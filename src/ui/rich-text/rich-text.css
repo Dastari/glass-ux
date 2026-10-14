@@ -1,0 +1,230 @@
+@layer components {
+  .fa-rich-text {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    overflow: clip;
+  }
+  .fa-rich-text-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2);
+    border-bottom: var(--border-width) solid var(--line);
+  }
+  .fa-rich-text-toolbar:has(> .fa-rich-text-modes-slot) {
+    /* Formatting keeps its natural row before the view switch gives up its labels. */
+    grid-template-columns: minmax(0, max-content) minmax(
+        calc(var(--control-h-sm) * 2 - var(--space-half) * 2),
+        1fr
+      );
+  }
+  .fa-rich-text-formatting {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .fa-rich-text-modes-slot {
+    display: flex;
+    justify-content: flex-end;
+    align-self: flex-start;
+    grid-column: 2;
+    grid-row: 1;
+    min-width: calc(var(--control-h-sm) * 2 - var(--space-half) * 2);
+  }
+  .fa-rich-text-toolbar > .fa-rich-text-status {
+    grid-column: 1 / -1;
+  }
+  .fa-rich-text-skeleton-action {
+    position: relative;
+  }
+  .fa-rich-text-skeleton-action > .fa-btn {
+    visibility: hidden;
+  }
+  .fa-rich-text-skeleton-action > .fa-skel {
+    position: absolute;
+    inset: 0;
+  }
+  .fa-rich-text-skeleton-modes {
+    display: inline-flex;
+  }
+  .fa-rich-text-skeleton-modes > :not(.fa-segmented-measure) {
+    visibility: hidden;
+  }
+  .fa-rich-text-block {
+    min-width: calc(var(--control-h-sm) * 3);
+  }
+  .fa-rich-text-content {
+    position: relative;
+    min-width: 0;
+  }
+  .fa-rich-text-editable,
+  .fa-rich-text-source .fa-textarea-input {
+    min-height: var(--_rich-min, calc(var(--space-8) * 5));
+    max-height: var(--_rich-max, calc(var(--space-12) * 10));
+    padding: var(--control-px-md);
+    overflow: auto;
+    overscroll-behavior: contain;
+    resize: none;
+    line-height: var(--type-body-line);
+    font-size: var(--type-body-size);
+    overflow-wrap: anywhere;
+    outline: none;
+  }
+  .fa-rich-text[data-resize] .fa-rich-text-editable,
+  .fa-rich-text[data-resize] .fa-rich-text-source .fa-textarea-input {
+    resize: vertical;
+  }
+  .fa-rich-text[data-disabled] .fa-rich-text-editable,
+  .fa-rich-text[data-disabled] .fa-rich-text-source .fa-textarea-input {
+    resize: none;
+  }
+  .fa-rich-text-editable > :first-child {
+    margin-top: 0;
+  }
+  .fa-rich-text-editable > :last-child {
+    margin-bottom: 0;
+  }
+  .fa-rich-text-editable p {
+    margin-block: var(--space-2);
+  }
+  .fa-rich-text-editable :is(h1, h2, h3, h4, h5, h6) {
+    font-weight: var(--type-title-weight);
+    line-height: 1.3;
+    margin-block: var(--space-3) var(--space-2);
+  }
+  .fa-rich-text-editable h1 {
+    font-size: var(--type-headline-size);
+  }
+  .fa-rich-text-editable h2 {
+    font-size: var(--type-title-size);
+  }
+  .fa-rich-text-editable :is(h3, h4, h5, h6) {
+    font-size: var(--type-subtitle-size);
+  }
+  .fa-rich-text-editable :is(ul, ol) {
+    margin-block: var(--space-2);
+    padding-inline-start: var(--space-6);
+  }
+  .fa-rich-text-editable ul {
+    list-style-type: disc;
+  }
+  .fa-rich-text-editable ol {
+    list-style-type: decimal;
+  }
+  .fa-rich-text-editable .fa-rich-text-list-nested {
+    list-style-type: none;
+  }
+  .fa-rich-text-editable blockquote {
+    margin-block: var(--space-3);
+    padding-inline-start: var(--space-3);
+    border-inline-start: calc(var(--border-width) * 3) solid var(--line);
+    color: var(--fg-muted);
+  }
+  .fa-rich-text-editable a {
+    color: var(--accent-text);
+    text-decoration: underline;
+    text-underline-offset: var(--space-half);
+  }
+  .fa-rich-text-code {
+    font-family: var(--font-mono);
+    background: var(--glass-fill-inset);
+    border-radius: var(--radius-item);
+    padding: var(--space-half) var(--space-1);
+  }
+  .fa-rich-text-code-block {
+    display: block;
+    white-space: pre-wrap;
+    font-family: var(--font-mono);
+    background: var(--glass-fill-inset);
+    border-radius: var(--radius-item);
+    padding: var(--space-3);
+    margin-block: var(--space-2);
+  }
+  .fa-rich-text-bold {
+    font-weight: var(--type-title-weight);
+  }
+  .fa-rich-text-italic {
+    font-style: italic;
+  }
+  .fa-rich-text-strike {
+    text-decoration: line-through;
+  }
+  .fa-rich-text-check {
+    position: relative;
+    list-style: none;
+    padding-inline-start: var(--space-6);
+    margin-inline-start: calc(var(--space-6) * -1);
+  }
+  .fa-rich-text-check::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: var(--space-1);
+    width: var(--space-4);
+    height: var(--space-4);
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-check);
+  }
+  .fa-rich-text-check[aria-checked="true"]::before {
+    content: "✓";
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    display: grid;
+    place-items: center;
+    line-height: 1;
+  }
+  .fa-rich-text-placeholder {
+    position: absolute;
+    inset: var(--control-px-md);
+    color: var(--fg-subtle);
+    pointer-events: none;
+  }
+  .fa-rich-text-source {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .fa-rich-text-source .fa-textarea-input {
+    font-family: var(--font-mono);
+    field-sizing: content;
+  }
+  .fa-rich-text-image img {
+    display: inline-block;
+    max-width: 100%;
+    max-height: var(--_rich-max, calc(var(--space-12) * 10));
+    object-fit: contain;
+    border-radius: var(--radius-item);
+    vertical-align: middle;
+  }
+  .fa-rich-text-image-blocked {
+    overflow-wrap: anywhere;
+    color: var(--fg-muted);
+  }
+  .fa-rich-text-status {
+    padding: var(--space-2) var(--control-px-md);
+    font-size: var(--type-caption-size);
+    color: var(--fg-muted);
+  }
+  .fa-rich-text-status[data-error] {
+    color: var(--danger-text);
+  }
+  .fa-rich-text-link-form {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .fa-rich-text-file {
+    display: none;
+  }
+}

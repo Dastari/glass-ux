@@ -16,5 +16,6 @@ are wide blocks that break out wider than the text.
 | --- | --- | --- | --- | --- | --- |
 | streaming | `boolean \| undefined` | false, true | no | false | Show the caret after the last character while the answer streams in. |
 | text | `string` | See type | yes | — | Assistant markdown (GFM). Raw HTML is ignored and the tree is sanitised. |
+| wrapTableCells | `boolean \| undefined` | false, true | no | false | Wrap table text within the available column widths. Default false uses single-line cells with truncation tooltips; use true for readable documents. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

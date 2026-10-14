@@ -36,7 +36,13 @@
     height: 100%;
     object-fit: contain;
   }
-  .fa-ai-desktop:is([data-state="ended"], [data-state="expired"], [data-state="failed"]) .fa-ai-desktop-screen img {
+  .fa-ai-desktop:is(
+      [data-state="ended"],
+      [data-state="expired"],
+      [data-state="failed"]
+    )
+    .fa-ai-desktop-screen
+    img {
     opacity: 0.45;
     filter: grayscale(1);
   }
@@ -57,36 +63,7 @@
     top: var(--space-2);
     left: var(--space-2);
   }
-  .fa-ai-desktop-dot {
-    width: var(--space-2);
-    height: var(--space-2);
-    border-radius: var(--radius-full);
-    background-color: var(--info);
-  }
-  .fa-ai-desktop-badge[data-state="controlling"] .fa-ai-desktop-dot {
-    --_pulse: var(--warning-line);
-    position: relative;
-    background-color: var(--warning);
-  }
   /* The live pulse is a halo of its own that only scales and fades (compositor-only). */
-  .fa-ai-desktop-badge[data-state="controlling"] .fa-ai-desktop-dot::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-color: var(--_pulse);
-    opacity: 0; /* at rest (reduced motion) only the dot shows */
-    animation: fa-pulse-halo var(--duration-shimmer) var(--ease-standard) infinite;
-  }
-  .fa-ai-desktop-badge:is([data-state="awaiting-action"], [data-state="paused"]) .fa-ai-desktop-dot {
-    background-color: var(--warning);
-  }
-  .fa-ai-desktop-badge[data-state="human"] .fa-ai-desktop-dot {
-    background-color: var(--success);
-  }
-  .fa-ai-desktop-badge:is([data-state="ended"], [data-state="expired"], [data-state="failed"]) .fa-ai-desktop-dot {
-    background-color: var(--fg-subtle);
-  }
   .fa-ai-desktop-cursor {
     top: 46%;
     left: 52%;
@@ -143,5 +120,14 @@
   }
   .fa-ai-desktop-stop {
     min-width: 8rem; /* tokens:allow the stop button reads as the largest control */
+  }
+}
+
+@layer components {
+  .fa-ai-desktop-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-controls);
   }
 }

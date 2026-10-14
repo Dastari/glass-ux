@@ -24,7 +24,13 @@
   .fa-ai-card[data-surface="canvas"] {
     --_shadow: var(--shadow-1);
   }
-  .fa-ai-card:is([data-tone="warning"], [data-tone="danger"], [data-tone="success"], [data-tone="accent"], [data-tone="info"]) {
+  .fa-ai-card:is(
+    [data-tone="warning"],
+    [data-tone="danger"],
+    [data-tone="success"],
+    [data-tone="accent"],
+    [data-tone="info"]
+  ) {
     border-color: var(--_tone-line);
   }
   .fa-ai-card[data-tone="warning"] {
@@ -112,13 +118,11 @@
     text-wrap: balance;
   }
   .fa-ai-card-meta {
-    overflow: hidden;
     color: var(--fg-muted);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
     font-variant-numeric: tabular-nums;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
   }
   .fa-ai-card-actions {
     display: flex;

@@ -112,7 +112,6 @@
     flex: none;
   }
 
-
   /* ── Running timer ─────────────────────────────────────────────────────────
      A neutral chip in the control material: running time is information, not a state, so
      it never wears red or the accent (R3.8). The "running" dot is the data hue and pulses
@@ -153,26 +152,7 @@
   .fa-shell-timer[data-hours] {
     --_time-w: 7ch;
   }
-  .fa-shell-timer-dot {
-    --_pulse: color-mix(in oklab, var(--chart-1) 55%, transparent);
-    position: relative;
-    flex: none;
-    width: var(--space-2);
-    height: var(--space-2);
-    border-radius: var(--radius-full);
-    background-color: var(--chart-1);
-  }
   /* The "running" pulse: a halo of its own (transform and opacity, run by the compositor). */
-  .fa-shell-timer-dot::after {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-color: var(--_pulse);
-    opacity: 0;
-    pointer-events: none;
-    content: "";
-    animation: fa-pulse-halo var(--duration-shimmer) var(--ease-standard) infinite;
-  }
   .fa-shell-timer-time {
     min-width: var(--_time-w);
     font-variant-numeric: tabular-nums;
@@ -221,20 +201,14 @@
     min-width: 0;
   }
   .fa-shell-account-name {
-    overflow: hidden;
     font-size: var(--type-label-size);
     line-height: var(--type-label-line);
     font-weight: var(--weight-semibold);
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .fa-shell-account-email {
-    overflow: hidden;
     color: var(--fg-muted);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .fa-shell-account-chevron {
     width: var(--icon-sm);
@@ -273,7 +247,8 @@
     flex: none;
     min-width: 0;
   }
-  .fa-shell-topbar[data-search="icon"] :is(.fa-shell-search-placeholder, .fa-shell-search-kbd) {
+  .fa-shell-topbar[data-search="icon"]
+    :is(.fa-shell-search-placeholder, .fa-shell-search-kbd) {
     display: none;
   }
   .fa-shell-topbar[data-search="icon"] .fa-shell-search {
@@ -312,7 +287,9 @@
     .fa-shell-topbar-scope .fa-org-switcher-includes {
       position: absolute;
       inset-block-start: 0;
-      inset-inline-start: calc(var(--space-1-5) + var(--_avatar) - var(--space-2));
+      inset-inline-start: calc(
+        var(--space-1-5) + var(--_avatar) - var(--space-2)
+      );
       padding-inline: var(--space-1);
       background-color: var(--surface-3);
       box-shadow: inset 0 0 0 var(--border-width) var(--line);
@@ -384,7 +361,9 @@
     .fa-shell-topbar[data-crumbs] .fa-shell-topbar-scope {
       display: contents;
     }
-    .fa-shell-topbar[data-crumbs] .fa-shell-topbar-scope > :not([role="status"]) {
+    .fa-shell-topbar[data-crumbs]
+      .fa-shell-topbar-scope
+      > :not([role="status"]) {
       display: none;
     }
     /* The module switch shows once it is its menu button (never the full track first). */

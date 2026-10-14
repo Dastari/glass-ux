@@ -1,0 +1,63 @@
+import {
+  IconCalendar,
+  IconCheck,
+  IconFileText,
+} from "../../icons/generated/icons.js";
+import { ActivityFeed } from "../../ui/activity-feed/index.js";
+import { Badge } from "../../ui/badge/index.js";
+import { SectionPage, Specimen } from "../kit.js";
+
+export default function ActivityFeedSection() {
+  const now = Date.now();
+  return (
+    <SectionPage>
+      <Specimen
+        title="Activity and scheduled events"
+        description="The application supplies order and content. Times tick on the shared clock and expose their absolute date in a tooltip."
+      >
+        <div className="w-full max-w-xl">
+          <ActivityFeed
+            aria-label="Project activity"
+            items={[
+              {
+                id: "review",
+                content: (
+                  <>
+                    Mira Rowan reviewed the draft{" "}
+                    <Badge size="sm" tone="success">
+                      Complete
+                    </Badge>
+                  </>
+                ),
+                at: now - 2 * 3_600_000,
+                icon: <IconCheck />,
+              },
+              {
+                id: "document",
+                content: "Avery Quinn attached the studio preview document",
+                at: now - 6 * 3_600_000,
+                icon: <IconFileText />,
+              },
+              {
+                id: "scheduled",
+                content: "Preview scheduled",
+                at: now + 3 * 86_400_000,
+                icon: <IconCalendar />,
+              },
+            ]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
+        title="Empty feed"
+        description="The named list keeps its place when there are no events."
+      >
+        <ActivityFeed
+          aria-label="Document activity"
+          items={[]}
+          empty="No document activity"
+        />
+      </Specimen>
+    </SectionPage>
+  );
+}

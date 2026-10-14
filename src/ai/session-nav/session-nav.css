@@ -117,18 +117,6 @@
     color: var(--accent-text);
     animation: fa-spin var(--duration-spin) linear infinite;
   }
-  .fa-ai-session-dot {
-    width: var(--space-2);
-    height: var(--space-2);
-    border-radius: var(--radius-full);
-    background-color: var(--accent);
-  }
-  .fa-ai-session-dot[data-activity="prompt"] {
-    background-color: var(--warning);
-  }
-  .fa-ai-session-dot[data-activity="error"] {
-    background-color: var(--danger);
-  }
   .fa-ai-session-menu {
     position: absolute;
     top: 50%;

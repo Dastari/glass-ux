@@ -260,23 +260,54 @@
  *        rim, a soft contact shadow. White in both modes, like a lit bead.
  */
 @layer components {
-  :is(.fa-check, .fa-radio, .fa-radio-card, .fa-radio-cards, .fa-choice-group, .fa-switch, .fa-slider, .fa-segmented)[data-tone="success"] {
+  :is(
+    .fa-check,
+    .fa-radio,
+    .fa-radio-card,
+    .fa-radio-cards,
+    .fa-choice-group,
+    .fa-switch,
+    .fa-slider,
+    .fa-segmented
+  )[data-tone="success"] {
     --fa-choice-tone: var(--success);
-    --fa-choice-tone-2: oklch(from var(--success) calc(l + 0.03) c calc(h - 24));
+    --fa-choice-tone-2: oklch(
+      from var(--success) calc(l + 0.03) c calc(h - 24)
+    );
     --fa-choice-tone-fg: var(--success-fg);
     --fa-choice-tone-text: var(--success-text);
     --fa-choice-tone-soft: var(--success-soft);
     --fa-choice-tone-line: var(--success-line);
   }
-  :is(.fa-check, .fa-radio, .fa-radio-card, .fa-radio-cards, .fa-choice-group, .fa-switch, .fa-slider, .fa-segmented)[data-tone="warning"] {
+  :is(
+    .fa-check,
+    .fa-radio,
+    .fa-radio-card,
+    .fa-radio-cards,
+    .fa-choice-group,
+    .fa-switch,
+    .fa-slider,
+    .fa-segmented
+  )[data-tone="warning"] {
     --fa-choice-tone: var(--warning);
-    --fa-choice-tone-2: oklch(from var(--warning) calc(l - 0.05) c calc(h - 16));
+    --fa-choice-tone-2: oklch(
+      from var(--warning) calc(l - 0.05) c calc(h - 16)
+    );
     --fa-choice-tone-fg: var(--warning-fg);
     --fa-choice-tone-text: var(--warning-text);
     --fa-choice-tone-soft: var(--warning-soft);
     --fa-choice-tone-line: var(--warning-line);
   }
-  :is(.fa-check, .fa-radio, .fa-radio-card, .fa-radio-cards, .fa-choice-group, .fa-switch, .fa-slider, .fa-segmented)[data-tone="danger"] {
+  :is(
+    .fa-check,
+    .fa-radio,
+    .fa-radio-card,
+    .fa-radio-cards,
+    .fa-choice-group,
+    .fa-switch,
+    .fa-slider,
+    .fa-segmented
+  )[data-tone="danger"] {
     --fa-choice-tone: var(--danger);
     --fa-choice-tone-2: oklch(from var(--danger) calc(l + 0.02) c calc(h - 14));
     --fa-choice-tone-fg: var(--danger-fg);
@@ -299,23 +330,45 @@
     --_on-edge: oklch(from var(--_on) calc(l - 0.08) c h);
     --_on-glow: oklch(from var(--_on) l c h / 0.42);
     --_on-fill:
-      var(--sheen-solid),
-      linear-gradient(105deg, var(--_on), var(--_on-2));
+      var(--sheen-solid), linear-gradient(105deg, var(--_on), var(--_on-2));
   }
   .fa-switch,
   .fa-slider {
-    --_bead:
-      radial-gradient(130% 130% at 30% 22%, oklch(1 0 0) 0%, oklch(0.995 0.002 var(--neutral-h)) 34%, oklch(0.925 0.008 var(--neutral-h)) 100%);
+    --_bead: radial-gradient(
+      130% 130% at 30% 22%,
+      oklch(1 0 0) 0%,
+      oklch(0.995 0.002 var(--neutral-h)) 34%,
+      oklch(0.925 0.008 var(--neutral-h)) 100%
+    );
     --_bead-shadow:
       inset 0 0 0 var(--border-width) oklch(1 0 0 / 0.7),
-      inset 0 calc(var(--border-width) * -1) var(--space-half) oklch(from var(--shadow-tint) l c h / 0.1),
+      inset 0 calc(var(--border-width) * -1) var(--space-half)
+        oklch(from var(--shadow-tint) l c h / 0.1),
       0 0 0 var(--border-width) oklch(from var(--shadow-tint) l c h / 0.1),
-      0 var(--border-width) var(--space-half) oklch(from var(--shadow-tint) l c h / 0.22),
-      0 var(--space-1) var(--space-2) calc(var(--space-half) * -1) oklch(from var(--shadow-tint) l c h / 0.26);
+      0 var(--border-width) var(--space-half)
+        oklch(from var(--shadow-tint) l c h / 0.22),
+      0 var(--space-1) var(--space-2) calc(var(--space-half) * -1)
+        oklch(from var(--shadow-tint) l c h / 0.26);
     /* the recessed well a bead runs in */
     --_well: color-mix(in oklab, var(--fg-subtle) 16%, var(--glass-fill-inset));
     --_well-shadow:
-      inset 0 0 0 var(--border-width) color-mix(in oklab, var(--fg-subtle) 26%, transparent),
-      inset 0 var(--border-width) var(--space-1) oklch(from var(--shadow-tint) l c h / 0.16);
+      inset 0 0 0 var(--border-width)
+        color-mix(in oklab, var(--fg-subtle) 26%, transparent),
+      inset 0 var(--border-width) var(--space-1)
+        oklch(from var(--shadow-tint) l c h / 0.16);
+  }
+}
+
+@layer components {
+  .fa-field-warning {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-inline);
+    color: var(--warning-text);
+  }
+  .fa-field-warning svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    flex: none;
   }
 }

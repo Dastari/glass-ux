@@ -67,10 +67,7 @@
   .fa-ai-context-tool-id {
     flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
     font-size: var(--type-caption-size);
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .fa-ai-context-tool-meta {
     flex: none;

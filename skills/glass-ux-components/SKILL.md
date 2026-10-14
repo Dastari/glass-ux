@@ -26,3 +26,8 @@ Use token roles and outer layout classes. Named variants and semantic tones are 
 local colour overrides. Give bounded charts, maps and workspaces a definite height, and
 check both a narrow and a wide container. Keep application-specific entities and policies
 in the consuming project; the generic primitive receives their data and actions.
+
+For compact facts, activity, clickable rows, chip overflow, semantic dots, link buttons or
+table meters, read `docs/components/compact-compositions.md` and the selected API page.
+Use these compositions before copying private class recipes. `TruncatedText` accepts rich
+nodes; `Field.warning` uses its reserved message slot.

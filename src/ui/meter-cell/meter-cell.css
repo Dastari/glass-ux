@@ -1,0 +1,15 @@
+@layer components {
+  .fa-meter-cell {
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 100%;
+    container-type: inline-size;
+    min-width: 0;
+  }
+  @container (width < 8rem) {
+    .fa-meter-cell .fa-meter-track {
+      display: none;
+    }
+  }
+}

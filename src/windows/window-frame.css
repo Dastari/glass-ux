@@ -54,24 +54,18 @@
     min-width: 0;
   }
   .fa-window-title {
-    overflow: hidden;
     color: var(--fg);
     font-size: var(--type-subtitle-size);
     line-height: var(--type-subtitle-line);
     font-weight: var(--type-subtitle-weight);
     letter-spacing: var(--type-subtitle-tracking);
-    text-overflow: ellipsis;
-    white-space: nowrap;
     transition: color var(--duration-fast) var(--ease-standard);
   }
   .fa-window-subtitle {
-    overflow: hidden;
     color: var(--fg-muted);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
     font-variant-numeric: tabular-nums;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .fa-window:not([data-focused]) .fa-window-title {
     color: var(--fg-muted);
@@ -217,8 +211,6 @@
   }
   .fa-window-status-label {
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
   /* :not(:first-child) rather than `* + *`: a universal sibling selector re-styles the
      siblings of every node inserted anywhere in the document (docs/performance.md). */
@@ -275,7 +267,12 @@
   .fa-window-resize[data-edge="w"] {
     left: 0;
   }
-  .fa-window-resize:is([data-edge="ne"], [data-edge="nw"], [data-edge="se"], [data-edge="sw"]) {
+  .fa-window-resize:is(
+    [data-edge="ne"],
+    [data-edge="nw"],
+    [data-edge="se"],
+    [data-edge="sw"]
+  ) {
     width: var(--_corner);
     height: var(--_corner);
   }

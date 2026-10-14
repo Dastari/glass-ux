@@ -25,6 +25,7 @@ PortInput bound to a `number | null` form field. Pair it with `portSchema()`.
 | services | `Readonly<Record<number, string>> \| undefined` | See type | no | — | Your own names for ports, checked before the well-known list ({ 8443: "UniFi controller" }). |
 | size | `NumberFieldSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | steppers | `boolean \| undefined` | false, true | no | — | Show the − / + steppers (default). Arrow keys always step. |
+| warning | `ReactNode` | false, true | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

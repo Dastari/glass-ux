@@ -170,18 +170,12 @@
     min-width: 0;
   }
   .fa-ai-rank-label {
-    overflow: hidden;
     font-weight: var(--weight-medium);
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .fa-ai-rank-description {
-    overflow: hidden;
     color: var(--fg-muted);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .fa-ai-ask-form {
@@ -246,9 +240,7 @@
   .fa-ai-ask-record-text {
     flex: 0 1 auto;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
   }
   .fa-ai-ask-record-outcome {
     color: var(--fg-muted);
@@ -261,7 +253,12 @@
     margin-block: calc(var(--space-1) * -1);
   }
   .fa-ai-ask-record-meta {
-    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-inline);
+    min-width: 0;
+    flex: 0 1 auto;
     margin-inline-start: auto;
     color: var(--fg-subtle);
     font-size: var(--type-caption-size);
@@ -272,7 +269,11 @@
   }
   @container (width < 30rem) {
     .fa-ai-ask-record-meta {
-      display: none;
+      flex-basis: 100%;
+      margin-inline-start: calc(var(--icon-sm) + var(--space-2-5));
+    }
+    .fa-ai-ask-record {
+      flex-wrap: wrap;
     }
   }
 

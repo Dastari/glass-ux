@@ -1,0 +1,65 @@
+import { useState } from "react";
+import { z } from "zod";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+import { richTextSchema } from "glass-ux/rich-text";
+
+const schema = z.object({
+  document: richTextSchema({ required: true, maxLength: 4000 }),
+});
+
+function DocumentForm() {
+  const [saved, setSaved] = useState("");
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { document: "" },
+    validators: { onDynamic: schema },
+    onSubmit: ({ value }) => {
+      setSaved(value.document);
+    },
+  });
+  return (
+    <div className="w-full" data-testid="rich-text-form-demo">
+      <Form form={form} aria-label="Document form">
+        <FormStack>
+          <form.AppField name="document">
+            {(field) => (
+              <field.RichTextField
+                label="Document"
+                hint="Write the handover and save its Markdown."
+                minHeight={160}
+                maxHeight={320}
+              />
+            )}
+          </form.AppField>
+          <FormActions>
+            <form.SubmitButton>Save document</form.SubmitButton>
+            <form.CancelButton />
+          </FormActions>
+        </FormStack>
+      </Form>
+      {saved ? (
+        <div role="status">
+          Saved Markdown:
+          <pre className="gallery-usage" data-testid="rich-text-saved">
+            {saved}
+          </pre>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export default function RichTextSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="In a form"
+        description="Validation starts when focus leaves the complete editor. Empty documents are rejected; saving receives a Markdown string."
+        layout="stack"
+      >
+        <DocumentForm />
+      </Specimen>
+    </SectionPage>
+  );
+}

@@ -1,6 +1,6 @@
 # RelativeTime
 
-"2 min ago", ticking on a shared clock; the absolute time is in the title (R2.7).
+"2 min ago", ticking on a shared clock; the absolute time is in a keyboard-accessible tooltip (R2.7).
 
 `import { RelativeTime } from "glass-ux/data-table"`
 

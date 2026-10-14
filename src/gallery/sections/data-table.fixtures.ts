@@ -341,7 +341,7 @@ export function createEndpointServer(count = 1284) {
       if (enrol === "always" || (enrol && random() < 0.35)) {
         enrolled++
         // New enrolments sort to the top by name and by last seen, so they land on page 1.
-        const name = code(random, used, "LMN-0")
+        const name = code(random, used, "AUR-NEW")
         endpoints = [{ ...makeEndpoint(random, used, at, count + enrolled, "online"), id: `ep_new_${enrolled}`, name, lastSeen: at }, ...endpoints]
       }
       return changes.size

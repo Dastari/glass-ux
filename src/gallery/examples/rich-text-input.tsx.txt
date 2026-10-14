@@ -1,0 +1,164 @@
+import { useState } from "react";
+import { ContainerLab, SectionPage, Specimen, SwapSlot } from "glass-ux/gallery/kit";
+import { Button } from "glass-ux/button";
+import { Field } from "glass-ux/field";
+import { RichTextInput, RichTextSkeleton } from "glass-ux/rich-text";
+
+const DOCUMENT = `## Northstar welcome guide
+
+Check the **site contact** before changing a device. Keep the handover *clear and brief*.
+
+- Record the device name
+- Link the [support guide](https://northstar.example/support)
+- Add the next step
+
+> Leave enough detail for the next technician.
+
+Use \`device status\` to check the connection.
+`;
+
+function DocumentDemo() {
+  const [markdown, setMarkdown] = useState(DOCUMENT);
+  return (
+    <div className="flex w-full min-w-0 flex-col gap-3" data-testid="rich-text-demo">
+      <Field label="Welcome guide" nativeLabel={false} hint="Markdown source is saved.">
+        <RichTextInput
+          value={markdown}
+          onValueChange={setMarkdown}
+          minHeight={220}
+          maxHeight={420}
+        />
+      </Field>
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" onClick={() => setMarkdown(DOCUMENT)}>
+          Reset document
+        </Button>
+        <Button
+          size="sm"
+          onClick={() =>
+            setMarkdown("## Updated guide\n\nThis document was replaced by its owner.")
+          }
+        >
+          Load another document
+        </Button>
+      </div>
+      <details>
+        <summary>Persisted Markdown</summary>
+        <pre className="gallery-usage" data-testid="rich-text-markdown">
+          {markdown}
+        </pre>
+      </details>
+    </div>
+  );
+}
+
+function AttachmentDemo() {
+  return (
+    <Field
+      label="Supporting files"
+      nativeLabel={false}
+      hint="Demo upload adapter returns a fictional file link. Applications supply storage and authorization."
+    >
+      <RichTextInput
+        defaultValue="Attach a guide or image to this document."
+        uploadAttachment={async (file) => ({
+          kind: "link",
+          url: `https://files.northstar.example/${encodeURIComponent(file.name)}`,
+          label: file.name,
+        })}
+        minHeight={120}
+        maxHeight={240}
+      />
+    </Field>
+  );
+}
+
+export default function RichTextSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Edit a document"
+        description="Visual editing is the default. Select text to format it, change the paragraph style, or use Ctrl/⌘ B and I. Markdown source is another presentation of the same value."
+        layout="stack"
+      >
+        <DocumentDemo />
+      </Specimen>
+
+      <Specimen
+        title="Attachments"
+        description="A host upload adapter adds image or file URLs to Markdown. Glass UX does not store files or grant upload authority."
+        layout="stack"
+      >
+        <AttachmentDemo />
+      </Specimen>
+      <Specimen title="States" layout="stack">
+        <Field label="Empty document" nativeLabel={false}>
+          <RichTextInput minHeight={100} maxHeight={220} />
+        </Field>
+        <Field label="Invalid document" nativeLabel={false} error="Write a document">
+          <RichTextInput invalid minHeight={100} maxHeight={220} />
+        </Field>
+        <Field label="Read-only document" nativeLabel={false}>
+          <RichTextInput
+            defaultValue={"## Published guide\n\nRead, select or inspect the **Markdown source**."}
+            readOnly
+            minHeight={100}
+            maxHeight={220}
+          />
+        </Field>
+        <Field label="Disabled document" nativeLabel={false}>
+          <RichTextInput
+            defaultValue="This guide is unavailable while the workspace loads."
+            disabled
+            minHeight={100}
+            maxHeight={220}
+          />
+        </Field>
+        <Field label="Visual only" nativeLabel={false}>
+          <RichTextInput
+            sourceView={false}
+            defaultValue="A compact **visual editor** with the same Markdown value."
+            minHeight={100}
+            maxHeight={220}
+          />
+        </Field>
+      </Specimen>
+      <Specimen
+        title="Loading geometry"
+        description="The skeleton retains the toolbar and content height."
+        layout="stack"
+      >
+        <SwapSlot
+          id="rich-text-loading"
+          skeleton={<RichTextSkeleton minHeight={160} />}
+          loaded={
+            <RichTextInput
+              defaultValue="The **document** is ready."
+              minHeight={160}
+              maxHeight={160}
+            />
+          }
+        />
+      </Specimen>
+      <ContainerLab
+        presets={[
+          { id: "tile", label: "Tile 280×320", width: 280, height: 320 },
+          { id: "pane", label: "Pane 720×480", width: 720, height: 480 },
+          { id: "tall", label: "Tall narrow 240×640", width: 240, height: 640 },
+        ]}
+        description="Formatting buttons wrap within the container; the source switch adapts with Segmented. Content scrolls after its maximum height, and either view can be resized vertically."
+      >
+        <div className="p-2">
+          <RichTextInput
+            aria-label="Container document"
+            defaultValue={
+              "## Shared guide\n\nA paragraph with **bold text**, a [link](https://northstar.example) and a next step."
+            }
+            minHeight={100}
+            maxHeight={180}
+          />
+        </div>
+      </ContainerLab>
+    </SectionPage>
+  );
+}

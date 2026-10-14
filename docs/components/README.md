@@ -41,6 +41,7 @@ const form = useAppForm({ ...formBehaviour, defaultValues, validators: { onDynam
 | [Money](money-field.md)                   | `MoneyField`                                 | minor units (cents), `number \| null` | `moneySchema`                             |
 | [Percentage](percent-field.md)            | `PercentField`                               | `number \| null`                      | `percentSchema`                           |
 | [Country](country-select.md)              | `CountryField`                               | ISO code, `string \| null`            | `countrySchema`                           |
+| [Rich text](rich-text.md)                 | `RichTextField`                              | Markdown string                       | `richTextSchema`                          |
 | [Time zone](time-zone-select.md)          | `TimeZoneField`                              | IANA name, `string \| null`           | `timeZoneSchema`                          |
 | [Copy button](copy-button.md)             | —                                            | —                                     | —                                         |
 | [Swatch picker](swatch-picker.md)         | — (bare control in a `SettingRow`)           | option value                          | —                                         |

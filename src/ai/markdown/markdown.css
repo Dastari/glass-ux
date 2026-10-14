@@ -42,7 +42,9 @@
   .fa-ai-md :is(p, ul, ol, blockquote, h1, h2, h3, h4, h5, h6) {
     max-width: var(--measure);
   }
-  .fa-ai-conversation-column .fa-ai-md :is(p, ul, ol, blockquote, h1, h2, h3, h4, h5, h6) {
+  .fa-ai-conversation-column
+    .fa-ai-md
+    :is(p, ul, ol, blockquote, h1, h2, h3, h4, h5, h6) {
     max-width: none;
   }
   .fa-ai-md p {
@@ -163,7 +165,11 @@
     color: var(--accent-text);
     font-weight: var(--weight-medium);
     text-decoration-line: underline;
-    text-decoration-color: color-mix(in oklab, var(--accent-text) 40%, transparent);
+    text-decoration-color: color-mix(
+      in oklab,
+      var(--accent-text) 40%,
+      transparent
+    );
     text-decoration-thickness: var(--border-width);
     text-underline-offset: 0.2em; /* tokens:allow follows the font size */
     border-radius: var(--radius-xs);
@@ -212,5 +218,20 @@
     border-radius: var(--radius-full);
     background-color: var(--accent);
     vertical-align: text-bottom;
+  }
+}
+
+@layer components {
+  .fa-ai-md[data-wrap-table-cells] .fa-ai-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+  }
+  .fa-ai-md[data-wrap-table-cells] .fa-ai-table :is(th, td) {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    vertical-align: top;
   }
 }

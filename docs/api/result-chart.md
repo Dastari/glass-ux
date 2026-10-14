@@ -1,9 +1,6 @@
 # ResultChart
 
-A line or bar chart for a tool result. Thin marks (2px lines, bars at most 24px with a
-rounded data end), hairline grid, one axis, a legend from two series, and a hover readout.
-Container tiers: compact cards drop the value axis and thin the time labels; the chart
-box keeps a fixed height per tier so it reserves its space before data arrives.
+Assistant result adapted into the shared chart family, with stable series and keyboard/table access.
 
 `import { ResultChart } from "glass-ux/ai"`
 

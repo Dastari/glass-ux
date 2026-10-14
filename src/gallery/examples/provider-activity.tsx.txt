@@ -165,7 +165,10 @@ const FAMILIES: Family[] = [
     example: (
       <>
         <ProviderActivity
-          status={{ state: "searching", detail: "TasNetworks Cedar Annex outage" }}
+          status={{
+            state: "searching",
+            detail: "TasNetworks Cedar Annex outage",
+          }}
         />
         <SourceList sources={SOURCES.slice(1)} />
       </>
@@ -180,7 +183,13 @@ const FAMILIES: Family[] = [
     status: "Built on main",
     example: (
       <>
-        <ApprovalCard ask={{ ...APPROVAL("pending"), id: "cat-ps", actionKind: "PowerShell" }} />
+        <ApprovalCard
+          ask={{
+            ...APPROVAL("pending"),
+            id: "cat-ps",
+            actionKind: "PowerShell",
+          }}
+        />
         <ToolGroup calls={[TOOLS.spooler]} />
       </>
     ),
@@ -230,7 +239,7 @@ const FAMILIES: Family[] = [
       <DesktopSession
         endpoint={E.c106Online}
         state="controlling"
-        user="AzureAD\\MiraRowan"
+        userEntity={E.mira}
         startedAt={NOW - 134000}
         leaseEndsAt={NOW + 12 * 60000}
         screen={{
@@ -241,9 +250,21 @@ const FAMILIES: Family[] = [
           height: 1000,
         }}
         steps={[
-          { id: "1", label: "Opened Devices and Printers", status: "succeeded" },
-          { id: "2", label: "Selected Ricoh IM C3000 · Level 2", status: "succeeded" },
-          { id: "3", label: "Setting it as the default printer", status: "running" },
+          {
+            id: "1",
+            label: "Opened Devices and Printers",
+            status: "succeeded",
+          },
+          {
+            id: "2",
+            label: "Selected Ricoh IM C3000 · Level 2",
+            status: "succeeded",
+          },
+          {
+            id: "3",
+            label: "Setting it as the default printer",
+            status: "running",
+          },
         ]}
       />
     ),

@@ -72,8 +72,6 @@
   }
   .fa-ai-chip-label {
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
   .fa-ai-chip-meta {
     flex: none;
@@ -149,7 +147,8 @@
     background: none;
     box-shadow: none;
   }
-  .fa-ai-chip-link[data-variant="plain"]:is(:hover, [data-popup-open]) .fa-ai-chip-label {
+  .fa-ai-chip-link[data-variant="plain"]:is(:hover, [data-popup-open])
+    .fa-ai-chip-label {
     text-decoration: underline;
     text-decoration-color: var(--line-strong);
     text-underline-offset: 0.2em; /* tokens:allow follows the font size */
@@ -247,43 +246,17 @@
     min-width: 0;
   }
   .fa-ai-preview-name {
-    overflow: hidden;
     color: var(--fg);
     font-size: var(--type-subtitle-size);
     line-height: var(--type-subtitle-line);
     font-weight: var(--type-subtitle-weight);
     letter-spacing: var(--type-subtitle-tracking);
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .fa-ai-preview-subtitle {
     color: var(--fg-muted);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
     text-wrap: pretty;
-  }
-  .fa-ai-preview-facts {
-    display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
-    gap: var(--space-1-5) var(--space-4);
-    width: 100%;
-    margin: 0;
-    font-size: var(--type-label-size);
-    line-height: var(--type-label-line);
-  }
-  .fa-ai-preview-fact {
-    display: contents;
-  }
-  .fa-ai-preview-fact dt {
-    color: var(--fg-muted);
-  }
-  .fa-ai-preview-fact dd {
-    min-width: 0;
-    margin: 0;
-    overflow: hidden;
-    color: var(--fg);
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .fa-ai-preview-actions {
     display: flex;

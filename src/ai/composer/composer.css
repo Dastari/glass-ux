@@ -237,24 +237,6 @@
     gap: var(--space-3);
     padding: calc(var(--inset-tile) - var(--inset-overlay));
   }
-  .fa-ai-model-facts {
-    display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
-    gap: var(--space-1-5) var(--space-4);
-    margin: 0;
-    font-size: var(--type-label-size);
-    line-height: var(--type-label-line);
-  }
-  .fa-ai-model-facts > div {
-    display: contents;
-  }
-  .fa-ai-model-facts dt {
-    color: var(--fg-muted);
-  }
-  .fa-ai-model-facts dd {
-    margin: 0;
-    font-weight: var(--weight-medium);
-  }
 
   /* Context popover */
   .fa-ai-context {

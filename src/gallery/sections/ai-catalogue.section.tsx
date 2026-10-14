@@ -1,5 +1,5 @@
-import type { ReactNode } from "react"
-import { Badge } from "../../ui/badge/index.js"
+import type { ReactNode } from "react";
+import { Badge } from "../../ui/badge/index.js";
 import {
   ApprovalCard,
   AskCard,
@@ -11,38 +11,49 @@ import {
   SourceList,
   TableScroll,
   ToolGroup,
-} from "../../ai/index.js"
-import { Rules, SectionPage, Specimen } from "../kit.js"
-import { APPROVAL, ASKS, E, NOW, RESULTS, SOURCES, TOOLS, TOOL_PREVIEWS } from "./ai.fixtures.js"
-import { screenshot } from "./ai.screens.js"
-import { AiGallery } from "./ai.kit.js"
+} from "../../ai/index.js";
+import { Rules, SectionPage, Specimen } from "../kit.js";
+import {
+  APPROVAL,
+  ASKS,
+  E,
+  NOW,
+  RESULTS,
+  SOURCES,
+  TOOLS,
+  TOOL_PREVIEWS,
+} from "./ai.fixtures.js";
+import { screenshot } from "./ai.screens.js";
+import { AiGallery } from "./ai.kit.js";
 
-type Status = "Built" | "Built on main" | "Planned" | "Disabled"
+type Status = "Built" | "Built on main" | "Planned" | "Disabled";
 
 interface Family {
-  name: string
+  name: string;
   /** Tool definitions or calls displayed in the view. */
-  tools: string
+  tools: string;
   /** Semantic entity or content kind, used to choose labels and rendering. */
-  kind: string
-  approval: string
-  renderer: string
+  kind: string;
+  approval: string;
+  renderer: string;
   /** Current operation or connection status. */
-  status: Status
-  example: ReactNode
+  status: Status;
+  example: ReactNode;
 }
 
-const STATUS_TONE: Record<Status, "success" | "info" | "neutral" | "warning"> = {
-  Built: "success",
-  "Built on main": "info",
-  Planned: "neutral",
-  Disabled: "warning",
-}
+const STATUS_TONE: Record<Status, "success" | "info" | "neutral" | "warning"> =
+  {
+    Built: "success",
+    "Built on main": "info",
+    Planned: "neutral",
+    Disabled: "warning",
+  };
 
 const FAMILIES: Family[] = [
   {
     name: "Counts",
-    tools: "sample.connected_endpoint_count · sample.directory.organization_count",
+    tools:
+      "sample.connected_endpoint_count · sample.directory.organization_count",
     kind: "Read",
     approval: "None",
     renderer: "Value tile (scalar)",
@@ -56,7 +67,8 @@ const FAMILIES: Family[] = [
   },
   {
     name: "Lists",
-    tools: "sample.endpoint_list · sample.ticket_list · sample.directory.organization_list",
+    tools:
+      "sample.endpoint_list · sample.ticket_list · sample.directory.organization_list",
     kind: "Read · ≤ 25 items",
     approval: "None",
     renderer: "Table (list) · entity list when every item is a known entity",
@@ -71,7 +83,8 @@ const FAMILIES: Family[] = [
   },
   {
     name: "Details",
-    tools: "sample.endpoint_details · sample.ticket_details · Sample organisation details",
+    tools:
+      "sample.endpoint_details · sample.ticket_details · Sample organisation details",
     kind: "Read",
     approval: "None",
     renderer: "Entity card with the entity's actions (object of a known type)",
@@ -80,7 +93,8 @@ const FAMILIES: Family[] = [
   },
   {
     name: "Project work",
-    tools: "sample.work.job_details · Project actions, requests, quotes, comments, stock and labour",
+    tools:
+      "sample.work.job_details · Project actions, requests, quotes, comments, stock and labour",
     kind: "Read · Confidential preview",
     approval: "None",
     renderer: "Detail tiles; Project jobs link as context chips",
@@ -98,7 +112,8 @@ const FAMILIES: Family[] = [
   },
   {
     name: "Metrics and history",
-    tools: "Glass UX endpoint metrics overview and history · process and diagnostic history",
+    tools:
+      "Glass UX endpoint metrics overview and history · process and diagnostic history",
     kind: "Read (generated capabilities)",
     approval: "None",
     renderer: "Figures · line chart · table · log",
@@ -115,14 +130,33 @@ const FAMILIES: Family[] = [
     tools: "graphql.capabilities.discover · describe · execute",
     kind: "Read",
     approval: "None",
-    renderer: "Tool rows only; arguments and results stay hidden unless a call fails",
+    renderer:
+      "Tool rows only; arguments and results stay hidden unless a call fails",
     status: "Built",
     example: (
       <ToolGroup
         calls={[
-          { id: "b1", toolId: "graphql.capabilities.discover", label: "Found an authorised data capability", status: "succeeded", elapsedMs: 410 },
-          { id: "b2", toolId: "graphql.capabilities.describe", label: "Loaded the authorised query contract", status: "succeeded", elapsedMs: 220 },
-          { id: "b3", toolId: "graphql.capabilities.execute", label: "Queried authorised application data", status: "succeeded", elapsedMs: 1390 },
+          {
+            id: "b1",
+            toolId: "graphql.capabilities.discover",
+            label: "Found an authorised data capability",
+            status: "succeeded",
+            elapsedMs: 410,
+          },
+          {
+            id: "b2",
+            toolId: "graphql.capabilities.describe",
+            label: "Loaded the authorised query contract",
+            status: "succeeded",
+            elapsedMs: 220,
+          },
+          {
+            id: "b3",
+            toolId: "graphql.capabilities.execute",
+            label: "Queried authorised application data",
+            status: "succeeded",
+            elapsedMs: 1390,
+          },
         ]}
         defaultOpen
       />
@@ -133,11 +167,17 @@ const FAMILIES: Family[] = [
     tools: "Hosted web_search (provider activity · citation)",
     kind: "Read · public web",
     approval: "None",
-    renderer: "Provider activity row, then numbered citations and the sources list",
+    renderer:
+      "Provider activity row, then numbered citations and the sources list",
     status: "Built",
     example: (
       <>
-        <ProviderActivity status={{ state: "searching", detail: "TasNetworks Cedar Annex outage" }} />
+        <ProviderActivity
+          status={{
+            state: "searching",
+            detail: "TasNetworks Cedar Annex outage",
+          }}
+        />
         <SourceList sources={SOURCES.slice(1)} />
       </>
     ),
@@ -151,14 +191,21 @@ const FAMILIES: Family[] = [
     status: "Built on main",
     example: (
       <>
-        <ApprovalCard ask={{ ...APPROVAL("pending"), id: "cat-ps", actionKind: "PowerShell" }} />
+        <ApprovalCard
+          ask={{
+            ...APPROVAL("pending"),
+            id: "cat-ps",
+            actionKind: "PowerShell",
+          }}
+        />
         <ToolGroup calls={[TOOLS.spooler]} />
       </>
     ),
   },
   {
     name: "Software",
-    tools: "Software policies · state · requests · available updates · Save · Scan · Apply",
+    tools:
+      "Software policies · state · requests · available updates · Save · Scan · Apply",
     kind: "Read · low-risk write",
     approval: "None (low-risk writes)",
     renderer: "Table · tool rows confirm writes",
@@ -176,7 +223,8 @@ const FAMILIES: Family[] = [
   },
   {
     name: "Context links",
-    tools: "Resource references (endpoint, ticket, organisation, Sample asset, Project job, quote, card file)",
+    tools:
+      "Resource references (endpoint, ticket, organisation, Sample asset, Project job, quote, card file)",
     kind: "—",
     approval: "None",
     renderer: "Context chips with preview; unverified links say so",
@@ -193,21 +241,40 @@ const FAMILIES: Family[] = [
     name: "Desktop observation and control",
     tools: "Observe (D2) · supervised control (D3)",
     kind: "Read · write",
-    approval: "Assured grant with MFA, ≤ 15 min; one-shot approval per consequential action",
+    approval:
+      "Assured grant with MFA, ≤ 15 min; one-shot approval per consequential action",
     renderer: "Desktop session: live screen, steps, Stop and Take over",
     status: "Planned",
     example: (
       <DesktopSession
         endpoint={E.c106Online}
         state="controlling"
-        user="AzureAD\\MiraRowan"
+        userEntity={E.mira}
         startedAt={NOW - 134_000}
         leaseEndsAt={NOW + 12 * 60_000}
-        screen={{ id: "d1", src: screenshot({ app: "Devices and Printers", hue: 250 }), alt: "NST-C106 with Devices and Printers open", width: 1600, height: 1000 }}
+        screen={{
+          id: "d1",
+          src: screenshot({ app: "Devices and Printers", hue: 250 }),
+          alt: "NST-C106 with Devices and Printers open",
+          width: 1600,
+          height: 1000,
+        }}
         steps={[
-          { id: "1", label: "Opened Devices and Printers", status: "succeeded" },
-          { id: "2", label: "Selected Ricoh IM C3000 · Level 2", status: "succeeded" },
-          { id: "3", label: "Setting it as the default printer", status: "running" },
+          {
+            id: "1",
+            label: "Opened Devices and Printers",
+            status: "succeeded",
+          },
+          {
+            id: "2",
+            label: "Selected Ricoh IM C3000 · Level 2",
+            status: "succeeded",
+          },
+          {
+            id: "3",
+            label: "Setting it as the default printer",
+            status: "running",
+          },
         ]}
       />
     ),
@@ -217,7 +284,8 @@ const FAMILIES: Family[] = [
     tools: "Needs-input kinds beyond approval (choice, free text)",
     kind: "—",
     approval: "—",
-    renderer: "Asks: choices, quick replies, forms, entities, time, confirm, order, clarify",
+    renderer:
+      "Asks: choices, quick replies, forms, entities, time, confirm, order, clarify",
     status: "Planned",
     example: <AskCard ask={ASKS.quick} />,
   },
@@ -239,13 +307,18 @@ const FAMILIES: Family[] = [
     status: "Disabled",
     example: <ResultBlock result={RESULTS.screen} />,
   },
-]
+];
 
 export default function AiCatalogueSection() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="Catalogue" description="Tools are a federated catalogue of read-only GraphQL operations plus a few reviewed writes. A result renders by its declared disclosure (list → table, object → detail, scalar → value, above the preview class → withheld) and upgrades to entity renderers when its root type is a known Glass UX entity." wide layout="bare">
+        <Specimen
+          title="Catalogue"
+          description="Tools are a federated catalogue of read-only GraphQL operations plus a few reviewed writes. A result renders by its declared disclosure (list → table, object → detail, scalar → value, above the preview class → withheld) and upgrades to entity renderers when its root type is a known Glass UX entity."
+          wide
+          layout="bare"
+        >
           <TableScroll label="Tool catalogue">
             <table className="fa-ai-table" data-wrap="">
               <thead>
@@ -269,7 +342,11 @@ export default function AiCatalogueSection() {
                     <td data-muted="">{family.approval}</td>
                     <td>{family.renderer}</td>
                     <td>
-                      <Badge size="sm" tone={STATUS_TONE[family.status]} marker="dot">
+                      <Badge
+                        size="sm"
+                        tone={STATUS_TONE[family.status]}
+                        marker="dot"
+                      >
                         {family.status}
                       </Badge>
                     </td>
@@ -281,8 +358,18 @@ export default function AiCatalogueSection() {
         </Specimen>
 
         {FAMILIES.map((family) => (
-          <Specimen key={family.name} title={family.name} description={`${family.tools} · ${family.renderer}`} layout="stack">
-            <Badge size="sm" tone={STATUS_TONE[family.status]} marker="dot" className="self-start">
+          <Specimen
+            key={family.name}
+            title={family.name}
+            description={`${family.tools} · ${family.renderer}`}
+            layout="stack"
+          >
+            <Badge
+              size="sm"
+              tone={STATUS_TONE[family.status]}
+              marker="dot"
+              className="self-start"
+            >
               {family.status}
             </Badge>
             {family.example}
@@ -303,5 +390,5 @@ export default function AiCatalogueSection() {
         />
       </SectionPage>
     </AiGallery>
-  )
+  );
 }

@@ -23,8 +23,12 @@
   }
   .fa-ai-json-row {
     white-space: nowrap;
+    border-radius: var(--radius-xs);
   }
-  .fa-ai-json-toggle,
+  .fa-ai-json-row:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
   .fa-ai-json-spacer {
     display: inline-grid;
     place-items: center;
@@ -34,20 +38,8 @@
     vertical-align: -0.2em; /* tokens:allow optical centre on the mono line */
   }
   .fa-ai-json-toggle {
-    padding: 0;
-    border: 0;
-    border-radius: var(--radius-xs);
-    background: transparent;
-    color: var(--fg-subtle);
-    cursor: pointer;
-  }
-  .fa-ai-json-toggle:hover {
-    background-color: var(--fill-hover);
-    color: var(--fg);
-  }
-  .fa-ai-json-toggle:focus-visible {
-    outline: var(--focus-ring-width) solid var(--accent-ring);
-    outline-offset: 0;
+    margin-inline-end: var(--space-half);
+    vertical-align: middle;
   }
   .fa-ai-json-toggle .fa-icon {
     width: var(--icon-xs);
@@ -88,17 +80,7 @@
     color: var(--fg-subtle);
   }
   .fa-ai-json-more {
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--accent-text);
     font-family: var(--font-sans);
-    font-size: var(--type-caption-size);
-    font-weight: var(--weight-medium);
-    cursor: pointer;
-  }
-  .fa-ai-json-more:hover {
-    text-decoration: underline;
   }
   .fa-ai-json-truncated {
     margin-top: var(--space-2);

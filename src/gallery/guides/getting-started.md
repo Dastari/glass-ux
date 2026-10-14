@@ -9,7 +9,7 @@ React 19, React DOM 19 and Node 22.12 or newer are required. Install the built a
 a GitHub release and commit the package-manager lockfile:
 
 ```sh
-pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.4.0/glass-ux-0.4.0.tgz
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.5.0/glass-ux-0.5.0.tgz
 ```
 
 The archive includes JavaScript, TypeScript declarations, styles, fonts, guides and skills.
@@ -102,7 +102,13 @@ router adapter it uses browser document navigation. For SSR, apply
 ```tsx
 import { z } from "zod";
 import { emailSchema } from "glass-ux/email-field";
-import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+import {
+  Form,
+  FormActions,
+  FormStack,
+  formBehaviour,
+  useAppForm,
+} from "glass-ux/form";
 
 const schema = z.object({ email: emailSchema({ required: true }) });
 
@@ -118,7 +124,9 @@ export function ContactForm() {
   return (
     <Form form={form}>
       <FormStack>
-        <form.AppField name="email">{(field) => <field.EmailField label="Email" />}</form.AppField>
+        <form.AppField name="email">
+          {(field) => <field.EmailField label="Email" />}
+        </form.AppField>
         <FormActions>
           <form.SubmitButton>Save contact</form.SubmitButton>
         </FormActions>

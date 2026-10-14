@@ -1,0 +1,26 @@
+import { SectionPage, Specimen, SwapSlot } from "glass-ux/gallery/kit";
+import { RichTextInput, RichTextSkeleton } from "glass-ux/rich-text";
+
+export default function RichTextSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Loading geometry"
+        description="The skeleton retains the toolbar and content height."
+        layout="stack"
+      >
+        <SwapSlot
+          id="rich-text-loading"
+          skeleton={<RichTextSkeleton minHeight={160} />}
+          loaded={
+            <RichTextInput
+              defaultValue="The **document** is ready."
+              minHeight={160}
+              maxHeight={160}
+            />
+          }
+        />
+      </Specimen>
+    </SectionPage>
+  );
+}

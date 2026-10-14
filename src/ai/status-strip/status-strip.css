@@ -26,26 +26,13 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .fa-ai-status-dot {
-    flex: none;
-    width: var(--space-1-5);
-    height: var(--space-1-5);
-    border-radius: var(--radius-full);
-    background-color: var(--fg-subtle);
-  }
   .fa-ai-status-icon {
     flex: none;
     width: var(--icon-xs);
     height: var(--icon-xs);
   }
-  .fa-ai-status-item[data-tone="success"] .fa-ai-status-dot {
-    background-color: var(--success);
-  }
   .fa-ai-status-item[data-tone="warning"] {
     color: var(--warning-text);
-  }
-  .fa-ai-status-item[data-tone="warning"] .fa-ai-status-dot {
-    background-color: var(--warning);
   }
   .fa-ai-status-item[data-tone="danger"] {
     color: var(--danger-text);

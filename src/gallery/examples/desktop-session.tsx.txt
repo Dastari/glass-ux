@@ -36,7 +36,7 @@ function Desktop() {
       <DesktopSession
         endpoint={E.c106Online}
         state={state}
-        user="AzureAD\\MiraRowan"
+        userEntity={E.mira}
         startedAt={NOW - 134000}
         leaseEndsAt={NOW + 12 * 60000}
         reason={
@@ -56,8 +56,16 @@ function Desktop() {
           height: 1000,
         }}
         steps={[
-          { id: "1", label: "Opened Devices and Printers", status: "succeeded" },
-          { id: "2", label: "Selected Ricoh IM C3000 · Level 2", status: "succeeded" },
+          {
+            id: "1",
+            label: "Opened Devices and Printers",
+            status: "succeeded",
+          },
+          {
+            id: "2",
+            label: "Selected Ricoh IM C3000 · Level 2",
+            status: "succeeded",
+          },
           {
             id: "3",
             label: "Set it as the default printer",

@@ -1,22 +1,48 @@
-import { formatAbsolute, formatRelative, toTime } from "../format.js"
-import { useNow } from "../use-now.js"
+import { useEffect, useRef, useState } from "react";
+import { Tooltip } from "../../tooltip/index.js";
+import { formatAbsolute, formatRelative, toTime } from "../format.js";
+import { useNow } from "../use-now.js";
 
 export interface RelativeTimeProps {
-  value: Date | number | string | null | undefined
+  value: Date | number | string | null | undefined;
   /** Text for a missing value. */
-  fallback?: string
+  fallback?: string;
 }
 
 /**
- * "2 min ago", ticking on a shared clock; the absolute time is in the title (R2.7).
+ * "2 min ago", ticking on a shared clock; the absolute time is in a keyboard-accessible tooltip (R2.7).
  */
 export function RelativeTime({ value, fallback = "Never" }: RelativeTimeProps) {
-  const now = useNow()
-  if (value === null || value === undefined) return <span className="fa-dt-text fa-dt-muted">{fallback}</span>
-  const time = toTime(value)
+  const now = useNow();
+  const element = useRef<HTMLTimeElement>(null);
+  const [insideControl, setInsideControl] = useState(false);
+  useEffect(() => {
+    setInsideControl(
+      Boolean(
+        element.current?.parentElement?.closest(
+          "a[href], button, [role=button], [role=link], [role=tab], [role=treeitem], [role=option], [role=menuitem], [role=row][tabindex], [role=gridcell][tabindex]",
+        ),
+      ),
+    );
+  }, [value]);
+  if (value === null || value === undefined)
+    return <span className="fa-dt-text fa-dt-muted">{fallback}</span>;
+  const time = toTime(value);
+  if (!Number.isFinite(time))
+    return <span className="fa-dt-text fa-dt-muted">{fallback}</span>;
   return (
-    <time className="fa-dt-text" dateTime={new Date(time).toISOString()} title={formatAbsolute(time)} suppressHydrationWarning>
-      {formatRelative(time, now || time)}
-    </time>
-  )
+    <Tooltip
+      content={formatAbsolute(time)}
+      tabIndex={insideControl ? undefined : 0}
+    >
+      <time
+        ref={element}
+        className="fa-dt-text"
+        dateTime={new Date(time).toISOString()}
+        suppressHydrationWarning
+      >
+        {formatRelative(time, now || time)}
+      </time>
+    </Tooltip>
+  );
 }

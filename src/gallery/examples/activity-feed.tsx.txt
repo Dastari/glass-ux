@@ -1,0 +1,55 @@
+import { IconCalendar, IconCheck, IconFileText } from "glass-ux/icons";
+import { ActivityFeed } from "glass-ux/activity-feed";
+import { Badge } from "glass-ux/badge";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+export default function ActivityFeedSection() {
+  const now = Date.now();
+  return (
+    <SectionPage>
+      <Specimen
+        title="Activity and scheduled events"
+        description="The application supplies order and content. Times tick on the shared clock and expose their absolute date in a tooltip."
+      >
+        <div className="w-full max-w-xl">
+          <ActivityFeed
+            aria-label="Project activity"
+            items={[
+              {
+                id: "review",
+                content: (
+                  <>
+                    Mira Rowan reviewed the draft{" "}
+                    <Badge size="sm" tone="success">
+                      Complete
+                    </Badge>
+                  </>
+                ),
+                at: now - 2 * 3600000,
+                icon: <IconCheck />,
+              },
+              {
+                id: "document",
+                content: "Avery Quinn attached the studio preview document",
+                at: now - 6 * 3600000,
+                icon: <IconFileText />,
+              },
+              {
+                id: "scheduled",
+                content: "Preview scheduled",
+                at: now + 3 * 86400000,
+                icon: <IconCalendar />,
+              },
+            ]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
+        title="Empty feed"
+        description="The named list keeps its place when there are no events."
+      >
+        <ActivityFeed aria-label="Document activity" items={[]} empty="No document activity" />
+      </Specimen>
+    </SectionPage>
+  );
+}

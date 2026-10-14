@@ -216,17 +216,7 @@
     line-height: var(--type-title-line);
   }
   .gallery-guide-document .fa-ai-table {
-    width: 100%;
-    min-width: 0;
-    table-layout: auto;
     font-size: inherit;
     line-height: inherit;
-  }
-  .gallery-guide-document .fa-ai-table :is(th, td) {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
-    overflow-wrap: anywhere;
-    vertical-align: top;
   }
 }

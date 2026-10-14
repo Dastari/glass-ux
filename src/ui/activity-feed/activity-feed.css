@@ -1,0 +1,31 @@
+@layer components {
+  .fa-activity-feed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-controls);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .fa-activity-feed li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--gap-controls);
+    min-width: 0;
+  }
+  .fa-activity-content {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .fa-activity-icon {
+    display: inline-flex;
+    align-self: center;
+    color: var(--fg-muted);
+  }
+  .fa-activity-icon svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+}

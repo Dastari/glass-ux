@@ -30,6 +30,7 @@ PhoneInput bound to a string form field (E.164). Pair it with `phoneSchema()`.
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | required | `boolean \| undefined` | false, true | no | — | Shows the required marker. Pass `required` to the control as well. |
 | size | `"sm" \| "md" \| "lg" \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
+| warning | `ReactNode` | false, true | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width (R15.6). Default medium. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

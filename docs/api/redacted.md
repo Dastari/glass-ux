@@ -10,7 +10,7 @@ The withheld treatment: the value is not in the browser; revealing it is a permi
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| onReveal | `(() => void) \| undefined` | See type | no | — | Event callback; the typed signature specifies its arguments. |
+| onReveal | `(() => void) \| undefined` | See type | no | — | Called when reveal occurs. The callback type specifies its arguments. |
 | value | `RedactedValue` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

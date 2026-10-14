@@ -46,7 +46,7 @@ export function LibraryGuide({ id }: { id: string }) {
       {error ? (
         <Notice tone="danger">{error}</Notice>
       ) : text ? (
-        <Markdown text={text} />
+        <Markdown wrapTableCells text={text} />
       ) : (
         <Skeleton.Text lines={4} />
       )}

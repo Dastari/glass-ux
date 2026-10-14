@@ -1,0 +1,5 @@
+@layer components {
+  .fa-status-dot[data-tone="data"] {
+    --_mark: var(--chart-1);
+  }
+}

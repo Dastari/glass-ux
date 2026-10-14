@@ -31,6 +31,7 @@ HostnameInput bound to a string form field. Pair it with `hostnameSchema()`.
 | size | `InputSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | trailing | `ReactNode` | false, true | no | — | Any other trailing content (a status, a small action). |
 | unit | `ReactNode` | false, true | no | — | Unit after the value ("GB", "ms", "%"). |
+| warning | `ReactNode` | false, true | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
 | wildcard | `boolean \| undefined` | false, true | no | — | Allow a leading "*." wildcard label ("*.northstar.example"). Default false. |
 

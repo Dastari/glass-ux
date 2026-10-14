@@ -1,74 +1,109 @@
-import { IconGrid, IconPopOut } from "../../icons/generated/icons.js"
-import { Badge, StatusBadge, type EndpointStatus } from "../../ui/badge/index.js"
-import { Button } from "../../ui/button/index.js"
-import { EntityChip } from "../entity-chip/index.js"
-import { formatAbsolute, formatNumber, formatRelative, THIN_SPACE, useNow } from "../format.js"
-import { useConversationHandlers } from "../handlers.js"
-import { TableScroll } from "../table/index.js"
-import type { AiResult, EntityRef, RedactedValue, ResultColumn, ResultRow } from "../types.js"
-import { ResultFrame } from "./frame.js"
-import { Redacted } from "./generic.js"
+import { IconGrid, IconPopOut } from "../../icons/generated/icons.js";
+import {
+  Badge,
+  StatusBadge,
+  type EndpointStatus,
+} from "../../ui/badge/index.js";
+import { Button } from "../../ui/button/index.js";
+import { EMPTY_CELL, TextCell } from "../../ui/data-table/cells/text.js";
+import { NumericCell } from "../../ui/data-table/cells/numeric.js";
+import { RelativeTime } from "../../ui/data-table/cells/relative-time.js";
+import { EntityChip } from "../entity-chip/index.js";
+import { formatNumber } from "../format.js";
+import { useConversationHandlers } from "../handlers.js";
+import { TableScroll } from "../table/index.js";
+import type {
+  AiResult,
+  EntityRef,
+  RedactedValue,
+  ResultColumn,
+  ResultRow,
+} from "../types.js";
+import { ResultFrame } from "./frame.js";
+import { Redacted } from "./generic.js";
 
-type TableResult = Extract<AiResult, { type: "table" }>
+type TableResult = Extract<AiResult, { type: "table" }>;
 
 /** Rows shown inline before "Show all n in a window". */
-export const INLINE_ROWS = 8
+export const INLINE_ROWS = 8;
 
-/** "2 min ago" on a minute clock, the absolute time on hover (R2.7). */
-function RelativeTime({ value }: { value: number }) {
-  const now = useNow(true, 60_000)
-  return (
-    <time dateTime={new Date(value).toISOString()} title={formatAbsolute(value)} suppressHydrationWarning>
-      {formatRelative(value, now)}
-    </time>
-  )
-}
-
-const isEntity = (value: unknown): value is EntityRef => typeof value === "object" && value !== null && "kind" in value && "label" in value
-const isRedacted = (value: unknown): value is RedactedValue => typeof value === "object" && value !== null && "redacted" in value
+const isEntity = (value: unknown): value is EntityRef =>
+  typeof value === "object" &&
+  value !== null &&
+  "kind" in value &&
+  "label" in value;
+const isRedacted = (value: unknown): value is RedactedValue =>
+  typeof value === "object" && value !== null && "redacted" in value;
 
 function cellText(column: ResultColumn, value: ResultRow[string]): string {
-  if (value === null || value === undefined) return ""
-  if (isRedacted(value)) return "Hidden"
-  if (isEntity(value)) return value.label
-  if (column.type === "time" && typeof value === "number") return new Date(value).toISOString()
-  if (typeof value === "number") return column.unit ? `${value} ${column.unit}` : String(value)
-  return String(value)
+  if (value === null || value === undefined) return "";
+  if (isRedacted(value)) return "Hidden";
+  if (isEntity(value)) return value.label;
+  if (column.type === "time" && typeof value === "number")
+    return new Date(value).toISOString();
+  if (typeof value === "number")
+    return column.unit ? `${value} ${column.unit}` : String(value);
+  return String(value);
 }
 
-function Cell({ column, value }: { column: ResultColumn; value: ResultRow[string] }) {
-  if (value === null || value === undefined) return <span className="fa-ai-cell-empty">—</span>
-  if (isRedacted(value)) return <Redacted value={value} />
+function Cell({
+  column,
+  value,
+}: {
+  column: ResultColumn;
+  value: ResultRow[string];
+}) {
+  if (value === null || value === undefined) return EMPTY_CELL;
+  if (isRedacted(value)) return <Redacted value={value} />;
   switch (column.type) {
     case "entity":
-      return isEntity(value) ? <EntityChip entity={value} variant="plain" /> : <>{String(value)}</>
+      return isEntity(value) ? (
+        <EntityChip entity={value} variant="plain" />
+      ) : (
+        <TextCell>{String(value)}</TextCell>
+      );
     case "status":
-      return <StatusBadge status={String(value) as EndpointStatus} size="sm" />
+      return <StatusBadge status={String(value) as EndpointStatus} size="sm" />;
     case "badge":
-      return <Badge size="sm">{String(value)}</Badge>
+      return <Badge size="sm">{String(value)}</Badge>;
     case "time":
-      return <RelativeTime value={value as number} />
+      return <RelativeTime value={value as number} />;
     case "number":
-      return (
-        <>
-          {typeof value === "number" ? formatNumber(value, Number.isInteger(value) ? 0 : 1) : String(value)}
-          {column.unit ? (column.unit === "%" ? "%" : `${THIN_SPACE}${column.unit}`) : null}
-        </>
-      )
+      return typeof value === "number" ? (
+        <NumericCell
+          value={value}
+          unit={column.unit}
+          fractionDigits={Number.isInteger(value) ? 0 : 1}
+        />
+      ) : (
+        <TextCell>{String(value)}</TextCell>
+      );
     default:
-      return <>{String(value)}</>
+      return <TextCell>{String(value)}</TextCell>;
   }
 }
 
 function toCsv(result: TableResult) {
-  const escape = (text: string) => (/[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text)
-  const head = result.columns.map((column) => escape(column.header)).join(",")
-  const body = result.rows.map((row) => result.columns.map((column) => escape(cellText(column, row[column.key]))).join(","))
-  return [head, ...body].join("\n")
+  const escape = (text: string) =>
+    /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  const head = result.columns.map((column) => escape(column.header)).join(",");
+  const body = result.rows.map((row) =>
+    result.columns
+      .map((column) => escape(cellText(column, row[column.key])))
+      .join(","),
+  );
+  return [head, ...body].join("\n");
 }
 
 function toText(result: TableResult) {
-  return [result.columns.map((column) => column.header).join("\t"), ...result.rows.map((row) => result.columns.map((column) => cellText(column, row[column.key])).join("\t"))].join("\n")
+  return [
+    result.columns.map((column) => column.header).join("\t"),
+    ...result.rows.map((row) =>
+      result.columns
+        .map((column) => cellText(column, row[column.key]))
+        .join("\t"),
+    ),
+  ].join("\n");
 }
 
 /**
@@ -77,11 +112,14 @@ function toText(result: TableResult) {
  * "Show all 1,284" opens the full DataTable in a window.
  */
 export function ResultTable({ result }: { result: TableResult }) {
-  const handlers = useConversationHandlers()
-  const rows = result.rows.slice(0, INLINE_ROWS)
-  const noun = result.noun ?? { one: "row", other: "rows" }
-  const meta = result.total > rows.length ? `${formatNumber(rows.length)} of ${formatNumber(result.total)}` : `${formatNumber(result.total)} ${result.total === 1 ? noun.one : noun.other}`
-  const [titleColumn, ...restColumns] = result.columns
+  const handlers = useConversationHandlers();
+  const rows = result.rows.slice(0, INLINE_ROWS);
+  const noun = result.noun ?? { one: "row", other: "rows" };
+  const meta =
+    result.total > rows.length
+      ? `${formatNumber(rows.length)} of ${formatNumber(result.total)}`
+      : `${formatNumber(result.total)} ${result.total === 1 ? noun.one : noun.other}`;
+  const [titleColumn, ...restColumns] = result.columns;
   return (
     <ResultFrame
       result={result}
@@ -92,7 +130,12 @@ export function ResultTable({ result }: { result: TableResult }) {
       flush
       footer={
         result.total > rows.length ? (
-          <Button variant="ghost" size="sm" icon={<IconPopOut />} onClick={() => handlers.openResultWindow(result)}>
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<IconPopOut />}
+            onClick={() => handlers.openResultWindow(result)}
+          >
             Show all {formatNumber(result.total)} {noun.other} in a window
           </Button>
         ) : undefined
@@ -103,7 +146,12 @@ export function ResultTable({ result }: { result: TableResult }) {
           <thead>
             <tr>
               {result.columns.map((column) => (
-                <th key={column.key} scope="col" data-priority={column.priority ?? 3} data-numeric={column.type === "number" ? "" : undefined}>
+                <th
+                  key={column.key}
+                  scope="col"
+                  data-priority={column.priority ?? 3}
+                  data-numeric={column.type === "number" ? "" : undefined}
+                >
                   {column.header}
                 </th>
               ))}
@@ -130,14 +178,20 @@ export function ResultTable({ result }: { result: TableResult }) {
       {titleColumn ? (
         <ul className="fa-ai-result-rows" aria-label={result.title}>
           {rows.map((row, index) => {
-            const status = restColumns.find((column) => column.type === "status")
-            const metas = restColumns.filter((column) => column.type !== "status").slice(0, 2)
+            const status = restColumns.find(
+              (column) => column.type === "status",
+            );
+            const metas = restColumns
+              .filter((column) => column.type !== "status")
+              .slice(0, 2);
             return (
               <li key={index} className="fa-ai-result-row">
                 <span className="fa-ai-result-row-title">
                   <Cell column={titleColumn} value={row[titleColumn.key]} />
                 </span>
-                {status ? <Cell column={status} value={row[status.key]} /> : null}
+                {status ? (
+                  <Cell column={status} value={row[status.key]} />
+                ) : null}
                 <span className="fa-ai-result-row-meta">
                   {metas.map((column, metaIndex) => (
                     <span key={column.key}>
@@ -147,10 +201,10 @@ export function ResultTable({ result }: { result: TableResult }) {
                   ))}
                 </span>
               </li>
-            )
+            );
           })}
         </ul>
       ) : null}
     </ResultFrame>
-  )
+  );
 }

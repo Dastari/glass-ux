@@ -40,7 +40,8 @@
     --_size: 1.25rem;
   }
   /* Small faces need a larger share to stay legible. */
-  .fa-org-avatar:is([data-size="xs"], [data-size="sm"]) .fa-org-avatar-initials {
+  .fa-org-avatar:is([data-size="xs"], [data-size="sm"])
+    .fa-org-avatar-initials {
     --_ratio: 0.46;
   }
   .fa-org-avatar[data-size="md"] {
@@ -250,7 +251,9 @@
   }
   .fa-org-switcher-item {
     --_indent: var(--space-6);
-    padding-inline-start: calc(var(--space-2-5) + var(--_indent) * var(--_depth, 0));
+    padding-inline-start: calc(
+      var(--space-2-5) + var(--_indent) * var(--_depth, 0)
+    );
   }
   .fa-org-switcher-text {
     display: flex;
@@ -266,12 +269,9 @@
   }
   .fa-org-switcher-detail {
     min-width: 0;
-    overflow: hidden;
     color: var(--fg-subtle);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .fa-org-switcher-item > .fa-item-trail {
     flex: none;

@@ -1,4 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
+import { TruncatedText } from "../../ui/truncated-text/index.js";
 import { cx } from "../../lib/cx.js";
 import { useAiSurface } from "../surface/index.js";
 
@@ -96,7 +97,9 @@ function Header({
         </span>
       ) : null}
       <div className="fa-ai-card-heading">
-        <Heading className="fa-ai-card-title">{title}</Heading>
+        <Heading className="fa-ai-card-title">
+          {iconTile ? title : <TruncatedText>{title}</TruncatedText>}
+        </Heading>
         {meta ? <p className="fa-ai-card-meta">{meta}</p> : null}
       </div>
       {children}

@@ -46,7 +46,10 @@
   }
   .fa-ai-sources-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--_min)), 1fr));
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(100%, var(--_min)), 1fr)
+    );
     gap: var(--space-2);
     margin: 0;
     padding: 0;
@@ -99,9 +102,6 @@
   }
   .fa-ai-source-title,
   .fa-ai-source-site {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
   .fa-ai-source-title {
     font-size: var(--type-label-size);

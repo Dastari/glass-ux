@@ -1,0 +1,22 @@
+@layer components {
+  .fa-chip-overflow {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-inline);
+    min-width: 0;
+  }
+  .fa-chip-overflow-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-controls);
+    list-style: none;
+    margin: var(--gap-controls) 0 0;
+    padding: 0;
+    max-height: calc(var(--space-16) * 4);
+    overflow: auto;
+  }
+  .fa-chip-overflow-list li {
+    min-width: 0;
+  }
+}

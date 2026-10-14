@@ -23,3 +23,9 @@ slot and explain submission failures through the documented error handler.
 Read the schema helper's options before composing validation. Do not impose a second parser
 with different empty/required behaviour. Address lookup needs an application-supplied adapter
 or matching server route; a demo fixture is not a production provider.
+
+Use `RichTextField` with `richTextSchema` for Markdown documents and notes. Read
+`docs/components/rich-text.md`: visual editing is the default, source mode is optional, and
+the persisted value remains Markdown. Supply an application-owned `uploadAttachment` adapter
+when needed; the field owns editing, not storage, authorization, revisions or credential custody.
+Do not build another toolbar or textarea/preview toggle around this field.

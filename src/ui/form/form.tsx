@@ -1,4 +1,9 @@
-import { createFormHook, useStore, type AnyFormApi } from "@tanstack/react-form"
+import { RichTextField } from "../rich-text/index.js";
+import {
+  createFormHook,
+  useStore,
+  type AnyFormApi,
+} from "@tanstack/react-form";
 import {
   createContext,
   useContext,
@@ -9,75 +14,128 @@ import {
   type ComponentType,
   type PropsWithChildren,
   type ReactNode,
-} from "react"
-import { cx } from "../../lib/cx.js"
-import { Button, FEEDBACK_HOLD_MS, type ButtonProps, type ButtonStatus } from "../button/index.js"
-import { Checkbox } from "../checkbox/index.js"
-import { Autocomplete } from "../autocomplete/index.js"
-import { Combobox, type ComboboxOption, type OptionItem, type OptionSource } from "../combobox/index.js"
-import { Field, Fieldset, type FieldWidth, type FieldsetProps } from "../field/index.js"
-import { Input, type InputProps } from "../input/index.js"
-import { MultiSelect } from "../multi-select/index.js"
-import { NumberField, type NumberFieldProps } from "../number-field/index.js"
-import { Radio, RadioCard, RadioGroup } from "../radio/index.js"
-import { Segmented, type SegmentedOption } from "../segmented/index.js"
-import { Select, type SelectOptions } from "../select/index.js"
-import { Slider, type SliderProps } from "../slider/index.js"
-import { SettingRow } from "../setting-row/index.js"
-import { Switch } from "../switch/index.js"
-import { TagInput, type TagInputProps } from "../tag-input/index.js"
-import { Textarea } from "../textarea/index.js"
-import { AddressField } from "../address-field/index.js"
-import { ByteSizeField } from "../byte-size-field/index.js"
-import { CoordinatesField } from "../coordinates-field/index.js"
-import { CountryField } from "../country-select/index.js"
-import { DurationField } from "../duration-field/index.js"
-import { EmailField } from "../email-field/index.js"
-import { DomainField, HostnameField } from "../hostname-field/index.js"
-import { IpField } from "../ip-field/index.js"
-import { MacAddressField } from "../mac-field/index.js"
-import { MoneyField } from "../money-field/index.js"
-import { OtpField } from "../otp-field/index.js"
-import { PasswordField } from "../password-field/index.js"
-import { PercentField } from "../percent-field/index.js"
-import { MobileField, PhoneField } from "../phone-field/index.js"
-import { PortField } from "../port-field/index.js"
-import { TimeZoneField } from "../time-zone-select/index.js"
-import { UrlField } from "../url-field/index.js"
-import { fieldContext, formContext, useBoundField, useFieldContext, useFormContext, type FieldChrome } from "./context.js"
-import { blurThenChange, focusFirstInvalid } from "./validation.js"
+} from "react";
+import { cx } from "../../lib/cx.js";
+import { AddressField } from "../address-field/index.js";
+import { Autocomplete } from "../autocomplete/index.js";
+import {
+  Button,
+  FEEDBACK_HOLD_MS,
+  type ButtonProps,
+  type ButtonStatus,
+} from "../button/index.js";
+import { ByteSizeField } from "../byte-size-field/index.js";
+import { Checkbox } from "../checkbox/index.js";
+import {
+  Combobox,
+  type ComboboxOption,
+  type OptionItem,
+  type OptionSource,
+} from "../combobox/index.js";
+import { CoordinatesField } from "../coordinates-field/index.js";
+import { CountryField } from "../country-select/index.js";
+import { DurationField } from "../duration-field/index.js";
+import { EmailField } from "../email-field/index.js";
+import {
+  Field,
+  Fieldset,
+  type FieldWidth,
+  type FieldsetProps,
+} from "../field/index.js";
+import { DomainField, HostnameField } from "../hostname-field/index.js";
+import { Input, type InputProps } from "../input/index.js";
+import { IpField } from "../ip-field/index.js";
+import { MacAddressField } from "../mac-field/index.js";
+import { MoneyField } from "../money-field/index.js";
+import { MultiSelect } from "../multi-select/index.js";
+import { NumberField, type NumberFieldProps } from "../number-field/index.js";
+import { OtpField } from "../otp-field/index.js";
+import { PasswordField } from "../password-field/index.js";
+import { PercentField } from "../percent-field/index.js";
+import { MobileField, PhoneField } from "../phone-field/index.js";
+import { PortField } from "../port-field/index.js";
+import { Radio, RadioCard, RadioGroup } from "../radio/index.js";
+import { Segmented, type SegmentedOption } from "../segmented/index.js";
+import { Select, type SelectOptions } from "../select/index.js";
+import { SettingRow } from "../setting-row/index.js";
+import { Slider, type SliderProps } from "../slider/index.js";
+import { Switch } from "../switch/index.js";
+import { TagInput, type TagInputProps } from "../tag-input/index.js";
+import { Textarea } from "../textarea/index.js";
+import { TimeZoneField } from "../time-zone-select/index.js";
+import { UrlField } from "../url-field/index.js";
+import {
+  fieldContext,
+  formContext,
+  useBoundField,
+  useFieldContext,
+  useFormContext,
+  type FieldChrome,
+} from "./context.js";
+import { blurThenChange, focusFirstInvalid } from "./validation.js";
 
-export { fieldContext, formContext, useFieldContext, useFormContext }
+export { fieldContext, formContext, useFieldContext, useFormContext };
 
 /** Field chrome every bound field accepts (label, hint, optional…). */
-type Chrome = FieldChrome
+type Chrome = FieldChrome;
 
 /** Error, invalid, dirty and touched for the Field wrapping a bound control. */
-const useFieldState = useBoundField
+const useFieldState = useBoundField;
 
 // ── Bound fields ─────────────────────────────────────────────────────────────
 
 export interface TextFieldProps
-  extends Chrome,
-    Pick<InputProps, "type" | "placeholder" | "icon" | "unit" | "size" | "width" | "autoComplete" | "maxLength" | "readOnly" | "inputMode" | "spellCheck"> {
+  extends
+    Chrome,
+    Pick<
+      InputProps,
+      | "type"
+      | "placeholder"
+      | "icon"
+      | "unit"
+      | "size"
+      | "width"
+      | "autoComplete"
+      | "maxLength"
+      | "readOnly"
+      | "inputMode"
+      | "spellCheck"
+    > {
   /** Show "n / maxLength" on the message line. */
-  counter?: boolean
+  counter?: boolean;
 }
 
-function TextField({ label, hint, optional, required, aside, className, disabled, counter, maxLength, ...control }: TextFieldProps) {
-  const { field, error, root } = useFieldState<string>()
+function TextField({
+  label,
+  hint,
+  warning,
+  optional,
+  required,
+  aside,
+  className,
+  disabled,
+  counter,
+  maxLength,
+  ...control
+}: TextFieldProps) {
+  const { field, error, root } = useFieldState<string>();
   return (
     <Field
       {...root}
       label={label}
       hint={hint}
+      warning={warning}
       optional={optional}
       required={required}
       aside={aside}
 
       className={className}
       disabled={disabled}
-      counter={counter && maxLength ? { value: field.state.value.length, max: maxLength } : undefined}
+      counter={
+        counter && maxLength
+          ? { value: field.state.value.length, max: maxLength }
+          : undefined
+      }
     >
       <Input
         {...control}
@@ -90,20 +148,30 @@ function TextField({ label, hint, optional, required, aside, className, disabled
         aria-invalid={error ? true : undefined}
       />
     </Field>
-  )
+  );
 }
 
 export interface TextareaFieldProps extends Chrome {
-  placeholder?: string
+  placeholder?: string;
   /** Hard limit; the counter shows "n / max" and turns danger past it. */
-  maxLength?: number
-  minRows?: number
-  maxRows?: number
-  readOnly?: boolean
+  maxLength?: number;
+  minRows?: number;
+  maxRows?: number;
+  readOnly?: boolean;
 }
 
-function TextareaField({ label, hint, optional, required, aside, className, disabled, maxLength, ...control }: TextareaFieldProps) {
-  const { field, root } = useFieldState<string>()
+function TextareaField({
+  label,
+  hint,
+  optional,
+  required,
+  aside,
+  className,
+  disabled,
+  maxLength,
+  ...control
+}: TextareaFieldProps) {
+  const { field, root } = useFieldState<string>();
   return (
     <Field
       {...root}
@@ -115,7 +183,11 @@ function TextareaField({ label, hint, optional, required, aside, className, disa
 
       className={className}
       disabled={disabled}
-      counter={maxLength ? { value: field.state.value.length, max: maxLength } : undefined}
+      counter={
+        maxLength
+          ? { value: field.state.value.length, max: maxLength }
+          : undefined
+      }
     >
       <Textarea
         {...control}
@@ -127,23 +199,42 @@ function TextareaField({ label, hint, optional, required, aside, className, disa
         disabled={disabled}
       />
     </Field>
-  )
+  );
 }
 
 export interface SelectFieldProps<V extends string = string> extends Chrome {
-  options: SelectOptions<V>
+  options: SelectOptions<V>;
   /** Available width or named width tier. */
-  width?: FieldWidth
-  placeholder?: string
-  icon?: ReactNode
-  size?: "sm" | "md" | "lg"
-  readOnly?: boolean
+  width?: FieldWidth;
+  placeholder?: string;
+  icon?: ReactNode;
+  size?: "sm" | "md" | "lg";
+  readOnly?: boolean;
 }
 
-function SelectField<V extends string = string>({ label, hint, optional, required, aside, className, disabled, ...control }: SelectFieldProps<V>) {
-  const { field, error, root } = useFieldState<V | null>()
+function SelectField<V extends string = string>({
+  label,
+  hint,
+  optional,
+  required,
+  aside,
+  className,
+  disabled,
+  ...control
+}: SelectFieldProps<V>) {
+  const { field, error, root } = useFieldState<V | null>();
   return (
-    <Field {...root} label={label} hint={hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled} nativeLabel={false}>
+    <Field
+      {...root}
+      label={label}
+      hint={hint}
+      optional={optional}
+      required={required}
+      aside={aside}
+      className={className}
+      disabled={disabled}
+      nativeLabel={false}
+    >
       <Select<V>
         {...control}
         name={field.name}
@@ -155,31 +246,51 @@ function SelectField<V extends string = string>({ label, hint, optional, require
         invalid={Boolean(error)}
       />
     </Field>
-  )
+  );
 }
 
 export interface ComboboxFieldProps<V extends string = string> extends Chrome {
   /** A static list… */
-  options?: Array<ComboboxOption<V>>
+  options?: Array<ComboboxOption<V>>;
   /** …or an async source. */
-  source?: OptionSource<V>
+  source?: OptionSource<V>;
   /** Available width or named width tier. */
-  width?: FieldWidth
-  placeholder?: string
-  icon?: ReactNode
+  width?: FieldWidth;
+  placeholder?: string;
+  icon?: ReactNode;
   /** Shows loading feedback in the space reserved for the content. */
-  loading?: boolean
+  loading?: boolean;
 }
 
-export interface MultiSelectFieldProps<V extends string = string> extends ComboboxFieldProps<V> {
+export interface MultiSelectFieldProps<
+  V extends string = string,
+> extends ComboboxFieldProps<V> {
   /** Chips wrap onto more lines in a form (default). */
-  wrap?: boolean
+  wrap?: boolean;
 }
 
-function ComboboxField<V extends string = string>({ label, hint, optional, required, aside, className, disabled, ...control }: ComboboxFieldProps<V>) {
-  const { field, error, root } = useFieldState<V | null>()
+function ComboboxField<V extends string = string>({
+  label,
+  hint,
+  optional,
+  required,
+  aside,
+  className,
+  disabled,
+  ...control
+}: ComboboxFieldProps<V>) {
+  const { field, error, root } = useFieldState<V | null>();
   return (
-    <Field {...root} label={label} hint={hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
+    <Field
+      {...root}
+      label={label}
+      hint={hint}
+      optional={optional}
+      required={required}
+      aside={aside}
+      className={className}
+      disabled={disabled}
+    >
       <Combobox<V>
         {...control}
         name={field.name}
@@ -191,13 +302,32 @@ function ComboboxField<V extends string = string>({ label, hint, optional, requi
         invalid={Boolean(error)}
       />
     </Field>
-  )
+  );
 }
 
-function MultiSelectField<V extends string = string>({ label, hint, optional, required, aside, className, disabled, wrap = true, ...control }: MultiSelectFieldProps<V>) {
-  const { field, error, root } = useFieldState<V[]>()
+function MultiSelectField<V extends string = string>({
+  label,
+  hint,
+  optional,
+  required,
+  aside,
+  className,
+  disabled,
+  wrap = true,
+  ...control
+}: MultiSelectFieldProps<V>) {
+  const { field, error, root } = useFieldState<V[]>();
   return (
-    <Field {...root} label={label} hint={hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
+    <Field
+      {...root}
+      label={label}
+      hint={hint}
+      optional={optional}
+      required={required}
+      aside={aside}
+      className={className}
+      disabled={disabled}
+    >
       <MultiSelect<V>
         {...control}
         wrap={wrap}
@@ -210,26 +340,46 @@ function MultiSelectField<V extends string = string>({ label, hint, optional, re
         invalid={Boolean(error)}
       />
     </Field>
-  )
+  );
 }
 
-export interface AutocompleteFieldProps<V extends string = string> extends Chrome {
-  options?: Array<OptionItem<V>>
+export interface AutocompleteFieldProps<
+  V extends string = string,
+> extends Chrome {
+  options?: Array<OptionItem<V>>;
   /** The typed source adapter or asset definition consumed by this component. */
-  source?: OptionSource<V>
+  source?: OptionSource<V>;
   /** Available width or named width tier. */
-  width?: FieldWidth
-  placeholder?: string
-  icon?: ReactNode
+  width?: FieldWidth;
+  placeholder?: string;
+  icon?: ReactNode;
   /** Lets the component fill a box with a definite size. */
-  fill?: "label" | "value"
+  fill?: "label" | "value";
 }
 
 /** Free text with suggestions (hostnames, paths, search terms). */
-function AutocompleteField<V extends string = string>({ label, hint, optional, required, aside, className, disabled, ...control }: AutocompleteFieldProps<V>) {
-  const { field, error, root } = useFieldState<string>()
+function AutocompleteField<V extends string = string>({
+  label,
+  hint,
+  optional,
+  required,
+  aside,
+  className,
+  disabled,
+  ...control
+}: AutocompleteFieldProps<V>) {
+  const { field, error, root } = useFieldState<string>();
   return (
-    <Field {...root} label={label} hint={hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
+    <Field
+      {...root}
+      label={label}
+      hint={hint}
+      optional={optional}
+      required={required}
+      aside={aside}
+      className={className}
+      disabled={disabled}
+    >
       <Autocomplete<V>
         {...control}
         name={field.name}
@@ -241,21 +391,55 @@ function AutocompleteField<V extends string = string>({ label, hint, optional, r
         invalid={Boolean(error)}
       />
     </Field>
-  )
+  );
 }
 
-export interface TagInputFieldProps extends Chrome, Pick<TagInputProps, "suggestions" | "source" | "allowCreate" | "normalize" | "validate" | "max" | "placeholder" | "icon" | "width" | "wrap"> {}
+export interface TagInputFieldProps
+  extends
+    Chrome,
+    Pick<
+      TagInputProps,
+      | "suggestions"
+      | "source"
+      | "allowCreate"
+      | "normalize"
+      | "validate"
+      | "max"
+      | "placeholder"
+      | "icon"
+      | "width"
+      | "wrap"
+    > {}
 
 /**
  * Free-entry chips bound to a string[] field. The message line shows the schema's error,
  * or the first chip that fails `validate` (“avery@: Enter an email such as …”).
  */
-function TagInputField({ label, hint, optional, required, aside, className, disabled, ...control }: TagInputFieldProps) {
-  const { field, error, root } = useFieldState<string[]>()
-  const [chipError, setChipError] = useState<string>()
-  const shown = error ?? chipError
+function TagInputField({
+  label,
+  hint,
+  optional,
+  required,
+  aside,
+  className,
+  disabled,
+  ...control
+}: TagInputFieldProps) {
+  const { field, error, root } = useFieldState<string[]>();
+  const [chipError, setChipError] = useState<string>();
+  const shown = error ?? chipError;
   return (
-    <Field {...root} error={shown} label={label} hint={hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
+    <Field
+      {...root}
+      error={shown}
+      label={label}
+      hint={hint}
+      optional={optional}
+      required={required}
+      aside={aside}
+      className={className}
+      disabled={disabled}
+    >
       <TagInput
         {...control}
         name={field.name}
@@ -267,25 +451,31 @@ function TagInputField({ label, hint, optional, required, aside, className, disa
         invalid={Boolean(shown)}
       />
     </Field>
-  )
+  );
 }
 
 export interface SwitchRowProps {
   /** Names the setting ("Keep agent up to date"). */
-  label: ReactNode
+  label: ReactNode;
   /** What turning it on does. */
-  description?: ReactNode
-  badge?: ReactNode
-  disabled?: boolean
-  className?: string
+  description?: ReactNode;
+  badge?: ReactNode;
+  disabled?: boolean;
+  className?: string;
 }
 
 /**
  * A boolean as a switch in a setting row (R15.4). Inside a form it saves with the form;
  * for a setting that applies at once, use SettingRow with `status` directly.
  */
-function SwitchRow({ label, description, badge, disabled, className }: SwitchRowProps) {
-  const { field } = useFieldState<boolean>()
+function SwitchRow({
+  label,
+  description,
+  badge,
+  disabled,
+  className,
+}: SwitchRowProps) {
+  const { field } = useFieldState<boolean>();
   return (
     <SettingRow
       label={label}
@@ -303,27 +493,42 @@ function SwitchRow({ label, description, badge, disabled, className }: SwitchRow
         />
       }
     />
-  )
+  );
 }
 
 export interface CheckboxFieldProps {
   /** The statement being confirmed ("I have notified the site contact"). */
-  label: ReactNode
-  description?: ReactNode
+  label: ReactNode;
+  description?: ReactNode;
   /** Supporting text in the field’s reserved message slot. Validation errors take precedence. */
-  hint?: ReactNode
-  disabled?: boolean
-  className?: string
+  hint?: ReactNode;
+  disabled?: boolean;
+  className?: string;
 }
 
 /**
  * Explicit consent: a checkbox with its statement and a message line for the error
  * (R15.4 — never a lone checkbox for a setting).
  */
-function CheckboxField({ label, description, hint, disabled, className }: CheckboxFieldProps) {
-  const { field, error, root } = useFieldState<boolean>()
+function CheckboxField({
+  label,
+  description,
+  hint,
+  disabled,
+  className,
+}: CheckboxFieldProps) {
+  const { field, error, root } = useFieldState<boolean>();
   return (
-    <Field {...root} orientation="horizontal" message="reserve" label={label} description={description} hint={hint} className={className} disabled={disabled}>
+    <Field
+      {...root}
+      orientation="horizontal"
+      message="reserve"
+      label={label}
+      description={description}
+      hint={hint}
+      className={className}
+      disabled={disabled}
+    >
       <Checkbox
         name={field.name}
         checked={field.state.value}
@@ -333,21 +538,27 @@ function CheckboxField({ label, description, hint, disabled, className }: Checkb
         invalid={Boolean(error)}
       />
     </Field>
-  )
+  );
 }
 
 export interface SegmentedRowProps<V extends string = string> {
-  label: ReactNode
-  description?: ReactNode
+  label: ReactNode;
+  description?: ReactNode;
   /** Two to four short options (R15.5). */
-  options: Array<SegmentedOption<V>>
-  disabled?: boolean
-  className?: string
+  options: Array<SegmentedOption<V>>;
+  disabled?: boolean;
+  className?: string;
 }
 
 /** Two to four always-visible modes as a segmented control in a setting row. */
-function SegmentedRow<V extends string = string>({ label, description, options, disabled, className }: SegmentedRowProps<V>) {
-  const { field, error } = useFieldState<V>()
+function SegmentedRow<V extends string = string>({
+  label,
+  description,
+  options,
+  disabled,
+  className,
+}: SegmentedRowProps<V>) {
+  const { field, error } = useFieldState<V>();
   return (
     <SettingRow
       label={label}
@@ -368,18 +579,34 @@ function SegmentedRow<V extends string = string>({ label, description, options, 
         />
       }
     />
-  )
+  );
 }
 
-export interface RadioGroupFieldProps<V extends string = string> extends Chrome {
-  options: Array<{ value: V; label: string; description?: string; icon?: ReactNode; disabled?: boolean }>
-  variant?: "list" | "cards"
+export interface RadioGroupFieldProps<
+  V extends string = string,
+> extends Chrome {
+  options: Array<{
+    value: V;
+    label: string;
+    description?: string;
+    icon?: ReactNode;
+    disabled?: boolean;
+  }>;
+  variant?: "list" | "cards";
   /** Direction of layout and keyboard navigation. */
-  orientation?: "vertical" | "horizontal"
+  orientation?: "vertical" | "horizontal";
 }
 
-function RadioGroupField<V extends string = string>({ label, hint, className, disabled, options, variant = "list", orientation }: RadioGroupFieldProps<V>) {
-  const { field, error, root } = useFieldState<V>()
+function RadioGroupField<V extends string = string>({
+  label,
+  hint,
+  className,
+  disabled,
+  options,
+  variant = "list",
+  orientation,
+}: RadioGroupFieldProps<V>) {
+  const { field, error, root } = useFieldState<V>();
   return (
     <Field {...root} hint={hint} className={className} disabled={disabled}>
       <RadioGroup<V>
@@ -391,27 +618,76 @@ function RadioGroupField<V extends string = string>({ label, hint, className, di
         disabled={disabled}
         invalid={Boolean(error)}
         onBlur={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) field.handleBlur()
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+            field.handleBlur();
         }}
       >
         {options.map((option) =>
           variant === "cards" ? (
-            <RadioCard<V> key={option.value} value={option.value} title={option.label} description={option.description} icon={option.icon} disabled={option.disabled} />
+            <RadioCard<V>
+              key={option.value}
+              value={option.value}
+              title={option.label}
+              description={option.description}
+              icon={option.icon}
+              disabled={option.disabled}
+            />
           ) : (
-            <Radio<V> key={option.value} value={option.value} label={option.label} description={option.description} disabled={option.disabled} />
-          )
+            <Radio<V>
+              key={option.value}
+              value={option.value}
+              label={option.label}
+              description={option.description}
+              disabled={option.disabled}
+            />
+          ),
         )}
       </RadioGroup>
     </Field>
-  )
+  );
 }
 
-export interface NumberFieldBoundProps extends Chrome, Pick<NumberFieldProps, "min" | "max" | "step" | "largeStep" | "format" | "unit" | "scrubLabel" | "size" | "width" | "placeholder" | "readOnly" | "steppers"> {}
+export interface NumberFieldBoundProps
+  extends
+    Chrome,
+    Pick<
+      NumberFieldProps,
+      | "min"
+      | "max"
+      | "step"
+      | "largeStep"
+      | "format"
+      | "unit"
+      | "scrubLabel"
+      | "size"
+      | "width"
+      | "placeholder"
+      | "readOnly"
+      | "steppers"
+    > {}
 
-function NumberInputField({ label, hint, optional, required, aside, className, disabled, ...control }: NumberFieldBoundProps) {
-  const { field, error, root } = useFieldState<number | null>()
+function NumberInputField({
+  label,
+  hint,
+  optional,
+  required,
+  aside,
+  className,
+  disabled,
+  ...control
+}: NumberFieldBoundProps) {
+  const { field, error, root } = useFieldState<number | null>();
   return (
-    <Field {...root} label={label} hint={hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
+    <Field
+      {...root}
+      label={label}
+      hint={hint}
+      optional={optional}
+      required={required}
+      aside={aside}
+      className={className}
+      disabled={disabled}
+    >
       <NumberField
         {...control}
         name={field.name}
@@ -423,17 +699,37 @@ function NumberInputField({ label, hint, optional, required, aside, className, d
         invalid={Boolean(error)}
       />
     </Field>
-  )
+  );
 }
 
-export interface SliderFieldProps extends Chrome, Pick<SliderProps, "min" | "max" | "step" | "largeStep" | "format" | "unit" | "marks"> {
+export interface SliderFieldProps
+  extends
+    Chrome,
+    Pick<
+      SliderProps,
+      "min" | "max" | "step" | "largeStep" | "format" | "unit" | "marks"
+    > {
   /** Show the current value at the end of the label row (default). */
-  showValue?: boolean
+  showValue?: boolean;
 }
 
-function SliderField({ label, hint, optional, required, className, disabled, showValue = true, ...control }: SliderFieldProps) {
-  const { field, root } = useFieldState<number>()
-  const show = control.format ?? ((value: number) => (control.unit ? `${value.toLocaleString("en-AU")} ${control.unit}` : value.toLocaleString("en-AU")))
+function SliderField({
+  label,
+  hint,
+  optional,
+  required,
+  className,
+  disabled,
+  showValue = true,
+  ...control
+}: SliderFieldProps) {
+  const { field, root } = useFieldState<number>();
+  const show =
+    control.format ??
+    ((value: number) =>
+      control.unit
+        ? `${value.toLocaleString("en-AU")} ${control.unit}`
+        : value.toLocaleString("en-AU"));
   return (
     <Field
       {...root}
@@ -451,32 +747,45 @@ function SliderField({ label, hint, optional, required, className, disabled, sho
         {...control}
         name={field.name}
         value={field.state.value}
-        onValueChange={(value) => field.handleChange(Array.isArray(value) ? (value[0] ?? 0) : value)}
+        onValueChange={(value) =>
+          field.handleChange(Array.isArray(value) ? (value[0] ?? 0) : value)
+        }
         onBlur={field.handleBlur}
         disabled={disabled}
       />
     </Field>
-  )
+  );
 }
 
 // ── Form-level pieces ────────────────────────────────────────────────────────
 
 interface FormStatus {
   /** Current operation or connection status. */
-  status: ButtonStatus
+  status: ButtonStatus;
 }
-const FormStatusContext = createContext<FormStatus>({ status: "idle" })
+const FormStatusContext = createContext<FormStatus>({ status: "idle" });
 
-export interface SubmitButtonProps extends Omit<ButtonProps, "type" | "status" | "onClick"> {}
+export interface SubmitButtonProps extends Omit<
+  ButtonProps,
+  "type" | "status" | "onClick"
+> {}
 
 /**
  * The form's Save. Disabled until something changes; then pending → ✓ Saved in place
  * (R15.3). It reports the form's own submission, so Enter in a field shows it too.
  */
-function SubmitButton({ children = "Save changes", pendingLabel = "Saving…", successLabel = "Saved", errorLabel = "Not saved", variant = "primary", disabled, ...rest }: SubmitButtonProps) {
-  const form = useFormContext()
-  const { status } = useContext(FormStatusContext)
-  const unchanged = useStore(form.store, (state) => state.isDefaultValue)
+function SubmitButton({
+  children = "Save changes",
+  pendingLabel = "Saving…",
+  successLabel = "Saved",
+  errorLabel = "Not saved",
+  variant = "primary",
+  disabled,
+  ...rest
+}: SubmitButtonProps) {
+  const form = useFormContext();
+  const { status } = useContext(FormStatusContext);
+  const unchanged = useStore(form.store, (state) => state.isDefaultValue);
   return (
     <Button
       {...rest}
@@ -490,18 +799,27 @@ function SubmitButton({ children = "Save changes", pendingLabel = "Saving…", s
     >
       {children}
     </Button>
-  )
+  );
 }
 
-export interface CancelButtonProps extends Omit<ButtonProps, "type" | "onClick"> {
+export interface CancelButtonProps extends Omit<
+  ButtonProps,
+  "type" | "onClick"
+> {
   /** Called after the form reverts (close the dialog here). */
-  onCancel?: () => void
+  onCancel?: () => void;
 }
 
 /** Reverts every field to its saved value (R15.4). */
-function CancelButton({ children = "Cancel", onCancel, variant = "secondary", disabled, ...rest }: CancelButtonProps) {
-  const form = useFormContext()
-  const unchanged = useStore(form.store, (state) => state.isDefaultValue)
+function CancelButton({
+  children = "Cancel",
+  onCancel,
+  variant = "secondary",
+  disabled,
+  ...rest
+}: CancelButtonProps) {
+  const form = useFormContext();
+  const unchanged = useStore(form.store, (state) => state.isDefaultValue);
   return (
     <Button
       {...rest}
@@ -509,13 +827,13 @@ function CancelButton({ children = "Cancel", onCancel, variant = "secondary", di
       variant={variant}
       disabled={disabled || (unchanged && !onCancel)}
       onClick={() => {
-        form.reset()
-        onCancel?.()
+        form.reset();
+        onCancel?.();
       }}
     >
       {children}
     </Button>
-  )
+  );
 }
 
 export const { useAppForm, withForm, withFieldGroup } = createFormHook({
@@ -524,6 +842,7 @@ export const { useAppForm, withForm, withFieldGroup } = createFormHook({
   fieldComponents: {
     TextField,
     TextareaField,
+    RichTextField,
     SelectField,
     ComboboxField,
     MultiSelectField,
@@ -560,7 +879,7 @@ export const { useAppForm, withForm, withFieldGroup } = createFormHook({
     SubmitButton,
     CancelButton,
   },
-})
+});
 
 /**
  * Options every Glass UX form spreads into `useAppForm`: blur-then-change validation against
@@ -570,25 +889,29 @@ export const { useAppForm, withForm, withFieldGroup } = createFormHook({
  */
 export const formBehaviour = {
   validationLogic: blurThenChange,
-  onSubmitInvalid: ({ formApi }: { formApi: AnyFormApi }) => focusFirstInvalid(formApi.formId),
-}
+  onSubmitInvalid: ({ formApi }: { formApi: AnyFormApi }) =>
+    focusFirstInvalid(formApi.formId),
+};
 
 /** What Form needs from a form instance (any `useAppForm` result fits). */
 export interface FormInstance {
-  formId: string
+  formId: string;
   /** Controlled view state, including loading, empty and error states. */
-  state: { isSubmitSuccessful: boolean; values: unknown }
-  AppForm: ComponentType<PropsWithChildren>
-  handleSubmit: () => Promise<void>
-  validateAllFields: (cause: "submit") => Promise<unknown>
-  reset: (values?: never) => void
+  state: { isSubmitSuccessful: boolean; values: unknown };
+  AppForm: ComponentType<PropsWithChildren>;
+  handleSubmit: () => Promise<void>;
+  validateAllFields: (cause: "submit") => Promise<unknown>;
+  reset: (values?: never) => void;
 }
 
-export interface FormProps extends Omit<ComponentProps<"form">, "onSubmit" | "onError"> {
+export interface FormProps extends Omit<
+  ComponentProps<"form">,
+  "onSubmit" | "onError"
+> {
   /** Form instance whose values, validation and submission state are observed. */
-  form: FormInstance
+  form: FormInstance;
   /** A failed save (onSubmit threw). The button shows ✕; put the reason in a toast here. */
-  onError?: (error: unknown) => void
+  onError?: (error: unknown) => void;
 }
 
 /**
@@ -597,35 +920,41 @@ export interface FormProps extends Omit<ComponentProps<"form">, "onSubmit" | "on
  * ✓ in place, and the form takes the saved values as its new baseline. Pass the saved
  * record back as `defaultValues` (it normally comes from the server).
  */
-export function Form({ form, onError, className, children, ...rest }: FormProps) {
-  const [status, setStatus] = useState<ButtonStatus>("idle")
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  useEffect(() => () => clearTimeout(timer.current), [])
+export function Form({
+  form,
+  onError,
+  className,
+  children,
+  ...rest
+}: FormProps) {
+  const [status, setStatus] = useState<ButtonStatus>("idle");
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
 
   const hold = (next: ButtonStatus) => {
-    setStatus(next)
-    clearTimeout(timer.current)
-    timer.current = setTimeout(() => setStatus("idle"), FEEDBACK_HOLD_MS)
-  }
+    setStatus(next);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setStatus("idle"), FEEDBACK_HOLD_MS);
+  };
 
   const submit = async () => {
-    if (status === "pending") return
-    clearTimeout(timer.current)
-    setStatus("pending")
+    if (status === "pending") return;
+    clearTimeout(timer.current);
+    setStatus("pending");
     try {
-      await form.validateAllFields("submit")
-      await form.handleSubmit()
+      await form.validateAllFields("submit");
+      await form.handleSubmit();
       if (form.state.isSubmitSuccessful) {
-        form.reset(form.state.values as never)
-        hold("success")
+        form.reset(form.state.values as never);
+        hold("success");
       } else {
-        setStatus("idle")
+        setStatus("idle");
       }
     } catch (error) {
-      hold("error")
-      onError?.(error)
+      hold("error");
+      onError?.(error);
     }
-  }
+  };
 
   return (
     <form.AppForm>
@@ -636,16 +965,16 @@ export function Form({ form, onError, className, children, ...rest }: FormProps)
           className={cx("fa-form", className)}
           data-form={form.formId}
           onSubmit={(event) => {
-            event.preventDefault()
-            event.stopPropagation()
-            void submit()
+            event.preventDefault();
+            event.stopPropagation();
+            void submit();
           }}
         >
           {children}
         </form>
       </FormStatusContext.Provider>
     </form.AppForm>
-  )
+  );
 }
 
 export interface FormStackProps extends ComponentProps<"div"> {}
@@ -655,24 +984,37 @@ export interface FormStackProps extends ComponentProps<"div"> {}
  * --form-measure. Fields keep their message line, so rows sit on a steady rhythm.
  */
 export function FormStack({ className, ...rest }: FormStackProps) {
-  return <div {...rest} className={cx("fa-form-stack", className)} />
+  return <div {...rest} className={cx("fa-form-stack", className)} />;
 }
 
-export interface FormGroupProps extends Omit<FieldsetProps, "variant" | "legend"> {
+export interface FormGroupProps extends Omit<
+  FieldsetProps,
+  "variant" | "legend"
+> {
   /** Overline group label ("Placement", "Behaviour"). */
-  label: ReactNode
+  label: ReactNode;
 }
 
 /** Related rows under an overline label; groups are separated by --gap-section (R15.8). */
-export function FormGroup({ label, className, children, ...rest }: FormGroupProps) {
+export function FormGroup({
+  label,
+  className,
+  children,
+  ...rest
+}: FormGroupProps) {
   return (
-    <Fieldset {...rest} legend={label} variant="section" className={cx("fa-form-group", className)}>
+    <Fieldset
+      {...rest}
+      legend={label}
+      variant="section"
+      className={cx("fa-form-group", className)}
+    >
       {children}
     </Fieldset>
-  )
+  );
 }
 
 /** Footer row for a form outside a Panel or Dialog: secondary actions, then Save. */
 export function FormActions({ className, ...rest }: ComponentProps<"div">) {
-  return <div {...rest} className={cx("fa-form-actions", className)} />
+  return <div {...rest} className={cx("fa-form-actions", className)} />;
 }

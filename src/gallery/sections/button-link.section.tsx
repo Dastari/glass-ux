@@ -1,0 +1,40 @@
+import { useState } from "react";
+import { IconArrowRight } from "../../icons/generated/icons.js";
+import { ButtonLink } from "../../ui/button-link/index.js";
+import { SectionPage, Specimen } from "../kit.js";
+
+export default function ButtonLinkSection() {
+  const [visits, setVisits] = useState(0);
+  return (
+    <SectionPage>
+      <Specimen
+        title="Native links"
+        description="The shared button appearance preserves anchor semantics, keyboard activation and browser open-in-new-tab behaviour."
+      >
+        <ButtonLink href="#api" variant="primary" iconEnd={<IconArrowRight />}>
+          Read the API
+        </ButtonLink>
+        <ButtonLink href="#usage" size="sm" variant="ghost">
+          View usage
+        </ButtonLink>
+      </Specimen>
+      <Specimen
+        title="Host-rendered anchor"
+        description="An application can supply its router link. Existing handlers and styles are merged with the component props."
+      >
+        <ButtonLink
+          render={
+            <a
+              href="#examples"
+              onClick={() => setVisits((count) => count + 1)}
+            />
+          }
+          onClick={() => setVisits((count) => count + 1)}
+        >
+          Return to examples
+        </ButtonLink>
+        <span role="status">Anchor handlers called {visits} times</span>
+      </Specimen>
+    </SectionPage>
+  );
+}

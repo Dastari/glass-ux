@@ -162,7 +162,11 @@
   }
   .fa-ai-msg:is(:hover, :focus-within) .fa-ai-msg-actions,
   .fa-ai-msg[data-latest] .fa-ai-msg-actions,
-  .fa-ai-msg-actions:has([aria-pressed="true"], [data-status="pending"], [data-status="success"]) {
+  .fa-ai-msg-actions:has(
+    [aria-pressed="true"],
+    [data-status="pending"],
+    [data-status="success"]
+  ) {
     opacity: 1;
   }
   @media (pointer: coarse) {
@@ -174,9 +178,10 @@
     visibility: hidden;
   }
   .fa-ai-msg-meta {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: flex;
+    gap: var(--gap-inline);
+    align-items: center;
+    min-width: 0;
   }
   .fa-ai-msg[data-role="user"] .fa-ai-msg-time {
     order: -1;

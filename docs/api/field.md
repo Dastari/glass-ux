@@ -24,5 +24,6 @@ Field namespace: `<Field label …>` plus the parts for custom layouts.
 | optional | `boolean \| undefined` | false, true | no | false | Marks the label "Optional". Prefer this over marking required fields. |
 | orientation | `FieldOrientation \| undefined` | "horizontal", "vertical" | no | "vertical" | vertical: label above the control (text fields, selects). horizontal: control first, label and description beside it (switches, checkboxes). |
 | required | `boolean \| undefined` | false, true | no | false | Shows the required marker. Pass `required` to the control as well. |
+| warning | `ReactNode` | false, true | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

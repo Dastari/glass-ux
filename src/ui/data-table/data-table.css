@@ -900,7 +900,8 @@
   }
   .fa-dt-status-text {
     display: flex;
-    flex: 1 1 auto;
+    /* Freshness uses its content width; spare space belongs to the pager controls. */
+    flex: 0 1 auto;
     align-items: center;
     gap: var(--space-3);
     min-width: 0;

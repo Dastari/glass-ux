@@ -145,7 +145,4 @@
     font: inherit;
     text-align: start;
   }
-  .fa-wm-switcher-subtitle {
-    color: var(--fg-muted);
-  }
 }

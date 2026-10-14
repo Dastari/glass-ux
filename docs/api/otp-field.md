@@ -28,5 +28,6 @@ complete code submits the form, so the Submit button's pending → ✓ shows the
 | required | `boolean \| undefined` | false, true | no | — | Shows the required marker. Pass `required` to the control as well. |
 | size | `"md" \| "lg" \| undefined` | "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | status | `OtpStatus \| undefined` | "success", "error" | no | — | error: the code was refused. success: accepted — boxes go green with a ✓, no shift either way. |
+| warning | `ReactNode` | false, true | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -1,6 +1,7 @@
 export {
   AssistantMessage,
   MessageSkeleton,
+  type MessageSkeletonProps,
   messageText,
   SystemNotice,
   Turn,
@@ -8,4 +9,4 @@ export {
   type AssistantMessageProps,
   type SystemNoticeProps,
   type UserMessageProps,
-} from "./message.js"
+} from "./message.js";

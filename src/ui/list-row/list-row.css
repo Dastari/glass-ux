@@ -1,0 +1,36 @@
+@layer components {
+  .fa-list-row {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-controls);
+    width: 100%;
+    text-align: start;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    padding-block: var(--space-1);
+  }
+  .fa-list-row-text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  .fa-list-row-meta {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-list-row-icon,
+  .fa-list-row-trailing {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-inline);
+  }
+  .fa-list-row-icon svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--fg-muted);
+  }
+}

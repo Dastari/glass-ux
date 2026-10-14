@@ -28,6 +28,7 @@ EmailInput bound to a string form field, with the typo hint. Pair it with `email
 | suggest | `boolean \| undefined` | false, true | no | true | Offer a correction for a likely typo in the domain (default true). |
 | trailing | `ReactNode` | false, true | no | — | Any other trailing content (a status, a small action). |
 | unit | `ReactNode` | false, true | no | — | Unit after the value ("GB", "ms", "%"). |
+| warning | `ReactNode` | false, true | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -33,6 +33,7 @@ strong it is until there is an error. Pair it with `passwordSchema()` (new) or
 | trailing | `ReactNode` | false, true | no | — | Any other trailing content (a status, a small action). |
 | unit | `ReactNode` | false, true | no | — | Unit after the value ("GB", "ms", "%"). |
 | userInputs | `readonly string[] \| undefined` | See type | no | — | The person's own details, which the strength estimate penalises (name, email, organisation). |
+| warning | `ReactNode` | false, true | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

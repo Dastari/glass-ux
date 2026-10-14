@@ -13,45 +13,6 @@
     border-radius: var(--radius-surface);
     container: ai-pane / inline-size;
   }
-  .fa-ai-pane-header {
-    display: flex;
-    flex: none;
-    align-items: center;
-    gap: var(--space-2-5);
-    min-height: calc(var(--control-h-md) + var(--space-3) * 2);
-    padding: var(--space-3) var(--space-2) var(--space-2) var(--space-4);
-    transition: box-shadow var(--duration-fast) var(--ease-standard);
-  }
-  .fa-ai-pane-heading {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    min-width: 0;
-  }
-  .fa-ai-pane-title {
-    overflow: hidden;
-    font-size: var(--type-subtitle-size);
-    line-height: var(--type-subtitle-line);
-    font-weight: var(--type-subtitle-weight);
-    letter-spacing: var(--type-subtitle-tracking);
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .fa-ai-pane-scope {
-    overflow: hidden;
-    color: var(--fg-muted);
-    font-size: var(--type-caption-size);
-    line-height: var(--type-caption-line);
-    font-variant-numeric: tabular-nums;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .fa-ai-pane-actions {
-    display: flex;
-    flex: none;
-    align-items: center;
-    gap: var(--space-half);
-  }
   .fa-ai-pane-body {
     display: flex;
     flex: 1 1 auto;

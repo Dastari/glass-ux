@@ -27,6 +27,7 @@ TimeZoneSelect bound to a `string | null` form field (IANA name). Pair it with `
 | required | `boolean \| undefined` | false, true | no | — | Shows the required marker. Pass `required` to the control as well. |
 | size | `SelectSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | suggested | `readonly string[] \| undefined` | See type | no | — | Zones listed first under "Suggested". Default: this browser's zone and UTC. |
+| warning | `ReactNode` | false, true | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "medium" | Content width: short (port, PIN), medium (name, hostname), full (default). |
 | zones | `readonly string[] \| undefined` | See type | no | — | Only these zones. |
 

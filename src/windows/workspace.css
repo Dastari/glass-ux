@@ -60,13 +60,21 @@
   .fa-wm-snap-preview {
     left: calc(var(--_fx) * 100cqw + var(--_gl) * var(--_half-gap));
     top: calc(var(--_fy) * 100cqh + var(--_gt) * var(--_half-gap));
-    width: calc(var(--_fw) * 100cqw - (var(--_gl) + var(--_gr)) * var(--_half-gap));
-    height: calc(var(--_fh) * 100cqh - (var(--_gt) + var(--_gb)) * var(--_half-gap));
+    width: calc(
+      var(--_fw) * 100cqw - (var(--_gl) + var(--_gr)) * var(--_half-gap)
+    );
+    height: calc(
+      var(--_fh) * 100cqh - (var(--_gt) + var(--_gb)) * var(--_half-gap)
+    );
   }
   .fa-wm-window[data-geometry="free"] {
     --_fw-px: min(calc(var(--_w) * var(--_px)), 100cqw);
     --_fh-px: min(calc(var(--_h) * var(--_px)), 100cqh);
-    left: clamp(0px, calc(var(--_x) * var(--_px)), calc(100cqw - var(--_fw-px)));
+    left: clamp(
+      0px,
+      calc(var(--_x) * var(--_px)),
+      calc(100cqw - var(--_fw-px))
+    );
     top: clamp(0px, calc(var(--_y) * var(--_px)), calc(100cqh - var(--_fh-px)));
     width: var(--_fw-px);
     height: var(--_fh-px);
@@ -74,7 +82,9 @@
 
   /* Geometry animates between states (open, tile, snap, maximise) once laid out. */
   .fa-wm-workspace-stage[data-ready] .fa-wm-window {
-    transition-property: left, top, width, height, opacity, transform, translate, visibility, box-shadow;
+    transition-property:
+      left, top, width, height, opacity, transform, translate, visibility,
+      box-shadow;
     transition-duration: var(--duration-base);
     transition-timing-function: var(--ease-standard);
   }
@@ -182,6 +192,7 @@
   }
 
   .fa-wm-snap-bar {
+    flex-direction: column;
     --_pad: var(--space-2);
     position: absolute;
     top: var(--space-3);
@@ -200,8 +211,19 @@
   @starting-style {
     .fa-wm-snap-bar {
       opacity: 0;
-      transform: translateY(calc(var(--overlay-enter-shift) * -1)) scale(var(--overlay-enter-scale));
+      transform: translateY(calc(var(--overlay-enter-shift) * -1))
+        scale(var(--overlay-enter-scale));
     }
+  }
+  .fa-wm-snap-choices {
+    display: flex;
+    gap: var(--space-2);
+  }
+  .fa-wm-snap-label {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-align: center;
   }
   .fa-wm-snap-layout {
     --_half-gap: var(--space-half);
@@ -220,10 +242,18 @@
   }
   .fa-wm-snap-zone {
     position: absolute;
-    left: calc(var(--_inset) + var(--_fx) * 100cqw + var(--_gl) * var(--_half-gap));
-    top: calc(var(--_inset) + var(--_fy) * 100cqh + var(--_gt) * var(--_half-gap));
-    width: calc(var(--_fw) * 100cqw - (var(--_gl) + var(--_gr)) * var(--_half-gap));
-    height: calc(var(--_fh) * 100cqh - (var(--_gt) + var(--_gb)) * var(--_half-gap));
+    left: calc(
+      var(--_inset) + var(--_fx) * 100cqw + var(--_gl) * var(--_half-gap)
+    );
+    top: calc(
+      var(--_inset) + var(--_fy) * 100cqh + var(--_gt) * var(--_half-gap)
+    );
+    width: calc(
+      var(--_fw) * 100cqw - (var(--_gl) + var(--_gr)) * var(--_half-gap)
+    );
+    height: calc(
+      var(--_fh) * 100cqh - (var(--_gt) + var(--_gb)) * var(--_half-gap)
+    );
     border-radius: var(--radius-xs);
     background-color: var(--glass-fill-control);
     box-shadow: inset 0 0 0 var(--border-width) var(--line);
@@ -250,7 +280,8 @@
     padding-bottom: var(--safe-bottom);
     border-radius: 0;
   }
-  .fa-wm-workspace-stage[data-ready] .fa-wm-window[data-geometry="sheet"]:not([data-hidden], [data-minimised]) {
+  .fa-wm-workspace-stage[data-ready]
+    .fa-wm-window[data-geometry="sheet"]:not([data-hidden], [data-minimised]) {
     transition-duration: var(--duration-slow);
     transition-timing-function: var(--ease-enter);
   }

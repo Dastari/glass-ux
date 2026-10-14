@@ -498,6 +498,7 @@ const app = await Application.bootstrapWithPlugins({
   tsconfig: "tsconfig.json",
   name: "Glass UX",
   includeVersion: true,
+  gitRevision: `v${JSON.parse(readFileSync("package.json", "utf8")).version}`,
   excludePrivate: true,
   excludeInternal: true,
   excludeExternals: true,

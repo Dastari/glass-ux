@@ -1,5 +1,7 @@
 # Glass UX
 
+<img src="public/brand/glass-ux.svg" alt="Glass UX logo" width="96" height="96" />
+
 A typed React 19 component library for glass interfaces, data applications and assistant
 experiences. Components use Base UI behaviour, semantic CSS tokens, container queries and
 shared keyboard and accessibility conventions.
@@ -9,7 +11,7 @@ shared keyboard and accessibility conventions.
 Install the versioned package attached to a [GitHub release](https://github.com/Dastari/glass-ux/releases).
 
 ```sh
-pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.3.0/glass-ux-0.3.0.tgz
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.4.0/glass-ux-0.4.0.tgz
 ```
 
 React 19 and React DOM 19 are peer dependencies. The tested integration uses Vite 8

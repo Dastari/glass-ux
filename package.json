@@ -1,6 +1,6 @@
 {
   "name": "glass-ux",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A typed React design system for glass interfaces, data applications and assistant experiences.",
   "type": "module",
   "license": "MIT",
@@ -22,7 +22,8 @@
     "AGENTS.md",
     "llms.txt",
     "skills",
-    "bin"
+    "bin",
+    "public/brand"
   ],
   "sideEffects": [
     "**/*.css"
@@ -584,7 +585,7 @@
     "docs:api": "node scripts/docs-api.mjs",
     "docs:build": "pnpm run docs:api && pnpm run build && pnpm --filter glass-ux-docs build && node scripts/docs-site.mjs",
     "dev": "pnpm --filter glass-ux-docs dev",
-    "check": "pnpm run styles:check && pnpm run icons:check && pnpm run fonts:check && pnpm run tokens:check && pnpm run layout:check && pnpm run css-perf:check && pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run boundaries:check && pnpm run docs:check",
+    "check": "pnpm run brand:check && pnpm run styles:check && pnpm run icons:check && pnpm run fonts:check && pnpm run tokens:check && pnpm run layout:check && pnpm run css-perf:check && pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run boundaries:check && pnpm run docs:check",
     "boundaries:check": "node scripts/check-boundaries.mjs",
     "docs:check": "node scripts/check-docs.mjs",
     "test:e2e": "playwright test",
@@ -598,7 +599,9 @@
     "fonts": "node scripts/build-fonts.mjs",
     "fonts:check": "node scripts/build-fonts.mjs --check",
     "layout:check": "node bin/glass-ux.mjs check-layout src/gallery apps/docs/src",
-    "test:production": "playwright test --config playwright.production.config.ts"
+    "test:production": "playwright test --config playwright.production.config.ts",
+    "brand": "node scripts/build-brand.mjs",
+    "brand:check": "node scripts/build-brand.mjs --check"
   },
   "bin": {
     "glass-ux": "./bin/glass-ux.mjs"

@@ -1,0 +1,25 @@
+{
+  "sourceSha256": "4387fcc1ed398b5ddc91b43cbcb216410474ac308ef7d44c8c9657a18a4db7f0",
+  "assets": [
+    {
+      "path": "public/brand/glass-ux.svg",
+      "sha256": "f6e5ebc85e9c17b12202cd8e8f313c71640ef700da4377d13256c510883d84f2"
+    },
+    {
+      "path": "src/gallery/assets/glass-ux.svg",
+      "sha256": "f6e5ebc85e9c17b12202cd8e8f313c71640ef700da4377d13256c510883d84f2"
+    },
+    {
+      "path": "public/brand/glass-ux.png",
+      "sha256": "3e12579152e144ada1f85ff38e94c2d23eebe0792694216c1d93e05602364585"
+    },
+    {
+      "path": "public/brand/social-preview.png",
+      "sha256": "a4fde60e084c8c8791f109d5d08ff8a07d87605d421eeda3e3f4024ff6d87f76"
+    },
+    {
+      "path": "public/brand/social-preview.svg",
+      "sha256": "2f046367796dd48bd549da14d46ef59e070ba0efdc83abddb12dd62a7f0077dd"
+    }
+  ]
+}

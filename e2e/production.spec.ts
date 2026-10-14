@@ -135,3 +135,70 @@ test("usage and guide code highlight from lazy chunks under the deployment base 
   await expect(shell).toBeAttached();
   expect(failed).toEqual([]);
 });
+
+test("the supplied brand mark, favicon and sharing image load under the deployment path", async ({
+  page,
+}) => {
+  await page.goto("guides/getting-started/");
+  const logo = page.locator(".gallery-brand svg[data-brand='glass-ux']");
+  await expect(logo).toBeVisible();
+  await expect(logo).toHaveAttribute("data-tones", "brand");
+  expect(await logo.locator("linearGradient").count()).toBe(2);
+  const icons = await page
+    .locator("link[rel='icon']")
+    .evaluate((element) => (element as HTMLLinkElement).href);
+  const favicon = await page.request.get(icons);
+  expect(favicon.ok()).toBe(true);
+  expect(await favicon.text()).toContain("glass-ux-logo-primary");
+  const sharing = await page
+    .locator("meta[property='og:image']")
+    .getAttribute("content");
+  expect(sharing).toContain("/glass-ux/brand/social-preview.png");
+  const preview = await page.request.get("brand/social-preview.png");
+  expect(preview.ok()).toBe(true);
+});
+
+test("published guides and Foundations share the aligned article and viewport scroll layout", async ({
+  page,
+}) => {
+  await page.goto("guides/agent-adoption/");
+  await expect(page.locator(".gallery-guide-document h1")).toHaveText(
+    "AI agent adoption",
+  );
+  const geometry = await page.evaluate(() => {
+    const article = document.querySelector<HTMLElement>(
+      ".gallery-guide-document",
+    )!;
+    const prose = article.querySelector("p")!.getBoundingClientRect();
+    const code = article.querySelector(".fa-ai-code")!.getBoundingClientRect();
+    const table = article.querySelector("table")!.getBoundingClientRect();
+    const scroller = document
+      .querySelector(".docs-content")!
+      .getBoundingClientRect();
+    return {
+      article: article.getBoundingClientRect().width,
+      prose: prose.width,
+      code: code.width,
+      table: table.width,
+      right: scroller.right,
+      bottom: scroller.bottom,
+      width: innerWidth,
+      height: innerHeight,
+    };
+  });
+  expect(geometry.article).toBeLessThanOrEqual(1024);
+  expect(geometry.prose).toBeCloseTo(geometry.code, 0);
+  expect(geometry.table).toBeCloseTo(geometry.code, 0);
+  expect(geometry.right).toBeCloseTo(geometry.width, 0);
+  expect(geometry.bottom).toBeCloseTo(geometry.height, 0);
+  await page.goto("foundations/space/");
+  await expect(
+    page.locator(
+      ".gallery-foundation-document .gallery-document-intro h1.type-display",
+    ),
+  ).toHaveText("Space and layout");
+  await expect(page.locator(".docs-content > h1")).toHaveCount(0);
+  await expect(
+    page.locator(".gallery-foundation-document .gallery-page"),
+  ).toBeAttached();
+});

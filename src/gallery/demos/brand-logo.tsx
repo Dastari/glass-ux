@@ -2,12 +2,13 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { BRAND_SOURCES } from "../fixtures/brand.js";
 import { Example, SectionPage, Specimen } from "../kit.js";
-import { BrandLogo, type BrandTones } from "../../ui/brand/index.js";
+import { PALETTES, PALETTE_LABELS } from "../../lib/appearance/appearance.js";
+import { BrandLogo, BrandMark, type BrandTones } from "../../ui/brand/index.js";
 
 const SOURCES = Object.values(BRAND_SOURCES);
 const TONES: Array<[BrandTones, string]> = [
   ["palette", "Palette: follows the palette and mode"],
-  ["brand", "Brand: Orbit Workspace's own tones in any palette"],
+  ["brand", "Brand: Glass UX's cyan-to-violet gradients in any palette"],
   ["mono", "Mono: currentColor"],
 ];
 
@@ -15,8 +16,39 @@ export default function BrandSection() {
   return (
     <SectionPage>
       <Specimen
+        title="Marks"
+        description="The Glass UX vector source generates both the static SVG and this inline BrandSource. Named marks share paths and gradients, so there is no image request or flash. A host configures its own product, wordmark and assistant marks."
+        wide
+      >
+        <Example label="product">
+          <BrandLogo
+            source={BRAND_SOURCES.product}
+            tones="brand"
+            className="gallery-mark-lg"
+            label="Glass UX"
+          />
+        </Example>
+        <Example label="ai">
+          <BrandLogo
+            source={BRAND_SOURCES.ai}
+            tones="brand"
+            className="gallery-mark-lg"
+            label="Assistant"
+          />
+        </Example>
+        <Example label="wordmark">
+          <BrandLogo
+            source={BRAND_SOURCES.wordmark}
+            tones="brand"
+            className="gallery-wordmark"
+            label="Glass UX"
+          />
+        </Example>
+      </Specimen>
+
+      <Specimen
         title="Tones"
-        description="Palette is the default (src/app/brand.ts). Brand keeps the brand's own palette as an island on the mark; mono draws both halves in the current text colour."
+        description="Palette follows the semantic brand roles. Brand keeps source-defined gradient colours; mono draws every path in the current text colour."
         wide
         layout="stack"
       >
@@ -34,6 +66,50 @@ export default function BrandSection() {
             </div>
           </Example>
         ))}
+      </Specimen>
+
+      <Specimen
+        title="Every palette"
+        description="The primary half is the palette's accent, lifted in dark mode to keep 3:1 on the canvas; the secondary half is ink. Graphite's accent is ink, so its secondary moves to a mid grey. Switch the gallery's mode to see the other."
+        wide
+        layout="bare"
+      >
+        <div className="gallery-brand-matrix">
+          {PALETTES.map((palette) => (
+            <div
+              key={palette}
+              className="gallery-brand-cell canvas-ambient"
+              data-palette={palette}
+              data-testid={`brand-${palette}`}
+            >
+              <BrandLogo
+                source={BRAND_SOURCES.product}
+                tones="palette"
+                className="gallery-mark-lg"
+              />
+              <BrandLogo source={BRAND_SOURCES.ai} tones="palette" className="gallery-mark-lg" />
+              <span className="gallery-brand-label">{PALETTE_LABELS[palette]}</span>
+            </div>
+          ))}
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="Over imagery"
+        description="Inside .over-imagery a mark gets the canvas halo every bare icon gets, so it reads on any image."
+        backdrop
+      >
+        <Example label="Product">
+          <BrandLogo source={BRAND_SOURCES.product} tones="brand" className="gallery-mark-lg" />
+        </Example>
+        <Example label="Wordmark">
+          <BrandLogo source={BRAND_SOURCES.wordmark} tones="brand" className="gallery-wordmark" />
+        </Example>
+        <Example label="Mono on a solid fill">
+          <span className="gallery-brand-solid">
+            <BrandMark mark="ai" tones="mono" className="gallery-mark-lg" />
+          </span>
+        </Example>
       </Specimen>
     </SectionPage>
   );

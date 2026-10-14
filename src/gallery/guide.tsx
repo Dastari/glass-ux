@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Markdown } from "../ai/markdown/index.js";
 import { Notice } from "../ui/notice/index.js";
 import { Skeleton } from "../ui/skeleton/index.js";
+import { DOCUMENTATION_VERSION } from "./release.generated.js";
 
 export const libraryGuides = [
   { id: "getting-started", title: "Getting started" },
@@ -29,7 +30,7 @@ export function LibraryGuide({ id }: { id: string }) {
             value.replace(
               /\]\((?!https?:|#)([^)]+)\)/g,
               (_match, path) =>
-                `](${new URL(path, "https://github.com/Dastari/glass-ux/blob/v0.2.1/docs/").href})`,
+                `](${new URL(path, `https://github.com/Dastari/glass-ux/blob/v${DOCUMENTATION_VERSION}/docs/`).href})`,
             ),
           );
       })

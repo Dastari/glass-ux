@@ -1,46 +1,15 @@
+import { BRAND_SOURCES } from "glass-ux/gallery/fixtures/brand";
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { PALETTES, PALETTE_LABELS } from "glass-ux/lib/appearance/appearance";
-import { BrandMark } from "glass-ux/brand";
+import { BrandLogo, BrandMark } from "glass-ux/brand";
 
 export default function BrandSection() {
   return (
     <SectionPage>
       <Specimen
-        title="Marks"
-        description="Each mark is built from public/brand/<name>.svg by pnpm brand: the paths of its …-logo-primary and …-logo-secondary elements, inlined, so there is no request and no flash. The product names them: product, wordmark and ai."
-        wide
+        title="Configured host mark"
+        description="BrandMark renders the product mark configured by the consuming application. The standalone docs configure the Glass UX mark; an embedded gallery retains its host's branding."
       >
-        <Example label="product">
-          <BrandMark mark="product" className="gallery-mark-lg" label="Glass UX" />
-        </Example>
-        <Example label="ai">
-          <BrandMark mark="ai" className="gallery-mark-lg" label="Assistant" />
-        </Example>
-        <Example label="wordmark">
-          <BrandMark mark="wordmark" className="gallery-wordmark" label="Orbit Workspace" />
-        </Example>
-      </Specimen>
-
-      <Specimen
-        title="Every palette"
-        description="The primary half is the palette's accent, lifted in dark mode to keep 3:1 on the canvas; the secondary half is ink. Graphite's accent is ink, so its secondary moves to a mid grey. Switch the gallery's mode to see the other."
-        wide
-        layout="bare"
-      >
-        <div className="gallery-brand-matrix">
-          {PALETTES.map((palette) => (
-            <div
-              key={palette}
-              className="gallery-brand-cell canvas-ambient"
-              data-palette={palette}
-              data-testid={`brand-${palette}`}
-            >
-              <BrandMark mark="product" className="gallery-mark-lg" />
-              <BrandMark mark="ai" className="gallery-mark-lg" />
-              <span className="gallery-brand-label">{PALETTE_LABELS[palette]}</span>
-            </div>
-          ))}
-        </div>
+        <BrandMark mark="product" className="gallery-mark-lg" label="Configured product mark" />
       </Specimen>
 
       <Specimen
@@ -49,10 +18,10 @@ export default function BrandSection() {
         backdrop
       >
         <Example label="Product">
-          <BrandMark mark="product" className="gallery-mark-lg" />
+          <BrandLogo source={BRAND_SOURCES.product} tones="brand" className="gallery-mark-lg" />
         </Example>
         <Example label="Wordmark">
-          <BrandMark mark="wordmark" className="gallery-wordmark" />
+          <BrandLogo source={BRAND_SOURCES.wordmark} tones="brand" className="gallery-wordmark" />
         </Example>
         <Example label="Mono on a solid fill">
           <span className="gallery-brand-solid">

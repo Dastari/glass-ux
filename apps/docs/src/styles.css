@@ -26,7 +26,6 @@
   .docs-main {
     min-width: 0;
     min-height: 0;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
   }
@@ -80,6 +79,7 @@
   }
   @media (width < 48rem) {
     .docs-layout {
+      --gallery-shell-gutter: var(--space-2);
       grid-template-columns: 1fr;
       grid-template-rows: auto minmax(0, 1fr);
     }
@@ -106,7 +106,7 @@
     }
     .docs-layout {
       gap: var(--space-2);
-      padding: var(--space-2);
+      padding: var(--gallery-shell-gutter);
     }
     .docs-main {
       gap: var(--gap-controls);

@@ -74,3 +74,13 @@ Documentation section navigation stays outside the article, left aligned and ins
 the parent's corners. Desktop uses `--space-16` (64px at the default UI scale) between rail
 and article; phones use chips. Size previews stack in ascending width-times-height order;
 the free resize frame follows the preset examples.
+
+Documentation uses one 64rem maximum article width. Explanatory prose, code and guide
+tables fill that column; assistant specimens retain their own reading measures. Foundation
+pages use `FoundationDocumentation` so their display heading and summary belong inside
+the same article as the examples. `ComponentDocumentation` keeps its section rail outside
+the article, pinned in the content viewport while the article flows normally.
+
+Mark the surrounding scroll viewport with `data-scroll-container`. The gallery's content
+viewport reaches the screen's right and bottom edges; only the sidebar retains its outer
+gutter. Do not add an independently scrolling, fixed-height article inside that viewport.

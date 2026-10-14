@@ -25,7 +25,7 @@ export default function SpaceSection() {
         <div className="space-steps">
           {STEPS.map((step) => (
             <div key={step} className="space-step">
-              <code className="type-caption w-16">--space-{step}</code>
+              <code className="type-caption w-24 shrink-0 whitespace-nowrap">--space-{step}</code>
               <span className="space-bar" style={{ width: `var(--space-${step})` }} />
               <span className="type-caption text-fg-muted" data-numeric>
                 {Number(step) * 4}px

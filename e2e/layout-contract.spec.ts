@@ -153,3 +153,90 @@ test("size previews stack by footprint and usage code has paragraph spacing", as
   const code = await page.locator("#usage .fa-ai-code").boundingBox();
   expect(code!.y - paragraph!.y - paragraph!.height).toBeGreaterThan(0);
 });
+
+test("guides align prose, code and tables in one narrower column with viewport-edge scrolling @responsive", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/guides/agent-adoption");
+  const article = page.locator(".gallery-guide-document");
+  await expect(article.locator("h1")).toHaveText("AI agent adoption");
+  const geometry = await page.evaluate(() => {
+    const article = document.querySelector<HTMLElement>(
+      ".gallery-guide-document",
+    )!;
+    const markdown = article.querySelector<HTMLElement>(".fa-ai-md")!;
+    const prose = markdown.querySelector("p")!;
+    const code = markdown.querySelector(".fa-ai-code")!;
+    const table = markdown.querySelector("table")!;
+    const scroller = document.querySelector(".docs-content")!;
+    const box = (element: Element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        left: rect.left,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+      };
+    };
+    return {
+      article: box(article),
+      markdown: box(markdown),
+      prose: box(prose),
+      code: box(code),
+      table: box(table),
+      scroller: box(scroller),
+      width: innerWidth,
+      height: innerHeight,
+    };
+  });
+  expect(geometry.article.width).toBeLessThanOrEqual(1024);
+  for (const element of [geometry.prose, geometry.code, geometry.table]) {
+    expect(element.left).toBeCloseTo(geometry.markdown.left, 0);
+    expect(element.width).toBeCloseTo(geometry.markdown.width, 0);
+  }
+  expect(geometry.scroller.right).toBeCloseTo(geometry.width, 0);
+  expect(geometry.scroller.bottom).toBeCloseTo(geometry.height, 0);
+  await expect(article.locator("pre[data-highlighted]").first()).toBeAttached();
+  await page.screenshot({
+    path: `.handoff/glass-ux-extract/screenshots/guide-${testInfo.project.name}.png`,
+  });
+});
+
+for (const id of [
+  "colour",
+  "typography",
+  "space",
+  "shape",
+  "materials",
+  "motion",
+  "knobs",
+  "brand",
+]) {
+  test(`${id} keeps its styled Foundation title and summary inside the article`, async ({
+    page,
+  }) => {
+    await page.goto(`/foundations/${id}`);
+    const article = page.locator(".gallery-foundation-document");
+    const header = article.locator(".gallery-document-intro");
+    await expect(header.locator("h1.type-display")).toBeVisible();
+    await expect(header.locator("p")).not.toBeEmpty();
+    await expect(page.locator(".docs-content > h1")).toHaveCount(0);
+    await expect(article.locator(".gallery-page")).toBeAttached();
+    const geometry = await header.evaluate((element) => {
+      const title = element.querySelector("h1")!;
+      const summary = element.querySelector("p")!;
+      return {
+        title: title.getBoundingClientRect().left,
+        summary: summary.getBoundingClientRect().left,
+        size: parseFloat(getComputedStyle(title).fontSize),
+        body: parseFloat(getComputedStyle(summary).fontSize),
+      };
+    });
+    expect(geometry.title).toBeCloseTo(geometry.summary, 0);
+    expect(geometry.size).toBeGreaterThan(geometry.body);
+    if (id === "space")
+      await page.screenshot({
+        path: ".handoff/glass-ux-extract/screenshots/foundation-space.png",
+      });
+  });
+}

@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import {
   createRootRoute,
   createRoute,
@@ -24,15 +24,11 @@ import { Button } from "glass-ux/button";
 import { usePhoneLayout } from "glass-ux/lib/use-media-query";
 import { SearchField } from "glass-ux/input";
 import { Surface } from "glass-ux/surface";
-import {
-  IconSun,
-  IconMoon,
-  IconSystem,
-  IconGrid,
-  IconSidebar,
-} from "glass-ux/icons";
+import { BrandMark } from "glass-ux/brand";
+import { IconSun, IconMoon, IconSystem, IconSidebar } from "glass-ux/icons";
 import {
   ComponentDocumentation,
+  FoundationDocumentation,
   componentCatalogue,
   configureDemoBrand,
   LibraryGuide,
@@ -146,7 +142,7 @@ function Layout() {
               >
                 <div className="docs-sidebar-heading">
                   <Link to="/" className="gallery-brand">
-                    <IconGrid className="gallery-brand-mark" />
+                    <BrandMark mark="product" className="gallery-brand-mark" />
                     <span>
                       <span className="gallery-brand-name">Glass UX</span>
                       <span className="gallery-brand-sub">Design system</span>
@@ -257,7 +253,8 @@ function Layout() {
                   <Toolbar />
                 </header>
                 <div
-                  className="docs-content"
+                  className="gallery-content docs-content"
+                  data-scroll-container
                   tabIndex={0}
                   role="region"
                   aria-label="Documentation content"
@@ -335,16 +332,7 @@ const foundationRoute = createRoute({
     const section = foundations.find((section) => section.id === id);
     if (!section) return <p>Foundation not found.</p>;
     if (id === "icons") return <ComponentDocumentation id="icons" />;
-    const { Component } = section;
-    return (
-      <>
-        <h1>{section.title}</h1>
-        <p>{section.summary}</p>
-        <Suspense fallback={<p>Loading examples…</p>}>
-          <Component />
-        </Suspense>
-      </>
-    );
+    return <FoundationDocumentation key={id} id={id} />;
   },
 });
 const router = createRouter({

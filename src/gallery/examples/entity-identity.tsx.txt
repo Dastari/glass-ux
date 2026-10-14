@@ -1,3 +1,4 @@
+import demoLogoUrl from "glass-ux/gallery/assets/glass-ux.svg?url";
 import type { ReactNode } from "react";
 import {
   ContainerLab,
@@ -239,7 +240,7 @@ export default function EntityIdentitySection() {
               tier="compact"
               heading="h4"
               icon={<IconCode />}
-              image={<img src="/brand/glass-ux.svg" alt="" />}
+              image={<img src={demoLogoUrl} alt="" />}
               state={{ id: "live", label: "Live", tone: "success" }}
               facts={["glass-ux.orbit.example.com.au", "0.1.0"]}
             />
@@ -251,7 +252,7 @@ export default function EntityIdentitySection() {
               {...entity(APP)}
               tier="row"
               icon={<IconCode />}
-              image={<img src="/brand/glass-ux.svg" alt="" />}
+              image={<img src={demoLogoUrl} alt="" />}
               state={{ id: "live", label: "Live", tone: "success" }}
               secondary="glass-ux.orbit.example.com.au"
             />
@@ -262,7 +263,7 @@ export default function EntityIdentitySection() {
             {...entity(APP)}
             tier="icon"
             icon={<IconCode />}
-            image={<img src="/brand/glass-ux.svg" alt="" />}
+            image={<img src={demoLogoUrl} alt="" />}
             state={{ id: "live", label: "Live", tone: "success" }}
           />
         </Example>

@@ -6,7 +6,7 @@ import { BrandLogo, BrandMark, type BrandTones } from "../../ui/brand/index.js"
 const SOURCES = Object.values(BRAND_SOURCES)
 const TONES: Array<[BrandTones, string]> = [
   ["palette", "Palette: follows the palette and mode"],
-  ["brand", "Brand: Orbit Workspace's own tones in any palette"],
+  ["brand", "Brand: Glass UX's cyan-to-violet gradients in any palette"],
   ["mono", "Mono: currentColor"],
 ]
 
@@ -15,21 +15,25 @@ export default function BrandSection() {
     <SectionPage>
       <Specimen
         title="Marks"
-        description="Each mark is built from public/brand/<name>.svg by pnpm brand: the paths of its …-logo-primary and …-logo-secondary elements, inlined, so there is no request and no flash. The product names them: product, wordmark and ai."
+        description="The Glass UX vector source generates both the static SVG and this inline BrandSource. Named marks share paths and gradients, so there is no image request or flash. A host configures its own product, wordmark and assistant marks."
         wide
       >
         <Example label="product">
-          <BrandMark mark="product" className="gallery-mark-lg" label="Glass UX" />
+          <BrandLogo source={BRAND_SOURCES.product} tones="brand" className="gallery-mark-lg" label="Glass UX" />
         </Example>
         <Example label="ai">
-          <BrandMark mark="ai" className="gallery-mark-lg" label="Assistant" />
+          <BrandLogo source={BRAND_SOURCES.ai} tones="brand" className="gallery-mark-lg" label="Assistant" />
         </Example>
         <Example label="wordmark">
-          <BrandMark mark="wordmark" className="gallery-wordmark" label="Orbit Workspace" />
+          <BrandLogo source={BRAND_SOURCES.wordmark} tones="brand" className="gallery-wordmark" label="Glass UX" />
         </Example>
       </Specimen>
 
-      <Specimen title="Tones" description="Palette is the default (src/app/brand.ts). Brand keeps the brand's own palette as an island on the mark; mono draws both halves in the current text colour." wide layout="stack">
+      <Specimen title="Configured host mark" description="BrandMark renders the product mark configured by the consuming application. The standalone docs configure the Glass UX mark; an embedded gallery retains its host's branding.">
+        <BrandMark mark="product" className="gallery-mark-lg" label="Configured product mark" />
+      </Specimen>
+
+      <Specimen title="Tones" description="Palette follows the semantic brand roles. Brand keeps source-defined gradient colours; mono draws every path in the current text colour." wide layout="stack">
         {TONES.map(([tones, label]) => (
           <Example key={tones} label={label}>
             <div className="gallery-brand-row" data-testid={`brand-tones-${tones}`}>
@@ -50,8 +54,8 @@ export default function BrandSection() {
         <div className="gallery-brand-matrix">
           {PALETTES.map((palette) => (
             <div key={palette} className="gallery-brand-cell canvas-ambient" data-palette={palette} data-testid={`brand-${palette}`}>
-              <BrandMark mark="product" className="gallery-mark-lg" />
-              <BrandMark mark="ai" className="gallery-mark-lg" />
+              <BrandLogo source={BRAND_SOURCES.product} tones="palette" className="gallery-mark-lg" />
+              <BrandLogo source={BRAND_SOURCES.ai} tones="palette" className="gallery-mark-lg" />
               <span className="gallery-brand-label">{PALETTE_LABELS[palette]}</span>
             </div>
           ))}
@@ -60,10 +64,10 @@ export default function BrandSection() {
 
       <Specimen title="Over imagery" description="Inside .over-imagery a mark gets the canvas halo every bare icon gets, so it reads on any image." backdrop>
         <Example label="Product">
-          <BrandMark mark="product" className="gallery-mark-lg" />
+          <BrandLogo source={BRAND_SOURCES.product} tones="brand" className="gallery-mark-lg" />
         </Example>
         <Example label="Wordmark">
-          <BrandMark mark="wordmark" className="gallery-wordmark" />
+          <BrandLogo source={BRAND_SOURCES.wordmark} tones="brand" className="gallery-wordmark" />
         </Example>
         <Example label="Mono on a solid fill">
           <span className="gallery-brand-solid">

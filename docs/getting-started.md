@@ -9,7 +9,7 @@ React 19, React DOM 19 and Node 22.12 or newer are required. Install the built a
 a GitHub release and commit the package-manager lockfile:
 
 ```sh
-pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.3.0/glass-ux-0.3.0.tgz
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.4.0/glass-ux-0.4.0.tgz
 ```
 
 The archive includes JavaScript, TypeScript declarations, styles, fonts, guides and skills.

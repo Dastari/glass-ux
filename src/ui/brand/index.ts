@@ -8,6 +8,8 @@ export {
   type BrandMarkName,
   type BrandMarkProps,
   type BrandPath,
+  type BrandGradient,
+  type BrandGradientStop,
   type BrandSource,
   type BrandTones,
-} from "./brand.js"
+} from "./brand.js";

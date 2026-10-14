@@ -110,8 +110,22 @@ test("the document keeps its sections, readable header and outside rail @respons
 }, testInfo) => {
   await page.goto("/components/vertical-tab-nav");
   const document = page.locator(".gallery-component-document");
+  const scroller = page.locator(".docs-content");
+  // Wait for the example with the same title, so this assertion also covers the
+  // fully loaded document instead of depending on lazy-loading timing.
   await expect(
-    document.getByRole("heading", { name: "VerticalTabNav", exact: true }),
+    document.getByRole("heading", {
+      name: "VerticalTabNav",
+      exact: true,
+      level: 2,
+    }),
+  ).toBeAttached();
+  await expect(
+    document.getByRole("heading", {
+      name: "VerticalTabNav",
+      exact: true,
+      level: 1,
+    }),
   ).toBeVisible();
   await expect(page.locator("#api .gallery-api-table").first()).toBeAttached();
   await expect(page.locator(".gallery-document-rail")).toBeVisible();
@@ -132,7 +146,7 @@ test("the document keeps its sections, readable header and outside rail @respons
     .getByRole("navigation", { name: "On this page" })
     .getByRole("link", { name: "Examples", exact: true })
     .click();
-  await document.evaluate((element) => {
+  await scroller.evaluate((element) => {
     element.scrollTop = 0;
   });
   await page.screenshot({
@@ -141,7 +155,7 @@ test("the document keeps its sections, readable header and outside rail @respons
   await page.evaluate(() => {
     document.documentElement.style.fontSize = "200%";
   });
-  await document.evaluate((element) => {
+  await scroller.evaluate((element) => {
     element.scrollTop = 0;
   });
   await expect(document.locator("h1")).toBeVisible();
@@ -149,7 +163,7 @@ test("the document keeps its sections, readable header and outside rail @respons
     path: `.handoff/glass-ux-extract/screenshots/large-font-${testInfo.project.name}.png`,
   });
   expect(
-    await document.evaluate((element) => element.clientHeight),
+    await scroller.evaluate((element) => element.clientHeight),
     JSON.stringify(
       await page
         .locator(

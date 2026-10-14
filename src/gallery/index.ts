@@ -5,6 +5,8 @@ export { configureDemoBrand } from "./fixtures/brand.js";
 export {
   ApiReference,
   ComponentDocumentation,
+  FoundationDocumentation,
+  type FoundationDocumentationProps,
   componentCatalogue,
 } from "./documentation.js";
 export { LibraryGuide, libraryGuides } from "./guide.js";

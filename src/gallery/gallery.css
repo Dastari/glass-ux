@@ -4,12 +4,13 @@
  */
 @layer components {
   .gallery-shell {
+    --gallery-shell-gutter: var(--page-gutter);
     display: grid;
     grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
     gap: var(--gap-panels);
     height: 100dvh;
-    padding: var(--page-gutter);
-    padding-top: max(var(--page-gutter), var(--safe-top));
+    padding: var(--gallery-shell-gutter);
+    padding-top: max(var(--gallery-shell-gutter), var(--safe-top));
     overflow: hidden;
   }
   .gallery-nav {
@@ -79,9 +80,10 @@
     position: relative;
     flex: 1 1 auto;
     min-height: 0;
-    margin-inline-end: calc(var(--page-gutter) * -1);
-    padding-inline-end: calc(var(--page-gutter) - var(--space-2));
-    border-radius: var(--radius-surface);
+    margin-inline-end: calc(var(--gallery-shell-gutter) * -1);
+    margin-block-end: calc(var(--gallery-shell-gutter) * -1);
+    overflow-y: auto;
+    scrollbar-gutter: stable;
   }
   /* R4.6: page framing sits on the canvas — no material behind the title or toolbar. */
   .gallery-header {

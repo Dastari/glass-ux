@@ -1,3 +1,4 @@
+import demoLogoUrl from "../assets/glass-ux.svg?url"
 import type { ReactNode } from "react"
 import { ContainerLab, Example, Matrix, OnCanvas, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
 import { IconArchive, IconCode, IconCopy, IconOrganisation, IconPopOut, IconTickets, IconUser } from "../../icons/generated/icons.js"
@@ -116,16 +117,16 @@ export default function EntityIdentitySection() {
       <Specimen title="Image" description="An illustration or logo replaces the glyph in the header, compact and icon tiers. Rows and chips keep the glyph so lists stay even.">
         <Example label="Compact">
           <div className="gallery-entity-fixed">
-            <EntityIdentity {...entity(APP)} tier="compact" heading="h4" icon={<IconCode />} image={<img src="/brand/glass-ux.svg" alt="" />} state={{ id: "live", label: "Live", tone: "success" }} facts={["glass-ux.orbit.example.com.au", "0.1.0"]} />
+            <EntityIdentity {...entity(APP)} tier="compact" heading="h4" icon={<IconCode />} image={<img src={demoLogoUrl} alt="" />} state={{ id: "live", label: "Live", tone: "success" }} facts={["glass-ux.orbit.example.com.au", "0.1.0"]} />
           </div>
         </Example>
         <Example label="Row">
           <div className="gallery-entity-fixed" data-size="row">
-            <EntityIdentity {...entity(APP)} tier="row" icon={<IconCode />} image={<img src="/brand/glass-ux.svg" alt="" />} state={{ id: "live", label: "Live", tone: "success" }} secondary="glass-ux.orbit.example.com.au" />
+            <EntityIdentity {...entity(APP)} tier="row" icon={<IconCode />} image={<img src={demoLogoUrl} alt="" />} state={{ id: "live", label: "Live", tone: "success" }} secondary="glass-ux.orbit.example.com.au" />
           </div>
         </Example>
         <Example label="Icon">
-          <EntityIdentity {...entity(APP)} tier="icon" icon={<IconCode />} image={<img src="/brand/glass-ux.svg" alt="" />} state={{ id: "live", label: "Live", tone: "success" }} />
+          <EntityIdentity {...entity(APP)} tier="icon" icon={<IconCode />} image={<img src={demoLogoUrl} alt="" />} state={{ id: "live", label: "Live", tone: "success" }} />
         </Example>
       </Specimen>
 

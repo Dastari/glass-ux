@@ -199,7 +199,7 @@ export function ComponentDocumentation({ id }: { id: string }) {
       root.current?.querySelector<HTMLElement>(`#${item.value}`),
     ).filter((target): target is HTMLElement => !!target);
     const scrollRoot =
-      root.current?.querySelector(".gallery-component-document") ?? null;
+      root.current?.closest<HTMLElement>("[data-scroll-container]") ?? null;
     const observer = new IntersectionObserver(
       (entries) => {
         const current = entries
@@ -248,17 +248,17 @@ export function ComponentDocumentation({ id }: { id: string }) {
       </aside>
       <article
         className="gallery-documentation gallery-component-document"
-        data-scroll-container
         aria-label={`${component.name} documentation`}
-        tabIndex={0}
       >
         <header className="gallery-document-intro">
           <Badge>
-            {component.family === "charts"
-              ? "Charts"
-              : component.family === "ai"
-                ? "Assistant components"
-                : "Component reference"}
+            {component.family === "icons"
+              ? "Foundation"
+              : component.family === "charts"
+                ? "Charts"
+                : component.family === "ai"
+                  ? "Assistant components"
+                  : "Component reference"}
           </Badge>
           <h1 className="type-display">{component.name}</h1>
           <Markdown
@@ -297,6 +297,39 @@ export function ComponentDocumentation({ id }: { id: string }) {
         </div>
       </article>
     </div>
+  );
+}
+
+export interface FoundationDocumentationProps {
+  /** Foundation section identifier: colour, typography, space, shape, materials, motion, knobs, icons or brand. */
+  id: string;
+}
+
+/** A Foundation's styled title, introduction and examples in one centered article. Icons retain their usage and API sections. */
+export function FoundationDocumentation({ id }: FoundationDocumentationProps) {
+  const section = findSection(id);
+  if (!section || section.group !== "Foundations")
+    return (
+      <Notice tone="warning">This Foundation is not in the catalogue.</Notice>
+    );
+  if (id === "icons") return <ComponentDocumentation id="icons" />;
+  const { Component } = section;
+  return (
+    <article
+      className="gallery-documentation gallery-foundation-document"
+      aria-label={`${section.title} foundation`}
+    >
+      <header className="gallery-document-intro">
+        <Badge>Foundation</Badge>
+        <h1 className="type-display">{section.title}</h1>
+        <p className="gallery-document-description type-body text-fg-muted">
+          {section.summary}
+        </p>
+      </header>
+      <Suspense fallback={<Skeleton.Text lines={4} />}>
+        <Component />
+      </Suspense>
+    </article>
   );
 }
 

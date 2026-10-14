@@ -1,6 +1,6 @@
 @layer components {
   .gallery-documentation {
-    --gallery-document-measure: 76rem;
+    --gallery-document-measure: 64rem;
     --gallery-document-rail: 10rem;
     display: flex;
     flex-direction: column;
@@ -23,7 +23,8 @@
     overflow-wrap: anywhere;
   }
   .gallery-document-intro > .gallery-document-description {
-    max-width: var(--measure);
+    width: 100%;
+    max-width: none;
   }
   .gallery-document-intro > .fa-ai-code {
     width: 100%;
@@ -37,6 +38,7 @@
     font-family: var(--font-mono);
   }
   .gallery-document-layout {
+    --gallery-document-measure: 64rem;
     --gallery-document-rail: 10rem;
     display: grid;
     grid-template-columns: var(--gallery-document-rail) minmax(0, 1fr);
@@ -44,19 +46,19 @@
     gap: var(--space-16);
     padding: var(--inset-panel);
     max-width: calc(
-      76rem + var(--gallery-document-rail) + var(--space-16) +
-        var(--inset-panel) * 2
+      var(--gallery-document-measure) + var(--gallery-document-rail) +
+        var(--space-16) + var(--inset-panel) * 2
     );
     margin-inline: auto;
     align-items: stretch;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     min-width: 0;
-    min-height: 0;
-    overflow: hidden;
+    overflow: visible;
   }
   .gallery-document-rail {
-    position: static;
+    position: sticky;
+    top: var(--inset-panel);
     align-self: start;
     padding-block-start: var(--inset-panel);
   }
@@ -119,7 +121,7 @@
     margin-block-end: 0;
   }
   .gallery-usage-example > p {
-    max-width: var(--measure);
+    max-width: none;
   }
   .gallery-api-scroll {
     max-width: 100%;
@@ -157,8 +159,10 @@
       padding: var(--inset-tile);
     }
     .gallery-document-rail {
-      position: static;
+      top: 0;
       padding-block-start: 0;
+      z-index: var(--z-shell);
+      background: var(--canvas);
     }
     .gallery-document-rail .fa-vtabs[data-layout="chips"] .fa-vtabs-scroll {
       padding-block: 0;
@@ -169,16 +173,16 @@
 @layer components {
   .gallery-component-document {
     position: relative;
-    height: 100%;
+    height: auto;
     min-height: 0;
-    overflow-y: auto;
+    overflow: visible;
   }
   .gallery-component-document > * {
     flex-shrink: 0;
   }
   @media (width < 48rem) {
     .gallery-document-layout {
-      grid-template-rows: auto minmax(0, 1fr);
+      grid-template-rows: auto auto;
     }
   }
 }
@@ -186,7 +190,16 @@
 @layer components {
   .gallery-guide-document {
     container-type: inline-size;
-    max-width: var(--reading-column-wide);
+    max-width: var(--gallery-document-measure);
+  }
+  .gallery-guide-document
+    .fa-ai-md
+    :is(p, ul, ol, blockquote, h1, h2, h3, h4, h5, h6),
+  .gallery-document-intro
+    .gallery-document-description
+    :is(p, ul, ol, blockquote),
+  .gallery-documentation .gallery-specimen-description {
+    max-width: none;
   }
   .gallery-guide-document .fa-ai-md h1 {
     font-family: var(--font-display);
@@ -203,8 +216,9 @@
     line-height: var(--type-title-line);
   }
   .gallery-guide-document .fa-ai-table {
+    width: 100%;
     min-width: 0;
-    table-layout: fixed;
+    table-layout: auto;
     font-size: inherit;
     line-height: inherit;
   }
@@ -212,6 +226,7 @@
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
+    overflow-wrap: anywhere;
     vertical-align: top;
   }
 }

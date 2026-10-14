@@ -1,0 +1,348 @@
+/*
+ * The design gallery. Built from the same tokens and materials as the product, so it is
+ * itself a specimen of the system.
+ */
+@layer components {
+  .gallery-shell {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    gap: var(--gap-panels);
+    height: 100dvh;
+    padding: var(--page-gutter);
+    padding-top: max(var(--page-gutter), var(--safe-top));
+    overflow: hidden;
+  }
+  .gallery-nav {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-radius: var(--radius-surface);
+    overflow: hidden;
+  }
+  .gallery-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-5) var(--space-3);
+  }
+  .gallery-brand-mark {
+    width: 2rem;
+    height: 2rem;
+  }
+  .gallery-brand-name {
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.01em;
+  }
+  .gallery-brand-sub {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .gallery-nav-scroll {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: var(--space-2) var(--space-3) var(--space-4);
+  }
+  .gallery-nav-group + .gallery-nav-group {
+    margin-top: var(--space-4);
+  }
+  .gallery-nav-group > .fa-overline {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-2-5);
+  }
+  .gallery-status-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-inline-start: auto;
+    border-radius: var(--radius-full);
+    background-color: var(--line-strong);
+    flex: none;
+  }
+  .gallery-status-dot[data-status="approved"] {
+    background-color: var(--success);
+  }
+  .gallery-status-dot[data-status="changes"] {
+    background-color: var(--warning);
+  }
+
+  .gallery-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-panels);
+    min-width: 0;
+    min-height: 0;
+  }
+  .gallery-content {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-inline-end: calc(var(--page-gutter) * -1);
+    padding-inline-end: calc(var(--page-gutter) - var(--space-2));
+    border-radius: var(--radius-surface);
+  }
+  /* R4.6: page framing sits on the canvas — no material behind the title or toolbar. */
+  .gallery-header {
+    flex: none;
+    z-index: var(--z-shell);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    min-height: var(--topbar-h);
+    padding-inline: var(--space-2) 0;
+  }
+  .gallery-header-title h1 {
+    font-family: var(--font-display);
+    font-size: var(--type-headline-size);
+    line-height: var(--type-headline-line);
+    font-weight: var(--type-headline-weight);
+    letter-spacing: var(--type-headline-tracking);
+  }
+  .gallery-header-title {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin-inline-end: auto;
+  }
+  .gallery-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  /* Documentation specimens form a centered, vertically stacked reading column. */
+  .gallery-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: var(--gallery-document-measure, 76rem);
+    margin-inline: auto;
+    width: 100%;
+    gap: var(--gap-panels);
+    align-items: start;
+  }
+  .gallery-page > [data-wide] {
+    grid-column: 1 / -1;
+  }
+  .gallery-specimen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-block: var(--space-6);
+    border-block-end: var(--divider);
+    container-type: inline-size;
+    min-width: 0;
+  }
+  .gallery-specimen-title {
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--type-subtitle-weight);
+    letter-spacing: var(--type-subtitle-tracking);
+  }
+  .gallery-specimen-description {
+    max-width: var(--measure);
+    margin-top: var(--space-1);
+    color: var(--fg-muted);
+  }
+  .gallery-specimen-body[data-layout="row"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+  .gallery-specimen-body[data-layout="stack"] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .gallery-specimen-body[data-layout="grid"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-4);
+  }
+  .gallery-specimen-body[data-backdrop] {
+    padding: var(--space-6);
+    border-radius: var(--radius-tile);
+    background:
+      radial-gradient(40% 70% at 20% 30%, oklch(0.7 0.18 var(--ambient-1-h) / 0.85), transparent 70%),
+      radial-gradient(40% 70% at 80% 70%, oklch(0.65 0.16 var(--ambient-3-h) / 0.85), transparent 70%),
+      linear-gradient(120deg, oklch(0.55 0.12 var(--ambient-2-h)), oklch(0.75 0.1 var(--ambient-1-h)));
+  }
+  .gallery-example {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+  }
+  .gallery-example-stage {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .gallery-example-label {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+
+  .gallery-matrix {
+    --gallery-matrix-label: 8rem;
+    display: grid;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+  }
+  .gallery-matrix-head,
+  .gallery-matrix-label {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .gallery-matrix-label {
+    color: var(--fg-muted);
+    font-weight: var(--weight-medium);
+  }
+
+  .gallery-rules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--gap-panels);
+  }
+  .gallery-rules-col {
+    padding-block: var(--space-4);
+  }
+  .gallery-rules-col[data-tone="do"] h3 {
+    color: var(--success-text);
+  }
+  .gallery-rules-col[data-tone="dont"] h3 {
+    color: var(--danger-text);
+  }
+  .gallery-rules-col ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding-inline-start: var(--space-4);
+    list-style: disc;
+    color: var(--fg-muted);
+  }
+
+  .gallery-token-scroll {
+    overflow-x: auto;
+  }
+  .gallery-token-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .gallery-token-table th {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: var(--divider);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    font-weight: var(--weight-medium);
+    text-align: start;
+  }
+  .gallery-token-table td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: var(--divider);
+    color: var(--fg-muted);
+    vertical-align: top;
+  }
+  .gallery-token-table tr:last-child td {
+    border-bottom: 0;
+  }
+  .gallery-token-table code {
+    font-size: var(--type-caption-size);
+    color: var(--fg);
+  }
+  .gallery-token-value {
+    display: inline-block;
+    max-width: 28rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--fg-muted) !important;
+  }
+
+  @media (width < 64rem) {
+    .gallery-shell {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+    .gallery-nav {
+      max-height: 12rem;
+    }
+    /* One scrolling row of appearance controls instead of a wrapping block. */
+    .gallery-toolbar {
+      flex-wrap: nowrap;
+      max-width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .gallery-toolbar > * {
+      flex: none;
+    }
+  }
+}
+
+@layer components {
+  .gallery-lab {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-6);
+    overflow-x: auto;
+    /* Room for the frames' dashed outlines, which the scroller would otherwise clip. */
+    margin: calc(var(--space-2) * -1);
+    padding: var(--space-2);
+  }
+  .gallery-lab-cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+  }
+  .gallery-lab-frame {
+    position: relative;
+    container-type: size;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    outline: var(--border-width) dashed var(--line-strong);
+    outline-offset: var(--space-1);
+  }
+  .gallery-lab-frame[data-resizable] {
+    resize: both;
+    min-width: 8rem;
+    min-height: 2rem;
+    max-width: 100%;
+  }
+}
+
+/* Tier boxes (TierBox, TierRow): a component in a box of each tier's size. */
+@layer components {
+  .gallery-tiers {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-6);
+    width: 100%;
+  }
+  .gallery-tier {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .gallery-tier > .gallery-example-stage {
+    min-width: 0;
+  }
+  .gallery-tier-box {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+  }
+}

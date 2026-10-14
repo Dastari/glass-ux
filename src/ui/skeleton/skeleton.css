@@ -1,0 +1,116 @@
+/*
+ * Skeleton. One shimmer for the whole page: the highlight is attached to the viewport
+ * (background-attachment: fixed), so every placeholder sweeps in the same beat instead of
+ * each blinking on its own clock.
+ */
+@layer base {
+  :root,
+  [data-mode="light"] {
+    --skel-base: oklch(0.35 0.04 var(--neutral-h) / 0.07);
+    --skel-shine: oklch(1 0 0 / 0.7);
+  }
+  [data-mode="dark"] {
+    --skel-base: oklch(1 0 0 / 0.065);
+    --skel-shine: oklch(1 0 0 / 0.07);
+  }
+}
+
+@layer components {
+  .fa-skel {
+    display: block;
+    background-color: var(--skel-base);
+    background-image: linear-gradient(
+      100deg,
+      transparent 20%,
+      var(--skel-shine) 50%,
+      transparent 80%
+    );
+    background-size: 40vw 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    animation: fa-shimmer var(--duration-shimmer) ease-in-out infinite;
+  }
+  .fa-skel-block {
+    flex: none;
+    border-radius: var(--radius-control);
+  }
+  .fa-skel-block[data-radius="check"] {
+    border-radius: var(--radius-check);
+  }
+  .fa-skel-block[data-radius="item"] {
+    border-radius: var(--radius-item);
+  }
+  .fa-skel-block[data-radius="tile"] {
+    border-radius: var(--radius-tile);
+  }
+  .fa-skel-block[data-radius="surface"] {
+    border-radius: var(--radius-surface);
+  }
+  .fa-skel-block[data-radius="full"] {
+    border-radius: var(--radius-full);
+  }
+
+  .fa-skel-text {
+    --_size: var(--type-body-size);
+    --_line: var(--type-body-line);
+    display: block;
+    width: 100%;
+  }
+  .fa-skel-line {
+    display: flex;
+    align-items: center;
+    height: var(--_line);
+  }
+  .fa-skel-bar {
+    width: 100%;
+    /* The glyphs' visual extent (ascender to descender ≈ 1.15em), inside the exact line
+       box of the text role — so the placeholder reads as the same size as the text and
+       swapping it for the text changes nothing. */
+    height: min(calc(var(--_line) - var(--space-1)), calc(var(--_size) * 1.15));
+    border-radius: var(--radius-xs);
+  }
+  .fa-skel-line[data-last] .fa-skel-bar {
+    width: var(--_w, 100%);
+  }
+  .fa-skel-text[data-type="display"] {
+    --_size: var(--type-display-size);
+    --_line: var(--type-display-line);
+  }
+  .fa-skel-text[data-type="headline"] {
+    --_size: var(--type-headline-size);
+    --_line: var(--type-headline-line);
+  }
+  .fa-skel-text[data-type="title"] {
+    --_size: var(--type-title-size);
+    --_line: var(--type-title-line);
+  }
+  .fa-skel-text[data-type="subtitle"] {
+    --_size: var(--type-subtitle-size);
+    --_line: var(--type-subtitle-line);
+  }
+  .fa-skel-text[data-type="label"] {
+    --_size: var(--type-label-size);
+    --_line: var(--type-label-line);
+  }
+  .fa-skel-text[data-type="caption"] {
+    --_size: var(--type-caption-size);
+    --_line: var(--type-caption-line);
+  }
+  .fa-skel-text[data-type="overline"] {
+    --_size: var(--type-overline-size);
+    --_line: var(--type-overline-line);
+  }
+  .fa-skel-text[data-type="mono"] {
+    --_size: var(--type-mono-size);
+    --_line: var(--type-mono-line);
+  }
+
+  :root[data-motion="reduced"] .fa-skel {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) .fa-skel {
+      animation: none;
+    }
+  }
+}

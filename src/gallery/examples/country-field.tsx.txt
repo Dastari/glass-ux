@@ -1,0 +1,56 @@
+import { z } from "zod";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { countrySchema } from "glass-ux/country-select";
+
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+function CountryDemo() {
+    const form = useAppForm({
+        ...formBehaviour,
+        defaultValues: { country: "AU" as string | null, tax: null as string | null },
+        validators: { onDynamic: z.object({ country: countrySchema({ required: true }), tax: countrySchema() }) },
+        onSubmit: () => wait(600),
+    });
+    return (<Form form={form} aria-label="Countries" className="w-full" data-testid="country-form">
+      <FormStack>
+        <form.AppField name="country">{(field) => <field.CountryField label="Country"/>}</form.AppField>
+        <form.AppField name="tax">{(field) => <field.CountryField label="Tax residency" optional/>}</form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>);
+}
+
+export default function CountrySelectSection() {
+    return (<SectionPage>
+      <Specimen title="By name, with the flag" description="Every ISO 3166-1 country, named by the browser in the locale, the workspace's own first. Flags are SVG (Windows has no flag emoji) and load once, lazily, in a reserved box.">
+        <CountryDemo />
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Usage code={`
+import { countrySchema } from "glass-ux/country-select"
+
+const schema = z.object({ country: countrySchema({ required: true }) })   // "AU"
+
+<form.AppField name="country">{(field) => <field.CountryField label="Country" priority={["AU", "NZ"]} />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

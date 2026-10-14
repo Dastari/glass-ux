@@ -1,0 +1,411 @@
+/*
+ * Chart marks — shared by every chart type so they read as one hand with Sparkline.
+ *
+ *   series colour   [data-slot] → --chart-N, [data-tone] → the status colour; marks read --_c
+ *   line            2px, round caps and joins, the series colour
+ *   wash            the Sparkline gradient: --chart-wash of the colour at the line → 0
+ *   bar             the series colour with --sheen-solid's light from above; rounded data end
+ *   dot             8px in the series colour, ringed 2px in --surface-3 (Sparkline's end dot)
+ *   grid            hairlines in --chart-grid; the baseline and crosshair in --chart-baseline
+ *   tick            caption role, fg-subtle, tabular figures
+ *
+ * Motion (R18, the motion.css vocabulary): lines draw in (fa-draw), washes fade in
+ * (fa-fade-in), bars and arcs grow from their baseline (fa-grow), staggered by
+ * --_enter-delay; live updates morph geometry (`d`) on --duration-slow. All of it stops
+ * under "Still" / reduced motion through --motion-scale and motion.css's global switch.
+ */
+@layer components {
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-slot="1"] {
+    --_c: var(--chart-1);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-slot="2"] {
+    --_c: var(--chart-2);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-slot="3"] {
+    --_c: var(--chart-3);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-slot="4"] {
+    --_c: var(--chart-4);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-slot="5"] {
+    --_c: var(--chart-5);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-slot="6"] {
+    --_c: var(--chart-6);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-slot="7"] {
+    --_c: var(--chart-7);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-slot="8"] {
+    --_c: var(--chart-8);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-slot="other"] {
+    --_c: var(--fg-subtle);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-tone="success"] {
+    --_c: var(--success);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-tone="warning"] {
+    --_c: var(--warning);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-tone="danger"] {
+    --_c: var(--danger);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-tone="info"] {
+    --_c: var(--info);
+  }
+  :where(.fa-chart, .fa-chart-tip, .fa-chart-legend) [data-tone="neutral"] {
+    --_c: var(--fg-subtle);
+  }
+
+  /* ── Lines and washes ──────────────────────────────────────────────────── */
+  .fa-chart-line {
+    fill: none;
+    stroke: var(--_c);
+    stroke-width: var(--chart-stroke);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition:
+      d var(--duration-slow) var(--ease-standard),
+      opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-chart-line[data-enter] {
+    --_len: 1;
+    stroke-dasharray: 1 1;
+    animation: fa-draw var(--duration-slower) var(--ease-enter) both;
+  }
+  .fa-chart-tone-stop {
+    stop-color: var(--_c);
+  }
+  /* The end dot steps aside while the crosshair is out (Sparkline does the same). */
+  .fa-chart-svg[data-hovering] .fa-chart-end {
+    opacity: 0;
+  }
+  .fa-chart-area {
+    transition:
+      d var(--duration-slow) var(--ease-standard),
+      opacity var(--duration-fast) var(--ease-standard);
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) both;
+  }
+  .fa-chart-wash-top {
+    stop-color: color-mix(in oklab, var(--_c) var(--chart-wash), transparent);
+  }
+  .fa-chart-wash-bottom {
+    stop-color: color-mix(in oklab, var(--_c) var(--chart-wash), transparent);
+    stop-opacity: 0;
+  }
+  /* Stacked layers read as bands: each keeps a wash from its edge down, never fading out. */
+  .fa-chart-band-top {
+    stop-color: color-mix(in oklab, var(--_c) calc(var(--chart-wash) * 1.4), transparent);
+  }
+  .fa-chart-band-bottom {
+    stop-color: color-mix(in oklab, var(--_c) calc(var(--chart-wash) * 0.45), transparent);
+  }
+  /* A series dims while the legend points at another. */
+  .fa-chart-series {
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-chart-svg[data-focus] .fa-chart-series:not([data-focused]) {
+    opacity: 0.28;
+  }
+
+  /* ── Bars, columns, arcs, tiles ────────────────────────────────────────── */
+  .fa-chart-bar {
+    --_grow-from: scaleY(0);
+    --_enter-delay: 0s; /* the chart staggers its marks inline */
+    fill: var(--_c);
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transition:
+      d var(--duration-slow) var(--ease-standard),
+      opacity var(--duration-fast) var(--ease-standard);
+    animation: fa-grow var(--duration-slower) var(--ease-enter) var(--_enter-delay) both;
+  }
+  .fa-chart-bar[data-end="right"] {
+    --_grow-from: scaleX(0);
+    transform-origin: 0 50%;
+  }
+  .fa-chart-bar[data-end="bottom"] {
+    transform-origin: 50% 0;
+  }
+  .fa-chart-sheen-top {
+    stop-color: color-mix(in oklab, var(--_c), var(--chart-sheen-light) var(--chart-sheen-mix));
+  }
+  .fa-chart-sheen-bottom {
+    stop-color: var(--_c);
+  }
+
+  /* ── Dots, crosshair, highlight ────────────────────────────────────────── */
+  .fa-chart-dot {
+    fill: var(--_c);
+    stroke: var(--surface-3);
+    stroke-width: var(--focus-ring-width);
+  }
+  .fa-chart-dot[data-enter] {
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) both;
+    animation-delay: var(--duration-base);
+  }
+  .fa-chart-crosshair {
+    stroke: var(--chart-baseline);
+    stroke-width: var(--border-width);
+    shape-rendering: crispEdges;
+  }
+  .fa-chart-hover-band {
+    fill: var(--fill-hover);
+  }
+  .fa-chart-hover-ring {
+    fill: none;
+    stroke: var(--fg);
+    stroke-width: var(--border-width-strong);
+    stroke-opacity: 0.55;
+  }
+
+  /* ── Grid and ticks ────────────────────────────────────────────────────── */
+  .fa-chart-grid {
+    stroke: var(--chart-grid);
+    stroke-width: var(--border-width);
+    shape-rendering: crispEdges;
+  }
+  .fa-chart-grid[data-baseline] {
+    stroke: var(--chart-baseline);
+  }
+  .fa-chart-tick {
+    color: var(--fg-subtle);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--type-caption-tracking);
+  }
+
+  /* ── Thresholds and markers ────────────────────────────────────────────── */
+  .fa-chart-band {
+    --_band: var(--fill-muted);
+    fill: var(--_band);
+    opacity: 0.7;
+  }
+  .fa-chart-band[data-tone="warning"] {
+    --_band: var(--warning-soft);
+  }
+  .fa-chart-band[data-tone="danger"] {
+    --_band: var(--danger-soft);
+  }
+  .fa-chart-band[data-tone="success"] {
+    --_band: var(--success-soft);
+  }
+  .fa-chart-band[data-tone="info"] {
+    --_band: var(--info-soft);
+  }
+  .fa-chart-threshold {
+    --_rule: var(--line-strong);
+    stroke: var(--_rule);
+    stroke-width: var(--border-width);
+    shape-rendering: crispEdges;
+  }
+  /* ── Text at a point of the plot (HTML: type roles and a real ellipsis) ─── */
+  .fa-chart-text {
+    position: absolute;
+    display: block;
+    overflow: hidden;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .fa-chart-text[data-anchor="middle"] {
+    translate: -50% 0;
+  }
+  .fa-chart-text[data-anchor="end"] {
+    translate: -100% 0;
+  }
+  .fa-chart-text[data-baseline="middle"] {
+    margin-block-start: calc(var(--type-caption-line) / -2);
+  }
+  .fa-chart-text[data-baseline="bottom"] {
+    margin-block-start: calc(var(--type-caption-line) * -1);
+  }
+  /* Labels drawn over marks knock a halo out of whatever passes beneath them. */
+  .fa-chart-threshold-label,
+  .fa-chart-marker-label,
+  .fa-chart-ring-label {
+    text-shadow:
+      0 0 var(--chart-label-halo) var(--halo-colour),
+      0 0 var(--chart-label-halo) var(--halo-colour),
+      0 0 calc(var(--chart-label-halo) * 2) var(--halo-colour);
+  }
+  .fa-chart-threshold-label {
+    --_text: var(--fg-muted);
+    color: var(--_text);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chart-ring-label {
+    color: var(--fg-muted);
+    font-weight: var(--weight-medium);
+  }
+  .fa-chart-ring-value {
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+  :is(.fa-chart-threshold, .fa-chart-threshold-label)[data-tone="warning"] {
+    --_rule: var(--warning-line);
+    --_text: var(--warning-text);
+  }
+  :is(.fa-chart-threshold, .fa-chart-threshold-label)[data-tone="danger"] {
+    --_rule: var(--danger-line);
+    --_text: var(--danger-text);
+  }
+  :is(.fa-chart-threshold, .fa-chart-threshold-label)[data-tone="success"] {
+    --_rule: var(--success-line);
+    --_text: var(--success-text);
+  }
+  .fa-chart-marker-rule {
+    stroke: var(--line-strong);
+    stroke-width: var(--border-width);
+    shape-rendering: crispEdges;
+  }
+  .fa-chart-marker:not([data-tone]) {
+    --_c: var(--fg-subtle);
+  }
+  .fa-chart-marker-dot {
+    fill: var(--_c);
+    stroke: var(--surface-3);
+    stroke-width: var(--focus-ring-width);
+  }
+  .fa-chart-marker-label {
+    color: var(--fg-muted);
+  }
+
+  /* ── Readout (Metric's crosshair model) ────────────────────────────────── */
+  .fa-chart-readout {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: baseline;
+    gap: var(--space-1-5);
+    min-width: 0;
+    margin-inline-start: auto;
+    white-space: nowrap;
+  }
+  .fa-chart-readout-value {
+    flex: none;
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chart-readout-meta {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+  }
+  .fa-chart-readout[data-hovering] .fa-chart-readout-meta {
+    color: var(--fg-muted);
+  }
+
+  /* A value in the micro trail or a direct label beside a mark. */
+  .fa-chart-figure {
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-width: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+  }
+  .fa-chart-figure-value {
+    flex: none;
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chart-figure[data-tone="warning"] .fa-chart-figure-value {
+    color: var(--warning-text);
+  }
+  .fa-chart-figure[data-tone="danger"] .fa-chart-figure-value {
+    color: var(--danger-text);
+  }
+  .fa-chart-figure-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Keys inside tooltips and figures: a short line for lines, a box for fills. */
+  .fa-chart-key,
+  .fa-chart-swatch {
+    flex: none;
+    display: inline-block;
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: calc(var(--chart-bar-radius) * 0.5);
+    background-color: var(--_c);
+  }
+  :is(.fa-chart-key, .fa-chart-swatch)[data-shape="line"] {
+    width: var(--space-3);
+    height: var(--chart-stroke);
+    border-radius: var(--radius-full);
+  }
+  :is(.fa-chart-key, .fa-chart-swatch)[data-shape="dot"] {
+    border-radius: var(--radius-full);
+  }
+  .fa-chart-swatch[data-off] {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 var(--border-width-strong) var(--_c);
+  }
+  .fa-chart-swatch[data-off][data-shape="line"] {
+    opacity: 0.4;
+    background-color: var(--_c);
+    box-shadow: none;
+  }
+}
+
+@layer components {
+  /* ── HTML labels over a plot (they truncate with a real ellipsis, R8) ──── */
+  .fa-chart-labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .fa-chart-cat,
+  .fa-chart-val,
+  .fa-chart-more {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+  }
+  /* Block (not flex) so the ellipsis applies; align-content centres the line in its row. */
+  .fa-chart-cat {
+    display: block;
+    align-content: center;
+    color: var(--fg-muted);
+    text-overflow: ellipsis;
+  }
+  .fa-chart-cat[data-align="middle"] {
+    text-align: center;
+  }
+  .fa-chart-val {
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chart-more {
+    inset-inline-start: 0;
+    color: var(--fg-subtle);
+  }
+  .fa-chart-track {
+    fill: var(--chart-track);
+  }
+  .fa-chart-underlay {
+    z-index: 0;
+  }
+}

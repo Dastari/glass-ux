@@ -1,0 +1,429 @@
+/*
+ * Dialog — the modal surface family: Dialog, AlertDialog, Sheet and the command palette
+ * share the scrim, the glass frame and the motion defined here.
+ *
+ * Sizes   sm 400 · md 560 · lg 760 · xl 1040 · full (width; height follows content up to
+ *         the viewport, minus the page gutter)
+ * Anatomy header (icon tile · title · data subtitle · close) / body (the only scrolling
+ *         part, an inline-size container) / footer (tertiary left, actions right)
+ * Edges   no dividers; the header and footer show a hairline only while content scrolls
+ *         beneath them (data-scrolled-top / data-scrolled-bottom, R5.8)
+ * Motion  enters like every floating surface (scale from --overlay-enter-scale, rise
+ *         --overlay-enter-shift, --duration-base on --ease-enter) and exits faster
+ * Nesting a parent recedes (scale + dim) behind the dialog it opened; two deep at most
+ * Phones  data-sheet: a bottom sheet with a grab handle, swipe to dismiss, footer pinned
+ *         above the safe area (R13.4)
+ */
+@layer components {
+  /* ── Scrim ─────────────────────────────────────────────────────────────── */
+  /* Geometry and motion only; the material is glass-scrim (glass.css). */
+  .fa-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-overlay);
+    min-height: 100dvh;
+    opacity: calc(1 - var(--drawer-swipe-progress, 0));
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-scrim[data-starting-style],
+  .fa-scrim[data-ending-style] {
+    opacity: 0;
+  }
+  .fa-scrim[data-ending-style] {
+    transition-duration: var(--duration-fast);
+  }
+
+  /* ── Centred dialog ────────────────────────────────────────────────────── */
+  .fa-dialog-viewport {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-dialog);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: max(var(--page-gutter), var(--safe-top)) max(var(--page-gutter), var(--safe-right))
+      max(var(--page-gutter), var(--safe-bottom)) max(var(--page-gutter), var(--safe-left));
+    overflow: hidden;
+  }
+
+  .fa-dialog {
+    /* component tokens: the width for each size, and the dialog elevation (R4.5) */
+    --_w: 35rem;
+    --_shadow: var(--shadow-4);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(var(--_w), 100%);
+    max-height: 100%;
+    min-height: 0;
+    border-radius: var(--radius-dialog);
+    color: var(--fg);
+    outline: none;
+    transition-property: opacity, transform;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-enter);
+  }
+  .fa-dialog[data-size="sm"] {
+    --_w: 25rem;
+  }
+  .fa-dialog[data-size="lg"] {
+    --_w: 47.5rem;
+  }
+  .fa-dialog[data-size="xl"] {
+    --_w: 65rem;
+  }
+  .fa-dialog[data-size="full"] {
+    --_w: 100%;
+    height: 100%;
+  }
+  .fa-dialog[data-starting-style] {
+    opacity: 0;
+    transform: translateY(var(--overlay-enter-shift)) scale(var(--overlay-enter-scale));
+  }
+  .fa-dialog[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.98);
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-exit);
+  }
+
+  /* A parent recedes behind the dialog it opened: it lifts, shrinks and dims (R13.3). */
+  .fa-dialog::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--scrim);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-dialog:is([data-nested-dialog-open], [data-nested-drawer-open])::after {
+    opacity: 1;
+  }
+  .fa-dialog[data-nested-dialog-open]:not([data-sheet]) {
+    transform: translateY(calc(var(--space-4) * -1)) scale(0.95);
+  }
+
+  /* ── Header ────────────────────────────────────────────────────────────── */
+  .fa-dialog-header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-4) var(--space-4) var(--inset-dialog);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-dialog-media {
+    display: inline-flex;
+    flex: none;
+  }
+  .fa-dialog-heading {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-dialog-title {
+    color: var(--fg);
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-line);
+    font-weight: var(--type-title-weight);
+    letter-spacing: var(--type-title-tracking);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+  .fa-dialog-subtitle {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-dialog-header-actions {
+    display: flex;
+    flex: none;
+    gap: var(--gap-controls);
+  }
+  .fa-dialog-close {
+    flex: none;
+    align-self: flex-start;
+  }
+  .fa-dialog[data-scrolled-top] .fa-dialog-header {
+    box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
+  }
+
+  /* ── Body ──────────────────────────────────────────────────────────────── */
+  .fa-dialog-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: var(--space-2) var(--inset-dialog);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    container-type: inline-size;
+  }
+  .fa-dialog-body:first-child {
+    padding-top: var(--inset-dialog);
+  }
+  .fa-dialog-body:last-child {
+    padding-bottom: var(--inset-dialog);
+  }
+  .fa-dialog-body[data-flush] {
+    padding: 0;
+  }
+
+  /* ── Footer ────────────────────────────────────────────────────────────── */
+  .fa-dialog-footer {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--gap-controls);
+    padding: var(--space-4) var(--inset-dialog) var(--inset-dialog);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-dialog-footer-start {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-controls);
+    margin-inline-end: auto;
+  }
+  .fa-dialog[data-scrolled-bottom] .fa-dialog-footer {
+    box-shadow: inset 0 var(--border-width) 0 var(--line);
+  }
+
+  /* ── Phone bottom sheet ────────────────────────────────────────────────── */
+  .fa-dialog-sheet-viewport {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-dialog);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-top: calc(var(--safe-top) + var(--space-8));
+  }
+  .fa-dialog[data-sheet] {
+    --_w: 100%;
+    max-height: 100%;
+    border-bottom-width: 0;
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+    transform: translateY(var(--drawer-swipe-movement-y, 0px));
+    transition: transform var(--duration-slow) var(--ease-enter);
+  }
+  .fa-dialog[data-sheet][data-starting-style],
+  .fa-dialog[data-sheet][data-ending-style] {
+    opacity: 1;
+    transform: translateY(100%);
+  }
+  .fa-dialog[data-sheet][data-ending-style] {
+    transition-duration: calc(var(--drawer-swipe-strength, 1) * var(--duration-slow));
+    transition-timing-function: var(--ease-exit);
+  }
+  .fa-dialog[data-sheet][data-swiping] {
+    transition-duration: 0s;
+    user-select: none;
+  }
+  .fa-dialog[data-sheet]:is([data-nested-drawer-open], [data-nested-dialog-open]) {
+    transform: translateY(calc(var(--space-3) * -1)) scale(0.95);
+  }
+  .fa-dialog-handle {
+    /* component tokens: the grab handle */
+    --_hw: 2.25rem;
+    --_hh: 0.3125rem;
+    display: block;
+    flex: none;
+    width: var(--_hw);
+    height: var(--_hh);
+    margin: var(--space-2) auto 0;
+    border-radius: var(--radius-full);
+    background-color: var(--line-strong);
+  }
+  .fa-dialog-content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .fa-dialog[data-sheet] .fa-dialog-header {
+    padding-top: var(--space-3);
+  }
+  .fa-dialog[data-sheet] .fa-dialog-footer {
+    padding-bottom: max(var(--inset-dialog), calc(var(--safe-bottom) + var(--space-3)));
+  }
+  /* Equal, thumb-sized actions in a sheet. */
+  .fa-dialog[data-sheet] .fa-dialog-footer > .fa-btn {
+    flex: 1 1 0;
+  }
+
+  /* ── In-flow preview (gallery) ─────────────────────────────────────────── */
+  .fa-dialog-preview {
+    /* component tokens: mirror the frame widths so previews sit side by side in a row */
+    --_w: 35rem;
+    display: flex;
+    flex: 0 1 var(--_w);
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+  }
+  .fa-dialog-preview[data-size="sm"] {
+    --_w: 25rem;
+  }
+  .fa-dialog-preview[data-size="lg"] {
+    --_w: 47.5rem;
+  }
+  .fa-dialog-preview[data-size="xl"] {
+    --_w: 65rem;
+  }
+  .fa-dialog-preview[data-size="full"] {
+    --_w: 100%;
+  }
+  .fa-dialog-preview .fa-dialog {
+    max-height: none;
+  }
+}
+
+/* ── Settings pattern ──────────────────────────────────────────────────────── */
+@layer components {
+  .fa-dialog[data-kind="settings"]:not([data-sheet]) {
+    /* component token: a settings dialog keeps one height across its sections */
+    --_h: 42rem;
+    height: min(var(--_h), 100%);
+  }
+  .fa-dialog[data-kind="settings"][data-sheet] {
+    height: 100%;
+  }
+  .fa-settings {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    padding: var(--space-2) var(--space-2) 0 var(--inset-dialog);
+  }
+  .fa-settings > .fa-vtabs {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .fa-settings .fa-vtabs-content {
+    padding-inline-end: var(--space-4);
+    padding-bottom: var(--space-2);
+  }
+}
+
+@layer components {
+  /* A preview has no viewport to measure against, so the settings height is fixed. */
+  .fa-dialog-preview .fa-dialog[data-kind="settings"] {
+    height: var(--_h);
+  }
+  .fa-dialog-preview[data-height="short"] .fa-dialog {
+    /* component token: a low frame so the body scrolls in the specimen */
+    --_preview-h: 21rem;
+    height: var(--_preview-h);
+  }
+}
+
+/* ── Edge sheets (Sheet) ───────────────────────────────────────────────────────
+ * A glass pane from a screen edge: right (inspector), left (section drawer) or bottom
+ * (a short list, with a grab handle). Side sheets float a page gutter away from the
+ * viewport edges like every other pane; a bottom sheet sits flush with the bottom edge.
+ * Widths sm 360 · md 480 · lg 640; side sheets keep a sliver of the page visible on phones
+ * and a bottom sheet spans the phone. Each follows the finger while swiped toward its
+ * edge, and only the edges it touches take the safe-area insets (R5.7).
+ *
+ * Component tokens
+ *   --_out   how far a side sheet travels to leave the screen
+ */
+@layer components {
+  .fa-dialog-side-viewport {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-dialog);
+    display: flex;
+    justify-content: flex-end;
+    padding: max(var(--page-gutter), var(--safe-top)) max(var(--page-gutter), var(--safe-right))
+      max(var(--page-gutter), var(--safe-bottom)) var(--page-gutter);
+  }
+  .fa-dialog-side-viewport[data-edge="left"] {
+    justify-content: flex-start;
+    padding-inline: max(var(--page-gutter), var(--safe-left)) var(--page-gutter);
+  }
+  .fa-dialog-side-viewport[data-edge="bottom"] {
+    container: sheet-viewport / inline-size;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: calc(var(--safe-top) + var(--space-8)) var(--safe-right) 0 var(--safe-left);
+  }
+
+  .fa-dialog:is([data-edge="left"], [data-edge="right"]) {
+    --_w: 30rem;
+    --_out: calc(100% + var(--page-gutter) * 2);
+    width: min(var(--_w), calc(100vw - var(--space-12)));
+    height: 100%;
+    max-height: none;
+    transform: translateX(var(--drawer-swipe-movement-x, 0px));
+    transition: transform var(--duration-slow) var(--ease-enter);
+  }
+  .fa-dialog[data-edge="bottom"] {
+    --_w: 30rem;
+    max-height: 100%;
+    border-bottom-width: 0;
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+    transform: translateY(var(--drawer-swipe-movement-y, 0px));
+    transition: transform var(--duration-slow) var(--ease-enter);
+  }
+  .fa-dialog[data-edge][data-size="sm"] {
+    --_w: 22.5rem;
+  }
+  .fa-dialog[data-edge][data-size="lg"] {
+    --_w: 40rem;
+  }
+  /* On a phone a bottom sheet spans the width at every size. */
+  @container sheet-viewport (width < 48rem) {
+    .fa-dialog[data-edge="bottom"][data-size] {
+      --_w: 100%;
+    }
+  }
+
+  .fa-dialog[data-edge="right"]:is([data-starting-style], [data-ending-style]) {
+    opacity: 1;
+    transform: translateX(var(--_out));
+  }
+  .fa-dialog[data-edge="left"]:is([data-starting-style], [data-ending-style]) {
+    opacity: 1;
+    transform: translateX(calc(var(--_out) * -1));
+  }
+  .fa-dialog[data-edge="bottom"]:is([data-starting-style], [data-ending-style]) {
+    opacity: 1;
+    transform: translateY(100%);
+  }
+  .fa-dialog[data-edge][data-ending-style] {
+    transition-duration: calc(var(--drawer-swipe-strength, 1) * var(--duration-slow));
+    transition-timing-function: var(--ease-exit);
+  }
+  .fa-dialog[data-edge][data-swiping] {
+    transition-duration: 0s;
+    user-select: none;
+  }
+
+  .fa-dialog[data-edge="right"]:is([data-nested-drawer-open], [data-nested-dialog-open]) {
+    transform: translateX(calc(var(--space-4) * -1)) scale(0.97);
+  }
+  .fa-dialog[data-edge="left"]:is([data-nested-drawer-open], [data-nested-dialog-open]) {
+    transform: translateX(var(--space-4)) scale(0.97);
+  }
+  .fa-dialog[data-edge="bottom"]:is([data-nested-drawer-open], [data-nested-dialog-open]) {
+    transform: translateY(calc(var(--space-3) * -1)) scale(0.95);
+  }
+
+  /* A bottom sheet keeps its last row and its footer above the home indicator. */
+  .fa-dialog[data-edge="bottom"] .fa-dialog-header {
+    padding-top: var(--space-3);
+  }
+  .fa-dialog[data-edge="bottom"] .fa-dialog-body:last-child,
+  .fa-dialog[data-edge="bottom"] .fa-dialog-footer {
+    padding-bottom: max(var(--inset-dialog), calc(var(--safe-bottom) + var(--space-3)));
+  }
+}

@@ -1,0 +1,55 @@
+import { z } from "zod";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { byteSizeSchema } from "glass-ux/byte-size-field";
+
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+function SizeDemo() {
+    const form = useAppForm({
+        ...formBehaviour,
+        defaultValues: { quota: 50e9 as number | null, upload: 500e6 as number | null, memory: 2 * 1024 ** 3 as number | null },
+        validators: { onDynamic: z.object({ quota: byteSizeSchema({ required: true, max: 100e9 }), upload: byteSizeSchema({ max: 2e9 }), memory: byteSizeSchema({ base: "binary" }) }) },
+        onSubmit: () => wait(600),
+    });
+    return (<Form form={form} aria-label="Sizes" className="w-full" data-testid="bytes-form">
+      <FormStack>
+        <form.AppField name="quota">{(field) => <field.ByteSizeField label="Mailbox warning"/>}</form.AppField>
+        <form.AppField name="upload">{(field) => <field.ByteSizeField label="Largest upload" optional/>}</form.AppField>
+        <form.AppField name="memory">{(field) => <field.ByteSizeField label="Memory alert below" optional base="binary" defaultUnit="GiB"/>}</form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>);
+}
+
+export default function ByteSizeFieldSection() {
+    return (<SectionPage>
+      <Specimen title="Sizes in words" description="500 MB, 1.5GB, 2 GiB, 750k. Decimal units by default (disks and files); binary (KiB, MiB, GiB) for memory. Held in bytes.">
+        <SizeDemo />
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Usage code={`
+import { byteSizeSchema } from "glass-ux/byte-size-field"
+
+const schema = z.object({ quota: byteSizeSchema({ required: true, max: 100e9 }) })   // bytes
+
+<form.AppField name="quota">{(field) => <field.ByteSizeField label="Mailbox warning" />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

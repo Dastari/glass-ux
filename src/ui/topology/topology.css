@@ -1,0 +1,388 @@
+/*
+ * TopologyCanvas.
+ *
+ * A fill component (container-type: size): the parent gives it a definite height (R7.3). It
+ * has no material of its own: it sits in a Panel, or full bleed on the Glass UX canvas behind
+ * floating page chrome like the dashboard's map (src/shell/bleed.tsx), with no backdrop of its
+ * own (no dot grid: the map's canvas shows the ambient fields, and so does this). Nodes are
+ * the caller's tiles, cluster blocks are inset wells, links are hairlines in the line colour
+ * and the selected node's way up to the root is drawn in the accent (selection, R3.8). Full
+ * bleed, the controls and the minimap float over it in the imagery context (R4.7), as the
+ * map's do; in a Panel they are its controls.
+ *
+ * Component tokens (the probe hands the sizes to the layout, so density and UI scale size
+ * the map):
+ *   --fa-topology-cell-w / -cell-h   one node's box: its tile and two lines of label
+ *   --fa-topology-gap-x / -gap-y     between sibling boxes, between rows
+ *   --fa-topology-cluster-pad        inside a cluster block
+ *   --fa-topology-cluster-header     a block's label line
+ *   --fa-topology-cluster-gap        between members of a block
+ *   --fa-topology-link-radius        the elbow's corner
+ *   --fa-topology-fit-padding        room around the fitted map
+ *   --fa-topology-fade               the soft edge where the stage meets the canvas
+ *   --fa-topology-inset-*            page chrome over a full-bleed canvas (TopologyCanvas
+ *                                    `insets`): the controls, the minimap, the list and every
+ *                                    frame stay clear of it
+ *
+ * The minimap shows only while part of the map is out of view, as the way back.
+ *
+ * Tiers (container): everything from 36rem by 22rem; below that the minimap goes; under 20rem
+ * by 16rem the zoom buttons go (scroll and pinch still zoom); under 8rem tall only the map.
+ */
+@layer components {
+  .fa-topology {
+    --fa-topology-cell-w: 7rem;
+    --fa-topology-cell-h: 5.25rem;
+    --fa-topology-gap-x: var(--space-6);
+    --fa-topology-gap-y: var(--space-16);
+    --fa-topology-cluster-pad: var(--space-3);
+    --fa-topology-cluster-header: var(--space-6);
+    --fa-topology-cluster-gap: var(--space-1);
+    --fa-topology-link-radius: var(--radius-md);
+    --fa-topology-fit-padding: var(--space-6);
+    --fa-topology-fade: var(--space-4);
+    --_in-top: var(--fa-topology-inset-top, 0px);
+    --_in-right: var(--fa-topology-inset-right, 0px);
+    --_in-bottom: var(--fa-topology-inset-bottom, 0px);
+    --_in-left: var(--fa-topology-inset-left, 0px);
+    --_controls: calc(var(--control-h-md) + var(--space-3));
+    --_minimap-w: 11rem;
+    --_minimap-h: 7rem;
+
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    isolation: isolate;
+    container-type: size;
+    border-radius: inherit;
+  }
+
+  /* Read by the canvas: each property carries one metric (topology.tsx readProbe). */
+  .fa-topology-probe {
+    position: absolute;
+    visibility: hidden;
+    pointer-events: none;
+    box-sizing: content-box;
+    width: var(--fa-topology-cell-w);
+    height: var(--fa-topology-cell-h);
+    margin: var(--fa-topology-gap-y) var(--_controls) 0 var(--fa-topology-gap-x);
+    padding: var(--fa-topology-cluster-header) var(--fa-topology-cluster-gap) var(--fa-topology-fit-padding) var(--fa-topology-cluster-pad);
+    border-top-left-radius: var(--fa-topology-link-radius);
+    transition-duration: var(--duration-slow);
+  }
+  @container (width < 30rem) or (height < 22rem) {
+    .fa-topology {
+      --fa-topology-fit-padding: var(--space-3);
+    }
+  }
+
+  /* ── The stage and the world ─────────────────────────────────────────────── */
+  .fa-topology-stage {
+    position: absolute;
+    inset: 0;
+    overflow: clip; /* never scrolled: focusing a node pans the camera instead */
+    touch-action: none;
+    cursor: grab;
+    /* The stage meets the canvas with a soft edge, not a cut (as the map's does). Alpha only. */
+    mask-image:
+      linear-gradient(to right, transparent, black var(--fa-topology-fade), black calc(100% - var(--fa-topology-fade)), transparent),
+      linear-gradient(to bottom, transparent, black var(--fa-topology-fade), black calc(100% - var(--fa-topology-fade)), transparent);
+    mask-composite: intersect;
+  }
+  .fa-topology[data-moving] .fa-topology-stage {
+    cursor: grabbing;
+  }
+  .fa-topology[data-view="list"] .fa-topology-stage {
+    visibility: hidden;
+  }
+  .fa-topology-world {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    outline: none;
+  }
+  .fa-topology[data-moving] .fa-topology-world {
+    will-change: transform;
+  }
+  .fa-topology:not([data-ready]) .fa-topology-world {
+    visibility: hidden;
+  }
+
+  /* ── Links ──────────────────────────────────────────────────────────────── */
+  .fa-topology-links {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .fa-topology-link {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: var(--border-width-strong);
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .fa-topology-link[data-kind="wireless"] {
+    stroke-dasharray: var(--space-half) var(--space-1);
+  }
+  .fa-topology-link[data-kind="unknown"] {
+    stroke: var(--fg-subtle);
+    stroke-dasharray: var(--space-1-5) var(--space-1-5);
+    stroke-linecap: butt;
+  }
+  .fa-topology-link[data-active] {
+    stroke: var(--accent);
+  }
+  .fa-topology-link-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0 var(--space-1);
+    border-radius: var(--radius-full);
+    background-color: var(--glass-fill-control);
+    border: var(--border-width) solid var(--glass-edge);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* ── Cluster blocks ─────────────────────────────────────────────────────── */
+  .fa-topology-cluster {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: var(--radius-tile);
+    background-color: var(--fill-muted);
+    border: var(--border-width) solid var(--line);
+  }
+  .fa-topology-cluster[data-active] {
+    border-color: var(--accent);
+  }
+  .fa-topology-cluster-label {
+    position: absolute;
+    top: var(--fa-topology-cluster-pad);
+    left: var(--fa-topology-cluster-pad);
+    right: var(--fa-topology-cluster-pad);
+    overflow: hidden;
+    color: var(--fg-muted);
+    text-overflow: ellipsis;
+  }
+  /* A block's label in its own type, measured by the canvas so the block widens to it. The
+     block's border is inside its width, so the measure carries it too. */
+  .fa-topology-measure {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-inline: var(--border-width);
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-topology-cluster-label,
+  .fa-topology-measure {
+    font-size: var(--type-overline-size);
+    line-height: var(--type-overline-line);
+    font-weight: var(--type-overline-weight);
+    letter-spacing: var(--type-overline-tracking);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── Nodes ──────────────────────────────────────────────────────────────── */
+  .fa-topology-node {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    width: var(--fa-topology-cell-w);
+    height: var(--fa-topology-cell-h);
+    padding: var(--space-1-5) var(--space-1) 0;
+    border-radius: var(--radius-item);
+    cursor: pointer;
+    outline: none;
+  }
+  .fa-topology-node:hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-topology-node:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-topology-node[data-selected] {
+    background-color: var(--accent-soft);
+  }
+  .fa-topology-node[data-selected] .fa-topology-node-label {
+    color: var(--accent-text);
+  }
+  .fa-topology-node-tile {
+    display: inline-flex;
+    flex: none;
+  }
+  .fa-topology-node-label,
+  .fa-topology-node-detail {
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-topology-node-label {
+    color: var(--fg);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+  }
+  .fa-topology-node-detail {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Far out the labels are unreadable: the tiles carry the map. */
+  .fa-topology[data-zoom="far"] :is(.fa-topology-node-label, .fa-topology-node-detail, .fa-topology-link-label, .fa-topology-cluster-label) {
+    visibility: hidden;
+  }
+
+  /* ── Controls and minimap: floating over the map, clear of the chrome ─── */
+  .fa-topology-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-raised);
+    pointer-events: none;
+    text-shadow: none;
+  }
+  .fa-topology-overlay > * {
+    pointer-events: auto;
+  }
+  /* The chrome is still being measured: nothing floats yet (it would land under the header). */
+  .fa-topology[data-insets="pending"] :is(.fa-topology-overlay, .fa-topology-skeleton) {
+    visibility: hidden;
+  }
+  .fa-topology-controls {
+    position: absolute;
+    top: calc(var(--_in-top) + var(--space-3));
+    right: calc(var(--_in-right) + var(--space-3));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .fa-topology-minimap {
+    position: absolute;
+    left: calc(var(--_in-left) + var(--space-3));
+    bottom: calc(var(--_in-bottom) + var(--space-3));
+    width: var(--_minimap-w);
+    height: var(--_minimap-h);
+    padding: var(--space-1-5);
+    border-radius: var(--radius-tile);
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .fa-topology-minimap > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    filter: none; /* a drawing of the map, not an icon: no halo */
+  }
+  /* Only while part of the map is out of view (the canvas sets data-overflow). */
+  .fa-topology:not([data-overflow]) .fa-topology-minimap {
+    display: none;
+  }
+  .fa-topology-minimap-cluster {
+    fill: var(--fill-muted);
+    stroke: var(--line);
+    vector-effect: non-scaling-stroke;
+  }
+  .fa-topology-minimap-node {
+    fill: var(--fg-subtle);
+  }
+  .fa-topology-minimap-node[data-selected] {
+    fill: var(--accent);
+  }
+  /* What shows: a quiet outline and the lightest tint, so the map under it still reads. */
+  .fa-topology-minimap-view {
+    fill: color-mix(in oklab, var(--fg) 6%, transparent);
+    stroke: var(--line-strong);
+    stroke-width: var(--border-width);
+    vector-effect: non-scaling-stroke;
+  }
+  .fa-topology-list {
+    position: absolute;
+    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: var(--inset-panel);
+    overflow: hidden;
+  }
+  .fa-topology-list > * {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .fa-topology-empty {
+    position: absolute;
+    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left);
+  }
+
+  /* The loading shape: the same box, three rows centred (R9.3). */
+  .fa-topology-skeleton {
+    position: absolute;
+    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-12);
+    padding: var(--fa-topology-fit-padding);
+    overflow: hidden;
+  }
+  .fa-topology-skeleton-row {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-6);
+    max-width: 100%;
+  }
+  .fa-topology-skeleton-tile.fa-skel {
+    width: var(--tile-icon-box);
+    height: var(--tile-icon-box);
+  }
+  .fa-topology-skeleton-cluster.fa-skel {
+    flex: 0 1 auto;
+    min-width: 0;
+    width: calc(var(--fa-topology-cell-w) * 2);
+    height: var(--fa-topology-cell-h);
+  }
+
+  @container (width < 36rem) or (height < 22rem) {
+    .fa-topology-minimap {
+      display: none;
+    }
+    .fa-topology-skeleton-cluster.fa-skel {
+      width: var(--fa-topology-cell-w);
+    }
+  }
+  @container (width < 20rem) or (height < 16rem) {
+    .fa-topology-controls [data-topology-control="zoom-in"],
+    .fa-topology-controls [data-topology-control="zoom-out"],
+    .fa-topology-controls [data-topology-control="minimap"] {
+      display: none;
+    }
+    .fa-topology-controls {
+      top: calc(var(--_in-top) + var(--space-2));
+      right: calc(var(--_in-right) + var(--space-2));
+    }
+  }
+  @container (height < 8rem) {
+    .fa-topology-controls {
+      display: none;
+    }
+  }
+}

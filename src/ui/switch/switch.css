@@ -1,0 +1,146 @@
+/*
+ * Switch — sizes sm 30×18 · md 38×22 (--switch-w × --switch-h) · lg 46×26.
+ *
+ *   off    a recessed glass well (inner shadow, 3:1 edge) with a glossy glass bead
+ *   on     the tone gradient sweeps in from the left behind the bead (clip-path), with
+ *          the primary button's top highlight and a soft tone glow
+ *   bead   travels on --ease-spring; while pressed it stretches toward its destination
+ *   icons  optional ✓ / ✕ inside the bead (md and lg), crossfading with the state
+ *
+ * Tones accent · success · warning · danger (shared tone tokens in field.css).
+ */
+@layer components {
+  .fa-switch {
+    /* component tokens */
+    --_w: var(--switch-w);
+    --_h: var(--switch-h);
+    --_inset: var(--space-half);
+    --_thumb: calc(var(--_h) - var(--_inset) * 2);
+    --_thumb-w: var(--_thumb);
+    --_travel: calc(var(--_w) - var(--_thumb-w) - var(--_inset) * 2);
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    width: var(--_w);
+    height: var(--_h);
+    margin: 0;
+    padding: 0 var(--_inset);
+    border: 0;
+    border-radius: var(--radius-full);
+    background-color: var(--_well);
+    box-shadow: var(--_well-shadow);
+    cursor: pointer;
+    outline-offset: var(--focus-ring-offset);
+    vertical-align: middle;
+    transition: box-shadow var(--duration-base) var(--ease-standard);
+  }
+  .fa-switch[data-size="sm"] {
+    --_w: calc(var(--switch-w) - var(--space-2));
+    --_h: calc(var(--switch-h) - var(--space-1));
+  }
+  .fa-switch[data-size="lg"] {
+    --_w: calc(var(--switch-w) + var(--space-2));
+    --_h: calc(var(--switch-h) + var(--space-1));
+  }
+
+  /* The tone fill: grows from under the bead on the left to the full track. */
+  .fa-switch::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--_on);
+    background-image: var(--_on-fill);
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--_on-edge),
+      inset 0 var(--border-width) 0 0 var(--rim-light),
+      inset 0 calc(var(--border-width) * -1) var(--space-half) var(--rim-shade);
+    clip-path: inset(0 calc(100% - var(--_h)) 0 0 round var(--radius-full));
+    opacity: 0;
+    transition:
+      clip-path var(--duration-slow) var(--ease-enter),
+      opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-switch[data-checked] {
+    box-shadow:
+      var(--_well-shadow),
+      0 var(--space-half) var(--space-2) calc(var(--space-half) * -1) var(--_on-glow);
+  }
+  .fa-switch[data-checked]::before {
+    clip-path: inset(0 0 0 0 round var(--radius-full));
+    opacity: 1;
+  }
+  .fa-switch:hover:not([data-disabled], [data-readonly], [data-checked]) {
+    --_well: color-mix(in oklab, var(--fg-subtle) 24%, var(--glass-fill-inset));
+  }
+  .fa-switch[data-invalid]:not([data-checked]) {
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--danger-line),
+      inset 0 var(--border-width) var(--space-1) oklch(from var(--shadow-tint) l c h / 0.16);
+  }
+  .fa-switch[data-disabled] {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+  }
+  .fa-switch[data-readonly] {
+    cursor: default;
+  }
+
+  /* ── Bead ──────────────────────────────────────────────────────────────── */
+  .fa-switch-thumb {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: var(--_thumb-w);
+    height: var(--_thumb);
+    border-radius: var(--radius-full);
+    background: var(--_bead);
+    box-shadow: var(--_bead-shadow);
+    transition:
+      transform var(--duration-slow) var(--ease-spring),
+      width var(--duration-base) var(--ease-spring);
+  }
+  .fa-switch[data-checked] .fa-switch-thumb {
+    transform: translateX(var(--_travel));
+  }
+  .fa-switch:active:not([data-disabled], [data-readonly]) {
+    --_thumb-w: calc(var(--_thumb) + var(--_h) * 0.22);
+  }
+
+  .fa-switch-icon {
+    grid-area: 1 / 1;
+    width: calc(var(--_thumb) * 0.6);
+    height: calc(var(--_thumb) * 0.6);
+    --_stroke: calc(var(--icon-stroke) * 1.5);
+    transition:
+      opacity var(--duration-fast) var(--ease-standard),
+      transform var(--duration-base) var(--ease-spring);
+  }
+  .fa-switch-icon[data-icon="check"] {
+    color: oklch(from var(--_on) min(l, 0.58) c h);
+    opacity: 0;
+    transform: scale(0.5) rotate(-30deg);
+  }
+  .fa-switch-icon[data-icon="close"] {
+    color: oklch(from var(--shadow-tint) l c h / 0.45);
+  }
+  .fa-switch[data-checked] .fa-switch-icon[data-icon="check"] {
+    opacity: 1;
+    transform: none;
+  }
+  .fa-switch[data-checked] .fa-switch-icon[data-icon="close"] {
+    opacity: 0;
+    transform: scale(0.5) rotate(30deg);
+  }
+
+  /* Finger-sized hit area on touch screens (R20.4). */
+  @media (pointer: coarse) {
+    .fa-switch::after {
+      content: "";
+      position: absolute;
+      inset: calc((var(--target-min) - var(--_h)) / -2) calc(var(--space-1) * -1);
+    }
+  }
+}

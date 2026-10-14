@@ -1,0 +1,46 @@
+/*
+ * AiMark — the Assistant brand mark at four sizes, with an optional working ring.
+ *
+ * Component tokens
+ *   --_size   the mark's box
+ *   --_ring   the gap between the mark and its working ring
+ */
+@layer components {
+  .fa-ai-mark {
+    --_size: calc(var(--unit) * 6);
+    --_ring: var(--space-half);
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--_size);
+    height: var(--_size);
+  }
+  .fa-ai-mark[data-size="xs"] {
+    --_size: var(--icon-sm);
+  }
+  .fa-ai-mark[data-size="md"] {
+    --_size: var(--control-h-sm);
+  }
+  .fa-ai-mark[data-size="lg"] {
+    --_size: var(--space-16);
+    --_ring: var(--space-1);
+  }
+  .fa-ai-mark-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+  }
+  /* The working ring: an accent arc that turns like the spinner. */
+  .fa-ai-mark[data-working]::after {
+    content: "";
+    position: absolute;
+    inset: calc(var(--_ring) * -1 - var(--border-width-strong));
+    border-radius: var(--radius-full);
+    background: conic-gradient(from 0deg, transparent 0turn, var(--accent) 0.32turn, transparent 0.34turn);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--border-width-strong) - var(--border-width)), black calc(100% - var(--border-width-strong)));
+    mask: radial-gradient(farthest-side, transparent calc(100% - var(--border-width-strong) - var(--border-width)), black calc(100% - var(--border-width-strong)));
+    animation: fa-spin var(--duration-spin) linear infinite;
+  }
+}

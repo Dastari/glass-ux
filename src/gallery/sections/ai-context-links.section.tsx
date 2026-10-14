@@ -1,0 +1,103 @@
+import { EntityChip, EntityPreviewCard, Markdown, SourceList, type EntityRef } from "../../ai/index.js"
+import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
+import { demoResolver, E, SOURCES } from "./ai.fixtures.js"
+import { AiGallery, LabScroll } from "./ai.kit.js"
+
+const KINDS: Array<[string, EntityRef]> = [
+  ["Endpoint · online", E.acs4e5e],
+  ["Endpoint · offline", E.c106],
+  ["Endpoint · warning", E.acs7b73],
+  ["Organisation", E.northstar],
+  ["Ticket", E.t7102],
+  ["User", E.mira],
+  ["Software", E.chrome],
+  ["Script", E.clearQueue],
+  ["Alert", E.diskAlert],
+  ["Project job", E.job],
+  ["Not yet verified", E.jobUnverified],
+]
+
+const PROSE =
+  "NST-C106 at [Northstar Studio](/organisations/northstar) stopped printing after the [Print Spooler stopped](/alerts/a-99812). [Mira Rowan](/users/MiraRowan) raised [#7102](/tickets/7102); [LMN-4E5E](/endpoints/LMN-4E5E) can wake it." // tokens:allow ticket number, not a colour
+
+export default function AiContextLinksSection() {
+  return (
+    <AiGallery>
+      <SectionPage>
+        <Specimen title="Kinds" description="One glyph per kind (registered by the application), the live status dot on endpoints, a toned state on tickets and alerts, a version on software." wide>
+          {KINDS.map(([label, entity]) => (
+            <Example key={label} label={label}>
+              <EntityChip entity={entity} size="sm" />
+            </Example>
+          ))}
+        </Specimen>
+
+        <Specimen title="In prose" description="Internal links in an answer become inline chips that sit inside the line box. Hover or focus one for its preview; click navigates; right-click or Shift+F10 opens its actions." layout="stack">
+          <Markdown text={PROSE} />
+        </Specimen>
+
+        <Specimen title="Preview card" description="Identity, live state, three or four facts, two promoted actions from the entity's own action set, and Open in window." layout="row">
+          <EntityPreviewCard entity={E.c106} data={demoResolver.preview(E.c106)} />
+          <EntityPreviewCard entity={E.t7102} data={demoResolver.preview(E.t7102)} />
+          <EntityPreviewCard entity={E.northstar} data={demoResolver.preview(E.northstar)} />
+        </Specimen>
+
+        <Specimen title="Variants" description="chip for prose and the composer · plain for table cells and lists · removable for picked context.">
+          <Example label="Inline (in a line of text)">
+            <span>
+              Restart <EntityChip entity={E.c106Online} /> tonight
+            </span>
+          </Example>
+          <Example label="sm">
+            <EntityChip entity={E.c106Online} size="sm" />
+          </Example>
+          <Example label="Plain">
+            <EntityChip entity={E.c106Online} variant="plain" />
+          </Example>
+          <Example label="Removable">
+            <EntityChip entity={E.c106Online} size="sm" onRemove={() => {}} />
+            <EntityChip entity={E.cedarvale} size="sm" onRemove={() => {}} />
+          </Example>
+          <Example label="Long names truncate">
+            <EntityChip entity={E.cedarvale} size="sm" />
+          </Example>
+        </Specimen>
+
+        <Specimen title="Sources" description="Citations number the sources an answer stands on: Glass UX records with their glyph, external pages with a monogram and the external-link glyph." layout="stack">
+          <SourceList sources={SOURCES} />
+        </Specimen>
+
+        <ContainerLab description="Chips truncate at their maximum and wrap with the text; they never push their row wider.">
+          {() => (
+            <LabScroll>
+              <Markdown text={PROSE} />
+            </LabScroll>
+          )}
+        </ContainerLab>
+
+        <Rules
+          do={[
+            "Link every Glass UX entity the answer names, with its internal path.",
+            "Take the chip's actions from the entity's action set, never a local list.",
+            "Keep the preview to facts the entity page also shows.",
+          ]}
+          dont={[
+            "Colour a chip by kind; status colours only for status.",
+            "Put a chip in a heading or a button label.",
+            "Use a chip for something you cannot open.",
+          ]}
+        />
+
+        <TokenTable
+          tokens={[
+            ["--fill-muted", "Chip fill"],
+            ["--line", "Chip rim"],
+            ["--radius-badge", "Chip shape"],
+            ["--control-h-xs", "sm chip height"],
+            ["--glass-fill-overlay", "Preview card"],
+          ]}
+        />
+      </SectionPage>
+    </AiGallery>
+  )
+}

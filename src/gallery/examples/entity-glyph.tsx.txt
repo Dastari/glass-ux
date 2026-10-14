@@ -1,0 +1,17 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+import { E } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { EntityGlyph } from "glass-ux/ai";
+
+export default function EntityGlyphExample() {
+    return (<AiGallery>
+      <SectionPage>
+        <Specimen title="EntityGlyph" layout="stack">
+          <EntityGlyph entity={E.c106Online}/>
+        </Specimen>
+      </SectionPage>
+    </AiGallery>);
+}

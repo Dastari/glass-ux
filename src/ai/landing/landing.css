@@ -1,0 +1,99 @@
+/*
+ * AiHero and SuggestionChips — the landing on the canvas (R4.6).
+ *
+ * Hero         mark (64px), the question at display size with one gradient phrase, then the
+ *              composer, on the reading column (R5.4). Steps down to headline size in narrow
+ *              containers.
+ * Suggestions  glass-control pills, the accent glyph, label weight; wrap and centre.
+ *
+ * Component tokens
+ *   --_hero-w   the hero column: the conversation's reading column, so the composer keeps
+ *               its width when the first message moves it to the bottom
+ */
+@layer components {
+  .fa-ai-hero {
+    --_hero-w: var(--reading-column);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    width: min(100%, var(--_hero-w));
+    margin-inline: auto;
+    text-align: center;
+  }
+  .fa-ai-hero-title {
+    color: var(--fg);
+    font-size: var(--type-display-size);
+    line-height: var(--type-display-line);
+    font-weight: var(--type-display-weight);
+    letter-spacing: var(--type-display-tracking);
+    text-wrap: balance;
+  }
+  @container (width < 36rem) {
+    .fa-ai-hero-title {
+      font-size: var(--type-headline-size);
+      line-height: var(--type-headline-line);
+      letter-spacing: var(--type-headline-tracking);
+    }
+    .fa-ai-hero .fa-ai-mark[data-size="lg"] {
+      --_size: var(--space-12);
+    }
+  }
+  .fa-ai-hero-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    width: 100%;
+    margin-top: var(--space-4);
+    text-align: start;
+  }
+
+  .fa-ai-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2) var(--space-3);
+  }
+  .fa-ai-suggestions[data-align="start"] {
+    justify-content: flex-start;
+  }
+  .fa-ai-suggestion {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    max-width: 100%;
+    min-height: var(--control-h-md);
+    padding: var(--space-1) var(--space-4) var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+    text-align: start;
+  }
+  .fa-ai-suggestion:hover {
+    background-color: var(--glass-fill-control-hover);
+    border-color: var(--line-strong);
+  }
+  .fa-ai-suggestion:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-ai-suggestion-icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    color: var(--accent-text);
+  }
+  .fa-ai-suggestion-icon .fa-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-ai-suggestion-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

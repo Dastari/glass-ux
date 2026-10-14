@@ -1,0 +1,71 @@
+/*
+ * Reasoning — the model's summary, collapsed to "Thought for 4 s". A quiet caption-weight
+ * trigger; the panel holds the summary in muted text beside a quote bar.
+ */
+@layer components {
+  .fa-ai-reasoning {
+    min-width: 0;
+  }
+  .fa-ai-reasoning-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-height: var(--control-h-xs);
+    padding: var(--space-half) var(--space-2) var(--space-half) var(--space-1-5);
+    border: 0;
+    border-radius: var(--radius-item);
+    background: transparent;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-ai-reasoning-trigger:hover {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-ai-reasoning-trigger:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-ai-reasoning-icon,
+  .fa-ai-reasoning-chevron {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+  }
+  .fa-ai-reasoning[data-running] .fa-ai-reasoning-icon {
+    color: var(--accent-text);
+  }
+  .fa-ai-reasoning-chevron {
+    color: var(--fg-subtle);
+    transition: rotate var(--duration-base) var(--ease-standard);
+  }
+  .fa-ai-reasoning-trigger[data-panel-open] .fa-ai-reasoning-chevron {
+    rotate: 90deg;
+  }
+  .fa-ai-reasoning-panel {
+    height: var(--collapsible-panel-height);
+    overflow: hidden;
+    transition: height var(--duration-base) var(--ease-standard);
+  }
+  .fa-ai-reasoning-panel:is([data-starting-style], [data-ending-style]) {
+    height: 0;
+  }
+  .fa-ai-reasoning-text {
+    max-width: var(--measure);
+    margin: var(--space-1) 0 var(--space-1) var(--space-3);
+    padding-inline-start: var(--space-3);
+    box-shadow: inset var(--border-width-strong) 0 0 var(--line-strong);
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    white-space: pre-line;
+    text-wrap: pretty;
+  }
+}

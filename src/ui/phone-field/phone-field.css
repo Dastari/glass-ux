@@ -1,0 +1,135 @@
+/*
+ * PhoneInput — one fa-control box:
+ *
+ *   [🇦🇺 AU +61 ▾] 0412 345 678…………… [ext. 204] [⧉]
+ *
+ * The country picker is a small pressable at the start of the box (it opens a glass list with
+ * a search box at the top); the number takes the rest; the extension, when asked for, is a
+ * narrow box of its own inside the same control.
+ */
+@layer components {
+  .fa-phone-frame {
+    container-type: inline-size;
+    width: 100%;
+    min-width: 0;
+  }
+  .fa-phone-frame[data-width="short"] {
+    max-width: var(--field-short);
+  }
+  .fa-phone-frame[data-width="medium"] {
+    max-width: var(--field-medium);
+  }
+  .fa-phone {
+    --_flag: var(--icon-sm);
+  }
+  /* The number keeps room for a short national number before anything else shrinks. */
+  .fa-phone .fa-phone-number {
+    min-width: 9ch;
+  }
+  @container (width < 20rem) {
+    .fa-phone-calling {
+      display: none;
+    }
+  }
+  @container (width < 15rem) {
+    .fa-phone-country-code,
+    .fa-phone-ext-label {
+      display: none;
+    }
+  }
+  .fa-phone-country-field {
+    display: contents;
+  }
+  .fa-phone-country {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1-5);
+    align-self: stretch;
+    margin-inline-start: calc(var(--_px) * -1 + var(--space-1));
+    padding-inline: var(--space-2) var(--space-1-5);
+    border: 0;
+    border-radius: calc(var(--radius-control) - var(--space-half));
+    margin-block: var(--space-1);
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-phone-country:hover:not(:disabled) {
+    background-color: var(--fill-hover);
+  }
+  .fa-phone-country[data-popup-open] {
+    background-color: var(--fill-press);
+  }
+  .fa-phone-country:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+  .fa-phone-country-code {
+    font-weight: var(--weight-medium);
+  }
+  .fa-phone-calling {
+    color: var(--fg-muted);
+  }
+  .fa-phone-chevron {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    color: var(--fg-subtle);
+  }
+  .fa-phone[data-size="sm"] .fa-phone-country {
+    margin-block: var(--space-half);
+    gap: var(--space-1);
+  }
+
+  /* ── Extension ─────────────────────────────────────────────────────────── */
+  .fa-phone-ext {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+    padding-inline-start: var(--space-2);
+    border-inline-start: var(--border-width) solid var(--line);
+    color: var(--fg-subtle);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-phone-ext-input {
+    width: 5ch;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-body-size);
+    font-variant-numeric: tabular-nums;
+    outline: none;
+  }
+  .fa-phone-ext-input:focus-visible {
+    box-shadow: 0 var(--border-width-strong) 0 0 var(--accent-ring);
+  }
+
+  /* ── Country list ──────────────────────────────────────────────────────── */
+  .fa-popup.fa-phone-country-popup {
+    --_min: 20rem; /* room for a long country name and its codes */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    width: max(var(--anchor-width, 0px), var(--_min));
+    overflow: hidden;
+  }
+  .fa-phone-country-search {
+    flex: none;
+  }
+  .fa-phone-country-list {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .fa-phone-country-list .fa-option-meta {
+    font-variant-numeric: tabular-nums;
+  }
+}

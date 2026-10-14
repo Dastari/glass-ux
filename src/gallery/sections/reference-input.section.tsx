@@ -1,0 +1,19 @@
+import { useState } from 'react'
+import { ContainerLab, Rules, SectionPage, Specimen } from '../kit.js'
+import { IconFolder, IconUser } from '../../icons/generated/icons.js'
+import { Field } from '../../ui/field/index.js'
+import { ReferenceInput, type ReferenceLink, type ReferenceSource } from '../../ui/reference-input/index.js'
+import { DEMO_DATASET } from '../fixtures/organisations.js'
+const kinds=[{id:'person',noun:'Person',plural:'People',icon:IconUser},{id:'project',noun:'Project',plural:'Projects',icon:IconFolder}]
+const targets=[...DEMO_DATASET.people.map(p=>({kind:'person',id:p.id,label:p.name,image:p.photo})),{kind:'project',id:'meridian',label:'Meridian launch'}]
+const source:ReferenceSource={suggestions:targets,search:async(q,{kind})=>targets.filter(t=>(!kind||t.kind===kind)&&t.label.toLowerCase().includes(q.toLowerCase()))}
+const relations=[{value:'assigned-to',label:'Assigned to',kinds:['person'],exclusive:true},{value:'related',label:'Related to'}]
+function Demo({disabled=false,readOnly=false}:{disabled?:boolean;readOnly?:boolean}){
+ const [value,setValue]=useState<ReferenceLink[]>([{target:targets[0]!,relation:'assigned-to'}])
+ return <Field label="References"><ReferenceInput value={value} onValueChange={setValue} source={source} kinds={kinds} relations={relations} defaultRelation="related" disabled={disabled} readOnly={readOnly}/></Field>
+}
+export default function ReferenceInputSection(){return <SectionPage>
+ <Specimen title="Linked items" layout="stack"><Demo/><Demo disabled/><Demo readOnly/></Specimen>
+ <ContainerLab>{()=> <Demo/>}</ContainerLab>
+ <Rules do={['Supply a cancellable search source.','Name every entity kind and relation.']} dont={['Store a display label as the entity identifier.']}/>
+</SectionPage>}

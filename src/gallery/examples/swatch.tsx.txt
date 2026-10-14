@@ -1,0 +1,19 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Swatch } from "glass-ux/charts";
+
+export default function SwatchExample() {
+    return (<SectionPage>
+      <Specimen title="Swatch" layout="stack">
+        <p>
+          <Swatch slot={1} shape="line"/> Booked
+        </p>
+        <p>
+          <Swatch slot={2} shape="box"/> Available
+        </p>
+        <p>
+          <Swatch slot={3} shape="dot"/> Waiting list
+        </p>
+      </Specimen>
+    </SectionPage>);
+}

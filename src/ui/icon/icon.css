@@ -1,0 +1,55 @@
+/*
+ * Icon frame. Stroke weight is optically compensated per size so a 14px and a 40px icon
+ * read as the same weight (see docs/icon-spec.md).
+ */
+@layer components {
+  .fa-icon {
+    --_stroke: var(--icon-stroke);
+    flex: none;
+    width: var(--icon-md);
+    height: var(--icon-md);
+    stroke-width: var(--_stroke);
+    overflow: visible;
+  }
+  .fa-icon[data-size="xs"] {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+  }
+  .fa-icon[data-size="sm"] {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+  }
+  .fa-icon[data-size="md"] {
+    width: var(--icon-md);
+    height: var(--icon-md);
+    --_stroke: calc(var(--icon-stroke) * 1.06);
+  }
+  .fa-icon[data-size="lg"] {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+  .fa-icon[data-size="xl"] {
+    width: var(--icon-xl);
+    height: var(--icon-xl);
+    --_stroke: calc(var(--icon-stroke) * 0.92);
+  }
+  .fa-icon[data-size="2xl"] {
+    width: var(--icon-2xl);
+    height: var(--icon-2xl);
+    --_stroke: calc(var(--icon-stroke) * 0.78);
+  }
+  .fa-icon-tint {
+    fill: currentColor;
+    stroke: none;
+    opacity: var(--icon-tint-opacity);
+  }
+  .fa-icon[data-tint="off"] .fa-icon-tint {
+    display: none;
+  }
+  .fa-icon-dot {
+    fill: currentColor;
+    stroke: none;
+  }
+}

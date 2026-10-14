@@ -1,0 +1,54 @@
+import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Field } from "glass-ux/field";
+
+import { FormStack } from "glass-ux/form";
+
+import { PercentInput } from "glass-ux/percent-field";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+export default function PercentFieldSection() {
+    return (<SectionPage>
+      <></>
+
+      <Specimen title="States" layout="grid">
+        <FormStack>
+          <Field label="Empty">
+            <PercentInput />
+          </Field>
+          <Field label="Invalid" error="Enter a percentage from 50 to 99">
+            <PercentInput defaultValue={40} invalid/>
+          </Field>
+        </FormStack>
+        <FormStack>
+          <Field label="Disabled">
+            <PercentInput defaultValue={90} disabled/>
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <Field label="Threshold">
+          <PercentInput defaultValue={90}/>
+        </Field>
+      </Specimen>
+
+      <ContainerLab>
+        <div className="flex h-full items-center p-1">
+          <PercentInput size="sm" defaultValue={90} width="full" aria-label="Threshold"/>
+        </div>
+      </ContainerLab>
+
+      <Usage code={`
+import { percentSchema } from "glass-ux/percent-field"
+
+const schema = z.object({ disk: percentSchema({ required: true, min: 50, max: 99 }) })
+
+<form.AppField name="disk">{(field) => <field.PercentField label="Disk alert threshold" min={50} max={99} />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

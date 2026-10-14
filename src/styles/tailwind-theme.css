@@ -1,0 +1,280 @@
+/*
+ * The Tailwind vocabulary — restricted to Glass UX tokens.
+ *
+ * The default Tailwind theme is wiped (--*: initial), so `bg-red-500`, `shadow-lg` or
+ * `rounded-2xl` do not exist. Only the roles below generate utilities. Arbitrary values
+ * (`p-[13px]`, `bg-[#fff]`) are rejected by scripts/check-tokens.mjs.
+ */
+
+@theme {
+  --*: initial;
+
+  --spacing: 0.25rem;
+
+  --breakpoint-sm: 40rem; /*  640 */
+  --breakpoint-md: 48rem; /*  768 */
+  --breakpoint-lg: 64rem; /* 1024 */
+  --breakpoint-xl: 80rem; /* 1280 */
+  --breakpoint-2xl: 96rem; /* 1536 */
+  --breakpoint-3xl: 120rem; /* 1920 — the design target */
+  --breakpoint-4xl: 160rem; /* 2560 — wide desktop / 1440p ultra-wide */
+  --breakpoint-5xl: 215rem; /* 3440 — ultra-wide */
+
+  --container-3xs: 16rem;
+  --container-2xs: 18rem;
+  --container-xs: 20rem;
+  --container-sm: 24rem;
+  --container-md: 28rem;
+  --container-lg: 32rem;
+  --container-xl: 36rem;
+  --container-2xl: 42rem;
+  --container-3xl: 48rem;
+  --container-4xl: 56rem;
+  --container-5xl: 64rem;
+  --container-6xl: 72rem;
+  --container-7xl: 80rem;
+  --container-8xl: 96rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --animate-spin: fa-spin 0.9s linear infinite;
+  --animate-fade-in: fa-fade-in var(--duration-base) var(--ease-enter) both;
+  --animate-rise-in: fa-rise-in var(--duration-slow) var(--ease-enter) both;
+}
+
+@theme reference inline {
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+
+  --text-display: var(--type-display-size);
+  --text-display--line-height: var(--type-display-line);
+  --text-display--letter-spacing: var(--type-display-tracking);
+  --text-display--font-weight: var(--type-display-weight);
+  --text-headline: var(--type-headline-size);
+  --text-headline--line-height: var(--type-headline-line);
+  --text-headline--letter-spacing: var(--type-headline-tracking);
+  --text-headline--font-weight: var(--type-headline-weight);
+  --text-title: var(--type-title-size);
+  --text-title--line-height: var(--type-title-line);
+  --text-title--letter-spacing: var(--type-title-tracking);
+  --text-title--font-weight: var(--type-title-weight);
+  --text-subtitle: var(--type-subtitle-size);
+  --text-subtitle--line-height: var(--type-subtitle-line);
+  --text-subtitle--letter-spacing: var(--type-subtitle-tracking);
+  --text-subtitle--font-weight: var(--type-subtitle-weight);
+  --text-body: var(--type-body-size);
+  --text-body--line-height: var(--type-body-line);
+  --text-body--letter-spacing: var(--type-body-tracking);
+  --text-label: var(--type-label-size);
+  --text-label--line-height: var(--type-label-line);
+  --text-label--font-weight: var(--type-label-weight);
+  --text-caption: var(--type-caption-size);
+  --text-caption--line-height: var(--type-caption-line);
+  --text-caption--letter-spacing: var(--type-caption-tracking);
+  --text-overline: var(--type-overline-size);
+  --text-overline--line-height: var(--type-overline-line);
+  --text-overline--letter-spacing: var(--type-overline-tracking);
+  --text-overline--font-weight: var(--type-overline-weight);
+  --text-mono: var(--type-mono-size);
+  --text-mono--line-height: var(--type-mono-line);
+
+  --color-canvas: var(--canvas);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-fg-disabled: var(--fg-disabled);
+  --color-fg-inverse: var(--fg-inverse);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fill-hover: var(--fill-hover);
+  --color-fill-press: var(--fill-press);
+  --color-fill-muted: var(--fill-muted);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-text: var(--accent-text);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-line: var(--accent-line);
+  --color-success: var(--success);
+  --color-success-text: var(--success-text);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-text: var(--warning-text);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-text: var(--danger-text);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-text: var(--info-text);
+  --color-info-soft: var(--info-soft);
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-full: var(--radius-full);
+  --radius-control: var(--radius-control);
+  --radius-tile: var(--radius-tile);
+  --radius-surface: var(--radius-surface);
+  --radius-overlay: var(--radius-overlay);
+  --radius-dialog: var(--radius-dialog);
+  --radius-item: var(--radius-item);
+
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
+  --shadow-4: var(--shadow-4);
+  --shadow-accent: var(--shadow-accent);
+
+  --ease-standard: var(--ease-standard);
+  --ease-enter: var(--ease-enter);
+  --ease-exit: var(--ease-exit);
+  --ease-spring: var(--ease-spring);
+}
+
+/* Composite type roles: size + line + weight + tracking in one class. */
+@utility type-display {
+  font-family: var(--font-display);
+  font-size: var(--type-display-size);
+  line-height: var(--type-display-line);
+  font-weight: var(--type-display-weight);
+  letter-spacing: var(--type-display-tracking);
+}
+@utility type-headline {
+  font-family: var(--font-display);
+  font-size: var(--type-headline-size);
+  line-height: var(--type-headline-line);
+  font-weight: var(--type-headline-weight);
+  letter-spacing: var(--type-headline-tracking);
+}
+@utility type-title {
+  font-size: var(--type-title-size);
+  line-height: var(--type-title-line);
+  font-weight: var(--type-title-weight);
+  letter-spacing: var(--type-title-tracking);
+}
+@utility type-subtitle {
+  font-size: var(--type-subtitle-size);
+  line-height: var(--type-subtitle-line);
+  font-weight: var(--type-subtitle-weight);
+  letter-spacing: var(--type-subtitle-tracking);
+}
+@utility type-body {
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: var(--type-body-weight);
+  letter-spacing: var(--type-body-tracking);
+}
+@utility type-label {
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-line);
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
+}
+@utility type-caption {
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  font-weight: var(--type-caption-weight);
+  letter-spacing: var(--type-caption-tracking);
+}
+@utility type-overline {
+  font-size: var(--type-overline-size);
+  line-height: var(--type-overline-line);
+  font-weight: var(--type-overline-weight);
+  letter-spacing: var(--type-overline-tracking);
+  text-transform: uppercase;
+}
+@utility type-mono {
+  font-family: var(--font-mono);
+  font-size: var(--type-mono-size);
+  line-height: var(--type-mono-line);
+}
+
+/* Semantic spacing utilities, so feature code can say what it means. */
+@utility gap-inline {
+  gap: var(--gap-inline);
+}
+@utility gap-controls {
+  gap: var(--gap-controls);
+}
+@utility gap-fields {
+  gap: var(--gap-fields);
+}
+@utility gap-tiles {
+  gap: var(--gap-tiles);
+}
+@utility gap-panels {
+  gap: var(--gap-panels);
+}
+@utility gap-section {
+  gap: var(--gap-section);
+}
+@utility p-panel {
+  padding: var(--inset-panel);
+}
+@utility p-tile {
+  padding: var(--inset-tile);
+}
+@utility p-dialog {
+  padding: var(--inset-dialog);
+}
+@utility px-gutter {
+  padding-inline: var(--page-gutter);
+}
+@utility p-gutter {
+  padding: var(--page-gutter);
+}
+@utility max-w-measure {
+  max-width: var(--measure);
+}
+
+/* Elevation stack. */
+@utility z-raised {
+  z-index: var(--z-raised);
+}
+@utility z-sticky {
+  z-index: var(--z-sticky);
+}
+@utility z-shell {
+  z-index: var(--z-shell);
+}
+
+/* Icon sizes. */
+@utility icon-xs {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+@utility icon-sm {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+@utility icon-md {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+@utility icon-lg {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+@utility icon-xl {
+  width: var(--icon-xl);
+  height: var(--icon-xl);
+}
+@utility icon-2xl {
+  width: var(--icon-2xl);
+  height: var(--icon-2xl);
+}
+
+/* Gradient text for hero moments (one per screen at most). */
+@utility text-accent-gradient {
+  background-image: linear-gradient(100deg, var(--accent) 10%, var(--accent-2) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

@@ -1,0 +1,198 @@
+/*
+ * VerticalTabs (L3).
+ *
+ * rail    fa-item rows (icon, label, optional count) beside the content. The current row
+ *         takes accent-soft and accent text plus a slim accent bar on its inline-start edge —
+ *         the same "you are here" mark as the sidebar and the tree. The rail scrolls.
+ * chips   below 36rem of container width: a horizontally scrolling strip of outlined chips
+ *         above the content, with soft fades at scrolled edges.
+ * select  below 36rem with more than six sections: a picker (menu) above the content.
+ * icons   chosen by the caller for a collapsed side nav: square rows with the icon centred,
+ *         the label visually hidden (still the accessible name) and shown as a tooltip.
+ */
+@layer components {
+  .fa-vtabs {
+    --_rail-w: 13.5rem; /* rail width */
+    --_bar-w: calc(var(--border-width) * 3); /* current-item bar */
+    --_fade: var(--space-6); /* chip strip edge fade */
+    --_picker-max: 20rem; /* the collapsed picker never stretches wider than this */
+    min-width: 0;
+    height: 100%;
+  }
+  .fa-vtabs-root {
+    display: grid;
+    grid-template-columns: var(--_rail-w) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: var(--gap-section);
+    height: 100%;
+    min-height: 0;
+  }
+  .fa-vtabs-scroll {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .fa-vtabs-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+  }
+  .fa-vtab {
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: var(--type-body-size);
+    text-align: start;
+    text-decoration: none;
+  }
+  .fa-vtab > .fa-count {
+    margin-inline-start: auto;
+  }
+  .fa-vtab[data-active] > .fa-count {
+    --_bg: var(--accent-soft);
+    --_fg: var(--accent-text);
+  }
+  /* Marker: a dot at the trailing edge — unsaved changes (neutral, like an unsaved
+     document's dot; the accent can be red in some palettes) or errors (danger). */
+  .fa-vtab-marker {
+    --_marker: 0.4375rem; /* the dot's diameter */
+    flex: none;
+    width: var(--_marker);
+    height: var(--_marker);
+    margin-inline-start: auto;
+    border-radius: var(--radius-full);
+    background-color: var(--fg-muted);
+  }
+  .fa-vtab-marker[data-marker="error"] {
+    background-color: var(--danger);
+  }
+  .fa-vtab-marker[data-marker="saved"] {
+    background-color: var(--success);
+  }
+  .fa-count ~ .fa-vtab-marker,
+  .fa-vtabs-picker > .fa-vtab-marker {
+    margin-inline-start: 0;
+  }
+  .fa-vtab[data-active]::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: var(--space-2);
+    width: var(--_bar-w);
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+  }
+  .fa-vtabs-content {
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-vtabs-panel {
+    min-width: 0;
+    outline: none;
+  }
+  .fa-vtabs-panel:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+    border-radius: var(--radius-tile);
+  }
+
+  /* ── Icons only ─────────────────────────────────────────────────────────── */
+  .fa-vtabs[data-layout="icons"] .fa-vtabs-root {
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+  .fa-vtabs[data-layout="icons"] .fa-vtab {
+    justify-content: center;
+    width: var(--item-h);
+    padding-inline: 0;
+  }
+  .fa-vtabs[data-layout="icons"] .fa-vtab > .fa-icon {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    --_stroke: var(--icon-stroke);
+  }
+  .fa-vtabs[data-layout="icons"] .fa-vtab > :is(.fa-item-label, .fa-count) {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ── Chips ──────────────────────────────────────────────────────────────── */
+  .fa-vtabs:is([data-layout="chips"], [data-layout="select"]) .fa-vtabs-root {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+  .fa-vtabs[data-layout="chips"] .fa-vtabs-scroll {
+    --_fade-start: 0px;
+    --_fade-end: 0px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    scrollbar-gutter: auto;
+    -webkit-mask-image: linear-gradient(90deg, transparent, black var(--_fade-start), black calc(100% - var(--_fade-end)), transparent);
+    mask-image: linear-gradient(90deg, transparent, black var(--_fade-start), black calc(100% - var(--_fade-end)), transparent);
+  }
+  .fa-vtabs[data-layout="chips"] .fa-vtabs-scroll[data-scrolled-left] {
+    --_fade-start: var(--_fade);
+  }
+  .fa-vtabs[data-layout="chips"] .fa-vtabs-scroll[data-scrolled-right] {
+    --_fade-end: var(--_fade);
+  }
+  .fa-vtabs[data-layout="chips"] .fa-vtabs-list {
+    flex-direction: row;
+    gap: var(--space-2);
+    width: max-content;
+    padding: var(--focus-ring-width);
+  }
+  .fa-vtabs[data-layout="chips"] .fa-vtab {
+    flex: none;
+    min-height: var(--control-h-sm);
+    padding-inline: var(--space-3);
+    gap: var(--space-2);
+    border-radius: var(--radius-full);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+  }
+  .fa-vtabs[data-layout="chips"] .fa-vtab > .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+  }
+  .fa-vtabs[data-layout="chips"] .fa-vtab[data-active] {
+    box-shadow: inset 0 0 0 var(--border-width) var(--accent-line);
+  }
+  .fa-vtabs[data-layout="chips"] .fa-vtab[data-active]::before {
+    display: none;
+  }
+  .fa-vtabs[data-layout="chips"] .fa-vtab > .fa-item-label {
+    overflow: visible;
+  }
+  @media (pointer: coarse) {
+    .fa-vtabs[data-layout="chips"] .fa-vtab {
+      min-height: var(--target-min);
+    }
+  }
+
+  /* ── Picker ─────────────────────────────────────────────────────────────── */
+  .fa-vtabs-picker {
+    width: 100%;
+    max-width: var(--_picker-max);
+    font: inherit;
+    font-size: var(--type-body-size);
+    text-align: start;
+  }
+  .fa-vtabs-picker-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-vtabs-picker > .fa-vtabs-picker-chevron {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--fg-subtle);
+  }
+}

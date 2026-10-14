@@ -1,0 +1,97 @@
+/*
+ * Swatch picker — one colour from a small set ("Palette ● ● ● ● ● ●").
+ *
+ *   track    the segmented control's recessed well, control height and radius, so it lines
+ *            up with fields and segmented controls in a setting row
+ *   swatch   a round hit target the height of a segment; the dot inside paints the colour
+ *            (a palette island's accent gradient, or a colour token) with a light rim
+ *   chosen   the dot gets a canvas gap and an accent ring; hover lifts the target's fill
+ *
+ * Sizes sm 32 · md 40.
+ */
+@layer components {
+  .fa-swatch-picker {
+    /* component tokens */
+    --_h: var(--control-h-md);
+    --_pad: var(--space-half);
+    --_dot: 1.25rem;
+    --_rim: oklch(1 0 0 / 0.35);
+    /* Resolved here, outside the swatches' palette islands: the page's accent and canvas. */
+    --_ring: var(--accent-line);
+    --_gap: var(--canvas);
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-half);
+    max-width: 100%;
+    min-height: var(--_h);
+    padding: var(--_pad);
+    border-radius: var(--radius-control);
+    background-color: var(--glass-fill-inset);
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--line),
+      inset 0 var(--border-width) var(--space-half) oklch(from var(--shadow-tint) l c h / 0.06);
+    vertical-align: middle;
+  }
+  .fa-swatch-picker[data-size="sm"] {
+    --_h: var(--control-h-sm);
+    --_dot: 1.125rem;
+  }
+  .fa-swatch-picker[data-disabled] {
+    opacity: var(--disabled-opacity);
+  }
+
+  .fa-swatch-picker-item {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: calc(var(--_h) - var(--_pad) * 2);
+    height: calc(var(--_h) - var(--_pad) * 2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-full);
+    background-color: transparent;
+    cursor: pointer;
+    outline-offset: calc(var(--focus-ring-width) * -1);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-swatch-picker-item:hover:not([data-disabled], [data-pressed]) {
+    background-color: var(--fill-hover);
+  }
+  .fa-swatch-picker-item:active:not([data-disabled], [data-pressed]) {
+    background-color: var(--fill-press);
+  }
+  .fa-swatch-picker-item[data-pressed] {
+    cursor: default;
+  }
+  .fa-swatch-picker-item[data-disabled] {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+  }
+  .fa-swatch-picker[data-disabled] > .fa-swatch-picker-item[data-disabled] {
+    opacity: 1;
+  }
+
+  .fa-swatch-picker-dot {
+    width: var(--_dot);
+    height: var(--_dot);
+    border-radius: var(--radius-full);
+    background-image: linear-gradient(135deg, var(--accent), var(--accent-2));
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--_rim),
+      0 0 0 var(--border-width) var(--glass-edge);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-swatch-picker-dot[data-colour] {
+    background-color: var(--_swatch);
+    background-image: none;
+  }
+  /* The ring takes the page's accent, not the swatch's: it marks the choice, not the colour. */
+  .fa-swatch-picker-item[data-pressed] > .fa-swatch-picker-dot {
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--_rim),
+      0 0 0 calc(var(--border-width) * 2) var(--_gap),
+      0 0 0 calc(var(--border-width) * 4) var(--_ring);
+  }
+}

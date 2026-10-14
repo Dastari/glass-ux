@@ -1,0 +1,155 @@
+import { useEffect, useState } from "react"
+import { ContainerLab, Example, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
+import { Button } from "../../ui/button/index.js"
+import { Meter, MeterSkeleton } from "../../ui/meter/index.js"
+import { Progress, ProgressRing, ProgressSkeleton } from "../../ui/progress/index.js"
+
+function useTicking(start: number, step = 7) {
+  const [value, setValue] = useState(start)
+  useEffect(() => {
+    const timer = setInterval(() => setValue((current) => (current >= 100 ? 0 : Math.min(100, current + step))), 900)
+    return () => clearInterval(timer)
+  }, [step])
+  return value
+}
+
+export default function ProgressSection() {
+  const live = useTicking(18)
+  return (
+    <SectionPage>
+      <Specimen title="Task progress" description="Label and percentage, the bar, then data and the one action. Use it where the work is: a row, a card, a window status bar." layout="stack">
+        <div className="flex w-110 max-w-full flex-col gap-6">
+          <Progress
+            value={65}
+            label="Installing Google Chrome 129.0…"
+            meta="1 of 3 devices completed"
+            action={
+              <Button size="sm" variant="secondary">
+                Cancel
+              </Button>
+            }
+          />
+          <Progress value={live} label="Deploying Windows updates · KB5044284" meta={`${Math.round(live / 10)} of 10 endpoints`} />
+          <Progress value={null} label="Waiting for NST-C106 to reconnect" meta="Started 2 min ago" />
+        </div>
+      </Specimen>
+
+      <Specimen title="States" description="Complete turns success. A failed run stays in place in danger with its reason on the data line." layout="stack">
+        <div className="flex w-110 max-w-full flex-col gap-6">
+          <Progress value={100} label="Installed Google Chrome 129.0" meta="3 of 3 devices completed" />
+          <Progress value={42} tone="danger" label="Install failed on LMN-4E5E" meta="Installer exited with 1603 — retry when the endpoint is idle" />
+          <Progress value={30} size="sm" label="Uploading install.log" />
+          <Progress value={74} size="sm" aria-label="Disk scan" />
+        </div>
+      </Specimen>
+
+      <Specimen title="Ring" description="Inline at 16, standalone at 32, and 48 with the percentage. Indeterminate spins an arc.">
+        <Example label="sm · md · lg">
+          <ProgressRing size="sm" value={live} aria-label="Uploading install.log" />
+          <ProgressRing size="md" value={live} aria-label="Uploading install.log" />
+          <ProgressRing size="lg" value={live} aria-label="Uploading install.log" />
+        </Example>
+        <Example label="Indeterminate · complete · failed">
+          <ProgressRing value={null} aria-label="Connecting to STUDIO-VM" />
+          <ProgressRing value={100} aria-label="Upload complete" />
+          <ProgressRing value={60} tone="danger" aria-label="Upload failed" />
+        </Example>
+      </Specimen>
+
+      <Specimen title="Meter" description="Neutral while healthy, warning past 75% and danger past 90%. The tick marks where warning begins." layout="stack">
+        <div className="flex w-110 max-w-full flex-col gap-5">
+          <Meter value={98} max={256} label="D: · Data" valueText="98 GB of 256 GB" />
+          <Meter value={212} max={256} label="C: · Local disk" valueText="212 GB of 256 GB" />
+          <Meter value={7.4} max={7.8} label="Memory" valueText="7.4 GB of 7.8 GB" />
+        </div>
+      </Specimen>
+
+      <Specimen title="Inline meter" description="For table cells and dense lists: the bar, then the reading." layout="stack">
+        <div className="flex w-75 max-w-full flex-col gap-3">
+          <Meter layout="inline" value={34} aria-label="CPU" />
+          <Meter layout="inline" value={81} aria-label="Memory" />
+          <Meter layout="inline" value={96} aria-label="C: drive" />
+        </div>
+      </Specimen>
+
+      <Specimen title="Loading" description="Skeletons keep the exact rows: the head line, the track and the data line with its action." wide>
+        <div className="grid w-full grid-cols-2 gap-6">
+          <SwapSlot
+            id="progress"
+            skeleton={<ProgressSkeleton meta action />}
+            loaded={
+              <Progress
+                value={65}
+                label="Installing Google Chrome 129.0…"
+                meta="1 of 3 devices completed"
+                action={
+                  <Button size="sm" variant="secondary">
+                    Cancel
+                  </Button>
+                }
+              />
+            }
+          />
+          <SwapSlot id="meter" skeleton={<MeterSkeleton />} loaded={<Meter value={212} max={256} label="C: · Local disk" valueText="212 GB of 256 GB" />} />
+          <ProgressSkeleton meta action />
+          <Progress
+            value={65}
+            label="Installing Google Chrome 129.0…"
+            meta="1 of 3 devices completed"
+            action={
+              <Button size="sm" variant="secondary">
+                Cancel
+              </Button>
+            }
+          />
+          <MeterSkeleton />
+          <Meter value={212} max={256} label="C: · Local disk" valueText="212 GB of 256 GB" />
+        </div>
+      </Specimen>
+
+      <Specimen title="Over imagery" description="Tracks are fills, not glass, so they sit on any surface." backdrop>
+        <div className="flex w-110 max-w-full flex-col gap-5">
+          <Progress value={65} label="Installing Google Chrome 129.0…" meta="1 of 3 devices completed" />
+          <Meter value={212} max={256} label="C: · Local disk" valueText="212 GB of 256 GB" />
+        </div>
+      </Specimen>
+
+      <ContainerLab description="Bars take the container's width; labels and data lines truncate.">
+        {() => (
+          <div className="flex flex-col gap-3 p-2">
+            <Progress value={65} label="Installing Google Chrome 129.0…" meta="1 of 3 devices completed" />
+            <Meter value={212} max={256} label="C: · Local disk" valueText="212 GB of 256 GB" />
+          </div>
+        )}
+      </ContainerLab>
+
+      <Rules
+        do={[
+          "Show progress where the work is, in the row or card it belongs to.",
+          "Say what is happening and to what: “Installing Google Chrome 129.0”.",
+          "Use the data line for counts and the reason a run failed.",
+          "Use a meter for levels with a range, progress for work that finishes.",
+        ]}
+        dont={[
+          "Show a page-level or full-screen progress bar (R10.1).",
+          "Colour a healthy meter; warning and danger mean something.",
+          "Add a separate “Done!” message; complete turns success in place.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--fill-muted", "Track"],
+          ["--accent", "Progress fill (start)"],
+          ["--accent-2", "Progress fill (end)"],
+          ["--success", "Complete"],
+          ["--fg-subtle", "Healthy meter"],
+          ["--warning", "Meter past 75%"],
+          ["--danger", "Meter past 90%, failed run"],
+          ["--duration-slow", "Fill transition"],
+          ["--duration-shimmer", "Indeterminate sweep"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

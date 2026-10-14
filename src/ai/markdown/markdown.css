@@ -1,0 +1,216 @@
+/*
+ * Markdown — assistant prose.
+ *
+ * Type      prose reads at the subtitle size on a 24px line in wide containers and at the
+ *           body size on a 20px line in narrow ones (the docked pane). Headings scale down
+ *           for chat: h1 title, h2 subtitle, h3–h6 body, all semibold.
+ * Measure   paragraphs, lists and quotes stop at --measure (R5.6); in a conversation the
+ *           reading column is the measure (R5.4), so they fill it. Code and tables are
+ *           [data-breakout]: in a conversation they break out wider than the text.
+ * Rhythm    space between blocks only, never rules (R5.8); `---` renders as a dinkus.
+ *
+ * Component tokens
+ *   --_size / --_line   the prose type
+ *   --_gap              space between blocks
+ */
+@layer components {
+  .fa-ai-md {
+    --_size: var(--type-body-size);
+    --_line: calc(var(--unit) * 5.5);
+    --_gap: var(--space-3);
+    min-width: 0;
+    color: var(--fg);
+    font-size: var(--_size);
+    line-height: var(--_line);
+    overflow-wrap: break-word;
+  }
+  @container (width >= 34rem) {
+    .fa-ai-md {
+      --_size: var(--type-subtitle-size);
+      --_line: var(--space-6);
+      --_gap: var(--space-4);
+    }
+  }
+
+  /* Spacing between blocks. No universal sibling selectors (`* + *`, `h2 + *`): Chromium
+     cannot key their invalidation, so every node inserted anywhere in the document (a table
+     row mounting while scrolling) would re-style its siblings' subtrees. Structural
+     :not(:first-child) and class-keyed siblings stay local (docs/performance.md). */
+  .fa-ai-md > :where(:not(:first-child)) {
+    margin-top: var(--_gap);
+  }
+  .fa-ai-md :is(p, ul, ol, blockquote, h1, h2, h3, h4, h5, h6) {
+    max-width: var(--measure);
+  }
+  .fa-ai-conversation-column .fa-ai-md :is(p, ul, ol, blockquote, h1, h2, h3, h4, h5, h6) {
+    max-width: none;
+  }
+  .fa-ai-md p {
+    text-wrap: pretty;
+  }
+  .fa-ai-md strong {
+    font-weight: var(--weight-semibold);
+  }
+
+  .fa-ai-md :is(h1, h2, h3, h4, h5, h6) {
+    font-weight: var(--weight-semibold);
+    text-wrap: balance;
+  }
+  .fa-ai-md h1 {
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-line);
+    letter-spacing: var(--type-title-tracking);
+  }
+  .fa-ai-md h2 {
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    letter-spacing: var(--type-subtitle-tracking);
+  }
+  .fa-ai-md :is(h3, h4, h5, h6) {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-ai-md > .fa-ai-md-heading:where(:not(:first-child)) {
+    margin-top: calc(var(--_gap) + var(--space-2));
+  }
+  .fa-ai-md > .fa-ai-md-heading + * {
+    margin-top: var(--space-1-5);
+  }
+
+  /* Lists */
+  .fa-ai-md :is(ul, ol) {
+    padding-inline-start: var(--space-5);
+  }
+  .fa-ai-md ul {
+    list-style: disc;
+  }
+  .fa-ai-md ol {
+    list-style: decimal;
+  }
+  .fa-ai-md li {
+    padding-inline-start: var(--space-1);
+  }
+  .fa-ai-md li + li,
+  .fa-ai-md li > :is(ul, ol) {
+    margin-top: var(--space-1);
+  }
+  .fa-ai-md li::marker {
+    color: var(--fg-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-ai-md li > p + p {
+    margin-top: var(--space-2);
+  }
+  .fa-ai-md :is(ul, ol):has(> .task-list-item) {
+    padding-inline-start: 0;
+    list-style: none;
+  }
+  .fa-ai-md .task-list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding-inline-start: 0;
+  }
+  .fa-ai-task {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    margin-top: calc((var(--_line) - var(--icon-sm)) / 2);
+    border-radius: var(--radius-xs);
+    box-shadow: inset 0 0 0 var(--border-width-strong) var(--line-strong);
+    color: var(--accent-fg);
+  }
+  .fa-ai-task[data-checked] {
+    background-color: var(--accent);
+    box-shadow: none;
+  }
+  .fa-ai-task .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.4);
+  }
+
+  /* Quotes */
+  .fa-ai-md blockquote {
+    padding-inline-start: var(--space-3);
+    box-shadow: inset var(--border-width-strong) 0 0 var(--line-strong);
+    color: var(--fg-muted);
+  }
+  .fa-ai-md blockquote > :where(:not(:first-child)) {
+    margin-top: var(--space-2);
+  }
+
+  .fa-ai-md-break {
+    color: var(--fg-subtle);
+    letter-spacing: var(--space-2);
+    text-align: center;
+  }
+  .fa-ai-md-image {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--fg-muted);
+  }
+  .fa-ai-md-image .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+
+  /* Links */
+  .fa-ai-link {
+    color: var(--accent-text);
+    font-weight: var(--weight-medium);
+    text-decoration-line: underline;
+    text-decoration-color: color-mix(in oklab, var(--accent-text) 40%, transparent);
+    text-decoration-thickness: var(--border-width);
+    text-underline-offset: 0.2em; /* tokens:allow follows the font size */
+    border-radius: var(--radius-xs);
+    transition: text-decoration-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-ai-link:hover {
+    text-decoration-color: currentColor;
+  }
+  .fa-ai-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--space-half);
+  }
+  .fa-ai-link-external {
+    display: inline-block;
+    width: 0.8em; /* tokens:allow sized to the surrounding text */
+    height: 0.8em; /* tokens:allow sized to the surrounding text */
+    margin-inline-start: var(--space-half);
+    vertical-align: -0.05em; /* tokens:allow optical baseline */
+  }
+
+  /* Markdown tables size to their content (up to the column), unlike result tables. */
+  .fa-ai-md-table .fa-ai-table {
+    width: auto;
+  }
+  .fa-ai-md-table .fa-ai-table :is(th, td) {
+    padding-inline: var(--space-3) var(--space-6);
+  }
+
+  /* Breakouts: code and tables take the whole message column. */
+  .fa-ai-md > .fa-ai-code,
+  .fa-ai-md > .fa-ai-md-table {
+    max-width: none;
+  }
+  .fa-ai-md > :is(.fa-ai-code, .fa-ai-md-table):where(:not(:first-child)),
+  .fa-ai-md > .fa-ai-code + *,
+  .fa-ai-md > .fa-ai-md-table + * {
+    margin-top: var(--space-4);
+  }
+
+  /* Streaming caret: a static accent bar at the end of the answer so far (no blink, R18.2). */
+  .fa-ai-caret {
+    display: inline-block;
+    width: var(--space-half);
+    height: 1.1em; /* tokens:allow the text's cap-to-descender height */
+    margin-inline-start: var(--space-half);
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+    vertical-align: text-bottom;
+  }
+}

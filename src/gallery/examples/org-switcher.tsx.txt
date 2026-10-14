@@ -1,0 +1,52 @@
+import { useState } from "react";
+
+import { MOCK_ORGANISATIONS, toSwitcherOrganisation } from "glass-ux/gallery/fixtures/organisations";
+
+import { ContainerLab, Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { OrgSwitcher } from "glass-ux/shell/org-switcher/index";
+
+const ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
+
+const RECENT = ["cedarvale", "mossbridge", "orbit"];
+
+/** One switcher with its own state, so each specimen can be tried. */
+function Switcher({ initial }: {
+    initial: string | null;
+}) {
+    const [value, setValue] = useState<string | null>(initial);
+    return <OrgSwitcher organisations={ORGS} value={value} onValueChange={setValue} recent={RECENT}/>;
+}
+
+export default function OrgSwitcherSection() {
+    return (<SectionPage>
+      <Specimen title="Trigger" description="First in the top bar, after the logo, on the canvas. The organisation's avatar and name, All organisations when unscoped, and +N when a parent includes the organisations under it. The breadcrumb continues after it." wide>
+        <Example label="All organisations">
+          <Switcher initial={null}/>
+        </Example>
+        <Example label="One organisation">
+          <Switcher initial="cedarvale"/>
+        </Example>
+        <Example label="A parent includes its children">
+          <Switcher initial="northstar"/>
+        </Example>
+        <Example label="With a logo">
+          <Switcher initial="orbit"/>
+        </Example>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <ContainerLab title="Trigger in the container lab" description="The trigger truncates its name with a tooltip and never wraps.">
+        {() => <Switcher initial="cedarvale"/>}
+      </ContainerLab>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

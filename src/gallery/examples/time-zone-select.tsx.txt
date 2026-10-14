@@ -1,0 +1,51 @@
+import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Field } from "glass-ux/field";
+
+import { FormStack } from "glass-ux/form";
+
+import { TimeZoneSelect } from "glass-ux/time-zone-select";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+export default function TimeZoneSelectSection() {
+    return (<SectionPage>
+      <></>
+
+      <Specimen title="States" layout="grid">
+        <FormStack>
+          <Field label="Empty">
+            <TimeZoneSelect width="medium"/>
+          </Field>
+        </FormStack>
+        <FormStack>
+          <Field label="Disabled">
+            <TimeZoneSelect width="medium" defaultValue="Australia/Hobart" disabled/>
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <Field label="Time zone">
+          <TimeZoneSelect width="medium" defaultValue="Australia/Hobart"/>
+        </Field>
+      </Specimen>
+
+      <ContainerLab>
+        <div className="flex h-full items-center p-1">
+          <TimeZoneSelect size="sm" defaultValue="America/Argentina/Buenos_Aires" aria-label="Time zone"/>
+        </div>
+      </ContainerLab>
+
+      <Usage code={`
+import { timeZoneSchema } from "glass-ux/time-zone-select"
+
+const schema = z.object({ zone: timeZoneSchema({ required: true }) })   // "Australia/Hobart"
+
+<form.AppField name="zone">{(field) => <field.TimeZoneField label="Time zone" suggested={["Australia/Hobart", "UTC"]} />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

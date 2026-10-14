@@ -1,0 +1,23 @@
+---
+name: glass-ux-author
+description: Extend the Glass UX library with a reusable component, typed public API, documented examples and proportional interaction and accessibility checks.
+---
+
+# Extend the library
+
+Read repository `AGENTS.md`, `docs/ui-rules.md`, the nearest component implementation and its
+gallery section. Determine whether the proposed component is reusable across applications.
+Application branding, domain adapters and business workflows belong in the consuming project.
+
+Use Base UI for existing keyboard, focus, ARIA and positioning behaviour. Put a component in
+its own source folder with CSS, public exports and TSDoc. Use semantic tokens, compound slots
+where useful, data attributes for variants and container-based adaptation.
+
+Document controlled/uncontrolled state, value units, valid options, defaults, callbacks and
+keyboard behaviour. Add a live specimen with fictional fixtures, loaded/skeleton parity and
+relevant disabled, empty, invalid, pending and error states.
+
+Update the public package entry and API catalogue mapping. Run `pnpm docs:api`, `pnpm check`,
+the static docs build and affected browser tests. Verify the packed artifact when changing
+exports, dependencies or assets. Release and publication remain governed by the repository's
+versioned release workflow and the user's requested scope.

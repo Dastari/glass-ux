@@ -1,0 +1,1 @@
+{"type":"Feature","bbox":[-109.047,37,-102.04,41],"properties":{"code":"US-CO","country":"US","name":"Colorado","type":"State","focus":[-109.0466,36.9998,-102.0396,40.9998]},"geometry":{"type":"MultiPolygon","coordinates":[[[[-109.046,41],[-102.052,41],[-102.04,37],[-109.047,37],[-109.046,41]]]]}}

@@ -1,0 +1,41 @@
+/*
+ * Brand tones — the two colours of every BrandLogo (src/ui/brand), per palette and mode.
+ *
+ *   --brand-primary    the mark's colour half. The palette's accent: in light mode the accent
+ *                      itself (Orbit Workspace's is the brand red), in dark mode lifted so it
+ *                      keeps 3:1 against the dark canvas (R20.1, graphics).
+ *   --brand-secondary  the ink half: the brand charcoal on light canvases, near-white on dark.
+ *
+ * Graphite's accent is ink in light mode and paper in dark mode, so its secondary moves to a
+ * mid grey there to keep the two halves apart. Over imagery a mark is a bare svg, so it gets
+ * the canvas halo from glass.css like every icon.
+ *
+ * Re-declared on islands ([data-mode], [data-palette]) like the colour roles, so a mark with
+ * data-palette (BrandLogo tones="brand") takes that palette's tones in its nearest mode.
+ */
+@layer base {
+  /* Scoped like the colour roles (themes.css): the nearest data-mode wins, even on an element
+     that also carries data-palette. */
+  @scope (:root, [data-mode="light"]) {
+    :scope,
+    [data-palette] {
+      --brand-primary: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
+      --brand-secondary: oklch(0.42 calc(var(--neutral-c) * 0.5) var(--neutral-h));
+    }
+    :scope:is([data-palette="graphite"]),
+    [data-palette="graphite"] {
+      --brand-secondary: oklch(0.6 var(--neutral-c) var(--neutral-h));
+    }
+  }
+  @scope ([data-mode="dark"]) {
+    :scope,
+    [data-palette] {
+      --brand-primary: oklch(max(var(--accent-l), 0.64) var(--accent-c) var(--accent-h));
+      --brand-secondary: oklch(0.9 calc(var(--neutral-c) * 0.5) var(--neutral-h));
+    }
+    :scope:is([data-palette="graphite"]),
+    [data-palette="graphite"] {
+      --brand-secondary: oklch(0.66 var(--neutral-c) var(--neutral-h));
+    }
+  }
+}

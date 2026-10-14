@@ -1,0 +1,73 @@
+import { useState } from "react";
+
+import { z } from "zod";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Form, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+
+import { otpSchema, type OtpStatus } from "glass-ux/otp-field";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+/** The code the demo accepts. */
+const GOOD = "482913";
+
+function VerifyDemo() {
+    const [status, setStatus] = useState<OtpStatus | undefined>();
+    const form = useAppForm({
+        ...formBehaviour,
+        defaultValues: { code: "" },
+        validators: { onDynamic: z.object({ code: otpSchema() }) },
+        onSubmit: async ({ value }) => {
+            await wait(500);
+            if (value.code !== GOOD) {
+                setStatus("error");
+                throw new Error("That code is not right");
+            }
+            setStatus("success");
+        },
+    });
+    return (<Form form={form} aria-label="Verify" className="w-full" data-testid="otp-form">
+      <FormStack>
+        <form.AppField name="code" listeners={{ onChange: () => setStatus(undefined) }}>
+          {(field) => (<field.OtpField label="Verification code" hint={status === "error" ? "That code is not right. Check the app and try again." : `Enter the code from your authenticator (try ${GOOD}).`} autoSubmit status={status}/>)}
+        </form.AppField>
+        <div>
+          <form.SubmitButton>Verify</form.SubmitButton>
+        </div>
+      </FormStack>
+    </Form>);
+}
+
+export default function OtpFieldSection() {
+    const [code, setCode] = useState("");
+    return (<SectionPage>
+      <></>
+
+      <Specimen title="Submit on complete" description="With autoSubmit the last digit submits the form; the boxes show the outcome in place.">
+        <VerifyDemo />
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Usage code={`
+import { otpSchema } from "glass-ux/otp-field"
+
+const schema = z.object({ code: otpSchema() })   // "Enter the 6-digit code"
+
+<form.AppField name="code">
+  {(field) => <field.OtpField label="Verification code" autoSubmit status={refused ? "error" : undefined} />}
+</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

@@ -1,0 +1,156 @@
+import { ContainerLab, Rules, SectionPage, Specimen, TierBox, TierRow, TokenTable } from "../kit.js"
+import { BarChart, BYTES, ColumnChart, type BarChartProps } from "../../ui/charts/index.js"
+import { ORG_ENDPOINTS, PATCH_DAYS, PATCH_SERIES, PROCESSES } from "./charts.fixtures.js"
+import { SkeletonSwaps, Tile, TileGrid } from "./charts.kit.js"
+
+const MB = 1024 * 1024
+
+const processes: BarChartProps = {
+  label: "Top processes by memory · NST-C106",
+  title: "Memory by process",
+  orientation: "horizontal",
+  categories: PROCESSES.map((p) => p.label),
+  series: [{ key: "memory", label: "Working set", data: PROCESSES.map((p) => p.value * MB) }],
+  categoryLabel: "Process",
+  ...BYTES,
+}
+
+const patches: BarChartProps = {
+  label: "Updates installed per day · Northstar Studio · this week",
+  title: "Updates installed",
+  categories: PATCH_DAYS,
+  series: PATCH_SERIES,
+  layout: "stacked",
+  categoryLabel: "Day",
+}
+
+const grouped: BarChartProps = {
+  label: "Updates installed per day by classification",
+  title: "By classification",
+  categories: PATCH_DAYS,
+  series: PATCH_SERIES,
+  layout: "grouped",
+  categoryLabel: "Day",
+}
+
+const orgs: BarChartProps = {
+  label: "Endpoints by organisation, online and offline",
+  title: "Endpoints",
+  orientation: "horizontal",
+  layout: "stacked",
+  categories: ORG_ENDPOINTS.map((o) => o.label),
+  series: [
+    { key: "online", label: "Online", data: ORG_ENDPOINTS.map((o) => o.online) },
+    { key: "offline", label: "Offline", data: ORG_ENDPOINTS.map((o) => o.offline), tone: "neutral" },
+  ],
+  categoryLabel: "Organisation",
+}
+
+export default function ChartsBarsSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Ranked list, three tiers"
+        description="Top processes by memory. Label, bar and value on one row where there is width, the label above its bar where there is not; rows that do not fit fold into “+N more”. In a row it becomes mini columns with the leader as a trail."
+        wide
+      >
+        <TierRow testId="bar-processes">{() => <BarChart {...processes} />}</TierRow>
+      </Specimen>
+
+      <Specimen title="Columns: stacked and grouped" description="Stacked when the parts make a total (the tooltip adds it), grouped when the series compare. A 2px surface gap separates every touching mark; only the data end is rounded." wide>
+        <div className="charts-split">
+          <div className="charts-pane" data-testid="column-stacked">
+            <ColumnChart {...patches} />
+          </div>
+          <div className="charts-pane" data-testid="column-grouped">
+            <ColumnChart {...grouped} />
+          </div>
+        </div>
+      </Specimen>
+
+      <Specimen title="Stacked bars with status" description="Online and offline per organisation. Offline is a state, so it wears the neutral status tone, not a series hue." wide>
+        <div className="charts-pane" data-size="short" data-testid="bar-orgs">
+          <BarChart {...orgs} />
+        </div>
+      </Specimen>
+
+      <Specimen title="Dashboard tiles" description="Compact and passive: labels and values where they fit, no axes." wide>
+        <TileGrid>
+          <Tile>
+            <BarChart {...processes} />
+          </Tile>
+          <Tile>
+            <ColumnChart {...patches} />
+          </Tile>
+          <Tile>
+            <ColumnChart {...grouped} />
+          </Tile>
+          <Tile>
+            <BarChart {...orgs} />
+          </Tile>
+        </TileGrid>
+      </Specimen>
+
+      <Specimen title="Loading, empty and error" description="The skeleton draws columns or rows in the plot's exact box." wide>
+        <SkeletonSwaps id="column" render={(state) => <ColumnChart {...patches} state={state} />} />
+        <div className="gallery-tiers">
+          <TierBox size="compact" label="loading · ranked">
+            <BarChart {...processes} state="loading" />
+          </TierBox>
+          <TierBox size="compact" label="empty">
+            <BarChart {...processes} state="empty" emptyText="No processes reported" />
+          </TierBox>
+          <TierBox size="full" label="error">
+            <ColumnChart {...patches} state="error" errorText="Couldn’t load update history — retry in a moment" onRetry={() => undefined} />
+          </TierBox>
+        </div>
+      </Specimen>
+
+      <Specimen title="Over imagery" description="Labels and marks take the imagery halo." backdrop>
+        <TierBox size="compact" label="compact">
+          <BarChart {...processes} />
+        </TierBox>
+        <TierBox size="compact" label="compact">
+          <ColumnChart {...patches} />
+        </TierBox>
+      </Specimen>
+
+      <ContainerLab description="micro mini columns in the row and header, label-above rows in the tall column, label · bar · value rows in the pane.">
+        {() => <BarChart {...processes} />}
+      </ContainerLab>
+
+      <ContainerLab title="Container lab — stacked columns" description="The stacked column chart at the same five sizes.">
+        {() => <ColumnChart {...patches} />}
+      </ContainerLab>
+
+      <Rules
+        do={[
+          "Use bars for ranked lists and columns for time or order.",
+          "Sort a ranked list largest first and label the values at the tips.",
+          "Stack only parts of a total; group when series compare.",
+          "Start every bar at zero.",
+        ]}
+        dont={[
+          "Colour bars by their value; one series is one colour.",
+          "Make a bar thicker than 24px to fill space; let the band breathe.",
+          "Rotate category labels; truncate them or switch to bars.",
+          "Draw a border around a bar; the surface gap separates.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--chart-1", "Series slot 1"],
+          ["--chart-2", "Series slot 2"],
+          ["--chart-3", "Series slot 3"],
+          ["--chart-bar-max", "Maximum bar thickness"],
+          ["--chart-bar-radius", "Rounded data end"],
+          ["--chart-gap", "Surface gap between marks"],
+          ["--chart-sheen-mix", "Light from above on bars"],
+          ["--chart-track", "Row track behind ranked bars"],
+          ["--fill-hover", "Hovered band"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

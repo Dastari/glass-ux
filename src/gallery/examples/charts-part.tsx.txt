@@ -1,0 +1,143 @@
+import { ContainerLab, Rules, SectionPage, Specimen, TierBox, TierRow, TokenTable } from "glass-ux/gallery/kit"
+import { DonutChart, Gauge, PieChart, RadialBar, type PieChartProps } from "glass-ux/charts"
+import { COMPLIANCE, OPERATING_SYSTEMS, RESOURCES } from "glass-ux/gallery/sections/charts.fixtures"
+import { SkeletonSwaps, Tile, TileGrid } from "glass-ux/gallery/sections/charts.kit"
+
+const compliance: PieChartProps = {
+  label: "Patch compliance · Northstar Studio · 137 endpoints",
+  title: "Patch compliance",
+  data: COMPLIANCE,
+  centre: { value: "82%", label: "Compliant" },
+  categoryLabel: "State",
+}
+
+const os: PieChartProps = {
+  label: "Operating systems across the fleet",
+  title: "Operating systems",
+  data: OPERATING_SYSTEMS,
+  totalLabel: "Endpoints",
+  categoryLabel: "Operating system",
+}
+
+const disk = { label: "C: · NST-C106", title: "C: · Local disk", value: 82, unit: "%", caption: "210 GB of 256 GB" }
+
+export default function ChartsPartSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Donut, three tiers"
+        description="Patch compliance is status data, so its parts wear the status tones. In a row it is a proportion strip; in a tile the ring and its key; in a pane the ring, the centre readout and a list. Hover a slice or its row: the centre shows it."
+        wide
+      >
+        <TierRow testId="donut-compliance">{() => <DonutChart {...compliance} />}</TierRow>
+      </Specimen>
+
+      <Specimen title="Categorical parts" description="Operating systems wear the series slots in order. Six slices at most; the tail folds into “Other”." wide>
+        <div className="charts-split">
+          <div className="charts-pane" data-size="short" data-testid="donut-os">
+            <DonutChart {...os} />
+          </div>
+          <div className="charts-pane" data-size="short" data-testid="pie-os">
+            <PieChart {...os} title="Operating systems · pie" />
+          </div>
+        </div>
+      </Specimen>
+
+      <Specimen title="Gauge" description="A level in a known range, with Meter's thresholds and semantics: neutral while healthy, warning from 75%, danger from 90%, the thresholds ticked beside the track. A value that is not a state wears the data colour." wide>
+        <TierRow testId="gauge-disk">{() => <Gauge {...disk} />}</TierRow>
+        <div className="gallery-tiers">
+          <TierBox size="compact" label="healthy">
+            <Gauge label="Memory · NST-C106" title="Memory" value={52} unit="%" caption="4.1 GB of 7.8 GB" />
+          </TierBox>
+          <TierBox size="compact" label="danger">
+            <Gauge label="D: · NST-SERVER" title="D: · Data" value={94} unit="%" caption="1.88 TB of 2 TB" />
+          </TierBox>
+          <TierBox size="compact" label="not a state">
+            <Gauge label="Licence seats · Microsoft 365 Business Premium" title="Licence seats" value={41} max={50} warningAt={null} dangerAt={null} caption="41 of 50 assigned" />
+          </TierBox>
+        </div>
+      </Specimen>
+
+      <Specimen title="Radial bars" description="Several levels at once, outermost first. With thresholds, a ring past one takes the status tone." wide>
+        <TierRow testId="radial-resources">{() => <RadialBar label="Resources · NST-C106" title="Resources" data={RESOURCES} unit="%" warningAt={0.9} dangerAt={0.95} />}</TierRow>
+      </Specimen>
+
+      <Specimen title="Dashboard tiles" wide>
+        <TileGrid>
+          <Tile>
+            <DonutChart {...compliance} />
+          </Tile>
+          <Tile>
+            <Gauge {...disk} />
+          </Tile>
+          <Tile>
+            <RadialBar label="Resources · NST-C106" title="Resources" data={RESOURCES} unit="%" />
+          </Tile>
+          <Tile>
+            <DonutChart {...os} />
+          </Tile>
+        </TileGrid>
+      </Specimen>
+
+      <Specimen title="Loading, empty and error" description="The skeleton is the ring in its exact box." wide>
+        <SkeletonSwaps id="donut" render={(state) => <DonutChart {...compliance} state={state} />} />
+        <div className="gallery-tiers">
+          <TierBox size="compact" label="gauge loading">
+            <Gauge {...disk} state="loading" />
+          </TierBox>
+          <TierBox size="compact" label="empty">
+            <DonutChart {...compliance} state="empty" emptyText="No endpoints have reported" />
+          </TierBox>
+          <TierBox size="compact" label="error">
+            <Gauge {...disk} state="error" errorText="NST-C106 is offline" />
+          </TierBox>
+        </div>
+      </Specimen>
+
+      <Specimen title="Over imagery" backdrop>
+        <TierBox size="compact" label="donut">
+          <DonutChart {...compliance} />
+        </TierBox>
+        <TierBox size="compact" label="gauge">
+          <Gauge {...disk} />
+        </TierBox>
+      </Specimen>
+
+      <ContainerLab description="A strip in the row and header, the ring with its key in the tile, ring above list in the tall column, ring, centre and list in the pane.">
+        {() => <DonutChart {...compliance} />}
+      </ContainerLab>
+
+      <ContainerLab title="Container lab — gauge" description="An inline meter in the row and header; the arc everywhere else.">
+        {() => <Gauge {...disk} />}
+      </ContainerLab>
+
+      <Rules
+        do={[
+          "Use a donut for a part-to-whole of six parts or fewer.",
+          "Put the one number that matters in the centre.",
+          "Use status tones when the parts are states, slots when they are kinds.",
+          "Use a gauge for one level in a known range.",
+        ]}
+        dont={[
+          "Compare close values in a pie; use bars.",
+          "Make a two-slice pie; show the number.",
+          "Label every slice on the ring; the list and the centre carry them.",
+          "Use a gauge for a value with no maximum.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--chart-1", "Slot 1, and a gauge whose value is not a state"],
+          ["--chart-track", "Gauge and radial tracks"],
+          ["--success", "Compliant"],
+          ["--warning", "Pending, gauge ≥ 75%"],
+          ["--danger", "Missing, gauge ≥ 90%"],
+          ["--fg-subtle", "Not reporting, Other"],
+          ["--type-display-size", "Large centre value"],
+          ["--type-headline-size", "Centre value"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

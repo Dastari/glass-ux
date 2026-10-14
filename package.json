@@ -1,0 +1,604 @@
+{
+  "name": "glass-ux",
+  "version": "0.1.0",
+  "description": "A typed React design system for glass interfaces, data applications and assistant experiences.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dastari/glass-ux.git"
+  },
+  "homepage": "https://dastari.github.io/glass-ux/",
+  "bugs": "https://github.com/Dastari/glass-ux/issues",
+  "packageManager": "pnpm@11.21.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "README.md",
+    "LICENSE",
+    "AGENTS.md",
+    "llms.txt",
+    "skills",
+    "bin"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./button": {
+      "types": "./dist/ui/button/index.d.ts",
+      "import": "./dist/ui/button/index.js"
+    },
+    "./field": {
+      "types": "./dist/ui/field/index.d.ts",
+      "import": "./dist/ui/field/index.js"
+    },
+    "./setting-row": {
+      "types": "./dist/ui/setting-row/index.d.ts",
+      "import": "./dist/ui/setting-row/index.js"
+    },
+    "./input": {
+      "types": "./dist/ui/input/index.d.ts",
+      "import": "./dist/ui/input/index.js"
+    },
+    "./time-zone-select": {
+      "types": "./dist/ui/time-zone-select/index.d.ts",
+      "import": "./dist/ui/time-zone-select/index.js"
+    },
+    "./vertical-tabs": {
+      "types": "./dist/ui/vertical-tabs/index.d.ts",
+      "import": "./dist/ui/vertical-tabs/index.js"
+    },
+    "./date-picker": {
+      "types": "./dist/ui/date-picker/index.d.ts",
+      "import": "./dist/ui/date-picker/index.js"
+    },
+    "./charts": {
+      "types": "./dist/ui/charts/index.d.ts",
+      "import": "./dist/ui/charts/index.js"
+    },
+    "./data-table": {
+      "types": "./dist/ui/data-table/index.d.ts",
+      "import": "./dist/ui/data-table/index.js"
+    },
+    "./context-menu": {
+      "types": "./dist/ui/context-menu/index.d.ts",
+      "import": "./dist/ui/context-menu/index.js"
+    },
+    "./mac-field": {
+      "types": "./dist/ui/mac-field/index.d.ts",
+      "import": "./dist/ui/mac-field/index.js"
+    },
+    "./money-field": {
+      "types": "./dist/ui/money-field/index.d.ts",
+      "import": "./dist/ui/money-field/index.js"
+    },
+    "./dialog": {
+      "types": "./dist/ui/dialog/index.d.ts",
+      "import": "./dist/ui/dialog/index.js"
+    },
+    "./file-drop": {
+      "types": "./dist/ui/file-drop/index.d.ts",
+      "import": "./dist/ui/file-drop/index.js"
+    },
+    "./tree": {
+      "types": "./dist/ui/tree/index.d.ts",
+      "import": "./dist/ui/tree/index.js"
+    },
+    "./otp-field": {
+      "types": "./dist/ui/otp-field/index.d.ts",
+      "import": "./dist/ui/otp-field/index.js"
+    },
+    "./switch": {
+      "types": "./dist/ui/switch/index.d.ts",
+      "import": "./dist/ui/switch/index.js"
+    },
+    "./url-field": {
+      "types": "./dist/ui/url-field/index.d.ts",
+      "import": "./dist/ui/url-field/index.js"
+    },
+    "./detail-tile": {
+      "types": "./dist/ui/detail-tile/index.d.ts",
+      "import": "./dist/ui/detail-tile/index.js"
+    },
+    "./percent-field": {
+      "types": "./dist/ui/percent-field/index.d.ts",
+      "import": "./dist/ui/percent-field/index.js"
+    },
+    "./icon": {
+      "types": "./dist/ui/icon/index.d.ts",
+      "import": "./dist/ui/icon/index.js"
+    },
+    "./sheet": {
+      "types": "./dist/ui/sheet/index.d.ts",
+      "import": "./dist/ui/sheet/index.js"
+    },
+    "./brand": {
+      "types": "./dist/ui/brand/index.d.ts",
+      "import": "./dist/ui/brand/index.js"
+    },
+    "./address-field": {
+      "types": "./dist/ui/address-field/index.d.ts",
+      "import": "./dist/ui/address-field/index.js"
+    },
+    "./combobox": {
+      "types": "./dist/ui/combobox/index.d.ts",
+      "import": "./dist/ui/combobox/index.js"
+    },
+    "./tabs": {
+      "types": "./dist/ui/tabs/index.d.ts",
+      "import": "./dist/ui/tabs/index.js"
+    },
+    "./autocomplete": {
+      "types": "./dist/ui/autocomplete/index.d.ts",
+      "import": "./dist/ui/autocomplete/index.js"
+    },
+    "./entity-settings": {
+      "types": "./dist/ui/entity-settings/index.d.ts",
+      "import": "./dist/ui/entity-settings/index.js"
+    },
+    "./skeleton": {
+      "types": "./dist/ui/skeleton/index.d.ts",
+      "import": "./dist/ui/skeleton/index.js"
+    },
+    "./phone-field": {
+      "types": "./dist/ui/phone-field/index.d.ts",
+      "import": "./dist/ui/phone-field/index.js"
+    },
+    "./byte-size-field": {
+      "types": "./dist/ui/byte-size-field/index.d.ts",
+      "import": "./dist/ui/byte-size-field/index.js"
+    },
+    "./entity": {
+      "types": "./dist/ui/entity/index.d.ts",
+      "import": "./dist/ui/entity/index.js"
+    },
+    "./menu": {
+      "types": "./dist/ui/menu/index.d.ts",
+      "import": "./dist/ui/menu/index.js"
+    },
+    "./notice": {
+      "types": "./dist/ui/notice/index.d.ts",
+      "import": "./dist/ui/notice/index.js"
+    },
+    "./tooltip": {
+      "types": "./dist/ui/tooltip/index.d.ts",
+      "import": "./dist/ui/tooltip/index.js"
+    },
+    "./badge": {
+      "types": "./dist/ui/badge/index.d.ts",
+      "import": "./dist/ui/badge/index.js"
+    },
+    "./popover": {
+      "types": "./dist/ui/popover/index.d.ts",
+      "import": "./dist/ui/popover/index.js"
+    },
+    "./meter": {
+      "types": "./dist/ui/meter/index.d.ts",
+      "import": "./dist/ui/meter/index.js"
+    },
+    "./pagination": {
+      "types": "./dist/ui/pagination/index.d.ts",
+      "import": "./dist/ui/pagination/index.js"
+    },
+    "./alert-dialog": {
+      "types": "./dist/ui/alert-dialog/index.d.ts",
+      "import": "./dist/ui/alert-dialog/index.js"
+    },
+    "./select": {
+      "types": "./dist/ui/select/index.d.ts",
+      "import": "./dist/ui/select/index.js"
+    },
+    "./scroll-area": {
+      "types": "./dist/ui/scroll-area/index.d.ts",
+      "import": "./dist/ui/scroll-area/index.js"
+    },
+    "./accordion": {
+      "types": "./dist/ui/accordion/index.d.ts",
+      "import": "./dist/ui/accordion/index.js"
+    },
+    "./progress": {
+      "types": "./dist/ui/progress/index.d.ts",
+      "import": "./dist/ui/progress/index.js"
+    },
+    "./number-field": {
+      "types": "./dist/ui/number-field/index.d.ts",
+      "import": "./dist/ui/number-field/index.js"
+    },
+    "./actions": {
+      "types": "./dist/ui/actions/index.d.ts",
+      "import": "./dist/ui/actions/index.js"
+    },
+    "./truncated-text": {
+      "types": "./dist/ui/truncated-text/index.d.ts",
+      "import": "./dist/ui/truncated-text/index.js"
+    },
+    "./map": {
+      "types": "./dist/ui/map/index.d.ts",
+      "import": "./dist/ui/map/index.js"
+    },
+    "./email-field": {
+      "types": "./dist/ui/email-field/index.d.ts",
+      "import": "./dist/ui/email-field/index.js"
+    },
+    "./command-palette": {
+      "types": "./dist/ui/command-palette/index.d.ts",
+      "import": "./dist/ui/command-palette/index.js"
+    },
+    "./ip-field": {
+      "types": "./dist/ui/ip-field/index.d.ts",
+      "import": "./dist/ui/ip-field/index.js"
+    },
+    "./duration-field": {
+      "types": "./dist/ui/duration-field/index.d.ts",
+      "import": "./dist/ui/duration-field/index.js"
+    },
+    "./radio": {
+      "types": "./dist/ui/radio/index.d.ts",
+      "import": "./dist/ui/radio/index.js"
+    },
+    "./surface": {
+      "types": "./dist/ui/surface/index.d.ts",
+      "import": "./dist/ui/surface/index.js"
+    },
+    "./copy-button": {
+      "types": "./dist/ui/copy-button/index.d.ts",
+      "import": "./dist/ui/copy-button/index.js"
+    },
+    "./slider": {
+      "types": "./dist/ui/slider/index.d.ts",
+      "import": "./dist/ui/slider/index.js"
+    },
+    "./textarea": {
+      "types": "./dist/ui/textarea/index.d.ts",
+      "import": "./dist/ui/textarea/index.js"
+    },
+    "./separator": {
+      "types": "./dist/ui/separator/index.d.ts",
+      "import": "./dist/ui/separator/index.js"
+    },
+    "./reference-input": {
+      "types": "./dist/ui/reference-input/index.d.ts",
+      "import": "./dist/ui/reference-input/index.js"
+    },
+    "./kbd": {
+      "types": "./dist/ui/kbd/index.d.ts",
+      "import": "./dist/ui/kbd/index.js"
+    },
+    "./coordinates-field": {
+      "types": "./dist/ui/coordinates-field/index.d.ts",
+      "import": "./dist/ui/coordinates-field/index.js"
+    },
+    "./toast": {
+      "types": "./dist/ui/toast/index.d.ts",
+      "import": "./dist/ui/toast/index.js"
+    },
+    "./checkbox": {
+      "types": "./dist/ui/checkbox/index.d.ts",
+      "import": "./dist/ui/checkbox/index.js"
+    },
+    "./segmented": {
+      "types": "./dist/ui/segmented/index.d.ts",
+      "import": "./dist/ui/segmented/index.js"
+    },
+    "./swatch-picker": {
+      "types": "./dist/ui/swatch-picker/index.d.ts",
+      "import": "./dist/ui/swatch-picker/index.js"
+    },
+    "./password-field": {
+      "types": "./dist/ui/password-field/index.d.ts",
+      "import": "./dist/ui/password-field/index.js"
+    },
+    "./port-field": {
+      "types": "./dist/ui/port-field/index.d.ts",
+      "import": "./dist/ui/port-field/index.js"
+    },
+    "./metric": {
+      "types": "./dist/ui/metric/index.d.ts",
+      "import": "./dist/ui/metric/index.js"
+    },
+    "./topology": {
+      "types": "./dist/ui/topology/index.d.ts",
+      "import": "./dist/ui/topology/index.js"
+    },
+    "./empty-state": {
+      "types": "./dist/ui/empty-state/index.d.ts",
+      "import": "./dist/ui/empty-state/index.js"
+    },
+    "./avatar": {
+      "types": "./dist/ui/avatar/index.d.ts",
+      "import": "./dist/ui/avatar/index.js"
+    },
+    "./country-select": {
+      "types": "./dist/ui/country-select/index.d.ts",
+      "import": "./dist/ui/country-select/index.js"
+    },
+    "./hostname-field": {
+      "types": "./dist/ui/hostname-field/index.d.ts",
+      "import": "./dist/ui/hostname-field/index.js"
+    },
+    "./breadcrumb": {
+      "types": "./dist/ui/breadcrumb/index.d.ts",
+      "import": "./dist/ui/breadcrumb/index.js"
+    },
+    "./multi-select": {
+      "types": "./dist/ui/multi-select/index.d.ts",
+      "import": "./dist/ui/multi-select/index.js"
+    },
+    "./tag-input": {
+      "types": "./dist/ui/tag-input/index.d.ts",
+      "import": "./dist/ui/tag-input/index.js"
+    },
+    "./form": {
+      "types": "./dist/ui/form/index.d.ts",
+      "import": "./dist/ui/form/index.js"
+    },
+    "./sparkline": {
+      "types": "./dist/ui/sparkline/index.d.ts",
+      "import": "./dist/ui/sparkline/index.js"
+    },
+    "./ai": {
+      "types": "./dist/ai/index.d.ts",
+      "import": "./dist/ai/index.js"
+    },
+    "./shell": {
+      "types": "./dist/shell/index.d.ts",
+      "import": "./dist/shell/index.js"
+    },
+    "./windows": {
+      "types": "./dist/windows/index.d.ts",
+      "import": "./dist/windows/index.js"
+    },
+    "./gallery": {
+      "types": "./dist/gallery/index.d.ts",
+      "import": "./dist/gallery/index.js"
+    },
+    "./appearance": {
+      "types": "./dist/lib/appearance/index.d.ts",
+      "import": "./dist/lib/appearance/index.js"
+    },
+    "./icons": {
+      "types": "./dist/icons/generated/icons.d.ts",
+      "import": "./dist/icons/generated/icons.js"
+    },
+    "./ui/*": {
+      "types": "./dist/ui/*.d.ts",
+      "import": "./dist/ui/*.js"
+    },
+    "./ai/*": {
+      "types": "./dist/ai/*.d.ts",
+      "import": "./dist/ai/*.js"
+    },
+    "./shell/*": {
+      "types": "./dist/shell/*.d.ts",
+      "import": "./dist/shell/*.js"
+    },
+    "./windows/*": {
+      "types": "./dist/windows/*.d.ts",
+      "import": "./dist/windows/*.js"
+    },
+    "./lib/*": {
+      "types": "./dist/lib/*.d.ts",
+      "import": "./dist/lib/*.js"
+    },
+    "./icons/*": {
+      "types": "./dist/icons/*.d.ts",
+      "import": "./dist/icons/*.js"
+    },
+    "./gallery/*": {
+      "types": "./dist/gallery/*.d.ts",
+      "import": "./dist/gallery/*.js"
+    },
+    "./styles.css": "./dist/styles/library.css",
+    "./gallery/styles.css": "./dist/gallery/styles.css",
+    "./styles/*": "./dist/styles/*",
+    "./package.json": "./package.json",
+    "./ai/table": {
+      "types": "./dist/ai/table/index.d.ts",
+      "import": "./dist/ai/table/index.js"
+    },
+    "./ai/blocks": {
+      "types": "./dist/ai/blocks/index.d.ts",
+      "import": "./dist/ai/blocks/index.js"
+    },
+    "./ai/sources": {
+      "types": "./dist/ai/sources/index.d.ts",
+      "import": "./dist/ai/sources/index.js"
+    },
+    "./ai/surface": {
+      "types": "./dist/ai/surface/index.d.ts",
+      "import": "./dist/ai/surface/index.js"
+    },
+    "./ai/results": {
+      "types": "./dist/ai/results/index.d.ts",
+      "import": "./dist/ai/results/index.js"
+    },
+    "./ai/pane": {
+      "types": "./dist/ai/pane/index.d.ts",
+      "import": "./dist/ai/pane/index.js"
+    },
+    "./ai/message": {
+      "types": "./dist/ai/message/index.d.ts",
+      "import": "./dist/ai/message/index.js"
+    },
+    "./ai/conversation": {
+      "types": "./dist/ai/conversation/index.d.ts",
+      "import": "./dist/ai/conversation/index.js"
+    },
+    "./ai/composer": {
+      "types": "./dist/ai/composer/index.d.ts",
+      "import": "./dist/ai/composer/index.js"
+    },
+    "./ai/code-block": {
+      "types": "./dist/ai/code-block/index.d.ts",
+      "import": "./dist/ai/code-block/index.js"
+    },
+    "./ai/card": {
+      "types": "./dist/ai/card/index.d.ts",
+      "import": "./dist/ai/card/index.js"
+    },
+    "./ai/entity-chip": {
+      "types": "./dist/ai/entity-chip/index.d.ts",
+      "import": "./dist/ai/entity-chip/index.js"
+    },
+    "./ai/session-nav": {
+      "types": "./dist/ai/session-nav/index.d.ts",
+      "import": "./dist/ai/session-nav/index.js"
+    },
+    "./ai/json-tree": {
+      "types": "./dist/ai/json-tree/index.d.ts",
+      "import": "./dist/ai/json-tree/index.js"
+    },
+    "./ai/inspector": {
+      "types": "./dist/ai/inspector/index.d.ts",
+      "import": "./dist/ai/inspector/index.js"
+    },
+    "./ai/asks": {
+      "types": "./dist/ai/asks/index.d.ts",
+      "import": "./dist/ai/asks/index.js"
+    },
+    "./ai/landing": {
+      "types": "./dist/ai/landing/index.d.ts",
+      "import": "./dist/ai/landing/index.js"
+    },
+    "./ai/tool-activity": {
+      "types": "./dist/ai/tool-activity/index.d.ts",
+      "import": "./dist/ai/tool-activity/index.js"
+    },
+    "./ai/ai-mark": {
+      "types": "./dist/ai/ai-mark/index.d.ts",
+      "import": "./dist/ai/ai-mark/index.js"
+    },
+    "./ai/desktop": {
+      "types": "./dist/ai/desktop/index.d.ts",
+      "import": "./dist/ai/desktop/index.js"
+    },
+    "./ai/reasoning": {
+      "types": "./dist/ai/reasoning/index.d.ts",
+      "import": "./dist/ai/reasoning/index.js"
+    },
+    "./ai/markdown": {
+      "types": "./dist/ai/markdown/index.d.ts",
+      "import": "./dist/ai/markdown/index.js"
+    },
+    "./ai/status-strip": {
+      "types": "./dist/ai/status-strip/index.d.ts",
+      "import": "./dist/ai/status-strip/index.js"
+    },
+    "./shell/org-switcher": {
+      "types": "./dist/shell/org-switcher/index.d.ts",
+      "import": "./dist/shell/org-switcher/index.js"
+    },
+    "./lib/appearance": {
+      "types": "./dist/lib/appearance/index.d.ts",
+      "import": "./dist/lib/appearance/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
+    },
+    "./icons/svg/*": "./dist/icons/svg/*",
+    "./assets/*": "./dist/assets/*"
+  },
+  "peerDependencies": {
+    "react": ">=19 <20",
+    "react-dom": ">=19 <20"
+  },
+  "dependencies": {
+    "@base-ui/react": "1.9.0",
+    "@tanstack/react-form": "^1.33.5",
+    "@tanstack/react-router": "1.170.43",
+    "@tanstack/react-table": "9.3.1",
+    "@tanstack/react-virtual": "3.14.17",
+    "clsx": "^2.1.1",
+    "country-flag-icons": "^1.6.20",
+    "d3-array": "^3.2.4",
+    "d3-hierarchy": "^3.1.2",
+    "d3-scale": "^4.0.2",
+    "d3-shape": "^3.2.0",
+    "libphonenumber-js": "^1.13.15",
+    "maplibre-gl": "6.14.0",
+    "react-markdown": "^10.1.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
+    "shiki": "^4.5.0",
+    "zod": "^4.6.6"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@capsizecss/core": "^4.1.3",
+    "@capsizecss/metrics": "^4.3.0",
+    "@maplibre/geojson-vt": "6.1.2",
+    "@maplibre/maplibre-gl-style-spec": "26.4.4",
+    "@playwright/test": "1.64.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/d3-array": "^3.2.2",
+    "@types/d3-hierarchy": "^3.1.7",
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-shape": "^3.2.0",
+    "@types/geojson": "7946.0.16",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "jsdom": "^30.1.2",
+    "oxlint": "^1.87.0",
+    "prettier": "^3.9.10",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "sharp": "^0.35.5",
+    "tailwindcss": "4.3.3",
+    "typescript": "~6.0.3",
+    "vite": "8.3.4",
+    "vitest": "^5.0.3",
+    "typedoc": "0.28.20",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/dm-sans": "^5.3.0",
+    "@fontsource-variable/figtree": "^5.3.0",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@fontsource-variable/ibm-plex-sans": "^5.3.0",
+    "@fontsource-variable/inter-tight": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource-variable/onest": "^5.3.1",
+    "@fontsource-variable/outfit": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run --maxWorkers=4",
+    "lint": "oxlint --deny-warnings src scripts apps/docs/src e2e",
+    "docs:api": "node scripts/docs-api.mjs",
+    "docs:build": "pnpm run docs:api && pnpm run build && pnpm --filter glass-ux-docs build && node scripts/docs-site.mjs",
+    "dev": "pnpm --filter glass-ux-docs dev",
+    "check": "pnpm run styles:check && pnpm run icons:check && pnpm run fonts:check && pnpm run tokens:check && pnpm run css-perf:check && pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run boundaries:check && pnpm run docs:check",
+    "boundaries:check": "node scripts/check-boundaries.mjs",
+    "docs:check": "node scripts/check-docs.mjs",
+    "test:e2e": "playwright test",
+    "pack:release": "pnpm run docs:build && pnpm pack --pack-destination .handoff",
+    "styles": "node scripts/build-styles.mjs",
+    "icons": "node scripts/build-icons.mjs",
+    "icons:check": "node scripts/build-icons.mjs --check",
+    "styles:check": "node scripts/build-styles.mjs --check",
+    "tokens:check": "node scripts/check-tokens.mjs",
+    "css-perf:check": "node scripts/check-css-perf.mjs",
+    "fonts": "node scripts/build-fonts.mjs",
+    "fonts:check": "node scripts/build-fonts.mjs --check"
+  },
+  "bin": {
+    "glass-ux": "./bin/glass-ux.mjs"
+  }
+}

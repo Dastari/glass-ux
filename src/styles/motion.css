@@ -1,0 +1,168 @@
+/*
+ * Glass UX motion — keyframes and the shared vocabulary.
+ *
+ *   enter   overlays scale from --overlay-enter-scale and rise --overlay-enter-shift,
+ *           --duration-base on --ease-enter
+ *   exit    the reverse at --duration-fast on --ease-exit
+ *   state   colour, fill and border changes: --duration-fast on --ease-standard
+ *   press   transform scale(--press-scale) for --duration-instant
+ *   confirm a stroke drawn on --ease-spring (the ✓ in a button)
+ *   grow    a data mark arriving from its baseline (fa-grow): columns scaleY, bars scaleX,
+ *           rings scale, set per element in --_grow-from; --duration-slower on --ease-enter
+ *
+ *   live    a halo that keeps pulsing while something is live (fa-pulse-halo): scale and
+ *           opacity on a ring of its own (a ::after the size of the dot, filled with --_pulse)
+ *
+ * Every duration is multiplied by --motion-scale, so reduced motion is one knob.
+ * Skeleton shimmer is attached to the viewport so every skeleton on the page sweeps in
+ * the same beat.
+ *
+ * Performance (docs/performance.md): an animation that repeats forever animates only
+ * transform and opacity, which the compositor runs without the main thread. Animating
+ * box-shadow, colours or sizes forever restyles and repaints the page on every frame for as
+ * long as it is on screen. Hidden faces (a button's pending spinner) animate only while
+ * shown.
+ */
+
+@layer base {
+  @keyframes fa-shimmer {
+    from {
+      background-position: -60vw 0;
+    }
+    to {
+      background-position: 60vw 0;
+    }
+  }
+  @keyframes fa-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes fa-draw {
+    from {
+      stroke-dashoffset: var(--_len, 24);
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes fa-pop {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes fa-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-3px);
+    }
+    40% {
+      transform: translateX(3px);
+    }
+    60% {
+      transform: translateX(-2px);
+    }
+    80% {
+      transform: translateX(2px);
+    }
+  }
+  /* Infinite "live" pulse, compositor-only: scale a ring filled with --_pulse out to the
+     old ring's 6px spread around the dot (2.5x) while it fades. */
+  @keyframes fa-pulse-halo {
+    from {
+      transform: scale(1);
+      opacity: 1;
+    }
+    to {
+      transform: scale(2.5);
+      opacity: 0;
+    }
+  }
+  /* A few pulses (box-shadow, so it repaints): only with a finite iteration count. For an
+     infinite pulse use fa-pulse-halo. */
+  @keyframes fa-pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 var(--_pulse, var(--success-line));
+    }
+    100% {
+      box-shadow: 0 0 0 6px transparent;
+    }
+  }
+  @keyframes fa-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes fa-rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--overlay-enter-shift));
+    }
+  }
+  /* A data mark growing from its baseline. The element says from what, in --_grow-from:
+     scaleY(0) for a column (transform-origin at its baseline), scaleX(0) for a bar,
+     scale(0.92) for a ring. Stopped with every other keyframe by the motion switch below. */
+  @keyframes fa-grow {
+    from {
+      transform: var(--_grow-from, scaleY(0));
+    }
+  }
+  /* A value that just changed from a live update. */
+  @keyframes fa-flash {
+    0% {
+      background-color: var(--accent-soft-hover);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+}
+
+/*
+ * Global motion switch (R18.3). "Still" in Appearance (data-motion="reduced") or the OS
+ * reduced-motion preference stops motion everywhere:
+ *   - transitions: every component duration is a token multiplied by --motion-scale, which
+ *     drops to near zero (tokens.css). The token checker rejects hard-coded durations, so
+ *     no transition can escape. (Forcing a duration on every element here would give
+ *     elements with no transition an implicit `transition: all` and break measurement.)
+ *   - keyframe animations and route transitions: stopped here, globally. An element only
+ *     has an animation if one was declared, so this override cannot create new ones.
+ */
+@layer base {
+  :root[data-motion="reduced"] *,
+  :root[data-motion="reduced"] *::before,
+  :root[data-motion="reduced"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  :root[data-motion="reduced"]::view-transition-group(*),
+  :root[data-motion="reduced"]::view-transition-old(*),
+  :root[data-motion="reduced"]::view-transition-new(*) {
+    animation: none !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) *,
+    :root:not([data-motion="full"]) *::before,
+    :root:not([data-motion="full"]) *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      animation-delay: 0s !important;
+      scroll-behavior: auto !important;
+    }
+    :root:not([data-motion="full"])::view-transition-group(*),
+    :root:not([data-motion="full"])::view-transition-old(*),
+    :root:not([data-motion="full"])::view-transition-new(*) {
+      animation: none !important;
+    }
+  }
+}

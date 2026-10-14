@@ -1,0 +1,61 @@
+import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Field } from "glass-ux/field";
+
+import { FormStack } from "glass-ux/form";
+
+import { MacAddressInput } from "glass-ux/mac-field";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+export default function MacFieldSection() {
+    return (<SectionPage>
+      <></>
+
+      <Specimen title="States" layout="grid">
+        <FormStack>
+          <Field label="Empty">
+            <MacAddressInput width="medium"/>
+          </Field>
+          <Field label="Invalid" error="Enter a MAC address such as 00:15:65:AA:BB:CC">
+            <MacAddressInput defaultValue="00:15:65:AA:BB" invalid width="medium"/>
+          </Field>
+        </FormStack>
+        <FormStack>
+          <Field label="Read-only">
+            <MacAddressInput defaultValue="00:15:65:AA:BB:CC" readOnly width="medium"/>
+          </Field>
+          <Field label="Disabled">
+            <MacAddressInput defaultValue="00:15:65:AA:BB:CC" disabled width="medium"/>
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <FormStack>
+          <Field label="Desk phone">
+            <MacAddressInput defaultValue="00:15:65:AA:BB:CC" width="medium"/>
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <ContainerLab>
+        <div className="flex h-full items-center p-1">
+          <MacAddressInput size="sm" defaultValue="00:15:65:AA:BB:CC" aria-label="MAC address"/>
+        </div>
+      </ContainerLab>
+
+      <Usage code={`
+import { macSchema } from "glass-ux/mac-field"
+
+const schema = z.object({ mac: macSchema({ required: true }) })
+
+<form.AppField name="mac">
+  {(field) => <field.MacAddressField label="MAC address" lookupVendor={(oui) => api.vendorOf(oui)} />}
+</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

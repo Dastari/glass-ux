@@ -1,0 +1,67 @@
+import { useState } from "react";
+
+import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconRestart, IconTrash } from "glass-ux/icons";
+
+import { AlertDialog, ConfirmHost, confirm } from "glass-ux/alert-dialog";
+
+import { Button } from "glass-ux/button";
+
+import { Switch } from "glass-ux/switch";
+
+import { Toaster, toast } from "glass-ux/toast";
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export default function AlertDialogSection() {
+    const [fail, setFail] = useState(false);
+    const outcome = async () => {
+        await wait(1200);
+        if (fail)
+            throw new Error("Agent offline — retry when NST-C106 reconnects");
+    };
+    return (<SectionPage>
+      <Toaster />
+      <ConfirmHost />
+      <Specimen title="Live" description="Cancel takes focus first and Esc cancels. The confirm runs the action in place; while it runs the dialog cannot be dismissed.">
+        <Example label="Danger · warning · default">
+          <AlertDialog trigger={<Button variant="danger-soft" icon={<IconTrash />}>
+                Remove device
+              </Button>} title="Remove NST-C106 from Northstar Studio?" description="The agent uninstalls at its next check-in. Its history stays in reports." confirmLabel="Remove device" pendingLabel="Removing…" tone="danger" onConfirm={outcome}/>
+          <AlertDialog trigger={<Button icon={<IconRestart />}>Restart</Button>} title="Restart NST-C106?" description="AzureAD\MiraRowan is signed in and loses unsaved work." confirmLabel="Restart now" pendingLabel="Restarting…" tone="warning" onConfirm={outcome}/>
+          <AlertDialog trigger={<Button>Enrol in pilot ring</Button>} title="Move LMN-4E5E to the pilot ring?" description="It receives agent releases a week before production." confirmLabel="Move to pilot" tone="default" onConfirm={outcome}/>
+        </Example>
+        <Example label="Imperative confirm()">
+          <Button onClick={async () => {
+            const confirmed = await confirm({
+                title: "Remove 3 endpoints from Orbit Workspace?",
+                description: "Their agents uninstall at the next check-in.",
+                confirmLabel: "Remove 3 endpoints",
+                tone: "danger",
+                onConfirm: outcome,
+            });
+            if (confirmed)
+                toast.success("3 endpoints removed from Orbit Workspace");
+        }}>
+            Remove 3 endpoints
+          </Button>
+        </Example>
+        <Example label="Outcome">
+          <Switch checked={fail} onCheckedChange={setFail} label="Next confirm fails"/>
+        </Example>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

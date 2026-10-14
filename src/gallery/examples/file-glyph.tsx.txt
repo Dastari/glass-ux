@@ -1,0 +1,16 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+import { FileGlyph } from "glass-ux/ai";
+
+export default function FileGlyphExample() {
+    return (<AiGallery>
+      <SectionPage>
+        <Specimen title="FileGlyph" layout="stack">
+          <FileGlyph name="exhibition-brief.pdf" mime="application/pdf"/>
+          <FileGlyph name="reservations.csv" mime="text/csv"/>
+        </Specimen>
+      </SectionPage>
+    </AiGallery>);
+}

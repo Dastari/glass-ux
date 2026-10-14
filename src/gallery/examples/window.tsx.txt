@@ -1,0 +1,19 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Window, WindowFrame } from "glass-ux/windows";
+
+export default function WindowExample() {
+    return (<SectionPage>
+      <Specimen title="Window body slots" layout="stack">
+        <WindowFrame.Root>
+          <WindowFrame.AppBar title="Exhibition notes"/>
+          <Window.Body>
+            <p>Content in the shared window body.</p>
+          </Window.Body>
+          <WindowFrame.StatusBar>
+            <Window.StatusItem>Draft</Window.StatusItem>
+          </WindowFrame.StatusBar>
+        </WindowFrame.Root>
+      </Specimen>
+    </SectionPage>);
+}

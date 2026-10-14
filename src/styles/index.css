@@ -1,0 +1,18 @@
+/*
+ * Design-system stylesheet: fonts, tokens, themes, materials, data colours, identity
+ * colours, brand tones, base, motion, recipes and every library component. Imported by an
+ * application's CSS entry (see src/app.css), which owns the Tailwind pipeline and the
+ * cascade-layer order.
+ */
+@import "./tailwind-theme.css";
+@import "./fonts.css";
+@import "./tokens.css";
+@import "./themes.css";
+@import "./glass.css";
+@import "./data.css";
+@import "./identity.css";
+@import "./brand.css";
+@import "./base.css";
+@import "./motion.css";
+@import "./recipes.css";
+@import "./components.css";

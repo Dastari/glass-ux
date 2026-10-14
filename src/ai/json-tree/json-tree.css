@@ -1,0 +1,110 @@
+/*
+ * JsonTree — read-only JSON for tool arguments and results. Monospace on the mono line,
+ * values in the code block's syntax colours (keys plain, strings and numbers tinted).
+ */
+@layer components {
+  .fa-ai-json {
+    --_indent: var(--space-4);
+    min-width: 0;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--type-mono-size);
+    line-height: var(--type-mono-line);
+    font-variant-ligatures: none;
+  }
+  .fa-ai-json-root,
+  .fa-ai-json-children {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-ai-json-children {
+    padding-inline-start: var(--_indent);
+  }
+  .fa-ai-json-row {
+    white-space: nowrap;
+  }
+  .fa-ai-json-toggle,
+  .fa-ai-json-spacer {
+    display: inline-grid;
+    place-items: center;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    margin-inline-end: var(--space-half);
+    vertical-align: -0.2em; /* tokens:allow optical centre on the mono line */
+  }
+  .fa-ai-json-toggle {
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--fg-subtle);
+    cursor: pointer;
+  }
+  .fa-ai-json-toggle:hover {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-ai-json-toggle:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: 0;
+  }
+  .fa-ai-json-toggle .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+  .fa-ai-json-toggle .fa-icon[data-open] {
+    transform: rotate(90deg);
+  }
+  .fa-ai-json-key {
+    color: var(--fg);
+  }
+  .fa-ai-json-colon {
+    margin-inline-end: var(--space-1-5);
+    color: var(--fg-subtle);
+  }
+  .fa-ai-json-punct,
+  .fa-ai-json-close {
+    color: var(--fg-subtle);
+  }
+  .fa-ai-json-close {
+    display: block;
+    padding-inline-start: calc(var(--icon-sm) + var(--space-half));
+  }
+  .fa-ai-json-summary {
+    margin-inline: var(--space-1);
+    color: var(--fg-subtle);
+    font-family: var(--font-sans);
+    font-size: var(--type-caption-size);
+  }
+  .fa-ai-json-value[data-type="string"] {
+    color: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 150));
+  }
+  .fa-ai-json-value:is([data-type="number"], [data-type="boolean"]) {
+    color: oklch(from var(--accent-text) l calc(c * 0.9) calc(h + 250));
+  }
+  .fa-ai-json-value[data-type="null"] {
+    color: var(--fg-subtle);
+  }
+  .fa-ai-json-more {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent-text);
+    font-family: var(--font-sans);
+    font-size: var(--type-caption-size);
+    font-weight: var(--weight-medium);
+    cursor: pointer;
+  }
+  .fa-ai-json-more:hover {
+    text-decoration: underline;
+  }
+  .fa-ai-json-truncated {
+    margin-top: var(--space-2);
+    color: var(--fg-muted);
+    font-family: var(--font-sans);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+}

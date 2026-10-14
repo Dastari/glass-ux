@@ -1,0 +1,31 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Toaster, ToastPreview } from "glass-ux/toast";
+
+export default function ToastSection() {
+    return (<SectionPage>
+      <Toaster />
+      <></>
+
+      <Specimen title="Tones" description="Neutral glass with the tone in the tile only. The title names the target and the outcome; the description gives the detail or the reason.">
+        <div className="flex w-full flex-col items-start gap-3">
+          <ToastPreview tone="success" title="NST-C106 restarted" description="Back online after 48 s."/>
+          <ToastPreview tone="info" title="Google Chrome 129.0 deployment started" description="Installing on 12 endpoints in Northstar Studio."/>
+          <ToastPreview tone="warning" title="LMN-4E5E went offline" description="Last seen 2 min ago."/>
+          <ToastPreview tone="danger" title="Restart failed" description="Agent offline — retry when NST-C106 reconnects."/>
+          <ToastPreview tone="success" title="STUDIO-VM moved to Orbit Workspace" action="Undo"/>
+        </div>
+      </Specimen>
+
+      <Specimen title="Over imagery" backdrop>
+        <div className="flex w-full flex-col items-start gap-3">
+          <ToastPreview tone="success" title="NST-C106 restarted" description="Back online after 48 s."/>
+          <ToastPreview tone="danger" title="Restart failed" description="Agent offline — retry when NST-C106 reconnects."/>
+        </div>
+      </Specimen>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

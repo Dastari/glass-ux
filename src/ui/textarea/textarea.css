@@ -1,0 +1,34 @@
+/*
+ * Textarea — multi-line fa-control. The textarea fills the box (so the resize grip sits
+ * in the box's corner) and grows from --_min-rows to --_max-rows, then scrolls.
+ * One row is exactly one control height, so a one-row textarea lines up with an Input.
+ */
+@layer components {
+  .fa-textarea {
+    /* component tokens: vertical padding that centres one line in a md control */
+    --_py: calc((var(--control-h-md) - var(--type-body-line)) / 2 - var(--border-width));
+    --_rows-h: calc(var(--control-h-md) - var(--type-body-line) - var(--border-width) * 2);
+    align-items: stretch;
+    padding: 0;
+    cursor: text;
+    min-width: 0;
+  }
+  .fa-textarea-input {
+    display: block;
+    width: 100%;
+    min-height: calc(var(--_min-rows, 3) * var(--type-body-line) + var(--_rows-h));
+    max-height: calc(var(--_max-rows, 8) * var(--type-body-line) + var(--_rows-h));
+    padding: var(--_py) var(--_px);
+    border-radius: inherit;
+    field-sizing: content;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    resize: none;
+  }
+  .fa-textarea[data-resize] .fa-textarea-input {
+    resize: vertical;
+  }
+  .fa-textarea[data-disabled] .fa-textarea-input {
+    resize: none;
+  }
+}

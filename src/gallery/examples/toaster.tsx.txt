@@ -1,0 +1,21 @@
+import { Toaster } from "glass-ux/toast";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { toast } from "glass-ux/toast";
+
+import { Button } from "glass-ux/button";
+
+export default function ToasterExample() {
+    return (<SectionPage>
+      <Specimen title="Shared notification viewport" description="Mount once at the root; ActionProvider supplies this automatically. Activate a button to see a notification." layout="stack">
+        <Toaster />
+        <Button onClick={() => toast.success("Sample exhibition saved")}>
+          Show success toast
+        </Button>
+        <Button onClick={() => toast.danger("Sample upload failed")}>
+          Show error toast
+        </Button>
+      </Specimen>
+    </SectionPage>);
+}

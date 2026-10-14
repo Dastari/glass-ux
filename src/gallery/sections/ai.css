@@ -1,0 +1,114 @@
+/*
+ * AI gallery scaffolding: scrolling lab cells, template links and the docked-width column.
+ */
+@layer components {
+  .ai-lab-scroll {
+    height: 100%;
+    padding: var(--space-2);
+    container-type: inline-size;
+  }
+  .ai-lab-scroll > :where(:not(:first-child)) {
+    margin-top: var(--space-3);
+  }
+  .ai-template-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .ai-template-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--control-h-sm);
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-control);
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    font-weight: var(--weight-medium);
+    text-decoration: none;
+  }
+  .ai-template-link .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--fg-muted);
+  }
+  .ai-docked-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: min(100%, 26rem);
+    container-type: inline-size;
+  }
+  .ai-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    min-width: 0;
+    container-type: inline-size;
+  }
+  .ai-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .ai-prose-sample {
+    max-width: var(--measure);
+    font-size: var(--type-subtitle-size);
+    line-height: var(--space-6);
+  }
+}
+
+@layer components {
+  /* A drawer at a given width: a row flexbox, like the shell's, so content that tried to
+     size the drawer would show here (the drawer-width regression, e2e/ai-layout.spec.ts). */
+  .ai-drawer-sample {
+    display: flex;
+    width: var(--_drawer, var(--sidebar-w));
+    height: 40rem;
+    padding-top: var(--space-3);
+    border-radius: var(--radius-surface);
+  }
+  .ai-drawer-sample[data-width="min"] {
+    --_drawer: 14rem; /* the narrowest drawer before it snaps to the rail (DRAWER_MIN_REM) */
+  }
+  .ai-drawer-sample[data-width="max"] {
+    --_drawer: 28rem; /* the widest drawer (DRAWER_MAX_REM) */
+  }
+  .ai-pane-sample {
+    width: min(100%, 26rem);
+    height: 34rem;
+  }
+  .ai-pane-sample[data-width="23"] {
+    width: min(100%, 23rem);
+    height: 38rem;
+  }
+  /* A bounded conversation for the ask dock and the floating composer. */
+  .ai-conversation-sample {
+    width: 100%;
+    height: 40rem;
+    border-radius: var(--radius-tile);
+    overflow: hidden;
+  }
+  .ai-inspector-sample {
+    width: min(100%, 26rem);
+    padding: var(--inset-panel);
+    border-radius: var(--radius-surface);
+  }
+}
+
+@layer components {
+  .gallery-specimen-body > .ai-stack {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}
+
+@layer components {
+  .gallery-example:has(.fa-ai-composer) {
+    width: 100%;
+  }
+  .gallery-example:has(.fa-ai-composer) > .gallery-example-stage {
+    display: block;
+  }
+}

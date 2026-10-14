@@ -1,0 +1,65 @@
+/*
+ * DataTable search (R16.8): the first control in the toolbar strip (filters/filters.css).
+ *
+ * Field    [🔍 Search devices…  /] at a fixed width, so typing, the clear button and the
+ *          keycap never move the toolbar. The width is mirrored in filters/bar.tsx
+ *          (SEARCH_FIELD_REM), which decides when the field gives way.
+ * Narrow   an icon button, or the "Search: acs-7" chip (a filter chip) while a query is
+ *          active. Opening it lays the field over the strip's line: the strip keeps its
+ *          layout underneath (hidden, still measured) and the line keeps its height.
+ */
+@layer components {
+  .fa-dt-search {
+    /* component token: the field's width */
+    --_w: 16rem;
+    display: flex;
+    flex: none;
+    align-items: center;
+    min-width: 0;
+  }
+  .fa-dt-search[data-mode="field"] {
+    width: var(--_w);
+  }
+  .fa-dt-search .fa-dt-search-field {
+    width: 100%;
+  }
+
+  /* ── The active query on a narrow toolbar ──────────────────────────────────── */
+  /* It keeps a fixed share of the line for the fold (SEARCH_CHIP_REM in filters/bar.tsx) and
+     truncates rather than push the line wider. */
+  .fa-dt-search[data-mode="collapsed"] {
+    flex: 0 1 auto;
+    min-width: auto;
+  }
+  .fa-dt-filter-chip.fa-dt-search-chip {
+    /* component tokens: the chip's widest and narrowest (icon, a few letters, ✕) */
+    --_max: 12rem;
+    --_min: 6rem;
+    min-width: var(--_min);
+  }
+  .fa-dt-search-chip .fa-dt-filter-chip-body {
+    padding-inline-start: var(--space-2);
+  }
+  .fa-dt-search-chip .fa-dt-filter-chip-body > .fa-icon {
+    flex: none;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+
+  /* ── Open over the line (narrow) ───────────────────────────────────────────── */
+  .fa-dt-filterbar[data-search="open"] {
+    position: relative;
+  }
+  .fa-dt-filterbar[data-search="open"] > :not(.fa-dt-search),
+  .fa-dt-search[data-expanded] > :not(.fa-dt-search-overlay) {
+    visibility: hidden;
+  }
+  .fa-dt-search-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+}

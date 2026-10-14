@@ -1,0 +1,173 @@
+/*
+ * Layout for the entity and device identity gallery sections: the tier matrix, the
+ * one-device-everywhere composition, prose with chips and the live toolbar.
+ */
+@layer components {
+  .gallery-entity-matrix {
+    --_compact: 21rem;
+    --_row: 18rem;
+    display: grid;
+    grid-template-columns: var(--_compact) var(--_row) minmax(9rem, max-content) max-content;
+    gap: var(--space-4) var(--space-6);
+    align-items: center;
+    min-width: 0;
+  }
+  .gallery-entity-matrix-head {
+    color: var(--fg-subtle);
+    font-size: var(--type-overline-size);
+    line-height: var(--type-overline-line);
+    font-weight: var(--type-overline-weight);
+    letter-spacing: var(--type-overline-tracking);
+    text-transform: uppercase;
+  }
+  .gallery-entity-cell {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+  .gallery-entity-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-block: var(--space-1);
+  }
+
+  .gallery-entity-headers {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .gallery-entity-window {
+    width: 100%;
+    container: window / inline-size;
+  }
+  .gallery-entity-window[data-width="compact"] {
+    width: min(30rem, 100%);
+  }
+  .gallery-entity-window[data-width="phone"] {
+    width: min(22rem, 100%);
+  }
+
+  .gallery-entity-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-6);
+  }
+  .gallery-entity-toolbar output {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gallery-entity-prose {
+    max-width: var(--measure);
+    color: var(--fg);
+    font-size: var(--type-body-size);
+    line-height: calc(var(--type-body-line) + var(--space-1));
+    text-wrap: pretty;
+  }
+
+  .gallery-entity-surfaces {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+    gap: var(--gap-panels);
+    width: 100%;
+  }
+  .gallery-entity-surface[data-surface="table"] {
+    grid-column: 1 / -1;
+  }
+  .gallery-entity-surface {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .gallery-entity-tree {
+    --_tree-h: 10.75rem;
+    height: var(--_tree-h);
+    border-radius: var(--radius-tile);
+  }
+  .gallery-entity-list {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 22rem);
+  }
+  .gallery-entity-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    min-width: 0;
+  }
+  .gallery-entity-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-6);
+    min-width: 0;
+  }
+  /* Container-aware tiers need a box: a definite width, capped by the column. */
+  .gallery-entity-fixed {
+    width: 21rem;
+    max-width: 100%;
+  }
+  .gallery-entity-fixed[data-size="row"] {
+    width: 18rem;
+  }
+  .gallery-entity-fixed[data-size="header"] {
+    width: 48rem;
+  }
+
+  .gallery-entity-classes {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .gallery-entity-classes th,
+  .gallery-entity-classes td {
+    padding: var(--space-3) var(--space-4) var(--space-3) 0;
+    text-align: start;
+    vertical-align: top;
+  }
+  .gallery-entity-classes thead th {
+    color: var(--fg-subtle);
+    font-size: var(--type-overline-size);
+    line-height: var(--type-overline-line);
+    font-weight: var(--type-overline-weight);
+    letter-spacing: var(--type-overline-tracking);
+    text-transform: uppercase;
+  }
+  .gallery-entity-classes tbody tr + tr :is(th, td) {
+    border-top: var(--divider);
+  }
+  .gallery-entity-class {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 12rem;
+  }
+  .gallery-entity-class-name {
+    display: flex;
+    flex-direction: column;
+  }
+  .gallery-entity-class-name > span:last-child {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-regular);
+  }
+  .gallery-entity-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1-5);
+    max-width: 26rem;
+  }
+  .gallery-entity-muted {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+}

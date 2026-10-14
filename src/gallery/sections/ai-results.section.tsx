@@ -1,0 +1,91 @@
+import { ResultBlock, ResultSkeleton, type AiResult } from "../../ai/index.js"
+import { ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
+import { RESULTS } from "./ai.fixtures.js"
+import { AiGallery, DockedColumn, LabScroll } from "./ai.kit.js"
+
+const ALL: Array<[string, string, AiResult]> = [
+  ["Table", "The first rows inline in the table style, columns stepping away by priority as the card narrows, a compact list below 26rem. Show all opens the DataTable in a window.", RESULTS.offline],
+  ["Large table", "A page of a large result: the count says how much is inline.", RESULTS.big],
+  ["Figures", "Metric tiles (src/ui/metric) that pick their own tier from the tile.", RESULTS.health],
+  ["Line chart", "Thin lines, one axis, a legend from two series, a crosshair readout on hover.", RESULTS.latency],
+  ["Bar chart", "Bars at most 24px with a rounded data end, grouped per label.", RESULTS.patchChart],
+  ["Detail", "Key–value facts as DetailTiles that reflow with the card.", RESULTS.network],
+  ["Entity", "One entity with its live state, facts and its own actions (ActionBar).", RESULTS.c106],
+  ["Entity list", "Compact rows with context links, state, and the row ⋯ menu (and right-click).", RESULTS.missing],
+  ["Images", "Screenshots in their reserved ratio; a click opens the lightbox with zoom.", RESULTS.screens],
+  ["One image", "A single image keeps its own ratio, capped in height.", RESULTS.screen],
+  ["Files", "Files the agent produced, with type, size and download.", RESULTS.files],
+  ["Change preview", "A unified diff: signs in the gutter, the tint only reinforces them.", RESULTS.printerDiff],
+  ["Log", "Time, a level word in its tone and the message; the newest lines first.", RESULTS.spoolerLog],
+]
+
+export default function AiResultsSection() {
+  return (
+    <AiGallery>
+      <SectionPage>
+        {ALL.map(([title, description, result]) => (
+          <Specimen key={title} title={title} description={description} layout="stack" wide={result.type === "table" || result.type === "images"}>
+            <ResultBlock result={result} />
+          </Specimen>
+        ))}
+
+        <Specimen title="Loading" description="Before data arrives each result holds its final box: the same header, the row count, the chart height, the image ratio." layout="stack" wide>
+          <ResultSkeleton type="table" count={4} />
+          <ResultSkeleton type="chart" />
+          <ResultSkeleton type="images" count={3} />
+          <ResultSkeleton type="log" count={5} />
+        </Specimen>
+
+        <Specimen title="Docked width" description="The same results at the docked assistant's width (26rem)." layout="bare">
+          <DockedColumn>
+            <ResultBlock result={RESULTS.offline} />
+            <ResultBlock result={RESULTS.health} />
+            <ResultBlock result={RESULTS.latency} />
+            <ResultBlock result={RESULTS.printerDiff} />
+          </DockedColumn>
+        </Specimen>
+
+        <Specimen title="Over imagery" description="Cards keep their contrast over a busy backdrop." backdrop>
+          <div className="ai-stack">
+            <ResultBlock result={RESULTS.files} />
+          </div>
+        </Specimen>
+
+        <ContainerLab description="Results in fixed boxes: the column scrolls inside the box, tables become lists, charts drop their value axis.">
+          {() => (
+            <LabScroll>
+              <ResultBlock result={RESULTS.offline} />
+              <ResultBlock result={RESULTS.patchChart} />
+            </LabScroll>
+          )}
+        </ContainerLab>
+
+        <Rules
+          do={[
+            "Name the result and its source in the header; the data line says how much is shown.",
+            "Reserve the result's box with its skeleton before the data arrives.",
+            "Offer the same three actions in the same order: copy, export, open in window.",
+            "Use the neutral second series to compare against the one that matters.",
+          ]}
+          dont={[
+            "Invent a new card for a new tool: map it to one of these renderers.",
+            "Colour a series with a status tone unless the series is that status.",
+            "Show more than a page inline; the window holds the rest.",
+          ]}
+        />
+
+        <TokenTable
+          tokens={[
+            ["--radius-tile", "Card radius"],
+            ["--glass-fill-control", "Card in a panel"],
+            ["--glass-fill-panel", "Card on the canvas"],
+            ["--row-h", "Table rows (compact)"],
+            ["--glass-fill-inset", "Table header, wells"],
+            ["--accent", "First series"],
+            ["--fg-subtle", "Comparison series"],
+          ]}
+        />
+      </SectionPage>
+    </AiGallery>
+  )
+}

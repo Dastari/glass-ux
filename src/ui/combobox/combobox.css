@@ -1,0 +1,180 @@
+/*
+ * Combobox, Autocomplete and the shared list rows.
+ *
+ * Boxes reuse Input (fa-control fa-input); lists reuse Select (fa-popup + fa-item).
+ * Option rows add what searching needs:
+ *
+ *   [icon] Label with the match emphasised           meta  ✓
+ *          description (second line, muted)
+ *
+ * List states sit above the options and are exactly one row tall: a thin indeterminate
+ * line while results refresh (the old ones stay), skeleton rows on the first load, an
+ * error with Retry, "type more", the empty row, and an "N more" footer.
+ */
+@layer components {
+  /* ── Option rows ───────────────────────────────────────────────────────── */
+  .fa-option[data-two-line] {
+    padding-block: var(--space-1);
+  }
+  .fa-option > .fa-icon {
+    align-self: center;
+  }
+  .fa-option-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-option-label,
+  .fa-option-description {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-option-description {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  /* While searching, the unmatched text steps back and the match stands out. */
+  .fa-option-text[data-query] .fa-option-label {
+    color: var(--fg-muted);
+  }
+  .fa-option-match {
+    background: none;
+    color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  .fa-option-description .fa-option-match {
+    color: var(--fg-muted);
+  }
+  .fa-item:is([data-selected], [data-active]) :is(.fa-option-label, .fa-option-match) {
+    color: inherit;
+  }
+  .fa-option-meta {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── List states ───────────────────────────────────────────────────────── */
+  .fa-combobox-popup {
+    position: relative;
+  }
+  .fa-option-progress {
+    position: sticky;
+    top: calc(var(--inset-overlay) * -1);
+    z-index: var(--z-raised);
+    height: var(--space-half);
+    margin: calc(var(--inset-overlay) * -1) calc(var(--inset-overlay) * -1) var(--space-half);
+    background-color: var(--accent-soft);
+    background-image: linear-gradient(90deg, transparent 20%, var(--accent) 50%, transparent 80%);
+    background-size: 40vw 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    animation: fa-shimmer var(--duration-shimmer) ease-in-out infinite;
+  }
+  :root[data-motion="reduced"] .fa-option-progress {
+    animation: none;
+    background-image: none;
+    background-color: var(--accent-line);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) .fa-option-progress {
+      animation: none;
+      background-image: none;
+      background-color: var(--accent-line);
+    }
+  }
+  .fa-option-skeletons {
+    display: flex;
+    flex-direction: column;
+  }
+  .fa-option-skeleton {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: var(--item-h);
+    padding-inline: var(--space-2-5);
+  }
+  .fa-option-skeleton[data-two-line] {
+    padding-block: var(--space-1);
+  }
+  .fa-option-note {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--item-h);
+    padding-inline: var(--space-2-5);
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-option-note[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .fa-option-note > .fa-icon {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  .fa-option-note-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-option-retry {
+    margin-inline-end: calc(var(--space-1) * -1);
+  }
+  .fa-option-more {
+    padding: var(--space-1-5) var(--space-2-5) var(--space-1);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Footer (Autocomplete): a data source's credit, after the rows ───────── */
+  .fa-autocomplete-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+    padding: var(--space-1) var(--space-2-5) var(--space-half);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+  }
+  .fa-autocomplete-footer a {
+    color: inherit;
+  }
+  .fa-autocomplete-footer a:hover {
+    color: var(--fg-muted);
+  }
+
+  /* ── Empty row ─────────────────────────────────────────────────────────── */
+  .fa-combobox-empty {
+    display: flex;
+    align-items: center;
+    min-height: var(--item-h);
+    padding-inline: var(--space-2-5);
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-combobox[data-readonly] .fa-control-input {
+    cursor: default;
+  }
+}

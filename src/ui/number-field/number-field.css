@@ -1,0 +1,73 @@
+/*
+ * NumberField — Input's box with tabular figures, a unit, and − / + steppers (ghost
+ * Buttons placed by fa-input-btn). An optional scrub label at the start drags the value.
+ *
+ *   [W] 1,920………………… px  [−][+]
+ */
+@layer components {
+  .fa-number {
+    min-width: 0;
+  }
+  .fa-number-input {
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-number-steppers {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+  }
+  .fa-number-scrub {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    align-self: stretch;
+    margin-inline-start: calc(var(--_px) * -1);
+    padding-inline: var(--_px) var(--space-1);
+    border-start-start-radius: inherit;
+    border-end-start-radius: inherit;
+    color: var(--fg-subtle);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+    cursor: ew-resize;
+    user-select: none;
+    touch-action: none;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-number-scrub:hover,
+  .fa-number-scrub[data-scrubbing] {
+    color: var(--accent-text);
+  }
+  .fa-number-group[data-disabled] .fa-number-scrub {
+    cursor: not-allowed;
+  }
+}
+
+/*
+ * A stepper disabled at its bound must not fade the whole box: fa-control treats any
+ * :disabled descendant as a disabled field (proposed recipe fix: match only
+ * .fa-control-input:disabled).
+ */
+@layer components {
+  .fa-control.fa-number-group:not([data-disabled]):not(:has(.fa-control-input:disabled)):has(:disabled) {
+    opacity: 1;
+    cursor: text;
+  }
+  .fa-control.fa-number-group:not([data-disabled]):not(:has(.fa-control-input:disabled)):has(:disabled):hover {
+    background-color: var(--glass-fill-control-hover);
+    border-color: var(--line-strong);
+  }
+  .fa-control.fa-number-group:not([data-disabled]):not(:has(.fa-control-input:disabled)):has(:disabled):focus-within {
+    border-color: var(--accent-line);
+  }
+  .fa-control.fa-number-group:is([data-invalid], :has([aria-invalid="true"])):not([data-disabled]):has(:disabled) {
+    border-color: var(--danger-line);
+  }
+}
+
+@layer components {
+  /* width="short" sizes the value; the steppers add their own room. */
+  .fa-control.fa-number-group[data-width="short"] {
+    max-width: calc(var(--field-short) + var(--control-h-sm) * 2);
+  }
+}

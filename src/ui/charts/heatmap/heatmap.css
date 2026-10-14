@@ -1,0 +1,79 @@
+/*
+ * Heatmap and scatter.
+ *
+ * Heat cells step through one hue — the data colour, --chart-1 — from the empty track (zero)
+ * to the full data colour in up to seven steps, so magnitude reads as "more" in both modes
+ * (lighter to stronger on light glass, dim to bright on dark). A missing value is an
+ * outlined empty cell. Never the accent: data is not brand, and a red ramp reads as alarm.
+ * Scatter dots are the family's ringed dot.
+ */
+@layer components {
+  .fa-chart-cell,
+  .fa-chart-cell-key {
+    --_step: 0%;
+    fill: color-mix(in oklab, var(--chart-1) var(--_step), var(--chart-track));
+    background-color: color-mix(in oklab, var(--chart-1) var(--_step), var(--chart-track));
+    transition:
+      d var(--duration-slow) var(--ease-standard),
+      fill var(--duration-base) var(--ease-standard);
+  }
+  .fa-chart-cell {
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) both;
+  }
+  .fa-chart-cell[data-step="none"] {
+    fill: transparent;
+    stroke: var(--line);
+    stroke-width: var(--border-width);
+  }
+  :is(.fa-chart-cell, .fa-chart-cell-key)[data-step="1"] {
+    --_step: 16%;
+  }
+  :is(.fa-chart-cell, .fa-chart-cell-key)[data-step="2"] {
+    --_step: 30%;
+  }
+  :is(.fa-chart-cell, .fa-chart-cell-key)[data-step="3"] {
+    --_step: 44%;
+  }
+  :is(.fa-chart-cell, .fa-chart-cell-key)[data-step="4"] {
+    --_step: 58%;
+  }
+  :is(.fa-chart-cell, .fa-chart-cell-key)[data-step="5"] {
+    --_step: 72%;
+  }
+  :is(.fa-chart-cell, .fa-chart-cell-key)[data-step="6"] {
+    --_step: 86%;
+  }
+  :is(.fa-chart-cell, .fa-chart-cell-key)[data-step="7"] {
+    --_step: 100%;
+  }
+
+  /* The step legend in the head: min · steps · max. */
+  .fa-chart-scale {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+    margin-inline-start: auto;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chart-scale-end {
+    padding-inline: var(--space-1);
+  }
+  .fa-chart-cell-key {
+    width: var(--space-3);
+    height: var(--space-2);
+    border-radius: calc(var(--chart-bar-radius) * 0.5);
+  }
+
+  .fa-chart-scatter-dot {
+    transition:
+      cx var(--duration-slow) var(--ease-standard),
+      cy var(--duration-slow) var(--ease-standard);
+  }
+  .fa-chart-tick[data-axis-name] {
+    color: var(--fg-muted);
+    font-weight: var(--weight-medium);
+  }
+}

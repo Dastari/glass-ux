@@ -1,0 +1,28 @@
+# Pagination
+
+The pager that sits in a table's status bar. "1–25 of 1,284", the page size, first /
+previous / page jump / next / last. It adapts to its own width (container queries): the
+page size, then the jump field, then the first/last buttons fold away.
+
+`import { Pagination } from "glass-ux/pagination"`
+
+[Live examples](https://dastari.github.io/glass-ux/components/pagination)
+
+## Props
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| compact | `boolean \| undefined` | false, true | no | false | One line: the range and previous/next only (short containers, card lists). |
+| cursor | `PaginationCursor \| undefined` | See type | no | — | Cursor mode: next/previous only, no last page or page jump. |
+| disabled | `boolean \| undefined` | false, true | no | false | Disables interaction while retaining the component’s disabled appearance. |
+| label | `string \| undefined` | See type | no | "Pages" | Names the navigation landmark, e.g. "Endpoint pages". |
+| loading | `boolean \| undefined` | false, true | no | false | First load: the range is a placeholder and the buttons wait. |
+| onPageChange | `((pageIndex: number) => void) \| undefined` | See type | no | — | Called when page change occurs. The callback type specifies its arguments. |
+| onPageSizeChange | `((pageSize: number) => void) \| undefined` | See type | no | — | Called when page size change occurs. The callback type specifies its arguments. |
+| pageIndex | `number` | See type | yes | — | Zero-based page index. |
+| pageRows | `number` | See type | yes | — | Rows on the current page (the last page may be short). |
+| pageSize | `number` | See type | yes | — | Number of records per page. |
+| pageSizes | `readonly number[] \| undefined` | See type | no | [25, 50, 100] | Page-size choices offered by pagination. |
+| rowCount | `number \| undefined` | See type | no | — | Total rows on the server; omit when unknown (cursor pages). |
+
+Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

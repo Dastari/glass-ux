@@ -1,0 +1,111 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "glass-ux/styles.css";
+@import "glass-ux/gallery/styles.css";
+@source "../../../dist";
+@source "./";
+@layer components {
+  .docs-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+    height: 100dvh;
+    gap: var(--gap-panels);
+    padding: var(--page-gutter);
+  }
+  .docs-sidebar {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-panels);
+    overflow: auto;
+    padding: var(--p-panel);
+  }
+  .docs-main {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .docs-content {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+  .docs-sidebar-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-inline);
+  }
+  .docs-directory {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .docs-directory[hidden] {
+    display: none;
+  }
+  .docs-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .docs-nav a {
+    display: block;
+    padding: var(--space-2);
+    border-radius: var(--radius-control);
+  }
+  .docs-nav a[aria-current="page"] {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  .docs-toolbar {
+    flex: none;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    align-items: center;
+    gap: var(--gap-controls);
+    padding: var(--p-panel);
+  }
+  .docs-toolbar > * {
+    flex-shrink: 0;
+  }
+  .docs-index {
+    padding: var(--p-panel);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: var(--gap-panels);
+  }
+  .docs-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-inline);
+    padding: var(--p-panel);
+  }
+  @media (width < 48rem) {
+    .docs-layout {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+    .docs-sidebar {
+      max-height: 35dvh;
+      gap: var(--space-2);
+      padding: var(--space-2);
+    }
+    .docs-toolbar {
+      padding: var(--space-2);
+    }
+    .docs-toolbar .fa-swatch-picker {
+      flex-wrap: nowrap;
+      width: max-content;
+      max-width: none;
+    }
+    .docs-layout {
+      gap: var(--space-2);
+      padding: var(--space-2);
+    }
+  }
+}

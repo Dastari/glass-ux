@@ -1,0 +1,61 @@
+/*
+ * Action renderers. The menus are Menu; the header bar is Buttons. This file only lays
+ * out the ActionBar and the static previews.
+ *
+ * ActionBar  right-aligned, one control tall at every level. An inert copy of every
+ *            candidate button is measured off-screen, so deciding what fits never depends
+ *            on what is currently shown.
+ */
+@layer components {
+  /* Its flex-basis is the width it needs with every candidate showing (set from the
+     measurement), so in a header it keeps its room before the title gives up its
+     subtitle; it never shrinks below the single ⋯ it collapses to, and sits at the end
+     of its row. */
+  .fa-action-bar {
+    position: relative;
+    display: flex;
+    flex: 0 1 auto;
+    justify-content: flex-end;
+    min-width: var(--control-h-md);
+    height: var(--control-h-md);
+    margin-inline-start: auto;
+  }
+  /* Sized by its container (an entity header): only as wide as what it shows. */
+  .fa-action-bar[data-sizing="container"] {
+    flex: none;
+  }
+  .fa-action-bar-row {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--gap-controls);
+  }
+  .fa-action-bar-measure {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    gap: var(--gap-controls);
+    width: max-content;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-action-bar-cell {
+    display: inline-flex;
+    flex: none;
+  }
+
+  /* Static menu + open submenu, side by side as the live menu draws them. */
+  .fa-action-menu-preview {
+    display: flex;
+    align-items: flex-start;
+  }
+  .fa-action-submenu-preview {
+    position: relative;
+    z-index: var(--z-raised);
+    margin-inline-start: calc(var(--space-1) * -1);
+    translate: 0 calc((var(--inset-overlay) + var(--border-width)) * -1);
+  }
+}

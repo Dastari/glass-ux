@@ -1,0 +1,176 @@
+/*
+ * Progress (bar) and ProgressRing.
+ *
+ * Bar     label + percentage, a pill track (fill-muted) with the accent gradient indicator,
+ *         then a data line with an optional action. md 6 · sm 4 track. Complete turns
+ *         success; tone="danger" for a failed run (kept in place, R9.1).
+ *         Indeterminate: a soft accent bar with the shared shimmer sweeping through it.
+ * Ring    sm 16 (inline) · md 32 · lg 48 (prints the percentage). Indeterminate spins an arc.
+ */
+@layer components {
+  .fa-progress {
+    --_track-h: 0.375rem; /* bar thickness */
+    --_fill: linear-gradient(90deg, var(--accent), var(--accent-2));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    min-width: 0;
+    width: 100%;
+  }
+  .fa-progress[data-size="sm"] {
+    --_track-h: 0.25rem;
+    gap: var(--space-1);
+  }
+  /* The progressbar itself: label line and track, at the same rhythm. */
+  .fa-progress-bar {
+    display: flex;
+    flex-direction: column;
+    gap: inherit;
+    min-width: 0;
+  }
+  .fa-progress[data-tone="success"],
+  .fa-progress[data-tone="accent"][data-complete] {
+    --_fill: linear-gradient(90deg, var(--success), var(--success));
+  }
+  .fa-progress[data-tone="danger"] {
+    --_fill: linear-gradient(90deg, var(--danger), var(--danger));
+  }
+
+  .fa-progress-head,
+  .fa-progress-foot {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-progress-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--type-label-weight);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-progress-value {
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+  }
+  .fa-progress[data-tone="danger"] .fa-progress-value {
+    color: var(--danger-text);
+  }
+  .fa-progress-meta {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-progress-action {
+    display: inline-flex;
+    flex: none;
+    margin-inline-start: auto;
+  }
+
+  .fa-progress-track {
+    position: relative;
+    display: block;
+    height: var(--_track-h);
+    overflow: hidden;
+    border-radius: var(--radius-full);
+    background-color: var(--fill-muted);
+    box-shadow: inset 0 var(--border-width) var(--border-width) oklch(from var(--shadow-tint) l c h / 0.08);
+  }
+  .fa-progress-indicator {
+    height: 100%;
+    border-radius: var(--radius-full);
+    background-image: var(--_fill);
+    transition: width var(--duration-slow) var(--ease-standard);
+  }
+  .fa-progress[data-indeterminate] .fa-progress-indicator {
+    width: 100%;
+    background-color: var(--accent-soft-hover);
+    background-image: linear-gradient(100deg, transparent 20%, var(--accent) 50%, transparent 80%);
+    background-size: 40vw 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    animation: fa-shimmer var(--duration-shimmer) ease-in-out infinite;
+  }
+
+  /* Skeleton parts. */
+  .fa-progress[data-skeleton] .fa-progress-track {
+    box-shadow: none;
+  }
+  .fa-progress-skel-text {
+    flex: 1 1 auto;
+  }
+  .fa-progress-skel-action {
+    --_w: 4.25rem; /* a small "Cancel" button */
+    width: var(--_w);
+    height: var(--control-h-sm);
+  }
+
+  /* ── Ring ───────────────────────────────────────────────────────────────── */
+  .fa-ring {
+    --_size: 2rem; /* ring diameter */
+    --_arc: var(--accent);
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--_size);
+    height: var(--_size);
+    vertical-align: middle;
+  }
+  .fa-ring[data-size="sm"] {
+    --_size: var(--icon-sm);
+  }
+  .fa-ring[data-size="lg"] {
+    --_size: 3rem;
+  }
+  .fa-ring[data-tone="success"],
+  .fa-ring[data-tone="accent"][data-complete] {
+    --_arc: var(--success);
+  }
+  .fa-ring[data-tone="danger"] {
+    --_arc: var(--danger);
+  }
+  .fa-ring-svg {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    rotate: -90deg;
+    fill: none;
+    stroke-width: 3.5;
+  }
+  .fa-ring[data-size="sm"] .fa-ring-svg {
+    stroke-width: 5;
+  }
+  .fa-ring-track {
+    stroke: var(--fill-press);
+  }
+  .fa-ring-arc {
+    stroke: var(--_arc);
+    stroke-linecap: round;
+    transition: stroke-dasharray var(--duration-slow) var(--ease-standard);
+  }
+  .fa-ring[data-indeterminate] .fa-ring-svg {
+    animation: fa-spin var(--duration-spin) linear infinite;
+  }
+  .fa-ring-value {
+    grid-area: 1 / 1;
+    color: var(--fg);
+    font-size: var(--type-overline-size);
+    line-height: 1;
+    font-weight: var(--weight-semibold);
+  }
+}

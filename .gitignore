@@ -1,0 +1,8 @@
+node_modules/
+dist/
+apps/docs/dist/
+test-results/
+.handoff/
+.cache/
+*.tgz
+.DS_Store

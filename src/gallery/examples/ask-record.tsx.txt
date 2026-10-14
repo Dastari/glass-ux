@@ -1,0 +1,16 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { NOW } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { AskRecord } from "glass-ux/ai";
+
+export default function AskRecordExample() {
+    return (<SectionPage>
+      <Specimen title="AskRecord" layout="stack">
+        <AskRecord status="succeeded" by="Avery Quinn" at={NOW}>
+          Selected the morning session.
+        </AskRecord>
+        <AskRecord status="cancelled">Skipped the optional question.</AskRecord>
+      </Specimen>
+    </SectionPage>);
+}

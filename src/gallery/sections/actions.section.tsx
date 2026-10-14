@@ -1,0 +1,218 @@
+import { useMemo, useState, type KeyboardEvent } from "react"
+import { ContainerLab, Example, Rules, SectionPage, Specimen } from "../kit.js"
+import { IconEndpoint, IconSearch } from "../../icons/generated/icons.js"
+import { ActionBar, ActionContextMenu, ActionMenu, ActionProvider, usePaletteActions, type ActionBarLevel } from "../../ui/actions/index.js"
+import { StatusBadge, StatusDot } from "../../ui/badge/index.js"
+import { Button } from "../../ui/button/index.js"
+import { CommandPanel, PaletteProvider, useCommandPalette, useRegisteredCommands } from "../../ui/command-palette/index.js"
+import { Kbd } from "../../ui/kbd/index.js"
+import { Switch } from "../../ui/switch/index.js"
+import { TruncatedText } from "../../ui/truncated-text/index.js"
+import { ENDPOINTS, demoFailures, endpointActions, type DemoEndpoint } from "./overlays.fixtures.js"
+
+/* ── Row list ─────────────────────────────────────────────────────────────── */
+
+function EndpointRow({ endpoint, selected, onSelect }: { endpoint: DemoEndpoint; selected: boolean; onSelect: () => void }) {
+  // A grid row: Enter or Space selects it; ↑ and ↓ move between rows.
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault()
+      onSelect()
+    }
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault()
+      const rows = [...(event.currentTarget.parentElement?.querySelectorAll<HTMLElement>("[role='row']") ?? [])]
+      const next = rows[rows.indexOf(event.currentTarget) + (event.key === "ArrowDown" ? 1 : -1)]
+      next?.focus()
+    }
+  }
+  return (
+    <ActionContextMenu set={endpointActions} targets={[endpoint]} label={endpoint.name}>
+      <div
+        role="row"
+        tabIndex={0}
+        aria-selected={selected}
+        aria-label={`${endpoint.name}, ${endpoint.online ? "online" : "offline"}`}
+        className="fa-item min-h-12 gap-3"
+        data-selected={selected ? "" : undefined}
+        onClick={onSelect}
+        onKeyDown={onKeyDown}
+      >
+        <span role="gridcell" className="flex min-w-0 flex-1 items-center gap-3">
+          <StatusDot status={endpoint.online ? "online" : "offline"} label={endpoint.online ? "Online" : "Offline"} />
+          <span className="flex min-w-0 flex-1 flex-col">
+            <TruncatedText className="type-label font-semibold">{endpoint.name}</TruncatedText>
+            <TruncatedText middle className="type-caption text-fg-muted">
+              {endpoint.user}
+            </TruncatedText>
+          </span>
+        </span>
+        <span role="gridcell" className="hidden min-w-0 flex-1 @xl:flex">
+          <TruncatedText className="type-label text-fg-muted">{endpoint.organisation}</TruncatedText>
+        </span>
+        <span role="gridcell" className="hidden w-24 type-label text-fg-muted @md:block">
+          {endpoint.lastSeen}
+        </span>
+        <span role="gridcell" className="flex-none">
+          <ActionMenu set={endpointActions} targets={[endpoint]} label={endpoint.name} />
+        </span>
+      </div>
+    </ActionContextMenu>
+  )
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+function EntityHeader({ endpoint, onLevel }: { endpoint: DemoEndpoint; onLevel?: (level: ActionBarLevel, count: number) => void }) {
+  return (
+    <div className="flex min-w-0 items-center gap-3">
+      <span className="fa-tile-icon">
+        <IconEndpoint />
+      </span>
+      <div className="flex min-w-52 flex-1 flex-col">
+        <span className="flex min-w-0 items-center gap-2">
+          <TruncatedText className="type-title">{endpoint.name}</TruncatedText>
+          <StatusBadge status={endpoint.online ? "online" : "offline"} size="sm" />
+        </span>
+        <TruncatedText className="type-caption text-fg-muted">{endpoint.model}</TruncatedText>
+      </div>
+      <ActionBar set={endpointActions} targets={[endpoint]} label={endpoint.name} onLevelChange={onLevel} />
+    </div>
+  )
+}
+
+const WIDTHS: Array<{ label: string; width: number | null }> = [
+  { label: "Full", width: null },
+  { label: "900", width: 900 },
+  { label: "640", width: 640 },
+  { label: "520", width: 520 },
+  { label: "360", width: 360 },
+]
+
+function HeaderDemo({ endpoint }: { endpoint: DemoEndpoint }) {
+  const [width, setWidth] = useState<number | null>(null)
+  const [level, setLevel] = useState<string>("")
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-2">
+        {WIDTHS.map((option) => (
+          <Button key={option.label} size="sm" variant={width === option.width ? "soft" : "ghost"} aria-pressed={width === option.width} onClick={() => setWidth(option.width)}>
+            {option.label}
+          </Button>
+        ))}
+        <span className="type-caption text-fg-muted" data-testid="bar-level">
+          {level}
+        </span>
+      </div>
+      <div
+        className="max-w-full min-w-0 overflow-hidden rounded-tile p-3 outline outline-dashed outline-line-strong"
+        data-header-frame=""
+        style={{ width: width ?? "100%", resize: "horizontal" }}
+      >
+        <EntityHeader endpoint={endpoint} onLevel={(next, count) => setLevel(`${next} · ${count} ${count === 1 ? "button" : "buttons"}`)} />
+      </div>
+    </div>
+  )
+}
+
+/* ── Palette ──────────────────────────────────────────────────────────────── */
+
+function PaletteActions({ endpoint }: { endpoint: DemoEndpoint }) {
+  const targets = useMemo(() => [endpoint], [endpoint])
+  usePaletteActions(endpointActions, targets, endpoint.name)
+  return null
+}
+
+function PaletteDemo() {
+  const palette = useCommandPalette()
+  const { commands } = useRegisteredCommands()
+  return (
+    <div className="flex w-full flex-col items-start gap-3">
+      <Button icon={<IconSearch />} iconEnd={<Kbd keys="mod+k" size="sm" />} onClick={palette.open}>
+        Search
+      </Button>
+      <div className="glass-overlay fa-palette-frame">
+        <CommandPanel commands={commands} onRun={(command) => void command.run()} defaultQuery="" />
+      </div>
+    </div>
+  )
+}
+
+/* ── Section ──────────────────────────────────────────────────────────────── */
+
+export default function ActionsSection() {
+  const [selected, setSelected] = useState("nst-c106")
+  const [fail, setFail] = useState(false)
+  const endpoint = ENDPOINTS.find((item) => item.id === selected) ?? ENDPOINTS[0]!
+  return (
+    <ActionProvider>
+      <PaletteProvider>
+        <PaletteActions endpoint={endpoint} />
+        <SectionPage>
+          <Specimen
+            title="Rows: ⋯ menu and right-click"
+            description="Each row's ⋯ button and its context menu (right-click, long-press, Shift+F10) render the same definition. Select a row: its actions follow into the header and the palette below."
+            wide
+          >
+            <div role="grid" aria-label="Endpoints" className="@container flex w-full flex-col gap-0.5">
+              {ENDPOINTS.map((item) => (
+                <EndpointRow key={item.id} endpoint={item} selected={item.id === selected} onSelect={() => setSelected(item.id)} />
+              ))}
+            </div>
+            <Example label="Outcome">
+              <Switch
+                checked={fail}
+                onCheckedChange={(next) => {
+                  setFail(next)
+                  demoFailures.next = next
+                }}
+                label="Next long-running action fails"
+              />
+            </Example>
+          </Specimen>
+
+          <Specimen
+            title="Entity header"
+            description="The highest-priority actions as buttons with the primary right-most; the rest under More actions. Narrow the frame (or drag its corner): buttons fold into More, More becomes ⋯, then everything collapses into one ⋯ — the primary never moves."
+            wide
+          >
+            <HeaderDemo endpoint={endpoint} />
+          </Specimen>
+
+          <Specimen
+            title="Command palette"
+            description="While a row is selected its actions are registered in the palette under its name, submenus flattened to “Power › Restart”. Press ⌘K or Ctrl K, or use the panel."
+            wide
+          >
+            <PaletteDemo />
+          </Specimen>
+
+          <ContainerLab title="Header bar in every box" description="ActionBar measures its container, not the viewport: from all buttons in a pane down to a single ⋯ in a row or a tall narrow column.">
+            {() => (
+              <div className="flex h-full items-center p-1">
+                <ActionBar set={endpointActions} targets={[ENDPOINTS[0]!]} label={ENDPOINTS[0]!.name} />
+              </div>
+            )}
+          </ContainerLab>
+
+          <Rules
+            do={[
+              "Declare an entity's actions once with defineActions and render them with ActionMenu, ActionContextMenu, ActionBar and usePaletteActions.",
+              "Give destructive actions a confirm spec that names the target; the renderers ask for you.",
+              "Return a reason from disabledReason instead of hiding an action that is temporarily unavailable.",
+              "Give long-running actions a successMessage; menus and the palette toast it, the header confirms in place.",
+              "Mount ActionProvider once at the root so every renderer shares navigation, toasts and confirms.",
+            ]}
+            dont={[
+              "Hand-build a menu, header or palette entry for an entity's actions.",
+              "Filter or reorder actions in a renderer — resolveActions does it the same way everywhere.",
+              "Promote more than one primary, or more than three buttons, to a header.",
+              "Toast the outcome of a header button.",
+            ]}
+          />
+        </SectionPage>
+      </PaletteProvider>
+    </ActionProvider>
+  )
+}

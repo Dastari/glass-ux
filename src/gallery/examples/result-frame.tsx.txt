@@ -1,0 +1,21 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+import { RESULTS } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { IconSparkle } from "glass-ux/icons";
+
+import { ResultFrame } from "glass-ux/ai";
+
+export default function ResultFrameExample() {
+    return (<AiGallery>
+      <SectionPage>
+        <Specimen title="ResultFrame" layout="stack">
+          <ResultFrame result={RESULTS.health} icon={<IconSparkle />} meta="3 values" copyText="42 reservations">
+            <p>Custom result content uses the shared header and actions.</p>
+          </ResultFrame>
+        </Specimen>
+      </SectionPage>
+    </AiGallery>);
+}

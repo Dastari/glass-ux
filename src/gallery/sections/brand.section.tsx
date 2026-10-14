@@ -1,0 +1,97 @@
+import { BRAND_SOURCES } from "../fixtures/brand.js"
+import { Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
+import { PALETTES, PALETTE_LABELS } from "../../lib/appearance/appearance.js"
+import { BrandLogo, BrandMark, type BrandTones } from "../../ui/brand/index.js"
+
+const SOURCES = Object.values(BRAND_SOURCES)
+const TONES: Array<[BrandTones, string]> = [
+  ["palette", "Palette: follows the palette and mode"],
+  ["brand", "Brand: Orbit Workspace's own tones in any palette"],
+  ["mono", "Mono: currentColor"],
+]
+
+export default function BrandSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Marks"
+        description="Each mark is built from public/brand/<name>.svg by pnpm brand: the paths of its …-logo-primary and …-logo-secondary elements, inlined, so there is no request and no flash. The product names them: product, wordmark and ai."
+        wide
+      >
+        <Example label="product">
+          <BrandMark mark="product" className="gallery-mark-lg" label="Glass UX" />
+        </Example>
+        <Example label="ai">
+          <BrandMark mark="ai" className="gallery-mark-lg" label="Assistant" />
+        </Example>
+        <Example label="wordmark">
+          <BrandMark mark="wordmark" className="gallery-wordmark" label="Orbit Workspace" />
+        </Example>
+      </Specimen>
+
+      <Specimen title="Tones" description="Palette is the default (src/app/brand.ts). Brand keeps the brand's own palette as an island on the mark; mono draws both halves in the current text colour." wide layout="stack">
+        {TONES.map(([tones, label]) => (
+          <Example key={tones} label={label}>
+            <div className="gallery-brand-row" data-testid={`brand-tones-${tones}`}>
+              {SOURCES.map((source) => (
+                <BrandLogo key={source.id} source={source} tones={tones} className={source.id === "orbit" ? "gallery-wordmark" : "gallery-mark-lg"} />
+              ))}
+            </div>
+          </Example>
+        ))}
+      </Specimen>
+
+      <Specimen
+        title="Every palette"
+        description="The primary half is the palette's accent, lifted in dark mode to keep 3:1 on the canvas; the secondary half is ink. Graphite's accent is ink, so its secondary moves to a mid grey. Switch the gallery's mode to see the other."
+        wide
+        layout="bare"
+      >
+        <div className="gallery-brand-matrix">
+          {PALETTES.map((palette) => (
+            <div key={palette} className="gallery-brand-cell canvas-ambient" data-palette={palette} data-testid={`brand-${palette}`}>
+              <BrandMark mark="product" className="gallery-mark-lg" />
+              <BrandMark mark="ai" className="gallery-mark-lg" />
+              <span className="gallery-brand-label">{PALETTE_LABELS[palette]}</span>
+            </div>
+          ))}
+        </div>
+      </Specimen>
+
+      <Specimen title="Over imagery" description="Inside .over-imagery a mark gets the canvas halo every bare icon gets, so it reads on any image." backdrop>
+        <Example label="Product">
+          <BrandMark mark="product" className="gallery-mark-lg" />
+        </Example>
+        <Example label="Wordmark">
+          <BrandMark mark="wordmark" className="gallery-wordmark" />
+        </Example>
+        <Example label="Mono on a solid fill">
+          <span className="gallery-brand-solid">
+            <BrandMark mark="ai" tones="mono" className="gallery-mark-lg" />
+          </span>
+        </Example>
+      </Specimen>
+
+      <Rules
+        do={[
+          "Draw marks with BrandMark by name, or BrandLogo with a generated source.",
+          "Replace a mark by replacing its SVG in public/brand and running pnpm brand.",
+          "Keep both tone groups in a source SVG: …-logo-primary and …-logo-secondary.",
+          "Use mono where a mark sits on a solid fill.",
+        ]}
+        dont={[
+          "Use an <img> or a <use href> to an external SVG: it costs a request and cannot follow the theme.",
+          "Colour a mark with literal colours or by hand per screen.",
+          "Treat a mark as an icon: icons come from src/icons (R19.3).",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--brand-primary", "The colour half: the palette's accent, lifted in dark mode"],
+          ["--brand-secondary", "The ink half: charcoal on light, near-white on dark"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

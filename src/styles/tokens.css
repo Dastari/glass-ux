@@ -1,0 +1,252 @@
+/*
+ * Glass UX design tokens — tier 1 (knobs) and tier 3 (component geometry).
+ *
+ * This file is the spec. Every length, radius, border, duration and easing used by a
+ * component resolves to a variable defined here. Colour roles live in themes.css (tier 2);
+ * materials live in glass.css. Components never declare raw values.
+ *
+ * Knobs (change these to restyle the whole product):
+ *   --ui-scale       root size multiplier (0.875 – 1.25). Scales type, spacing and controls.
+ *   --radius-scale   multiplies every radius except pills (0 = square, 1 = spec, 1.5 = soft).
+ *   --border-width   hairline width for every border and divider.
+ *   --motion-scale   multiplies every duration (0 under reduced motion).
+ *   data-density     comfortable | compact (control and row heights).
+ *
+ * Lengths use rem so the knobs and the browser's font size scale the interface together.
+ * Borders and focus rings use px so they stay crisp at every scale.
+ */
+
+@layer base {
+  :root {
+    /* ── Knobs ─────────────────────────────────────────────────────────────── */
+    --ui-scale: 1;
+    --radius-scale: 1;
+    --border-width: 1px;
+    --motion-scale: 1;
+
+    /* ── Grid ──────────────────────────────────────────────────────────────── */
+    /* One unit = 4px at scale 1. Layout spacing (gaps, surface padding, margins) uses whole
+       units. Half-unit steps (2/6/10px) exist only for control internals and optical
+       alignment inside a component. */
+    --unit: 0.25rem;
+    --space-0: 0;
+    --space-half: calc(var(--unit) * 0.5); /*  2 */
+    --space-1: calc(var(--unit) * 1); /*  4 */
+    --space-1-5: calc(var(--unit) * 1.5); /*  6 — control internals only */
+    --space-2: calc(var(--unit) * 2); /*  8 */
+    --space-2-5: calc(var(--unit) * 2.5); /* 10 — control internals only */
+    --space-3: calc(var(--unit) * 3); /* 12 */
+    --space-4: calc(var(--unit) * 4); /* 16 */
+    --space-5: calc(var(--unit) * 5); /* 20 */
+    --space-6: calc(var(--unit) * 6); /* 24 */
+    --space-8: calc(var(--unit) * 8); /* 32 */
+    --space-10: calc(var(--unit) * 10); /* 40 */
+    --space-12: calc(var(--unit) * 12); /* 48 */
+    --space-16: calc(var(--unit) * 16); /* 64 */
+
+    /* Semantic spacing. Prefer these names over raw steps. */
+    --gap-inline: var(--space-2); /* icon ↔ label, badge dot ↔ text */
+    --gap-controls: var(--space-2); /* adjacent buttons in a toolbar or footer */
+    --gap-fields: var(--space-5); /* vertical rhythm between form fields */
+    --gap-tiles: var(--space-3); /* tiles in a detail grid */
+    --gap-panels: var(--space-4); /* panels on a page, panes in the shell */
+    --gap-section: var(--space-6); /* sections inside a panel */
+    --inset-control: var(--space-3); /* horizontal padding inside a md control */
+    --inset-tile: var(--space-4);
+    --inset-panel: var(--space-5);
+    --inset-overlay: var(--space-1-5); /* menu/listbox padding around items */
+    --inset-dialog: var(--space-6);
+    --page-gutter: clamp(var(--space-3), 1.1vw, var(--space-6));
+    --measure: 72ch; /* longest comfortable reading line */
+    --reading-column: 48rem; /* conversations, documents, articles: the centred column (R5.4) */
+    --reading-column-wide: 64rem; /* wide blocks inside it: tables, charts, code, screenshots */
+    --form-measure: 40rem; /* the single form column (R15.7) */
+    --field-short: 8rem; /* width="short": port, year, PIN */
+    --field-medium: 24rem; /* width="medium": title, name, hostname */
+
+    /* ── Radius ────────────────────────────────────────────────────────────── */
+    --radius-xs: calc(var(--unit) * 1.5 * var(--radius-scale)); /*  6 */
+    --radius-sm: calc(var(--unit) * 2 * var(--radius-scale)); /*  8 */
+    --radius-md: calc(var(--unit) * 3 * var(--radius-scale)); /* 12 */
+    --radius-lg: calc(var(--unit) * 4 * var(--radius-scale)); /* 16 */
+    --radius-xl: calc(var(--unit) * 5.5 * var(--radius-scale)); /* 22 */
+    --radius-2xl: calc(var(--unit) * 7 * var(--radius-scale)); /* 28 */
+    --radius-full: 9999px;
+
+    /* Roles. A component picks a role, never a step. Nested corners follow
+       inner = outer − inset (see --radius-item and recipes.css). */
+    --radius-control: var(--radius-md); /* buttons, inputs, selects, segmented */
+    --radius-tile: var(--radius-lg); /* tiles and cards inside a panel */
+    --radius-surface: var(--radius-xl); /* panels, panes, the sidebar */
+    --radius-overlay: var(--radius-lg); /* menus, popovers, listboxes, toasts */
+    --radius-dialog: var(--radius-xl);
+    --radius-sheet: var(--radius-2xl);
+    --radius-item: max(var(--radius-xs), calc(var(--radius-overlay) - var(--inset-overlay)));
+    --radius-check: var(--radius-xs);
+    --radius-badge: var(--radius-full);
+    --radius-tooltip: var(--radius-sm);
+
+    /* ── Borders and focus ─────────────────────────────────────────────────── */
+    --border-width-strong: calc(var(--border-width) * 1.5);
+    --focus-ring-width: 2px;
+    --focus-ring-offset: 2px;
+    --focus-halo: 3px; /* text-entry focus halo */
+    --divider: var(--border-width) solid var(--line);
+
+    /* ── Typography ────────────────────────────────────────────────────────── */
+    /* --font-sans, --font-display and --font-mono are set by the font roles in fonts.css
+       (generated: pnpm fonts) from <html data-font-sans|display|mono>. */
+
+    /* role: size / line-height / weight / tracking */
+    --type-display-size: 2.5rem;
+    --type-display-line: 3rem;
+    --type-display-weight: 700;
+    --type-display-tracking: -0.028em;
+
+    --type-headline-size: 1.5rem;
+    --type-headline-line: 2rem;
+    --type-headline-weight: 650;
+    --type-headline-tracking: -0.02em;
+
+    --type-title-size: 1.125rem;
+    --type-title-line: 1.625rem;
+    --type-title-weight: 600;
+    --type-title-tracking: -0.012em;
+
+    --type-subtitle-size: 0.9375rem;
+    --type-subtitle-line: 1.375rem;
+    --type-subtitle-weight: 600;
+    --type-subtitle-tracking: -0.006em;
+
+    --type-body-size: 0.875rem;
+    --type-body-line: 1.25rem;
+    --type-body-weight: 400;
+    --type-body-tracking: -0.003em;
+
+    --type-label-size: 0.8125rem;
+    --type-label-line: 1.125rem;
+    --type-label-weight: 500;
+    --type-label-tracking: 0em;
+
+    --type-caption-size: 0.75rem;
+    --type-caption-line: 1rem;
+    --type-caption-weight: 400;
+    --type-caption-tracking: 0.002em;
+
+    --type-overline-size: 0.6875rem;
+    --type-overline-line: 1rem;
+    --type-overline-weight: 600;
+    --type-overline-tracking: 0.07em;
+
+    --type-mono-size: 0.8125rem;
+    --type-mono-line: 1.25rem;
+
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+    --button-weight: 550;
+    --button-tracking: -0.006em;
+
+    /* ── Controls (density: comfortable) ───────────────────────────────────── */
+    --control-h-xs: 1.5rem; /* 24 — inline chips, table toolbar toggles */
+    --control-h-sm: 2rem; /* 32 */
+    --control-h-md: 2.5rem; /* 40 — default */
+    --control-h-lg: 3rem; /* 48 */
+    --control-px-sm: var(--space-2-5);
+    --control-px-md: 0.875rem;
+    --control-px-lg: 1.125rem;
+    --icon-xs: 0.875rem; /* 14 */
+    --icon-sm: 1rem; /* 16 */
+    --icon-md: 1.125rem; /* 18 — default inside md controls */
+    --icon-lg: 1.25rem; /* 20 — navigation */
+    --icon-xl: 1.5rem; /* 24 — headers */
+    --icon-2xl: 2.5rem; /* 40 — empty states */
+    --icon-stroke: 1.75; /* stroke on the 24-unit icon grid */
+    --icon-tint-opacity: 0.16; /* the duotone fill layer; 0 disables duotone */
+    --item-h: 2.25rem; /* menu, listbox and navigation rows */
+    --row-h: 3rem; /* data-table body rows */
+    --row-h-header: 2.5rem;
+    --row-h-compact: 2.5rem; /* a single table switched to compact */
+    --row-h-header-compact: 2.25rem;
+    --tile-icon-box: 2.5rem; /* the soft square behind a tile or list icon */
+    --check-size: 1.125rem;
+    --switch-w: 2.375rem;
+    --switch-h: 1.375rem;
+    --target-min: 2.75rem; /* minimum touch target on coarse pointers */
+
+    /* ── Shell ─────────────────────────────────────────────────────────────── */
+    --sidebar-w: 16.5rem;
+    --sidebar-w-rail: 4.5rem;
+    --topbar-h: 4rem;
+    --bottombar-h: 4rem;
+    --inspector-w: clamp(22rem, 24vw, 34rem);
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+
+    /* ── Elevation stack ───────────────────────────────────────────────────── */
+    --z-raised: 1;
+    --z-sticky: 10;
+    --z-shell: 20;
+    --z-overlay: 50; /* backdrops */
+    --z-dialog: 60;
+    --z-popover: 70; /* menus, selects, popovers — above dialogs that open them */
+    --z-toast: 80;
+    --z-tooltip: 90;
+
+    /* ── Motion ────────────────────────────────────────────────────────────── */
+    --duration-instant: calc(80ms * var(--motion-scale));
+    --duration-fast: calc(140ms * var(--motion-scale));
+    --duration-base: calc(200ms * var(--motion-scale));
+    --duration-slow: calc(300ms * var(--motion-scale));
+    --duration-slower: calc(450ms * var(--motion-scale));
+    --duration-shimmer: 1.6s;
+    --feedback-hold: 1800ms; /* how long a button shows ✓ or ✕ before resting */
+
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* most state changes */
+    --ease-enter: cubic-bezier(0.16, 1, 0.3, 1); /* things arriving: decelerate */
+    --ease-exit: cubic-bezier(0.4, 0, 1, 1); /* things leaving: accelerate */
+    --ease-spring: cubic-bezier(0.34, 1.45, 0.64, 1); /* ticks, toggles, small overshoot */
+
+    --duration-spin: 0.8s;
+    --spinner-delay: 120ms; /* spinners appear only if work outlasts this */
+    --press-scale: 0.97;
+    --overlay-enter-scale: 0.96;
+    --overlay-enter-shift: 0.375rem;
+    --popup-offset: var(--space-1-5); /* gap between a trigger and its popup */
+    --disabled-opacity: 0.45;
+  }
+
+  /* Compact density trims heights, never type size or touch targets. */
+  :root[data-density="compact"] {
+    --control-h-sm: 1.75rem;
+    --control-h-md: 2.125rem;
+    --control-h-lg: 2.625rem;
+    --control-px-md: 0.75rem;
+    --item-h: 2rem;
+    --row-h: 2.5rem;
+    --row-h-header: 2.25rem;
+    --tile-icon-box: 2.25rem;
+    --inset-panel: var(--space-4);
+    --gap-fields: var(--space-4);
+  }
+
+  /* Coarse pointers always get finger-sized controls regardless of density. */
+  @media (pointer: coarse) {
+    :root {
+      --control-h-md: var(--target-min);
+      --item-h: var(--target-min);
+    }
+  }
+
+  :root[data-motion="reduced"] {
+    --motion-scale: 0.01;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) {
+      --motion-scale: 0.01;
+    }
+  }
+}

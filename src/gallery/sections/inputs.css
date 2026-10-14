@@ -1,0 +1,24 @@
+/* The typed-input sections: the usage block (code, scrolls sideways when long). */
+@layer components {
+  .gallery-usage {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    overflow-x: auto;
+    border-radius: var(--radius-tile);
+    background-color: var(--glass-fill-inset);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: var(--type-mono-size);
+    line-height: var(--type-mono-line);
+    tab-size: 2;
+  }
+  .gallery-usage pre {
+    margin: 0;
+    font: inherit;
+    white-space: pre;
+  }
+  .gallery-usage:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+}

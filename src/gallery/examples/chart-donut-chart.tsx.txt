@@ -1,0 +1,69 @@
+import type { ComponentProps } from "react";
+import { DonutChart, type ChartState } from "glass-ux/charts";
+import {
+  ContainerLab,
+  SectionPage,
+  Specimen,
+  TierBox,
+  TierRow,
+} from "glass-ux/gallery/kit";
+import { SkeletonSwaps } from "glass-ux/gallery/sections/charts.kit";
+
+const sample = {
+  data: [
+    { key: "planning", label: "Planning", value: 32 },
+    { key: "delivery", label: "Delivery", value: 48 },
+    { key: "review", label: "Review", value: 20 },
+  ],
+  centre: { value: "100", label: "Hours" },
+} satisfies Omit<ComponentProps<typeof DonutChart>, "label">;
+const render = (state: ChartState = "ready") => (
+  <DonutChart
+    {...sample}
+    label="DonutChart · fictional studio projects"
+    title="Studio projects"
+    state={state}
+    emptyText="No project measurements yet"
+    errorText="Measurements could not load"
+    onRetry={() => undefined}
+  />
+);
+
+export default function DonutChartSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="DonutChart"
+        description="A focused example using fictional studio project measurements. Hover or use the keyboard to inspect values; the chart's table preserves the exact data."
+        wide
+      >
+        <div className="charts-pane" data-testid="chart-donut-chart">
+          {render()}
+        </div>
+      </Specimen>
+      <Specimen
+        title="Responsive sizes"
+        description="The same DonutChart adapts to row, tile and full-panel sizes."
+        wide
+      >
+        <TierRow>{() => render()}</TierRow>
+      </Specimen>
+      <Specimen
+        title="Loading, empty and error"
+        description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
+        wide
+      >
+        <SkeletonSwaps id="donut-chart" render={render} />
+        <div className="gallery-tiers">
+          <TierBox size="compact" label="Empty">
+            {render("empty")}
+          </TierBox>
+          <TierBox size="full" label="Error">
+            {render("error")}
+          </TierBox>
+        </div>
+      </Specimen>
+      <ContainerLab>{() => render()}</ContainerLab>
+    </SectionPage>
+  );
+}

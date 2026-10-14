@@ -1,0 +1,51 @@
+import type { ComponentProps } from "react";
+
+import { ScatterChart, type ChartState } from "glass-ux/charts";
+
+import { ContainerLab, SectionPage, Specimen, TierBox, TierRow } from "glass-ux/gallery/kit";
+
+import { SkeletonSwaps } from "glass-ux/gallery/sections/charts.kit";
+
+const sample = {
+    x: { label: "Effort", unit: "h" },
+    y: { label: "Delivered items" },
+    series: [
+        {
+            key: "projects",
+            label: "Projects",
+            points: [
+                { x: 12, y: 8, label: "Lantern" },
+                { x: 20, y: 12, label: "Orchard" },
+                { x: 16, y: 10, label: "Harbour" },
+                { x: 28, y: 14, label: "Meadow" },
+            ],
+        },
+    ],
+} satisfies Omit<ComponentProps<typeof ScatterChart>, "label">;
+
+const render = (state: ChartState = "ready") => (<ScatterChart {...sample} label="ScatterChart · fictional studio projects" title="Studio projects" state={state} emptyText="No project measurements yet" errorText="Measurements could not load" onRetry={() => undefined}/>);
+
+export default function ScatterChartSection() {
+    return (<SectionPage>
+      <Specimen title="ScatterChart" description="A focused example using fictional studio project measurements. Hover or use the keyboard to inspect values; the chart's table preserves the exact data." wide>
+        <div className="charts-pane" data-testid="chart-scatter-chart">
+          {render()}
+        </div>
+      </Specimen>
+      <Specimen title="Responsive sizes" description="The same ScatterChart adapts to row, tile and full-panel sizes." wide>
+        <TierRow>{() => render()}</TierRow>
+      </Specimen>
+      <Specimen title="Loading, empty and error" description="States stay in the chart's own box. Swap the skeleton to compare its dimensions." wide>
+        <SkeletonSwaps id="scatter-chart" render={render}/>
+        <div className="gallery-tiers">
+          <TierBox size="compact" label="Empty">
+            {render("empty")}
+          </TierBox>
+          <TierBox size="full" label="Error">
+            {render("error")}
+          </TierBox>
+        </div>
+      </Specimen>
+      <ContainerLab>{() => render()}</ContainerLab>
+    </SectionPage>);
+}

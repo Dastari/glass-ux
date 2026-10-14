@@ -1,0 +1,163 @@
+/*
+ * ReferenceInput — linked entities as chips, added with @ (fa-control fa-input fa-multi).
+ *
+ *   [Assigned to ▾ (👤 Jamie Wells ✕)] [Related ▾ (🖨 FA-RICOH-L2 ✕)] type @ to link…  [+ Link…]
+ *
+ * The box always wraps (forms): it grows a line at a time, so adding a link never moves
+ * the chips already there. Each link is the relation (a quiet menu button) in front of the
+ * entity's own chip; the pair is one Base UI chip, reachable with ← from the input and
+ * removed with Backspace or Delete. A duplicate flashes the existing link.
+ *
+ * Popup: kind filter chips stay above the results while they scroll; results group by kind.
+ *
+ * Component tokens
+ *   --_relation-h   the relation button's height (the chip's)
+ */
+@layer components {
+  .fa-ref-input {
+    --_relation-h: var(--control-h-xs);
+    --_chip-max: 100%;
+  }
+  .fa-ref-input .fa-multi-chips {
+    row-gap: var(--space-1);
+    column-gap: var(--space-2);
+  }
+
+  /* ── One link: relation + chip ─────────────────────────────────────────── */
+  .fa-ref-chip {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    max-width: 100%;
+    min-width: 0;
+    border-radius: var(--radius-badge);
+    outline: none;
+  }
+  .fa-ref-chip-parts {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+    min-width: 0;
+    max-width: 100%;
+  }
+  .fa-ref-chip:focus-visible,
+  .fa-ref-chip:focus {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--space-half);
+  }
+  .fa-ref-chip[data-flash] {
+    animation: fa-flash var(--duration-slower) var(--ease-standard);
+  }
+  .fa-ref-chip .fa-entity[data-tier="chip"] {
+    max-width: 100%;
+  }
+
+  .fa-ref-relation {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-half);
+    height: var(--_relation-h);
+    padding-inline: var(--space-1-5) var(--space-1);
+    border: 0;
+    border-radius: var(--radius-badge);
+    background: none;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+  }
+  .fa-ref-relation[data-static] {
+    padding-inline: var(--space-1) 0;
+  }
+  .fa-ref-relation > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    color: var(--fg-subtle);
+  }
+  button.fa-ref-relation:hover,
+  button.fa-ref-relation[data-popup-open] {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  button.fa-ref-relation:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  /* The owner reads first: its relation is in full text colour. */
+  .fa-ref-relation:is([data-relation="assigned-to"], [data-relation="owner"]) {
+    color: var(--fg);
+  }
+
+  .fa-ref-none {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--_action);
+    color: var(--fg-subtle);
+  }
+  .fa-ref-input[data-readonly] {
+    cursor: default;
+  }
+
+  /* Link… ends the last line: the input grows to meet it; the box's inset matches an
+     inner button's (fa-input-btn). */
+  .fa-ref-input .fa-ref-add {
+    --_h: var(--_action);
+    flex: none;
+    margin-inline-start: auto;
+    margin-inline-end: calc((var(--_box-px) - (var(--_box-h) - var(--_action)) / 2) * -1);
+  }
+
+  /* ── Popup ─────────────────────────────────────────────────────────────── */
+  .fa-ref-popup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    overflow: hidden;
+  }
+  .fa-ref-results {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .fa-ref-kinds {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    padding: var(--space-half) var(--space-half) var(--space-1);
+  }
+  .fa-ref-kind {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    height: var(--control-h-xs);
+    padding-inline: var(--space-2);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: none;
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+  }
+  .fa-ref-kind > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-ref-kind:hover {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-ref-kind[aria-pressed="true"] {
+    background-color: var(--accent-soft);
+    box-shadow: inset 0 0 0 var(--border-width) var(--accent-line);
+    color: var(--accent-text);
+  }
+}

@@ -1,0 +1,130 @@
+/*
+ * OtpInput — N square boxes in groups, each an fa-control. The boxes share one row with a
+ * fixed width per box, so the row never changes size; the ✓ after a success sits in a
+ * reserved slot at the end (R9).
+ *
+ *   [4][8][2]  –  [9][1][3]   ✓
+ *
+ * Component tokens: --_box (the box side: control-h-lg, or md with size="md"), --_gap.
+ */
+@layer components {
+  .fa-otp {
+    --_box: var(--control-h-lg);
+    --_gap: var(--space-1-5);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    max-width: 100%;
+  }
+  .fa-otp[data-size="md"] {
+    --_box: var(--control-h-md);
+    --_gap: var(--space-1);
+  }
+  .fa-otp-group {
+    display: flex;
+    gap: var(--_gap);
+    min-width: 0;
+  }
+  .fa-otp-box {
+    /* The fa-control look on a bare input (no inner input to wrap). */
+    flex: 0 1 var(--_box);
+    width: var(--_box);
+    /* Boxes narrow in a tight column, never below a small control; past that the groups wrap. */
+    min-width: var(--control-h-sm);
+    height: var(--_box);
+    padding: 0;
+    border-radius: var(--radius-control);
+    background-color: var(--glass-fill-control);
+    border: var(--border-width) solid var(--glass-edge);
+    box-shadow:
+      inset 0 var(--border-width) 0 0 var(--glass-rim-top),
+      var(--shadow-1);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    caret-color: var(--accent);
+    outline: none;
+    transition-property: background-color, border-color, box-shadow, color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-otp[data-size="md"] .fa-otp-box {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-otp-box:hover:not(:disabled, [readonly]) {
+    background-color: var(--glass-fill-control-hover);
+    border-color: var(--line-strong);
+  }
+  .fa-otp-box:focus {
+    background-color: var(--glass-fill-control-hover);
+    border-color: var(--accent-line);
+    box-shadow:
+      inset 0 var(--border-width) 0 0 var(--glass-rim-top),
+      0 0 0 var(--focus-halo) var(--accent-soft);
+  }
+  .fa-otp-box::placeholder {
+    color: var(--fg-subtle);
+  }
+
+  /* States: invalid or refused, accepted, disabled. */
+  .fa-otp[data-invalid] .fa-otp-box {
+    border-color: var(--danger-line);
+  }
+  .fa-otp[data-invalid] .fa-otp-box:focus {
+    box-shadow:
+      inset 0 var(--border-width) 0 0 var(--glass-rim-top),
+      0 0 0 var(--focus-halo) var(--danger-soft);
+  }
+  .fa-otp[data-status="success"] .fa-otp-box {
+    border-color: var(--success-line);
+    background-color: var(--success-soft);
+    color: var(--success-text);
+  }
+  .fa-otp[data-disabled] .fa-otp-box {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+  }
+  .fa-otp[data-readonly] .fa-otp-box {
+    background-color: var(--glass-fill-inset);
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .fa-otp-separator {
+    flex: none;
+    width: var(--space-2);
+    height: var(--border-width-strong);
+    border-radius: var(--radius-full);
+    background-color: var(--line-strong);
+  }
+
+  /* The ✓ slot is always there; it shows only on success. */
+  .fa-otp-mark {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    color: var(--success-text);
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-spring);
+  }
+  .fa-otp-mark > .fa-icon {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+  .fa-otp[data-status="success"] .fa-otp-mark {
+    opacity: 1;
+    transform: none;
+  }
+}

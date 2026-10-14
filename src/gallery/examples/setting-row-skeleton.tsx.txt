@@ -1,0 +1,34 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { FormStack } from "glass-ux/form";
+
+import { SettingRowSkeleton } from "glass-ux/setting-row";
+
+import { Toaster } from "glass-ux/toast";
+
+export default function SettingRowSection() {
+    return (<SectionPage>
+      <Toaster />
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Specimen title="Loading" description="The skeleton keeps the label, description and control boxes.">
+        <FormStack>
+          <SettingRowSkeleton />
+          <SettingRowSkeleton control="segmented" description={false} labelWidth="30%"/>
+          <SettingRowSkeleton control="button" labelWidth="45%"/>
+        </FormStack>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

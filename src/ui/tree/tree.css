@@ -1,0 +1,162 @@
+/*
+ * Tree — the sidebar's endpoints by organisation.
+ *
+ * Rows are fa-item: group rows at --item-h (chevron, organisation icon, name in fg-muted at
+ * medium weight, leaf count), endpoint rows two lines tall (device icon with a status dot,
+ * name in fg, the data subtitle in fg-muted). The selected endpoint takes accent-soft and the
+ * slim accent bar — the same "you are here" mark as the sidebar and vertical tabs. Each level
+ * indents by --_indent. Heights are fixed per kind so the virtualiser can place rows; the
+ * Tree measures them from these rules (probes), so density and touch sizes just work.
+ */
+@layer components {
+  .fa-tree {
+    --_indent: var(--space-3); /* per level below the first */
+    --_bar-w: calc(var(--border-width) * 3); /* selected-row bar */
+    --_row-2: max(var(--item-h), calc(var(--type-body-line) + var(--type-caption-line) + var(--space-2))); /* two-line row */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-tree-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    overscroll-behavior: contain;
+    outline: none;
+  }
+  .fa-tree-canvas {
+    position: relative;
+    width: 100%;
+  }
+
+  .fa-tree-row {
+    --_icon: var(--icon-lg);
+    gap: var(--space-2);
+    height: var(--item-h);
+    padding-inline: calc(var(--space-1-5) + (var(--_level, 1) - 1) * var(--_indent)) var(--space-2);
+  }
+  .fa-tree-canvas:not([data-flow]) > .fa-tree-row {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+  }
+  .fa-tree-row[data-two-line] {
+    height: var(--_row-2);
+  }
+  .fa-tree-row[data-kind="group"] {
+    --_icon: var(--icon-sm);
+  }
+  .fa-tree-row[data-selected]::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: var(--space-2);
+    width: var(--_bar-w);
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+  }
+
+  .fa-tree-chevron {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--fg-subtle);
+  }
+  .fa-tree-chevron > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+    transition: rotate var(--duration-base) var(--ease-standard);
+  }
+  .fa-tree-row[aria-expanded="true"] .fa-tree-chevron > .fa-icon {
+    rotate: 90deg;
+  }
+
+  .fa-tree-icon {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--_icon);
+    height: var(--_icon);
+    color: var(--fg-muted);
+  }
+  .fa-tree-icon > .fa-icon {
+    width: 100%;
+    height: 100%;
+  }
+  .fa-tree-row[data-kind="group"] .fa-tree-icon > .fa-icon {
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+  }
+  .fa-tree-row:is(:hover, [data-selected]) .fa-tree-icon {
+    color: inherit;
+  }
+  .fa-tree-icon > .fa-status-dot {
+    --_dot: 0.4375rem;
+  }
+  .fa-tree-icon.fa-skel-block {
+    border-radius: var(--radius-xs);
+  }
+
+  .fa-tree-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-tree-label,
+  .fa-tree-description {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-tree-label {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-tree-row[data-kind="group"] .fa-tree-label {
+    color: var(--fg-muted);
+    font-weight: var(--weight-medium);
+  }
+  .fa-tree-row[data-kind="group"]:hover .fa-tree-label {
+    color: var(--fg);
+  }
+  .fa-tree-description {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-tree-row[data-selected] .fa-tree-description {
+    color: inherit;
+    opacity: 0.8;
+  }
+  .fa-tree-mark {
+    border-radius: calc(var(--radius-xs) / 2);
+    background-color: var(--accent-soft-hover);
+    color: inherit;
+    font-weight: var(--weight-semibold);
+  }
+  .fa-tree-count {
+    margin-inline-start: auto;
+  }
+
+  .fa-tree-probes {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}

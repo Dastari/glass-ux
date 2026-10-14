@@ -1,0 +1,831 @@
+/*
+ * Tool-rendered results (generative UI). Every result is an AiCard on the breakout column
+ * with the ResultFrame header; this file lays out each body against its card.
+ *
+ * Tiers (container ai-card)
+ *   table     ≥ 48rem every column · priority 5 hides < 48rem, 4 < 40rem, 3 < 32rem ·
+ *             below 26rem the rows become a compact list
+ *   chart     ≥ 28rem value axis and 13rem plot · narrower: no value axis, 9rem plot
+ *   metrics   auto-fill tiles (min 11rem), each 7.5rem tall so Metric picks its tier
+ *   images    one image at its ratio (max 22rem tall) · several: auto-fill 10rem tiles
+ *   log       time column from 28rem
+ *
+ * Component tokens
+ *   --_plot      chart plot height
+ *   --_tile-h    metric tile height
+ */
+@layer components {
+  .fa-ai-result,
+  .fa-ai-lightbox {
+    /* component tokens: the result tiers */
+    --_plot-sm: 9rem;
+    --_plot-lg: 13rem;
+    --_tip-min: 9rem;
+    --_tile-min: 11rem;
+    --_image-min: 10rem;
+    --_image-max-h: 22rem;
+    /* the lightbox stage: its height band and the width a zoom multiplies */
+    --_stage-min: min(70vh, 40rem);
+    --_stage-max: min(72vh, 48rem);
+    --_stage-img: min(70vh, 46rem);
+    --_zoom-base: 60rem;
+    --_zoom-label: 3.5rem;
+  }
+  .fa-ai-sr {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .fa-ai-result-footer {
+    padding-top: var(--space-1);
+  }
+  .fa-ai-result-body[data-flush] + .fa-ai-result-footer {
+    padding-top: var(--space-2);
+  }
+
+  /* ── Table ─────────────────────────────────────────────────────────────── */
+  .fa-ai-result-table {
+    margin: 0 var(--space-2);
+  }
+  .fa-ai-result-body[data-flush] > .fa-ai-result-table:last-child {
+    margin-bottom: var(--space-2);
+  }
+  .fa-ai-cell-empty {
+    color: var(--fg-subtle);
+  }
+  .fa-ai-result-rows {
+    display: none;
+    flex-direction: column;
+    margin: 0;
+    padding: 0 var(--space-2) var(--space-2);
+    list-style: none;
+  }
+  .fa-ai-result-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-half) var(--space-2);
+    padding: var(--space-2) var(--space-2);
+    border-radius: var(--radius-item);
+  }
+  .fa-ai-result-row-title {
+    min-width: 0;
+    overflow: hidden;
+    font-weight: var(--weight-medium);
+  }
+  .fa-ai-result-row-meta {
+    grid-column: 1 / -1;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  @container ai-card (width < 48rem) {
+    .fa-ai-result-table [data-priority="5"] {
+      display: none;
+    }
+  }
+  @container ai-card (width < 40rem) {
+    .fa-ai-result-table [data-priority="4"] {
+      display: none;
+    }
+  }
+  @container ai-card (width < 32rem) {
+    .fa-ai-result-table [data-priority="3"] {
+      display: none;
+    }
+  }
+  @container ai-card (width < 26rem) {
+    .fa-ai-result-table {
+      display: none;
+    }
+    .fa-ai-result-rows {
+      display: flex;
+    }
+  }
+
+  /* ── Chart ─────────────────────────────────────────────────────────────── */
+  .fa-ai-chart {
+    --_plot: var(--_plot-sm);
+    /* Series slots, fixed order, from the data palette (R3.8). Status hues never stand in
+       for a series. */
+    --fa-chart-1: var(--chart-1);
+    --fa-chart-2: var(--chart-2);
+    --fa-chart-3: var(--chart-3);
+    --fa-chart-4: var(--chart-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+  }
+  @container ai-card (width >= 28rem) {
+    .fa-ai-chart {
+      --_plot: var(--_plot-lg);
+    }
+  }
+  .fa-ai-chart [data-slot="1"] {
+    --_c: var(--fa-chart-1);
+  }
+  .fa-ai-chart [data-slot="2"] {
+    --_c: var(--fa-chart-2);
+  }
+  .fa-ai-chart [data-slot="3"] {
+    --_c: var(--fa-chart-3);
+  }
+  .fa-ai-chart [data-slot="4"] {
+    --_c: var(--fa-chart-4);
+  }
+  .fa-ai-chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-ai-chart-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+  }
+  .fa-ai-chart-key {
+    flex: none;
+    width: var(--space-3);
+    height: var(--space-half);
+    border-radius: var(--radius-full);
+    background-color: var(--_c);
+  }
+  .fa-ai-chart[data-chart="bar"] .fa-ai-chart-key {
+    height: var(--space-2);
+    border-radius: var(--space-half);
+    width: var(--space-2);
+  }
+  .fa-ai-chart-frame {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: var(--_plot) auto;
+    column-gap: var(--space-2);
+  }
+  .fa-ai-chart-yaxis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-block: calc(var(--type-caption-line) / -2);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-align: end;
+  }
+  @container ai-card (width < 28rem) {
+    .fa-ai-chart-yaxis {
+      display: none;
+    }
+    .fa-ai-chart-frame {
+      grid-template-columns: minmax(0, 1fr);
+      column-gap: 0;
+    }
+    .fa-ai-chart-frame > .fa-ai-chart-xaxis {
+      grid-column: 1;
+    }
+  }
+  .fa-ai-chart-plot {
+    position: relative;
+    min-width: 0;
+    touch-action: pan-y;
+  }
+  .fa-ai-chart-grid {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+  .fa-ai-chart-grid > span {
+    height: var(--border-width);
+    background-color: var(--line);
+  }
+  .fa-ai-chart-grid > span:last-child {
+    background-color: var(--line-strong);
+  }
+  .fa-ai-chart-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .fa-ai-chart-line {
+    fill: none;
+    stroke: var(--_c);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .fa-ai-chart-area {
+    fill: color-mix(in oklab, var(--_c) 10%, transparent);
+    stroke: none;
+  }
+  .fa-ai-chart-dot {
+    position: absolute;
+    left: var(--_x);
+    top: var(--_y);
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--_c);
+    box-shadow: 0 0 0 var(--border-width-strong) var(--surface-3);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .fa-ai-chart-cross {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--_x);
+    width: var(--border-width);
+    background-color: var(--line-strong);
+    pointer-events: none;
+  }
+  .fa-ai-chart-bars {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: stretch;
+  }
+  .fa-ai-chart-group {
+    display: flex;
+    flex: 1 1 0;
+    align-items: flex-end;
+    justify-content: center;
+    gap: var(--space-half);
+    min-width: 0;
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-xs);
+  }
+  .fa-ai-chart-group[data-active] {
+    background-color: var(--fill-hover);
+  }
+  .fa-ai-chart-bar {
+    flex: 1 1 0;
+    max-width: var(--space-6);
+    height: var(--_h);
+    min-height: var(--border-width);
+    border-radius: var(--space-1) var(--space-1) 0 0;
+    background-color: var(--_c);
+  }
+  .fa-ai-chart-xaxis {
+    position: relative;
+    grid-column: 2;
+    height: calc(var(--type-caption-line) + var(--space-1));
+    padding-top: var(--space-1);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-ai-chart-xaxis > span {
+    position: absolute;
+    left: var(--_x);
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+  .fa-ai-chart-xaxis > span[data-edge="start"] {
+    transform: none;
+  }
+  .fa-ai-chart-xaxis > span[data-edge="end"] {
+    transform: translateX(-100%);
+  }
+  .fa-ai-chart-tip {
+    position: absolute;
+    top: var(--space-1);
+    left: var(--_x);
+    z-index: var(--z-raised);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: var(--_tip-min);
+    padding: var(--space-2) var(--space-2-5);
+    border-radius: var(--radius-item);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    transform: translateX(var(--space-3));
+    pointer-events: none;
+  }
+  .fa-ai-chart-tip[data-flip] {
+    transform: translateX(calc(-100% - var(--space-3)));
+  }
+  .fa-ai-chart-tip-label {
+    color: var(--fg-muted);
+    font-weight: var(--weight-medium);
+  }
+  .fa-ai-chart-tip-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1-5);
+  }
+  .fa-ai-chart-tip-name {
+    flex: 1 1 auto;
+    color: var(--fg-muted);
+  }
+  .fa-ai-chart-tip-row [data-numeric] {
+    color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+
+  /* ── Metrics ───────────────────────────────────────────────────────────── */
+  /* Each tile leaves Metric at least 10rem inside, so it shows its compact tier (label,
+     value, delta, chart) rather than the one-line micro tier. */
+  .fa-ai-metrics {
+    --_tile-h: 7.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--_tile-min)), 1fr));
+    gap: var(--space-2);
+  }
+  .fa-ai-metric-tile {
+    height: var(--_tile-h);
+    padding: var(--space-2-5) var(--space-2) var(--space-2);
+    border-radius: var(--radius-control);
+  }
+  .fa-ai-metrics > .fa-skel.fa-ai-metric-tile {
+    padding: 0;
+  }
+
+  /* ── Detail ────────────────────────────────────────────────────────────── */
+  .fa-ai-detail-grid {
+    min-width: 0;
+  }
+
+  /* ── Entity card ───────────────────────────────────────────────────────── */
+  .fa-ai-entity-card .fa-ai-card-title {
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+  }
+  .fa-ai-entity-name {
+    font-weight: var(--weight-semibold);
+  }
+  .fa-ai-entity-card .fa-ai-glyph > .fa-icon {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    --_stroke: var(--icon-stroke);
+  }
+  .fa-ai-entity-card .fa-ai-glyph-dot.fa-status-dot {
+    --_dot: 0.5rem;
+    inset-inline-end: calc(var(--space-1) * -1);
+    inset-block-end: calc(var(--space-1) * -1);
+  }
+  .fa-ai-entity-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--_tile-min)), 1fr));
+    gap: var(--space-3) var(--space-5);
+    margin: 0;
+  }
+  .fa-ai-entity-facts > div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-ai-entity-facts dt {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-ai-entity-facts dd {
+    margin: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-entity-actions {
+    justify-content: flex-end;
+  }
+  .fa-ai-entity-actions .fa-action-bar,
+  .fa-ai-entity-actions > * {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* ── Entity list ───────────────────────────────────────────────────────── */
+  .fa-ai-entity-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0 var(--space-2) var(--space-2);
+    list-style: none;
+  }
+  .fa-ai-entity-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    min-height: var(--item-h);
+    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+    border-radius: var(--radius-item);
+    outline: none;
+  }
+  .fa-ai-entity-row:hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-ai-entity-row:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-ai-entity-row-name {
+    flex: 0 1 auto;
+    min-width: 0;
+    font-weight: var(--weight-medium);
+  }
+  .fa-ai-entity-row-detail {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-entity-row-state {
+    display: inline-flex;
+    flex: none;
+    margin-inline-start: auto;
+  }
+  @container ai-card (width < 26rem) {
+    .fa-ai-entity-row-detail {
+      display: none;
+    }
+  }
+
+  /* ── Images ────────────────────────────────────────────────────────────── */
+  .fa-ai-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--_image-min)), 1fr));
+    gap: var(--gap-tiles);
+  }
+  .fa-ai-images[data-single] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fa-ai-image {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    min-width: 0;
+    margin: 0;
+  }
+  .fa-ai-image-button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: none;
+    cursor: zoom-in;
+  }
+  .fa-ai-image-button:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-ai-image-box {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--_ratio);
+    max-height: var(--_image-max-h);
+    overflow: hidden;
+    border-radius: var(--radius-control);
+    background-color: var(--skel-base);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+  }
+  .fa-ai-images[data-single] .fa-ai-image-box {
+    width: auto;
+    max-width: 100%;
+  }
+  .fa-ai-image-box[data-cover] {
+    aspect-ratio: 16 / 10;
+  }
+  .fa-ai-image-box img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-ai-image-box[data-cover] img {
+    object-fit: cover;
+    object-position: top center;
+  }
+  .fa-ai-image-box[data-loaded] img {
+    opacity: 1;
+  }
+  .fa-ai-image-button:hover .fa-ai-image-box {
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+  }
+  .fa-ai-image-caption {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-lightbox .fa-dialog-body {
+    display: flex;
+  }
+  .fa-ai-lightbox-stage {
+    display: grid;
+    flex: 1 1 auto;
+    place-items: center;
+    min-height: var(--_stage-min);
+    max-height: var(--_stage-max);
+    overflow: auto;
+    overscroll-behavior: contain;
+    background-color: var(--canvas);
+    outline: none;
+  }
+  .fa-ai-lightbox-stage:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-ai-lightbox-stage img {
+    display: block;
+    max-width: 100%;
+    max-height: var(--_stage-img);
+    width: auto;
+    height: auto;
+    border-radius: var(--radius-xs);
+  }
+  .fa-ai-lightbox-stage[data-zoomed] {
+    place-items: start;
+  }
+  .fa-ai-lightbox-stage[data-zoomed] img {
+    max-width: none;
+    max-height: none;
+    width: calc(var(--_scale) * min(100%, var(--_zoom-base)));
+  }
+  .fa-ai-lightbox-zoom {
+    min-width: var(--_zoom-label);
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    text-align: center;
+  }
+
+  /* ── Files ─────────────────────────────────────────────────────────────── */
+  .fa-ai-files {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-ai-file {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-ai-file-icon {
+    --tile-icon-box: var(--control-h-md);
+  }
+  .fa-ai-file-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-ai-file-name {
+    min-width: 0;
+    font-weight: var(--weight-medium);
+  }
+  .fa-ai-file-meta {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+
+  /* ── Diff ──────────────────────────────────────────────────────────────── */
+  .fa-ai-diff-target {
+    padding: 0 var(--_pad) var(--space-2);
+  }
+  .fa-ai-diff {
+    display: flex;
+    flex-direction: column;
+    margin: 0 var(--space-2) var(--space-2);
+    padding-block: var(--space-1);
+    overflow-x: auto;
+    border-radius: var(--radius-control);
+    font-family: var(--font-mono);
+    font-size: var(--type-mono-size);
+    line-height: var(--type-mono-line);
+  }
+  .fa-ai-diff:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+  }
+  .fa-ai-diff-rows {
+    display: flex;
+    flex-direction: column;
+    min-width: max-content;
+  }
+  .fa-ai-diff-line {
+    display: grid;
+    grid-template-columns: 3ch 3ch 2ch minmax(0, 1fr);
+    gap: var(--space-2);
+    min-width: max-content;
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-xs);
+  }
+  .fa-ai-diff-line[data-type="add"] {
+    background-color: var(--success-soft);
+  }
+  .fa-ai-diff-line[data-type="remove"] {
+    background-color: var(--danger-soft);
+  }
+  .fa-ai-diff-number {
+    color: var(--fg-disabled);
+    text-align: end;
+    user-select: none;
+  }
+  .fa-ai-diff-sign {
+    color: var(--fg-subtle);
+    text-align: center;
+    user-select: none;
+  }
+  .fa-ai-diff-line[data-type="add"] .fa-ai-diff-sign {
+    color: var(--success-text);
+  }
+  .fa-ai-diff-line[data-type="remove"] .fa-ai-diff-sign {
+    color: var(--danger-text);
+  }
+  .fa-ai-diff-text {
+    white-space: pre;
+  }
+  @container ai-card (width < 26rem) {
+    .fa-ai-diff-line {
+      grid-template-columns: 2ch minmax(0, 1fr);
+    }
+    .fa-ai-diff-number {
+      display: none;
+    }
+  }
+
+  /* ── Log ───────────────────────────────────────────────────────────────── */
+  .fa-ai-log {
+    display: flex;
+    flex-direction: column;
+    margin: 0 var(--space-2) var(--space-2);
+    padding: var(--space-1) 0;
+    overflow-x: auto;
+    border-radius: var(--radius-control);
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--type-mono-size);
+    line-height: var(--type-mono-line);
+    outline: none;
+  }
+  .fa-ai-log:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+  }
+  .fa-ai-log-line {
+    display: grid;
+    grid-template-columns: max-content 7ch minmax(0, 1fr);
+    gap: var(--space-3);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-xs);
+  }
+  .fa-ai-log-line[data-level="error"] {
+    background-color: var(--danger-soft);
+  }
+  .fa-ai-log-time {
+    color: var(--fg-subtle);
+  }
+  .fa-ai-log-level {
+    color: var(--fg-muted);
+    font-weight: var(--weight-semibold);
+  }
+  .fa-ai-log-line[data-level="debug"] .fa-ai-log-level {
+    color: var(--fg-subtle);
+  }
+  .fa-ai-log-line[data-level="info"] .fa-ai-log-level {
+    color: var(--info-text);
+  }
+  .fa-ai-log-line[data-level="warning"] .fa-ai-log-level {
+    color: var(--warning-text);
+  }
+  .fa-ai-log-line[data-level="error"] .fa-ai-log-level {
+    color: var(--danger-text);
+  }
+  .fa-ai-log-line[data-level="success"] .fa-ai-log-level {
+    color: var(--success-text);
+  }
+  .fa-ai-log-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .fa-ai-log-more {
+    display: flex;
+    justify-content: center;
+    padding: 0 var(--space-2);
+  }
+  @container ai-card (width < 28rem) {
+    .fa-ai-log-line {
+      grid-template-columns: 7ch minmax(0, 1fr);
+    }
+    .fa-ai-log-time {
+      display: none;
+    }
+  }
+
+  /* ── Skeletons ─────────────────────────────────────────────────────────── */
+  .fa-ai-skel-table {
+    display: flex;
+    flex-direction: column;
+    margin: 0 var(--space-2) var(--space-2);
+  }
+  .fa-ai-skel-head {
+    width: 100%;
+    height: var(--row-h-header);
+  }
+  .fa-ai-skel-row {
+    display: flex;
+    align-items: center;
+    height: calc(var(--row-h) - var(--space-2));
+    padding-inline: var(--space-3);
+  }
+  .fa-ai-skel-chart {
+    width: 100%;
+    height: calc(var(--_plot-sm) + var(--type-caption-line) + var(--space-1));
+  }
+  @container ai-card (width >= 28rem) {
+    .fa-ai-skel-chart {
+      height: calc(var(--_plot-lg) + var(--type-caption-line) + var(--space-1));
+    }
+  }
+  .fa-ai-skel-image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    height: auto;
+  }
+  .fa-ai-skel-lines {
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--space-2) var(--space-2);
+  }
+  .fa-ai-result-body[data-flush] > .fa-ai-skel-lines {
+    padding-inline: var(--_pad);
+  }
+}
+
+@layer components {
+  /* ── Value and redaction ───────────────────────────────────────────────── */
+  .fa-ai-value {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+  }
+  .fa-ai-value-label,
+  .fa-ai-value-detail {
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-ai-value-figure {
+    color: var(--fg);
+    font-size: var(--type-headline-size);
+    line-height: var(--type-headline-line);
+    font-weight: var(--type-headline-weight);
+    letter-spacing: var(--type-headline-tracking);
+    overflow-wrap: anywhere;
+  }
+  .fa-ai-redacted {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    max-width: 100%;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+  }
+  .fa-ai-redacted-icon {
+    flex: none;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-ai-redacted-mask {
+    color: var(--fg-subtle);
+    letter-spacing: var(--space-half);
+  }
+  .fa-ai-redacted-reveal.fa-btn {
+    --_h: var(--control-h-xs);
+    --_px: var(--space-2);
+  }
+}

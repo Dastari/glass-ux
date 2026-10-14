@@ -1,0 +1,13 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { PrivilegedMark } from "glass-ux/entity-settings";
+
+export default function PrivilegedMarkExample() {
+    return (<SectionPage>
+      <Specimen title="PrivilegedMark" layout="stack">
+        <p>
+          Restricted project setting <PrivilegedMark />
+        </p>
+      </Specimen>
+    </SectionPage>);
+}

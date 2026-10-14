@@ -1,0 +1,57 @@
+import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Field } from "glass-ux/field";
+
+import { FormStack } from "glass-ux/form";
+
+import { PortInput } from "glass-ux/port-field";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+export default function PortFieldSection() {
+    return (<SectionPage>
+      <></>
+
+      <Specimen title="States" layout="grid">
+        <FormStack>
+          <Field label="Empty">
+            <PortInput />
+          </Field>
+          <Field label="Invalid" error="Enter a port from 1 to 65535">
+            <PortInput defaultValue={0} invalid/>
+          </Field>
+        </FormStack>
+        <FormStack>
+          <Field label="Read-only">
+            <PortInput defaultValue={3389} readOnly/>
+          </Field>
+          <Field label="Disabled">
+            <PortInput defaultValue={22} disabled/>
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <Field label="Port">
+          <PortInput defaultValue={443}/>
+        </Field>
+      </Specimen>
+
+      <ContainerLab>
+        <div className="flex h-full items-center p-1">
+          <PortInput size="sm" defaultValue={3268} width="full" aria-label="Port"/>
+        </div>
+      </ContainerLab>
+
+      <Usage code={`
+import { portSchema } from "glass-ux/port-field"
+
+const schema = z.object({ port: portSchema({ required: true }) })   // number | null
+
+<form.AppField name="port">{(field) => <field.PortField label="Port" services={{ 8443: "UniFi" }} />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

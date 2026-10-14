@@ -1,0 +1,28 @@
+/*
+ * CoordinatesInput's "Pick on map" popover: a map well the popover's width, and the point in
+ * degrees, minutes and seconds under it (one caption line, reserved).
+ */
+@layer components {
+  .fa-coordinates-popup .fa-popover-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .fa-coordinates-map,
+  .fa-coordinates-map-loading {
+    --fa-pin-map-h: 16rem;
+    height: var(--fa-pin-map-h);
+    border-radius: var(--radius-tile);
+  }
+  .fa-coordinates-caption {
+    min-height: var(--type-caption-line);
+    margin: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

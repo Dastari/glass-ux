@@ -1,0 +1,99 @@
+import { useState, type ReactNode } from "react";
+
+import { ORGANISATION_SETTINGS, moduleRail } from "glass-ux/gallery/fixtures/brand";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconArchive, IconFolder, IconHistory, IconNewChat, IconSearch, IconSettings } from "glass-ux/icons";
+
+import { Rail, SectionDrawer } from "glass-ux/shell";
+
+import { BrandMark } from "glass-ux/brand";
+
+import { Button } from "glass-ux/button";
+
+import { EmptyState } from "glass-ux/empty-state";
+
+/* ── Live parts ──────────────────────────────────────────────────────────── */
+const RAIL_ITEMS: Array<{
+    label: string;
+    icon: ReactNode;
+    shortcut: string;
+}> = moduleRail("rmm").map((item) => ({
+    label: item.label,
+    icon: <item.icon />,
+    shortcut: item.shortcut,
+}));
+
+const SPECIMEN_ITEMS = [
+    { label: "Conversation history", icon: <IconHistory />, count: 0 },
+    { label: "Archived chats", icon: <IconArchive />, count: 6 },
+];
+
+const SPECIMEN_PROJECTS = ["Northstar Studio migration", "Patch Tuesday · October"];
+
+function RailAndDrawer() {
+    // SectionDrawer.Search: local state, the host filters its own rows and highlights the match.
+    const [query, setQuery] = useState("");
+    const needle = query.trim().toLocaleLowerCase("en-AU");
+    const keep = (label: string) => !needle || label.toLocaleLowerCase("en-AU").includes(needle);
+    const items = SPECIMEN_ITEMS.filter((item) => keep(item.label));
+    const projects = SPECIMEN_PROJECTS.filter(keep);
+    return (<div className="gallery-shell-sidebar">
+      <Rail.Root aria-label="Main (specimen)">
+        {RAIL_ITEMS.map((item) => (<Rail.Item key={item.label} icon={item.icon} label={item.label} shortcut={item.shortcut} active={item.label === "Assistant"}/>))}
+        <Rail.Spacer />
+        <Rail.Item icon={<IconSettings />} label={ORGANISATION_SETTINGS.label} shortcut={ORGANISATION_SETTINGS.shortcut}/>
+      </Rail.Root>
+      <SectionDrawer.Root aria-label="Assistant navigation (specimen)">
+        <SectionDrawer.Header icon={<BrandMark mark="ai"/>} title="Assistant"/>
+        <SectionDrawer.Search noun="Assistant" value={query} onValueChange={setQuery}/>
+        <SectionDrawer.Body>
+          <Button variant="primary" block icon={<IconNewChat />}>
+            New chat
+          </Button>
+          {items.length ? (<SectionDrawer.List>
+              {items.map((item) => (<SectionDrawer.Item key={item.label} icon={item.icon} label={<SectionDrawer.Match text={item.label} query={query}/>} count={item.count}/>))}
+            </SectionDrawer.List>) : null}
+          {projects.length ? (<SectionDrawer.Group id="gallery.ai.projects" title="Projects">
+              <SectionDrawer.List>
+                {projects.map((label) => (<SectionDrawer.Item key={label} icon={<IconFolder />} label={<SectionDrawer.Match text={label} query={query}/>} active={label === SPECIMEN_PROJECTS[0]}/>))}
+              </SectionDrawer.List>
+            </SectionDrawer.Group>) : null}
+          {!items.length && !projects.length ? <EmptyState icon={<IconSearch />}>{`No items match "${query.trim()}"`}</EmptyState> : null}
+        </SectionDrawer.Body>
+        <SectionDrawer.Footer>
+          <SectionDrawer.List>
+            <SectionDrawer.Item icon={<IconSettings />} label="AI settings"/>
+          </SectionDrawer.List>
+        </SectionDrawer.Footer>
+      </SectionDrawer.Root>
+    </div>);
+}
+
+/* ── Section ─────────────────────────────────────────────────────────────── */
+export default function AppShellSection() {
+    return (<SectionPage>
+      <></>
+
+    <></>
+
+      <></>
+
+      <Specimen title="Rail and section drawer" description="The rail is icon-only on the canvas; every item has a tooltip with its label and shortcut. Its bottom gear opens the current organisation's Settings dialog, disabled under All organisations with the reason. The drawer holds the section's navigation: drag its edge to resize, below its minimum it snaps closed; mod+B or the current rail item toggles it.">
+        <RailAndDrawer />
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

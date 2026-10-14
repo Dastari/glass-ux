@@ -1,0 +1,149 @@
+/*
+ * Radio, RadioGroup and RadioCard. The circle shares Checkbox's box (checkbox.css):
+ * same edge, fill, accent pop and press. Chosen = accent fill around a dot that springs in.
+ *
+ * RadioCard  a tile-sized option: [◉] [icon] title / description.
+ *            chosen = tone-soft fill + tone-line edge (the selected-row language).
+ * Sizes and tones as Checkbox.
+ */
+@layer components {
+  .fa-radio {
+    border-radius: var(--radius-full);
+  }
+  .fa-radio-indicator {
+    position: relative;
+    width: calc(var(--_size) * 0.38);
+    height: calc(var(--_size) * 0.38);
+    border-radius: var(--radius-full);
+    background-color: var(--_on-fg);
+    box-shadow: 0 var(--border-width) var(--border-width) oklch(from var(--shadow-tint) l c h / 0.25);
+    transition:
+      transform var(--duration-base) var(--ease-spring),
+      opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-radio-indicator[data-starting-style],
+  .fa-radio-indicator[data-ending-style] {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  /* ── Cards ─────────────────────────────────────────────────────────────── */
+  .fa-radio-cards {
+    /* component token: the narrowest a card column gets before the grid reflows */
+    --_card-min: 15rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .fa-radio-cards[data-orientation="horizontal"] {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--_card-min)), 1fr));
+  }
+  .fa-radio-cards > .fa-fieldset-legend {
+    grid-column: 1 / -1;
+  }
+  .fa-radio-card {
+    /* component token: a tile presses a third as deep as a button */
+    --_press: calc(1 - (1 - var(--press-scale)) / 3);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    border: var(--border-width) solid var(--glass-edge);
+    border-radius: var(--radius-control);
+    background-color: var(--glass-fill-control);
+    box-shadow:
+      inset 0 var(--border-width) 0 0 var(--glass-rim-top),
+      var(--shadow-1);
+    color: var(--fg);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    outline-offset: var(--focus-ring-offset);
+    transition-property: background-color, border-color, box-shadow, transform;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-radio-card:hover:not([data-disabled], [data-readonly]) {
+    border-color: var(--line-strong);
+    background-color: var(--glass-fill-control-hover);
+  }
+  .fa-radio-card:active:not([data-disabled], [data-readonly]) {
+    transform: scale(var(--_press));
+    transition-duration: var(--duration-instant);
+  }
+  .fa-radio-card[data-checked] {
+    border-color: var(--_on-line);
+    background-color: var(--_on-soft);
+    box-shadow: inset 0 var(--border-width) 0 0 var(--glass-rim-top);
+  }
+  .fa-radio-card[data-checked]:hover:not([data-disabled], [data-readonly]) {
+    border-color: var(--_on-line);
+    background-color: color-mix(in oklab, var(--_on-soft), var(--_on) 7%);
+  }
+  .fa-radio-cards[data-invalid] .fa-radio-card:not([data-checked]) {
+    border-color: var(--danger-line);
+  }
+  .fa-radio-card[data-disabled] {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  /* The circle mirrors the card's state. */
+  .fa-radio-card-circle {
+    margin-top: calc((var(--type-body-line) - var(--check-size)) / 2);
+  }
+  .fa-radio-card:hover:not([data-disabled], [data-checked]) .fa-radio-card-circle {
+    --_edge: var(--_edge-hover);
+  }
+  .fa-radio-card[data-checked] .fa-radio-card-circle {
+    --_edge: var(--_on-edge);
+    box-shadow: 0 var(--space-half) var(--space-1-5) calc(var(--space-half) * -1) var(--_on-glow);
+  }
+  .fa-radio-card[data-checked] .fa-radio-card-circle::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .fa-radio-card-icon {
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+    margin-block: calc((var(--type-body-line) - var(--control-h-sm)) / 2) 0;
+    border-radius: var(--radius-sm);
+  }
+  .fa-radio-card-icon > .fa-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-radio-card[data-checked] .fa-radio-card-icon {
+    border-color: transparent;
+    background-color: var(--glass-fill-control-hover);
+    color: var(--_on-text);
+  }
+  .fa-radio-card-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+  }
+  .fa-radio-card-title {
+    overflow: hidden;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-radio-card-description {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-wrap: pretty;
+  }
+}

@@ -1,0 +1,106 @@
+/*
+ * CodeBlock — fenced code in an AiCard well, highlighted lazily with Shiki.
+ *
+ * The syntax colours are component tokens derived from the accent so every palette gets a
+ * harmonious set at the accent text's lightness (AA on glass in both modes): keywords take
+ * the accent, strings and numbers the accent turned round the hue circle, comments the
+ * subtle foreground. No italics or weights, so highlighted text keeps the plain text's
+ * exact advance and nothing shifts when the colours arrive.
+ *
+ * Component tokens
+ *   --fa-code-*   the Shiki CSS-variables theme
+ *   --_lines      lines shown while collapsed (set inline from maxLines)
+ */
+@layer components {
+  .fa-ai-code {
+    --fa-code-foreground: var(--fg);
+    --fa-code-background: transparent;
+    --fa-code-token-keyword: var(--accent-text);
+    --fa-code-token-string: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 150));
+    --fa-code-token-string-expression: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 150));
+    --fa-code-token-constant: oklch(from var(--accent-text) l calc(c * 0.9) calc(h + 250));
+    --fa-code-token-function: oklch(from var(--accent-text) l calc(c * 0.8) calc(h + 205));
+    --fa-code-token-parameter: var(--fg-muted);
+    --fa-code-token-punctuation: var(--fg-muted);
+    --fa-code-token-comment: var(--fg-subtle);
+    --fa-code-token-link: var(--accent-text);
+  }
+
+  .fa-ai-code-scroll {
+    --_lines: 16;
+    position: relative;
+    overflow: auto;
+    overscroll-behavior-x: contain;
+    padding: 0 var(--_pad) var(--space-3);
+    outline: none;
+    border-radius: 0 0 var(--radius-tile) var(--radius-tile);
+  }
+  .fa-ai-code-scroll:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-ai-code-scroll[data-collapsed] {
+    max-height: calc(var(--type-mono-line) * var(--_lines) + var(--space-3));
+    overflow-y: hidden;
+    -webkit-mask: linear-gradient(to bottom, var(--fg) calc(100% - var(--space-12)), transparent);
+    mask: linear-gradient(to bottom, var(--fg) calc(100% - var(--space-12)), transparent);
+  }
+  .fa-ai-code-pre {
+    margin: 0;
+    color: var(--fa-code-foreground);
+    font-family: var(--font-mono);
+    font-size: var(--type-mono-size);
+    line-height: var(--type-mono-line);
+    font-variant-ligatures: none;
+    tab-size: 4;
+    counter-reset: fa-code-line;
+  }
+  .fa-ai-code-pre code {
+    display: block;
+    width: max-content;
+    min-width: 100%;
+    font: inherit;
+  }
+  .fa-ai-code[data-wrap] .fa-ai-code-pre code {
+    width: auto;
+  }
+  .fa-ai-code-line {
+    display: block;
+    white-space: pre;
+  }
+  .fa-ai-code[data-wrap] .fa-ai-code-line {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .fa-ai-code-pre[data-numbers] .fa-ai-code-line {
+    counter-increment: fa-code-line;
+    padding-inline-start: calc(4ch + var(--space-3));
+    text-indent: calc((4ch + var(--space-3)) * -1);
+  }
+  .fa-ai-code-pre[data-numbers] .fa-ai-code-line::before {
+    content: counter(fa-code-line);
+    display: inline-block;
+    width: 4ch;
+    margin-inline-end: var(--space-3);
+    color: var(--fg-disabled);
+    text-align: end;
+    text-indent: 0;
+    user-select: none;
+  }
+  .fa-ai-code-more {
+    display: flex;
+    justify-content: center;
+    padding: 0 var(--space-2) var(--space-2);
+  }
+
+  .fa-ai-inline-code {
+    padding: 0 var(--space-1);
+    border-radius: var(--radius-xs);
+    background-color: var(--fill-muted);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 0.9em; /* tokens:allow mono sits optically larger than Inter at the same size */
+    overflow-wrap: anywhere;
+  }
+}

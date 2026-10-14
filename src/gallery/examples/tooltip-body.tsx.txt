@@ -1,0 +1,16 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { TooltipBody } from "glass-ux/charts";
+
+export default function TooltipBodyExample() {
+    return (<SectionPage>
+      <Specimen title="TooltipBody" layout="stack">
+        <div className="glass-overlay fa-chart-tooltip">
+          <TooltipBody title="Week 1" meta="Meridian Studio" rows={[
+            { key: "booked", label: "Reservations", value: "42", slot: 1 },
+            { key: "capacity", label: "Capacity", value: "80", slot: 2 },
+        ]}/>
+        </div>
+      </Specimen>
+    </SectionPage>);
+}

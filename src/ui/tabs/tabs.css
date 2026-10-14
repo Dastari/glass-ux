@@ -1,0 +1,210 @@
+/*
+ * Tabs (L2) and TabNav.
+ *
+ * A strip of icon + label tabs at --control-h-md. Inactive tabs are muted, the active tab
+ * takes accent text and a sliding accent underline (Base UI's --active-tab-* variables; the
+ * router TabNav sets the same variables). Hover shows the shared fill as a pill inside the
+ * tab, never a filled active pill. Tabs never wrap: what does not fit moves into "More".
+ */
+@layer components {
+  .fa-tabs {
+    --_indicator-h: calc(var(--border-width) * 2); /* underline thickness */
+    --_pill-inset: var(--space-1); /* hover pill sits this far inside the tab, top and bottom */
+    display: flex;
+    flex-direction: column;
+    /* Take the width on offer; overflow is measured against it. */
+    width: 100%;
+    min-width: 0;
+  }
+
+  .fa-tabs-bar {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-1);
+    width: 100%;
+    min-width: 0;
+    height: var(--control-h-md);
+    overflow: hidden;
+  }
+  .fa-tabs-list {
+    position: relative;
+    display: flex;
+    flex: 0 1 auto;
+    align-items: stretch;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
+  .fa-tab {
+    --_icon: var(--icon-md);
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--control-h-md);
+    padding-inline: var(--space-3);
+    border: 0;
+    background: none;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--type-body-tracking);
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    isolation: isolate;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  /* The hover / focus pill. */
+  .fa-tab::before {
+    content: "";
+    position: absolute;
+    inset-block: var(--_pill-inset);
+    inset-inline: 0;
+    z-index: -1;
+    border-radius: var(--radius-item);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-tab > .fa-icon {
+    width: var(--_icon);
+    height: var(--_icon);
+    --_stroke: calc(var(--icon-stroke) * 1.06);
+    color: var(--fg-subtle);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-tab-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-tab:is(:hover, [data-popup-open]):not([data-disabled], [data-skeleton]) {
+    color: var(--fg);
+  }
+  .fa-tab:is(:hover, [data-popup-open]):not([data-disabled], [data-skeleton])::before {
+    background-color: var(--fill-hover);
+  }
+  .fa-tab:is(:hover, [data-popup-open]):not([data-disabled], [data-skeleton]) > .fa-icon {
+    color: var(--fg-muted);
+  }
+  .fa-tab:active:not([data-disabled], [data-skeleton])::before {
+    background-color: var(--fill-press);
+  }
+  .fa-tab:focus-visible::before {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-tab[data-active],
+  .fa-tab[data-active]:hover {
+    color: var(--accent-text);
+  }
+  .fa-tab[data-active] > .fa-icon,
+  .fa-tab[data-active]:hover > .fa-icon {
+    color: var(--accent-text);
+  }
+  .fa-tab[data-active] .fa-count {
+    --_bg: var(--accent-soft);
+    --_fg: var(--accent-text);
+  }
+  .fa-tab[data-disabled] {
+    cursor: not-allowed;
+    opacity: var(--disabled-opacity);
+  }
+  /* Only the active tab is left and it still does not fit: let it truncate. */
+  .fa-tabs-list[data-solo] > .fa-tab {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .fa-tabs-indicator {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    width: var(--active-tab-width, 0);
+    height: var(--_indicator-h);
+    translate: var(--active-tab-left, 0) 0;
+    pointer-events: none;
+    transition:
+      translate var(--duration-base) var(--ease-standard),
+      width var(--duration-base) var(--ease-standard);
+  }
+  .fa-tabs-indicator::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline: var(--space-2);
+    border-radius: var(--radius-full);
+    background-image: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+
+  .fa-tabs-more {
+    flex: none;
+  }
+  .fa-tabs-more > .fa-tabs-more-chevron {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+    color: var(--fg-subtle);
+    transition: rotate var(--duration-base) var(--ease-standard);
+  }
+  .fa-tabs-more[data-popup-open] > .fa-tabs-more-chevron {
+    rotate: 180deg;
+  }
+
+  /* Off-screen measuring row: real tab styles, no layout, no scroll extent. */
+  .fa-tabs-measure {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-tabs-measure-row {
+    display: flex;
+    gap: var(--space-1);
+    width: max-content;
+  }
+
+  .fa-tabs-panel {
+    min-width: 0;
+    outline: none;
+  }
+  .fa-tabs-panel:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+    border-radius: var(--radius-tile);
+  }
+
+  /* Skeleton: same tab box, placeholder icon and label. Placeholders that do not fit wrap
+     onto a hidden second line instead of being cut at the edge. */
+  .fa-tabs-bar[data-skeleton] > .fa-tabs-list {
+    flex-wrap: wrap;
+    height: var(--control-h-md);
+    overflow: hidden;
+  }
+  .fa-tab[data-skeleton] {
+    cursor: default;
+  }
+  .fa-tab-skel-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-tab-skel-label {
+    --_w: 4.5em; /* placeholder label widths, in the label's own em */
+    width: var(--_w);
+  }
+  .fa-tab-skel-label[data-index="1"] {
+    --_w: 3.5em;
+  }
+  .fa-tab-skel-label[data-index="2"] {
+    --_w: 5.5em;
+  }
+}

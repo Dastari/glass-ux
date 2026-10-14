@@ -1,0 +1,190 @@
+/*
+ * Slider — sizes sm · md · lg; tones accent · success · warning · danger.
+ *
+ *   track   a recessed glass well (Switch's well)
+ *   range   the tone gradient with the primary button's highlight and a soft tone glow
+ *   thumb   the Switch's glass bead; grows a little on hover and while dragging
+ *   bubble  a glass value bubble above the thumb while dragging or keyboard-focused
+ *   ticks   optional dots on the track, labels underneath
+ *
+ * Keyboard and track-press steps glide (the range and thumb ease to the new value);
+ * dragging follows the pointer exactly. Thumbs align to the track's edges, so nothing
+ * overhangs the box the slider is given; ticks use the same geometry.
+ */
+@layer components {
+  .fa-slider {
+    /* component tokens */
+    --_track-h: var(--space-1-5);
+    --_thumb: calc(var(--check-size) + var(--space-half));
+    --_control-h: var(--control-h-xs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    width: 100%;
+    min-width: 0;
+  }
+  .fa-slider[data-size="sm"] {
+    --_track-h: var(--space-1);
+    --_thumb: calc(var(--check-size) - var(--space-half));
+    --_control-h: calc(var(--control-h-xs) - var(--space-1));
+  }
+  .fa-slider[data-size="lg"] {
+    --_track-h: var(--space-2);
+    --_thumb: calc(var(--check-size) + var(--space-1-5));
+    --_control-h: var(--control-h-sm);
+  }
+  .fa-slider-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: var(--_control-h);
+    touch-action: none;
+    user-select: none;
+    cursor: pointer;
+  }
+  .fa-slider[data-disabled] {
+    opacity: var(--disabled-opacity);
+  }
+  .fa-slider[data-disabled] .fa-slider-control {
+    cursor: not-allowed;
+  }
+  .fa-slider-track {
+    position: relative;
+    width: 100%;
+    height: var(--_track-h);
+    border-radius: var(--radius-full);
+    background-color: var(--_well);
+    box-shadow: var(--_well-shadow);
+  }
+  .fa-slider-indicator {
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--_on);
+    background-image: var(--_on-fill);
+    box-shadow:
+      inset 0 var(--border-width) 0 0 var(--rim-light),
+      0 0 var(--space-2) calc(var(--space-half) * -1) var(--_on-glow);
+  }
+
+  /* Glide between values unless the pointer is driving. */
+  .fa-slider:not([data-dragging]) :is(.fa-slider-indicator, .fa-slider-thumb) {
+    transition-property: inset-inline-start, inset-inline-end, left, right, width, transform, box-shadow;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-standard);
+  }
+
+  /* ── Ticks ─────────────────────────────────────────────────────────────── */
+  .fa-slider-tick {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--_thumb) / 2 + var(--_at) * (100% - var(--_thumb)));
+    width: var(--space-1);
+    height: var(--space-1);
+    border-radius: var(--radius-full);
+    background-color: color-mix(in oklab, var(--fg-subtle) 60%, transparent);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-slider[data-size="sm"] .fa-slider-tick {
+    width: var(--space-half);
+    height: var(--space-half);
+  }
+  .fa-slider-tick[data-active] {
+    background-color: color-mix(in oklab, var(--_on-fg) 75%, transparent);
+  }
+  .fa-slider-marks {
+    position: relative;
+    height: var(--type-caption-line);
+  }
+  .fa-slider-mark-label {
+    position: absolute;
+    top: 0;
+    left: calc(var(--_thumb) / 2 + var(--_at) * (100% - var(--_thumb)));
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+  .fa-slider-mark-label:first-child {
+    left: 0;
+    transform: none;
+  }
+  .fa-slider-mark-label:last-child {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+
+  /* ── Bead ──────────────────────────────────────────────────────────────── */
+  .fa-slider-thumb {
+    width: var(--_thumb);
+    height: var(--_thumb);
+    border-radius: var(--radius-full);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-slider-thumb::before {
+    /* the bead is a layer, so it can grow without resizing the thumb's input */
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--_bead);
+    box-shadow: var(--_bead-shadow);
+    transition: transform var(--duration-base) var(--ease-spring);
+  }
+  .fa-slider-control:hover .fa-slider-thumb:not([data-disabled])::before {
+    transform: scale(1.08);
+  }
+  .fa-slider-thumb[data-dragging]::before {
+    transform: scale(1.16);
+  }
+  .fa-slider-thumb:has(:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+  }
+
+  /* ── Value bubble: unblurred glass (it sits inside a panel, R4.2) ─────── */
+  .fa-slider-bubble {
+    position: absolute;
+    bottom: calc(100% + var(--space-2));
+    left: 50%;
+    z-index: var(--z-raised);
+    min-width: var(--control-h-sm);
+    padding: var(--space-half) var(--space-2);
+    border: var(--border-width) solid var(--glass-edge);
+    border-radius: var(--radius-sm);
+    background-color: var(--glass-fill-overlay);
+    background-image: var(--glass-sheen);
+    box-shadow:
+      inset 0 var(--border-width) 0 0 var(--glass-rim-top),
+      var(--shadow-3);
+    color: var(--fg);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, var(--space-1)) scale(var(--overlay-enter-scale));
+    transform-origin: bottom center;
+    transition:
+      opacity var(--duration-fast) var(--ease-exit),
+      transform var(--duration-fast) var(--ease-exit);
+  }
+  .fa-slider[data-bubble="never"] .fa-slider-bubble {
+    display: none;
+  }
+  .fa-slider[data-bubble="always"] .fa-slider-bubble,
+  .fa-slider-thumb:has(:focus-visible) > .fa-slider-bubble,
+  .fa-slider-thumb[data-dragging]:has(:focus) > .fa-slider-bubble {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+    transition:
+      opacity var(--duration-fast) var(--ease-standard),
+      transform var(--duration-base) var(--ease-spring);
+  }
+}

@@ -1,0 +1,147 @@
+/*
+ * DesktopSession — the supervised desktop block. The screen keeps its frame's ratio; its
+ * state badge and the AI cursor label sit on glass-float so they read on any wallpaper.
+ * Controlling is the warning tone (the AI acts on someone's machine); Stop is the largest
+ * control in the card and always visible while the session is active.
+ */
+@layer components {
+  .fa-ai-desktop-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+  @container ai-card (width >= 40rem) {
+    .fa-ai-desktop-body {
+      grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem); /* tokens:allow the step list column */
+      align-items: start;
+    }
+  }
+  .fa-ai-desktop-screen {
+    position: relative;
+    width: 100%;
+    aspect-ratio: var(--_ratio);
+    overflow: hidden;
+    border-radius: var(--radius-control);
+    background-color: var(--skel-base);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+  }
+  .fa-ai-desktop[data-state="controlling"] .fa-ai-desktop-screen {
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--line),
+      0 0 0 var(--border-width-strong) var(--warning-line);
+  }
+  .fa-ai-desktop-screen img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .fa-ai-desktop:is([data-state="ended"], [data-state="expired"], [data-state="failed"]) .fa-ai-desktop-screen img {
+    opacity: 0.45;
+    filter: grayscale(1);
+  }
+  .fa-ai-desktop-badge,
+  .fa-ai-desktop-cursor {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    height: var(--control-h-xs);
+    padding-inline: var(--space-2) var(--space-2-5);
+    border-radius: var(--radius-full);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-semibold);
+  }
+  .fa-ai-desktop-badge {
+    top: var(--space-2);
+    left: var(--space-2);
+  }
+  .fa-ai-desktop-dot {
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--info);
+  }
+  .fa-ai-desktop-badge[data-state="controlling"] .fa-ai-desktop-dot {
+    --_pulse: var(--warning-line);
+    position: relative;
+    background-color: var(--warning);
+  }
+  /* The live pulse is a halo of its own that only scales and fades (compositor-only). */
+  .fa-ai-desktop-badge[data-state="controlling"] .fa-ai-desktop-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--_pulse);
+    opacity: 0; /* at rest (reduced motion) only the dot shows */
+    animation: fa-pulse-halo var(--duration-shimmer) var(--ease-standard) infinite;
+  }
+  .fa-ai-desktop-badge:is([data-state="awaiting-action"], [data-state="paused"]) .fa-ai-desktop-dot {
+    background-color: var(--warning);
+  }
+  .fa-ai-desktop-badge[data-state="human"] .fa-ai-desktop-dot {
+    background-color: var(--success);
+  }
+  .fa-ai-desktop-badge:is([data-state="ended"], [data-state="expired"], [data-state="failed"]) .fa-ai-desktop-dot {
+    background-color: var(--fg-subtle);
+  }
+  .fa-ai-desktop-cursor {
+    top: 46%;
+    left: 52%;
+  }
+  .fa-ai-desktop-cursor .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-ai-desktop-side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-ai-desktop-action {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border-radius: var(--radius-control);
+  }
+  .fa-ai-desktop-action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--gap-controls);
+    padding-top: var(--space-2);
+  }
+  .fa-ai-desktop-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-ai-desktop-step {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-1) 0;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-ai-desktop-step .fa-ai-status-glyph {
+    margin-top: var(--space-half);
+  }
+  .fa-ai-desktop-step[data-status="running"] {
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+  }
+  .fa-ai-desktop-footer {
+    justify-content: flex-end;
+  }
+  .fa-ai-desktop-stop {
+    min-width: 8rem; /* tokens:allow the stop button reads as the largest control */
+  }
+}

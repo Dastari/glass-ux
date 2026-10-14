@@ -1,0 +1,18 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { VerticalTabNav } from "glass-ux/vertical-tabs";
+
+export default function VerticalTabNavExample() {
+    return (<SectionPage>
+      <Specimen title="VerticalTabNav" description="Navigation links are supplied by the host. These sample links jump to page anchors; a router can provide route links with the same props." layout="stack">
+        <VerticalTabNav items={[
+            { value: "overview", label: "Overview" },
+            { value: "schedule", label: "Schedule" },
+            { value: "access", label: "Access" },
+        ]} value="overview" aria-label="Sample project sections" renderLink={(item, props) => (<a {...props} href={`#sample-${item.value}`}/>)}/>
+        <p id="sample-overview">Overview anchor</p>
+        <p id="sample-schedule">Schedule anchor</p>
+        <p id="sample-access">Access anchor</p>
+      </Specimen>
+    </SectionPage>);
+}

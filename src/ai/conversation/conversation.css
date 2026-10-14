@@ -1,0 +1,248 @@
+/*
+ * ConversationLog — the scrolling log on a centred reading column, the composer floating
+ * over its bottom, the ask dock above the composer, and the turn navigator beside it.
+ *
+ * Column   --reading-column, centred (R5.4). Its children (turns, notices) hold that width;
+ *          the column itself is as wide as --reading-column-wide allows, so wide blocks
+ *          (tables, charts, code, images: [data-breakout], see message.css) can break out,
+ *          centred on the text. The column is an inline-size container (ai-column).
+ * Float    the dock covers the log (pointer-events pass through) and holds the floating part
+ *          at its bottom, a --_gap above the edge, on the reading column: "Scroll to end",
+ *          the ask dock, the composer. It is a size container (ai-dock) so the ask dock caps
+ *          its height against the conversation. The log's end is padded by the floating
+ *          part's measured height (--_dock-h, set from the component).
+ * Landing  data-layout="landing": the log is hidden; hero, composer and suggestions stack in
+ *          the middle (a little above centre) and scroll together if the box is short.
+ * Turns    the navigator appears when the conversation is at least 64rem wide.
+ *
+ * Component tokens
+ *   --_read     the reading column
+ *   --_wide     how far wide blocks may break out
+ *   --_gutter   space either side of the column
+ *   --_gap      the composer's distance from the bottom edge
+ *   --_dock-h   the floating part's height (measured)
+ *   --_sb       half the log's scrollbar gutter (measured), so the float aligns with the text
+ */
+@layer components {
+  .fa-ai-conversation {
+    --_read: var(--reading-column);
+    --_wide: var(--reading-column-wide);
+    --_gutter: var(--space-4);
+    --_gap: var(--space-3);
+    --_dock-h: 0px;
+    --_sb: 0px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    container: ai-conversation / inline-size;
+  }
+  @container ai-conversation (width < 30rem) {
+    .fa-ai-conversation-column,
+    .fa-ai-conversation-dock {
+      --_gutter: var(--space-3);
+    }
+  }
+  .fa-ai-conversation-scroll {
+    /* component token: the soft edge where the log meets the top bar and the bottom edge */
+    --_fade: var(--space-6);
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-mask: linear-gradient(to bottom, transparent, var(--fg) var(--_fade), var(--fg) calc(100% - var(--_fade)), transparent);
+    mask: linear-gradient(to bottom, transparent, var(--fg) var(--_fade), var(--fg) calc(100% - var(--_fade)), transparent);
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable both-edges;
+    outline: none;
+  }
+  .fa-ai-conversation-scroll:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+    border-radius: var(--radius-surface);
+  }
+  .fa-ai-conversation-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+    width: min(100%, calc(var(--_wide) + var(--_gutter) * 2));
+    margin-inline: auto;
+    padding: var(--space-6) var(--_gutter) calc(var(--_dock-h) + var(--_gap) + var(--space-6));
+    container: ai-column / inline-size;
+  }
+  .fa-ai-conversation-column > * {
+    width: 100%;
+    max-width: var(--_read);
+    margin-inline: auto;
+  }
+  .fa-ai-conversation[data-arrived] .fa-ai-conversation-column {
+    animation: fa-fade-in var(--duration-slow) var(--ease-enter);
+  }
+
+  /* The floating part: pill, ask dock, composer. */
+  .fa-ai-conversation-dock {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-sticky);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--space-6) calc(var(--_gutter) + var(--_sb)) var(--_gap);
+    pointer-events: none;
+    container: ai-dock / size;
+  }
+  .fa-ai-conversation-float {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: min(100%, var(--_read));
+    min-height: 0;
+    max-height: 100%;
+    margin-inline: auto;
+    pointer-events: auto;
+  }
+  .fa-ai-conversation-footer {
+    flex: none;
+    min-width: 0;
+  }
+  /* Landing → conversation: the composer slides from the middle to its place (FLIP). */
+  .fa-ai-conversation-float[data-flip="from"] {
+    transform: translate(var(--_flip-x), var(--_flip-y));
+  }
+  .fa-ai-conversation-float[data-flip="to"] {
+    transition: transform var(--duration-slower) var(--ease-enter);
+  }
+
+  /* Landing: hero, composer and suggestions in the middle, a little above centre. */
+  .fa-ai-conversation[data-layout="landing"] {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-inline: var(--space-4);
+  }
+  .fa-ai-conversation[data-layout="landing"] .fa-ai-conversation-scroll {
+    display: none;
+  }
+  .fa-ai-conversation[data-layout="landing"] .fa-ai-conversation-dock {
+    position: static;
+    flex: none;
+    padding: 0;
+    pointer-events: auto;
+    container-type: normal;
+  }
+  .fa-ai-conversation-landing {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: min(100%, var(--_read));
+    margin-inline: auto;
+  }
+  .fa-ai-conversation-landing[data-part="top"] {
+    flex: 2 0 auto;
+    justify-content: flex-end;
+    padding-block: var(--space-6) var(--space-8);
+  }
+  .fa-ai-conversation-landing[data-part="bottom"] {
+    flex: 3 0 auto;
+    justify-content: flex-start;
+    padding-block: var(--space-6);
+  }
+
+  /* Scroll to end / New messages */
+  .fa-ai-new-pill {
+    position: absolute;
+    bottom: calc(100% + var(--space-3));
+    left: 50%;
+    z-index: var(--z-sticky);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    height: var(--control-h-sm);
+    padding-inline: var(--space-3) var(--space-4);
+    border-radius: var(--radius-full);
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-label-size);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, var(--overlay-enter-shift));
+    transition-property: opacity, transform, visibility;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-enter);
+  }
+  .fa-ai-new-pill[data-visible] {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+  .fa-ai-new-pill .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--accent-text);
+  }
+  .fa-ai-new-pill:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Turn navigator */
+  .fa-ai-turns {
+    position: absolute;
+    top: 50%;
+    left: var(--space-2);
+    z-index: var(--z-raised);
+    display: none;
+    flex-direction: column;
+    max-height: min(60%, 28rem); /* tokens:allow the navigator's band */
+    padding: var(--space-2) 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+    transform: translateY(-50%);
+  }
+  @container ai-conversation (width >= 64rem) {
+    .fa-ai-turns {
+      display: flex;
+    }
+  }
+  .fa-ai-turn-dash {
+    display: flex;
+    align-items: center;
+    width: var(--space-10);
+    height: var(--space-4);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: none;
+    cursor: pointer;
+  }
+  .fa-ai-turn-dash > span {
+    width: var(--space-2);
+    height: var(--space-half);
+    border-radius: var(--radius-full);
+    background-color: var(--line-strong);
+    transition-property: width, background-color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-ai-turn-dash[data-near="2"] > span {
+    width: var(--space-4);
+  }
+  .fa-ai-turn-dash[data-near="1"] > span {
+    width: var(--space-6);
+  }
+  .fa-ai-turn-dash[data-near="0"] > span {
+    width: var(--space-8);
+    background-color: var(--fg-muted);
+  }
+  .fa-ai-turn-dash[aria-current="step"] > span {
+    width: calc(var(--space-6) + var(--space-1));
+    background-color: var(--accent);
+  }
+  .fa-ai-turn-dash:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: 0;
+  }
+}

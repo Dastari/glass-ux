@@ -1,0 +1,240 @@
+import { useState } from "react"
+import { ContainerLab, Matrix, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
+import { IconEndpoint, IconGlobe, IconKey, IconMail } from "../../icons/generated/icons.js"
+import { Field } from "../../ui/field/index.js"
+import { FormStack } from "../../ui/form/index.js"
+import { Input, SearchField, type InputSize } from "../../ui/input/index.js"
+import { Textarea } from "../../ui/textarea/index.js"
+
+const SIZES: InputSize[] = ["sm", "md", "lg"]
+
+function NotesField() {
+  const [value, setValue] = useState(
+    "Primary office workstation. Used by the IT team for remote support."
+  )
+  return (
+    <Field
+      label="Notes"
+      counter={{ value: value.length, max: 500 }}
+      hint="Grows to 8 lines, then scrolls."
+    >
+      <Textarea value={value} onValueChange={setValue} minRows={3} maxRows={8} />
+    </Field>
+  )
+}
+
+export default function TextFieldsSection() {
+  return (
+    <SectionPage>
+      <div className="flex flex-col gap-2 px-1" data-wide="">
+        <span className="fa-overline">On the canvas — the top bar</span>
+        <div className="flex flex-wrap items-center gap-4">
+          <SearchField
+            className="max-w-2xl"
+            placeholder="Search endpoints, organisations, software…"
+            shortcut="mod+k"
+            aria-label="Search everything"
+          />
+          <SearchField
+            className="max-w-xs"
+            size="sm"
+            placeholder="Search endpoints"
+            aria-label="Search endpoints"
+          />
+        </div>
+      </div>
+
+      <Specimen
+        title="Sizes and states"
+        description="sm 32 · md 40 · lg 48, like Button. Hover and focus are live: focus shows the accent halo for every input method."
+        wide
+      >
+        <Matrix
+          columns={["Empty", "Filled", "Read-only", "Invalid", "Disabled"]}
+          rows={SIZES.map((size) => ({
+            label: size,
+            cells: [
+              <Input
+                key="a"
+                size={size}
+                placeholder="NST-C106"
+                aria-label={`Empty ${size}`}
+                className="w-56"
+              />,
+              <Input
+                key="b"
+                size={size}
+                defaultValue="LMN-4E5E"
+                aria-label={`Filled ${size}`}
+                className="w-56"
+              />,
+              <Input
+                key="c"
+                size={size}
+                defaultValue="a1f7-44c2-9e0b"
+                readOnly
+                aria-label={`Read-only ${size}`}
+                className="w-56"
+              />,
+              <Input
+                key="d"
+                size={size}
+                defaultValue="ORB 4E5E"
+                invalid
+                aria-label={`Invalid ${size}`}
+                className="w-56"
+              />,
+              <Input
+                key="e"
+                size={size}
+                defaultValue="STUDIO-VM"
+                disabled
+                aria-label={`Disabled ${size}`}
+                className="w-56"
+              />,
+            ],
+          }))}
+        />
+      </Specimen>
+
+      <Specimen
+        title="Slots"
+        description="A leading icon, a unit, a clear button, the password reveal and a keyboard hint. Inner buttons are ghost Buttons, so they carry tooltips."
+      >
+        <FormStack>
+          <Field label="Hostname">
+            <Input icon={<IconEndpoint />} defaultValue="NST-C106" width="medium" />
+          </Field>
+          <Field label="Disk alert threshold">
+            <Input inputMode="numeric" defaultValue="90" unit="%" width="short" />
+          </Field>
+          <Field label="Site URL">
+            <Input
+              icon={<IconGlobe />}
+              clearable
+              defaultValue="https://northstar.example"
+              type="url"
+            />
+          </Field>
+          <Field label="Contact email">
+            <Input icon={<IconMail />} type="email" placeholder="name@example.com.au" />
+          </Field>
+          <Field label="Local admin password" hint="Rotated every 30 days.">
+            <Input icon={<IconKey />} type="password" defaultValue="Correct-Horse-7" width="medium" />
+          </Field>
+          <Field label="Search">
+            <SearchField defaultValue="orb-" />
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen
+        title="Textarea"
+        description="Grows with its content between minRows and maxRows, then scrolls inside itself. One row is exactly one field height."
+      >
+        <FormStack>
+          <NotesField />
+          <Field label="Login message" optional>
+            <Textarea placeholder="Shown on the sign-in screen" minRows={3} resize={false} />
+          </Field>
+          <Field label="Last change">
+            <Textarea
+              readOnly
+              minRows={2}
+              defaultValue="Agent updated to 6.8.0 by Avery Quinn · 2 min ago"
+            />
+          </Field>
+          <Field label="Reason" error="Give a reason for the wipe">
+            <Textarea minRows={2} />
+          </Field>
+          <Field label="Archived notes" disabled>
+            <Textarea minRows={2} disabled defaultValue="Moved from LMN-7C71 on 12 Sep." />
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <SearchField
+          className="max-w-sm"
+          placeholder="Search endpoints"
+          aria-label="Search over imagery"
+        />
+        <Input className="max-w-xs" defaultValue="NST-C106" aria-label="Hostname over imagery" />
+      </Specimen>
+
+      <ContainerLab>
+        {(preset) =>
+          preset?.id === "row" ? (
+            <div className="flex h-full items-center gap-2 px-1">
+              <SearchField
+                size="sm"
+                placeholder="Search 1,284 endpoints by hostname, user or serial"
+                aria-label="Search endpoints"
+              />
+              <Input
+                size="sm"
+                defaultValue="Northstar Studio"
+                aria-label="Organisation"
+                className="max-w-48"
+              />
+            </div>
+          ) : preset?.id === "header" ? (
+            <div className="flex h-full items-center px-2">
+              <SearchField
+                placeholder="Search endpoints, organisations, software…"
+                shortcut="mod+k"
+                aria-label="Search"
+              />
+            </div>
+          ) : (
+            <div className="h-full overflow-y-auto" data-scroll-container>
+              <FormStack className="p-3">
+                <Field label="Hostname">
+                  <Input
+                    icon={<IconEndpoint />}
+                    defaultValue="NST-C106-FRONT-COUNTER-RECEPTION"
+                  />
+                </Field>
+                <Field label="Threshold">
+                  <Input defaultValue="90" unit="%" />
+                </Field>
+                <NotesField />
+              </FormStack>
+            </div>
+          )
+        }
+      </ContainerLab>
+
+      <Rules
+        do={[
+          "Put every text field in a Field, or give it an aria-label.",
+          "Use the unit slot for units and the type that matches the data (email, url, numeric).",
+          "Use SearchField for every search; Esc clears it.",
+          "Give long free text a Textarea with a counter when there is a limit.",
+        ]}
+        dont={[
+          "Use the placeholder as the label or for instructions.",
+          "Restyle the box; size it from the outside with width only.",
+          "Add a separate clear or reveal button beside the field.",
+          "Let a Textarea grow without a maxRows.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--control-h-md", "Height, md"],
+          ["--control-px-md", "Inner padding, md"],
+          ["--radius-control", "Corner"],
+          ["--glass-fill-control", "Fill"],
+          ["--glass-fill-control-hover", "Fill on hover and focus"],
+          ["--glass-edge", "Edge"],
+          ["--accent-line", "Focused edge"],
+          ["--accent-soft", "Focus halo"],
+          ["--focus-halo", "Halo width"],
+          ["--danger-line", "Invalid edge"],
+          ["--glass-fill-inset", "Read-only well"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

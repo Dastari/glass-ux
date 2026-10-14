@@ -1,0 +1,13 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { NOW } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { TimerChip } from "glass-ux/shell";
+
+export default function TimerChipExample() {
+    return (<SectionPage>
+      <Specimen title="TimerChip" layout="stack">
+        <TimerChip label="Exhibition planning" startedAt={NOW - 185000}/>
+      </Specimen>
+    </SectionPage>);
+}

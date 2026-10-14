@@ -1,0 +1,156 @@
+import { Link } from "@tanstack/react-router"
+import { useMemo, useState, type ReactElement } from "react"
+import { ContainerLab, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
+import { CountBadge } from "../../ui/badge/index.js"
+import { SearchField } from "../../ui/input/index.js"
+import { ActionContextMenu } from "../../ui/actions/index.js"
+import { Tree, TreeSkeleton, type TreeNode } from "../../ui/tree/index.js"
+import { ENDPOINTS, ORGANISATIONS, manyEndpoints, type DemoEndpoint } from "./nav.fixtures.js"
+import { ENDPOINTS as ACTION_TARGETS, endpointActions } from "./overlays.fixtures.js"
+
+function byOrganisation(endpoints: DemoEndpoint[]): TreeNode[] {
+  return ORGANISATIONS.map((org) => ({
+    id: `org:${org}`,
+    label: org,
+    children: endpoints
+      .filter((endpoint) => endpoint.organisation === org)
+      .map((endpoint) => ({ id: endpoint.id, label: endpoint.name, description: endpoint.user, status: endpoint.status })),
+  }))
+}
+
+const NODES = byOrganisation(ENDPOINTS)
+const ALL_OPEN = NODES.map((node) => node.id)
+
+function SidebarTree({ initialQuery = "", nodes = NODES, height = "h-140" }: { initialQuery?: string; nodes?: TreeNode[]; height?: string }) {
+  const [query, setQuery] = useState(initialQuery)
+  const [selected, setSelected] = useState<string | null>("nst-c106")
+  const total = useMemo(() => nodes.reduce((sum, node) => sum + (node.children?.length ?? 0), 0), [nodes])
+  return (
+    <div className={`flex w-72 max-w-full flex-col gap-2 ${height}`}>
+      <div className="flex items-center justify-between px-2.5">
+        <span className="fa-overline">Endpoints</span>
+        <CountBadge value={total} />
+      </div>
+      <SearchField size="sm" aria-label="Search endpoints" placeholder="Search endpoints" value={query} onValueChange={(value) => setQuery(String(value))} onClear={() => setQuery("")} />
+      <div className="min-h-0 flex-1">
+        <Tree
+          nodes={nodes}
+          aria-label="Endpoints"
+          defaultExpanded={ALL_OPEN.slice(0, 3)}
+          selectedId={selected}
+          onSelect={(node) => setSelected(node.id)}
+          query={query}
+          emptyText={(q) => `No endpoints match “${q}”`}
+        />
+      </div>
+    </div>
+  )
+}
+
+/** The endpoint's ActionSet on right-click; organisation rows have none here. */
+function withActions(node: TreeNode, row: ReactElement) {
+  const target = ACTION_TARGETS.find((endpoint) => endpoint.name === node.label)
+  if (!target) return row
+  return (
+    <ActionContextMenu set={endpointActions} targets={[target]} label={target.name}>
+      {row}
+    </ActionContextMenu>
+  )
+}
+
+function LinkedTree() {
+  return (
+    <div className="h-110 w-72 max-w-full">
+      <Tree
+        nodes={NODES}
+        aria-label="Endpoints (links)"
+        defaultExpanded={ALL_OPEN}
+        selectedId="nst-c106"
+        renderLink={(node, props) => (
+          <Link to="/demo/o/$org/devices/$id" params={{ org: "all", id: node.label }} {...props} activeOptions={{ exact: true }} activeProps={{}} inactiveProps={{}} />
+        )}
+        rowWrapper={withActions}
+      />
+    </div>
+  )
+}
+
+const MANY = byOrganisation(manyEndpoints(2400))
+
+const LOADED: TreeNode[] = [
+  NODES[0]!,
+  { ...NODES[1]!, children: NODES[1]!.children?.slice(0, 2) ?? [] },
+]
+
+export default function TreeSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Sidebar endpoints"
+        description="Organisations collapse; endpoints are two-line rows with a status dot on the device. Search reveals matching branches and highlights the match. Keyboard: ↑ ↓, → ←, Home, End, Enter, and type a name to jump."
+      >
+        <SidebarTree />
+      </Specimen>
+
+      <Specimen
+        title="Links and actions"
+        description="In the sidebar, endpoint rows are links (renderLink: middle-click and Enter work as links do) and right-click, long-press, Shift+F10 or the Menu key opens the endpoint's actions (rowWrapper with ActionContextMenu) — the same definition as its header."
+      >
+        <LinkedTree />
+      </Specimen>
+
+      <Specimen title="2,400 endpoints" description="Rows are virtualised with fixed heights from tokens: only the rows in view (plus a few) are in the DOM, and the focused row is always kept.">
+        <div className="h-140 w-72 max-w-full" data-testid="tree-many">
+          <Tree nodes={MANY} aria-label="All endpoints" defaultExpanded={MANY.map((node) => node.id)} selectedId="orb-2" />
+        </div>
+      </Specimen>
+
+      <Specimen title="Search states" description="A match by organisation shows its endpoints; no match shows one factual line in the tree's own box.">
+        <SidebarTree initialQuery="northstar" height="h-80" />
+        <SidebarTree initialQuery="orb-9" height="h-40" />
+      </Specimen>
+
+      <Specimen title="Loading" description="Skeleton rows have the tree's exact heights, icon boxes and text roles. Swap in place to compare.">
+        <div className="w-72 max-w-full">
+          <SwapSlot
+            id="tree"
+            className="h-90 w-72 max-w-full"
+            skeleton={<TreeSkeleton rows={["group", "two-line", "two-line", "two-line", "two-line", "group", "two-line", "two-line"]} />}
+            loaded={<Tree nodes={LOADED} aria-label="Endpoints (loaded)" defaultExpanded={LOADED.map((node) => node.id)} />}
+          />
+        </div>
+      </Specimen>
+
+      <ContainerLab description="The tree fills its box and scrolls inside it; names and users truncate with an ellipsis.">
+        {() => <Tree nodes={NODES} aria-label="Endpoints in a lab frame" defaultExpanded={ALL_OPEN} selectedId="nst-c106" />}
+      </ContainerLab>
+
+      <Rules
+        do={[
+          "Use the tree for places in a hierarchy: organisations and their endpoints.",
+          "Give rows a data subtitle (the signed-in user), never a description of the row.",
+          "Feed the sidebar search field into `query` so matches reveal themselves.",
+          "Give the tree a bounded height; it scrolls and virtualises inside it.",
+        ]}
+        dont={[
+          "Put action buttons inside rows; wrap rows in the entity's ActionContextMenu instead (R12).",
+          "Nest deeper than the data needs; three levels is a lot in a sidebar.",
+          "Draw lines between rows or levels; indentation and space carry the structure.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--item-h", "Group and one-line rows"],
+          ["--type-body-line", "Two-line row: name"],
+          ["--type-caption-line", "Two-line row: user"],
+          ["--space-3", "Indent per level"],
+          ["--accent-soft", "Selected row"],
+          ["--accent", "Selected bar"],
+          ["--accent-soft-hover", "Search highlight"],
+          ["--icon-lg", "Device icon"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

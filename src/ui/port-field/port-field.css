@@ -1,0 +1,15 @@
+/*
+ * PortInput: the number keeps room for five digits and the service name takes what is left,
+ * ending in an ellipsis when it is long ("Global catalog (TLS)" in a short box).
+ */
+@layer components {
+  .fa-port .fa-number-input {
+    flex: 1 0 5ch;
+  }
+  .fa-port .fa-input-unit {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

@@ -1,0 +1,741 @@
+/*
+ * EntityIdentity — one entity, five tiers (docs/glass-ux-components-plan.md §5).
+ *
+ *   header   on the canvas: a 48px tile, the headline title and state badge, the data
+ *            facts line, one live metric, the ActionBar, then L2 tabs. Steps down with its
+ *            own width (48rem, 30rem) and, inside a window, with the window's height.
+ *   compact  windows and narrow panes: a 40px tile, the title (subtitle role) and a small
+ *            state badge, the facts line, one ⋯.
+ *   row      lists, trees and table cells: the 20px glyph, name over a second line, the
+ *            state dot on the glyph's corner, a trailing ⋯. Interactive rows are fa-item.
+ *   chip     inline in text: the badge's pill (20px inline, 24px sm), a 14px glyph with its
+ *            dot, the name. Hover or focus opens a preview card.
+ *   icon     the tile alone with its corner marks; a tooltip names it.
+ *
+ * The corner marks are the shared status dot (pulsing while active — it stops under the
+ * motion switch — and hollow when paused) and an optional count. A state's colour is the
+ * same in every tier because it is the same badge tone.
+ *
+ * Containers
+ *   fa-entity      the header's own width (inline-size)
+ *   fa-entity-fit  the auto-tier box: inline-size, or size with `fill`
+ *   window         the primary window's height (the header steps down in short windows)
+ *
+ * Component tokens
+ *   --_icon-box   the header's tile
+ *   --_dot        the corner dot's diameter, per tier
+ *   --_box        the icon tier's tile, shrinking to a small box
+ *   --_h, --_max  the chip's height and longest width
+ */
+@layer components {
+  .fa-entity {
+    min-width: 0;
+  }
+
+  /* ── Auto tier box ─────────────────────────────────────────────────────── */
+  .fa-entity-fit {
+    container: fa-entity-fit / inline-size;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0;
+  }
+  .fa-entity-fit[data-fill] {
+    container-type: size;
+    height: 100%;
+    min-height: 0;
+  }
+  .fa-entity-fit:not([data-measured]) > * {
+    visibility: hidden;
+  }
+  .fa-entity-fit[data-fill]:is([data-tier="row"], [data-tier="chip"], [data-tier="icon"]) {
+    justify-content: center;
+  }
+  .fa-entity-fit:is([data-tier="chip"], [data-tier="icon"]) {
+    align-items: flex-start;
+  }
+
+  /* ── Corner marks ──────────────────────────────────────────────────────── */
+  .fa-entity-dot.fa-status-dot {
+    --_dot: 0.4375rem;
+  }
+  /* The pulse runs on a ring of its own, so the dot keeps its surface ring while it pulses. */
+  .fa-entity-dot[data-marker="pulse"] {
+    animation: none;
+  }
+  .fa-entity-dot[data-marker="pulse"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--_pulse);
+    opacity: 0;
+    pointer-events: none;
+    /* Transform and opacity only: the compositor runs it (an infinite box-shadow repaints). */
+    animation: fa-pulse-halo var(--duration-shimmer) var(--ease-standard) infinite;
+  }
+  :root[data-motion="reduced"] .fa-entity-dot::after {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) .fa-entity-dot::after {
+      animation: none;
+    }
+  }
+  /* The corner count is an overlay CountBadge (solid, ringed, R20.8): placed here only. */
+  .fa-entity-count.fa-count {
+    position: absolute;
+    inset-block-start: calc(var(--space-1) * -1);
+    inset-inline-end: calc(var(--space-1) * -1);
+  }
+
+  /* ── The tile (header, compact, icon) ──────────────────────────────────── */
+  .fa-entity-icon {
+    position: relative;
+  }
+  .fa-entity-icon[data-image] {
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+  }
+  .fa-entity-icon > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: inherit;
+  }
+  .fa-entity-icon > .fa-entity-dot {
+    --_dot: 0.5625rem;
+    inset-inline-end: calc(var(--space-half) * -1);
+    inset-block-end: calc(var(--space-half) * -1);
+  }
+  .fa-entity-icon-skel {
+    flex: none;
+    width: var(--tile-icon-box);
+    height: var(--tile-icon-box);
+  }
+
+  /* ── The glyph (row, chip) ─────────────────────────────────────────────── */
+  .fa-entity-glyph {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    color: var(--fg-muted);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-entity-glyph > .fa-icon {
+    width: 100%;
+    height: 100%;
+  }
+  /* Its placeholder is the glyph's square, as the tree's is. */
+  .fa-entity-glyph.fa-skel-block {
+    border-radius: var(--radius-xs);
+  }
+  /* In a list row the glyph lights up with the row, as fa-item's own icons do. */
+  :is(.fa-item:is(:hover, [data-highlighted], [data-selected], [data-popup-open]), .fa-entity[data-tier="row"][data-interactive]:hover) .fa-entity-glyph {
+    color: inherit;
+  }
+
+  /* ── Portrait (a person in the icon slot) ──────────────────────────────── */
+  /* The photo or initials fill the slot; the entity's glyph becomes a small corner mark at
+     the bottom start, opposite the state dot. --_slot is the slot's size in each tier. */
+  .fa-entity-icon[data-portrait] {
+    --_slot: var(--tile-icon-box);
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+  }
+  .fa-entity[data-tier="icon"][data-portrait] {
+    --_slot: var(--_box);
+  }
+  .fa-entity-glyph[data-portrait] {
+    --_slot: var(--icon-lg);
+  }
+  .fa-entity[data-tier="chip"] .fa-entity-glyph[data-portrait] {
+    --_slot: var(--icon-sm);
+    width: var(--_slot);
+    height: var(--_slot);
+  }
+  .fa-entity-portrait.fa-avatar {
+    --_size: var(--_slot);
+  }
+  .fa-entity-glyph[data-portrait] .fa-avatar-initials {
+    font-size: calc(var(--_size) * 0.46);
+    letter-spacing: 0;
+  }
+  .fa-entity-mark {
+    /* component token: the mark's box — about two fifths of the slot, never under 10px */
+    --_mark: max(0.625rem, calc(var(--_slot) * 0.42));
+    position: absolute;
+    inset-inline-start: calc(var(--space-half) * -1);
+    inset-block-end: calc(var(--space-half) * -1);
+    display: grid;
+    place-items: center;
+    width: var(--_mark);
+    height: var(--_mark);
+    border-radius: var(--radius-xs);
+    background-color: var(--surface-3);
+    box-shadow: 0 0 0 var(--border-width) var(--line);
+    color: var(--fg-muted);
+  }
+  .fa-entity-mark > svg,
+  .fa-entity-icon[data-portrait] > .fa-entity-mark > svg,
+  .fa-entity[data-tier="icon"] > .fa-entity-mark > svg {
+    width: 78%;
+    height: 78%;
+  }
+  .fa-entity-glyph[data-portrait] > .fa-entity-mark {
+    inset-inline-start: calc(var(--space-1) * -1);
+  }
+
+  /* ── Title links ───────────────────────────────────────────────────────── */
+  .fa-entity-link {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+  }
+  .fa-entity-link:hover .fa-entity-name {
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 0.18em; /* tokens:allow follows the font size */
+  }
+  .fa-entity-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--space-half);
+  }
+  .fa-entity-name {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ── Header ────────────────────────────────────────────────────────────── */
+  /* The title row never wraps: the heading keeps a readable width and the ActionBar gives
+     way (buttons move into More, then one ⋯). Under 30rem the actions are a single ⋯ at
+     the end of the title line, so the header is one compact block. */
+  /* The header and compact tiers fill their inline box: they are containers, so they have
+     no content width of their own to shrink to. */
+  .fa-entity:is([data-tier="header"], [data-tier="compact"]) {
+    width: 100%;
+  }
+  .fa-entity[data-tier="header"] {
+    container: fa-entity / inline-size;
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-block: var(--space-2) var(--space-3);
+  }
+  .fa-entity[data-tier="header"] .fa-entity-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    min-width: 0;
+  }
+  .fa-entity[data-tier="header"] .fa-entity-icon {
+    --tile-icon-box: var(--control-h-lg);
+    border-radius: var(--radius-tile);
+  }
+  .fa-entity[data-tier="header"] .fa-entity-icon > svg {
+    width: var(--icon-xl);
+    height: var(--icon-xl);
+  }
+  .fa-entity[data-tier="header"] .fa-entity-icon > .fa-entity-dot {
+    --_dot: 0.625rem;
+  }
+  /* The heading keeps its natural width first: when room runs out, promoted buttons fold
+     into More (the ActionBar gets only what is left, measured), then the metric hides, then
+     the facts line truncates, and the name last, once the header is down to name, state and
+     ⋯. The free room sits after the heading, and the title line and facts keep their own
+     widths, so a live state whose label changes width moves nothing else. */
+  .fa-entity[data-tier="header"] .fa-entity-heading {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    margin-inline-end: auto;
+  }
+  .fa-entity[data-tier="header"] .fa-entity-titleline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    max-width: 100%;
+    min-width: 0;
+  }
+  .fa-entity[data-tier="header"] .fa-entity-title {
+    min-width: 0;
+    overflow: hidden;
+    font-size: var(--type-headline-size);
+    line-height: var(--type-headline-line);
+    font-weight: var(--type-headline-weight);
+    letter-spacing: var(--type-headline-tracking);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-wrap: nowrap;
+  }
+  .fa-entity-state {
+    display: inline-flex;
+    flex: none;
+    min-width: 0;
+  }
+  .fa-entity[data-tier="header"] .fa-entity-facts {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* The live metric's box is fixed, so a value that changes never moves anything. */
+  .fa-entity[data-tier="header"] .fa-entity-metric {
+    --_metric-w: 15rem;
+    flex: none;
+    width: var(--_metric-w);
+    height: var(--control-h-md);
+  }
+  .fa-entity[data-tier="header"] .fa-entity-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--gap-controls);
+    min-width: var(--control-h-md);
+  }
+  .fa-entity[data-tier="header"][data-metric="hidden"] .fa-entity-metric {
+    display: none;
+  }
+  /* A skeleton has no natural text width: its heading takes the free room instead. */
+  .fa-entity[data-tier="header"][data-skeleton] .fa-entity-heading {
+    flex: 1 1 0;
+    align-items: stretch;
+  }
+  .fa-entity[data-tier="header"] .fa-entity-actions-skel {
+    flex: none;
+    width: calc(var(--control-h-md) * 3);
+    height: var(--control-h-md);
+  }
+  .fa-entity-tabs {
+    min-width: 0;
+  }
+  /* The skeleton's title line follows the title's size tier. */
+  .fa-entity-skel[data-tier="compact"] {
+    display: none;
+  }
+
+  @container fa-entity (width < 48rem) {
+    .fa-entity[data-tier="header"] .fa-entity-row {
+      gap: var(--space-3);
+    }
+    .fa-entity[data-tier="header"] .fa-entity-icon {
+      --tile-icon-box: var(--control-h-md);
+    }
+    .fa-entity[data-tier="header"] .fa-entity-icon > svg {
+      width: var(--icon-lg);
+      height: var(--icon-lg);
+    }
+    .fa-entity[data-tier="header"] .fa-entity-icon > .fa-entity-dot {
+      --_dot: 0.5625rem;
+    }
+    .fa-entity[data-tier="header"] .fa-entity-title {
+      font-size: var(--type-title-size);
+      line-height: var(--type-title-line);
+      font-weight: var(--type-title-weight);
+      letter-spacing: var(--type-title-tracking);
+    }
+    .fa-entity[data-tier="header"] .fa-entity-facts {
+      font-size: var(--type-caption-size);
+      line-height: var(--type-caption-line);
+    }
+    .fa-entity-skel[data-tier="wide"] {
+      display: none;
+    }
+    .fa-entity-skel[data-tier="compact"] {
+      display: block;
+    }
+  }
+  @container fa-entity (width < 30rem) {
+    .fa-entity[data-tier="header"] .fa-entity-row {
+      align-items: flex-start;
+    }
+    .fa-entity[data-tier="header"] .fa-entity-icon {
+      display: none;
+    }
+    .fa-entity[data-tier="header"] .fa-entity-heading {
+      min-width: 0;
+    }
+    .fa-entity[data-tier="header"] .fa-entity-titleline {
+      gap: var(--space-2);
+      min-height: var(--control-h-md);
+    }
+    /* R21.2: the ActionBar is one ⋯ menu, on the title line (the cap is measured). */
+    .fa-entity[data-tier="header"] .fa-entity-actions:has(> .fa-action-bar) {
+      max-width: var(--control-h-md);
+    }
+  }
+  /* In a window: very short boxes keep the title line only; short ones drop the tile. */
+  @container window (height < 5rem) {
+    .fa-entity[data-tier="header"] {
+      gap: 0;
+      padding-block: 0;
+    }
+    .fa-entity[data-tier="header"] .fa-entity-row {
+      flex-wrap: nowrap;
+    }
+    .fa-entity[data-tier="header"] :is(.fa-entity-icon, .fa-entity-facts, .fa-entity-metric),
+    .fa-entity[data-tier="header"] .fa-entity-tabs {
+      display: none;
+    }
+  }
+  @container window (height < 30rem) {
+    .fa-entity[data-tier="header"] {
+      gap: var(--space-2);
+      padding-block: var(--space-1) var(--space-2);
+    }
+    .fa-entity[data-tier="header"] .fa-entity-icon {
+      display: none;
+    }
+  }
+
+  /* ── Compact ───────────────────────────────────────────────────────────── */
+  .fa-entity[data-tier="compact"] {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--control-h-md);
+  }
+  .fa-entity[data-tier="compact"] .fa-entity-icon {
+    --tile-icon-box: var(--control-h-md);
+  }
+  .fa-entity[data-tier="compact"] .fa-entity-heading {
+    container: fa-entity-heading / inline-size;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-entity[data-tier="compact"] .fa-entity-titleline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-entity[data-tier="compact"] .fa-entity-title {
+    --_size: var(--type-subtitle-size);
+    --_line: var(--type-subtitle-line);
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--_size);
+    line-height: var(--_line);
+    font-weight: var(--type-subtitle-weight);
+    letter-spacing: var(--type-subtitle-tracking);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .fa-entity[data-tier="compact"] .fa-entity-facts {
+    --_size: var(--type-caption-size);
+    --_line: var(--type-caption-line);
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--_size);
+    line-height: var(--_line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-entity[data-tier="compact"] > .fa-entity-actions {
+    display: flex;
+    flex: none;
+    align-self: center;
+  }
+  .fa-entity[data-tier="compact"] .fa-entity-menu-skel {
+    width: var(--control-h-md);
+    height: var(--control-h-md);
+  }
+  /* A narrow heading keeps the name: the badge goes (the corner dot still says it). */
+  @container fa-entity-heading (width < 12rem) {
+    .fa-entity[data-tier="compact"] .fa-entity-state {
+      display: none;
+    }
+  }
+
+  /* ── Row ───────────────────────────────────────────────────────────────── */
+  .fa-entity[data-tier="row"] {
+    --_row-2: max(var(--item-h), calc(var(--type-body-line) + var(--type-caption-line) + var(--space-2)));
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-1);
+    color: inherit;
+  }
+  .fa-entity[data-tier="row"][data-interactive] {
+    min-height: var(--_row-2);
+    padding-inline: var(--space-2-5) var(--space-1);
+    border-radius: var(--radius-item);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-entity[data-tier="row"][data-interactive]:is(:hover, :has(> .fa-entity-main:focus-visible), [data-popup-open]) {
+    background-color: var(--fill-hover);
+  }
+  .fa-entity[data-tier="row"][data-interactive]:has(> .fa-entity-main:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-entity[data-tier="row"] > .fa-entity-main {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-align: start;
+    text-decoration: none;
+    outline: none;
+  }
+  .fa-entity[data-tier="row"] > :is(a, button).fa-entity-main {
+    cursor: pointer;
+    align-self: stretch;
+  }
+  .fa-entity-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-entity[data-tier="row"] .fa-entity-title,
+  .fa-entity[data-tier="row"] .fa-entity-secondary {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-entity[data-tier="row"] .fa-entity-title {
+    --_size: var(--type-body-size);
+    --_line: var(--type-body-line);
+    color: inherit;
+    font-size: var(--_size);
+    line-height: var(--_line);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-entity[data-tier="row"] .fa-entity-secondary {
+    --_size: var(--type-caption-size);
+    --_line: var(--type-caption-line);
+    color: var(--fg-muted);
+    font-size: var(--_size);
+    line-height: var(--_line);
+  }
+  .fa-item[data-selected] .fa-entity[data-tier="row"] .fa-entity-secondary {
+    color: inherit;
+    opacity: 0.8;
+  }
+  .fa-entity[data-tier="row"] > .fa-entity-actions {
+    display: inline-flex;
+    flex: none;
+  }
+  .fa-entity[data-tier="row"] .fa-entity-row-menu-skel {
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+  }
+  /* A row box under two lines tall keeps the name only (R7.4). */
+  @container fa-entity-fit (height < 2.75rem) {
+    .fa-entity[data-tier="row"] .fa-entity-secondary {
+      display: none;
+    }
+    .fa-entity[data-tier="row"][data-interactive] {
+      min-height: 0;
+      height: 100%;
+    }
+  }
+
+  /* ── Chip ──────────────────────────────────────────────────────────────── */
+  .fa-entity[data-tier="chip"] {
+    --_h: calc(var(--control-h-xs) - var(--space-1));
+    --_max: 16rem;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1-5);
+    max-width: min(100%, var(--_max));
+    height: var(--_h);
+    padding-inline: var(--space-1-5) var(--space-2);
+    border-radius: var(--radius-badge);
+    background-color: var(--fill-muted);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--type-label-tracking);
+    text-decoration: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    /* Sit centred on the text's x-height without growing the line box. */
+    margin-block: calc(var(--space-half) * -1);
+  }
+  .fa-entity[data-tier="chip"][data-size="sm"] {
+    --_h: var(--control-h-xs);
+    gap: var(--space-2);
+    margin-block: 0;
+    padding-inline: var(--space-2) var(--space-2-5);
+  }
+  .fa-entity[data-tier="chip"] .fa-entity-glyph {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-entity[data-tier="chip"] .fa-entity-glyph > .fa-icon {
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+  }
+  .fa-entity[data-tier="chip"] .fa-entity-dot.fa-status-dot {
+    --_dot: 0.375rem;
+    inset-inline-end: calc(var(--space-half) * -1.5);
+    inset-block-end: calc(var(--space-half) * -1);
+    box-shadow: 0 0 0 calc(var(--border-width) * 1.5) var(--surface-3);
+  }
+  .fa-entity[data-tier="chip"] .fa-entity-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-entity[data-tier="chip"]:is([data-link], [tabindex]) {
+    cursor: pointer;
+    outline: none;
+    transition-property: background-color, box-shadow, color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-entity[data-tier="chip"][data-link]:is(:hover, [data-popup-open]) {
+    background-color: var(--fill-press);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+  }
+  .fa-entity[data-tier="chip"][data-link]:is(:hover, [data-popup-open]) .fa-entity-glyph {
+    color: var(--fg);
+  }
+  .fa-entity[data-tier="chip"]:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--space-half);
+  }
+  .fa-entity[data-tier="chip"][data-link]:active {
+    background-color: var(--accent-soft);
+  }
+  .fa-entity[data-tier="chip"][data-removable] {
+    padding-inline-end: var(--space-half);
+  }
+  .fa-entity[data-tier="chip"][data-skeleton] {
+    --_skel-w: 7rem;
+    width: var(--_skel-w);
+    box-shadow: none;
+  }
+  .fa-entity-remove {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: calc(var(--_h) - var(--space-1));
+    height: calc(var(--_h) - var(--space-1));
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--fg-subtle);
+  }
+  .fa-entity-remove:hover {
+    background-color: var(--fill-press);
+    color: var(--fg);
+  }
+  .fa-entity-remove .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+  }
+
+  /* ── Icon ──────────────────────────────────────────────────────────────── */
+  .fa-entity[data-tier="icon"] {
+    --_box: var(--tile-icon-box);
+    flex: none;
+    width: var(--_box);
+    height: var(--_box);
+    min-width: var(--_box);
+    padding: 0;
+    font: inherit;
+    text-decoration: none;
+    vertical-align: middle;
+  }
+  .fa-entity-fit[data-fill] > .fa-entity[data-tier="icon"] {
+    --_box: min(var(--tile-icon-box), 100cqh, 100cqw);
+  }
+  .fa-entity[data-tier="icon"] > svg {
+    width: calc(var(--_box) * 0.5);
+    height: calc(var(--_box) * 0.5);
+  }
+  .fa-entity[data-tier="icon"] > .fa-entity-dot {
+    --_dot: max(0.4375rem, calc(var(--_box) * 0.24));
+  }
+  .fa-entity[data-tier="icon"]:is(a, button) {
+    cursor: pointer;
+    outline: none;
+    transition-property: background-color, border-color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-entity[data-tier="icon"]:is(a, button):is(:hover, [data-popup-open]) {
+    border-color: var(--line-strong);
+    background-color: var(--glass-fill-control-hover);
+  }
+  .fa-entity[data-tier="icon"]:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* ── Preview card (chip) ───────────────────────────────────────────────── */
+  .fa-entity-preview-positioner {
+    z-index: var(--z-popover);
+  }
+  .fa-entity-preview {
+    --_w: 20rem; /* the card width */
+    width: min(var(--_w), calc(100vw - var(--space-4) * 2));
+    max-height: none;
+  }
+  .fa-entity-preview-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: calc(var(--inset-tile) - var(--inset-overlay));
+  }
+  .fa-entity-preview-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-controls);
+  }
+  .fa-entity-preview-static {
+    position: relative;
+  }
+}

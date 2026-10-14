@@ -1,0 +1,121 @@
+/*
+ * Pagination: the pager in a table's status bar.
+ *
+ *   1–25 of 1,284   [25 per page ⇅]   |‹  ‹  [ 3 ] of 52  ›  ›|
+ *
+ * Container-aware: below 34rem the page size folds away, below 26rem the page jump,
+ * below 20rem the first/last buttons. `compact` shows only the range and ‹ ›.
+ */
+@layer components {
+  .fa-pager {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    min-width: 0;
+    container: fa-pager / inline-size;
+  }
+  .fa-pager-range {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-pager-range-skeleton {
+    /* About the width of "1–25 of 1,284". */
+    --_w: 7rem;
+    width: var(--_w);
+  }
+  .fa-pager-buttons {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-half);
+  }
+
+  .fa-pager-size {
+    flex: none;
+    gap: var(--space-1-5);
+    cursor: pointer;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    white-space: nowrap;
+  }
+  .fa-pager-size:hover {
+    color: var(--fg);
+  }
+  .fa-pager-size-value {
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-pager-size-icon {
+    display: inline-grid;
+    color: var(--fg-subtle);
+  }
+  .fa-pager-size-icon .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  .fa-pager-positioner {
+    z-index: var(--z-popover);
+    outline: none;
+  }
+  .fa-pager-popup {
+    --_min: 10rem;
+    min-width: max(var(--anchor-width, var(--_min)), var(--_min));
+  }
+  .fa-pager-check {
+    display: inline-grid;
+    margin-inline-start: auto;
+    color: var(--accent-text);
+  }
+  .fa-pager-check .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+
+  .fa-pager-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    margin-inline: var(--space-1);
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    white-space: nowrap;
+  }
+  .fa-pager-jump-field {
+    /* Fits five digits. */
+    --_w: 3.25rem;
+    width: var(--_w);
+    padding-inline: var(--space-1);
+  }
+  .fa-pager-jump-field .fa-control-input {
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+  .fa-pager-of {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @container fa-pager (inline-size < 34rem) {
+    .fa-pager-size {
+      display: none;
+    }
+  }
+  @container fa-pager (inline-size < 26rem) {
+    .fa-pager-jump {
+      display: none;
+    }
+  }
+  @container fa-pager (inline-size < 20rem) {
+    .fa-pager-edge {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,100 @@
+import { useState } from "react";
+
+import { ContainerLab, Matrix, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconEndpoint, IconGlobe, IconKey, IconMail } from "glass-ux/icons";
+
+import { Field } from "glass-ux/field";
+
+import { FormStack } from "glass-ux/form";
+
+import { Input, SearchField, type InputSize } from "glass-ux/input";
+
+import { Textarea } from "glass-ux/textarea";
+
+const SIZES: InputSize[] = ["sm", "md", "lg"];
+
+function NotesField() {
+    const [value, setValue] = useState("Primary office workstation. Used by the IT team for remote support.");
+    return (<Field label="Notes" counter={{ value: value.length, max: 500 }} hint="Grows to 8 lines, then scrolls.">
+      <Textarea value={value} onValueChange={setValue} minRows={3} maxRows={8}/>
+    </Field>);
+}
+
+export default function TextFieldsSection() {
+    return (<SectionPage>
+      <div className="flex flex-col gap-2 px-1" data-wide="">
+        <span className="fa-overline">On the canvas — the top bar</span>
+        <div className="flex flex-wrap items-center gap-4">
+          <SearchField className="max-w-2xl" placeholder="Search endpoints, organisations, software…" shortcut="mod+k" aria-label="Search everything"/>
+          <SearchField className="max-w-xs" size="sm" placeholder="Search endpoints" aria-label="Search endpoints"/>
+        </div>
+      </div>
+
+      <Specimen title="Sizes and states" description="sm 32 · md 40 · lg 48, like Button. Hover and focus are live: focus shows the accent halo for every input method." wide>
+        <Matrix columns={["Empty", "Filled", "Read-only", "Invalid", "Disabled"]} rows={SIZES.map((size) => ({
+            label: size,
+            cells: [
+                <Input key="a" size={size} placeholder="NST-C106" aria-label={`Empty ${size}`} className="w-56"/>,
+                <Input key="b" size={size} defaultValue="LMN-4E5E" aria-label={`Filled ${size}`} className="w-56"/>,
+                <Input key="c" size={size} defaultValue="a1f7-44c2-9e0b" readOnly aria-label={`Read-only ${size}`} className="w-56"/>,
+                <Input key="d" size={size} defaultValue="ORB 4E5E" invalid aria-label={`Invalid ${size}`} className="w-56"/>,
+                <Input key="e" size={size} defaultValue="STUDIO-VM" disabled aria-label={`Disabled ${size}`} className="w-56"/>,
+            ],
+        }))}/>
+      </Specimen>
+
+      <Specimen title="Slots" description="A leading icon, a unit, a clear button, the password reveal and a keyboard hint. Inner buttons are ghost Buttons, so they carry tooltips.">
+        <FormStack>
+          <Field label="Hostname">
+            <Input icon={<IconEndpoint />} defaultValue="NST-C106" width="medium"/>
+          </Field>
+          <Field label="Disk alert threshold">
+            <Input inputMode="numeric" defaultValue="90" unit="%" width="short"/>
+          </Field>
+          <Field label="Site URL">
+            <Input icon={<IconGlobe />} clearable defaultValue="https://northstar.example" type="url"/>
+          </Field>
+          <Field label="Contact email">
+            <Input icon={<IconMail />} type="email" placeholder="name@example.com.au"/>
+          </Field>
+          <Field label="Local admin password" hint="Rotated every 30 days.">
+            <Input icon={<IconKey />} type="password" defaultValue="Correct-Horse-7" width="medium"/>
+          </Field>
+          <Field label="Search">
+            <SearchField defaultValue="orb-"/>
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <></>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <SearchField className="max-w-sm" placeholder="Search endpoints" aria-label="Search over imagery"/>
+        <Input className="max-w-xs" defaultValue="NST-C106" aria-label="Hostname over imagery"/>
+      </Specimen>
+
+      <ContainerLab>
+        {(preset) => preset?.id === "row" ? (<div className="flex h-full items-center gap-2 px-1">
+              <SearchField size="sm" placeholder="Search 1,284 endpoints by hostname, user or serial" aria-label="Search endpoints"/>
+              <Input size="sm" defaultValue="Northstar Studio" aria-label="Organisation" className="max-w-48"/>
+            </div>) : preset?.id === "header" ? (<div className="flex h-full items-center px-2">
+              <SearchField placeholder="Search endpoints, organisations, software…" shortcut="mod+k" aria-label="Search"/>
+            </div>) : (<div className="h-full overflow-y-auto" data-scroll-container>
+              <FormStack className="p-3">
+                <Field label="Hostname">
+                  <Input icon={<IconEndpoint />} defaultValue="NST-C106-FRONT-COUNTER-RECEPTION"/>
+                </Field>
+                <Field label="Threshold">
+                  <Input defaultValue="90" unit="%"/>
+                </Field>
+                <NotesField />
+              </FormStack>
+            </div>)}
+      </ContainerLab>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

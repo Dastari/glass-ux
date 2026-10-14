@@ -1,0 +1,102 @@
+import { useMemo, useState, type KeyboardEvent } from "react";
+
+import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { ActionContextMenu, ActionMenu, ActionProvider, usePaletteActions } from "glass-ux/actions";
+
+import { StatusDot } from "glass-ux/badge";
+
+import { PaletteProvider } from "glass-ux/command-palette";
+
+import { Switch } from "glass-ux/switch";
+
+import { TruncatedText } from "glass-ux/truncated-text";
+
+import { ENDPOINTS, demoFailures, endpointActions, type DemoEndpoint } from "glass-ux/gallery/sections/overlays.fixtures";
+
+/* ── Row list ─────────────────────────────────────────────────────────────── */
+function EndpointRow({ endpoint, selected, onSelect }: {
+    endpoint: DemoEndpoint;
+    selected: boolean;
+    onSelect: () => void;
+}) {
+    // A grid row: Enter or Space selects it; ↑ and ↓ move between rows.
+    const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (event.target !== event.currentTarget)
+            return;
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onSelect();
+        }
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            const rows = [...(event.currentTarget.parentElement?.querySelectorAll<HTMLElement>("[role='row']") ?? [])];
+            const next = rows[rows.indexOf(event.currentTarget) + (event.key === "ArrowDown" ? 1 : -1)];
+            next?.focus();
+        }
+    };
+    return (<ActionContextMenu set={endpointActions} targets={[endpoint]} label={endpoint.name}>
+      <div role="row" tabIndex={0} aria-selected={selected} aria-label={`${endpoint.name}, ${endpoint.online ? "online" : "offline"}`} className="fa-item min-h-12 gap-3" data-selected={selected ? "" : undefined} onClick={onSelect} onKeyDown={onKeyDown}>
+        <span role="gridcell" className="flex min-w-0 flex-1 items-center gap-3">
+          <StatusDot status={endpoint.online ? "online" : "offline"} label={endpoint.online ? "Online" : "Offline"}/>
+          <span className="flex min-w-0 flex-1 flex-col">
+            <TruncatedText className="type-label font-semibold">{endpoint.name}</TruncatedText>
+            <TruncatedText middle className="type-caption text-fg-muted">
+              {endpoint.user}
+            </TruncatedText>
+          </span>
+        </span>
+        <span role="gridcell" className="hidden min-w-0 flex-1 @xl:flex">
+          <TruncatedText className="type-label text-fg-muted">{endpoint.organisation}</TruncatedText>
+        </span>
+        <span role="gridcell" className="hidden w-24 type-label text-fg-muted @md:block">
+          {endpoint.lastSeen}
+        </span>
+        <span role="gridcell" className="flex-none">
+          <ActionMenu set={endpointActions} targets={[endpoint]} label={endpoint.name}/>
+        </span>
+      </div>
+    </ActionContextMenu>);
+}
+
+/* ── Palette ──────────────────────────────────────────────────────────────── */
+function PaletteActions({ endpoint }: {
+    endpoint: DemoEndpoint;
+}) {
+    const targets = useMemo(() => [endpoint], [endpoint]);
+    usePaletteActions(endpointActions, targets, endpoint.name);
+    return null;
+}
+
+/* ── Section ──────────────────────────────────────────────────────────────── */
+export default function ActionsSection() {
+    const [selected, setSelected] = useState("nst-c106");
+    const [fail, setFail] = useState(false);
+    const endpoint = ENDPOINTS.find((item) => item.id === selected) ?? ENDPOINTS[0]!;
+    return (<ActionProvider>
+      <PaletteProvider>
+        <PaletteActions endpoint={endpoint}/>
+        <SectionPage>
+          <Specimen title="Rows: ⋯ menu and right-click" description="Each row's ⋯ button and its context menu (right-click, long-press, Shift+F10) render the same definition. Select a row: its actions follow into the header and the palette below." wide>
+            <div role="grid" aria-label="Endpoints" className="@container flex w-full flex-col gap-0.5">
+              {ENDPOINTS.map((item) => (<EndpointRow key={item.id} endpoint={item} selected={item.id === selected} onSelect={() => setSelected(item.id)}/>))}
+            </div>
+            <Example label="Outcome">
+              <Switch checked={fail} onCheckedChange={(next) => {
+            setFail(next);
+            demoFailures.next = next;
+        }} label="Next long-running action fails"/>
+            </Example>
+          </Specimen>
+
+          <></>
+
+          <></>
+
+          <></>
+
+          <></>
+        </SectionPage>
+      </PaletteProvider>
+    </ActionProvider>);
+}

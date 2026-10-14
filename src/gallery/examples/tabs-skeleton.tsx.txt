@@ -1,0 +1,47 @@
+import { SectionPage, Specimen, SwapSlot } from "glass-ux/gallery/kit";
+
+import { Tabs, TabsSkeleton, type TabItem } from "glass-ux/tabs";
+
+import { ENDPOINT_TABS } from "glass-ux/gallery/sections/nav.fixtures";
+
+const SHORT: TabItem[] = ENDPOINT_TABS.slice(0, 4);
+
+function LocalTabs({ initial = "overview", items = ENDPOINT_TABS, label = "NST-C106" }: {
+    initial?: string;
+    items?: TabItem[];
+    label?: string;
+}) {
+    return (<Tabs.Root defaultValue={initial}>
+      <Tabs.List items={items} aria-label={`${label} sections`}/>
+    </Tabs.Root>);
+}
+
+export default function TabsSection() {
+    return (<SectionPage>
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Specimen title="Loading" description="The skeleton strip occupies the same height and rhythm as the loaded strip. Swap them in place to compare.">
+        <div className="w-105 max-w-full">
+          <SwapSlot id="tabs" skeleton={<TabsSkeleton count={4}/>} loaded={<LocalTabs items={SHORT}/>}/>
+        </div>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

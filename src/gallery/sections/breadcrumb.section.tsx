@@ -1,0 +1,226 @@
+import { useMemo, useState } from "react"
+import { ContainerLab, Example, OnCanvas, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
+import { IconEndpoint, IconOrganisation } from "../../icons/generated/icons.js"
+import { STATUS } from "../../ui/badge/index.js"
+import { sections } from "../registry.js"
+import { Breadcrumb, RouteBreadcrumb, type BreadcrumbProps, type Crumb, type RouteCrumb } from "../../ui/breadcrumb/index.js"
+import { Segmented } from "../../ui/segmented/index.js"
+import { ENDPOINTS, ENDPOINT_TABS, ORGANISATIONS } from "./nav.fixtures.js"
+
+/** A live breadcrumb: switching an endpoint, organisation or tab updates the trail. */
+function useTrail(initial = { org: ORGANISATIONS[0] as string, endpoint: "nst-c106", tab: "software" }) {
+  const [place, setPlace] = useState(initial)
+
+  return useMemo<Crumb[]>(() => {
+    const inOrg = ENDPOINTS.filter((endpoint) => endpoint.organisation === place.org)
+    const endpoint = inOrg.find((item) => item.id === place.endpoint) ?? inOrg[0] ?? ENDPOINTS[0]!
+    const tab = ENDPOINT_TABS.find((item) => item.value === place.tab) ?? ENDPOINT_TABS[0]!
+    return [
+      { id: "endpoints", label: "Endpoints", icon: <IconEndpoint />, onSelect: () => {} },
+      {
+        id: place.org,
+        label: place.org,
+        icon: <IconOrganisation />,
+        onSelect: () => {},
+        siblingsLabel: "Switch organisation",
+        siblings: ORGANISATIONS.map((org) => ({
+          id: org,
+          label: org,
+          icon: <IconOrganisation />,
+          onSelect: () => setPlace((current) => ({ ...current, org, endpoint: "" })),
+        })),
+      },
+      {
+        id: endpoint.id,
+        label: endpoint.name,
+        onSelect: () => {},
+        siblingsLabel: "Switch endpoint",
+        // Every endpoint, so the switcher shows its search field.
+        siblings: ENDPOINTS.map((item) => ({
+          id: item.id,
+          label: item.name,
+          meta: item.status === "online" ? item.user : STATUS[item.status].label,
+          onSelect: () => setPlace((current) => ({ ...current, org: item.organisation, endpoint: item.id })),
+        })),
+      },
+      {
+        id: tab.value,
+        label: tab.label,
+        siblingsLabel: "Switch tab",
+        siblings: ENDPOINT_TABS.map((item) => ({
+          id: item.value,
+          label: item.label,
+          icon: item.icon,
+          onSelect: () => setPlace((current) => ({ ...current, tab: item.value })),
+        })),
+      },
+    ]
+  }, [place])
+}
+
+/** Real router links: this page's own trail, with every component section as a sibling. */
+const ROUTE_TRAIL: RouteCrumb[] = [
+  { id: "design", label: "Design system", link: { to: "/design" } },
+  { id: "components", label: "Components", link: { to: "/design" } },
+  {
+    id: "breadcrumb",
+    label: "Breadcrumb",
+    siblingsLabel: "Switch component",
+    siblings: sections
+      .filter((section) => section.group === "Components")
+      .map((section) => ({ id: section.id, label: section.title, link: { to: "/design/$section", params: { section: section.id } } })),
+  },
+]
+
+function LiveBreadcrumb(props: Omit<BreadcrumbProps, "items">) {
+  const items = useTrail()
+  return <Breadcrumb items={items} {...props} />
+}
+
+/** What the top bar folds into the trail on a phone: the module switch and the organisation. */
+function FoldedBreadcrumb() {
+  const [module, setModule] = useState("rmm")
+  const [switched, setSwitched] = useState(0)
+  return (
+    <LiveBreadcrumb
+      collapse="current"
+      aria-label="Folded breadcrumb"
+      header={
+        <Segmented
+          block
+          size="sm"
+          aria-label="Module"
+          value={module}
+          onValueChange={setModule}
+          options={[
+            { value: "rmm", label: "RMM" },
+            { value: "psa", label: "PSA" },
+            { value: "chat", label: "CHAT" },
+          ]}
+        />
+      }
+      scope={{
+        label: switched ? `Northstar Studio (${switched})` : "Northstar Studio",
+        icon: <IconOrganisation />,
+        "aria-label": "Organisation: Northstar Studio. Switch organisation",
+        onSelect: () => setSwitched((count) => count + 1),
+      }}
+    />
+  )
+}
+
+export default function BreadcrumbSection() {
+  return (
+    <SectionPage>
+      <OnCanvas
+        title="In the top bar"
+        description="The top bar is transparent: the breadcrumb sits on the ambient canvas. Crumbs navigate; the current place is fg at medium weight; the chevrons beside a crumb switch between its siblings."
+      >
+        <div className="flex h-16 w-full items-center">
+          <LiveBreadcrumb />
+        </div>
+      </OnCanvas>
+
+      <Specimen
+        title="Route crumbs"
+        description="RouteBreadcrumb renders crumbs and siblings with `link` as router links — this page's own trail; the switcher lists every component section. The core Breadcrumb stays router-agnostic."
+        wide
+      >
+        <RouteBreadcrumb items={ROUTE_TRAIL} aria-label="Gallery breadcrumb" />
+      </Specimen>
+
+      <Specimen title="On glass" description="Muted crumbs, separators and hover fills read the same on panel glass as on the canvas." wide>
+        <LiveBreadcrumb />
+      </Specimen>
+
+      <Specimen
+        title="Collapse"
+        description="Measured against its own width: first the middle crumbs fold into an ellipsis menu, then the trail becomes ‹ parent · current, and last only the current place with the trail in its popup."
+        layout="stack"
+        wide
+      >
+        <Example label="Full · 720px">
+          <div className="w-180 max-w-full">
+            <LiveBreadcrumb />
+          </div>
+        </Example>
+        <Example label="Middle collapsed · 440px">
+          <div className="w-110 max-w-full">
+            <LiveBreadcrumb />
+          </div>
+        </Example>
+        <Example label="Parent · current · 300px">
+          <div className="w-75 max-w-full">
+            <LiveBreadcrumb />
+          </div>
+        </Example>
+      </Specimen>
+
+      <Specimen
+        title="Current place only"
+        description="The last step: only the current place, its icon and a chevron, as one button. Its popup holds the trail as an indented tree, root first; every level navigates and a level with siblings carries Switch. On a phone the top bar folds its context into it (BreadcrumbFoldContext): the module switch at full width and the organisation, which opens the switcher, sit above the trail, and the popup drops from the bar at its full width. Esc closes it and focus returns to the button."
+        layout="stack"
+        wide
+      >
+        <Example label="Folded by the host · 280px">
+          <div className="w-70 max-w-full">
+            <FoldedBreadcrumb />
+          </div>
+        </Example>
+        <Example label="By itself, when ‹ parent · current no longer fits · 160px">
+          <div className="w-40 max-w-full">
+            <LiveBreadcrumb aria-label="Narrow breadcrumb" />
+          </div>
+        </Example>
+      </Specimen>
+
+      <Specimen title="Long names" description="Each crumb truncates at its own maximum width; the full name is in the title and in the menus.">
+        <div className="w-full">
+          <Breadcrumb
+            items={[
+              { id: "orgs", label: "Organisations", icon: <IconOrganisation />, onSelect: () => {} },
+              { id: "cedarvale", label: "Cedar Vale Collective", onSelect: () => {} },
+              { id: "cedarvalei-6231", label: "CDV-6231" },
+            ]}
+          />
+        </div>
+      </Specimen>
+
+      <Specimen title="Over imagery" description="Muted crumbs, separators and hover fills keep their contrast over busy content." backdrop>
+        <LiveBreadcrumb />
+      </Specimen>
+
+      <ContainerLab description="Full in the pane, middle-collapsed in the row, parent · current in the header, tile and tall-narrow boxes.">
+        {() => <LiveBreadcrumb />}
+      </ContainerLab>
+
+      <Rules
+        do={[
+          "Feed it from the router: one crumb per matched route, the current place last.",
+          "Give a crumb siblings when switching laterally is common (endpoint to endpoint).",
+          "Name switchers by what they switch: “Switch endpoint”.",
+          "When a host folds its scope into the trail, give the breadcrumb a `scope` that opens the host's switcher and a `header` for what else folded (the module switch).",
+          "Keep crumbs to names; the page itself carries the detail.",
+        ]}
+        dont={[
+          "Repeat the breadcrumb's last crumb as a page title (R2.1, R6.5).",
+          "Put a second breadcrumb inside a page or window.",
+          "Use dividers or slashes between crumbs; the chevron is the separator.",
+          "Make the current crumb a link to itself.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--control-h-sm", "Breadcrumb height"],
+          ["--fg-muted", "Ancestor crumbs"],
+          ["--fg", "Current crumb"],
+          ["--fg-subtle", "Separators and switchers"],
+          ["--icon-xs", "Separator chevron"],
+          ["--fill-hover", "Hover fill"],
+          ["--radius-item", "Crumb radius"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

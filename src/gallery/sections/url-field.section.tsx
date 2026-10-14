@@ -1,0 +1,99 @@
+import { z } from "zod"
+import { ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
+import { Field } from "../../ui/field/index.js"
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js"
+import { UrlInput, urlSchema } from "../../ui/url-field/index.js"
+import { Usage } from "./inputs.kit.js"
+import { wait } from "./forms.fixtures.js"
+
+const schema = z.object({ portal: urlSchema({ required: true }), webhook: urlSchema({ schemes: ["https"] }) })
+
+function UrlDemo() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { portal: "northstar.example/portal", webhook: "http://hooks.orbit.example.com.au/workspace" },
+    validators: { onDynamic: schema },
+    onSubmit: () => wait(600),
+  })
+  return (
+    <Form form={form} aria-label="Links" className="w-full" data-testid="url-form">
+      <FormStack>
+        <form.AppField name="portal">{(field) => <field.UrlField label="Customer portal" />}</form.AppField>
+        <form.AppField name="webhook">{(field) => <field.UrlField label="Webhook" optional schemes={["https"]} hint="HTTPS only." />}</form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  )
+}
+
+export default function UrlFieldSection() {
+  return (
+    <SectionPage>
+      <Specimen title="Scheme handling" description="Leave a field: https:// is added when the scheme is missing, the host lower-cased and a bare trailing slash dropped. Schemes that are not links (javascript:, data:) are refused.">
+        <FormStack className="w-full">
+          <Field label="Printer web page" hint="An http:// address says it is not encrypted.">
+            <UrlInput defaultValue="http://10.13.4.20" />
+          </Field>
+          <Field label="Documentation">
+            <UrlInput defaultValue="https://docs.orbit.example.com.au/workspace/agents" />
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="In a form">
+        <UrlDemo />
+      </Specimen>
+
+      <Specimen title="States" layout="grid">
+        <FormStack>
+          <Field label="Empty">
+            <UrlInput />
+          </Field>
+          <Field label="Invalid" error="Use an address that starts with https:// or http://">
+            <UrlInput defaultValue="ftp://files.northstar.local" invalid />
+          </Field>
+        </FormStack>
+        <FormStack>
+          <Field label="Read-only">
+            <UrlInput defaultValue="https://northstar.example" readOnly />
+          </Field>
+          <Field label="Disabled">
+            <UrlInput defaultValue="https://northstar.example" disabled />
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <FormStack>
+          <Field label="Customer portal">
+            <UrlInput defaultValue="https://northstar.example/portal" />
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <ContainerLab>
+        <div className="flex h-full items-center p-1">
+          <UrlInput size="sm" defaultValue="https://docs.orbit.example.com.au/workspace/agents/windows" aria-label="Link" />
+        </div>
+      </ContainerLab>
+
+      <Usage
+        code={`
+import { urlSchema } from "../../ui/url-field/index.js"
+
+const schema = z.object({ portal: urlSchema({ required: true }), webhook: urlSchema({ schemes: ["https"] }) })
+
+<form.AppField name="portal">{(field) => <field.UrlField label="Customer portal" />}</form.AppField>`}
+      />
+
+      <Rules
+        do={["Restrict schemes when only one makes sense (webhooks: https).", "Let people paste a bare host; the field adds the scheme.", "Keep the open button so the address can be checked."]}
+        dont={["Accept javascript: or data: links.", "Rewrite the path's case: paths are case-sensitive.", "Use a plain Input for URLs that are stored."]}
+      />
+
+      <TokenTable tokens={[["--fg-subtle", "Leading icon"], ["--field-medium", "Narrow forms"]]} />
+    </SectionPage>
+  )
+}

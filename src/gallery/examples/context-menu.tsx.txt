@@ -1,0 +1,21 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Button } from "glass-ux/button";
+
+import { ContextMenu } from "glass-ux/context-menu";
+
+export default function ContextMenuExample() {
+    return (<SectionPage>
+      <Specimen title="ContextMenu" layout="stack">
+        <ContextMenu.Root>
+          <ContextMenu.Trigger>
+            <Button>Right-click or press Shift+F10</Button>
+          </ContextMenu.Trigger>
+          <ContextMenu.Popup>
+            <ContextMenu.Item>Open sample</ContextMenu.Item>
+            <ContextMenu.Item>Duplicate sample</ContextMenu.Item>
+          </ContextMenu.Popup>
+        </ContextMenu.Root>
+      </Specimen>
+    </SectionPage>);
+}

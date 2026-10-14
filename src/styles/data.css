@@ -1,0 +1,87 @@
+/*
+ * Glass UX data colours and data geometry — the tokens every chart, sparkline and metric reads.
+ *
+ * Data has its own calm colour, separate from the brand accent. A palette sets one parameter,
+ * --chart-h (themes.css): a blue near 250 by default; a palette whose accent is already calm and
+ * not a status (ocean) may use its accent hue. Red, amber and green are reserved for states:
+ * a series wears --danger / --warning / --success only when its data means that state.
+ *
+ * Categorical series colours --chart-1 … --chart-8
+ *   slot 1     --chart-h at its own lightness and chroma per mode (--chart-1-l, --chart-1-c)
+ *   slots 2–8  fixed hue offsets from --chart-h (--chart-offset-N) at one chroma and one of two
+ *              lightness tiers (--chart-l-a lighter, --chart-l-b deeper), chosen per slot.
+ *   With the default hue the order reads blue · deep teal · lavender · lime · navy · cyan ·
+ *   plum · rose. No slot sits in the warm arc (red, orange, amber, yellow); slots 1–3 stay at
+ *   least 25° from every status hue; a later slot near one differs from it by ≥ 0.1 lightness.
+ *   src/styles/data.test.ts parses this file and themes.css and proves, for every palette in
+ *   both modes: ≥ 3:1 on the panel glass and on Solid, neighbours ΔE ≥ 15 (normal vision) and
+ *   ≥ 8 (protan/deutan), and the status-hue rules; it also sweeps --chart-h round the wheel.
+ *   Assign slots in order, never cycle, and keep a series on its slot when others hide.
+ *
+ * The slot formulas are re-declared on islands ([data-mode], [data-palette]) so a palette or
+ * mode island recomputes its own data colours; the per-mode numbers simply inherit from the
+ * nearest data-mode, so an element with both attributes takes its own mode (e2e/token-islands).
+ */
+@layer base {
+  :root,
+  [data-mode],
+  [data-palette] {
+    --chart-c: 0.13; /* chroma of slots 2–8 */
+    --chart-offset-2: 290;
+    --chart-offset-3: 50;
+    --chart-offset-4: 220;
+    --chart-offset-5: 10;
+    --chart-offset-6: 310;
+    --chart-offset-7: 90;
+    --chart-offset-8: 100;
+
+    --chart-1: oklch(var(--chart-1-l) var(--chart-1-c) var(--chart-h));
+    --chart-2: oklch(var(--chart-l-b) var(--chart-c) calc(var(--chart-h) + var(--chart-offset-2)));
+    --chart-3: oklch(var(--chart-l-a) var(--chart-c) calc(var(--chart-h) + var(--chart-offset-3)));
+    --chart-4: oklch(var(--chart-l-a) var(--chart-c) calc(var(--chart-h) + var(--chart-offset-4)));
+    --chart-5: oklch(var(--chart-l-b) var(--chart-c) calc(var(--chart-h) + var(--chart-offset-5)));
+    --chart-6: oklch(var(--chart-l-a) var(--chart-c) calc(var(--chart-h) + var(--chart-offset-6)));
+    --chart-7: oklch(var(--chart-l-b) var(--chart-c) calc(var(--chart-h) + var(--chart-offset-7)));
+    --chart-8: oklch(var(--chart-l-a) var(--chart-c) calc(var(--chart-h) + var(--chart-offset-8)));
+  }
+  /* Plain numbers per mode: they inherit, so every island reads its nearest data-mode's tier
+     and the formulas above recompute on it. */
+  :root,
+  [data-mode="light"] {
+    --chart-1-l: 0.58;
+    --chart-1-c: 0.15;
+    --chart-l-a: 0.63; /* the lighter tier */
+    --chart-l-b: 0.44; /* the deeper tier */
+    --chart-wash: 14%; /* the area wash at the line */
+    --chart-tile-mix: 34%; /* treemap tiles: a soft tint that ink labels read on */
+    --chart-group-mix: 11%; /* a treemap folder's wash behind its contents */
+  }
+  [data-mode="dark"] {
+    --chart-1-l: 0.72;
+    --chart-1-c: 0.15;
+    --chart-l-a: 0.78;
+    --chart-l-b: 0.6;
+    --chart-wash: 25%;
+    --chart-tile-mix: 27%;
+    --chart-group-mix: 9%;
+  }
+
+  :root {
+    /* Geometry and chrome. */
+    --chart-stroke: 2px; /* every series line, whatever the size */
+    --chart-dot: var(--space-2); /* end and hover dots (≥ 8px), ringed in --surface-3 */
+    --chart-gap: calc(var(--border-width) * 2); /* surface gap between touching marks */
+    --chart-bar-max: 1.5rem; /* a bar or column never grows thicker than this */
+    --chart-bar-radius: calc(var(--unit) * var(--radius-scale)); /* the data end; the baseline stays square */
+    --chart-tile-radius: var(--radius-xs); /* treemap tiles and heatmap cells */
+    --chart-grid: var(--line); /* gridlines: hairlines, low emphasis */
+    --chart-baseline: var(--line-strong); /* the zero line and crosshair */
+    --chart-track: var(--fill-muted); /* gauge and radial-bar tracks, the empty heat cell */
+    --chart-sheen-mix: 12%; /* light from above on bars (--sheen-solid's top stop, softened) */
+    --chart-sheen-light: oklch(1 0 0);
+    --chart-hit: 1.5rem; /* minimum hover/focus target for small marks */
+    --chart-label-halo: 0.1875rem; /* knock-out behind labels drawn over marks */
+    --chart-tooltip-min: 9rem;
+    --chart-tooltip-w: 16rem;
+  }
+}

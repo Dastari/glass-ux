@@ -1,0 +1,42 @@
+name: Release
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Validate tag
+        run: node -e 'if (process.env.GITHUB_REF_NAME !== "v" + require("./package.json").version) process.exit(1)'
+      - run: pnpm check
+      - run: pnpm docs:build
+        env:
+          GLASS_UX_BASE: /glass-ux/
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - name: Package release
+        run: |
+          mkdir -p .handoff/release
+          pnpm pack --pack-destination .handoff/release
+          tar -czf .handoff/release/glass-ux-docs.tar.gz -C apps/docs/dist .
+          cd .handoff/release
+          sha256sum *.tgz *.tar.gz > SHA256SUMS
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "Release already exists; immutable assets retained."
+          else
+            gh release create "$GITHUB_REF_NAME" .handoff/release/*.tgz .handoff/release/*.tar.gz .handoff/release/SHA256SUMS --verify-tag --generate-notes
+          fi

@@ -1,0 +1,93 @@
+/*
+ * Notice — an in-place info / success / warning / danger block (the mockup's blue callout).
+ *
+ * The tone's soft fill and a faint tone rim, the tone icon at md, text in fg (title at label
+ * weight) so it reads in every palette. Compact: a single line at control height that
+ * truncates. Fixed positions only — a notice is part of the layout, never injected (R9.1).
+ */
+@layer components {
+  .fa-notice {
+    --_bg: var(--info-soft);
+    --_rim: color-mix(in oklab, var(--info-line) 55%, transparent);
+    --_icon: var(--info-text);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-tile);
+    background-color: var(--_bg);
+    box-shadow: inset 0 0 0 var(--border-width) var(--_rim);
+    color: var(--fg);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-notice[data-tone="success"] {
+    --_bg: var(--success-soft);
+    --_rim: color-mix(in oklab, var(--success-line) 55%, transparent);
+    --_icon: var(--success-text);
+  }
+  .fa-notice[data-tone="warning"] {
+    --_bg: var(--warning-soft);
+    --_rim: color-mix(in oklab, var(--warning-line) 55%, transparent);
+    --_icon: var(--warning-text);
+  }
+  .fa-notice[data-tone="danger"] {
+    --_bg: var(--danger-soft);
+    --_rim: color-mix(in oklab, var(--danger-line) 55%, transparent);
+    --_icon: var(--danger-text);
+  }
+
+  .fa-notice-icon {
+    flex: none;
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    color: var(--_icon);
+  }
+  .fa-notice-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-wrap: pretty;
+  }
+  .fa-notice-title {
+    display: block;
+    font-weight: var(--weight-semibold);
+  }
+  .fa-notice-body {
+    color: var(--fg);
+  }
+  .fa-notice-title + .fa-notice-body {
+    color: var(--fg-muted);
+  }
+  .fa-notice-action {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--gap-controls);
+    margin-block: calc(var(--space-1-5) * -1);
+  }
+
+  .fa-notice[data-compact] {
+    align-items: center;
+    min-height: var(--control-h-md);
+    padding-block: var(--space-1-5);
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-control);
+  }
+  .fa-notice[data-compact] .fa-notice-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-notice[data-compact] .fa-notice-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-notice[data-compact] .fa-notice-title {
+    display: inline;
+    margin-inline-end: var(--space-1-5);
+  }
+  .fa-notice[data-compact] .fa-notice-action {
+    margin-block: 0;
+  }
+}

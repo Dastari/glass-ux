@@ -1,0 +1,61 @@
+import { z } from "zod";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { durationSchema } from "glass-ux/duration-field";
+
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+function DurationDemo() {
+    const form = useAppForm({
+        ...formBehaviour,
+        defaultValues: { response: 5400 as number | null, maintenance: 7200 as number | null, timeout: null as number | null },
+        validators: {
+            onDynamic: z.object({
+                response: durationSchema({ required: true, min: 900, max: 604800 }),
+                maintenance: durationSchema({ max: 86400 }),
+                timeout: durationSchema({ min: 30, max: 3600 }),
+            }),
+        },
+        onSubmit: () => wait(600),
+    });
+    return (<Form form={form} aria-label="Durations" className="w-full" data-testid="duration-form">
+      <FormStack>
+        <form.AppField name="response">{(field) => <field.DurationField label="Response target"/>}</form.AppField>
+        <form.AppField name="maintenance">{(field) => <field.DurationField label="Maintenance window" optional/>}</form.AppField>
+        <form.AppField name="timeout">{(field) => <field.DurationField label="Script timeout" optional units={["m", "s"]} defaultUnit="s" placeholder="90s"/>}</form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>);
+}
+
+export default function DurationFieldSection() {
+    return (<SectionPage>
+      <Specimen title="As people say it" description="1h 30m, 90 (minutes by default), 1:30, 1.5 hours, 2 days 4 hrs. Leave the field and it is written compactly; the hint spells it out so a bare number is never misread.">
+        <DurationDemo />
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Usage code={`
+import { durationSchema } from "glass-ux/duration-field"
+
+const schema = z.object({ response: durationSchema({ required: true, min: 900, max: 604800 }) })   // seconds
+
+<form.AppField name="response">{(field) => <field.DurationField label="Response target" units={["d", "h", "m"]} />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

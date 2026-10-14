@@ -1,0 +1,1 @@
+{"id":"window-body-skeleton","name":"WindowBodySkeleton","entry":"glass-ux/windows","family":"windows","description":"The loading state of a window body: the scroll body's padding and a few lines.","source":"src/windows/window-content.tsx","signature":"(): import(\"react\").JSX.Element","props":[],"slots":[],"section":"windows"}

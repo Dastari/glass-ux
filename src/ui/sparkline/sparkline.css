@@ -1,0 +1,106 @@
+/*
+ * Sparkline — one series, filling its box.
+ *
+ * Line 2px (non-scaling) with round caps in the data colour (--chart-1, data.css) or a status
+ * tone; a wash under it from --chart-wash of that colour to transparent; the latest point is an 8px dot ringed in the surface
+ * colour. The plot is inset by the dot radius so the dot and stroke never clip. A hover
+ * crosshair (hairline) and dot appear when the parent drives `hover`.
+ */
+@layer components {
+  .fa-spark {
+    --_inset: 0.3125rem; /* half the dot plus its ring */
+    --_line: var(--chart-1); /* data, never the brand accent ("accent" tone is an alias) */
+    --_wash: color-mix(in oklab, var(--chart-1) var(--chart-wash), transparent);
+    --_dot: var(--space-2);
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: var(--_inset);
+  }
+  .fa-spark[data-tone="success"] {
+    --_line: var(--success);
+    --_wash: var(--success-soft);
+  }
+  .fa-spark[data-tone="warning"] {
+    --_line: var(--warning);
+    --_wash: var(--warning-soft);
+  }
+  .fa-spark[data-tone="danger"] {
+    --_line: var(--danger);
+    --_wash: var(--danger-soft);
+  }
+  .fa-spark[data-tone="info"] {
+    --_line: var(--info);
+    --_wash: var(--info-soft);
+  }
+  .fa-spark[data-tone="neutral"] {
+    --_line: var(--fg-subtle);
+    --_wash: var(--fill-muted);
+  }
+
+  .fa-spark-plot {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .fa-spark-plot[data-interactive] {
+    cursor: crosshair;
+    touch-action: pan-y;
+  }
+  .fa-spark-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .fa-spark-line {
+    fill: none;
+    stroke: var(--_line);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .fa-spark-stop-top {
+    stop-color: var(--_wash);
+  }
+  .fa-spark-stop-bottom {
+    stop-color: var(--_wash);
+    stop-opacity: 0;
+  }
+  .fa-spark-reference {
+    stroke: var(--line-strong);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .fa-spark-dot {
+    position: absolute;
+    width: var(--_dot);
+    height: var(--_dot);
+    border-radius: var(--radius-full);
+    background-color: var(--_line);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--surface-3);
+    translate: -50% -50%;
+    pointer-events: none;
+  }
+  .fa-spark-crosshair {
+    position: absolute;
+    inset-block: 0;
+    width: var(--border-width);
+    background-color: var(--line-strong);
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .fa-spark-skel {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-xs);
+  }
+}

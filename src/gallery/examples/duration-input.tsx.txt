@@ -1,0 +1,57 @@
+import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { DurationInput } from "glass-ux/duration-field";
+
+import { Field } from "glass-ux/field";
+
+import { FormStack } from "glass-ux/form";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+export default function DurationFieldSection() {
+    return (<SectionPage>
+      <></>
+
+      <Specimen title="States" layout="grid">
+        <FormStack>
+          <Field label="Empty">
+            <DurationInput />
+          </Field>
+          <Field label="Unreadable" error="Enter a duration such as 1h 30m, 90m or 1:30">
+            <DurationInput defaultValue={Number.NaN} invalid placeholder="soon"/>
+          </Field>
+        </FormStack>
+        <FormStack>
+          <Field label="Read-only">
+            <DurationInput defaultValue={5400} readOnly/>
+          </Field>
+          <Field label="Disabled">
+            <DurationInput defaultValue={5400} disabled/>
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <Field label="Response target">
+          <DurationInput defaultValue={5400}/>
+        </Field>
+      </Specimen>
+
+      <ContainerLab>
+        <div className="flex h-full items-center p-1">
+          <DurationInput size="sm" defaultValue={187200} width="full" aria-label="Duration"/>
+        </div>
+      </ContainerLab>
+
+      <Usage code={`
+import { durationSchema } from "glass-ux/duration-field"
+
+const schema = z.object({ response: durationSchema({ required: true, min: 900, max: 604800 }) })   // seconds
+
+<form.AppField name="response">{(field) => <field.DurationField label="Response target" units={["d", "h", "m"]} />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

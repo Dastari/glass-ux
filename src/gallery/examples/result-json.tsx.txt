@@ -1,0 +1,20 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+import { ResultJson } from "glass-ux/ai";
+
+export default function ResultJsonExample() {
+    return (<AiGallery>
+      <SectionPage>
+        <Specimen title="ResultJson" layout="stack">
+          <ResultJson result={{
+            id: "sample-json",
+            type: "json",
+            title: "Exhibition configuration",
+            value: { rooms: 3, open: true, tags: ["art", "design"] },
+        }}/>
+        </Specimen>
+      </SectionPage>
+    </AiGallery>);
+}

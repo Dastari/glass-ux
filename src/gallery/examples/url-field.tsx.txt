@@ -1,0 +1,58 @@
+import { z } from "zod";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+
+import { urlSchema } from "glass-ux/url-field";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+const schema = z.object({ portal: urlSchema({ required: true }), webhook: urlSchema({ schemes: ["https"] }) });
+
+function UrlDemo() {
+    const form = useAppForm({
+        ...formBehaviour,
+        defaultValues: { portal: "northstar.example/portal", webhook: "http://hooks.orbit.example.com.au/workspace" },
+        validators: { onDynamic: schema },
+        onSubmit: () => wait(600),
+    });
+    return (<Form form={form} aria-label="Links" className="w-full" data-testid="url-form">
+      <FormStack>
+        <form.AppField name="portal">{(field) => <field.UrlField label="Customer portal"/>}</form.AppField>
+        <form.AppField name="webhook">{(field) => <field.UrlField label="Webhook" optional schemes={["https"]} hint="HTTPS only."/>}</form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>);
+}
+
+export default function UrlFieldSection() {
+    return (<SectionPage>
+      <></>
+
+      <Specimen title="In a form">
+        <UrlDemo />
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Usage code={`
+import { urlSchema } from "glass-ux/url-field"
+
+const schema = z.object({ portal: urlSchema({ required: true }), webhook: urlSchema({ schemes: ["https"] }) })
+
+<form.AppField name="portal">{(field) => <field.UrlField label="Customer portal" />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

@@ -1,0 +1,230 @@
+/*
+ * Gallery: Patterns › Windows. Specimen boxes and the annotated anatomy.
+ */
+@layer components {
+  .gallery-wm-box {
+    --_h: 16rem;
+    width: 100%;
+    height: var(--_h);
+  }
+  .gallery-wm-box[data-size="sm"] {
+    --_h: 9rem;
+  }
+  .gallery-wm-box[data-size="lg"] {
+    --_h: 22rem;
+  }
+  .gallery-wm-box > .fa-window,
+  .gallery-wm-fill > .fa-window {
+    width: 100%;
+    height: 100%;
+  }
+  .gallery-wm-fill {
+    width: 100%;
+    height: 100%;
+  }
+
+  .gallery-wm-rows {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .gallery-wm-rows li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-1);
+    box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
+  }
+  .gallery-wm-rows li > :first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .gallery-wm-rows li > :not(:first-child) {
+    color: var(--fg-muted);
+    text-align: end;
+  }
+
+  /* ── Anatomy: numbered parts, matched by the legend ────────────────────── */
+  .gallery-wm-anatomy {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+    gap: var(--space-8);
+    align-items: center;
+  }
+  .gallery-wm-legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: part;
+  }
+  .gallery-wm-legend li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-inline-start: var(--space-8);
+    counter-increment: part;
+  }
+  .gallery-wm-legend li::before,
+  .gallery-wm-annotated :is(.fa-window-icon, .fa-window-heading, .fa-window-actions, .fa-window-controls, .fa-window-body, .fa-window-status-item:first-child, .fa-window-status-meta)::after {
+    display: inline-grid;
+    place-items: center;
+    width: var(--space-5);
+    height: var(--space-5);
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+    color: var(--accent-fg);
+    font-size: var(--type-overline-size);
+    font-weight: var(--weight-bold);
+    line-height: 1;
+  }
+  .gallery-wm-legend li::before {
+    content: counter(part);
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .gallery-wm-annotated :is(.fa-window-icon, .fa-window-heading, .fa-window-actions, .fa-window-controls, .fa-window-body, .fa-window-status-item:first-child, .fa-window-status-meta) {
+    position: relative;
+    overflow: visible;
+  }
+  .gallery-wm-annotated :is(.fa-window-icon, .fa-window-heading, .fa-window-actions, .fa-window-controls, .fa-window-body, .fa-window-status-item:first-child, .fa-window-status-meta)::after {
+    position: absolute;
+    top: calc(var(--space-2) * -1);
+    right: calc(var(--space-2) * -1);
+    z-index: var(--z-raised);
+    pointer-events: none;
+  }
+  .gallery-wm-annotated .fa-window-icon::after {
+    content: "1";
+  }
+  .gallery-wm-annotated .fa-window-heading::after {
+    content: "2";
+    right: auto;
+    left: calc(var(--space-16) * 2);
+  }
+  .gallery-wm-annotated .fa-window-actions::after {
+    content: "3";
+  }
+  .gallery-wm-annotated .fa-window-controls::after {
+    content: "4";
+  }
+  .gallery-wm-annotated .fa-window-body::after {
+    content: "5";
+    top: var(--space-4);
+    right: var(--space-4);
+  }
+  .gallery-wm-annotated .fa-window-status-item:first-child::after {
+    content: "6";
+    top: calc(var(--space-5) * -1);
+    right: auto;
+    left: calc(var(--space-2) * -1);
+  }
+  .gallery-wm-annotated .fa-window-status-meta::after {
+    content: "7";
+    top: calc(var(--space-5) * -1);
+  }
+  .gallery-wm-annotated .fa-window-body {
+    overflow: hidden;
+  }
+  .gallery-wm-annotated {
+    overflow: visible;
+  }
+
+  /* ── States ─────────────────────────────────────────────────────────────── */
+  .gallery-wm-states {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    gap: var(--space-6);
+  }
+  .gallery-wm-states .gallery-example-stage {
+    display: block;
+  }
+  .gallery-wm-dock-stage {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-6) 0;
+  }
+
+  /* ── Snap thumbnails ────────────────────────────────────────────────────── */
+  .gallery-wm-thumb {
+    --_half-gap: var(--space-half);
+    --_inset: var(--space-1);
+    position: relative;
+    box-sizing: content-box;
+    width: 7.5rem;
+    height: 4.5rem;
+    padding: var(--_inset);
+    border-radius: var(--radius-sm);
+    background-color: var(--glass-fill-inset);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    container-type: size;
+  }
+  .gallery-wm-thumb > span {
+    position: absolute;
+    left: calc(var(--_inset) + var(--_fx) * 100cqw + var(--_gl) * var(--_half-gap));
+    top: calc(var(--_inset) + var(--_fy) * 100cqh + var(--_gt) * var(--_half-gap));
+    width: calc(var(--_fw) * 100cqw - (var(--_gl) + var(--_gr)) * var(--_half-gap));
+    height: calc(var(--_fh) * 100cqh - (var(--_gt) + var(--_gb)) * var(--_half-gap));
+    border-radius: var(--radius-xs);
+    background-color: var(--accent-soft);
+    box-shadow: inset 0 0 0 var(--border-width) var(--accent-line);
+  }
+
+  /* ── The live mini workspace ────────────────────────────────────────────── */
+  .gallery-wm-mini {
+    display: flex;
+    flex-direction: column;
+    height: 36rem;
+  }
+  .gallery-wm-mini > .fa-wm-workspace {
+    flex: 1 1 auto;
+  }
+  .gallery-wm-screen {
+    width: 100%;
+    height: 100%;
+    background-color: var(--canvas);
+    background-image:
+      radial-gradient(60% 50% at 50% 65%, var(--ambient-1), transparent 70%),
+      linear-gradient(180deg, var(--ambient-3), var(--ambient-2));
+  }
+  .gallery-wm-terminal {
+    height: 100%;
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    overflow: auto;
+    background-color: var(--canvas);
+    color: var(--fg);
+  }
+
+  /* ── Keyboard table ─────────────────────────────────────────────────────── */
+  .gallery-wm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .gallery-wm-table th {
+    width: 16rem;
+    padding: var(--space-2) var(--space-4) var(--space-2) 0;
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    text-align: start;
+    vertical-align: top;
+  }
+  .gallery-wm-table td {
+    padding: var(--space-2) 0;
+    color: var(--fg-muted);
+  }
+  .gallery-wm-keys {
+    display: inline-flex;
+    gap: var(--space-1);
+  }
+}

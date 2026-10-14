@@ -1,0 +1,567 @@
+/*
+ * GeoMap.
+ *
+ * A fill component (container-type: size): the parent gives it a definite height (R7.3).
+ * The map has no material of its own. Its canvas is transparent, so it sits on the Glass UX
+ * canvas like hero content and the ambient fields show through as the sea; the home region
+ * glows in the data hue. Controls over it use the imagery context (R4.7).
+ *
+ * Component tokens (read by theme.ts for the GL style, by this file for the DOM layer):
+ *   --fa-map-glow          the home region's glow: the data hue (--chart-1), never the brand
+ *   --fa-map-glow-core     the glow's crisp core, pulled toward the ink
+ *   --fa-map-land / -water / -road / -road-major / -boundary / -building   basemap inks
+ *   --fa-map-label / -label-strong / -label-halo                             label text
+ *   --fa-map-fit-padding   room around a framed region or set of points (on the stage)
+ *   --fa-map-fade          the soft edge where the canvas meets the Glass UX canvas
+ *
+ * Tiers (container): the full control set from 16rem tall and 20rem wide; below that the zoom
+ * buttons go (pinch and scroll still zoom) and the attribution shrinks to its ⓘ; under 8rem
+ * tall only the map remains.
+ */
+@layer components {
+  .fa-map {
+    --fa-map-glow: var(--chart-1);
+    --fa-map-glow-core: color-mix(in oklab, var(--chart-1) 70%, var(--fg));
+    --fa-map-land: color-mix(in oklab, var(--chart-1) 30%, var(--fg));
+    --fa-map-water: color-mix(in oklab, var(--chart-1) 28%, var(--canvas));
+    --fa-map-road: var(--fg-subtle);
+    --fa-map-road-major: var(--fg-muted);
+    --fa-map-boundary: var(--fg-subtle);
+    --fa-map-building: var(--fg);
+    --fa-map-label: var(--fg-muted);
+    --fa-map-label-strong: var(--fg);
+    --fa-map-label-halo: var(--canvas);
+    --fa-map-fade: var(--space-8);
+    /* Insets: page chrome floating over a full-bleed map (a header, a status strip), set by the
+       caller (GeoMap's `insets`). Controls, the credits, the list and every frame clear them. */
+    --_in-top: var(--fa-map-inset-top, 0px);
+    --_in-right: var(--fa-map-inset-right, 0px);
+    --_in-bottom: var(--fa-map-inset-bottom, 0px);
+    --_in-left: var(--fa-map-inset-left, 0px);
+    --_label-max: 12rem; /* a marker label truncates past this */
+    --_popup-min: 16rem; /* popups: one width band whatever they hold */
+    --_popup-max: 22rem;
+    --_popup-max-h: 26rem;
+
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    isolation: isolate;
+    container-type: size;
+    border-radius: inherit;
+  }
+
+  /* The fit padding, and on the right the controls column besides: a framed region centres
+     in the open part of the map. The camera (map.tsx) and the silhouette read the same tokens. */
+  .fa-map-stage {
+    --fa-map-fit-padding: var(--space-12);
+    --_controls: calc(var(--control-h-md) + var(--space-3)); /* the controls column and its margin */
+    --fa-map-fit-top: calc(var(--_in-top) + var(--fa-map-fit-padding));
+    --fa-map-fit-right: calc(var(--_in-right) + var(--fa-map-fit-padding) + var(--_controls));
+    --fa-map-fit-bottom: calc(var(--_in-bottom) + var(--fa-map-fit-padding));
+    --fa-map-fit-left: calc(var(--_in-left) + var(--fa-map-fit-padding));
+    position: absolute;
+    inset: 0;
+  }
+  @container (width < 30rem) or (height < 22rem) {
+    .fa-map-stage {
+      --fa-map-fit-padding: var(--space-6);
+    }
+  }
+  @container (width < 12rem) or (height < 8rem) {
+    .fa-map-stage {
+      --fa-map-fit-padding: var(--space-1);
+      --_controls: 0px;
+    }
+  }
+
+  /* ── Loading: the silhouette, then the canvas fades in over it ──────────── */
+  .fa-map-silhouette {
+    position: absolute;
+    top: var(--fa-map-fit-top);
+    left: var(--fa-map-fit-left);
+    width: calc(100% - var(--fa-map-fit-left) - var(--fa-map-fit-right));
+    height: calc(100% - var(--fa-map-fit-top) - var(--fa-map-fit-bottom));
+    overflow: visible;
+    pointer-events: none;
+    transition: opacity var(--duration-slow) var(--ease-standard);
+  }
+  .fa-map-silhouette path {
+    fill: var(--skel-base);
+    stroke: var(--line-strong);
+    stroke-width: var(--border-width-strong);
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .fa-map[data-phase="ready"] .fa-map-silhouette {
+    opacity: 0;
+  }
+  /* The chrome insets are still being measured: hidden (not counted as a layout shift when the
+     frame settles), then it fades in through the opacity transition above. */
+  .fa-map[data-insets="pending"] .fa-map-silhouette {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .fa-map-canvas {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity var(--duration-slower) var(--ease-standard);
+  }
+  .fa-map[data-phase="ready"] .fa-map-canvas {
+    opacity: 1;
+  }
+  .fa-map[data-view="list"] .fa-map-stage {
+    visibility: hidden;
+  }
+
+  /* MapLibre's own DOM (its stylesheet is not loaded: only what the map needs). */
+  .fa-map .maplibregl-map {
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fa-map .maplibregl-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    outline: none;
+    /* The canvas meets the Glass UX canvas with a soft edge, not a cut. Masks are alpha only. */
+    mask-image:
+      linear-gradient(to right, transparent, black var(--fa-map-fade), black calc(100% - var(--fa-map-fade)), transparent),
+      linear-gradient(to bottom, transparent, black var(--fa-map-fade), black calc(100% - var(--fa-map-fade)), transparent);
+    mask-composite: intersect;
+  }
+  .fa-map .maplibregl-canvas-container.maplibregl-interactive {
+    cursor: grab;
+    user-select: none;
+  }
+  .fa-map .maplibregl-canvas-container.maplibregl-interactive:active {
+    cursor: grabbing;
+  }
+  .fa-map .maplibregl-canvas-container.maplibregl-touch-zoom-rotate,
+  .fa-map .maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas {
+    touch-action: pan-x pan-y;
+  }
+  .fa-map .maplibregl-canvas-container.maplibregl-touch-drag-pan,
+  .fa-map .maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas {
+    touch-action: pinch-zoom;
+  }
+  .fa-map .maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,
+  .fa-map .maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas {
+    touch-action: none;
+  }
+  .fa-map .maplibregl-marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+  }
+  .fa-map .maplibregl-popup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: var(--z-raised);
+    display: flex;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .fa-map .maplibregl-popup-tip {
+    display: none;
+  }
+  .fa-map .maplibregl-popup-content {
+    pointer-events: auto;
+  }
+  .fa-map .maplibregl-boxzoom {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    background: var(--accent-soft);
+    border: var(--border-width) solid var(--accent-line);
+  }
+
+  /* ── Markers ─────────────────────────────────────────────────────────────── */
+  .fa-map-marker-host {
+    z-index: var(--z-raised);
+  }
+  .fa-map-marker-host:has([data-open], [data-selected], :focus-visible) {
+    z-index: calc(var(--z-raised) + 1);
+  }
+
+  .fa-map-marker {
+    --_dot: 0.875rem; /* a site's dot */
+    --_ring: 0.25rem; /* the status ring around it */
+    --_status: var(--fg-subtle);
+    --_status-soft: color-mix(in oklab, var(--_status) 30%, transparent);
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-full);
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    cursor: pointer;
+    outline: none;
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+  .fa-map-marker[data-status="healthy"] {
+    --_status: var(--success);
+  }
+  .fa-map-marker[data-status="warning"] {
+    --_status: var(--warning);
+  }
+  .fa-map-marker[data-status="danger"] {
+    --_status: var(--danger);
+  }
+  .fa-map-marker:hover,
+  .fa-map-marker[data-open] {
+    transform: scale(1.12);
+  }
+  .fa-map-marker:focus-visible {
+    box-shadow:
+      0 0 0 var(--focus-ring-offset) var(--canvas),
+      0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--accent-ring);
+  }
+
+  /* A site: its status as a dot with a ring, and the selection as an accent halo. */
+  .fa-map-dot {
+    width: var(--_dot);
+    height: var(--_dot);
+    margin: var(--_ring);
+    border-radius: var(--radius-full);
+    background-color: var(--_status);
+    box-shadow:
+      0 0 0 var(--border-width-strong) var(--surface-3),
+      0 0 0 var(--_ring) var(--_status-soft);
+  }
+  .fa-map-marker[data-selected] .fa-map-dot {
+    box-shadow:
+      0 0 0 var(--border-width-strong) var(--surface-3),
+      0 0 0 var(--_ring) var(--accent),
+      0 0 var(--space-3) var(--accent-glow);
+  }
+
+  .fa-map-marker-label {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    display: none;
+    max-width: var(--_label-max);
+    overflow: hidden;
+    padding-inline-start: var(--space-1);
+    transform: translateY(-50%);
+    color: var(--fg);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    pointer-events: none;
+    text-shadow:
+      0 0 var(--border-width) var(--halo-colour),
+      0 0 var(--space-1) var(--halo-colour),
+      0 0 var(--space-3) var(--halo-colour);
+  }
+  .fa-map[data-labels] .fa-map-marker-label,
+  .fa-map-marker[data-selected] .fa-map-marker-label {
+    display: block;
+  }
+
+  /* A cluster: its count on a disc, its statuses as a segmented ring. */
+  .fa-map-cluster {
+    --_size: 2.25rem; /* a small cluster; md and lg step up with the count */
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: var(--_size);
+    height: var(--_size);
+    border-radius: var(--radius-full);
+    background-color: color-mix(in oklab, var(--surface-3) 88%, transparent);
+    box-shadow: var(--shadow-1);
+  }
+  .fa-map-marker[data-size="md"] .fa-map-cluster {
+    --_size: 2.625rem;
+  }
+  .fa-map-marker[data-size="lg"] .fa-map-cluster {
+    --_size: 3rem;
+  }
+  .fa-map-marker[data-selected] .fa-map-cluster {
+    box-shadow:
+      var(--shadow-1),
+      0 0 0 var(--focus-ring-width) var(--accent);
+  }
+  .fa-map-ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .fa-map-ring path {
+    fill: none;
+    stroke: var(--fg-subtle);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+  }
+  .fa-map-ring path[data-status="healthy"] {
+    stroke: var(--success);
+  }
+  .fa-map-ring path[data-status="warning"] {
+    stroke: var(--warning);
+  }
+  .fa-map-ring path[data-status="danger"] {
+    stroke: var(--danger);
+  }
+  .fa-map-cluster-count {
+    position: relative;
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* A live status change: one pulse in the new status's colour (stopped by the motion switch). */
+  .fa-map-pulse {
+    --_pulse: color-mix(in oklab, var(--_status) 70%, transparent);
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    pointer-events: none;
+    animation: fa-pulse-ring calc(var(--duration-slower) * 2) var(--ease-standard) 3;
+  }
+
+  /* ── Popup ───────────────────────────────────────────────────────────────── */
+  .fa-map-popup {
+    position: relative;
+    min-width: min(var(--_popup-min), calc(100cqw - var(--space-6)));
+    max-width: min(var(--_popup-max), calc(100cqw - var(--space-6)));
+    max-height: min(var(--_popup-max-h), calc(100cqh - var(--space-12)));
+    padding: var(--space-3);
+  }
+  .fa-map-popup[data-pinned] {
+    padding-inline-end: var(--space-8);
+  }
+  .fa-map-popup:focus-visible {
+    outline: none;
+  }
+  .fa-map-popup-close {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+  }
+  .fa-map-popup-title {
+    color: var(--fg);
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--type-subtitle-weight);
+    letter-spacing: var(--type-subtitle-tracking);
+  }
+  .fa-map-popup-more {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-map-cluster-popup {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  .fa-map-cluster-list {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    margin-inline: calc(var(--space-2) * -1);
+  }
+  .fa-map-cluster-item {
+    width: 100%;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: start;
+  }
+  .fa-map-cluster-item-trail {
+    max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fa-map-menu-dot {
+    flex: none;
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--fg-subtle);
+  }
+  .fa-map-menu-dot[data-status="healthy"] {
+    background-color: var(--success);
+  }
+  .fa-map-menu-dot[data-status="warning"] {
+    background-color: var(--warning);
+  }
+  .fa-map-menu-dot[data-status="danger"] {
+    background-color: var(--danger);
+  }
+
+  .fa-map-status-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-map-status-summary li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+  }
+  .fa-map-status-count {
+    color: var(--fg);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Controls ────────────────────────────────────────────────────────────── */
+  .fa-map-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: calc(var(--z-raised) + 2);
+    pointer-events: none;
+    text-shadow: none;
+  }
+  .fa-map-overlay > * {
+    pointer-events: auto;
+  }
+  .fa-map-controls {
+    position: absolute;
+    top: calc(var(--_in-top) + var(--space-3));
+    right: calc(var(--_in-right) + var(--space-3));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  /* Top left: clear of the controls (top right) and the attribution (bottom right). */
+  .fa-map-outside {
+    position: absolute;
+    top: calc(var(--_in-top) + var(--space-3));
+    left: calc(var(--_in-left) + var(--space-3));
+    max-width: calc(100% - var(--_in-left) - var(--_in-right) - var(--control-h-md) - var(--space-3) * 3);
+  }
+  .fa-map-attribution {
+    position: absolute;
+    right: calc(var(--_in-right) + var(--space-2));
+    bottom: calc(var(--_in-bottom) + var(--space-2));
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-map-attribution-text {
+    display: flex;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition-property: opacity, visibility;
+    transition-duration: var(--duration-slow);
+    transition-timing-function: var(--ease-standard);
+  }
+  /* Collapsed after a few seconds or the first interaction (map.tsx, docs/map.md): ⓘ stays. */
+  .fa-map-attribution[data-collapsed] .fa-map-attribution-text {
+    position: absolute;
+    right: 100%;
+    opacity: 0;
+    visibility: hidden;
+  }
+  /* The minimal forms only show in a small map. */
+  .fa-map-credit {
+    white-space: pre;
+  }
+  .fa-map-credit-minimal {
+    display: none;
+  }
+  .fa-map-attribution-text a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .fa-map-attribution-text a:hover {
+    color: var(--fg);
+    text-decoration: underline;
+  }
+  .fa-map-credits {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-map-credits a {
+    color: var(--accent-text);
+  }
+  .fa-map-credit-licence {
+    color: var(--fg-muted);
+  }
+
+  @container (height < 16rem) or (width < 20rem) {
+    .fa-map-controls [data-map-control="zoom-in"],
+    .fa-map-controls [data-map-control="zoom-out"],
+    .fa-map-credit:not([data-minimal]),
+    .fa-map-credit-short {
+      display: none;
+    }
+    .fa-map-credit-minimal {
+      display: inline;
+    }
+    .fa-map-controls {
+      top: calc(var(--_in-top) + var(--space-2));
+      right: calc(var(--_in-right) + var(--space-2));
+    }
+  }
+  /* A row-sized map: no controls; the credits as everywhere else. */
+  @container (height < 8rem) {
+    .fa-map-controls,
+    .fa-map-outside {
+      display: none;
+    }
+    .fa-map-attribution {
+      right: calc(var(--_in-right) + var(--space-1));
+      bottom: calc(var(--_in-bottom) + var(--space-half));
+    }
+  }
+
+  /* ── List view and failure ───────────────────────────────────────────────── */
+  /* The list is page content: a card (no blur, so it can sit in a panel too). */
+  .fa-map-list {
+    position: absolute;
+    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: var(--radius-surface);
+  }
+  .fa-map-failed {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    text-align: center;
+  }
+}

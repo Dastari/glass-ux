@@ -1,0 +1,152 @@
+import { ContainerLab, Example, Matrix, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconColumns, IconGrid, IconList, IconRemoteControl, IconTerminal, IconViewOnly } from "glass-ux/icons";
+
+import { Field, type ChoiceTone } from "glass-ux/field";
+
+import { Segmented, type SegmentedOption } from "glass-ux/segmented";
+
+const ENABLED: SegmentedOption[] = [
+    { value: "enabled", label: "Enabled" },
+    { value: "disabled", label: "Disabled" },
+];
+
+const VIEWS: SegmentedOption[] = [
+    { value: "list", label: "List", icon: <IconList /> },
+    { value: "grid", label: "Grid", icon: <IconGrid /> },
+    { value: "columns", label: "Columns", icon: <IconColumns /> },
+];
+
+const SESSIONS: SegmentedOption[] = [
+    { value: "control", label: "Control", icon: <IconRemoteControl /> },
+    { value: "view", label: "View only", icon: <IconViewOnly /> },
+    { value: "shell", label: "Shell", icon: <IconTerminal /> },
+];
+
+const RANGES: SegmentedOption[] = [
+    { value: "1h", label: "1 hour" },
+    { value: "24h", label: "24 hours" },
+    { value: "7d", label: "7 days" },
+    { value: "30d", label: "30 days" },
+    { value: "90d", label: "90 days" },
+];
+
+const MODULES: SegmentedOption[] = [
+    { value: "rmm", label: "RMM" },
+    { value: "psa", label: "PSA" },
+    { value: "chat", label: "CHAT" },
+];
+
+const TONES: ChoiceTone[] = ["accent", "success", "warning", "danger"];
+
+/** Stepped boxes for the collapse ladder: every label, icons only, the menu. */
+const LADDER = [
+    { width: "w-90", label: "360 px" },
+    { width: "w-40", label: "160 px" },
+    { width: "w-20", label: "80 px" },
+];
+
+export default function SegmentedSection() {
+    return (<SectionPage>
+      <Specimen title="Variants" description="Text, icon and text, icons only (each segment keeps its name for screen readers and as a tooltip). Click to watch the pill slide.">
+        <Example label="Text">
+          <Segmented options={ENABLED} defaultValue="enabled" aria-label="Remote control"/>
+        </Example>
+        <Example label="Icon and text">
+          <Segmented options={SESSIONS} defaultValue="control" aria-label="Session"/>
+        </Example>
+        <Example label="Icons only">
+          <Segmented options={VIEWS} defaultValue="grid" iconOnly aria-label="View"/>
+        </Example>
+      </Specimen>
+
+      <Specimen title="Sizes" description="sm 32 · md 40 · lg 48 — the same heights as Button and the fields, so it lines up in a toolbar or a form row.">
+        <Matrix columns={["Text", "Icons"]} rows={(["sm", "md", "lg"] as const).map((size) => ({
+            label: size,
+            cells: [
+                <Segmented key="a" size={size} options={ENABLED} defaultValue="enabled" aria-label={`Remote control ${size}`}/>,
+                <Segmented key="b" size={size} options={VIEWS} iconOnly defaultValue="list" aria-label={`View ${size}`}/>,
+            ],
+        }))}/>
+      </Specimen>
+
+      <Specimen title="Tones" description="The chosen pill takes the tone. Status tones only when the modes are statuses.">
+        <Matrix columns={["Chosen"]} rows={TONES.map((tone) => ({
+            label: tone,
+            cells: [<Segmented key="a" tone={tone} options={ENABLED} defaultValue="enabled" aria-label={`${tone} mode`}/>],
+        }))}/>
+      </Specimen>
+
+      <Specimen title="States" layout="stack">
+        <Example label="Full width (segments share the width)">
+          <div className="w-full max-w-md">
+            <Segmented block options={RANGES} defaultValue="24h" aria-label="Range"/>
+          </div>
+        </Example>
+        <Example label="Disabled">
+          <Segmented options={ENABLED} defaultValue="disabled" disabled aria-label="Remote control (disabled)"/>
+        </Example>
+        <Example label="In a field, invalid">
+          <div className="w-full max-w-xs">
+            <Field label="Remote control" nativeLabel={false} error="Choose whether technicians can take control">
+              <Segmented block invalid options={ENABLED} aria-label="Remote control"/>
+            </Field>
+          </div>
+        </Example>
+      </Specimen>
+
+      <Specimen title="Full → collapsed" description="Measured against its box (R7): every label while they fit, then icons only when every option has one, then one menu button showing the chosen option. The menu lists the options with a check on the chosen one; the value and the group's name are the same in every form." layout="stack" wide>
+        {LADDER.map((step) => (<Example key={step.label} label={`${step.label} · with icons, then text only`}>
+            <div className="flex flex-col gap-3">
+              <div className={step.width}>
+                <Segmented options={SESSIONS} defaultValue="view" aria-label={`Session (${step.label})`}/>
+              </div>
+              <div className={step.width}>
+                <Segmented size="sm" options={MODULES} defaultValue="rmm" aria-label={`Module (${step.label})`}/>
+              </div>
+            </div>
+          </Example>))}
+        <Example label={'Forced by the host: the top bar on a phone (collapse="menu")'}>
+          <Segmented size="sm" collapse="menu" options={MODULES} defaultValue="psa" aria-label="Module (phone top bar)"/>
+        </Example>
+        <Example label={'collapse="none": scrolls inside the track instead'}>
+          <div className="w-50">
+            <Segmented collapse="none" options={RANGES} defaultValue="7d" aria-label="Range (scrolls)"/>
+          </div>
+        </Example>
+      </Specimen>
+
+      <Specimen title="Narrow boxes" description="When labels do not fit, segments with icons drop to icons; text-only segments become the menu. Drag the free frame in the container lab to watch it switch.">
+        <Example label="200 px, with icons">
+          <div className="w-50">
+            <Segmented options={SESSIONS} defaultValue="view" aria-label="Session (narrow)"/>
+          </div>
+        </Example>
+        <Example label="200 px, text only">
+          <div className="w-50">
+            <Segmented options={RANGES} defaultValue="7d" aria-label="Range (narrow)"/>
+          </div>
+        </Example>
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <Segmented options={ENABLED} defaultValue="enabled" aria-label="Over imagery"/>
+        <Segmented options={VIEWS} iconOnly defaultValue="columns" aria-label="View over imagery"/>
+      </Specimen>
+
+      <ContainerLab description="Full in the pane; in the tile and the tall-narrow column the session modes drop to icons and the five ranges fold to their menu. Drag the free frame to walk the ladder: full → icons → menu.">
+        {(preset) => preset?.id === "row" || preset?.id === "header" ? (<div className="flex h-full items-center gap-2 px-2">
+              <Segmented size="sm" options={MODULES} defaultValue="rmm" aria-label="Module"/>
+              <Segmented size="sm" options={SESSIONS} defaultValue="control" aria-label="Session"/>
+            </div>) : (<div className="flex flex-col gap-3 p-3">
+              <Segmented block options={ENABLED} defaultValue="enabled" aria-label="Remote control"/>
+              <Segmented options={SESSIONS} defaultValue="view" aria-label="Session"/>
+              <Segmented options={RANGES} defaultValue="24h" aria-label="Range"/>
+            </div>)}
+      </ContainerLab>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

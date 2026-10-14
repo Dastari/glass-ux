@@ -1,0 +1,56 @@
+/*
+ * Identity colours — the tints of organisation and person avatars (OrgAvatar, Avatar).
+ *
+ * Identity is not data and not status, so it has its own eight hues. They derive from the
+ * palette's data hue (--chart-h) like the data colours, at fixed offsets in a different order,
+ * so an avatar never wears the hue of the chart series in the same slot beside it. A tile is
+ * soft: light and low in chroma in light mode, deep in dark mode, with initials in --fg.
+ *
+ *   slot N     oklch(tier lightness, --identity-c, --chart-h + --identity-offset-N)
+ *   tiers      --identity-l-a (lighter) / --identity-l-b (deeper), chosen per slot so the
+ *              closest hues differ in lightness
+ *   With the default hue the order reads violet · blue · orchid · cyan · lime · rose ·
+ *   apricot · teal. Slots 1–5 stay ≥ 25° from every status hue (danger, warning, success);
+ *   no slot comes within 25° of danger, so no organisation is red (R3.8).
+ *
+ * src/styles/identity.test.ts parses this file and proves, for every palette in both modes:
+ * initials (--fg) ≥ 4.5:1 on every tile, every pair of tiles ΔE ≥ 6, slot N ≥ 30° from
+ * chart slot N, and the status rules.
+ *
+ * Assign a slot by a stable hash of the organisation or person, never by list position.
+ */
+@layer base {
+  :root,
+  [data-mode],
+  [data-palette] {
+    --identity-offset-1: 35;
+    --identity-offset-2: 355;
+    --identity-offset-3: 80;
+    --identity-offset-4: 315;
+    --identity-offset-5: 225;
+    --identity-offset-6: 105;
+    --identity-offset-7: 165;
+    --identity-offset-8: 285;
+
+    --identity-1: oklch(var(--identity-l-b) var(--identity-c) calc(var(--chart-h) + var(--identity-offset-1)));
+    --identity-2: oklch(var(--identity-l-a) var(--identity-c) calc(var(--chart-h) + var(--identity-offset-2)));
+    --identity-3: oklch(var(--identity-l-a) var(--identity-c) calc(var(--chart-h) + var(--identity-offset-3)));
+    --identity-4: oklch(var(--identity-l-b) var(--identity-c) calc(var(--chart-h) + var(--identity-offset-4)));
+    --identity-5: oklch(var(--identity-l-b) var(--identity-c) calc(var(--chart-h) + var(--identity-offset-5)));
+    --identity-6: oklch(var(--identity-l-b) var(--identity-c) calc(var(--chart-h) + var(--identity-offset-6)));
+    --identity-7: oklch(var(--identity-l-a) var(--identity-c) calc(var(--chart-h) + var(--identity-offset-7)));
+    --identity-8: oklch(var(--identity-l-a) var(--identity-c) calc(var(--chart-h) + var(--identity-offset-8)));
+  }
+  /* Plain numbers per mode: they inherit from the nearest data-mode (see data.css). */
+  :root,
+  [data-mode="light"] {
+    --identity-l-a: 0.9;
+    --identity-l-b: 0.8;
+    --identity-c: 0.08;
+  }
+  [data-mode="dark"] {
+    --identity-l-a: 0.43;
+    --identity-l-b: 0.33;
+    --identity-c: 0.09;
+  }
+}

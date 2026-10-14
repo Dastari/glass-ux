@@ -1,0 +1,107 @@
+/*
+ * TabBar — the phone's floating glass pill (glass-chrome). Each tab is an icon over a
+ * tiny label; the active tab's icon sits on an accent-soft capsule. Condensed (while
+ * content scrolls down) the labels fold away and the pill tightens.
+ *
+ * Component tokens
+ *   --_capsule-w / --_capsule-h   the active capsule behind the icon
+ */
+@layer components {
+  .fa-tabbar {
+    --_capsule-w: 3.25rem;
+    --_capsule-h: var(--control-h-sm);
+    display: flex;
+    max-width: 100%;
+    padding: var(--space-1-5) var(--space-2);
+    border-radius: var(--radius-full);
+    transition: padding var(--duration-base) var(--ease-standard);
+  }
+  .fa-tabbar-list {
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-tabbar-entry {
+    display: flex;
+  }
+  .fa-tabbar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-half);
+    min-width: var(--target-min);
+    min-height: var(--target-min);
+    padding: 0 var(--space-1-5);
+    border: 0;
+    border-radius: var(--radius-full);
+    background-color: transparent;
+    color: var(--fg-muted);
+    font: inherit;
+    text-decoration: none;
+  }
+  .fa-tabbar-icon {
+    display: grid;
+    place-items: center;
+    width: var(--_capsule-w);
+    height: var(--_capsule-h);
+    border-radius: var(--radius-full);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-tabbar-icon > svg {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+  .fa-tabbar-label {
+    max-height: var(--type-overline-line);
+    overflow: hidden;
+    font-size: var(--type-overline-size);
+    line-height: var(--type-overline-line);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    transition-property: max-height, opacity;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-tabbar-item[data-active] {
+    color: var(--accent-text);
+  }
+  .fa-tabbar-item[data-active] .fa-tabbar-icon {
+    background-color: var(--accent-soft);
+  }
+  .fa-tabbar-item:hover:not([data-active]) .fa-tabbar-icon {
+    background-color: var(--fill-hover);
+  }
+
+  .fa-tabbar[data-condensed] {
+    padding-block: var(--space-1);
+  }
+  .fa-tabbar[data-condensed] .fa-tabbar-label {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  /* ── More (rows inside a bottom Sheet) ─────────────────────────────────── */
+  .fa-tabbar-more-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-tabbar-more-section {
+    padding-block-end: var(--space-2);
+  }
+  .fa-tabbar-more-item {
+    width: 100%;
+    border: 0;
+    background-color: transparent;
+    font: inherit;
+    text-align: start;
+    text-decoration: none;
+  }
+}

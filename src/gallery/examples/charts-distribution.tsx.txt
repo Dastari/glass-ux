@@ -1,0 +1,115 @@
+import { ContainerLab, Rules, SectionPage, Specimen, TierBox, TierRow, TokenTable } from "glass-ux/gallery/kit"
+import { Heatmap, Histogram, ScatterChart, type HeatmapProps, type HistogramProps, type ScatterChartProps } from "glass-ux/charts"
+import { ALERT_CATEGORIES, ALERT_HOURS, ALERTS, FLEET, LATENCIES } from "glass-ux/gallery/sections/charts.fixtures"
+import { SkeletonSwaps } from "glass-ux/gallery/sections/charts.kit"
+
+const alerts: HeatmapProps = {
+  label: "Alerts per hour by category · last 24 hours",
+  title: "Alerts per hour",
+  rows: ALERT_CATEGORIES,
+  columns: ALERT_HOURS,
+  values: ALERTS,
+  unit: "alerts",
+  rowLabel: "Category",
+  columnLabel: "Hour",
+}
+
+const latency: HistogramProps = {
+  label: "Agent check-in latency across the fleet · last hour",
+  title: "Check-in latency",
+  values: LATENCIES,
+  bins: 14,
+  unit: "ms",
+  countLabel: "Check-ins",
+}
+
+const fleet: ScatterChartProps = {
+  label: "CPU against memory per endpoint, by organisation",
+  title: "CPU and memory",
+  series: FLEET.map((org) => ({ key: org.key, label: org.label, points: org.points })),
+  x: { label: "CPU", unit: "%", domain: [0, 100] },
+  y: { label: "Memory", unit: "%", domain: [0, 100] },
+}
+
+export default function ChartsDistributionSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Heatmap, three tiers"
+        description="Alerts per hour by category. One hue in five steps, zero as the empty track. In a row, each hour's total as one strip; in a pane, labels, the step key and a cell tooltip (arrow keys move in two dimensions)."
+        wide
+      >
+        <TierRow testId="heatmap-alerts">{() => <Heatmap {...alerts} />}</TierRow>
+      </Specimen>
+
+      <Specimen title="Histogram" description="Check-in latency across the fleet: bins touch, the axis labels their edges, and the slow tail stays visible." wide>
+        <TierRow testId="histogram-latency">{() => <Histogram {...latency} />}</TierRow>
+      </Specimen>
+
+      <Specimen title="Scatter" description="CPU against memory per endpoint. Three series at most, because any two dots can sit side by side. The pointer only has to be nearest." wide>
+        <div className="charts-pane" data-testid="scatter-fleet">
+          <ScatterChart {...fleet} />
+        </div>
+        <TierRow testId="scatter-tiers">{() => <ScatterChart {...fleet} />}</TierRow>
+      </Specimen>
+
+      <Specimen title="Loading, empty and error" wide>
+        <SkeletonSwaps id="heatmap" render={(state) => <Heatmap {...alerts} state={state} />} />
+        <div className="gallery-tiers">
+          <TierBox size="compact" label="histogram loading">
+            <Histogram {...latency} state="loading" />
+          </TierBox>
+          <TierBox size="compact" label="empty">
+            <ScatterChart {...fleet} state="empty" emptyText="No endpoints match the filter" />
+          </TierBox>
+          <TierBox size="full" label="error">
+            <Heatmap {...alerts} state="error" errorText="Couldn’t load alerts — retry in a moment" onRetry={() => undefined} />
+          </TierBox>
+        </div>
+      </Specimen>
+
+      <Specimen title="Over imagery" backdrop>
+        <TierBox size="compact" label="heatmap">
+          <Heatmap {...alerts} />
+        </TierBox>
+        <TierBox size="compact" label="scatter">
+          <ScatterChart {...fleet} />
+        </TierBox>
+      </Specimen>
+
+      <ContainerLab description="A strip of hourly totals in the row and header; the grid everywhere else, with labels in the pane.">
+        {() => <Heatmap {...alerts} />}
+      </ContainerLab>
+
+      <ContainerLab title="Container lab — scatter" description="Dots alone in the row and header; axes and legend in the pane.">
+        {() => <ScatterChart {...fleet} />}
+      </ContainerLab>
+
+      <Rules
+        do={[
+          "Use one hue for magnitude; more is stronger.",
+          "Keep zero as the empty track so quiet reads as quiet.",
+          "Name both axes of a scatter.",
+          "Fold a fourth scatter series into “Other” or facet it.",
+        ]}
+        dont={[
+          "Use a rainbow ramp or status colours for magnitude.",
+          "Use more than seven steps; neighbours blur.",
+          "Leave gaps between histogram bins beyond the surface gap.",
+          "Make the reader land on a dot; nearest wins.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--chart-1", "Heat ramp hue, histogram bins"],
+          ["--chart-track", "Empty heat cell"],
+          ["--chart-tile-radius", "Cell corners"],
+          ["--chart-dot", "Scatter dots"],
+          ["--surface-3", "Dot ring"],
+          ["--line", "No-data cell outline"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

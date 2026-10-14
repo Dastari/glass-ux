@@ -1,0 +1,106 @@
+/*
+ * Rail — L1 navigation as an icon column directly on the canvas. Items are square
+ * targets: hover is a fill-hover tile, the current section an accent-soft tile with an
+ * accent icon. Icons are navigation size (lg, R19.2).
+ *
+ * Component tokens
+ *   --_size   an item's square (the touch-target minimum, so it is never too small)
+ */
+@layer components {
+  .fa-shell-rail {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .fa-shell-rail-list {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-height: 0;
+    margin: 0;
+    padding: var(--space-1) 0 var(--space-1);
+    overflow-y: auto;
+    scrollbar-width: none;
+    list-style: none;
+  }
+  .fa-shell-rail-entry {
+    display: flex;
+    flex: none;
+  }
+  .fa-shell-rail-spacer {
+    flex: 1 1 auto;
+  }
+  .fa-shell-rail-item {
+    --_size: var(--target-min);
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: var(--_size);
+    height: var(--_size);
+    border: 0;
+    border-radius: var(--radius-control);
+    background-color: transparent;
+    color: var(--fg-muted);
+  }
+  .fa-shell-rail-item > svg {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+  .fa-shell-rail-item:hover {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  /* A count on the icon's corner: CountBadge overlay (solid, with a ring). */
+  .fa-shell-rail-item > .fa-count[data-overlay] {
+    position: absolute;
+    inset-block-start: var(--space-half);
+    inset-inline-end: var(--space-half);
+  }
+  /* Disabled with a reason: still focusable and hoverable, so the tooltip can say why. */
+  .fa-shell-rail-item[data-disabled] {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+  }
+  .fa-shell-rail-item[data-disabled]:hover {
+    background-color: transparent;
+    color: var(--fg-muted);
+  }
+  .fa-shell-rail-item[data-active] {
+    background-color: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  .fa-shell-rail-item[data-active]:hover {
+    background-color: var(--accent-soft-hover);
+  }
+
+  /* The product mark over the rail, in the top-left corner. */
+  .fa-shell-mark {
+    --_size: var(--target-min);
+    display: inline-grid;
+    place-items: center;
+    width: var(--_size);
+    height: var(--_size);
+    border-radius: var(--radius-control);
+  }
+  .fa-shell-mark > :is(img, svg) {
+    width: var(--icon-2xl);
+    height: var(--icon-2xl);
+  }
+  .fa-shell-mark:hover {
+    background-color: var(--fill-hover);
+  }
+
+  /* Tooltip content: a label and its keys on one line. */
+  .fa-shell-tip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .fa-shell-keys {
+    display: inline-flex;
+    gap: var(--space-half);
+  }
+}

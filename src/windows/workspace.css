@@ -1,0 +1,277 @@
+/*
+ * Workspace — the stage windows live on, the split handles between tiled columns, and
+ * the snap bar and preview shown while dragging.
+ *
+ * Geometry is container-unit maths against the stage (container: workspace / size):
+ *   frac   --_fx --_fy --_fw --_fh are fractions of the stage; --_g[lrtb] are 1 on
+ *          interior edges, where the window gives up half a panel gap
+ *   free   --_x --_y --_w --_h are unitless CSS pixels, clamped inside the stage
+ *   sheet  phones: the window covers the screen
+ * Tiled columns read the stage's dividers (--_d0 … --_dN), so dragging a split handle
+ * rewrites one variable on the stage and every column follows without React.
+ *
+ * Component tokens
+ *   --_px        one CSS pixel, to turn unitless geometry into lengths
+ *   --_half-gap  half the panel gap, given up on interior edges
+ *   --_z-*       stacking inside the stage (an isolated context): tiled windows sit at 1,
+ *                floating ones at 10 + their rank, then handles, preview, drag, snap bar
+ */
+@layer components {
+  .fa-wm-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-panels);
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .fa-wm-workspace-stage {
+    --_px: 1px;
+    --_half-gap: calc(var(--gap-panels) / 2);
+    --_z-handle: 5;
+    --_z-preview: 9998;
+    --_z-drag: 9999;
+    --_z-bar: 10000;
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    column-gap: var(--gap-panels);
+    container: workspace / size;
+    isolation: isolate;
+  }
+
+  .fa-wm-window {
+    position: absolute;
+    z-index: var(--_z, 1);
+  }
+  /* Paint containment, with the size and layout containment the frame already has as a
+     size container, makes every window a relayout boundary: a change inside it (a table
+     row mounting, a live value) lays out that window, not the shell around it. The clip
+     margin keeps shadows and focus rings that reach past the edge; where the margin is not
+     supported the window keeps painting freely (docs/performance.md). */
+  @supports (overflow-clip-margin: 1px) {
+    .fa-wm-window {
+      contain: paint;
+      overflow-clip-margin: var(--space-6);
+    }
+  }
+  .fa-wm-window[data-geometry="frac"],
+  .fa-wm-snap-preview {
+    left: calc(var(--_fx) * 100cqw + var(--_gl) * var(--_half-gap));
+    top: calc(var(--_fy) * 100cqh + var(--_gt) * var(--_half-gap));
+    width: calc(var(--_fw) * 100cqw - (var(--_gl) + var(--_gr)) * var(--_half-gap));
+    height: calc(var(--_fh) * 100cqh - (var(--_gt) + var(--_gb)) * var(--_half-gap));
+  }
+  .fa-wm-window[data-geometry="free"] {
+    --_fw-px: min(calc(var(--_w) * var(--_px)), 100cqw);
+    --_fh-px: min(calc(var(--_h) * var(--_px)), 100cqh);
+    left: clamp(0px, calc(var(--_x) * var(--_px)), calc(100cqw - var(--_fw-px)));
+    top: clamp(0px, calc(var(--_y) * var(--_px)), calc(100cqh - var(--_fh-px)));
+    width: var(--_fw-px);
+    height: var(--_fh-px);
+  }
+
+  /* Geometry animates between states (open, tile, snap, maximise) once laid out. */
+  .fa-wm-workspace-stage[data-ready] .fa-wm-window {
+    transition-property: left, top, width, height, opacity, transform, translate, visibility, box-shadow;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-standard);
+  }
+  @starting-style {
+    .fa-wm-workspace-stage[data-ready] .fa-wm-window {
+      opacity: 0;
+      transform: scale(var(--overlay-enter-scale));
+    }
+  }
+  .fa-wm-workspace-stage[data-splitting] .fa-wm-window,
+  .fa-wm-window:is([data-dragging], [data-resizing]) {
+    transition-property: box-shadow;
+  }
+  .fa-wm-workspace-stage[data-splitting] {
+    cursor: col-resize;
+    user-select: none;
+  }
+
+  /* The drag writes `translate` on the frame once per frame (managed-window.tsx): own
+     compositor layer for the gesture only, no inherited variables, no layout or repaint. */
+  .fa-wm-window[data-dragging] {
+    z-index: var(--_z-drag);
+    will-change: translate;
+  }
+  .fa-wm-window[data-dragging] .fa-window-appbar {
+    cursor: grabbing;
+  }
+  :root[data-window-dragging] {
+    user-select: none;
+  }
+
+  /* Minimised: still mounted (state kept) but hidden, inert and quiet. */
+  .fa-wm-window:is([data-minimised], [data-hidden]) {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(var(--space-6)) scale(var(--overlay-enter-scale));
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-exit);
+  }
+
+  /* The routed view inside the primary window. Only it cross-fades between routes. */
+  .fa-window-view {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  /* ── Split handles between tiled columns ───────────────────────────────── */
+  .fa-wm-split-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--_d) * 100cqw - var(--_half-gap));
+    z-index: var(--_z-handle);
+    display: grid;
+    place-items: center;
+    width: var(--gap-panels);
+    cursor: col-resize;
+    touch-action: none;
+    outline: none;
+  }
+  .fa-wm-split-grip {
+    --_grip-h: var(--space-10);
+    width: var(--space-1);
+    height: var(--_grip-h);
+    border-radius: var(--radius-full);
+    background-color: var(--line-strong);
+    opacity: 0;
+    transition-property: opacity, background-color, height;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-wm-split-handle:hover .fa-wm-split-grip {
+    opacity: 1;
+  }
+  .fa-wm-split-handle[data-active] .fa-wm-split-grip,
+  .fa-wm-split-handle:focus-visible .fa-wm-split-grip {
+    --_grip-h: var(--space-16);
+    opacity: 1;
+    background-color: var(--accent);
+  }
+  .fa-wm-split-handle:focus-visible .fa-wm-split-grip {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* ── Snapping ──────────────────────────────────────────────────────────── */
+  .fa-wm-snap-preview {
+    position: absolute;
+    z-index: var(--_z-preview);
+    border-radius: var(--radius-surface);
+    background-color: var(--accent-soft);
+    box-shadow: inset 0 0 0 var(--border-width-strong) var(--accent-line);
+    opacity: 0;
+    pointer-events: none;
+    transition-property: left, top, width, height, opacity;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-wm-snap-preview[data-visible] {
+    opacity: 1;
+  }
+
+  .fa-wm-snap-bar {
+    --_pad: var(--space-2);
+    position: absolute;
+    top: var(--space-3);
+    left: 50%;
+    z-index: var(--_z-bar);
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--_pad);
+    border-radius: calc(var(--radius-sm) + var(--_pad));
+    translate: -50% 0;
+    pointer-events: none;
+    transition-property: opacity, transform;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-enter);
+  }
+  @starting-style {
+    .fa-wm-snap-bar {
+      opacity: 0;
+      transform: translateY(calc(var(--overlay-enter-shift) * -1)) scale(var(--overlay-enter-scale));
+    }
+  }
+  .fa-wm-snap-layout {
+    --_half-gap: var(--space-half);
+    --_w: 4.5rem; /* a thumbnail of the workspace */
+    --_h: 2.75rem;
+    --_inset: var(--space-1);
+    position: relative;
+    box-sizing: content-box;
+    width: var(--_w);
+    height: var(--_h);
+    padding: var(--_inset);
+    border-radius: var(--radius-sm);
+    background-color: var(--glass-fill-inset);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    container-type: size;
+  }
+  .fa-wm-snap-zone {
+    position: absolute;
+    left: calc(var(--_inset) + var(--_fx) * 100cqw + var(--_gl) * var(--_half-gap));
+    top: calc(var(--_inset) + var(--_fy) * 100cqh + var(--_gt) * var(--_half-gap));
+    width: calc(var(--_fw) * 100cqw - (var(--_gl) + var(--_gr)) * var(--_half-gap));
+    height: calc(var(--_fh) * 100cqh - (var(--_gt) + var(--_gb)) * var(--_half-gap));
+    border-radius: var(--radius-xs);
+    background-color: var(--glass-fill-control);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    transition-property: background-color, box-shadow;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  /* The page (primary window) in the "beside the page" thumbnail: shown, not a target. */
+  .fa-wm-snap-zone[data-page] {
+    background-color: var(--fill-muted);
+    box-shadow: none;
+  }
+  .fa-wm-snap-zone[data-active] {
+    background-color: var(--accent-soft-hover);
+    box-shadow: inset 0 0 0 var(--border-width-strong) var(--accent-line);
+  }
+
+  /* ── Phones: windows are full-screen sheets ────────────────────────────── */
+  .fa-wm-window[data-geometry="sheet"] {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--z-shell) + 1);
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+    border-radius: 0;
+  }
+  .fa-wm-workspace-stage[data-ready] .fa-wm-window[data-geometry="sheet"]:not([data-hidden], [data-minimised]) {
+    transition-duration: var(--duration-slow);
+    transition-timing-function: var(--ease-enter);
+  }
+  @starting-style {
+    .fa-wm-workspace-stage[data-ready] .fa-wm-window[data-geometry="sheet"] {
+      transform: translateY(var(--space-12));
+    }
+  }
+}
+
+@layer components {
+  /* Size containment makes the stage the containing block of fixed descendants, so on
+     phones the stage gives it up and sheets cover the viewport. */
+  .fa-wm-workspace[data-sheet] .fa-wm-workspace-stage {
+    container-type: normal;
+    isolation: auto;
+  }
+  .fa-wm-workspace[data-sheet] .fa-wm-window[data-primary] {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

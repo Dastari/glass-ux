@@ -1,0 +1,358 @@
+/*
+ * Breadcrumb — the universal one, top bar left (R6.4).
+ *
+ * One line at --control-h-sm. Crumbs are pressable links in fg-muted that turn fg with the
+ * shared hover fill; the current crumb is fg at medium weight and does not navigate.
+ * Separators are xs chevrons in fg-subtle, never dividers. A crumb with siblings carries a
+ * small switcher (chevrons-up-down) that opens a menu, searchable past seven entries.
+ *
+ * Collapse (measured against the breadcrumb's own width):
+ *   full → middle (first › … › tail) → compact (… ‹ parent · current) → current
+ * Each crumb truncates with an ellipsis at --_crumb-max (current: --_current-max).
+ *
+ * current: only the current crumb, its icon and a chevron, as one button that opens the
+ * trail popup — the host's header (module switch) and scope (organisation) when folded into
+ * it, then the trail as an indented tree, one level per --_depth. Dropped from the host's
+ * anchor (the top bar on a phone) it spans that box like a sheet from the top.
+ */
+@layer components {
+  .fa-breadcrumb {
+    --_crumb-max: 16rem; /* longest ancestor label before it truncates */
+    --_current-max: 20rem; /* longest current label before it truncates */
+    --_h: var(--control-h-sm);
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* Claim the space on offer: the collapse is measured against this width, so it must
+       not shrink-wrap its own content. */
+    width: 100%;
+    min-width: 0;
+    height: var(--_h);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    letter-spacing: var(--type-body-tracking);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-half);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-crumb {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-half);
+    min-width: 0;
+  }
+  /* The visible list spans the breadcrumb, so the current crumb's share below is of the row,
+     not of its own content (a one-crumb trail after the organisation switcher). */
+  .fa-breadcrumb > .fa-breadcrumb-list {
+    flex: 1 1 auto;
+  }
+  /* The current place keeps its name (up to three quarters of the row); ancestors give way. */
+  .fa-crumb[data-current] {
+    flex: 0 0 auto;
+    max-width: 75%;
+  }
+
+  .fa-crumb-sep {
+    flex: none;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+    color: var(--fg-subtle);
+  }
+  .fa-crumb-dot {
+    flex: none;
+    padding-inline: var(--space-half);
+    color: var(--fg-subtle);
+  }
+
+  .fa-crumb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-width: 0;
+    max-width: var(--_crumb-max);
+    height: var(--_h);
+    padding-inline: var(--space-2);
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: var(--fg-muted);
+    font: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-crumb-link > .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+    color: var(--fg-subtle);
+  }
+  .fa-crumb-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  :is(a, button).fa-crumb-link:is(:hover, [data-popup-open]) {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  :is(a, button).fa-crumb-link:is(:hover, [data-popup-open]) > .fa-icon {
+    color: var(--fg-muted);
+  }
+  .fa-crumb-link[aria-current="page"] {
+    max-width: var(--_current-max);
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    cursor: default;
+  }
+  .fa-crumb[data-current] > .fa-crumb-link {
+    flex: 0 1 auto;
+  }
+  .fa-crumb-link > .fa-crumb-back {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+    margin-inline-start: calc(var(--space-1) * -1);
+  }
+  /* In the compact form the parent gives up space before the current place. */
+  .fa-crumb[data-back] {
+    flex: 0 1 auto;
+  }
+  /* A crumb and its switcher read as one control. */
+  .fa-crumb-link:has(+ .fa-crumb-switch) {
+    padding-inline-end: var(--space-1);
+  }
+  .fa-crumb-ellipsis {
+    justify-content: center;
+    width: var(--_h);
+    padding-inline: 0;
+  }
+
+  .fa-crumb-switch {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--control-h-xs);
+    height: var(--control-h-xs);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--fg-subtle);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-crumb-switch > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+  }
+  button.fa-crumb-switch:is(:hover, [data-popup-open]) {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+
+  /* Switcher menu: wide enough for a name and its data; search stays put while the list
+     scrolls. */
+  .fa-crumb-menu {
+    --_menu-min: 20rem; /* room for "NST-C106  AzureAD\MiraRowan" */
+    min-width: max(var(--anchor-width, 0px), var(--_menu-min));
+  }
+  .fa-crumb-menu[data-searchable] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    overflow: hidden;
+  }
+  .fa-crumb-menu[data-searchable] .fa-crumb-menu-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .fa-crumb-search {
+    flex: none;
+  }
+  .fa-crumb-empty {
+    padding: var(--space-2) var(--space-2-5);
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-crumb-empty:empty {
+    display: none;
+  }
+  .fa-crumb-meta {
+    max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-item > .fa-crumb-check {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    margin-inline-start: var(--space-1);
+    color: var(--accent-text);
+  }
+  .fa-item:not(:has(.fa-crumb-meta)) > .fa-crumb-check {
+    margin-inline-start: auto;
+  }
+
+  /* Off-screen measuring row. */
+  .fa-breadcrumb-measure {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-breadcrumb-measure-row {
+    width: max-content;
+  }
+
+  /* ── Current crumb and its trail popup ────────────────────────────────────── */
+  .fa-crumb-link.fa-crumb-trail {
+    gap: var(--space-1);
+    max-width: 100%;
+    cursor: pointer;
+  }
+  .fa-crumb[data-current]:has(> .fa-crumb-trail) {
+    flex: 0 1 auto;
+    max-width: 100%;
+  }
+  .fa-crumb-trail > .fa-icon:first-child {
+    margin-inline-end: var(--space-half);
+  }
+  .fa-crumb-trail > .fa-crumb-trail-chevron {
+    flex: none;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+    color: var(--fg-subtle);
+  }
+  /* A full touch target on coarse pointers, without growing the one-line bar. */
+  @media (pointer: coarse) {
+    .fa-crumb-trail {
+      position: relative;
+    }
+    .fa-crumb-trail::after {
+      position: absolute;
+      inset: calc((var(--target-min) - var(--_h)) / -2) 0;
+      content: "";
+    }
+  }
+
+  .fa-crumb-trail-positioner {
+    z-index: var(--z-popover);
+  }
+  .fa-crumb-trail-popup {
+    --_trail-w: 24rem; /* room for a device name, its organisation and the Switch button */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: min(var(--_trail-w), var(--available-width));
+    max-height: var(--available-height);
+    padding: var(--inset-overlay);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  /* From the host's anchor (the top bar on a phone): as wide as the bar, like a top sheet. */
+  .fa-crumb-trail-positioner[data-anchored] .fa-crumb-trail-popup {
+    width: min(var(--anchor-width), var(--available-width));
+  }
+  .fa-crumb-trail-header {
+    display: flex;
+    flex-direction: column;
+    padding-block-end: var(--space-1);
+  }
+  .fa-crumb-tree {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-crumb-tree-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+    padding-inline-start: calc(var(--space-4) * var(--_depth, 0));
+  }
+  .fa-crumb-tree-link {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    text-align: start;
+    text-decoration: none;
+  }
+  .fa-crumb-tree-link > .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  span.fa-crumb-tree-link {
+    cursor: default;
+  }
+  /* Only the current place is marked current. An ancestor whose link is the same page (a
+     device and its Overview) reads as a level, not a second current row. */
+  :is(a, button).fa-crumb-tree-link:is([aria-current="page"], [data-active]) {
+    background-color: transparent;
+    color: var(--fg);
+  }
+  :is(a, button).fa-crumb-tree-link:is([aria-current="page"], [data-active]):hover {
+    background-color: var(--fill-hover);
+  }
+  :is(a, button).fa-crumb-tree-link:is([aria-current="page"], [data-active]) > svg {
+    color: var(--fg-muted);
+  }
+  .fa-crumb-tree-link > .fa-crumb-tree-switch-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+    color: var(--fg-subtle);
+  }
+  .fa-crumb-tree-switch {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: var(--item-h);
+    padding-inline: var(--space-2-5);
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-crumb-tree-switch > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+    color: var(--fg-subtle);
+  }
+  .fa-crumb-tree-switch:is(:hover, [data-popup-open]) {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+}

@@ -1,0 +1,20 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Tooltip, TooltipProvider } from "glass-ux/tooltip";
+
+import { Button } from "glass-ux/button";
+
+export default function TooltipProviderExample() {
+    return (<SectionPage>
+      <Specimen title="TooltipProvider" description="Hover the first control, then its neighbour. The provider shares the delay between nearby tooltips." layout="stack">
+        <TooltipProvider>
+          <Tooltip content="Create an exhibition">
+            <Button>Create exhibition</Button>
+          </Tooltip>
+          <Tooltip content="Search exhibitions">
+            <Button>Search</Button>
+          </Tooltip>
+        </TooltipProvider>
+      </Specimen>
+    </SectionPage>);
+}

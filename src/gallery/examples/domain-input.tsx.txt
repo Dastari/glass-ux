@@ -1,0 +1,53 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Field } from "glass-ux/field";
+
+import { FormStack } from "glass-ux/form";
+
+import { DomainInput, HostnameInput } from "glass-ux/hostname-field";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+export default function HostnameFieldSection() {
+    return (<SectionPage>
+      <></>
+
+      <Specimen title="States" layout="grid">
+        <FormStack>
+          <Field label="Empty">
+            <HostnameInput width="medium"/>
+          </Field>
+          <Field label="Invalid" error="A part can't start or end with a hyphen">
+            <HostnameInput defaultValue="-nst-c106" invalid width="medium"/>
+          </Field>
+        </FormStack>
+        <FormStack>
+          <Field label="Read-only">
+            <DomainInput defaultValue="northstar.example" readOnly width="medium"/>
+          </Field>
+          <Field label="Disabled">
+            <DomainInput defaultValue="northstar.example" disabled width="medium"/>
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <Usage code={`
+import { domainSchema, hostnameSchema } from "glass-ux/hostname-field"
+
+const schema = z.object({
+  computer: hostnameSchema({ required: true }),
+  domain: domainSchema({ required: true }),          // "Enter a full domain such as northstar.example"
+})
+
+<form.AppField name="computer">{(field) => <field.HostnameField label="Computer name" netbios />}</form.AppField>
+<form.AppField name="domain">{(field) => <field.DomainField label="Email domain" />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

@@ -1,0 +1,51 @@
+import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { PALETTES, PALETTE_LABELS } from "glass-ux/lib/appearance/appearance";
+
+import { BrandMark } from "glass-ux/brand";
+
+export default function BrandSection() {
+    return (<SectionPage>
+      <Specimen title="Marks" description="Each mark is built from public/brand/<name>.svg by pnpm brand: the paths of its …-logo-primary and …-logo-secondary elements, inlined, so there is no request and no flash. The product names them: product, wordmark and ai." wide>
+        <Example label="product">
+          <BrandMark mark="product" className="gallery-mark-lg" label="Glass UX"/>
+        </Example>
+        <Example label="ai">
+          <BrandMark mark="ai" className="gallery-mark-lg" label="Assistant"/>
+        </Example>
+        <Example label="wordmark">
+          <BrandMark mark="wordmark" className="gallery-wordmark" label="Orbit Workspace"/>
+        </Example>
+      </Specimen>
+
+      <></>
+
+      <Specimen title="Every palette" description="The primary half is the palette's accent, lifted in dark mode to keep 3:1 on the canvas; the secondary half is ink. Graphite's accent is ink, so its secondary moves to a mid grey. Switch the gallery's mode to see the other." wide layout="bare">
+        <div className="gallery-brand-matrix">
+          {PALETTES.map((palette) => (<div key={palette} className="gallery-brand-cell canvas-ambient" data-palette={palette} data-testid={`brand-${palette}`}>
+              <BrandMark mark="product" className="gallery-mark-lg"/>
+              <BrandMark mark="ai" className="gallery-mark-lg"/>
+              <span className="gallery-brand-label">{PALETTE_LABELS[palette]}</span>
+            </div>))}
+        </div>
+      </Specimen>
+
+      <Specimen title="Over imagery" description="Inside .over-imagery a mark gets the canvas halo every bare icon gets, so it reads on any image." backdrop>
+        <Example label="Product">
+          <BrandMark mark="product" className="gallery-mark-lg"/>
+        </Example>
+        <Example label="Wordmark">
+          <BrandMark mark="wordmark" className="gallery-wordmark"/>
+        </Example>
+        <Example label="Mono on a solid fill">
+          <span className="gallery-brand-solid">
+            <BrandMark mark="ai" tones="mono" className="gallery-mark-lg"/>
+          </span>
+        </Example>
+      </Specimen>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

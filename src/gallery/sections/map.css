@@ -1,0 +1,97 @@
+/* Map gallery frames: the map fills its box, so every example gives it a definite height. */
+@layer components {
+  .gallery-map-frame {
+    position: relative;
+    width: 100%;
+    height: 36rem;
+    border-radius: var(--radius-surface);
+  }
+  .gallery-map-frame[data-size="list"] {
+    height: 30rem;
+  }
+  .gallery-map-frame[data-size="short"] {
+    height: 22rem;
+  }
+  .gallery-map-islands {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 28rem), 1fr));
+    gap: var(--gap-tiles);
+  }
+  .gallery-map-island {
+    width: 100%;
+    padding: var(--space-2);
+    border-radius: var(--radius-surface);
+  }
+  .gallery-map-island .gallery-map-frame {
+    height: 24rem;
+  }
+  .gallery-map-fill {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .gallery-map-marker-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-6);
+    padding: var(--space-2);
+  }
+  .gallery-map-sources {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: var(--measure);
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    list-style: disc;
+    padding-inline-start: var(--space-5);
+  }
+  .gallery-map-sources strong {
+    color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  .gallery-map-popup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .gallery-map-popup-meta {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+
+  /* The dashboard in a frame the size of a primary window. */
+  .gallery-dash-frame {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
+    height: 50rem;
+    min-height: 0;
+  }
+  .gallery-dash-frame[data-size="short"] {
+    height: 40rem;
+  }
+  .gallery-dash-frame[data-size="phone"] {
+    width: 390px;
+    height: 780px;
+    overflow: hidden;
+  }
+  .gallery-dash-workspace {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 48rem;
+  }
+  .gallery-dash-workspace > .fa-wm-workspace {
+    flex: 1 1 auto;
+  }
+  .gallery-dash-column {
+    width: min(30rem, 100%);
+    height: 60rem;
+    overflow-y: auto;
+  }
+}

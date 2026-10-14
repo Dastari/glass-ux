@@ -1,0 +1,274 @@
+/*
+ * AppShell layout (R5, R21). One grid owns the viewport; nothing in it grows the document.
+ *
+ *   "brand top    top  top"      row 1: on the canvas (brand mark, TopBar)
+ *   "rail  drawer work insp"     row 2: rail on the canvas; drawer, windows, inspector
+ *
+ * Track count never changes, so collapsing the drawer or inspector animates the columns.
+ * Gaps live inside the drawer and inspector tracks (a collapsed track takes its gap
+ * with it), so the workspace edge never sits a double gap away.
+ *
+ * Component tokens
+ *   --_drawer-min / --_drawer-max   the drawer's width limits (mirrored in shell-state.ts)
+ *   --_drawer       the drawer's width: the user's --shell-drawer, default --sidebar-w
+ *   --_drawer-col   its track: width + gap when open, 0 when collapsed
+ *   --_insp-col     the inspector's track: width + gap when shown, 0 otherwise
+ *   --_tabbar-space room reserved under the workspace for the floating phone tab bar
+ */
+@layer components {
+  /* R6.3: only the routed view cross-fades between routes; the shell stays live. AppShell
+     sets data-shell on <html> while it is mounted (not :root:has(), which Chromium re-checks
+     on every DOM insertion). */
+  :root[data-shell] {
+    view-transition-name: none;
+  }
+  .fa-shell .fa-window[data-primary] .fa-window-view {
+    view-transition-name: fa-shell-primary-view;
+  }
+  ::view-transition-group(fa-shell-primary-view) {
+    animation-duration: var(--duration-base);
+    animation-timing-function: var(--ease-standard);
+  }
+  ::view-transition-old(fa-shell-primary-view),
+  ::view-transition-new(fa-shell-primary-view) {
+    animation-duration: var(--duration-base);
+  }
+
+  .fa-shell {
+    --_drawer-min: 14rem;
+    --_drawer-max: 28rem;
+    --_drawer: clamp(var(--_drawer-min), var(--shell-drawer, var(--sidebar-w)), var(--_drawer-max));
+    --_drawer-col: calc(var(--_drawer) + var(--gap-panels));
+    --_insp-col: 0px;
+    --_tabbar-space: 0px;
+    display: grid;
+    grid-template-columns: var(--sidebar-w-rail) var(--_drawer-col) minmax(0, 1fr) var(--_insp-col);
+    grid-template-rows: var(--topbar-h) minmax(0, 1fr);
+    grid-template-areas:
+      "brand top top top"
+      "rail drawer work insp";
+    height: 100dvh;
+    padding: var(--safe-top) max(var(--page-gutter), var(--safe-right)) max(var(--page-gutter), var(--safe-bottom))
+      max(var(--space-1), var(--safe-left));
+    overflow: hidden;
+    transition: grid-template-columns var(--duration-base) var(--ease-standard);
+  }
+  .fa-shell[data-resizing] {
+    transition: none;
+    cursor: col-resize;
+    user-select: none;
+  }
+  .fa-shell:not([data-has-drawer]),
+  :root[data-shell-drawer="closed"] .fa-shell:not([data-drawer-preview="open"]),
+  .fa-shell[data-drawer-preview="closed"] {
+    --_drawer-col: 0px;
+  }
+
+  /* The top bar and the rail sit on the canvas: corner marks there are cut out of it. */
+  .fa-shell-slot-top,
+  .fa-shell-slot-rail {
+    --overlay-underlay: var(--canvas);
+  }
+
+  /* ── Row 1: brand and top bar, directly on the canvas ──────────────────── */
+  .fa-shell-slot-brand {
+    grid-area: brand;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+  }
+  .fa-shell-slot-top {
+    grid-area: top;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  /* ── Row 2 ─────────────────────────────────────────────────────────────── */
+  .fa-shell-slot-rail {
+    grid-area: rail;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .fa-shell-slot-drawer {
+    grid-area: drawer;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    padding-inline-end: var(--gap-panels);
+    /* Clip sideways only, so the pane keeps its width (no reflow) while it collapses
+       and its shadow still falls below. */
+    overflow-x: clip;
+    transition: visibility 0s linear 0s;
+  }
+  :root[data-shell-drawer="closed"] .fa-shell:not([data-drawer-preview="open"]) .fa-shell-slot-drawer,
+  .fa-shell[data-drawer-preview="closed"] .fa-shell-slot-drawer {
+    visibility: hidden;
+    transition-delay: var(--duration-base);
+  }
+  .fa-shell-drawer-handle {
+    grid-row: 2;
+    grid-column: 1 / 3;
+    justify-self: end;
+    z-index: var(--z-raised);
+    display: grid;
+    place-items: center;
+    width: var(--gap-panels);
+    cursor: col-resize;
+    touch-action: none;
+    outline: none;
+  }
+  .fa-shell-drawer-grip {
+    --_grip-h: var(--space-10);
+    width: var(--space-1);
+    height: var(--_grip-h);
+    border-radius: var(--radius-full);
+    background-color: var(--line-strong);
+    opacity: 0;
+    transition-property: opacity, background-color, height;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-shell-drawer-handle:hover .fa-shell-drawer-grip {
+    opacity: 1;
+  }
+  .fa-shell-drawer-handle:is([data-active], :focus-visible) .fa-shell-drawer-grip {
+    --_grip-h: var(--space-16);
+    opacity: 1;
+    background-color: var(--accent);
+  }
+  .fa-shell-drawer-handle:focus-visible .fa-shell-drawer-grip {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .fa-shell-slot-work {
+    grid-area: work;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    padding-bottom: var(--_tabbar-space);
+  }
+  .fa-shell-slot-work > * {
+    flex: 1 1 auto;
+  }
+
+  .fa-shell-slot-inspector {
+    grid-area: insp;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    padding-inline-start: var(--gap-panels);
+    overflow-x: clip;
+    visibility: hidden;
+    transition: visibility 0s linear var(--duration-base);
+  }
+  .fa-shell-slot-inspector > * {
+    flex: none;
+    width: var(--inspector-w);
+  }
+  @media (width >= 120rem) {
+    :root:not([data-shell-inspector="closed"]) .fa-shell[data-has-inspector] {
+      --_insp-col: calc(var(--inspector-w) + var(--gap-panels));
+    }
+    :root:not([data-shell-inspector="closed"]) .fa-shell-slot-inspector {
+      visibility: visible;
+      transition-delay: 0s;
+    }
+  }
+  @media (width >= 80rem) {
+    :root[data-shell-inspector="open"] .fa-shell[data-has-inspector] {
+      --_insp-col: calc(var(--inspector-w) + var(--gap-panels));
+    }
+    :root[data-shell-inspector="open"] .fa-shell-slot-inspector {
+      visibility: visible;
+      transition-delay: 0s;
+    }
+  }
+  @media (width < 80rem) {
+    .fa-shell-slot-inspector {
+      display: none;
+    }
+  }
+
+  .fa-shell-slot-tabbar {
+    display: none;
+  }
+
+  /* ── Tablet: rail on the canvas, the drawer slides over ────────────────── */
+  @media (width < 64rem) {
+    .fa-shell {
+      --_drawer-col: 0px;
+    }
+    .fa-shell-slot-drawer,
+    .fa-shell-drawer-handle {
+      display: none;
+    }
+  }
+
+  /* ── Phone: top bar, workspace and a floating tab bar ──────────────────── */
+  @media (width < 48rem) {
+    .fa-shell {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "top"
+        "work";
+      padding: var(--safe-top) max(var(--page-gutter), var(--safe-right)) 0 max(var(--page-gutter), var(--safe-left));
+    }
+    .fa-shell[data-has-tabbar] {
+      --_tabbar-space: calc(var(--bottombar-h) + max(var(--space-3), var(--safe-bottom)) + var(--space-2));
+    }
+    .fa-shell:not([data-has-tabbar]) .fa-shell-slot-work {
+      padding-bottom: max(var(--page-gutter), var(--safe-bottom));
+    }
+    .fa-shell-slot-brand,
+    .fa-shell-slot-rail {
+      display: none;
+    }
+    .fa-shell-slot-tabbar {
+      position: fixed;
+      inset-inline: 0;
+      bottom: max(var(--space-3), var(--safe-bottom));
+      z-index: var(--z-shell);
+      display: flex;
+      justify-content: center;
+      padding-inline: var(--page-gutter);
+      pointer-events: none;
+    }
+    .fa-shell-slot-tabbar > * {
+      pointer-events: auto;
+    }
+  }
+
+  /* A window sheet covers the screen on phones (data-window-sheet, set by Workspace):
+     hide the chrome beneath so the glass does not show it through. */
+  :root[data-window-sheet] :is(.fa-shell-slot-top, .fa-shell-slot-tabbar) {
+    visibility: hidden;
+  }
+
+  /* ── Installed desktop app with Window Controls Overlay ────────────────── */
+  @media (display-mode: window-controls-overlay) {
+    .fa-shell {
+      grid-template-rows: env(titlebar-area-height, var(--topbar-h)) minmax(0, 1fr);
+      padding-top: 0;
+    }
+    .fa-shell-slot-brand {
+      padding-inline-start: env(titlebar-area-x, 0px);
+    }
+    .fa-shell-slot-brand,
+    .fa-shell-slot-top {
+      -webkit-app-region: drag;
+      app-region: drag;
+    }
+    .fa-shell-slot-top {
+      padding-inline-end: calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw));
+    }
+    .fa-shell-slot-brand :is(a, button, input, [role="button"], [role="combobox"]),
+    .fa-shell-slot-top :is(a, button, input, [role="button"], [role="combobox"]) {
+      -webkit-app-region: no-drag;
+      app-region: no-drag;
+    }
+  }
+}

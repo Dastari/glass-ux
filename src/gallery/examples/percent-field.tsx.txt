@@ -1,0 +1,54 @@
+import { z } from "zod";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+
+import { percentSchema } from "glass-ux/percent-field";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+function PercentDemo() {
+    const form = useAppForm({
+        ...formBehaviour,
+        defaultValues: { disk: 90 as number | null, discount: 0.125 as number | null },
+        validators: { onDynamic: z.object({ disk: percentSchema({ required: true, min: 50, max: 99 }), discount: percentSchema({ scale: "fraction", max: 0.5 }) }) },
+        onSubmit: () => wait(600),
+    });
+    return (<Form form={form} aria-label="Percentages" className="w-full" data-testid="percent-form">
+      <FormStack>
+        <form.AppField name="disk">{(field) => <field.PercentField label="Disk alert threshold" min={50} max={99}/>}</form.AppField>
+        <form.AppField name="discount">{(field) => <field.PercentField label="Agreement discount" optional scale="fraction" max={0.5} decimals={1}/>}</form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>);
+}
+
+export default function PercentFieldSection() {
+    return (<SectionPage>
+      <Specimen title="Whole percents or fractions" description="A threshold is 90 (whole); a discount from an API may be 0.125 (fraction). Either way the box shows 90 % or 12.5 %, clamped to its bounds.">
+        <PercentDemo />
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Usage code={`
+import { percentSchema } from "glass-ux/percent-field"
+
+const schema = z.object({ disk: percentSchema({ required: true, min: 50, max: 99 }) })
+
+<form.AppField name="disk">{(field) => <field.PercentField label="Disk alert threshold" min={50} max={99} />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

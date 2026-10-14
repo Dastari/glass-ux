@@ -1,0 +1,128 @@
+/*
+ * Input and SearchField — the text box. Geometry, fill, hover, focus halo, invalid and
+ * disabled come from the fa-control recipe; this file adds the slots.
+ *
+ *   [icon] value………………… [unit] [trailing] [⌘ K] [✕] [👁]
+ *
+ * Sizes  sm 32 · md 40 · lg 48 (type steps with the size, like Button)
+ * Slots  fa-input-btn places an icon-only ghost Button inside the box (clear, reveal,
+ *        steppers, popup trigger). Number field, combobox and multi-select reuse it.
+ */
+@layer components {
+  .fa-input {
+    /* component tokens: the box's height and padding for its inner buttons (Button
+       redefines --_h/--_px on itself), and the inner chip/keycap height */
+    --_box-h: var(--_h);
+    --_box-px: var(--_px);
+    --_icon: var(--icon-md);
+    --_action-inset: var(--space-2);
+    --_action: calc(var(--_h) - var(--_action-inset) * 2);
+    width: 100%;
+    min-width: 0;
+    cursor: text;
+  }
+  /* Values longer than the box end in an ellipsis until the field is focused. */
+  .fa-input .fa-control-input {
+    text-overflow: ellipsis;
+  }
+  .fa-input[data-size="sm"] {
+    --_icon: var(--icon-sm);
+    --_action-inset: var(--space-1-5);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-input[data-size="lg"] {
+    --_icon: var(--icon-lg);
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+  }
+  .fa-input > .fa-icon {
+    width: var(--_icon);
+    height: var(--_icon);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-input:focus-within > .fa-icon {
+    color: var(--fg-muted);
+  }
+  .fa-input[data-disabled] {
+    cursor: not-allowed;
+  }
+
+  /* Native affordances we replace with our own. */
+  .fa-input .fa-control-input::-webkit-search-cancel-button,
+  .fa-input .fa-control-input::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .fa-input .fa-control-input::-ms-reveal {
+    display: none;
+  }
+  .fa-control-input:read-only {
+    cursor: default;
+  }
+
+  .fa-input-unit {
+    flex: none;
+    color: var(--fg-subtle);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ── Keyboard hint (top-bar search): hidden once the user is in the field ─ */
+  .fa-input:focus-within > .fa-input-kbd {
+    display: none;
+  }
+
+  /* ── Inner icon buttons (clear, reveal, steppers, popup trigger) ─────────
+     Ghost Buttons (so they carry the Button tooltip), inset from the box's right edge
+     by the same amount as from its top and bottom. Button's own --_h/--_px are
+     separate, hence the --_box-* copies. In sm boxes they shrink to --control-h-xs
+     until Button gains an xs size (proposed). */
+  .fa-input-btn {
+    flex: none;
+  }
+  .fa-input-btn:last-child {
+    margin-inline-end: calc((var(--_box-px) - (var(--_box-h) - var(--control-h-sm)) / 2) * -1);
+  }
+  .fa-input-btn + .fa-input-btn {
+    margin-inline-start: calc(var(--space-1) - var(--space-2));
+  }
+  .fa-input[data-size="sm"] .fa-input-btn {
+    --_h: var(--control-h-xs);
+    --_icon: var(--icon-sm);
+  }
+  .fa-input[data-size="sm"] .fa-input-btn:last-child {
+    margin-inline-end: calc((var(--_box-px) - (var(--_box-h) - var(--control-h-xs)) / 2) * -1);
+  }
+  /* fa-control hides inner outlines (the box shows the halo); mark which button has focus. */
+  .fa-input-btn:focus-visible {
+    --_shadow: inset 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+
+  /* ── Read-only: a recessed well, still selectable and focusable ─────────── */
+  .fa-control[data-readonly],
+  .fa-control[data-readonly]:hover:not([data-disabled]),
+  .fa-control[data-readonly]:focus-within {
+    background-color: var(--glass-fill-inset);
+    border-color: transparent;
+    box-shadow: none;
+  }
+  .fa-control[data-readonly]:focus-within {
+    border-color: var(--line-strong);
+  }
+
+  /* ── Content widths (R15.6): the box caps at the value's expected length ── */
+  .fa-control[data-width="short"] {
+    max-width: var(--field-short);
+  }
+  .fa-control[data-width="medium"] {
+    max-width: var(--field-medium);
+  }
+}
+
+/* Identifiers (IP and MAC addresses, host names, codes) line their digits up (R8.4). */
+@layer components {
+  .fa-control-input[data-identifier] {
+    font-variant-numeric: tabular-nums;
+  }
+}

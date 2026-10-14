@@ -1,0 +1,509 @@
+import ts from "typescript";
+import { Application } from "typedoc";
+import {
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  cpSync,
+  rmSync,
+} from "node:fs";
+import { join } from "node:path";
+import { propDescriptions } from "./document-props.mjs";
+import { generateComponentDemos } from "./component-demos.mjs";
+
+const config = ts.readConfigFile("tsconfig.json", ts.sys.readFile);
+const parsed = ts.parseJsonConfigFileContent(
+  config.config,
+  ts.sys,
+  process.cwd(),
+);
+const program = ts.createProgram(parsed.fileNames, parsed.options);
+const checker = program.getTypeChecker();
+const entries = [];
+for (const dir of readdirSync("src/ui")) {
+  if (ts.sys.fileExists(`src/ui/${dir}/index.ts`))
+    entries.push({
+      file: `src/ui/${dir}/index.ts`,
+      entry: `glass-ux/${dir}`,
+      family: dir,
+    });
+}
+for (const dir of ["ai", "shell", "windows"])
+  entries.push({
+    file: `src/${dir}/index.ts`,
+    entry: `glass-ux/${dir}`,
+    family: dir,
+  });
+entries.push({
+  file: "src/lib/appearance/index.ts",
+  entry: "glass-ux/appearance",
+  family: "appearance",
+});
+entries.push({
+  file: "src/icons/generated/icons.tsx",
+  entry: "glass-ux/icons",
+  family: "icons",
+});
+
+const descriptions = {
+  children: "The content or component slots rendered inside the component.",
+  className:
+    "Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance.",
+  ref: "Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop.",
+  value:
+    "The controlled value. Keep it in application state and update it in the change callback.",
+  defaultValue:
+    "The initial value when using the component without controlling its state.",
+  onValueChange:
+    "Called with the next value when a person changes the control. Update controlled state here.",
+  onOpenChange:
+    "Called when the open state changes, including keyboard dismissal and outside interaction.",
+  open: "Controls whether the overlay is open.",
+  defaultOpen: "Opens the uncontrolled overlay initially.",
+  disabled:
+    "Disables interaction while retaining the component’s disabled appearance.",
+  readOnly: "Displays the current value without allowing edits.",
+  required:
+    "Marks the field as required; pair it with the corresponding schema validation.",
+  label: "The visible or accessible label for this component.",
+  name: "The component’s name or native form field name, as specified by its value type.",
+  size: "The token-based size. Touch targets adapt to coarse pointers independently of the selected density.",
+  variant:
+    "The named visual variant. It is rendered as a data attribute and styled through shared tokens.",
+  tone: "The semantic tone. Use danger and warning for consequences and states.",
+  render:
+    "Base UI composition: supply an element or render function to replace the default element while preserving its behaviour.",
+  onClick: "Called when the control is activated by pointer or keyboard.",
+  items:
+    "The collection rendered by the component. Stable identifiers preserve selection and keyboard focus.",
+  options: "The available choices, including their values and visible labels.",
+  placeholder:
+    "The prompt shown while the value is empty. It does not replace the field’s label.",
+  id: "A stable element or component identifier.",
+  title: "The heading or title content.",
+  description:
+    "Additional content describing the value, state, or consequence.",
+  icon: "An icon element without an explicit size; the component sizes it through its tokens.",
+  onBlur:
+    "Called when the element loses focus. Typed inputs normalise on blur rather than while typing.",
+};
+const doc = (symbol) =>
+  ts.displayPartsToString(symbol?.getDocumentationComment(checker) ?? []);
+const slug = (name) =>
+  name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+const seen = new Set();
+const components = [];
+const iconComponents = [];
+const familySummary = {};
+for (const file of readdirSync("src/gallery/sections").filter((file) =>
+  file.endsWith(".meta.ts"),
+)) {
+  const text = readFileSync(join("src/gallery/sections", file), "utf8");
+  const summary = /summary:\s*"([^"]+)"/.exec(text)?.[1];
+  if (summary) familySummary[file.replace(".meta.ts", "")] = summary;
+}
+function defaults(declaration) {
+  const result = {};
+  if (!declaration?.parameters) return result;
+  for (const parameter of declaration.parameters) {
+    if (ts.isObjectBindingPattern(parameter.name))
+      for (const e of parameter.name.elements) {
+        if (e.initializer)
+          result[(e.propertyName ?? e.name).getText()] =
+            e.initializer.getText();
+      }
+  }
+  if (declaration.body?.statements)
+    for (const statement of declaration.body.statements)
+      if (ts.isVariableStatement(statement))
+        for (const binding of statement.declarationList.declarations) {
+          if (
+            ts.isObjectBindingPattern(binding.name) &&
+            binding.initializer &&
+            ts.isIdentifier(binding.initializer) &&
+            declaration.parameters.some(
+              (parameter) =>
+                parameter.name.getText() === binding.initializer.getText(),
+            )
+          )
+            for (const e of binding.name.elements)
+              if (e.initializer)
+                result[(e.propertyName ?? e.name).getText()] =
+                  e.initializer.getText();
+        }
+  return result;
+}
+function sourceFunction(at, visited = new Set()) {
+  if (!at || visited.has(at)) return null;
+  visited.add(at);
+  if (at.parameters) return at;
+  if (ts.isVariableDeclaration(at) || ts.isPropertyAssignment(at))
+    return sourceFunction(at.initializer, visited);
+  if (ts.isCallExpression(at)) return sourceFunction(at.arguments[0], visited);
+  if (ts.isIdentifier(at) || ts.isShorthandPropertyAssignment(at)) {
+    const symbol = ts.isShorthandPropertyAssignment(at)
+      ? checker.getShorthandAssignmentValueSymbol(at)
+      : checker.getSymbolAtLocation(at);
+    return sourceFunction(symbol?.valueDeclaration, visited);
+  }
+  return null;
+}
+function signatureApi(type, at) {
+  const sig = type.getCallSignatures()[0];
+  if (!sig) return null;
+  const parameter = sig.getParameters()[0];
+  const parameterType =
+    parameter && checker.getTypeOfSymbolAtLocation(parameter, at);
+  const defaultProps = {
+    ...defaults(sig.getDeclaration()),
+    ...defaults(sourceFunction(at)),
+  };
+  const props = parameterType
+    ? checker
+        .getPropertiesOfType(parameterType)
+        .map((prop) => {
+          const declaration =
+            prop.valueDeclaration ?? prop.declarations?.[0] ?? at;
+          const file = declaration
+            .getSourceFile()
+            .fileName.replaceAll("\\", "/");
+          const own =
+            file.includes("/src/") && !file.includes("/node_modules/");
+          const name = prop.getName();
+          const propType = checker.getTypeOfSymbolAtLocation(prop, declaration);
+          const options = (
+            propType.isUnion() ? propType.types : [propType]
+          ).flatMap((type) =>
+            type.isStringLiteral() || type.isNumberLiteral()
+              ? [type.value]
+              : type.flags & ts.TypeFlags.BooleanLiteral
+                ? [type.intrinsicName === "true"]
+                : [],
+          );
+          return {
+            name,
+            type: checker.typeToString(
+              propType,
+              declaration,
+              ts.TypeFormatFlags.NoTruncation,
+            ),
+            options,
+            required: !(prop.flags & ts.SymbolFlags.Optional),
+            default: defaultProps[name] ?? null,
+            description:
+              doc(prop) ||
+              descriptions[name] ||
+              propDescriptions[name] ||
+              (/^on[A-Z]/.test(name)
+                ? "Event callback; the typed signature specifies its arguments."
+                : !own
+                  ? "Native React DOM property. Its accepted values are specified by the type."
+                  : ""),
+            inherited: !own,
+          };
+        })
+        .sort(
+          (a, b) =>
+            Number(a.inherited) - Number(b.inherited) ||
+            a.name.localeCompare(b.name),
+        )
+    : [];
+  return {
+    signature: checker.signatureToString(
+      sig,
+      at,
+      ts.TypeFormatFlags.NoTruncation,
+    ),
+    props,
+  };
+}
+for (const entry of entries) {
+  const source = program.getSourceFile(entry.file);
+  const module = source && checker.getSymbolAtLocation(source);
+  if (!module) continue;
+  for (const exported of checker.getExportsOfModule(module)) {
+    const name = exported.getName();
+    let symbol =
+      exported.flags & ts.SymbolFlags.Alias
+        ? checker.getAliasedSymbol(exported)
+        : exported;
+    if (
+      !/^[A-Z][a-z]/.test(name) ||
+      !(symbol.flags & ts.SymbolFlags.Value) ||
+      seen.has(symbol)
+    )
+      continue;
+    const at = symbol.valueDeclaration ?? symbol.declarations?.[0];
+    if (!at) continue;
+    // Raw primitives, React contexts and error constructors belong in TypeDoc, not the visual catalogue.
+    if (
+      (ts.isVariableDeclaration(at) &&
+        at.initializer?.getText().startsWith("createContext")) ||
+      name.endsWith("Context") ||
+      name.endsWith("Primitive") ||
+      name.endsWith("Error") ||
+      at.getSourceFile().fileName.includes("node_modules")
+    )
+      continue;
+    const type = checker.getTypeOfSymbolAtLocation(symbol, at);
+    const api = signatureApi(type, at);
+    const slots = api
+      ? []
+      : checker.getPropertiesOfType(type).flatMap((slot) => {
+          const slotAt = slot.valueDeclaration ?? at;
+          const signature = signatureApi(
+            checker.getTypeOfSymbolAtLocation(slot, slotAt),
+            slotAt,
+          );
+          return signature
+            ? [{ name: slot.getName(), description: doc(slot), ...signature }]
+            : [];
+        });
+    if (!api && !slots.length) continue;
+    seen.add(symbol);
+    const fallback =
+      entry.family === "icons"
+        ? `${name.replace(/^Icon/, "").replace(/([a-z])([A-Z])/g, "$1 $2")} icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.`
+        : (familySummary[entry.family] ??
+          `${name} is part of the ${entry.family} component family. Its typed API defines the data, state and application callbacks it accepts.`);
+    const destination = ["icons", "icon"].includes(entry.family)
+      ? iconComponents
+      : components;
+    destination.push({
+      id: slug(name),
+      name,
+      entry: entry.entry,
+      family: entry.family,
+      description: doc(symbol) || fallback,
+      source: at.getSourceFile().fileName.replace(process.cwd() + "/", ""),
+      ...api,
+      slots,
+    });
+  }
+}
+const sectionByFamily = {
+  input: "text-fields",
+  textarea: "text-fields",
+  checkbox: "choice",
+  radio: "choice",
+  autocomplete: "combobox",
+  "multi-select": "combobox",
+  "tag-input": "combobox",
+  meter: "progress",
+  sparkline: "metric",
+  surface: "materials",
+  icon: "icons",
+  kbd: "text-fields",
+  entity: "entity-identity",
+  "entity-settings": "entity-settings",
+  shell: "app-shell",
+  windows: "windows",
+  ai: "ai-messages",
+  actions: "actions",
+  "data-table": "data-table",
+  appearance: "knobs",
+  skeleton: "typography",
+  "truncated-text": "tooltip",
+};
+function sectionFor(component) {
+  const name = component.name.toLowerCase();
+  if (component.family === "shell" && /orgswitcher|orgavatar/.test(name))
+    return "org-switcher";
+  if (component.family === "icons") return "icons";
+  if (
+    component.family === "charts" &&
+    [
+      "LineChart",
+      "AreaChart",
+      "BarChart",
+      "ColumnChart",
+      "PieChart",
+      "DonutChart",
+      "Gauge",
+      "RadialBar",
+      "Heatmap",
+      "ScatterChart",
+      "Histogram",
+      "Treemap",
+      "Sunburst",
+    ].includes(component.name)
+  )
+    return "chart-" + component.id;
+  if (component.family === "charts") {
+    if (/line|area/.test(name)) return "charts-lines";
+    if (/bar|column/.test(name)) return "charts-bars";
+    if (/tree|sunburst|drill/.test(name)) return "charts-hierarchy";
+    if (/scatter|histogram|heatmap/.test(name)) return "charts-distribution";
+    return "charts-part";
+  }
+  if (component.family === "ai") {
+    if (/composer/.test(name)) return "ai-composer";
+    if (/approval/.test(name)) return "ai-approvals";
+    if (/ask/.test(name)) return "ai-asks";
+    if (/entity|context/.test(name)) return "ai-context-links";
+    if (/tool/.test(name)) return "ai-tools";
+    if (/result|card|table/.test(name)) return "ai-results";
+    if (/session|pane|inspector/.test(name)) return "ai-sessions";
+  }
+  return sectionByFamily[component.family] ?? component.family;
+}
+for (const component of components) component.section = sectionFor(component);
+components.sort((a, b) => a.name.localeCompare(b.name));
+const coverage = generateComponentDemos(program, checker, components);
+console.log(
+  `Focused demos: ${coverage.filter((c) => c.covered).length}/${coverage.length}; missing: ${coverage
+    .filter((c) => !c.covered)
+    .map((c) => c.name)
+    .join(", ")}`,
+);
+mkdirSync("docs/api", { recursive: true });
+const iconApi = {
+  id: "icons",
+  name: "Icons",
+  entry: "glass-ux/icons",
+  description:
+    "All icons share IconProps. Import only the named icons your interface uses; meaningful icons need a label, decorative icons omit it.",
+  props: iconComponents.find((component) => component.family === "icons").props,
+  slots: [],
+  icons: iconComponents
+    .filter((component) => component.family === "icons")
+    .map(({ name, description }) => ({ name, description })),
+};
+mkdirSync("src/gallery/api", { recursive: true });
+writeFileSync("src/gallery/api/icons.json", JSON.stringify(iconApi));
+const currentIds = new Set([
+  "README",
+  "icons",
+  ...components.map((component) => component.id),
+]);
+for (const file of readdirSync("docs/api"))
+  if (file.endsWith(".md") && !currentIds.has(file.replace(".md", "")))
+    rmSync(join("docs/api", file));
+for (const file of readdirSync("src/gallery/api"))
+  if (file.endsWith(".json") && !currentIds.has(file.replace(".json", "")))
+    rmSync(join("src/gallery/api", file));
+writeFileSync(
+  "docs/api/icons.md",
+  "# Icons\n\n" +
+    iconApi.description +
+    '\n\n`import { IconSearch } from "glass-ux/icons"`\n\n' +
+    iconApi.props
+      .filter((prop) => !prop.inherited)
+      .map(
+        (prop) => `- **${prop.name}**: \`${prop.type}\` — ${prop.description}`,
+      )
+      .join("\n") +
+    "\n\n## Available icons\n\n" +
+    iconApi.icons
+      .map((icon) => `- **${icon.name}** — ${icon.description}`)
+      .join("\n") +
+    "\n",
+);
+
+for (const c of components) {
+  const table = (props) =>
+    [
+      "| Prop | Type | Valid options | Required | Default | Description |",
+      "| --- | --- | --- | --- | --- | --- |",
+      ...props
+        .filter((p) => !p.inherited)
+        .map(
+          (p) =>
+            `| ${p.name} | \`${p.type.replaceAll("|", "\\|")}\` | ${p.options.map((value) => JSON.stringify(value)).join(", ") || "See type"} | ${p.required ? "yes" : "no"} | ${p.default ?? "—"} | ${p.description.replaceAll("\n", " ")} |`,
+        ),
+    ].join("\n");
+  let content = `# ${c.name}\n\n${c.description}\n\n\`import { ${c.name} } from "${c.entry}"\`\n\n[Live examples](https://dastari.github.io/glass-ux/components/${c.id})\n\n`;
+  if (c.props) content += "## Props\n\n" + table(c.props) + "\n\n";
+  for (const slot of c.slots)
+    content += `## ${c.name}.${slot.name}\n\n${slot.description}\n\n${table(slot.props)}\n\n`;
+  content +=
+    "Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.\n";
+  writeFileSync(`docs/api/${c.id}.md`, content);
+}
+writeFileSync("src/gallery/api.generated.json", JSON.stringify(components));
+mkdirSync("src/gallery/api", { recursive: true });
+for (const component of components)
+  writeFileSync(
+    `src/gallery/api/${component.id}.json`,
+    JSON.stringify(component),
+  );
+mkdirSync("src/gallery/examples", { recursive: true });
+for (const section of new Set(["icons"])) {
+  const file = `src/gallery/sections/${section}.section.tsx`;
+  if (!ts.sys.fileExists(file)) continue;
+  const text = readFileSync(file, "utf8").replace(
+    /(from\s+["'])([^"']+)(["'])/g,
+    (_match, before, spec, after) => {
+      if (!spec.startsWith(".")) return before + spec + after;
+      const resolved = ts.sys
+        .resolvePath(join("src/gallery/sections", spec))
+        .replace(process.cwd() + "/src/", "")
+        .replace(/\.js$/, "");
+      let entry = "glass-ux/" + resolved;
+      if (/^ui\/[^/]+\/index$/.test(resolved))
+        entry = "glass-ux/" + resolved.split("/")[1];
+      else if (resolved === "icons/generated/icons") entry = "glass-ux/icons";
+      else if (/^(ai|shell|windows)\/index$/.test(resolved))
+        entry = "glass-ux/" + resolved.split("/")[0];
+      return before + entry + after;
+    },
+  );
+  writeFileSync(`src/gallery/examples/${section}.tsx.txt`, text);
+}
+writeFileSync(
+  "src/gallery/catalogue.generated.json",
+  JSON.stringify(
+    components.map(({ id, name, entry, family, description, section }) => ({
+      id,
+      name,
+      entry,
+      family,
+      description: description
+        .split(/\n\s*\n/)[0]
+        .replaceAll(/\s+/g, " ")
+        .split(/(?<=\.)\s+/)[0],
+      section,
+    })),
+  ),
+);
+writeFileSync(
+  "docs/api/README.md",
+  "# Component API\n\n" +
+    "- [Icons](icons.md) — `glass-ux/icons`\n" +
+    components
+      .map((c) => `- [${c.name}](${c.id}.md) — \`${c.entry}\``)
+      .join("\n") +
+    "\n",
+);
+mkdirSync("src/gallery/guides", { recursive: true });
+for (const guide of ["getting-started", "integration", "agent-adoption"])
+  cpSync(`docs/${guide}.md`, `src/gallery/guides/${guide}.md`);
+writeFileSync(
+  "llms.txt",
+  "# Glass UX\n\nTyped React components, compound slots, themes and interaction rules. Read docs from the installed package to match its version.\n\n- [Getting started](docs/getting-started.md)\n- [Existing applications](docs/integration.md)\n- [Agent adoption](docs/agent-adoption.md)\n- [API index](docs/api/README.md)\n- [Design rules](docs/ui-rules.md)\n- [Typed form inputs](docs/components/README.md)\n- [Adoption skill](skills/glass-ux-adopt/SKILL.md)\n- [Component selection skill](skills/glass-ux-components/SKILL.md)\n- [Forms skill](skills/glass-ux-forms/SKILL.md)\n- [Data views skill](skills/glass-ux-data/SKILL.md)\n- [Assistant UI skill](skills/glass-ux-assistant/SKILL.md)\n- [Authoring skill](skills/glass-ux-author/SKILL.md)\n",
+);
+const app = await Application.bootstrapWithPlugins({
+  entryPoints: [
+    ...entries.map((e) => e.file),
+    "src/vite.ts",
+    "src/lib/graphql-orm/where.ts",
+  ],
+  tsconfig: "tsconfig.json",
+  name: "Glass UX",
+  includeVersion: true,
+  excludePrivate: true,
+  excludeInternal: true,
+  excludeExternals: true,
+  readme: "README.md",
+  out: ".handoff/typedoc",
+  validation: { notExported: false, invalidLink: true, notDocumented: false },
+  logLevel: "Warn",
+});
+const project = await app.convert();
+if (!project) throw new Error("TypeDoc could not convert the public API");
+await app.generateDocs(project, ".handoff/typedoc");
+await app.generateJson(project, "docs/api/typedoc.json");
+console.log(
+  `Generated ${components.length} component API pages, prop tables, compound slots and TypeDoc reference.`,
+);

@@ -1,0 +1,62 @@
+import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconEndpoint } from "glass-ux/icons";
+
+import { EntityHeader, EntityHeaderSkeleton } from "glass-ux/shell";
+
+import { ActionBar } from "glass-ux/actions";
+
+import { StatusBadge, StatusDot } from "glass-ux/badge";
+
+import { ENDPOINTS, endpointActions } from "glass-ux/gallery/sections/overlays.fixtures";
+
+function SpecimenHeader() {
+    const endpoint = ENDPOINTS[0]!;
+    return (<EntityHeader icon={<IconEndpoint />} iconStatus={<StatusDot status="online" overlay/>} title={endpoint.name} status={<StatusBadge status="online"/>} subtitle={endpoint.model} actions={<ActionBar set={endpointActions} targets={[endpoint]} label={endpoint.name}/>}/>);
+}
+
+/* ── Section ─────────────────────────────────────────────────────────────── */
+export default function AppShellSection() {
+    return (<SectionPage>
+      <></>
+
+    <Specimen title="Entity header" description="The primary window's title bar, on the canvas, with the entity's ActionBar. The title line never wraps: the actions give way first (buttons move into More), below 48rem the title steps down a size, and under 30rem the icon goes and every action is one ⋯ at the end of the title line." wide layout="stack">
+        <Example label="Full">
+          <div className="gallery-shell-window">
+            <SpecimenHeader />
+          </div>
+        </Example>
+        <Example label="Compact (a 30rem window)">
+          <div className="gallery-shell-window" data-width="compact">
+            <SpecimenHeader />
+          </div>
+        </Example>
+        <Example label="Phone (a 22rem window)">
+          <div className="gallery-shell-window" data-width="phone">
+            <SpecimenHeader />
+          </div>
+        </Example>
+        <Example label="Loading">
+          <div className="gallery-shell-window">
+            <EntityHeaderSkeleton />
+          </div>
+        </Example>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

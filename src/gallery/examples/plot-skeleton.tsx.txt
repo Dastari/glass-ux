@@ -1,0 +1,16 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { PlotSkeleton } from "glass-ux/charts";
+
+export default function PlotSkeletonExample() {
+    return (<SectionPage>
+      <Specimen title="PlotSkeleton" layout="stack">
+        <div className="relative h-60 w-full">
+          <PlotSkeleton kind="line" tier="full"/>
+        </div>
+        <div className="relative h-60 w-full">
+          <PlotSkeleton kind="column" tier="compact"/>
+        </div>
+      </Specimen>
+    </SectionPage>);
+}

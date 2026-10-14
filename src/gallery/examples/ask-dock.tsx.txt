@@ -1,0 +1,21 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+import { ASKS } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { AskCard, AskDock, AskDockProvider } from "glass-ux/ai";
+
+export default function AskDockExample() {
+    return (<AiGallery>
+      <SectionPage>
+        <Specimen title="Pending questions above the composer" layout="stack">
+          <AskDockProvider>
+            <AskCard ask={ASKS.single}/>
+            <AskCard ask={ASKS.quick}/>
+            <AskDock />
+          </AskDockProvider>
+        </Specimen>
+      </SectionPage>
+    </AiGallery>);
+}

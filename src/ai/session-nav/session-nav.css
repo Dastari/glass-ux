@@ -1,0 +1,180 @@
+/*
+ * SessionNav — the Assistant drawer's content. New chat and search pinned at the top, the
+ * views and projects as fa-item rows with counts, sessions grouped by day under overline
+ * labels, AI settings pinned at the bottom. Fills the drawer; only the list scrolls.
+ *
+ * Row   title (truncates first) · organisation code chip (R6.9; "All" for cross-client
+ *       chats) · trailing state: spinner (working) · warning dot (waiting for an approval) ·
+ *       danger dot (run failed) · accent dot (unread) · relative time. The ⋯ menu takes the
+ *       trailing edge on hover and focus (always on touch, R11.7).
+ * Width the drawer decides it, never the content: the root is an inline-size container, so
+ *       its min-content is zero and no-wrap titles, the search field's intrinsic width or the
+ *       button's label cannot push it wider than the drawer (they truncate instead, R8). It
+ *       fills its parent whether that is a block, a column or a row flexbox.
+ */
+@layer components {
+  .fa-ai-sessions {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    container: ai-sessions / inline-size;
+  }
+  .fa-ai-sessions-top {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: 0 var(--space-3) var(--space-3);
+  }
+  .fa-ai-sessions-scroll {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-5);
+    min-height: 0;
+    padding: 0 var(--space-3) var(--space-3);
+    scrollbar-gutter: auto;
+  }
+  .fa-ai-sessions :is(ul) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-ai-sessions .fa-item {
+    width: 100%;
+    border: 0;
+    background-color: transparent;
+    font: inherit;
+    font-size: var(--type-body-size);
+    text-align: start;
+  }
+  .fa-ai-sessions-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .fa-ai-sessions-label {
+    padding: 0 var(--space-2-5);
+  }
+  .fa-ai-sessions-empty {
+    height: 10rem; /* tokens:allow the empty state's block tier */
+  }
+
+  .fa-ai-session {
+    position: relative;
+    display: flex;
+    min-width: 0;
+  }
+  .fa-ai-session-row {
+    padding-inline-end: var(--space-2);
+  }
+  .fa-ai-session-title {
+    font-weight: var(--weight-regular);
+  }
+  .fa-ai-session-row[data-unread] .fa-ai-session-title {
+    font-weight: var(--weight-semibold);
+  }
+  .fa-ai-session-org {
+    flex: none;
+    margin-inline-start: auto;
+    padding: 0 var(--space-1-5);
+    border-radius: var(--radius-xs);
+    background-color: var(--fill-muted);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .fa-ai-session-org + :is(.fa-ai-session-trail, .fa-ai-session-state) {
+    margin-inline-start: 0;
+  }
+  .fa-ai-session-trail,
+  .fa-ai-session-state {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1-5);
+    margin-inline-start: auto;
+    padding-inline-start: var(--space-2);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-ai-session-state .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--accent-text);
+    animation: fa-spin var(--duration-spin) linear infinite;
+  }
+  .fa-ai-session-dot {
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+  }
+  .fa-ai-session-dot[data-activity="prompt"] {
+    background-color: var(--warning);
+  }
+  .fa-ai-session-dot[data-activity="error"] {
+    background-color: var(--danger);
+  }
+  .fa-ai-session-menu {
+    position: absolute;
+    top: 50%;
+    right: var(--space-half);
+    display: inline-flex;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-ai-session-menu .fa-btn {
+    --_h: var(--control-h-xs);
+    border-radius: var(--radius-xs);
+  }
+  .fa-ai-session:is(:hover, :focus-within) .fa-ai-session-menu,
+  .fa-ai-session-menu:has([data-popup-open]) {
+    opacity: 1;
+  }
+  .fa-ai-session:is(:hover, :focus-within) .fa-ai-session-trail,
+  .fa-ai-session:has([data-popup-open]) .fa-ai-session-trail {
+    opacity: 0;
+  }
+  .fa-ai-session:is(:hover, :focus-within) .fa-ai-session-state {
+    opacity: 0;
+  }
+  @media (pointer: coarse) {
+    .fa-ai-session-menu {
+      opacity: 1;
+    }
+    .fa-ai-session-trail,
+    .fa-ai-session-state {
+      margin-inline-end: var(--control-h-sm);
+    }
+  }
+  .fa-ai-session[data-renaming] {
+    padding: var(--space-half) 0;
+  }
+  .fa-ai-session-rename {
+    width: 100%;
+  }
+  .fa-ai-session-skel-time {
+    flex: none;
+    width: var(--space-8);
+  }
+
+  .fa-ai-sessions-foot {
+    flex: none;
+    padding: var(--space-2) var(--space-3) var(--space-3);
+  }
+}

@@ -1,0 +1,157 @@
+/*
+ * Date picker — Calendar (a month grid), DateField and DateRangeField (typed days with a
+ * calendar popover). The popover is the shared Popover (glass-overlay + fa-popup); the
+ * fields are fa-control boxes like Input.
+ *
+ * Calendar  head (‹ month year ›) · weekday row · 6 × 7 day buttons. Selected days fill
+ *           with the accent; a range draws a soft accent band between its ends.
+ */
+@layer components {
+  .fa-calendar {
+    /* component tokens: one day cell, square */
+    --_cell: var(--control-h-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: max-content;
+    max-width: 100%;
+    user-select: none;
+  }
+  .fa-calendar-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .fa-calendar-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-calendar-grid {
+    display: grid;
+    gap: var(--space-half);
+    outline: none;
+  }
+  .fa-calendar-row {
+    display: grid;
+    grid-template-columns: repeat(7, var(--_cell));
+  }
+  .fa-calendar-weekday {
+    display: grid;
+    place-items: center;
+    height: var(--type-caption-line);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+  }
+  .fa-calendar-cell {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: var(--_cell);
+    height: var(--_cell);
+  }
+  /* The range band joins the selected days into one strip. */
+  .fa-calendar-cell[data-in-range]::before {
+    content: "";
+    position: absolute;
+    inset: var(--space-half) 0;
+    background-color: var(--accent-soft);
+  }
+  .fa-calendar-cell[data-range-start]::before {
+    inset-inline-start: var(--space-half);
+    border-start-start-radius: var(--radius-item);
+    border-end-start-radius: var(--radius-item);
+  }
+  .fa-calendar-cell[data-range-end]::before {
+    inset-inline-end: var(--space-half);
+    border-start-end-radius: var(--radius-item);
+    border-end-end-radius: var(--radius-item);
+  }
+  .fa-calendar-day {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: calc(var(--_cell) - var(--space-1));
+    height: calc(var(--_cell) - var(--space-1));
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-variant-numeric: tabular-nums;
+    outline: none;
+  }
+  .fa-calendar-cell[data-outside] .fa-calendar-day {
+    color: var(--fg-subtle);
+  }
+  .fa-calendar-day:hover:not(:disabled) {
+    background-color: var(--fill-hover);
+  }
+  .fa-calendar-day[data-today] {
+    color: var(--accent-text);
+    font-weight: var(--weight-semibold);
+  }
+  .fa-calendar-day[data-today]::after {
+    content: "";
+    position: absolute;
+    bottom: var(--space-1);
+    left: 50%;
+    width: var(--space-1);
+    height: var(--space-1);
+    translate: -50% 0;
+    border-radius: var(--radius-full);
+    background-color: currentColor;
+  }
+  .fa-calendar-cell[data-in-range] .fa-calendar-day {
+    color: var(--accent-text);
+  }
+  .fa-calendar[data-mode="single"] .fa-calendar-day[data-selected],
+  .fa-calendar-cell:is([data-range-start], [data-range-end]) .fa-calendar-day {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+  .fa-calendar-day:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+  .fa-calendar-day:disabled {
+    color: var(--fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* ── Fields ───────────────────────────────────────────────────────────────── */
+  .fa-date-input {
+    font-variant-numeric: tabular-nums;
+  }
+  /* The two ends sit beside the dash at the width of a date; the calendar button keeps the far end. */
+  .fa-date-range {
+    /* component token: one typed date */
+    --_date-w: 11ch;
+  }
+  .fa-date-range .fa-date-input {
+    flex: 0 1 var(--_date-w);
+    min-width: 0;
+  }
+  .fa-date-range .fa-input-btn {
+    margin-inline-start: auto;
+  }
+  .fa-date-range-dash {
+    flex: none;
+    color: var(--fg-subtle);
+  }
+  /* The calendar sizes its own popover. */
+  .fa-popover.fa-date-popover {
+    --_w: max-content;
+  }
+}

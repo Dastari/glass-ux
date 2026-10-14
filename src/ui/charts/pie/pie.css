@@ -1,0 +1,124 @@
+/*
+ * Part-to-whole: pie, donut, gauge and radial bars.
+ *
+ * Arcs are flat series fills separated by the 2px surface gap (pad angle) with softly rounded
+ * corners; the hovered slice lifts a little proud of the ring. The centre of a donut or gauge
+ * is Metric's value — display, headline or title role by the ring's size — and the hovered
+ * slice's value replaces it. Tracks use --chart-track; threshold ticks use --line-strong.
+ */
+@layer components {
+  .fa-chart-arc {
+    --_grow-from: scale(0.92);
+    --_enter-delay: 0s; /* the chart staggers its arcs inline */
+    fill: var(--_c);
+    transform-box: view-box;
+    transform-origin: 0 0;
+    transition: d var(--duration-slow) var(--ease-standard);
+    animation:
+      fa-grow var(--duration-slower) var(--ease-enter) var(--_enter-delay) both,
+      fa-fade-in var(--duration-slower) var(--ease-enter) var(--_enter-delay) both;
+  }
+  .fa-chart-arc[data-lift] {
+    pointer-events: none;
+    stroke: var(--surface-3);
+    stroke-width: var(--chart-gap);
+    transition: none;
+    animation: none;
+  }
+  .fa-chart-track {
+    fill: var(--chart-track);
+  }
+  .fa-chart-gauge-tick {
+    stroke: var(--line-strong);
+    stroke-width: var(--border-width-strong);
+    stroke-linecap: round;
+  }
+
+  /* ── The centre readout ────────────────────────────────────────────────── */
+  .fa-chart-centre {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-half);
+    min-width: 0;
+    text-align: center;
+    pointer-events: none;
+  }
+  .fa-chart-centre[data-gauge] {
+    justify-content: center;
+  }
+  .fa-chart-centre-value {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-line);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--type-title-tracking);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-chart-centre[data-size="xs"] .fa-chart-centre-value {
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    letter-spacing: var(--type-label-tracking);
+  }
+  .fa-chart-centre[data-size="md"] .fa-chart-centre-value {
+    font-size: var(--type-headline-size);
+    line-height: var(--type-headline-line);
+    letter-spacing: var(--type-headline-tracking);
+  }
+  .fa-chart-centre[data-size="lg"] .fa-chart-centre-value {
+    font-size: var(--type-display-size);
+    line-height: var(--type-display-line);
+    letter-spacing: var(--type-display-tracking);
+  }
+  .fa-chart-centre-value[data-tone="warning"] {
+    color: var(--warning-text);
+  }
+  .fa-chart-centre-value[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .fa-chart-centre-label {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-chart-centre[data-hovering] .fa-chart-centre-label {
+    color: var(--fg);
+  }
+
+  /* The list legend beside (or under) a ring. */
+  .fa-chart-pie-legend {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .fa-chart-pie[data-layout="stack"] .fa-chart-pie-legend {
+    justify-content: flex-start;
+  }
+  .fa-chart[data-tier="compact"] .fa-chart-pie-legend .fa-chart-legend-item {
+    min-height: var(--type-label-line);
+    padding-inline: 0;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+
+  .fa-chart-gauge-end {
+    position: absolute;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+}

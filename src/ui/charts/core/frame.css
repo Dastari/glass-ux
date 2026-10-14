@@ -1,0 +1,306 @@
+/*
+ * ChartFrame — the shell every chart renders in.
+ *
+ * A size container that fills its parent; the box picks the tier on both axes and the frame
+ * exposes it as data-tier (tier.ts uses the same thresholds as Metric's container queries):
+ *
+ *   micro    one row like Metric's micro tier: title (from 14rem), the marks, a trail value
+ *   compact  head row (title + passive legend or readout) above the plot
+ *   full     head row (title, interactive legend or readout, the table toggle) above the plot
+ *
+ * The head row has a fixed block size per tier so the skeleton, the empty/error states and the
+ * loaded chart share one plot box (R9.3). Charts sit inside panels: no background of their own.
+ */
+@layer components {
+  .fa-chart {
+    container: fa-chart / size;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+  }
+  .fa-chart-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+  }
+  .fa-chart[data-tier="full"] .fa-chart-body {
+    gap: var(--space-3);
+  }
+  .fa-chart[data-tier="micro"] .fa-chart-body {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  /* ── Head row ──────────────────────────────────────────────────────────── */
+  .fa-chart-head {
+    --_head-h: var(--type-label-line);
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    block-size: var(--_head-h);
+  }
+  .fa-chart[data-tier="full"] .fa-chart-head {
+    --_head-h: var(--control-h-xs);
+  }
+  .fa-chart-head-main {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    height: 100%;
+  }
+  .fa-chart-view {
+    margin-inline-start: auto;
+  }
+
+  /* Metric's label role, so a chart and a Metric in one grid read as one family. */
+  .fa-chart-title {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--type-label-weight);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-chart-title[data-micro] {
+    flex: 0 1 auto;
+    max-width: 30%;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  @container fa-chart (width < 14rem) {
+    .fa-chart-title[data-micro] {
+      display: none;
+    }
+  }
+
+  /* ── Plot ──────────────────────────────────────────────────────────────── */
+  .fa-chart-plot {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-chart[data-tier="micro"] .fa-chart-plot {
+    align-self: stretch;
+  }
+  .fa-chart-svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: visible;
+  }
+  /* The hit layer: owns the pointer and the keyboard cursor; marks never re-render on hover. */
+  .fa-chart-hit {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-xs);
+    outline-offset: var(--focus-ring-offset);
+    touch-action: pan-y;
+  }
+  .fa-chart-hit[data-cursor="crosshair"] {
+    cursor: crosshair;
+  }
+  .fa-chart-hit[data-cursor="pointer"] {
+    cursor: pointer;
+  }
+  /* A plot's own positioning layer (svg, overlay and hit layer stack inside it). */
+  .fa-chart-layer {
+    position: absolute;
+    inset: 0;
+  }
+  .fa-chart-overlay {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  /* The micro tier's trailing figure (latest value, share). */
+  .fa-chart-trail {
+    --_trail-w: 34%; /* a figure: label and value */
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    width: var(--_trail-w);
+    min-width: 0;
+    overflow: hidden;
+  }
+  .fa-chart-trail[data-size="value"] {
+    --_trail-w: 4.5em; /* a bare value: "44.4%", "82%" */
+    font-size: var(--type-caption-size);
+  }
+  .fa-chart .fa-chart-trail .fa-chart-skel-text {
+    --_skw: 4em;
+  }
+  @container fa-chart (width < 22rem) {
+    .fa-chart-trail[data-optional] {
+      display: none;
+    }
+  }
+
+  /* Micro empty/error: one line in the row. */
+  .fa-chart-note {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    height: 100%;
+    min-width: 0;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-chart-note > .fa-icon {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+  }
+  .fa-chart-note[data-tone="danger"] > .fa-icon {
+    color: var(--danger-text);
+  }
+  .fa-chart-note-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ── Skeleton ──────────────────────────────────────────────────────────── */
+  .fa-chart-skel {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template: "marks" minmax(0, 1fr) / minmax(0, 1fr);
+  }
+  .fa-chart-skel[data-axes] {
+    grid-template:
+      "y marks" minmax(0, 1fr)
+      ". x" auto / auto minmax(0, 1fr);
+    gap: var(--space-1-5) var(--space-2);
+  }
+  .fa-chart-skel-y {
+    grid-area: y;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .fa-chart-skel-x {
+    grid-area: x;
+    display: flex;
+    justify-content: space-between;
+  }
+  .fa-chart-skel-marks {
+    position: relative;
+    grid-area: marks;
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-chart .fa-chart-skel-text {
+    --_skw: 2.5em; /* placeholder width in the part's own em */
+    flex: none;
+    width: var(--_skw);
+  }
+  .fa-chart .fa-chart-skel-text[data-part="legend"] {
+    --_skw: 5em;
+  }
+  .fa-chart .fa-chart-skel-text[data-part="bar-label"] {
+    --_skw: 6em;
+  }
+  .fa-chart-head-skel {
+    display: flex;
+    gap: var(--space-3);
+  }
+  .fa-chart-skel-area {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-xs);
+    /* A soft hill: reads as a series, not a slab. */
+    clip-path: polygon(0 100%, 0 70%, 10% 56%, 22% 64%, 34% 40%, 46% 52%, 58% 30%, 70% 44%, 82% 24%, 92% 34%, 100% 20%, 100% 100%);
+  }
+  .fa-chart-skel-columns {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: var(--space-2);
+  }
+  .fa-chart-skel-columns > .fa-skel {
+    flex: 0 1 var(--chart-bar-max);
+    border-start-start-radius: var(--chart-bar-radius);
+    border-start-end-radius: var(--chart-bar-radius);
+  }
+  .fa-chart-skel-bars {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: var(--space-1);
+  }
+  .fa-chart-skel-bar-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 0;
+  }
+  .fa-chart-skel-bar-row > .fa-skel {
+    height: min(var(--space-3), 100%);
+    border-start-end-radius: var(--chart-bar-radius);
+    border-end-end-radius: var(--chart-bar-radius);
+  }
+  .fa-chart-skel-radial {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+  .fa-chart-skel-ring {
+    height: min(100%, 100cqw);
+    max-height: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--radius-full);
+    mask-image: radial-gradient(closest-side, transparent 64%, var(--fg) 65%);
+  }
+  .fa-chart-skel-ring[data-kind="sunburst"] {
+    mask-image: radial-gradient(closest-side, transparent 30%, var(--fg) 31%);
+  }
+  .fa-chart-skel-strip {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 50%;
+    height: var(--space-2);
+    translate: 0 -50%;
+    border-radius: var(--radius-full);
+  }
+  .fa-chart-skel-tiles {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 5fr 3fr 2fr;
+    grid-template-rows: 3fr 2fr;
+    gap: var(--chart-gap);
+  }
+  .fa-chart-skel-tiles > .fa-skel {
+    border-radius: var(--chart-tile-radius);
+  }
+  .fa-chart-skel-tiles > .fa-skel:first-child {
+    grid-row: span 2;
+  }
+}

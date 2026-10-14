@@ -1,0 +1,13 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconOrganisation } from "glass-ux/icons";
+
+import { ShellBrand } from "glass-ux/shell";
+
+export default function ShellBrandExample() {
+    return (<SectionPage>
+      <Specimen title="ShellBrand" layout="stack">
+        <ShellBrand label="Meridian Studio" mark={<IconOrganisation />}/>
+      </Specimen>
+    </SectionPage>);
+}

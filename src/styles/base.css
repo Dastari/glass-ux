@@ -1,0 +1,82 @@
+/*
+ * Document defaults that sit on top of Tailwind's preflight.
+ */
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    font-size: calc(100% * var(--ui-scale));
+    font-feature-settings: "cv11", "ss01", "ss03";
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    color: var(--fg);
+    background-color: var(--canvas);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* R5.1: the shell owns the viewport; the document itself never scrolls. */
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    letter-spacing: var(--type-body-tracking);
+    overscroll-behavior: none;
+  }
+
+  :where(h1, h2, h3, h4, h5, h6) {
+    text-wrap: balance;
+  }
+  :where(p) {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--accent-soft-hover);
+    color: inherit;
+  }
+
+  /* Numbers that update live never change width. */
+  :where(time, data, [data-numeric]) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :where(code, kbd, samp, pre) {
+    font-family: var(--font-mono);
+    font-size: var(--type-mono-size);
+  }
+
+  /* One focus treatment for everything. Components may move the ring (e.g. inset for
+     rows) but never restyle it. */
+  :where(:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  :where(:focus:not(:focus-visible)) {
+    outline: none;
+  }
+
+  /* Thin, quiet scrollbars that match the glass. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  /* Scroll containers reserve their scrollbar so content never jumps sideways (R9.5). */
+  [data-scroll-container] {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+}

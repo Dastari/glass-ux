@@ -1,0 +1,20 @@
+/*
+ * BrandLogo — a two-tone mark. Fills are the brand roles (src/styles/brand.css); the box is
+ * the caller's: an svg with a viewBox keeps its aspect ratio inside whatever size it is given.
+ */
+@layer components {
+  .fa-brand {
+    display: block;
+    flex: none;
+    overflow: visible;
+  }
+  .fa-brand-primary {
+    fill: var(--brand-primary);
+  }
+  .fa-brand-secondary {
+    fill: var(--brand-secondary);
+  }
+  .fa-brand[data-tones="mono"] :is(.fa-brand-primary, .fa-brand-secondary) {
+    fill: currentColor;
+  }
+}

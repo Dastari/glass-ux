@@ -1,0 +1,284 @@
+/*
+ * Composer — the message box.
+ *
+ * Material  the material of its surface (glass-overlay floating over a conversation,
+ *           glass-panel on the canvas, glass-control in a panel) at the surface radius;
+ *           focus shows the control halo (R11.4) and keeps the material's elevation.
+ * Text      prose type (subtitle size, 24px line) from 30rem, body below; grows from
+ *           --_min-rows to --_max-rows, then scrolls inside.
+ * Toolbar   tools left (Attach, model, Context, a disabled reason), dictation and send right.
+ *           Below 32rem the tools drop their labels; below 26rem the model chip folds away.
+ * Status    the conversation's status strip as the last row, inside the same surface.
+ *
+ * Component tokens
+ *   --_line                    the text line height
+ *   --_min-rows / --_max-rows  set inline from props
+ */
+@layer components {
+  .fa-ai-composer {
+    --_line: var(--type-body-line);
+    --_size: var(--type-body-size);
+    --_min-rows: 1;
+    --_max-rows: 10;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    width: 100%;
+    min-width: 0;
+    padding: var(--space-2-5) var(--space-2-5) var(--space-2-5);
+    border-radius: var(--radius-surface);
+    container: ai-composer / inline-size;
+    transition-property: border-color, box-shadow;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-ai-composer:focus-within {
+    border-color: var(--accent-line);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-rim-top),
+      0 0 0 var(--focus-halo) var(--accent-soft),
+      var(--_shadow, var(--shadow-2));
+  }
+  .fa-ai-composer[data-size="lg"] {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+  @container (width >= 30rem) {
+    .fa-ai-composer {
+      --_line: var(--space-6);
+      --_size: var(--type-subtitle-size);
+    }
+  }
+
+  .fa-ai-composer-status {
+    margin-inline: calc(var(--space-1) * -1);
+    margin-block: calc(var(--space-1) * -1) calc(var(--space-1-5) * -1);
+  }
+  .fa-ai-composer-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1-5);
+    padding: var(--space-half) var(--space-half) var(--space-1);
+  }
+  .fa-ai-composer-input {
+    width: 100%;
+    min-height: calc(var(--_line) * var(--_min-rows) + var(--space-2) * 2);
+    max-height: calc(var(--_line) * var(--_max-rows) + var(--space-2) * 2);
+    padding: var(--space-2) var(--space-2-5);
+    border: 0;
+    background: transparent;
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--_size);
+    line-height: var(--_line);
+    field-sizing: content;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    resize: none;
+    outline: none;
+  }
+  .fa-ai-composer-input::placeholder {
+    color: var(--fg-subtle);
+    opacity: 1;
+  }
+  .fa-ai-composer[data-disabled] .fa-ai-composer-input {
+    cursor: not-allowed;
+  }
+  .fa-ai-composer[data-disabled] .fa-ai-composer-input::placeholder {
+    color: var(--fg-muted);
+  }
+
+  .fa-ai-composer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-ai-composer-tools {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .fa-ai-composer-send {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .fa-ai-composer-reason {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-width: 0;
+    padding-inline: var(--space-2);
+    color: var(--warning-text);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-ai-composer-reason > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-composer-reason .fa-icon {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  @container ai-composer (width < 32rem) {
+    .fa-ai-composer-tool {
+      width: var(--_h);
+      --_px: 0;
+    }
+    .fa-ai-composer-tool .fa-ai-composer-tool-label,
+    .fa-ai-composer-tool > .fa-icon:last-child:not(:first-child) {
+      display: none;
+    }
+    .fa-ai-composer-reason > span {
+      display: none;
+    }
+  }
+  @container ai-composer (width < 26rem) {
+    .fa-ai-composer-model {
+      display: none;
+    }
+  }
+
+  /* Dictation level: five bars scaled by the live input level. */
+  .fa-ai-level {
+    --_level: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+    height: var(--icon-md);
+  }
+  .fa-ai-level > span {
+    width: var(--space-half);
+    height: max(var(--space-half), calc(var(--_w) * var(--_level) * 100%));
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+    transition: height var(--duration-instant) linear;
+  }
+
+  /* Attachments */
+  .fa-ai-attachment {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    max-width: 16rem; /* tokens:allow the longest attachment chip */
+    min-height: calc(var(--control-h-md) + var(--space-1));
+    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-1);
+    border-radius: var(--radius-control);
+  }
+  .fa-ai-attachment[data-state="rejected"] {
+    border-color: var(--danger-line);
+  }
+  .fa-ai-attachment-thumb,
+  .fa-ai-attachment-icon {
+    flex: none;
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+    border-radius: var(--radius-xs);
+    object-fit: cover;
+  }
+  .fa-ai-attachment-icon {
+    display: inline-grid;
+    place-items: center;
+    background-color: var(--fill-muted);
+    color: var(--fg-muted);
+  }
+  .fa-ai-attachment-icon .fa-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-ai-attachment-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-ai-attachment-name {
+    min-width: 0;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+  }
+  .fa-ai-attachment-meta {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-ai-attachment[data-state="rejected"] .fa-ai-attachment-meta,
+  .fa-ai-attachment-warning {
+    color: var(--danger-text);
+  }
+  .fa-ai-attachment-warning {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  .fa-ai-attachment .fa-ai-chip-remove {
+    --_h: var(--control-h-xs);
+  }
+
+  /* Menus */
+  .fa-ai-menu {
+    --_w: 24rem;
+    width: min(var(--_w), calc(100vw - var(--space-4) * 2));
+  }
+
+  /* Model popover */
+  .fa-ai-model {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: calc(var(--inset-tile) - var(--inset-overlay));
+  }
+  .fa-ai-model-facts {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--space-1-5) var(--space-4);
+    margin: 0;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-ai-model-facts > div {
+    display: contents;
+  }
+  .fa-ai-model-facts dt {
+    color: var(--fg-muted);
+  }
+  .fa-ai-model-facts dd {
+    margin: 0;
+    font-weight: var(--weight-medium);
+  }
+
+  /* Context popover */
+  .fa-ai-context {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .fa-ai-context-head {
+    padding: var(--space-2) var(--space-2-5) 0;
+  }
+  .fa-ai-context-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-ai-context-list .fa-ai-option {
+    padding-inline-end: var(--space-half);
+  }
+  .fa-ai-context-search {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-1) var(--space-1);
+  }
+}

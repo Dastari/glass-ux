@@ -1,0 +1,53 @@
+import { SessionNav } from "glass-ux/ai";
+
+import { ContainerLab, Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { PROJECTS, SESSIONS } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+export default function AiSessionsSection() {
+    return (<AiGallery>
+      <SectionPage>
+        <></>
+
+        <Specimen title="Drawer" description="New chat, search, the two views with counts, projects, sessions by day. A spinner while working, a warning dot waiting for you, a danger dot after a failed run, an accent dot and bold title when unread. ⋯ and right-click carry the session actions. The drawer sets the width: at its narrowest, default and widest, everything fits and titles truncate." layout="row" wide>
+          {([
+            ["min", "14rem · narrowest"],
+            [undefined, "16.5rem · default"],
+            ["max", "28rem · widest"],
+        ] as const).map(([width, label]) => (<Example key={label} label={label}>
+              <div className="glass-control ai-drawer-sample" data-width={width} data-drawer-sample={width ?? "default"}>
+                <SessionNav sessions={SESSIONS} projects={PROJECTS} activeId="s-cedar-annex" counts={{ conversations: 8, archived: 2 }} onNewChat={() => { }} onRename={() => { }} onArchive={() => { }} onDelete={() => new Promise((resolve) => setTimeout(resolve, 500))} onOpenWindow={() => { }} onOpenSettings={() => { }}/>
+              </div>
+            </Example>))}
+        </Specimen>
+
+        <Specimen title="Drawer states" description="Loading rows in their final box; an empty history; no search matches." layout="bare">
+          <div className="ai-row">
+            <div className="glass-control ai-drawer-sample">
+              <SessionNav sessions={[]} loading counts={{ conversations: 0, archived: 0 }} onNewChat={() => { }}/>
+            </div>
+            <div className="glass-control ai-drawer-sample">
+              <SessionNav sessions={[]} counts={{ conversations: 0, archived: 6 }} onNewChat={() => { }}/>
+            </div>
+            <div className="glass-control ai-drawer-sample">
+              <SessionNav sessions={SESSIONS} initialQuery="spooler" counts={{ conversations: 8, archived: 2 }} onNewChat={() => { }}/>
+            </div>
+          </div>
+        </Specimen>
+
+        <></>
+
+        <></>
+
+        <></>
+
+        <ContainerLab description="The drawer content in fixed boxes: it fills the box, its list scrolls, titles truncate.">
+          {() => (<SessionNav sessions={SESSIONS} counts={{ conversations: 8, archived: 2 }} onNewChat={() => { }}/>)}
+        </ContainerLab>
+
+        <></>
+      </SectionPage>
+    </AiGallery>);
+}

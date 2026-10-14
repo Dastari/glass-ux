@@ -1,0 +1,9 @@
+{
+  "name": "glass-ux-docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"dev":"vite --host 127.0.0.1 --port 4220","build":"vite build","preview":"vite preview --host 127.0.0.1 --port 4221"},
+  "dependencies": {"glass-ux":"workspace:*","react":"19.3.0","react-dom":"19.3.0","@tanstack/react-router":"1.170.43"},
+  "devDependencies": {"vite":"8.3.4","@vitejs/plugin-react":"6.1.2","@tailwindcss/vite":"4.3.3","tailwindcss":"4.3.3"}
+}

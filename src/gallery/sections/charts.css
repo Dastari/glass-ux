@@ -1,0 +1,62 @@
+/*
+ * Chart gallery sections: tier rows and dashboard tile grids. Charts fill their box, so
+ * every box here has a definite height.
+ */
+@layer components {
+  .charts-tiles {
+    --_tile-min: 17rem; /* a compact chart tile */
+    --_tile-h: 11.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--_tile-min)), 1fr));
+    gap: var(--gap-tiles);
+    width: 100%;
+  }
+  .charts-tile {
+    height: var(--_tile-h);
+    min-width: 0;
+  }
+  .charts-pane {
+    --_pane-h: 26rem; /* a full-tier pane */
+    width: 100%;
+    height: var(--_pane-h);
+  }
+  .charts-pane[data-size="short"] {
+    --_pane-h: 20rem;
+  }
+  .charts-pane[data-size="tall"] {
+    --_pane-h: 32rem;
+  }
+  .charts-split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+    gap: var(--gap-panels);
+    width: 100%;
+  }
+  .charts-rows {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 40rem;
+  }
+  .charts-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    height: var(--row-h);
+    padding-inline: var(--space-2);
+    border-block-end: var(--border-width) solid var(--line);
+  }
+  .charts-row:last-child {
+    border-block-end: 0;
+  }
+  .charts-row-name {
+    flex: none;
+    width: 9rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .charts-row-chart {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: var(--control-h-md);
+  }
+}

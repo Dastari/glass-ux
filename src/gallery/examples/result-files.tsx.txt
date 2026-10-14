@@ -1,0 +1,17 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+import { RESULTS } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { ResultFiles } from "glass-ux/ai";
+
+export default function ResultFilesExample() {
+    return (<AiGallery>
+      <SectionPage>
+        <Specimen title="ResultFiles" description="This renderer displays one typed result. The sample is local fictional data; supply your own result and host handlers." layout="stack">
+          <ResultFiles result={RESULTS.files}/>
+        </Specimen>
+      </SectionPage>
+    </AiGallery>);
+}

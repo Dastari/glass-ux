@@ -1,0 +1,22 @@
+/*
+ * Separator — the --line hairline, horizontal or vertical. Allowed only where R5.8 allows a
+ * divider: between action groups (toolbar, menu — at most two per menu), table row lines and
+ * scroll edges. A vertical separator in a toolbar is inset so it never touches the edges.
+ */
+@layer components {
+  .fa-separator {
+    flex: none;
+    margin: 0;
+    border: 0;
+    background-color: var(--line);
+  }
+  .fa-separator[data-orientation="horizontal"] {
+    width: 100%;
+    height: var(--border-width);
+  }
+  .fa-separator[data-orientation="vertical"] {
+    align-self: stretch;
+    width: var(--border-width);
+    margin-block: var(--space-1-5);
+  }
+}

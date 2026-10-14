@@ -1,0 +1,375 @@
+/*
+ * Asks — the human-in-the-loop cards, the dock that pins them above the composer, and the
+ * marker and record that hold their place in the transcript. Never modal (R13.8).
+ *
+ * Card     AiCard in the ask's tone: approvals warning (danger when destructive), every other
+ *          ask accent. Question as the title beside a toned icon tile; one-field-per-row
+ *          controls (R15); the footer puts secondary actions left and the primary right.
+ * Confirm  destructive and MFA approvals (and destructive confirmations) take a second step
+ *          in the card: the effect becomes a toned notice, the footer Back and the one solid
+ *          button.
+ * Dock     glass-overlay above the composer, the ask's tone on its edge; a bar (waiting
+ *          label or, folded, the question · "1 of 3" ‹ › · fold) over the ask, whose card
+ *          takes no material of its own. Capped at half the conversation's height, scrolling
+ *          inside.
+ * Marker   the ask's place in the transcript while it waits: a record line with Review.
+ * Record   one line in the same material: status glyph, the decision in words, who and when.
+ * Fold     AskShell animates the height between them on --duration-slow.
+ *
+ * Component tokens
+ *   --_dock-max   the dock's height cap against the conversation (ai-dock container)
+ */
+@layer components {
+  .fa-ai-ask-shell {
+    min-width: 0;
+    transition: height var(--duration-slow) var(--ease-standard);
+  }
+  .fa-ai-ask-shell[data-phase="closing"] {
+    overflow: hidden;
+  }
+  .fa-ai-ask-shell[data-phase="closing"] > div,
+  .fa-ai-ask-shell[data-phase="closed"] > div {
+    animation: fa-fade-in var(--duration-base) var(--ease-enter) both;
+  }
+
+  .fa-ai-ask-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  /* The card spans the column like every result; its controls keep the form measure (R15.7). */
+  .fa-ai-ask-body > * {
+    max-width: var(--form-measure);
+  }
+  .fa-ai-ask-body > .fa-ai-approval {
+    max-width: none;
+  }
+  .fa-ai-ask .fa-ai-ask-body {
+    padding-top: var(--space-3);
+  }
+  .fa-ai-ask-footer {
+    justify-content: flex-end;
+  }
+  .fa-ai-ask-footer-start {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-controls);
+    margin-inline-end: auto;
+  }
+  .fa-ai-ask-count {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-ai-ask-expiry[data-soon] {
+    color: var(--warning-text);
+  }
+  .fa-ai-ask-running {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    color: var(--fg-muted);
+  }
+  .fa-ai-ask-spinner {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    color: var(--accent-text);
+    animation: fa-spin var(--duration-spin) linear infinite;
+  }
+
+  /* Approval */
+  .fa-ai-approval {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-ai-approval-targets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+  .fa-ai-approval-effect,
+  .fa-ai-ask-consequence {
+    max-width: var(--measure);
+    color: var(--fg);
+    text-wrap: pretty;
+  }
+  /* Choices */
+  .fa-ai-ask-cards.fa-radio-cards {
+    min-width: 0;
+  }
+  .fa-ai-ask-checks .fa-ai-ask-check-all {
+    padding-bottom: var(--space-1);
+  }
+  .fa-ai-ask-times {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* Quick replies: the question as text on the surface, the answers as pills. */
+  .fa-ai-quick {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-ai-quick-question {
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+  }
+  .fa-ai-quick-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .fa-btn.fa-ai-quick-option {
+    border-radius: var(--radius-full);
+  }
+
+  /* Rank */
+  .fa-ai-rank {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-ai-rank-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--control-h-lg);
+    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+    border-radius: var(--radius-control);
+    outline: none;
+  }
+  .fa-ai-rank-row:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-ai-rank-grip {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--fg-subtle);
+  }
+  .fa-ai-rank-index {
+    flex: none;
+    width: var(--icon-sm);
+    color: var(--fg-muted);
+    font-weight: var(--weight-semibold);
+    text-align: center;
+  }
+  .fa-ai-rank-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-ai-rank-label {
+    overflow: hidden;
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-rank-description {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fa-ai-ask-form {
+    min-width: 0;
+  }
+  .fa-ai-ask-confirm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  /* Entity picker */
+  .fa-ai-picker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: var(--form-measure);
+  }
+  .fa-ai-picker-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    min-height: var(--control-h-xs);
+  }
+  .fa-ai-picker-chips[data-empty]::before {
+    content: "Nothing selected";
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--control-h-xs);
+  }
+  .fa-ai-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    max-height: calc(var(--item-h) * 5 + var(--space-half) * 4);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .fa-ai-option .fa-ai-option-glyph > .fa-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+    --_stroke: calc(var(--icon-stroke) * 1.06);
+  }
+  .fa-ai-options-empty {
+    padding: var(--space-2) var(--space-2-5);
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+  }
+
+  /* Record */
+  .fa-ai-ask-record {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-width: 0;
+    min-height: var(--item-h);
+    padding: var(--space-1) var(--space-2);
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-ai-ask-record-text {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-ask-record-outcome {
+    color: var(--fg-muted);
+  }
+  .fa-ai-ask-record-text + .fa-btn {
+    margin-inline-start: auto;
+  }
+  .fa-ai-ask-record > .fa-btn {
+    flex: none;
+    margin-block: calc(var(--space-1) * -1);
+  }
+  .fa-ai-ask-record-meta {
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-ai-ask-record[data-status="succeeded"] .fa-ai-ask-record-text {
+    color: var(--fg);
+  }
+  @container (width < 30rem) {
+    .fa-ai-ask-record-meta {
+      display: none;
+    }
+  }
+
+  /* Marker: the pending ask's place in the transcript. */
+  .fa-ai-ask-marker .fa-ai-ask-record-text {
+    color: var(--fg);
+  }
+
+  /* Second step of a destructive or MFA approval. */
+  .fa-ai-ask-confirm-notice {
+    animation: fa-rise-in var(--duration-base) var(--ease-enter);
+  }
+
+  /* Ask dock */
+  .fa-ai-ask-dock {
+    --_dock-max: 50cqh;
+    --_tone-line: var(--glass-edge);
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    max-height: var(--_dock-max);
+    border-color: var(--_tone-line);
+    border-radius: var(--radius-surface);
+    color: var(--fg);
+    animation: fa-rise-in var(--duration-base) var(--ease-enter);
+  }
+  .fa-ai-ask-dock[data-tone="warning"] {
+    --_tone-line: var(--warning-line);
+  }
+  .fa-ai-ask-dock[data-tone="danger"] {
+    --_tone-line: var(--danger-line);
+  }
+  .fa-ai-ask-dock-bar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    min-height: calc(var(--control-h-sm) + var(--space-2));
+    padding: var(--space-1) var(--space-1-5) var(--space-1) var(--inset-tile);
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-ai-ask-dock-label,
+  .fa-ai-ask-dock-summary {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-ask-dock-summary {
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    font-weight: var(--weight-medium);
+    text-align: start;
+    cursor: pointer;
+  }
+  .fa-ai-ask-dock-summary:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-ai-ask-dock-pager {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-half);
+  }
+  .fa-ai-ask-dock-count {
+    padding-inline-end: var(--space-1);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+  }
+  .fa-ai-ask-dock-body {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .fa-ai-ask-dock-item {
+    outline: none;
+  }
+  .fa-ai-ask-dock-item:focus-visible {
+    border-radius: var(--radius-surface);
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+  .fa-ai-ask-dock-item .fa-ai-ask .fa-ai-card-header[data-tile] {
+    padding-top: var(--space-1);
+  }
+  .fa-ai-ask-dock-item .fa-ai-quick {
+    padding: var(--space-1) var(--inset-tile) var(--inset-tile);
+  }
+}

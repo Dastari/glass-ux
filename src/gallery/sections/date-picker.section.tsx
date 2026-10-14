@@ -1,0 +1,135 @@
+import { useState } from "react"
+import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
+import { Calendar, DateField, DateRangeField, addDays, todayIso, type DateRange, type IsoDate } from "../../ui/date-picker/index.js"
+import { Field } from "../../ui/field/index.js"
+import { FormStack } from "../../ui/form/index.js"
+
+const today = todayIso()
+
+function SingleCalendar() {
+  const [value, setValue] = useState<IsoDate | null>(addDays(today, 3))
+  return (
+    <Example label={value ?? "Nothing picked"}>
+      <div className="glass-overlay fa-popup fa-popover fa-popover-preview fa-date-popover" data-size="sm">
+        <div className="fa-popover-body">
+          <Calendar value={value} onValueChange={setValue} aria-label="Maintenance day" />
+        </div>
+      </div>
+    </Example>
+  )
+}
+
+function RangeCalendar() {
+  const [value, setValue] = useState<DateRange | null>({ start: addDays(today, -9), end: addDays(today, -2) })
+  return (
+    <Example label={value ? `${value.start} – ${value.end}` : "Nothing picked"}>
+      <div className="glass-overlay fa-popup fa-popover fa-popover-preview fa-date-popover" data-size="sm">
+        <div className="fa-popover-body">
+          <Calendar mode="range" value={value} onValueChange={setValue} aria-label="Reporting period" />
+        </div>
+      </div>
+    </Example>
+  )
+}
+
+export default function DatePickerSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Calendar"
+        description="Arrow keys move by day and week, Home and End to the week's ends, Page Up and Page Down by month (Shift: year), Enter picks. In a range, the first pick is the start; the band follows the pointer until the second."
+      >
+        <SingleCalendar />
+        <RangeCalendar />
+        <Example label="Bounded: the next 30 days">
+          <div className="glass-overlay fa-popup fa-popover fa-popover-preview fa-date-popover" data-size="sm">
+            <div className="fa-popover-body">
+              <Calendar min={today} max={addDays(today, 30)} aria-label="Next 30 days" />
+            </div>
+          </div>
+        </Example>
+      </Specimen>
+
+      <Specimen title="Fields" description="Type in the locale's order (13/10/2026; any separator, two-digit years) or open the calendar with its button or Alt+↓. Text that is not a day turns the box invalid and keeps what was typed." layout="stack">
+        <FormStack>
+          <Field label="Warranty ends">
+            <DateField defaultValue="2027-03-31" />
+          </Field>
+          <Field label="Next maintenance">
+            <DateField min={today} />
+          </Field>
+          <Field label="Reporting period" nativeLabel={false}>
+            <DateRangeField defaultValue={{ start: addDays(today, -30), end: today }} aria-label="Reporting period" />
+          </Field>
+          <Field label="Retired on" error="Pick a day on or before today">
+            <DateField defaultValue={addDays(today, 2)} invalid />
+          </Field>
+          <Field label="Enrolled">
+            <DateField defaultValue="2024-02-12" readOnly />
+          </Field>
+          <Field label="Archived">
+            <DateField disabled />
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="Sizes" description="The box follows the control sizes; the calendar keeps its own.">
+        <DateField size="sm" defaultValue={today} aria-label="Small" />
+        <DateField size="md" defaultValue={today} aria-label="Medium" />
+        <DateField size="lg" defaultValue={today} aria-label="Large" />
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <DateField defaultValue={today} aria-label="Date over imagery" />
+        <DateRangeField defaultValue={{ start: addDays(today, -7), end: today }} aria-label="Range over imagery" />
+      </Specimen>
+
+      <ContainerLab>
+        {(preset) =>
+          preset?.id === "row" || preset?.id === "header" ? (
+            <div className="flex h-full items-center gap-2 px-1">
+              <DateField size="sm" width="full" defaultValue={today} aria-label="Date" />
+            </div>
+          ) : (
+            <div className="h-full overflow-y-auto" data-scroll-container>
+              <FormStack className="p-3">
+                <Field label="Warranty ends">
+                  <DateField defaultValue="2027-03-31" width="full" />
+                </Field>
+                <Field label="Reporting period" nativeLabel={false}>
+                  <DateRangeField defaultValue={{ start: addDays(today, -30), end: today }} aria-label="Reporting period" />
+                </Field>
+              </FormStack>
+            </div>
+          )
+        }
+      </ContainerLab>
+
+      <Rules
+        do={[
+          "Store and pass calendar days as ISO dates (2026-10-13); they never drift across time zones.",
+          "Let people type: most dates are faster to type than to find.",
+          "Bound the calendar with min and max when only some days make sense.",
+          "Use DateRangeField for a range, not two DateFields side by side.",
+        ]}
+        dont={[
+          "Store a calendar day as a midnight timestamp.",
+          "Spell out the format in a hint; the placeholder already shows it.",
+          "Open the calendar on focus; it opens from its button or Alt+↓.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--control-h-sm", "Day cell"],
+          ["--accent", "Picked day and range ends"],
+          ["--accent-soft", "Range band"],
+          ["--accent-text", "Today and days inside the range"],
+          ["--fill-hover", "Hovered day"],
+          ["--radius-item", "Day and band corners"],
+          ["--fg-subtle", "Weekdays and days outside the month"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

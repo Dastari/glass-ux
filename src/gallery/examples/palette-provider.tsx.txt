@@ -1,0 +1,36 @@
+import { PaletteProvider, useCommandPalette, usePaletteCommands } from "glass-ux/command-palette";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { toast } from "glass-ux/toast";
+
+import { Button } from "glass-ux/button";
+
+function DemoPaletteCommands() {
+    const palette = useCommandPalette();
+    usePaletteCommands([
+        {
+            id: "sample-open",
+            label: "Open exhibition",
+            group: "Projects",
+            run: () => toast.info("Sample exhibition opened"),
+        },
+        {
+            id: "sample-save",
+            label: "Save exhibition",
+            group: "Actions",
+            run: () => toast.success("Sample saved"),
+        },
+    ]);
+    return <Button onClick={palette.open}>Open command palette</Button>;
+}
+
+export default function PaletteProviderExample() {
+    return (<SectionPage>
+      <Specimen title="Register commands in a host" layout="stack">
+        <PaletteProvider>
+          <DemoPaletteCommands />
+        </PaletteProvider>
+      </Specimen>
+    </SectionPage>);
+}

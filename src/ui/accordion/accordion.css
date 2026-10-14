@@ -1,0 +1,77 @@
+/*
+ * Accordion and Disclosure.
+ *
+ * The trigger is a full-width fa-item row: chevron (rotates 90° when open), optional icon,
+ * title at label weight, trailing meta. Items are separated by a half step of space and
+ * the shared hover fill — no dividers (R5.8). Panels animate their height on
+ * --duration-base and indent their content to the title.
+ */
+@layer components {
+  .fa-accordion {
+    --_indent: calc(var(--space-2-5) + var(--icon-sm) + var(--space-2-5)); /* to the title */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+  }
+  .fa-accordion-header {
+    margin: 0;
+    font: inherit;
+  }
+  .fa-accordion-trigger {
+    width: 100%;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: start;
+  }
+  .fa-accordion-trigger > .fa-accordion-chevron {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+    color: var(--fg-subtle);
+    transition:
+      rotate var(--duration-base) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-accordion-trigger[data-panel-open] > .fa-accordion-chevron {
+    rotate: 90deg;
+  }
+  .fa-accordion-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Meta gives way to the title: it never takes more than half the row. */
+  .fa-accordion-meta {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .fa-accordion-panel {
+    height: var(--accordion-panel-height);
+    overflow: hidden;
+    transition: height var(--duration-base) var(--ease-standard);
+  }
+  .fa-accordion-panel[data-collapsible] {
+    height: var(--collapsible-panel-height);
+  }
+  .fa-accordion-panel:is([data-starting-style], [data-ending-style]) {
+    height: 0;
+  }
+  .fa-accordion-content {
+    padding: var(--space-1) var(--space-2-5) var(--space-3) var(--_indent);
+    color: var(--fg-muted);
+  }
+}

@@ -1,0 +1,59 @@
+import type { ReactNode } from "react";
+
+import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { TruncatedText } from "glass-ux/truncated-text";
+
+function TruncateBox({ label, children }: {
+    label: string;
+    children: ReactNode;
+}) {
+    return (<figure className="gallery-example">
+      <div className="glass-inset flex h-10 max-w-3xs items-center rounded-control px-3">
+        {children}
+      </div>
+      <figcaption className="gallery-example-label">{label}</figcaption>
+    </figure>);
+}
+
+export default function TooltipSection() {
+    return (<SectionPage>
+      <></>
+
+      <></>
+
+      <></>
+
+      <Specimen title="Truncated text" description="Single-line labels end in an ellipsis. Hover them: only the ones that were actually cut show a tooltip with the full text." layout="grid">
+        <TruncateBox label="End (fits)">
+          <TruncatedText>NST-C106</TruncatedText>
+        </TruncateBox>
+        <TruncateBox label="End (cut)">
+          <TruncatedText>
+            HP EliteOne 1000 G2 27-in 4K UHD AiO · Windows 11 Business 10.0.26300
+          </TruncatedText>
+        </TruncateBox>
+        <TruncateBox label="Middle: hostname">
+          <TruncatedText middle>NST-ADMINISTRATION-SERVER-C106</TruncatedText>
+        </TruncateBox>
+        <TruncateBox label="Middle: account">
+          <TruncatedText middle>AzureAD\MiraRowan-Administrator</TruncatedText>
+        </TruncateBox>
+      </Specimen>
+
+      <ContainerLab description="TruncatedText in each box: names end in an ellipsis, identifiers keep both ends. Nothing is clipped without one.">
+        {() => (<div className="flex h-full flex-col justify-center gap-1 p-2">
+            <TruncatedText className="type-label">
+              Cedar Vale Collective
+            </TruncatedText>
+            <TruncatedText middle className="type-caption text-fg-muted">
+              CDV-6231-RECEPTION-KIOSK
+            </TruncatedText>
+          </div>)}
+      </ContainerLab>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

@@ -1,0 +1,23 @@
+/*
+ * Full bleed (bleed.tsx): the layer fills the primary window (its containing block) under
+ * everything else; the header, the status strip and any floating panel sit over it on the
+ * canvas; the body is a spacer that lets the pointer through to the layer, except for the
+ * chrome inside it.
+ */
+@layer components {
+  .fa-bleed {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .fa-bleed-chrome {
+    position: relative;
+    z-index: 1;
+  }
+  .fa-bleed-spacer {
+    pointer-events: none;
+  }
+  .fa-bleed-spacer .fa-bleed-chrome {
+    pointer-events: auto;
+  }
+}

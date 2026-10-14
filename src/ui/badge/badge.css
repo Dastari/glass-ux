@@ -1,0 +1,265 @@
+/*
+ * Badge, StatusBadge, StatusDot, CountBadge, NotificationDot.
+ *
+ * Tones   neutral · accent · success · warning · danger · info — a soft fill, the tone's
+ *         text colour and a faint rim so the pill holds its shape on bright glass.
+ * Sizes   sm 20 (tables, tree rows) · md 24 (headers, cards).
+ * Markers dot (state) · ring (paused) · pulse (live / connecting, loops only while live,
+ *         never under reduced motion) · spinner (work in progress).
+ */
+@layer components {
+  .fa-badge {
+    --_h: var(--control-h-xs);
+    --_px: var(--space-2);
+    --_gap: var(--space-1-5);
+    --_dot: 0.375rem; /* the marker dot */
+    --_bg: var(--fill-muted);
+    --_fg: var(--fg-muted);
+    --_mark: var(--fg-subtle);
+    --_rim: var(--line);
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--_gap);
+    max-width: 100%;
+    height: var(--_h);
+    padding-inline: var(--_px);
+    border-radius: var(--radius-badge);
+    background-color: var(--_bg);
+    box-shadow: inset 0 0 0 var(--border-width) var(--_rim);
+    color: var(--_fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .fa-badge[data-size="sm"] {
+    --_h: calc(var(--control-h-xs) - var(--space-1));
+    --_px: var(--space-1-5);
+    --_gap: var(--space-1);
+    --_dot: 0.3125rem;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-badge-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-badge-icon {
+    display: inline-grid;
+    flex: none;
+    color: var(--_mark);
+  }
+  .fa-badge-icon .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+  }
+  .fa-badge-spinner {
+    flex: none;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    color: var(--_mark);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+    animation: fa-spin var(--duration-spin) linear infinite;
+  }
+  .fa-badge[data-size="sm"] .fa-badge-spinner {
+    width: calc(var(--icon-xs) - var(--space-half));
+    height: calc(var(--icon-xs) - var(--space-half));
+  }
+
+  /* Tones. The rim is half the tone's line so the soft fill reads as one shape. */
+  .fa-badge[data-tone="accent"] {
+    --_bg: var(--accent-soft);
+    --_fg: var(--accent-text);
+    --_mark: var(--accent);
+    --_rim: color-mix(in oklab, var(--accent-line) 45%, transparent);
+  }
+  .fa-badge[data-tone="success"] {
+    --_bg: var(--success-soft);
+    --_fg: var(--success-text);
+    --_mark: var(--success);
+    --_rim: color-mix(in oklab, var(--success-line) 45%, transparent);
+  }
+  .fa-badge[data-tone="warning"] {
+    --_bg: var(--warning-soft);
+    --_fg: var(--warning-text);
+    --_mark: var(--warning);
+    --_rim: color-mix(in oklab, var(--warning-line) 45%, transparent);
+  }
+  .fa-badge[data-tone="danger"] {
+    --_bg: var(--danger-soft);
+    --_fg: var(--danger-text);
+    --_mark: var(--danger);
+    --_rim: color-mix(in oklab, var(--danger-line) 45%, transparent);
+  }
+  .fa-badge[data-tone="info"] {
+    --_bg: var(--info-soft);
+    --_fg: var(--info-text);
+    --_mark: var(--info);
+    --_rim: color-mix(in oklab, var(--info-line) 45%, transparent);
+  }
+
+  /* ── Dots (shared by the badge marker and the bare StatusDot) ───────────── */
+  .fa-badge-dot,
+  .fa-status-dot {
+    --_pulse: color-mix(in oklab, var(--_mark) 55%, transparent);
+    flex: none;
+    width: var(--_dot);
+    height: var(--_dot);
+    border-radius: var(--radius-full);
+    background-color: var(--_mark);
+  }
+  .fa-badge-dot[data-marker="ring"],
+  .fa-status-dot[data-marker="ring"] {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 calc(var(--border-width) * 1.5) var(--_mark);
+  }
+  /* A live dot pulses with a halo of its own (fa-pulse-halo: transform and opacity only, so
+     the compositor runs it; an infinite box-shadow would repaint the page every frame). At
+     rest, and under the motion switch, the halo is invisible and the plain dot shows. */
+  .fa-badge-dot[data-marker="pulse"]:not([data-overlay]),
+  .fa-status-dot[data-marker="pulse"]:not([data-overlay]) {
+    position: relative;
+  }
+  .fa-badge-dot[data-marker="pulse"]::after,
+  .fa-status-dot[data-marker="pulse"]::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--_pulse);
+    opacity: 0;
+    pointer-events: none;
+    content: "";
+    animation: fa-pulse-halo var(--duration-shimmer) var(--ease-standard) infinite;
+  }
+
+  .fa-status-dot {
+    --_dot: 0.5rem;
+    --_mark: var(--fg-subtle);
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .fa-status-dot[data-tone="success"] {
+    --_mark: var(--success);
+  }
+  .fa-status-dot[data-tone="warning"] {
+    --_mark: var(--warning);
+  }
+  .fa-status-dot[data-tone="danger"] {
+    --_mark: var(--danger);
+  }
+  .fa-status-dot[data-tone="info"] {
+    --_mark: var(--info);
+  }
+  .fa-status-dot[data-tone="accent"] {
+    --_mark: var(--accent);
+  }
+  /* ── Corner marks: one cut-out for every overlay ────────────────────────────
+     A status dot, a count or a notification dot on another element's corner (an avatar,
+     an icon tile, a rail or dock icon) is cut out of it by the same ring, in the colour of
+     the surface directly beneath the tile, so every corner mark reads the same (R20.8).
+       --overlay-underlay  set by a container whose surface is not a glass pane: the shell's
+                           top bar and rail set the canvas. Default: --surface-3, the glass.
+       --overlay-ring      the cut-out's width.
+     Over imagery the cut-out takes the halo, which reads on any image. */
+  :is(.fa-status-dot[data-overlay], .fa-count[data-overlay], .fa-notify-dot) {
+    --_cutout: var(--overlay-underlay, var(--surface-3));
+    --_cutout-w: var(--overlay-ring, var(--focus-ring-width));
+  }
+  .over-imagery :is(.fa-status-dot[data-overlay], .fa-count[data-overlay], .fa-notify-dot) {
+    --_cutout: var(--halo-colour);
+  }
+  .fa-status-dot[data-overlay] {
+    position: absolute;
+    inset-inline-end: calc(var(--space-half) * -1);
+    inset-block-end: calc(var(--space-half) * -1);
+    box-shadow: 0 0 0 var(--_cutout-w) var(--_cutout);
+  }
+  .fa-status-dot[data-overlay][data-marker="ring"] {
+    background-color: var(--_cutout);
+    box-shadow:
+      inset 0 0 0 calc(var(--border-width) * 1.5) var(--_mark),
+      0 0 0 var(--_cutout-w) var(--_cutout);
+  }
+
+  :root[data-motion="reduced"] :is(.fa-badge-dot, .fa-status-dot)[data-marker="pulse"] {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) :is(.fa-badge-dot, .fa-status-dot)[data-marker="pulse"] {
+      animation: none;
+    }
+  }
+
+  /* ── Count ──────────────────────────────────────────────────────────────── */
+  .fa-count {
+    --_bg: var(--fill-muted);
+    --_fg: var(--fg-muted);
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-width: calc(var(--control-h-xs) - var(--space-1));
+    height: calc(var(--control-h-xs) - var(--space-1));
+    padding-inline: var(--space-1-5);
+    border-radius: var(--radius-badge);
+    background-color: var(--_bg);
+    color: var(--_fg);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .fa-count[data-tone="accent"] {
+    --_bg: var(--accent-soft);
+    --_fg: var(--accent-text);
+  }
+  .fa-count[data-tone="danger"] {
+    --_bg: var(--danger);
+    --_fg: var(--danger-fg);
+  }
+  /* Overlay: a count on another element's corner (an avatar, a rail icon, a dock icon, an
+     entity tile). Always a solid fill with its foreground (R20.7 checks every pair) and the
+     shared corner cut-out (below), so it separates from the face it sits on. Never soft: a
+     translucent tint over a face reads as part of the face. */
+  .fa-count[data-overlay] {
+    --_bg: var(--fg);
+    --_fg: var(--fg-inverse);
+    min-width: var(--space-4);
+    height: var(--space-4);
+    padding-inline: var(--space-1);
+    box-shadow: 0 0 0 var(--_cutout-w) var(--_cutout);
+    font-size: var(--type-overline-size);
+    line-height: 1;
+    font-weight: var(--weight-semibold);
+  }
+  .fa-count[data-overlay][data-tone="accent"] {
+    --_bg: var(--accent);
+    --_fg: var(--accent-fg);
+  }
+  .fa-count[data-overlay][data-tone="danger"] {
+    --_bg: var(--danger);
+    --_fg: var(--danger-fg);
+  }
+
+  /* ── Notification dot ───────────────────────────────────────────────────── */
+  .fa-notify-dot {
+    position: absolute;
+    inset-block-start: var(--space-1-5);
+    inset-inline-end: var(--space-1-5);
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+    box-shadow: 0 0 0 var(--_cutout-w) var(--_cutout);
+    pointer-events: none;
+  }
+  .fa-notify-dot[data-tone="danger"] {
+    background-color: var(--danger);
+  }
+}

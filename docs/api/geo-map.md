@@ -1,0 +1,34 @@
+# GeoMap
+
+Points with a status anywhere in the world, clustered with a status ring, over a token-themed vector basemap with the home region glowing in the data hue.
+
+`import { GeoMap } from "glass-ux/map"`
+
+[Live examples](https://dastari.github.io/glass-ux/components/geo-map)
+
+## Props
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| config | `MapConfig` | See type | yes | — | Typed component configuration and external provider definitions. |
+| frame | `MapFrame \| undefined` | "points", "home" | no | "home" | Frame the home region (default) or the points. |
+| frameKey | `string \| undefined` | See type | no | — | Re-frame when this changes (a new scope, a new home region). |
+| home | `MapRegion \| null \| undefined` | See type | yes | — | The home region: undefined while it loads, null when there is none. |
+| insets | `MapInsets \| null \| undefined` | See type | no | — | Page chrome floating over a full-bleed map, in CSS pixels (a header above, a status strip below): controls, credits and every frame stay clear of it, and it re-frames when it changes. `null` means "being measured": the silhouette stays transparent until the insets are known, so a server-rendered frame never paints in the wrong place and then jumps (CLS). |
+| label | `string` | See type | yes | — | Accessible name of the map: "Sites, All organisations". |
+| list | `ReactNode` | false, true | no | — | The list view: the caller's table, with a ViewToggle in its toolbar. |
+| loading | `boolean \| undefined` | false, true | no | false | The points are still loading: the silhouette stays, markers wait. |
+| noun | `MapNoun \| undefined` | See type | no | { one: "site", other: "sites" } | Singular and plural names used in counts and accessible labels. |
+| onSelect | `((point: MapPoint<T> \| null) => void) \| undefined` | See type | no | — | Called when select occurs. The callback type specifies its arguments. |
+| onViewChange | `((view: "map" \| "list") => void) \| undefined` | See type | no | — | Called when view change occurs. The callback type specifies its arguments. |
+| points | `readonly MapPoint<T>[]` | See type | yes | — | Geographical or chart points. |
+| pulses | `Readonly<Record<string, number>> \| undefined` | See type | no | — | Per point, a counter that changes when its status changes: the marker pulses once. |
+| regions | `readonly MapRegion[] \| undefined` | See type | no | [] | Other regions to outline faintly (the regions that hold points). |
+| renderClusterPopup | `((cluster: MapCluster<T>, context: MapClusterPopupContext) => ReactNode) \| undefined` | See type | no | — | Renders details for an aggregate map cluster. |
+| renderPopup | `(point: MapPoint<T>, context: MapPopupContext) => ReactNode` | See type | yes | — | Renders details for an individual map point. |
+| selectedId | `string \| null \| undefined` | See type | no | null | Stable identifier of the selected item. |
+| statusLabels | `Readonly<Record<"danger" \| "warning" \| "healthy" \| "unknown", string>> \| undefined` | See type | no | DEFAULT_STATUS_LABELS | Display and accessible labels for the supported statuses. |
+| view | `"map" \| "list" \| undefined` | "map", "list" | no | "map" | "map" (default) or "list": the list replaces the map in the same box. |
+
+Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

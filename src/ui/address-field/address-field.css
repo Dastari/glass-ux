@@ -1,0 +1,92 @@
+/*
+ * AddressInput — the lookup, then the parts, one per row on the form's rhythm (R15.2). The
+ * rows are the parent FormStack's own rhythm: the editor is a column with the same gap.
+ *
+ *   Address                                   Enter manually
+ *   [🔍 Start typing an address…            ]
+ *   Street address        [12 Example Lane                     ]
+ *   …
+ *   Position              [  map well with the pin               ]
+ *                         -42.88334, 147.32688 · from the lookup   Reset pin
+ */
+@layer components {
+  .fa-address {
+    --_row-gap: calc(var(--gap-fields) - var(--space-2));
+    display: flex;
+    flex-direction: column;
+    gap: var(--_row-gap);
+    min-width: 0;
+  }
+  .fa-address-manual {
+    margin-block: calc(var(--space-1) * -1);
+  }
+
+  /* ── Map row ───────────────────────────────────────────────────────────── */
+  .fa-address-map {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    min-width: 0;
+  }
+  .fa-address-map-label {
+    min-width: 0;
+  }
+  .fa-address-map-well {
+    --fa-pin-map-h: 11rem;
+    height: var(--fa-pin-map-h);
+    border-radius: var(--radius-tile);
+  }
+  .fa-address-map-caption {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    min-height: var(--type-caption-line);
+    margin-top: calc(var(--space-half) * -1);
+  }
+  .fa-address-map-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-address-map-caption > .fa-btn {
+    flex: none;
+    margin-block: calc(var(--space-1) * -1);
+  }
+
+  /* ── Read-only view ────────────────────────────────────────────────────── */
+  .fa-address-view {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-address-view-text {
+    align-items: flex-start;
+    padding-block: var(--space-2);
+  }
+  .fa-address-view-lines {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    font-style: normal;
+  }
+  .fa-address-view-lines > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-address-view-lines[data-empty] {
+    color: var(--fg-subtle);
+  }
+  .fa-address-view-text > .fa-input-btn {
+    margin-block: calc(var(--space-1) * -1);
+  }
+}

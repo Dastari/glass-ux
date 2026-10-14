@@ -1,0 +1,27 @@
+# DonutChart
+
+Display a part-to-whole dataset as a ring, with responsive legends, an accessible data table and optional centre content.
+
+`import { DonutChart } from "glass-ux/charts"`
+
+[Live examples](https://dastari.github.io/glass-ux/components/donut-chart)
+
+## Props
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| categoryLabel | `string \| undefined` | See type | no | — | Header for the table's first column. |
+| centre | `{ value: string; label: string; } \| undefined` | See type | no | — | What the centre says when nothing is hovered. Defaults to the total. |
+| data | `readonly PieSlice[]` | See type | yes | — | Typed records rendered by the component. |
+| emptyText | `ReactNode` | false, true | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
+| errorText | `ReactNode` | false, true | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
+| format | `((value: number) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). |
+| label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
+| maxSlices | `number \| undefined` | See type | no | — | Slices past this fold into "Other" (part-to-whole reads at six or fewer). |
+| onRetry | `(() => void) \| undefined` | See type | no | — | Called when retry occurs. The callback type specifies its arguments. |
+| state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | — | Controlled view state, including loading, empty and error states. |
+| title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
+| totalLabel | `string \| undefined` | See type | no | — | Label under the centre total ("Endpoints"). |
+| unit | `ChartUnit \| undefined` | See type | no | — | "%", "GB", "ms", or a counted noun ({ one, other })… "%" sticks to the number; other units take a space. |
+
+Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

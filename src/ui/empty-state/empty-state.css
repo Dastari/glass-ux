@@ -1,0 +1,104 @@
+/*
+ * EmptyState — fills the box the content would have used (container-type: size).
+ *
+ *   row     height < 10rem: md icon, the line (one line, ellipsis) and the action in a row
+ *   block   centred: the icon in the shared soft tile, the line, the action
+ *   large   height ≥ 16rem and width ≥ 20rem: a larger tile around the 2xl icon
+ */
+@layer components {
+  .fa-empty {
+    container: fa-empty / size;
+    width: 100%;
+    height: 100%;
+    min-height: var(--control-h-lg);
+  }
+  .fa-empty-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    height: 100%;
+    padding: var(--space-4);
+    text-align: center;
+  }
+  .fa-empty-glyph {
+    display: none;
+  }
+  .fa-empty-tile > .fa-icon {
+    width: var(--icon-xl);
+    height: var(--icon-xl);
+    --_stroke: calc(var(--icon-stroke) * 0.92);
+  }
+  .fa-empty-tile:not([data-tone]) {
+    color: var(--fg-muted);
+  }
+  .fa-empty-text {
+    max-width: var(--measure);
+    margin: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    text-wrap: balance;
+  }
+  .fa-empty[data-tone="danger"] .fa-empty-text {
+    color: var(--fg);
+  }
+  .fa-empty-action {
+    display: flex;
+    gap: var(--gap-controls);
+    margin-block-start: var(--space-1);
+  }
+
+  @container fa-empty (height >= 16rem) and (width >= 20rem) {
+    .fa-empty-tile {
+      --_box: calc(var(--icon-2xl) + var(--space-6)); /* the large tile */
+      width: var(--_box);
+      height: var(--_box);
+      border-radius: var(--radius-tile);
+    }
+    .fa-empty-tile > .fa-icon {
+      width: var(--icon-2xl);
+      height: var(--icon-2xl);
+      --_stroke: calc(var(--icon-stroke) * 0.78);
+    }
+  }
+
+  @container fa-empty (height < 10rem) {
+    .fa-empty-body {
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: var(--space-2-5);
+      padding: 0 var(--space-3);
+      text-align: start;
+    }
+    .fa-empty-tile {
+      display: none;
+    }
+    .fa-empty-glyph {
+      display: inline-grid;
+      flex: none;
+      color: var(--fg-subtle);
+    }
+    .fa-empty[data-tone="danger"] .fa-empty-glyph {
+      color: var(--danger-text);
+    }
+    .fa-empty-glyph > .fa-icon {
+      width: var(--icon-md);
+      height: var(--icon-md);
+      --_stroke: calc(var(--icon-stroke) * 1.06);
+    }
+    .fa-empty-text {
+      flex: 0 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .fa-empty-action {
+      flex: none;
+      margin-block-start: 0;
+      margin-inline-start: auto;
+    }
+  }
+}

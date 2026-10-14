@@ -1,0 +1,321 @@
+/*
+ * Field — label, control, reserved message line.
+ *
+ * Vertical    label row (label · required/optional · aside)
+ *             control
+ *             message line: hint | error (replaces the hint in place) · counter
+ * Horizontal  [control] label / description, for switches and checkboxes; the control
+ *             centres on the label's first line.
+ *
+ * The message line is one caption line high and is always present on vertical fields,
+ * so an error never moves the fields that follow it (R9.1). Long messages truncate.
+ */
+@layer components {
+  .fa-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    min-width: 0;
+  }
+
+  /* ── Label row ─────────────────────────────────────────────────────────── */
+  .fa-field-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-1-5);
+    min-width: 0;
+  }
+  .fa-field-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-field[data-disabled] .fa-field-label {
+    color: var(--fg-muted);
+  }
+  .fa-field-required {
+    flex: none;
+    margin-inline-start: calc(var(--space-1) * -1);
+    color: var(--danger-text);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+  }
+  .fa-field-optional {
+    flex: none;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-field-aside {
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Message line ──────────────────────────────────────────────────────── */
+  .fa-field-message {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    min-width: 0;
+    min-height: var(--type-caption-line);
+    /* 4px under the control instead of the 6px label gap. */
+    margin-top: calc(var(--space-half) * -1);
+  }
+  .fa-field-message-slot {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .fa-field-message-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-field-error {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+    color: var(--danger-text);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-field-error[data-starting-style],
+  .fa-field-error[data-ending-style] {
+    opacity: 0;
+  }
+  .fa-field-error > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+  }
+  .fa-field-counter {
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-field-counter[data-over] {
+    color: var(--danger-text);
+    font-weight: var(--weight-medium);
+  }
+
+  /* ── Horizontal (switch and checkbox rows) ─────────────────────────────── */
+  .fa-field[data-orientation="horizontal"] {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 0 var(--space-3);
+  }
+  .fa-field[data-orientation="horizontal"] > .fa-field-control {
+    grid-row: 1;
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    /* The control centres on the label's first line, whatever its own height. */
+    height: var(--type-label-line);
+  }
+  .fa-field-text {
+    grid-row: 1;
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+  }
+  .fa-field[data-orientation="horizontal"] > .fa-field-message {
+    grid-column: 2;
+    margin-top: var(--space-1);
+  }
+  .fa-field-description {
+    text-wrap: pretty;
+  }
+  .fa-field[data-orientation="horizontal"] .fa-field-label {
+    cursor: pointer;
+  }
+  .fa-field[data-orientation="horizontal"][data-disabled] .fa-field-label {
+    cursor: not-allowed;
+  }
+
+  /* ── Fieldset ──────────────────────────────────────────────────────────── */
+  .fa-fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .fa-fieldset[data-variant="section"] {
+    gap: var(--space-3);
+  }
+  .fa-fieldset-legend {
+    padding: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ── Skeleton ──────────────────────────────────────────────────────────── */
+  .fa-field-skeleton .fa-field-head > .fa-skel-text {
+    max-width: 100%;
+  }
+}
+
+/*
+ * Choice row — a checkbox, radio or switch with its own label (and optional description)
+ * beside it: Checkbox/Radio/Switch `label` prop. Same grid as a horizontal Field.
+ */
+@layer components {
+  .fa-choice {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 0 var(--space-2-5);
+    min-width: 0;
+  }
+  .fa-choice-control {
+    display: flex;
+    align-items: center;
+    height: var(--type-body-line);
+  }
+  .fa-choice-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+  }
+  .fa-choice-label {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .fa-choice-description {
+    text-wrap: pretty;
+  }
+  .fa-choice[data-disabled] .fa-choice-label {
+    color: var(--fg-muted);
+    cursor: not-allowed;
+  }
+  .fa-choice[data-disabled] .fa-choice-description {
+    color: var(--fg-subtle);
+  }
+
+  /* A set of choice rows (CheckboxGroup, RadioGroup). */
+  .fa-choice-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2-5);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .fa-choice-group[data-orientation="horizontal"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-2-5) var(--space-5);
+  }
+  .fa-choice-group > .fa-fieldset-legend {
+    margin-bottom: calc(var(--space-1) - var(--space-2-5));
+  }
+}
+
+@layer components {
+  .fa-choice-group[data-orientation="horizontal"] > .fa-fieldset-legend {
+    flex-basis: 100%;
+  }
+  /* A titled setting (label + description) reads as a heading and its explanation. */
+  .fa-choice:has(.fa-choice-description) .fa-choice-label {
+    font-weight: var(--weight-medium);
+  }
+}
+
+/*
+ * Shared by the choice controls — Checkbox, Radio, RadioCard, Switch, Slider, Segmented.
+ *
+ * Tone   the "on" colour. Accent by default; data-tone="success | warning | danger" on the
+ *        control (or on a group, which its controls inherit) swaps in that status role.
+ *        Warning keeps its dark foreground. Controls read only the --_on* names.
+ * Bead   the glossy glass knob of Switch and Slider: a top-left radial highlight, a lit
+ *        rim, a soft contact shadow. White in both modes, like a lit bead.
+ */
+@layer components {
+  :is(.fa-check, .fa-radio, .fa-radio-card, .fa-radio-cards, .fa-choice-group, .fa-switch, .fa-slider, .fa-segmented)[data-tone="success"] {
+    --fa-choice-tone: var(--success);
+    --fa-choice-tone-2: oklch(from var(--success) calc(l + 0.03) c calc(h - 24));
+    --fa-choice-tone-fg: var(--success-fg);
+    --fa-choice-tone-text: var(--success-text);
+    --fa-choice-tone-soft: var(--success-soft);
+    --fa-choice-tone-line: var(--success-line);
+  }
+  :is(.fa-check, .fa-radio, .fa-radio-card, .fa-radio-cards, .fa-choice-group, .fa-switch, .fa-slider, .fa-segmented)[data-tone="warning"] {
+    --fa-choice-tone: var(--warning);
+    --fa-choice-tone-2: oklch(from var(--warning) calc(l - 0.05) c calc(h - 16));
+    --fa-choice-tone-fg: var(--warning-fg);
+    --fa-choice-tone-text: var(--warning-text);
+    --fa-choice-tone-soft: var(--warning-soft);
+    --fa-choice-tone-line: var(--warning-line);
+  }
+  :is(.fa-check, .fa-radio, .fa-radio-card, .fa-radio-cards, .fa-choice-group, .fa-switch, .fa-slider, .fa-segmented)[data-tone="danger"] {
+    --fa-choice-tone: var(--danger);
+    --fa-choice-tone-2: oklch(from var(--danger) calc(l + 0.02) c calc(h - 14));
+    --fa-choice-tone-fg: var(--danger-fg);
+    --fa-choice-tone-text: var(--danger-text);
+    --fa-choice-tone-soft: var(--danger-soft);
+    --fa-choice-tone-line: var(--danger-line);
+  }
+  .fa-check,
+  .fa-radio,
+  .fa-radio-card,
+  .fa-switch,
+  .fa-slider,
+  .fa-segmented {
+    --_on: var(--fa-choice-tone, var(--accent));
+    --_on-2: var(--fa-choice-tone-2, var(--accent-2));
+    --_on-fg: var(--fa-choice-tone-fg, var(--accent-fg));
+    --_on-text: var(--fa-choice-tone-text, var(--accent-text));
+    --_on-soft: var(--fa-choice-tone-soft, var(--accent-soft));
+    --_on-line: var(--fa-choice-tone-line, var(--accent-line));
+    --_on-edge: oklch(from var(--_on) calc(l - 0.08) c h);
+    --_on-glow: oklch(from var(--_on) l c h / 0.42);
+    --_on-fill:
+      var(--sheen-solid),
+      linear-gradient(105deg, var(--_on), var(--_on-2));
+  }
+  .fa-switch,
+  .fa-slider {
+    --_bead:
+      radial-gradient(130% 130% at 30% 22%, oklch(1 0 0) 0%, oklch(0.995 0.002 var(--neutral-h)) 34%, oklch(0.925 0.008 var(--neutral-h)) 100%);
+    --_bead-shadow:
+      inset 0 0 0 var(--border-width) oklch(1 0 0 / 0.7),
+      inset 0 calc(var(--border-width) * -1) var(--space-half) oklch(from var(--shadow-tint) l c h / 0.1),
+      0 0 0 var(--border-width) oklch(from var(--shadow-tint) l c h / 0.1),
+      0 var(--border-width) var(--space-half) oklch(from var(--shadow-tint) l c h / 0.22),
+      0 var(--space-1) var(--space-2) calc(var(--space-half) * -1) oklch(from var(--shadow-tint) l c h / 0.26);
+    /* the recessed well a bead runs in */
+    --_well: color-mix(in oklab, var(--fg-subtle) 16%, var(--glass-fill-inset));
+    --_well-shadow:
+      inset 0 0 0 var(--border-width) color-mix(in oklab, var(--fg-subtle) 26%, transparent),
+      inset 0 var(--border-width) var(--space-1) oklch(from var(--shadow-tint) l c h / 0.16);
+  }
+}

@@ -1,0 +1,68 @@
+/*
+ * AiStatusStrip — one caption line under the composer: connection on the left, budget and
+ * model on the right. Tones carry state (success live, warning reconnecting or budget ≥ 80%,
+ * danger offline or exhausted) through a dot and the text colour, never a filled banner.
+ */
+@layer components {
+  .fa-ai-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    min-height: var(--control-h-sm);
+    padding-inline: var(--space-3);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    container: ai-status / inline-size;
+  }
+  .fa-ai-status-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-status-dot {
+    flex: none;
+    width: var(--space-1-5);
+    height: var(--space-1-5);
+    border-radius: var(--radius-full);
+    background-color: var(--fg-subtle);
+  }
+  .fa-ai-status-icon {
+    flex: none;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-ai-status-item[data-tone="success"] .fa-ai-status-dot {
+    background-color: var(--success);
+  }
+  .fa-ai-status-item[data-tone="warning"] {
+    color: var(--warning-text);
+  }
+  .fa-ai-status-item[data-tone="warning"] .fa-ai-status-dot {
+    background-color: var(--warning);
+  }
+  .fa-ai-status-item[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .fa-ai-status-meta {
+    display: inline-flex;
+    gap: var(--space-3);
+    min-width: 0;
+    margin-inline-start: auto;
+  }
+  .fa-ai-status-retry.fa-btn {
+    --_h: var(--control-h-xs);
+    --_px: var(--space-2);
+  }
+  @container ai-status (width < 26rem) {
+    .fa-ai-status-meta .fa-ai-status-item:last-child:not(:first-child) {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,143 @@
+/*
+ * Checkbox (and the box Radio shares).
+ *
+ *   unticked   a small glass control: control fill, top rim highlight, a 3:1 edge
+ *   ticked     the tone gradient pops in on the spring curve (it overshoots, then
+ *              settles), a soft tone glow rises under it and the ✓ is drawn
+ *   mixed      the same fill; the bar is drawn
+ *   pressed    shrinks to --press-scale · invalid: danger edge · disabled: --disabled-opacity
+ *
+ * Sizes  sm 16 · md 18 (--check-size) · lg 22.  Tones  accent · success · warning · danger.
+ */
+@layer components {
+  .fa-check,
+  .fa-radio {
+    /* component tokens: the unticked edge must read at 3:1 against the panel (R20.1) */
+    --_size: var(--check-size);
+    --_edge: color-mix(in oklab, var(--fg-subtle) 55%, transparent);
+    --_edge-hover: color-mix(in oklab, var(--fg-subtle) 85%, transparent);
+    --_mark-stroke: calc(var(--icon-stroke) * 1.55);
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--_size);
+    height: var(--_size);
+    margin: 0;
+    padding: 0;
+    border: var(--border-width) solid var(--_edge);
+    border-radius: var(--radius-check);
+    background-color: var(--glass-fill-control);
+    background-image: linear-gradient(180deg, var(--glass-rim-top), transparent 70%);
+    box-shadow:
+      inset 0 var(--border-width) 0 0 var(--glass-rim-top),
+      var(--shadow-1);
+    color: var(--_on-fg);
+    cursor: pointer;
+    outline-offset: var(--focus-ring-offset);
+    vertical-align: middle;
+    transition-property: border-color, background-color, box-shadow, transform;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-check[data-size="sm"],
+  .fa-radio[data-size="sm"] {
+    --_size: calc(var(--check-size) - var(--space-half));
+    --_mark-stroke: calc(var(--icon-stroke) * 1.7);
+  }
+  .fa-check[data-size="lg"],
+  .fa-radio[data-size="lg"] {
+    --_size: calc(var(--check-size) + var(--space-1));
+    --_mark-stroke: calc(var(--icon-stroke) * 1.4);
+  }
+  .fa-check[data-size="lg"] {
+    border-radius: calc(var(--radius-check) + var(--space-half));
+  }
+
+  /* The tone fill is its own layer so it can pop in; gradients cannot transition. */
+  .fa-check::before,
+  .fa-radio::before {
+    content: "";
+    position: absolute;
+    inset: calc(var(--border-width) * -1);
+    border-radius: inherit;
+    background-color: var(--_on);
+    background-image: var(--_on-fill);
+    box-shadow:
+      inset 0 var(--border-width) 0 0 var(--rim-light),
+      inset 0 calc(var(--border-width) * -1) 0 0 var(--rim-shade);
+    opacity: 0;
+    transform: scale(0.4);
+    transition:
+      opacity var(--duration-fast) var(--ease-standard),
+      transform var(--duration-slow) var(--ease-spring);
+  }
+  .fa-check:hover:not([data-disabled], [data-readonly]),
+  .fa-radio:hover:not([data-disabled], [data-readonly]) {
+    --_edge: var(--_edge-hover);
+    background-color: var(--glass-fill-control-hover);
+  }
+  .fa-check:active:not([data-disabled], [data-readonly]),
+  .fa-radio:active:not([data-disabled], [data-readonly]) {
+    transform: scale(var(--press-scale));
+    transition-duration: var(--duration-instant);
+  }
+  .fa-check:is([data-checked], [data-indeterminate]),
+  .fa-radio[data-checked] {
+    --_edge: var(--_on-edge);
+    box-shadow: 0 var(--space-half) var(--space-1-5) calc(var(--space-half) * -1) var(--_on-glow);
+  }
+  .fa-check:is([data-checked], [data-indeterminate])::before,
+  .fa-radio[data-checked]::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .fa-check:is([data-checked], [data-indeterminate]):hover:not([data-disabled], [data-readonly]),
+  .fa-radio[data-checked]:hover:not([data-disabled], [data-readonly]) {
+    --_edge: oklch(from var(--_on) calc(l - 0.12) c h);
+    box-shadow: 0 var(--space-half) var(--space-2) calc(var(--space-half) * -1) var(--_on-glow);
+  }
+  .fa-check[data-invalid]:not([data-checked], [data-indeterminate]),
+  .fa-radio[data-invalid]:not([data-checked]) {
+    --_edge: var(--danger-line);
+  }
+  .fa-check[data-disabled],
+  .fa-radio[data-disabled] {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+  }
+  .fa-check[data-readonly],
+  .fa-radio[data-readonly] {
+    cursor: default;
+  }
+
+  /* ── Tick ──────────────────────────────────────────────────────────────── */
+  .fa-check-indicator {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    transition:
+      opacity var(--duration-fast) var(--ease-standard),
+      transform var(--duration-base) var(--ease-spring);
+  }
+  .fa-check-indicator[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  .fa-check-indicator > .fa-icon {
+    width: calc(var(--_size) * 0.82);
+    height: calc(var(--_size) * 0.82);
+    --_stroke: var(--_mark-stroke);
+  }
+  /* The ✓ (or bar) is drawn when ticked — never on page load. */
+  .fa-check-indicator path {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset var(--duration-slower) var(--ease-spring) var(--duration-instant);
+  }
+  .fa-check-indicator[data-starting-style] path {
+    stroke-dashoffset: 24;
+  }
+}

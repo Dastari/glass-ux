@@ -1,0 +1,267 @@
+/*
+ * Segmented control — "Enabled | Disabled".
+ *
+ *   track      recessed glass well, control height and radius (lines up with fields)
+ *   indicator  a lit glass pill tinted with the tone (accent by default) and its edge; it
+ *              slides between segments on the spring curve (placed by measuring the
+ *              pressed segment)
+ *   segments   button weight; muted until chosen, accent text when chosen
+ *
+ * Sizes sm 32 · md 40 · lg 48.
+ *
+ * Forms (data-form, measured against the container by Segmented):
+ *   full    every segment with its label
+ *   icons   data-compact: icons only, each named by its label
+ *   menu    the track holds one trigger drawn as the chosen pill, the chosen option's icon
+ *           and label and a chevron ("RMM ▾"); the options are in a menu with a check
+ * data-scroll: collapse="none" — the segments scroll sideways inside the track instead.
+ */
+@layer components {
+  .fa-segmented {
+    /* component tokens */
+    --_h: var(--control-h-md);
+    --_pad: var(--space-half);
+    --_r: max(var(--radius-xs), calc(var(--radius-control) - var(--_pad)));
+    --_icon: var(--icon-md);
+    --_font: var(--type-body-size);
+    --_line: var(--type-body-line);
+    --_ink: oklch(0 0 0); /* mask opacity only; never painted */
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: stretch;
+    max-width: 100%;
+    height: var(--_h);
+    padding: var(--_pad);
+    border-radius: var(--radius-control);
+    background-color: var(--glass-fill-inset);
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--line),
+      inset 0 var(--border-width) var(--space-half) oklch(from var(--shadow-tint) l c h / 0.06);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    vertical-align: middle;
+  }
+  .fa-segmented::-webkit-scrollbar {
+    display: none;
+  }
+  /* Segments that scroll fade out at the edge that has more to show. */
+  .fa-segmented[data-scroll-right] {
+    mask-image: linear-gradient(90deg, var(--_ink) calc(100% - var(--space-8)), transparent);
+  }
+  .fa-segmented[data-scroll-left] {
+    mask-image: linear-gradient(90deg, transparent, var(--_ink) var(--space-8));
+  }
+  .fa-segmented[data-scroll-left][data-scroll-right] {
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--_ink) var(--space-8),
+      var(--_ink) calc(100% - var(--space-8)),
+      transparent
+    );
+  }
+  .fa-segmented[data-size="sm"] {
+    --_h: var(--control-h-sm);
+    --_icon: var(--icon-sm);
+    --_font: var(--type-label-size);
+    --_line: var(--type-label-line);
+  }
+  .fa-segmented[data-size="lg"] {
+    --_h: var(--control-h-lg);
+    --_icon: var(--icon-lg);
+    --_font: var(--type-subtitle-size);
+    --_line: var(--type-subtitle-line);
+  }
+  .fa-segmented[data-block] {
+    display: flex;
+    width: 100%;
+  }
+  .fa-segmented[data-invalid] {
+    box-shadow: inset 0 0 0 var(--border-width) var(--danger-line);
+  }
+  .fa-segmented[data-disabled] {
+    opacity: var(--disabled-opacity);
+  }
+
+  .fa-segmented-item {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1-5);
+    min-width: calc(var(--_h) - var(--_pad) * 2);
+    margin: 0;
+    padding: 0 var(--space-3);
+    border: 0;
+    border-radius: var(--_r);
+    background-color: transparent;
+    color: var(--fg-muted);
+    font-family: inherit;
+    font-size: var(--_font);
+    line-height: var(--_line);
+    font-weight: var(--button-weight);
+    letter-spacing: var(--button-tracking);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    outline-offset: calc(var(--focus-ring-width) * -1);
+    transition:
+      color var(--duration-fast) var(--ease-standard),
+      background-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-segmented[data-block] > .fa-segmented-item {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .fa-segmented-item:hover:not([data-disabled], [data-pressed]) {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-segmented-item:active:not([data-disabled], [data-pressed]) {
+    background-color: var(--fill-press);
+  }
+  .fa-segmented-item[data-pressed] {
+    color: var(--_on-text);
+    cursor: default;
+  }
+  .fa-segmented-item[data-disabled] {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+  }
+  /* A disabled group fades once, not once per segment. */
+  .fa-segmented[data-disabled] > .fa-segmented-item[data-disabled] {
+    opacity: 1;
+  }
+  .fa-segmented-item > .fa-icon {
+    width: var(--_icon);
+    height: var(--_icon);
+  }
+  .fa-segmented-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-segmented[data-compact] > .fa-segmented-item {
+    flex: none;
+    width: calc(var(--_h) - var(--_pad) * 2);
+    padding: 0;
+  }
+  .fa-segmented[data-compact][data-block] > .fa-segmented-item {
+    flex: 1 1 0;
+    width: auto;
+  }
+
+  /* The chosen segment's surface: a lit glass pill tinted with the tone, with a top
+     highlight, the tone edge and a faint tone glow beneath. */
+  .fa-segmented-indicator,
+  .fa-segmented:not([data-ready]) > .fa-segmented-item[data-pressed],
+  .fa-segmented-trigger {
+    background-color: var(--glass-fill-control-hover);
+    background-image:
+      linear-gradient(180deg, var(--glass-rim-top), transparent 60%),
+      linear-gradient(var(--_on-soft), var(--_on-soft));
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--_on-line),
+      inset 0 var(--border-width) 0 0 var(--glass-rim-top),
+      var(--shadow-1),
+      0 var(--space-half) var(--space-2) calc(var(--space-half) * -1) oklch(from var(--_on) l c h / 0.22);
+  }
+  .fa-segmented-indicator {
+    position: absolute;
+    z-index: 0;
+    top: var(--_pad);
+    bottom: var(--_pad);
+    left: 0;
+    width: var(--_w, 0);
+    border-radius: var(--_r);
+    opacity: 0;
+    transform: translateX(var(--_x, 0));
+    pointer-events: none;
+  }
+  .fa-segmented[data-ready] > .fa-segmented-indicator {
+    opacity: 1;
+    transition:
+      transform var(--duration-base) var(--ease-spring),
+      width var(--duration-base) var(--ease-spring);
+  }
+
+  /* ── Menu form: the chosen pill as a menu button ──────────────────────────── */
+  /* The track hugs its one button, even where a flex column would stretch it. */
+  .fa-segmented[data-form="menu"] {
+    width: max-content;
+    overflow: visible;
+  }
+  .fa-segmented-trigger {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 var(--space-2) 0 var(--space-3);
+    border: 0;
+    border-radius: var(--_r);
+    color: var(--_on-text);
+    font-family: inherit;
+    font-size: var(--_font);
+    line-height: var(--_line);
+    font-weight: var(--button-weight);
+    letter-spacing: var(--button-tracking);
+    white-space: nowrap;
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-segmented-trigger:has(> .fa-icon:first-child) {
+    padding-inline-start: var(--space-2);
+  }
+  .fa-segmented-trigger > .fa-icon {
+    flex: none;
+    width: var(--_icon);
+    height: var(--_icon);
+  }
+  .fa-segmented-trigger > .fa-segmented-chevron {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+    color: var(--_on-text);
+  }
+  .fa-segmented-trigger:disabled {
+    cursor: not-allowed;
+  }
+  /* The trigger keeps a full touch target on coarse pointers without growing the track. */
+  @media (pointer: coarse) {
+    .fa-segmented-trigger::after {
+      position: absolute;
+      inset: min(0px, calc((var(--target-min) - var(--_h)) / -2)) calc(var(--_pad) * -1);
+      content: "";
+    }
+  }
+  .fa-item > .fa-segmented-check {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    margin-inline-start: auto;
+    color: var(--accent-text);
+  }
+
+  /* Off-screen row that gives the natural width with every label, in any form. */
+  .fa-segmented-measure {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-segmented-measure-row {
+    display: inline-flex;
+    width: max-content;
+    padding-inline: var(--_pad);
+  }
+}

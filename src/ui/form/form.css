@@ -1,0 +1,43 @@
+/*
+ * Form layout (R15).
+ *
+ *   FormStack    the single form column: one field or setting row per line, capped at
+ *                --form-measure. Fields reserve their message line, so the gap between
+ *                rows is the field gap minus that line's share.
+ *   FormGroup    related rows under an overline label; groups sit --gap-section apart.
+ *   FormActions  a right-aligned action row for forms outside a Panel or Dialog footer.
+ */
+@layer components {
+  .fa-form {
+    min-width: 0;
+  }
+  .fa-form-stack,
+  .fa-form-group {
+    /* component token: the gap between rows */
+    --_row-gap: calc(var(--gap-fields) - var(--space-2));
+    display: flex;
+    flex-direction: column;
+    gap: var(--_row-gap);
+    width: 100%;
+    min-width: 0;
+  }
+  .fa-form-stack {
+    max-width: var(--form-measure);
+  }
+  /* Not `* + .fa-form-group`: a universal left-hand sibling makes Chromium re-check the
+     siblings of every node inserted anywhere in the document (docs/performance.md). */
+  .fa-form-stack > .fa-form-group + *,
+  .fa-form-stack > .fa-form-group:where(:not(:first-child)) {
+    margin-top: calc(var(--gap-section) - var(--_row-gap));
+  }
+  .fa-form-group > .fa-fieldset-legend {
+    margin-bottom: calc(var(--space-2) - var(--_row-gap));
+  }
+  .fa-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--gap-controls);
+  }
+}

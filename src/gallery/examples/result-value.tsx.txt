@@ -1,0 +1,22 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+import { ResultValue } from "glass-ux/ai";
+
+export default function ResultValueExample() {
+    return (<AiGallery>
+      <SectionPage>
+        <Specimen title="ResultValue" layout="stack">
+          <ResultValue result={{
+            id: "sample-value",
+            type: "value",
+            title: "Reservations",
+            label: "This week",
+            value: 42,
+            unit: "places",
+        }}/>
+        </Specimen>
+      </SectionPage>
+    </AiGallery>);
+}

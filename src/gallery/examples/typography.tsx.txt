@@ -1,0 +1,152 @@
+import { useState } from "react"
+import { Rules, SectionPage, Specimen, TokenTable } from "glass-ux/gallery/kit"
+import { isLocked } from "glass-ux/lib/appearance/appearance"
+import { FONT_OPTIONS } from "glass-ux/lib/appearance/fonts"
+import { useAppearance } from "glass-ux/lib/appearance/use-appearance"
+import { Button } from "glass-ux/button"
+import { Skeleton, type SkeletonTextRole } from "glass-ux/skeleton"
+
+type View = "text" | "skeleton" | "overlay"
+
+const ROLES: Array<{ role: SkeletonTextRole; className: string; sample: string; use: string }> = [
+  { role: "display", className: "type-display", sample: "What can I help you with?", use: "One hero line per screen (Assistant landing)" },
+  { role: "headline", className: "type-headline", sample: "NST-C106", use: "Entity title in a header" },
+  { role: "title", className: "type-title", sample: "Connect to NST-C106", use: "Dialog and window titles" },
+  { role: "subtitle", className: "type-subtitle", sample: "Device details", use: "Panel titles" },
+  { role: "body", className: "type-body", sample: "Windows 11 Business 10.0.26300 · HP EliteOne 1000 G2", use: "Default text, table cells, menu items" },
+  { role: "label", className: "type-label", sample: "Serial number", use: "Field labels, buttons, tabs" },
+  { role: "caption", className: "type-caption", sample: "Updated 2 min ago · 1,284 endpoints", use: "Metadata, hints, data subtitles" },
+  { role: "overline", className: "type-overline", sample: "Favourites", use: "Section labels in navigation" },
+  { role: "mono", className: "type-mono", sample: "10.0.1.115 · 8CC0481GWV", use: "Addresses, serials, code" },
+]
+
+type Role = "fontSans" | "fontDisplay" | "fontMono"
+
+function FontPicker({ role, label, options }: { role: Role; label: string; options: ReadonlyArray<{ id: string; label: string }> }) {
+  const { appearance, update } = useAppearance()
+  const locked = isLocked(role)
+  return (
+    <div className="type-font-role">
+      <span className="fa-label">{label}</span>
+      <div className="flex flex-wrap gap-controls" role="group" aria-label={label}>
+        {options.map((option) => (
+          <Button
+            key={option.id}
+            size="sm"
+            variant={appearance[role] === option.id ? "soft" : "ghost"}
+            aria-pressed={appearance[role] === option.id}
+            disabledReason={locked && appearance[role] !== option.id ? "Locked by the project" : undefined}
+            onClick={() => update({ [role]: option.id })}
+          >
+            {option.label}
+          </Button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function FontSpecimens() {
+  return (
+    <div className="type-font-grid">
+      {FONT_OPTIONS.sans.map((option) => (
+        <div key={option.id} className="glass-control type-font-card" data-font-sans={option.id}>
+          <span className="type-caption text-fg-subtle">{option.label}</span>
+          <span className="type-font-sample-display">What can I help you with?</span>
+          <span className="type-font-sample-body">NST-C106 · Windows 11 Business · 1,284 endpoints · 7.8 GB</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default function TypographySection() {
+  const [view, setView] = useState<View>("overlay")
+  return (
+    <SectionPage>
+      <Specimen
+        title="Fonts"
+        description="Three roles, chosen from a curated set of self-hosted families. Each family has its own metric-matched fallback, so no choice flashes or moves text. A project can lock any role in its appearance config."
+        layout="stack"
+        wide
+      >
+        <FontPicker role="fontSans" label="Interface" options={FONT_OPTIONS.sans} />
+        <FontPicker role="fontDisplay" label="Display and headlines" options={[{ id: "match", label: "Same as interface" }, ...FONT_OPTIONS.display]} />
+        <FontPicker role="fontMono" label="Code and identifiers" options={FONT_OPTIONS.mono} />
+        <FontSpecimens />
+      </Specimen>
+      <Specimen
+        title="Roles and their skeletons"
+        description="Use a role class (type-title, type-caption…). Each sets size, line height, weight and tracking together. Its skeleton occupies exactly the same line box and covers the glyph height, so swapping between them moves nothing. Overlay draws the skeleton behind the text."
+        layout="stack"
+        wide
+      >
+        <div className="flex gap-controls" role="group" aria-label="Show">
+          {(["text", "skeleton", "overlay"] as View[]).map((option) => (
+            <Button key={option} size="sm" variant={view === option ? "soft" : "ghost"} aria-pressed={view === option} onClick={() => setView(option)}>
+              {option === "text" ? "Text" : option === "skeleton" ? "Skeleton" : "Overlay"}
+            </Button>
+          ))}
+        </div>
+        <div className="type-roles">
+          {ROLES.map(({ role, className, sample, use }) => (
+            <div key={role} className="type-role">
+              <div className="type-role-meta">
+                <code className="type-caption">{className}</code>
+                <span className="type-caption text-fg-muted">{use}</span>
+              </div>
+              <div className="type-role-stage" data-view={view} data-testid={`type-stage-${role}`}>
+                <Skeleton.Text type={role} width="62%" className="type-role-skeleton" />
+                <span className={`${className} type-role-text truncate`}>{sample}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Specimen>
+
+      <Specimen title="Numbers" description="Figures are tabular wherever values update, so columns and counters never jitter." layout="stack">
+        <div className="type-numbers">
+          {["1,284", "111,111", "7.8 GB", "28 ms", "99.9%"].map((value) => (
+            <span key={value} className="type-title" data-numeric>
+              {value}
+            </span>
+          ))}
+        </div>
+      </Specimen>
+
+      <Specimen title="Overflow" description="Single-line labels end in an ellipsis; sentences wrap. Nothing is clipped." layout="stack">
+        <div className="type-overflow">
+          <span className="type-label truncate">Cedar Vale Collective — Lady Barron office</span>
+          <p className="type-body text-fg-muted">
+            Windows Update installed 14 updates on NST-C106 overnight. A restart is pending and will run at 2:00 am
+            unless someone is signed in.
+          </p>
+        </div>
+      </Specimen>
+
+      <Rules
+        do={[
+          "Use the role classes; pair a size with its line height and weight.",
+          "Use caption for data subtitles (AzureAD\\MiraRowan), never for explanation.",
+          "Keep one display line per screen.",
+        ]}
+        dont={[
+          "Set font sizes or weights directly.",
+          "Bold for emphasis inside body text; use the label role or accent text.",
+          "Use uppercase except the overline role.",
+        ]}
+      />
+      <TokenTable
+        tokens={[
+          ["--font-sans", "Interface face"],
+          ["--font-mono", "Code and identifiers"],
+          ["--type-body-size", "Default size"],
+          ["--type-body-line", "Default line height"],
+          ["--type-title-size", "Dialog and window titles"],
+          ["--type-caption-size", "Metadata"],
+          ["--ui-scale", "Scales every size"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

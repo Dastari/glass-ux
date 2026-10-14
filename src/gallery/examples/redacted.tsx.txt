@@ -1,0 +1,15 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+import { Redacted } from "glass-ux/ai";
+
+export default function RedactedExample() {
+    return (<AiGallery>
+      <SectionPage>
+        <Specimen title="Redacted" description="Sensitive content is withheld by the host. The browser receives a typed redaction record instead of the secret." layout="stack">
+          <Redacted value={{ redacted: true, reason: "Restricted demo value" }}/>
+        </Specimen>
+      </SectionPage>
+    </AiGallery>);
+}

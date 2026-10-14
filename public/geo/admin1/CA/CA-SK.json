@@ -1,0 +1,1 @@
+{"type":"Feature","bbox":[-110,48.993,-101.364,60],"properties":{"code":"CA-SK","country":"CA","name":"Saskatchewan","type":"Province","focus":[-110,48.9926,-101.3643,60.0001]},"geometry":{"type":"MultiPolygon","coordinates":[[[[-104.048,48.993],[-109.999,48.993],[-110,60],[-102.002,60],[-102.001,55.816],[-101.364,48.993],[-104.048,48.993]]]]}}

@@ -1,0 +1,48 @@
+import { useState } from "react";
+
+import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconChevronDown, IconEndpoint, IconMoreHorizontal, IconSearch, IconSparkle } from "glass-ux/icons";
+
+import { Button, ButtonGroup } from "glass-ux/button";
+
+export default function ButtonSection() {
+    const [fail, setFail] = useState(false);
+    return (<SectionPage>
+      <></>
+
+      <></>
+
+      <></>
+
+      <Specimen title="Groups and split buttons" description="Adjacent actions sit 8px apart. A split button joins the main action to its menu.">
+        <Example label="Split primary">
+          <ButtonGroup attached>
+            <Button variant="primary" icon={<IconEndpoint />}>
+              Connect
+            </Button>
+            <Button variant="primary" icon={<IconChevronDown />} aria-label="Connection options"/>
+          </ButtonGroup>
+        </Example>
+        <Example label="Header actions">
+          <ButtonGroup>
+            <Button variant="ghost" icon={<IconMoreHorizontal />} aria-label="More"/>
+            <Button iconEnd={<IconChevronDown />}>More actions</Button>
+            <Button variant="primary" icon={<IconEndpoint />}>
+              Connect
+            </Button>
+          </ButtonGroup>
+        </Example>
+        <Example label="Circle (composer send)">
+          <Button variant="primary" shape="circle" size="lg" icon={<IconSparkle />} aria-label="Ask Assistant"/>
+          <Button shape="circle" icon={<IconSearch />} aria-label="Search"/>
+        </Example>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

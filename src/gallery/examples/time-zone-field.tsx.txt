@@ -1,0 +1,54 @@
+import { z } from "zod";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+
+import { timeZoneSchema } from "glass-ux/time-zone-select";
+
+import { Usage } from "glass-ux/gallery/sections/inputs.kit";
+
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+function ZoneDemo() {
+    const form = useAppForm({
+        ...formBehaviour,
+        defaultValues: { zone: "Australia/Hobart" as string | null, overnight: null as string | null },
+        validators: { onDynamic: z.object({ zone: timeZoneSchema({ required: true }), overnight: timeZoneSchema() }) },
+        onSubmit: () => wait(600),
+    });
+    return (<Form form={form} aria-label="Time zones" className="w-full" data-testid="tz-form">
+      <FormStack>
+        <form.AppField name="zone">{(field) => <field.TimeZoneField label="Business hours time zone" suggested={["Australia/Hobart", "Australia/Sydney", "Pacific/Auckland", "UTC"]}/>}</form.AppField>
+        <form.AppField name="overnight">{(field) => <field.TimeZoneField label="Overnight support" optional/>}</form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>);
+}
+
+export default function TimeZoneSelectSection() {
+    return (<SectionPage>
+      <Specimen title="By city, with the offset now" description="Type a city or region. Each row shows the abbreviation and offset today, so daylight saving is visible; the hint shows the time there now.">
+        <ZoneDemo />
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Usage code={`
+import { timeZoneSchema } from "glass-ux/time-zone-select"
+
+const schema = z.object({ zone: timeZoneSchema({ required: true }) })   // "Australia/Hobart"
+
+<form.AppField name="zone">{(field) => <field.TimeZoneField label="Time zone" suggested={["Australia/Hobart", "UTC"]} />}</form.AppField>`}/>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

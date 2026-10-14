@@ -1,0 +1,52 @@
+import { AskCard, AskMarker, type AiAsk } from "glass-ux/ai";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { ASKS } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+const ALL: Array<[
+    string,
+    string,
+    AiAsk
+]> = [
+    ["Single choice", "Radio cards when each option needs a sentence; the submit names the outcome.", ASKS.single],
+    ["Several choices", "Checkboxes pick items from a list, with Select all and a live count.", ASKS.multi],
+    ["Quick replies", "A few short answers as pills; one tap answers. A typed reply still works.", ASKS.quick],
+    ["Short form", "Stacked fields, one per row, capped at the form measure; pre-filled by the agent, validated on blur.", ASKS.form],
+    ["Entity", "Search the application's entities; picks become removable chips.", ASKS.entity],
+    ["Date and time", "The agent's suggestions as one-tap choices, or an exact time, in the stated time zone.", ASKS.datetime],
+    ["Confirmation", "Yes or no with the consequence spelt out.", ASKS.confirm],
+    ["Destructive confirmation", "The soft entry point turns the consequence into a danger notice and the footer into Back and the solid danger button, inside the card. Esc goes back.", ASKS.confirmDanger],
+    ["Order", "Put options in order with the arrow buttons (or ↑ ↓ on them).", ASKS.rank],
+    ["Clarification", "The agent's best guesses as one-tap answers, or free text.", ASKS.clarify],
+];
+
+export default function AiAsksSection() {
+    return (<AiGallery>
+      <SectionPage>
+        {ALL.map(([title, description, ask]) => (<></>))}
+
+        <Specimen title="Records" description="Every ask folds into one line once resolved: the decision in words, who, when. The fold animates from the ask's height. While it waits in the dock, its place shows the same line with Review." layout="stack" wide>
+          <AskCard ask={ASKS.singleDone}/>
+          <AskCard ask={ASKS.multiDone}/>
+          <AskCard ask={ASKS.formDone}/>
+          <AskCard ask={ASKS.expired}/>
+          <AskMarker ask={ASKS.entity}/>
+        </Specimen>
+
+        <></>
+
+        <></>
+
+        <></>
+
+        <></>
+
+        <></>
+
+        <></>
+      </SectionPage>
+    </AiGallery>);
+}

@@ -1,0 +1,19 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconSearch } from "glass-ux/icons";
+
+import { MenuItemContent, MenuPreview } from "glass-ux/menu";
+
+export default function MenuItemContentExample() {
+    return (<SectionPage>
+      <Specimen title="MenuItemContent" layout="stack">
+        <MenuPreview.Surface label="Sample actions">
+          <div className="fa-item">
+            <MenuItemContent icon={<IconSearch />} shortcut="mod+k">
+              Search exhibitions
+            </MenuItemContent>
+          </div>
+        </MenuPreview.Surface>
+      </Specimen>
+    </SectionPage>);
+}

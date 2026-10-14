@@ -1,0 +1,210 @@
+/*
+ * SectionDrawer — the current section's navigation in a glass pane (glass-overlay when it
+ * slides over as a sheet). Its width comes from the shell (--_drawer) and does not change
+ * while the shell collapses it, so the content never reflows mid-animation; the shell
+ * clips it instead. Rows are fa-item.
+ */
+@layer components {
+  .fa-shell-drawer {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: var(--_drawer, var(--sidebar-w));
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: var(--radius-surface);
+    container: drawer / inline-size;
+  }
+  .fa-shell-drawer[data-placement="sheet"] {
+    width: 100%;
+  }
+
+  .fa-shell-drawer-header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2-5);
+    padding: var(--space-4) var(--space-3) var(--space-3) var(--space-4);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  /* With a search, the scroll edge sits under the field instead (it stays put). */
+  .fa-shell-drawer:not(:has(.fa-shell-drawer-search)):has(.fa-shell-drawer-body[data-scrolled-top]) .fa-shell-drawer-header {
+    box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
+  }
+  .fa-shell-drawer-search {
+    flex: none;
+    min-width: 0;
+    padding: 0 var(--space-3) var(--space-2);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-shell-drawer:has(.fa-shell-drawer-body[data-scrolled-top]) .fa-shell-drawer-search {
+    box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
+  }
+  /* In the sheet it lines up with the sheet's header and body. */
+  .fa-shell-drawer-search[data-placement="sheet"] {
+    padding-inline: var(--inset-dialog);
+  }
+  .fa-shell-drawer-match {
+    border-radius: calc(var(--radius-xs) / 2);
+    background-color: var(--accent-soft-hover);
+    color: inherit;
+    font-weight: var(--weight-semibold);
+  }
+
+  .fa-shell-drawer-mark {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+    color: var(--accent-text);
+  }
+  .fa-shell-drawer-mark > :is(img, svg) {
+    width: var(--icon-xl);
+    height: var(--icon-xl);
+  }
+  .fa-shell-drawer-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--type-subtitle-weight);
+    letter-spacing: var(--type-subtitle-tracking);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fa-shell-drawer-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-5);
+    min-height: 0;
+    padding: var(--space-1) var(--space-3) var(--space-3);
+  }
+  /* fill: the last child takes the remaining height and scrolls itself. */
+  .fa-shell-drawer-body[data-fill] {
+    overflow: hidden;
+  }
+  .fa-shell-drawer-body[data-fill][data-placement="sheet"] {
+    height: 100%;
+  }
+  .fa-shell-drawer-body[data-fill] > :last-child {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+  .fa-shell-drawer-footer {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    padding: var(--space-2) var(--space-3) var(--space-3);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-shell-drawer:has(.fa-shell-drawer-body[data-scrolled-bottom]) .fa-shell-drawer-footer {
+    box-shadow: inset 0 var(--border-width) 0 var(--line);
+  }
+
+  .fa-shell-drawer-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-shell-drawer-entry {
+    display: flex;
+    min-width: 0;
+  }
+  .fa-shell-drawer-item {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    background-color: transparent;
+    font: inherit;
+    font-size: var(--type-body-size);
+    text-align: start;
+    text-decoration: none;
+  }
+  .fa-shell-drawer-item[data-detail] {
+    padding-block: var(--space-1-5);
+  }
+  /* An entity identity as the row's face (Item face). */
+  .fa-shell-drawer-face {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .fa-shell-drawer-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-shell-drawer-detail {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ── Groups ────────────────────────────────────────────────────────────── */
+  .fa-shell-drawer-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .fa-shell-drawer-group-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .fa-shell-drawer-group-trigger {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    height: var(--control-h-sm);
+    padding-inline: var(--space-2-5) var(--space-2);
+    border: 0;
+    border-radius: var(--radius-item);
+    background-color: transparent;
+    color: inherit;
+    text-align: start;
+  }
+  .fa-shell-drawer-group-trigger .fa-overline {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-shell-drawer-group-trigger:hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-shell-drawer-chevron {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    margin-inline-start: auto;
+    color: var(--fg-subtle);
+    transform: rotate(-90deg);
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+  .fa-shell-drawer-group-trigger[data-panel-open] .fa-shell-drawer-chevron {
+    transform: none;
+  }
+  .fa-shell-drawer-group-panel {
+    height: var(--collapsible-panel-height);
+    overflow: hidden;
+    transition: height var(--duration-base) var(--ease-standard);
+  }
+  .fa-shell-drawer-group-panel:is([data-starting-style], [data-ending-style]) {
+    height: 0;
+  }
+}

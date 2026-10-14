@@ -1,0 +1,21 @@
+import { Panel, PanelHeader, PanelBody, PanelFooter } from "glass-ux/surface";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Button } from "glass-ux/button";
+
+export default function PanelExample() {
+    return (<SectionPage>
+      <Specimen title="Content panel slots" layout="stack">
+        <Panel>
+          <PanelHeader title="Exhibition overview" description="Fictional studio project"/>
+          <PanelBody>
+            Three rooms are reserved for the next exhibition.
+          </PanelBody>
+          <PanelFooter>
+            <Button>View schedule</Button>
+          </PanelFooter>
+        </Panel>
+      </Specimen>
+    </SectionPage>);
+}

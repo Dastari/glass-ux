@@ -1,0 +1,38 @@
+import { useState } from "react";
+
+import { MOCK_ORGANISATIONS, toSwitcherOrganisation } from "glass-ux/gallery/fixtures/organisations";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { OrgSwitcherPanel } from "glass-ux/shell/org-switcher/index";
+
+const ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
+
+const RECENT = ["cedarvale", "mossbridge", "orbit"];
+
+function Panel() {
+    const [value, setValue] = useState<string | null>("northstar");
+    return (<div className="glass-overlay gallery-switcher-panel" data-clip-boundary="">
+      <OrgSwitcherPanel organisations={ORGS} value={value} onValueChange={setValue} recent={RECENT}/>
+    </div>);
+}
+
+export default function OrgSwitcherSection() {
+    return (<SectionPage>
+      <></>
+
+      <Specimen title="List" description="The popup's contents: search, All organisations, Recent, then every organisation as a tree. Typing ranks matches by name, word, initials, then anywhere, and names a child's parent. Arrow keys move, Enter chooses, Esc closes. On phones the same list is a bottom sheet." layout="bare">
+        <Panel />
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

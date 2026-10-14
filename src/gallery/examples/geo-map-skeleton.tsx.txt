@@ -1,0 +1,50 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { DEMO_MAP_CONFIG, MOCK_SITES } from "glass-ux/gallery/fixtures/map";
+
+import { GeoMapSkeleton, useMapRegion, type MapPoint, type MapStatus } from "glass-ux/map";
+
+/** Gallery points: the demo's sites with a fixed spread of statuses. */
+const STATUSES: MapStatus[] = ["healthy", "healthy", "warning", "healthy", "danger", "healthy", "unknown", "healthy", "warning", "healthy"];
+
+const POINTS: MapPoint<{
+    address: string;
+}>[] = MOCK_SITES.map((site, index) => ({
+    id: site.id,
+    lng: site.location.lng,
+    lat: site.location.lat,
+    status: STATUSES[index % STATUSES.length]!,
+    label: site.name,
+    description: site.address.split(", ").at(-1),
+    data: { address: site.address },
+}));
+
+export default function MapSection() {
+    const tasmania = useMapRegion(DEMO_MAP_CONFIG, "AU-TAS");
+    const sample = POINTS.slice(0, 9);
+    return (<SectionPage>
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Specimen title="Loading" description="Before the map engine arrives, the home region's outline stands in, framed exactly as the map will frame it, so the map fades in over it without a shift. Never a spinner." layout="bare" wide>
+        <div className="gallery-map-frame" data-size="short" data-testid="map-skeleton">
+          <GeoMapSkeleton region={tasmania}/>
+        </div>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

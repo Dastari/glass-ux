@@ -1,0 +1,171 @@
+/*
+ * Chips — MultiSelect and TagInput (fa-control fa-input fa-multi).
+ *
+ *   one line  [icon] (Production ×) (All-in-One ×) (+2) type to filter…   ⇅
+ *             The box never grows: chips that do not fit fold into "+N". A hidden twin
+ *             measures every chip so the count is decided before paint.
+ *   wrap      chips flow onto more lines (forms); the box grows with them.
+ *
+ * Chip: --_action tall (the inner-button height), radius-badge, soft fill, a label that
+ * truncates (tooltip) and a round remove Button. Invalid chips take the danger tone; a
+ * duplicate entry flashes the existing chip.
+ */
+@layer components {
+  .fa-multi {
+    /* component tokens: the narrowest the typing area gets, and the longest chip */
+    --_input-min: 3rem;
+    --_chip-max: 9rem;
+    --_chip-font: var(--type-label-size);
+    --_chip-line: var(--type-label-line);
+    cursor: text;
+  }
+  .fa-multi[data-size="sm"] {
+    --_chip-font: var(--type-caption-size);
+    --_chip-line: var(--type-caption-line);
+    --_chip-max: 8rem;
+  }
+  .fa-multi-chips {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  .fa-multi-input {
+    flex: 1 1 0;
+    min-width: var(--_input-min);
+  }
+  /* Unfocused, the typing area gives its room to the chips. */
+  .fa-multi[data-has-value]:not([data-wrap]):not(:focus-within) .fa-multi-input {
+    min-width: 0;
+  }
+
+  /* ── Wrapping (forms) ──────────────────────────────────────────────────── */
+  .fa-multi[data-wrap] {
+    --_chip-max: 16rem;
+    align-items: flex-start;
+    height: auto;
+    padding-block: calc((var(--_h) - var(--_action)) / 2 - var(--border-width));
+  }
+  .fa-multi[data-wrap] .fa-multi-chips {
+    flex-wrap: wrap;
+    height: auto;
+    overflow: visible;
+  }
+  .fa-multi[data-wrap] .fa-multi-input {
+    min-height: var(--_action);
+    flex-basis: var(--_input-min);
+  }
+  .fa-multi[data-wrap] > :is(.fa-icon, .fa-input-btn) {
+    align-self: flex-start;
+  }
+  .fa-multi[data-wrap] > .fa-icon {
+    margin-block: calc((var(--_action) - var(--_icon)) / 2);
+  }
+  .fa-multi[data-wrap] > .fa-input-btn {
+    margin-block: calc((var(--_action) - var(--control-h-sm)) / 2);
+  }
+
+  /* ── Chip ──────────────────────────────────────────────────────────────── */
+  .fa-chip {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-half);
+    height: var(--_action);
+    max-width: min(var(--_chip-max), 100%);
+    padding-inline: var(--space-2) var(--space-half);
+    border-radius: var(--radius-badge);
+    background-color: var(--fill-muted);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    color: var(--fg);
+    font-size: var(--_chip-font);
+    line-height: var(--_chip-line);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    outline: none;
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-chip > .fa-icon {
+    flex: none;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    color: var(--fg-muted);
+  }
+  .fa-chip[data-overflow],
+  .fa-multi[data-readonly] .fa-chip,
+  span.fa-chip:not([data-measure]):not(:has(.fa-chip-remove)) {
+    padding-inline: var(--space-2);
+  }
+  .fa-chip[data-overflow] {
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chip-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Chips are reachable with ← from the input; mark the focused one. */
+  .fa-chip:focus-visible,
+  .fa-chip:focus {
+    background-color: var(--accent-soft);
+    box-shadow: inset 0 0 0 var(--border-width) var(--accent-line);
+    color: var(--accent-text);
+  }
+  .fa-chip[data-invalid] {
+    background-color: var(--danger-soft);
+    box-shadow: inset 0 0 0 var(--border-width) var(--danger-line);
+    color: var(--danger-text);
+  }
+  .fa-chip[data-flash] {
+    animation: fa-flash var(--duration-slower) var(--ease-standard);
+  }
+  /* The round remove button: a ghost Button sized to sit inside the chip. */
+  .fa-chip .fa-chip-remove {
+    --_h: calc(var(--_action) - var(--space-1));
+    --_icon: var(--icon-xs);
+    --_icon-stroke: calc(var(--icon-stroke) * 1.2);
+    --_fg: var(--fg-subtle);
+  }
+  .fa-chip[data-invalid] .fa-chip-remove {
+    --_fg: var(--danger-text);
+  }
+  .fa-chip-remove-space {
+    flex: none;
+    width: calc(var(--_action) - var(--space-1));
+    height: calc(var(--_action) - var(--space-1));
+  }
+  /* Editing a chip in place: the chip becomes a small input. */
+  .fa-chip-edit {
+    min-width: var(--_input-min);
+    padding-inline: var(--space-2);
+    border: 0;
+    background-color: var(--glass-fill-control-hover);
+    box-shadow: inset 0 0 0 var(--border-width) var(--accent-line);
+    font: inherit;
+    font-size: var(--_chip-font);
+    cursor: text;
+  }
+
+  /* Off-screen twin of the chips, used only for measuring. */
+  .fa-multi-measure {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    display: flex;
+    gap: var(--space-1);
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-multi-input-min {
+    flex: none;
+    width: var(--_input-min);
+  }
+}

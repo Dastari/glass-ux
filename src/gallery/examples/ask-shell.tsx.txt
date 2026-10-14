@@ -1,0 +1,25 @@
+import { useState } from "react";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconSparkle } from "glass-ux/icons";
+
+import { AskLayout, AskRecord, AskShell } from "glass-ux/ai";
+
+import { Button } from "glass-ux/button";
+
+export default function AskShellExample() {
+    const [resolved, setResolved] = useState(false);
+    return (<SectionPage>
+      <Specimen title="Fold an answered question into a record" layout="stack">
+        <AskShell resolved={resolved} record={<AskRecord status="succeeded">Confirmed the schedule.</AskRecord>}>
+          <AskLayout id="fold-question" title="Confirm the schedule?" icon={<IconSparkle />} tone="accent" footer={<Button onClick={() => setResolved(true)}>Confirm</Button>}>
+            The session starts at 9 am.
+          </AskLayout>
+        </AskShell>
+        <Button variant="ghost" onClick={() => setResolved(false)}>
+          Reset
+        </Button>
+      </Specimen>
+    </SectionPage>);
+}

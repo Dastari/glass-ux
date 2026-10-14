@@ -1,0 +1,70 @@
+/*
+ * DataTable cells: text, numbers, identity and the sparkline cell. Status badges, status
+ * dots, the sparkline itself and the selection checkbox are the shared components.
+ * Every cell holds one line at the body role (two for identity and wrap cells) so a row
+ * keeps the --row-h box at both densities.
+ */
+@layer components {
+  .fa-dt-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-dt-text[data-identifier] {
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-dt-text[data-muted],
+  .fa-dt-muted {
+    color: var(--fg-subtle);
+  }
+  .fa-dt-num {
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-dt-cell[data-wrap] .fa-dt-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .fa-dt-two-line {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-dt-two-line-sub {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+
+  /* ── Sparkline: the shared Sparkline in a row-sized box, the value beside it ── */
+  .fa-dt-spark-cell {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  /* The sparkline's box, shared with its skeleton. It gives way before the value. */
+  .fa-dt-spark,
+  .fa-dt-skel-spark {
+    --_w: 4.5rem;
+    --_h: 1.75rem; /* the inline sparkline height, as in Metric's micro tier */
+    flex: 0 1 auto;
+    width: var(--_w);
+    min-width: 0;
+    height: var(--_h);
+  }
+  .fa-dt-spark {
+    display: block;
+  }
+  .fa-dt-spark-value {
+    flex: none;
+    min-width: 3.5ch;
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+}

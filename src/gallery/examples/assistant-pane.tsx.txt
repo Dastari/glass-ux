@@ -1,0 +1,45 @@
+import { IconHistory, IconMaximise, IconNewChat } from "glass-ux/icons";
+
+import { AiStatusStrip, AssistantPane, Composer, ConversationLog, SuggestionChips } from "glass-ux/ai";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Button } from "glass-ux/button";
+
+import { BUDGET, E, MODEL, SCOPED_SUGGESTIONS } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+export default function AiSessionsSection() {
+    return (<AiGallery>
+      <SectionPage>
+        <></>
+
+        <></>
+
+        <></>
+
+        <Specimen title="Docked assistant" description="The pane beside an endpoint page, scoped to it: a new chat offers contextual suggestions. The composer floats over the bottom of the pane with the status line inside it." layout="bare">
+          <div className="ai-pane-sample">
+            <AssistantPane scope="NST-C106" actions={<>
+                  <Button variant="ghost" size="sm" icon={<IconNewChat />} aria-label="New chat about NST-C106"/>
+                  <Button variant="ghost" size="sm" icon={<IconHistory />} aria-label="Conversations"/>
+                  <Button variant="ghost" size="sm" icon={<IconMaximise />} aria-label="Open full page"/>
+                </>}>
+              <ConversationLog surface="panel" footer={<Composer model={MODEL} context={[E.c106Online]} onContextChange={() => { }} onAttach={() => { }} placeholder="Ask about NST-C106…" status={<AiStatusStrip stream="connected" budget={BUDGET} model={MODEL.name}/>}/>}>
+                <SuggestionChips align="start" suggestions={SCOPED_SUGGESTIONS} onSelect={() => { }}/>
+              </ConversationLog>
+            </AssistantPane>
+          </div>
+        </Specimen>
+
+        <></>
+
+        <></>
+
+        <></>
+
+        <></>
+      </SectionPage>
+    </AiGallery>);
+}

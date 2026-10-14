@@ -1,0 +1,180 @@
+/*
+ * Command palette — a Dialog of kind "palette" near the top of the viewport. One search
+ * row, grouped fa-item results (icon · label with matched letters · data · shortcut), and
+ * keyboard hints. Its height is fixed, so results changing under the query never move the
+ * search field or the frame. Edges show a hairline only while results scroll beneath.
+ */
+@layer components {
+  .fa-dialog-viewport[data-kind="palette"] {
+    align-items: flex-start;
+    padding-top: max(12dvh, calc(var(--safe-top) + var(--space-4)));
+  }
+  .fa-dialog[data-kind="palette"] {
+    /* component tokens: the palette's fixed frame */
+    --_w: 40rem;
+    --_h: 28rem;
+    height: min(var(--_h), 100%);
+  }
+
+  .fa-palette {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .fa-palette-search {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-4) var(--space-2) var(--space-5);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-palette-search > .fa-icon {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    color: var(--fg-muted);
+  }
+  .fa-palette-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: var(--control-h-lg);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    outline: none;
+  }
+  .fa-palette-input::placeholder {
+    color: var(--fg-subtle);
+    opacity: 1;
+  }
+  .fa-palette[data-scrolled-top] .fa-palette-search {
+    box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
+  }
+
+  .fa-palette-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0 var(--inset-overlay) var(--inset-overlay);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-padding-block: var(--space-8) var(--inset-overlay);
+  }
+  .fa-palette-group + .fa-palette-group {
+    margin-top: var(--space-1-5);
+  }
+  .fa-palette-item {
+    scroll-margin-block: var(--space-8) var(--inset-overlay);
+  }
+  .fa-palette-text {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-palette-label {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-palette-detail {
+    flex: 0 4 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-subtle);
+    font-size: var(--type-label-size);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-palette-match {
+    background: none;
+    color: inherit;
+    font-weight: var(--weight-semibold);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-line);
+    text-decoration-thickness: var(--border-width-strong);
+    text-underline-offset: var(--space-half);
+  }
+  .fa-palette-empty:not(:empty) {
+    padding: var(--space-8) var(--space-4);
+    color: var(--fg-muted);
+    text-align: center;
+  }
+
+  .fa-palette-footer {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-5);
+    padding: var(--space-2-5) var(--space-5);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-palette[data-scrolled-bottom] .fa-palette-footer {
+    box-shadow: inset 0 var(--border-width) 0 var(--line);
+  }
+  .fa-palette-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .fa-palette-hint > .fa-kbd:last-of-type {
+    margin-inline-end: var(--space-half);
+  }
+
+  /* In-flow specimen: a fixed frame like the modal palette. */
+  .fa-palette-frame {
+    --_h: 28rem;
+    display: flex;
+    flex-direction: column;
+    height: var(--_h);
+  }
+
+  /* Phones: full width under the status bar; no keyboard hints on touch. */
+  @media (width < 48rem) {
+    .fa-dialog-viewport[data-kind="palette"] {
+      padding: calc(var(--safe-top) + var(--space-2)) var(--space-2) var(--space-2);
+    }
+    .fa-dialog[data-kind="palette"] {
+      --_w: 100%;
+      --_h: 100%;
+    }
+    .fa-palette-footer,
+    .fa-palette-search .fa-palette-esc {
+      display: none;
+    }
+  }
+}
+
+@layer components {
+  /* Loading rows take exactly a result row's box (fa-item geometry, one body line). */
+  .fa-palette-skeleton-label {
+    width: auto;
+    padding: var(--space-2) var(--space-2-5) var(--space-1);
+  }
+  .fa-palette-skeleton-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-height: var(--item-h);
+    padding-inline: var(--space-2-5);
+  }
+}
+
+@layer components {
+  .fa-palette-frame {
+    --_w: 40rem;
+    width: min(var(--_w), 100%);
+    border-radius: var(--radius-dialog);
+  }
+}

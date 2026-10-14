@@ -1,0 +1,128 @@
+/*
+ * PinMap — a small map with one pin, in a glass-inset well with the tile radius.
+ *
+ * Component tokens:
+ *   --fa-pin-map-h     the well's height when the parent does not set one (default 12rem)
+ *   --_pin             the pin's size
+ * It reuses GeoMap's theme tokens (.fa-map), with a narrow soft edge: the well's own edge
+ * frames it, so the canvas fades only a little into it.
+ */
+@layer components {
+  .fa-map.fa-pin-map {
+    --fa-map-fade: var(--space-1);
+    --_pin: var(--icon-2xl);
+    --_height: var(--fa-pin-map-h, 12rem);
+    position: relative;
+    width: 100%;
+    height: var(--_height);
+    border-radius: var(--radius-tile);
+    overflow: hidden;
+  }
+  .fa-pin-map-canvas {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-standard);
+  }
+  .fa-pin-map[data-phase="ready"] .fa-pin-map-canvas {
+    opacity: 1;
+  }
+
+  /* Loading: the pin's place, quiet. */
+  .fa-pin-map-placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--fg-subtle);
+  }
+  .fa-pin-map-placeholder > .fa-icon {
+    width: var(--icon-xl);
+    height: var(--icon-xl);
+  }
+  .fa-pin-map-note {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    padding: var(--space-3);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-align: center;
+    text-wrap: pretty;
+  }
+
+  /* ── The pin ─────────────────────────────────────────────────────────────── */
+  .fa-pin-map-host {
+    z-index: var(--z-raised);
+  }
+  .fa-pin-map-pin {
+    display: grid;
+    place-items: center;
+    width: var(--_pin);
+    height: var(--_pin);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-full);
+    background: none;
+    color: var(--accent);
+    --icon-tint-opacity: 0.4;
+    filter: drop-shadow(0 0 var(--space-half) var(--canvas)) drop-shadow(0 var(--space-half) var(--space-1) var(--shadow-tint));
+    cursor: default;
+  }
+  .fa-pin-map[data-editable] .fa-pin-map-pin {
+    cursor: grab;
+  }
+  .fa-pin-map[data-editable] .fa-pin-map-pin:active {
+    cursor: grabbing;
+  }
+  .fa-pin-map-pin > .fa-icon {
+    width: var(--_pin);
+    height: var(--_pin);
+  }
+  .fa-pin-map-pin:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* ── Controls and credit, over the map ───────────────────────────────────── */
+  .fa-pin-map-controls {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    z-index: var(--z-raised);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .fa-pin-map-credit {
+    position: absolute;
+    right: var(--space-2);
+    bottom: var(--space-1);
+    z-index: var(--z-raised);
+    display: flex;
+    gap: var(--space-2);
+    max-width: calc(100% - var(--space-4));
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-pin-map-credit a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .fa-pin-map-credit a:hover {
+    text-decoration: underline;
+  }
+  /* A very small well keeps only the map, the pin and the credit. */
+  @container (height < 8rem) or (width < 12rem) {
+    .fa-pin-map-controls {
+      display: none;
+    }
+  }
+}

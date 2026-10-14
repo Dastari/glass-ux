@@ -1,0 +1,238 @@
+/*
+ * Legend, tooltip and table view.
+ *
+ * Legend   caption-sized items: a swatch that mirrors the mark, then the label in fg-muted.
+ *          Interactive at the full tier (a toolbar of toggles with the pressable recipe);
+ *          a hidden series keeps its slot and shows a hollow swatch. `list` layout is the
+ *          pie/donut column with values right-aligned.
+ * Tooltip  glass-overlay; values lead in fg semibold, labels follow in fg-muted.
+ * Table    the visible "View as table" mode: fills the plot box and scrolls inside it.
+ */
+@layer components {
+  .fa-chart-legend {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: var(--space-half) var(--space-1);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+  }
+  .fa-chart-legend-item {
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-width: 0;
+    height: var(--control-h-xs);
+    padding-inline: var(--space-1-5);
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    outline-offset: calc(var(--focus-ring-width) * -1);
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-chart[data-tier="compact"] .fa-chart-legend-item {
+    height: auto;
+    padding-inline: 0 var(--space-2);
+  }
+  button.fa-chart-legend-item:hover:not([aria-disabled="true"]) {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  button.fa-chart-legend-item[aria-disabled="true"] {
+    cursor: default;
+  }
+  .fa-chart-legend-item[data-off] {
+    color: var(--fg-subtle);
+  }
+  .fa-chart-legend-item[data-dim] {
+    opacity: 0.55;
+  }
+  .fa-chart-legend-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-chart-legend-value {
+    flex: none;
+    margin-inline-start: auto;
+    padding-inline-start: var(--space-2);
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chart-legend-detail {
+    --_detail-w: 3.25em; /* room for "100%" so shares align */
+    flex: none;
+    min-width: var(--_detail-w);
+    color: var(--fg-subtle);
+    font-weight: var(--weight-regular);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  /* The list layout: one series per row, values aligned in a column. */
+  .fa-chart-legend[data-layout="list"] {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    overflow: visible;
+  }
+  .fa-chart-legend[data-layout="list"] .fa-chart-legend-item {
+    width: 100%;
+    height: auto;
+    min-height: var(--control-h-xs);
+    padding-inline: var(--space-1-5);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-chart-legend[data-layout="list"] .fa-chart-legend-item[data-active] {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-chart-legend[data-layout="list"] .fa-chart-legend-detail {
+    font-size: var(--type-caption-size);
+  }
+
+  /* ── Tooltip ───────────────────────────────────────────────────────────── */
+  .fa-chart-tip {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    z-index: var(--z-tooltip);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    min-width: var(--chart-tooltip-min);
+    max-width: var(--chart-tooltip-w);
+    padding: var(--space-2) var(--space-2-5) var(--space-2-5);
+    border-radius: var(--radius-overlay);
+    color: var(--fg);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-chart-tip[data-placed] {
+    opacity: 1;
+  }
+  .fa-chart-tip-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-width: 0;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-chart-tip-title {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-chart-tip-meta {
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--fg-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chart-tip-rows {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-chart-tip-row {
+    display: contents;
+  }
+  .fa-chart-tip-value {
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    white-space: nowrap;
+  }
+  .fa-chart-tip-label {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-chart-tip-row[data-active] .fa-chart-tip-label {
+    color: var(--fg);
+  }
+  .fa-chart-tip-detail {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .fa-chart-tip-row:not(:has(.fa-chart-tip-detail)) .fa-chart-tip-label {
+    grid-column: span 2;
+  }
+  .fa-chart-tip-foot {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+
+  /* ── Table view ────────────────────────────────────────────────────────── */
+  .fa-chart-table-scroll {
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border-radius: var(--radius-xs);
+  }
+  .fa-chart-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chart-table :is(th, td) {
+    height: var(--row-h-compact);
+    padding-inline: var(--space-2);
+    border-block-end: var(--border-width) solid var(--line);
+    text-align: start;
+    white-space: nowrap;
+  }
+  .fa-chart-table thead th {
+    position: sticky;
+    inset-block-start: 0;
+    height: var(--row-h-header-compact);
+    background-color: var(--sticky-fill);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    font-weight: var(--weight-medium);
+  }
+  .fa-chart-table tbody th {
+    color: var(--fg);
+    font-weight: var(--weight-regular);
+  }
+  .fa-chart-table td {
+    color: var(--fg-muted);
+  }
+  .fa-chart-table [data-numeric] {
+    text-align: end;
+  }
+}

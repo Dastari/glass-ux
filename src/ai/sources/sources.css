@@ -1,0 +1,122 @@
+/*
+ * Citations — numbered markers in the text and the sources list under the answer.
+ *
+ * Marker  a small numbered pill riding on the x-height (no superscript shift of the line).
+ * List    an auto-fill grid of compact link tiles (glass-control): number, monogram or entity
+ *         glyph, title and site. External links show the external-link glyph.
+ */
+@layer components {
+  .fa-ai-cite {
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--icon-sm);
+    height: var(--icon-sm);
+    margin-inline: var(--space-half);
+    padding-inline: var(--space-1);
+    border-radius: var(--radius-full);
+    background-color: var(--fill-muted);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    color: var(--fg-muted);
+    font-size: var(--type-overline-size);
+    line-height: 1;
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+    vertical-align: middle;
+    transition-property: background-color, color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  a.fa-ai-cite:hover {
+    background-color: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  a.fa-ai-cite:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--space-half);
+  }
+
+  .fa-ai-sources {
+    /* component token: the narrowest source tile before the grid drops a column */
+    --_min: 15rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-ai-sources-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--_min)), 1fr));
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-ai-source {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-width: 0;
+    padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+    border-radius: var(--radius-control);
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .fa-ai-source:hover {
+    background-color: var(--glass-fill-control-hover);
+    border-color: var(--line-strong);
+  }
+  .fa-ai-source:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-ai-source-index {
+    flex: none;
+    width: var(--icon-sm);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-semibold);
+    text-align: center;
+  }
+  .fa-ai-source-mark {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--control-h-xs);
+    height: var(--control-h-xs);
+    border-radius: var(--radius-xs);
+    background-color: var(--fill-muted);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    font-weight: var(--weight-bold);
+  }
+  .fa-ai-source-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-ai-source-title,
+  .fa-ai-source-site {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-source-title {
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+  }
+  .fa-ai-source-site {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-ai-source-external {
+    flex: none;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    color: var(--fg-subtle);
+  }
+}

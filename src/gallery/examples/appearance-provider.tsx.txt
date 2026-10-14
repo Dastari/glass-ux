@@ -1,0 +1,21 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { ThemeToggle } from "glass-ux/shell";
+
+import { AppearanceProvider } from "glass-ux/lib/appearance/index";
+
+import { SwatchPicker } from "glass-ux/swatch-picker";
+
+export default function AppearanceProviderExample() {
+    return (<SectionPage>
+      <Specimen title="AppearanceProvider" description="Mount once at the application root. The theme control updates the persisted appearance and document tokens." layout="stack">
+        <AppearanceProvider>
+          <ThemeToggle />
+          <SwatchPicker options={[
+            { value: "ocean", label: "Ocean", palette: "ocean" },
+            { value: "aurora", label: "Aurora", palette: "aurora" },
+        ]} defaultValue="ocean" aria-label="Sample palette"/>
+        </AppearanceProvider>
+      </Specimen>
+    </SectionPage>);
+}

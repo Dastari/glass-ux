@@ -1,0 +1,84 @@
+import { useSearch, type LinkProps } from "@tanstack/react-router";
+
+import { OnCanvas, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconEndpoint } from "glass-ux/icons";
+
+import { StatusBadge } from "glass-ux/badge";
+
+import { RouteTabs, type RouteTabItem } from "glass-ux/tabs";
+
+import { ENDPOINT_TABS } from "glass-ux/gallery/sections/nav.fixtures";
+
+/**
+ * In the product each tab is a path segment (/endpoints/{id}/software). The gallery owns a
+ * single route, so its demo tabs are `?tab=` on this page; the design route does not type
+ * that search param, hence the cast.
+ */
+const tabLink = (tab: string) => ({ to: ".", search: tab === "overview" ? {} : { tab } }) as unknown as LinkProps;
+
+const ROUTE_TABS: RouteTabItem[] = ENDPOINT_TABS.map((tab) => ({ ...tab, link: tabLink(tab.value) }));
+
+function EndpointHeader() {
+    return (<div className="flex min-w-0 items-center gap-3">
+      <span className="fa-tile-icon" aria-hidden>
+        <IconEndpoint />
+      </span>
+      <div className="min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="type-title">NST-C106</span>
+          <StatusBadge status="online" size="sm"/>
+        </div>
+        <div className="type-caption text-fg-muted">HP EliteOne 1000 G2 27-in 4K UHD AiO · Windows 11 Business</div>
+      </div>
+    </div>);
+}
+
+/** Stands in for the route's <Outlet />: names the place the URL points at. */
+function Outlet() {
+    const search = useSearch({ strict: false }) as {
+        tab?: string;
+    };
+    const label = ENDPOINT_TABS.find((tab) => tab.value === (search.tab ?? "overview"))?.label ?? "Overview";
+    return <div className="glass-inset mt-3 h-20 rounded-tile p-tile type-caption text-fg-muted">{label} · /endpoints/nst-c106/{search.tab ?? ""}</div>;
+}
+
+export default function TabsSection() {
+    return (<SectionPage>
+      <OnCanvas title="On the canvas" description="Tabs are routes by default (R6.2): every tab is a link to its own URL, read back from the location. In the product the entity header and its tabs sit straight on the ambient canvas.">
+        <div className="flex min-w-0 flex-col gap-3">
+          <EndpointHeader />
+          <RouteTabs items={ROUTE_TABS} aria-label="NST-C106 pages (on canvas)"/>
+        </div>
+      </OnCanvas>
+
+      <Specimen title="Route tabs (default)" description="Links in a nav landmark; the current one carries aria-current. A child route stays inside its tab. Arrow keys, Home, End and Space work exactly as in local tabs, and the rows in More are links too." wide>
+        <div className="w-full">
+          <RouteTabs items={ROUTE_TABS} aria-label="NST-C106 pages"/>
+          <Outlet />
+        </div>
+      </Specimen>
+
+      <Specimen title="Route tabs in a narrow header" description="At 420px the strip shows what fits plus More. Following a link from More swaps that tab into the strip; the active tab is never hidden.">
+        <div className="w-105 max-w-full">
+          <RouteTabs items={ROUTE_TABS} aria-label="NST-C106 pages (narrow)"/>
+        </div>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

@@ -1,0 +1,33 @@
+/*
+ * EmailField's typo hint: a link-like button in the field's message line, so the suggestion
+ * replaces the hint in place and moves nothing (R9.1).
+ */
+@layer components {
+  .fa-email-suggestion {
+    min-width: 0;
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent-text);
+    font: inherit;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    border-radius: var(--radius-xs);
+  }
+  .fa-email-suggestion:hover {
+    text-decoration: underline;
+  }
+  .fa-email-suggestion:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-email-suggestion strong {
+    font-weight: var(--weight-semibold);
+  }
+}

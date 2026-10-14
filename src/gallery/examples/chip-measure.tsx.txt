@@ -1,0 +1,17 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { ChipMeasure } from "glass-ux/combobox";
+
+export default function ChipMeasureExample() {
+    return (<SectionPage>
+      <Specimen title="ChipMeasure" layout="stack">
+        <div className="fa-chip-measure-example" aria-hidden="true">
+          <ChipMeasure label="Northstar"/>
+        </div>
+        <p>
+          The hidden measuring twin is used by chip containers to decide how
+          many values fit. It is not an interactive chip.
+        </p>
+      </Specimen>
+    </SectionPage>);
+}

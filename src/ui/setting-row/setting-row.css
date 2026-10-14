@@ -1,0 +1,158 @@
+/*
+ * SettingRow — one setting per line (R15.3).
+ *
+ *   Label  value  [badge]                                  (status) [control]
+ *   Description, wrapping under the label
+ *
+ * The control is right-aligned and vertically centred on the text block. When the
+ * text would get narrower than --_text-min, the control wraps under it instead of
+ * squeezing it; in narrow rows (container query) it then aligns to the start. The save
+ * status (spinner → ✓ / ✕) sits in the gap to the left of the control, so it never
+ * moves anything.
+ */
+@layer components {
+  .fa-setting-row {
+    container-type: inline-size;
+    min-width: 0;
+    padding-block: var(--space-1);
+  }
+  .fa-setting-row-inner {
+    /* component token: the narrowest the text column gets before the control wraps */
+    --_text-min: 12rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-6);
+    min-height: var(--control-h-sm);
+  }
+  .fa-setting-row-text {
+    display: flex;
+    flex: 1 1 var(--_text-min);
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+  }
+  .fa-setting-row-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-half) var(--space-2);
+    min-width: 0;
+  }
+  .fa-setting-row-label {
+    min-width: 0;
+    color: var(--fg);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--type-body-tracking);
+    text-wrap: pretty;
+  }
+  .fa-setting-row-value {
+    min-width: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+  .fa-setting-row-badge {
+    display: inline-flex;
+    flex: none;
+    align-self: center;
+  }
+  .fa-setting-row-description {
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    text-wrap: pretty;
+  }
+  .fa-setting-row-description[data-error] {
+    color: var(--danger-text);
+  }
+  .fa-setting-row[data-disabled] :is(.fa-setting-row-label, .fa-setting-row-value) {
+    color: var(--fg-muted);
+  }
+  .fa-setting-row[data-disabled] .fa-setting-row-description {
+    color: var(--fg-subtle);
+  }
+
+  .fa-setting-row-control {
+    position: relative;
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--gap-controls);
+    min-width: 0;
+    max-width: 100%;
+    margin-inline-start: auto;
+  }
+
+  /* ── In-place save status ──────────────────────────────────────────────── */
+  .fa-setting-row-status {
+    position: absolute;
+    top: 50%;
+    right: calc(100% + var(--space-2));
+    display: grid;
+    place-items: center;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  .fa-setting-row-status > .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+  }
+  .fa-setting-row-status[data-status="pending"] {
+    color: var(--fg-subtle);
+  }
+  .fa-setting-row-spinner {
+    animation:
+      fa-spin var(--duration-spin) linear infinite,
+      fa-fade-in var(--duration-base) var(--ease-standard) var(--spinner-delay) both;
+  }
+  .fa-setting-row-status[data-status="success"] {
+    color: var(--success-text);
+  }
+  .fa-setting-row-check path {
+    stroke-dasharray: 24;
+    animation: fa-draw var(--duration-slow) var(--ease-spring) both;
+  }
+  .fa-setting-row-status[data-status="error"] {
+    color: var(--danger-text);
+    animation: fa-shake var(--duration-slower) var(--ease-standard);
+  }
+  :root[data-motion="reduced"] :is(.fa-setting-row-spinner, .fa-setting-row-check path, .fa-setting-row-status) {
+    animation-duration: var(--duration-instant);
+    animation-iteration-count: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) :is(.fa-setting-row-spinner, .fa-setting-row-check path, .fa-setting-row-status) {
+      animation-duration: var(--duration-instant);
+      animation-iteration-count: 1;
+    }
+  }
+
+  /* ── Narrow: the control moves under the text ──────────────────────────── */
+  @container (width < 16rem) {
+    .fa-setting-row-text {
+      flex-basis: 100%;
+    }
+    .fa-setting-row-control {
+      justify-content: flex-start;
+      margin-inline-start: 0;
+    }
+    .fa-setting-row-status {
+      position: static;
+      order: 2;
+      transform: none;
+    }
+  }
+
+  .fa-setting-row-skeleton .fa-setting-row-head > .fa-skel-text {
+    max-width: 100%;
+  }
+}

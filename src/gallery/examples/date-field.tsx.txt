@@ -1,0 +1,68 @@
+import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { DateField, DateRangeField, addDays, todayIso } from "glass-ux/date-picker";
+
+import { Field } from "glass-ux/field";
+
+import { FormStack } from "glass-ux/form";
+
+const today = todayIso();
+
+export default function DatePickerSection() {
+    return (<SectionPage>
+      <></>
+
+      <Specimen title="Fields" description="Type in the locale's order (13/10/2026; any separator, two-digit years) or open the calendar with its button or Alt+↓. Text that is not a day turns the box invalid and keeps what was typed." layout="stack">
+        <FormStack>
+          <Field label="Warranty ends">
+            <DateField defaultValue="2027-03-31"/>
+          </Field>
+          <Field label="Next maintenance">
+            <DateField min={today}/>
+          </Field>
+          <Field label="Reporting period" nativeLabel={false}>
+            <DateRangeField defaultValue={{ start: addDays(today, -30), end: today }} aria-label="Reporting period"/>
+          </Field>
+          <Field label="Retired on" error="Pick a day on or before today">
+            <DateField defaultValue={addDays(today, 2)} invalid/>
+          </Field>
+          <Field label="Enrolled">
+            <DateField defaultValue="2024-02-12" readOnly/>
+          </Field>
+          <Field label="Archived">
+            <DateField disabled/>
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="Sizes" description="The box follows the control sizes; the calendar keeps its own.">
+        <DateField size="sm" defaultValue={today} aria-label="Small"/>
+        <DateField size="md" defaultValue={today} aria-label="Medium"/>
+        <DateField size="lg" defaultValue={today} aria-label="Large"/>
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <DateField defaultValue={today} aria-label="Date over imagery"/>
+        <DateRangeField defaultValue={{ start: addDays(today, -7), end: today }} aria-label="Range over imagery"/>
+      </Specimen>
+
+      <ContainerLab>
+        {(preset) => preset?.id === "row" || preset?.id === "header" ? (<div className="flex h-full items-center gap-2 px-1">
+              <DateField size="sm" width="full" defaultValue={today} aria-label="Date"/>
+            </div>) : (<div className="h-full overflow-y-auto" data-scroll-container>
+              <FormStack className="p-3">
+                <Field label="Warranty ends">
+                  <DateField defaultValue="2027-03-31" width="full"/>
+                </Field>
+                <Field label="Reporting period" nativeLabel={false}>
+                  <DateRangeField defaultValue={{ start: addDays(today, -30), end: today }} aria-label="Reporting period"/>
+                </Field>
+              </FormStack>
+            </div>)}
+      </ContainerLab>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

@@ -1,0 +1,16 @@
+# Glass UX
+
+Typed React components, compound slots, themes and interaction rules. Read docs from the installed package to match its version.
+
+- [Getting started](docs/getting-started.md)
+- [Existing applications](docs/integration.md)
+- [Agent adoption](docs/agent-adoption.md)
+- [API index](docs/api/README.md)
+- [Design rules](docs/ui-rules.md)
+- [Typed form inputs](docs/components/README.md)
+- [Adoption skill](skills/glass-ux-adopt/SKILL.md)
+- [Component selection skill](skills/glass-ux-components/SKILL.md)
+- [Forms skill](skills/glass-ux-forms/SKILL.md)
+- [Data views skill](skills/glass-ux-data/SKILL.md)
+- [Assistant UI skill](skills/glass-ux-assistant/SKILL.md)
+- [Authoring skill](skills/glass-ux-author/SKILL.md)

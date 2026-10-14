@@ -1,0 +1,232 @@
+/*
+ * FileDrop, FileList, FileRow.
+ *
+ *   full     dashed tile: icon tile · "Drop files here or browse" · limits line
+ *   compact  one control-height dashed row, for toolbars and table rows
+ *   states   hover lifts the edge · dragging = accent edge + accent-soft fill · keyboard
+ *            focus rings the tile · invalid = danger edge · disabled at --disabled-opacity
+ *
+ * Rows: [file tile] name …………… size · state  [✕]
+ *                   progress bar (always present, so rows never change height)
+ */
+@layer components {
+  .fa-file-drop {
+    /* component tokens: the dashed edge reads at 3:1 */
+    --_edge: color-mix(in oklab, var(--fg-subtle) 45%, transparent);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2-5);
+    width: 100%;
+    min-width: 0;
+    padding: var(--space-5) var(--space-4);
+    border: var(--border-width-strong) dashed var(--_edge);
+    border-radius: var(--radius-tile);
+    background-color: var(--glass-fill-control);
+    color: var(--fg-muted);
+    text-align: center;
+    cursor: pointer;
+    transition-property: border-color, background-color, color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-file-drop:hover:not([data-disabled]) {
+    --_edge: color-mix(in oklab, var(--fg-subtle) 75%, transparent);
+    background-color: var(--glass-fill-control-hover);
+  }
+  .fa-file-drop[data-dragging] {
+    --_edge: var(--accent);
+    background-color: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  .fa-file-drop:has(.fa-file-drop-input:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-file-drop[data-invalid]:not([data-dragging]) {
+    --_edge: var(--danger-line);
+  }
+  .fa-file-drop[data-disabled] {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .fa-file-drop-icon {
+    color: var(--fg-muted);
+    transition:
+      transform var(--duration-base) var(--ease-spring),
+      background-color var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-file-drop[data-dragging] .fa-file-drop-icon {
+    border-color: transparent;
+    background-color: var(--accent-soft);
+    color: var(--accent-text);
+    transform: translateY(calc(var(--space-1) * -1));
+  }
+  .fa-file-drop-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+    max-width: 100%;
+  }
+  .fa-file-drop-title {
+    color: var(--fg);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-weight: var(--weight-medium);
+    text-wrap: balance;
+  }
+  .fa-file-drop[data-dragging] .fa-file-drop-title {
+    color: var(--accent-text);
+  }
+  .fa-file-drop-link {
+    color: var(--accent-text);
+  }
+  .fa-file-drop-hint {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-wrap: balance;
+  }
+
+  /* ── Compact: one row ──────────────────────────────────────────────────── */
+  .fa-file-drop[data-variant="compact"] {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--space-2);
+    height: var(--control-h-md);
+    padding: 0 var(--control-px-md);
+    border-radius: var(--radius-control);
+    text-align: start;
+  }
+  .fa-file-drop[data-variant="compact"] .fa-file-drop-icon {
+    width: auto;
+    height: auto;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .fa-file-drop[data-variant="compact"] .fa-file-drop-icon > .fa-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-file-drop[data-variant="compact"] .fa-file-drop-text {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-2);
+    overflow: hidden;
+  }
+  .fa-file-drop[data-variant="compact"] :is(.fa-file-drop-title, .fa-file-drop-hint) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-file-drop[data-variant="compact"] .fa-file-drop-title {
+    flex: none;
+  }
+  .fa-file-drop[data-variant="compact"] .fa-file-drop-hint {
+    min-width: 0;
+  }
+
+  /* ── File list ─────────────────────────────────────────────────────────── */
+  .fa-file-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-file-row {
+    container-type: inline-size;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-2) var(--space-1-5) var(--space-2) var(--space-2);
+    border: var(--border-width) solid var(--glass-edge);
+    border-radius: var(--radius-control);
+    background-color: var(--glass-fill-control);
+    box-shadow: inset 0 var(--border-width) 0 0 var(--glass-rim-top);
+  }
+  .fa-file-row-icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+    border-radius: var(--radius-sm);
+    background-color: var(--glass-fill-inset);
+    color: var(--fg-muted);
+  }
+  .fa-file-row-icon > .fa-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-file-row[data-status="error"] .fa-file-row-icon {
+    background-color: var(--danger-soft);
+    color: var(--danger-text);
+  }
+  .fa-file-row-main {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    min-width: 0;
+  }
+  .fa-file-row-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-file-row-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-file-row-meta,
+  .fa-file-row-error {
+    flex: none;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+  }
+  .fa-file-row-meta {
+    color: var(--fg-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-file-row-error {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--danger-text);
+    text-overflow: ellipsis;
+  }
+
+  /* Narrow rows: the size line moves under the name instead of squeezing it. */
+  @container (width < 20rem) {
+    .fa-file-row-head {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+    .fa-file-row-meta,
+    .fa-file-row-error {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

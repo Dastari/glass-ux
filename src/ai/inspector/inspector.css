@@ -1,0 +1,89 @@
+/*
+ * ConversationContext — the inspector's sections: overline title with a data count, then
+ * chips, tool rows, the sources list (one column here) and the budget meter. Sections are
+ * set apart by --gap-section, never rules (R5.8).
+ */
+@layer components {
+  .fa-ai-context-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-section);
+    min-width: 0;
+  }
+  .fa-ai-context-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-ai-context-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin: 0;
+  }
+  .fa-ai-context-meta {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-ai-context-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1-5);
+  }
+  .fa-ai-context-workspace {
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+  }
+  .fa-ai-context-tools {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-ai-context-tool {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--control-h-sm);
+    min-width: 0;
+    font-size: var(--type-label-size);
+  }
+  .fa-ai-context-tool-icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    color: var(--fg-muted);
+  }
+  .fa-ai-context-tool-icon .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  .fa-ai-context-tool-id {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    font-size: var(--type-caption-size);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-context-tool-meta {
+    flex: none;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+  }
+  .fa-ai-context-failed {
+    color: var(--danger-text);
+  }
+  .fa-ai-context-sources .fa-ai-sources-title {
+    display: none;
+  }
+  .fa-ai-context-sources .fa-ai-sources-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

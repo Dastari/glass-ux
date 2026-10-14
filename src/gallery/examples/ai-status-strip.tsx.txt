@@ -1,0 +1,37 @@
+import { AiStatusStrip, Composer } from "glass-ux/ai";
+
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { BUDGET, BUDGET_LOW, BUDGET_OUT, MODEL, NOW } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+export default function AiComposerSection() {
+    return (<AiGallery>
+      <SectionPage>
+        <></>
+
+        <></>
+
+        <></>
+
+        <></>
+
+        <Specimen title="Status strip" description="Connection, budget and model as one caption line, the composer's last row (status): never a banner." layout="stack">
+          <Composer model={MODEL} placeholder="Ask a follow-up…" status={<AiStatusStrip stream="connected" budget={BUDGET} model={MODEL.name}/>}/>
+          <AiStatusStrip stream="connected" budget={BUDGET} model={MODEL.name}/>
+          <AiStatusStrip stream="connected" budget={BUDGET_LOW} model={MODEL.name}/>
+          <AiStatusStrip stream="reconnecting" attempt={2} retryAt={NOW + 4000} onRetry={() => { }} budget={BUDGET} model={MODEL.name}/>
+          <AiStatusStrip stream="offline" onRetry={() => { }} budget={BUDGET_OUT}/>
+        </Specimen>
+
+        <></>
+
+        <></>
+
+        <></>
+
+        <></>
+      </SectionPage>
+    </AiGallery>);
+}

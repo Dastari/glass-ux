@@ -1,0 +1,28 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+import { AttachmentChip } from "glass-ux/ai";
+
+export default function AttachmentChipExample() {
+    return (<AiGallery>
+      <SectionPage>
+        <Specimen title="AttachmentChip" layout="stack">
+          <AttachmentChip attachment={{
+            id: "brief",
+            name: "exhibition-brief.pdf",
+            size: 240000,
+            mime: "application/pdf",
+            state: "ready",
+        }}/>
+          <AttachmentChip attachment={{
+            id: "draft",
+            name: "draft.csv",
+            size: 42000,
+            state: "uploading",
+            progress: 0.6,
+        }}/>
+        </Specimen>
+      </SectionPage>
+    </AiGallery>);
+}

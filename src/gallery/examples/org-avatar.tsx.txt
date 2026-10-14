@@ -1,0 +1,82 @@
+import { MOCK_ORGANISATIONS, toSwitcherOrganisation } from "glass-ux/gallery/fixtures/organisations";
+
+import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconTerminal } from "glass-ux/icons";
+
+import { OrgAvatar, type OrgTint } from "glass-ux/shell/org-switcher/index";
+
+import { WindowFrame, WindowScopeChip, WindowScopeProvider, type WindowScopes } from "glass-ux/windows";
+
+const ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
+
+const byId = (id: string) => ORGS.find((org) => org.id === id)!;
+
+const SCOPES: WindowScopes = {
+    current: "cedarvale",
+    describe: (id) => {
+        const org = ORGS.find((item) => item.id === id);
+        return org ? { label: org.name, avatar: <OrgAvatar org={org} size="xs"/> } : undefined;
+    },
+};
+
+function ScopedWindow({ scope }: {
+    scope: string;
+}) {
+    return (<WindowScopeProvider value={SCOPES}>
+      <WindowFrame.Root focused state="floating" aria-label="Terminal">
+        <WindowFrame.AppBar icon={<IconTerminal />} title="Terminal" subtitle="NST-C106" scope={<WindowScopeChip scope={scope}/>}/>
+      </WindowFrame.Root>
+    </WindowScopeProvider>);
+}
+
+export default function OrgSwitcherSection() {
+    return (<SectionPage>
+      <></>
+
+      <></>
+
+      <Specimen title="Avatar" description="A rounded square, so an organisation never reads as a person. Initials sit in ink on one of the eight identity colours (never the data hues); a logo replaces them. In a narrow top bar the trigger shows the avatar and the short code (“NST”).">
+        <Example label="Sizes">
+          <div className="gallery-avatar-row">
+            {(["xs", "sm", "md", "lg"] as const).map((size) => (<OrgAvatar key={size} org={byId("northstar")} size={size}/>))}
+          </div>
+        </Example>
+        <Example label="Tints">
+          <div className="gallery-avatar-row">
+            {([1, 2, 3, 4, 5, 6, 7, 8] as OrgTint[]).map((tint) => (<OrgAvatar key={tint} org={{ ...byId("cedarvale"), tint }} size="md"/>))}
+          </div>
+        </Example>
+        <Example label="Logo · All organisations">
+          <div className="gallery-avatar-row">
+            <OrgAvatar org={byId("orbit")} size="md"/>
+            <OrgAvatar org={null} size="md"/>
+          </div>
+        </Example>
+      </Specimen>
+
+      <Specimen title="Window scope chip" description="Windows sit above the scope (R14.4). A window from another organisation than the current one carries its chip; the dock groups windows by organisation behind each group's avatar." wide layout="stack">
+        <Example label="Another organisation (in Cedar Vale)">
+          <div className="gallery-shell-window">
+            <ScopedWindow scope="northstar"/>
+          </div>
+        </Example>
+        <Example label="The current organisation: no chip">
+          <div className="gallery-shell-window">
+            <ScopedWindow scope="cedarvale"/>
+          </div>
+        </Example>
+        <Example label="A narrow window keeps the avatar">
+          <div className="gallery-shell-window" data-width="phone">
+            <ScopedWindow scope="northstar"/>
+          </div>
+        </Example>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

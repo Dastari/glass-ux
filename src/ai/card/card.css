@@ -1,0 +1,162 @@
+/*
+ * AiCard — the frame for every non-prose block in a conversation.
+ *
+ * Material  canvas: glass-card (panel look, no blur — R4.8) · panel: glass-control, or
+ *           glass-inset for wells.
+ * Anatomy   header (icon · title + data meta · ghost actions) · body · footer.
+ * Tone      warning / danger / success / accent / info tint the edge and the icon tile; the
+ *           same roles as buttons, badges and notices (R11.9).
+ *
+ * Component tokens
+ *   --_pad   the card's inset (tile inset; tighter in narrow cards)
+ */
+@layer components {
+  .fa-ai-card {
+    --_pad: var(--inset-tile);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-radius: var(--radius-tile);
+    container: ai-card / inline-size;
+    color: var(--fg);
+  }
+  .fa-ai-card[data-surface="canvas"] {
+    --_shadow: var(--shadow-1);
+  }
+  .fa-ai-card:is([data-tone="warning"], [data-tone="danger"], [data-tone="success"], [data-tone="accent"], [data-tone="info"]) {
+    border-color: var(--_tone-line);
+  }
+  .fa-ai-card[data-tone="warning"] {
+    --_tone-line: var(--warning-line);
+  }
+  .fa-ai-card[data-tone="danger"] {
+    --_tone-line: var(--danger-line);
+  }
+  .fa-ai-card[data-tone="success"] {
+    --_tone-line: var(--success-line);
+  }
+  /* Questions are not alarms: in a red-accent palette an accent edge reads as an error,
+     so accent-tone cards stay neutral. Approvals carry their risk tone instead. */
+  .fa-ai-card[data-tone="accent"] {
+    --_tone-line: var(--glass-edge);
+  }
+  .fa-ai-card[data-tone="info"] {
+    --_tone-line: var(--info-line);
+  }
+
+  .fa-ai-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-width: 0;
+    min-height: calc(var(--control-h-sm) + var(--space-2) * 2);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--_pad);
+  }
+  .fa-ai-card-header[data-tile] {
+    gap: var(--space-3);
+    padding-block: var(--space-3) var(--space-1);
+  }
+  .fa-ai-card-icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    color: var(--fg-muted);
+  }
+  .fa-ai-card-icon:not(.fa-tile-icon) .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+  }
+  .fa-ai-card[data-tone] .fa-ai-card-icon.fa-tile-icon {
+    border-color: transparent;
+  }
+  .fa-ai-card[data-tone="warning"] .fa-ai-card-icon.fa-tile-icon {
+    background-color: var(--warning-soft);
+    color: var(--warning-text);
+  }
+  .fa-ai-card[data-tone="danger"] .fa-ai-card-icon.fa-tile-icon {
+    background-color: var(--danger-soft);
+    color: var(--danger-text);
+  }
+  .fa-ai-card[data-tone="success"] .fa-ai-card-icon.fa-tile-icon {
+    background-color: var(--success-soft);
+    color: var(--success-text);
+  }
+  .fa-ai-card[data-tone="accent"] .fa-ai-card-icon.fa-tile-icon {
+    color: var(--fg-muted);
+  }
+  .fa-ai-card[data-tone="info"] .fa-ai-card-icon.fa-tile-icon {
+    background-color: var(--info-soft);
+    color: var(--info-text);
+  }
+  .fa-ai-card-heading {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-ai-card-title {
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-card-header[data-tile] .fa-ai-card-title {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    white-space: normal;
+    text-wrap: balance;
+  }
+  .fa-ai-card-meta {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-card-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-half);
+    margin-inline-start: auto;
+  }
+
+  .fa-ai-card-body {
+    min-width: 0;
+    padding: 0 var(--_pad) var(--_pad);
+  }
+  .fa-ai-card-body[data-flush] {
+    padding: 0;
+  }
+  .fa-ai-card-header + .fa-ai-card-body:not([data-flush]) {
+    padding-top: var(--space-1);
+  }
+  .fa-ai-card > .fa-ai-card-body:first-child:not([data-flush]) {
+    padding-top: var(--_pad);
+  }
+  .fa-ai-card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-controls);
+    min-width: 0;
+    padding: 0 var(--_pad) var(--_pad);
+  }
+
+  @container ai-card (width < 22rem) {
+    .fa-ai-card-header {
+      --_pad: var(--space-3);
+    }
+    .fa-ai-card-body,
+    .fa-ai-card-footer {
+      --_pad: var(--space-3);
+    }
+  }
+}

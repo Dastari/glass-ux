@@ -1,0 +1,50 @@
+import { Matrix, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { Badge, type BadgeTone } from "glass-ux/badge";
+
+const TONES: BadgeTone[] = ["neutral", "accent", "success", "warning", "danger", "info"];
+
+const TONE_LABEL: Record<BadgeTone, string> = {
+    neutral: "Workstation",
+    accent: "Favourite",
+    success: "Compliant",
+    warning: "Reboot pending",
+    danger: "Agent outdated",
+    info: "Beta channel",
+};
+
+export default function BadgeSection() {
+    return (<SectionPage>
+      <Specimen title="Tones" description="Soft pills. Status tones only for status; accent for brand or selection; neutral for categories." wide>
+        <Matrix columns={["md", "md · dot", "sm", "sm · dot"]} rows={TONES.map((tone) => ({
+            label: tone,
+            cells: [
+                <Badge key="a" tone={tone}>
+                {TONE_LABEL[tone]}
+              </Badge>,
+                <Badge key="b" tone={tone} marker="dot">
+                {TONE_LABEL[tone]}
+              </Badge>,
+                <Badge key="c" tone={tone} size="sm">
+                {TONE_LABEL[tone]}
+              </Badge>,
+                <Badge key="d" tone={tone} size="sm" marker="dot">
+                {TONE_LABEL[tone]}
+              </Badge>,
+            ],
+        }))}/>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

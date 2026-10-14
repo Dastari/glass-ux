@@ -1,0 +1,191 @@
+/*
+ * EntitySettingsDialog and its building blocks.
+ *
+ *   dialog          an lg settings dialog (dialog.css): header (identity tile · Settings ·
+ *                   data subtitle), the L3 rail with dirty and error dots, Cancel / Save.
+ *                   The <form> is display: contents, so the header, rail and footer stay
+ *                   the dialog's own flex children.
+ *   tab             one form column (fa-form-stack): a field or setting per row, groups
+ *                   apart by --gap-section (R15).
+ *   inherited       a setting row that says where its value comes from; overridden, its
+ *                   fields follow beneath, indented by nothing (one column, R15.2).
+ *   test            the Test button and a reserved summary line, then a fixed result block.
+ *
+ * Component tokens
+ *   --_fact-label   the result block's label column
+ *   --_summary-min  the narrowest the summary line gets beside the button before it wraps
+ */
+@layer components {
+  .fa-entity-settings-form {
+    display: contents;
+  }
+  /* A tab is one form column (fa-form-stack): rows on the field rhythm, groups apart. */
+  .fa-entity-settings-tab {
+    padding-block: var(--space-1) var(--space-4);
+  }
+  /* The identity tile in the header sits where the icon tile would. */
+  .fa-dialog-media .fa-entity[data-tier="icon"] {
+    --tile-icon-box: var(--control-h-lg);
+  }
+
+  /* ── InheritedSetting ──────────────────────────────────────────────────── */
+  .fa-inherited {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-inherited-scope {
+    color: var(--fg-muted);
+  }
+  /* Overridden reads as a fact, not a warning: full text colour, medium weight (the accent
+     can be red in some palettes). */
+  .fa-inherited[data-overridden] .fa-inherited-scope {
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+  }
+  .fa-inherited-was {
+    color: var(--fg-subtle);
+  }
+  .fa-inherited-fields {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--gap-fields) - var(--space-2));
+    min-width: 0;
+  }
+
+  /* ── SecretField ───────────────────────────────────────────────────────── */
+  .fa-input .fa-secret-btn {
+    flex: none;
+  }
+  .fa-input:has(> [data-secret-state="set"]) .fa-control-input {
+    color: var(--fg-muted);
+  }
+  .fa-input:has(> [data-secret-state="clear"]) .fa-control-input {
+    color: var(--warning-text);
+  }
+
+  /* ── TestButton ────────────────────────────────────────────────────────── */
+  .fa-test {
+    --_fact-label: 7rem;
+    --_summary-min: 12rem;
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-test-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    min-width: 0;
+  }
+  .fa-test-summary {
+    flex: 1 1 var(--_summary-min);
+    min-width: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-variant-numeric: tabular-nums;
+    text-wrap: pretty;
+  }
+  .fa-test-summary[data-tone="success"] {
+    color: var(--success-text);
+  }
+  .fa-test-summary[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .fa-test-result {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding: var(--space-3);
+    border-radius: var(--radius-tile);
+  }
+  .fa-test-fact {
+    display: grid;
+    grid-template-columns: var(--_fact-label) minmax(0, 1fr);
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-test-label {
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-test-value {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-test[data-stale] .fa-test-value {
+    color: var(--fg-muted);
+  }
+  @container (width < 22rem) {
+    .fa-test-fact {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+  }
+
+  /* ── Conflict, beside Save ─────────────────────────────────────────────── */
+  /* The footer's start slot: it never pushes the tab's rows (R9.1). */
+  .fa-dialog-footer-start:has(> .fa-entity-settings-conflict) {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .fa-entity-settings-conflict {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-entity-settings-conflict-icon {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--warning-text);
+  }
+  .fa-entity-settings-conflict-text {
+    min-width: 0;
+    color: var(--fg);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-wrap: pretty;
+  }
+  .fa-entity-settings-conflict > .fa-btn {
+    flex: none;
+  }
+
+  /* ── PrivilegedMark: a lock beside a label (needs MFA to change) ───────── */
+  .fa-privileged-mark {
+    display: inline-flex;
+    margin-inline-start: var(--space-1);
+    color: var(--fg-subtle);
+    vertical-align: -0.125em; /* tokens:allow optical alignment with the label's x-height */
+  }
+  .fa-privileged-mark > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-inherited-lock {
+    display: inline-block;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    margin-inline-end: var(--space-1);
+    vertical-align: -0.125em; /* tokens:allow optical alignment with the caption */
+  }
+  .fa-inherited[data-enforced] .fa-inherited-scope {
+    color: var(--fg-muted);
+  }
+}

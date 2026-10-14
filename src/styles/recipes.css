@@ -1,0 +1,361 @@
+/*
+ * Glass UX recipes — the shared interaction grammar.
+ *
+ * A recipe is a class that several components share so they behave identically:
+ *
+ *   fa-pressable   anything you click: state transitions, press scale, disabled
+ *   fa-item        a row in any list: menus, selects, combobox, navigation, tree, command
+ *   fa-popup       any floating surface: menus, selects, popovers, combobox lists
+ *   fa-control     any box you type or pick into: input, textarea, select trigger, date
+ *   fa-tile-icon   the soft square behind an icon in tiles, list rows and dialogs
+ *   fa-label / fa-hint / fa-overline   text roles around controls
+ *
+ * Components compose recipes; they do not re-implement hover, focus, highlight, selected,
+ * invalid or disabled. Base UI exposes state as data attributes, and so do our own
+ * components, so one selector serves both: [data-highlighted], [data-selected],
+ * [data-disabled], [data-invalid], [data-focused], [data-pressed], [data-popup-open].
+ */
+
+@layer components {
+  /* ── Pressable ───────────────────────────────────────────────────────────── */
+  .fa-pressable {
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-pressable:active:not(:disabled, [data-disabled], [aria-disabled="true"]) {
+    transform: scale(var(--_press, var(--press-scale)));
+    transition-duration: var(--duration-instant);
+  }
+  .fa-pressable:is(:disabled, [data-disabled], [aria-disabled="true"]) {
+    cursor: not-allowed;
+    opacity: var(--disabled-opacity);
+  }
+
+  /* ── Item ────────────────────────────────────────────────────────────────── */
+  .fa-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-height: var(--item-h);
+    padding-inline: var(--space-2-5);
+    border-radius: var(--radius-item);
+    color: var(--fg);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    transition-property: background-color, color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-item > svg,
+  .fa-item > .fa-item-icon {
+    flex: none;
+    width: var(--icon-md);
+    height: var(--icon-md);
+    color: var(--fg-muted);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-item-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-item-trail {
+    margin-inline-start: auto;
+    padding-inline-start: var(--space-3);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+  /* A row whose submenu is open stays highlighted while focus is in the submenu. */
+  .fa-item:is(:hover, [data-highlighted], [data-popup-open]):not([data-disabled]) {
+    background-color: var(--fill-hover);
+  }
+  .fa-item:is(:hover, [data-highlighted], [data-popup-open]):not([data-disabled]) > svg {
+    color: var(--fg);
+  }
+  .fa-item:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  /* In composite widgets the highlight fill is the focus indicator; no second ring. */
+  .fa-item[data-highlighted]:focus-visible {
+    outline: none;
+  }
+  .fa-item:is([data-selected], [data-active], [aria-current="page"]) {
+    background-color: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  .fa-item:is([data-selected], [data-active], [aria-current="page"]) > svg {
+    color: var(--accent-text);
+  }
+  .fa-item:is([data-selected], [data-active], [aria-current="page"]):is(:hover, [data-highlighted]) {
+    background-color: var(--accent-soft-hover);
+  }
+  .fa-item[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .fa-item[data-tone="danger"] > svg {
+    color: var(--danger-text);
+  }
+  .fa-item[data-tone="danger"]:is(:hover, [data-highlighted]) {
+    background-color: var(--danger-soft);
+  }
+  .fa-item[data-disabled] {
+    cursor: not-allowed;
+    opacity: var(--disabled-opacity);
+  }
+
+  /* ── Popup ───────────────────────────────────────────────────────────────── */
+  .fa-popup {
+    --_enter-y: calc(var(--overlay-enter-shift) * -1);
+    min-width: max(var(--anchor-width, 0px), 12rem);
+    max-width: min(28rem, calc(100vw - var(--space-4) * 2));
+    max-height: min(var(--available-height, 28rem), 28rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--inset-overlay);
+    border-radius: var(--radius-overlay);
+    color: var(--fg);
+    outline: none;
+    transform-origin: var(--transform-origin, top center);
+    transition-property: opacity, transform;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-enter);
+  }
+  .fa-popup[data-side="top"] {
+    --_enter-y: var(--overlay-enter-shift);
+  }
+  .fa-popup:is([data-side="left"], [data-side="right"], [data-side="inline-start"], [data-side="inline-end"]) {
+    --_enter-y: 0px;
+  }
+  .fa-popup[data-starting-style] {
+    opacity: 0;
+    transform: translateY(var(--_enter-y)) scale(var(--overlay-enter-scale));
+  }
+  .fa-popup[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.98);
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-exit);
+  }
+  /* Elevation lives on the positioner, outside the popup's blur pass (docs/performance.md,
+     "Glass under popups"). A blurred layer's own box-shadow is part of its blur pass, and a
+     repaint anywhere inside the layer (a row highlight) makes the compositor redraw that whole
+     pass, shadow included. With the shadow inside, that rect reaches 55–85px past the popup
+     and cuts through the blurred panels underneath; Edge on Windows presents only the cut part
+     and shows it as a lighter tile that flickers per hover. Base UI wraps every positioned
+     popup in a positioner with the popup's box ([data-side] parent), so the positioner paints
+     the shadow and enters and exits with the popup. Popups without one keep their own. */
+  [data-side] > .fa-popup {
+    --_shadow: 0 0 #0000;
+  }
+  [data-side]:has(> .fa-popup) {
+    --_lift: calc(var(--overlay-enter-shift) * -1);
+  }
+  [data-side="top"]:has(> .fa-popup) {
+    --_lift: var(--overlay-enter-shift);
+  }
+  :is([data-side="left"], [data-side="right"], [data-side="inline-start"], [data-side="inline-end"]):has(> .fa-popup) {
+    --_lift: 0px;
+  }
+  [data-side]:has(> .fa-popup)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: var(--radius-overlay);
+    box-shadow: var(--shadow-3);
+    pointer-events: none;
+    transform-origin: var(--transform-origin, top center);
+    transition-property: opacity, transform;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-enter);
+  }
+  [data-side]:has(> .fa-popup[data-starting-style])::before {
+    opacity: 0;
+    transform: translateY(var(--_lift)) scale(var(--overlay-enter-scale));
+  }
+  [data-side]:has(> .fa-popup[data-ending-style])::before {
+    opacity: 0;
+    transform: scale(0.98);
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-exit);
+  }
+  .fa-popup-separator {
+    height: var(--border-width);
+    margin: var(--space-1-5) calc(var(--inset-overlay) * -1);
+    background-color: var(--line);
+  }
+  .fa-popup-group-label {
+    padding: var(--space-2) var(--space-2-5) var(--space-1);
+    color: var(--fg-subtle);
+    font-size: var(--type-overline-size);
+    line-height: var(--type-overline-line);
+    font-weight: var(--type-overline-weight);
+    letter-spacing: var(--type-overline-tracking);
+    text-transform: uppercase;
+  }
+
+  /* ── Control (field box) ─────────────────────────────────────────────────── */
+  .fa-control {
+    --_h: var(--control-h-md);
+    --_px: var(--control-px-md);
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--_h);
+    padding-inline: var(--_px);
+    border-radius: var(--radius-control);
+    background-color: var(--glass-fill-control);
+    border: var(--border-width) solid var(--glass-edge);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-rim-top),
+      var(--shadow-1);
+    color: var(--fg);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    transition-property: background-color, border-color, box-shadow;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-control[data-size="sm"] {
+    --_h: var(--control-h-sm);
+    --_px: var(--control-px-sm);
+  }
+  .fa-control[data-size="lg"] {
+    --_h: var(--control-h-lg);
+    --_px: var(--control-px-lg);
+  }
+  .fa-control > svg {
+    flex: none;
+    width: var(--icon-md);
+    height: var(--icon-md);
+    color: var(--fg-subtle);
+  }
+  .fa-control:hover:not([data-disabled], [data-readonly], :has(.fa-control-input:disabled)) {
+    background-color: var(--glass-fill-control-hover);
+    border-color: var(--line-strong);
+  }
+  /* Text-entry focus shows a halo for every input modality. */
+  .fa-control:is(:focus-within, [data-focused], [data-popup-open]) {
+    background-color: var(--glass-fill-control-hover);
+    border-color: var(--accent-line);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-rim-top),
+      0 0 0 var(--focus-halo) var(--accent-soft);
+  }
+  .fa-control:has(:focus-visible) :focus-visible {
+    outline: none;
+  }
+  .fa-control:is([data-invalid], :has([aria-invalid="true"])) {
+    border-color: var(--danger-line);
+  }
+  .fa-control:is([data-invalid], :has([aria-invalid="true"])):focus-within {
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-rim-top),
+      0 0 0 var(--focus-halo) var(--danger-soft);
+  }
+  /* Only the control's own input disables the box; an inner stepper at its limit does not. */
+  .fa-control:is([data-disabled], :has(.fa-control-input:disabled)) {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+  }
+  /* Read-only: a recessed well with no hover or focus halo, text still selectable. */
+  .fa-control[data-readonly] {
+    background-color: var(--glass-fill-inset);
+    border-color: transparent;
+    box-shadow: none;
+  }
+  .fa-control-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    min-height: calc(var(--_h) - var(--border-width) * 2);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    outline: none;
+  }
+  .fa-control-input::placeholder {
+    color: var(--fg-subtle);
+    opacity: 1;
+  }
+
+  /* ── Tile icon ───────────────────────────────────────────────────────────── */
+  .fa-tile-icon {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: var(--tile-icon-box);
+    height: var(--tile-icon-box);
+    border-radius: var(--radius-md);
+    background-color: var(--glass-fill-control);
+    border: var(--border-width) solid var(--glass-edge);
+    box-shadow: inset 0 1px 0 0 var(--glass-rim-top);
+    color: var(--fg);
+  }
+  .fa-tile-icon > svg {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+  .fa-tile-icon[data-tone="accent"] {
+    background-color: var(--accent-soft);
+    border-color: transparent;
+    color: var(--accent-text);
+  }
+  .fa-tile-icon:is([data-tone="success"], [data-tone="warning"], [data-tone="danger"], [data-tone="info"]) {
+    border-color: transparent;
+  }
+  .fa-tile-icon[data-tone="success"] {
+    background-color: var(--success-soft);
+    color: var(--success-text);
+  }
+  .fa-tile-icon[data-tone="warning"] {
+    background-color: var(--warning-soft);
+    color: var(--warning-text);
+  }
+  .fa-tile-icon[data-tone="danger"] {
+    background-color: var(--danger-soft);
+    color: var(--danger-text);
+  }
+  .fa-tile-icon[data-tone="info"] {
+    background-color: var(--info-soft);
+    color: var(--info-text);
+  }
+
+  /* ── Text roles around controls ──────────────────────────────────────────── */
+  .fa-label {
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--type-label-weight);
+  }
+  .fa-hint {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-overline {
+    color: var(--fg-subtle);
+    font-size: var(--type-overline-size);
+    line-height: var(--type-overline-line);
+    font-weight: var(--type-overline-weight);
+    letter-spacing: var(--type-overline-tracking);
+    text-transform: uppercase;
+  }
+}

@@ -1,0 +1,21 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { IconOrganisation } from "glass-ux/icons";
+
+import { AppShell, Inspector, InspectorToggle, Rail, ShellBrand, TopBar } from "glass-ux/shell";
+
+export default function AppShellExample() {
+    return (<SectionPage>
+      <Specimen title="AppShell" description="A bounded working shell. Open the inspector from the top bar to inspect the fictional exhibition." layout="stack">
+        <div className="relative h-120 w-full overflow-hidden">
+          <AppShell className="h-full!" brand={<ShellBrand label="Meridian" mark={<IconOrganisation />}/>} rail={<Rail.Root aria-label="Sample navigation">
+                <Rail.Item label="Projects" icon={<IconOrganisation />}/>
+              </Rail.Root>} topBar={<TopBar breadcrumb={<span>Projects / Exhibition</span>} actions={<InspectorToggle />}/>} inspector={<Inspector title="Exhibition details">
+                <p>Three rooms, 42 reservations.</p>
+              </Inspector>}>
+            <p className="p-5">Sample project workspace</p>
+          </AppShell>
+        </div>
+      </Specimen>
+    </SectionPage>);
+}

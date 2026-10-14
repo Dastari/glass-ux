@@ -1,0 +1,41 @@
+/* Gallery-only layout for the table filters section. */
+@layer components {
+  .dtf-demo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .dtf-frame {
+    height: clamp(30rem, calc(100dvh - 22rem), 44rem);
+    min-width: 0;
+  }
+  .dtf-json {
+    max-height: 24rem;
+    overflow: auto;
+    padding: var(--space-3);
+    border-radius: var(--radius-tile);
+    background-color: var(--glass-fill-inset);
+    color: var(--fg-muted);
+    font-family: var(--font-mono);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .dtf-json > pre {
+    margin: 0;
+    font: inherit;
+  }
+  .dtf-narrow {
+    width: min(30rem, 100%);
+    height: 34rem;
+  }
+  .dtf-editors {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    align-items: start;
+    gap: var(--space-6);
+  }
+  .dtf-editor .gallery-example-stage {
+    align-items: flex-start;
+  }
+}

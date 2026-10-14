@@ -1,0 +1,45 @@
+import type { ComponentProps } from "react";
+
+import { Treemap, type ChartState } from "glass-ux/charts";
+
+import { ContainerLab, SectionPage, Specimen, TierBox, TierRow } from "glass-ux/gallery/kit";
+
+import { SkeletonSwaps } from "glass-ux/gallery/sections/charts.kit";
+
+const sample = {
+    data: {
+        label: "Studio",
+        children: [
+            { label: "Planning", value: 32 },
+            { label: "Delivery", value: 48 },
+            { label: "Review", value: 20 },
+        ],
+    },
+} satisfies Omit<ComponentProps<typeof Treemap>, "label">;
+
+const render = (state: ChartState = "ready") => (<Treemap {...sample} label="Treemap · fictional studio projects" title="Studio projects" state={state} emptyText="No project measurements yet" errorText="Measurements could not load" onRetry={() => undefined}/>);
+
+export default function TreemapSection() {
+    return (<SectionPage>
+      <Specimen title="Treemap" description="A focused example using fictional studio project measurements. Hover or use the keyboard to inspect values; the chart's table preserves the exact data." wide>
+        <div className="charts-pane" data-testid="chart-treemap">
+          {render()}
+        </div>
+      </Specimen>
+      <Specimen title="Responsive sizes" description="The same Treemap adapts to row, tile and full-panel sizes." wide>
+        <TierRow>{() => render()}</TierRow>
+      </Specimen>
+      <Specimen title="Loading, empty and error" description="States stay in the chart's own box. Swap the skeleton to compare its dimensions." wide>
+        <SkeletonSwaps id="treemap" render={render}/>
+        <div className="gallery-tiers">
+          <TierBox size="compact" label="Empty">
+            {render("empty")}
+          </TierBox>
+          <TierBox size="full" label="Error">
+            {render("error")}
+          </TierBox>
+        </div>
+      </Specimen>
+      <ContainerLab>{() => render()}</ContainerLab>
+    </SectionPage>);
+}

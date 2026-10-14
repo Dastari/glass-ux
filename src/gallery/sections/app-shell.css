@@ -1,0 +1,276 @@
+/*
+ * Gallery: Patterns › Application shell. Anatomy diagrams, scaled live previews and the
+ * boxes the live shell parts are shown in.
+ */
+@layer components {
+  /* ── Anatomy diagrams ───────────────────────────────────────────────────── */
+  .gallery-shell-anatomy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-8);
+    align-items: end;
+  }
+  .gallery-shell-anatomy .gallery-example-stage {
+    display: block;
+  }
+  .gallery-shell-diagram {
+    display: grid;
+    grid-template-columns: 3rem 10rem minmax(0, 1fr) 12rem;
+    grid-template-rows: 2.75rem minmax(0, 1fr);
+    grid-template-areas:
+      "brand top top top"
+      "rail drawer work insp";
+    gap: var(--space-2);
+    height: 22rem;
+    padding: var(--space-2) var(--space-3) var(--space-3) var(--space-2);
+    border-radius: var(--radius-tile);
+    background-color: var(--canvas);
+    background-image:
+      radial-gradient(50% 60% at 90% 0%, var(--ambient-1), transparent 70%),
+      radial-gradient(45% 60% at 0% 100%, var(--ambient-2), transparent 70%);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .gallery-shell-diagram [data-part] {
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    padding: var(--space-1-5);
+    border-radius: var(--radius-sm);
+    text-align: center;
+  }
+  .gallery-shell-diagram [data-canvas] {
+    outline: var(--border-width) dashed var(--line-strong);
+    outline-offset: calc(var(--border-width) * -1);
+  }
+  .gallery-shell-diagram [data-glass] {
+    background-color: var(--glass-fill-control);
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--glass-edge),
+      var(--shadow-1);
+    color: var(--fg);
+  }
+  .gallery-shell-diagram [data-part="brand"] {
+    grid-area: brand;
+  }
+  .gallery-shell-diagram [data-part="top"] {
+    grid-area: top;
+  }
+  .gallery-shell-diagram [data-part="rail"] {
+    grid-area: rail;
+    writing-mode: vertical-rl;
+  }
+  .gallery-shell-diagram [data-part="drawer"] {
+    grid-area: drawer;
+  }
+  .gallery-shell-diagram [data-part="inspector"] {
+    grid-area: insp;
+  }
+  .gallery-shell-diagram [data-part="work"] {
+    grid-area: work;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "primary tile"
+      "dock dock";
+    gap: var(--space-2);
+    padding: 0;
+    place-items: stretch;
+  }
+  .gallery-shell-diagram [data-part="primary"] {
+    grid-area: primary;
+  }
+  .gallery-shell-diagram [data-part="tile"] {
+    grid-area: tile;
+  }
+  .gallery-shell-diagram [data-part="dock"] {
+    grid-area: dock;
+    justify-self: center;
+    padding-inline: var(--space-6);
+  }
+  .gallery-shell-diagram[data-phone] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 2.75rem minmax(0, 1fr) 2.75rem;
+    grid-template-areas:
+      "top"
+      "work"
+      "tabbar";
+    width: 12rem;
+    padding: var(--space-2);
+  }
+  .gallery-shell-diagram[data-phone] [data-part="work"] {
+    display: grid;
+    place-items: center;
+    padding: var(--space-1-5);
+  }
+  .gallery-shell-diagram [data-part="tabbar"] {
+    grid-area: tabbar;
+    justify-self: center;
+    width: 80%;
+    border-radius: var(--radius-full);
+  }
+
+  /* ── Live previews ──────────────────────────────────────────────────────── */
+  .gallery-shell-previews {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 0.9fr) minmax(0, 0.6fr);
+    gap: var(--space-6);
+    align-items: end;
+  }
+  .gallery-shell-preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+  }
+  .gallery-shell-preview-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-tile);
+    background-color: var(--canvas);
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--line),
+      var(--shadow-2);
+  }
+  .gallery-shell-preview-frame iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 0;
+    transform-origin: 0 0;
+    pointer-events: none;
+  }
+
+  /* ── Boxes for the live parts ───────────────────────────────────────────── */
+  .gallery-shell-window {
+    width: 100%;
+    container: window / inline-size;
+  }
+  .gallery-shell-window[data-width="compact"] {
+    width: min(30rem, 100%);
+  }
+  .gallery-shell-window[data-width="phone"] {
+    width: min(22rem, 100%);
+  }
+  .gallery-shell-window[data-fill] {
+    height: 100%;
+    container-type: size;
+  }
+  .gallery-shell-sidebar {
+    display: flex;
+    gap: var(--gap-panels);
+    height: 34rem;
+  }
+  .gallery-shell-sidebar > .fa-shell-rail {
+    flex: none;
+    width: var(--sidebar-w-rail);
+  }
+  .gallery-shell-topbar {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    height: var(--topbar-h);
+  }
+  .gallery-shell-topbar[data-width="medium"] {
+    width: 44rem;
+  }
+  .gallery-shell-topbar[data-width="narrow"] {
+    width: 24rem;
+  }
+  .gallery-shell-topbar .gallery-example-stage,
+  .gallery-shell-topbar > * {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .gallery-shell-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .gallery-shell-table th {
+    width: 18rem;
+    padding: var(--space-2) var(--space-4) var(--space-2) 0;
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    text-align: start;
+    vertical-align: top;
+  }
+  .gallery-shell-table td {
+    padding: var(--space-2) 0;
+    color: var(--fg-muted);
+  }
+
+  @container (width < 48rem) {
+    .gallery-shell-anatomy,
+    .gallery-shell-previews {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+}
+
+/* ── Brand marks and the organisation switcher (brand, org-switcher sections) ── */
+@layer components {
+  .gallery-mark-lg {
+    --_size: var(--space-12);
+    width: var(--_size);
+    height: var(--_size);
+  }
+  .gallery-wordmark {
+    --_h: var(--space-8);
+    width: auto;
+    height: var(--_h);
+  }
+  .gallery-brand-solid {
+    display: inline-flex;
+    padding: var(--space-3);
+    border-radius: var(--radius-tile);
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+  .gallery-brand-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-6);
+  }
+  .gallery-brand-matrix {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+    gap: var(--gap-tiles);
+  }
+  .gallery-brand-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-radius: var(--radius-tile);
+    color: var(--fg);
+  }
+  .gallery-brand-label {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .gallery-switcher-panel {
+    --_w: 24rem;
+    --_h: 26rem;
+    display: flex;
+    flex-direction: column;
+    width: min(var(--_w), 100%);
+    height: var(--_h);
+    overflow: hidden;
+    padding: var(--inset-overlay);
+    border-radius: var(--radius-overlay);
+  }
+  .gallery-avatar-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+}

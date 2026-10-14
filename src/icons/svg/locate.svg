@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <circle class="t" cx="12" cy="12" r="6.75"/>
+  <circle cx="12" cy="12" r="6.75"/>
+  <path d="M12 2V5.25M12 18.75V22M2 12H5.25M18.75 12H22"/>
+  <circle class="d" cx="12" cy="12" r="1.75"/>
+</svg>

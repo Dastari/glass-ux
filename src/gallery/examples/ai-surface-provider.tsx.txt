@@ -1,0 +1,22 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiCard, AiSurfaceProvider } from "glass-ux/ai";
+
+export default function AiSurfaceProviderExample() {
+    return (<SectionPage>
+      <Specimen title="AiSurfaceProvider" layout="stack">
+        <AiSurfaceProvider surface="canvas">
+          <AiCard.Root>
+            <AiCard.Header title="On the canvas"/>
+            <AiCard.Body>Panel material is chosen by the provider.</AiCard.Body>
+          </AiCard.Root>
+        </AiSurfaceProvider>
+        <AiSurfaceProvider surface="panel">
+          <AiCard.Root>
+            <AiCard.Header title="Inside a panel"/>
+            <AiCard.Body>Control material avoids nested panels.</AiCard.Body>
+          </AiCard.Root>
+        </AiSurfaceProvider>
+      </Specimen>
+    </SectionPage>);
+}

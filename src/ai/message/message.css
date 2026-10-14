@@ -1,0 +1,233 @@
+/*
+ * Messages — prompts, answers, system notices and turns.
+ *
+ * Prompt   a glass-control bubble, right-aligned, at most 80% of the column (radius tile, the
+ *          corner nearest the edge tightened), attachments above, edit and copy below.
+ * Answer   no bubble: the AI mark in a gutter column, blocks in the body. Prose fills the
+ *          reading column; wide blocks marked [data-breakout] (tables, charts, code, images)
+ *          break out wider than the text, centred on it, as far as the conversation column
+ *          allows (R5.4).
+ * Footer   actions and the time/model caption. Its row always exists, so actions fading in on
+ *          hover (always shown on touch and on the latest answer) never move anything.
+ * Turns    space between turns, a tighter rhythm within one.
+ *
+ * Component tokens
+ *   --_mark       the AI mark's gutter
+ *   --_inset      where the body starts: the mark and its gap (0 when the mark hides)
+ *   --_block-gap  space between blocks in a message
+ *   --_wide-w     a breakout block's width
+ */
+@layer components {
+  .fa-ai-turn {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    min-width: 0;
+    scroll-margin-top: var(--space-6);
+  }
+
+  .fa-ai-msg {
+    --_mark: calc(var(--unit) * 6);
+    --_inset: calc(var(--_mark) + var(--space-3));
+    --_block-gap: var(--space-3);
+    display: flex;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-ai-msg-mark {
+    flex: none;
+    width: var(--_mark);
+    padding-top: var(--space-half);
+  }
+  .fa-ai-msg-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--_block-gap);
+    min-width: 0;
+  }
+  .fa-ai-msg-body > .fa-ai-block {
+    min-width: 0;
+  }
+  .fa-ai-msg-body > .fa-ai-block-flush {
+    margin-inline: calc(var(--space-2) * -1);
+  }
+  @container (width < 22rem) {
+    .fa-ai-msg-mark {
+      display: none;
+    }
+    .fa-ai-msg {
+      --_inset: 0px;
+    }
+  }
+  /* Wide blocks break out of the text, centred on it, up to the conversation column's width
+     (100cqi of ai-column, itself capped at --reading-column-wide). Never narrower than the
+     text, so in a narrow pane nothing changes. */
+  .fa-ai-msg-body > [data-breakout],
+  .fa-ai-msg-body > .fa-ai-md > [data-breakout] {
+    --_wide-w: max(100%, calc(100cqi - var(--_inset)));
+    width: var(--_wide-w);
+    max-width: none;
+    margin-inline: calc((100% - var(--_wide-w)) / 2);
+  }
+
+  /* Prompt */
+  .fa-ai-msg[data-role="user"] .fa-ai-msg-body {
+    align-items: flex-end;
+    gap: var(--space-1-5);
+  }
+  .fa-ai-bubble {
+    max-width: min(80%, var(--measure));
+    padding: var(--space-2) calc(var(--space-3) + var(--space-half));
+    border-radius: var(--radius-tile);
+    border-end-end-radius: var(--radius-xs);
+  }
+  .fa-ai-bubble-text {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  @container (width >= 34rem) {
+    .fa-ai-bubble-text {
+      font-size: var(--type-subtitle-size);
+      line-height: var(--space-6);
+    }
+  }
+  .fa-ai-msg-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    max-width: min(80%, var(--measure));
+  }
+  .fa-ai-msg-thumb {
+    width: calc(var(--unit) * 24);
+  }
+  .fa-ai-msg-files .fa-ai-file {
+    padding: var(--space-1-5) var(--space-1-5) var(--space-1-5) var(--space-1-5);
+    border-radius: var(--radius-control);
+    background-color: var(--glass-fill-control);
+    box-shadow: inset 0 0 0 var(--border-width) var(--glass-edge);
+  }
+  .fa-ai-msg-files .fa-ai-file-icon {
+    --tile-icon-box: var(--control-h-sm);
+  }
+
+  /* Answer */
+  .fa-ai-msg[data-role="assistant"] .fa-ai-msg-body {
+    padding-top: var(--space-half);
+  }
+  .fa-ai-msg-purged {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--fg-muted);
+  }
+  .fa-ai-msg-purged .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  .fa-ai-msg-code {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+  }
+
+  /* Footer: actions + caption. The row is always there; only its opacity changes. */
+  .fa-ai-msg-foot {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--control-h-sm);
+    margin-top: calc(var(--space-1) * -1);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-ai-msg[data-role="assistant"] .fa-ai-msg-foot {
+    gap: var(--space-3);
+  }
+  .fa-ai-msg[data-role="user"] .fa-ai-msg-foot {
+    flex-direction: row;
+  }
+  .fa-ai-msg-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-half);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-ai-msg-feedback.fa-btn-group {
+    gap: var(--space-half);
+  }
+  .fa-ai-msg:is(:hover, :focus-within) .fa-ai-msg-actions,
+  .fa-ai-msg[data-latest] .fa-ai-msg-actions,
+  .fa-ai-msg-actions:has([aria-pressed="true"], [data-status="pending"], [data-status="success"]) {
+    opacity: 1;
+  }
+  @media (pointer: coarse) {
+    .fa-ai-msg-actions {
+      opacity: 1;
+    }
+  }
+  .fa-ai-msg-foot[data-hidden] {
+    visibility: hidden;
+  }
+  .fa-ai-msg-meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-msg[data-role="user"] .fa-ai-msg-time {
+    order: -1;
+  }
+
+  /* System notice: a centred caption pill, no rules either side (R5.8). */
+  .fa-ai-system {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+  }
+  .fa-ai-system-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    max-width: 100%;
+    min-height: var(--control-h-xs);
+    padding: var(--space-half) var(--space-3);
+    border-radius: var(--radius-full);
+    background-color: var(--fill-muted);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-ai-system-pill > .fa-icon {
+    flex: none;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-ai-system-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-system-pill .fa-ai-msg-time::before {
+    content: "·";
+    margin-inline-end: var(--space-1-5);
+  }
+
+  /* Skeleton turn: the same boxes as a prompt and an answer. */
+  .fa-ai-skel-bubble {
+    width: min(60%, 22rem); /* tokens:allow a typical prompt's width */
+    height: calc(var(--space-6) + var(--space-2) * 2);
+  }
+  .fa-ai-md .fa-skel-text.fa-ai-skel-prose {
+    --_size: inherit;
+    --_line: inherit;
+  }
+  .fa-ai-skel-card {
+    width: 100%;
+    height: calc(var(--row-h) * 4);
+  }
+}

@@ -1,0 +1,168 @@
+import { useCallback, useMemo, useState } from "react"
+import { ContainerLab, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "glass-ux/gallery/kit"
+import { IconAccessPoint, IconDeskPhone, IconEndpoint, IconNetworkSwitch, IconPrinter, IconRouter, IconServer } from "glass-ux/icons"
+import { defineActions } from "glass-ux/lib/actions/actions"
+import { EntityIdentity, type EntityState } from "glass-ux/entity"
+import { Panel } from "glass-ux/surface"
+import { TopologyCanvas, TopologySkeleton, TopologyViewToggle, type TopologyClusterSpec, type TopologyNode, type TopologyNodeMenu, type TopologyView } from "glass-ux/topology"
+
+/** A node's kind in the specimens: the glyph and its name. */
+type Kind = "router" | "switch" | "ap" | "computer" | "server" | "phone" | "printer"
+interface Thing {
+  /** Semantic entity or content kind, used to choose labels and rendering. */
+  kind: Kind
+  /** Controlled view state, including loading, empty and error states. */
+  state: EntityState
+}
+
+const ICONS = { router: IconRouter, switch: IconNetworkSwitch, ap: IconAccessPoint, computer: IconEndpoint, server: IconServer, phone: IconDeskPhone, printer: IconPrinter }
+const LABELS: Record<Kind, string> = { router: "Router", switch: "Switch", ap: "Access point", computer: "Computer", server: "Server", phone: "Phone", printer: "Printer" }
+const ONLINE: EntityState = { id: "online", label: "Online", tone: "success" }
+const OFFLINE: EntityState = { id: "offline", label: "Offline", tone: "neutral" }
+const IN_CALL: EntityState = { id: "in-call", label: "In a call", tone: "info", activity: true }
+
+const CLUSTERS: Record<string, TopologyClusterSpec> = {
+  servers: { label: "Servers", order: 1 },
+  computers: { label: "Computers", order: 2 },
+  phones: { label: "Phones", order: 3 },
+  printers: { label: "Printers", order: 4 },
+}
+
+const at = (id: string, parentId: string | null, kind: Kind, extra: Partial<TopologyNode<Thing>> = {}, state = ONLINE): TopologyNode<Thing> => ({
+  id,
+  parentId,
+  label: id,
+  data: { kind, state },
+  ...extra,
+})
+
+/** A small office: a gateway, a core switch, an access point, and its clients. */
+const OFFICE: TopologyNode<Thing>[] = [
+  at("FA-GW01", null, "router", { detail: "10.13.4.1" }),
+  at("ORB-SW-CORE", "FA-GW01", "switch", { detail: "10.13.4.2", link: { kind: "wired", speedMbps: 10_000 } }),
+  at("FA-AP-L2", "ORB-SW-CORE", "ap", { detail: "10.13.4.12", link: { kind: "wired", speedMbps: 2500 } }),
+  at("FA-SRV-01", "ORB-SW-CORE", "server", { cluster: "servers", detail: "10.13.4.10", link: { kind: "wired", speedMbps: 10_000 } }),
+  ...["LMN-4E5E", "LMN-9A12"].map((id, index) => at(id, "ORB-SW-CORE", "computer", { cluster: "computers", detail: `10.13.4.${94 + index}`, link: { kind: "wired", speedMbps: 1000 } })),
+  ...Array.from({ length: 6 }, (_, index) => at(`FA-PHONE-${204 + index}`, "ORB-SW-CORE", "phone", { cluster: "phones", detail: `10.13.4.${52 + index}`, link: { kind: "wired" } }, index === 1 ? IN_CALL : ONLINE)),
+  at("FA-RICOH-L2", "ORB-SW-CORE", "printer", { cluster: "printers", detail: "10.13.4.31", link: { kind: "wired" } }),
+  ...["LMN-7C71", "LMN-B3F0", "LMN-0D44"].map((id, index) => at(id, "FA-AP-L2", "computer", { cluster: "computers", link: { kind: "wireless" } }, index === 2 ? OFFLINE : ONLINE)),
+  at("10.13.4.77", "FA-GW01", "computer", { cluster: "computers", link: { kind: "unknown" } }, OFFLINE),
+]
+
+/** About 300 nodes: a school with six switches, two access points each and their clients. */
+function school(): TopologyNode<Thing>[] {
+  const nodes: TopologyNode<Thing>[] = [at("HVS-GW", null, "router")]
+  for (let s = 1; s <= 6; s++) {
+    nodes.push(at(`HVS-SW${s}`, "HVS-GW", "switch", { link: { kind: "wired", speedMbps: 10_000 } }))
+    for (let a = 1; a <= 2; a++) {
+      nodes.push(at(`HVS-AP${s}${a}`, `HVS-SW${s}`, "ap", { link: { kind: "wired", speedMbps: 2500 } }))
+      for (let c = 1; c <= 12; c++) nodes.push(at(`HVS-L${s}${a}-${c}`, `HVS-AP${s}${a}`, "computer", { cluster: "computers", link: { kind: "wireless" } }, c % 7 ? ONLINE : OFFLINE))
+    }
+    for (let c = 1; c <= 21; c++) nodes.push(at(`HVS-D${s}-${c}`, `HVS-SW${s}`, c % 5 ? "computer" : "phone", { cluster: c % 5 ? "computers" : "phones", link: { kind: "wired", speedMbps: c % 4 ? 1000 : 100 } }))
+  }
+  return nodes
+}
+
+const ACTIONS = defineActions<Thing & { name: string }>("device", [
+  { id: "open", label: "Open", group: "open", run: () => undefined },
+  { id: "ping", label: "Ping", group: "connect", run: () => undefined },
+  { id: "settings", label: "Settings…", group: "manage", run: () => undefined },
+])
+
+function Tile({ node }: { node: TopologyNode<Thing> }) {
+  const Icon = ICONS[node.data.kind]
+  return <EntityIdentity tier="icon" name={node.label} kind={LABELS[node.data.kind]} icon={<Icon />} state={node.data.state} />
+}
+
+function DemoMap({ nodes, minimap = true, listable = false }: { nodes: TopologyNode<Thing>[] | undefined; minimap?: boolean; listable?: boolean }) {
+  const [selected, setSelected] = useState<string | null>(null)
+  const [view, setView] = useState<TopologyView>("map")
+  const renderNode = useCallback((node: TopologyNode<Thing>) => <Tile node={node} />, [])
+  const describe = useCallback((node: TopologyNode<Thing>) => `${LABELS[node.data.kind]} ${node.label}, ${node.data.state.label}`, [])
+  const menu = useCallback((node: TopologyNode<Thing>): TopologyNodeMenu => ({ set: ACTIONS, targets: [{ ...node.data, name: node.label }], label: node.label }), [])
+  return (
+    <TopologyCanvas<Thing>
+      label="Network map"
+      nodes={nodes}
+      clusters={CLUSTERS}
+      renderNode={renderNode}
+      describeNode={describe}
+      selectedId={selected}
+      onSelect={setSelected}
+      nodeMenu={menu}
+      minimap={minimap}
+      view={view}
+      onViewChange={listable ? setView : undefined}
+      list={
+        listable ? (
+          <div className="flex flex-col items-start gap-3">
+            <TopologyViewToggle view="list" onViewChange={setView} size="sm" />
+            <p className="type-body text-fg-muted">The caller's list goes here: a DataTable of the same nodes.</p>
+          </div>
+        ) : undefined
+      }
+      emptyText="No devices seen on this network yet"
+    />
+  )
+}
+
+export default function TopologySection() {
+  const big = useMemo(() => school(), [])
+  return (
+    <SectionPage>
+      <Specimen
+        title="An office network"
+        description="Rows top to bottom: the gateway, its switch, then the access point and the client blocks. Link speeds show where a source reports them; wireless links are dotted and unknown links dashed. Click a node to select it (its way up turns accent), double-click to open it, right-click for its actions. Keyboard: arrows move like a family tree, Enter selects, + − 0 zoom and fit, Shift+F10 opens the menu."
+        wide
+      >
+        <Panel className="h-140 w-full" data-testid="topology-office">
+          <DemoMap nodes={OFFICE} listable />
+        </Panel>
+      </Specimen>
+
+      <Specimen title="About 300 nodes" description="A school: six switches, twelve access points and their clients. Blocks keep it a few rows deep; the minimap appears once part of the map is out of view." wide>
+        <Panel className="h-140 w-full" data-testid="topology-school">
+          <DemoMap nodes={big} />
+        </Panel>
+      </Specimen>
+
+      <Specimen title="Loading and empty" description="The skeleton fills the map's own box while the layout loads (it is code-split), so nothing moves when the map lands. An empty map says so in the same box.">
+        <SwapSlot id="topology" className="h-90 w-160 max-w-full" skeleton={<div className="fa-topology"><TopologySkeleton /></div>} loaded={<DemoMap nodes={OFFICE.slice(0, 6)} />} />
+        <div className="h-90 w-120 max-w-full">
+          <DemoMap nodes={[]} />
+        </div>
+      </Specimen>
+
+      <ContainerLab description="The map fills its box: the minimap goes first, then the zoom buttons (scroll and pinch still zoom), and a row-sized box keeps only the map.">
+        {() => <DemoMap nodes={OFFICE} />}
+      </ContainerLab>
+
+      <TokenTable
+        tokens={[
+          ["--fa-topology-cell-w / -cell-h", "one node: its tile and two label lines"],
+          ["--fa-topology-gap-x / -gap-y", "between siblings, between rows"],
+          ["--fa-topology-cluster-pad / -header / -gap", "inside a client block"],
+          ["--fa-topology-link-radius", "the elbow's corner"],
+          ["--fa-topology-fit-padding", "room around the fitted map"],
+          ["--line-strong / --fg-subtle", "links / unknown links"],
+          ["--accent", "the selected node's way up (selection, not data)"],
+          ["--fill-muted / --line", "client blocks"],
+        ]}
+      />
+
+      <Rules
+        do={[
+          "Give the canvas a definite height (a Panel in a grid row): it is a fill component.",
+          "Draw each node with the entity's own identity at its icon tier, so a node is the same object as its row and header.",
+          "Offer the list: pass a DataTable of the same nodes with TopologyViewToggle in its toolbar.",
+          "Keep renderNode and describeNode stable (useCallback): selection then re-renders two nodes, not three hundred.",
+        ]}
+        dont={[
+          "Invent link speeds: leave speedMbps out when nothing reports it, and the link draws without a label.",
+          "Put interactive controls inside a node; its actions are the context menu and the selected node's panel.",
+          "Animate the camera for decoration: it glides only to bring a focused node into view, and jumps under the motion switch.",
+        ]}
+      />
+    </SectionPage>
+  )
+}

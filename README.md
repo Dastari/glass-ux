@@ -1,0 +1,92 @@
+# Glass UX
+
+A typed React 19 component library for glass interfaces, data applications and assistant
+experiences. Components use Base UI behaviour, semantic CSS tokens, container queries and
+shared keyboard and accessibility conventions.
+
+## Install
+
+Install the versioned package attached to a [GitHub release](https://github.com/Dastari/glass-ux/releases).
+
+```sh
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.1.0/glass-ux-0.1.0.tgz
+```
+
+React 19 and React DOM 19 are peer dependencies. The tested integration uses Vite 8
+and Tailwind 4. Register `glassUx()` from `glass-ux/vite` beside the React and Tailwind plugins. Import components through their public entries:
+
+```tsx
+import { Button } from "glass-ux/button"
+import { Dialog } from "glass-ux/dialog"
+import { DataTable } from "glass-ux/data-table"
+import { AssistantPane } from "glass-ux/ai"
+import "glass-ux/styles.css"
+
+export function SaveButton() {
+  return <Button variant="primary" onClick={() => console.info("Saved")}>Save changes</Button>
+}
+```
+
+The application owns the Tailwind pipeline, authentication, routing, data adapters and
+branding. With Tailwind 4, include the package in source discovery:
+
+```css
+@import "tailwindcss";
+@import "glass-ux/styles.css";
+@source "../node_modules/glass-ux/dist";
+```
+
+Supply `TooltipProvider`, `ActionProvider`, `PaletteProvider` and `AppearanceProvider` at
+the application root when using their respective components. See the component API for
+their props and controlled/uncontrolled state contracts.
+
+## Documentation and demos
+
+- [Installation, providers and your first form](docs/getting-started.md).
+- [Migrating an existing application](docs/integration.md).
+- [AI agent skills and adoption](docs/agent-adoption.md).
+
+- [Component API index](docs/api/README.md), generated from the exported TypeScript types.
+- [Typed input guides](docs/components/README.md).
+- [Design and accessibility rules](docs/ui-rules.md).
+- [Live documentation site](https://dastari.github.io/glass-ux/): a separate page for each
+  public component, live examples, props, defaults, callbacks and compound slots.
+
+The `glass-ux/gallery` entry supplies the same catalogue and demos to consuming applications.
+Applications can combine it with their own component sections.
+
+All sample organisations, people, identifiers, conversations and values are fictional.
+The demo portraits are generated faces approved by the repository owner for redistribution.
+They are demo assets; the component runtime never assumes a person or a data source.
+
+## Agent skills
+
+```sh
+pnpm exec glass-ux skills install --target agents
+```
+
+Six bundled skills cover adoption, component selection, forms, tables and charts, assistant
+UI and library authoring. They read the documentation installed with the same release.
+The command preserves existing project instructions and requires `--update` before replacing
+already installed Glass UX skills. `--target claude` installs under `.claude/skills`.
+
+## Development
+
+```sh
+pnpm install
+pnpm build
+pnpm dev             # documentation site on http://127.0.0.1:4220
+pnpm check
+pnpm docs:build      # package, API reference and static documentation site
+pnpm test:e2e
+```
+
+TypeScript 6 is pinned for the TypeDoc compiler API. Consumers may use newer TypeScript
+versions. Releases contain ESM JavaScript, declaration files and maps, CSS, bundled fonts,
+offline Markdown guides and the generated API model. No build runs when a release package
+is installed.
+
+## Licence
+
+The code is [MIT licensed](LICENSE). Bundled font licences and demo-asset provenance are
+recorded in [third-party assets](docs/assets.md).

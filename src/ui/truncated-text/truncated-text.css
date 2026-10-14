@@ -1,0 +1,32 @@
+/*
+ * TruncatedText — single-line ellipsis (R8.1). Middle truncation keeps both ends of an
+ * identifier: the head shrinks with an ellipsis, the tail never shrinks (R8.4).
+ */
+@layer components {
+  .fa-truncate {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-truncate[data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-truncate[data-middle] {
+    display: flex;
+    text-overflow: clip;
+  }
+  .fa-truncate-head {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-truncate-tail {
+    flex: none;
+    white-space: pre;
+  }
+}

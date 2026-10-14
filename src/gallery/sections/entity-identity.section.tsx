@@ -1,0 +1,190 @@
+import type { ReactNode } from "react"
+import { ContainerLab, Example, Matrix, OnCanvas, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
+import { IconArchive, IconCode, IconCopy, IconOrganisation, IconPopOut, IconTickets, IconUser } from "../../icons/generated/icons.js"
+import { defineActions } from "../../lib/actions/actions.js"
+import { EntityIdentity, type EntityIdentityProps, type EntityState } from "../../ui/entity/index.js"
+import { toast } from "../../ui/toast/index.js"
+
+/** Neutral example data: the library knows nothing about devices. */
+interface Item {
+  id: string
+  name: string
+  /** Semantic entity or content kind, used to choose labels and rendering. */
+  kind: string
+}
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const itemActions = defineActions<Item>("item", [
+  { id: "open", label: "Open", icon: IconPopOut, group: "open", primary: true, priority: 1, run: ([item]) => void toast.info(`Opened ${item?.name ?? ""}`) },
+  { id: "copy", label: "Copy link", icon: IconCopy, group: "open", priority: 2, run: () => undefined, successMessage: ([item]) => `Link to ${item?.name ?? ""} copied` },
+  {
+    id: "archive",
+    label: "Archive",
+    icon: IconArchive,
+    group: "danger",
+    confirm: ([item]) => ({ title: `Archive ${item?.name ?? ""}?`, body: "It leaves every list. Restore it from Archived.", confirmLabel: "Archive", tone: "danger" }),
+    run: () => wait(800),
+    successMessage: ([item]) => `${item?.name ?? ""} archived`,
+  },
+])
+
+const ORG: Item = { id: "northstar", name: "Northstar Studio", kind: "Organisation" }
+const TICKET: Item = { id: "7102", name: "#7102", kind: "Ticket" } // tokens:allow a ticket number, not a colour
+const PERSON: Item = { id: "avery", name: "Avery Quinn", kind: "User" }
+const SCRIPT: Item = { id: "clear-printqueue", name: "Clear-PrintQueue.ps1", kind: "Script" }
+const APP: Item = { id: "glassUx", name: "Glass UX", kind: "Application" }
+
+const open = (item: Item) => () => void toast.info(`Open ${item.name}`)
+
+/** The shared props for one example entity (every tier reads the same). */
+function entity(item: Item, extra: Partial<EntityIdentityProps<Item>> = {}): EntityIdentityProps<Item> {
+  return { name: item.name, kind: item.kind, actions: itemActions, target: item, href: `#${item.id}`, onOpen: open(item), ...extra }
+}
+
+const ORG_PROPS = entity(ORG, {
+  icon: <IconOrganisation />,
+  state: { id: "active", label: "Active", tone: "success" },
+  count: { value: 7, label: "7 open tickets", tone: "accent" },
+  facts: ["214 endpoints", "9 sites", "Morgan Vale"],
+  secondary: "214 endpoints · 9 sites",
+})
+
+const STATES: Array<{ label: string; item: Item; icon: ReactNode; state: EntityState; facts: string[]; count?: EntityIdentityProps["count"] }> = [
+  { label: "neutral", item: PERSON, icon: <IconUser />, state: { id: "away", label: "Away", tone: "neutral" }, facts: ["AzureAD\\AveryQuinn", "Orbit Workspace"] },
+  { label: "accent", item: TICKET, icon: <IconTickets />, state: { id: "open", label: "Open", tone: "accent" }, facts: ["Power outage — North studio", "Avery Quinn"] },
+  { label: "success", item: ORG, icon: <IconOrganisation />, state: { id: "active", label: "Active", tone: "success" }, facts: ["214 endpoints", "9 sites"], count: { value: 7, label: "7 open tickets", tone: "accent" } },
+  { label: "info · activity", item: SCRIPT, icon: <IconCode />, state: { id: "running", label: "Running", tone: "info", activity: true }, facts: ["PowerShell", "12 endpoints"] },
+  { label: "warning", item: TICKET, icon: <IconTickets />, state: { id: "waiting", label: "Waiting", tone: "warning" }, facts: ["Replacement toner ordered", "Morgan Vale"] },
+  { label: "danger", item: SCRIPT, icon: <IconCode />, state: { id: "failed", label: "Failed on 3", tone: "danger" }, facts: ["PowerShell", "12 endpoints"] },
+  { label: "paused", item: SCRIPT, icon: <IconCode />, state: { id: "paused", label: "Paused", tone: "neutral", paused: true }, facts: ["PowerShell", "Scheduled 2:00 am"] },
+]
+
+function Tiers({ props }: { props: EntityIdentityProps<Item> }) {
+  return [
+    <div key="compact" className="gallery-entity-fixed">
+      <EntityIdentity {...props} tier="compact" heading="h4" />
+    </div>,
+    <div key="row" className="gallery-entity-fixed" data-size="row">
+      <EntityIdentity {...props} tier="row" />
+    </div>,
+    <span key="chip">
+      <EntityIdentity {...props} tier="chip" />
+    </span>,
+    <EntityIdentity key="icon" {...props} tier="icon" />,
+  ]
+}
+
+export default function EntityIdentitySection() {
+  return (
+    <SectionPage>
+      <OnCanvas title="Header" description="The entity page's header, on the canvas: tile, title and state, the data facts line, actions and tabs. Under 48rem the title steps down; under 30rem the tile goes and every action is one ⋯.">
+        <div className="gallery-entity-headers">
+          <div className="gallery-entity-window">
+            <EntityIdentity {...ORG_PROPS} tier="header" heading="h4" />
+          </div>
+          <div className="gallery-entity-window" data-width="compact">
+            <EntityIdentity {...ORG_PROPS} tier="header" heading="h4" />
+          </div>
+        </div>
+      </OnCanvas>
+
+      <Specimen title="Five tiers" description="One definition: the same glyph, state colour, name and actions at every size. Click or Enter opens; right-click or Shift+F10 opens the ⋯ menu's actions; the chip previews on hover or focus; the icon names itself in a tooltip." wide layout="bare">
+        <div className="gallery-entity-scroll">
+          <div className="gallery-entity-matrix" data-testid="entity-tiers">
+            <span className="gallery-entity-matrix-head">Compact</span>
+            <span className="gallery-entity-matrix-head">Row</span>
+            <span className="gallery-entity-matrix-head">Chip</span>
+            <span className="gallery-entity-matrix-head">Icon</span>
+            <Tiers props={ORG_PROPS} />
+          </div>
+        </div>
+      </Specimen>
+
+      <Specimen title="States" description="The state is a badge in the header tiers and the corner dot everywhere. Activity pulses until the motion switch stops it; paused is a ring. A count sits on the top corner." wide layout="bare">
+        <div className="gallery-entity-scroll">
+          <Matrix
+            columns={["Compact", "Row", "Chip", "Icon"]}
+            rows={STATES.map((example) => ({
+              label: example.label,
+              cells: Tiers({ props: entity(example.item, { icon: example.icon, state: example.state, facts: example.facts, count: example.count }) }),
+            }))}
+          />
+        </div>
+      </Specimen>
+
+      <Specimen title="Image" description="An illustration or logo replaces the glyph in the header, compact and icon tiers. Rows and chips keep the glyph so lists stay even.">
+        <Example label="Compact">
+          <div className="gallery-entity-fixed">
+            <EntityIdentity {...entity(APP)} tier="compact" heading="h4" icon={<IconCode />} image={<img src="/brand/glass-ux.svg" alt="" />} state={{ id: "live", label: "Live", tone: "success" }} facts={["glass-ux.orbit.example.com.au", "0.1.0"]} />
+          </div>
+        </Example>
+        <Example label="Row">
+          <div className="gallery-entity-fixed" data-size="row">
+            <EntityIdentity {...entity(APP)} tier="row" icon={<IconCode />} image={<img src="/brand/glass-ux.svg" alt="" />} state={{ id: "live", label: "Live", tone: "success" }} secondary="glass-ux.orbit.example.com.au" />
+          </div>
+        </Example>
+        <Example label="Icon">
+          <EntityIdentity {...entity(APP)} tier="icon" icon={<IconCode />} image={<img src="/brand/glass-ux.svg" alt="" />} state={{ id: "live", label: "Live", tone: "success" }} />
+        </Example>
+      </Specimen>
+
+      <Specimen title="Chip preview" description="Hovering or focusing a chip opens this card after 400 ms: the compact tier and the top two actions. It adds nothing the page, the menu or the palette cannot reach.">
+        <EntityIdentity.PreviewCard {...ORG_PROPS} />
+      </Specimen>
+
+      <Specimen title="Loading" description="Each tier's skeleton takes the loaded tier's boxes, so content arrives without moving anything.">
+        {(["compact", "row", "chip", "icon"] as const).map((tier) => (
+          <Example key={tier} label={tier}>
+            <div className={tier === "compact" || tier === "row" ? "gallery-entity-fixed" : undefined} data-size={tier === "row" ? "row" : undefined}>
+              <SwapSlot
+                id={`entity-skeleton-${tier}`}
+                className="w-full"
+                skeleton={<EntityIdentity.Skeleton tier={tier} actions={tier === "compact" || tier === "row"} />}
+                loaded={<EntityIdentity {...ORG_PROPS} tier={tier} heading="h4" />}
+              />
+            </div>
+          </Example>
+        ))}
+      </Specimen>
+
+      <Specimen title="Over imagery" description="Chips, rows and icons hold their contrast over screenshots and media." backdrop>
+        <Tiers props={ORG_PROPS} />
+      </Specimen>
+
+      <ContainerLab title="Entity identity in the container lab" description="tier=auto fill: the box picks the tier on both axes. Rows under 2.75rem keep the name only; the icon shrinks to a small box.">
+        {() => <EntityIdentity {...ORG_PROPS} tier="auto" fill heading="h4" />}
+      </ContainerLab>
+
+      <Rules
+        do={[
+          "Render every entity through one identity so it looks the same in a header, a list, a chip and an icon.",
+          "Let the container pick the tier (tier=auto) unless the surface defines it: rows in lists, chips in text.",
+          "Pass the entity's ActionSet: the header's buttons, the ⋯, right-click and the chip preview all read it.",
+          "Keep the facts line to data: model, version, owner, address.",
+          "Make a host row (table, tree) own opening and actions and render the identity passive inside it.",
+        ]}
+        dont={[
+          "Hand-build an icon, name and badge for an entity in a new place.",
+          "Repeat the state as text beside the badge or the dot.",
+          "Animate a state that is not an activity.",
+          "Put interactive content inside a chip or a row's main area.",
+          "Size the identity with the viewport; give it a box.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--tile-icon-box", "Compact and icon tile (header: --control-h-lg)"],
+          ["--icon-lg", "Row glyph"],
+          ["--icon-xs", "Chip glyph"],
+          ["--item-h", "Interactive row minimum"],
+          ["--type-headline-size", "Header title"],
+          ["--type-subtitle-size", "Compact title"],
+          ["--radius-badge", "Chip"],
+          ["--duration-shimmer", "Activity pulse"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

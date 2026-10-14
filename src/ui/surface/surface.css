@@ -1,0 +1,109 @@
+/*
+ * Surface and Panel. Materials come from glass.css; this file owns geometry only.
+ */
+@layer components {
+  .fa-surface {
+    position: relative;
+    min-width: 0;
+  }
+  .fa-surface[data-radius="control"] {
+    border-radius: var(--radius-control);
+  }
+  .fa-surface[data-radius="tile"] {
+    border-radius: var(--radius-tile);
+  }
+  .fa-surface[data-radius="surface"] {
+    border-radius: var(--radius-surface);
+  }
+  .fa-surface[data-radius="overlay"] {
+    border-radius: var(--radius-overlay);
+  }
+  .fa-surface[data-radius="dialog"] {
+    border-radius: var(--radius-dialog);
+  }
+  .fa-surface[data-padding="tile"] {
+    padding: var(--inset-tile);
+  }
+  .fa-surface[data-padding="panel"] {
+    padding: var(--inset-panel);
+  }
+  .fa-surface[data-padding="dialog"] {
+    padding: var(--inset-dialog);
+  }
+  .fa-surface[data-container] {
+    container-type: inline-size;
+  }
+
+  .fa-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    container: panel / inline-size;
+  }
+  .fa-panel[data-scroll] {
+    overflow: hidden;
+  }
+  .fa-panel-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: calc(var(--control-h-md) + var(--inset-panel));
+    padding: var(--inset-panel) var(--inset-panel) 0;
+  }
+  .fa-panel-header-icon {
+    display: inline-grid;
+    place-items: center;
+    color: var(--fg-muted);
+  }
+  .fa-panel-header-icon .fa-icon {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+  .fa-panel-header-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .fa-panel-title {
+    color: var(--fg);
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--type-subtitle-weight);
+    letter-spacing: var(--type-subtitle-tracking);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-panel-description {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-panel-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--gap-controls);
+    margin-inline-start: auto;
+  }
+  .fa-panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: var(--inset-panel);
+  }
+  .fa-panel[data-scroll] > .fa-panel-body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .fa-panel-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--gap-controls);
+    padding: 0 var(--inset-panel) var(--inset-panel);
+  }
+  /* R5.8: the footer edge appears only while content scrolls beneath it. */
+  .fa-panel[data-scroll][data-scrolled-end="false"] > .fa-panel-footer {
+    padding-top: var(--space-4);
+    box-shadow: inset 0 var(--border-width) 0 var(--line);
+  }
+}

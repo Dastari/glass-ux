@@ -1,0 +1,155 @@
+/*
+ * Toast — glass-overlay cards in one viewport: bottom-right on desktop, top on phones.
+ * At most three; behind the front toast they peek out as a scaled stack, and the stack
+ * fans out while hovered or focused (timers pause meanwhile). The tone shows in the tile
+ * icon only — the card itself stays neutral glass.
+ */
+@layer components {
+  .fa-toast-viewport {
+    /* component token: toast width on desktop */
+    --_w: 24rem;
+    position: fixed;
+    z-index: var(--z-toast);
+    width: min(var(--_w), calc(100vw - var(--page-gutter) * 2));
+    outline: none;
+  }
+  .fa-toast-viewport[data-position="bottom"] {
+    right: max(var(--page-gutter), var(--safe-right));
+    bottom: max(var(--page-gutter), var(--safe-bottom));
+  }
+  .fa-toast-viewport[data-position="top"] {
+    top: calc(var(--safe-top) + var(--space-2));
+    right: var(--page-gutter);
+    left: var(--page-gutter);
+    width: auto;
+  }
+
+  .fa-toast {
+    /* component tokens: stack geometry */
+    --_gap: var(--space-2); /* between toasts when fanned out */
+    --_peek: var(--space-2-5); /* how much of each toast shows behind the front one */
+    --_scale: calc(max(0, 1 - var(--toast-index) * 0.05));
+    --_shrink: calc(1 - var(--_scale));
+    --_height: var(--toast-frontmost-height, var(--toast-height));
+    --_dir: -1; /* stack grows upwards from the bottom edge */
+    --_offset-y: calc(
+      (var(--toast-offset-y) + var(--toast-index) * var(--_gap)) * var(--_dir) + var(--toast-swipe-movement-y)
+    );
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: calc(1000 - var(--toast-index));
+    width: 100%;
+    height: var(--_height);
+    border-radius: var(--radius-overlay);
+    color: var(--fg);
+    user-select: none;
+    transform-origin: bottom center;
+    transform: translateX(var(--toast-swipe-movement-x))
+      translateY(
+        calc(var(--toast-swipe-movement-y) + (var(--toast-index) * var(--_peek) + var(--_shrink) * var(--_height)) * var(--_dir))
+      )
+      scale(var(--_scale));
+    transition:
+      transform var(--duration-slower) var(--ease-enter),
+      opacity var(--duration-slow) var(--ease-standard),
+      height var(--duration-fast) var(--ease-standard);
+  }
+  .fa-toast-viewport[data-position="top"] .fa-toast {
+    --_dir: 1;
+    top: 0;
+    bottom: auto;
+    transform-origin: top center;
+  }
+  .fa-toast[data-expanded] {
+    height: var(--toast-height);
+    transform: translateX(var(--toast-swipe-movement-x)) translateY(var(--_offset-y));
+  }
+  /* Keeps the stack hovered while the pointer crosses the gap between fanned toasts. */
+  .fa-toast::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: calc(var(--_gap) + var(--border-width));
+    top: 100%;
+  }
+  .fa-toast-viewport[data-position="top"] .fa-toast::after {
+    top: auto;
+    bottom: 100%;
+  }
+  .fa-toast[data-starting-style],
+  .fa-toast[data-ending-style] {
+    transform: translateY(calc(150% * var(--_dir) * -1));
+  }
+  .fa-toast[data-limited] {
+    opacity: 0;
+  }
+  .fa-toast[data-ending-style] {
+    opacity: 0;
+    transition-timing-function: var(--ease-exit);
+  }
+  .fa-toast[data-ending-style][data-swipe-direction="right"] {
+    transform: translateX(calc(var(--toast-swipe-movement-x) + 150%)) translateY(var(--_offset-y));
+  }
+  .fa-toast[data-ending-style][data-swipe-direction="up"] {
+    transform: translateY(calc(var(--toast-swipe-movement-y) - 150%));
+  }
+  .fa-toast[data-ending-style][data-swipe-direction="down"] {
+    transform: translateY(calc(var(--toast-swipe-movement-y) + 150%));
+  }
+  .fa-toast[data-swiping] {
+    transition-duration: 0s;
+  }
+  .fa-toast:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .fa-toast-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-2) var(--space-3) var(--space-3);
+    overflow: hidden;
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-toast-content[data-behind] {
+    opacity: 0;
+  }
+  .fa-toast-content[data-expanded] {
+    opacity: 1;
+  }
+  .fa-toast-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-toast-title {
+    color: var(--fg);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-weight: var(--weight-semibold);
+    overflow-wrap: anywhere;
+  }
+  .fa-toast-description {
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    overflow-wrap: anywhere;
+  }
+  .fa-toast-action,
+  .fa-toast-close {
+    flex: none;
+  }
+
+  /* Static toast for the gallery. */
+  .fa-toast-preview {
+    --_w: 24rem; /* component token: mirrors the viewport width */
+    position: relative;
+    width: min(var(--_w), 100%);
+    height: auto;
+    transform: none;
+  }
+}

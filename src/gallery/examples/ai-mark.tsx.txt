@@ -1,0 +1,12 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiMark } from "glass-ux/ai";
+
+export default function AiMarkExample() {
+    return (<SectionPage>
+      <Specimen title="AiMark" description="The shared assistant identity mark." layout="stack">
+        <AiMark />
+        <AiMark size="lg"/>
+      </Specimen>
+    </SectionPage>);
+}

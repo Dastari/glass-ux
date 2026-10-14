@@ -1,0 +1,70 @@
+/* Gallery-only layout for the DataTable section (the demos' frames and controls). */
+@layer components {
+  .dt-demo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .dt-demo-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .dt-demo-group {
+    gap: var(--space-half);
+    padding: var(--space-half);
+    border-radius: calc(var(--radius-control) + var(--space-half));
+  }
+  .dt-demo-request {
+    flex: 1 1 18rem;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-subtle);
+    font-family: var(--font-mono);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-align: end;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* The table as the sole content of a pane that fills the remaining height. */
+  .dt-demo-frame {
+    height: clamp(30rem, calc(100dvh - 22rem), 48rem);
+    min-width: 0;
+  }
+  .dt-demo-search {
+    flex: 0 1 18rem;
+    min-width: 10rem;
+  }
+  .dt-demo-resizable {
+    max-width: 100%;
+    height: 32rem;
+    min-width: 16rem;
+  }
+  .dt-demo-heights {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+  .dt-demo-height {
+    min-width: 0;
+  }
+  .dt-demo-height > .gallery-lab-frame {
+    width: 100%;
+  }
+  .dt-demo-cell {
+    display: inline-flex;
+    align-items: center;
+    width: 15rem;
+    min-height: var(--row-h);
+  }
+  .dt-demo-spark {
+    width: 9rem;
+  }
+  /* Grouped rows: a pane tall enough for a few groups and their "Show more". */
+  .dt-demo-grouped {
+    height: calc(var(--row-h) * 11);
+  }
+}

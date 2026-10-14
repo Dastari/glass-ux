@@ -1,0 +1,257 @@
+/*
+ * Glass UX colour roles — tier 2.
+ *
+ * A palette is a handful of parameters (hues, chroma, accent lightness). Every role is
+ * derived from those parameters by the same formulas in both modes, so palettes cannot
+ * drift and a custom accent is just `--accent-h` / `--accent-c` set inline.
+ *
+ *   <html data-mode="light|dark" data-palette="ocean|aurora|emerald|sunset|graphite">
+ *
+ * Any element may carry data-mode or data-palette to create an island (an always-dark
+ * remote viewer, an inverted tooltip, a palette swatch). Components only ever reference
+ * the roles below — never a palette parameter and never a literal colour.
+ *
+ * Roles
+ *   canvas            the page behind every glass pane
+ *   fg / fg-muted / fg-subtle / fg-disabled / fg-inverse
+ *   line / line-strong                     dividers and outlines
+ *   fill-hover / fill-press / fill-muted   neutral state layers on transparent elements
+ *   accent / accent-2 / accent-hover / accent-active / accent-fg
+ *   accent-text      accent-coloured text that meets AA on glass
+ *   accent-soft / accent-soft-hover / accent-line / accent-ring / accent-glow
+ *   success | warning | danger | info  each with -solid -fg -text -soft -line
+ *   chart-1 … chart-8  data colours (data.css), derived from the palette's --chart-h: a calm
+ *                      data hue of its own, never the brand accent, so a CPU line at 44% never
+ *                      reads as an alarm. Red and amber stay reserved for states.
+ *   scrim            modal backdrop tint
+ *   ambient-1..3     colour fields painted on the canvas for glass to bend
+ */
+
+@layer base {
+  /* ── Palette parameters ──────────────────────────────────────────────────── */
+
+  [data-palette="ocean"] {
+    --accent-h: 252;
+    --accent-c: 0.19;
+    --accent-l: 0.51;
+    --accent-2-h: 222;
+    --accent-fg-l: 0.99;
+    --neutral-h: 250;
+    --neutral-c: 0.016;
+    --ambient-1-h: 235;
+    --ambient-2-h: 200;
+    --ambient-3-h: 280;
+    --chart-h: 252; /* data hue: the accent itself — calm and not a status */
+  }
+  [data-palette="aurora"] {
+    --accent-h: 293;
+    --accent-c: 0.21;
+    --accent-l: 0.56;
+    --accent-2-h: 325;
+    --accent-fg-l: 0.99;
+    --neutral-h: 290;
+    --neutral-c: 0.016;
+    --ambient-1-h: 300;
+    --ambient-2-h: 195;
+    --ambient-3-h: 340;
+    --chart-h: 250;
+  }
+  [data-palette="emerald"] {
+    --accent-h: 160;
+    --accent-c: 0.14;
+    --accent-l: 0.515;
+    --accent-2-h: 182;
+    --accent-fg-l: 0.99;
+    --neutral-h: 200;
+    --neutral-c: 0.012;
+    --ambient-1-h: 165;
+    --ambient-2-h: 205;
+    --ambient-3-h: 120;
+    --chart-h: 250; /* not the accent: green means success */
+  }
+  [data-palette="sunset"] {
+    --accent-h: 48;
+    --accent-c: 0.18;
+    --accent-l: 0.565;
+    --accent-2-h: 22;
+    --accent-fg-l: 0.99;
+    --neutral-h: 45;
+    --neutral-c: 0.012;
+    --ambient-1-h: 60;
+    --ambient-2-h: 18;
+    --ambient-3-h: 320;
+    --chart-h: 250; /* not the accent: orange reads as warning */
+  }
+  :root,
+  [data-palette="graphite"] {
+    --accent-h: 265;
+    --accent-c: 0.02;
+    --accent-l: 0.3;
+    --accent-2-h: 265;
+    --accent-fg-l: 0.99;
+    --neutral-h: 265;
+    --neutral-c: 0.008;
+    --ambient-1-h: 260;
+    --ambient-2-h: 230;
+    --ambient-3-h: 290;
+    --chart-h: 250;
+  }
+
+  /* ── Light roles ─────────────────────────────────────────────────────────── */
+  /*
+   * Mode islands. The roles are re-declared on every palette island ([data-palette]) so they
+   * recompute from that palette's parameters, and @scope makes the nearest mode win: an element
+   * with both data-mode and data-palette takes its own mode (:scope, proximity 0), and a palette
+   * island takes the mode of its closest data-mode ancestor, however the islands nest. Plain
+   * descendant selectors tie on specificity and let source order pick dark (e2e/token-islands).
+   * The light scope includes :root so a page without data-mode is light; the dark blocks come
+   * later so a dark <html> wins that tie.
+   */
+  @scope (:root, [data-mode="light"]) {
+    :scope,
+    [data-palette] {
+      color-scheme: light;
+
+      --canvas: oklch(0.972 0.008 var(--neutral-h));
+      --canvas-solid: oklch(0.99 0.004 var(--neutral-h));
+      --fg: oklch(0.235 0.03 var(--neutral-h));
+      --fg-muted: oklch(0.45 0.025 var(--neutral-h));
+      --fg-subtle: oklch(0.53 0.02 var(--neutral-h));
+      --fg-disabled: oklch(0.68 0.012 var(--neutral-h));
+      --fg-inverse: oklch(0.985 0.004 var(--neutral-h));
+
+      --line: oklch(0.35 0.04 var(--neutral-h) / 0.11);
+      --line-strong: oklch(0.35 0.04 var(--neutral-h) / 0.2);
+      --fill-hover: oklch(0.35 0.04 var(--neutral-h) / 0.045);
+      --fill-press: oklch(0.35 0.04 var(--neutral-h) / 0.085);
+      --fill-muted: oklch(0.35 0.04 var(--neutral-h) / 0.055);
+
+      --accent: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
+      --accent-2: oklch(var(--accent-l) var(--accent-c) var(--accent-2-h));
+      --accent-hover: oklch(calc(var(--accent-l) - 0.035) var(--accent-c) var(--accent-h));
+      --accent-active: oklch(calc(var(--accent-l) - 0.07) var(--accent-c) var(--accent-h));
+      --accent-fg: oklch(var(--accent-fg-l) 0.005 var(--accent-h));
+      --accent-text: oklch(calc(var(--accent-l) - 0.05) var(--accent-c) var(--accent-h));
+      --accent-soft: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.09);
+      --accent-soft-hover: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.14);
+      --accent-line: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.38);
+      --accent-ring: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.42);
+      --accent-glow: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.34);
+
+      --success: oklch(0.53 0.15 152);
+      --success-fg: oklch(0.99 0.01 152);
+      --success-text: oklch(0.47 0.13 152);
+      --success-soft: oklch(0.6 0.15 152 / 0.12);
+      --success-line: oklch(0.6 0.15 152 / 0.4);
+      --warning: oklch(0.77 0.16 72);
+      --warning-fg: oklch(0.25 0.06 60);
+      --warning-text: oklch(0.52 0.13 60);
+      --warning-soft: oklch(0.77 0.16 72 / 0.16);
+      --warning-line: oklch(0.72 0.16 68 / 0.45);
+      --danger: oklch(0.575 0.215 22);
+      --danger-fg: oklch(0.99 0.01 22);
+      --danger-text: oklch(0.52 0.2 22);
+      --danger-soft: oklch(0.575 0.215 22 / 0.1);
+      --danger-line: oklch(0.575 0.215 22 / 0.4);
+      --info: oklch(0.55 0.18 252);
+      --info-fg: oklch(0.99 0.01 252);
+      --info-text: oklch(0.49 0.17 252);
+      --info-soft: oklch(0.57 0.18 252 / 0.1);
+      --info-line: oklch(0.57 0.18 252 / 0.38);
+
+      --scrim: oklch(0.3 0.04 var(--neutral-h) / 0.22);
+      --shadow-tint: oklch(0.32 0.06 var(--neutral-h));
+
+      --ambient-1: oklch(0.86 0.095 var(--ambient-1-h));
+      --ambient-2: oklch(0.88 0.075 var(--ambient-2-h));
+      --ambient-3: oklch(0.89 0.07 var(--ambient-3-h));
+      --ambient-strength: 1;
+      --silk: oklch(1 0 0 / 0.9);
+    }
+  }
+
+  /* ── Dark roles ──────────────────────────────────────────────────────────── */
+  @scope ([data-mode="dark"]) {
+    :scope,
+    [data-palette] {
+      color-scheme: dark;
+
+      --canvas: oklch(0.17 0.022 var(--neutral-h));
+      --canvas-solid: oklch(0.215 0.022 var(--neutral-h));
+      --fg: oklch(0.965 0.006 var(--neutral-h));
+      --fg-muted: oklch(0.77 0.016 var(--neutral-h));
+      --fg-subtle: oklch(0.66 0.016 var(--neutral-h));
+      --fg-disabled: oklch(0.5 0.012 var(--neutral-h));
+      --fg-inverse: oklch(0.2 0.02 var(--neutral-h));
+
+      --line: oklch(1 0 0 / 0.09);
+      --line-strong: oklch(1 0 0 / 0.17);
+      --fill-hover: oklch(1 0 0 / 0.055);
+      --fill-press: oklch(1 0 0 / 0.1);
+      --fill-muted: oklch(1 0 0 / 0.07);
+
+      --accent: oklch(var(--accent-l) var(--accent-c) var(--accent-h));
+      --accent-2: oklch(var(--accent-l) var(--accent-c) var(--accent-2-h));
+      --accent-hover: oklch(calc(var(--accent-l) + 0.035) var(--accent-c) var(--accent-h));
+      --accent-active: oklch(calc(var(--accent-l) - 0.03) var(--accent-c) var(--accent-h));
+      --accent-fg: oklch(var(--accent-fg-l) 0.005 var(--accent-h));
+      --accent-text: oklch(0.76 calc(var(--accent-c) * 0.75) var(--accent-h));
+      --accent-soft: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.18);
+      --accent-soft-hover: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.25);
+      --accent-line: oklch(0.7 var(--accent-c) var(--accent-h) / 0.5);
+      --accent-ring: oklch(0.7 var(--accent-c) var(--accent-h) / 0.6);
+      --accent-glow: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.45);
+
+      --success: oklch(0.66 0.15 152);
+      --success-fg: oklch(0.18 0.04 152);
+      --success-text: oklch(0.8 0.13 152);
+      --success-soft: oklch(0.66 0.15 152 / 0.18);
+      --success-line: oklch(0.7 0.15 152 / 0.45);
+      --warning: oklch(0.8 0.15 75);
+      --warning-fg: oklch(0.22 0.05 60);
+      --warning-text: oklch(0.85 0.13 80);
+      --warning-soft: oklch(0.8 0.15 75 / 0.16);
+      --warning-line: oklch(0.8 0.15 75 / 0.45);
+      --danger: oklch(0.575 0.21 22);
+      --danger-fg: oklch(0.99 0.01 22);
+      --danger-text: oklch(0.77 0.15 22);
+      --danger-soft: oklch(0.62 0.21 22 / 0.18);
+      --danger-line: oklch(0.68 0.2 22 / 0.5);
+      --info: oklch(0.55 0.16 252);
+      --info-fg: oklch(0.99 0.01 252);
+      --info-text: oklch(0.79 0.12 252);
+      --info-soft: oklch(0.64 0.16 252 / 0.18);
+      --info-line: oklch(0.7 0.15 252 / 0.45);
+
+      --scrim: oklch(0.08 0.02 var(--neutral-h) / 0.5);
+      --shadow-tint: oklch(0.04 0.02 var(--neutral-h));
+
+      --ambient-1: oklch(0.42 0.13 var(--ambient-1-h));
+      --ambient-2: oklch(0.36 0.11 var(--ambient-2-h));
+      --ambient-3: oklch(0.38 0.1 var(--ambient-3-h));
+      --ambient-strength: 0.55;
+      --silk: oklch(1 0 0 / 0.07);
+    }
+  }
+
+  /*
+   * Graphite's accent is ink in light mode and paper in dark mode. The light scope repeats its
+   * light parameters so a light graphite island inside a dark page takes them back; :scope:is()
+   * outranks the descendant form, so an element's own mode beats its ancestors'.
+   */
+  @scope (:root, [data-mode="light"]) {
+    :scope:is([data-palette="graphite"]),
+    [data-palette="graphite"] {
+      --accent-l: 0.3;
+      --accent-fg-l: 0.99;
+    }
+  }
+  @scope ([data-mode="dark"]) {
+    :scope:is([data-palette="graphite"]),
+    [data-palette="graphite"] {
+      --accent-l: 0.93;
+      --accent-fg-l: 0.2;
+      --accent-text: oklch(0.93 0.01 var(--accent-h));
+    }
+  }
+}

@@ -1,0 +1,368 @@
+/*
+ * WindowFrame — app bar, body, status bar (R14.1). Material: glass-panel. The focused
+ * window sits one elevation step higher; unfocused windows dim their app bar text.
+ *
+ * Component tokens
+ *   --_bar-h     app bar height (a 32px control row with breathing room)
+ *   --_pad       inline padding shared by app bar, body and status bar
+ */
+@layer components {
+  .fa-window {
+    --_bar-h: 3.25rem;
+    --_pad: var(--space-4);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    border-radius: var(--radius-surface);
+    overflow: hidden;
+    container: window / size;
+    color: var(--fg);
+    outline: none;
+  }
+  .fa-window[data-focused] {
+    --_shadow: var(--shadow-3);
+  }
+
+  /* ── App bar ───────────────────────────────────────────────────────────── */
+  .fa-window-appbar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-height: var(--_bar-h);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+    user-select: none;
+    touch-action: none;
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-window-icon {
+    --tile-icon-box: var(--control-h-sm);
+    border-radius: var(--radius-sm);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-window-icon > svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-window-heading {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
+  .fa-window-title {
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--type-subtitle-weight);
+    letter-spacing: var(--type-subtitle-tracking);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-window-subtitle {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-window:not([data-focused]) .fa-window-title {
+    color: var(--fg-muted);
+  }
+  .fa-window:not([data-focused]) .fa-window-icon {
+    color: var(--fg-muted);
+  }
+  /* The organisation chip (R14.4): the window belongs to another scope than the current one.
+     A fill inside the panel (R4.2), avatar and name; narrow windows keep the avatar. */
+  .fa-window-scope {
+    --_max: 14rem; /* the chip's longest, before its name truncates */
+    display: inline-flex;
+    /* The title gives way last: the chip shrinks four times as fast, down to its avatar. */
+    flex: 0 4 auto;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-width: var(--control-h-xs);
+    max-width: var(--_max);
+    height: var(--control-h-xs);
+    padding-inline: var(--space-half) var(--space-2-5);
+    border-radius: var(--radius-full);
+    background-color: var(--fill-muted);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+  }
+  .fa-window-scope-avatar {
+    display: inline-flex;
+    flex: none;
+  }
+  .fa-window-scope-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  @container window (width < 36rem) {
+    .fa-window-scope {
+      padding-inline: var(--space-half);
+    }
+    .fa-window-scope-label {
+      display: none;
+    }
+  }
+  .fa-window-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .fa-window-actions:empty {
+    display: none;
+  }
+  .fa-window-controls {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-half);
+  }
+  .fa-window-actions:not(:empty) + .fa-window-controls {
+    margin-inline-start: var(--space-2);
+  }
+
+  /* R5.8: the app bar and status bar edges show only while content scrolls beneath. */
+  .fa-window:has(.fa-window-body[data-scrolled-top]) .fa-window-appbar {
+    box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
+  }
+  .fa-window:has(.fa-window-body[data-scrolled-bottom]) .fa-window-status {
+    box-shadow: inset 0 var(--border-width) 0 var(--line);
+  }
+
+  /* ── Body ──────────────────────────────────────────────────────────────── */
+  .fa-window-body {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    container: window-body / size;
+  }
+  .fa-window-body[data-variant="scroll"] {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-1) var(--_pad) var(--_pad);
+  }
+  .fa-window-body[data-variant="fill"] {
+    overflow: hidden;
+  }
+  .fa-window-empty {
+    color: var(--fg-muted);
+  }
+  .fa-window-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+  }
+
+  /* ── Status bar ────────────────────────────────────────────────────────── */
+  .fa-window-status {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--control-h-sm);
+    padding: var(--space-1) var(--_pad) var(--space-1-5);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-window-status:empty {
+    display: none;
+  }
+  @container window (width < 30rem) {
+    .fa-window-status[data-narrow="hide"] {
+      display: none;
+    }
+  }
+  .fa-window-status-group {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-window-status-item {
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-width: 0;
+  }
+  /* The state itself (the toned item) never truncates; metadata gives way first. */
+  .fa-window-status-item[data-tone] {
+    flex: none;
+  }
+  .fa-window-status-item[data-tone] {
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+  }
+  .fa-window-status-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* :not(:first-child) rather than `* + *`: a universal sibling selector re-styles the
+     siblings of every node inserted anywhere in the document (docs/performance.md). */
+  .fa-window-status-item + .fa-window-status-item::before,
+  .fa-window-status-meta > :where(:not(:first-child))::before {
+    content: "·";
+    margin-inline-end: var(--space-2);
+    color: var(--fg-subtle);
+    font-weight: var(--weight-regular);
+  }
+  .fa-window-status-meta {
+    display: inline-flex;
+    flex: 0 100 auto;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    margin-inline-start: auto;
+    color: var(--fg-subtle);
+  }
+  .fa-window-status-meta > * {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Resize handles (floating windows) ─────────────────────────────────── */
+  .fa-window-resize {
+    --_grab: var(--space-1-5);
+    --_corner: var(--space-4);
+    position: absolute;
+    z-index: var(--z-raised);
+    touch-action: none;
+  }
+  .fa-window-resize:is([data-edge="n"], [data-edge="s"]) {
+    inset-inline: var(--_corner);
+    height: var(--_grab);
+    cursor: ns-resize;
+  }
+  .fa-window-resize:is([data-edge="e"], [data-edge="w"]) {
+    inset-block: var(--_corner);
+    width: var(--_grab);
+    cursor: ew-resize;
+  }
+  .fa-window-resize[data-edge="n"] {
+    top: 0;
+  }
+  .fa-window-resize[data-edge="s"] {
+    bottom: 0;
+  }
+  .fa-window-resize[data-edge="e"] {
+    right: 0;
+  }
+  .fa-window-resize[data-edge="w"] {
+    left: 0;
+  }
+  .fa-window-resize:is([data-edge="ne"], [data-edge="nw"], [data-edge="se"], [data-edge="sw"]) {
+    width: var(--_corner);
+    height: var(--_corner);
+  }
+  .fa-window-resize[data-edge="ne"] {
+    top: 0;
+    right: 0;
+    cursor: nesw-resize;
+  }
+  .fa-window-resize[data-edge="nw"] {
+    top: 0;
+    left: 0;
+    cursor: nwse-resize;
+  }
+  .fa-window-resize[data-edge="se"] {
+    right: 0;
+    bottom: 0;
+    cursor: nwse-resize;
+  }
+  .fa-window-resize[data-edge="sw"] {
+    bottom: 0;
+    left: 0;
+    cursor: nesw-resize;
+  }
+
+  /* ── Size tiers (R7): a short frame keeps its app bar; a narrow one sheds the subtitle. */
+  @container window (height < 7rem) {
+    .fa-window-status {
+      display: none;
+    }
+  }
+  @container window (height < 4.5rem) {
+    .fa-window-appbar {
+      min-height: 100cqh;
+      padding-block: 0;
+    }
+    .fa-window-subtitle {
+      display: none;
+    }
+  }
+  @container window (width < 34rem) {
+    .fa-window-status-meta {
+      display: none;
+    }
+  }
+  @container window (width < 22rem) {
+    .fa-window-subtitle {
+      display: none;
+    }
+    .fa-window-icon {
+      display: none;
+    }
+  }
+
+  /* ── Popped out: the frame is the whole browser window ─────────────────── */
+  .fa-wm-popout {
+    position: fixed;
+    inset: 0;
+    border-radius: 0;
+  }
+  .fa-wm-popout-empty {
+    display: grid;
+    place-items: center;
+    height: 100dvh;
+    color: var(--fg-muted);
+  }
+}
+
+@layer components {
+  /* The primary window has no frame: header, tabs and status bar sit on the canvas and
+     its content panels carry the glass (R5.3). Its body scrolls the panels. */
+  .fa-window[data-material="none"] {
+    --_pad: 0px;
+    overflow: visible;
+    border-radius: 0;
+  }
+  .fa-window[data-material="none"] .fa-window-body[data-variant="scroll"] {
+    padding: var(--space-1) 0 var(--space-4);
+  }
+  .fa-window[data-material="none"] .fa-window-status {
+    padding: var(--space-2) 0 0;
+  }
+}
+
+@layer components {
+  /* A focused scroll body shows the ring inset, inside the frame's rounded clip. */
+  .fa-window-body:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+}

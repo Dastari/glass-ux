@@ -1,0 +1,44 @@
+/*
+ * Kbd — keyboard shortcuts.
+ *
+ * Variants  keys   keycaps (help text, palette footer hints)
+ *           text   the quiet inline form at the trailing edge of menu and palette rows
+ * Sizes     sm 20 · md 24 (keycaps only)
+ */
+@layer components {
+  .fa-kbd {
+    --_h: var(--control-h-xs);
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-half);
+    font-family: var(--font-sans);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .fa-kbd[data-size="sm"] {
+    /* component token: a keycap that fits inside a dense row */
+    --_h: 1.25rem;
+  }
+  .fa-kbd-key {
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--_h);
+    height: var(--_h);
+    padding-inline: var(--space-1);
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-xs);
+    background-color: var(--glass-fill-inset);
+    box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
+    color: var(--fg-muted);
+    font: inherit;
+  }
+  .fa-kbd[data-variant="text"] {
+    color: var(--fg-subtle);
+    font-weight: var(--weight-regular);
+    letter-spacing: var(--type-caption-tracking);
+  }
+}

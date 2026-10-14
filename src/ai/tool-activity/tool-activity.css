@@ -1,0 +1,283 @@
+/*
+ * Tool activity — what the assistant did, as quiet rows between the prose.
+ *
+ * Row      status glyph · verb label (+ failure reason) · target names · elapsed · chevron.
+ *          Done rows recede (muted label); running rows read at full strength with a thin
+ *          indeterminate line along the bottom (the skeleton shimmer, the one allowed loop).
+ * Status   running accent spinner · done success · failed danger · approval warning ·
+ *          queued and cancelled subtle: the same tone roles as everywhere (R11.9).
+ * Group    consecutive calls fold into "Ran 4 tools · 2.3 s" with stacked tool glyphs.
+ * Panel    expands in place (height animates on --duration-base) to the details well.
+ */
+@layer components {
+  .fa-ai-tool {
+    --_glyph: var(--icon-sm);
+    min-width: 0;
+  }
+  .fa-ai-tool-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    width: 100%;
+    min-width: 0;
+    min-height: var(--item-h);
+    padding: var(--space-1) var(--space-2);
+    border: 0;
+    border-radius: var(--radius-item);
+    background: transparent;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    text-align: start;
+    cursor: pointer;
+    outline: none;
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-ai-tool-row[data-static] {
+    cursor: default;
+  }
+  .fa-ai-tool-row:not([data-static]):hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-ai-tool-row:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+
+  .fa-ai-status-glyph {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--_glyph, var(--icon-sm));
+    height: var(--_glyph, var(--icon-sm));
+    color: var(--fg-subtle);
+  }
+  .fa-ai-status-glyph > .fa-icon {
+    width: 100%;
+    height: 100%;
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+  }
+  .fa-ai-status-glyph[data-status="running"] {
+    color: var(--accent-text);
+  }
+  /* R10.2: the spinner fades in only if the work outlasts --spinner-delay. */
+  .fa-ai-status-glyph[data-status="running"] > .fa-icon[data-icon="spinner"] {
+    animation:
+      fa-spin var(--duration-spin) linear infinite,
+      fa-fade-in var(--duration-base) var(--ease-standard) var(--spinner-delay) both;
+  }
+  .fa-ai-status-glyph[data-status="succeeded"] {
+    color: var(--success-text);
+  }
+  .fa-ai-status-glyph[data-status="failed"] {
+    color: var(--danger-text);
+  }
+  .fa-ai-status-glyph[data-status="awaiting-approval"] {
+    color: var(--warning-text);
+  }
+
+  .fa-ai-tool-text {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-ai-tool-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-tool:is([data-status="running"], [data-status="awaiting-approval"], [data-status="queued"]) > .fa-ai-tool-row .fa-ai-tool-label {
+    color: var(--fg);
+  }
+  .fa-ai-tool[data-status="failed"] > .fa-ai-tool-row .fa-ai-tool-label {
+    color: var(--danger-text);
+  }
+  .fa-ai-tool-reason {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-ai-tool-failed {
+    color: var(--danger-text);
+  }
+  .fa-ai-tool-detail {
+    color: var(--fg-muted);
+  }
+
+  .fa-ai-tool-chips {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+    overflow: hidden;
+  }
+  .fa-ai-tool-chips .fa-ai-chip {
+    --_h: calc(var(--control-h-xs) - var(--space-1));
+    flex: 0 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding-inline: var(--space-2);
+    color: var(--fg-muted);
+    font-weight: var(--weight-regular);
+  }
+  .fa-ai-tool-more {
+    flex: none;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+  }
+
+  .fa-ai-tool-stack {
+    display: flex;
+    flex: none;
+    align-items: center;
+  }
+  .fa-ai-tool-stack-icon {
+    display: inline-grid;
+    place-items: center;
+    width: var(--control-h-xs);
+    height: var(--control-h-xs);
+    border-radius: var(--radius-full);
+    background-color: var(--surface-3);
+    box-shadow:
+      0 0 0 var(--border-width-strong) var(--surface-2),
+      inset 0 0 0 var(--border-width) var(--line);
+    color: var(--fg-muted);
+  }
+  .fa-ai-tool-stack-icon + .fa-ai-tool-stack-icon {
+    margin-inline-start: calc(var(--space-1-5) * -1);
+  }
+  .fa-ai-tool-stack-icon[data-status="failed"] {
+    color: var(--danger-text);
+  }
+  .fa-ai-tool-stack-icon .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+  }
+
+  .fa-ai-tool-elapsed,
+  .fa-ai-tool-model {
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-ai-tool-model + .fa-ai-tool-elapsed {
+    margin-inline-start: 0;
+  }
+  .fa-ai-tool-chevron {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--fg-subtle);
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+    transition: rotate var(--duration-base) var(--ease-standard);
+  }
+  .fa-ai-tool-chips + .fa-ai-tool-chevron,
+  .fa-ai-tool-text + .fa-ai-tool-chevron,
+  .fa-ai-tool-stack + .fa-ai-tool-chevron {
+    margin-inline-start: auto;
+  }
+  .fa-ai-tool-row[data-panel-open] > .fa-ai-tool-chevron {
+    rotate: 90deg;
+  }
+
+  /* Indeterminate progress: the page shimmer through a hairline (still under "Still"). */
+  .fa-ai-tool-progress {
+    position: absolute;
+    inset-inline: var(--space-2);
+    bottom: 0;
+    height: var(--border-width-strong);
+    border-radius: var(--radius-full);
+    background-color: var(--accent-soft);
+    background-image: linear-gradient(100deg, transparent 20%, var(--accent) 50%, transparent 80%);
+    background-size: 40vw 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    animation: fa-shimmer var(--duration-shimmer) ease-in-out infinite;
+  }
+
+  .fa-ai-tool-panel {
+    height: var(--collapsible-panel-height);
+    overflow: hidden;
+    transition: height var(--duration-base) var(--ease-standard);
+  }
+  .fa-ai-tool-panel:is([data-starting-style], [data-ending-style]) {
+    height: 0;
+  }
+  .fa-ai-tool-panel > * {
+    margin: var(--space-1) 0 var(--space-2) calc(var(--space-2) + var(--_glyph) + var(--space-2-5));
+  }
+  .fa-ai-tool-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+  }
+  .fa-ai-tool-list > .fa-ai-tool > .fa-ai-tool-panel > * {
+    margin-inline-start: calc(var(--space-2) + var(--_glyph) + var(--space-2-5));
+  }
+
+  .fa-ai-tool-details .fa-ai-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .fa-ai-tool-facts {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--space-1-5) var(--space-4);
+    margin: 0;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-ai-tool-facts > div {
+    display: contents;
+  }
+  .fa-ai-tool-facts dt {
+    color: var(--fg-muted);
+  }
+  .fa-ai-tool-facts dd {
+    min-width: 0;
+    margin: 0;
+  }
+  .fa-ai-tool-facts code {
+    font-size: var(--type-caption-size);
+  }
+  .fa-ai-tool-targets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+  .fa-ai-tool-json {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .fa-ai-tool-json-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--control-h-sm);
+  }
+
+  @container (width < 30rem) {
+    .fa-ai-tool-chips,
+    .fa-ai-tool-stack,
+    .fa-ai-tool-model {
+      display: none;
+    }
+    .fa-ai-tool-elapsed {
+      margin-inline-start: auto;
+    }
+  }
+}

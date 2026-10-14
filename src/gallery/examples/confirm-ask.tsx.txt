@@ -1,0 +1,17 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
+
+import { ASKS } from "glass-ux/gallery/sections/ai.fixtures";
+
+import { ConfirmAsk } from "glass-ux/ai";
+
+export default function ConfirmAskExample() {
+    return (<AiGallery>
+      <SectionPage>
+        <Specimen title="ConfirmAsk" description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision." layout="stack">
+          <ConfirmAsk ask={ASKS.confirm}/>
+        </Specimen>
+      </SectionPage>
+    </AiGallery>);
+}

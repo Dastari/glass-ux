@@ -1,0 +1,81 @@
+/*
+ * AlertDialog — the confirmation for destructive or irreversible actions. A Dialog of size
+ * sm with a fixed anatomy: tone tile, a title that names the target, one sentence, then
+ * Cancel and the confirm. On phones it rises from the bottom edge like a sheet.
+ */
+@layer components {
+  /* A ghost icon: the tone glyph alone, no tile, larger than a list icon and centred
+     against the whole message so it anchors the dialog rather than the first line. */
+  .fa-alert {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    padding: var(--inset-dialog) var(--inset-dialog) var(--space-2);
+  }
+  .fa-alert-icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    color: var(--fg-muted);
+  }
+  .fa-alert-icon > svg {
+    --_stroke: calc(var(--icon-stroke) * 0.8);
+    width: calc(var(--icon-2xl) * 0.9);
+    height: calc(var(--icon-2xl) * 0.9);
+  }
+  .fa-alert-icon[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .fa-alert-icon[data-tone="warning"] {
+    color: var(--warning-text);
+  }
+  .fa-alert-icon[data-tone="info"],
+  .fa-alert-icon[data-tone="accent"] {
+    color: var(--info-text);
+  }
+  .fa-alert-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    min-width: 0;
+  }
+  .fa-alert-title {
+    color: var(--fg);
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-line);
+    font-weight: var(--type-title-weight);
+    letter-spacing: var(--type-title-tracking);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+  .fa-alert-description {
+    max-width: var(--measure);
+    color: var(--fg-muted);
+  }
+
+  /* Phones: anchored to the bottom edge with equal, thumb-sized actions (R13.4). The
+     viewport query is deliberate — the dialog is positioned against the viewport. */
+  @media (width < 48rem) {
+    .fa-dialog-viewport[data-kind="alert"] {
+      align-items: flex-end;
+      padding: 0;
+    }
+    .fa-dialog[data-kind="alert"] {
+      --_w: 100%;
+      border-bottom-width: 0;
+      border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+      transition-duration: var(--duration-slow);
+    }
+    .fa-dialog[data-kind="alert"]:is([data-starting-style], [data-ending-style]) {
+      opacity: 1;
+      transform: translateY(100%);
+    }
+    .fa-dialog[data-kind="alert"] .fa-dialog-footer {
+      padding-bottom: max(var(--inset-dialog), calc(var(--safe-bottom) + var(--space-3)));
+    }
+    .fa-dialog[data-kind="alert"] .fa-dialog-footer > .fa-btn {
+      flex: 1 1 0;
+    }
+  }
+}

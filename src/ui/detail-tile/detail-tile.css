@@ -1,0 +1,92 @@
+/*
+ * DetailTile and DetailGrid — the facts about an entity ("Manufacturer · HP").
+ *
+ * Tile   glass-control fill (safe inside panels), tile radius, the shared fa-tile-icon box,
+ *        a caption label in fg-muted, the value in fg at medium weight and an optional muted
+ *        second line. Values wrap to two lines, then ellipsis. Under 13rem of tile width
+ *        the icon box steps aside.
+ * Grid   repeat(auto-fill, minmax(min, 1fr)) with --gap-tiles: columns follow the container.
+ */
+@layer components {
+  .fa-detail-grid {
+    --_min: 15rem; /* md: smallest tile before the grid drops a column */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--_min)), 1fr));
+    gap: var(--gap-tiles);
+    min-width: 0;
+  }
+  .fa-detail-grid[data-min="sm"] {
+    --_min: 11rem;
+  }
+  .fa-detail-grid[data-min="lg"] {
+    --_min: 19rem;
+  }
+
+  .fa-detail-tile {
+    container: fa-detail-tile / inline-size;
+    min-width: 0;
+    border-radius: var(--radius-tile);
+  }
+  .fa-detail-tile-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    height: 100%;
+    padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3);
+  }
+  .fa-detail-tile-skel-icon {
+    width: var(--tile-icon-box);
+    height: var(--tile-icon-box);
+  }
+  .fa-detail-tile-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    margin: 0;
+  }
+  .fa-detail-tile-label {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-detail-tile-value,
+  .fa-detail-tile-detail {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    overflow-wrap: anywhere;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  .fa-detail-tile-value {
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+  }
+  .fa-detail-tile-detail {
+    color: var(--fg-muted);
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+  .fa-detail-tile-value[data-truncate] {
+    display: block;
+    white-space: nowrap;
+  }
+
+  /* Narrow tiles: the value needs the room more than the icon does. */
+  @container fa-detail-tile (width < 13rem) {
+    .fa-detail-tile-icon {
+      display: none;
+    }
+    .fa-detail-tile-inner {
+      padding-inline-start: var(--space-4);
+    }
+  }
+}

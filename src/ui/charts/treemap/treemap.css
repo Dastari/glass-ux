@@ -1,0 +1,145 @@
+/*
+ * Hierarchy charts: treemap and sunburst, and the drill path they share.
+ *
+ * Treemap tiles are soft tints of their colour (--_tile of --_c) with the 2px surface gap,
+ * so ink labels read in both modes; a group (a folder with its children drawn inside) is a
+ * lighter wash with a header. Sunburst arcs are the colour itself at the first ring, fading
+ * outward ring by ring. The hovered tile or arc takes a ring in --fg.
+ */
+@layer components {
+  .fa-chart-tile {
+    --_tile: var(--chart-tile-mix);
+    fill: color-mix(in oklab, var(--_c) var(--_tile), transparent);
+    transition: d var(--duration-slow) var(--ease-standard);
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) both;
+  }
+  .fa-chart-tile[data-group] {
+    --_tile: var(--chart-group-mix);
+  }
+  .fa-chart-tile-label {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .fa-chart-tile-label[data-lines="2"] {
+    justify-content: flex-start;
+  }
+  .fa-chart-tile-label[data-group] {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-2);
+  }
+  .fa-chart-tile-name {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-chart[data-tier="full"] .fa-chart-tile-label:not([data-group]) .fa-chart-tile-name {
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-chart-tile-label[data-group] .fa-chart-tile-name {
+    flex: 0 1 auto;
+    font-weight: var(--weight-semibold);
+  }
+  .fa-chart-tile-size {
+    flex: none;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Sunburst rings fade outward in their branch's hue. */
+  .fa-chart-arc[data-depth="2"] {
+    fill: color-mix(in oklab, var(--_c) 62%, transparent);
+  }
+  .fa-chart-arc[data-depth="3"] {
+    fill: color-mix(in oklab, var(--_c) 38%, transparent);
+  }
+  .fa-chart-arc[data-depth="4"] {
+    fill: color-mix(in oklab, var(--_c) 24%, transparent);
+  }
+
+  /* ── The drill path ────────────────────────────────────────────────────── */
+  .fa-chart-path {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .fa-chart-path > ol {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+  }
+  .fa-chart-path-item {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    min-width: 0;
+  }
+  .fa-chart-path-item:last-child {
+    flex-shrink: 0.5;
+  }
+  .fa-chart-path-sep {
+    flex: none;
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    margin-inline: var(--space-half);
+    color: var(--fg-subtle);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+  }
+  .fa-chart-path-link,
+  .fa-chart-path-current,
+  .fa-chart-path-gap {
+    --_crumb-max: 14rem; /* a crumb truncates past this */
+    min-width: 0;
+    max-width: var(--_crumb-max);
+    overflow: hidden;
+    padding-inline: var(--space-1-5);
+    font-size: var(--type-label-size);
+    line-height: var(--control-h-xs);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-chart-path-link {
+    height: var(--control-h-xs);
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-label-size);
+  }
+  .fa-chart-path-link:hover {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-chart-path-current {
+    color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  .fa-chart-path-gap {
+    color: var(--fg-subtle);
+  }
+  .fa-chart-path-item:first-child .fa-chart-path-link,
+  .fa-chart-path-item:first-child .fa-chart-path-current {
+    padding-inline-start: 0;
+  }
+}

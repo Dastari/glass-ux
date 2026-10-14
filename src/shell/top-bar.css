@@ -1,0 +1,397 @@
+/*
+ * TopBar — directly on the canvas: no material, no edge, no shadow. Only its controls
+ * have fills (the search field is a glass-control box). An inline-size container named
+ * `topbar`, so it adapts to its own width rather than the viewport's.
+ *
+ * Component tokens
+ *   --_search-w   the search field's comfortable width
+ */
+@layer components {
+  .fa-shell-topbar {
+    --_search-w: min(24rem, 24cqw);
+    container: topbar / inline-size;
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    height: 100%;
+  }
+  .fa-shell-topbar-drawer-toggle {
+    display: none;
+  }
+  @media (width < 64rem) {
+    .fa-shell-topbar-drawer-toggle {
+      display: inline-flex;
+    }
+  }
+  .fa-shell-topbar-module,
+  .fa-shell-topbar-status,
+  .fa-shell-topbar-trailing {
+    display: flex;
+    flex: none;
+    align-items: center;
+  }
+  /* The scope comes first and keeps its full name as long as possible (R5.2): it gives way
+     last, folding to its avatar and short code under 70rem. Only a very long name truncates. */
+  .fa-shell-topbar-scope {
+    --_scope-max: 22rem;
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+    max-width: var(--_scope-max);
+    margin-inline-start: calc(var(--space-1-5) * -1);
+  }
+  .fa-shell-topbar-sep {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--fg-subtle);
+  }
+  /* The breadcrumb takes the space that is left. While the search is a field, the trail's
+     natural width (--_crumbs-need, measured by TopBar) is its basis and it never shrinks, so
+     the search gives way first; once the search is an icon (data-search="icon") the basis is
+     0 and the breadcrumb collapses itself against what is left. Anything that appears in the
+     bar (the timer chip) takes its room from the search, then the breadcrumb, never moves the
+     controls. */
+  .fa-shell-topbar-crumbs {
+    --_crumbs-min: min(8rem, 12cqw);
+    display: flex;
+    flex: 1 0 var(--_crumbs-need, 0px);
+    align-items: center;
+    min-width: var(--_crumbs-min);
+    /* The breadcrumb collapses itself; this only guarantees it never overlaps the bar. */
+    overflow: clip;
+    overflow-clip-margin: var(--space-1);
+  }
+  .fa-shell-topbar-crumbs > * {
+    min-width: 0;
+  }
+  .fa-shell-topbar[data-search="icon"] .fa-shell-topbar-crumbs {
+    flex: 1 1 0;
+  }
+  .fa-shell-topbar-search {
+    /* Gives way before anything else: it takes nearly all of any shrink, down to its minimum
+       (TopBar folds it to an icon below that). */
+    --_search-min: 14rem;
+    display: flex;
+    flex: 0 1000 var(--_search-w);
+    justify-content: flex-end;
+    min-width: min(var(--_search-min), 30cqw);
+  }
+  .fa-shell-topbar-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  /* ── Search trigger: a field-shaped button that opens the palette ─────── */
+  .fa-shell-search {
+    width: 100%;
+    color: var(--fg-subtle);
+    cursor: pointer;
+    text-align: start;
+    font: inherit;
+    font-size: var(--type-body-size);
+  }
+  .fa-shell-search:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-shell-search-placeholder {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-shell-search-kbd {
+    flex: none;
+  }
+
+
+  /* ── Running timer ─────────────────────────────────────────────────────────
+     A neutral chip in the control material: running time is information, not a state, so
+     it never wears red or the accent (R3.8). The "running" dot is the data hue and pulses
+     until the motion switch stops it; the clock is tabular so ticking never moves anything.
+     Component tokens: --_time-w  the clock's reserved width (m:ss, then h:mm:ss) */
+  .fa-shell-timer {
+    --_time-w: 5ch;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    height: var(--control-h-sm);
+    padding-inline: var(--space-2-5) var(--space-3);
+    border: var(--border-width) solid var(--glass-edge);
+    border-radius: var(--radius-full);
+    background-color: var(--glass-fill-control);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-rim-top),
+      var(--shadow-1);
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    cursor: pointer;
+    transition-property: background-color, border-color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-shell-timer:hover {
+    border-color: var(--line-strong);
+    background-color: var(--glass-fill-control-hover);
+  }
+  .fa-shell-timer:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-shell-timer[data-hours] {
+    --_time-w: 7ch;
+  }
+  .fa-shell-timer-dot {
+    --_pulse: color-mix(in oklab, var(--chart-1) 55%, transparent);
+    position: relative;
+    flex: none;
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--chart-1);
+  }
+  /* The "running" pulse: a halo of its own (transform and opacity, run by the compositor). */
+  .fa-shell-timer-dot::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--_pulse);
+    opacity: 0;
+    pointer-events: none;
+    content: "";
+    animation: fa-pulse-halo var(--duration-shimmer) var(--ease-standard) infinite;
+  }
+  .fa-shell-timer-time {
+    min-width: var(--_time-w);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+  .fa-shell-timer-ticket {
+    color: var(--fg-muted);
+  }
+
+  /* ── Account ───────────────────────────────────────────────────────────── */
+  .fa-shell-account {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-width: 0;
+    height: var(--control-h-lg);
+    padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
+    border: 0;
+    border-radius: var(--radius-full);
+    background-color: transparent;
+    color: var(--fg);
+    font: inherit;
+    text-align: start;
+  }
+  .fa-shell-account:hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-shell-account[data-popup-open] {
+    background-color: var(--fill-press);
+  }
+  /* The notifications badge rides on the avatar's corner. */
+  .fa-shell-account-face {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+  }
+  .fa-shell-account-badge {
+    position: absolute;
+    inset-block-start: calc(var(--space-1) * -1);
+    inset-inline-end: calc(var(--space-1) * -1);
+  }
+  .fa-shell-account-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-shell-account-name {
+    overflow: hidden;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-shell-account-email {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-shell-account-chevron {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--fg-subtle);
+  }
+
+  /* ── Narrow bars ───────────────────────────────────────────────────────────
+     What gives way first, as the bar narrows (R5.2):
+       1          the search field shrinks to its minimum (14rem), then folds to an icon
+                  square (data-search="icon", set by TopBar when the breadcrumb's natural
+                  width and the field's minimum no longer both fit)
+       2          the breadcrumb compacts against what is left (middle, then ‹ parent)
+       < 84rem    the account folds to its avatar (name and email are in its menu)
+       < 70rem    the organisation folds to its avatar and short code ("NST"), never the
+                  bare avatar; "+N" rides on the avatar's corner
+       < 44rem    the timer chip drops its ticket number
+       < 34rem    the bar folds (data-fold, measured by TopBar at the same width):
+                  - the module switch is its menu button ("RMM ▾"), first after the drawer
+                    toggle;
+                  - the breadcrumb is the current place alone, a button whose popup drops
+                    from the bar with the module switch, the organisation and the trail;
+                  - the organisation's trigger leaves the bar for that popup (its "Now in …"
+                    announcement stays);
+                  - the search is a ghost icon; Glass UX settings move to the More sheet;
+                  - a running timer keeps its place, and the module button leaves for the
+                    trail popup to make the room.
+     The search, the account and the assistant never leave the bar; on a phone the
+     organisation is one tap away, at the top of the trail. */
+  /* Tighter gaps on a phone. A container cannot query its own width, so this keys off the
+     measured data-fold (the same 34rem). */
+  .fa-shell-topbar[data-fold] {
+    gap: var(--space-1-5);
+  }
+  .fa-shell-topbar[data-search="icon"] .fa-shell-topbar-search {
+    flex: none;
+    min-width: 0;
+  }
+  .fa-shell-topbar[data-search="icon"] :is(.fa-shell-search-placeholder, .fa-shell-search-kbd) {
+    display: none;
+  }
+  .fa-shell-topbar[data-search="icon"] .fa-shell-search {
+    justify-content: center;
+    width: var(--_h);
+    padding: 0;
+  }
+  @container topbar (width < 84rem) {
+    .fa-shell-account-text,
+    .fa-shell-account-chevron {
+      display: none;
+    }
+    /* Avatar only: it never gives up its box. */
+    .fa-shell-account {
+      flex: none;
+      padding: var(--space-1);
+    }
+  }
+  @container topbar (width < 70rem) {
+    /* The scope keeps its avatar and short code; the full name is in its accessible name and
+       at the top of its popup. */
+    .fa-shell-topbar-scope {
+      flex: none;
+      --_scope-max: none;
+    }
+    .fa-shell-topbar-scope .fa-org-switcher-name {
+      display: none;
+    }
+    .fa-shell-topbar-scope .fa-org-switcher-code {
+      display: inline;
+    }
+    .fa-shell-topbar-scope .fa-org-switcher {
+      position: relative;
+    }
+    /* "+N" rides on the avatar's corner, like a count badge. */
+    .fa-shell-topbar-scope .fa-org-switcher-includes {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: calc(var(--space-1-5) + var(--_avatar) - var(--space-2));
+      padding-inline: var(--space-1);
+      background-color: var(--surface-3);
+      box-shadow: inset 0 0 0 var(--border-width) var(--line);
+      font-size: var(--type-overline-size);
+      line-height: var(--type-overline-line);
+    }
+  }
+  @container topbar (width < 44rem) {
+    .fa-shell-topbar-status [data-timer-ticket] {
+      display: none;
+    }
+  }
+  @container topbar (width < 34rem) {
+    /* Before TopBar has measured (server render), a phone bar starts with the icon. */
+    .fa-shell-topbar-search {
+      flex: none;
+      min-width: 0;
+    }
+    .fa-shell-search-placeholder,
+    .fa-shell-search-kbd {
+      display: none;
+    }
+    /* The search is a ghost icon, like the bar's other icon buttons: no tile until hover. */
+    .fa-shell-topbar .fa-shell-search {
+      justify-content: center;
+      width: var(--_h);
+      padding: 0;
+      border-color: transparent;
+      background-color: transparent;
+      box-shadow: none;
+      color: var(--fg-muted);
+    }
+    .fa-shell-topbar .fa-shell-search > svg {
+      color: inherit;
+    }
+    .fa-shell-topbar .fa-shell-search:hover {
+      border-color: transparent;
+      background-color: var(--fill-hover);
+      color: var(--fg);
+    }
+    .fa-shell-topbar .fa-shell-search:active {
+      background-color: var(--fill-press);
+    }
+    .fa-shell-topbar-actions > :not([data-keep]) {
+      display: none;
+    }
+    .fa-shell-topbar-scope {
+      margin-inline-start: 0;
+    }
+    /* An actions slot whose every button has moved out takes no gap. */
+    .fa-shell-topbar-actions:not(:has(> [data-keep])) {
+      display: none;
+    }
+    /* The breadcrumb is the current place alone: it takes what is left, down to its icon. */
+    .fa-shell-topbar-crumbs {
+      --_crumbs-min: 0px;
+    }
+    .fa-shell-topbar[data-crumbs] .fa-shell-topbar-crumbs {
+      flex: 1 1 0;
+    }
+    .fa-shell-topbar-sep,
+    .fa-shell-topbar-scope .fa-org-switcher-chevron {
+      display: none;
+    }
+    .fa-shell-topbar-scope .fa-org-switcher {
+      padding-inline: var(--space-1-5);
+    }
+    /* The organisation's trigger moves into the trail popup; its live region stays. */
+    .fa-shell-topbar[data-crumbs] .fa-shell-topbar-scope {
+      display: contents;
+    }
+    .fa-shell-topbar[data-crumbs] .fa-shell-topbar-scope > :not([role="status"]) {
+      display: none;
+    }
+    /* The module switch shows once it is its menu button (never the full track first). */
+    .fa-shell-topbar:not([data-fold]) .fa-shell-topbar-module,
+    /* A running timer keeps its place; the module button makes the room (it is in the trail). */
+    .fa-shell-topbar:has(> .fa-shell-topbar-status) .fa-shell-topbar-module {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,46 @@
+import { SectionPage, Specimen, SwapSlot } from "glass-ux/gallery/kit";
+
+import { Tree, TreeSkeleton, type TreeNode } from "glass-ux/tree";
+
+import { ENDPOINTS, ORGANISATIONS, type DemoEndpoint } from "glass-ux/gallery/sections/nav.fixtures";
+
+function byOrganisation(endpoints: DemoEndpoint[]): TreeNode[] {
+    return ORGANISATIONS.map((org) => ({
+        id: `org:${org}`,
+        label: org,
+        children: endpoints
+            .filter((endpoint) => endpoint.organisation === org)
+            .map((endpoint) => ({ id: endpoint.id, label: endpoint.name, description: endpoint.user, status: endpoint.status })),
+    }));
+}
+
+const NODES = byOrganisation(ENDPOINTS);
+
+const LOADED: TreeNode[] = [
+    NODES[0]!,
+    { ...NODES[1]!, children: NODES[1]!.children?.slice(0, 2) ?? [] },
+];
+
+export default function TreeSection() {
+    return (<SectionPage>
+      <></>
+
+      <></>
+
+      <></>
+
+      <></>
+
+      <Specimen title="Loading" description="Skeleton rows have the tree's exact heights, icon boxes and text roles. Swap in place to compare.">
+        <div className="w-72 max-w-full">
+          <SwapSlot id="tree" className="h-90 w-72 max-w-full" skeleton={<TreeSkeleton rows={["group", "two-line", "two-line", "two-line", "two-line", "group", "two-line", "two-line"]}/>} loaded={<Tree nodes={LOADED} aria-label="Endpoints (loaded)" defaultExpanded={LOADED.map((node) => node.id)}/>}/>
+        </div>
+      </Specimen>
+
+      <></>
+
+      <></>
+
+      <></>
+    </SectionPage>);
+}

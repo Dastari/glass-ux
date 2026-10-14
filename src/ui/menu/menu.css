@@ -1,0 +1,108 @@
+/*
+ * Menu — rows are fa-item, the surface is glass-overlay + fa-popup. Shared by Menu,
+ * ContextMenu, ActionMenu, ActionBar overflow and submenus, so every menu in the product
+ * is the same object.
+ *
+ * Grouping (R5.8): groups are set apart by space; a hairline appears only before the
+ * destructive group (and at most one more, chosen by the caller).
+ */
+@layer components {
+  .fa-menu-positioner {
+    z-index: var(--z-popover);
+    outline: none;
+  }
+  .fa-menu-group + .fa-menu-group {
+    margin-top: var(--space-1-5);
+  }
+
+  .fa-menu-item {
+    scroll-margin-block: var(--inset-overlay);
+  }
+  .fa-menu-item .fa-item-trail {
+    flex: none;
+  }
+  /* A value note in the trail gives way to the label and ends in an ellipsis. */
+  .fa-menu-item .fa-menu-trail {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* A submenu row keeps its fill while its submenu is open and the pointer has moved in.
+     (Candidate for the fa-item recipe: [data-popup-open] is a highlighted state.) */
+  .fa-menu-item[data-popup-open]:not([data-disabled]) {
+    background-color: var(--fill-hover);
+  }
+  .fa-menu-item[data-popup-open]:not([data-disabled]) > svg {
+    color: var(--fg);
+  }
+  .fa-menu-chevron {
+    display: inline-grid;
+    place-items: center;
+    padding-inline-start: var(--space-2);
+    margin-inline-end: calc(var(--space-1) * -1);
+    color: var(--fg-subtle);
+  }
+  .fa-menu-chevron > .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    --_stroke: calc(var(--icon-stroke) * 1.14);
+  }
+
+  /* Checkbox and radio indicators sit in the icon slot. */
+  .fa-menu-indicator {
+    display: inline-grid;
+    place-items: center;
+  }
+  .fa-menu-check {
+    display: inline-grid;
+    place-items: center;
+    color: var(--fg);
+    transition:
+      opacity var(--duration-fast) var(--ease-standard),
+      transform var(--duration-base) var(--ease-spring);
+  }
+  .fa-menu-check > .fa-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+  }
+  .fa-menu-check[data-unchecked] {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  .fa-menu-dot {
+    /* component token: the radio dot */
+    --_dot: 0.5rem;
+    width: var(--_dot);
+    height: var(--_dot);
+    border-radius: var(--radius-full);
+    background-color: var(--fg);
+    transition:
+      opacity var(--duration-fast) var(--ease-standard),
+      transform var(--duration-base) var(--ease-spring);
+  }
+  .fa-menu-dot[data-unchecked] {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+
+  /* The reason a row is disabled, under its label (R12.3). Full contrast: the row itself
+     is dimmed, the explanation is not. */
+  .fa-menu-reason {
+    margin-top: calc(var(--space-1-5) * -1);
+    padding: 0 var(--space-2-5) var(--space-1-5) calc(var(--space-2-5) * 2 + var(--icon-md));
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    max-width: var(--measure);
+  }
+
+  .fa-menu-preview {
+    max-height: none;
+    overflow: visible;
+  }
+}

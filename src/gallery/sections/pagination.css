@@ -1,0 +1,6 @@
+/* Gallery-only layout for the Pagination section. */
+@layer components {
+  .pager-demo-row {
+    width: min(100%, 52rem);
+  }
+}

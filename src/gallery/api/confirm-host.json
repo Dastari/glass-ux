@@ -1,0 +1,1 @@
+{"id":"confirm-host","name":"ConfirmHost","entry":"glass-ux/alert-dialog","family":"alert-dialog","description":"Renders confirm() requests one at a time. Mount once; extra instances stay inert.","source":"src/ui/alert-dialog/alert-dialog.tsx","signature":"(): import(\"react\").JSX.Element | null","props":[],"slots":[],"section":"alert-dialog"}

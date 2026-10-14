@@ -1,0 +1,49 @@
+/*
+ * Popover — glass-overlay + fa-popup like every floating surface. The popup keeps the
+ * recipe's overlay inset; the body adds the rest so content sits a tile's inset from the
+ * rim. Sizes are widths only: sm 16rem · md 20rem · lg 26rem.
+ */
+@layer components {
+  .fa-popover-positioner {
+    z-index: var(--z-popover);
+  }
+  .fa-popover {
+    /* component tokens: popover widths */
+    --_w: 20rem;
+    width: min(var(--_w), calc(100vw - var(--space-4) * 2));
+  }
+  .fa-popover[data-size="sm"] {
+    --_w: 16rem;
+  }
+  .fa-popover[data-size="lg"] {
+    --_w: 26rem;
+  }
+  .fa-popover-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-inline-start: calc(var(--inset-tile) - var(--inset-overlay));
+  }
+  .fa-popover-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--fg);
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--type-subtitle-weight);
+    letter-spacing: var(--type-subtitle-tracking);
+  }
+  .fa-popover-body {
+    padding: calc(var(--inset-tile) - var(--inset-overlay));
+    container-type: inline-size;
+  }
+  .fa-popover-header + .fa-popover-body {
+    padding-top: var(--space-1);
+  }
+  .fa-popover-preview {
+    max-height: none;
+  }
+}

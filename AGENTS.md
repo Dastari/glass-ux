@@ -16,6 +16,10 @@ changing public types. Every public component must have a catalogue page and a w
 Run `pnpm check`, `pnpm docs:build` and affected browser checks.
 Verify density, UI scale, radius, line weight, actual insets and scroll-edge clipping;
 rendering and accessibility checks alone do not establish layout correctness.
+Before publishing docs, build with `GLASS_UX_BASE=/glass-ux/` and run
+`pnpm test:production`. Check computed palette colours and highlighted code, not only
+the selected controls or data attributes. The same tests accept `GLASS_UX_TEST_URL`
+for verification after deployment.
 Never commit node_modules, test output, credentials or .handoff notes.
 
 The release package is built once and installed from the versioned GitHub release archive.

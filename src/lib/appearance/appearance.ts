@@ -13,7 +13,7 @@
 import { FONT_DEFAULTS, FONT_OPTIONS, FONT_PRELOAD } from "./fonts.js"
 
 export const MODES = ["system", "light", "dark"] as const
-export const PALETTES: string[] = ["ocean", "aurora", "emerald", "sunset", "graphite"]
+export const PALETTES: string[] = ["ocean", "aurora", "emerald", "sunset", "graphite", "ruby"]
 export const DENSITIES = ["comfortable", "compact"] as const
 export const GLASS_LEVELS = ["full", "reduced", "solid"] as const
 export const MOTION_LEVELS = ["system", "full", "reduced"] as const
@@ -105,6 +105,7 @@ export const PALETTE_LABELS: Record<Palette, string> = {
   emerald: "Emerald",
   sunset: "Sunset",
   graphite: "Graphite",
+  ruby: "Ruby",
 }
 
 /** The transparency levels' names, as every appearance control shows them. */

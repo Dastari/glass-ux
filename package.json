@@ -1,6 +1,6 @@
 {
   "name": "glass-ux",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A typed React design system for glass interfaces, data applications and assistant experiences.",
   "type": "module",
   "license": "MIT",
@@ -597,7 +597,8 @@
     "css-perf:check": "node scripts/check-css-perf.mjs",
     "fonts": "node scripts/build-fonts.mjs",
     "fonts:check": "node scripts/build-fonts.mjs --check",
-    "layout:check": "node bin/glass-ux.mjs check-layout src/gallery apps/docs/src"
+    "layout:check": "node bin/glass-ux.mjs check-layout src/gallery apps/docs/src",
+    "test:production": "playwright test --config playwright.production.config.ts"
   },
   "bin": {
     "glass-ux": "./bin/glass-ux.mjs"

@@ -58,7 +58,7 @@ const PALETTES = palettes()
 
 describe("palette contrast (R20.1)", () => {
   it("parses every palette", () => {
-    expect(Object.keys(PALETTES)).toEqual(["ocean", "aurora", "emerald", "sunset", "graphite"])
+    expect(Object.keys(PALETTES)).toEqual(["ocean", "aurora", "emerald", "sunset", "graphite", "ruby"])
   })
 
   for (const [name, p] of Object.entries(PALETTES)) {

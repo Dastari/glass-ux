@@ -1,13 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { IconLayers } from "glass-ux/icons";
-import {
-  AssistantMessage,
-  Reasoning,
-  SystemNotice,
-  Turn,
-  UserMessage,
-  type AiMessage,
-} from "glass-ux/ai";
+import { AssistantMessage, Reasoning, Turn, UserMessage, type AiMessage } from "glass-ux/ai";
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { Button } from "glass-ux/button";
 import { CONVERSATION, MODEL, NOW, SOURCES, TOOLS } from "glass-ux/gallery/sections/ai.fixtures";
@@ -120,9 +112,6 @@ export default function AiMessagesSection() {
                 ))}
               </Turn>
             ) : null}
-            <SystemNotice icon={<IconLayers />} at={NOW - 46 * 60000}>
-              NST-C106 added to the conversation context
-            </SystemNotice>
           </div>
         </Specimen>
 

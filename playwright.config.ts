@@ -1,11 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
+  testIgnore: "production.spec.ts",
   fullyParallel: true,
   workers: 2,
   timeout: 45000,
   expect: { timeout: 15000 },
-  outputDir: "test-results",
+  outputDir: "test-results/development",
   reporter: [["list"]],
   use: { baseURL: "http://127.0.0.1:4220", trace: "retain-on-failure" },
   projects: [

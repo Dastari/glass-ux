@@ -1,5 +1,4 @@
-import { IconLayers } from "glass-ux/icons";
-import { AssistantMessage, SystemNotice, Turn, UserMessage, type AiMessage } from "glass-ux/ai";
+import { AssistantMessage, Turn, UserMessage, type AiMessage } from "glass-ux/ai";
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { CONVERSATION, MODEL, NOW } from "glass-ux/gallery/sections/ai.fixtures";
 import { AiGallery, LabScroll } from "glass-ux/gallery/sections/ai.kit";
@@ -35,9 +34,6 @@ export default function AiMessagesSection() {
                 ))}
               </Turn>
             ) : null}
-            <SystemNotice icon={<IconLayers />} at={NOW - 46 * 60000}>
-              NST-C106 added to the conversation context
-            </SystemNotice>
           </div>
         </Specimen>
 

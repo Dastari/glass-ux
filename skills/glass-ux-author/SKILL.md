@@ -24,3 +24,6 @@ Update the public package entry and API catalogue mapping. Run `pnpm docs:api`, 
 the static docs build and affected browser tests. Verify the packed artifact when changing
 exports, dependencies or assets. Release and publication remain governed by the repository's
 versioned release workflow and the user's requested scope.
+Before publishing documentation, build with `GLASS_UX_BASE=/glass-ux/` and run
+`pnpm test:production`. Its rendered-colour and syntax checks catch palette cascade and
+lazy-chunk failures that control state and development-server checks can miss.

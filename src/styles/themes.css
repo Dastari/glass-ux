@@ -5,7 +5,7 @@
  * derived from those parameters by the same formulas in both modes, so palettes cannot
  * drift and a custom accent is just `--accent-h` / `--accent-c` set inline.
  *
- *   <html data-mode="light|dark" data-palette="ocean|aurora|emerald|sunset|graphite">
+ *   <html data-mode="light|dark" data-palette="ocean|aurora|emerald|sunset|graphite|ruby">
  *
  * Any element may carry data-mode or data-palette to create an island (an always-dark
  * remote viewer, an inverted tooltip, a palette swatch). Components only ever reference
@@ -82,7 +82,9 @@
     --ambient-3-h: 320;
     --chart-h: 250; /* not the accent: orange reads as warning */
   }
-  :root,
+  /* The fallback must be weaker than an explicit palette on <html>. A bare :root
+   * ties with [data-palette] and would override earlier palettes by source order. */
+  :where(:root),
   [data-palette="graphite"] {
     --accent-h: 265;
     --accent-c: 0.02;
@@ -94,6 +96,20 @@
     --ambient-1-h: 260;
     --ambient-2-h: 230;
     --ambient-3-h: 290;
+    --chart-h: 250;
+  }
+
+  [data-palette="ruby"] {
+    --accent-h: 25;
+    --accent-c: 0.215;
+    --accent-l: 0.575;
+    --accent-2-h: 6;
+    --accent-fg-l: 0.99;
+    --neutral-h: 276;
+    --neutral-c: 0.014;
+    --ambient-1-h: 12;
+    --ambient-2-h: 330;
+    --ambient-3-h: 250;
     --chart-h: 250;
   }
 

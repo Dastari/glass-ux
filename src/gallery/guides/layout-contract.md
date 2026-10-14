@@ -39,6 +39,11 @@ export function ComponentDirectory() {
 
 ## CSS names and verification
 
+Glass UX includes Ocean, Aurora, Emerald, Sunset, Graphite and Ruby palettes. Select a
+palette through `configureAppearance` or the appearance provider, and use semantic roles
+such as `--accent-text` in components. Application palettes can be registered with
+`definePalette`; their CSS and branding belong to the host.
+
 Tailwind's `p-panel` utility reads `--inset-panel`. It is not a CSS variable named `--p-panel`.
 Use `--inset-tile`, `--inset-panel`, `--inset-dialog`, semantic gap roles and radius roles in
 host CSS. Keep geometry responsive to density, UI scale, radius scale and line weight.
@@ -58,6 +63,12 @@ and line weight, and a narrow viewport. Check actual pane insets, card corners, 
 scroll edges and clipping. A page rendering without errors or passing axe is insufficient
 evidence for those layout properties. The library's catalogue regression checks compare
 computed geometry with the theme and require group sections to stay on the canvas.
+Check the computed root accent and rendered syntax-token colours when changing palettes:
+a selected swatch or a changed `data-palette` alone does not prove that the CSS applied.
+Before publishing, run `pnpm test:production` against the built documentation site. It
+verifies all presets in both modes, appearance persistence and lazy highlighting under
+the `/glass-ux/` deployment path. Set `GLASS_UX_TEST_URL` to the published docs URL to
+repeat those checks against the deployed artifact.
 
 Documentation section navigation stays outside the article, left aligned and inset from
 the parent's corners. Desktop uses `--space-16` (64px at the default UI scale) between rail

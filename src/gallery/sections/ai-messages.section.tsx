@@ -95,10 +95,14 @@ export default function AiMessagesSection() {
                 ))}
               </Turn>
             ) : null}
-            <SystemNotice icon={<IconLayers />} at={NOW - 46 * 60_000}>
-              NST-C106 added to the conversation context
-            </SystemNotice>
           </div>
+        </Specimen>
+
+        <Specimen title="Conversation notices" description="Quiet inline notices identify changes to conversation context. Use an icon and an optional timestamp; omit the timestamp for a persistent notice." layout="stack">
+          <SystemNotice icon={<IconLayers />} at={NOW - 46 * 60_000}>
+            Sample document added to the conversation context
+          </SystemNotice>
+          <SystemNotice>Conversation model changed</SystemNotice>
         </Specimen>
 
         <Specimen title="Markdown" description="Headings scale down for chat; lists, task lists, quotes, inline code and links. Glass UX links become context chips, external links say they leave, [^n] becomes a citation. Code and tables break out of the measure." layout="bare" wide>

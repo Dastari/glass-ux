@@ -8,7 +8,7 @@ const STATUSES = Object.keys(STATUS) as EndpointStatus[];
 
 export default function BadgeSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Endpoint status" description="One definition per state, shared by badges, dots, the tree and the dock. Only live and connecting pulse; installing spins. Reduced motion stops the pulse." layout="stack">
         <Example label="StatusBadge · md">
@@ -25,7 +25,7 @@ export default function BadgeSection() {
         </Example>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Over imagery" description="On a card over busy content the rim keeps each pill's shape." backdrop>
         <div className="glass-control flex flex-wrap items-center gap-2 rounded-tile p-tile">
@@ -43,8 +43,8 @@ export default function BadgeSection() {
           </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

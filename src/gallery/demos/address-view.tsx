@@ -12,8 +12,6 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { demoGeocoder } from "../fixtures/geocoder.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 const AU = { code: "AU", name: "Australia" };
 
 const HOBART_OFFICE: AddressValue = {
@@ -40,13 +38,13 @@ const SAMPLE_DEPOT: AddressValue = {
 
 export default function AddressFieldSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
 
       <Specimen title="Read-only" description="AddressView: the postal block in a recessed well with Copy, and the map when the address has a position. Put it in a Field for its label." layout="grid">
         <FormStack>
@@ -64,7 +62,7 @@ export default function AddressFieldSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <ContainerLab description="The editor is a form column: it fills its box to --form-measure, one row per part. The read-only view wraps nothing and truncates long lines." presets={CONTAINER_PRESETS.filter((preset) => preset.id !== "row" && preset.id !== "header")}>
         <div className="h-full overflow-y-auto p-3" data-scroll-container>
@@ -75,30 +73,10 @@ export default function AddressFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { addressSchema } from "../../ui/address-field/index.js"
 
-const schema = z.object({
-  address: addressSchema({ required: true }),   // messages land on line1, locality, postcode, country
-  billing: addressSchema(),                     // empty is fine
-})
 
-<form.AppField name="address">
-  {(field) => (
-    <field.AddressField
-      label="Street address"
-      bias={{ lat: -42.88, lng: 147.33, zoom: 7 }}   // the workspace's home region
-      countries={["AU", "NZ"]}                      // suggest only these
-      map={mapConfig}                               // optional pin map (MapLibre, lazy)
-      // Supply your own GeocoderAdapter, or implement the default /api/geocode contract.
-    />
-  )}
-</form.AppField>
 
-// Read-only: <Field label="Address"><AddressView value={address} map={mapConfig} /></Field>`}/>
 
-      <></>
 
-      <></>
     </SectionPage>);
 }

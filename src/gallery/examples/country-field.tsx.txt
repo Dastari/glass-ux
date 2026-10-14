@@ -6,8 +6,6 @@ import { countrySchema } from "glass-ux/country-select";
 
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 function CountryDemo() {
@@ -34,23 +32,18 @@ export default function CountrySelectSection() {
         <CountryDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { countrySchema } from "glass-ux/country-select"
 
-const schema = z.object({ country: countrySchema({ required: true }) })   // "AU"
 
-<form.AppField name="country">{(field) => <field.CountryField label="Country" priority={["AU", "NZ"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
+
     </SectionPage>);
 }

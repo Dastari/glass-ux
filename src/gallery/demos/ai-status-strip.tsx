@@ -11,13 +11,13 @@ import { AiGallery } from "../sections/ai.kit.js";
 export default function AiComposerSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
 
         <Specimen title="Status strip" description="Connection, budget and model as one caption line, the composer's last row (status): never a banner." layout="stack">
           <Composer model={MODEL} placeholder="Ask a follow-up…" status={<AiStatusStrip stream="connected" budget={BUDGET} model={MODEL.name}/>}/>
@@ -27,13 +27,13 @@ export default function AiComposerSection() {
           <AiStatusStrip stream="offline" onRetry={() => { }} budget={BUDGET_OUT}/>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
       </SectionPage>
     </AiGallery>);
 }

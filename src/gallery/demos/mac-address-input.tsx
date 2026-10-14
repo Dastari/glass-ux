@@ -8,11 +8,9 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { MacAddressInput } from "../../ui/mac-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function MacFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -47,17 +45,10 @@ export default function MacFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { macSchema } from "../../ui/mac-field/index.js"
 
-const schema = z.object({ mac: macSchema({ required: true }) })
 
-<form.AppField name="mac">
-  {(field) => <field.MacAddressField label="MAC address" lookupVendor={(oui) => api.vendorOf(oui)} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

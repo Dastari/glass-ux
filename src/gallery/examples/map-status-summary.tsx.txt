@@ -99,7 +99,7 @@ export default function MapSection() {
         </div>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Popups" description="The shared popup look (glass-overlay fa-popup), not MapLibre's. Hovering or focusing a marker previews it; clicking or Enter pins it and moves focus inside; Esc closes it and returns focus. The caller renders the content and can add detail once zoomed in.">
         <Example label="Point">
@@ -118,16 +118,16 @@ export default function MapSection() {
         <ListViewExample />
       </Specimen>
 
-      <></>
 
-      <></>
+
+
 
       <ContainerLab description="The map fills whatever box it is given. From 16rem tall and 20rem wide it shows every control and the full credit line; below that the zoom buttons go (pinch and scroll still zoom) and the credit line starts as “© OpenStreetMap”; under 8rem tall the controls go too. Everywhere the line folds to ⓘ after five seconds or the first interaction.">
         {() => <LiveMap id="map-lab" className="gallery-map-fill"/>}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

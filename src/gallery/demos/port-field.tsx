@@ -8,8 +8,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../u
 
 import { portSchema } from "../../ui/port-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 function PortDemo() {
@@ -37,21 +35,16 @@ export default function PortFieldSection() {
         <PortDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { portSchema } from "../../ui/port-field/index.js"
 
-const schema = z.object({ port: portSchema({ required: true }) })   // number | null
 
-<form.AppField name="port">{(field) => <field.PortField label="Port" services={{ 8443: "UniFi" }} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

@@ -8,8 +8,6 @@ import { durationSchema } from "../../ui/duration-field/index.js";
 
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 function DurationDemo() {
@@ -43,21 +41,16 @@ export default function DurationFieldSection() {
         <DurationDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { durationSchema } from "../../ui/duration-field/index.js"
 
-const schema = z.object({ response: durationSchema({ required: true, min: 900, max: 604800 }) })   // seconds
 
-<form.AppField name="response">{(field) => <field.DurationField label="Response target" units={["d", "h", "m"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

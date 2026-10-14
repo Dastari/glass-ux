@@ -13,9 +13,9 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export default function ButtonSection() {
     const [fail, setFail] = useState(false);
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="Feedback in place" description="The button confirms its own outcome. Faces share one grid cell, so “Save changes”, “Saving…” and “Saved” never move the layout. Errors also raise a toast with the reason.">
         <Example label="Click to run (succeeds after 1.2s)">
@@ -41,12 +41,12 @@ export default function ButtonSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

@@ -40,9 +40,9 @@ export default function AiAsksSection() {
           <AskMarker ask={ASKS.entity}/>
         </Specimen>
 
-        <></>
 
-        <></>
+
+
 
         <Specimen title="Docked width" description="Asks at 26rem: radio cards stack, forms keep one field per row." layout="bare">
           <DockedColumn>
@@ -57,9 +57,9 @@ export default function AiAsksSection() {
             </LabScroll>)}
         </ContainerLab>
 
-        <></>
 
-        <></>
+
+
       </SectionPage>
     </AiGallery>);
 }

@@ -1,4 +1,11 @@
 import {
+  IdentityCell,
+  TextCell,
+  NumericCell,
+  RelativeTime,
+  SparklineCell,
+} from "../ui/data-table/index.js";
+import {
   EntityResolverProvider,
   EntityChip,
   ConversationHandlersProvider,
@@ -2165,7 +2172,11 @@ export function ActionProviderExample() {
         <ActionProvider
           navigate={(path) => toast.info(`Demo destination: ${path}`)}
         >
-          <ActionMenu label="Exhibition" set={SAMPLE_ACTIONS} targets={[{ id: "meridian" }]} />
+          <ActionMenu
+            label="Exhibition"
+            set={SAMPLE_ACTIONS}
+            targets={[{ id: "meridian" }]}
+          />
         </ActionProvider>
       </Specimen>
     </SectionPage>
@@ -2310,6 +2321,68 @@ export function PanelFooterExample() {
             <Button variant="primary">Save schedule</Button>
           </PanelFooter>
         </Panel>
+      </Specimen>
+    </SectionPage>
+  );
+}
+
+export function IdentityCellExample() {
+  return (
+    <SectionPage>
+      <Specimen title="Primary identity in a table cell" layout="stack">
+        <IdentityCell
+          title="Meridian Studio"
+          subtitle="Exhibition project"
+          icon={<IconOrganisation />}
+        />
+      </Specimen>
+    </SectionPage>
+  );
+}
+export function TextCellExample() {
+  return (
+    <SectionPage>
+      <Specimen title="Text, truncation and alignment" layout="stack">
+        <div className="w-70">
+          <TextCell>Meridian Studio exhibition and design workshop</TextCell>
+        </div>
+        <TextCell>Short label</TextCell>
+      </Specimen>
+    </SectionPage>
+  );
+}
+export function NumericCellExample() {
+  return (
+    <SectionPage>
+      <Specimen title="Formatted numeric table values" layout="stack">
+        <NumericCell value={42} unit="places" />
+        <NumericCell value={18.5} unit="GB" fractionDigits={1} />
+      </Specimen>
+    </SectionPage>
+  );
+}
+export function RelativeTimeExample() {
+  return (
+    <SectionPage>
+      <Specimen title="Relative time with an exact-time tooltip" layout="stack">
+        <RelativeTime value={NOW - 120000} />
+        <RelativeTime value={NOW - 3600000} />
+      </Specimen>
+    </SectionPage>
+  );
+}
+export function SparklineCellExample() {
+  return (
+    <SectionPage>
+      <Specimen title="Compact table trend" layout="stack">
+        <div className="h-12 w-70">
+          <SparklineCell
+            values={[12, 18, 16, 24, 28, 22, 31]}
+            domain={[0, 40]}
+            label="Weekly reservations"
+            unit="places"
+          />
+        </div>
       </Specimen>
     </SectionPage>
   );

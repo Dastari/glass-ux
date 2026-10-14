@@ -20,11 +20,11 @@ function TruncateBox({ label, children }: {
 
 export default function TooltipSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="Truncated text" description="Single-line labels end in an ellipsis. Hover them: only the ones that were actually cut show a tooltip with the full text." layout="grid">
         <TruncateBox label="End (fits)">
@@ -54,8 +54,8 @@ export default function TooltipSection() {
           </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

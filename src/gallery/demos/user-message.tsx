@@ -19,7 +19,7 @@ const base = (extra: Partial<AiMessage>): AiMessage => ({ id: "x", role: "assist
 export default function AiMessagesSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
+
 
         <Specimen title="A turn" description="The prompt is a compact glass-control bubble on the right with its attachments above. The answer has no bubble: the AI mark in the gutter, prose across the reading column; tables, charts, images and code break out wider in a conversation. Actions sit under each message and show on hover, focus and always on the latest answer." wide layout="bare">
           <div className="ai-stack">
@@ -33,15 +33,15 @@ export default function AiMessagesSection() {
           </div>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
+
 
         <Specimen title="Over imagery" description="Bubbles and cards hold their contrast on a busy background." backdrop>
           <div className="ai-stack">
@@ -58,9 +58,9 @@ export default function AiMessagesSection() {
             </LabScroll>)}
         </ContainerLab>
 
-        <></>
 
-        <></>
+
+
       </SectionPage>
     </AiGallery>);
 }

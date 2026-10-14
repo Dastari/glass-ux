@@ -38,9 +38,9 @@ function Panels({ items, host = "LMN-7C71" }: {
 
 export default function VerticalTabsSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="Local sections — the exception" description="State-held sections only for lightweight toggles inside a component, where resetting on revisit loses nothing. Identical look and keyboard; the remaining specimens use this mode so each can hold its own state.">
         <div className="w-full">
@@ -94,8 +94,8 @@ export default function VerticalTabsSection() {
           </VerticalTabs.Root>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

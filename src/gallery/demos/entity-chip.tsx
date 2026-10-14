@@ -34,9 +34,9 @@ export default function AiContextLinksSection() {
             </Example>))}
         </Specimen>
 
-        <></>
 
-        <></>
+
+
 
         <Specimen title="Variants" description="chip for prose and the composer · plain for table cells and lists · removable for picked context.">
           <Example label="Inline (in a line of text)">
@@ -59,13 +59,13 @@ export default function AiContextLinksSection() {
           </Example>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
       </SectionPage>
     </AiGallery>);
 }

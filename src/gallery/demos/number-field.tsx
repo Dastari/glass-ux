@@ -73,8 +73,8 @@ export default function NumberFieldSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

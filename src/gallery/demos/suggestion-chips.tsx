@@ -11,7 +11,7 @@ import { AiGallery, DockedColumn } from "../sections/ai.kit.js";
 export default function AiComposerSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
+
 
         <Specimen title="Landing" description="The hero sits on the canvas; the composer is the landing's one card, with suggestions under it." wide layout="bare">
           <AiHero>
@@ -20,11 +20,11 @@ export default function AiComposerSection() {
           </AiHero>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
 
         <Specimen title="Docked width" description="At 26rem the tools drop their labels and the model folds; at 20rem nothing else gives way." layout="bare">
           <DockedColumn>
@@ -33,11 +33,11 @@ export default function AiComposerSection() {
           </DockedColumn>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
       </SectionPage>
     </AiGallery>);
 }

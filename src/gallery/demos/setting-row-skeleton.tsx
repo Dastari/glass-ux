@@ -6,18 +6,16 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { SettingRowSkeleton } from "../../ui/setting-row/index.js";
 
-import { Toaster } from "../../ui/toast/index.js";
-
 export default function SettingRowSection() {
     return (<SectionPage>
-      <Toaster />
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
 
       <Specimen title="Loading" description="The skeleton keeps the label, description and control boxes.">
         <FormStack>
@@ -27,10 +25,10 @@ export default function SettingRowSection() {
         </FormStack>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
     </SectionPage>);
 }

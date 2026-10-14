@@ -4,9 +4,7 @@ import { useState } from "react";
 
 import { SectionPage, Specimen } from "../kit.js";
 
-import { AlertDialogPreview, ConfirmHost } from "../../ui/alert-dialog/index.js";
-
-import { Toaster } from "../../ui/toast/index.js";
+import { AlertDialogPreview } from "../../ui/alert-dialog/index.js";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -18,9 +16,9 @@ export default function AlertDialogSection() {
             throw new Error("Agent offline — retry when NST-C106 reconnects");
     };
     return (<SectionPage>
-      <Toaster />
-      <ConfirmHost />
-      <></>
+
+
+
 
       <Specimen title="Anatomy" description="Tone tile, a title that names the target, one sentence, Cancel, then the confirm — the only solid danger button in the product.">
         <AlertDialogPreview tone="danger" title="Remove NST-C106 from Northstar Studio?" description="The agent uninstalls at its next check-in. Its history stays in reports." confirmLabel="Remove device"/>
@@ -42,8 +40,8 @@ export default function AlertDialogSection() {
         <AlertDialogPreview tone="warning" title="Restart NST-C106?" description="AzureAD\MiraRowan is signed in and loses unsaved work." confirmLabel="Restart now"/>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

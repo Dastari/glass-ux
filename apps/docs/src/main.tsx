@@ -33,6 +33,16 @@ import {
 import "./styles.css";
 
 configureDemoBrand();
+const COMPONENT_GROUPS = ["Components", "Patterns", "Charts", "AI"] as const;
+function componentGroup(family: string) {
+  return family === "charts"
+    ? "Charts"
+    : family === "ai"
+      ? "AI"
+      : ["shell", "windows"].includes(family)
+        ? "Patterns"
+        : "Components";
+}
 const foundations = sections.filter(
   (section) => section.group === "Foundations",
 );
@@ -138,6 +148,7 @@ function Layout() {
                     onValueChange={setQuery}
                   />
                   <nav className="docs-nav" aria-label="Guides">
+                    <span className="type-overline text-fg-muted">Guides</span>
                     {libraryGuides.map((guide) => (
                       <Link
                         key={guide.id}
@@ -149,6 +160,9 @@ function Layout() {
                     ))}
                   </nav>
                   <nav className="docs-nav" aria-label="Foundations">
+                    <span className="type-overline text-fg-muted">
+                      Foundations
+                    </span>
                     {foundations.map((section) => (
                       <Link
                         key={section.id}
@@ -164,19 +178,31 @@ function Layout() {
                   </a>
 
                   <nav className="docs-nav" aria-label="Components">
-                    {items.map((item) => (
-                      <Link
-                        onClick={() => {
-                          setQuery("");
-                          setBrowse(false);
-                        }}
-                        key={item.id}
-                        to="/components/$component"
-                        params={{ component: item.id }}
-                      >
-                        {item.name}
-                      </Link>
-                    ))}
+                    {COMPONENT_GROUPS.map((group) => {
+                      const entries = items.filter(
+                        (item) => componentGroup(item.family) === group,
+                      );
+                      return entries.length ? (
+                        <div className="docs-nav-group" key={group}>
+                          <span className="type-overline text-fg-muted">
+                            {group}
+                          </span>
+                          {entries.map((item) => (
+                            <Link
+                              key={item.id}
+                              onClick={() => {
+                                setQuery("");
+                                setBrowse(false);
+                              }}
+                              to="/components/$component"
+                              params={{ component: item.id }}
+                            >
+                              {item.name}
+                            </Link>
+                          ))}
+                        </div>
+                      ) : null;
+                    })}
                   </nav>
                   <a href="https://github.com/Dastari/glass-ux">
                     Source and releases

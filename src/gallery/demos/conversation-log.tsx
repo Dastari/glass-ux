@@ -2,7 +2,7 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { useState } from "react";
 
-import { AssistantMessage, Composer, ConversationLog, Turn, UserMessage, type AiApproval } from "../../ai/index.js";
+import { AssistantMessage, Composer, ConversationLog, Turn, UserMessage } from "../../ai/index.js";
 
 import { SectionPage, Specimen } from "../kit.js";
 
@@ -11,22 +11,6 @@ import { Button } from "../../ui/button/index.js";
 import { APPROVAL, MODEL, NOW, TOOLS } from "../sections/ai.fixtures.js";
 
 import { AiGallery } from "../sections/ai.kit.js";
-
-type Approval = AiApproval;
-
-const STATES: Array<[
-    string,
-    string,
-    Approval
-]> = [
-    ["Pending", "Warning tone: an action with consequences. Deny on the left, the solid warning Approve on the right; the expiry counts down.", APPROVAL("pending")],
-    ["Executing", "Approved: the card has folded into its record, which shows the run and keeps Revoke until it starts (AiApprovalView resume_claimed).", APPROVAL("approved")],
-    ["Executed", "Consumed: the card has folded into its record with the outcome.", APPROVAL("executed")],
-    ["Denied", "Denied by the person; the run continues without it.", APPROVAL("denied")],
-    ["Expired", "Nobody decided before ExpiresAt.", APPROVAL("expired", { decidedBy: undefined })],
-    ["Revoked", "Withdrawn after approval, before it ran.", APPROVAL("revoked")],
-    ["Failed", "Approved, ran and failed: the record carries the reason.", APPROVAL("failed", { outcome: "Agent offline — retry when NST-C106 reconnects" })],
-];
 
 /**
  * An approval inside a conversation: the card waits in the ask dock above the composer, the
@@ -66,25 +50,25 @@ function DockedApproval() {
 export default function AiApprovalsSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
 
-        {STATES.map(([title, description, ask]) => (<></>))}
 
-        <></>
 
-        <></>
+
+
+
+
 
         <Specimen title="In a conversation" description="Never modal: the card waits in the ask dock above the composer, the transcript keeps a marker with Review at its place, and the agent carries on with work that does not depend on it." wide layout="stack">
           <DockedApproval />
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
       </SectionPage>
     </AiGallery>);
 }

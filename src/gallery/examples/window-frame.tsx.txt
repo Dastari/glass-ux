@@ -245,7 +245,7 @@ export default function WindowsSection() {
         </div>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Status bar" description="Background state lives here (R14.6): never a banner in the body. The toned item never truncates; metadata gives way first." layout="stack">
         <Example label="Live">
@@ -263,7 +263,7 @@ export default function WindowsSection() {
         <MiniWorkspace />
       </Specimen>
 
-      <></>
+
 
       <ContainerLab description="The frame in a table row, a header, a grid tile, a pane and a tall narrow column. Short frames keep the title bar; narrow ones shed the icon and subtitle.">
         {() => (<div className="gallery-wm-fill">
@@ -285,8 +285,8 @@ export default function WindowsSection() {
           </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

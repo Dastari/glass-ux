@@ -6,7 +6,7 @@ import { Disclosure } from "../../ui/accordion/index.js";
 
 export default function AccordionSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Disclosure" description="One section that shows and hides, with the same row and motion.">
         <div className="w-120 max-w-full">
@@ -16,10 +16,10 @@ export default function AccordionSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
     </SectionPage>);
 }

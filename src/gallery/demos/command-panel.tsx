@@ -85,7 +85,7 @@ export default function CommandPaletteSection() {
       <PaletteProvider>
         <DemoCommands selected={selected} onSelect={setSelected} loading={loading}/>
         <SectionPage>
-          <></>
+
 
           <Specimen title="Anatomy" description="Search row, grouped results — icon, label with matched letters, data, shortcut — and keyboard hints. The frame keeps one height while results change." wide>
             <InlinePanel />
@@ -97,9 +97,9 @@ export default function CommandPaletteSection() {
             <InlinePanel query="win" loading/>
           </Specimen>
 
-          <></>
 
-          <></>
+
+
         </SectionPage>
       </PaletteProvider>
     </ActionProvider>);

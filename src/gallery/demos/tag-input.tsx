@@ -45,15 +45,15 @@ function Hosts() {
 
 export default function ComboboxSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
 
       <Specimen title="Chips you type" description="TagInput: Enter, comma, semicolon or Tab makes a chip; pasting a list adds them all. Values are tidied and de-duplicated — adding one again flashes the existing chip. Invalid chips stay, in danger, with the reason as their tooltip and in the message line. Enter or a double-click edits a chip.">
         <FormStack>
@@ -68,9 +68,9 @@ export default function ComboboxSection() {
         </FormStack>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
 
       <ContainerLab>
         {(preset) => preset?.id === "row" ? (<div className="flex h-full items-center gap-2 px-1">
@@ -93,8 +93,8 @@ export default function ComboboxSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

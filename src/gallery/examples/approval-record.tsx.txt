@@ -25,25 +25,25 @@ const STATES: Array<[
 export default function AiApprovalsSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
+
 
         {STATES.map(([title, description, ask]) => (<Specimen key={title} title={title} description={description} layout="stack">
             {ask.state === "pending" || ask.state === "approved" ? <ApprovalCard ask={ask}/> : <ApprovalRecord ask={ask}/>}
           </Specimen>))}
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
+
+
+
       </SectionPage>
     </AiGallery>);
 }

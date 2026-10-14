@@ -1,11 +1,11 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 
-import { Toaster, ToastPreview } from "glass-ux/toast";
+import { ToastPreview } from "glass-ux/toast";
 
 export default function ToastSection() {
     return (<SectionPage>
-      <Toaster />
-      <></>
+
+
 
       <Specimen title="Tones" description="Neutral glass with the tone in the tile only. The title names the target and the outcome; the description gives the detail or the reason.">
         <div className="flex w-full flex-col items-start gap-3">
@@ -24,8 +24,8 @@ export default function ToastSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

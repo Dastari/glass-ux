@@ -39,16 +39,16 @@ export default function TooltipSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
     </SectionPage>);
 }

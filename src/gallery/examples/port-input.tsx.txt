@@ -6,11 +6,9 @@ import { FormStack } from "glass-ux/form";
 
 import { PortInput } from "glass-ux/port-field";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 export default function PortFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -43,15 +41,10 @@ export default function PortFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { portSchema } from "glass-ux/port-field"
 
-const schema = z.object({ port: portSchema({ required: true }) })   // number | null
 
-<form.AppField name="port">{(field) => <field.PortField label="Port" services={{ 8443: "UniFi" }} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

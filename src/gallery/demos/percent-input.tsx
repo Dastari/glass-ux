@@ -8,11 +8,9 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { PercentInput } from "../../ui/percent-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function PercentFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -42,15 +40,10 @@ export default function PercentFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { percentSchema } from "../../ui/percent-field/index.js"
 
-const schema = z.object({ disk: percentSchema({ required: true, min: 50, max: 99 }) })
 
-<form.AppField name="disk">{(field) => <field.PercentField label="Disk alert threshold" min={50} max={99} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

@@ -20,11 +20,11 @@ function ParentGroup() {
 
 export default function ChoiceSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="With labels" description="Click the label or the box. A description makes the label a heading." layout="stack">
         <Checkbox label="Wake devices before patching" defaultChecked/>
@@ -33,20 +33,20 @@ export default function ChoiceSection() {
         <ParentGroup />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
+
+
     </SectionPage>);
 }

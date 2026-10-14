@@ -8,8 +8,6 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { UrlInput } from "../../ui/url-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function UrlFieldSection() {
     return (<SectionPage>
       <Specimen title="Scheme handling" description="Leave a field: https:// is added when the scheme is missing, the host lower-cased and a bare trailing slash dropped. Schemes that are not links (javascript:, data:) are refused.">
@@ -23,7 +21,7 @@ export default function UrlFieldSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -58,15 +56,10 @@ export default function UrlFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { urlSchema } from "../../ui/url-field/index.js"
 
-const schema = z.object({ portal: urlSchema({ required: true }), webhook: urlSchema({ schemes: ["https"] }) })
 
-<form.AppField name="portal">{(field) => <field.UrlField label="Customer portal" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

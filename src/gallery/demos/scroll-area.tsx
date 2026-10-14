@@ -56,8 +56,8 @@ export default function ScrollAreaSection() {
           </ScrollArea>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

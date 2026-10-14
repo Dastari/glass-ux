@@ -61,7 +61,7 @@ const RETRY_LAYERS = [
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-function RelaySettings({ open, onOpenChange, preview = false }: { open: boolean; onOpenChange: (open: boolean) => void; preview?: boolean }) {
+function RelaySettings({ open, onOpenChange, preview = false, loading = false }: { open: boolean; onOpenChange: (open: boolean) => void; preview?: boolean; loading?: boolean }) {
   const [saved, setSaved] = useState<RelayValues>(SAVED)
   const [tab, setTab] = useState("general")
   const form = useAppForm({
@@ -83,6 +83,7 @@ function RelaySettings({ open, onOpenChange, preview = false }: { open: boolean;
       open={open}
       onOpenChange={onOpenChange}
       preview={preview}
+      loading={loading}
       form={form}
       tab={tab}
       onTabChange={setTab}
@@ -267,6 +268,8 @@ export default function EntitySettingsSection() {
           <RelaySettings open onOpenChange={() => undefined} preview />
         </div>
       </Specimen>
+
+      <Specimen title="Loading settings" description="The labelled group reserves field geometry while the host loads a document." layout="bare" wide><RelaySettings open onOpenChange={()=>undefined} preview loading/></Specimen>
 
       <Specimen
         title="Inherited setting"

@@ -82,8 +82,8 @@ export default function SelectSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

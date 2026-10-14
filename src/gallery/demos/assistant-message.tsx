@@ -84,7 +84,7 @@ function StreamingDemo() {
 export default function AiMessagesSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
+
 
         <Specimen title="A turn" description="The prompt is a compact glass-control bubble on the right with its attachments above. The answer has no bubble: the AI mark in the gutter, prose across the reading column; tables, charts, images and code break out wider in a conversation. Actions sit under each message and show on hover, focus and always on the latest answer." wide layout="bare">
           <div className="ai-stack">
@@ -102,7 +102,7 @@ export default function AiMessagesSection() {
           <AssistantMessage message={base({ id: "md", blocks: [{ kind: "markdown", text: MARKDOWN }, { kind: "sources", sources: SOURCES.slice(1, 3).map((source, index) => ({ ...source, index: index + 2 })) }] })} latest/>
         </Specimen>
 
-        <></>
+
 
         <Specimen title="Reasoning and streaming" description="The reasoning summary folds to one line with the time it took. Streaming text appends after a static caret; earlier lines never reflow." layout="stack">
           <Reasoning reasoning={{ seconds: 4, summary: "Find the organisation, list its offline endpoints, keep those silent for more than a day, then look for a shared site or time." }}/>
@@ -117,9 +117,9 @@ export default function AiMessagesSection() {
           <AssistantMessage message={base({ id: "u", state: "failed", failure: { code: "budget_exhausted", reason: "Your daily AI allowance is used up. It resets at 4:00 pm.", retryable: false } })}/>
         </Specimen>
 
-        <></>
 
-        <></>
+
+
 
         <ContainerLab description="An answer in a row, a header, a tile, a pane and a tall narrow column: the column scrolls, the mark steps aside below 22rem, prose drops to the body size below 34rem.">
           {() => (<LabScroll>
@@ -130,9 +130,9 @@ export default function AiMessagesSection() {
             </LabScroll>)}
         </ContainerLab>
 
-        <></>
 
-        <></>
+
+
       </SectionPage>
     </AiGallery>);
 }

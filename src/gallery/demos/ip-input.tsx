@@ -8,11 +8,9 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { IpInput } from "../../ui/ip-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function IpFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -47,18 +45,10 @@ export default function IpFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { ipSchema } from "../../ui/ip-field/index.js"
 
-const schema = z.object({
-  gateway: ipSchema({ version: 4, required: true }),
-  subnet: ipSchema({ version: 4, cidr: "required" }),   // "Add a prefix length, such as /24"
-})
 
-<form.AppField name="subnet">{(field) => <field.IpField label="Subnet" version={4} cidr="required" width="medium" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

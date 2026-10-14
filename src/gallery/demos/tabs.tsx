@@ -56,11 +56,11 @@ function ChartWithRange() {
 
 export default function TabsSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="Local tabs — the exception" description="State tabs are only for lightweight presentation toggles inside a component, where resetting on revisit loses nothing: a chart's range, JSON versus table. They look and behave identically.">
         <ChartWithRange />
@@ -94,8 +94,8 @@ export default function TabsSection() {
         {() => <LocalTabs initial="activity"/>}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

@@ -10,8 +10,6 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { OtpInput } from "../../ui/otp-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 /** The code the demo accepts. */
 const GOOD = "482913";
 
@@ -26,7 +24,7 @@ export default function OtpFieldSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="States" description="Error and success change the boxes, never the layout: the ✓ has its slot already." layout="grid">
         <FormStack>
@@ -64,17 +62,10 @@ export default function OtpFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { otpSchema } from "../../ui/otp-field/index.js"
 
-const schema = z.object({ code: otpSchema() })   // "Enter the 6-digit code"
 
-<form.AppField name="code">
-  {(field) => <field.OtpField label="Verification code" autoSubmit status={refused ? "error" : undefined} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

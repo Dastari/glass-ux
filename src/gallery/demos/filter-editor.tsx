@@ -45,16 +45,16 @@ function EditorGallery() {
 
 export default function DataTableFiltersSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="Editors" description="One per kind, the same shape: condition, value, Clear and Apply. Checkbox lists, yes/no and date presets apply as you choose." layout="bare" wide>
         <EditorGallery />
       </Specimen>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

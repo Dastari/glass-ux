@@ -6,11 +6,9 @@ import { Field } from "glass-ux/field";
 
 import { FormStack } from "glass-ux/form";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 export default function DurationFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -43,15 +41,10 @@ export default function DurationFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { durationSchema } from "glass-ux/duration-field"
 
-const schema = z.object({ response: durationSchema({ required: true, min: 900, max: 604800 }) })   // seconds
 
-<form.AppField name="response">{(field) => <field.DurationField label="Response target" units={["d", "h", "m"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

@@ -8,8 +8,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../u
 
 import { timeZoneSchema } from "../../ui/time-zone-select/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 function ZoneDemo() {
@@ -36,21 +34,16 @@ export default function TimeZoneSelectSection() {
         <ZoneDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { timeZoneSchema } from "../../ui/time-zone-select/index.js"
 
-const schema = z.object({ zone: timeZoneSchema({ required: true }) })   // "Australia/Hobart"
 
-<form.AppField name="zone">{(field) => <field.TimeZoneField label="Time zone" suggested={["Australia/Hobart", "UTC"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

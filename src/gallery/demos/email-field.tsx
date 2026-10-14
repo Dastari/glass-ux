@@ -8,8 +8,6 @@ import { emailSchema } from "../../ui/email-field/index.js";
 
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 const schema = z.object({ work: emailSchema({ required: true }), personal: emailSchema() });
@@ -34,29 +32,22 @@ function EmailDemo() {
 
 export default function EmailFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="In a form" description="Leave each field to see its hint. The domain is lower-cased and mailto: dropped on blur.">
         <EmailDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { emailSchema } from "../../ui/email-field/index.js"
 
-const schema = z.object({ work: emailSchema({ required: true }), personal: emailSchema() })
 
-<form.AppField name="work">
-  {(field) => <field.EmailField label="Work email" knownDomains={[organisation.emailDomain]} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

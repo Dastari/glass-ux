@@ -33,9 +33,9 @@ export default function AiToolsSection() {
           <ToolCallRow call={TOOLS.eventlog}/>
         </Specimen>
 
-        <></>
 
-        <></>
+
+
 
         <ContainerLab description="Target names and the glyph stack drop below 30rem; the label truncates; the time stays.">
           {() => (<LabScroll>
@@ -44,9 +44,9 @@ export default function AiToolsSection() {
             </LabScroll>)}
         </ContainerLab>
 
-        <></>
 
-        <></>
+
+
       </SectionPage>
     </AiGallery>);
 }

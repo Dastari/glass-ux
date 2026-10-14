@@ -47,17 +47,17 @@ export default function ActionsSection() {
       <PaletteProvider>
         <PaletteActions endpoint={endpoint}/>
         <SectionPage>
-          <></>
 
-          <></>
+
+
 
           <Specimen title="Command palette" description="While a row is selected its actions are registered in the palette under its name, submenus flattened to “Power › Restart”. Press ⌘K or Ctrl K, or use the panel." wide>
             <PaletteDemo />
           </Specimen>
 
-          <></>
 
-          <></>
+
+
         </SectionPage>
       </PaletteProvider>
     </ActionProvider>);

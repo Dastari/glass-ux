@@ -70,7 +70,7 @@ export default function AiApprovalsSection() {
           <ApprovalCard ask={{ ...APPROVAL("pending"), id: "step-up", stepUp: true, allowForSession: false }}/>
         </Specimen>
 
-        <></>
+
 
         <Specimen title="Docked width" description="The same card at 26rem: the switch row drops below its text, the command wraps." layout="bare">
           <DockedColumn>
@@ -84,9 +84,9 @@ export default function AiApprovalsSection() {
             </LabScroll>)}
         </ContainerLab>
 
-        <></>
 
-        <></>
+
+
       </SectionPage>
     </AiGallery>);
 }

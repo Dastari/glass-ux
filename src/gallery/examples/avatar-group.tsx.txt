@@ -14,11 +14,11 @@ const PEOPLE = [
 
 export default function AvatarSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="Groups" description="Who is watching or connected. Faces overlap with a surface ring; the rest collapse into +N with their names in the label.">
         <Example label="sm · max 4">
@@ -32,7 +32,7 @@ export default function AvatarSection() {
         </Example>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Over imagery" description="Tints are opaque palette colours, so initials stay legible on any content." backdrop>
         <Avatar name="Avery Quinn" size="xl" presence="online"/>
@@ -46,8 +46,8 @@ export default function AvatarSection() {
           </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

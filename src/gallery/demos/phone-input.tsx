@@ -10,8 +10,6 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { PhoneInput } from "../../ui/phone-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 function PasteDemo() {
     const [value, setValue] = useState("");
     return (<FormStack className="w-full" data-testid="phone-paste">
@@ -47,7 +45,7 @@ export default function PhoneFieldSection() {
         <PasteDemo />
       </Specimen>
 
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -88,21 +86,10 @@ export default function PhoneFieldSection() {
             </div>)}
       </ContainerLab>
 
-      <Usage code={`
-import { mobileSchema, phoneSchema } from "../../ui/phone-field/index.js"
 
-const schema = z.object({
-  mobile: mobileSchema({ required: true }),   // "Enter a mobile number, not a landline"
-  office: phoneSchema(),                      // optional; "+61362345678;ext=204"
-})
 
-<form.AppField name="mobile">{(field) => <field.MobileField label="Mobile" />}</form.AppField>
-<form.AppField name="office">{(field) => <field.PhoneField label="Office" extension />}</form.AppField>
 
-// defaultCountry (default "AU") reads national numbers; display="international" shows +61 4…`}/>
 
-      <></>
 
-      <></>
     </SectionPage>);
 }

@@ -64,13 +64,13 @@ const cpu = METRICS[0]!;
 
 export default function MetricSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
 
       <Specimen title="Loading" description="The skeleton takes the same rows in every tier. Swap in place to compare." wide>
         <div className="gallery-tiers">
@@ -80,10 +80,10 @@ export default function MetricSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
     </SectionPage>);
 }

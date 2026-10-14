@@ -2,17 +2,13 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
-import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js";
+import { ContainerLab, SectionPage, Specimen } from "../kit.js";
 
 import { IconOperatingSystem, IconRefresh, IconSoftware, IconWindows } from "../../icons/generated/icons.js";
 
-import { Badge } from "../../ui/badge/index.js";
-
 import { Button, ButtonGroup } from "../../ui/button/index.js";
 
-import { createDataTableColumns, DataTable, IdentityCell, NumericCell, RelativeTime, SparklineCell, StatusBadge, TextCell, searchRows, shownFor, useTableUrlState, type DataTableDensity, type DataTableGroup, type DataTableSearch, type DataTableState } from "../../ui/data-table/index.js";
-
-import type { Domain } from "../../ui/sparkline/index.js";
+import { createDataTableColumns, DataTable, IdentityCell, NumericCell, RelativeTime, TextCell, searchRows, shownFor, useTableUrlState, type DataTableDensity, type DataTableGroup, type DataTableSearch, type DataTableState } from "../../ui/data-table/index.js";
 
 import { endpointColumns, useEndpointRowActions } from "../sections/data-table.columns.js";
 
@@ -30,8 +26,6 @@ const PAGE_SIZES = [25, 50, 100] as const;
 const NOUN = { one: "endpoint", other: "endpoints" };
 
 const NO_ROWS: Endpoint[] = [];
-
-const PERCENT: Domain = [0, 100];
 
 type Simulate = "data" | "loading" | "empty" | "error";
 
@@ -257,8 +251,6 @@ interface Software {
 
 const now = Date.now();
 
-const TWO_MINUTES_AGO = now - 2 * 60000;
-
 const SOFTWARE: Software[] = [
     { id: "s1", name: "Google Chrome", publisher: "Google LLC", version: "129.0.6668.90", installed: now - 3 * 86400000, sizeMb: 512 },
     { id: "s2", name: "Microsoft 365 Apps for business", publisher: "Microsoft Corporation", version: "16.0.18129", installed: now - 40 * 86400000, sizeMb: 3820 },
@@ -331,79 +323,13 @@ function DataTableSection() {
         </div>
       </Specimen>
 
-      <Specimen title="Cells" description="Helpers for the cells Glass UX tables repeat. Numbers are tabular with a thin space before units; times are relative with the absolute time on hover.">
-        <Example label="Identity">
-          <span className="dt-demo-cell">
-            <IdentityCell title="NST-C106" subtitle="AzureAD\MiraRowan" status="online"/>
-          </span>
-          <span className="dt-demo-cell">
-            <IdentityCell title="LMN-4E5E" subtitle="LMN-4E5E\Front Counter" status="warning" statusLabel="Needs restart"/>
-          </span>
-        </Example>
-        <Example label="Status">
-          <StatusBadge status="online" size="sm"/>
-          <StatusBadge status="offline" size="sm"/>
-          <StatusBadge status="warning" size="sm">
-            Needs restart
-          </StatusBadge>
-          <StatusBadge status="error" size="sm">
-            Agent error
-          </StatusBadge>
-          <StatusBadge status="installing" size="sm"/>
-          <Badge tone="info" marker="dot" size="sm">
-            Update scheduled
-          </Badge>
-        </Example>
-        <Example label="Time, number, trend">
-          <span className="dt-demo-cell">
-            <RelativeTime value={TWO_MINUTES_AGO}/>
-          </span>
-          <span className="dt-demo-cell">
-            <NumericCell value={7.8} unit="GB" fractionDigits={1}/>
-          </span>
-          <span className="dt-demo-cell dt-demo-spark">
-            <SparklineCell values={[12, 14, 11, 18, 23, 19, 16, 22, 31, 27, 24, 21, 18, 20, 26, 29, 25, 22, 19, 23]} domain={PERCENT} unit="%" label="CPU"/>
-          </span>
-          <span className="dt-demo-cell dt-demo-spark">
-            <SparklineCell values={[61, 64, 70, 72, 69, 75, 81, 84, 88, 91]} domain={PERCENT} unit="%" label="CPU" tone="danger"/>
-          </span>
-        </Example>
-      </Specimen>
+
 
       <ContainerLab>{(preset) => <FrameTable id={`gallery-endpoints-lab-${preset?.id ?? "free"}`} pageSize={25}/>}</ContainerLab>
 
-      <Rules do={[
-            "Give every column a priority so the table knows what to fold first.",
-            "Keep sorting, the search, page and page size in the URL with useTableUrlState.",
-            "Give every table a search on its identifying columns; the field sits beside Filters.",
-            "Pass the entity's ActionSet; the ⋯ menu, right-click and bulk bar all read it. Rows of different kinds pass getRowActions.",
-            "Group on the server: a grouped count for the headers, one query per expanded group.",
-            "Write empty states as one fact plus the action that fixes it.",
-            "Let the table fill a pane with a definite height; it scrolls inside itself.",
-        ]} dont={[
-            "Hide columns with media queries; the table measures its own container.",
-            "Put a banner above the table for errors or new rows; both happen in place.",
-            "Hand-build a row menu next to the table's own.",
-            "Count a group's rows in the browser; the header shows the server's count.",
-            "Size columns in px; widths are rem so they scale with the interface.",
-            "Wrap the table in another glass layer; the header is an inset fill.",
-        ]}/>
 
-      <TokenTable tokens={[
-            ["--row-h", "Body row height (density)"],
-            ["--row-h-header", "Header height (density)"],
-            ["--check-size", "Selection checkbox"],
-            ["--control-h-sm", "Row and pager buttons"],
-            ["--glass-fill-inset", "Header fill"],
-            ["--line", "Row hairlines (at 70%)"],
-            ["--fill-hover", "Hovered row"],
-            ["--accent-soft", "Selected row and bulk bar"],
-            ["--accent-ring", "Focused row"],
-            ["--radius-item", "Row corners"],
-            ["--radius-control", "Header band"],
-            ["--surface-2", "Pinned cells while scrolled sideways"],
-            ["--duration-slower", "Live-update flash (×2.5)"],
-        ]}/>
+
+
     </SectionPage>);
 }
 

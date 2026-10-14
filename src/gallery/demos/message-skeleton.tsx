@@ -9,29 +9,29 @@ import { AiGallery } from "../sections/ai.kit.js";
 export default function AiMessagesSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
+
+
 
         <Specimen title="Loading" description="A loading conversation draws its turns in their final boxes: the prompt bubble, prose lines and a card." layout="stack">
           <MessageSkeleton />
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
       </SectionPage>
     </AiGallery>);
 }

@@ -69,9 +69,9 @@ export default function FileDropSection() {
         <InstallerUpload />
       </Specimen>
 
-      <></>
 
-      <></>
+
+
 
       <Specimen title="File rows" description="Every row keeps its height: the bar is always there, and the state or the error replaces the size line in place.">
         <FileList className="w-full max-w-lg" aria-label="Uploads">
@@ -82,7 +82,7 @@ export default function FileDropSection() {
         </FileList>
       </Specimen>
 
-      <></>
+
 
       <ContainerLab>
         {(preset) => preset?.id === "row" || preset?.id === "header" ? (<div className="flex h-full items-center px-1">
@@ -96,8 +96,8 @@ export default function FileDropSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

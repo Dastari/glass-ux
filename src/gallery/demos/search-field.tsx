@@ -31,7 +31,7 @@ export default function TextFieldsSection() {
         </div>
       </div>
 
-      <></>
+
 
       <Specimen title="Slots" description="A leading icon, a unit, a clear button, the password reveal and a keyboard hint. Inner buttons are ghost Buttons, so they carry tooltips.">
         <FormStack>
@@ -56,7 +56,7 @@ export default function TextFieldsSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Over glass and imagery" backdrop>
         <SearchField className="max-w-sm" placeholder="Search endpoints" aria-label="Search over imagery"/>
@@ -82,8 +82,8 @@ export default function TextFieldsSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

@@ -147,8 +147,8 @@ export default function SegmentedSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

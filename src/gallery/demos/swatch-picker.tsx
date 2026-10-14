@@ -67,8 +67,8 @@ export default function SwatchPickerSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

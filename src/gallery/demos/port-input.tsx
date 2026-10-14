@@ -8,11 +8,9 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { PortInput } from "../../ui/port-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function PortFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -45,15 +43,10 @@ export default function PortFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { portSchema } from "../../ui/port-field/index.js"
 
-const schema = z.object({ port: portSchema({ required: true }) })   // number | null
 
-<form.AppField name="port">{(field) => <field.PortField label="Port" services={{ 8443: "UniFi" }} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

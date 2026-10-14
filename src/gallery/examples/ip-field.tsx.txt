@@ -6,8 +6,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-u
 
 import { ipSchema } from "glass-ux/ip-field";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 function NetworkDemo() {
@@ -35,24 +33,16 @@ export default function IpFieldSection() {
         <NetworkDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { ipSchema } from "glass-ux/ip-field"
 
-const schema = z.object({
-  gateway: ipSchema({ version: 4, required: true }),
-  subnet: ipSchema({ version: 4, cidr: "required" }),   // "Add a prefix length, such as /24"
-})
 
-<form.AppField name="subnet">{(field) => <field.IpField label="Subnet" version={4} cidr="required" width="medium" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

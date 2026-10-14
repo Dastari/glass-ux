@@ -8,11 +8,9 @@ import { Field } from "../../ui/field/index.js";
 
 import { FormStack } from "../../ui/form/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function ByteSizeFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -42,15 +40,10 @@ export default function ByteSizeFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { byteSizeSchema } from "../../ui/byte-size-field/index.js"
 
-const schema = z.object({ quota: byteSizeSchema({ required: true, max: 100e9 }) })   // bytes
 
-<form.AppField name="quota">{(field) => <field.ByteSizeField label="Mailbox warning" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

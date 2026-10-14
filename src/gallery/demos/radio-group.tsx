@@ -27,7 +27,7 @@ function SessionCards({ orientation = "vertical" }: {
 
 export default function ChoiceSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Radio" description="The chosen circle fills with the tone and the dot springs in. Arrow keys move and choose." wide>
         <Matrix columns={["Not chosen", "Chosen", "Invalid", "Disabled", "Disabled, chosen"]} rows={SIZES.map((size) => ({
@@ -68,7 +68,7 @@ export default function ChoiceSection() {
         }))}/>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Radio group" layout="stack">
         <RadioGroup legend="When to install" defaultValue="window">
@@ -105,7 +105,7 @@ export default function ChoiceSection() {
         </div>
       </Specimen>
 
-      <></>
+
 
       <ContainerLab>
         {(preset) => preset?.id === "row" ? (<div className="flex h-full items-center gap-5 px-3">
@@ -128,8 +128,8 @@ export default function ChoiceSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

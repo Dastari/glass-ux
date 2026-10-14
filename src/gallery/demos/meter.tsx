@@ -22,11 +22,11 @@ function useTicking(start: number, step = 7) {
 export default function ProgressSection() {
     const live = useTicking(18);
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="Meter" description="Neutral while healthy, warning past 75% and danger past 90%. The tick marks where warning begins." layout="stack">
         <div className="flex w-110 max-w-full flex-col gap-5">
@@ -73,8 +73,8 @@ export default function ProgressSection() {
           </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

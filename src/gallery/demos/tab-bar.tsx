@@ -28,15 +28,15 @@ function SpecimenTabBar({ condensed }: {
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function AppShellSection() {
     return (<SectionPage>
-      <></>
 
-    <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
 
       <Specimen title="Phone tab bar" description="The rail on phones: a floating glass pill above the safe area. Scrolling down condenses it; scrolling up restores it." backdrop>
         <Example label="Resting">
@@ -47,12 +47,12 @@ export default function AppShellSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

@@ -41,11 +41,11 @@ export default function ProgressSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="Loading" description="Skeletons keep the exact rows: the head line, the track and the data line with its action." wide>
         <div className="grid w-full grid-cols-2 gap-6">
@@ -76,8 +76,8 @@ export default function ProgressSection() {
           </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

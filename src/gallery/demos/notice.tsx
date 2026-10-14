@@ -40,8 +40,8 @@ export default function NoticeSection() {
           </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

@@ -308,9 +308,9 @@ export default function DialogSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
 
       <Specimen title="Settings dialog" description="An L3 rail of sections beside a scrolling pane, at a fixed height so switching sections never resizes it. In a narrow dialog — a phone sheet, a small window — the rail becomes chips." wide>
         <Dialog.Preview size="xl" kind="settings">
@@ -323,12 +323,12 @@ export default function DialogSection() {
         </Dialog.Preview>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

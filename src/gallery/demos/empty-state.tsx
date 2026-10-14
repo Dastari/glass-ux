@@ -62,8 +62,8 @@ export default function EmptyStateSection() {
           </EmptyState>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

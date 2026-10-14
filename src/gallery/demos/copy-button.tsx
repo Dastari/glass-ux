@@ -33,8 +33,8 @@ export default function CopyButtonSection() {
         <Input defaultValue="10.13.4.1" readOnly aria-label="Gateway" className="w-72" trailing={<CopyButton value="10.13.4.1" label="Copy address" className="fa-input-btn"/>}/>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

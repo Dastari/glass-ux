@@ -6,7 +6,7 @@ import { TooltipPreview } from "../../ui/tooltip/index.js";
 
 export default function TooltipSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Anatomy" description="One line of medium caption text, an 8px gap and a small arrow. A shortcut follows in keycaps.">
         <Example label="Label">
@@ -25,12 +25,12 @@ export default function TooltipSection() {
         <TooltipPreview content="Open in a new window" shortcut="mod+enter"/>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

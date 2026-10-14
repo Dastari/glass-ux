@@ -21,20 +21,20 @@ function Panel() {
 
 export default function OrgSwitcherSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="List" description="The popup's contents: search, All organisations, Recent, then every organisation as a tree. Typing ranks matches by name, word, initials, then anywhere, and names a child's parent. Arrow keys move, Enter chooses, Esc closes. On phones the same list is a bottom sheet." layout="bare">
         <Panel />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
     </SectionPage>);
 }

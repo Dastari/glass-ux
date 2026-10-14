@@ -8,8 +8,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../u
 
 import { urlSchema } from "../../ui/url-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 const schema = z.object({ portal: urlSchema({ required: true }), webhook: urlSchema({ schemes: ["https"] }) });
@@ -34,27 +32,22 @@ function UrlDemo() {
 
 export default function UrlFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="In a form">
         <UrlDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { urlSchema } from "../../ui/url-field/index.js"
 
-const schema = z.object({ portal: urlSchema({ required: true }), webhook: urlSchema({ schemes: ["https"] }) })
 
-<form.AppField name="portal">{(field) => <field.UrlField label="Customer portal" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

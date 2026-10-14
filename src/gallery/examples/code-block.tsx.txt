@@ -9,11 +9,11 @@ const LONG_SCRIPT = Array.from({ length: 28 }, (_, index) => index % 7 === 0 ? `
 export default function AiMessagesSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
 
-        <></>
 
-        <></>
+
+
+
 
         <Specimen title="Code blocks" description="Language label, copy with an in-place ✓, wrap toggle and optional line numbers. Highlighting loads on the first block; until then the same text sits in the same lines. Long blocks show their first lines." layout="stack">
           <CodeBlock language="powershell" code={'Stop-Service -Name Spooler -Force\nRemove-Item "$env:SystemRoot\\System32\\spool\\PRINTERS\\*" -Force\nStart-Service -Name Spooler'}/>
@@ -22,19 +22,19 @@ export default function AiMessagesSection() {
           <CodeBlock language="log" wrap code={"2026-10-11 21:38:51 ERROR Faulting module PrintConfig.dll, version 10.0.26300.1, exception 0xc0000005, process spoolsv.exe"}/>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
+
+
+
       </SectionPage>
     </AiGallery>);
 }

@@ -37,18 +37,18 @@ export default function OrgSwitcherSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <ContainerLab title="Trigger in the container lab" description="The trigger truncates its name with a tooltip and never wraps.">
         {() => <Switcher initial="cedarvale"/>}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

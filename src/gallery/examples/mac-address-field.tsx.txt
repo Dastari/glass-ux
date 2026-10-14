@@ -6,8 +6,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-u
 
 import { macSchema, type MacVendorLookup } from "glass-ux/mac-field";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 /** A few OUIs, standing in for the server's IEEE registry lookup. */
@@ -43,23 +41,16 @@ export default function MacFieldSection() {
         <MacDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { macSchema } from "glass-ux/mac-field"
 
-const schema = z.object({ mac: macSchema({ required: true }) })
 
-<form.AppField name="mac">
-  {(field) => <field.MacAddressField label="MAC address" lookupVendor={(oui) => api.vendorOf(oui)} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

@@ -24,7 +24,7 @@ const SIZES: SelectSize[] = ["sm", "md", "lg"];
 
 export default function ComboboxSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Combobox" description="Choose exactly one item. Static lists filter as you type (case and accents ignored, matches emphasised); a source searches the server. Arrows move, Enter chooses, Esc closes then clears.">
         <FormStack>
@@ -70,11 +70,11 @@ export default function ComboboxSection() {
         </FormStack>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="Over glass and imagery" backdrop>
         <Combobox options={ORGANISATIONS} defaultValue="northstar" aria-label="Organisation over imagery" className="w-72"/>
@@ -102,8 +102,8 @@ export default function ComboboxSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

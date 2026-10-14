@@ -12,8 +12,6 @@ import { Field } from "../../ui/field/index.js";
 
 import { FormStack } from "../../ui/form/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 const TASMANIA = [143.8, -43.7, 148.5, -39.5] as const;
 
 function PasteDemo() {
@@ -31,7 +29,7 @@ export default function CoordinatesFieldSection() {
         <PasteDemo />
       </Specimen>
 
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -66,17 +64,10 @@ export default function CoordinatesFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { coordinatesSchema } from "../../ui/coordinates-field/index.js"
 
-const schema = z.object({ position: coordinatesSchema({ required: true }) })   // { lat, lng } | null
 
-<form.AppField name="position">
-  {(field) => <field.CoordinatesField label="Site position" map={mapConfig} mapFallback={homeRegionBox} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

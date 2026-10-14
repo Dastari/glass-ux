@@ -308,18 +308,18 @@ export default function DialogSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
+
     </SectionPage>);
 }

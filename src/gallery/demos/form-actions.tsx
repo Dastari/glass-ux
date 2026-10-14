@@ -83,7 +83,7 @@ export default function FormSection() {
         <ContactForm />
       </Specimen>
 
-      <></>
+
 
       <ContainerLab description="The form column fills its box up to --form-measure; nothing reflows into columns. A whole form has no row or header size. Drag the free frame." presets={CONTAINER_PRESETS.filter((preset) => preset.id !== "row" && preset.id !== "header")}>
         <div className="h-full overflow-y-auto p-3" data-scroll-container>
@@ -91,8 +91,8 @@ export default function FormSection() {
         </div>
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

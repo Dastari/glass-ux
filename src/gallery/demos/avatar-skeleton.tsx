@@ -6,13 +6,13 @@ import { Avatar, AvatarSkeleton } from "../../ui/avatar/index.js";
 
 export default function AvatarSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
 
       <Specimen title="Loading" description="The skeleton is the same circle.">
         <Example label="Skeleton · loaded">
@@ -24,12 +24,12 @@ export default function AvatarSection() {
         <SwapSlot id="avatar" skeleton={<AvatarSkeleton size="lg"/>} loaded={<Avatar name="Avery Quinn" size="lg"/>}/>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

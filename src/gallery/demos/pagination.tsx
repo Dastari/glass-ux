@@ -66,8 +66,8 @@ export default function PaginationSection() {
         {() => <OffsetPager />}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

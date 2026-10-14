@@ -6,8 +6,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-u
 
 import { timeZoneSchema } from "glass-ux/time-zone-select";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 function ZoneDemo() {
@@ -34,21 +32,16 @@ export default function TimeZoneSelectSection() {
         <ZoneDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { timeZoneSchema } from "glass-ux/time-zone-select"
 
-const schema = z.object({ zone: timeZoneSchema({ required: true }) })   // "Australia/Hobart"
 
-<form.AppField name="zone">{(field) => <field.TimeZoneField label="Time zone" suggested={["Australia/Hobart", "UTC"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

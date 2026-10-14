@@ -6,8 +6,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-u
 
 import { urlSchema } from "glass-ux/url-field";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 const schema = z.object({ portal: urlSchema({ required: true }), webhook: urlSchema({ schemes: ["https"] }) });
@@ -32,27 +30,22 @@ function UrlDemo() {
 
 export default function UrlFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="In a form">
         <UrlDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { urlSchema } from "glass-ux/url-field"
 
-const schema = z.object({ portal: urlSchema({ required: true }), webhook: urlSchema({ schemes: ["https"] }) })
 
-<form.AppField name="portal">{(field) => <field.UrlField label="Customer portal" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

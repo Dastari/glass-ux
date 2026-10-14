@@ -12,7 +12,7 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { demoGeocoder } from "../fixtures/geocoder.js";
 
-import { HOME_BIAS, Usage } from "../sections/inputs.kit.js";
+import { HOME_BIAS } from "../sections/inputs.kit.js";
 
 const AU = { code: "AU", name: "Australia" };
 
@@ -57,7 +57,7 @@ export default function AddressFieldSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="States" description="Errors replace the hint in place; disabled keeps the layout." layout="grid">
         <FormStack>
@@ -68,7 +68,7 @@ export default function AddressFieldSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Over glass and imagery" backdrop>
         <FormStack>
@@ -85,30 +85,10 @@ export default function AddressFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { addressSchema } from "../../ui/address-field/index.js"
 
-const schema = z.object({
-  address: addressSchema({ required: true }),   // messages land on line1, locality, postcode, country
-  billing: addressSchema(),                     // empty is fine
-})
 
-<form.AppField name="address">
-  {(field) => (
-    <field.AddressField
-      label="Street address"
-      bias={{ lat: -42.88, lng: 147.33, zoom: 7 }}   // the workspace's home region
-      countries={["AU", "NZ"]}                      // suggest only these
-      map={mapConfig}                               // optional pin map (MapLibre, lazy)
-      // Supply your own GeocoderAdapter, or implement the default /api/geocode contract.
-    />
-  )}
-</form.AppField>
 
-// Read-only: <Field label="Address"><AddressView value={address} map={mapConfig} /></Field>`}/>
 
-      <></>
 
-      <></>
     </SectionPage>);
 }

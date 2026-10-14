@@ -99,24 +99,24 @@ export default function MapSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
 
       <Specimen title="List view" description="“View as list” swaps the map for the caller's table in the same box; “View as map” in the table's toolbar swaps back. The map keeps its camera while hidden." layout="bare" wide>
         <ListViewExample />
       </Specimen>
 
-      <></>
 
-      <></>
+
+
 
       <ContainerLab description="The map fills whatever box it is given. From 16rem tall and 20rem wide it shows every control and the full credit line; below that the zoom buttons go (pinch and scroll still zoom) and the credit line starts as “© OpenStreetMap”; under 8rem tall the controls go too. Everywhere the line folds to ⓘ after five seconds or the first interaction.">
         {() => <LiveMap id="map-lab" className="gallery-map-fill"/>}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

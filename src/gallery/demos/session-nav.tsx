@@ -11,7 +11,7 @@ import { AiGallery } from "../sections/ai.kit.js";
 export default function AiSessionsSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
+
 
         <Specimen title="Drawer" description="New chat, search, the two views with counts, projects, sessions by day. A spinner while working, a warning dot waiting for you, a danger dot after a failed run, an accent dot and bold title when unread. ⋯ and right-click carry the session actions. The drawer sets the width: at its narrowest, default and widest, everything fits and titles truncate." layout="row" wide>
           {([
@@ -39,17 +39,17 @@ export default function AiSessionsSection() {
           </div>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
 
         <ContainerLab description="The drawer content in fixed boxes: it fills the box, its list scrolls, titles truncate.">
           {() => (<SessionNav sessions={SESSIONS} counts={{ conversations: 8, archived: 2 }} onNewChat={() => { }}/>)}
         </ContainerLab>
 
-        <></>
+
       </SectionPage>
     </AiGallery>);
 }

@@ -6,8 +6,6 @@ import { FormStack } from "glass-ux/form";
 
 import { UrlInput } from "glass-ux/url-field";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 export default function UrlFieldSection() {
     return (<SectionPage>
       <Specimen title="Scheme handling" description="Leave a field: https:// is added when the scheme is missing, the host lower-cased and a bare trailing slash dropped. Schemes that are not links (javascript:, data:) are refused.">
@@ -21,7 +19,7 @@ export default function UrlFieldSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -56,15 +54,10 @@ export default function UrlFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { urlSchema } from "glass-ux/url-field"
 
-const schema = z.object({ portal: urlSchema({ required: true }), webhook: urlSchema({ schemes: ["https"] }) })
 
-<form.AppField name="portal">{(field) => <field.UrlField label="Customer portal" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

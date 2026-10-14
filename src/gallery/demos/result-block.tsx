@@ -35,7 +35,7 @@ export default function AiResultsSection() {
             <ResultBlock result={result}/>
           </Specimen>))}
 
-        <></>
+
 
         <Specimen title="Docked width" description="The same results at the docked assistant's width (26rem)." layout="bare">
           <DockedColumn>
@@ -59,9 +59,9 @@ export default function AiResultsSection() {
             </LabScroll>)}
         </ContainerLab>
 
-        <></>
 
-        <></>
+
+
       </SectionPage>
     </AiGallery>);
 }

@@ -150,24 +150,24 @@ function MiniWorkspace() {
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function WindowsSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
 
       <Specimen title="Workspace" description="A working workspace with its own manager (not saved). Open windows, drag them to the edges or the snap bar, resize, minimise and restore from the dock." wide layout="bare" backdrop>
         <MiniWorkspace />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

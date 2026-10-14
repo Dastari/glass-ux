@@ -12,7 +12,7 @@ import { Form, FormActions, FormGroup, FormStack, formBehaviour, useAppForm } fr
 
 import { demoGeocoder } from "../fixtures/geocoder.js";
 
-import { HOME_BIAS, Usage } from "../sections/inputs.kit.js";
+import { HOME_BIAS } from "../sections/inputs.kit.js";
 
 import { wait } from "../sections/forms.fixtures.js";
 
@@ -49,46 +49,26 @@ function BoundDemo() {
 
 export default function AddressFieldSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="In a form" description="Each part is its own form field, so the schema's messages land on the row to fix and Save focuses the first one.">
         <BoundDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { addressSchema } from "../../ui/address-field/index.js"
 
-const schema = z.object({
-  address: addressSchema({ required: true }),   // messages land on line1, locality, postcode, country
-  billing: addressSchema(),                     // empty is fine
-})
 
-<form.AppField name="address">
-  {(field) => (
-    <field.AddressField
-      label="Street address"
-      bias={{ lat: -42.88, lng: 147.33, zoom: 7 }}   // the workspace's home region
-      countries={["AU", "NZ"]}                      // suggest only these
-      map={mapConfig}                               // optional pin map (MapLibre, lazy)
-      // Supply your own GeocoderAdapter, or implement the default /api/geocode contract.
-    />
-  )}
-</form.AppField>
 
-// Read-only: <Field label="Address"><AddressView value={address} map={mapConfig} /></Field>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

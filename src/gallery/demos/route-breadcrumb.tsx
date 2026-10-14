@@ -22,26 +22,26 @@ const ROUTE_TRAIL: RouteCrumb[] = [
 
 export default function BreadcrumbSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Route crumbs" description="RouteBreadcrumb renders crumbs and siblings with `link` as router links — this page's own trail; the switcher lists every component section. The core Breadcrumb stays router-agnostic." wide>
         <RouteBreadcrumb items={ROUTE_TRAIL} aria-label="Gallery breadcrumb"/>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
+
+
     </SectionPage>);
 }

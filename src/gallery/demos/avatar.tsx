@@ -40,7 +40,7 @@ export default function AvatarSection() {
         <Avatar name="Noa Finch" size="sm" presence="offline"/>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Loading" description="The skeleton is the same circle.">
         <Example label="Skeleton · loaded">
@@ -64,8 +64,8 @@ export default function AvatarSection() {
           </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

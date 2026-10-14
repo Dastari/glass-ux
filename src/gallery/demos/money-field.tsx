@@ -8,8 +8,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../u
 
 import { formatMoney, moneySchema } from "../../ui/money-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 function MoneyDemo() {
@@ -42,21 +40,16 @@ export default function MoneyFieldSection() {
         <MoneyDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { moneySchema } from "../../ui/money-field/index.js"
 
-const schema = z.object({ rate: moneySchema({ required: true, max: 100000 }) })   // cents: 16500 = $165.00
 
-<form.AppField name="rate">{(field) => <field.MoneyField label="Hourly rate" currency="AUD" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

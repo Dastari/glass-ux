@@ -11,11 +11,11 @@ import { Button, ButtonGroup } from "../../ui/button/index.js";
 export default function ButtonSection() {
     const [fail, setFail] = useState(false);
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="Groups and split buttons" description="Adjacent actions sit 8px apart. A split button joins the main action to its menu.">
         <Example label="Split primary">
@@ -41,10 +41,10 @@ export default function ButtonSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
     </SectionPage>);
 }

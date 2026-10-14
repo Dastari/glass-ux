@@ -11,11 +11,11 @@ import { AiGallery } from "../sections/ai.kit.js";
 export default function AiToolsSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
 
-        <></>
 
-        <></>
+
+
+
 
         <Specimen title="Provider activity" description="Between tool calls: working, waiting on an endpoint, retrying the provider, or searching the web. Replaced in place by the answer." layout="stack">
           <ProviderActivity status={{ state: "working", model: MODEL.name }}/>
@@ -25,11 +25,11 @@ export default function AiToolsSection() {
           <ToolCallSkeleton />
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
       </SectionPage>
     </AiGallery>);
 }

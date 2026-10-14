@@ -166,8 +166,8 @@ export default function EntityIdentitySection() {
         {() => <EntityIdentity {...ORG_PROPS} tier="auto" fill heading="h4"/>}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

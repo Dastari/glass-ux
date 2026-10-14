@@ -69,10 +69,11 @@ const RETRY_LAYERS = [
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-function RelaySettings({ open, onOpenChange, preview = false }: {
+function RelaySettings({ open, onOpenChange, preview = false, loading = false }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     preview?: boolean;
+    loading?: boolean;
 }) {
     const [saved, setSaved] = useState<RelayValues>(SAVED);
     const [tab, setTab] = useState("general");
@@ -91,7 +92,7 @@ function RelaySettings({ open, onOpenChange, preview = false }: {
     });
     const retry = useStore(form.store, (state) => state.values.policy.retry);
     const inherited = resolveSetting([...RETRY_LAYERS, { scope: "relay", label: "this relay", value: retry }], true);
-    return (<EntitySettingsDialog open={open} onOpenChange={onOpenChange} preview={preview} form={form} tab={tab} onTabChange={setTab} media={<EntityIdentity tier="icon" name="Cedar Annex SMTP relay" kind="Mail relay" icon={<IconMail />} state={{ id: "up", label: "Sending", tone: "success" }}/>} subtitle="smtp.northstar.example · Northstar Studio" entityName="Cedar Annex SMTP relay" onSaveError={(error) => toast.danger(error instanceof Error ? error.message : "Not saved", { description: "Fix the marked fields and save again." })} tabs={[
+    return (<EntitySettingsDialog open={open} onOpenChange={onOpenChange} preview={preview} loading={loading} form={form} tab={tab} onTabChange={setTab} media={<EntityIdentity tier="icon" name="Cedar Annex SMTP relay" kind="Mail relay" icon={<IconMail />} state={{ id: "up", label: "Sending", tone: "success" }}/>} subtitle="smtp.northstar.example · Northstar Studio" entityName="Cedar Annex SMTP relay" onSaveError={(error) => toast.danger(error instanceof Error ? error.message : "Not saved", { description: "Fix the marked fields and save again." })} tabs={[
             {
                 value: "general",
                 label: "General",
@@ -179,16 +180,18 @@ export default function EntitySettingsSection() {
         </div>
       </Specimen>
 
-      <></>
+      <Specimen title="Loading settings" description="The labelled group reserves field geometry while the host loads a document." layout="bare" wide><RelaySettings open onOpenChange={() => undefined} preview loading/></Specimen>
 
-      <></>
+
+
+
 
       <Specimen title="Test button" description="Confirms in place (pending, then ✓ or ✕ with a shake) and says why on the line beside it. The result block keeps its rows before any test, so nothing moves.">
         <Tests />
       </Specimen>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

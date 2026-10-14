@@ -11,9 +11,9 @@ import { AiGallery } from "../sections/ai.kit.js";
 export default function AiContextLinksSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
 
-        <></>
+
+
 
         <Specimen title="Preview card" description="Identity, live state, three or four facts, two promoted actions from the entity's own action set, and Open in window." layout="row">
           <EntityPreviewCard entity={E.c106} data={demoResolver.preview(E.c106)}/>
@@ -21,15 +21,15 @@ export default function AiContextLinksSection() {
           <EntityPreviewCard entity={E.northstar} data={demoResolver.preview(E.northstar)}/>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
+
       </SectionPage>
     </AiGallery>);
 }

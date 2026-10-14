@@ -106,8 +106,8 @@ export default function TreeSection() {
         {() => <Tree nodes={NODES} aria-label="Endpoints in a lab frame" defaultExpanded={ALL_OPEN} selectedId="nst-c106"/>}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

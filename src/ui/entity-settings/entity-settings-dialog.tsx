@@ -113,7 +113,7 @@ export interface EntitySettingsDialogProps {
 /** A tab's loading shape: the rows a settings tab usually starts with (R9.3). */
 function TabSkeleton() {
   return (
-    <div className="fa-form-stack fa-entity-settings-tab" aria-busy="true" aria-label="Loading settings">
+    <div className="fa-form-stack fa-entity-settings-tab" role="group" aria-busy="true" aria-label="Loading settings">
       <FieldSkeleton labelWidth="30%" />
       <FieldSkeleton labelWidth="22%" />
       <SettingRowSkeleton labelWidth="34%" />

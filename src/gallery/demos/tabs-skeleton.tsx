@@ -20,17 +20,17 @@ function LocalTabs({ initial = "overview", items = ENDPOINT_TABS, label = "NST-C
 
 export default function TabsSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
 
       <Specimen title="Loading" description="The skeleton strip occupies the same height and rhythm as the loaded strip. Swap them in place to compare.">
         <div className="w-105 max-w-full">
@@ -38,12 +38,12 @@ export default function TabsSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

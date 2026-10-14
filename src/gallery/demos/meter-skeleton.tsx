@@ -22,15 +22,15 @@ function useTicking(start: number, step = 7) {
 export default function ProgressSection() {
     const live = useTicking(18);
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
 
       <Specimen title="Loading" description="Skeletons keep the exact rows: the head line, the track and the data line with its action." wide>
         <div className="grid w-full grid-cols-2 gap-6">
@@ -47,12 +47,12 @@ export default function ProgressSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

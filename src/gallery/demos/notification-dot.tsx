@@ -10,9 +10,9 @@ import { Button } from "../../ui/button/index.js";
 
 export default function BadgeSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="Counts and notification dot" description="Counts beside navigation and groups use tabular figures and cap at a maximum. The dot sits on the corner of an icon button.">
         <Example label="CountBadge">
@@ -33,12 +33,12 @@ export default function BadgeSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

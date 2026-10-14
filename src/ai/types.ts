@@ -1,22 +1,14 @@
 /**
- * Assistant view model.
- *
- * The browser renders these shapes, never raw backend payloads. Each type notes the Example application AI
- * contract it is reduced from (schema/router.graphql, the durable session event log) so the
- * mapping lives next to the shape. docs/ai-ui.md is the full table, including the shapes the
- * backend does not emit yet (structured asks, generative results), which are proposals.
+ * Typed assistant rendering models. The host adapts its own messages, tool events,
+ * results, sources and questions into these shapes. Glass UX assumes no backend schema
+ * or transport; see docs/ai-ui.md for the integration contracts and handler boundaries.
  */
 import type { BadgeTone, EndpointStatus } from "../ui/badge/index.js"
 import type { IconComponent } from "../ui/icon/index.js"
 
 /* ── Entities ─────────────────────────────────────────────────────────────── */
 
-/**
- * A registered entity kind ("endpoint", "ticket"…). The kinds are the application's: it
- * registers each kind's glyph, noun and route with the EntityResolver (entity-chip). Example application's
- * GlassUxAiResourceReference.Kind today: glass-ux-endpoint, glass-ux-ticket, sample-organisation,
- * sample-device.
- */
+/** A host-registered entity kind. EntityResolver supplies its glyph, noun, destinations and adapters. */
 export type EntityKind = string
 
 /** A reference to one entity. `label` is resolved server-side, never typed by the model. */
@@ -35,7 +27,7 @@ export interface EntityRef {
   tone?: "info" | "warning" | "danger"
   /**
    * false: the assistant named it but the server has not confirmed it exists and is visible
-   * to you (glass-ux-ai-resource-links phase 2). The chip still opens; it says so.
+   * to the current person. The chip still opens; it says so.
    */
   verified?: boolean
   /** Organisations: the staff-set short code ("NST", unique per workspace;). */
@@ -44,29 +36,22 @@ export interface EntityRef {
 
 /* ── Messages ─────────────────────────────────────────────────────────────── */
 
-/** AiMessageView.Role, plus the browser-synthesised run-failure row. */
+/** Who emitted the message; the host may synthesize system notices. */
 export type AiRole = "user" | "assistant" | "system"
 
-/**
- * AiMessageView.CompletionState, reduced:
- *   complete     assistant_message_completed
- *   streaming    provider_live_delta events for the open run
- *   failed       run_failed / run_recovery_required (synthesised row, retryable by admission)
- *   cancelled    run_cancelled (the user pressed Stop)
- *   purged       ContentPurged: retention removed the preview and blocks
- */
+/** Presentation state for completed, streaming, failed, cancelled or retained-without-content messages. */
 export type AiMessageState = "complete" | "streaming" | "failed" | "cancelled" | "purged"
 
 export interface AiAttachment {
   id: string
   name: string
-  /** Bytes (AiAttachmentView.ByteCount / ExpectedByteCount). */
+  /** Attachment size in bytes. */
   size: number
   /** Media type of the file. */
   mime?: string
   /** Upload progress 0–1 while QuarantineState is uploading. */
   progress?: number
-  /** AiAttachmentView.QuarantineState + ScanState, reduced. */
+  /** Upload and content-screening state supplied by the host. */
   state?: "uploading" | "scanning" | "ready" | "rejected"
   /** Image preview (object URL while composing, thumbnail once released). */
   previewUrl?: string
@@ -90,18 +75,14 @@ export interface AiMessage {
   author?: string
   /** The model that answered (session ExecutionSelection.Model). */
   model?: string
-  /** Failure outcome code and admission (run-failure.ts in Example application). */
+  /** Host failure code, reason and whether retry is allowed. */
   failure?: { code?: string; reason: string; retryable: boolean }
   feedback?: AiFeedback
 }
 
 /* ── Blocks ───────────────────────────────────────────────────────────────── */
 
-/**
- * One block in an assistant message, in display order. Backend AiMessageBlockView.Kind
- * today is `text` (markdown) and `metadata` (not rendered). Reasoning, tools and sources come
- * from session events for the run; results and asks are proposals (docs/ai-ui.md §Gaps).
- */
+/** One supported assistant message block, in display order. The host owns the data and execution callbacks. */
 export type AiBlock =
   | { kind: "markdown"; text: string }
   | { kind: "reasoning"; reasoning: AiReasoning }
@@ -121,10 +102,7 @@ export interface AiReasoning {
 
 /* ── Tools ────────────────────────────────────────────────────────────────── */
 
-/**
- * AiConversationToolCallSummary.State + application_tool_started / _completed events.
- * `awaiting-approval` is a run waiting_approval with an AiApprovalView bound to this call.
- */
+/** Tool execution presentation state. Awaiting approval describes a pending host decision. */
 export type ToolStatus = "queued" | "running" | "succeeded" | "failed" | "cancelled" | "awaiting-approval"
 
 export interface AiToolCall {
@@ -145,13 +123,13 @@ export interface AiToolCall {
   elapsedMs?: number
   /** Failed: the outcome code in words ("Agent offline — retry when NST-C106 reconnects"). */
   reason?: string
-  /** AiToolCallResultPreviewView.Arguments (null = withheld by the host). */
+  /** Tool arguments supplied by the host; null means withheld. */
   args?: unknown
-  /** AiToolCallResultPreviewView.Preview. */
+  /** Tool result preview supplied by the host. */
   result?: unknown
 }
 
-/** provider_activity · hosted_tool_* (web search) and the run's own state. */
+/** Provider progress state supplied by the host. */
 export interface AiProviderStatus {
   /** Controlled view state, including loading, empty and error states. */
   state: "working" | "waiting" | "retrying" | "searching"
@@ -163,7 +141,7 @@ export interface AiProviderStatus {
 
 /* ── Sources ──────────────────────────────────────────────────────────────── */
 
-/** provider_activity · citation (HTTPS only, credential-free) or a Glass UX record. */
+/** A source citation: a credential-free HTTPS destination or a host record path. */
 export interface AiSource {
   id: string
   /** Footnote number used in the text as [^n]. */

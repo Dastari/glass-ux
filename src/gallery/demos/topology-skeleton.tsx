@@ -110,9 +110,9 @@ function DemoMap({ nodes, minimap = true, listable = false }: {
 export default function TopologySection() {
     const big = useMemo(() => school(), []);
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="Loading and empty" description="The skeleton fills the map's own box while the layout loads (it is code-split), so nothing moves when the map lands. An empty map says so in the same box.">
         <SwapSlot id="topology" className="h-90 w-160 max-w-full" skeleton={<div className="fa-topology"><TopologySkeleton /></div>} loaded={<DemoMap nodes={OFFICE.slice(0, 6)}/>}/>
@@ -121,10 +121,10 @@ export default function TopologySection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
     </SectionPage>);
 }

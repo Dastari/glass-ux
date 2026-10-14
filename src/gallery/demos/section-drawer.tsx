@@ -76,26 +76,26 @@ function RailAndDrawer() {
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function AppShellSection() {
     return (<SectionPage>
-      <></>
 
-    <></>
 
-      <></>
+
+
+
 
       <Specimen title="Rail and section drawer" description="The rail is icon-only on the canvas; every item has a tooltip with its label and shortcut. Its bottom gear opens the current organisation's Settings dialog, disabled under All organisations with the reason. The drawer holds the section's navigation: drag its edge to resize, below its minimum it snaps closed; mod+B or the current rail item toggles it.">
         <RailAndDrawer />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
     </SectionPage>);
 }

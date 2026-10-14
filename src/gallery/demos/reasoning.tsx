@@ -49,13 +49,13 @@ function StreamingDemo() {
 export default function AiMessagesSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
 
         <Specimen title="Reasoning and streaming" description="The reasoning summary folds to one line with the time it took. Streaming text appends after a static caret; earlier lines never reflow." layout="stack">
           <Reasoning reasoning={{ seconds: 4, summary: "Find the organisation, list its offline endpoints, keep those silent for more than a day, then look for a shared site or time." }}/>
@@ -63,17 +63,17 @@ export default function AiMessagesSection() {
           <StreamingDemo />
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
+
+
       </SectionPage>
     </AiGallery>);
 }

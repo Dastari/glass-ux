@@ -158,3 +158,19 @@ test("the document keeps its sections, readable header and outside rail @respons
     path: `.handoff/glass-ux-extract/screenshots/header-${testInfo.project.name}.png`,
   });
 });
+
+test("loading entity settings has an accessible named group", async ({
+  page,
+}) => {
+  await page.goto("/components/entity-settings-dialog");
+  const loading = page.getByRole("group", {
+    name: "Loading settings",
+    exact: true,
+  });
+  await expect(loading).toBeAttached();
+  await expect(loading).toHaveAttribute("aria-busy", "true");
+  const result = await new AxeBuilder({ page })
+    .include('[aria-label="Loading settings"]')
+    .analyze();
+  expect(result.violations.map((v) => v.id)).toEqual([]);
+});

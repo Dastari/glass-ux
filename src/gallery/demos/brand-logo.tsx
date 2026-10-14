@@ -19,7 +19,7 @@ const TONES: Array<[
 
 export default function BrandSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Tones" description="Palette is the default (src/app/brand.ts). Brand keeps the brand's own palette as an island on the mark; mono draws both halves in the current text colour." wide layout="stack">
         {TONES.map(([tones, label]) => (<Example key={tones} label={label}>
@@ -29,12 +29,12 @@ export default function BrandSection() {
           </Example>))}
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

@@ -8,13 +8,11 @@ import { Field } from "../../ui/field/index.js";
 
 import { FormStack } from "../../ui/form/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function CountrySelectSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -47,15 +45,10 @@ export default function CountrySelectSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { countrySchema } from "../../ui/country-select/index.js"
 
-const schema = z.object({ country: countrySchema({ required: true }) })   // "AU"
 
-<form.AppField name="country">{(field) => <field.CountryField label="Country" priority={["AU", "NZ"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

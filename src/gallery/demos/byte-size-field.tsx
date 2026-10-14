@@ -8,8 +8,6 @@ import { byteSizeSchema } from "../../ui/byte-size-field/index.js";
 
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 function SizeDemo() {
@@ -37,21 +35,16 @@ export default function ByteSizeFieldSection() {
         <SizeDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { byteSizeSchema } from "../../ui/byte-size-field/index.js"
 
-const schema = z.object({ quota: byteSizeSchema({ required: true, max: 100e9 }) })   // bytes
 
-<form.AppField name="quota">{(field) => <field.ByteSizeField label="Mailbox warning" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

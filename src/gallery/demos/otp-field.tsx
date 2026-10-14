@@ -10,8 +10,6 @@ import { Form, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.
 
 import { otpSchema, type OtpStatus } from "../../ui/otp-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 /** The code the demo accepts. */
@@ -47,29 +45,22 @@ function VerifyDemo() {
 export default function OtpFieldSection() {
     const [code, setCode] = useState("");
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Submit on complete" description="With autoSubmit the last digit submits the form; the boxes show the outcome in place.">
         <VerifyDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { otpSchema } from "../../ui/otp-field/index.js"
 
-const schema = z.object({ code: otpSchema() })   // "Enter the 6-digit code"
 
-<form.AppField name="code">
-  {(field) => <field.OtpField label="Verification code" autoSubmit status={refused ? "error" : undefined} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

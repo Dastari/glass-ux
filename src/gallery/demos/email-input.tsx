@@ -10,8 +10,6 @@ import { Field } from "../../ui/field/index.js";
 
 import { FormStack } from "../../ui/form/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 function SuggestionDemo() {
     const [value, setValue] = useState("avery@hotmial.com");
     const suggestion = suggestEmail(value);
@@ -28,7 +26,7 @@ export default function EmailFieldSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -63,17 +61,10 @@ export default function EmailFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { emailSchema } from "../../ui/email-field/index.js"
 
-const schema = z.object({ work: emailSchema({ required: true }), personal: emailSchema() })
 
-<form.AppField name="work">
-  {(field) => <field.EmailField label="Work email" knownDomains={[organisation.emailDomain]} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

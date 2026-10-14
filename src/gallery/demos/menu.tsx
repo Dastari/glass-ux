@@ -98,17 +98,17 @@ export default function MenuSection() {
           </Example>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
+
+
       </SectionPage>
     </ActionProvider>);
 }

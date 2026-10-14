@@ -8,11 +8,9 @@ import { Field } from "../../ui/field/index.js";
 
 import { FormStack } from "../../ui/form/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function DurationFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -45,15 +43,10 @@ export default function DurationFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { durationSchema } from "../../ui/duration-field/index.js"
 
-const schema = z.object({ response: durationSchema({ required: true, min: 900, max: 604800 }) })   // seconds
 
-<form.AppField name="response">{(field) => <field.DurationField label="Response target" units={["d", "h", "m"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

@@ -25,13 +25,7 @@ function NotesField() {
 
 export default function TextFieldsSection() {
     return (<SectionPage>
-      <div className="flex flex-col gap-2 px-1" data-wide="">
-        <span className="fa-overline">On the canvas — the top bar</span>
-        <div className="flex flex-wrap items-center gap-4">
-          <SearchField className="max-w-2xl" placeholder="Search endpoints, organisations, software…" shortcut="mod+k" aria-label="Search everything"/>
-          <SearchField className="max-w-xs" size="sm" placeholder="Search endpoints" aria-label="Search endpoints"/>
-        </div>
-      </div>
+
 
       <Specimen title="Sizes and states" description="sm 32 · md 40 · lg 48, like Button. Hover and focus are live: focus shows the accent halo for every input method." wide>
         <Matrix columns={["Empty", "Filled", "Read-only", "Invalid", "Disabled"]} rows={SIZES.map((size) => ({
@@ -69,7 +63,7 @@ export default function TextFieldsSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Over glass and imagery" backdrop>
         <SearchField className="max-w-sm" placeholder="Search endpoints" aria-label="Search over imagery"/>
@@ -95,8 +89,8 @@ export default function TextFieldsSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

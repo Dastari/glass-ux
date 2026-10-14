@@ -359,10 +359,10 @@ export default function DialogSection() {
         </Dialog.Preview>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
     </SectionPage>);
 }

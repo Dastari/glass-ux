@@ -14,17 +14,17 @@ import { Textarea } from "../../ui/textarea/index.js";
 
 export default function FieldSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
 
       <Specimen title="Loading" description="Each skeleton is the row's exact box: a label-role line, the control's height and the reserved message line (R9.3). Real row on the left, skeleton on the right." wide>
         <div className="grid w-full grid-cols-2 gap-5" data-testid="skeleton-parity">
@@ -45,10 +45,10 @@ export default function FieldSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
     </SectionPage>);
 }

@@ -8,11 +8,9 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { TimeZoneSelect } from "../../ui/time-zone-select/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function TimeZoneSelectSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -39,15 +37,10 @@ export default function TimeZoneSelectSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { timeZoneSchema } from "../../ui/time-zone-select/index.js"
 
-const schema = z.object({ zone: timeZoneSchema({ required: true }) })   // "Australia/Hobart"
 
-<form.AppField name="zone">{(field) => <field.TimeZoneField label="Time zone" suggested={["Australia/Hobart", "UTC"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

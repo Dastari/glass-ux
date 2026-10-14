@@ -9,15 +9,15 @@ import { ENDPOINTS, endpointActions } from "../sections/overlays.fixtures.js";
 export default function ContextMenuSection() {
     return (<ActionProvider>
       <SectionPage>
-        <></>
+
 
         <Specimen title="Anatomy" description="Opens at the pointer — or under the focused element from the keyboard — and is otherwise identical to Menu.">
           <ActionMenuPreview set={endpointActions} targets={[ENDPOINTS[1]!]} label={ENDPOINTS[1]!.name} openSubmenu="remote-tools" highlight="remote-tools"/>
         </Specimen>
 
-        <></>
 
-        <></>
+
+
       </SectionPage>
     </ActionProvider>);
 }

@@ -6,8 +6,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-u
 
 import { percentSchema } from "glass-ux/percent-field";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 function PercentDemo() {
@@ -34,21 +32,16 @@ export default function PercentFieldSection() {
         <PercentDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { percentSchema } from "glass-ux/percent-field"
 
-const schema = z.object({ disk: percentSchema({ required: true, min: 50, max: 99 }) })
 
-<form.AppField name="disk">{(field) => <field.PercentField label="Disk alert threshold" min={50} max={99} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

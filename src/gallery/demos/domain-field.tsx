@@ -8,8 +8,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../u
 
 import { domainSchema, hostnameSchema } from "../../ui/hostname-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 function HostDemo() {
@@ -40,25 +38,16 @@ export default function HostnameFieldSection() {
         <HostDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { domainSchema, hostnameSchema } from "../../ui/hostname-field/index.js"
 
-const schema = z.object({
-  computer: hostnameSchema({ required: true }),
-  domain: domainSchema({ required: true }),          // "Enter a full domain such as northstar.example"
-})
 
-<form.AppField name="computer">{(field) => <field.HostnameField label="Computer name" netbios />}</form.AppField>
-<form.AppField name="domain">{(field) => <field.DomainField label="Email domain" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

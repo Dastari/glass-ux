@@ -104,8 +104,8 @@ export default function FormSection() {
         </div>
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

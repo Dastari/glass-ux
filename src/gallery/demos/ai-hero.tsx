@@ -11,7 +11,7 @@ import { AiGallery } from "../sections/ai.kit.js";
 export default function AiComposerSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
+
 
         <Specimen title="Landing" description="The hero sits on the canvas; the composer is the landing's one card, with suggestions under it." wide layout="bare">
           <AiHero>
@@ -20,19 +20,19 @@ export default function AiComposerSection() {
           </AiHero>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
+
+
+
       </SectionPage>
     </AiGallery>);
 }

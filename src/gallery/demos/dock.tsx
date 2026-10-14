@@ -167,7 +167,7 @@ function DockSpecimen() {
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function WindowsSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" description="The layout is state, not position: a window keeps its intent (tiled, floating) when the screen changes size." wide layout="bare">
         <div className="gallery-wm-states">
@@ -189,18 +189,18 @@ export default function WindowsSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
+
     </SectionPage>);
 }

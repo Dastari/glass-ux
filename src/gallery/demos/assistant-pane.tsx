@@ -15,11 +15,11 @@ import { AiGallery } from "../sections/ai.kit.js";
 export default function AiSessionsSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
 
-        <></>
 
-        <></>
+
+
+
 
         <Specimen title="Docked assistant" description="The pane beside an endpoint page, scoped to it: a new chat offers contextual suggestions. The composer floats over the bottom of the pane with the status line inside it." layout="bare">
           <div className="ai-pane-sample">
@@ -35,13 +35,13 @@ export default function AiSessionsSection() {
           </div>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
       </SectionPage>
     </AiGallery>);
 }

@@ -22,13 +22,13 @@ const SIZES: SelectSize[] = ["sm", "md", "lg"];
 
 export default function ComboboxSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
 
       <Specimen title="Multi-select" description="Choose several; choices become chips. In a form they wrap onto more lines; in a toolbar or a table row they stay on one line and fold into +N (its tooltip lists them). Backspace removes the last choice; ← walks the chips.">
         <FormStack>
@@ -53,7 +53,7 @@ export default function ComboboxSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Sizes" description="Chips are as tall as the inner buttons, so a one-line box keeps its height.">
         {SIZES.map((size) => (<Example key={size} label={size}>
@@ -87,8 +87,8 @@ export default function ComboboxSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

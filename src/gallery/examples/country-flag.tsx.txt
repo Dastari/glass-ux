@@ -2,11 +2,9 @@ import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 
 import { CountryFlag } from "glass-ux/country-select";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 export default function CountrySelectSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Flags" description="3:2, the height of a small icon, with a hairline so white flags read on white.">
         <span className="flex flex-wrap items-center gap-2">
@@ -14,21 +12,16 @@ export default function CountrySelectSection() {
         </span>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { countrySchema } from "glass-ux/country-select"
 
-const schema = z.object({ country: countrySchema({ required: true }) })   // "AU"
 
-<form.AppField name="country">{(field) => <field.CountryField label="Country" priority={["AU", "NZ"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

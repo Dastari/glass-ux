@@ -8,8 +8,6 @@ import { countrySchema } from "../../ui/country-select/index.js";
 
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 function CountryDemo() {
@@ -36,23 +34,18 @@ export default function CountrySelectSection() {
         <CountryDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { countrySchema } from "../../ui/country-select/index.js"
 
-const schema = z.object({ country: countrySchema({ required: true }) })   // "AU"
 
-<form.AppField name="country">{(field) => <field.CountryField label="Country" priority={["AU", "NZ"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
+
     </SectionPage>);
 }

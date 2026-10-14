@@ -71,7 +71,7 @@ export default function SwitchSection() {
         <Switch size="lg" icons aria-label="Off with icons"/>
       </Specimen>
 
-      <></>
+
 
       <ContainerLab>
         {(preset) => preset?.id === "row" || preset?.id === "header" ? (<div className="flex h-full items-center gap-3 px-3">
@@ -81,8 +81,8 @@ export default function SwitchSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

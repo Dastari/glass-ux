@@ -8,8 +8,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../u
 
 import { ipSchema } from "../../ui/ip-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 function NetworkDemo() {
@@ -37,24 +35,16 @@ export default function IpFieldSection() {
         <NetworkDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { ipSchema } from "../../ui/ip-field/index.js"
 
-const schema = z.object({
-  gateway: ipSchema({ version: 4, required: true }),
-  subnet: ipSchema({ version: 4, cidr: "required" }),   // "Add a prefix length, such as /24"
-})
 
-<form.AppField name="subnet">{(field) => <field.IpField label="Subnet" version={4} cidr="required" width="medium" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

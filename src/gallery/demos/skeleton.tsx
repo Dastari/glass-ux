@@ -30,7 +30,7 @@ const ROLES: Array<{
 export default function TypographySection() {
     const [view, setView] = useState<View>("overlay");
     return (<SectionPage>
-      <></>
+
       <Specimen title="Roles and their skeletons" description="Use a role class (type-title, type-caption…). Each sets size, line height, weight and tracking together. Its skeleton occupies exactly the same line box and covers the glyph height, so swapping between them moves nothing. Overlay draws the skeleton behind the text." layout="stack" wide>
         <div className="flex gap-controls" role="group" aria-label="Show">
           {(["text", "skeleton", "overlay"] as View[]).map((option) => (<Button key={option} size="sm" variant={view === option ? "soft" : "ghost"} aria-pressed={view === option} onClick={() => setView(option)}>
@@ -51,11 +51,11 @@ export default function TypographySection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
-      <></>
+
+
+
+
     </SectionPage>);
 }

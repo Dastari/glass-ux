@@ -8,8 +8,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../u
 
 import { macSchema, type MacVendorLookup } from "../../ui/mac-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 /** A few OUIs, standing in for the server's IEEE registry lookup. */
@@ -45,23 +43,16 @@ export default function MacFieldSection() {
         <MacDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { macSchema } from "../../ui/mac-field/index.js"
 
-const schema = z.object({ mac: macSchema({ required: true }) })
 
-<form.AppField name="mac">
-  {(field) => <field.MacAddressField label="MAC address" lookupVendor={(oui) => api.vendorOf(oui)} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

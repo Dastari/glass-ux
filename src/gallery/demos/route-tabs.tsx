@@ -67,20 +67,20 @@ export default function TabsSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
+
+
     </SectionPage>);
 }

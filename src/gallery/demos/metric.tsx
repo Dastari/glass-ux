@@ -89,7 +89,7 @@ export default function MetricSection() {
         </div>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Loading" description="The skeleton takes the same rows in every tier. Swap in place to compare." wide>
         <div className="gallery-tiers">
@@ -103,8 +103,8 @@ export default function MetricSection() {
         {() => <Metric {...cpu}/>}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

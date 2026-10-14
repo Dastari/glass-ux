@@ -52,6 +52,9 @@
     flex-direction: column;
     gap: var(--space-1);
   }
+  .docs-nav-group + .docs-nav-group {
+    margin-block-start: var(--space-6);
+  }
   .docs-nav a {
     display: block;
     padding: var(--space-2);

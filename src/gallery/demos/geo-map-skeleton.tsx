@@ -25,15 +25,15 @@ export default function MapSection() {
     const tasmania = useMapRegion(DEMO_MAP_CONFIG, "AU-TAS");
     const sample = POINTS.slice(0, 9);
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
 
       <Specimen title="Loading" description="Before the map engine arrives, the home region's outline stands in, framed exactly as the map will frame it, so the map fades in over it without a shift. Never a spinner." layout="bare" wide>
         <div className="gallery-map-frame" data-size="short" data-testid="map-skeleton">
@@ -41,12 +41,12 @@ export default function MapSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

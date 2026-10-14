@@ -8,11 +8,11 @@ import { series } from "../sections/nav.fixtures.js";
 
 export default function MetricSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="Sparkline" description="Usable alone: 2px line in the data colour, a wash under it and a ringed dot on the latest sample. Status tones only when the series is in that state.">
         {(["data", "success", "warning", "danger", "neutral"] as const).map((tone, index) => (<Example key={tone} label={tone}>
@@ -22,12 +22,12 @@ export default function MetricSection() {
           </Example>))}
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

@@ -20,7 +20,7 @@ export default function BrandSection() {
         </Example>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Every palette" description="The primary half is the palette's accent, lifted in dark mode to keep 3:1 on the canvas; the secondary half is ink. Graphite's accent is ink, so its secondary moves to a mid grey. Switch the gallery's mode to see the other." wide layout="bare">
         <div className="gallery-brand-matrix">
@@ -46,8 +46,8 @@ export default function BrandSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

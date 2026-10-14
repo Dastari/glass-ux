@@ -6,11 +6,9 @@ import { FormStack } from "glass-ux/form";
 
 import { MacAddressInput } from "glass-ux/mac-field";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 export default function MacFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -45,17 +43,10 @@ export default function MacFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { macSchema } from "glass-ux/mac-field"
 
-const schema = z.object({ mac: macSchema({ required: true }) })
 
-<form.AppField name="mac">
-  {(field) => <field.MacAddressField label="MAC address" lookupVendor={(oui) => api.vendorOf(oui)} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

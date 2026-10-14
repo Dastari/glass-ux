@@ -10,8 +10,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../u
 
 import { mobileSchema, phoneSchema } from "../../ui/phone-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 const schema = z.object({ mobile: mobileSchema({ required: true }), office: phoneSchema(), afterHours: phoneSchema() });
@@ -47,35 +45,24 @@ function ContactDemo() {
 
 export default function PhoneFieldSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="In a form" description="PhoneField and MobileField store E.164 (“+61412345678”, “+61362345678;ext=204”). mobileSchema refuses landlines; both check the number is valid for its country.">
         <ContactDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { mobileSchema, phoneSchema } from "../../ui/phone-field/index.js"
 
-const schema = z.object({
-  mobile: mobileSchema({ required: true }),   // "Enter a mobile number, not a landline"
-  office: phoneSchema(),                      // optional; "+61362345678;ext=204"
-})
 
-<form.AppField name="mobile">{(field) => <field.MobileField label="Mobile" />}</form.AppField>
-<form.AppField name="office">{(field) => <field.PhoneField label="Office" extension />}</form.AppField>
 
-// defaultCountry (default "AU") reads national numbers; display="international" shows +61 4…`}/>
 
-      <></>
 
-      <></>
+
+
+
     </SectionPage>);
 }

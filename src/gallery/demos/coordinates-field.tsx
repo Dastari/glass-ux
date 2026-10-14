@@ -10,8 +10,6 @@ import { coordinatesSchema, type LatLng } from "../../ui/coordinates-field/index
 
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 const TASMANIA = [143.8, -43.7, 148.5, -39.5] as const;
@@ -36,29 +34,22 @@ function BoundDemo() {
 
 export default function CoordinatesFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Pick on map and use my location" description="The map pin opens a picker: click the map or drag the pin. The location button asks the browser for the device's position; a site whose location is blocked says how to allow it.">
         <BoundDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { coordinatesSchema } from "../../ui/coordinates-field/index.js"
 
-const schema = z.object({ position: coordinatesSchema({ required: true }) })   // { lat, lng } | null
 
-<form.AppField name="position">
-  {(field) => <field.CoordinatesField label="Site position" map={mapConfig} mapFallback={homeRegionBox} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

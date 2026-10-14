@@ -4,13 +4,13 @@ import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
 
 import { IconRestart, IconTrash } from "glass-ux/icons";
 
-import { AlertDialog, ConfirmHost, confirm } from "glass-ux/alert-dialog";
+import { AlertDialog, confirm } from "glass-ux/alert-dialog";
 
 import { Button } from "glass-ux/button";
 
 import { Switch } from "glass-ux/switch";
 
-import { Toaster, toast } from "glass-ux/toast";
+import { toast } from "glass-ux/toast";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -22,8 +22,8 @@ export default function AlertDialogSection() {
             throw new Error("Agent offline — retry when NST-C106 reconnects");
     };
     return (<SectionPage>
-      <Toaster />
-      <ConfirmHost />
+
+
       <Specimen title="Live" description="Cancel takes focus first and Esc cancels. The confirm runs the action in place; while it runs the dialog cannot be dismissed.">
         <Example label="Danger · warning · default">
           <AlertDialog trigger={<Button variant="danger-soft" icon={<IconTrash />}>
@@ -52,16 +52,16 @@ export default function AlertDialogSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
     </SectionPage>);
 }

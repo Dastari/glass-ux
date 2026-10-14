@@ -50,8 +50,8 @@ export default function PopoverSection() {
         </Popover.Preview>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

@@ -12,7 +12,7 @@ const today = todayIso();
 
 export default function DatePickerSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Fields" description="Type in the locale's order (13/10/2026; any separator, two-digit years) or open the calendar with its button or Alt+↓. Text that is not a day turns the box invalid and keeps what was typed." layout="stack">
         <FormStack>
@@ -63,8 +63,8 @@ export default function DatePickerSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

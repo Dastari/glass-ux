@@ -135,8 +135,8 @@ export default function TopologySection() {
         {() => <DemoMap nodes={OFFICE}/>}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

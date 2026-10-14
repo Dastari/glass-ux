@@ -247,9 +247,9 @@ export default function AiCatalogueSection() {
           </TableScroll>
         </Specimen>
 
-        {FAMILIES.map((family) => (<></>))}
 
-        <></>
+
+
       </SectionPage>
     </AiGallery>);
 }

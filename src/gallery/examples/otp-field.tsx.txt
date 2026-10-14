@@ -8,8 +8,6 @@ import { Form, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
 
 import { otpSchema, type OtpStatus } from "glass-ux/otp-field";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 /** The code the demo accepts. */
@@ -45,29 +43,22 @@ function VerifyDemo() {
 export default function OtpFieldSection() {
     const [code, setCode] = useState("");
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Submit on complete" description="With autoSubmit the last digit submits the form; the boxes show the outcome in place.">
         <VerifyDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { otpSchema } from "glass-ux/otp-field"
 
-const schema = z.object({ code: otpSchema() })   // "Enter the 6-digit code"
 
-<form.AppField name="code">
-  {(field) => <field.OtpField label="Verification code" autoSubmit status={refused ? "error" : undefined} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

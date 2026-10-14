@@ -32,9 +32,9 @@ function ScopedWindow({ scope }: {
 
 export default function OrgSwitcherSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="Avatar" description="A rounded square, so an organisation never reads as a person. Initials sit in ink on one of the eight identity colours (never the data hues); a logo replaces them. In a narrow top bar the trigger shows the avatar and the short code (“NST”).">
         <Example label="Sizes">
@@ -73,10 +73,10 @@ export default function OrgSwitcherSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
     </SectionPage>);
 }

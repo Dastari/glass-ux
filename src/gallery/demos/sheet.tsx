@@ -169,8 +169,8 @@ export default function SheetSection() {
         </Dialog.Preview>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

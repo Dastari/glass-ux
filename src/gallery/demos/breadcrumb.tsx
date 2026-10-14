@@ -93,7 +93,7 @@ export default function BreadcrumbSection() {
         </div>
       </OnCanvas>
 
-      <></>
+
 
       <Specimen title="On glass" description="Muted crumbs, separators and hover fills read the same on panel glass as on the canvas." wide>
         <LiveBreadcrumb />
@@ -148,8 +148,8 @@ export default function BreadcrumbSection() {
         {() => <LiveBreadcrumb />}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

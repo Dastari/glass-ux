@@ -30,13 +30,13 @@ function SpecimenTopBar() {
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function AppShellSection() {
     return (<SectionPage>
-      <></>
 
-    <></>
 
-      <></>
 
-      <></>
+
+
+
+
 
       <Specimen title="Top bar" description="The application context, on the canvas: nothing in it depends on the organisation. The switcher is the door to the organisation context below; Glass UX settings is the gear; notifications are the badge on the avatar. It adapts to its own width: the organisation folds to its avatar (with +N on its corner), the search field becomes a square and the account folds to its avatar." wide layout="stack">
         {(["wide", "medium", "narrow"] as const).map((width) => (<Example key={width} label={width === "wide" ? "Wide" : width === "medium" ? "Medium" : "Narrow"}>
@@ -46,14 +46,14 @@ export default function AppShellSection() {
           </Example>))}
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
     </SectionPage>);
 }

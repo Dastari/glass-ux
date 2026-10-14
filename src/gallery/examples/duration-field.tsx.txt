@@ -6,8 +6,6 @@ import { durationSchema } from "glass-ux/duration-field";
 
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 function DurationDemo() {
@@ -41,21 +39,16 @@ export default function DurationFieldSection() {
         <DurationDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { durationSchema } from "glass-ux/duration-field"
 
-const schema = z.object({ response: durationSchema({ required: true, min: 900, max: 604800 }) })   // seconds
 
-<form.AppField name="response">{(field) => <field.DurationField label="Response target" units={["d", "h", "m"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

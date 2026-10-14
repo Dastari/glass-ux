@@ -93,7 +93,7 @@ export default function FileDropSection() {
         </div>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Over glass and imagery" backdrop>
         <div className="w-full max-w-md">
@@ -113,8 +113,8 @@ export default function FileDropSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

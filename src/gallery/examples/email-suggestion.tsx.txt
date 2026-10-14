@@ -8,8 +8,6 @@ import { Field } from "glass-ux/field";
 
 import { FormStack } from "glass-ux/form";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 function SuggestionDemo() {
     const [value, setValue] = useState("avery@hotmial.com");
     const suggestion = suggestEmail(value);
@@ -26,25 +24,18 @@ export default function EmailFieldSection() {
         </FormStack>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { emailSchema } from "glass-ux/email-field"
 
-const schema = z.object({ work: emailSchema({ required: true }), personal: emailSchema() })
 
-<form.AppField name="work">
-  {(field) => <field.EmailField label="Work email" knownDomains={[organisation.emailDomain]} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
+
     </SectionPage>);
 }

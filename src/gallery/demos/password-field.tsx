@@ -8,8 +8,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../u
 
 import { currentPasswordSchema, passwordSchema } from "../../ui/password-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 import { wait } from "../sections/forms.fixtures.js";
 
 const USER = ["Avery Quinn", "avery.quinn@orbit.example.com.au", "Orbit Workspace"];
@@ -37,33 +35,24 @@ function ChangePasswordDemo() {
 
 export default function PasswordFieldSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="In a form" description="currentPasswordSchema only requires a value; passwordSchema wants 12 characters and at least Fair, and penalises the person's own name and email.">
         <ChangePasswordDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { currentPasswordSchema, passwordSchema } from "../../ui/password-field/index.js"
 
-const schema = z.object({
-  current: currentPasswordSchema(),                                   // autocomplete="current-password"
-  next: passwordSchema({ minLength: 12, minScore: 2, userInputs: [name, email] }),
-})
 
-<form.AppField name="current">{(field) => <field.PasswordField label="Current password" purpose="current" />}</form.AppField>
-<form.AppField name="next">{(field) => <field.PasswordField label="New password" generate userInputs={[name, email]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

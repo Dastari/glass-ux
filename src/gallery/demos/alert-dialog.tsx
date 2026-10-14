@@ -6,13 +6,13 @@ import { Example, SectionPage, Specimen } from "../kit.js";
 
 import { IconRestart, IconTrash } from "../../icons/generated/icons.js";
 
-import { AlertDialog, ConfirmHost, confirm } from "../../ui/alert-dialog/index.js";
+import { AlertDialog, confirm } from "../../ui/alert-dialog/index.js";
 
 import { Button } from "../../ui/button/index.js";
 
 import { Switch } from "../../ui/switch/index.js";
 
-import { Toaster, toast } from "../../ui/toast/index.js";
+import { toast } from "../../ui/toast/index.js";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -24,8 +24,8 @@ export default function AlertDialogSection() {
             throw new Error("Agent offline — retry when NST-C106 reconnects");
     };
     return (<SectionPage>
-      <Toaster />
-      <ConfirmHost />
+
+
       <Specimen title="Live" description="Cancel takes focus first and Esc cancels. The confirm runs the action in place; while it runs the dialog cannot be dismissed.">
         <Example label="Danger · warning · default">
           <AlertDialog trigger={<Button variant="danger-soft" icon={<IconTrash />}>
@@ -54,16 +54,16 @@ export default function AlertDialogSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
     </SectionPage>);
 }

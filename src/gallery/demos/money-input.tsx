@@ -8,11 +8,9 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { MoneyInput } from "../../ui/money-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function MoneyFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Currencies and states" layout="grid">
         <FormStack>
@@ -45,15 +43,10 @@ export default function MoneyFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { moneySchema } from "../../ui/money-field/index.js"
 
-const schema = z.object({ rate: moneySchema({ required: true, max: 100000 }) })   // cents: 16500 = $165.00
 
-<form.AppField name="rate">{(field) => <field.MoneyField label="Hourly rate" currency="AUD" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

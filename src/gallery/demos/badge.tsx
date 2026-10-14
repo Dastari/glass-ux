@@ -37,16 +37,16 @@ export default function BadgeSection() {
         }))}/>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
     </SectionPage>);
 }

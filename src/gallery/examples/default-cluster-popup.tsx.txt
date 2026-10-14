@@ -35,11 +35,11 @@ export default function MapSection() {
     const tasmania = useMapRegion(DEMO_MAP_CONFIG, "AU-TAS");
     const sample = POINTS.slice(0, 9);
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="Popups" description="The shared popup look (glass-overlay fa-popup), not MapLibre's. Hovering or focusing a marker previews it; clicking or Enter pins it and moves focus inside; Esc closes it and returns focus. The caller renders the content and can add detail once zoomed in.">
         <Example label="Point">
@@ -54,16 +54,16 @@ export default function MapSection() {
         </Example>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
+
     </SectionPage>);
 }

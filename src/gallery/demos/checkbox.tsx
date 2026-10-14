@@ -53,7 +53,7 @@ export default function ChoiceSection() {
         }))}/>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="Tones" description="Accent by default. Success, warning and danger only when the choice itself is a status (R3.3).">
         <Matrix columns={["Ticked", "Mixed", "Chosen", "Card"]} rows={TONES.map((tone) => ({
@@ -78,11 +78,11 @@ export default function ChoiceSection() {
         <ParentGroup />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
 
       <Specimen title="Over glass and imagery" backdrop>
         <div className="flex flex-col gap-3">
@@ -125,8 +125,8 @@ export default function ChoiceSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

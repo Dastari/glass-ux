@@ -2,12 +2,12 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { SectionPage, Specimen } from "../kit.js";
 
-import { Toaster, ToastPreview } from "../../ui/toast/index.js";
+import { ToastPreview } from "../../ui/toast/index.js";
 
 export default function ToastSection() {
     return (<SectionPage>
-      <Toaster />
-      <></>
+
+
 
       <Specimen title="Tones" description="Neutral glass with the tone in the tile only. The title names the target and the outcome; the description gives the detail or the reason.">
         <div className="flex w-full flex-col items-start gap-3">
@@ -26,8 +26,8 @@ export default function ToastSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

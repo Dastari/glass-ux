@@ -51,9 +51,9 @@ function LoadingFacts() {
 
 export default function DetailTileSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen wide title="Loading" description="Each skeleton tile is the loaded tile's exact box: same icon box, same type roles, same lines.">
         <div className="flex w-full flex-col gap-6">
@@ -66,14 +66,14 @@ export default function DetailTileSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
+
     </SectionPage>);
 }

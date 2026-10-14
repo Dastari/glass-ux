@@ -249,7 +249,7 @@ export default function AiCatalogueSection() {
 
         {FAMILIES.map((family) => (<></>))}
 
-        <></>
+
       </SectionPage>
     </AiGallery>);
 }

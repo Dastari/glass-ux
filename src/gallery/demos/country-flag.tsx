@@ -4,11 +4,9 @@ import { SectionPage, Specimen } from "../kit.js";
 
 import { CountryFlag } from "../../ui/country-select/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function CountrySelectSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Flags" description="3:2, the height of a small icon, with a hairline so white flags read on white.">
         <span className="flex flex-wrap items-center gap-2">
@@ -16,21 +14,16 @@ export default function CountrySelectSection() {
         </span>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { countrySchema } from "../../ui/country-select/index.js"
 
-const schema = z.object({ country: countrySchema({ required: true }) })   // "AU"
 
-<form.AppField name="country">{(field) => <field.CountryField label="Country" priority={["AU", "NZ"]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

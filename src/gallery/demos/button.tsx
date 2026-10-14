@@ -125,8 +125,8 @@ export default function ButtonSection() {
         <Button variant="ghost" icon={<IconMoreHorizontal />} aria-label="More"/>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

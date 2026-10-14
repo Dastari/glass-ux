@@ -6,8 +6,6 @@ import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-u
 
 import { formatMoney, moneySchema } from "glass-ux/money-field";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 function MoneyDemo() {
@@ -40,21 +38,16 @@ export default function MoneyFieldSection() {
         <MoneyDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { moneySchema } from "glass-ux/money-field"
 
-const schema = z.object({ rate: moneySchema({ required: true, max: 100000 }) })   // cents: 16500 = $165.00
 
-<form.AppField name="rate">{(field) => <field.MoneyField label="Hourly rate" currency="AUD" />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

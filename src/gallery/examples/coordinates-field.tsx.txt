@@ -8,8 +8,6 @@ import { coordinatesSchema, type LatLng } from "glass-ux/coordinates-field";
 
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 const TASMANIA = [143.8, -43.7, 148.5, -39.5] as const;
@@ -34,29 +32,22 @@ function BoundDemo() {
 
 export default function CoordinatesFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="Pick on map and use my location" description="The map pin opens a picker: click the map or drag the pin. The location button asks the browser for the device's position; a site whose location is blocked says how to allow it.">
         <BoundDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { coordinatesSchema } from "glass-ux/coordinates-field"
 
-const schema = z.object({ position: coordinatesSchema({ required: true }) })   // { lat, lng } | null
 
-<form.AppField name="position">
-  {(field) => <field.CoordinatesField label="Site position" map={mapConfig} mapFallback={homeRegionBox} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

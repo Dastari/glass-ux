@@ -16,7 +16,7 @@ import { SettingRow } from "../../ui/setting-row/index.js";
 
 import { Switch } from "../../ui/switch/index.js";
 
-import { Toaster, toast } from "../../ui/toast/index.js";
+import { toast } from "../../ui/toast/index.js";
 
 import { wait } from "../sections/forms.fixtures.js";
 
@@ -63,7 +63,7 @@ function Rows() {
 
 export default function SettingRowSection() {
     return (<SectionPage>
-      <Toaster />
+
       <Specimen title="Every control type" description="Switches, segmented controls of up to four options, a read-only value with an action, a plain action, and a value on its own. The label names the control; the description says what it does.">
         <FormStack>
           <Rows />
@@ -99,7 +99,7 @@ export default function SettingRowSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <ContainerLab>
         {(preset) => preset?.id === "row" || preset?.id === "header" ? (<div className="flex h-full items-center px-3">
@@ -111,8 +111,8 @@ export default function SettingRowSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

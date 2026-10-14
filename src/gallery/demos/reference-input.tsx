@@ -32,6 +32,6 @@ export default function ReferenceInputSection() {
     return <SectionPage>
  <Specimen title="Linked items" layout="stack"><Demo /><Demo disabled/><Demo readOnly/></Specimen>
  <ContainerLab>{() => <Demo />}</ContainerLab>
- <></>
+
     </SectionPage>;
 }

@@ -109,8 +109,8 @@ export default function DetailTileSection() {
           </ScrollArea>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

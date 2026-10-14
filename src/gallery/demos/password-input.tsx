@@ -8,8 +8,6 @@ import { FormStack } from "../../ui/form/index.js";
 
 import { PasswordInput } from "../../ui/password-field/index.js";
 
-import { Usage } from "../sections/inputs.kit.js";
-
 export default function PasswordFieldSection() {
     return (<SectionPage>
       <Specimen title="Reveal, Caps Lock and strength" description="The eye shows and hides the password (a tooltip names it; aria-pressed says which). With Caps Lock on, a note appears inside the box. New passwords get a strength bar along the box's lower edge; the words are in the message line.">
@@ -34,7 +32,7 @@ export default function PasswordFieldSection() {
         </FormStack>
       </Specimen>
 
-      <></>
+
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -66,19 +64,10 @@ export default function PasswordFieldSection() {
         </div>
       </ContainerLab>
 
-      <Usage code={`
-import { currentPasswordSchema, passwordSchema } from "../../ui/password-field/index.js"
 
-const schema = z.object({
-  current: currentPasswordSchema(),                                   // autocomplete="current-password"
-  next: passwordSchema({ minLength: 12, minScore: 2, userInputs: [name, email] }),
-})
 
-<form.AppField name="current">{(field) => <field.PasswordField label="Current password" purpose="current" />}</form.AppField>
-<form.AppField name="next">{(field) => <field.PasswordField label="New password" generate userInputs={[name, email]} />}</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
     </SectionPage>);
 }

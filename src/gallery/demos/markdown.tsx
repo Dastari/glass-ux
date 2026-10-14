@@ -12,17 +12,17 @@ const PROSE = "NST-C106 at [Northstar Studio](/organisations/northstar) stopped 
 export default function AiContextLinksSection() {
     return (<AiGallery>
       <SectionPage>
-        <></>
+
 
         <Specimen title="In prose" description="Internal links in an answer become inline chips that sit inside the line box. Hover or focus one for its preview; click navigates; right-click or Shift+F10 opens its actions." layout="stack">
           <Markdown text={PROSE}/>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
 
         <ContainerLab description="Chips truncate at their maximum and wrap with the text; they never push their row wider.">
           {() => (<LabScroll>
@@ -30,9 +30,9 @@ export default function AiContextLinksSection() {
             </LabScroll>)}
         </ContainerLab>
 
-        <></>
 
-        <></>
+
+
       </SectionPage>
     </AiGallery>);
 }

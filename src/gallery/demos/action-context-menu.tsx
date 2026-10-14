@@ -91,13 +91,13 @@ export default function ActionsSection() {
             </Example>
           </Specimen>
 
-          <></>
 
-          <></>
 
-          <></>
 
-          <></>
+
+
+
+
         </SectionPage>
       </PaletteProvider>
     </ActionProvider>);

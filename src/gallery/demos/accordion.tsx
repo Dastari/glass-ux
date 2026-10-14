@@ -32,7 +32,7 @@ export default function AccordionSection() {
         </div>
       </Specimen>
 
-      <></>
+
 
       <ContainerLab description="Titles and meta truncate; the panel scrolls with its container.">
         {() => (<div className="h-full overflow-auto" data-scroll-container>
@@ -47,8 +47,8 @@ export default function AccordionSection() {
           </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

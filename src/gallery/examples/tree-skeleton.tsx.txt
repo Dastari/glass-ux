@@ -23,13 +23,13 @@ const LOADED: TreeNode[] = [
 
 export default function TreeSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
+
 
       <Specimen title="Loading" description="Skeleton rows have the tree's exact heights, icon boxes and text roles. Swap in place to compare.">
         <div className="w-72 max-w-full">
@@ -37,10 +37,10 @@ export default function TreeSection() {
         </div>
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
+
+
+
     </SectionPage>);
 }

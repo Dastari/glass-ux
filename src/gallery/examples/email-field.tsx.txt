@@ -6,8 +6,6 @@ import { emailSchema } from "glass-ux/email-field";
 
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
 
-import { Usage } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 const schema = z.object({ work: emailSchema({ required: true }), personal: emailSchema() });
@@ -32,29 +30,22 @@ function EmailDemo() {
 
 export default function EmailFieldSection() {
     return (<SectionPage>
-      <></>
+
 
       <Specimen title="In a form" description="Leave each field to see its hint. The domain is lower-cased and mailto: dropped on blur.">
         <EmailDemo />
       </Specimen>
 
-      <></>
 
-      <></>
 
-      <></>
 
-      <Usage code={`
-import { emailSchema } from "glass-ux/email-field"
 
-const schema = z.object({ work: emailSchema({ required: true }), personal: emailSchema() })
 
-<form.AppField name="work">
-  {(field) => <field.EmailField label="Work email" knownDomains={[organisation.emailDomain]} />}
-</form.AppField>`}/>
 
-      <></>
 
-      <></>
+
+
+
+
     </SectionPage>);
 }

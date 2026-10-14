@@ -9,7 +9,7 @@ React 19, React DOM 19 and Node 22.12 or newer are required. Install the built a
 a GitHub release and commit the package-manager lockfile:
 
 ```sh
-pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.1.0/glass-ux-0.1.0.tgz
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.1.1/glass-ux-0.1.1.tgz
 ```
 
 The archive includes JavaScript, TypeScript declarations, styles, fonts, guides and skills.
@@ -92,7 +92,9 @@ export function App() {
 ```
 
 Use the providers needed by your components. The host router wraps the application when
-using routed tabs, table URL state or the packaged gallery. For SSR, apply
+using routed tabs, table URL state or the packaged gallery. ActionProvider uses TanStack
+navigation when available; supply its navigate callback for another router. Without a
+router adapter it uses browser document navigation. For SSR, apply
 `appearanceBootScript()` before first paint and use your framework's supported script API.
 
 ## Build a typed form

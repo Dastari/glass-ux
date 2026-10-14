@@ -13,9 +13,9 @@ const win11 = ENDPOINTS[2]!;
 export default function MenuSection() {
     return (<ActionProvider>
       <SectionPage>
-        <></>
 
-        <></>
+
+
 
         <Specimen title="Toggles, choices and labels" description="Ticks and dots take the icon slot, so labels line up with icon rows.">
           <MenuPreview.Surface label="View">
@@ -41,13 +41,13 @@ export default function MenuSection() {
           <ActionMenuPreview set={endpointActions} targets={[win11]} label={win11.name}/>
         </Specimen>
 
-        <></>
 
-        <></>
 
-        <></>
 
-        <></>
+
+
+
+
       </SectionPage>
     </ActionProvider>);
 }

@@ -25,9 +25,9 @@ function SessionCards({ orientation = "vertical" }: {
 
 export default function ChoiceSection() {
     return (<SectionPage>
-      <></>
 
-      <></>
+
+
 
       <Specimen title="Tones" description="Accent by default. Success, warning and danger only when the choice itself is a status (R3.3).">
         <Matrix columns={["Ticked", "Mixed", "Chosen", "Card"]} rows={TONES.map((tone) => ({
@@ -45,9 +45,9 @@ export default function ChoiceSection() {
         }))}/>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
 
       <Specimen title="Radio cards" description="For options that need a sentence, typically in a dialog: Connect to NST-C106." layout="stack">
         <div className="max-w-md">
@@ -59,9 +59,9 @@ export default function ChoiceSection() {
         <SessionCards orientation="horizontal"/>
       </Specimen>
 
-      <></>
 
-      <></>
+
+
 
       <ContainerLab>
         {(preset) => preset?.id === "row" ? (<div className="flex h-full items-center gap-5 px-3">
@@ -84,8 +84,8 @@ export default function ChoiceSection() {
             </div>)}
       </ContainerLab>
 
-      <></>
 
-      <></>
+
+
     </SectionPage>);
 }

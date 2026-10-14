@@ -1,15 +1,22 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Button } from "glass-ux/button";
-
 import { ToastLayout } from "glass-ux/toast";
 
 export default function ToastLayoutExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="ToastLayout" layout="stack">
-        <ToastLayout tone="success" title="Exhibition saved" description="Your fictional sample was updated." close={<Button size="sm" variant="ghost" aria-label="Dismiss sample toast">
+        <ToastLayout
+          tone="success"
+          title="Exhibition saved"
+          description="Your fictional sample was updated."
+          close={
+            <Button size="sm" variant="ghost" aria-label="Dismiss sample toast">
               Dismiss
-            </Button>}/>
+            </Button>
+          }
+        />
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

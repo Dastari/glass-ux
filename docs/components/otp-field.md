@@ -2,7 +2,6 @@
 
 `glass-ux/otp-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 N boxes for a TOTP or verification code, built on Base UI's OTP Field: `autocomplete="one-time-code"`
 (phones offer the code from a message), `inputmode="numeric"`, Backspace steps back, the arrows
 move, and paste fills every box — the code is found inside whatever was copied ("Your code is

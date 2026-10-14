@@ -2,7 +2,6 @@
 
 `glass-ux/duration-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 A duration typed as people say it — "1h 30m", "90" (minutes by default), "1:30", "1.5 hours",
 "2 days 4 hrs" — held in whole seconds and rewritten compactly when focus leaves ("1h 30m"). The
 hint spells it out ("1 hour 30 minutes"), so a bare number is never misread.

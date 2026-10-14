@@ -1,18 +1,22 @@
 import { Panel, PanelHeader, PanelBody } from "glass-ux/surface";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { IconOrganisation } from "glass-ux/icons";
-
 import { Button } from "glass-ux/button";
 
 export default function PanelHeaderExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="Panel heading and actions" layout="stack">
         <Panel>
-          <PanelHeader icon={<IconOrganisation />} title="Exhibition overview" description="Three rooms · next month" actions={<Button variant="ghost">Edit</Button>}/>
+          <PanelHeader
+            icon={<IconOrganisation />}
+            title="Exhibition overview"
+            description="Three rooms · next month"
+            actions={<Button variant="ghost">Edit</Button>}
+          />
           <PanelBody>Panel body content.</PanelBody>
         </Panel>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

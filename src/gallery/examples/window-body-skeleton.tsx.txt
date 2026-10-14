@@ -1,13 +1,18 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { WindowBodySkeleton } from "glass-ux/windows";
 
 export default function WindowBodySkeletonExample() {
-    return (<SectionPage>
-      <Specimen title="WindowBodySkeleton" description="The loading state keeps the corresponding content dimensions while data arrives." layout="stack">
+  return (
+    <SectionPage>
+      <Specimen
+        title="WindowBodySkeleton"
+        description="The loading state keeps the corresponding content dimensions while data arrives."
+        layout="stack"
+      >
         <div className="h-45 w-full">
           <WindowBodySkeleton />
         </div>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

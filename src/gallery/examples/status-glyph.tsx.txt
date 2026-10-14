@@ -1,14 +1,15 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { StatusGlyph } from "glass-ux/ai";
 
 export default function StatusGlyphExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="StatusGlyph" layout="stack">
-        <StatusGlyph status="queued"/>
-        <StatusGlyph status="running"/>
-        <StatusGlyph status="succeeded"/>
-        <StatusGlyph status="failed"/>
+        <StatusGlyph status="queued" />
+        <StatusGlyph status="running" />
+        <StatusGlyph status="succeeded" />
+        <StatusGlyph status="failed" />
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

@@ -319,7 +319,7 @@ export function UsageExample({ section }: { section: string }) {
     };
   }, [section]);
   return (
-    <section>
+    <section className="gallery-usage-example">
       <h2 id="usage-title">Usage</h2>
       <p>
         This complete example uses the same package as the live demo. Gallery

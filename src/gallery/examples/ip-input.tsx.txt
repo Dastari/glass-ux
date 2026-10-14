@@ -1,30 +1,26 @@
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Field } from "glass-ux/field";
-
 import { FormStack } from "glass-ux/form";
-
 import { IpInput } from "glass-ux/ip-field";
 
 export default function IpFieldSection() {
-    return (<SectionPage>
-
-
+  return (
+    <SectionPage>
       <Specimen title="States" layout="grid">
         <FormStack>
           <Field label="Empty">
-            <IpInput width="medium"/>
+            <IpInput width="medium" />
           </Field>
           <Field label="Invalid" error="Enter an IPv4 address such as 192.168.1.10">
-            <IpInput defaultValue="10.13.4.256" invalid width="medium"/>
+            <IpInput defaultValue="10.13.4.256" invalid width="medium" />
           </Field>
         </FormStack>
         <FormStack>
           <Field label="Read-only">
-            <IpInput defaultValue="203.0.113.24" readOnly width="medium"/>
+            <IpInput defaultValue="203.0.113.24" readOnly width="medium" />
           </Field>
           <Field label="Disabled">
-            <IpInput defaultValue="10.13.4.1" disabled width="medium"/>
+            <IpInput defaultValue="10.13.4.1" disabled width="medium" />
           </Field>
         </FormStack>
       </Specimen>
@@ -32,21 +28,16 @@ export default function IpFieldSection() {
       <Specimen title="Over glass and imagery" backdrop>
         <FormStack>
           <Field label="Gateway">
-            <IpInput defaultValue="10.13.4.1" width="medium"/>
+            <IpInput defaultValue="10.13.4.1" width="medium" />
           </Field>
         </FormStack>
       </Specimen>
 
       <ContainerLab>
         <div className="flex h-full items-center p-1">
-          <IpInput size="sm" defaultValue="2001:db8:85a3::8a2e:370:7334" aria-label="Address"/>
+          <IpInput size="sm" defaultValue="2001:db8:85a3::8a2e:370:7334" aria-label="Address" />
         </div>
       </ContainerLab>
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

@@ -1,18 +1,18 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { TooltipPopup, TooltipPrimitive } from "glass-ux/tooltip";
-
 import { Button } from "glass-ux/button";
 
 export default function TooltipPopupExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="Custom tooltip surface" layout="stack">
         <TooltipPrimitive.Root>
-          <TooltipPrimitive.Trigger render={<Button>Hover for details</Button>}/>
+          <TooltipPrimitive.Trigger render={<Button>Hover for details</Button>} />
           <TooltipPopup side="top" align="center" arrow>
             Sample tooltip content
           </TooltipPopup>
         </TooltipPrimitive.Root>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

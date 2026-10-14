@@ -7,11 +7,14 @@ description: Extend the Glass UX library with a reusable component, typed public
 
 Read repository `AGENTS.md`, `docs/ui-rules.md`, the nearest component implementation and its
 gallery section. Determine whether the proposed component is reusable across applications.
+Read `docs/layout-contract.md`; include the docs application CSS in token/layout checks.
 Application branding, domain adapters and business workflows belong in the consuming project.
 
 Use Base UI for existing keyboard, focus, ARIA and positioning behaviour. Put a component in
 its own source folder with CSS, public exports and TSDoc. Use semantic tokens, compound slots
 where useful, data attributes for variants and container-based adaptation.
+Use the shared Surface/Panel geometry for panes and cards. Test actual theme-driven insets,
+corners and line weight, and keep catalogue headings and panel groups on the canvas.
 
 Document controlled/uncontrolled state, value units, valid options, defaults, callbacks and
 keyboard behaviour. Add a live specimen with fictional fixtures, loaded/skeleton parity and

@@ -1,51 +1,44 @@
 import { z } from "zod";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { emailSchema } from "glass-ux/email-field";
-
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 const schema = z.object({ work: emailSchema({ required: true }), personal: emailSchema() });
 
 function EmailDemo() {
-    const form = useAppForm({
-        ...formBehaviour,
-        defaultValues: { work: "mira.rowan@northstar.tas.gov.ua", personal: "avery@gmial.com" },
-        validators: { onDynamic: schema },
-        onSubmit: () => wait(600),
-    });
-    return (<Form form={form} aria-label="Email addresses" className="w-full" data-testid="email-form">
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { work: "mira.rowan@northstar.tas.gov.ua", personal: "avery@gmial.com" },
+    validators: { onDynamic: schema },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="Email addresses" className="w-full" data-testid="email-form">
       <FormStack>
-        <form.AppField name="work">{(field) => <field.EmailField label="Work email" knownDomains={["northstar.example"]}/>}</form.AppField>
-        <form.AppField name="personal">{(field) => <field.EmailField label="Personal email" optional/>}</form.AppField>
+        <form.AppField name="work">
+          {(field) => <field.EmailField label="Work email" knownDomains={["northstar.example"]} />}
+        </form.AppField>
+        <form.AppField name="personal">
+          {(field) => <field.EmailField label="Personal email" optional />}
+        </form.AppField>
         <FormActions>
           <form.SubmitButton>Save</form.SubmitButton>
         </FormActions>
       </FormStack>
-    </Form>);
+    </Form>
+  );
 }
 
 export default function EmailFieldSection() {
-    return (<SectionPage>
-
-
-      <Specimen title="In a form" description="Leave each field to see its hint. The domain is lower-cased and mailto: dropped on blur.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="In a form"
+        description="Leave each field to see its hint. The domain is lower-cased and mailto: dropped on blur."
+      >
         <EmailDemo />
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

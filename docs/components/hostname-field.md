@@ -2,7 +2,6 @@
 
 `glass-ux/hostname-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 Names checked label by label (RFC 1123: letters, digits and hyphens, never starting or ending with
 a hyphen, 63 per label, 253 in all). A pasted URL gives its host.
 

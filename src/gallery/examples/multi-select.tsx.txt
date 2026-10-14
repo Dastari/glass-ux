@@ -1,94 +1,147 @@
 import { ContainerLab, Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { IconOrganisation, IconTag } from "glass-ux/icons";
-
 import { Combobox } from "glass-ux/combobox";
-
 import { Field } from "glass-ux/field";
-
 import { FormStack } from "glass-ux/form";
-
 import { MultiSelect } from "glass-ux/multi-select";
-
 import type { SelectSize } from "glass-ux/select";
-
 import { TagInput } from "glass-ux/tag-input";
-
 import { ORGANISATIONS, TAGS } from "glass-ux/gallery/sections/forms.fixtures";
-
 import { organisationSource } from "glass-ux/gallery/sections/forms.sources";
 
 const SIZES: SelectSize[] = ["sm", "md", "lg"];
 
 export default function ComboboxSection() {
-    return (<SectionPage>
-
-
-
-
-
-
-
-
-      <Specimen title="Multi-select" description="Choose several; choices become chips. In a form they wrap onto more lines; in a toolbar or a table row they stay on one line and fold into +N (its tooltip lists them). Backspace removes the last choice; ← walks the chips.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Multi-select"
+        description="Choose several; choices become chips. In a form they wrap onto more lines; in a toolbar or a table row they stay on one line and fold into +N (its tooltip lists them). Backspace removes the last choice; ← walks the chips."
+      >
         <FormStack>
           <Field label="Notify on failure" hint="Searched on the server, at least 2 characters.">
-            <MultiSelect wrap source={organisationSource} defaultValue={[]} placeholder="Add organisations" icon={<IconOrganisation />}/>
+            <MultiSelect
+              wrap
+              source={organisationSource}
+              defaultValue={[]}
+              placeholder="Add organisations"
+              icon={<IconOrganisation />}
+            />
           </Field>
           <Field label="Tags">
-            <MultiSelect wrap options={TAGS} defaultValue={["production", "all-in-one", "front-counter", "finance"]} placeholder="Add tags" icon={<IconTag />}/>
+            <MultiSelect
+              wrap
+              options={TAGS}
+              defaultValue={["production", "all-in-one", "front-counter", "finance"]}
+              placeholder="Add tags"
+              icon={<IconTag />}
+            />
           </Field>
-          <Field label="One line" hint="width=&quot;medium&quot;, no wrap: the rest fold into +N.">
-            <MultiSelect width="medium" options={TAGS} defaultValue={["production", "all-in-one", "front-counter", "finance"]} placeholder="Add tags"/>
+          <Field label="One line" hint='width="medium", no wrap: the rest fold into +N.'>
+            <MultiSelect
+              width="medium"
+              options={TAGS}
+              defaultValue={["production", "all-in-one", "front-counter", "finance"]}
+              placeholder="Add tags"
+            />
           </Field>
           <Field label="Read-only">
-            <MultiSelect options={TAGS} defaultValue={["finance", "reception"]} readOnly/>
+            <MultiSelect options={TAGS} defaultValue={["finance", "reception"]} readOnly />
           </Field>
           <Field label="Invalid" error="Add at least one tag">
-            <MultiSelect options={TAGS} invalid placeholder="Add tags"/>
+            <MultiSelect options={TAGS} invalid placeholder="Add tags" />
           </Field>
           <Field label="Disabled" disabled>
-            <MultiSelect options={TAGS} defaultValue={["loaner"]} disabled/>
+            <MultiSelect options={TAGS} defaultValue={["loaner"]} disabled />
           </Field>
         </FormStack>
       </Specimen>
 
-
-
-      <Specimen title="Sizes" description="Chips are as tall as the inner buttons, so a one-line box keeps its height.">
-        {SIZES.map((size) => (<Example key={size} label={size}>
-            <MultiSelect size={size} options={TAGS} defaultValue={["production", "kiosk"]} aria-label={`Tags ${size}`} className="w-72"/>
-          </Example>))}
+      <Specimen
+        title="Sizes"
+        description="Chips are as tall as the inner buttons, so a one-line box keeps its height."
+      >
+        {SIZES.map((size) => (
+          <Example key={size} label={size}>
+            <MultiSelect
+              size={size}
+              options={TAGS}
+              defaultValue={["production", "kiosk"]}
+              aria-label={`Tags ${size}`}
+              className="w-72"
+            />
+          </Example>
+        ))}
       </Specimen>
 
       <Specimen title="Over glass and imagery" backdrop>
-        <Combobox options={ORGANISATIONS} defaultValue="northstar" aria-label="Organisation over imagery" className="w-72"/>
-        <MultiSelect options={TAGS} defaultValue={["production", "all-in-one"]} aria-label="Tags over imagery" className="w-72"/>
+        <Combobox
+          options={ORGANISATIONS}
+          defaultValue="northstar"
+          aria-label="Organisation over imagery"
+          className="w-72"
+        />
+        <MultiSelect
+          options={TAGS}
+          defaultValue={["production", "all-in-one"]}
+          aria-label="Tags over imagery"
+          className="w-72"
+        />
       </Specimen>
 
       <ContainerLab>
-        {(preset) => preset?.id === "row" ? (<div className="flex h-full items-center gap-2 px-1">
-              <Combobox size="sm" options={ORGANISATIONS} defaultValue="cedarvale" aria-label="Organisation" className="w-64"/>
-              <MultiSelect size="sm" options={TAGS} defaultValue={["production", "all-in-one", "front-counter", "finance"]} aria-label="Tags"/>
-            </div>) : preset?.id === "header" ? (<div className="flex h-full items-center px-2">
-              <TagInput wrap={false} defaultValue={["avery.quinn@orbit.example.com.au", "mira.rowan@northstar.example", "it@northstar.example"]} aria-label="Recipients"/>
-            </div>) : (<div className="h-full overflow-y-auto" data-scroll-container>
+        {(preset) =>
+          preset?.id === "row" ? (
+            <div className="flex h-full items-center gap-2 px-1">
+              <Combobox
+                size="sm"
+                options={ORGANISATIONS}
+                defaultValue="cedarvale"
+                aria-label="Organisation"
+                className="w-64"
+              />
+              <MultiSelect
+                size="sm"
+                options={TAGS}
+                defaultValue={["production", "all-in-one", "front-counter", "finance"]}
+                aria-label="Tags"
+              />
+            </div>
+          ) : preset?.id === "header" ? (
+            <div className="flex h-full items-center px-2">
+              <TagInput
+                wrap={false}
+                defaultValue={[
+                  "avery.quinn@orbit.example.com.au",
+                  "mira.rowan@northstar.example",
+                  "it@northstar.example",
+                ]}
+                aria-label="Recipients"
+              />
+            </div>
+          ) : (
+            <div className="h-full overflow-y-auto" data-scroll-container>
               <FormStack className="p-3">
                 <Field label="Organisation">
-                  <Combobox options={ORGANISATIONS} defaultValue="cedarvale"/>
+                  <Combobox options={ORGANISATIONS} defaultValue="cedarvale" />
                 </Field>
                 <Field label="Tags">
-                  <MultiSelect wrap options={TAGS} defaultValue={["production", "all-in-one", "front-counter", "finance"]}/>
+                  <MultiSelect
+                    wrap
+                    options={TAGS}
+                    defaultValue={["production", "all-in-one", "front-counter", "finance"]}
+                  />
                 </Field>
                 <Field label="Recipients">
-                  <TagInput defaultValue={["avery.quinn@orbit.example.com.au", "it@northstar.example"]}/>
+                  <TagInput
+                    defaultValue={["avery.quinn@orbit.example.com.au", "it@northstar.example"]}
+                  />
                 </Field>
               </FormStack>
-            </div>)}
+            </div>
+          )
+        }
       </ContainerLab>
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

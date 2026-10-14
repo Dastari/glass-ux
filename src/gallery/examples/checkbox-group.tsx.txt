@@ -1,50 +1,47 @@
 import { useState } from "react";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Checkbox, CheckboxGroup } from "glass-ux/checkbox";
 
 const ENDPOINT_IDS = ["nst-c106", "orb-4e5e", "win11-vm"];
-
-const ENDPOINT_NAMES: Record<string, string> = { "nst-c106": "NST-C106", "orb-4e5e": "LMN-4E5E", "win11-vm": "STUDIO-VM" };
+const ENDPOINT_NAMES: Record<string, string> = {
+  "nst-c106": "NST-C106",
+  "orb-4e5e": "LMN-4E5E",
+  "win11-vm": "STUDIO-VM",
+};
 
 function ParentGroup() {
-    const [value, setValue] = useState<string[]>(["nst-c106"]);
-    return (<CheckboxGroup legend="Restart after patching" value={value} onValueChange={setValue} allValues={ENDPOINT_IDS}>
-      <Checkbox parent label="All endpoints in Front office"/>
-      {ENDPOINT_IDS.map((id) => (<Checkbox key={id} value={id} label={ENDPOINT_NAMES[id]} className="ms-7"/>))}
-    </CheckboxGroup>);
+  const [value, setValue] = useState<string[]>(["nst-c106"]);
+  return (
+    <CheckboxGroup
+      legend="Restart after patching"
+      value={value}
+      onValueChange={setValue}
+      allValues={ENDPOINT_IDS}
+    >
+      <Checkbox parent label="All endpoints in Front office" />
+      {ENDPOINT_IDS.map((id) => (
+        <Checkbox key={id} value={id} label={ENDPOINT_NAMES[id]} className="ms-7" />
+      ))}
+    </CheckboxGroup>
+  );
 }
 
 export default function ChoiceSection() {
-    return (<SectionPage>
-
-
-
-
-
-
-      <Specimen title="With labels" description="Click the label or the box. A description makes the label a heading." layout="stack">
-        <Checkbox label="Wake devices before patching" defaultChecked/>
-        <Checkbox label="Restart when the signed-in user is idle" description="Waits up to 4 hours, then restarts at 2:00 am."/>
-        <Checkbox label="Skip devices on battery" disabled/>
+  return (
+    <SectionPage>
+      <Specimen
+        title="With labels"
+        description="Click the label or the box. A description makes the label a heading."
+        layout="stack"
+      >
+        <Checkbox label="Wake devices before patching" defaultChecked />
+        <Checkbox
+          label="Restart when the signed-in user is idle"
+          description="Waits up to 4 hours, then restarts at 2:00 am."
+        />
+        <Checkbox label="Skip devices on battery" disabled />
         <ParentGroup />
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

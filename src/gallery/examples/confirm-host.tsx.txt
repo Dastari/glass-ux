@@ -1,25 +1,32 @@
 import { ConfirmHost, confirm } from "glass-ux/alert-dialog";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { toast } from "glass-ux/toast";
-
 import { Button } from "glass-ux/button";
 
 export default function ConfirmHostExample() {
-    return (<SectionPage>
-      <Specimen title="Promise-based confirmation" description="Mount one host at the application root. ActionProvider already supplies it; duplicate mounts are suppressed." layout="stack">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Promise-based confirmation"
+        description="Mount one host at the application root. ActionProvider already supplies it; duplicate mounts are suppressed."
+        layout="stack"
+      >
         <ConfirmHost />
-        <Button onClick={() => void confirm({
-            title: "Archive the sample exhibition?",
-            description: "The fictional exhibition can be restored later.",
-            confirmLabel: "Archive",
-            onConfirm: async () => {
+        <Button
+          onClick={() =>
+            void confirm({
+              title: "Archive the sample exhibition?",
+              description: "The fictional exhibition can be restored later.",
+              confirmLabel: "Archive",
+              onConfirm: async () => {
                 toast.info("Sample archived");
-            },
-        })}>
+              },
+            })
+          }
+        >
           Ask for confirmation
         </Button>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

@@ -1,77 +1,98 @@
 import type { ReactNode } from "react";
-
 import { SectionPage, Specimen, SwapSlot } from "glass-ux/gallery/kit";
-
-import { IconClock, IconCpu, IconMemory, IconNetwork, IconOperatingSystem, IconOrganisation, IconTag, IconUser, IconEndpoint } from "glass-ux/icons";
-
+import {
+  IconClock,
+  IconCpu,
+  IconMemory,
+  IconNetwork,
+  IconOperatingSystem,
+  IconOrganisation,
+  IconTag,
+  IconUser,
+  IconEndpoint,
+} from "glass-ux/icons";
 import { DetailGrid, DetailTile, DetailTileSkeleton } from "glass-ux/detail-tile";
 
 interface Fact {
-    label: string;
-    value: string;
-    /** Additional detail for this value or request. */
-    detail?: string;
-    icon?: ReactNode;
-    numeric?: boolean;
-    truncate?: boolean;
+  label: string;
+  value: string;
+  /** Additional detail for this value or request. */
+  detail?: string;
+  icon?: ReactNode;
+  numeric?: boolean;
+  truncate?: boolean;
 }
 
 /** NST-C106, as in the endpoint overview mockup. */
 const FACTS: Fact[] = [
-    { label: "Manufacturer", value: "HP", icon: <IconOrganisation /> },
-    { label: "Model", value: "EliteOne 1000 G2", detail: "27-in 4K UHD AiO", icon: <IconEndpoint /> },
-    { label: "Serial number", value: "8CC0481GWV", icon: <IconTag />, numeric: true, truncate: true },
-    { label: "Operating system", value: "Windows 11 Business", detail: "10.0.26300", icon: <IconOperatingSystem /> },
-    { label: "Processor", value: "Intel(R) Core(TM) i5-8500T @ 2.10GHz", icon: <IconCpu /> },
-    { label: "Physical memory", value: "7.8 GB", icon: <IconMemory />, numeric: true },
-    { label: "Uptime", value: "2 days", icon: <IconClock /> },
-    { label: "Domain", value: "WORKGROUP", icon: <IconNetwork /> },
-    { label: "Registered user", value: "AzureAD\\MiraRowan", icon: <IconUser />, truncate: true },
+  { label: "Manufacturer", value: "HP", icon: <IconOrganisation /> },
+  { label: "Model", value: "EliteOne 1000 G2", detail: "27-in 4K UHD AiO", icon: <IconEndpoint /> },
+  { label: "Serial number", value: "8CC0481GWV", icon: <IconTag />, numeric: true, truncate: true },
+  {
+    label: "Operating system",
+    value: "Windows 11 Business",
+    detail: "10.0.26300",
+    icon: <IconOperatingSystem />,
+  },
+  { label: "Processor", value: "Intel(R) Core(TM) i5-8500T @ 2.10GHz", icon: <IconCpu /> },
+  { label: "Physical memory", value: "7.8 GB", icon: <IconMemory />, numeric: true },
+  { label: "Uptime", value: "2 days", icon: <IconClock /> },
+  { label: "Domain", value: "WORKGROUP", icon: <IconNetwork /> },
+  { label: "Registered user", value: "AzureAD\\MiraRowan", icon: <IconUser />, truncate: true },
 ];
-
 const LOADING = FACTS.slice(0, 4);
 
 /** Skeleton and loaded grids side by side, at the same width, so their boxes can be compared. */
 function LoadingFacts() {
-    return (<div className="grid w-full grid-cols-2 gap-6">
+  return (
+    <div className="grid w-full grid-cols-2 gap-6">
       <div>
         <DetailGrid min="sm">
-          {LOADING.map((fact) => (<DetailTileSkeleton key={fact.label} detail={Boolean(fact.detail)}/>))}
+          {LOADING.map((fact) => (
+            <DetailTileSkeleton key={fact.label} detail={Boolean(fact.detail)} />
+          ))}
         </DetailGrid>
       </div>
       <div>
         <DetailGrid min="sm">
-          {LOADING.map((fact) => (<DetailTile key={fact.label} {...fact}/>))}
+          {LOADING.map((fact) => (
+            <DetailTile key={fact.label} {...fact} />
+          ))}
         </DetailGrid>
       </div>
-    </div>);
+    </div>
+  );
 }
 
 export default function DetailTileSection() {
-    return (<SectionPage>
-
-
-
-
-      <Specimen wide title="Loading" description="Each skeleton tile is the loaded tile's exact box: same icon box, same type roles, same lines.">
+  return (
+    <SectionPage>
+      <Specimen
+        wide
+        title="Loading"
+        description="Each skeleton tile is the loaded tile's exact box: same icon box, same type roles, same lines."
+      >
         <div className="flex w-full flex-col gap-6">
           <LoadingFacts />
-          <SwapSlot id="detail-tile" skeleton={<DetailGrid min="sm">
-                {LOADING.map((fact) => (<DetailTileSkeleton key={fact.label} detail={Boolean(fact.detail)}/>))}
-              </DetailGrid>} loaded={<DetailGrid min="sm">
-                {LOADING.map((fact) => (<DetailTile key={fact.label} {...fact}/>))}
-              </DetailGrid>}/>
+          <SwapSlot
+            id="detail-tile"
+            skeleton={
+              <DetailGrid min="sm">
+                {LOADING.map((fact) => (
+                  <DetailTileSkeleton key={fact.label} detail={Boolean(fact.detail)} />
+                ))}
+              </DetailGrid>
+            }
+            loaded={
+              <DetailGrid min="sm">
+                {LOADING.map((fact) => (
+                  <DetailTile key={fact.label} {...fact} />
+                ))}
+              </DetailGrid>
+            }
+          />
         </div>
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

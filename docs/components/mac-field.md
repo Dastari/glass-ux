@@ -2,7 +2,6 @@
 
 `glass-ux/mac-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 A MAC address in any notation — colons, hyphens (Windows), dots (Cisco `0015.65aa.bbcc`) or none —
 written one way when focus leaves. With `lookupVendor`, the hint names the maker ("Vendor ·
 Yealink"); a locally administered (randomised Wi-Fi) or multicast address says so.

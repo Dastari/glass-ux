@@ -1,17 +1,18 @@
 import { Panel, PanelHeader, PanelBody } from "glass-ux/surface";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 
 export default function PanelBodyExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="Panel body content" layout="stack">
         <Panel>
-          <PanelHeader title="Exhibition notes"/>
+          <PanelHeader title="Exhibition notes" />
           <PanelBody>
             <p>The body provides consistent content padding.</p>
             <p>Use scroll on the parent Panel for bounded content.</p>
           </PanelBody>
         </Panel>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

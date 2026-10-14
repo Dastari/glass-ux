@@ -9,21 +9,25 @@ shared keyboard and accessibility conventions.
 Install the versioned package attached to a [GitHub release](https://github.com/Dastari/glass-ux/releases).
 
 ```sh
-pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.1.1/glass-ux-0.1.1.tgz
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.2.0/glass-ux-0.2.0.tgz
 ```
 
 React 19 and React DOM 19 are peer dependencies. The tested integration uses Vite 8
 and Tailwind 4. Register `glassUx()` from `glass-ux/vite` beside the React and Tailwind plugins. Import components through their public entries:
 
 ```tsx
-import { Button } from "glass-ux/button"
-import { Dialog } from "glass-ux/dialog"
-import { DataTable } from "glass-ux/data-table"
-import { AssistantPane } from "glass-ux/ai"
-import "glass-ux/styles.css"
+import { Button } from "glass-ux/button";
+import { Dialog } from "glass-ux/dialog";
+import { DataTable } from "glass-ux/data-table";
+import { AssistantPane } from "glass-ux/ai";
+import "glass-ux/styles.css";
 
 export function SaveButton() {
-  return <Button variant="primary" onClick={() => console.info("Saved")}>Save changes</Button>
+  return (
+    <Button variant="primary" onClick={() => console.info("Saved")}>
+      Save changes
+    </Button>
+  );
 }
 ```
 
@@ -44,6 +48,7 @@ their props and controlled/uncontrolled state contracts.
 
 - [Installation, providers and your first form](docs/getting-started.md).
 - [Migrating an existing application](docs/integration.md).
+- [Theme geometry and layout verification](docs/layout-contract.md).
 - [AI agent skills and adoption](docs/agent-adoption.md).
 
 - [Component API index](docs/api/README.md), generated from the exported TypeScript types.

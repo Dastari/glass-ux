@@ -1,15 +1,19 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { ChoiceRow } from "glass-ux/field";
-
 import { Checkbox } from "glass-ux/checkbox";
 
 export default function ChoiceRowExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="ChoiceRow" layout="stack">
-        <ChoiceRow controlId="sample-consent" label="Send an exhibition reminder" description="One message on the morning of the event.">
-          <Checkbox id="sample-consent"/>
+        <ChoiceRow
+          controlId="sample-consent"
+          label="Send an exhibition reminder"
+          description="One message on the morning of the event."
+        >
+          <Checkbox id="sample-consent" />
         </ChoiceRow>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

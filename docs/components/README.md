@@ -23,34 +23,34 @@ const form = useAppForm({ ...formBehaviour, defaultValues, validators: { onDynam
 
 ## Typed inputs
 
-| Page | Bound field | Value | Schema helper |
-| --- | --- | --- | --- |
-| [Address](address-field.md) | `AddressField` (and `AddressView` read-only) | `AddressValue` | `addressSchema` |
-| [Phone and mobile](phone-field.md) | `PhoneField`, `MobileField` | E.164 string | `phoneSchema`, `mobileSchema` |
-| [Email](email-field.md) | `EmailField` | string | `emailSchema` |
-| [Web address](url-field.md) | `UrlField` | string | `urlSchema` |
-| [Password](password-field.md) | `PasswordField` | string | `passwordSchema`, `currentPasswordSchema` |
-| [One-time code](otp-field.md) | `OtpField` | string | `otpSchema` |
-| [Coordinates](coordinates-field.md) | `CoordinatesField` | `{ lat, lng } \| null` | `coordinatesSchema` |
-| [IP address](ip-field.md) | `IpField` | string | `ipSchema` |
-| [MAC address](mac-field.md) | `MacAddressField` | string | `macSchema` |
-| [Host name and domain](hostname-field.md) | `HostnameField`, `DomainField` | string | `hostnameSchema`, `domainSchema` |
-| [Port](port-field.md) | `PortField` | `number \| null` | `portSchema` |
-| [Duration](duration-field.md) | `DurationField` | seconds, `number \| null` | `durationSchema` |
-| [Byte size](byte-size-field.md) | `ByteSizeField` | bytes, `number \| null` | `byteSizeSchema` |
-| [Money](money-field.md) | `MoneyField` | minor units (cents), `number \| null` | `moneySchema` |
-| [Percentage](percent-field.md) | `PercentField` | `number \| null` | `percentSchema` |
-| [Country](country-select.md) | `CountryField` | ISO code, `string \| null` | `countrySchema` |
-| [Time zone](time-zone-select.md) | `TimeZoneField` | IANA name, `string \| null` | `timeZoneSchema` |
-| [Copy button](copy-button.md) | — | — | — |
-| [Swatch picker](swatch-picker.md) | — (bare control in a `SettingRow`) | option value | — |
+| Page                                      | Bound field                                  | Value                                 | Schema helper                             |
+| ----------------------------------------- | -------------------------------------------- | ------------------------------------- | ----------------------------------------- |
+| [Address](address-field.md)               | `AddressField` (and `AddressView` read-only) | `AddressValue`                        | `addressSchema`                           |
+| [Phone and mobile](phone-field.md)        | `PhoneField`, `MobileField`                  | E.164 string                          | `phoneSchema`, `mobileSchema`             |
+| [Email](email-field.md)                   | `EmailField`                                 | string                                | `emailSchema`                             |
+| [Web address](url-field.md)               | `UrlField`                                   | string                                | `urlSchema`                               |
+| [Password](password-field.md)             | `PasswordField`                              | string                                | `passwordSchema`, `currentPasswordSchema` |
+| [One-time code](otp-field.md)             | `OtpField`                                   | string                                | `otpSchema`                               |
+| [Coordinates](coordinates-field.md)       | `CoordinatesField`                           | `{ lat, lng } \| null`                | `coordinatesSchema`                       |
+| [IP address](ip-field.md)                 | `IpField`                                    | string                                | `ipSchema`                                |
+| [MAC address](mac-field.md)               | `MacAddressField`                            | string                                | `macSchema`                               |
+| [Host name and domain](hostname-field.md) | `HostnameField`, `DomainField`               | string                                | `hostnameSchema`, `domainSchema`          |
+| [Port](port-field.md)                     | `PortField`                                  | `number \| null`                      | `portSchema`                              |
+| [Duration](duration-field.md)             | `DurationField`                              | seconds, `number \| null`             | `durationSchema`                          |
+| [Byte size](byte-size-field.md)           | `ByteSizeField`                              | bytes, `number \| null`               | `byteSizeSchema`                          |
+| [Money](money-field.md)                   | `MoneyField`                                 | minor units (cents), `number \| null` | `moneySchema`                             |
+| [Percentage](percent-field.md)            | `PercentField`                               | `number \| null`                      | `percentSchema`                           |
+| [Country](country-select.md)              | `CountryField`                               | ISO code, `string \| null`            | `countrySchema`                           |
+| [Time zone](time-zone-select.md)          | `TimeZoneField`                              | IANA name, `string \| null`           | `timeZoneSchema`                          |
+| [Copy button](copy-button.md)             | —                                            | —                                     | —                                         |
+| [Swatch picker](swatch-picker.md)         | — (bare control in a `SettingRow`)           | option value                          | —                                         |
 
 Building your own schema helper: `textRule(check, options)` and `numberRule(options)` in
 `glass-ux/form` treat "empty" and "required" the same way every helper above does.
 
 ## Navigation and choice
 
-| Page | Component | Collapse |
-| --- | --- | --- |
-| [Segmented control](segmented.md) | `Segmented` | full → icons → menu button |
-| [Breadcrumb](breadcrumb.md) | `Breadcrumb`, `RouteBreadcrumb` | full → middle → ‹ parent · current → current place with the trail in a popup |
+| Page                              | Component                       | Collapse                                                                     |
+| --------------------------------- | ------------------------------- | ---------------------------------------------------------------------------- |
+| [Segmented control](segmented.md) | `Segmented`                     | full → icons → menu button                                                   |
+| [Breadcrumb](breadcrumb.md)       | `Breadcrumb`, `RouteBreadcrumb` | full → middle → ‹ parent · current → current place with the trail in a popup |

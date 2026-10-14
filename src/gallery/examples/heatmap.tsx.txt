@@ -1,36 +1,55 @@
 import type { ComponentProps } from "react";
-
 import { Heatmap, type ChartState } from "glass-ux/charts";
-
 import { ContainerLab, SectionPage, Specimen, TierBox, TierRow } from "glass-ux/gallery/kit";
-
 import { SkeletonSwaps } from "glass-ux/gallery/sections/charts.kit";
 
 const sample = {
-    rows: ["Planning", "Delivery", "Review"],
-    columns: [1, 2, 3, 4, 5],
-    values: [
-        [2, 4, 1, 3, 5],
-        [5, 6, 4, 8, 7],
-        [1, 2, 3, 2, 4],
-    ],
-    unit: "h",
+  rows: ["Planning", "Delivery", "Review"],
+  columns: [1, 2, 3, 4, 5],
+  values: [
+    [2, 4, 1, 3, 5],
+    [5, 6, 4, 8, 7],
+    [1, 2, 3, 2, 4],
+  ],
+  unit: "h",
 } satisfies Omit<ComponentProps<typeof Heatmap>, "label">;
-
-const render = (state: ChartState = "ready") => (<Heatmap {...sample} label="Heatmap · fictional studio projects" title="Studio projects" state={state} emptyText="No project measurements yet" errorText="Measurements could not load" onRetry={() => undefined}/>);
+const render = (state: ChartState = "ready") => (
+  <Heatmap
+    {...sample}
+    label="Heatmap · fictional studio projects"
+    title="Studio projects"
+    state={state}
+    emptyText="No project measurements yet"
+    errorText="Measurements could not load"
+    onRetry={() => undefined}
+  />
+);
 
 export default function HeatmapSection() {
-    return (<SectionPage>
-      <Specimen title="Heatmap" description="A focused example using fictional studio project measurements. Hover or use the keyboard to inspect values; the chart's table preserves the exact data." wide>
+  return (
+    <SectionPage>
+      <Specimen
+        title="Heatmap"
+        description="A focused example using fictional studio project measurements. Hover or use the keyboard to inspect values; the chart's table preserves the exact data."
+        wide
+      >
         <div className="charts-pane" data-testid="chart-heatmap">
           {render()}
         </div>
       </Specimen>
-      <Specimen title="Responsive sizes" description="The same Heatmap adapts to row, tile and full-panel sizes." wide>
+      <Specimen
+        title="Responsive sizes"
+        description="The same Heatmap adapts to row, tile and full-panel sizes."
+        wide
+      >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
-      <Specimen title="Loading, empty and error" description="States stay in the chart's own box. Swap the skeleton to compare its dimensions." wide>
-        <SkeletonSwaps id="heatmap" render={render}/>
+      <Specimen
+        title="Loading, empty and error"
+        description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
+        wide
+      >
+        <SkeletonSwaps id="heatmap" render={render} />
         <div className="gallery-tiers">
           <TierBox size="compact" label="Empty">
             {render("empty")}
@@ -41,5 +60,6 @@ export default function HeatmapSection() {
         </div>
       </Specimen>
       <ContainerLab>{() => render()}</ContainerLab>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

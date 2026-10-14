@@ -1,53 +1,99 @@
 import { useState } from "react";
-
 import { DesktopSession, type DesktopState } from "glass-ux/ai";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Segmented } from "glass-ux/segmented";
-
 import { toast } from "glass-ux/toast";
-
 import { E, NOW } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { screenshot } from "glass-ux/gallery/sections/ai.screens";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
-const DESKTOP_STATES: DesktopState[] = ["observing", "controlling", "awaiting-action", "paused", "human", "ended", "expired", "failed"];
+const DESKTOP_STATES: DesktopState[] = [
+  "observing",
+  "controlling",
+  "awaiting-action",
+  "paused",
+  "human",
+  "ended",
+  "expired",
+  "failed",
+];
 
 function Desktop() {
-    const [state, setState] = useState<DesktopState>("controlling");
-    return (<div className="ai-stack">
-      <Segmented size="sm" aria-label="Desktop session state" value={state} onValueChange={setState} options={DESKTOP_STATES.map((value) => ({ value, label: value === "awaiting-action" ? "Approval" : value[0]!.toUpperCase() + value.slice(1) }))}/>
-      <DesktopSession endpoint={E.c106Online} state={state} user="AzureAD\\MiraRowan" startedAt={NOW - 134000} leaseEndsAt={NOW + 12 * 60000} reason={state === "paused" ? "The video froze; input is paused" : state === "failed" ? "Agent offline" : state === "expired" ? "The 15-minute control lease ended" : undefined} screen={{ id: "d1", src: screenshot({ app: "Devices and Printers", hue: 250 }), alt: "NST-C106 with Devices and Printers open", width: 1600, height: 1000 }} steps={[
-            { id: "1", label: "Opened Devices and Printers", status: "succeeded" },
-            { id: "2", label: "Selected Ricoh IM C3000 · Level 2", status: "succeeded" },
-            { id: "3", label: "Set it as the default printer", status: state === "awaiting-action" ? "awaiting-approval" : state === "controlling" ? "running" : "queued" },
-        ]} pendingAction={{ label: "Set Ricoh IM C3000 · Level 2 as default", effect: "Changes Mira Rowan's default printer. Reversible." }} onStop={() => toast.info("Stopped. You have the screen.")} onTakeOver={() => setState("human")} onResume={() => setState("controlling")}/>
-    </div>);
+  const [state, setState] = useState<DesktopState>("controlling");
+  return (
+    <div className="ai-stack">
+      <Segmented
+        size="sm"
+        aria-label="Desktop session state"
+        value={state}
+        onValueChange={setState}
+        options={DESKTOP_STATES.map((value) => ({
+          value,
+          label:
+            value === "awaiting-action" ? "Approval" : value[0]!.toUpperCase() + value.slice(1),
+        }))}
+      />
+      <DesktopSession
+        endpoint={E.c106Online}
+        state={state}
+        user="AzureAD\\MiraRowan"
+        startedAt={NOW - 134000}
+        leaseEndsAt={NOW + 12 * 60000}
+        reason={
+          state === "paused"
+            ? "The video froze; input is paused"
+            : state === "failed"
+              ? "Agent offline"
+              : state === "expired"
+                ? "The 15-minute control lease ended"
+                : undefined
+        }
+        screen={{
+          id: "d1",
+          src: screenshot({ app: "Devices and Printers", hue: 250 }),
+          alt: "NST-C106 with Devices and Printers open",
+          width: 1600,
+          height: 1000,
+        }}
+        steps={[
+          { id: "1", label: "Opened Devices and Printers", status: "succeeded" },
+          { id: "2", label: "Selected Ricoh IM C3000 · Level 2", status: "succeeded" },
+          {
+            id: "3",
+            label: "Set it as the default printer",
+            status:
+              state === "awaiting-action"
+                ? "awaiting-approval"
+                : state === "controlling"
+                  ? "running"
+                  : "queued",
+          },
+        ]}
+        pendingAction={{
+          label: "Set Ricoh IM C3000 · Level 2 as default",
+          effect: "Changes Mira Rowan's default printer. Reversible.",
+        }}
+        onStop={() => toast.info("Stopped. You have the screen.")}
+        onTakeOver={() => setState("human")}
+        onResume={() => setState("controlling")}
+      />
+    </div>
+  );
 }
 
 export default function AiSessionsSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-
-
-
-
-
-
-
-
-        <Specimen title="Supervised desktop control" description="Planned (glass-ux-ai-desktop-control): the live screen with who holds control, the steps, a lease countdown and a large Stop. Grants and consequential actions are approvals." wide layout="stack">
+        <Specimen
+          title="Supervised desktop control"
+          description="Planned (glass-ux-ai-desktop-control): the live screen with who holds control, the steps, a lease countdown and a large Stop. Grants and consequential actions are approvals."
+          wide
+          layout="stack"
+        >
           <Desktop />
         </Specimen>
-
-
-
-
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

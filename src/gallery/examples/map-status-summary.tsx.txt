@@ -1,133 +1,233 @@
 import { useMemo, useState } from "react";
-
 import { ContainerLab, Example, OnCanvas, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { DEMO_MAP_CONFIG, MOCK_SITES } from "glass-ux/gallery/fixtures/map";
-
 import { createDataTableColumns, DataTable } from "glass-ux/data-table";
-
-import { DefaultClusterPopup, GeoMap, MapStatusSummary, MapViewToggle, countStatuses, useMapRegion, useMapRegions, type MapConfig, type MapPoint, type MapStatus } from "glass-ux/map";
+import {
+  DefaultClusterPopup,
+  GeoMap,
+  MapStatusSummary,
+  MapViewToggle,
+  countStatuses,
+  useMapRegion,
+  useMapRegions,
+  type MapConfig,
+  type MapPoint,
+  type MapStatus,
+} from "glass-ux/map";
 
 /** Gallery points: the demo's sites with a fixed spread of statuses. */
-const STATUSES: MapStatus[] = ["healthy", "healthy", "warning", "healthy", "danger", "healthy", "unknown", "healthy", "warning", "healthy"];
-
+const STATUSES: MapStatus[] = [
+  "healthy",
+  "healthy",
+  "warning",
+  "healthy",
+  "danger",
+  "healthy",
+  "unknown",
+  "healthy",
+  "warning",
+  "healthy",
+];
 const POINTS: MapPoint<{
-    address: string;
+  address: string;
 }>[] = MOCK_SITES.map((site, index) => ({
-    id: site.id,
-    lng: site.location.lng,
-    lat: site.location.lat,
-    status: STATUSES[index % STATUSES.length]!,
-    label: site.name,
-    description: site.address.split(", ").at(-1),
-    data: { address: site.address },
+  id: site.id,
+  lng: site.location.lng,
+  lat: site.location.lat,
+  status: STATUSES[index % STATUSES.length]!,
+  label: site.name,
+  description: site.address.split(", ").at(-1),
+  data: { address: site.address },
 }));
-
 const OUTLINE_ONLY: MapConfig = { ...DEMO_MAP_CONFIG, basemap: null };
 
-function PointPopup({ point }: {
-    point: MapPoint<{
-        address: string;
-    }>;
+function PointPopup({
+  point,
+}: {
+  point: MapPoint<{
+    address: string;
+  }>;
 }) {
-    return (<div className="gallery-map-popup">
+  return (
+    <div className="gallery-map-popup">
       <p className="fa-map-popup-title">{point.label}</p>
       <p className="gallery-map-popup-meta">{point.data.address}</p>
-      <MapStatusSummary counts={countStatuses([point])}/>
-    </div>);
+      <MapStatusSummary counts={countStatuses([point])} />
+    </div>
+  );
 }
 
 function useRegions() {
-    const home = useMapRegion(DEMO_MAP_CONFIG, "AU-TAS");
-    const regions = useMapRegions(DEMO_MAP_CONFIG, ["AU-VIC", "NZ-MBH"]);
-    return { home, regions };
+  const home = useMapRegion(DEMO_MAP_CONFIG, "AU-TAS");
+  const regions = useMapRegions(DEMO_MAP_CONFIG, ["AU-VIC", "NZ-MBH"]);
+  return { home, regions };
 }
 
-function LiveMap({ id, config = DEMO_MAP_CONFIG, points = POINTS, className = "gallery-map-frame" }: {
-    id: string;
-    config?: MapConfig;
-    points?: typeof POINTS;
-    className?: string;
+function LiveMap({
+  id,
+  config = DEMO_MAP_CONFIG,
+  points = POINTS,
+  className = "gallery-map-frame",
+}: {
+  id: string;
+  config?: MapConfig;
+  points?: typeof POINTS;
+  className?: string;
 }) {
-    const { home, regions } = useRegions();
-    const [selected, setSelected] = useState<string | null>(null);
-    return (<div className={className} data-testid={id}>
-      <GeoMap label="Sites" config={config} home={home} regions={regions} points={points} selectedId={selected} onSelect={(point) => setSelected(point?.id ?? null)} renderPopup={(point) => <PointPopup point={point}/>}/>
-    </div>);
+  const { home, regions } = useRegions();
+  const [selected, setSelected] = useState<string | null>(null);
+  return (
+    <div className={className} data-testid={id}>
+      <GeoMap
+        label="Sites"
+        config={config}
+        home={home}
+        regions={regions}
+        points={points}
+        selectedId={selected}
+        onSelect={(point) => setSelected(point?.id ?? null)}
+        renderPopup={(point) => <PointPopup point={point} />}
+      />
+    </div>
+  );
 }
 
 const listColumns = (() => {
-    const col = createDataTableColumns<MapPoint<{
-        address: string;
-    }>>();
-    return col.columns([
-        col.accessor("label", { header: "Site", pin: true, width: 16, filter: { none: "A short fixed list in the gallery" } }),
-        col.accessor("status", { header: "Status", width: 8, filter: { none: "A short fixed list in the gallery" } }),
-        col.accessor("description", { header: "Locality", width: 12, filter: { none: "A short fixed list in the gallery" } }),
-    ]);
+  const col = createDataTableColumns<
+    MapPoint<{
+      address: string;
+    }>
+  >();
+  return col.columns([
+    col.accessor("label", {
+      header: "Site",
+      pin: true,
+      width: 16,
+      filter: { none: "A short fixed list in the gallery" },
+    }),
+    col.accessor("status", {
+      header: "Status",
+      width: 8,
+      filter: { none: "A short fixed list in the gallery" },
+    }),
+    col.accessor("description", {
+      header: "Locality",
+      width: 12,
+      filter: { none: "A short fixed list in the gallery" },
+    }),
+  ]);
 })();
 
 function ListViewExample() {
-    const { home, regions } = useRegions();
-    const [view, setView] = useState<"map" | "list">("list");
-    const rows = useMemo(() => POINTS.slice(0, 12), []);
-    return (<div className="gallery-map-frame" data-size="list" data-testid="map-list-example">
-      <GeoMap label="Sites" config={OUTLINE_ONLY} home={home} regions={regions} points={rows} view={view} onViewChange={setView} renderPopup={(point) => <PointPopup point={point}/>} list={<DataTable id="gallery-map-list" label="Sites" rows={rows} rowCount={rows.length} columns={listColumns} getRowId={(row) => row.id} selectable={false} toolbar={<MapViewToggle view="list" onViewChange={setView} size="sm"/>} noun={{ one: "site", other: "sites" }}/>}/>
-    </div>);
+  const { home, regions } = useRegions();
+  const [view, setView] = useState<"map" | "list">("list");
+  const rows = useMemo(() => POINTS.slice(0, 12), []);
+  return (
+    <div className="gallery-map-frame" data-size="list" data-testid="map-list-example">
+      <GeoMap
+        label="Sites"
+        config={OUTLINE_ONLY}
+        home={home}
+        regions={regions}
+        points={rows}
+        view={view}
+        onViewChange={setView}
+        renderPopup={(point) => <PointPopup point={point} />}
+        list={
+          <DataTable
+            id="gallery-map-list"
+            label="Sites"
+            rows={rows}
+            rowCount={rows.length}
+            columns={listColumns}
+            getRowId={(row) => row.id}
+            selectable={false}
+            toolbar={<MapViewToggle view="list" onViewChange={setView} size="sm" />}
+            noun={{ one: "site", other: "sites" }}
+          />
+        }
+      />
+    </div>
+  );
 }
 
 export default function MapSection() {
-    const tasmania = useMapRegion(DEMO_MAP_CONFIG, "AU-TAS");
-    const sample = POINTS.slice(0, 9);
-    return (<SectionPage>
-      <OnCanvas title="Home region" description="The map sits on the canvas with no material of its own, so the ambient fields show through as the sea. The home region glows in the data hue (--chart-1, never the brand) as a wide blurred halo, a medium glow and a crisp core; basemap water, roads and places fade in as you zoom and the outline steps back. Sites outside Tasmania (Port Melbourne, Blenheim) are a pan away, counted in the pill at the bottom.">
-        <LiveMap id="map-hero"/>
+  const tasmania = useMapRegion(DEMO_MAP_CONFIG, "AU-TAS");
+  const sample = POINTS.slice(0, 9);
+  return (
+    <SectionPage>
+      <OnCanvas
+        title="Home region"
+        description="The map sits on the canvas with no material of its own, so the ambient fields show through as the sea. The home region glows in the data hue (--chart-1, never the brand) as a wide blurred halo, a medium glow and a crisp core; basemap water, roads and places fade in as you zoom and the outline steps back. Sites outside Tasmania (Port Melbourne, Blenheim) are a pan away, counted in the pill at the bottom."
+      >
+        <LiveMap id="map-hero" />
       </OnCanvas>
 
-      <Specimen title="Modes and palettes" description="The style is generated from tokens at the map's own element, so a mode or palette island recolours it: the glow, water, roads and labels all follow. Glass, Frosted and Solid (the toolbar above) change only the controls; the map is never a material." layout="bare" wide>
+      <Specimen
+        title="Modes and palettes"
+        description="The style is generated from tokens at the map's own element, so a mode or palette island recolours it: the glow, water, roads and labels all follow. Glass, Frosted and Solid (the toolbar above) change only the controls; the map is never a material."
+        layout="bare"
+        wide
+      >
         <div className="gallery-map-islands">
-        <Example label="Light">
-          <div data-mode="light" className="canvas-ambient gallery-map-island">
-            <LiveMap id="map-light" className="gallery-map-frame"/>
-          </div>
-        </Example>
-        <Example label="Dark · ocean">
-          <div data-mode="dark" data-palette="ocean" className="canvas-ambient gallery-map-island">
-            <LiveMap id="map-dark" className="gallery-map-frame"/>
-          </div>
-        </Example>
+          <Example label="Light">
+            <div data-mode="light" className="canvas-ambient gallery-map-island">
+              <LiveMap id="map-light" className="gallery-map-frame" />
+            </div>
+          </Example>
+          <Example label="Dark · ocean">
+            <div
+              data-mode="dark"
+              data-palette="ocean"
+              className="canvas-ambient gallery-map-island"
+            >
+              <LiveMap id="map-dark" className="gallery-map-frame" />
+            </div>
+          </Example>
         </div>
       </Specimen>
 
-
-
-      <Specimen title="Popups" description="The shared popup look (glass-overlay fa-popup), not MapLibre's. Hovering or focusing a marker previews it; clicking or Enter pins it and moves focus inside; Esc closes it and returns focus. The caller renders the content and can add detail once zoomed in.">
+      <Specimen
+        title="Popups"
+        description="The shared popup look (glass-overlay fa-popup), not MapLibre's. Hovering or focusing a marker previews it; clicking or Enter pins it and moves focus inside; Esc closes it and returns focus. The caller renders the content and can add detail once zoomed in."
+      >
         <Example label="Point">
           <div className="glass-overlay fa-popup fa-map-popup" data-pinned="">
-            <PointPopup point={POINTS[1]!}/>
+            <PointPopup point={POINTS[1]!} />
           </div>
         </Example>
         <Example label="Cluster">
           <div className="glass-overlay fa-popup fa-map-popup">
-            <DefaultClusterPopup cluster={{ id: 1, lng: 147.9, lat: -42.5, points: sample }} size={sample.length} counts={countStatuses(sample)} labels={{ danger: "Critical", warning: "Warning", healthy: "Healthy", unknown: "Offline" }} noun={{ one: "site", other: "sites" }} onZoom={() => undefined} onOpen={() => undefined}/>
+            <DefaultClusterPopup
+              cluster={{ id: 1, lng: 147.9, lat: -42.5, points: sample }}
+              size={sample.length}
+              counts={countStatuses(sample)}
+              labels={{
+                danger: "Critical",
+                warning: "Warning",
+                healthy: "Healthy",
+                unknown: "Offline",
+              }}
+              noun={{ one: "site", other: "sites" }}
+              onZoom={() => undefined}
+              onOpen={() => undefined}
+            />
           </div>
         </Example>
       </Specimen>
 
-      <Specimen title="List view" description="“View as list” swaps the map for the caller's table in the same box; “View as map” in the table's toolbar swaps back. The map keeps its camera while hidden." layout="bare" wide>
+      <Specimen
+        title="List view"
+        description="“View as list” swaps the map for the caller's table in the same box; “View as map” in the table's toolbar swaps back. The map keeps its camera while hidden."
+        layout="bare"
+        wide
+      >
         <ListViewExample />
       </Specimen>
 
-
-
-
-
       <ContainerLab description="The map fills whatever box it is given. From 16rem tall and 20rem wide it shows every control and the full credit line; below that the zoom buttons go (pinch and scroll still zoom) and the credit line starts as “© OpenStreetMap”; under 8rem tall the controls go too. Everywhere the line folds to ⓘ after five seconds or the first interaction.">
-        {() => <LiveMap id="map-lab" className="gallery-map-fill"/>}
+        {() => <LiveMap id="map-lab" className="gallery-map-fill" />}
       </ContainerLab>
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

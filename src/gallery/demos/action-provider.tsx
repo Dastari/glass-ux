@@ -3,28 +3,32 @@
 import { ActionMenu, ActionProvider } from "../../ui/actions/index.js";
 
 const SAMPLE_ACTIONS = defineActions<{
-    id: string;
+  id: string;
 }>("exhibitions", [
-    {
-        id: "open",
-        label: "Open exhibition",
-        group: "open",
-        run: (_targets, context) => context.navigate("#sample-exhibition"),
-    },
+  {
+    id: "open",
+    label: "Open exhibition",
+    group: "open",
+    run: (_targets, context) => context.navigate("#sample-exhibition"),
+  },
 ]);
 
 import { defineActions } from "../../lib/actions/actions.js";
-
 import { SectionPage, Specimen } from "../kit.js";
-
 import { toast } from "../../ui/toast/index.js";
 
 export default function ActionProviderExample() {
-    return (<SectionPage>
-      <Specimen title="Host action services" description="Mount ActionProvider inside the router. Nested providers inherit the shared toast and confirmation hosts." layout="stack">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Host action services"
+        description="Mount ActionProvider inside the router. Nested providers inherit the shared toast and confirmation hosts."
+        layout="stack"
+      >
         <ActionProvider navigate={(path) => toast.info(`Demo destination: ${path}`)}>
-          <ActionMenu label="Exhibition" set={SAMPLE_ACTIONS} targets={[{ id: "meridian" }]}/>
+          <ActionMenu label="Exhibition" set={SAMPLE_ACTIONS} targets={[{ id: "meridian" }]} />
         </ActionProvider>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

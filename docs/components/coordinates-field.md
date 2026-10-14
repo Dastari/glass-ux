@@ -2,7 +2,6 @@
 
 `glass-ux/coordinates-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 Latitude and longitude in one box. Paste anything a person has and it becomes
 "-42.88334, 147.32688" when focus leaves:
 

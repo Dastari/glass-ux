@@ -38,12 +38,12 @@ Six traits make the set read as one hand. A new icon has all six.
   generator rejects anything outside.
 - **Keyline shapes.** Pick the one closest to the glyph:
 
-  | Keyline   | Size                        | Used by                          |
-  | --------- | --------------------------- | -------------------------------- |
-  | Circle    | Ø18–19, centred on 12,12    | status icons, `clock`, `globe`   |
-  | Square    | 17 × 17 (3.5–20.5)          | `tasks`, `tag`, `dashboard`      |
-  | Portrait  | 15 × 19                     | `file`, `clipboard`, `bookmark`  |
-  | Landscape | 18 × 12–16                  | `endpoint`, `terminal`, `mail`   |
+  | Keyline   | Size                     | Used by                         |
+  | --------- | ------------------------ | ------------------------------- |
+  | Circle    | Ø18–19, centred on 12,12 | status icons, `clock`, `globe`  |
+  | Square    | 17 × 17 (3.5–20.5)       | `tasks`, `tag`, `dashboard`     |
+  | Portrait  | 15 × 19                  | `file`, `clipboard`, `bookmark` |
+  | Landscape | 18 × 12–16               | `endpoint`, `terminal`, `mail`  |
 
 - **Centring.** Centre the stroke centre-line bounding box on 12,12, snapped to 0.25.
   Shapes with uneven mass are centred optically:

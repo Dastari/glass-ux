@@ -16,14 +16,13 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    border-radius: var(--radius-surface);
     overflow: hidden;
   }
   .gallery-brand {
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-5) var(--space-5) var(--space-3);
+    padding-block-end: var(--space-3);
   }
   .gallery-brand-mark {
     width: 2rem;
@@ -36,6 +35,7 @@
     letter-spacing: -0.01em;
   }
   .gallery-brand-sub {
+    display: block;
     color: var(--fg-subtle);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
@@ -43,7 +43,7 @@
   .gallery-nav-scroll {
     flex: 1 1 auto;
     overflow-y: auto;
-    padding: var(--space-2) var(--space-3) var(--space-4);
+    padding-block-start: var(--space-2);
   }
   .gallery-nav-group + .gallery-nav-group {
     margin-top: var(--space-4);
@@ -131,7 +131,6 @@
     flex-direction: column;
     gap: var(--space-4);
     padding-block: var(--space-6);
-    border-block-end: var(--divider);
     container-type: inline-size;
     min-width: 0;
   }
@@ -166,9 +165,21 @@
     padding: var(--space-6);
     border-radius: var(--radius-tile);
     background:
-      radial-gradient(40% 70% at 20% 30%, oklch(0.7 0.18 var(--ambient-1-h) / 0.85), transparent 70%),
-      radial-gradient(40% 70% at 80% 70%, oklch(0.65 0.16 var(--ambient-3-h) / 0.85), transparent 70%),
-      linear-gradient(120deg, oklch(0.55 0.12 var(--ambient-2-h)), oklch(0.75 0.1 var(--ambient-1-h)));
+      radial-gradient(
+        40% 70% at 20% 30%,
+        oklch(0.7 0.18 var(--ambient-1-h) / 0.85),
+        transparent 70%
+      ),
+      radial-gradient(
+        40% 70% at 80% 70%,
+        oklch(0.65 0.16 var(--ambient-3-h) / 0.85),
+        transparent 70%
+      ),
+      linear-gradient(
+        120deg,
+        oklch(0.55 0.12 var(--ambient-2-h)),
+        oklch(0.75 0.1 var(--ambient-1-h))
+      );
   }
   .gallery-example {
     display: flex;
@@ -271,6 +282,9 @@
   }
 
   @media (width < 64rem) {
+    .gallery-header {
+      min-height: var(--control-h-sm);
+    }
     .gallery-shell {
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
@@ -294,7 +308,7 @@
 @layer components {
   .gallery-lab {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     align-items: flex-start;
     gap: var(--space-6);
     overflow-x: auto;
@@ -328,7 +342,7 @@
 @layer components {
   .gallery-tiers {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     align-items: flex-start;
     gap: var(--space-6);
     width: 100%;
@@ -344,5 +358,37 @@
     flex: 0 1 auto;
     min-width: 0;
     max-width: 100%;
+  }
+}
+
+@layer components {
+  .gallery-catalogue {
+    max-width: var(--gallery-document-measure, 76rem);
+    width: 100%;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-section);
+    padding-block: var(--gap-section);
+  }
+  .gallery-catalogue-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-panels);
+  }
+  .gallery-catalogue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: var(--gap-panels);
+  }
+  .gallery-catalogue-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-inline);
+  }
+  .gallery-catalogue-card-title {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-inline);
   }
 }

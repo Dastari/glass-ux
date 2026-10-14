@@ -1,13 +1,19 @@
 import { SparklineCell } from "glass-ux/data-table";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 
 export default function SparklineCellExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="Compact table trend" layout="stack">
         <div className="h-12 w-70">
-          <SparklineCell values={[12, 18, 16, 24, 28, 22, 31]} domain={[0, 40]} label="Weekly reservations" unit="places"/>
+          <SparklineCell
+            values={[12, 18, 16, 24, 28, 22, 31]}
+            domain={[0, 40]}
+            label="Weekly reservations"
+            unit="places"
+          />
         </div>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

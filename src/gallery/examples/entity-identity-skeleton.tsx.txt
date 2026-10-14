@@ -1,11 +1,12 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { EntityIdentitySkeleton } from "glass-ux/entity";
 
 export default function EntityIdentitySkeletonExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="EntityIdentitySkeleton" layout="stack">
         <EntityIdentitySkeleton />
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

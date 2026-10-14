@@ -1,48 +1,55 @@
 import { z } from "zod";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
-
 import { ipSchema } from "glass-ux/ip-field";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 function NetworkDemo() {
-    const form = useAppForm({
-        ...formBehaviour,
-        defaultValues: { gateway: "010.013.004.001", subnet: "10.13.4.0/22", dns: "2001:0DB8:0000:0000:0000:0000:0000:0001" },
-        validators: { onDynamic: z.object({ gateway: ipSchema({ version: 4, required: true }), subnet: ipSchema({ version: 4, cidr: "required", required: true }), dns: ipSchema() }) },
-        onSubmit: () => wait(600),
-    });
-    return (<Form form={form} aria-label="Network" className="w-full" data-testid="ip-form">
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: {
+      gateway: "010.013.004.001",
+      subnet: "10.13.4.0/22",
+      dns: "2001:0DB8:0000:0000:0000:0000:0000:0001",
+    },
+    validators: {
+      onDynamic: z.object({
+        gateway: ipSchema({ version: 4, required: true }),
+        subnet: ipSchema({ version: 4, cidr: "required", required: true }),
+        dns: ipSchema(),
+      }),
+    },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="Network" className="w-full" data-testid="ip-form">
       <FormStack>
-        <form.AppField name="gateway">{(field) => <field.IpField label="Gateway" version={4} width="medium"/>}</form.AppField>
-        <form.AppField name="subnet">{(field) => <field.IpField label="Subnet" version={4} cidr="required" width="medium"/>}</form.AppField>
-        <form.AppField name="dns">{(field) => <field.IpField label="DNS server" optional width="medium"/>}</form.AppField>
+        <form.AppField name="gateway">
+          {(field) => <field.IpField label="Gateway" version={4} width="medium" />}
+        </form.AppField>
+        <form.AppField name="subnet">
+          {(field) => <field.IpField label="Subnet" version={4} cidr="required" width="medium" />}
+        </form.AppField>
+        <form.AppField name="dns">
+          {(field) => <field.IpField label="DNS server" optional width="medium" />}
+        </form.AppField>
         <FormActions>
           <form.SubmitButton>Save network</form.SubmitButton>
         </FormActions>
       </FormStack>
-    </Form>);
+    </Form>
+  );
 }
 
 export default function IpFieldSection() {
-    return (<SectionPage>
-      <Specimen title="Normalised on blur" description="Leave a field: 010.013.004.001 becomes 10.13.4.1 and IPv6 is compressed per RFC 5952. The hint says what the address or range is; Copy appears once it is valid.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Normalised on blur"
+        description="Leave a field: 010.013.004.001 becomes 10.13.4.1 and IPv6 is compressed per RFC 5952. The hint says what the address or range is; Copy appears once it is valid."
+      >
         <NetworkDemo />
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

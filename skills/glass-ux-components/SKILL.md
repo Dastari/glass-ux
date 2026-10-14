@@ -8,6 +8,9 @@ description: Choose and compose Glass UX controls, navigation, identity, surface
 Read the installed package's `docs/api/README.md` and the page for each component you use.
 The component pages list types, literal options, defaults, callbacks and compound slots.
 Read `docs/ui-rules.md` for material, container, interaction and accessibility conventions.
+Read `docs/layout-contract.md` before writing layout. Use Surface radius/padding props or
+Panel/drawer content slots. Keep group headings on the canvas and verify theme geometry;
+raw material classes only provide appearance.
 
 Choose components by their job: `Button` and shared actions for outcomes, `Field` and typed
 inputs for editing, `EntityIdentity` for generic entities, `EmptyState` for no results,

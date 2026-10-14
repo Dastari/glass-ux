@@ -1,17 +1,23 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { IconSparkle } from "glass-ux/icons";
-
 import { AskLayout } from "glass-ux/ai";
-
 import { Button } from "glass-ux/button";
 
 export default function AskLayoutExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="AskLayout" layout="stack">
-        <AskLayout id="sample-question" icon={<IconSparkle />} tone="accent" title="Continue with the exhibition plan?" meta="Northstar Studio" footer={<Button>Continue</Button>}>
+        <AskLayout
+          id="sample-question"
+          icon={<IconSparkle />}
+          tone="accent"
+          title="Continue with the exhibition plan?"
+          meta="Northstar Studio"
+          footer={<Button>Continue</Button>}
+        >
           Review the proposed schedule before continuing.
         </AskLayout>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

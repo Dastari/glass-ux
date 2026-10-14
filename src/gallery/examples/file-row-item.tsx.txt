@@ -1,21 +1,23 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
-
 import { FileRowItem } from "glass-ux/ai";
 
 export default function FileRowItemExample() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
         <Specimen title="FileRowItem" layout="stack">
-          <FileRowItem file={{
-            id: "brief",
-            name: "exhibition-brief.pdf",
-            size: 240000,
-            mime: "application/pdf",
-            href: "https://files.northstar.example/brief.pdf",
-        }}/>
+          <FileRowItem
+            file={{
+              id: "brief",
+              name: "exhibition-brief.pdf",
+              size: 240000,
+              mime: "application/pdf",
+              href: "https://files.northstar.example/brief.pdf",
+            }}
+          />
         </Specimen>
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

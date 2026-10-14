@@ -1,11 +1,16 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { ThemeToggle } from "glass-ux/shell";
 
 export default function ThemeToggleExample() {
-    return (<SectionPage>
-      <Specimen title="ThemeToggle" description="Cycle the document\u2019s appearance mode. AppearanceProvider is installed by the gallery host." layout="stack">
+  return (
+    <SectionPage>
+      <Specimen
+        title="ThemeToggle"
+        description="Cycle the document\u2019s appearance mode. AppearanceProvider is installed by the gallery host."
+        layout="stack"
+      >
         <ThemeToggle />
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

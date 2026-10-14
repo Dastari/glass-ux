@@ -1,20 +1,19 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
-
 import { SOURCES } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { Markdown, SourceList, SourcesProvider } from "glass-ux/ai";
 
 export default function SourcesProviderExample() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
         <Specimen title="SourcesProvider" layout="stack">
           <SourcesProvider sources={SOURCES}>
-            <Markdown text="A report with a source citation[^1]."/>
-            <SourceList sources={SOURCES}/>
+            <Markdown text="A report with a source citation[^1]." />
+            <SourceList sources={SOURCES} />
           </SourcesProvider>
         </Specimen>
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

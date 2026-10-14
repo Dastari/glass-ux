@@ -21,6 +21,7 @@ import {
 } from "../ui/command-palette/index.js";
 import {
   Panel,
+  Surface,
   PanelHeader,
   PanelBody,
   PanelFooter,
@@ -2273,6 +2274,20 @@ export function PanelExample() {
             <Button>View schedule</Button>
           </PanelFooter>
         </Panel>
+      </Specimen>
+    </SectionPage>
+  );
+}
+export function SurfaceExample() {
+  return (
+    <SectionPage>
+      <Specimen title="Theme-owned surface geometry" layout="stack">
+        <Surface material="panel" padding="panel">
+          Panel material, surface corners and the theme's panel inset.
+        </Surface>
+        <Surface material="card" radius="tile" padding="tile">
+          Repeated cards use tile geometry and the unblurred card material.
+        </Surface>
       </Specimen>
     </SectionPage>
   );

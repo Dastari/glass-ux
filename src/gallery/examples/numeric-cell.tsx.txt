@@ -1,12 +1,13 @@
 import { NumericCell } from "glass-ux/data-table";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 
 export default function NumericCellExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="Formatted numeric table values" layout="stack">
-        <NumericCell value={42} unit="places"/>
-        <NumericCell value={18.5} unit="GB" fractionDigits={1}/>
+        <NumericCell value={42} unit="places" />
+        <NumericCell value={18.5} unit="GB" fractionDigits={1} />
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

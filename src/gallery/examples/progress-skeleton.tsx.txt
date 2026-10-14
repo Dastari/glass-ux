@@ -1,56 +1,69 @@
 import { useEffect, useState } from "react";
-
 import { SectionPage, Specimen, SwapSlot } from "glass-ux/gallery/kit";
-
 import { Button } from "glass-ux/button";
-
 import { Meter, MeterSkeleton } from "glass-ux/meter";
-
 import { Progress, ProgressSkeleton } from "glass-ux/progress";
 
 function useTicking(start: number, step = 7) {
-    const [value, setValue] = useState(start);
-    useEffect(() => {
-        const timer = setInterval(() => setValue((current) => (current >= 100 ? 0 : Math.min(100, current + step))), 900);
-        return () => clearInterval(timer);
-    }, [step]);
-    return value;
+  const [value, setValue] = useState(start);
+  useEffect(() => {
+    const timer = setInterval(
+      () => setValue((current) => (current >= 100 ? 0 : Math.min(100, current + step))),
+      900,
+    );
+    return () => clearInterval(timer);
+  }, [step]);
+  return value;
 }
 
 export default function ProgressSection() {
-    const live = useTicking(18);
-    return (<SectionPage>
-
-
-
-
-
-
-
-
-
-
-      <Specimen title="Loading" description="Skeletons keep the exact rows: the head line, the track and the data line with its action." wide>
+  const live = useTicking(18);
+  return (
+    <SectionPage>
+      <Specimen
+        title="Loading"
+        description="Skeletons keep the exact rows: the head line, the track and the data line with its action."
+        wide
+      >
         <div className="grid w-full grid-cols-2 gap-6">
-          <SwapSlot id="progress" skeleton={<ProgressSkeleton meta action/>} loaded={<Progress value={65} label="Installing Google Chrome 129.0…" meta="1 of 3 devices completed" action={<Button size="sm" variant="secondary">
+          <SwapSlot
+            id="progress"
+            skeleton={<ProgressSkeleton meta action />}
+            loaded={
+              <Progress
+                value={65}
+                label="Installing Google Chrome 129.0…"
+                meta="1 of 3 devices completed"
+                action={
+                  <Button size="sm" variant="secondary">
                     Cancel
-                  </Button>}/>}/>
-          <SwapSlot id="meter" skeleton={<MeterSkeleton />} loaded={<Meter value={212} max={256} label="C: · Local disk" valueText="212 GB of 256 GB"/>}/>
-          <ProgressSkeleton meta action/>
-          <Progress value={65} label="Installing Google Chrome 129.0…" meta="1 of 3 devices completed" action={<Button size="sm" variant="secondary">
+                  </Button>
+                }
+              />
+            }
+          />
+          <SwapSlot
+            id="meter"
+            skeleton={<MeterSkeleton />}
+            loaded={
+              <Meter value={212} max={256} label="C: · Local disk" valueText="212 GB of 256 GB" />
+            }
+          />
+          <ProgressSkeleton meta action />
+          <Progress
+            value={65}
+            label="Installing Google Chrome 129.0…"
+            meta="1 of 3 devices completed"
+            action={
+              <Button size="sm" variant="secondary">
                 Cancel
-              </Button>}/>
+              </Button>
+            }
+          />
           <MeterSkeleton />
-          <Meter value={212} max={256} label="C: · Local disk" valueText="212 GB of 256 GB"/>
+          <Meter value={212} max={256} label="C: · Local disk" valueText="212 GB of 256 GB" />
         </div>
       </Specimen>
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

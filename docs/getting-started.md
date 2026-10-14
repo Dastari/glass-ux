@@ -9,7 +9,7 @@ React 19, React DOM 19 and Node 22.12 or newer are required. Install the built a
 a GitHub release and commit the package-manager lockfile:
 
 ```sh
-pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.1.1/glass-ux-0.1.1.tgz
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.2.0/glass-ux-0.2.0.tgz
 ```
 
 The archive includes JavaScript, TypeScript declarations, styles, fonts, guides and skills.
@@ -28,12 +28,12 @@ pnpm add -D vite@8 @vitejs/plugin-react tailwindcss@4 @tailwindcss/vite typescri
 ## Configure Vite
 
 ```ts
-import { defineConfig } from "vite"
-import react from "@vitejs/plugin-react"
-import tailwindcss from "@tailwindcss/vite"
-import { glassUx } from "glass-ux/vite"
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { glassUx } from "glass-ux/vite";
 
-export default defineConfig({ plugins: [react(), tailwindcss(), glassUx()] })
+export default defineConfig({ plugins: [react(), tailwindcss(), glassUx()] });
 ```
 
 The Glass UX plugin keeps its asset imports and lazy demo registry available to Vite’s
@@ -63,16 +63,16 @@ component's props for variants. Fonts are bundled assets with relative URLs.
 ## Set up the root
 
 ```tsx
-import { AppearanceProvider, configureAppearance } from "glass-ux/appearance"
-import { TooltipProvider } from "glass-ux/tooltip"
-import { ActionProvider } from "glass-ux/actions"
-import { PaletteProvider } from "glass-ux/command-palette"
-import { Button } from "glass-ux/button"
+import { AppearanceProvider, configureAppearance } from "glass-ux/appearance";
+import { TooltipProvider } from "glass-ux/tooltip";
+import { ActionProvider } from "glass-ux/actions";
+import { PaletteProvider } from "glass-ux/command-palette";
+import { Button } from "glass-ux/button";
 
 configureAppearance({
   storageKey: "my-application.appearance.v1",
   defaults: { palette: "graphite", mode: "system" },
-})
+});
 
 export function App() {
   return (
@@ -87,7 +87,7 @@ export function App() {
         </ActionProvider>
       </TooltipProvider>
     </AppearanceProvider>
-  )
+  );
 }
 ```
 
@@ -100,29 +100,31 @@ router adapter it uses browser document navigation. For SSR, apply
 ## Build a typed form
 
 ```tsx
-import { z } from "zod"
-import { emailSchema } from "glass-ux/email-field"
-import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form"
+import { z } from "zod";
+import { emailSchema } from "glass-ux/email-field";
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
 
-const schema = z.object({ email: emailSchema({ required: true }) })
+const schema = z.object({ email: emailSchema({ required: true }) });
 
 export function ContactForm() {
   const form = useAppForm({
     ...formBehaviour,
     defaultValues: { email: "" },
     validators: { onDynamic: schema },
-    onSubmit: async ({ value }) => { console.info(value.email) },
-  })
+    onSubmit: async ({ value }) => {
+      console.info(value.email);
+    },
+  });
   return (
     <Form form={form}>
       <FormStack>
-        <form.AppField name="email">
-          {(field) => <field.EmailField label="Email" />}
-        </form.AppField>
-        <FormActions><form.SubmitButton>Save contact</form.SubmitButton></FormActions>
+        <form.AppField name="email">{(field) => <field.EmailField label="Email" />}</form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save contact</form.SubmitButton>
+        </FormActions>
       </FormStack>
     </Form>
-  )
+  );
 }
 ```
 

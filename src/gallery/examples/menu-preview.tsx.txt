@@ -1,21 +1,18 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { ActionMenuPreview, ActionProvider } from "glass-ux/actions";
-
 import { MenuPreview } from "glass-ux/menu";
-
 import { ENDPOINTS, endpointActions } from "glass-ux/gallery/sections/overlays.fixtures";
 
 const win11 = ENDPOINTS[2]!;
 
 export default function MenuSection() {
-    return (<ActionProvider>
+  return (
+    <ActionProvider>
       <SectionPage>
-
-
-
-
-        <Specimen title="Toggles, choices and labels" description="Ticks and dots take the icon slot, so labels line up with icon rows.">
+        <Specimen
+          title="Toggles, choices and labels"
+          description="Ticks and dots take the icon slot, so labels line up with icon rows."
+        >
           <MenuPreview.Surface label="View">
             <MenuPreview.Group>
               <MenuPreview.GroupLabel>Columns</MenuPreview.GroupLabel>
@@ -36,16 +33,9 @@ export default function MenuSection() {
               </MenuPreview.Item>
             </MenuPreview.Group>
           </MenuPreview.Surface>
-          <ActionMenuPreview set={endpointActions} targets={[win11]} label={win11.name}/>
+          <ActionMenuPreview set={endpointActions} targets={[win11]} label={win11.name} />
         </Specimen>
-
-
-
-
-
-
-
-
       </SectionPage>
-    </ActionProvider>);
+    </ActionProvider>
+  );
 }

@@ -1,118 +1,211 @@
 import { useEffect, useState } from "react";
-
 import { ContainerLab, Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Field } from "glass-ux/field";
-
-import { FileDrop, FileList, FileRow, describeRejections, type FileStatus } from "glass-ux/file-drop";
+import {
+  FileDrop,
+  FileList,
+  FileRow,
+  describeRejections,
+  type FileStatus,
+} from "glass-ux/file-drop";
 
 const MAX = 500 * 1024 * 1024;
 
 interface Upload {
-    id: string;
-    name: string;
-    size: number;
-    progress: number;
-    /** Current operation or connection status. */
-    status: FileStatus;
+  id: string;
+  name: string;
+  size: number;
+  progress: number;
+  /** Current operation or connection status. */
+  status: FileStatus;
 }
 
 let nextId = 0;
 
 function InstallerUpload() {
-    const [uploads, setUploads] = useState<Upload[]>([
-        { id: "seed", name: "GoogleChromeStandaloneEnterprise64.msi", size: 132800000, progress: 100, status: "done" },
-    ]);
-    const [error, setError] = useState<string>();
-    useEffect(() => {
-        if (!uploads.some((upload) => upload.status !== "done"))
-            return;
-        const timer = setInterval(() => {
-            setUploads((current) => {
-                let started = false;
-                return current.map((upload) => {
-                    if (upload.status === "uploading") {
-                        const progress = Math.min(100, upload.progress + 9);
-                        return { ...upload, progress, status: progress >= 100 ? "done" : "uploading" };
-                    }
-                    if (upload.status === "queued" && !started && !current.some((other) => other.status === "uploading")) {
-                        started = true;
-                        return { ...upload, status: "uploading" };
-                    }
-                    return upload;
-                });
-            });
-        }, 300);
-        return () => clearInterval(timer);
-    }, [uploads]);
-    return (<div className="flex w-full max-w-xl flex-col gap-3">
+  const [uploads, setUploads] = useState<Upload[]>([
+    {
+      id: "seed",
+      name: "GoogleChromeStandaloneEnterprise64.msi",
+      size: 132800000,
+      progress: 100,
+      status: "done",
+    },
+  ]);
+  const [error, setError] = useState<string>();
+  useEffect(() => {
+    if (!uploads.some((upload) => upload.status !== "done")) return;
+    const timer = setInterval(() => {
+      setUploads((current) => {
+        let started = false;
+        return current.map((upload) => {
+          if (upload.status === "uploading") {
+            const progress = Math.min(100, upload.progress + 9);
+            return { ...upload, progress, status: progress >= 100 ? "done" : "uploading" };
+          }
+          if (
+            upload.status === "queued" &&
+            !started &&
+            !current.some((other) => other.status === "uploading")
+          ) {
+            started = true;
+            return { ...upload, status: "uploading" };
+          }
+          return upload;
+        });
+      });
+    }, 300);
+    return () => clearInterval(timer);
+  }, [uploads]);
+  return (
+    <div className="flex w-full max-w-xl flex-col gap-3">
       <Field label="Installer packages" error={error}>
-        <FileDrop accept=".msi,.exe" maxSize={MAX} maxFiles={5} existing={uploads.length} invalid={Boolean(error)} onFiles={(accepted, rejected) => {
+        <FileDrop
+          accept=".msi,.exe"
+          maxSize={MAX}
+          maxFiles={5}
+          existing={uploads.length}
+          invalid={Boolean(error)}
+          onFiles={(accepted, rejected) => {
             setError(describeRejections(rejected));
             setUploads((current) => [
-                ...current,
-                ...accepted.map((file) => ({ id: `u${nextId++}`, name: file.name, size: file.size, progress: 0, status: "queued" as const })),
+              ...current,
+              ...accepted.map((file) => ({
+                id: `u${nextId++}`,
+                name: file.name,
+                size: file.size,
+                progress: 0,
+                status: "queued" as const,
+              })),
             ]);
-        }}/>
+          }}
+        />
       </Field>
       <FileList aria-label="Installer packages">
-        {uploads.map((upload) => (<FileRow key={upload.id} name={upload.name} size={upload.size} status={upload.status} progress={upload.progress} onRemove={() => setUploads((current) => current.filter((other) => other.id !== upload.id))}/>))}
+        {uploads.map((upload) => (
+          <FileRow
+            key={upload.id}
+            name={upload.name}
+            size={upload.size}
+            status={upload.status}
+            progress={upload.progress}
+            onRemove={() =>
+              setUploads((current) => current.filter((other) => other.id !== upload.id))
+            }
+          />
+        ))}
       </FileList>
-    </div>);
+    </div>
+  );
 }
 
 export default function FileDropSection() {
-    return (<SectionPage>
-      <Specimen title="Upload" description="Drop files or activate the tile (Enter or Space) to browse. Try a file that is not .msi or .exe: the reason appears in the message line and the tile keeps its size." wide>
+  return (
+    <SectionPage>
+      <Specimen
+        title="Upload"
+        description="Drop files or activate the tile (Enter or Space) to browse. Try a file that is not .msi or .exe: the reason appears in the message line and the tile keeps its size."
+        wide
+      >
         <InstallerUpload />
       </Specimen>
 
       <Specimen title="States" wide>
         <div className="grid w-full grid-cols-2 gap-5">
           <Example label="Resting">
-            <FileDrop onFiles={() => { }} accept=".msi,.exe" maxSize={MAX} aria-label="Resting"/>
+            <FileDrop onFiles={() => {}} accept=".msi,.exe" maxSize={MAX} aria-label="Resting" />
           </Example>
           <Example label="Dragging over">
-            <FileDrop onFiles={() => { }} accept=".msi,.exe" maxSize={MAX} dragging aria-label="Dragging over"/>
+            <FileDrop
+              onFiles={() => {}}
+              accept=".msi,.exe"
+              maxSize={MAX}
+              dragging
+              aria-label="Dragging over"
+            />
           </Example>
           <Example label="Invalid">
-            <FileDrop onFiles={() => { }} accept=".msi,.exe" maxSize={MAX} invalid aria-label="Invalid"/>
+            <FileDrop
+              onFiles={() => {}}
+              accept=".msi,.exe"
+              maxSize={MAX}
+              invalid
+              aria-label="Invalid"
+            />
           </Example>
           <Example label="Disabled">
-            <FileDrop onFiles={() => { }} accept=".msi,.exe" maxSize={MAX} disabled aria-label="Disabled"/>
+            <FileDrop
+              onFiles={() => {}}
+              accept=".msi,.exe"
+              maxSize={MAX}
+              disabled
+              aria-label="Disabled"
+            />
           </Example>
         </div>
       </Specimen>
 
-      <Specimen title="Compact" description="One field-height row for toolbars, table rows and narrow panes.">
+      <Specimen
+        title="Compact"
+        description="One field-height row for toolbars, table rows and narrow panes."
+      >
         <div className="flex w-full max-w-lg flex-col gap-3">
-          <FileDrop variant="compact" onFiles={() => { }} maxSize={25 * 1024 * 1024} aria-label="Attach files"/>
-          <FileDrop variant="compact" onFiles={() => { }} maxSize={25 * 1024 * 1024} dragging aria-label="Attach files (dragging)"/>
+          <FileDrop
+            variant="compact"
+            onFiles={() => {}}
+            maxSize={25 * 1024 * 1024}
+            aria-label="Attach files"
+          />
+          <FileDrop
+            variant="compact"
+            onFiles={() => {}}
+            maxSize={25 * 1024 * 1024}
+            dragging
+            aria-label="Attach files (dragging)"
+          />
         </div>
       </Specimen>
-
-
 
       <Specimen title="Over glass and imagery" backdrop>
         <div className="w-full max-w-md">
-          <FileDrop onFiles={() => { }} maxSize={MAX} aria-label="Upload over imagery"/>
+          <FileDrop onFiles={() => {}} maxSize={MAX} aria-label="Upload over imagery" />
         </div>
       </Specimen>
 
       <ContainerLab>
-        {(preset) => preset?.id === "row" || preset?.id === "header" ? (<div className="flex h-full items-center px-1">
-              <FileDrop variant="compact" onFiles={() => { }} maxSize={MAX} aria-label="Attach files"/>
-            </div>) : (<div className="flex h-full flex-col gap-3 overflow-y-auto p-3" data-scroll-container>
-              <FileDrop onFiles={() => { }} accept=".msi,.exe" maxSize={MAX} aria-label="Upload"/>
+        {(preset) =>
+          preset?.id === "row" || preset?.id === "header" ? (
+            <div className="flex h-full items-center px-1">
+              <FileDrop
+                variant="compact"
+                onFiles={() => {}}
+                maxSize={MAX}
+                aria-label="Attach files"
+              />
+            </div>
+          ) : (
+            <div className="flex h-full flex-col gap-3 overflow-y-auto p-3" data-scroll-container>
+              <FileDrop onFiles={() => {}} accept=".msi,.exe" maxSize={MAX} aria-label="Upload" />
               <FileList aria-label="Uploads">
-                <FileRow name="Setup-Glass UX-Agent-6.8.0.msi" size={48600000} status="uploading" progress={64} onRemove={() => { }}/>
-                <FileRow name="vcredist_x64.exe" size={25400000} status="error" error="Connection lost — retry when online" onRemove={() => { }}/>
+                <FileRow
+                  name="Setup-Glass UX-Agent-6.8.0.msi"
+                  size={48600000}
+                  status="uploading"
+                  progress={64}
+                  onRemove={() => {}}
+                />
+                <FileRow
+                  name="vcredist_x64.exe"
+                  size={25400000}
+                  status="error"
+                  error="Connection lost — retry when online"
+                  onRemove={() => {}}
+                />
               </FileList>
-            </div>)}
+            </div>
+          )
+        }
       </ContainerLab>
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

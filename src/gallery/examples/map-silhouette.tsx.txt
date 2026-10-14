@@ -1,34 +1,37 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { MapSilhouette } from "glass-ux/map";
 
 export default function MapSilhouetteExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="MapSilhouette" layout="stack">
         <div className="h-60 w-full">
-          <MapSilhouette region={{
-            type: "Feature",
-            bbox: [140, -42, 145, -37],
-            properties: {
+          <MapSilhouette
+            region={{
+              type: "Feature",
+              bbox: [140, -42, 145, -37],
+              properties: {
                 code: "SAMPLE",
                 country: "AU",
                 name: "Sample region",
                 focus: [140, -42, 145, -37],
-            },
-            geometry: {
+              },
+              geometry: {
                 type: "Polygon",
                 coordinates: [
-                    [
-                        [140, -42],
-                        [145, -42],
-                        [145, -37],
-                        [140, -37],
-                        [140, -42],
-                    ],
+                  [
+                    [140, -42],
+                    [145, -42],
+                    [145, -37],
+                    [140, -37],
+                    [140, -42],
+                  ],
                 ],
-            },
-        }}/>
+              },
+            }}
+          />
         </div>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

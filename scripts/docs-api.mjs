@@ -350,7 +350,7 @@ function sectionFor(component) {
 }
 for (const component of components) component.section = sectionFor(component);
 components.sort((a, b) => a.name.localeCompare(b.name));
-const coverage = generateComponentDemos(program, checker, components);
+const coverage = await generateComponentDemos(program, checker, components);
 console.log(
   `Focused demos: ${coverage.filter((c) => c.covered).length}/${coverage.length}; missing: ${coverage
     .filter((c) => !c.covered)
@@ -477,16 +477,22 @@ writeFileSync(
     "\n",
 );
 mkdirSync("src/gallery/guides", { recursive: true });
-for (const guide of ["getting-started", "integration", "agent-adoption"])
+for (const guide of [
+  "getting-started",
+  "integration",
+  "agent-adoption",
+  "layout-contract",
+])
   cpSync(`docs/${guide}.md`, `src/gallery/guides/${guide}.md`);
 writeFileSync(
   "llms.txt",
-  "# Glass UX\n\nTyped React components, compound slots, themes and interaction rules. Read docs from the installed package to match its version.\n\n- [Getting started](docs/getting-started.md)\n- [Existing applications](docs/integration.md)\n- [Agent adoption](docs/agent-adoption.md)\n- [API index](docs/api/README.md)\n- [Design rules](docs/ui-rules.md)\n- [Typed form inputs](docs/components/README.md)\n- [Adoption skill](skills/glass-ux-adopt/SKILL.md)\n- [Component selection skill](skills/glass-ux-components/SKILL.md)\n- [Forms skill](skills/glass-ux-forms/SKILL.md)\n- [Data views skill](skills/glass-ux-data/SKILL.md)\n- [Assistant UI skill](skills/glass-ux-assistant/SKILL.md)\n- [Authoring skill](skills/glass-ux-author/SKILL.md)\n",
+  "# Glass UX\n\nTyped React components, compound slots, themes and interaction rules. Read docs from the installed package to match its version.\n\n- [Getting started](docs/getting-started.md)\n- [Existing applications](docs/integration.md)\n- [Agent adoption](docs/agent-adoption.md)\n- [API index](docs/api/README.md)\n- [Design rules](docs/ui-rules.md)\n- [Theme and layout](docs/layout-contract.md)\n- [Typed form inputs](docs/components/README.md)\n- [Adoption skill](skills/glass-ux-adopt/SKILL.md)\n- [Component selection skill](skills/glass-ux-components/SKILL.md)\n- [Forms skill](skills/glass-ux-forms/SKILL.md)\n- [Data views skill](skills/glass-ux-data/SKILL.md)\n- [Assistant UI skill](skills/glass-ux-assistant/SKILL.md)\n- [Authoring skill](skills/glass-ux-author/SKILL.md)\n",
 );
 const app = await Application.bootstrapWithPlugins({
   entryPoints: [
     ...entries.map((e) => e.file),
     "src/vite.ts",
+    "src/gallery/index.ts",
     "src/lib/graphql-orm/where.ts",
   ],
   tsconfig: "tsconfig.json",

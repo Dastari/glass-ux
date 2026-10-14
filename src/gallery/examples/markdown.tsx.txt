@@ -1,36 +1,30 @@
 import { Markdown } from "glass-ux/ai";
-
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery, LabScroll } from "glass-ux/gallery/sections/ai.kit";
 
-const PROSE = "NST-C106 at [Northstar Studio](/organisations/northstar) stopped printing after the [Print Spooler stopped](/alerts/a-99812). [Mira Rowan](/users/MiraRowan) raised [#7102](/tickets/7102); [LMN-4E5E](/endpoints/LMN-4E5E) can wake it."; // tokens:allow ticket number, not a colour
-
+const PROSE =
+  "NST-C106 at [Northstar Studio](/organisations/northstar) stopped printing after the [Print Spooler stopped](/alerts/a-99812). [Mira Rowan](/users/MiraRowan) raised [#7102](/tickets/7102); [LMN-4E5E](/endpoints/LMN-4E5E) can wake it."; // tokens:allow ticket number, not a colour
 
 export default function AiContextLinksSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-        <Specimen title="In prose" description="Internal links in an answer become inline chips that sit inside the line box. Hover or focus one for its preview; click navigates; right-click or Shift+F10 opens its actions." layout="stack">
-          <Markdown text={PROSE}/>
+        <Specimen
+          title="In prose"
+          description="Internal links in an answer become inline chips that sit inside the line box. Hover or focus one for its preview; click navigates; right-click or Shift+F10 opens its actions."
+          layout="stack"
+        >
+          <Markdown text={PROSE} />
         </Specimen>
 
-
-
-
-
-
-
         <ContainerLab description="Chips truncate at their maximum and wrap with the text; they never push their row wider.">
-          {() => (<LabScroll>
-              <Markdown text={PROSE}/>
-            </LabScroll>)}
+          {() => (
+            <LabScroll>
+              <Markdown text={PROSE} />
+            </LabScroll>
+          )}
         </ContainerLab>
-
-
-
-
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

@@ -1,11 +1,10 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Button } from "glass-ux/button";
-
 import { ContextMenu } from "glass-ux/context-menu";
 
 export default function ContextMenuExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="ContextMenu" layout="stack">
         <ContextMenu.Root>
           <ContextMenu.Trigger>
@@ -17,5 +16,6 @@ export default function ContextMenuExample() {
           </ContextMenu.Popup>
         </ContextMenu.Root>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

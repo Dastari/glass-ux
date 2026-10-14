@@ -1,50 +1,38 @@
 import { useEffect, useState } from "react";
-
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { ProgressRing } from "glass-ux/progress";
 
 function useTicking(start: number, step = 7) {
-    const [value, setValue] = useState(start);
-    useEffect(() => {
-        const timer = setInterval(() => setValue((current) => (current >= 100 ? 0 : Math.min(100, current + step))), 900);
-        return () => clearInterval(timer);
-    }, [step]);
-    return value;
+  const [value, setValue] = useState(start);
+  useEffect(() => {
+    const timer = setInterval(
+      () => setValue((current) => (current >= 100 ? 0 : Math.min(100, current + step))),
+      900,
+    );
+    return () => clearInterval(timer);
+  }, [step]);
+  return value;
 }
 
 export default function ProgressSection() {
-    const live = useTicking(18);
-    return (<SectionPage>
-
-
-
-
-      <Specimen title="Ring" description="Inline at 16, standalone at 32, and 48 with the percentage. Indeterminate spins an arc.">
+  const live = useTicking(18);
+  return (
+    <SectionPage>
+      <Specimen
+        title="Ring"
+        description="Inline at 16, standalone at 32, and 48 with the percentage. Indeterminate spins an arc."
+      >
         <Example label="sm · md · lg">
-          <ProgressRing size="sm" value={live} aria-label="Uploading install.log"/>
-          <ProgressRing size="md" value={live} aria-label="Uploading install.log"/>
-          <ProgressRing size="lg" value={live} aria-label="Uploading install.log"/>
+          <ProgressRing size="sm" value={live} aria-label="Uploading install.log" />
+          <ProgressRing size="md" value={live} aria-label="Uploading install.log" />
+          <ProgressRing size="lg" value={live} aria-label="Uploading install.log" />
         </Example>
         <Example label="Indeterminate · complete · failed">
-          <ProgressRing value={null} aria-label="Connecting to STUDIO-VM"/>
-          <ProgressRing value={100} aria-label="Upload complete"/>
-          <ProgressRing value={60} tone="danger" aria-label="Upload failed"/>
+          <ProgressRing value={null} aria-label="Connecting to STUDIO-VM" />
+          <ProgressRing value={100} aria-label="Upload complete" />
+          <ProgressRing value={60} tone="danger" aria-label="Upload failed" />
         </Example>
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

@@ -1,32 +1,20 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { FormStack } from "glass-ux/form";
-
 import { SettingRowSkeleton } from "glass-ux/setting-row";
 
 export default function SettingRowSection() {
-    return (<SectionPage>
-
-
-
-
-
-
-
-
-
-      <Specimen title="Loading" description="The skeleton keeps the label, description and control boxes.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Loading"
+        description="The skeleton keeps the label, description and control boxes."
+      >
         <FormStack>
           <SettingRowSkeleton />
-          <SettingRowSkeleton control="segmented" description={false} labelWidth="30%"/>
-          <SettingRowSkeleton control="button" labelWidth="45%"/>
+          <SettingRowSkeleton control="segmented" description={false} labelWidth="30%" />
+          <SettingRowSkeleton control="button" labelWidth="45%" />
         </FormStack>
       </Specimen>
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

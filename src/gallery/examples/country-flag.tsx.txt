@@ -1,27 +1,19 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { CountryFlag } from "glass-ux/country-select";
 
 export default function CountrySelectSection() {
-    return (<SectionPage>
-
-
-      <Specimen title="Flags" description="3:2, the height of a small icon, with a hairline so white flags read on white.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Flags"
+        description="3:2, the height of a small icon, with a hairline so white flags read on white."
+      >
         <span className="flex flex-wrap items-center gap-2">
-          {["AU", "NZ", "GB", "US", "CA", "JP", "SG", "FJ", "PG", "IE", "IN", "PH"].map((code) => (<CountryFlag key={code} code={code}/>))}
+          {["AU", "NZ", "GB", "US", "CA", "JP", "SG", "FJ", "PG", "IE", "IN", "PH"].map((code) => (
+            <CountryFlag key={code} code={code} />
+          ))}
         </span>
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

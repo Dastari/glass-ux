@@ -1,16 +1,22 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { ProportionStrip } from "glass-ux/charts";
 
 export default function ProportionStripExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="ProportionStrip" layout="stack">
         <svg viewBox="0 0 480 40" role="img" aria-label="Booked 60 percent, available 40 percent">
-          <ProportionStrip width={480} height={40} rem={16} items={[
-            { key: "booked", value: 60, slot: 1 },
-            { key: "available", value: 40, slot: 2 },
-        ]}/>
+          <ProportionStrip
+            width={480}
+            height={40}
+            rem={16}
+            items={[
+              { key: "booked", value: 60, slot: 1 },
+              { key: "available", value: 40, slot: 2 },
+            ]}
+          />
         </svg>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

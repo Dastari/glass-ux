@@ -1,13 +1,17 @@
 import { IdentityCell } from "glass-ux/data-table";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { IconOrganisation } from "glass-ux/icons";
 
 export default function IdentityCellExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="Primary identity in a table cell" layout="stack">
-        <IdentityCell title="Meridian Studio" subtitle="Exhibition project" icon={<IconOrganisation />}/>
+        <IdentityCell
+          title="Meridian Studio"
+          subtitle="Exhibition project"
+          icon={<IconOrganisation />}
+        />
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

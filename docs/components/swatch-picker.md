@@ -2,7 +2,6 @@
 
 `glass-ux/swatch-picker` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 One colour from a small set, where the colours themselves are the choice: a palette, an
 organisation's tint. Round swatches sit in the segmented control's recessed track (same heights:
 sm 32, md 40), each named by a tooltip and its accessible name. The chosen swatch takes a canvas
@@ -17,7 +16,11 @@ swatches. In a `SettingRow` the row's label names it, like `Segmented`.
     <SwatchPicker<Palette>
       value={appearance.palette}
       onValueChange={(palette) => update({ palette, accentHue: null })}
-      options={PALETTES.map((palette) => ({ value: palette, label: PALETTE_LABELS[palette], palette }))}
+      options={PALETTES.map((palette) => ({
+        value: palette,
+        label: PALETTE_LABELS[palette],
+        palette,
+      }))}
     />
   }
 />

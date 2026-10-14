@@ -1,69 +1,69 @@
 import { useState } from "react";
-
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Field } from "glass-ux/field";
-
 import { FormStack } from "glass-ux/form";
-
 import { OtpInput } from "glass-ux/otp-field";
 
 /** The code the demo accepts. */
 const GOOD = "482913";
 
 export default function OtpFieldSection() {
-    const [code, setCode] = useState("");
-    return (<SectionPage>
-      <Specimen title="Entry and paste" description="Type, or paste anything with the code in it (“Your code is 482913”, “482 913”, “G-482913”): every box fills. Backspace steps back, the arrows move, and phones offer the code from a message (autocomplete one-time-code).">
+  const [code, setCode] = useState("");
+  return (
+    <SectionPage>
+      <Specimen
+        title="Entry and paste"
+        description="Type, or paste anything with the code in it (“Your code is 482913”, “482 913”, “G-482913”): every box fills. Backspace steps back, the arrows move, and phones offer the code from a message (autocomplete one-time-code)."
+      >
         <FormStack className="w-full" data-testid="otp-demo">
-          <Field label="Verification code" hint={code.length === 6 ? `Complete: ${code}` : "Six digits"}>
-            <OtpInput value={code} onValueChange={setCode}/>
+          <Field
+            label="Verification code"
+            hint={code.length === 6 ? `Complete: ${code}` : "Six digits"}
+          >
+            <OtpInput value={code} onValueChange={setCode} />
           </Field>
         </FormStack>
       </Specimen>
 
-
-
-      <Specimen title="States" description="Error and success change the boxes, never the layout: the ✓ has its slot already." layout="grid">
+      <Specimen
+        title="States"
+        description="Error and success change the boxes, never the layout: the ✓ has its slot already."
+        layout="grid"
+      >
         <FormStack>
           <Field label="Error" error="That code is not right">
-            <OtpInput defaultValue="481239" status="error"/>
+            <OtpInput defaultValue="481239" status="error" />
           </Field>
           <Field label="Success">
-            <OtpInput defaultValue={GOOD} status="success"/>
+            <OtpInput defaultValue={GOOD} status="success" />
           </Field>
         </FormStack>
         <FormStack>
           <Field label="Disabled">
-            <OtpInput defaultValue="48" disabled/>
+            <OtpInput defaultValue="48" disabled />
           </Field>
           <Field label="Recovery code" hint="Eight letters and digits, in two groups.">
-            <OtpInput length={8} characters="alphanumeric" size="md"/>
+            <OtpInput length={8} characters="alphanumeric" size="md" />
           </Field>
           <Field label="PIN" hint="Masked, four digits.">
-            <OtpInput length={4} mask size="md" groups={[4]}/>
+            <OtpInput length={4} mask size="md" groups={[4]} />
           </Field>
         </FormStack>
       </Specimen>
 
       <Specimen title="Over glass and imagery" backdrop>
         <Field label="Verification code">
-          <OtpInput defaultValue="4829"/>
+          <OtpInput defaultValue="4829" />
         </Field>
       </Specimen>
 
       <ContainerLab>
         <div className="flex h-full items-center p-1">
           <Field label="Code">
-            <OtpInput size="md" defaultValue="482913"/>
+            <OtpInput size="md" defaultValue="482913" />
           </Field>
         </div>
       </ContainerLab>
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

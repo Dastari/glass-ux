@@ -1,50 +1,70 @@
 import { useState } from "react";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
-import { IconEndpoint, IconRefresh, IconRemoteControl, IconTaskManager, IconTerminal } from "glass-ux/icons";
-
+import {
+  IconEndpoint,
+  IconRefresh,
+  IconRemoteControl,
+  IconTaskManager,
+  IconTerminal,
+} from "glass-ux/icons";
 import { EntityHeader } from "glass-ux/shell";
-
 import { Button } from "glass-ux/button";
-
 import { Panel, PanelBody } from "glass-ux/surface";
-
-import { Window, WindowFrame, WindowManagerProvider, Workspace, createWindowManager, registerWindowKind, useWindowVisibility, type WindowContentProps } from "glass-ux/windows";
+import {
+  Window,
+  WindowFrame,
+  WindowManagerProvider,
+  Workspace,
+  createWindowManager,
+  registerWindowKind,
+  useWindowVisibility,
+  type WindowContentProps,
+} from "glass-ux/windows";
 
 /* ── Sample bodies ───────────────────────────────────────────────────────── */
 const PROCESSES = [
-    ["chrome.exe", "6.2%", "1,184 MB"],
-    ["OUTLOOK.EXE", "1.4%", "412 MB"],
-    ["GlassUxAgent.exe", "0.8%", "96 MB"],
-    ["MsMpEng.exe", "3.1%", "238 MB"],
-    ["Teams.exe", "2.6%", "688 MB"],
+  ["chrome.exe", "6.2%", "1,184 MB"],
+  ["OUTLOOK.EXE", "1.4%", "412 MB"],
+  ["GlassUxAgent.exe", "0.8%", "96 MB"],
+  ["MsMpEng.exe", "3.1%", "238 MB"],
+  ["Teams.exe", "2.6%", "688 MB"],
 ] as const;
 
 function ProcessRows() {
-    return (<ul className="gallery-wm-rows">
-      {PROCESSES.map(([name, cpu, memory]) => (<li key={name}>
+  return (
+    <ul className="gallery-wm-rows">
+      {PROCESSES.map(([name, cpu, memory]) => (
+        <li key={name}>
           <span>{name}</span>
           <span data-numeric>{cpu}</span>
           <span data-numeric>{memory}</span>
-        </li>))}
-    </ul>);
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 interface SampleParams {
-    /** Endpoint presentation data supplied by the host. */
-    endpoint: string;
-    [key: string]: string;
+  /** Endpoint presentation data supplied by the host. */
+  endpoint: string;
+  [key: string]: string;
 }
 
 function ProcessesBody(_props: WindowContentProps<SampleParams>) {
-    const { visible } = useWindowVisibility();
-    return (<>
+  const { visible } = useWindowVisibility();
+  return (
+    <>
       <Window.Actions>
-        <Button variant="ghost" size="sm" icon={<IconRefresh />} aria-label="Refresh processes"/>
+        <Button variant="ghost" size="sm" icon={<IconRefresh />} aria-label="Refresh processes" />
       </Window.Actions>
-      <Window.Status indicator={visible ? { tone: "success", label: "Live" } : { tone: "neutral", label: "Paused" }}>
-        <Window.StatusItem tone={visible ? "success" : "neutral"}>{visible ? "Live" : "Paused"}</Window.StatusItem>
+      <Window.Status
+        indicator={
+          visible ? { tone: "success", label: "Live" } : { tone: "neutral", label: "Paused" }
+        }
+      >
+        <Window.StatusItem tone={visible ? "success" : "neutral"}>
+          {visible ? "Live" : "Paused"}
+        </Window.StatusItem>
         <Window.StatusItem>142 processes</Window.StatusItem>
         <Window.StatusMeta>
           <span>CPU 17%</span>
@@ -53,119 +73,150 @@ function ProcessesBody(_props: WindowContentProps<SampleParams>) {
       <Window.Body>
         <ProcessRows />
       </Window.Body>
-    </>);
+    </>
+  );
 }
 
 function ScreenBody({ params }: WindowContentProps<SampleParams>) {
-    return (<>
+  return (
+    <>
       <Window.Status indicator={{ tone: "success", label: "Connected" }}>
         <Window.StatusItem tone="success">Connected</Window.StatusItem>
         <Window.StatusItem>1920 × 1080</Window.StatusItem>
         <Window.StatusItem>28 ms</Window.StatusItem>
       </Window.Status>
       <Window.Body variant="fill">
-        <div className="gallery-wm-screen" data-mode="dark" role="img" aria-label={`Screen of ${params.endpoint}`}/>
+        <div
+          className="gallery-wm-screen"
+          data-mode="dark"
+          role="img"
+          aria-label={`Screen of ${params.endpoint}`}
+        />
       </Window.Body>
-    </>);
+    </>
+  );
 }
 
 function TerminalBody({ params }: WindowContentProps<SampleParams>) {
-    return (<>
+  return (
+    <>
       <Window.Status indicator={{ tone: "success", label: "Connected" }}>
         <Window.StatusItem tone="success">Connected</Window.StatusItem>
         <Window.StatusItem>PowerShell 7.4</Window.StatusItem>
       </Window.Status>
       <Window.Body variant="fill">
-        <pre className="gallery-wm-terminal" data-mode="dark" aria-label={`Terminal on ${params.endpoint}`}>
-          {"PS C:\\> Get-Service GlassUxAgent\n\nStatus   Name\n------   ----\nRunning  GlassUxAgent"}
+        <pre
+          className="gallery-wm-terminal"
+          data-mode="dark"
+          aria-label={`Terminal on ${params.endpoint}`}
+        >
+          {
+            "PS C:\\> Get-Service GlassUxAgent\n\nStatus   Name\n------   ----\nRunning  GlassUxAgent"
+          }
         </pre>
       </Window.Body>
-    </>);
+    </>
+  );
 }
 
 registerWindowKind<SampleParams>({
-    kind: "gallery.processes",
-    title: () => "Task manager",
-    subtitle: (params) => params.endpoint,
-    icon: IconTaskManager,
-    size: { w: 440, h: 300 },
-    minSize: { w: 280, h: 180 },
-    load: async () => ({ default: ProcessesBody }),
+  kind: "gallery.processes",
+  title: () => "Task manager",
+  subtitle: (params) => params.endpoint,
+  icon: IconTaskManager,
+  size: { w: 440, h: 300 },
+  minSize: { w: 280, h: 180 },
+  load: async () => ({ default: ProcessesBody }),
 });
 
 registerWindowKind<SampleParams>({
-    kind: "gallery.screen",
-    title: () => "Remote control",
-    subtitle: (params) => params.endpoint,
-    icon: IconRemoteControl,
-    key: (params) => params.endpoint,
-    size: { w: 480, h: 320 },
-    minSize: { w: 280, h: 200 },
-    load: async () => ({ default: ScreenBody }),
+  kind: "gallery.screen",
+  title: () => "Remote control",
+  subtitle: (params) => params.endpoint,
+  icon: IconRemoteControl,
+  key: (params) => params.endpoint,
+  size: { w: 480, h: 320 },
+  minSize: { w: 280, h: 200 },
+  load: async () => ({ default: ScreenBody }),
 });
 
 registerWindowKind<SampleParams>({
-    kind: "gallery.terminal",
-    title: () => "Terminal",
-    subtitle: (params) => params.endpoint,
-    icon: IconTerminal,
-    size: { w: 420, h: 260 },
-    minSize: { w: 280, h: 180 },
-    load: async () => ({ default: TerminalBody }),
+  kind: "gallery.terminal",
+  title: () => "Terminal",
+  subtitle: (params) => params.endpoint,
+  icon: IconTerminal,
+  size: { w: 420, h: 260 },
+  minSize: { w: 280, h: 180 },
+  load: async () => ({ default: TerminalBody }),
 });
 
 /* ── Live workspace ──────────────────────────────────────────────────────── */
 function MiniWorkspace() {
-    // Its own manager: not saved, not synced, no pop-out.
-    const [manager] = useState(() => createWindowManager({ storageKey: null, channelName: null, defaultLayout: () => "floating" }));
-    const open = (kind: string) => manager.open({ kind, params: { endpoint: "NST-C106" } });
-    return (<WindowManagerProvider manager={manager}>
+  // Its own manager: not saved, not synced, no pop-out.
+  const [manager] = useState(() =>
+    createWindowManager({ storageKey: null, channelName: null, defaultLayout: () => "floating" }),
+  );
+  const open = (kind: string) => manager.open({ kind, params: { endpoint: "NST-C106" } });
+  return (
+    <WindowManagerProvider manager={manager}>
       <div className="gallery-wm-mini">
-        <Workspace primaryLabel="NST-C106" primary={<>
-              <EntityHeader icon={<IconEndpoint />} title="NST-C106" subtitle="HP EliteOne 1000 G2 27-in 4K UHD AiO" actions={<>
+        <Workspace
+          primaryLabel="NST-C106"
+          primary={
+            <>
+              <EntityHeader
+                icon={<IconEndpoint />}
+                title="NST-C106"
+                subtitle="HP EliteOne 1000 G2 27-in 4K UHD AiO"
+                actions={
+                  <>
                     <Button icon={<IconTerminal />} onClick={() => open("gallery.terminal")}>
                       Terminal
                     </Button>
                     <Button icon={<IconTaskManager />} onClick={() => open("gallery.processes")}>
                       Task manager
                     </Button>
-                    <Button variant="primary" icon={<IconRemoteControl />} onClick={() => open("gallery.screen")}>
+                    <Button
+                      variant="primary"
+                      icon={<IconRemoteControl />}
+                      onClick={() => open("gallery.screen")}
+                    >
                       Connect
                     </Button>
-                  </>}/>
+                  </>
+                }
+              />
               <WindowFrame.Body>
                 <Panel>
                   <PanelBody>
-                    <p className="fa-hint">Open windows from the header. Drag a title bar to an edge, a corner or the snap bar.</p>
+                    <p className="fa-hint">
+                      Open windows from the header. Drag a title bar to an edge, a corner or the
+                      snap bar.
+                    </p>
                   </PanelBody>
                 </Panel>
               </WindowFrame.Body>
-            </>}/>
+            </>
+          }
+        />
       </div>
-    </WindowManagerProvider>);
+    </WindowManagerProvider>
+  );
 }
 
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function WindowsSection() {
-    return (<SectionPage>
-
-
-
-
-
-
-
-
-      <Specimen title="Workspace" description="A working workspace with its own manager (not saved). Open windows, drag them to the edges or the snap bar, resize, minimise and restore from the dock." wide layout="bare" backdrop>
+  return (
+    <SectionPage>
+      <Specimen
+        title="Workspace"
+        description="A working workspace with its own manager (not saved). Open windows, drag them to the edges or the snap bar, resize, minimise and restore from the dock."
+        wide
+        layout="bare"
+        backdrop
+      >
         <MiniWorkspace />
       </Specimen>
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

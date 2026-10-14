@@ -1,13 +1,14 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { InlineCode } from "glass-ux/ai";
 
 export default function InlineCodeExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="InlineCode" layout="stack">
         <p>
           Run <InlineCode>pnpm build</InlineCode> to build the sample project.
         </p>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

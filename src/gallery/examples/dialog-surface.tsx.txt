@@ -1,26 +1,23 @@
 import { Dialog } from "glass-ux/dialog";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Button } from "glass-ux/button";
-
 import { DialogSurface } from "glass-ux/dialog";
 
 export default function DialogSurfaceExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="DialogSurface" layout="stack">
         <Dialog.Root>
-          <Dialog.Trigger render={<Button>Open dialog surface</Button>}/>
+          <Dialog.Trigger render={<Button>Open dialog surface</Button>} />
           <DialogSurface mode="dialog">
-            <Dialog.Header title="Sample dialog"/>
-            <Dialog.Body>
-              Surface owns the backdrop, positioning and accessible popup.
-            </Dialog.Body>
+            <Dialog.Header title="Sample dialog" />
+            <Dialog.Body>Surface owns the backdrop, positioning and accessible popup.</Dialog.Body>
             <Dialog.Footer>
-              <Dialog.Close render={<Button>Close</Button>}/>
+              <Dialog.Close render={<Button>Close</Button>} />
             </Dialog.Footer>
           </DialogSurface>
         </Dialog.Root>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

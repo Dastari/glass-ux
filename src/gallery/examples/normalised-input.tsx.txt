@@ -1,15 +1,18 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { NormalisedInput } from "glass-ux/input";
-
 import { Field } from "glass-ux/field";
 
 export default function NormalisedInputExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="NormalisedInput" layout="stack">
         <Field label="Project slug" hint="Type spaces or capitals, then leave the field.">
-          <NormalisedInput defaultValue="Meridian Studio" normalise={(text) => text.trim().toLowerCase().replaceAll(/\s+/g, "-")}/>
+          <NormalisedInput
+            defaultValue="Meridian Studio"
+            normalise={(text) => text.trim().toLowerCase().replaceAll(/\s+/g, "-")}
+          />
         </Field>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

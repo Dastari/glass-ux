@@ -1,33 +1,22 @@
 import { Example, SectionPage, Specimen, SwapSlot } from "glass-ux/gallery/kit";
-
 import { Avatar, AvatarSkeleton } from "glass-ux/avatar";
 
 export default function AvatarSection() {
-    return (<SectionPage>
-
-
-
-
-
-
-
-
+  return (
+    <SectionPage>
       <Specimen title="Loading" description="The skeleton is the same circle.">
         <Example label="Skeleton · loaded">
-          <AvatarSkeleton size="lg"/>
-          <Avatar name="Avery Quinn" size="lg"/>
-          <AvatarSkeleton size="md"/>
-          <Avatar name="Avery Quinn" size="md"/>
+          <AvatarSkeleton size="lg" />
+          <Avatar name="Avery Quinn" size="lg" />
+          <AvatarSkeleton size="md" />
+          <Avatar name="Avery Quinn" size="md" />
         </Example>
-        <SwapSlot id="avatar" skeleton={<AvatarSkeleton size="lg"/>} loaded={<Avatar name="Avery Quinn" size="lg"/>}/>
+        <SwapSlot
+          id="avatar"
+          skeleton={<AvatarSkeleton size="lg" />}
+          loaded={<Avatar name="Avery Quinn" size="lg" />}
+        />
       </Specimen>
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

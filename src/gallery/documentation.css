@@ -9,7 +9,7 @@
     max-width: var(--gallery-document-measure);
     min-width: 0;
     margin-inline: auto;
-    padding: var(--p-panel);
+    padding: var(--inset-panel);
   }
   .gallery-document-intro {
     display: flex;
@@ -31,7 +31,7 @@
 
   .gallery-documentation pre:not(.fa-ai-code-pre) {
     overflow: auto;
-    padding: var(--p-tile);
+    padding: var(--inset-tile);
     background: var(--fill-muted);
     border-radius: var(--radius-control);
     font-family: var(--font-mono);
@@ -41,7 +41,13 @@
     display: grid;
     grid-template-columns: var(--gallery-document-rail) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
-    gap: var(--gap-panels);
+    gap: var(--space-16);
+    padding: var(--inset-panel);
+    max-width: calc(
+      76rem + var(--gallery-document-rail) + var(--space-16) +
+        var(--inset-panel) * 2
+    );
+    margin-inline: auto;
     align-items: stretch;
     width: 100%;
     height: 100%;
@@ -52,14 +58,16 @@
   .gallery-document-rail {
     position: static;
     align-self: start;
-    padding-block-start: var(--p-panel);
+    padding-block-start: var(--inset-panel);
   }
   .gallery-document-rail .fa-vtabs {
     height: auto;
     overflow: visible;
   }
-  .gallery-document-rail .fa-vtabs-root {
+  .gallery-document-rail .fa-vtabs[data-layout] .fa-vtabs-root {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    gap: 0;
     height: auto;
   }
   .gallery-document-rail .fa-vtabs-content {
@@ -102,6 +110,17 @@
     flex-direction: column;
     gap: var(--gap-fields);
   }
+  .gallery-usage-example {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-fields);
+  }
+  .gallery-document-sections .gallery-usage-example > h2 {
+    margin-block-end: 0;
+  }
+  .gallery-usage-example > p {
+    max-width: var(--measure);
+  }
   .gallery-api-scroll {
     max-width: 100%;
     overflow: auto;
@@ -126,7 +145,7 @@
     font-weight: var(--weight-medium);
   }
   .gallery-api details {
-    padding: var(--p-tile);
+    padding: var(--inset-tile);
   }
   .gallery-api summary {
     cursor: pointer;
@@ -134,12 +153,16 @@
   @media (width < 48rem) {
     .gallery-document-layout {
       grid-template-columns: minmax(0, 1fr);
+      gap: var(--gap-controls);
+      padding: var(--inset-tile);
     }
     .gallery-document-rail {
       position: static;
       padding-block-start: 0;
     }
-    .gallery-document-rail .fa-vtabs[data-layout="chips"] .fa-vtabs-scroll { padding-block: 0; }
+    .gallery-document-rail .fa-vtabs[data-layout="chips"] .fa-vtabs-scroll {
+      padding-block: 0;
+    }
   }
 }
 
@@ -157,5 +180,38 @@
     .gallery-document-layout {
       grid-template-rows: auto minmax(0, 1fr);
     }
+  }
+}
+
+@layer components {
+  .gallery-guide-document {
+    container-type: inline-size;
+    max-width: var(--reading-column-wide);
+  }
+  .gallery-guide-document .fa-ai-md h1 {
+    font-family: var(--font-display);
+    font-size: var(--type-display-size);
+    line-height: var(--type-display-line);
+    letter-spacing: var(--type-display-tracking);
+  }
+  .gallery-guide-document .fa-ai-md h2 {
+    font-size: var(--type-headline-size);
+    line-height: var(--type-headline-line);
+  }
+  .gallery-guide-document .fa-ai-md h3 {
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-line);
+  }
+  .gallery-guide-document .fa-ai-table {
+    min-width: 0;
+    table-layout: fixed;
+    font-size: inherit;
+    line-height: inherit;
+  }
+  .gallery-guide-document .fa-ai-table :is(th, td) {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    vertical-align: top;
   }
 }

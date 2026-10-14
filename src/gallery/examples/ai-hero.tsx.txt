@@ -1,36 +1,30 @@
 import { AiHero, Composer, SuggestionChips } from "glass-ux/ai";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { MODEL, SUGGESTIONS } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
 export default function AiComposerSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-        <Specimen title="Landing" description="The hero sits on the canvas; the composer is the landing's one card, with suggestions under it." wide layout="bare">
+        <Specimen
+          title="Landing"
+          description="The hero sits on the canvas; the composer is the landing's one card, with suggestions under it."
+          wide
+          layout="bare"
+        >
           <AiHero>
-            <Composer size="lg" minRows={2} model={MODEL} onContextChange={() => { }} onAttach={() => { }}/>
-            <SuggestionChips suggestions={SUGGESTIONS} onSelect={() => { }}/>
+            <Composer
+              size="lg"
+              minRows={2}
+              model={MODEL}
+              onContextChange={() => {}}
+              onAttach={() => {}}
+            />
+            <SuggestionChips suggestions={SUGGESTIONS} onSelect={() => {}} />
           </AiHero>
         </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

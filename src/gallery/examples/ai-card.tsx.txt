@@ -1,23 +1,28 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { IconSparkle } from "glass-ux/icons";
-
 import { AiCard } from "glass-ux/ai";
-
 import { Button } from "glass-ux/button";
 
 export default function AiCardExample() {
-    return (<SectionPage>
-      <Specimen title="AiCard" description="Compose the header, body and footer. The card reads its material from AiSurfaceProvider." layout="stack">
+  return (
+    <SectionPage>
+      <Specimen
+        title="AiCard"
+        description="Compose the header, body and footer. The card reads its material from AiSurfaceProvider."
+        layout="stack"
+      >
         <AiCard.Root>
-          <AiCard.Header icon={<IconSparkle />} title="Research summary" meta="3 sources reviewed"/>
-          <AiCard.Body>
-            A fictional studio is planning its next exhibition.
-          </AiCard.Body>
+          <AiCard.Header
+            icon={<IconSparkle />}
+            title="Research summary"
+            meta="3 sources reviewed"
+          />
+          <AiCard.Body>A fictional studio is planning its next exhibition.</AiCard.Body>
           <AiCard.Footer>
             <Button>Review sources</Button>
           </AiCard.Footer>
         </AiCard.Root>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

@@ -1,48 +1,59 @@
 import { z } from "zod";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
-
 import { portSchema } from "glass-ux/port-field";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 function PortDemo() {
-    const form = useAppForm({
-        ...formBehaviour,
-        defaultValues: { web: 443 as number | null, snmp: 161 as number | null, controller: 8443 as number | null },
-        validators: { onDynamic: z.object({ web: portSchema({ required: true }), snmp: portSchema({ required: true }), controller: portSchema() }) },
-        onSubmit: () => wait(600),
-    });
-    return (<Form form={form} aria-label="Ports" className="w-full" data-testid="port-form">
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: {
+      web: 443 as number | null,
+      snmp: 161 as number | null,
+      controller: 8443 as number | null,
+    },
+    validators: {
+      onDynamic: z.object({
+        web: portSchema({ required: true }),
+        snmp: portSchema({ required: true }),
+        controller: portSchema(),
+      }),
+    },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="Ports" className="w-full" data-testid="port-form">
       <FormStack>
-        <form.AppField name="web">{(field) => <field.PortField label="Web interface port" hint="Printers default to HTTP 80"/>}</form.AppField>
-        <form.AppField name="snmp">{(field) => <field.PortField label="SNMP port"/>}</form.AppField>
-        <form.AppField name="controller">{(field) => <field.PortField label="Controller port" optional services={{ 8443: "UniFi" }}/>}</form.AppField>
+        <form.AppField name="web">
+          {(field) => (
+            <field.PortField label="Web interface port" hint="Printers default to HTTP 80" />
+          )}
+        </form.AppField>
+        <form.AppField name="snmp">
+          {(field) => <field.PortField label="SNMP port" />}
+        </form.AppField>
+        <form.AppField name="controller">
+          {(field) => (
+            <field.PortField label="Controller port" optional services={{ 8443: "UniFi" }} />
+          )}
+        </form.AppField>
         <FormActions>
           <form.SubmitButton>Save</form.SubmitButton>
         </FormActions>
       </FormStack>
-    </Form>);
+    </Form>
+  );
 }
 
 export default function PortFieldSection() {
-    return (<SectionPage>
-      <Specimen title="With its service" description="Whole numbers 1–65535, no grouping, and the service usually on the port named beside it (“443 HTTPS”). Arrow keys step; Shift steps by 1,000.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="With its service"
+        description="Whole numbers 1–65535, no grouping, and the service usually on the port named beside it (“443 HTTPS”). Arrow keys step; Shift steps by 1,000."
+      >
         <PortDemo />
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

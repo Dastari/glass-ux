@@ -1,17 +1,20 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
-
 import { ASKS } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { MultiChoiceAsk } from "glass-ux/ai";
 
 export default function MultiChoiceAskExample() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-        <Specimen title="MultiChoiceAsk" description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision." layout="stack">
-          <MultiChoiceAsk ask={ASKS.multi}/>
+        <Specimen
+          title="MultiChoiceAsk"
+          description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision."
+          layout="stack"
+        >
+          <MultiChoiceAsk ask={ASKS.multi} />
         </Specimen>
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

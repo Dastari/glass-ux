@@ -1,42 +1,61 @@
 import { useNavigate } from "@tanstack/react-router";
-
 import { useMemo, useState, type ReactNode } from "react";
-
 import { sections } from "glass-ux/gallery/registry";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
-import { IconColumns, IconEndpoint, IconGrid, IconLayers, IconMoon, IconPlus, IconSun } from "glass-ux/icons";
-
+import {
+  IconColumns,
+  IconEndpoint,
+  IconGrid,
+  IconLayers,
+  IconMoon,
+  IconPlus,
+  IconSun,
+} from "glass-ux/icons";
 import { useAppearance } from "glass-ux/lib/appearance/use-appearance";
-
 import { ActionProvider, usePaletteActions } from "glass-ux/actions";
-
-import { CommandPanel, PaletteProvider, usePaletteCommands, useRegisteredCommands, type PaletteCommand } from "glass-ux/command-palette";
-
+import {
+  CommandPanel,
+  PaletteProvider,
+  usePaletteCommands,
+  useRegisteredCommands,
+  type PaletteCommand,
+} from "glass-ux/command-palette";
 import { toast } from "glass-ux/toast";
-
 import { ENDPOINTS, endpointActions } from "glass-ux/gallery/sections/overlays.fixtures";
 
-const GROUP_ICON: Record<string, ReactNode> = { Foundations: <IconLayers />, Components: <IconGrid />, Patterns: <IconColumns /> };
+const GROUP_ICON: Record<string, ReactNode> = {
+  Foundations: <IconLayers />,
+  Components: <IconGrid />,
+  Patterns: <IconColumns />,
+};
 
 /** What a page would register: destinations, records and global actions. */
-function DemoCommands({ selected, onSelect, loading }: {
-    selected: string;
-    onSelect: (id: string) => void;
-    loading: boolean;
+function DemoCommands({
+  selected,
+  onSelect,
+  loading,
+}: {
+  selected: string;
+  onSelect: (id: string) => void;
+  loading: boolean;
 }) {
-    const navigate = useNavigate();
-    const { appearance, update } = useAppearance();
-    const navigation = useMemo<PaletteCommand[]>(() => sections.map((section) => ({
+  const navigate = useNavigate();
+  const { appearance, update } = useAppearance();
+  const navigation = useMemo<PaletteCommand[]>(
+    () =>
+      sections.map((section) => ({
         id: `nav:${section.id}`,
         label: section.title,
         group: "Navigation",
         detail: section.group,
         icon: GROUP_ICON[section.group] ?? <IconColumns />,
         run: () => void navigate({ to: "/design/$section", params: { section: section.id } }),
-    })), [navigate]);
-    const endpoints = useMemo<PaletteCommand[]>(() => ENDPOINTS.map((endpoint) => ({
+      })),
+    [navigate],
+  );
+  const endpoints = useMemo<PaletteCommand[]>(
+    () =>
+      ENDPOINTS.map((endpoint) => ({
         id: `endpoint:${endpoint.id}`,
         label: endpoint.name,
         group: "Endpoints",
@@ -44,61 +63,80 @@ function DemoCommands({ selected, onSelect, loading }: {
         keywords: [endpoint.user, endpoint.model],
         icon: <IconEndpoint />,
         run: () => onSelect(endpoint.id),
-    })), [onSelect]);
-    const actions = useMemo<PaletteCommand[]>(() => [
-        { id: "ticket:new", label: "New ticket", group: "Actions", icon: <IconPlus />, shortcut: "mod+alt+n", run: () => toast.info("Ticket 7102 created") },
-        {
-            id: "appearance:mode",
-            label: appearance.mode === "dark" ? "Switch to light mode" : "Switch to dark mode",
-            group: "Actions",
-            icon: appearance.mode === "dark" ? <IconSun /> : <IconMoon />,
-            keywords: ["theme", "appearance"],
-            run: () => update({ mode: appearance.mode === "dark" ? "light" : "dark" }),
-        },
-    ], [appearance.mode, update]);
-    usePaletteCommands(navigation);
-    usePaletteCommands(endpoints, { loading });
-    usePaletteCommands(actions);
-    const endpoint = ENDPOINTS.find((item) => item.id === selected) ?? ENDPOINTS[0]!;
-    const targets = useMemo(() => [endpoint], [endpoint]);
-    usePaletteActions(endpointActions, targets, endpoint.name);
-    return null;
+      })),
+    [onSelect],
+  );
+  const actions = useMemo<PaletteCommand[]>(
+    () => [
+      {
+        id: "ticket:new",
+        label: "New ticket",
+        group: "Actions",
+        icon: <IconPlus />,
+        shortcut: "mod+alt+n",
+        run: () => toast.info("Ticket 7102 created"),
+      },
+      {
+        id: "appearance:mode",
+        label: appearance.mode === "dark" ? "Switch to light mode" : "Switch to dark mode",
+        group: "Actions",
+        icon: appearance.mode === "dark" ? <IconSun /> : <IconMoon />,
+        keywords: ["theme", "appearance"],
+        run: () => update({ mode: appearance.mode === "dark" ? "light" : "dark" }),
+      },
+    ],
+    [appearance.mode, update],
+  );
+  usePaletteCommands(navigation);
+  usePaletteCommands(endpoints, { loading });
+  usePaletteCommands(actions);
+  const endpoint = ENDPOINTS.find((item) => item.id === selected) ?? ENDPOINTS[0]!;
+  const targets = useMemo(() => [endpoint], [endpoint]);
+  usePaletteActions(endpointActions, targets, endpoint.name);
+  return null;
 }
 
-function InlinePanel({ query, loading: forceLoading }: {
-    query?: string;
-    loading?: boolean;
-}) {
-    const { commands, loading } = useRegisteredCommands();
-    return (<div className="glass-overlay fa-palette-frame">
-      <CommandPanel commands={commands} loading={forceLoading ?? loading} defaultQuery={query} onRun={(command) => void command.run()}/>
-    </div>);
+function InlinePanel({ query, loading: forceLoading }: { query?: string; loading?: boolean }) {
+  const { commands, loading } = useRegisteredCommands();
+  return (
+    <div className="glass-overlay fa-palette-frame">
+      <CommandPanel
+        commands={commands}
+        loading={forceLoading ?? loading}
+        defaultQuery={query}
+        onRun={(command) => void command.run()}
+      />
+    </div>
+  );
 }
 
 export default function CommandPaletteSection() {
-    const [selected, setSelected] = useState("nst-c106");
-    const [loading, setLoading] = useState(false);
-    const current = ENDPOINTS.find((item) => item.id === selected) ?? ENDPOINTS[0]!;
-    return (<ActionProvider>
+  const [selected, setSelected] = useState("nst-c106");
+  const [loading, setLoading] = useState(false);
+  const current = ENDPOINTS.find((item) => item.id === selected) ?? ENDPOINTS[0]!;
+  return (
+    <ActionProvider>
       <PaletteProvider>
-        <DemoCommands selected={selected} onSelect={setSelected} loading={loading}/>
+        <DemoCommands selected={selected} onSelect={setSelected} loading={loading} />
         <SectionPage>
-
-
-          <Specimen title="Anatomy" description="Search row, grouped results — icon, label with matched letters, data, shortcut — and keyboard hints. The frame keeps one height while results change." wide>
+          <Specimen
+            title="Anatomy"
+            description="Search row, grouped results — icon, label with matched letters, data, shortcut — and keyboard hints. The frame keeps one height while results change."
+            wide
+          >
             <InlinePanel />
-            <InlinePanel query="pow re"/>
+            <InlinePanel query="pow re" />
           </Specimen>
 
-          <Specimen title="Empty and loading" description="No match states the query in one line. A source still fetching shows rows of skeleton in the shape of results.">
-            <InlinePanel query="orb-7"/>
-            <InlinePanel query="win" loading/>
+          <Specimen
+            title="Empty and loading"
+            description="No match states the query in one line. A source still fetching shows rows of skeleton in the shape of results."
+          >
+            <InlinePanel query="orb-7" />
+            <InlinePanel query="win" loading />
           </Specimen>
-
-
-
-
         </SectionPage>
       </PaletteProvider>
-    </ActionProvider>);
+    </ActionProvider>
+  );
 }

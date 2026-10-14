@@ -1,24 +1,38 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
-import { IconClipboard, IconCursor, IconDisplays, IconFullscreen, IconKeyboard, IconMoreHorizontal, IconPower } from "glass-ux/icons";
-
+import {
+  IconClipboard,
+  IconCursor,
+  IconDisplays,
+  IconFullscreen,
+  IconKeyboard,
+  IconMoreHorizontal,
+  IconPower,
+} from "glass-ux/icons";
 import { Button } from "glass-ux/button";
-
 import { Separator } from "glass-ux/separator";
 
 export default function SeparatorSection() {
-    return (<SectionPage>
-      <Specimen title="Between action groups" description="R5.8 allows a divider in three places only: between action groups (a toolbar, a menu — at most two per menu), as table row lines, and as a scroll edge. Everywhere else, space separates." wide>
-        <div className="glass-control flex h-12 items-center gap-1 rounded-control px-1.5" role="toolbar" aria-label="Remote control">
-          <Button variant="ghost" size="sm" icon={<IconDisplays />} aria-label="Switch display"/>
-          <Button variant="ghost" size="sm" icon={<IconCursor />} aria-label="Show remote cursor"/>
-          <Separator orientation="vertical"/>
-          <Button variant="ghost" size="sm" icon={<IconKeyboard />} aria-label="Send keys"/>
-          <Button variant="ghost" size="sm" icon={<IconClipboard />} aria-label="Sync clipboard"/>
-          <Separator orientation="vertical"/>
-          <Button variant="ghost" size="sm" icon={<IconFullscreen />} aria-label="Full screen"/>
-          <Button variant="ghost" size="sm" icon={<IconPower />} aria-label="Power"/>
-          <Button variant="ghost" size="sm" icon={<IconMoreHorizontal />} aria-label="More tools"/>
+  return (
+    <SectionPage>
+      <Specimen
+        title="Between action groups"
+        description="R5.8 allows a divider in three places only: between action groups (a toolbar, a menu — at most two per menu), as table row lines, and as a scroll edge. Everywhere else, space separates."
+        wide
+      >
+        <div
+          className="glass-control flex h-12 items-center gap-1 rounded-control px-1.5"
+          role="toolbar"
+          aria-label="Remote control"
+        >
+          <Button variant="ghost" size="sm" icon={<IconDisplays />} aria-label="Switch display" />
+          <Button variant="ghost" size="sm" icon={<IconCursor />} aria-label="Show remote cursor" />
+          <Separator orientation="vertical" />
+          <Button variant="ghost" size="sm" icon={<IconKeyboard />} aria-label="Send keys" />
+          <Button variant="ghost" size="sm" icon={<IconClipboard />} aria-label="Sync clipboard" />
+          <Separator orientation="vertical" />
+          <Button variant="ghost" size="sm" icon={<IconFullscreen />} aria-label="Full screen" />
+          <Button variant="ghost" size="sm" icon={<IconPower />} aria-label="Power" />
+          <Button variant="ghost" size="sm" icon={<IconMoreHorizontal />} aria-label="More tools" />
         </div>
       </Specimen>
 
@@ -29,9 +43,6 @@ export default function SeparatorSection() {
           <span className="type-label text-danger-text">Remove from Northstar Studio</span>
         </div>
       </Specimen>
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

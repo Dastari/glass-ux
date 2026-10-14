@@ -2,7 +2,6 @@
 
 `glass-ux/percent-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 A percentage with `%` as its unit, clamped to its bounds (0–100 by default). The value is a whole
 percent (90) or, with `scale="fraction"`, a fraction (0.9) as many APIs store it. Built on
 NumberField.

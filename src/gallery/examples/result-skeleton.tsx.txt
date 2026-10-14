@@ -1,30 +1,23 @@
 import { ResultSkeleton } from "glass-ux/ai";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
 export default function AiResultsSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-        <Specimen title="Loading" description="Before data arrives each result holds its final box: the same header, the row count, the chart height, the image ratio." layout="stack" wide>
-          <ResultSkeleton type="table" count={4}/>
-          <ResultSkeleton type="chart"/>
-          <ResultSkeleton type="images" count={3}/>
-          <ResultSkeleton type="log" count={5}/>
+        <Specimen
+          title="Loading"
+          description="Before data arrives each result holds its final box: the same header, the row count, the chart height, the image ratio."
+          layout="stack"
+          wide
+        >
+          <ResultSkeleton type="table" count={4} />
+          <ResultSkeleton type="chart" />
+          <ResultSkeleton type="images" count={3} />
+          <ResultSkeleton type="log" count={5} />
         </Specimen>
-
-
-
-
-
-
-
-
-
-
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

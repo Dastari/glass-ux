@@ -145,8 +145,25 @@ test("the document keeps its sections, readable header and outside rail @respons
     element.scrollTop = 0;
   });
   await expect(document.locator("h1")).toBeVisible();
+  await page.screenshot({
+    path: `.handoff/glass-ux-extract/screenshots/large-font-${testInfo.project.name}.png`,
+  });
   expect(
     await document.evaluate((element) => element.clientHeight),
+    JSON.stringify(
+      await page
+        .locator(
+          ".docs-layout, .docs-sidebar, .gallery-header, .docs-content, .gallery-document-layout, .gallery-document-rail, .gallery-component-document",
+        )
+        .evaluateAll((elements) =>
+          elements.map((element) => ({
+            class: element.className,
+            height: element.getBoundingClientRect().height,
+            gap: getComputedStyle(element).rowGap,
+            padding: getComputedStyle(element).padding,
+          })),
+        ),
+    ),
   ).toBeGreaterThan(200);
   const intro = document.locator(".gallery-document-intro");
   const typography = await intro.locator("h1").evaluate((element) => ({

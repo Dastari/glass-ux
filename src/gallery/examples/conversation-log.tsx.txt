@@ -1,13 +1,8 @@
 import { useState } from "react";
-
 import { AssistantMessage, Composer, ConversationLog, Turn, UserMessage } from "glass-ux/ai";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Button } from "glass-ux/button";
-
 import { APPROVAL, MODEL, NOW, TOOLS } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
 /**
@@ -16,24 +11,66 @@ import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
  * blurs; the composer stays usable.
  */
 function DockedApproval() {
-    const [key, setKey] = useState(0);
-    return (<div className="ai-stack">
+  const [key, setKey] = useState(0);
+  return (
+    <div className="ai-stack">
       <div className="ai-conversation-sample" key={key}>
-        <ConversationLog surface="panel" label="Conversation with a pending approval" footer={<Composer model={MODEL} placeholder="Ask a follow-up…"/>}>
+        <ConversationLog
+          surface="panel"
+          label="Conversation with a pending approval"
+          footer={<Composer model={MODEL} placeholder="Ask a follow-up…" />}
+        >
           <Turn index={1}>
-            <UserMessage message={{ id: "d1", role: "user", createdAt: NOW - 90000, state: "complete", blocks: [{ kind: "markdown", text: "Restart the spooler on NST-C106 and clear the queue." }] }}/>
-            <AssistantMessage latest message={{
-            id: "d2",
-            role: "assistant",
-            createdAt: NOW - 60000,
-            state: "complete",
-            model: MODEL.name,
-            blocks: [
-                { kind: "markdown", text: "Clearing the queue needs your approval because the stuck jobs cannot be recovered." },
-                { kind: "ask", ask: { ...APPROVAL("pending"), id: `docked-approval-${key}`, expiresAt: NOW + 10 * 60000 } },
-                { kind: "tools", calls: [{ ...TOOLS.printers, id: "d-side", status: "running", label: "Checking the other print queues", activeLabel: "Checking the other print queues" }] },
-            ],
-        }}/>
+            <UserMessage
+              message={{
+                id: "d1",
+                role: "user",
+                createdAt: NOW - 90000,
+                state: "complete",
+                blocks: [
+                  {
+                    kind: "markdown",
+                    text: "Restart the spooler on NST-C106 and clear the queue.",
+                  },
+                ],
+              }}
+            />
+            <AssistantMessage
+              latest
+              message={{
+                id: "d2",
+                role: "assistant",
+                createdAt: NOW - 60000,
+                state: "complete",
+                model: MODEL.name,
+                blocks: [
+                  {
+                    kind: "markdown",
+                    text: "Clearing the queue needs your approval because the stuck jobs cannot be recovered.",
+                  },
+                  {
+                    kind: "ask",
+                    ask: {
+                      ...APPROVAL("pending"),
+                      id: `docked-approval-${key}`,
+                      expiresAt: NOW + 10 * 60000,
+                    },
+                  },
+                  {
+                    kind: "tools",
+                    calls: [
+                      {
+                        ...TOOLS.printers,
+                        id: "d-side",
+                        status: "running",
+                        label: "Checking the other print queues",
+                        activeLabel: "Checking the other print queues",
+                      },
+                    ],
+                  },
+                ],
+              }}
+            />
           </Turn>
         </ConversationLog>
       </div>
@@ -42,31 +79,23 @@ function DockedApproval() {
           Reset
         </Button>
       </div>
-    </div>);
+    </div>
+  );
 }
 
 export default function AiApprovalsSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-
-
-
-
-
-
-        <Specimen title="In a conversation" description="Never modal: the card waits in the ask dock above the composer, the transcript keeps a marker with Review at its place, and the agent carries on with work that does not depend on it." wide layout="stack">
+        <Specimen
+          title="In a conversation"
+          description="Never modal: the card waits in the ask dock above the composer, the transcript keeps a marker with Review at its place, and the agent carries on with work that does not depend on it."
+          wide
+          layout="stack"
+        >
           <DockedApproval />
         </Specimen>
-
-
-
-
-
-
-
-
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

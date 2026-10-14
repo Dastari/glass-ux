@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
+import ts from "typescript";
 const components = JSON.parse(
   readFileSync("src/gallery/api.generated.json", "utf8"),
 );
@@ -30,6 +31,23 @@ for (const component of components) {
     !existsSync(`src/gallery/api/${component.id}.json`)
   )
     failures.push(`${component.name}: no API page`);
+  const usagePath = `src/gallery/examples/${component.id}.tsx.txt`;
+  if (existsSync(usagePath)) {
+    const usage = readFileSync(usagePath, "utf8");
+    const parsed = ts.createSourceFile(
+      usagePath,
+      usage,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
+    );
+    if (parsed.parseDiagnostics.length)
+      failures.push(`${component.name}: usage example has invalid syntax`);
+    if (/from ["'][^"']+["'];?\n\s*\nimport /m.test(usage))
+      failures.push(
+        `${component.name}: unnecessary blank line between imports`,
+      );
+  }
   for (const part of [
     ...(component.props ? [component] : []),
     ...component.slots,

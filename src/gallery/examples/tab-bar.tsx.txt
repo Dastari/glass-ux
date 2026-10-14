@@ -1,56 +1,52 @@
 import { WORKSPACE_SETTINGS, ORGANISATION_SETTINGS } from "glass-ux/gallery/fixtures/brand";
-
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
-import { IconAi, IconAlerts, IconDashboard, IconEndpoint, IconOrganisation, IconSettings, IconTickets } from "glass-ux/icons";
-
+import {
+  IconAi,
+  IconAlerts,
+  IconDashboard,
+  IconEndpoint,
+  IconOrganisation,
+  IconSettings,
+  IconTickets,
+} from "glass-ux/icons";
 import { TabBar } from "glass-ux/shell";
 
-function SpecimenTabBar({ condensed }: {
-    condensed?: boolean;
-}) {
-    return (<TabBar.Root aria-label={condensed ? "Main, condensed (specimen)" : "Main (specimen)"} condensed={condensed}>
-      <TabBar.Item icon={<IconAi />} label="AI"/>
-      <TabBar.Item icon={<IconEndpoint />} label="Devices" active/>
-      <TabBar.Item icon={<IconTickets />} label="Tickets"/>
-      <TabBar.Item icon={<IconAlerts />} label="Alerts"/>
+function SpecimenTabBar({ condensed }: { condensed?: boolean }) {
+  return (
+    <TabBar.Root
+      aria-label={condensed ? "Main, condensed (specimen)" : "Main (specimen)"}
+      condensed={condensed}
+    >
+      <TabBar.Item icon={<IconAi />} label="AI" />
+      <TabBar.Item icon={<IconEndpoint />} label="Devices" active />
+      <TabBar.Item icon={<IconTickets />} label="Tickets" />
+      <TabBar.Item icon={<IconAlerts />} label="Alerts" />
       <TabBar.More>
-        <TabBar.MoreItem icon={<IconDashboard />} label="Dashboard"/>
-        <TabBar.MoreItem icon={<IconOrganisation />} label="Organisations"/>
-        <TabBar.MoreItem icon={<IconSettings />} label={ORGANISATION_SETTINGS.label}/>
-        <TabBar.MoreItem icon={<IconSettings />} label={WORKSPACE_SETTINGS.label}/>
+        <TabBar.MoreItem icon={<IconDashboard />} label="Dashboard" />
+        <TabBar.MoreItem icon={<IconOrganisation />} label="Organisations" />
+        <TabBar.MoreItem icon={<IconSettings />} label={ORGANISATION_SETTINGS.label} />
+        <TabBar.MoreItem icon={<IconSettings />} label={WORKSPACE_SETTINGS.label} />
       </TabBar.More>
-    </TabBar.Root>);
+    </TabBar.Root>
+  );
 }
 
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function AppShellSection() {
-    return (<SectionPage>
-
-
-
-
-
-
-
-
-
-
-      <Specimen title="Phone tab bar" description="The rail on phones: a floating glass pill above the safe area. Scrolling down condenses it; scrolling up restores it." backdrop>
+  return (
+    <SectionPage>
+      <Specimen
+        title="Phone tab bar"
+        description="The rail on phones: a floating glass pill above the safe area. Scrolling down condenses it; scrolling up restores it."
+        backdrop
+      >
         <Example label="Resting">
-          <SpecimenTabBar condensed={false}/>
+          <SpecimenTabBar condensed={false} />
         </Example>
         <Example label="Condensed">
-          <SpecimenTabBar condensed/>
+          <SpecimenTabBar condensed />
         </Example>
       </Specimen>
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

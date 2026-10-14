@@ -1,14 +1,14 @@
 import { RelativeTime } from "glass-ux/data-table";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { NOW } from "glass-ux/gallery/sections/ai.fixtures";
 
 export default function RelativeTimeExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="Relative time with an exact-time tooltip" layout="stack">
-        <RelativeTime value={NOW - 120000}/>
-        <RelativeTime value={NOW - 3600000}/>
+        <RelativeTime value={NOW - 120000} />
+        <RelativeTime value={NOW - 3600000} />
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

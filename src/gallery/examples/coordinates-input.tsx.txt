@@ -1,33 +1,42 @@
 import { useState } from "react";
-
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { DEMO_MAP_CONFIG } from "glass-ux/gallery/fixtures/map";
-
 import { CoordinatesInput, formatDms, isReadable, type LatLng } from "glass-ux/coordinates-field";
-
 import { Field } from "glass-ux/field";
-
 import { FormStack } from "glass-ux/form";
 
 const TASMANIA = [143.8, -43.7, 148.5, -39.5] as const;
 
 function PasteDemo() {
-    const [value, setValue] = useState<LatLng | null>(null);
-    return (<FormStack className="w-full" data-testid="coordinates-paste">
-      <Field label="Site position" hint={isReadable(value) ? formatDms(value) : "Paste decimal degrees, DMS or a Google Maps link"}>
-        <CoordinatesInput value={value} onValueChange={setValue} map={DEMO_MAP_CONFIG} mapFallback={TASMANIA}/>
+  const [value, setValue] = useState<LatLng | null>(null);
+  return (
+    <FormStack className="w-full" data-testid="coordinates-paste">
+      <Field
+        label="Site position"
+        hint={
+          isReadable(value) ? formatDms(value) : "Paste decimal degrees, DMS or a Google Maps link"
+        }
+      >
+        <CoordinatesInput
+          value={value}
+          onValueChange={setValue}
+          map={DEMO_MAP_CONFIG}
+          mapFallback={TASMANIA}
+        />
       </Field>
-    </FormStack>);
+    </FormStack>
+  );
 }
 
 export default function CoordinatesFieldSection() {
-    return (<SectionPage>
-      <Specimen title="Paste anything" description="-42.88334, 147.32688 · 42°53′0″S 147°19′37″E · 42.88334S 147.32688E · a Google Maps, OpenStreetMap or Apple Maps link · geo:-42.88,147.33. Leave the field and it becomes decimal degrees; the hint shows DMS.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Paste anything"
+        description="-42.88334, 147.32688 · 42°53′0″S 147°19′37″E · 42.88334S 147.32688E · a Google Maps, OpenStreetMap or Apple Maps link · geo:-42.88,147.33. Leave the field and it becomes decimal degrees; the hint shows DMS."
+      >
         <PasteDemo />
       </Specimen>
-
-
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -35,15 +44,15 @@ export default function CoordinatesFieldSection() {
             <CoordinatesInput />
           </Field>
           <Field label="Out of range" error="Latitude must be between -90 and 90">
-            <CoordinatesInput defaultValue={{ lat: -95, lng: 147.3 }} invalid/>
+            <CoordinatesInput defaultValue={{ lat: -95, lng: 147.3 }} invalid />
           </Field>
         </FormStack>
         <FormStack>
           <Field label="Read-only">
-            <CoordinatesInput defaultValue={{ lat: -42.88334, lng: 147.32688 }} readOnly/>
+            <CoordinatesInput defaultValue={{ lat: -42.88334, lng: 147.32688 }} readOnly />
           </Field>
           <Field label="Disabled">
-            <CoordinatesInput defaultValue={{ lat: -42.88334, lng: 147.32688 }} disabled/>
+            <CoordinatesInput defaultValue={{ lat: -42.88334, lng: 147.32688 }} disabled />
           </Field>
         </FormStack>
       </Specimen>
@@ -51,21 +60,23 @@ export default function CoordinatesFieldSection() {
       <Specimen title="Over glass and imagery" backdrop>
         <FormStack>
           <Field label="Site position">
-            <CoordinatesInput defaultValue={{ lat: -42.88334, lng: 147.32688 }} map={DEMO_MAP_CONFIG}/>
+            <CoordinatesInput
+              defaultValue={{ lat: -42.88334, lng: 147.32688 }}
+              map={DEMO_MAP_CONFIG}
+            />
           </Field>
         </FormStack>
       </Specimen>
 
       <ContainerLab>
         <div className="flex h-full items-center p-1">
-          <CoordinatesInput size="sm" defaultValue={{ lat: -42.88334, lng: 147.32688 }} aria-label="Coordinates"/>
+          <CoordinatesInput
+            size="sm"
+            defaultValue={{ lat: -42.88334, lng: 147.32688 }}
+            aria-label="Coordinates"
+          />
         </div>
       </ContainerLab>
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

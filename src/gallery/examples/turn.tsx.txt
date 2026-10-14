@@ -1,60 +1,70 @@
 import { IconLayers } from "glass-ux/icons";
-
 import { AssistantMessage, SystemNotice, Turn, UserMessage, type AiMessage } from "glass-ux/ai";
-
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { CONVERSATION, MODEL, NOW } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { AiGallery, LabScroll } from "glass-ux/gallery/sections/ai.kit";
 
 const turn = CONVERSATION.find((item) => item.kind === "turn" && item.index === 1);
-
 const first = turn?.kind === "turn" ? turn : null;
-
-const base = (extra: Partial<AiMessage>): AiMessage => ({ id: "x", role: "assistant", createdAt: NOW - 60000, state: "complete", model: MODEL.name, blocks: [], ...extra });
+const base = (extra: Partial<AiMessage>): AiMessage => ({
+  id: "x",
+  role: "assistant",
+  createdAt: NOW - 60000,
+  state: "complete",
+  model: MODEL.name,
+  blocks: [],
+  ...extra,
+});
 
 export default function AiMessagesSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-        <Specimen title="A turn" description="The prompt is a compact glass-control bubble on the right with its attachments above. The answer has no bubble: the AI mark in the gutter, prose across the reading column; tables, charts, images and code break out wider in a conversation. Actions sit under each message and show on hover, focus and always on the latest answer." wide layout="bare">
+        <Specimen
+          title="A turn"
+          description="The prompt is a compact glass-control bubble on the right with its attachments above. The answer has no bubble: the AI mark in the gutter, prose across the reading column; tables, charts, images and code break out wider in a conversation. Actions sit under each message and show on hover, focus and always on the latest answer."
+          wide
+          layout="bare"
+        >
           <div className="ai-stack">
-            {first ? (<Turn index={1}>
-                <UserMessage message={first.user} editable/>
-                {first.replies.map((message) => (<AssistantMessage key={message.id} message={message} latest/>))}
-              </Turn>) : null}
+            {first ? (
+              <Turn index={1}>
+                <UserMessage message={first.user} editable />
+                {first.replies.map((message) => (
+                  <AssistantMessage key={message.id} message={message} latest />
+                ))}
+              </Turn>
+            ) : null}
             <SystemNotice icon={<IconLayers />} at={NOW - 46 * 60000}>
               NST-C106 added to the conversation context
             </SystemNotice>
           </div>
         </Specimen>
 
-
-
-
-
-
-
-
-
-
-
-
-
         <ContainerLab description="An answer in a row, a header, a tile, a pane and a tall narrow column: the column scrolls, the mark steps aside below 22rem, prose drops to the body size below 34rem.">
-          {() => (<LabScroll>
-              {first ? (<Turn index={1}>
-                  <UserMessage message={first.user}/>
-                  <AssistantMessage message={base({ id: "lab", blocks: [{ kind: "markdown", text: "**6 endpoints** at [Northstar Studio](/organisations/northstar) have not checked in for more than 24 hours." }] })} latest/>
-                </Turn>) : null}
-            </LabScroll>)}
+          {() => (
+            <LabScroll>
+              {first ? (
+                <Turn index={1}>
+                  <UserMessage message={first.user} />
+                  <AssistantMessage
+                    message={base({
+                      id: "lab",
+                      blocks: [
+                        {
+                          kind: "markdown",
+                          text: "**6 endpoints** at [Northstar Studio](/organisations/northstar) have not checked in for more than 24 hours.",
+                        },
+                      ],
+                    })}
+                    latest
+                  />
+                </Turn>
+              ) : null}
+            </LabScroll>
+          )}
         </ContainerLab>
-
-
-
-
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

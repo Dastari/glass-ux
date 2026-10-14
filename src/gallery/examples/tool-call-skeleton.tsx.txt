@@ -1,33 +1,34 @@
 import { ProviderActivity, ToolCallSkeleton } from "glass-ux/ai";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { MODEL } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
 export default function AiToolsSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-
-
-
-
-        <Specimen title="Provider activity" description="Between tool calls: working, waiting on an endpoint, retrying the provider, or searching the web. Replaced in place by the answer." layout="stack">
-          <ProviderActivity status={{ state: "working", model: MODEL.name }}/>
-          <ProviderActivity status={{ state: "waiting", detail: "NST-C106 is answering", model: MODEL.name }}/>
-          <ProviderActivity status={{ state: "retrying", detail: "Provider busy · attempt 2 of 3", model: MODEL.name }}/>
-          <ProviderActivity status={{ state: "searching", detail: "TasNetworks Cedar Annex outage" }}/>
+        <Specimen
+          title="Provider activity"
+          description="Between tool calls: working, waiting on an endpoint, retrying the provider, or searching the web. Replaced in place by the answer."
+          layout="stack"
+        >
+          <ProviderActivity status={{ state: "working", model: MODEL.name }} />
+          <ProviderActivity
+            status={{ state: "waiting", detail: "NST-C106 is answering", model: MODEL.name }}
+          />
+          <ProviderActivity
+            status={{
+              state: "retrying",
+              detail: "Provider busy · attempt 2 of 3",
+              model: MODEL.name,
+            }}
+          />
+          <ProviderActivity
+            status={{ state: "searching", detail: "TasNetworks Cedar Annex outage" }}
+          />
           <ToolCallSkeleton />
         </Specimen>
-
-
-
-
-
-
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

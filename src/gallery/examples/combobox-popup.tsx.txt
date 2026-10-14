@@ -1,23 +1,27 @@
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 
 const CHOICES = [
-    { value: "meridian", label: "Meridian exhibition" },
-    { value: "cedar", label: "Cedar design workshop" },
+  { value: "meridian", label: "Meridian exhibition" },
+  { value: "cedar", label: "Cedar design workshop" },
 ];
 
 import { Input } from "glass-ux/input";
-
 import { ComboboxPopup } from "glass-ux/combobox";
 
 export default function ComboboxPopupExample() {
-    return (<SectionPage>
-      <Specimen title="ComboboxPopup" description="Compose the shared popup inside a Base UI combobox root." layout="stack">
+  return (
+    <SectionPage>
+      <Specimen
+        title="ComboboxPopup"
+        description="Compose the shared popup inside a Base UI combobox root."
+        layout="stack"
+      >
         <BaseCombobox.Root items={CHOICES}>
-          <BaseCombobox.Input render={<Input aria-label="Search sample projects"/>}/>
-          <ComboboxPopup items={CHOICES} query=""/>
+          <BaseCombobox.Input render={<Input aria-label="Search sample projects" />} />
+          <ComboboxPopup items={CHOICES} query="" />
         </BaseCombobox.Root>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

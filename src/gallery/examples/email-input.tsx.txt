@@ -1,30 +1,35 @@
 import { useState } from "react";
-
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { EmailInput, EmailSuggestion, suggestEmail } from "glass-ux/email-field";
-
 import { Field } from "glass-ux/field";
-
 import { FormStack } from "glass-ux/form";
 
 function SuggestionDemo() {
-    const [value, setValue] = useState("avery@hotmial.com");
-    const suggestion = suggestEmail(value);
-    return (<Field label="Email" hint={suggestion ? <EmailSuggestion suggestion={suggestion} onAccept={setValue}/> : undefined}>
-      <EmailInput value={value} onValueChange={setValue}/>
-    </Field>);
+  const [value, setValue] = useState("avery@hotmial.com");
+  const suggestion = suggestEmail(value);
+  return (
+    <Field
+      label="Email"
+      hint={
+        suggestion ? <EmailSuggestion suggestion={suggestion} onAccept={setValue} /> : undefined
+      }
+    >
+      <EmailInput value={value} onValueChange={setValue} />
+    </Field>
+  );
 }
 
 export default function EmailFieldSection() {
-    return (<SectionPage>
-      <Specimen title="Typo hint" description="Once focus leaves, a domain one or two keystrokes from a common provider — or from the organisation's own domain — offers the correction in the message line. Choosing it replaces the value; nothing moves.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Typo hint"
+        description="Once focus leaves, a domain one or two keystrokes from a common provider — or from the organisation's own domain — offers the correction in the message line. Choosing it replaces the value; nothing moves."
+      >
         <FormStack className="w-full">
           <SuggestionDemo />
         </FormStack>
       </Specimen>
-
-
 
       <Specimen title="States" layout="grid">
         <FormStack>
@@ -32,15 +37,15 @@ export default function EmailFieldSection() {
             <EmailInput />
           </Field>
           <Field label="Invalid" error="Enter an email such as name@example.com.au">
-            <EmailInput defaultValue="mira@" invalid/>
+            <EmailInput defaultValue="mira@" invalid />
           </Field>
         </FormStack>
         <FormStack>
           <Field label="Read-only">
-            <EmailInput defaultValue="avery.quinn@orbit.example.com.au" readOnly/>
+            <EmailInput defaultValue="avery.quinn@orbit.example.com.au" readOnly />
           </Field>
           <Field label="Disabled">
-            <EmailInput defaultValue="avery.quinn@orbit.example.com.au" disabled/>
+            <EmailInput defaultValue="avery.quinn@orbit.example.com.au" disabled />
           </Field>
         </FormStack>
       </Specimen>
@@ -48,21 +53,16 @@ export default function EmailFieldSection() {
       <Specimen title="Over glass and imagery" backdrop>
         <FormStack>
           <Field label="Work email">
-            <EmailInput defaultValue="mira.rowan@northstar.example"/>
+            <EmailInput defaultValue="mira.rowan@northstar.example" />
           </Field>
         </FormStack>
       </Specimen>
 
       <ContainerLab>
         <div className="flex h-full items-center p-1">
-          <EmailInput size="sm" defaultValue="mira.rowan@northstar.example" aria-label="Email"/>
+          <EmailInput size="sm" defaultValue="mira.rowan@northstar.example" aria-label="Email" />
         </div>
       </ContainerLab>
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

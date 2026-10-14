@@ -2,7 +2,6 @@
 
 `glass-ux/email-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 An email address checked the way mail systems read it (not the full RFC 5322 grammar), with a
 hint when the domain looks mistyped: "Did you mean avery@**gmail.com**?" in the message line, which
 replaces the value when chosen. The hint appears only after focus leaves.

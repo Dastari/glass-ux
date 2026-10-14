@@ -1,34 +1,32 @@
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { TooltipPreview } from "glass-ux/tooltip";
 
 export default function TooltipSection() {
-    return (<SectionPage>
-
-
-      <Specimen title="Anatomy" description="One line of medium caption text, an 8px gap and a small arrow. A shortcut follows in keycaps.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Anatomy"
+        description="One line of medium caption text, an 8px gap and a small arrow. A shortcut follows in keycaps."
+      >
         <Example label="Label">
-          <TooltipPreview content="View and control the remote device"/>
+          <TooltipPreview content="View and control the remote device" />
         </Example>
         <Example label="With shortcut">
-          <TooltipPreview content="Search" shortcut="mod+k"/>
+          <TooltipPreview content="Search" shortcut="mod+k" />
         </Example>
         <Example label="Disabled reason">
-          <TooltipPreview content="Endpoint is online" side="bottom"/>
+          <TooltipPreview content="Endpoint is online" side="bottom" />
         </Example>
       </Specimen>
 
-      <Specimen title="Over imagery" description="The bubble is glass-overlay in the opposite mode, so it holds contrast over busy content." backdrop>
-        <TooltipPreview content="Connected · 1920 × 1080 · 28 ms"/>
-        <TooltipPreview content="Open in a new window" shortcut="mod+enter"/>
+      <Specimen
+        title="Over imagery"
+        description="The bubble is glass-overlay in the opposite mode, so it holds contrast over busy content."
+        backdrop
+      >
+        <TooltipPreview content="Connected · 1920 × 1080 · 28 ms" />
+        <TooltipPreview content="Open in a new window" shortcut="mod+enter" />
       </Specimen>
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

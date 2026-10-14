@@ -1,49 +1,53 @@
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { IconBell, IconShield } from "glass-ux/icons";
-
-import { CountBadge, NotificationDot, STATUS, StatusBadge, type EndpointStatus } from "glass-ux/badge";
-
+import {
+  CountBadge,
+  NotificationDot,
+  STATUS,
+  StatusBadge,
+  type EndpointStatus,
+} from "glass-ux/badge";
 import { Button } from "glass-ux/button";
 
 const STATUSES = Object.keys(STATUS) as EndpointStatus[];
 
 export default function BadgeSection() {
-    return (<SectionPage>
-
-
-
-
-      <Specimen title="Counts and notification dot" description="Counts beside navigation and groups use tabular figures and cap at a maximum. The dot sits on the corner of an icon button.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Counts and notification dot"
+        description="Counts beside navigation and groups use tabular figures and cap at a maximum. The dot sits on the corner of an icon button."
+      >
         <Example label="CountBadge">
-          <CountBadge value={12}/>
-          <CountBadge value={3} tone="accent"/>
-          <CountBadge value={1284}/>
-          <CountBadge value={2400} max={999} tone="danger"/>
+          <CountBadge value={12} />
+          <CountBadge value={3} tone="accent" />
+          <CountBadge value={1284} />
+          <CountBadge value={2400} max={999} tone="danger" />
         </Example>
         <Example label="NotificationDot">
           <span className="relative inline-flex">
-            <Button variant="ghost" icon={<IconBell />} aria-label="Notifications"/>
-            <NotificationDot label="3 unread notifications"/>
+            <Button variant="ghost" icon={<IconBell />} aria-label="Notifications" />
+            <NotificationDot label="3 unread notifications" />
           </span>
           <span className="relative inline-flex">
-            <Button variant="ghost" icon={<IconShield />} aria-label="Security alerts"/>
-            <NotificationDot label="Critical alert" tone="danger"/>
+            <Button variant="ghost" icon={<IconShield />} aria-label="Security alerts" />
+            <NotificationDot label="Critical alert" tone="danger" />
           </span>
         </Example>
       </Specimen>
 
-      <Specimen title="Over imagery" description="On a card over busy content the rim keeps each pill's shape." backdrop>
+      <Specimen
+        title="Over imagery"
+        description="On a card over busy content the rim keeps each pill's shape."
+        backdrop
+      >
         <div className="glass-control flex flex-wrap items-center gap-2 rounded-tile p-tile">
-          {STATUSES.slice(0, 5).map((status) => (<StatusBadge key={status} status={status}/>))}
-          <CountBadge value={12}/>
+          {STATUSES.slice(0, 5).map((status) => (
+            <StatusBadge key={status} status={status} />
+          ))}
+          <CountBadge value={12} />
         </div>
       </Specimen>
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

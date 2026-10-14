@@ -1,69 +1,88 @@
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { DEMO_MAP_CONFIG, MOCK_SITES } from "glass-ux/gallery/fixtures/map";
-
-import { DefaultClusterPopup, MapStatusSummary, countStatuses, useMapRegion, type MapPoint, type MapStatus } from "glass-ux/map";
+import {
+  DefaultClusterPopup,
+  MapStatusSummary,
+  countStatuses,
+  useMapRegion,
+  type MapPoint,
+  type MapStatus,
+} from "glass-ux/map";
 
 /** Gallery points: the demo's sites with a fixed spread of statuses. */
-const STATUSES: MapStatus[] = ["healthy", "healthy", "warning", "healthy", "danger", "healthy", "unknown", "healthy", "warning", "healthy"];
-
+const STATUSES: MapStatus[] = [
+  "healthy",
+  "healthy",
+  "warning",
+  "healthy",
+  "danger",
+  "healthy",
+  "unknown",
+  "healthy",
+  "warning",
+  "healthy",
+];
 const POINTS: MapPoint<{
-    address: string;
+  address: string;
 }>[] = MOCK_SITES.map((site, index) => ({
-    id: site.id,
-    lng: site.location.lng,
-    lat: site.location.lat,
-    status: STATUSES[index % STATUSES.length]!,
-    label: site.name,
-    description: site.address.split(", ").at(-1),
-    data: { address: site.address },
+  id: site.id,
+  lng: site.location.lng,
+  lat: site.location.lat,
+  status: STATUSES[index % STATUSES.length]!,
+  label: site.name,
+  description: site.address.split(", ").at(-1),
+  data: { address: site.address },
 }));
 
-function PointPopup({ point }: {
-    point: MapPoint<{
-        address: string;
-    }>;
+function PointPopup({
+  point,
+}: {
+  point: MapPoint<{
+    address: string;
+  }>;
 }) {
-    return (<div className="gallery-map-popup">
+  return (
+    <div className="gallery-map-popup">
       <p className="fa-map-popup-title">{point.label}</p>
       <p className="gallery-map-popup-meta">{point.data.address}</p>
-      <MapStatusSummary counts={countStatuses([point])}/>
-    </div>);
+      <MapStatusSummary counts={countStatuses([point])} />
+    </div>
+  );
 }
 
 export default function MapSection() {
-    const tasmania = useMapRegion(DEMO_MAP_CONFIG, "AU-TAS");
-    const sample = POINTS.slice(0, 9);
-    return (<SectionPage>
-
-
-
-
-
-
-      <Specimen title="Popups" description="The shared popup look (glass-overlay fa-popup), not MapLibre's. Hovering or focusing a marker previews it; clicking or Enter pins it and moves focus inside; Esc closes it and returns focus. The caller renders the content and can add detail once zoomed in.">
+  const tasmania = useMapRegion(DEMO_MAP_CONFIG, "AU-TAS");
+  const sample = POINTS.slice(0, 9);
+  return (
+    <SectionPage>
+      <Specimen
+        title="Popups"
+        description="The shared popup look (glass-overlay fa-popup), not MapLibre's. Hovering or focusing a marker previews it; clicking or Enter pins it and moves focus inside; Esc closes it and returns focus. The caller renders the content and can add detail once zoomed in."
+      >
         <Example label="Point">
           <div className="glass-overlay fa-popup fa-map-popup" data-pinned="">
-            <PointPopup point={POINTS[1]!}/>
+            <PointPopup point={POINTS[1]!} />
           </div>
         </Example>
         <Example label="Cluster">
           <div className="glass-overlay fa-popup fa-map-popup">
-            <DefaultClusterPopup cluster={{ id: 1, lng: 147.9, lat: -42.5, points: sample }} size={sample.length} counts={countStatuses(sample)} labels={{ danger: "Critical", warning: "Warning", healthy: "Healthy", unknown: "Offline" }} noun={{ one: "site", other: "sites" }} onZoom={() => undefined} onOpen={() => undefined}/>
+            <DefaultClusterPopup
+              cluster={{ id: 1, lng: 147.9, lat: -42.5, points: sample }}
+              size={sample.length}
+              counts={countStatuses(sample)}
+              labels={{
+                danger: "Critical",
+                warning: "Warning",
+                healthy: "Healthy",
+                unknown: "Offline",
+              }}
+              noun={{ one: "site", other: "sites" }}
+              onZoom={() => undefined}
+              onOpen={() => undefined}
+            />
           </div>
         </Example>
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

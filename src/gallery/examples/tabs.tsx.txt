@@ -1,99 +1,124 @@
 import { useState } from "react";
-
 import { ContainerLab, SectionPage, Specimen, SwapSlot } from "glass-ux/gallery/kit";
-
 import { IconActivity, IconDashboard, IconRemoteControl, IconSoftware } from "glass-ux/icons";
-
 import { Metric } from "glass-ux/metric";
-
 import { Tabs, TabsSkeleton, type TabItem } from "glass-ux/tabs";
-
 import { ENDPOINT_TABS, clockTimes, series } from "glass-ux/gallery/sections/nav.fixtures";
 
 const SHORT: TabItem[] = ENDPOINT_TABS.slice(0, 4);
-
 const STATES: TabItem[] = [
-    { value: "overview", label: "Overview", icon: <IconDashboard /> },
-    { value: "software", label: "Software", icon: <IconSoftware />, count: 42 },
-    { value: "remote", label: "Remote control", icon: <IconRemoteControl />, disabled: true },
-    { value: "activity", label: "Activity", icon: <IconActivity />, count: 3 },
+  { value: "overview", label: "Overview", icon: <IconDashboard /> },
+  { value: "software", label: "Software", icon: <IconSoftware />, count: 42 },
+  { value: "remote", label: "Remote control", icon: <IconRemoteControl />, disabled: true },
+  { value: "activity", label: "Activity", icon: <IconActivity />, count: 3 },
 ];
 
-function LocalTabs({ initial = "overview", items = ENDPOINT_TABS, label = "NST-C106" }: {
-    initial?: string;
-    items?: TabItem[];
-    label?: string;
+function LocalTabs({
+  initial = "overview",
+  items = ENDPOINT_TABS,
+  label = "NST-C106",
+}: {
+  initial?: string;
+  items?: TabItem[];
+  label?: string;
 }) {
-    return (<Tabs.Root defaultValue={initial}>
-      <Tabs.List items={items} aria-label={`${label} sections`}/>
-    </Tabs.Root>);
+  return (
+    <Tabs.Root defaultValue={initial}>
+      <Tabs.List items={items} aria-label={`${label} sections`} />
+    </Tabs.Root>
+  );
 }
 
 const RANGES: TabItem[] = [
-    { value: "1h", label: "1\u2009h" },
-    { value: "24h", label: "24\u2009h" },
-    { value: "7d", label: "7\u2009d" },
+  { value: "1h", label: "1\u2009h" },
+  { value: "24h", label: "24\u2009h" },
+  { value: "7d", label: "7\u2009d" },
 ];
-
-const RANGE_DATA: Record<string, number[]> = { "1h": series(60, 1.3, 34, 30), "24h": series(48, 3.1, 40, 25), "7d": series(42, 5.7, 30, 20) };
+const RANGE_DATA: Record<string, number[]> = {
+  "1h": series(60, 1.3, 34, 30),
+  "24h": series(48, 3.1, 40, 25),
+  "7d": series(42, 5.7, 30, 20),
+};
 
 function ChartWithRange() {
-    const [range, setRange] = useState("1h");
-    const data = RANGE_DATA[range] ?? [];
-    return (<div className="glass-control flex w-130 max-w-full flex-col gap-2 rounded-tile p-tile">
+  const [range, setRange] = useState("1h");
+  const data = RANGE_DATA[range] ?? [];
+  return (
+    <div className="glass-control flex w-130 max-w-full flex-col gap-2 rounded-tile p-tile">
       <div className="w-50">
         <Tabs.Root value={range} onValueChange={setRange}>
-          <Tabs.List items={RANGES} aria-label="CPU chart range"/>
+          <Tabs.List items={RANGES} aria-label="CPU chart range" />
         </Tabs.Root>
       </div>
       <div className="h-56">
-        <Metric label="CPU" value={data.at(-1) ?? null} unit="%" data={data} domain={[0, 100]} times={clockTimes(data.length)} range={RANGES.find((r) => r.value === range)?.label}/>
+        <Metric
+          label="CPU"
+          value={data.at(-1) ?? null}
+          unit="%"
+          data={data}
+          domain={[0, 100]}
+          times={clockTimes(data.length)}
+          range={RANGES.find((r) => r.value === range)?.label}
+        />
       </div>
-    </div>);
+    </div>
+  );
 }
 
 export default function TabsSection() {
-    return (<SectionPage>
-
-
-
-
-
-
-      <Specimen title="Local tabs — the exception" description="State tabs are only for lightweight presentation toggles inside a component, where resetting on revisit loses nothing: a chart's range, JSON versus table. They look and behave identically.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Local tabs — the exception"
+        description="State tabs are only for lightweight presentation toggles inside a component, where resetting on revisit loses nothing: a chart's range, JSON versus table. They look and behave identically."
+      >
         <ChartWithRange />
       </Specimen>
 
-      <Specimen title="Overflow keeps the active tab" description="The same overflow in local mode: Settings is active, so it is swapped into the strip.">
+      <Specimen
+        title="Overflow keeps the active tab"
+        description="The same overflow in local mode: Settings is active, so it is swapped into the strip."
+      >
         <div className="w-105 max-w-full">
-          <LocalTabs initial="settings"/>
+          <LocalTabs initial="settings" />
         </div>
       </Specimen>
 
-      <Specimen title="States" description="Counts use tabular figures. A disabled tab stays in place and is skipped by the arrow keys.">
+      <Specimen
+        title="States"
+        description="Counts use tabular figures. A disabled tab stays in place and is skipped by the arrow keys."
+      >
         <div className="w-full">
-          <LocalTabs items={STATES} initial="software"/>
+          <LocalTabs items={STATES} initial="software" />
         </div>
       </Specimen>
 
-      <Specimen title="Loading" description="The skeleton strip occupies the same height and rhythm as the loaded strip. Swap them in place to compare.">
+      <Specimen
+        title="Loading"
+        description="The skeleton strip occupies the same height and rhythm as the loaded strip. Swap them in place to compare."
+      >
         <div className="w-105 max-w-full">
-          <SwapSlot id="tabs" skeleton={<TabsSkeleton count={4}/>} loaded={<LocalTabs items={SHORT}/>}/>
+          <SwapSlot
+            id="tabs"
+            skeleton={<TabsSkeleton count={4} />}
+            loaded={<LocalTabs items={SHORT} />}
+          />
         </div>
       </Specimen>
 
-      <Specimen title="Over imagery" description="On a card over busy content the underline and text keep their contrast." backdrop>
+      <Specimen
+        title="Over imagery"
+        description="On a card over busy content the underline and text keep their contrast."
+        backdrop
+      >
         <div className="glass-control w-130 max-w-full rounded-surface px-3">
-          <LocalTabs items={SHORT} initial="software"/>
+          <LocalTabs items={SHORT} initial="software" />
         </div>
       </Specimen>
 
       <ContainerLab description="Row, header, tile, pane and tall-narrow (local mode, so each box can hold its own active tab). The strip shows what fits plus More; in the narrowest boxes only the active tab and More remain.">
-        {() => <LocalTabs initial="activity"/>}
+        {() => <LocalTabs initial="activity" />}
       </ContainerLab>
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

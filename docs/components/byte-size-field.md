@@ -2,7 +2,6 @@
 
 `glass-ux/byte-size-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 A size typed as people write it — "500 MB", "1.5GB", "2 GiB", "750k" — held in bytes and rewritten
 when focus leaves. Decimal units (kB, MB, GB: disks and files) by default; `base="binary"` writes
 KiB, MiB, GiB (memory). Added because quotas, thresholds and upload limits are everywhere in an RMM

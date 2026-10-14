@@ -1,50 +1,49 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { IconSearch } from "glass-ux/icons";
-
 import { Autocomplete } from "glass-ux/autocomplete";
-
 import { Field } from "glass-ux/field";
-
 import { FormStack } from "glass-ux/form";
-
 import { endpointSource } from "glass-ux/gallery/sections/forms.sources";
 
 export default function ComboboxSection() {
-    return (<SectionPage>
-      <Specimen title="Autocomplete" description="Free text with suggestions as you type — search boxes, hostnames, paths. Choosing a suggestion fills the text; anything else may be typed. 1,284 endpoints answer in 150–600 ms; earlier results stay while new ones load (the thin line), and only the latest query ever renders.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Autocomplete"
+        description="Free text with suggestions as you type — search boxes, hostnames, paths. Choosing a suggestion fills the text; anything else may be typed. 1,284 endpoints answer in 150–600 ms; earlier results stay while new ones load (the thin line), and only the latest query ever renders."
+      >
         <FormStack>
           <Field label="Hostname" hint="Focus to see recent endpoints.">
-            <Autocomplete source={endpointSource} icon={<IconSearch />} placeholder="NST, ORB, user name…"/>
+            <Autocomplete
+              source={endpointSource}
+              icon={<IconSearch />}
+              placeholder="NST, ORB, user name…"
+            />
           </Field>
           <Field label="Share path" optional>
-            <Autocomplete options={[
-            { value: "\\\\nst-server\\shared", label: "\\\\nst-server\\shared", description: "NST-SERVER" },
-            { value: "\\\\nst-server\\finance", label: "\\\\nst-server\\finance", description: "NST-SERVER" },
-            { value: "\\\\orb-nas\\scans", label: "\\\\orb-nas\\scans", description: "LMN-NAS" },
-        ]} placeholder="\\\\server\\share"/>
+            <Autocomplete
+              options={[
+                {
+                  value: "\\\\nst-server\\shared",
+                  label: "\\\\nst-server\\shared",
+                  description: "NST-SERVER",
+                },
+                {
+                  value: "\\\\nst-server\\finance",
+                  label: "\\\\nst-server\\finance",
+                  description: "NST-SERVER",
+                },
+                {
+                  value: "\\\\orb-nas\\scans",
+                  label: "\\\\orb-nas\\scans",
+                  description: "LMN-NAS",
+                },
+              ]}
+              placeholder="\\\\server\\share"
+            />
           </Field>
         </FormStack>
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

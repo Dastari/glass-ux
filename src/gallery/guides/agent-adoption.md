@@ -16,14 +16,14 @@ Use `--target claude` for `.claude/skills`, or `--target agents` for `.agents/sk
 The installer copies only the six Glass UX skill folders and retains existing project
 instructions. It refuses to replace an existing skill unless `--update` is supplied.
 
-| Skill | Task |
-| --- | --- |
-| `glass-ux-adopt` | Install, style, configure providers and verify the first screen |
-| `glass-ux-components` | Select and compose controls, identity, surfaces and overlays |
-| `glass-ux-forms` | Bind typed fields, units, schema validation and submission |
-| `glass-ux-data` | Tables, server filters, charts, maps and topology |
-| `glass-ux-assistant` | Typed conversations, results, asks, approvals and host handlers |
-| `glass-ux-author` | Add a reusable component, documentation and relevant checks |
+| Skill                 | Task                                                            |
+| --------------------- | --------------------------------------------------------------- |
+| `glass-ux-adopt`      | Install, style, configure providers and verify the first screen |
+| `glass-ux-components` | Select and compose controls, identity, surfaces and overlays    |
+| `glass-ux-forms`      | Bind typed fields, units, schema validation and submission      |
+| `glass-ux-data`       | Tables, server filters, charts, maps and topology               |
+| `glass-ux-assistant`  | Typed conversations, results, asks, approvals and host handlers |
+| `glass-ux-author`     | Add a reusable component, documentation and relevant checks     |
 
 The package's `AGENTS.md` explains library ownership and verification. A consuming project's
 own instructions remain authoritative for that project. Skills guide implementation; they

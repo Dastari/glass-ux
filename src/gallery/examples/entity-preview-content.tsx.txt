@@ -1,17 +1,16 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
-
 import { E } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { EntityPreviewContent } from "glass-ux/ai";
 
 export default function EntityPreviewContentExample() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
         <Specimen title="EntityPreviewContent" layout="stack">
-          <EntityPreviewContent entity={E.c106Online}/>
+          <EntityPreviewContent entity={E.c106Online} />
         </Specimen>
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

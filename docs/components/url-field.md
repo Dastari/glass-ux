@@ -2,7 +2,6 @@
 
 `glass-ux/url-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 A URL. When focus leaves, a missing scheme is added (`https://` by default), the scheme and host
 are lower-cased, Unicode hosts become punycode, default ports and a bare trailing slash are
 dropped. Schemes that are not links (`javascript:`, `data:`) are refused. An "Open in a new tab"

@@ -1,44 +1,39 @@
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Field } from "glass-ux/field";
-
 import { FormStack } from "glass-ux/form";
-
 import { TimeZoneSelect } from "glass-ux/time-zone-select";
 
 export default function TimeZoneSelectSection() {
-    return (<SectionPage>
-
-
+  return (
+    <SectionPage>
       <Specimen title="States" layout="grid">
         <FormStack>
           <Field label="Empty">
-            <TimeZoneSelect width="medium"/>
+            <TimeZoneSelect width="medium" />
           </Field>
         </FormStack>
         <FormStack>
           <Field label="Disabled">
-            <TimeZoneSelect width="medium" defaultValue="Australia/Hobart" disabled/>
+            <TimeZoneSelect width="medium" defaultValue="Australia/Hobart" disabled />
           </Field>
         </FormStack>
       </Specimen>
 
       <Specimen title="Over glass and imagery" backdrop>
         <Field label="Time zone">
-          <TimeZoneSelect width="medium" defaultValue="Australia/Hobart"/>
+          <TimeZoneSelect width="medium" defaultValue="Australia/Hobart" />
         </Field>
       </Specimen>
 
       <ContainerLab>
         <div className="flex h-full items-center p-1">
-          <TimeZoneSelect size="sm" defaultValue="America/Argentina/Buenos_Aires" aria-label="Time zone"/>
+          <TimeZoneSelect
+            size="sm"
+            defaultValue="America/Argentina/Buenos_Aires"
+            aria-label="Time zone"
+          />
         </div>
       </ContainerLab>
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

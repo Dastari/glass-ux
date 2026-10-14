@@ -1,17 +1,20 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
-
 import { ASKS } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { EntityPickerAsk } from "glass-ux/ai";
 
 export default function EntityPickerAskExample() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-        <Specimen title="EntityPickerAsk" description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision." layout="stack">
-          <EntityPickerAsk ask={ASKS.entity}/>
+        <Specimen
+          title="EntityPickerAsk"
+          description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision."
+          layout="stack"
+        >
+          <EntityPickerAsk ask={ASKS.entity} />
         </Specimen>
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

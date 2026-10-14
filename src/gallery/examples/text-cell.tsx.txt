@@ -1,14 +1,15 @@
 import { TextCell } from "glass-ux/data-table";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 
 export default function TextCellExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="Text, truncation and alignment" layout="stack">
         <div className="w-70">
           <TextCell>Meridian Studio exhibition and design workshop</TextCell>
         </div>
         <TextCell>Short label</TextCell>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

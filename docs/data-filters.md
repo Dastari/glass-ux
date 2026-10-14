@@ -38,8 +38,8 @@ Column widths, hidden columns, pins and density are browser preferences rather t
 state. Configure their namespace before mounting tables:
 
 ```ts
-import { configureDataTables } from "glass-ux/data-table"
-configureDataTables({ storageKeyPrefix: "my-app.table" })
+import { configureDataTables } from "glass-ux/data-table";
+configureDataTables({ storageKeyPrefix: "my-app.table" });
 ```
 
 ## Adapt the server shape

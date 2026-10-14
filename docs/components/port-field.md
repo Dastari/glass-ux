@@ -2,7 +2,6 @@
 
 `glass-ux/port-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 A TCP or UDP port: whole numbers 1–65535, no grouping, the service usually on it named inside the
 box ("443 HTTPS"), arrow keys to step (Shift by 1,000), no steppers. Short width by default. Built
 on NumberField.

@@ -1,22 +1,27 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { ChartTable } from "glass-ux/charts";
 
 export default function ChartTableExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="ChartTable" layout="stack">
         <div className="h-60 w-full">
-          <ChartTable visible caption="Weekly reservations" model={{
-            columns: [
+          <ChartTable
+            visible
+            caption="Weekly reservations"
+            model={{
+              columns: [
                 { key: "week", label: "Week" },
                 { key: "count", label: "Reservations", numeric: true },
-            ],
-            rows: [
+              ],
+              rows: [
                 { week: "Week 1", count: "42" },
                 { week: "Week 2", count: "58" },
-            ],
-        }}/>
+              ],
+            }}
+          />
         </div>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

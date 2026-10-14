@@ -1,17 +1,17 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { ChoiceRow, Fieldset } from "glass-ux/field";
-
 import { Checkbox } from "glass-ux/checkbox";
 
 export default function FieldsetExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="Fieldset" layout="stack">
         <Fieldset legend="Notifications">
           <ChoiceRow controlId="sample-notify" label="Send a reminder">
-            <Checkbox id="sample-notify"/>
+            <Checkbox id="sample-notify" />
           </ChoiceRow>
         </Fieldset>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

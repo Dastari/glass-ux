@@ -1,18 +1,17 @@
 import { EntityResolverProvider, EntityChip } from "glass-ux/ai";
-
 import { demoResolver } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { E } from "glass-ux/gallery/sections/ai.fixtures";
 
 export default function EntityResolverProviderExample() {
-    return (<SectionPage>
+  return (
+    <SectionPage>
       <Specimen title="Host-defined entity presentation" layout="stack">
         <EntityResolverProvider resolver={demoResolver}>
-          <EntityChip entity={E.northstar}/>
-          <EntityChip entity={E.mira}/>
+          <EntityChip entity={E.northstar} />
+          <EntityChip entity={E.mira} />
         </EntityResolverProvider>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

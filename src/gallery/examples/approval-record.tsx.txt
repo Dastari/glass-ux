@@ -1,49 +1,50 @@
 import { ApprovalCard, ApprovalRecord, type AiApproval } from "glass-ux/ai";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { APPROVAL } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
 type Approval = AiApproval;
 
-const STATES: Array<[
-    string,
-    string,
-    Approval
-]> = [
-    ["Pending", "Warning tone: an action with consequences. Deny on the left, the solid warning Approve on the right; the expiry counts down.", APPROVAL("pending")],
-    ["Executing", "Approved: the card has folded into its record, which shows the run and keeps Revoke until it starts (AiApprovalView resume_claimed).", APPROVAL("approved")],
-    ["Executed", "Consumed: the card has folded into its record with the outcome.", APPROVAL("executed")],
-    ["Denied", "Denied by the person; the run continues without it.", APPROVAL("denied")],
-    ["Expired", "Nobody decided before ExpiresAt.", APPROVAL("expired", { decidedBy: undefined })],
-    ["Revoked", "Withdrawn after approval, before it ran.", APPROVAL("revoked")],
-    ["Failed", "Approved, ran and failed: the record carries the reason.", APPROVAL("failed", { outcome: "Agent offline — retry when NST-C106 reconnects" })],
+const STATES: Array<[string, string, Approval]> = [
+  [
+    "Pending",
+    "Warning tone: an action with consequences. Deny on the left, the solid warning Approve on the right; the expiry counts down.",
+    APPROVAL("pending"),
+  ],
+  [
+    "Executing",
+    "Approved: the card has folded into its record, which shows the run and keeps Revoke until it starts (AiApprovalView resume_claimed).",
+    APPROVAL("approved"),
+  ],
+  [
+    "Executed",
+    "Consumed: the card has folded into its record with the outcome.",
+    APPROVAL("executed"),
+  ],
+  ["Denied", "Denied by the person; the run continues without it.", APPROVAL("denied")],
+  ["Expired", "Nobody decided before ExpiresAt.", APPROVAL("expired", { decidedBy: undefined })],
+  ["Revoked", "Withdrawn after approval, before it ran.", APPROVAL("revoked")],
+  [
+    "Failed",
+    "Approved, ran and failed: the record carries the reason.",
+    APPROVAL("failed", { outcome: "Agent offline — retry when NST-C106 reconnects" }),
+  ],
 ];
 
 export default function AiApprovalsSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-        {STATES.map(([title, description, ask]) => (<Specimen key={title} title={title} description={description} layout="stack">
-            {ask.state === "pending" || ask.state === "approved" ? <ApprovalCard ask={ask}/> : <ApprovalRecord ask={ask}/>}
-          </Specimen>))}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        {STATES.map(([title, description, ask]) => (
+          <Specimen key={title} title={title} description={description} layout="stack">
+            {ask.state === "pending" || ask.state === "approved" ? (
+              <ApprovalCard ask={ask} />
+            ) : (
+              <ApprovalRecord ask={ask} />
+            )}
+          </Specimen>
+        ))}
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

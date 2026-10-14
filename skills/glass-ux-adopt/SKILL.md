@@ -9,6 +9,16 @@ Find the installed `glass-ux` package and read its `README.md`, `docs/getting-st
 `docs/integration.md`. Those files match the installed release. Use its `docs/api/README.md`
 to find component contracts; the live site is supplementary when versions differ.
 
+Before writing layout, read `docs/layout-contract.md` and the token, materials and layout
+rules in `docs/ui-rules.md`. Use `Surface` geometry props and Panel/drawer content slots.
+Choose an explicit padding role for direct Surface children; never assume a raw glass class
+supplies padding or corners. Headings and panel groups sit on the canvas.
+
+Run `pnpm exec glass-ux check-layout` with the host stylesheet directories. Verify computed
+insets and corners with non-default density, UI scale, radius and line weight. Inspect focus
+rings and curved edges at scroll boundaries. Do not treat axe or successful rendering as
+proof that the theme's geometry is respected.
+
 Inspect the consuming project's framework, React version, styling pipeline and repository
 instructions before editing. Preserve its router, authentication, data layer and product identity.
 Glass UX supplies presentation and interaction primitives; it does not replace those services.

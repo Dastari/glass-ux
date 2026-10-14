@@ -7,6 +7,7 @@ Typed React components, compound slots, themes and interaction rules. Read docs 
 - [Agent adoption](docs/agent-adoption.md)
 - [API index](docs/api/README.md)
 - [Design rules](docs/ui-rules.md)
+- [Theme and layout](docs/layout-contract.md)
 - [Typed form inputs](docs/components/README.md)
 - [Adoption skill](skills/glass-ux-adopt/SKILL.md)
 - [Component selection skill](skills/glass-ux-components/SKILL.md)

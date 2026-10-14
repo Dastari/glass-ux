@@ -1,17 +1,16 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
-
 import { RESULTS } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { ImageTile } from "glass-ux/ai";
 
 export default function ImageTileExample() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
         <Specimen title="ImageTile" layout="stack">
-          <ImageTile image={RESULTS.screen.images[0]!}/>
+          <ImageTile image={RESULTS.screen.images[0]!} />
         </Specimen>
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

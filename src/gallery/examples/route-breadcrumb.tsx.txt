@@ -1,45 +1,35 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { sections } from "glass-ux/gallery/registry";
-
 import { RouteBreadcrumb, type RouteCrumb } from "glass-ux/breadcrumb";
 
 /** Real router links: this page's own trail, with every component section as a sibling. */
 const ROUTE_TRAIL: RouteCrumb[] = [
-    { id: "design", label: "Design system", link: { to: "/design" } },
-    { id: "components", label: "Components", link: { to: "/design" } },
-    {
-        id: "breadcrumb",
-        label: "Breadcrumb",
-        siblingsLabel: "Switch component",
-        siblings: sections
-            .filter((section) => section.group === "Components")
-            .map((section) => ({ id: section.id, label: section.title, link: { to: "/design/$section", params: { section: section.id } } })),
-    },
+  { id: "design", label: "Design system", link: { to: "/design" } },
+  { id: "components", label: "Components", link: { to: "/design" } },
+  {
+    id: "breadcrumb",
+    label: "Breadcrumb",
+    siblingsLabel: "Switch component",
+    siblings: sections
+      .filter((section) => section.group === "Components")
+      .map((section) => ({
+        id: section.id,
+        label: section.title,
+        link: { to: "/design/$section", params: { section: section.id } },
+      })),
+  },
 ];
 
 export default function BreadcrumbSection() {
-    return (<SectionPage>
-
-
-      <Specimen title="Route crumbs" description="RouteBreadcrumb renders crumbs and siblings with `link` as router links — this page's own trail; the switcher lists every component section. The core Breadcrumb stays router-agnostic." wide>
-        <RouteBreadcrumb items={ROUTE_TRAIL} aria-label="Gallery breadcrumb"/>
+  return (
+    <SectionPage>
+      <Specimen
+        title="Route crumbs"
+        description="RouteBreadcrumb renders crumbs and siblings with `link` as router links — this page's own trail; the switcher lists every component section. The core Breadcrumb stays router-agnostic."
+        wide
+      >
+        <RouteBreadcrumb items={ROUTE_TRAIL} aria-label="Gallery breadcrumb" />
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

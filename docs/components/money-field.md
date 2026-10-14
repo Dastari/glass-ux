@@ -2,7 +2,6 @@
 
 `glass-ux/money-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 An amount held in minor units (integer cents), so sums never drift. It shows and reads the locale's
 currency format (`$1,234.50`) through Intl.NumberFormat, rounds to the currency's minor digits
 (AUD 2, JPY 0, KWD 3) and refuses negatives unless `allowNegative`. Built on NumberField.

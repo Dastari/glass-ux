@@ -1,20 +1,23 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
-
 import { JsonTree } from "glass-ux/ai";
 
 export default function JsonTreeExample() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
         <Specimen title="JsonTree" layout="stack">
-          <JsonTree label="Sample exhibition configuration" value={{
-            title: "Meridian",
-            rooms: 3,
-            access: { public: true },
-            tags: ["photography", "sculpture"],
-        }}/>
+          <JsonTree
+            label="Sample exhibition configuration"
+            value={{
+              title: "Meridian",
+              rooms: 3,
+              access: { public: true },
+              tags: ["photography", "sculpture"],
+            }}
+          />
         </Specimen>
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

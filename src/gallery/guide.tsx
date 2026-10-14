@@ -7,6 +7,7 @@ export const libraryGuides = [
   { id: "getting-started", title: "Getting started" },
   { id: "integration", title: "Existing applications" },
   { id: "agent-adoption", title: "AI agent adoption" },
+  { id: "layout-contract", title: "Theme and layout" },
 ] as const;
 
 /** A version-matched human guide from the installed release. */
@@ -28,7 +29,7 @@ export function LibraryGuide({ id }: { id: string }) {
             value.replace(
               /\]\((?!https?:|#)([^)]+)\)/g,
               (_match, path) =>
-                `](${new URL(path, "https://github.com/Dastari/glass-ux/blob/v0.1.1/docs/").href})`,
+                `](${new URL(path, "https://github.com/Dastari/glass-ux/blob/v0.2.0/docs/").href})`,
             ),
           );
       })
@@ -40,7 +41,7 @@ export function LibraryGuide({ id }: { id: string }) {
     };
   }, [id]);
   return (
-    <article className="gallery-documentation">
+    <article className="gallery-documentation gallery-guide-document">
       {error ? (
         <Notice tone="danger">{error}</Notice>
       ) : text ? (

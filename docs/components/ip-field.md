@@ -2,7 +2,6 @@
 
 `glass-ux/ip-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 An IPv4 or IPv6 address, optionally with a prefix length (CIDR). When focus leaves it becomes
 canonical: leading zeros dropped (`010.013.004.001` → `10.13.4.1`, read as decimal, never octal),
 IPv6 lower-cased and compressed per RFC 5952 (`2001:db8::1`), IPv4-mapped tails kept, brackets and

@@ -1,23 +1,19 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Disclosure } from "glass-ux/accordion";
 
 export default function AccordionSection() {
-    return (<SectionPage>
-
-
-      <Specimen title="Disclosure" description="One section that shows and hides, with the same row and motion.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Disclosure"
+        description="One section that shows and hides, with the same row and motion."
+      >
         <div className="w-120 max-w-full">
           <Disclosure title="Advanced" meta="3 settings">
             Proxy, update channel and log level for LMN-7C71.
           </Disclosure>
         </div>
       </Specimen>
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

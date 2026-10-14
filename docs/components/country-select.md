@@ -2,7 +2,6 @@
 
 `glass-ux/country-select` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 Every ISO 3166-1 country (and Kosovo) chosen by typing its name, named by the browser in the
 locale (Intl.DisplayNames), with its flag and code. The workspace's country comes first
 (`priority`). Shares its data with the phone field.

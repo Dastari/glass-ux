@@ -2,7 +2,6 @@
 
 `glass-ux/password-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 A password box: the eye toggles reveal (an icon button with a tooltip and `aria-pressed`), a Caps
 Lock note appears inside the box while Caps Lock is on, and new passwords get a strength bar along
 the box's lower edge with the words in the message line ("Fair · Add another word or a few more

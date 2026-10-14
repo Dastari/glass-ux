@@ -1,50 +1,41 @@
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Field } from "glass-ux/field";
-
 import { FormStack } from "glass-ux/form";
-
 import { MoneyInput } from "glass-ux/money-field";
 
 export default function MoneyFieldSection() {
-    return (<SectionPage>
-
-
+  return (
+    <SectionPage>
       <Specimen title="Currencies and states" layout="grid">
         <FormStack>
           <Field label="NZD, with its code">
-            <MoneyInput currency="NZD" showCode defaultValue={99000} width="medium"/>
+            <MoneyInput currency="NZD" showCode defaultValue={99000} width="medium" />
           </Field>
           <Field label="Yen">
-            <MoneyInput currency="JPY" showCode defaultValue={1500} width="medium"/>
+            <MoneyInput currency="JPY" showCode defaultValue={1500} width="medium" />
           </Field>
         </FormStack>
         <FormStack>
           <Field label="Invalid" error="Enter an amount up to $1,000.00">
-            <MoneyInput defaultValue={250000} invalid width="medium"/>
+            <MoneyInput defaultValue={250000} invalid width="medium" />
           </Field>
           <Field label="Disabled">
-            <MoneyInput defaultValue={16500} disabled width="medium"/>
+            <MoneyInput defaultValue={16500} disabled width="medium" />
           </Field>
         </FormStack>
       </Specimen>
 
       <Specimen title="Over glass and imagery" backdrop>
         <Field label="Hourly rate">
-          <MoneyInput defaultValue={16500} width="medium"/>
+          <MoneyInput defaultValue={16500} width="medium" />
         </Field>
       </Specimen>
 
       <ContainerLab>
         <div className="flex h-full items-center p-1">
-          <MoneyInput size="sm" defaultValue={123456789} aria-label="Amount"/>
+          <MoneyInput size="sm" defaultValue={123456789} aria-label="Amount" />
         </div>
       </ContainerLab>
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

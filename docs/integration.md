@@ -2,18 +2,19 @@
 
 Keep the application's router, identity, authentication, GraphQL client and data services.
 Adopt Glass UX through its public imports and replace one coherent screen at a time.
+Read [the theme and layout contract](layout-contract.md) before composing the first screen.
 
-| Existing pattern | Glass UX primitive |
-| --- | --- |
-| Action button with asynchronous feedback | `ActionButton` |
-| Ad hoc modal | `Dialog` or `AlertDialog` |
-| Form control plus separate error markup | `Field`, a typed bound field and its schema helper |
-| Entity name, icon and action menu assembled repeatedly | `EntityIdentity` and a shared `ActionSet` |
-| Interactive table | `DataTable`, typed columns, filters and a host data adapter |
-| Local palette dropdown | `SwatchPicker` and the appearance runtime |
-| Browser tooltip on truncated text | `TruncatedText` or `Tooltip` |
-| Repeated clipboard handler | `CopyButton` |
-| Assistant UI tied directly to backend rows | Typed view models, entity resolvers and conversation handlers |
+| Existing pattern                                       | Glass UX primitive                                            |
+| ------------------------------------------------------ | ------------------------------------------------------------- |
+| Action button with asynchronous feedback               | `ActionButton`                                                |
+| Ad hoc modal                                           | `Dialog` or `AlertDialog`                                     |
+| Form control plus separate error markup                | `Field`, a typed bound field and its schema helper            |
+| Entity name, icon and action menu assembled repeatedly | `EntityIdentity` and a shared `ActionSet`                     |
+| Interactive table                                      | `DataTable`, typed columns, filters and a host data adapter   |
+| Local palette dropdown                                 | `SwatchPicker` and the appearance runtime                     |
+| Browser tooltip on truncated text                      | `TruncatedText` or `Tooltip`                                  |
+| Repeated clipboard handler                             | `CopyButton`                                                  |
+| Assistant UI tied directly to backend rows             | Typed view models, entity resolvers and conversation handlers |
 
 An application-owned palette is CSS containing the named `data-palette` selector and the
 palette parameters. Register its identifier and label with `definePalette(id, label)`, then
@@ -37,8 +38,14 @@ page, keep the component styles and override the document defaults in the host s
 
 ```css
 @layer base {
-  html { height: auto; overflow: auto; }
-  body { height: auto; overflow: visible; }
+  html {
+    height: auto;
+    overflow: auto;
+  }
+  body {
+    height: auto;
+    overflow: visible;
+  }
 }
 ```
 

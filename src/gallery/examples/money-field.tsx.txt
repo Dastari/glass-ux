@@ -1,53 +1,62 @@
 import { z } from "zod";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
-
 import { formatMoney, moneySchema } from "glass-ux/money-field";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 function MoneyDemo() {
-    const form = useAppForm({
-        ...formBehaviour,
-        defaultValues: { rate: 16500 as number | null, monthly: 129900 as number | null, credit: null as number | null },
-        validators: { onDynamic: z.object({ rate: moneySchema({ required: true, max: 100000 }), monthly: moneySchema({ required: true }), credit: moneySchema({ allowNegative: true }) }) },
-        onSubmit: () => wait(600),
-    });
-    return (<Form form={form} aria-label="Billing" className="w-full" data-testid="money-form">
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: {
+      rate: 16500 as number | null,
+      monthly: 129900 as number | null,
+      credit: null as number | null,
+    },
+    validators: {
+      onDynamic: z.object({
+        rate: moneySchema({ required: true, max: 100000 }),
+        monthly: moneySchema({ required: true }),
+        credit: moneySchema({ allowNegative: true }),
+      }),
+    },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="Billing" className="w-full" data-testid="money-form">
       <FormStack>
-        <form.AppField name="rate">{(field) => <field.MoneyField label="Hourly rate" hint="Excluding GST"/>}</form.AppField>
-        <form.AppField name="monthly">{(field) => <field.MoneyField label="Monthly agreement"/>}</form.AppField>
-        <form.AppField name="credit">{(field) => <field.MoneyField label="Adjustment" optional allowNegative/>}</form.AppField>
+        <form.AppField name="rate">
+          {(field) => <field.MoneyField label="Hourly rate" hint="Excluding GST" />}
+        </form.AppField>
+        <form.AppField name="monthly">
+          {(field) => <field.MoneyField label="Monthly agreement" />}
+        </form.AppField>
+        <form.AppField name="credit">
+          {(field) => <field.MoneyField label="Adjustment" optional allowNegative />}
+        </form.AppField>
         <form.Subscribe selector={(state) => state.values.rate}>
-          {(rate) => (<p className="fa-hint" data-testid="money-minor">
+          {(rate) => (
+            <p className="fa-hint" data-testid="money-minor">
               Stored: {rate ?? "null"} cents ({rate === null ? "—" : formatMoney(rate)})
-            </p>)}
+            </p>
+          )}
         </form.Subscribe>
         <FormActions>
           <form.SubmitButton>Save</form.SubmitButton>
         </FormActions>
       </FormStack>
-    </Form>);
+    </Form>
+  );
 }
 
 export default function MoneyFieldSection() {
-    return (<SectionPage>
-      <Specimen title="Integer cents, the locale's format" description="Type 165 or $1,234.5: the field shows $1,234.50 when focus leaves and stores 123450. Other currencies use their own minor digits (JPY has none).">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Integer cents, the locale's format"
+        description="Type 165 or $1,234.5: the field shows $1,234.50 when focus leaves and stores 123450. Other currencies use their own minor digits (JPY has none)."
+      >
         <MoneyDemo />
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

@@ -2,7 +2,6 @@
 
 `glass-ux/phone-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 A phone number with its country. The country picker (flag, ISO code, calling code; search by name,
 code or "+61") sets how national numbers are read; typing or pasting an international number
 ("+64 21 123 4567", "0011 64…", "00 44…") switches it. Numbers are stored as E.164 and shown
@@ -51,24 +50,40 @@ never uses them. `flags={false}` turns them off.
 
 Glass UX's `ContactMethod` (`kind: "email" | "phone" | "mobile"`, `value: string`) maps one to one:
 
-| kind | Field | Schema | value |
-| --- | --- | --- | --- |
-| `mobile` | `field.MobileField` | `mobileSchema()` | `"+61412345678"` |
-| `phone` | `field.PhoneField extension` | `phoneSchema()` | `"+61362345678;ext=204"` |
-| `email` | `field.EmailField knownDomains={[organisation.emailDomain]}` | `emailSchema()` | `"mira.rowan@northstar.example"` |
+| kind     | Field                                                        | Schema           | value                            |
+| -------- | ------------------------------------------------------------ | ---------------- | -------------------------------- |
+| `mobile` | `field.MobileField`                                          | `mobileSchema()` | `"+61412345678"`                 |
+| `phone`  | `field.PhoneField extension`                                 | `phoneSchema()`  | `"+61362345678;ext=204"`         |
+| `email`  | `field.EmailField knownDomains={[organisation.emailDomain]}` | `emailSchema()`  | `"mira.rowan@northstar.example"` |
 
 In a list of contact methods (a form array), bind each row's `value` with the field for its kind;
 the label ("Work", "Reception") is a TextField in its own row. The schema picks the rule by kind:
 
 ```ts
 const contactMethod = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("email"), label: z.string(), value: emailSchema({ required: true }), primary: z.boolean() }),
-  z.object({ kind: z.literal("phone"), label: z.string(), value: phoneSchema({ required: true }), primary: z.boolean() }),
-  z.object({ kind: z.literal("mobile"), label: z.string(), value: mobileSchema({ required: true }), primary: z.boolean() }),
-])
-const schema = z.object({ contacts: z.array(contactMethod) })
+  z.object({
+    kind: z.literal("email"),
+    label: z.string(),
+    value: emailSchema({ required: true }),
+    primary: z.boolean(),
+  }),
+  z.object({
+    kind: z.literal("phone"),
+    label: z.string(),
+    value: phoneSchema({ required: true }),
+    primary: z.boolean(),
+  }),
+  z.object({
+    kind: z.literal("mobile"),
+    label: z.string(),
+    value: mobileSchema({ required: true }),
+    primary: z.boolean(),
+  }),
+]);
+const schema = z.object({ contacts: z.array(contactMethod) });
 ```
- Read-only display:
+
+Read-only display:
 `formatPhone(lib, value, "national", "AU")` once `usePhoneLibrary()` returns the library (show the
 E.164 text until then), with `<CopyButton value={value} label="Copy number" />`.
 

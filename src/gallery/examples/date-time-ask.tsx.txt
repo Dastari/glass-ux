@@ -1,17 +1,20 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
-
 import { ASKS } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { DateTimeAsk } from "glass-ux/ai";
 
 export default function DateTimeAskExample() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-        <Specimen title="DateTimeAsk" description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision." layout="stack">
-          <DateTimeAsk ask={ASKS.datetime}/>
+        <Specimen
+          title="DateTimeAsk"
+          description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision."
+          layout="stack"
+        >
+          <DateTimeAsk ask={ASKS.datetime} />
         </Specimen>
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

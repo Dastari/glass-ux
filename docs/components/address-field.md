@@ -2,7 +2,6 @@
 
 `glass-ux/address-field` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 A street address found by typing, then kept as structured parts. Choosing a suggestion fills
 every part and drops a pin; the parts stay editable, and "Enter manually" opens them without a
 lookup. An optional map shows the pin, which can be dragged, nudged with the arrow keys or placed
@@ -38,14 +37,14 @@ Outside a form: `<AddressInput label="Site address" value={value} onValueChange=
 
 ```ts
 interface AddressValue {
-  line1: string                              // the street: "12 Example Lane", or "PO Box 12"
-  line2: string                              // unit, level or building: "Level 2"
-  locality: string                           // suburb, town or city
-  region: { code: string; name: string }     // ISO 3166-2 "AU-TAS" / "Tasmania"; code "" when unknown
-  postcode: string
-  country: { code: string; name: string }    // ISO 3166-1 alpha-2
-  location: { lat: number; lng: number } | null
-  pinned: boolean                            // the pin was placed by hand
+  line1: string; // the street: "12 Example Lane", or "PO Box 12"
+  line2: string; // unit, level or building: "Level 2"
+  locality: string; // suburb, town or city
+  region: { code: string; name: string }; // ISO 3166-2 "AU-TAS" / "Tasmania"; code "" when unknown
+  postcode: string;
+  country: { code: string; name: string }; // ISO 3166-1 alpha-2
+  location: { lat: number; lng: number } | null;
+  pinned: boolean; // the pin was placed by hand
 }
 ```
 
@@ -63,10 +62,10 @@ Lookups go through a `GeocoderAdapter`:
 
 ```ts
 interface GeocoderAdapter {
-  search(query, { signal, bias, countries, lang, limit }): Promise<AddressSuggestion[]>
-  attribution: { provider; providerHref?; data; dataHref? }   // shown in the suggestions' footer
-  minChars?: number      // default 3
-  debounceMs?: number    // default 300
+  search(query, { signal, bias, countries, lang, limit }): Promise<AddressSuggestion[]>;
+  attribution: { provider; providerHref?; data; dataHref? }; // shown in the suggestions' footer
+  minChars?: number; // default 3
+  debounceMs?: number; // default 300
 }
 ```
 

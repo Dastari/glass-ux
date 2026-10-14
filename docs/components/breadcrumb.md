@@ -21,11 +21,11 @@ targets as router links; the core `Breadcrumb` is router-agnostic.
 
 Measured against its own width (`collapseCrumbs`, unit-tested), `data-mode` is:
 
-| Mode | Shows |
-| --- | --- |
-| `full` | every crumb |
-| `middle` | first › … › the longest tail that fits; the ellipsis menu holds the rest |
-| `compact` | … ‹ parent · current |
+| Mode      | Shows                                                                                         |
+| --------- | --------------------------------------------------------------------------------------------- |
+| `full`    | every crumb                                                                                   |
+| `middle`  | first › … › the longest tail that fits; the ellipsis menu holds the rest                      |
+| `compact` | … ‹ parent · current                                                                          |
 | `current` | only the current place, with its icon, as one button with a chevron. It opens the trail popup |
 
 `current` is chosen when even `compact` cannot show the current crumb and a readable parent

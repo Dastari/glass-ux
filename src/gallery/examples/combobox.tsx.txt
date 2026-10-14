@@ -1,107 +1,208 @@
 import { ContainerLab, Matrix, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { IconEndpoint, IconOrganisation, IconSearch } from "glass-ux/icons";
-
 import { Combobox } from "glass-ux/combobox";
-
 import { Field } from "glass-ux/field";
-
 import { FormStack } from "glass-ux/form";
-
 import { MultiSelect } from "glass-ux/multi-select";
-
 import type { SelectSize } from "glass-ux/select";
-
 import { TagInput } from "glass-ux/tag-input";
-
 import { ORGANISATIONS, TAGS } from "glass-ux/gallery/sections/forms.fixtures";
-
-import { endpointSource, flakySource, organisationSource, raceSource } from "glass-ux/gallery/sections/forms.sources";
+import {
+  endpointSource,
+  flakySource,
+  organisationSource,
+  raceSource,
+} from "glass-ux/gallery/sections/forms.sources";
 
 const SIZES: SelectSize[] = ["sm", "md", "lg"];
 
 export default function ComboboxSection() {
-    return (<SectionPage>
-
-
-      <Specimen title="Combobox" description="Choose exactly one item. Static lists filter as you type (case and accents ignored, matches emphasised); a source searches the server. Arrows move, Enter chooses, Esc closes then clears.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Combobox"
+        description="Choose exactly one item. Static lists filter as you type (case and accents ignored, matches emphasised); a source searches the server. Arrows move, Enter chooses, Esc closes then clears."
+      >
         <FormStack>
           <Field label="Endpoint">
-            <Combobox source={endpointSource} icon={<IconEndpoint />} placeholder="Hostname, user or serial"/>
+            <Combobox
+              source={endpointSource}
+              icon={<IconEndpoint />}
+              placeholder="Hostname, user or serial"
+            />
           </Field>
           <Field label="Organisation" hint="A static list of 10.">
-            <Combobox options={ORGANISATIONS} icon={<IconOrganisation />} defaultValue="northstar"/>
+            <Combobox
+              options={ORGANISATIONS}
+              icon={<IconOrganisation />}
+              defaultValue="northstar"
+            />
           </Field>
         </FormStack>
       </Specimen>
 
       <Specimen title="Sizes and states" wide>
-        <Matrix columns={["Empty", "Chosen", "Read-only", "Invalid", "Disabled"]} rows={SIZES.map((size) => ({
+        <Matrix
+          columns={["Empty", "Chosen", "Read-only", "Invalid", "Disabled"]}
+          rows={SIZES.map((size) => ({
             label: size,
             cells: [
-                <Combobox key="a" size={size} options={ORGANISATIONS} placeholder="Find an organisation" aria-label={`Organisation ${size}`} className="w-64"/>,
-                <Combobox key="b" size={size} options={ORGANISATIONS} defaultValue="northstar" icon={<IconOrganisation />} aria-label={`Chosen ${size}`} className="w-64"/>,
-                <Combobox key="c" size={size} options={ORGANISATIONS} defaultValue="orbit" readOnly aria-label={`Read-only ${size}`} className="w-64"/>,
-                <Combobox key="d" size={size} options={ORGANISATIONS} invalid placeholder="Find an organisation" aria-label={`Invalid ${size}`} className="w-64"/>,
-                <Combobox key="e" size={size} options={ORGANISATIONS} defaultValue="cedarvale" disabled aria-label={`Disabled ${size}`} className="w-64"/>,
+              <Combobox
+                key="a"
+                size={size}
+                options={ORGANISATIONS}
+                placeholder="Find an organisation"
+                aria-label={`Organisation ${size}`}
+                className="w-64"
+              />,
+              <Combobox
+                key="b"
+                size={size}
+                options={ORGANISATIONS}
+                defaultValue="northstar"
+                icon={<IconOrganisation />}
+                aria-label={`Chosen ${size}`}
+                className="w-64"
+              />,
+              <Combobox
+                key="c"
+                size={size}
+                options={ORGANISATIONS}
+                defaultValue="orbit"
+                readOnly
+                aria-label={`Read-only ${size}`}
+                className="w-64"
+              />,
+              <Combobox
+                key="d"
+                size={size}
+                options={ORGANISATIONS}
+                invalid
+                placeholder="Find an organisation"
+                aria-label={`Invalid ${size}`}
+                className="w-64"
+              />,
+              <Combobox
+                key="e"
+                size={size}
+                options={ORGANISATIONS}
+                defaultValue="cedarvale"
+                disabled
+                aria-label={`Disabled ${size}`}
+                className="w-64"
+              />,
             ],
-        }))}/>
+          }))}
+        />
       </Specimen>
 
-      <Specimen title="List states" description="Open each one. Rows of every state are exactly one option tall, so nothing jumps when results arrive.">
+      <Specimen
+        title="List states"
+        description="Open each one. Rows of every state are exactly one option tall, so nothing jumps when results arrive."
+      >
         <FormStack>
           <Field label="Loading" hint="Skeleton rows on the first load.">
-            <Combobox options={[]} loading placeholder="Hostname, user or serial" icon={<IconEndpoint />}/>
+            <Combobox
+              options={[]}
+              loading
+              placeholder="Hostname, user or serial"
+              icon={<IconEndpoint />}
+            />
           </Field>
           <Field label="At least 2 characters" hint="Type one character.">
-            <Combobox source={organisationSource} placeholder="Find an organisation" icon={<IconOrganisation />}/>
+            <Combobox
+              source={organisationSource}
+              placeholder="Find an organisation"
+              icon={<IconOrganisation />}
+            />
           </Field>
-          <Field label="Error and retry" hint="Type anything: the first attempt fails, Retry succeeds.">
-            <Combobox source={flakySource} placeholder="Hostname" icon={<IconEndpoint />}/>
+          <Field
+            label="Error and retry"
+            hint="Type anything: the first attempt fails, Retry succeeds."
+          >
+            <Combobox source={flakySource} placeholder="Hostname" icon={<IconEndpoint />} />
           </Field>
           <Field label="No matches" hint="Type anything: the empty row names the query.">
-            <Combobox options={[]} placeholder="Hostname, user or serial" icon={<IconEndpoint />}/>
+            <Combobox options={[]} placeholder="Hostname, user or serial" icon={<IconEndpoint />} />
           </Field>
-          <Field label="Latest wins" hint="One-character queries answer slowly, longer ones fast; type quickly." data-testid="race">
-            <Combobox source={raceSource} placeholder="Type quickly" icon={<IconSearch />}/>
+          <Field
+            label="Latest wins"
+            hint="One-character queries answer slowly, longer ones fast; type quickly."
+            data-testid="race"
+          >
+            <Combobox source={raceSource} placeholder="Type quickly" icon={<IconSearch />} />
           </Field>
         </FormStack>
       </Specimen>
 
-
-
-
-
-
-
       <Specimen title="Over glass and imagery" backdrop>
-        <Combobox options={ORGANISATIONS} defaultValue="northstar" aria-label="Organisation over imagery" className="w-72"/>
-        <MultiSelect options={TAGS} defaultValue={["production", "all-in-one"]} aria-label="Tags over imagery" className="w-72"/>
+        <Combobox
+          options={ORGANISATIONS}
+          defaultValue="northstar"
+          aria-label="Organisation over imagery"
+          className="w-72"
+        />
+        <MultiSelect
+          options={TAGS}
+          defaultValue={["production", "all-in-one"]}
+          aria-label="Tags over imagery"
+          className="w-72"
+        />
       </Specimen>
 
       <ContainerLab>
-        {(preset) => preset?.id === "row" ? (<div className="flex h-full items-center gap-2 px-1">
-              <Combobox size="sm" options={ORGANISATIONS} defaultValue="cedarvale" aria-label="Organisation" className="w-64"/>
-              <MultiSelect size="sm" options={TAGS} defaultValue={["production", "all-in-one", "front-counter", "finance"]} aria-label="Tags"/>
-            </div>) : preset?.id === "header" ? (<div className="flex h-full items-center px-2">
-              <TagInput wrap={false} defaultValue={["avery.quinn@orbit.example.com.au", "mira.rowan@northstar.example", "it@northstar.example"]} aria-label="Recipients"/>
-            </div>) : (<div className="h-full overflow-y-auto" data-scroll-container>
+        {(preset) =>
+          preset?.id === "row" ? (
+            <div className="flex h-full items-center gap-2 px-1">
+              <Combobox
+                size="sm"
+                options={ORGANISATIONS}
+                defaultValue="cedarvale"
+                aria-label="Organisation"
+                className="w-64"
+              />
+              <MultiSelect
+                size="sm"
+                options={TAGS}
+                defaultValue={["production", "all-in-one", "front-counter", "finance"]}
+                aria-label="Tags"
+              />
+            </div>
+          ) : preset?.id === "header" ? (
+            <div className="flex h-full items-center px-2">
+              <TagInput
+                wrap={false}
+                defaultValue={[
+                  "avery.quinn@orbit.example.com.au",
+                  "mira.rowan@northstar.example",
+                  "it@northstar.example",
+                ]}
+                aria-label="Recipients"
+              />
+            </div>
+          ) : (
+            <div className="h-full overflow-y-auto" data-scroll-container>
               <FormStack className="p-3">
                 <Field label="Organisation">
-                  <Combobox options={ORGANISATIONS} defaultValue="cedarvale"/>
+                  <Combobox options={ORGANISATIONS} defaultValue="cedarvale" />
                 </Field>
                 <Field label="Tags">
-                  <MultiSelect wrap options={TAGS} defaultValue={["production", "all-in-one", "front-counter", "finance"]}/>
+                  <MultiSelect
+                    wrap
+                    options={TAGS}
+                    defaultValue={["production", "all-in-one", "front-counter", "finance"]}
+                  />
                 </Field>
                 <Field label="Recipients">
-                  <TagInput defaultValue={["avery.quinn@orbit.example.com.au", "it@northstar.example"]}/>
+                  <TagInput
+                    defaultValue={["avery.quinn@orbit.example.com.au", "it@northstar.example"]}
+                  />
                 </Field>
               </FormStack>
-            </div>)}
+            </div>
+          )
+        }
       </ContainerLab>
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

@@ -1,12 +1,17 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { OptionChip } from "glass-ux/combobox";
 
 export default function OptionChipExample() {
-    return (<SectionPage>
-      <Specimen title="OptionChip" description="A read-only chip requires no combobox context. Editable chips belong inside a Base UI Chips collection." layout="stack">
-        <OptionChip label="Northstar Studio" readOnly/>
-        <OptionChip label="Long sample project name" readOnly invalid="Archived project"/>
+  return (
+    <SectionPage>
+      <Specimen
+        title="OptionChip"
+        description="A read-only chip requires no combobox context. Editable chips belong inside a Base UI Chips collection."
+        layout="stack"
+      >
+        <OptionChip label="Northstar Studio" readOnly />
+        <OptionChip label="Long sample project name" readOnly invalid="Archived project" />
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

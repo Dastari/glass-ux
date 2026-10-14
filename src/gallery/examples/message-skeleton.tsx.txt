@@ -1,35 +1,19 @@
 import { MessageSkeleton } from "glass-ux/ai";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
 export default function AiMessagesSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-
-
-
-
-
-
-
-
-
-
-        <Specimen title="Loading" description="A loading conversation draws its turns in their final boxes: the prompt bubble, prose lines and a card." layout="stack">
+        <Specimen
+          title="Loading"
+          description="A loading conversation draws its turns in their final boxes: the prompt bubble, prose lines and a card."
+          layout="stack"
+        >
           <MessageSkeleton />
         </Specimen>
-
-
-
-
-
-
-
-
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

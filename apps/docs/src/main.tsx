@@ -13,6 +13,7 @@ import {
   useAppearance,
   PALETTES,
   PALETTE_LABELS,
+  configureAppearance,
 } from "glass-ux/appearance";
 import { ActionProvider } from "glass-ux/actions";
 import { PaletteProvider } from "glass-ux/command-palette";
@@ -22,6 +23,14 @@ import { SwatchPicker } from "glass-ux/swatch-picker";
 import { Button } from "glass-ux/button";
 import { usePhoneLayout } from "glass-ux/lib/use-media-query";
 import { SearchField } from "glass-ux/input";
+import { Surface } from "glass-ux/surface";
+import {
+  IconSun,
+  IconMoon,
+  IconSystem,
+  IconGrid,
+  IconSidebar,
+} from "glass-ux/icons";
 import {
   ComponentDocumentation,
   componentCatalogue,
@@ -29,10 +38,13 @@ import {
   LibraryGuide,
   libraryGuides,
   sections,
+  CatalogueIndex,
+  type CatalogueLinkProps,
 } from "glass-ux/gallery";
 import "./styles.css";
 
 configureDemoBrand();
+configureAppearance({ defaults: { palette: "ocean" } });
 const COMPONENT_GROUPS = ["Components", "Patterns", "Charts", "AI"] as const;
 function componentGroup(family: string) {
   return family === "charts"
@@ -56,16 +68,19 @@ function Toolbar() {
       tabIndex={0}
     >
       <Segmented
+        size="sm"
+        iconOnly
         aria-label="Mode"
         value={appearance.mode}
         onValueChange={(mode) => update({ mode })}
         options={[
-          { value: "light", label: "Light" },
-          { value: "dark", label: "Dark" },
-          { value: "system", label: "System" },
+          { value: "light", label: "Light", icon: <IconSun /> },
+          { value: "dark", label: "Dark", icon: <IconMoon /> },
+          { value: "system", label: "Match system", icon: <IconSystem /> },
         ]}
       />
       <SwatchPicker
+        size="sm"
         aria-label="Palette"
         value={appearance.palette}
         onValueChange={(palette) => update({ palette, accentHue: null })}
@@ -76,6 +91,7 @@ function Toolbar() {
         }))}
       />
       <Segmented
+        size="sm"
         aria-label="Material"
         value={appearance.glass}
         onValueChange={(glass) => update({ glass })}
@@ -86,6 +102,7 @@ function Toolbar() {
         ]}
       />
       <Segmented
+        size="sm"
         aria-label="Animations"
         value={appearance.motion === "reduced" ? "reduced" : "full"}
         onValueChange={(motion) => update({ motion })}
@@ -95,6 +112,7 @@ function Toolbar() {
         ]}
       />
       <Segmented
+        size="sm"
         aria-label="Density"
         value={appearance.density}
         onValueChange={(density) => update({ density })}
@@ -118,24 +136,31 @@ function Layout() {
       <TooltipProvider>
         <ActionProvider>
           <PaletteProvider>
-            <div className="docs-layout">
-              <aside
-                className="glass-panel docs-sidebar"
+            <div className="gallery-shell docs-layout">
+              <Surface
+                as="aside"
+                material="chrome"
+                padding="panel"
+                className="docs-sidebar"
                 aria-label="Component navigation"
               >
                 <div className="docs-sidebar-heading">
-                  <Link to="/" className="type-subtitle">
-                    Glass UX
+                  <Link to="/" className="gallery-brand">
+                    <IconGrid className="gallery-brand-mark" />
+                    <span>
+                      <span className="gallery-brand-name">Glass UX</span>
+                      <span className="gallery-brand-sub">Design system</span>
+                    </span>
                   </Link>
                   {phone ? (
                     <Button
                       variant="ghost"
                       size="sm"
+                      icon={<IconSidebar />}
+                      aria-label="Browse"
                       aria-expanded={browse}
                       onClick={() => setBrowse((value) => !value)}
-                    >
-                      Browse
-                    </Button>
+                    />
                   ) : null}
                 </div>
                 <div
@@ -147,74 +172,90 @@ function Layout() {
                     value={query}
                     onValueChange={setQuery}
                   />
-                  <nav className="docs-nav" aria-label="Guides">
-                    <span className="type-overline text-fg-muted">Guides</span>
-                    {libraryGuides.map((guide) => (
-                      <Link
-                        key={guide.id}
-                        to="/guides/$guide"
-                        params={{ guide: guide.id }}
-                      >
-                        {guide.title}
-                      </Link>
-                    ))}
-                  </nav>
-                  <nav className="docs-nav" aria-label="Foundations">
-                    <span className="type-overline text-fg-muted">
-                      Foundations
-                    </span>
-                    {foundations.map((section) => (
-                      <Link
-                        key={section.id}
-                        to="/foundations/$section"
-                        params={{ section: section.id }}
-                      >
-                        {section.title}
-                      </Link>
-                    ))}
-                  </nav>
-                  <a href={`${import.meta.env.BASE_URL}api/`}>
-                    Types and helpers (TypeDoc)
-                  </a>
+                  <div className="docs-directory-scroll">
+                    <nav className="docs-nav" aria-label="Guides">
+                      <span className="type-overline text-fg-muted">
+                        Guides
+                      </span>
+                      {libraryGuides.map((guide) => (
+                        <Link
+                          key={guide.id}
+                          className="fa-item"
+                          to="/guides/$guide"
+                          params={{ guide: guide.id }}
+                        >
+                          <span className="fa-item-label">{guide.title}</span>
+                        </Link>
+                      ))}
+                    </nav>
+                    <nav className="docs-nav" aria-label="Foundations">
+                      <span className="type-overline text-fg-muted">
+                        Foundations
+                      </span>
+                      {foundations.map((section) => (
+                        <Link
+                          key={section.id}
+                          className="fa-item"
+                          to="/foundations/$section"
+                          params={{ section: section.id }}
+                        >
+                          <span className="fa-item-label">{section.title}</span>
+                        </Link>
+                      ))}
+                    </nav>
+                    <a href={`${import.meta.env.BASE_URL}api/`}>
+                      Types and helpers (TypeDoc)
+                    </a>
 
-                  <nav className="docs-nav" aria-label="Components">
-                    {COMPONENT_GROUPS.map((group) => {
-                      const entries = items.filter(
-                        (item) => componentGroup(item.family) === group,
-                      );
-                      return entries.length ? (
-                        <div className="docs-nav-group" key={group}>
-                          <span className="type-overline text-fg-muted">
-                            {group}
-                          </span>
-                          {entries.map((item) => (
-                            <Link
-                              key={item.id}
-                              onClick={() => {
-                                setQuery("");
-                                setBrowse(false);
-                              }}
-                              to="/components/$component"
-                              params={{ component: item.id }}
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                        </div>
-                      ) : null;
-                    })}
-                  </nav>
-                  <a href="https://github.com/Dastari/glass-ux">
-                    Source and releases
-                  </a>
+                    <nav className="docs-nav" aria-label="Components">
+                      {COMPONENT_GROUPS.map((group) => {
+                        const entries = items.filter(
+                          (item) => componentGroup(item.family) === group,
+                        );
+                        return entries.length ? (
+                          <div className="docs-nav-group" key={group}>
+                            <span className="type-overline text-fg-muted">
+                              {group}
+                            </span>
+                            {entries.map((item) => (
+                              <Link
+                                key={item.id}
+                                className="fa-item"
+                                onClick={() => {
+                                  setQuery("");
+                                  setBrowse(false);
+                                }}
+                                to="/components/$component"
+                                params={{ component: item.id }}
+                              >
+                                <span className="fa-item-label">
+                                  {item.name}
+                                </span>
+                              </Link>
+                            ))}
+                          </div>
+                        ) : null;
+                      })}
+                    </nav>
+                    <a href="https://github.com/Dastari/glass-ux">
+                      Source and releases
+                    </a>
+                  </div>
                 </div>
-              </aside>
+              </Surface>
               <main
-                className="docs-main"
+                className="gallery-main docs-main"
                 tabIndex={0}
                 aria-label="Documentation"
               >
-                <Toolbar />
+                <header className="gallery-header">
+                  <div className="gallery-header-title">
+                    <span className="type-subtitle">
+                      Glass UX component library
+                    </span>
+                  </div>
+                  <Toolbar />
+                </header>
                 <div
                   className="docs-content"
                   tabIndex={0}
@@ -244,24 +285,32 @@ const indexRoute = createRoute({
           experiences.
         </p>
       </div>
-      <div className="docs-index">
-        {componentCatalogue
-          .filter((item) => item.family !== "icons")
-          .map((item) => (
-            <Link
-              className="glass-panel docs-card"
-              key={item.id}
-              to="/components/$component"
-              params={{ component: item.id }}
-            >
-              <strong>{item.name}</strong>
-              <span>{item.entry}</span>
-            </Link>
-          ))}
-      </div>
+      <CatalogueIndex
+        groups={["Foundations", ...COMPONENT_GROUPS]}
+        LinkComponent={CatalogueRouteLink}
+        entries={[
+          ...foundations.map((section) => ({
+            id: section.id,
+            title: section.title,
+            summary: section.summary,
+            group: "Foundations",
+            href: `/foundations/${section.id}`,
+          })),
+          ...componentCatalogue.map((item) => ({
+            id: item.id,
+            title: item.name,
+            summary: item.description,
+            group: componentGroup(item.family),
+            href: `/components/${item.id}`,
+          })),
+        ]}
+      />
     </>
   ),
 });
+function CatalogueRouteLink({ entry, ...props }: CatalogueLinkProps) {
+  return <Link {...props} to={entry.href} />;
+}
 const componentRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/$component",

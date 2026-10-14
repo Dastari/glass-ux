@@ -8,7 +8,7 @@
 @layer components {
   .docs-layout {
     display: grid;
-    grid-template-columns: minmax(0, 18rem) minmax(0, 1fr);
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
     height: 100dvh;
     gap: var(--gap-panels);
     padding: var(--page-gutter);
@@ -18,8 +18,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap-panels);
-    overflow: auto;
-    padding: var(--p-panel);
+    overflow: hidden;
+  }
+  .docs-content {
+    position: relative;
   }
   .docs-main {
     min-width: 0;
@@ -43,6 +45,16 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
+    min-height: 0;
+    flex: 1;
+  }
+  .docs-directory-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-section);
+    overflow-y: auto;
+    min-height: 0;
+    flex: 1;
   }
   .docs-directory[hidden] {
     display: none;
@@ -55,15 +67,6 @@
   .docs-nav-group + .docs-nav-group {
     margin-block-start: var(--space-6);
   }
-  .docs-nav a {
-    display: block;
-    padding: var(--space-2);
-    border-radius: var(--radius-control);
-  }
-  .docs-nav a[aria-current="page"] {
-    background: var(--accent-soft);
-    color: var(--accent-text);
-  }
   .docs-toolbar {
     flex: none;
     display: flex;
@@ -71,22 +74,9 @@
     overflow-x: auto;
     align-items: center;
     gap: var(--gap-controls);
-    padding: var(--p-panel);
   }
   .docs-toolbar > * {
     flex-shrink: 0;
-  }
-  .docs-index {
-    padding: var(--p-panel);
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-    gap: var(--gap-panels);
-  }
-  .docs-card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-inline);
-    padding: var(--p-panel);
   }
   @media (width < 48rem) {
     .docs-layout {
@@ -96,10 +86,18 @@
     .docs-sidebar {
       max-height: 35dvh;
       gap: var(--space-2);
-      padding: var(--space-2);
+    }
+    .docs-sidebar .gallery-brand-sub,
+    .docs-main > .gallery-header .gallery-header-title {
+      display: none;
+    }
+    .docs-sidebar .gallery-brand-mark {
+      display: none;
     }
     .docs-toolbar {
-      padding: var(--space-2);
+      padding: 0;
+      width: 100%;
+      max-width: 100%;
     }
     .docs-toolbar .fa-swatch-picker {
       flex-wrap: nowrap;
@@ -109,6 +107,9 @@
     .docs-layout {
       gap: var(--space-2);
       padding: var(--space-2);
+    }
+    .docs-main {
+      gap: var(--gap-controls);
     }
   }
 }

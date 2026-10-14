@@ -1,323 +1,476 @@
 import { useState } from "react";
-
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
-import { IconActivity, IconEdit, IconEndpoint, IconFileText, IconFileTransfer, IconHistory, IconOrganisation, IconPower, IconRefresh, IconRemoteControl, IconSettings, IconTerminal, IconViewOnly } from "glass-ux/icons";
-
+import {
+  IconActivity,
+  IconEdit,
+  IconEndpoint,
+  IconFileText,
+  IconFileTransfer,
+  IconHistory,
+  IconOrganisation,
+  IconPower,
+  IconRefresh,
+  IconRemoteControl,
+  IconSettings,
+  IconTerminal,
+  IconViewOnly,
+} from "glass-ux/icons";
 import { ActionButton, Button } from "glass-ux/button";
-
-import { Dialog, SettingsDialog, SettingsSections, useDialogGuard, type DialogSize, type SettingsSection } from "glass-ux/dialog";
-
+import {
+  Dialog,
+  SettingsDialog,
+  SettingsSections,
+  useDialogGuard,
+  type DialogSize,
+  type SettingsSection,
+} from "glass-ux/dialog";
 import { Field } from "glass-ux/field";
-
 import { FormGroup, FormStack } from "glass-ux/form";
-
 import { SettingRow } from "glass-ux/setting-row";
-
 import { Input } from "glass-ux/input";
-
 import { RadioCard, RadioGroup } from "glass-ux/radio";
-
 import { Select } from "glass-ux/select";
-
 import { Switch } from "glass-ux/switch";
-
 import { Textarea } from "glass-ux/textarea";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /* ── Content ─────────────────────────────────────────────────────────────── */
 /* One field per row (R15.2): stacked fields in one column, setting rows for switches. */
-function EditDeviceFields({ onChange }: {
-    onChange?: () => void;
-}) {
-    return (<FormStack>
-        <Field label="Device name">
-          <Input defaultValue="NST-C106" onChange={onChange}/>
-        </Field>
-        <Field label="Asset tag" optional>
-          <Input defaultValue="NST-00412" onChange={onChange}/>
-        </Field>
-        <Field label="Description">
-          <Input defaultValue="HP EliteOne 1000 G2 27-in 4K UHD AiO" onChange={onChange}/>
-        </Field>
-        <Field label="Notes" counter={{ value: 70, max: 500 }}>
-          <Textarea defaultValue="Front counter workstation. Used by Mira Rowan for rates enquiries." onChange={onChange}/>
-        </Field>
-    </FormStack>);
+function EditDeviceFields({ onChange }: { onChange?: () => void }) {
+  return (
+    <FormStack>
+      <Field label="Device name">
+        <Input defaultValue="NST-C106" onChange={onChange} />
+      </Field>
+      <Field label="Asset tag" optional>
+        <Input defaultValue="NST-00412" onChange={onChange} />
+      </Field>
+      <Field label="Description">
+        <Input defaultValue="HP EliteOne 1000 G2 27-in 4K UHD AiO" onChange={onChange} />
+      </Field>
+      <Field label="Notes" counter={{ value: 70, max: 500 }}>
+        <Textarea
+          defaultValue="Front counter workstation. Used by Mira Rowan for rates enquiries."
+          onChange={onChange}
+        />
+      </Field>
+    </FormStack>
+  );
 }
 
 const CONNECT_MODES = [
-    { value: "interactive", title: "Interactive session", description: "View and control the device", icon: <IconRemoteControl /> },
-    { value: "view", title: "View only", description: "Watch without control", icon: <IconViewOnly /> },
-    { value: "files", title: "File transfer", description: "Move files without a session", icon: <IconFileTransfer /> },
-    { value: "terminal", title: "Command prompt", description: "A remote shell as SYSTEM", icon: <IconTerminal /> },
+  {
+    value: "interactive",
+    title: "Interactive session",
+    description: "View and control the device",
+    icon: <IconRemoteControl />,
+  },
+  {
+    value: "view",
+    title: "View only",
+    description: "Watch without control",
+    icon: <IconViewOnly />,
+  },
+  {
+    value: "files",
+    title: "File transfer",
+    description: "Move files without a session",
+    icon: <IconFileTransfer />,
+  },
+  {
+    value: "terminal",
+    title: "Command prompt",
+    description: "A remote shell as SYSTEM",
+    icon: <IconTerminal />,
+  },
 ];
 
 function ConnectBody() {
-    return (<RadioGroup variant="cards" defaultValue="interactive" aria-label="Connection type">
-      {CONNECT_MODES.map((mode) => (<RadioCard key={mode.value} value={mode.value} title={mode.title} description={mode.description} icon={mode.icon}/>))}
-    </RadioGroup>);
+  return (
+    <RadioGroup variant="cards" defaultValue="interactive" aria-label="Connection type">
+      {CONNECT_MODES.map((mode) => (
+        <RadioCard
+          key={mode.value}
+          value={mode.value}
+          title={mode.title}
+          description={mode.description}
+          icon={mode.icon}
+        />
+      ))}
+    </RadioGroup>
+  );
 }
 
 const EVENTS = Array.from({ length: 40 }, (_, index) => {
-    const minute = String(59 - index).padStart(2, "0");
-    const kinds = ["Service Control Manager · 7036", "Microsoft-Windows-Kernel-Power · 41", "Glass UX Agent · 1002", "Group Policy · 1502"];
-    return { time: `10:${minute}:12`, source: kinds[index % kinds.length] ?? "" };
+  const minute = String(59 - index).padStart(2, "0");
+  const kinds = [
+    "Service Control Manager · 7036",
+    "Microsoft-Windows-Kernel-Power · 41",
+    "Glass UX Agent · 1002",
+    "Group Policy · 1502",
+  ];
+  return { time: `10:${minute}:12`, source: kinds[index % kinds.length] ?? "" };
 });
 
 function EventLog() {
-    return (<div className="flex flex-col">
-      {EVENTS.map((event) => (<div key={event.time} className="flex min-w-0 gap-4 py-1.5 type-body">
+  return (
+    <div className="flex flex-col">
+      {EVENTS.map((event) => (
+        <div key={event.time} className="flex min-w-0 gap-4 py-1.5 type-body">
           <time className="type-mono text-fg-muted">{event.time}</time>
           <span className="min-w-0 truncate">{event.source}</span>
-        </div>))}
-    </div>);
+        </div>
+      ))}
+    </div>
+  );
 }
 
 const ORGANISATION_OPTIONS = [
-    { value: "northstar", label: "Northstar Studio" },
-    { value: "cedarvale", label: "Cedar Vale Collective" },
-    { value: "fa", label: "Orbit Workspace" },
+  { value: "northstar", label: "Northstar Studio" },
+  { value: "cedarvale", label: "Cedar Vale Collective" },
+  { value: "fa", label: "Orbit Workspace" },
 ];
-
 const AGENT_SECTIONS: SettingsSection[] = [
-    {
-        value: "general",
-        label: "General",
-        icon: <IconSettings />,
-        content: (<FormStack>
+  {
+    value: "general",
+    label: "General",
+    icon: <IconSettings />,
+    content: (
+      <FormStack>
         <FormGroup label="Identity">
           <Field label="Device name">
-            <Input defaultValue="LMN-7C71"/>
+            <Input defaultValue="LMN-7C71" />
           </Field>
           <Field label="Description" optional>
-            <Input defaultValue="HP EliteOne 1000 G2 27-in 4K UHD AiO"/>
+            <Input defaultValue="HP EliteOne 1000 G2 27-in 4K UHD AiO" />
           </Field>
           <Field label="Agent group" nativeLabel={false}>
-            <Select defaultValue="workstations" options={[
+            <Select
+              defaultValue="workstations"
+              options={[
                 { value: "workstations", label: "Workstations" },
                 { value: "servers", label: "Servers" },
                 { value: "kiosks", label: "Kiosks" },
-            ]}/>
+              ]}
+            />
           </Field>
         </FormGroup>
         <FormGroup label="Agent">
-          <SettingRow label="Keep the agent up to date" description="Installs agent releases at the next check-in." control={<Switch defaultChecked/>}/>
-          <SettingRow label="Verbose logging" description="Collects extra logs for 24 h; slows the agent slightly." control={<Switch />}/>
-          <SettingRow label="Release ring" value="Production · 6.8.0" control={<Button size="sm">Change</Button>}/>
+          <SettingRow
+            label="Keep the agent up to date"
+            description="Installs agent releases at the next check-in."
+            control={<Switch defaultChecked />}
+          />
+          <SettingRow
+            label="Verbose logging"
+            description="Collects extra logs for 24 h; slows the agent slightly."
+            control={<Switch />}
+          />
+          <SettingRow
+            label="Release ring"
+            value="Production · 6.8.0"
+            control={<Button size="sm">Change</Button>}
+          />
         </FormGroup>
         <Field label="Notes" counter={{ value: 70, max: 500 }}>
-            <Textarea defaultValue="Primary office workstation. Used by the IT team for remote support and maintenance."/>
-          </Field>
-      </FormStack>),
-    },
-    {
-        value: "organisation",
-        label: "Org & location",
-        icon: <IconOrganisation />,
-        content: (<FormStack>
+          <Textarea defaultValue="Primary office workstation. Used by the IT team for remote support and maintenance." />
+        </Field>
+      </FormStack>
+    ),
+  },
+  {
+    value: "organisation",
+    label: "Org & location",
+    icon: <IconOrganisation />,
+    content: (
+      <FormStack>
         <Field label="Organisation" nativeLabel={false}>
-          <Select defaultValue="northstar" options={ORGANISATION_OPTIONS}/>
+          <Select defaultValue="northstar" options={ORGANISATION_OPTIONS} />
         </Field>
         <Field label="Site">
-          <Input defaultValue="Mossbridge office"/>
+          <Input defaultValue="Mossbridge office" />
         </Field>
-      </FormStack>),
-    },
-    {
-        value: "updates",
-        label: "Updates",
-        icon: <IconRefresh />,
-        content: (<FormStack>
-          <SettingRow label="Agent" value="6.8.0" description="Checked 4 min ago" control={<Button size="sm">Check now</Button>}/>
-          <SettingRow label="Install outside business hours" description="Waits for 6 pm–6 am local time." control={<Switch defaultChecked/>}/>
-      </FormStack>),
-    },
-    { value: "overrides", label: "Overrides", icon: <IconEdit />, content: <p className="text-fg-muted">No policy overrides on LMN-7C71</p> },
-    { value: "audit", label: "Audit history", icon: <IconHistory />, content: <EventLog /> },
-    { value: "usage", label: "Data usage", icon: <IconActivity />, content: <p className="text-fg-muted">1.2 GB this month · 38 MB today</p> },
-    { value: "lifecycle", label: "Lifecycle", icon: <IconPower />, content: <p className="text-fg-muted">Enrolled 14 Mar 2024 · warranty to 13 Mar 2027</p> },
+      </FormStack>
+    ),
+  },
+  {
+    value: "updates",
+    label: "Updates",
+    icon: <IconRefresh />,
+    content: (
+      <FormStack>
+        <SettingRow
+          label="Agent"
+          value="6.8.0"
+          description="Checked 4 min ago"
+          control={<Button size="sm">Check now</Button>}
+        />
+        <SettingRow
+          label="Install outside business hours"
+          description="Waits for 6 pm–6 am local time."
+          control={<Switch defaultChecked />}
+        />
+      </FormStack>
+    ),
+  },
+  {
+    value: "overrides",
+    label: "Overrides",
+    icon: <IconEdit />,
+    content: <p className="text-fg-muted">No policy overrides on LMN-7C71</p>,
+  },
+  { value: "audit", label: "Audit history", icon: <IconHistory />, content: <EventLog /> },
+  {
+    value: "usage",
+    label: "Data usage",
+    icon: <IconActivity />,
+    content: <p className="text-fg-muted">1.2 GB this month · 38 MB today</p>,
+  },
+  {
+    value: "lifecycle",
+    label: "Lifecycle",
+    icon: <IconPower />,
+    content: <p className="text-fg-muted">Enrolled 14 Mar 2024 · warranty to 13 Mar 2027</p>,
+  },
 ];
 
 /* ── Live demos ──────────────────────────────────────────────────────────── */
-function SaveFooter({ label = "Save changes" }: {
-    label?: string;
-}) {
-    return (<Dialog.Footer>
-      <Dialog.Close render={<Button>Cancel</Button>}/>
-      <ActionButton variant="primary" onAction={() => wait(900)} pendingLabel="Saving…" successLabel="Saved">
+function SaveFooter({ label = "Save changes" }: { label?: string }) {
+  return (
+    <Dialog.Footer>
+      <Dialog.Close render={<Button>Cancel</Button>} />
+      <ActionButton
+        variant="primary"
+        onAction={() => wait(900)}
+        pendingLabel="Saving…"
+        successLabel="Saved"
+      >
         {label}
       </ActionButton>
-    </Dialog.Footer>);
+    </Dialog.Footer>
+  );
 }
 
 const SIZE_DEMOS: Array<{
-    size: DialogSize;
-    label: string;
+  size: DialogSize;
+  label: string;
 }> = [
-    { size: "sm", label: "sm 400" },
-    { size: "md", label: "md 560" },
-    { size: "lg", label: "lg 760" },
-    { size: "xl", label: "xl 1040" },
-    { size: "full", label: "full" },
+  { size: "sm", label: "sm 400" },
+  { size: "md", label: "md 560" },
+  { size: "lg", label: "lg 760" },
+  { size: "xl", label: "xl 1040" },
+  { size: "full", label: "full" },
 ];
 
-function SizeDemo({ size, label }: {
-    size: DialogSize;
-    label: string;
-}) {
-    return (<Dialog.Root>
-      <Dialog.Trigger render={<Button>{label}</Button>}/>
+function SizeDemo({ size, label }: { size: DialogSize; label: string }) {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger render={<Button>{label}</Button>} />
       <Dialog.Popup size={size}>
-        {size === "sm" ? (<>
-            <Dialog.Header icon={<IconEdit />} title="Rename endpoint" subtitle="NST-C106"/>
+        {size === "sm" ? (
+          <>
+            <Dialog.Header icon={<IconEdit />} title="Rename endpoint" subtitle="NST-C106" />
             <Dialog.Body>
               <Field label="Name">
-                <Input defaultValue="NST-C106" autoFocus/>
+                <Input defaultValue="NST-C106" autoFocus />
               </Field>
             </Dialog.Body>
-            <SaveFooter label="Rename"/>
-          </>) : size === "md" ? (<>
-            <Dialog.Header icon={<IconEndpoint />} title="Edit device" subtitle="NST-C106 · Northstar Studio"/>
+            <SaveFooter label="Rename" />
+          </>
+        ) : size === "md" ? (
+          <>
+            <Dialog.Header
+              icon={<IconEndpoint />}
+              title="Edit device"
+              subtitle="NST-C106 · Northstar Studio"
+            />
             <Dialog.Body>
               <EditDeviceFields />
             </Dialog.Body>
             <SaveFooter />
-          </>) : size === "lg" ? (<>
-            <Dialog.Header icon={<IconRemoteControl />} tone="accent" title="Connect to NST-C106" subtitle="AzureAD\MiraRowan · signed in"/>
+          </>
+        ) : size === "lg" ? (
+          <>
+            <Dialog.Header
+              icon={<IconRemoteControl />}
+              tone="accent"
+              title="Connect to NST-C106"
+              subtitle="AzureAD\MiraRowan · signed in"
+            />
             <Dialog.Body>
               <ConnectBody />
             </Dialog.Body>
             <Dialog.Footer>
-              <Dialog.Close render={<Button>Cancel</Button>}/>
-              <Dialog.Close render={<Button variant="primary">Connect</Button>}/>
+              <Dialog.Close render={<Button>Cancel</Button>} />
+              <Dialog.Close render={<Button variant="primary">Connect</Button>} />
             </Dialog.Footer>
-          </>) : size === "xl" ? (<>
-            <Dialog.Header icon={<IconSettings />} title="Agent settings" subtitle="LMN-7C71"/>
-            <SettingsSections sections={AGENT_SECTIONS} label="Agent settings sections"/>
+          </>
+        ) : size === "xl" ? (
+          <>
+            <Dialog.Header icon={<IconSettings />} title="Agent settings" subtitle="LMN-7C71" />
+            <SettingsSections sections={AGENT_SECTIONS} label="Agent settings sections" />
             <SaveFooter />
-          </>) : (<>
-            <Dialog.Header icon={<IconFileText />} title="Event log" subtitle="NST-C106 · System · 40 events"/>
+          </>
+        ) : (
+          <>
+            <Dialog.Header
+              icon={<IconFileText />}
+              title="Event log"
+              subtitle="NST-C106 · System · 40 events"
+            />
             <Dialog.Body>
               <EventLog />
             </Dialog.Body>
-          </>)}
+          </>
+        )}
       </Dialog.Popup>
-    </Dialog.Root>);
+    </Dialog.Root>
+  );
 }
 
 function NestedDemo() {
-    return (<Dialog.Root>
-      <Dialog.Trigger render={<Button>Nested</Button>}/>
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger render={<Button>Nested</Button>} />
       <Dialog.Popup size="md">
-        <Dialog.Header icon={<IconEndpoint />} title="Edit device" subtitle="NST-C106"/>
+        <Dialog.Header icon={<IconEndpoint />} title="Edit device" subtitle="NST-C106" />
         <Dialog.Body>
           <EditDeviceFields />
         </Dialog.Body>
-        <Dialog.Footer start={<Dialog.Root>
-              <Dialog.Trigger render={<Button variant="ghost">Change organisation…</Button>}/>
+        <Dialog.Footer
+          start={
+            <Dialog.Root>
+              <Dialog.Trigger render={<Button variant="ghost">Change organisation…</Button>} />
               <Dialog.Popup size="sm">
-                <Dialog.Header icon={<IconOrganisation />} title="Change organisation" subtitle="NST-C106"/>
+                <Dialog.Header
+                  icon={<IconOrganisation />}
+                  title="Change organisation"
+                  subtitle="NST-C106"
+                />
                 <Dialog.Body>
                   <Field label="Organisation" nativeLabel={false}>
-                    <Select defaultValue="northstar" options={ORGANISATION_OPTIONS}/>
+                    <Select defaultValue="northstar" options={ORGANISATION_OPTIONS} />
                   </Field>
                 </Dialog.Body>
-                <SaveFooter label="Move"/>
+                <SaveFooter label="Move" />
               </Dialog.Popup>
-            </Dialog.Root>}>
-          <Dialog.Close render={<Button>Cancel</Button>}/>
-          <Dialog.Close render={<Button variant="primary">Save changes</Button>}/>
+            </Dialog.Root>
+          }
+        >
+          <Dialog.Close render={<Button>Cancel</Button>} />
+          <Dialog.Close render={<Button variant="primary">Save changes</Button>} />
         </Dialog.Footer>
       </Dialog.Popup>
-    </Dialog.Root>);
+    </Dialog.Root>
+  );
 }
 
 function GuardDemo() {
-    const [open, setOpen] = useState(false);
-    const [dirty, setDirty] = useState(false);
-    const [version, setVersion] = useState(0);
-    const guard = useDialogGuard({
-        open,
-        onOpenChange: (next) => {
-            setOpen(next);
-            if (!next)
-                setDirty(false);
-        },
-        dirty,
-        onDiscard: () => setVersion((value) => value + 1),
-        title: "Discard changes to NST-C106?",
-    });
-    return (<Dialog.Root {...guard.rootProps}>
-      <Dialog.Trigger render={<Button>Unsaved changes</Button>}/>
+  const [open, setOpen] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [version, setVersion] = useState(0);
+  const guard = useDialogGuard({
+    open,
+    onOpenChange: (next) => {
+      setOpen(next);
+      if (!next) setDirty(false);
+    },
+    dirty,
+    onDiscard: () => setVersion((value) => value + 1),
+    title: "Discard changes to NST-C106?",
+  });
+  return (
+    <Dialog.Root {...guard.rootProps}>
+      <Dialog.Trigger render={<Button>Unsaved changes</Button>} />
       <Dialog.Popup size="md">
-        <Dialog.Header icon={<IconEndpoint />} title="Edit device" subtitle="NST-C106"/>
+        <Dialog.Header icon={<IconEndpoint />} title="Edit device" subtitle="NST-C106" />
         <Dialog.Body>
-          <EditDeviceFields key={version} onChange={() => setDirty(true)}/>
+          <EditDeviceFields key={version} onChange={() => setDirty(true)} />
         </Dialog.Body>
         <Dialog.Footer>
-          <Dialog.Close render={<Button>Cancel</Button>}/>
-          <ActionButton variant="primary" disabled={!dirty} onAction={async () => {
-            await wait(700);
-            setDirty(false);
-        }} pendingLabel="Saving…" successLabel="Saved">
+          <Dialog.Close render={<Button>Cancel</Button>} />
+          <ActionButton
+            variant="primary"
+            disabled={!dirty}
+            onAction={async () => {
+              await wait(700);
+              setDirty(false);
+            }}
+            pendingLabel="Saving…"
+            successLabel="Saved"
+          >
             Save changes
           </ActionButton>
         </Dialog.Footer>
         {guard.confirm}
       </Dialog.Popup>
-    </Dialog.Root>);
+    </Dialog.Root>
+  );
 }
 
 function SheetDemo() {
-    return (<Dialog.Root sheet>
-      <Dialog.Trigger render={<Button>As a sheet</Button>}/>
+  return (
+    <Dialog.Root sheet>
+      <Dialog.Trigger render={<Button>As a sheet</Button>} />
       <Dialog.Popup>
-        <Dialog.Header icon={<IconRemoteControl />} tone="accent" title="Connect to NST-C106" subtitle="AzureAD\MiraRowan · signed in"/>
+        <Dialog.Header
+          icon={<IconRemoteControl />}
+          tone="accent"
+          title="Connect to NST-C106"
+          subtitle="AzureAD\MiraRowan · signed in"
+        />
         <Dialog.Body>
           <ConnectBody />
         </Dialog.Body>
         <Dialog.Footer>
-          <Dialog.Close render={<Button>Cancel</Button>}/>
-          <Dialog.Close render={<Button variant="primary">Connect</Button>}/>
+          <Dialog.Close render={<Button>Cancel</Button>} />
+          <Dialog.Close render={<Button variant="primary">Connect</Button>} />
         </Dialog.Footer>
       </Dialog.Popup>
-    </Dialog.Root>);
+    </Dialog.Root>
+  );
 }
 
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function DialogSection() {
-    return (<SectionPage>
-      <Specimen title="Live" description="Esc, the close button and the backdrop close a dialog; focus returns to the button that opened it. Only the body scrolls; header and footer stay put.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="Live"
+        description="Esc, the close button and the backdrop close a dialog; focus returns to the button that opened it. Only the body scrolls; header and footer stay put."
+      >
         <Example label="Sizes">
-          {SIZE_DEMOS.map((demo) => (<SizeDemo key={demo.size} {...demo}/>))}
+          {SIZE_DEMOS.map((demo) => (
+            <SizeDemo key={demo.size} {...demo} />
+          ))}
         </Example>
         <Example label="Behaviour">
           <NestedDemo />
           <GuardDemo />
           <SheetDemo />
-          <SettingsDialog trigger={<Button icon={<IconSettings />}>Agent settings</Button>} icon={<IconSettings />} title="Agent settings" subtitle="LMN-7C71" sections={AGENT_SECTIONS} footer={<>
-                <Dialog.Close render={<Button>Cancel</Button>}/>
-                <ActionButton variant="primary" onAction={() => wait(900)} pendingLabel="Saving…" successLabel="Saved">
+          <SettingsDialog
+            trigger={<Button icon={<IconSettings />}>Agent settings</Button>}
+            icon={<IconSettings />}
+            title="Agent settings"
+            subtitle="LMN-7C71"
+            sections={AGENT_SECTIONS}
+            footer={
+              <>
+                <Dialog.Close render={<Button>Cancel</Button>} />
+                <ActionButton
+                  variant="primary"
+                  onAction={() => wait(900)}
+                  pendingLabel="Saving…"
+                  successLabel="Saved"
+                >
                   Save changes
                 </ActionButton>
-              </>}/>
+              </>
+            }
+          />
         </Example>
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

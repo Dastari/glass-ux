@@ -14,7 +14,11 @@ chosen segment.
   size="sm"
   value={module}
   onValueChange={switchModule}
-  options={[{ value: "rmm", label: "RMM" }, { value: "psa", label: "PSA" }, { value: "chat", label: "CHAT" }]}
+  options={[
+    { value: "rmm", label: "RMM" },
+    { value: "psa", label: "PSA" },
+    { value: "chat", label: "CHAT" },
+  ]}
 />
 ```
 
@@ -22,11 +26,11 @@ chosen segment.
 
 The control measures the box it is given and shows the widest form that fits:
 
-| Form (`data-form`) | When | What it shows |
-| --- | --- | --- |
-| `full` | every label fits | every segment with its icon and label |
-| `icons` | the labels do not fit, every option has an icon and the icons fit | the icons, each named by its label (name and tooltip) |
-| `menu` | nothing else fits | one button drawn as the chosen pill: its icon, label and a chevron ("RMM ▾"). Its menu lists the options with a check on the chosen one |
+| Form (`data-form`) | When                                                              | What it shows                                                                                                                           |
+| ------------------ | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `full`             | every label fits                                                  | every segment with its icon and label                                                                                                   |
+| `icons`            | the labels do not fit, every option has an icon and the icons fit | the icons, each named by its label (name and tooltip)                                                                                   |
+| `menu`             | nothing else fits                                                 | one button drawn as the chosen pill: its icon, label and a chevron ("RMM ▾"). Its menu lists the options with a check on the chosen one |
 
 - **`collapse`** decides what happens when the options do not fit:
   - `"auto"` (default) is the ladder above;

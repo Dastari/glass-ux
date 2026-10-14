@@ -1,33 +1,22 @@
 import { EntityPreviewCard } from "glass-ux/ai";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { demoResolver, E } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
 export default function AiContextLinksSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-
-
-        <Specimen title="Preview card" description="Identity, live state, three or four facts, two promoted actions from the entity's own action set, and Open in window." layout="row">
-          <EntityPreviewCard entity={E.c106} data={demoResolver.preview(E.c106)}/>
-          <EntityPreviewCard entity={E.t7102} data={demoResolver.preview(E.t7102)}/>
-          <EntityPreviewCard entity={E.northstar} data={demoResolver.preview(E.northstar)}/>
+        <Specimen
+          title="Preview card"
+          description="Identity, live state, three or four facts, two promoted actions from the entity's own action set, and Open in window."
+          layout="row"
+        >
+          <EntityPreviewCard entity={E.c106} data={demoResolver.preview(E.c106)} />
+          <EntityPreviewCard entity={E.t7102} data={demoResolver.preview(E.t7102)} />
+          <EntityPreviewCard entity={E.northstar} data={demoResolver.preview(E.northstar)} />
         </Specimen>
-
-
-
-
-
-
-
-
-
-
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

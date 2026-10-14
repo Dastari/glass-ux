@@ -1,72 +1,79 @@
 import { useState } from "react";
-
 import { z } from "zod";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { addressSchema, emptyAddress } from "glass-ux/address-field";
-
 import { Form, FormActions, FormGroup, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
-
 import { demoGeocoder } from "glass-ux/gallery/fixtures/geocoder";
-
 import { HOME_BIAS } from "glass-ux/gallery/sections/inputs.kit";
-
 import { wait } from "glass-ux/gallery/sections/forms.fixtures";
 
 const AU = { code: "AU", name: "Australia" };
-
 const schema = z.object({ address: addressSchema({ required: true }), billing: addressSchema() });
 
 function BoundDemo() {
-    const [saved, setSaved] = useState({ address: { ...emptyAddress(AU) }, billing: { ...emptyAddress(AU) } });
-    const form = useAppForm({
-        ...formBehaviour,
-        defaultValues: saved,
-        validators: { onDynamic: schema },
-        onSubmit: async ({ value }) => {
-            await wait(700);
-            setSaved(value);
-        },
-    });
-    return (<Form form={form} aria-label="Organisation address" className="w-full" data-testid="address-form">
+  const [saved, setSaved] = useState({
+    address: { ...emptyAddress(AU) },
+    billing: { ...emptyAddress(AU) },
+  });
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: saved,
+    validators: { onDynamic: schema },
+    onSubmit: async ({ value }) => {
+      await wait(700);
+      setSaved(value);
+    },
+  });
+  return (
+    <Form
+      form={form}
+      aria-label="Organisation address"
+      className="w-full"
+      data-testid="address-form"
+    >
       <FormStack>
         <FormGroup label="Address">
-          <form.AppField name="address">{(field) => <field.AddressField geocoder={demoGeocoder} label="Street address" bias={HOME_BIAS} countries={["AU", "NZ"]}/>}</form.AppField>
+          <form.AppField name="address">
+            {(field) => (
+              <field.AddressField
+                geocoder={demoGeocoder}
+                label="Street address"
+                bias={HOME_BIAS}
+                countries={["AU", "NZ"]}
+              />
+            )}
+          </form.AppField>
         </FormGroup>
         <FormGroup label="Billing address">
-          <form.AppField name="billing">{(field) => <field.AddressField geocoder={demoGeocoder} label="Billing address" optional bias={HOME_BIAS}/>}</form.AppField>
+          <form.AppField name="billing">
+            {(field) => (
+              <field.AddressField
+                geocoder={demoGeocoder}
+                label="Billing address"
+                optional
+                bias={HOME_BIAS}
+              />
+            )}
+          </form.AppField>
         </FormGroup>
         <FormActions>
           <form.CancelButton />
           <form.SubmitButton>Save addresses</form.SubmitButton>
         </FormActions>
       </FormStack>
-    </Form>);
+    </Form>
+  );
 }
 
 export default function AddressFieldSection() {
-    return (<SectionPage>
-
-
-
-
-      <Specimen title="In a form" description="Each part is its own form field, so the schema's messages land on the row to fix and Save focuses the first one.">
+  return (
+    <SectionPage>
+      <Specimen
+        title="In a form"
+        description="Each part is its own form field, so the schema's messages land on the row to fix and Save focuses the first one."
+      >
         <BoundDemo />
       </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

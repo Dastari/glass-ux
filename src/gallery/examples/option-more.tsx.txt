@@ -1,11 +1,16 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { OptionMore } from "glass-ux/combobox";
 
 export default function OptionMoreExample() {
-    return (<SectionPage>
-      <Specimen title="OptionMore" description="The count prompts people to refine a search that has more matches than the current list." layout="stack">
-        <OptionMore more={128}/>
+  return (
+    <SectionPage>
+      <Specimen
+        title="OptionMore"
+        description="The count prompts people to refine a search that has more matches than the current list."
+        layout="stack"
+      >
+        <OptionMore more={128} />
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

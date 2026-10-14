@@ -1,31 +1,26 @@
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { Sparkline } from "glass-ux/sparkline";
-
 import { series } from "glass-ux/gallery/sections/nav.fixtures";
 
 export default function MetricSection() {
-    return (<SectionPage>
-
-
-
-
-
-
-      <Specimen title="Sparkline" description="Usable alone: 2px line in the data colour, a wash under it and a ringed dot on the latest sample. Status tones only when the series is in that state.">
-        {(["data", "success", "warning", "danger", "neutral"] as const).map((tone, index) => (<Example key={tone} label={tone}>
+  return (
+    <SectionPage>
+      <Specimen
+        title="Sparkline"
+        description="Usable alone: 2px line in the data colour, a wash under it and a ringed dot on the latest sample. Status tones only when the series is in that state."
+      >
+        {(["data", "success", "warning", "danger", "neutral"] as const).map((tone, index) => (
+          <Example key={tone} label={tone}>
             <div className="h-10 w-40">
-              <Sparkline data={series(24, index * 1.7, 50, 30)} tone={tone} label={`${tone} series`}/>
+              <Sparkline
+                data={series(24, index * 1.7, 50, 30)}
+                tone={tone}
+                label={`${tone} series`}
+              />
             </div>
-          </Example>))}
+          </Example>
+        ))}
       </Specimen>
-
-
-
-
-
-
-
-
-    </SectionPage>);
+    </SectionPage>
+  );
 }

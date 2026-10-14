@@ -1,23 +1,27 @@
 import { ConversationHandlersProvider } from "glass-ux/ai";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { ASKS } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { toast } from "glass-ux/toast";
-
 import { QuickRepliesAsk } from "glass-ux/ai";
 
 export default function ConversationHandlersProviderExample() {
-    return (<SectionPage>
-      <Specimen title="Wire assistant decisions to the host" description="Choose an answer. The host callback displays the submitted answer; no backend is called." layout="stack">
-        <ConversationHandlersProvider handlers={{
+  return (
+    <SectionPage>
+      <Specimen
+        title="Wire assistant decisions to the host"
+        description="Choose an answer. The host callback displays the submitted answer; no backend is called."
+        layout="stack"
+      >
+        <ConversationHandlersProvider
+          handlers={{
             answer: async (_id, answer) => {
-                toast.info(`Demo answer: ${JSON.stringify(answer)}`);
+              toast.info(`Demo answer: ${JSON.stringify(answer)}`);
             },
-        }}>
-          <QuickRepliesAsk ask={ASKS.quick}/>
+          }}
+        >
+          <QuickRepliesAsk ask={ASKS.quick} />
         </ConversationHandlersProvider>
       </Specimen>
-    </SectionPage>);
+    </SectionPage>
+  );
 }

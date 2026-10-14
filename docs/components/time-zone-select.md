@@ -2,7 +2,6 @@
 
 `glass-ux/time-zone-select` · [Live component catalogue](https://dastari.github.io/glass-ux/)
 
-
 An IANA time zone chosen by typing a city or region. Rows show the abbreviation and offset now
 ("AEDT · UTC+11:00"), so daylight saving is visible; suggested zones (this browser's and UTC by
 default) are listed first; the hint shows the time there now. The list comes from the platform

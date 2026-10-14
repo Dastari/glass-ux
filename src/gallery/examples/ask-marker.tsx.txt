@@ -1,35 +1,25 @@
 import { AskCard, AskMarker } from "glass-ux/ai";
-
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-
 import { ASKS } from "glass-ux/gallery/sections/ai.fixtures";
-
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
 export default function AiAsksSection() {
-    return (<AiGallery>
+  return (
+    <AiGallery>
       <SectionPage>
-
-
-        <Specimen title="Records" description="Every ask folds into one line once resolved: the decision in words, who, when. The fold animates from the ask's height. While it waits in the dock, its place shows the same line with Review." layout="stack" wide>
-          <AskCard ask={ASKS.singleDone}/>
-          <AskCard ask={ASKS.multiDone}/>
-          <AskCard ask={ASKS.formDone}/>
-          <AskCard ask={ASKS.expired}/>
-          <AskMarker ask={ASKS.entity}/>
+        <Specimen
+          title="Records"
+          description="Every ask folds into one line once resolved: the decision in words, who, when. The fold animates from the ask's height. While it waits in the dock, its place shows the same line with Review."
+          layout="stack"
+          wide
+        >
+          <AskCard ask={ASKS.singleDone} />
+          <AskCard ask={ASKS.multiDone} />
+          <AskCard ask={ASKS.formDone} />
+          <AskCard ask={ASKS.expired} />
+          <AskMarker ask={ASKS.entity} />
         </Specimen>
-
-
-
-
-
-
-
-
-
-
-
-
       </SectionPage>
-    </AiGallery>);
+    </AiGallery>
+  );
 }

@@ -11,6 +11,7 @@ export default defineConfig({
     "org-switcher-remote.spec.ts",
     "entity-settings-save.spec.ts",
     "map-attribution.spec.ts",
+    "slider-production.spec.ts",
   ],
   fullyParallel: true,
   workers: 2,

@@ -83,6 +83,9 @@ export function Slider({
   ...aria
 }: SliderProps) {
   const [inner, setInner] = useState(() => asArray(defaultValue, min))
+  // Mount measured thumbs after the public Control ref attaches. Base UI's child
+  // layout effect must see that control to observe an initially hidden panel's reveal.
+  const [control, setControl] = useState<HTMLDivElement | null>(null)
   const values = value === undefined ? inner : asArray(value, min)
   const show = format ?? ((current: number) => (unit ? `${current.toLocaleString("en-AU")} ${unit}` : current.toLocaleString("en-AU")))
   const span = max - min || 1
@@ -118,7 +121,7 @@ export function Slider({
       data-bubble={bubble === "auto" ? undefined : bubble}
       data-marks={labelled ? "labelled" : markList.length ? "" : undefined}
     >
-      <BaseSlider.Control className="fa-slider-control">
+      <BaseSlider.Control ref={setControl} className="fa-slider-control">
         <BaseSlider.Track className="fa-slider-track">
           <BaseSlider.Indicator className="fa-slider-indicator" />
           {markList.map((mark) => (
@@ -138,7 +141,7 @@ export function Slider({
               style={{ "--_at": (mark.value - min) / span } as CSSProperties}
             />
           ))}
-          {values.map((current, index) => (
+          {control && values.map((current, index) => (
             <BaseSlider.Thumb
               key={index}
               index={index}

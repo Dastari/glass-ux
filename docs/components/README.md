@@ -45,6 +45,7 @@ const form = useAppForm({ ...formBehaviour, defaultValues, validators: { onDynam
 | [Time zone](time-zone-select.md)          | `TimeZoneField`                              | IANA name, `string \| null`           | `timeZoneSchema`                          |
 | [Copy button](copy-button.md)             | —                                            | —                                     | —                                         |
 | [Swatch picker](swatch-picker.md)         | — (bare control in a `SettingRow`)           | option value                          | —                                         |
+| [Slider](slider.md)                      | — (bare control inside a `Field`)           | number or number array                | —                                         |
 
 Building your own schema helper: `textRule(check, options)` and `numberRule(options)` in
 `glass-ux/form` treat "empty" and "required" the same way every helper above does.

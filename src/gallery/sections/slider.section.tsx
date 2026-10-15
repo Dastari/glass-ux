@@ -2,11 +2,27 @@ import { useState } from "react"
 import { ContainerLab, Matrix, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { Field, type ChoiceSize, type ChoiceTone } from "../../ui/field/index.js"
 import { Slider } from "../../ui/slider/index.js"
+import { Tabs } from "../../ui/tabs/index.js"
 
 const SIZES: ChoiceSize[] = ["sm", "md", "lg"]
 const TONES: ChoiceTone[] = ["accent", "success", "warning", "danger"]
 
 const hour = (value: number) => `${value % 12 === 0 ? 12 : value % 12}:00 ${value < 12 || value === 24 ? "am" : "pm"}`
+
+function RetainedSlider() {
+  const [value, setValue] = useState(40)
+  return (
+    <Tabs.Root defaultValue="summary">
+      <Tabs.List aria-label="Retained slider views" items={[{ value: "summary", label: "Summary" }, { value: "controls", label: "Controls" }]} />
+      <Tabs.Panel value="summary"><p>The controls stay mounted while this summary is shown. Open Controls to adjust the retained volume.</p></Tabs.Panel>
+      <Tabs.Panel value="controls" keepMounted>
+        <Field label="Retained volume" nativeLabel={false} aside={`${value}%`}>
+          <Slider value={value} onValueChange={(next) => setValue(next as number)} aria-label="Retained volume" unit="%" />
+        </Field>
+      </Tabs.Panel>
+    </Tabs.Root>
+  )
+}
 
 function BandwidthField() {
   const [value, setValue] = useState(40)
@@ -98,6 +114,10 @@ export default function SliderSection() {
         <div className="w-72 pt-8">
           <Slider size="lg" defaultValue={[25, 75]} thumbLabels={["From", "To"]} />
         </div>
+      </Specimen>
+
+      <Specimen title="Initially hidden controls" description="Retained tabs and dialogs can mount a slider before it has a measurable size. It measures when revealed, follows container resizing and keeps its value when hidden again." layout="bare">
+        <RetainedSlider />
       </Specimen>
 
       <ContainerLab>

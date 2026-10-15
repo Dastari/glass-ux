@@ -130,6 +130,7 @@
   .gallery-api-table {
     border-collapse: collapse;
     width: 100%;
+    min-width: 48rem;
     font-size: var(--type-body-size);
   }
   .gallery-api-table th,
@@ -142,6 +143,12 @@
   .gallery-api-table code {
     overflow-wrap: anywhere;
     font-family: var(--font-mono);
+  }
+  .gallery-api-table th[scope="row"] {
+    white-space: nowrap;
+  }
+  .gallery-api-table th[scope="row"] code {
+    overflow-wrap: normal;
   }
   .gallery-api-table th {
     font-weight: var(--weight-medium);

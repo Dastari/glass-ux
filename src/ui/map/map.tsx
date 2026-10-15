@@ -40,6 +40,8 @@ const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : us
 
 /** The whole world, for a map with neither a home region nor points. */
 const WORLD: LngLatBox = [-170, -58, 178, 75]
+/** An omitted optional collection must retain its identity across internal view updates. */
+const NO_REGIONS: readonly MapRegion[] = []
 /** A single point still frames an area this many degrees across. */
 const MIN_POINT_SPAN = 0.25
 /** Fitting never zooms closer than this (a lone point stays in context). */
@@ -87,7 +89,7 @@ export interface GeoMapProps<T> {
   config: MapConfig
   /** The home region: undefined while it loads, null when there is none. */
   home: MapRegion | null | undefined
-  /** Other regions to outline faintly (the regions that hold points). */
+  /** Other regions to outline faintly (the regions that hold points). Defaults to an empty list. */
   regions?: readonly MapRegion[]
   /** Geographical or chart points. */
   points: readonly MapPoint<T>[]
@@ -355,7 +357,7 @@ export function GeoMap<T>({
   label,
   config,
   home,
-  regions = [],
+  regions = NO_REGIONS,
   points,
   loading = false,
   frame: frameProp = "home",

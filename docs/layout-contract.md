@@ -84,3 +84,12 @@ the article, pinned in the content viewport while the article flows normally.
 Mark the surrounding scroll viewport with `data-scroll-container`. The gallery's content
 viewport reaches the screen's right and bottom edges; only the sidebar retains its outer
 gutter. Do not add an independently scrolling, fixed-height article inside that viewport.
+
+API property names remain on one line so identifiers can be read and copied intact.
+On narrow screens, the API table scrolls inside its own keyboard-accessible region;
+it must not widen the page. Types and descriptions may wrap within their columns.
+
+The documentation directory search covers guides, Foundations, components and utility
+links. It matches titles, identifiers and available summaries or group names without
+case sensitivity, and ignores surrounding spaces. Hide groups with no matches, explain
+an empty result, and restore the directory when the search is cleared or a page is opened.

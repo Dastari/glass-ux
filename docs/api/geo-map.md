@@ -24,7 +24,7 @@ Points with a status anywhere in the world, clustered with a status ring, over a
 | onViewChange | `((view: "map" \| "list") => void) \| undefined` | See type | no | — | Called when view change occurs. The callback type specifies its arguments. |
 | points | `readonly MapPoint<T>[]` | See type | yes | — | Geographical or chart points. |
 | pulses | `Readonly<Record<string, number>> \| undefined` | See type | no | — | Per point, a counter that changes when its status changes: the marker pulses once. |
-| regions | `readonly MapRegion[] \| undefined` | See type | no | [] | Other regions to outline faintly (the regions that hold points). |
+| regions | `readonly MapRegion[] \| undefined` | See type | no | NO_REGIONS | Other regions to outline faintly (the regions that hold points). Defaults to an empty list. |
 | renderClusterPopup | `((cluster: MapCluster<T>, context: MapClusterPopupContext) => ReactNode) \| undefined` | See type | no | — | Renders details for an aggregate map cluster. |
 | renderPopup | `(point: MapPoint<T>, context: MapPopupContext) => ReactNode` | See type | yes | — | Renders details for an individual map point. |
 | selectedId | `string \| null \| undefined` | See type | no | null | Stable identifier of the selected item. |

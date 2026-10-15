@@ -5,7 +5,7 @@ import { defineConfig, devices } from "@playwright/test";
 const published = process.env.GLASS_UX_TEST_URL;
 export default defineConfig({
   testDir: "./e2e",
-  testMatch: "production.spec.ts",
+  testMatch: ["production.spec.ts", "documentation-navigation.spec.ts"],
   fullyParallel: true,
   workers: 2,
   timeout: 60000,

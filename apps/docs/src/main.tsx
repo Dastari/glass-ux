@@ -124,9 +124,30 @@ function Layout() {
   const [query, setQuery] = useState("");
   const [browse, setBrowse] = useState(false);
   const phone = usePhoneLayout();
+  const search = query.trim().toLowerCase();
+  const matches = (...text: string[]) =>
+    text.join(" ").toLowerCase().includes(search);
   const items = componentCatalogue.filter((item) =>
-    item.name.toLowerCase().includes(query.toLowerCase()),
+    matches(item.name, item.description, item.id, componentGroup(item.family)),
   );
+  const guides = libraryGuides.filter((guide) =>
+    matches(guide.title, guide.id, "Guides"),
+  );
+  const foundationItems = foundations.filter((section) =>
+    matches(section.title, section.summary, section.id, "Foundations"),
+  );
+  const showTypes = matches("Types and helpers", "TypeDoc", "API reference");
+  const showSource = matches("Source and releases", "GitHub");
+  const empty =
+    !items.length &&
+    !guides.length &&
+    !foundationItems.length &&
+    !showTypes &&
+    !showSource;
+  const activate = () => {
+    setQuery("");
+    setBrowse(false);
+  };
   return (
     <AppearanceProvider>
       <TooltipProvider>
@@ -169,73 +190,95 @@ function Layout() {
                     onValueChange={setQuery}
                   />
                   <div className="docs-directory-scroll">
-                    <nav className="docs-nav" aria-label="Guides">
-                      <span className="type-overline text-fg-muted">
-                        Guides
-                      </span>
-                      {libraryGuides.map((guide) => (
-                        <Link
-                          key={guide.id}
-                          className="fa-item"
-                          to="/guides/$guide"
-                          params={{ guide: guide.id }}
-                        >
-                          <span className="fa-item-label">{guide.title}</span>
-                        </Link>
-                      ))}
-                    </nav>
-                    <nav className="docs-nav" aria-label="Foundations">
-                      <span className="type-overline text-fg-muted">
-                        Foundations
-                      </span>
-                      {foundations.map((section) => (
-                        <Link
-                          key={section.id}
-                          className="fa-item"
-                          to="/foundations/$section"
-                          params={{ section: section.id }}
-                        >
-                          <span className="fa-item-label">{section.title}</span>
-                        </Link>
-                      ))}
-                    </nav>
-                    <a href={`${import.meta.env.BASE_URL}api/`}>
-                      Types and helpers (TypeDoc)
-                    </a>
-
-                    <nav className="docs-nav" aria-label="Components">
-                      {COMPONENT_GROUPS.map((group) => {
-                        const entries = items.filter(
-                          (item) => componentGroup(item.family) === group,
-                        );
-                        return entries.length ? (
-                          <div className="docs-nav-group" key={group}>
-                            <span className="type-overline text-fg-muted">
-                              {group}
+                    {empty ? (
+                      <p role="status" className="type-caption text-fg-muted">
+                        No documentation matches “{query.trim()}”.
+                      </p>
+                    ) : null}
+                    {guides.length ? (
+                      <nav className="docs-nav" aria-label="Guides">
+                        <span className="type-overline text-fg-muted">
+                          Guides
+                        </span>
+                        {guides.map((guide) => (
+                          <Link
+                            key={guide.id}
+                            className="fa-item"
+                            to="/guides/$guide"
+                            params={{ guide: guide.id }}
+                            onClick={activate}
+                          >
+                            <span className="fa-item-label">{guide.title}</span>
+                          </Link>
+                        ))}
+                      </nav>
+                    ) : null}
+                    {foundationItems.length ? (
+                      <nav className="docs-nav" aria-label="Foundations">
+                        <span className="type-overline text-fg-muted">
+                          Foundations
+                        </span>
+                        {foundationItems.map((section) => (
+                          <Link
+                            key={section.id}
+                            className="fa-item"
+                            to="/foundations/$section"
+                            params={{ section: section.id }}
+                            onClick={activate}
+                          >
+                            <span className="fa-item-label">
+                              {section.title}
                             </span>
-                            {entries.map((item) => (
-                              <Link
-                                key={item.id}
-                                className="fa-item"
-                                onClick={() => {
-                                  setQuery("");
-                                  setBrowse(false);
-                                }}
-                                to="/components/$component"
-                                params={{ component: item.id }}
-                              >
-                                <span className="fa-item-label">
-                                  {item.name}
-                                </span>
-                              </Link>
-                            ))}
-                          </div>
-                        ) : null;
-                      })}
-                    </nav>
-                    <a href="https://github.com/Dastari/glass-ux">
-                      Source and releases
-                    </a>
+                          </Link>
+                        ))}
+                      </nav>
+                    ) : null}
+                    {showTypes ? (
+                      <a
+                        href={`${import.meta.env.BASE_URL}api/`}
+                        onClick={activate}
+                      >
+                        Types and helpers (TypeDoc)
+                      </a>
+                    ) : null}
+
+                    {items.length ? (
+                      <nav className="docs-nav" aria-label="Components">
+                        {COMPONENT_GROUPS.map((group) => {
+                          const entries = items.filter(
+                            (item) => componentGroup(item.family) === group,
+                          );
+                          return entries.length ? (
+                            <div className="docs-nav-group" key={group}>
+                              <span className="type-overline text-fg-muted">
+                                {group}
+                              </span>
+                              {entries.map((item) => (
+                                <Link
+                                  key={item.id}
+                                  className="fa-item"
+                                  onClick={activate}
+                                  to="/components/$component"
+                                  params={{ component: item.id }}
+                                >
+                                  <span className="fa-item-label">
+                                    {item.name}
+                                  </span>
+                                </Link>
+                              ))}
+                            </div>
+                          ) : null;
+                        })}
+                      </nav>
+                    ) : null}
+                    {showSource ? (
+                      <a
+                        href="https://github.com/Dastari/glass-ux"
+                        onClick={activate}
+                      >
+                        Source and releases
+                      </a>
+                    ) : null}
                   </div>
                 </div>
               </Surface>

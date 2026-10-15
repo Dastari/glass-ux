@@ -302,4 +302,18 @@
     color: var(--fg-muted);
     text-align: center;
   }
+  .fa-org-switcher-feedback {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--gap-controls);
+    padding: var(--inset-overlay);
+  }
+  .fa-org-switcher-feedback:empty {
+    display: none;
+  }
+  .fa-org-switcher-feedback .fa-org-switcher-empty {
+    margin: 0;
+    padding: var(--space-3) var(--space-2);
+  }
 }

@@ -1,45 +1,85 @@
-import { useState } from "react"
-import { MOCK_ORGANISATIONS, toSwitcherOrganisation } from "../fixtures/organisations.js"
-import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { IconTerminal } from "../../icons/generated/icons.js"
-import { OrgAvatar, OrgSwitcher, OrgSwitcherPanel, type OrgTint } from "../../shell/org-switcher/index.js"
-import { WindowFrame, WindowScopeChip, WindowScopeProvider, type WindowScopes } from "../../windows/index.js"
+import { useState } from "react";
+import {
+  MOCK_ORGANISATIONS,
+  toSwitcherOrganisation,
+} from "../fixtures/organisations.js";
+import {
+  ContainerLab,
+  Example,
+  Rules,
+  SectionPage,
+  Specimen,
+  TokenTable,
+} from "../kit.js";
+import { IconTerminal } from "../../icons/generated/icons.js";
+import {
+  OrgAvatar,
+  OrgSwitcher,
+  OrgSwitcherPanel,
+  type OrgTint,
+} from "../../shell/org-switcher/index.js";
+import {
+  WindowFrame,
+  WindowScopeChip,
+  WindowScopeProvider,
+  type WindowScopes,
+} from "../../windows/index.js";
+import { RemoteOrgSwitcherExample } from "./org-switcher-remote.js";
 
-const ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation)
-const RECENT = ["cedarvale", "mossbridge", "orbit"]
-const byId = (id: string) => ORGS.find((org) => org.id === id)!
+const ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
+const RECENT = ["cedarvale", "mossbridge", "orbit"];
+const byId = (id: string) => ORGS.find((org) => org.id === id)!;
 
 /** One switcher with its own state, so each specimen can be tried. */
 function Switcher({ initial }: { initial: string | null }) {
-  const [value, setValue] = useState<string | null>(initial)
-  return <OrgSwitcher organisations={ORGS} value={value} onValueChange={setValue} recent={RECENT} />
+  const [value, setValue] = useState<string | null>(initial);
+  return (
+    <OrgSwitcher
+      organisations={ORGS}
+      value={value}
+      onValueChange={setValue}
+      recent={RECENT}
+    />
+  );
 }
 
 function Panel() {
-  const [value, setValue] = useState<string | null>("northstar")
+  const [value, setValue] = useState<string | null>("northstar");
   return (
     <div className="glass-overlay gallery-switcher-panel" data-clip-boundary="">
-      <OrgSwitcherPanel organisations={ORGS} value={value} onValueChange={setValue} recent={RECENT} />
+      <OrgSwitcherPanel
+        organisations={ORGS}
+        value={value}
+        onValueChange={setValue}
+        recent={RECENT}
+      />
     </div>
-  )
+  );
 }
 
 const SCOPES: WindowScopes = {
   current: "cedarvale",
   describe: (id) => {
-    const org = ORGS.find((item) => item.id === id)
-    return org ? { label: org.name, avatar: <OrgAvatar org={org} size="xs" /> } : undefined
+    const org = ORGS.find((item) => item.id === id);
+    return org
+      ? { label: org.name, avatar: <OrgAvatar org={org} size="xs" /> }
+      : undefined;
   },
-}
+};
 
 function ScopedWindow({ scope }: { scope: string }) {
   return (
     <WindowScopeProvider value={SCOPES}>
       <WindowFrame.Root focused state="floating" aria-label="Terminal">
-        <WindowFrame.AppBar icon={<IconTerminal />} title="Terminal" subtitle="NST-C106" scope={<WindowScopeChip scope={scope} />} />
+        <WindowFrame.AppBar
+          icon={<IconTerminal />}
+          title="Terminal"
+          subtitle="NST-C106"
+          scope={<WindowScopeChip scope={scope} />}
+        />
       </WindowFrame.Root>
     </WindowScopeProvider>
-  )
+  );
 }
 
 export default function OrgSwitcherSection() {
@@ -72,7 +112,18 @@ export default function OrgSwitcherSection() {
         <Panel />
       </Specimen>
 
-      <Specimen title="Avatar" description="A rounded square, so an organisation never reads as a person. Initials sit in ink on one of the eight identity colours (never the data hues); a logo replaces them. In a narrow top bar the trigger shows the avatar and the short code (“NST”).">
+      <Specimen
+        title="Server directory"
+        description="A bounded flat directory: the host searches, cancels stale requests and loads one more page at a time. Summit Loom remains selected outside the first page. Search for coastal to match an alternate name, or simulate a read failure and retry. No parent or descendant relationship is inferred."
+        layout="bare"
+      >
+        <RemoteOrgSwitcherExample />
+      </Specimen>
+
+      <Specimen
+        title="Avatar"
+        description="A rounded square, so an organisation never reads as a person. Initials sit in ink on one of the eight identity colours (never the data hues); a logo replaces them. In a narrow top bar the trigger shows the avatar and the short code (“NST”)."
+      >
         <Example label="Sizes">
           <div className="gallery-avatar-row">
             {(["xs", "sm", "md", "lg"] as const).map((size) => (
@@ -83,7 +134,11 @@ export default function OrgSwitcherSection() {
         <Example label="Tints">
           <div className="gallery-avatar-row">
             {([1, 2, 3, 4, 5, 6, 7, 8] as OrgTint[]).map((tint) => (
-              <OrgAvatar key={tint} org={{ ...byId("cedarvale"), tint }} size="md" />
+              <OrgAvatar
+                key={tint}
+                org={{ ...byId("cedarvale"), tint }}
+                size="md"
+              />
             ))}
           </div>
         </Example>
@@ -118,7 +173,10 @@ export default function OrgSwitcherSection() {
         </Example>
       </Specimen>
 
-      <ContainerLab title="Trigger in the container lab" description="The trigger truncates its name with a tooltip and never wraps.">
+      <ContainerLab
+        title="Trigger in the container lab"
+        description="The trigger truncates its name with a tooltip and never wraps."
+      >
         {() => <Switcher initial="cedarvale" />}
       </ContainerLab>
 
@@ -146,5 +204,5 @@ export default function OrgSwitcherSection() {
         ]}
       />
     </SectionPage>
-  )
+  );
 }

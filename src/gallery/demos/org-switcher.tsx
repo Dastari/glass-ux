@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MOCK_ORGANISATIONS, toSwitcherOrganisation } from "../fixtures/organisations.js";
 import { ContainerLab, Example, SectionPage, Specimen } from "../kit.js";
 import { OrgSwitcher } from "../../shell/org-switcher/index.js";
+import { RemoteOrgSwitcherExample } from "../sections/org-switcher-remote.js";
 
 const ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
 const RECENT = ["cedarvale", "mossbridge", "orbit"];
@@ -36,6 +37,14 @@ export default function OrgSwitcherSection() {
         <Example label="With a logo">
           <Switcher initial="orbit" />
         </Example>
+      </Specimen>
+
+      <Specimen
+        title="Server directory"
+        description="A bounded flat directory: the host searches, cancels stale requests and loads one more page at a time. Summit Loom remains selected outside the first page. Search for coastal to match an alternate name, or simulate a read failure and retry. No parent or descendant relationship is inferred."
+        layout="bare"
+      >
+        <RemoteOrgSwitcherExample />
       </Specimen>
 
       <ContainerLab

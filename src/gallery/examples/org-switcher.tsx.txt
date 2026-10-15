@@ -5,6 +5,7 @@ import {
 } from "glass-ux/gallery/fixtures/organisations";
 import { ContainerLab, Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { OrgSwitcher } from "glass-ux/shell/org-switcher/index";
+import { RemoteOrgSwitcherExample } from "glass-ux/gallery/sections/org-switcher-remote";
 
 const ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
 const RECENT = ["cedarvale", "mossbridge", "orbit"];
@@ -37,6 +38,14 @@ export default function OrgSwitcherSection() {
         <Example label="With a logo">
           <Switcher initial="orbit" />
         </Example>
+      </Specimen>
+
+      <Specimen
+        title="Server directory"
+        description="A bounded flat directory: the host searches, cancels stale requests and loads one more page at a time. Summit Loom remains selected outside the first page. Search for coastal to match an alternate name, or simulate a read failure and retry. No parent or descendant relationship is inferred."
+        layout="bare"
+      >
+        <RemoteOrgSwitcherExample />
       </Specimen>
 
       <ContainerLab

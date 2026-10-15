@@ -7,7 +7,7 @@ export {
   type OrgAvatarSize,
   type OrgSwitcherPanelProps,
   type OrgSwitcherProps,
-} from "./org-switcher.js"
+} from "./org-switcher.js";
 export {
   DEFAULT_SWITCHER_LABELS,
   buildOrgTree,
@@ -24,5 +24,6 @@ export {
   type SwitcherLabels,
   type SwitcherOrganisation,
   type SwitcherRow,
-} from "./model.js"
-export { useRecentOrganisations } from "./recent.js"
+} from "./model.js";
+export { useRecentOrganisations } from "./recent.js";
+export type { OrgSwitcherRemote } from "./remote.js";

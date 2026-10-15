@@ -55,3 +55,4 @@ Building your own schema helper: `textRule(check, options)` and `numberRule(opti
 | --------------------------------- | ------------------------------- | ---------------------------------------------------------------------------- |
 | [Segmented control](segmented.md) | `Segmented`                     | full → icons → menu button                                                   |
 | [Breadcrumb](breadcrumb.md)       | `Breadcrumb`, `RouteBreadcrumb` | full → middle → ‹ parent · current → current place with the trail in a popup |
+| [Organisation switcher](org-switcher.md) | `OrgSwitcher`, `OrgSwitcherPanel` | Complete local hierarchy or bounded server directory; phone sheet |

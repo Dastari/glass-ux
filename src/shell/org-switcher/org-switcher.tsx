@@ -55,6 +55,11 @@ import {
   type SwitcherOrganisation,
   type SwitcherRow,
 } from "./model.js";
+import {
+  RemoteFeedback,
+  remoteGroups,
+  type OrgSwitcherRemote,
+} from "./remote.js";
 
 /* ── Avatar ─────────────────────────────────────────────────────────────── */
 
@@ -121,8 +126,10 @@ export function OrgAvatar({
 export interface OrgSwitcherProps<
   O extends SwitcherOrganisation = SwitcherOrganisation,
 > {
-  /** The complete hierarchy of selectable organisations, with stable IDs and parent links. */
+  /** Complete local hierarchy, or the loaded flat server results when remote is supplied. */
   organisations: readonly O[];
+  /** Controlled server search/paging. Bypasses local filtering and ignores parent links and recents. */
+  remote?: OrgSwitcherRemote;
   /** The current scope: an organisation id, or null for all organisations. */
   value: string | null;
   /** A choice was made (also when it is the current one: the caller may ignore it). */
@@ -156,9 +163,10 @@ export function describeOrgScope(
   return { org: org ?? null, name, code, includes, accessible };
 }
 
-/** Search and choose an organisation scope, with a responsive picker and an optional all-organisations choice. */
+/** Choose an organisation from a complete local hierarchy or a bounded server directory. */
 export function OrgSwitcher<O extends SwitcherOrganisation>({
   organisations,
+  remote,
   value,
   onValueChange,
   recent = [],
@@ -180,7 +188,22 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
     if (openProp === undefined) setInnerOpen(next);
     onOpenChange?.(next);
   };
-  const scope = describeOrgScope(tree, value, labels);
+  const selectedOrg =
+    value === null
+      ? undefined
+      : remote?.selected?.id === value
+        ? remote.selected
+        : tree.byId.get(value);
+  const scope =
+    remote && value !== null
+      ? {
+          org: selectedOrg ?? null,
+          name: selectedOrg?.name ?? "Organisation unavailable",
+          code: selectedOrg ? orgCode(selectedOrg) : "?",
+          includes: 0,
+          accessible: selectedOrg?.name ?? "Organisation unavailable",
+        }
+      : describeOrgScope(tree, value, labels);
   const changed = useExternalChange(value);
   const fresh = useFreshAfterClose();
 
@@ -242,6 +265,8 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
             {/* Straight in the sheet, not in a Sheet.Body: the search stays put and the list scrolls. */}
             <SwitcherList
               tree={tree}
+              organisations={organisations}
+              remote={remote}
               value={value}
               recent={recent}
               labels={labels}
@@ -262,6 +287,8 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
         key={fresh.generation}
         onOpenChangeComplete={fresh.onOpenChangeComplete}
         tree={tree}
+        organisations={organisations}
+        remote={remote}
         value={value}
         recent={recent}
         labels={labels}
@@ -344,6 +371,8 @@ function useExternalChange(value: string | null) {
 
 interface SwitcherListProps {
   tree: OrgTree;
+  organisations: readonly SwitcherOrganisation[];
+  remote?: OrgSwitcherRemote;
   value: string | null;
   recent: readonly string[];
   /** Display and accessibility labels supplied by the application. */
@@ -370,6 +399,8 @@ interface SwitcherListProps {
  */
 function SwitcherList({
   tree,
+  organisations,
+  remote,
   value,
   recent,
   labels,
@@ -382,10 +413,15 @@ function SwitcherList({
   onOpenChangeComplete,
   trigger,
 }: SwitcherListProps) {
-  const [query, setQuery] = useState("");
+  const [localQuery, setLocalQuery] = useState("");
+  const query = remote?.query ?? localQuery;
+  const setQuery = remote?.onQueryChange ?? setLocalQuery;
   const groups = useMemo(
-    () => switcherGroups(tree, { query, recent, value, labels }),
-    [tree, query, recent, value, labels],
+    () =>
+      remote
+        ? remoteGroups(organisations, remote, labels)
+        : switcherGroups(tree, { query, recent, value, labels }),
+    [tree, query, recent, value, labels, remote, organisations],
   );
   // The selected row is the tree's, never the Recent copy, so it is marked once.
   const selected = useMemo(
@@ -411,11 +447,21 @@ function SwitcherList({
         />
       </div>
       <Combobox.Status className="sr-only">
-        {query.trim() ? `${count} ${count === 1 ? "result" : "results"}` : ""}
+        {remote
+          ? remote.loading
+            ? "Loading organisations"
+            : remote.error
+              ? "Organisation directory unavailable"
+              : `${organisations.length} loaded ${organisations.length === 1 ? "result" : "results"}${remote.hasNextPage ? "; more available" : ""}`
+          : query.trim()
+            ? `${count} ${count === 1 ? "result" : "results"}`
+            : ""}
       </Combobox.Status>
-      <Combobox.Empty className="fa-org-switcher-empty">
-        {query.trim() ? `No organisations match “${query.trim()}”` : null}
-      </Combobox.Empty>
+      {!remote && (
+        <Combobox.Empty className="fa-org-switcher-empty">
+          {query.trim() ? `No organisations match “${query.trim()}”` : null}
+        </Combobox.Empty>
+      )}
       <Combobox.List
         className="fa-org-switcher-list"
         data-inline={inline ? "" : undefined}
@@ -439,6 +485,9 @@ function SwitcherList({
           </Combobox.Group>
         )}
       </Combobox.List>
+      {remote ? (
+        <RemoteFeedback remote={remote} count={organisations.length} />
+      ) : null}
     </>
   );
 
@@ -458,7 +507,7 @@ function SwitcherList({
       isItemEqualToValue={(a: SwitcherRow, b: SwitcherRow) => a.key === b.key}
       open={inline ? true : open}
       onOpenChange={(next) => {
-        if (!next) setQuery("");
+        if (!next && !remote) setLocalQuery("");
         onOpenChange?.(next);
       }}
       onOpenChangeComplete={onOpenChangeComplete}
@@ -534,8 +583,10 @@ function SwitcherItem({ row, query }: { row: SwitcherRow; query: string }) {
 export interface OrgSwitcherPanelProps<
   O extends SwitcherOrganisation = SwitcherOrganisation,
 > {
-  /** The complete hierarchy of selectable organisations, with stable IDs and parent links. */
+  /** Complete local hierarchy, or the loaded flat server results when remote is supplied. */
   organisations: readonly O[];
+  /** Controlled server search and paging; parent links and local recents are ignored. */
+  remote?: OrgSwitcherRemote;
   /** Selected organisation ID, or null for the all-organisations scope. */
   value: string | null;
   /** Called when value change occurs. The callback type specifies its arguments. */
@@ -551,6 +602,7 @@ export interface OrgSwitcherPanelProps<
 /** The switcher's list, always open, for a sheet, a page or the gallery. */
 export function OrgSwitcherPanel<O extends SwitcherOrganisation>({
   organisations,
+  remote,
   value,
   onValueChange,
   recent = [],
@@ -565,6 +617,8 @@ export function OrgSwitcherPanel<O extends SwitcherOrganisation>({
   return (
     <SwitcherList
       tree={tree}
+      organisations={organisations}
+      remote={remote}
       value={value}
       recent={recent}
       labels={labels}

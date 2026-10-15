@@ -16,8 +16,8 @@ the form.
 | className | `string \| undefined` | See type | no | — | Layout only (width, grid placement). Applied to the control box. |
 | copyable | `boolean \| undefined` | false, true | no | — | A copy button while there is a value. Default: on when Generate is. |
 | defaultValue | `string \| undefined` | See type | no | "" | The initial value when using the component without controlling its state. |
-| generate | `boolean \| GenerateOptions \| undefined` | false, true | no | false | A Generate button (cryptographically random), with these options. Default off. |
-| icon | `ReactNode` | false, true | no | — | Leading icon. Pass the icon without a size. |
+| generate | `boolean \| GenerateOptions \| undefined` | See type | no | false | A Generate button (cryptographically random), with these options. Default off. |
+| icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field (inside a Field, set `error` on the Field instead). |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
@@ -29,8 +29,8 @@ the form.
 | shortcut | `string \| undefined` | See type | no | — | Keyboard hint shown while the field is empty and unfocused ("mod+k" → ⌘K / Ctrl K). |
 | size | `InputSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | strength | `boolean \| undefined` | false, true | no | — | The strength bar along the box's lower edge. Default: on for new passwords. |
-| trailing | `ReactNode` | false, true | no | — | Any other trailing content (a status, a small action). |
-| unit | `ReactNode` | false, true | no | — | Unit after the value ("GB", "ms", "%"). |
+| trailing | `ReactNode` | See type | no | — | Any other trailing content (a status, a small action). |
+| unit | `ReactNode` | See type | no | — | Unit after the value ("GB", "ms", "%"). |
 | userInputs | `readonly string[] \| undefined` | See type | no | — | The person's own details, which the strength estimate penalises (name, email, organisation). |
 | value | `string \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |

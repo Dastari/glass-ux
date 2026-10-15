@@ -20,9 +20,9 @@ Compose a section navigation drawer with header, search, groups, items, body and
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| actions | `ReactNode` | false, true | no | — | Supporting actions rendered in the action slot. |
-| icon | `ReactNode` | false, true | no | — | The section's mark or icon. |
-| title | `ReactNode` | false, true | yes | — | The heading or title content. |
+| actions | `ReactNode` | See type | no | — | Supporting actions rendered in the action slot. |
+| icon | `ReactNode` | See type | no | — | The section's mark or icon. |
+| title | `ReactNode` | See type | yes | — | The heading or title content. |
 
 ## SectionDrawer.Search
 
@@ -74,10 +74,10 @@ Compose a section navigation drawer with header, search, groups, items, body and
 | --- | --- | --- | --- | --- | --- |
 | active | `boolean \| undefined` | false, true | no | false | Marks the current destination or active choice. |
 | count | `number \| undefined` | See type | no | — | Tabular count at the trailing edge. |
-| detail | `ReactNode` | false, true | no | — | Data subtitle under the label (a user, a path). |
-| face | `ReactNode` | false, true | no | — | The row's face, drawn instead of icon, label and detail: an entity identity at its row tier (OrganisationIdentity, DeviceIdentity), so the drawer shows the entity exactly as a table does. `label` stays its plain name. |
-| icon | `ReactNode` | false, true | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
-| label | `ReactNode` | false, true | yes | — | The visible or accessible label for this component. |
+| detail | `ReactNode` | See type | no | — | Data subtitle under the label (a user, a path). |
+| face | `ReactNode` | See type | no | — | The row's face, drawn instead of icon, label and detail: an entity identity at its row tier (OrganisationIdentity, DeviceIdentity), so the drawer shows the entity exactly as a table does. `label` stays its plain name. |
+| icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
+| label | `ReactNode` | See type | yes | — | The visible or accessible label for this component. |
 | render | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | Render as a router link: render={<Link to="…" />}. Default: a button. |
 
 ## SectionDrawer.Group
@@ -86,8 +86,8 @@ Compose a section navigation drawer with header, search, groups, items, body and
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| actions | `ReactNode` | false, true | no | — | Supporting actions rendered in the action slot. |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
+| actions | `ReactNode` | See type | no | — | Supporting actions rendered in the action slot. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | count | `number \| undefined` | See type | no | — | Item count shown by the component. |
 | id | `string` | See type | yes | — | Persisted collapsed state key, e.g. "ai.projects". |
 | title | `string` | See type | yes | — | The heading or title content. |

@@ -11,7 +11,7 @@ pressed while the pane is open. Renders nothing when the page has no inspector.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| icon | `ReactNode` | false, true | no | — | The pane's mark (the product's AI mark). Default: the inspector glyph. |
+| icon | `ReactNode` | See type | no | — | The pane's mark (the product's AI mark). Default: the inspector glyph. |
 | label | `string \| undefined` | See type | no | — | Its name and tooltip: "Assistant here". Default: "Show inspector" / "Hide inspector". |
 | shortcut | `string \| undefined` | See type | no | — | Toggles from anywhere ("mod+."); shown in the tooltip. |
 

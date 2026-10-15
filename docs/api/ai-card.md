@@ -22,12 +22,12 @@ A composable assistant card with header, body and footer slots. Its material fol
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| actions | `ReactNode` | false, true | no | — | Trailing ghost actions: copy, export, open in window. |
-| icon | `ReactNode` | false, true | no | — | A glyph before the title. Pass it without a size. |
+| actions | `ReactNode` | See type | no | — | Trailing ghost actions: copy, export, open in window. |
+| icon | `ReactNode` | See type | no | — | A glyph before the title. Pass it without a size. |
 | iconTile | `boolean \| undefined` | false, true | no | false | Put the icon in a toned tile (asks, entity cards). |
 | level | `2 \| 3 \| 4 \| 5 \| 6 \| undefined` | 2, 3, 4, 5, 6 | no | 3 | Heading level inside the conversation outline. |
-| meta | `ReactNode` | false, true | no | — | Data only (R2.2): row count, source, target. |
-| title | `ReactNode` | false, true | yes | — | The heading or title content. |
+| meta | `ReactNode` | See type | no | — | Data only (R2.2): row count, source, target. |
+| title | `ReactNode` | See type | yes | — | The heading or title content. |
 
 ## AiCard.Body
 

@@ -19,7 +19,7 @@ The trigger keeps its own accessible name; the tooltip repeats it visually.
 | align | `"center" \| "start" \| "end" \| undefined` | "center", "start", "end" | no | "center" | Alignment of the overlay relative to its anchor. |
 | arrow | `boolean \| undefined` | false, true | no | true | A pointer towards the trigger. On by default: tooltips label small, similar targets. |
 | children | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>>` | See type | yes | — | The element the tooltip describes. No wrapper is added: the trigger's props and ref are merged onto it, so it must forward its ref and spread props (every design-system control does). A disabled control must stay hoverable — render it with aria-disabled (Base UI `focusableWhenDisabled`) rather than the native disabled attribute. |
-| content | `ReactNode` | false, true | yes | — | One line: the control's name, or why it is disabled. Never interactive content (R13.5). |
+| content | `ReactNode` | See type | yes | — | One line: the control's name, or why it is disabled. Never interactive content (R13.5). |
 | describe | `boolean \| undefined` | false, true | no | — | Link the open tooltip to the trigger with aria-describedby. Default: only when the content is text that differs from the trigger's aria-label (a reason, extra detail) — a tooltip that repeats the name would be announced twice. |
 | enabled | `boolean \| undefined` | false, true | no | true | Set false to suppress the tooltip (for example while text is not truncated). |
 | onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called when open change occurs. The callback type specifies its arguments. |

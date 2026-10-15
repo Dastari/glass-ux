@@ -22,13 +22,13 @@ Everything in the workspace is a window: tiled, floating, snapped, maximised, mi
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| actions | `ReactNode` | false, true | no | — | Window-specific actions, before the controls. Ghost sm buttons. |
+| actions | `ReactNode` | See type | no | — | Window-specific actions, before the controls. Ghost sm buttons. |
 | actionsRef | `Ref<HTMLDivElement> \| undefined` | See type | no | — | Receives the actions container, for content that portals its own actions in. |
-| controls | `ReactNode` | false, true | no | — | Window controls (WindowControls). |
-| icon | `ReactNode` | false, true | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
-| scope | `ReactNode` | false, true | no | — | The window's organisation when it is not the current one (WindowScopeChip, R14.4). |
-| subtitle | `ReactNode` | false, true | no | — | Data only (R2.2): the endpoint or organisation the window is about. |
-| title | `ReactNode` | false, true | yes | — | The heading or title content. |
+| controls | `ReactNode` | See type | no | — | Window controls (WindowControls). |
+| icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
+| scope | `ReactNode` | See type | no | — | The window's organisation when it is not the current one (WindowScopeChip, R14.4). |
+| subtitle | `ReactNode` | See type | no | — | Data only (R2.2): the endpoint or organisation the window is about. |
+| title | `ReactNode` | See type | yes | — | The heading or title content. |
 | titleId | `string \| undefined` | See type | no | — | id for the title, so the frame can be labelled by it. |
 
 ## WindowFrame.Body
@@ -76,7 +76,7 @@ Everything in the workspace is a window: tiled, floating, snapped, maximised, mi
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | compact | `boolean \| undefined` | false, true | no | false | Phones: minimise reads as "back to workspace" and maximise is implicit. |
-| leading | `ReactNode` | false, true | no | — | Extra controls before the standard ones (the phone window switcher). |
+| leading | `ReactNode` | See type | no | — | Extra controls before the standard ones (the phone window switcher). |
 | maximised | `boolean \| undefined` | false, true | no | false | Whether the window fills its available workspace. |
 | onClose | `(() => void) \| undefined` | See type | no | — | Called when close occurs. The callback type specifies its arguments. |
 | onMinimise | `(() => void) \| undefined` | See type | no | — | Called when minimise occurs. The callback type specifies its arguments. |

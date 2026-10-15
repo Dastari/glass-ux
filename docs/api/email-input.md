@@ -13,7 +13,7 @@ An email address: trimmed, "mailto:" dropped and the domain lower-cased when foc
 | className | `string \| undefined` | See type | no | — | Layout only (width, grid placement). Applied to the control box. |
 | clearable | `boolean \| undefined` | false, true | no | — | Show a clear button while the field has a value. |
 | defaultValue | `string \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
-| icon | `ReactNode` | false, true | no | — | Leading icon. Pass the icon without a size. |
+| icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field (inside a Field, set `error` on the Field instead). |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
@@ -22,8 +22,8 @@ An email address: trimmed, "mailto:" dropped and the domain lower-cased when foc
 | revealed | `boolean \| undefined` | false, true | no | — | Password boxes: whether the value shows as text. Leave unset for the box's own toggle. |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard hint shown while the field is empty and unfocused ("mod+k" → ⌘K / Ctrl K). |
 | size | `InputSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-| trailing | `ReactNode` | false, true | no | — | Any other trailing content (a status, a small action). |
-| unit | `ReactNode` | false, true | no | — | Unit after the value ("GB", "ms", "%"). |
+| trailing | `ReactNode` | See type | no | — | Any other trailing content (a status, a small action). |
+| unit | `ReactNode` | See type | no | — | Unit after the value ("GB", "ms", "%"). |
 | value | `string \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
 

@@ -13,7 +13,7 @@ Focused tasks in a glass frame: icon header, one scrolling body, a pinned footer
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | actionsRef | `RefObject<{ unmount: () => void; close: () => void; } \| null> \| undefined` | See type | no | — | Ref exposing the component’s imperative action contract. |
-| children | `ReactNode` | false, true | no | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | defaultOpen | `boolean \| undefined` | false, true | no | — | Opens the uncontrolled overlay initially. |
 | disablePointerDismissal | `boolean \| undefined` | false, true | no | — | Keep the dialog open on outside press (Esc still closes). |
 | modal | `boolean \| undefined` | false, true | no | — | Default true. `false` lets the page stay interactive (rare; prefer a Popover or Sheet). |
@@ -36,10 +36,10 @@ Focused tasks in a glass frame: icon header, one scrolling body, a pinned footer
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string \| undefined` | See type | no | — | Accessible name when a visible label does not name the control. |
-| children | `ReactNode` | false, true | no | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| finalFocus | `boolean \| RefObject<HTMLElement \| null> \| ((closeType: import(".pnpm/@base-ui+utils@0.5.0_@types+react@19.3.0_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | false, true | no | — | The element or behaviour to focus when the overlay closes. |
-| initialFocus | `boolean \| RefObject<HTMLElement \| null> \| ((openType: import(".pnpm/@base-ui+utils@0.5.0_@types+react@19.3.0_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | false, true | no | — | The element or behaviour to focus when the overlay opens. |
+| finalFocus | `boolean \| RefObject<HTMLElement \| null> \| ((closeType: import(".pnpm/@base-ui+utils@0.5.0_@types+react@19.3.0_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | See type | no | — | The element or behaviour to focus when the overlay closes. |
+| initialFocus | `boolean \| RefObject<HTMLElement \| null> \| ((openType: import(".pnpm/@base-ui+utils@0.5.0_@types+react@19.3.0_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | See type | no | — | The element or behaviour to focus when the overlay opens. |
 | kind | `DialogKind \| undefined` | "dialog", "alert", "palette", "side", "settings" | no | — | `settings` fixes the height so switching sections never resizes the dialog. |
 | size | `DialogSize \| undefined` | "full", "sm", "md", "lg", "xl" | no | — | sm 400 · md 560 · lg 760 · xl 1040 · full. Ignored by phone sheets (full width). |
 
@@ -50,10 +50,10 @@ Focused tasks in a glass frame: icon header, one scrolling body, a pinned footer
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | close | `boolean \| undefined` | false, true | no | true | Show the close button (default). |
-| icon | `ReactNode` | false, true | no | — | Icon in a tile, sized by the header. |
-| media | `ReactNode` | false, true | no | — | Replaces the icon tile with the caller's own: an entity's identity tile (its photo, state). |
-| subtitle | `ReactNode` | false, true | no | — | Data only: the target's identifier or context (R2.2), never a restatement. |
-| title | `ReactNode` | false, true | yes | — | The heading or title content. |
+| icon | `ReactNode` | See type | no | — | Icon in a tile, sized by the header. |
+| media | `ReactNode` | See type | no | — | Replaces the icon tile with the caller's own: an entity's identity tile (its photo, state). |
+| subtitle | `ReactNode` | See type | no | — | Data only: the target's identifier or context (R2.2), never a restatement. |
+| title | `ReactNode` | See type | yes | — | The heading or title content. |
 | tone | `DialogTone \| undefined` | "danger", "warning", "default", "success", "accent", "info" | no | "default" | The semantic tone. Use danger and warning for consequences and states. |
 
 ## Dialog.Body
@@ -70,7 +70,7 @@ Focused tasks in a glass frame: icon header, one scrolling body, a pinned footer
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| start | `ReactNode` | false, true | no | — | Tertiary actions on the left (Reset, Help). The primary always goes last, on the right. |
+| start | `ReactNode` | See type | no | — | Tertiary actions on the left (Reset, Help). The primary always goes last, on the right. |
 
 ## Dialog.Title
 
@@ -78,7 +78,7 @@ Focused tasks in a glass frame: icon header, one scrolling body, a pinned footer
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | no | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 
 ## Dialog.Description
@@ -87,7 +87,7 @@ Focused tasks in a glass frame: icon header, one scrolling body, a pinned footer
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | no | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 
 ## Dialog.Close
@@ -103,7 +103,7 @@ Focused tasks in a glass frame: icon header, one scrolling body, a pinned footer
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | height | `"auto" \| "short" \| undefined` | "auto", "short" | no | "auto" | `short` fixes a low frame so the body scrolls (to show the scroll edges). |
 | kind | `DialogKind \| undefined` | "dialog", "alert", "palette", "side", "settings" | no | "dialog" | Semantic entity or content kind, used to choose labels and rendering. |

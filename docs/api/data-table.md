@@ -17,9 +17,9 @@ Server-side sorting and pages, columns that fold by priority into “+N” and t
 | cursor | `CursorPagination \| undefined` | See type | no | — | Switch the pager to cursor mode. |
 | defaultState | `Partial<DataTableState> \| undefined` | See type | no | — | Initial uncontrolled view state. |
 | density | `DataTableDensity \| undefined` | "compact", "comfortable" | no | — | Row density for this table. Uncontrolled tables persist the user's choice. |
-| emptyAction | `ReactNode` | false, true | no | — | The primary action for the unfiltered empty state ("Enrol a device"). |
-| emptyMessage | `ReactNode` | false, true | no | "No rows" | One line for an empty result with nothing searched or filtered (R2.5): "No endpoints enrolled". While searching or filtering the table says so itself (`No devices match "orb-7" and 2 filters`) and offers Clear search and Clear filters instead. |
-| error | `ReactNode` | false, true | no | — | Shown in the body box with Retry. A string should say what failed and what to do. |
+| emptyAction | `ReactNode` | See type | no | — | The primary action for the unfiltered empty state ("Enrol a device"). |
+| emptyMessage | `ReactNode` | See type | no | "No rows" | One line for an empty result with nothing searched or filtered (R2.5): "No endpoints enrolled". While searching or filtering the table says so itself (`No devices match "orb-7" and 2 filters`) and offers Clear search and Clear filters instead. |
+| error | `ReactNode` | See type | no | — | Shown in the body box with Retry. A string should say what failed and what to do. |
 | filterToggles | `readonly DataTableFilterToggle[] \| undefined` | See type | no | — | On/off filters that are not a column ("Show hidden"): rows in the Filters menu, and a chip while on. Clear filters turns them off too. |
 | getRowActions | `((row: T) => ActionSet<T> \| undefined) \| undefined` | See type | no | — | Per-row ActionSets, for rows of different kinds (a device list: an endpoint's set is not a printer's). It replaces `actions`. One row's ⋯ and right-click resolve its own set, so they match its header exactly. A selection of several kinds (right-click inside it, the bulk bar) offers the actions every kind's set resolves, bulk in each, and each kind runs its own definition against its own rows (`resolveRowActions`). Keep the sets stable: the same object for every row of a kind. |
 | getRowId | `(row: T) => string` | See type | yes | — | Returns a stable row identifier for selection, live updates and preferences. |
@@ -48,8 +48,8 @@ Server-side sorting and pages, columns that fold by priority into “+N” and t
 | search | `DataTableSearch<T> \| undefined` | See type | no | — | The toolbar search (R16.8): a field at the start of the toolbar, beside Filters, that matches these identifying fields on the server. Its query is the `search` state slice (`q` in the URL with useTableUrlState). Typing waits 220 ms, then returns to the first page. `/` focuses it while the table has focus. On a narrow toolbar it is an icon button that opens the field, and an active query shows as a "Search: …" chip. |
 | selectable | `boolean \| undefined` | false, true | no | true | Show checkboxes and allow selection (default true). |
 | state | `Partial<DataTableState> \| undefined` | See type | no | — | Controlled slices. A slice left out is owned by the table. |
-| status | `ReactNode` | false, true | no | — | Extra status bar content (connection state, last sync). |
-| toolbar | `ReactNode` | false, true | no | — | The table's own controls (a view switch, Refresh), at the end of the toolbar. |
+| status | `ReactNode` | See type | no | — | Extra status bar content (connection state, last sync). |
+| toolbar | `ReactNode` | See type | no | — | The table's own controls (a view switch, Refresh), at the end of the toolbar. |
 | updatedAt | `number \| Date \| undefined` | See type | no | — | When the data was last refreshed (status bar: "Updated 2 min ago"). |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

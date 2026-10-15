@@ -13,10 +13,10 @@ a Save.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| description | `ReactNode` | false, true | no | — | Second line: what turning it on does. |
+| description | `ReactNode` | See type | no | — | Second line: what turning it on does. |
 | icons | `boolean \| undefined` | false, true | no | — | ✓ / ✕ inside the bead (md and lg). |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
-| label | `ReactNode` | false, true | no | — | Label beside the switch. Omit when a Field (or an aria-label) names it. |
+| label | `ReactNode` | See type | no | — | Label beside the switch. Omit when a Field (or an aria-label) names it. |
 | size | `ChoiceSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | The "on" colour. Status tones only when the setting itself is a status (R3.3). |
 

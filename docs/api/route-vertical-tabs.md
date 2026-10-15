@@ -13,7 +13,7 @@ chip and picker entry is a link.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string` | See type | yes | — | Accessible name when a visible label does not name the control. |
-| children | `ReactNode` | false, true | no | — | The section's content: normally the route's `<Outlet />`. |
+| children | `ReactNode` | See type | no | — | The section's content: normally the route's `<Outlet />`. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | items | `RouteTabItem[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
 | layout | `VerticalTabsLayout \| undefined` | "select", "rail", "icons", "chips" | no | — | Layout or presentation mode. |

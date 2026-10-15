@@ -10,7 +10,7 @@ Single-line text that truncates with an ellipsis; the full text appears on hover
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | identifier | `boolean \| undefined` | false, true | no | — | Identifiers (IP addresses, serials, versions): tabular figures (R8.4). |
 | muted | `boolean \| undefined` | false, true | no | — | Secondary text in the muted ink. |
 

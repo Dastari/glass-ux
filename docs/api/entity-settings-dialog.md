@@ -26,10 +26,10 @@ and Cancel / Save. One form spans every tab, so Save sends one document.
 | --- | --- | --- | --- | --- | --- |
 | defaultTab | `string \| undefined` | See type | no | — | Initially selected tab. |
 | entityName | `string \| undefined` | See type | no | — | Names the entity in the discard question: "Discard changes to NST-C106?". |
-| footerStart | `ReactNode` | false, true | no | — | Tertiary footer actions on the left. |
+| footerStart | `ReactNode` | See type | no | — | Tertiary footer actions on the left. |
 | form | `EntitySettingsForm` | See type | yes | — | The form every tab edits: one `useAppForm` with the entity's Zod schema. |
 | loading | `boolean \| undefined` | false, true | no | false | The document is loading: every tab shows its skeleton and Save waits. |
-| media | `ReactNode` | false, true | no | — | The entity's identity tile: its glyph or photo with the state dot. |
+| media | `ReactNode` | See type | no | — | The entity's identity tile: its glyph or photo with the state dot. |
 | onOpenChange | `(open: boolean) => void` | See type | yes | — | Called when open change occurs. The callback type specifies its arguments. |
 | onReload | `((fields: readonly string[]) => Promise<void>) \| undefined` | See type | no | — | After a conflict (SettingsConflictError), reload the documents behind these fields: they take the server's values and lose their edits; every other edit stays. |
 | onSaved | `(() => void) \| undefined` | See type | no | — | After a save is confirmed (the saved values are the new baseline). |
@@ -40,9 +40,9 @@ and Cancel / Save. One form spans every tab, so Save sends one document.
 | preview | `boolean \| undefined` | false, true | no | false | Render in the page flow, open and non-modal (gallery specimens). |
 | privileged | `readonly string[] \| undefined` | See type | no | [] | Fields (names or prefixes) that need MFA to change (PrivilegedWrite). While the changes include one, Save reads "Verify and save" and runs `onVerify` first. Mark their labels with PrivilegedMark. Reads never need it. |
 | size | `"lg" \| "xl" \| undefined` | "lg", "xl" | no | "lg" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-| subtitle | `ReactNode` | false, true | no | — | Data only (R2.2): "NST-C106 · Northstar Studio". |
+| subtitle | `ReactNode` | See type | no | — | Data only (R2.2): "NST-C106 · Northstar Studio". |
 | tab | `string \| undefined` | See type | no | — | The open tab, when it lives in the URL (`?settings=snmp`). |
 | tabs | `readonly EntitySettingsTab[]` | See type | yes | — | Tab definitions in display order. |
-| title | `ReactNode` | false, true | no | "Settings" | Default "Settings". |
+| title | `ReactNode` | See type | no | "Settings" | Default "Settings". |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

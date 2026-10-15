@@ -16,9 +16,9 @@ resizes the dialog.
 | --- | --- | --- | --- | --- | --- |
 | defaultSection | `string \| undefined` | See type | no | — | Initially active section. |
 | dirty | `boolean \| undefined` | false, true | no | false | Guard closing while there are unsaved changes. |
-| footer | `ReactNode` | false, true | no | — | Footer actions, primary last: Cancel, then an ActionButton "Save changes". |
-| footerStart | `ReactNode` | false, true | no | — | Footer start slot (Reset to defaults). |
-| icon | `ReactNode` | false, true | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
+| footer | `ReactNode` | See type | no | — | Footer actions, primary last: Cancel, then an ActionButton "Save changes". |
+| footerStart | `ReactNode` | See type | no | — | Footer start slot (Reset to defaults). |
+| icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | onDiscard | `(() => void) \| undefined` | See type | no | — | Called when discard occurs. The callback type specifies its arguments. |
 | onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called when open change occurs. The callback type specifies its arguments. |
 | onSectionChange | `((section: string) => void) \| undefined` | See type | no | — | Write the section to the URL when it is a place (R6.2). |
@@ -26,8 +26,8 @@ resizes the dialog.
 | section | `string \| undefined` | See type | no | — | Active section identifier. |
 | sections | `SettingsSection[]` | See type | yes | — | Section definitions in display order. |
 | size | `"lg" \| "xl" \| undefined` | "lg", "xl" | no | "xl" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-| subtitle | `ReactNode` | false, true | no | — | Data: the target, e.g. "LMN-7C71". |
-| title | `ReactNode` | false, true | yes | — | "Agent settings" |
+| subtitle | `ReactNode` | See type | no | — | Data: the target, e.g. "LMN-7C71". |
+| title | `ReactNode` | See type | yes | — | "Agent settings" |
 | trigger | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | Control that opens the overlay or action. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

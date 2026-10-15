@@ -13,7 +13,7 @@ its map. Put it in a Field for a label ("Address") and a hint ("Change it in …
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | copyable | `boolean \| undefined` | false, true | no | true | A copy button for the one-line address. Default true. |
-| empty | `ReactNode` | false, true | no | "No address yet" | Shown when the address is empty. |
+| empty | `ReactNode` | See type | no | "No address yet" | Shown when the address is empty. |
 | homeCountry | `string \| undefined` | See type | no | "AU" | The country left off the postal block. Default "AU". |
 | map | `MapConfig \| undefined` | See type | no | — | A small map with the pin, when the address has a position. |
 | value | `AddressValue` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |

@@ -13,10 +13,10 @@ cell is passive. Used as the title column of entity tables and as the card title
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| icon | `ReactNode` | false, true | no | — | Entity glyph. Defaults to the endpoint monitor. Pass the icon without a size. |
+| icon | `ReactNode` | See type | no | — | Entity glyph. Defaults to the endpoint monitor. Pass the icon without a size. |
 | status | `EndpointStatus \| undefined` | "warning", "error", "online", "offline", "installing", "maintenance", "connecting", "live" | no | — | Live state, drawn as the shared status dot on the glyph's corner. |
 | statusLabel | `string \| undefined` | See type | no | — | Accessible text for the status dot. Defaults to the state's name ("Online"). |
-| subtitle | `ReactNode` | false, true | no | — | Data only (R2.2): `AzureAD\MiraRowan`, never a description. |
-| title | `ReactNode` | false, true | yes | — | The entity's name: hostname, person, organisation. |
+| subtitle | `ReactNode` | See type | no | — | Data only (R2.2): `AzureAD\MiraRowan`, never a description. |
+| title | `ReactNode` | See type | yes | — | The entity's name: hostname, person, organisation. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

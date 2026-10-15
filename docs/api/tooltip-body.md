@@ -10,9 +10,9 @@ The standard tooltip body: a heading (the x or category), then one row per serie
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| footer | `ReactNode` | false, true | no | — | Content after the body, normally supporting actions. |
-| meta | `ReactNode` | false, true | no | — | Supporting data displayed with the item. |
+| footer | `ReactNode` | See type | no | — | Content after the body, normally supporting actions. |
+| meta | `ReactNode` | See type | no | — | Supporting data displayed with the item. |
 | rows | `readonly TooltipRow[]` | See type | yes | — | Records or matrix rows in display order. |
-| title | `ReactNode` | false, true | no | — | The heading or title content. |
+| title | `ReactNode` | See type | no | — | The heading or title content. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

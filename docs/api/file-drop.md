@@ -19,7 +19,7 @@ field's message line — the tile never grows to show errors.
 | disabled | `boolean \| undefined` | false, true | no | false | Disables interaction while retaining the component’s disabled appearance. |
 | dragging | `boolean \| undefined` | false, true | no | false | Show the drag-over state without a drag (documentation and tests). |
 | existing | `number \| undefined` | See type | no | 0 | Files already in the list (for maxFiles). |
-| hint | `ReactNode` | false, true | no | — | The limits line. Default: built from maxSize and accept ("Max 500 MB per file · .msi or .exe"). |
+| hint | `ReactNode` | See type | no | — | The limits line. Default: built from maxSize and accept ("Max 500 MB per file · .msi or .exe"). |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
 | maxFiles | `number \| undefined` | See type | no | — | Files allowed in total, counting `existing`. |
 | maxSize | `number \| undefined` | See type | no | — | Bytes per file. |

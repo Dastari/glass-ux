@@ -11,7 +11,7 @@ the right and an optional ✓ column. A disabled option shows its reason as the 
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| check | `ReactNode` | false, true | no | — | Reserve a trailing column for a ✓ (pass the indicator element to fill it). |
+| check | `ReactNode` | See type | no | — | Reserve a trailing column for a ✓ (pass the indicator element to fill it). |
 | item | `OptionItem<string>` | See type | yes | — | The typed item displayed or acted upon. |
 | query | `string \| undefined` | See type | no | "" | The text being searched for; matches are emphasised. |
 

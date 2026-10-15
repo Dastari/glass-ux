@@ -21,9 +21,9 @@ Compose the primary application navigation rail from accessible items, separator
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | active | `boolean \| undefined` | false, true | no | false | This is the current section. |
-| badge | `ReactNode` | false, true | no | — | A NotificationDot or count on the icon's corner. |
+| badge | `ReactNode` | See type | no | — | A NotificationDot or count on the icon's corner. |
 | disabledReason | `string \| undefined` | See type | no | — | Why the item does nothing here ("Choose an organisation to see its settings"). It stays focusable (aria-disabled) and the tooltip and description give the reason (R12.3, R20.5). |
-| icon | `ReactNode` | false, true | yes | — | An icon element without an explicit size; the component sizes it through its tokens. |
+| icon | `ReactNode` | See type | yes | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | label | `string` | See type | yes | — | The destination's name: the accessible name and the tooltip. |
 | render | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | Render as a router link: render={<Link to="/endpoints" />}. |
 | shortcut | `string \| undefined` | See type | no | — | "g e" (press G, then E). Shown in the tooltip and handled by the rail. |

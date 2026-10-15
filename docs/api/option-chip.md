@@ -13,7 +13,7 @@ the input; Backspace or Delete removes the focused one.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | flash | `boolean \| undefined` | false, true | no | — | Flash once (an attempt to add it again). |
-| icon | `ReactNode` | false, true | no | — | Leading icon. Pass it without a size. |
+| icon | `ReactNode` | See type | no | — | Leading icon. Pass it without a size. |
 | invalid | `string \| undefined` | See type | no | — | Why this value is not valid: the chip turns danger and the reason is its tooltip. |
 | label | `string` | See type | yes | — | The visible or accessible label for this component. |
 | onEdit | `(() => void) \| undefined` | See type | no | — | Enter or double-click edits the chip in place. |

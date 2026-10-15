@@ -10,7 +10,7 @@ A chip-shaped twin used only to measure how many chips fit (no behaviour, hidden
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| icon | `ReactNode` | false, true | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
+| icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | label | `string` | See type | yes | — | The visible or accessible label for this component. |
 | removable | `boolean \| undefined` | false, true | no | true | Allows removal through the item’s named remove control. |
 

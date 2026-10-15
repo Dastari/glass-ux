@@ -115,6 +115,10 @@ for (const width of [320, 390, 1920]) {
       await expect(names.filter({ hasText: /^attachmentAccept$/ })).toHaveCount(
         1,
       );
+      const aside = scroll.getByRole("row").filter({
+        has: page.getByRole("rowheader", { name: "aside", exact: true }),
+      });
+      await expect(aside.getByRole("cell").nth(1)).toHaveText("See type");
       const geometry = await scroll.evaluate((element) => ({
         pageWidth: document.documentElement.scrollWidth,
         viewport: innerWidth,

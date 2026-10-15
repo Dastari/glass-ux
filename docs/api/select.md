@@ -18,7 +18,7 @@ enough to need typing.
 | className | `string \| undefined` | See type | no | — | Layout only. Applied to the trigger. |
 | defaultValue | `V \| null \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
-| icon | `ReactNode` | false, true | no | — | A fixed leading icon, for options that have none of their own. |
+| icon | `ReactNode` | See type | no | — | A fixed leading icon, for options that have none of their own. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |

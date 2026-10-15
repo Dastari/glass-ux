@@ -20,8 +20,8 @@ top bar. Filtering lists, tables and the command palette all use this one field.
 | revealed | `boolean \| undefined` | false, true | no | — | Password boxes: whether the value shows as text. Leave unset for the box's own toggle. |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard hint shown while the field is empty and unfocused ("mod+k" → ⌘K / Ctrl K). |
 | size | `InputSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-| trailing | `ReactNode` | false, true | no | — | Any other trailing content (a status, a small action). |
-| unit | `ReactNode` | false, true | no | — | Unit after the value ("GB", "ms", "%"). |
+| trailing | `ReactNode` | See type | no | — | Any other trailing content (a status, a small action). |
+| unit | `ReactNode` | See type | no | — | Unit after the value ("GB", "ms", "%"). |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

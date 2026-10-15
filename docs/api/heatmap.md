@@ -19,8 +19,8 @@ quiet hours read as quiet. A step legend sits in the head.
 | columnLabel | `string \| undefined` | See type | no | "Time" | Accessible name or label definition for a column. |
 | columns | `readonly XValue[]` | See type | yes | — | One per column: hours (Dates) or labels. |
 | domain | `readonly [number, number] \| undefined` | See type | no | — | Value range for the colour scale; defaults to [0, max]. |
-| emptyText | `ReactNode` | false, true | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
-| errorText | `ReactNode` | false, true | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
+| emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
+| errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
 | format | `((value: number) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). |
 | formatColumn | `((column: XValue) => string) \| undefined` | See type | no | — | Format a column for labels and the readout. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |

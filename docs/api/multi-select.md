@@ -18,7 +18,7 @@ the last choice; ← walks the chips.
 | defaultValue | `V[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | empty | `((query: string) => ReactNode) \| undefined` | See type | no | — | Content shown when there are no matching items. |
-| icon | `ReactNode` | false, true | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
+| icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Marks the control invalid. Pair it with an accessible validation message. |
 | loading | `boolean \| undefined` | false, true | no | false | Skeleton rows while static options load elsewhere. |

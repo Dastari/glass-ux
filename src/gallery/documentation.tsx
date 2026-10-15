@@ -15,7 +15,7 @@ interface Prop {
   name: string;
   /** Semantic content or control type. */
   type: string;
-  options: Array<string | number | boolean>;
+  options: Array<string | number | boolean | null>;
   required: boolean;
   default: string | null;
   description: string;

@@ -13,7 +13,7 @@ A glass pane from a screen edge: the inspector (right), the section drawer (left
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | actionsRef | `RefObject<{ unmount: () => void; close: () => void; } \| null> \| undefined` | See type | no | — | Ref exposing the component’s imperative action contract. |
-| children | `ReactNode` | false, true | no | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | defaultOpen | `boolean \| undefined` | false, true | no | — | Opens the uncontrolled overlay initially. |
 | modal | `boolean \| undefined` | false, true | no | — | Whether the overlay traps focus and makes outside content inert. |
 | onOpenChange | `((open: boolean, details: DialogChangeDetails) => void) \| undefined` | See type | no | — | Called when open change occurs. The callback type specifies its arguments. |
@@ -35,7 +35,7 @@ A glass pane from a screen edge: the inspector (right), the section drawer (left
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string \| undefined` | See type | no | — | Accessible name when a visible label does not name the control. |
-| children | `ReactNode` | false, true | no | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | size | `SheetSize \| undefined` | "sm", "md", "lg" | no | "md" | Width: sm 360 · md 480 · lg 640. Side sheets keep a sliver of the page visible on phones; a bottom sheet spans the phone's width. |
 
@@ -46,10 +46,10 @@ A glass pane from a screen edge: the inspector (right), the section drawer (left
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | close | `boolean \| undefined` | false, true | no | true | Show the close button (default). |
-| icon | `ReactNode` | false, true | no | — | Icon in a tile, sized by the header. |
-| media | `ReactNode` | false, true | no | — | Replaces the icon tile with the caller's own: an entity's identity tile (its photo, state). |
-| subtitle | `ReactNode` | false, true | no | — | Data only: the target's identifier or context (R2.2), never a restatement. |
-| title | `ReactNode` | false, true | yes | — | The heading or title content. |
+| icon | `ReactNode` | See type | no | — | Icon in a tile, sized by the header. |
+| media | `ReactNode` | See type | no | — | Replaces the icon tile with the caller's own: an entity's identity tile (its photo, state). |
+| subtitle | `ReactNode` | See type | no | — | Data only: the target's identifier or context (R2.2), never a restatement. |
+| title | `ReactNode` | See type | yes | — | The heading or title content. |
 | tone | `DialogTone \| undefined` | "danger", "warning", "default", "success", "accent", "info" | no | "default" | The semantic tone. Use danger and warning for consequences and states. |
 
 ## Sheet.Body
@@ -66,7 +66,7 @@ A glass pane from a screen edge: the inspector (right), the section drawer (left
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| start | `ReactNode` | false, true | no | — | Tertiary actions on the left (Reset, Help). The primary always goes last, on the right. |
+| start | `ReactNode` | See type | no | — | Tertiary actions on the left (Reset, Help). The primary always goes last, on the right. |
 
 ## Sheet.Close
 

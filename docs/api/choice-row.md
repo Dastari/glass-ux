@@ -12,11 +12,11 @@ toggles it; works inside or outside a Field.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The checkbox, radio or switch. Give it `id={controlId}` and `aria-describedby={descriptionId(controlId)}`. |
+| children | `ReactNode` | See type | yes | — | The checkbox, radio or switch. Give it `id={controlId}` and `aria-describedby={descriptionId(controlId)}`. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | controlId | `string` | See type | yes | — | The control's id (the label points at it). |
-| description | `ReactNode` | false, true | no | — | Additional content describing the value, state, or consequence. |
+| description | `ReactNode` | See type | no | — | Additional content describing the value, state, or consequence. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
-| label | `ReactNode` | false, true | yes | — | The visible or accessible label for this component. |
+| label | `ReactNode` | See type | yes | — | The visible or accessible label for this component. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -14,7 +14,7 @@ or a picker whose rows are links. Router-agnostic: `RouteVerticalTabs` adapts it
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string` | See type | yes | — | Accessible name when a visible label does not name the control. |
-| children | `ReactNode` | false, true | no | — | The section's content (the route's outlet). |
+| children | `ReactNode` | See type | no | — | The section's content (the route's outlet). |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | items | `T[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
 | layout | `VerticalTabsLayout \| undefined` | "select", "rail", "icons", "chips" | no | — | Layout or presentation mode. |

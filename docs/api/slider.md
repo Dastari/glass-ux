@@ -21,7 +21,7 @@ Arrow keys step, Shift/Page keys take large steps, Home/End jump to the ends.
 | format | `((value: number) => string) \| undefined` | See type | no | — | Formats the bubble and aria-valuetext. Default: the number plus `unit`. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | largeStep | `number \| undefined` | See type | no | — | The larger keyboard increment. |
-| marks | `boolean \| (number \| SliderMark)[] \| undefined` | false, true | no | — | Tick marks under the track; `true` puts one on every step (use for ≤ 20 steps). |
+| marks | `boolean \| (number \| SliderMark)[] \| undefined` | See type | no | — | Tick marks under the track; `true` puts one on every step (use for ≤ 20 steps). |
 | max | `number \| undefined` | See type | no | 100 | Upper value or visible-item limit, as specified by the type. |
 | min | `number \| undefined` | See type | no | 0 | Lower allowed value. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |

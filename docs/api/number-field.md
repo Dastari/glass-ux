@@ -29,11 +29,11 @@ with tabular figures.
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
-| scrubLabel | `ReactNode` | false, true | no | — | A short prefix inside the box that scrubs the value when dragged ("W", "Max"). |
+| scrubLabel | `ReactNode` | See type | no | — | A short prefix inside the box that scrubs the value when dragged ("W", "Max"). |
 | size | `NumberFieldSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | step | `number \| undefined` | See type | no | 1 | Increment used by keyboard and stepper interaction. |
 | steppers | `boolean \| undefined` | false, true | no | true | Show the − / + steppers (default). Arrow keys always step. |
-| unit | `ReactNode` | false, true | no | — | Unit after the value ("MB", "ms", "devices"). |
+| unit | `ReactNode` | See type | no | — | Unit after the value ("MB", "ms", "devices"). |
 | value | `number \| null \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
 

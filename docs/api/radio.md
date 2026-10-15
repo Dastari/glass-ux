@@ -11,8 +11,8 @@ One option of a RadioGroup. The chosen circle fills with the accent around a dot
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| description | `ReactNode` | false, true | no | — | Additional content describing the value, state, or consequence. |
-| label | `ReactNode` | false, true | no | — | Label beside the circle. |
+| description | `ReactNode` | See type | no | — | Additional content describing the value, state, or consequence. |
+| label | `ReactNode` | See type | no | — | Label beside the circle. |
 | size | `ChoiceSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | The semantic tone. Use danger and warning for consequences and states. |
 

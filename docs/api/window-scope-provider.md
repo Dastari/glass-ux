@@ -10,7 +10,7 @@ Everything in the workspace is a window: tiled, floating, snapped, maximised, mi
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | value | `WindowScopes \| null \| undefined` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

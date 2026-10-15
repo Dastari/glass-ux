@@ -15,7 +15,7 @@ replaced by its canonical form before `onBlur` runs, so validation sees the fina
 | className | `string \| undefined` | See type | no | — | Layout only (width, grid placement). Applied to the control box. |
 | clearable | `boolean \| undefined` | false, true | no | — | Show a clear button while the field has a value. |
 | defaultValue | `string \| undefined` | See type | no | "" | The initial value when using the component without controlling its state. |
-| icon | `ReactNode` | false, true | no | — | Leading icon. Pass the icon without a size. |
+| icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | identifier | `boolean \| undefined` | false, true | no | true | Identifiers (addresses, hostnames) get tabular figures (R8.4). Default true. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field (inside a Field, set `error` on the Field instead). |
 | normalise | `(text: string) => string \| null` | See type | yes | — | The canonical form of the text, or null when it cannot be read (it is then left exactly as typed, for the schema to explain). |
@@ -26,8 +26,8 @@ replaced by its canonical form before `onBlur` runs, so validation sees the fina
 | revealed | `boolean \| undefined` | false, true | no | — | Password boxes: whether the value shows as text. Leave unset for the box's own toggle. |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard hint shown while the field is empty and unfocused ("mod+k" → ⌘K / Ctrl K). |
 | size | `InputSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-| trailing | `ReactNode` | false, true | no | — | Any other trailing content (a status, a small action). |
-| unit | `ReactNode` | false, true | no | — | Unit after the value ("GB", "ms", "%"). |
+| trailing | `ReactNode` | See type | no | — | Any other trailing content (a status, a small action). |
+| unit | `ReactNode` | See type | no | — | Unit after the value ("GB", "ms", "%"). |
 | value | `string \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
 

@@ -12,7 +12,7 @@ Slots for window bodies.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 
 ## Window.Status
 
@@ -20,7 +20,7 @@ Slots for window bodies.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | no | — | StatusItem / StatusMeta children for the status bar. |
+| children | `ReactNode` | See type | no | — | StatusItem / StatusMeta children for the status bar. |
 | indicator | `WindowIndicator \| undefined` | See type | no | — | What the dock shows for this window: a dot and a one-word state. |
 
 ## Window.Body

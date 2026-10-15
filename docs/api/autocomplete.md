@@ -18,8 +18,8 @@ list or an async source and use the same rows as Select and Combobox.
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | empty | `((query: string) => ReactNode) \| undefined` | See type | no | — | Text for the empty row (only while a source has answered). Default: none. |
 | fill | `"label" \| "value" \| undefined` | "label", "value" | no | "label" | What choosing a suggestion puts in the field: its label (default) or its value. |
-| footer | `ReactNode` | false, true | no | — | A quiet line at the foot of the suggestions: a data source's attribution. |
-| icon | `ReactNode` | false, true | no | — | Leading icon. |
+| footer | `ReactNode` | See type | no | — | A quiet line at the foot of the suggestions: a data source's attribution. |
+| icon | `ReactNode` | See type | no | — | Leading icon. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Marks the control invalid. Pair it with an accessible validation message. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |

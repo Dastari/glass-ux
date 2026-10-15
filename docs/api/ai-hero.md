@@ -13,7 +13,7 @@ hold the composer and suggestions as children. No subtitle — the composer says
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | no | — | The composer, then the suggestions. |
+| children | `ReactNode` | See type | no | — | The composer, then the suggestions. |
 | emphasis | `string \| undefined` | See type | no | "help you" | Portion of the heading receiving emphasis. |
 | title | `string \| undefined` | See type | no | "What can I help you with?" | The headline; the part in `emphasis` takes the accent gradient (one per screen). |
 

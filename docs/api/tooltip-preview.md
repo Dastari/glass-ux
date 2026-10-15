@@ -10,7 +10,7 @@ A static tooltip bubble for documentation and screenshots. Same classes, no beha
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| content | `ReactNode` | false, true | yes | — | Content rendered by this slot or overlay. |
+| content | `ReactNode` | See type | yes | — | Content rendered by this slot or overlay. |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard shortcut shown with the control, using the host platform’s modifier keys. |
 | side | `"top" \| "bottom" \| undefined` | "top", "bottom" | no | "top" | Preferred side of the anchor; collision handling may choose another side. |
 

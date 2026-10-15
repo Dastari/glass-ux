@@ -12,7 +12,7 @@ Mount once near the root; nested providers defer to the outer one.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | groupOrder | `readonly string[] \| undefined` | See type | no | DEFAULT_ORDER | Group order; "*" marks where unlisted groups go. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

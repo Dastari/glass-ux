@@ -15,7 +15,7 @@ track so the reader sees how close it is.
 | aria-label | `string \| undefined` | See type | no | — | Accessible name when there is no visible label. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | dangerAt | `number \| undefined` | See type | no | 0.9 | Threshold at which the value enters the danger state. |
-| label | `ReactNode` | false, true | no | — | What is measured: "C: · Local disk", "Memory". |
+| label | `ReactNode` | See type | no | — | What is measured: "C: · Local disk", "Memory". |
 | layout | `"inline" \| "stacked" \| undefined` | "inline", "stacked" | no | "stacked" | `stacked`: label and reading above the bar. `inline`: bar then reading on one line — for table cells and dense lists. |
 | max | `number \| undefined` | See type | no | 100 | Upper value or visible-item limit, as specified by the type. |
 | value | `number` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |

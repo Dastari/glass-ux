@@ -12,9 +12,9 @@ For transient outcomes use a toast; for connection state use the status bar.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| action | `ReactNode` | false, true | no | — | One trailing control: a small Button or a link. |
+| action | `ReactNode` | See type | no | — | One trailing control: a small Button or a link. |
 | compact | `boolean \| undefined` | false, true | no | false | One line that truncates; the full text is available on hover and keyboard focus. |
-| title | `ReactNode` | false, true | no | — | A short bold lead-in. Optional: most notices are one sentence. |
+| title | `ReactNode` | See type | no | — | A short bold lead-in. Optional: most notices are one sentence. |
 | tone | `NoticeTone \| undefined` | "danger", "warning", "success", "info" | no | "info" | The semantic tone. Use danger and warning for consequences and states. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

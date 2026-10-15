@@ -13,8 +13,8 @@ Display a part-to-whole dataset as a ring, with responsive legends, an accessibl
 | categoryLabel | `string \| undefined` | See type | no | — | Header for the table's first column. |
 | centre | `{ value: string; label: string; } \| undefined` | See type | no | — | What the centre says when nothing is hovered. Defaults to the total. |
 | data | `readonly PieSlice[]` | See type | yes | — | Typed records rendered by the component. |
-| emptyText | `ReactNode` | false, true | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
-| errorText | `ReactNode` | false, true | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
+| emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
+| errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
 | format | `((value: number) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | maxSlices | `number \| undefined` | See type | no | — | Slices past this fold into "Other" (part-to-whole reads at six or fewer). |

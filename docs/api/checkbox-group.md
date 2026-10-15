@@ -11,9 +11,9 @@ clears the rest and shows the mixed state when only some are ticked (pass `allVa
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| legend | `ReactNode` | false, true | no | — | Names the group (rendered as a fieldset legend in the field-label style). |
+| legend | `ReactNode` | See type | no | — | Names the group (rendered as a fieldset legend in the field-label style). |
 | orientation | `"horizontal" \| "vertical" \| undefined` | "horizontal", "vertical" | no | "vertical" | Direction of layout and keyboard navigation. |
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | Tone for every checkbox in the group. |
 

@@ -21,8 +21,8 @@ box grows.
 | --- | --- | --- | --- | --- | --- |
 | area | `boolean \| undefined` | false, true | no | — | The Sparkline wash under each line. Defaults on for a single series. |
 | domain | `Domain \| undefined` | See type | no | — | Fixed value range (percentages: [0, 100]). Defaults to the data, rounded to nice ticks. |
-| emptyText | `ReactNode` | false, true | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
-| errorText | `ReactNode` | false, true | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
+| emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
+| errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
 | format | `((value: number) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). |
 | formatX | `((x: number) => string) \| undefined` | See type | no | — | Format a numeric x. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |

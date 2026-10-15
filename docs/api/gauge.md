@@ -20,8 +20,8 @@ not a state (warningAt={null}) wears the data colour, --chart-1.
 | --- | --- | --- | --- | --- | --- |
 | caption | `string \| undefined` | See type | no | — | The reading in words under the value: "212 GB of 256 GB". |
 | dangerAt | `number \| null \| undefined` | See type | no | 0.9 | Threshold at which the value enters the danger state. |
-| emptyText | `ReactNode` | false, true | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
-| errorText | `ReactNode` | false, true | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
+| emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
+| errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
 | format | `((value: number) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | max | `number \| undefined` | See type | no | 100 | Upper value or visible-item limit, as specified by the type. |

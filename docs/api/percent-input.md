@@ -29,7 +29,7 @@ whole percent, or a fraction with `scale="fraction"`; bounds are in the same sca
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
 | scale | `"whole" \| "fraction" \| undefined` | "whole", "fraction" | no | "whole" | whole (default): 90 means 90 %. fraction: 0.9 means 90 % (what ratios and APIs often store). |
-| scrubLabel | `ReactNode` | false, true | no | — | A short prefix inside the box that scrubs the value when dragged ("W", "Max"). |
+| scrubLabel | `ReactNode` | See type | no | — | A short prefix inside the box that scrubs the value when dragged ("W", "Max"). |
 | size | `NumberFieldSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | step | `number \| undefined` | See type | no | — | Increment used by keyboard and stepper interaction. |
 | steppers | `boolean \| undefined` | false, true | no | — | Show the − / + steppers (default). Arrow keys always step. |

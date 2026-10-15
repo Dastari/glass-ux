@@ -16,7 +16,7 @@ zone's abbreviation and offset now, so daylight saving is visible. The value is 
 | defaultValue | `string \| null \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | empty | `((query: string) => ReactNode) \| undefined` | See type | no | — | Text for the empty row. Default: No matches for “query”. |
-| icon | `ReactNode` | false, true | no | — | Leading icon. |
+| icon | `ReactNode` | See type | no | — | Leading icon. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Marks the control invalid. Pair it with an accessible validation message. |
 | locale | `string \| undefined` | See type | no | — | Locale used to format values. |

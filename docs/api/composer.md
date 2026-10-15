@@ -44,7 +44,7 @@ Width  container-aware down to the docked pane: labels drop to icons, the model 
 | placeholder | `string \| undefined` | See type | no | "Ask Assistant…" | The prompt shown while the value is empty. It does not replace the field’s label. |
 | run | `RunState \| undefined` | "idle", "running", "sending", "stopping" | no | "idle" | Operation invoked by the component. |
 | size | `"md" \| "lg" \| undefined` | "md", "lg" | no | "md" | md: conversations and panes · lg: the landing hero (bigger send circle). |
-| status | `ReactNode` | false, true | no | — | The conversation's status line (AiStatusStrip), the last row inside the composer. |
+| status | `ReactNode` | See type | no | — | The conversation's status line (AiStatusStrip), the last row inside the composer. |
 | value | `string \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

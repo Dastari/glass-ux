@@ -10,10 +10,10 @@ A clickable list row sharing the library's item recipe and native keyboard activ
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| icon | `ReactNode` | false, true | no | — | Leading icon or identity glyph. |
-| meta | `ReactNode` | false, true | no | — | Secondary information, below the title. |
+| icon | `ReactNode` | See type | no | — | Leading icon or identity glyph. |
+| meta | `ReactNode` | See type | no | — | Secondary information, below the title. |
 | selected | `boolean \| undefined` | false, true | no | false | Marks the currently selected destination. |
-| title | `ReactNode` | false, true | yes | — | Main row label; rich nodes receive a truncation tooltip. |
-| trailing | `ReactNode` | false, true | no | — | Non-interactive trailing metadata or count. |
+| title | `ReactNode` | See type | yes | — | Main row label; rich nodes receive a truncation tooltip. |
+| trailing | `ReactNode` | See type | no | — | Non-interactive trailing metadata or count. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

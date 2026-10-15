@@ -17,7 +17,7 @@ Points with a status anywhere in the world, clustered with a status ring, over a
 | home | `MapRegion \| null \| undefined` | See type | yes | — | The home region: undefined while it loads, null when there is none. |
 | insets | `MapInsets \| null \| undefined` | See type | no | — | Page chrome floating over a full-bleed map, in CSS pixels (a header above, a status strip below): controls, credits and every frame stay clear of it, and it re-frames when it changes. `null` means "being measured": the silhouette stays transparent until the insets are known, so a server-rendered frame never paints in the wrong place and then jumps (CLS). |
 | label | `string` | See type | yes | — | Accessible name of the map: "Sites, All organisations". |
-| list | `ReactNode` | false, true | no | — | The list view: the caller's table, with a ViewToggle in its toolbar. |
+| list | `ReactNode` | See type | no | — | The list view: the caller's table, with a ViewToggle in its toolbar. |
 | loading | `boolean \| undefined` | false, true | no | false | The points are still loading: the silhouette stays, markers wait. |
 | noun | `MapNoun \| undefined` | See type | no | { one: "site", other: "sites" } | Singular and plural names used in counts and accessible labels. |
 | onSelect | `((point: MapPoint<T> \| null) => void) \| undefined` | See type | no | — | Called when select occurs. The callback type specifies its arguments. |

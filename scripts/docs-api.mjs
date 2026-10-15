@@ -11,6 +11,7 @@ import {
 import { join } from "node:path";
 import { propDescriptions } from "./document-props.mjs";
 import { generateComponentDemos } from "./component-demos.mjs";
+import { literalOptions } from "./docs-api-options.mjs";
 
 const config = ts.readConfigFile("tsconfig.json", ts.sys.readFile);
 writeFileSync(
@@ -176,15 +177,7 @@ function signatureApi(type, at) {
             file.includes("/src/") && !file.includes("/node_modules/");
           const name = prop.getName();
           const propType = checker.getTypeOfSymbolAtLocation(prop, declaration);
-          const options = (
-            propType.isUnion() ? propType.types : [propType]
-          ).flatMap((type) =>
-            type.isStringLiteral() || type.isNumberLiteral()
-              ? [type.value]
-              : type.flags & ts.TypeFlags.BooleanLiteral
-                ? [type.intrinsicName === "true"]
-                : [],
-          );
+          const options = literalOptions(propType);
           return {
             name,
             type: checker.typeToString(

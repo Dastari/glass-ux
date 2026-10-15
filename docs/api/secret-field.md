@@ -13,8 +13,8 @@ SecretInput bound to a form field holding a `SecretValue`: use it inside
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
-| hint | `ReactNode` | false, true | no | — | Supporting text in the field’s reserved message slot. Validation errors take precedence. |
-| label | `ReactNode` | false, true | yes | — | The visible or accessible label for this component. |
+| hint | `ReactNode` | See type | no | — | Supporting text in the field’s reserved message slot. Validation errors take precedence. |
+| label | `ReactNode` | See type | yes | — | The visible or accessible label for this component. |
 | optional | `boolean \| undefined` | false, true | no | — | Shows the optional-field indication without changing validation. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
 | secretName | `string \| undefined` | See type | no | — | Names the secret for its buttons ("community"). |

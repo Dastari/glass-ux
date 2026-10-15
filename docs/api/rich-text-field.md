@@ -13,13 +13,13 @@ Markdown input bound to a string form field, with Field label and reserved valid
 | aria-describedby | `string \| undefined` | See type | no | — | IDs of supporting or validation text. |
 | aria-label | `string \| undefined` | See type | no | — | Accessible name for a bare input. |
 | aria-labelledby | `string \| undefined` | See type | no | — | IDs providing the accessible name. |
-| aside | `ReactNode` | false, true | no | — | Right side of the label row: a live value readout or a small link. |
+| aside | `ReactNode` | See type | no | — | Right side of the label row: a live value readout or a small link. |
 | attachmentAccept | `string \| undefined` | See type | no | — | File picker accept attribute used by the upload adapter. Default unrestricted. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | defaultView | `RichTextView \| undefined` | "visual", "markdown" | no | — | Initial presentation for an uncontrolled view. Default visual. |
-| hint | `ReactNode` | false, true | no | — | The message line's resting text. Only when the format or consequence is not obvious (R2.8). |
+| hint | `ReactNode` | See type | no | — | The message line's resting text. Only when the format or consequence is not obvious (R2.8). |
 | id | `string \| undefined` | See type | no | — | ID of the active editing surface. Field supplies a label when wrapped. |
-| label | `ReactNode` | false, true | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
+| label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
 | maxHeight | `number \| undefined` | See type | no | — | Maximum content height, in CSS pixels; longer documents scroll. Default 480. |
 | minHeight | `number \| undefined` | See type | no | — | Minimum content height, in CSS pixels. Default 160. Toolbar height is additional. |
 | onAttachmentError | `((error: unknown) => void) \| undefined` | See type | no | — | Reports an upload failure to the host; an inline message also explains it. |
@@ -36,6 +36,6 @@ Markdown input bound to a string form field, with Field label and reserved valid
 | style | `CSSProperties \| undefined` | See type | no | — | Outer layout styles. |
 | uploadAttachment | `((file: File) => Promise<RichTextAttachment>) \| undefined` | See type | no | — | Host-owned upload adapter. When supplied, the toolbar offers Attach file. |
 | view | `RichTextView \| undefined` | "visual", "markdown" | no | — | Controlled presentation. Default visual; the visual view is directly editable. |
-| warning | `ReactNode` | false, true | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
+| warning | `ReactNode` | See type | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

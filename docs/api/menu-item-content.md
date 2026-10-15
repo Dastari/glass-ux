@@ -11,9 +11,9 @@ then a trailing shortcut or chevron. One layout, so every list reads the same.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
-| icon | `ReactNode` | false, true | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
+| icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard shortcut shown with the control, using the host platform’s modifier keys. |
-| trail | `ReactNode` | false, true | no | — | Ancestor trail before the current item. |
+| trail | `ReactNode` | See type | no | — | Ancestor trail before the current item. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -19,7 +19,7 @@ double-click. With suggestions or a source, the list offers matches and “Creat
 | className | `string \| undefined` | See type | no | — | Layout only. Applied to the control box. |
 | defaultValue | `string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
-| icon | `ReactNode` | false, true | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
+| icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Marks the control invalid. Pair it with an accessible validation message. |
 | max | `number \| undefined` | See type | no | — | Most chips allowed. |

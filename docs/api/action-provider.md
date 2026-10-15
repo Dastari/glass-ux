@@ -15,7 +15,7 @@ what it is given. A layout that owns a window manager wires `openWindow` this wa
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | navigate | `((to: string) => void) \| undefined` | See type | no | — | Override navigation with the host router. Defaults to TanStack Router when present, otherwise browser navigation. |
 | openWindow | `((kind: string, params: Record<string, string>) => void) \| undefined` | See type | no | — | Application callback opening a serialisable view in a managed window. |
 

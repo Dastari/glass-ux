@@ -31,7 +31,7 @@ Small, contextual, non-blocking content next to its trigger: a filter, a peek, a
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | side | `import("@base-ui/react/internals/useAnchorPositioning").Side \| undefined` | "top", "bottom", "left", "right", "inline-end", "inline-start" | no | "bottom" | Preferred side of the anchor; collision handling may choose another side. |
 | size | `PopoverSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-| title | `ReactNode` | false, true | no | — | Optional title row; adds a close button. Omit it when the trigger already names the content. |
+| title | `ReactNode` | See type | no | — | Optional title row; adds a close button. Omit it when the trigger already names the content. |
 
 ## Popover.Close
 
@@ -53,8 +53,8 @@ Small, contextual, non-blocking content next to its trigger: a filter, a peek, a
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | size | `PopoverSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-| title | `ReactNode` | false, true | no | — | The heading or title content. |
+| title | `ReactNode` | See type | no | — | The heading or title content. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

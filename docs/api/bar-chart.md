@@ -24,8 +24,8 @@ Rows that do not fit in a ranked list fold into a "+N more" line — nothing is 
 | categoryLabel | `string \| undefined` | See type | no | "Category" | Header for the category column of the table ("Process", "Day"). |
 | domain | `Domain \| undefined` | See type | no | — | Fixed value range; defaults to zero → the data, rounded to nice ticks. |
 | edges | `readonly number[] \| undefined` | See type | no | — | Bin edges for a histogram: n + 1 numbers; bars touch and the axis labels the edges. |
-| emptyText | `ReactNode` | false, true | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
-| errorText | `ReactNode` | false, true | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
+| emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
+| errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
 | format | `((value: number) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). |
 | formatEdge | `((value: number) => string) \| undefined` | See type | no | — | Format a bin edge. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |

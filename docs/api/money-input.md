@@ -28,7 +28,7 @@ reads the locale's currency format ("$1,234.50"), and rounds to the currency's m
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
-| scrubLabel | `ReactNode` | false, true | no | — | A short prefix inside the box that scrubs the value when dragged ("W", "Max"). |
+| scrubLabel | `ReactNode` | See type | no | — | A short prefix inside the box that scrubs the value when dragged ("W", "Max"). |
 | showCode | `boolean \| undefined` | false, true | no | false | Show the currency code after the amount ("AUD"), for screens with more than one currency. Default false. |
 | size | `NumberFieldSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | step | `number \| undefined` | See type | no | — | Step for the arrow keys, in minor units. Default one major unit ($1). |

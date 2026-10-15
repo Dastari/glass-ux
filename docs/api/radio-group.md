@@ -10,10 +10,10 @@ One choice from a few visible options. Arrow keys move and select; Tab leaves th
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| children | `ReactNode` | false, true | yes | — | The content or component slots rendered inside the component. |
+| children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
-| legend | `ReactNode` | false, true | no | — | Names the group (a fieldset legend in the field-label style). |
+| legend | `ReactNode` | See type | no | — | Names the group (a fieldset legend in the field-label style). |
 | orientation | `"horizontal" \| "vertical" \| undefined` | "horizontal", "vertical" | no | "vertical" | Direction of layout and keyboard navigation. |
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | Tone for every option in the group. |
 | variant | `"list" \| "cards" \| undefined` | "list", "cards" | no | "list" | list: rows of radios. cards: RadioCard tiles that reflow by container width. |

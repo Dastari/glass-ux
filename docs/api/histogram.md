@@ -15,8 +15,8 @@ count. Tiers are the column chart's.
 | bins | `number \| undefined` | See type | no | 12 | About how many bins (d3 picks nice edges near this). |
 | countLabel | `string \| undefined` | See type | no | "Count" | What is counted: "Endpoints", "Check-ins". |
 | domain | `Domain \| undefined` | See type | no | — | The x range to bin over; defaults to the data's extent. |
-| emptyText | `ReactNode` | false, true | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
-| errorText | `ReactNode` | false, true | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
+| emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
+| errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
 | format | `((value: number) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called when retry occurs. The callback type specifies its arguments. |

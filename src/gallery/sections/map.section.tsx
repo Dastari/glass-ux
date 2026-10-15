@@ -32,6 +32,13 @@ const POINTS: MapPoint<{ address: string }>[] = MOCK_SITES.map((site, index) => 
 }))
 
 const OUTLINE_ONLY: MapConfig = { ...DEMO_MAP_CONFIG, basemap: null }
+const ATTRIBUTION_CONFIG: MapConfig = { ...OUTLINE_ONLY, regionAttribution: {
+  label: "Natural Earth public domain boundary data",
+  href: "https://www.naturalearthdata.com/",
+  licence: "Public domain",
+  short: "Boundary data: Natural Earth, public domain cartographic data",
+  minimal: "Natural Earth",
+} }
 
 const CLUSTERS = [
   { label: "Cluster · all healthy", size: "sm", counts: { danger: 0, warning: 0, healthy: 4, unknown: 0 } },
@@ -127,6 +134,10 @@ export default function MapSection() {
       >
         <LiveMap id="map-hero" />
       </OnCanvas>
+
+      <Specimen title="Attribution in narrow maps" description="The required minimal credit stays readable in narrow containers and at larger UI scales. The information control retains the complete source and licence links." layout="bare">
+        <LiveMap id="map-attribution" config={ATTRIBUTION_CONFIG} />
+      </Specimen>
 
       <Specimen
         title="Modes and palettes"
@@ -239,7 +250,7 @@ export default function MapSection() {
         </ul>
       </Specimen>
 
-      <ContainerLab description="The map fills whatever box it is given. From 16rem tall and 20rem wide it shows every control and the full credit line; below that the zoom buttons go (pinch and scroll still zoom) and the credit line starts as “© OpenStreetMap”; under 8rem tall the controls go too. Everywhere the line folds to ⓘ after five seconds or the first interaction.">
+      <ContainerLab description="The map fills whatever box it is given. Below 16rem tall or 20rem wide the zoom buttons go (pinch and scroll still zoom); under 8rem tall all controls go. Credits use their minimal labels below 30rem wide or 16rem tall, wrap within the available width, and retain their complete source links under ⓘ. Everywhere the line folds to ⓘ after five seconds or the first interaction.">
         {() => <LiveMap id="map-lab" className="gallery-map-fill" />}
       </ContainerLab>
 

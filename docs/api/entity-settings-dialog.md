@@ -39,6 +39,7 @@ and Cancel / Save. One form spans every tab, so Save sends one document.
 | open | `boolean` | false, true | yes | — | Controls whether the overlay is open. |
 | preview | `boolean \| undefined` | false, true | no | false | Render in the page flow, open and non-modal (gallery specimens). |
 | privileged | `readonly string[] \| undefined` | See type | no | [] | Fields (names or prefixes) that need MFA to change (PrivilegedWrite). While the changes include one, Save reads "Verify and save" and runs `onVerify` first. Mark their labels with PrivilegedMark. Reads never need it. |
+| saveDisabledReason | `string \| undefined` | See type | no | — | Why saving is unavailable, while keeping populated fields editable. Blocks submission and verification; does not imply loading. |
 | size | `"lg" \| "xl" \| undefined` | "lg", "xl" | no | "lg" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | subtitle | `ReactNode` | See type | no | — | Data only (R2.2): "NST-C106 · Northstar Studio". |
 | tab | `string \| undefined` | See type | no | — | The open tab, when it lives in the URL (`?settings=snmp`). |

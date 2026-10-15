@@ -102,11 +102,13 @@ function RelaySettings({
   onOpenChange,
   preview = false,
   loading = false,
+  saveDisabledReason,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   preview?: boolean;
   loading?: boolean;
+  saveDisabledReason?: string;
 }) {
   const [saved, setSaved] = useState<RelayValues>(SAVED);
   const [tab, setTab] = useState("general");
@@ -148,6 +150,7 @@ function RelaySettings({
       onOpenChange={onOpenChange}
       preview={preview}
       loading={loading}
+      saveDisabledReason={saveDisabledReason}
       form={form}
       tab={tab}
       onTabChange={setTab}
@@ -363,6 +366,20 @@ export default function EntitySettingsSection() {
         wide
       >
         <RelaySettings open onOpenChange={() => undefined} preview loading />
+      </Specimen>
+
+      <Specimen
+        title="Draft-only settings"
+        description="Populated fields remain editable when the host has no admitted save operation. Save explains why it is unavailable; the dialog does not pretend a read or save is pending."
+        layout="bare"
+        wide
+      >
+        <RelaySettings
+          open
+          onOpenChange={() => undefined}
+          preview
+          saveDisabledReason="Saving this draft is not available"
+        />
       </Specimen>
 
       <Specimen

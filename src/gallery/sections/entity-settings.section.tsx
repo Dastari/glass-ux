@@ -61,7 +61,7 @@ const RETRY_LAYERS = [
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-function RelaySettings({ open, onOpenChange, preview = false, loading = false }: { open: boolean; onOpenChange: (open: boolean) => void; preview?: boolean; loading?: boolean }) {
+function RelaySettings({ open, onOpenChange, preview = false, loading = false, saveDisabledReason }: { open: boolean; onOpenChange: (open: boolean) => void; preview?: boolean; loading?: boolean; saveDisabledReason?: string }) {
   const [saved, setSaved] = useState<RelayValues>(SAVED)
   const [tab, setTab] = useState("general")
   const form = useAppForm({
@@ -84,6 +84,7 @@ function RelaySettings({ open, onOpenChange, preview = false, loading = false }:
       onOpenChange={onOpenChange}
       preview={preview}
       loading={loading}
+      saveDisabledReason={saveDisabledReason}
       form={form}
       tab={tab}
       onTabChange={setTab}
@@ -270,6 +271,10 @@ export default function EntitySettingsSection() {
       </Specimen>
 
       <Specimen title="Loading settings" description="The labelled group reserves field geometry while the host loads a document." layout="bare" wide><RelaySettings open onOpenChange={()=>undefined} preview loading/></Specimen>
+
+      <Specimen title="Draft-only settings" description="Populated fields remain editable when the host has no admitted save operation. Save explains why it is unavailable; the dialog does not pretend a read or save is pending." layout="bare" wide>
+        <RelaySettings open onOpenChange={() => undefined} preview saveDisabledReason="Saving this draft is not available" />
+      </Specimen>
 
       <Specimen
         title="Inherited setting"

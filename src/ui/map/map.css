@@ -15,8 +15,9 @@
  *   --fa-map-fade          the soft edge where the canvas meets the Glass UX canvas
  *
  * Tiers (container): the full control set from 16rem tall and 20rem wide; below that the zoom
- * buttons go (pinch and scroll still zoom) and the attribution shrinks to its ⓘ; under 8rem
- * tall only the map remains.
+ * buttons go (pinch and scroll still zoom). Credits use their minimal labels below 30rem
+ * wide or 16rem tall; the information button always retains complete source links. Under
+ * 8rem tall only the map and credits remain.
  */
 @layer components {
   .fa-map {
@@ -460,6 +461,10 @@
     position: absolute;
     right: calc(var(--_in-right) + var(--space-2));
     bottom: calc(var(--_in-bottom) + var(--space-2));
+    max-inline-size: max(
+      0px,
+      calc(100% - var(--_in-left) - var(--_in-right) - var(--space-2) * 2)
+    );
     display: flex;
     align-items: center;
     gap: var(--space-1);
@@ -469,9 +474,9 @@
   }
   .fa-map-attribution-text {
     display: flex;
+    flex-wrap: wrap;
     min-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
+    white-space: normal;
     transition-property: opacity, visibility;
     transition-duration: var(--duration-slow);
     transition-timing-function: var(--ease-standard);
@@ -485,7 +490,12 @@
   }
   /* The minimal forms only show in a small map. */
   .fa-map-credit {
-    white-space: pre;
+    max-inline-size: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .fa-map-attribution > .fa-button {
+    flex-shrink: 0;
   }
   .fa-map-credit-minimal {
     display: none;
@@ -514,17 +524,22 @@
 
   @container (height < 16rem) or (width < 20rem) {
     .fa-map-controls [data-map-control="zoom-in"],
-    .fa-map-controls [data-map-control="zoom-out"],
+    .fa-map-controls [data-map-control="zoom-out"] {
+      display: none;
+    }
+    .fa-map-controls {
+      top: calc(var(--_in-top) + var(--space-2));
+      right: calc(var(--_in-right) + var(--space-2));
+    }
+  }
+  /* Credit text needs more room than the controls, especially at larger UI scales. */
+  @container (height < 16rem) or (width < 30rem) {
     .fa-map-credit:not([data-minimal]),
     .fa-map-credit-short {
       display: none;
     }
     .fa-map-credit-minimal {
       display: inline;
-    }
-    .fa-map-controls {
-      top: calc(var(--_in-top) + var(--space-2));
-      right: calc(var(--_in-right) + var(--space-2));
     }
   }
   /* A row-sized map: no controls; the credits as everywhere else. */

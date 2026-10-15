@@ -9,6 +9,8 @@ export default defineConfig({
     "production.spec.ts",
     "documentation-navigation.spec.ts",
     "org-switcher-remote.spec.ts",
+    "entity-settings-save.spec.ts",
+    "map-attribution.spec.ts",
   ],
   fullyParallel: true,
   workers: 2,

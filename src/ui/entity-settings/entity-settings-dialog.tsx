@@ -95,6 +95,8 @@ export interface EntitySettingsDialogProps {
   preview?: boolean
   /** The document is loading: every tab shows its skeleton and Save waits. */
   loading?: boolean
+  /** Why saving is unavailable, while keeping populated fields editable. Blocks submission and verification; does not imply loading. */
+  saveDisabledReason?: string
   /**
    * Fields (names or prefixes) that need MFA to change (PrivilegedWrite). While the
    * changes include one, Save reads "Verify and save" and runs `onVerify` first. Mark their
@@ -173,6 +175,7 @@ export function EntitySettingsDialog({
   size = "lg",
   preview = false,
   loading = false,
+  saveDisabledReason,
   privileged = [],
   onVerify,
   onReload,
@@ -250,7 +253,7 @@ export function EntitySettingsDialog({
   }
 
   const save = async () => {
-    if (status === "pending") return
+    if (status === "pending" || loading || saveDisabledReason) return
     // The tabs this save is for: the ones with changes now.
     const dirtyTabs = tabs.filter((entry) => tabMarkers([entry], form.state.fieldMeta)[entry.value] === "dirty").map((entry) => entry.value)
     for (const name of serverErrors.current.keys()) clearServerError(name)
@@ -386,7 +389,7 @@ export function EntitySettingsDialog({
             pendingLabel={phase === "verify" ? "Verifying…" : "Saving…"}
             successLabel={phase === "verify" ? "Verified" : "Saved"}
             errorLabel="Not saved"
-            disabledReason={loading ? "Loading settings" : !dirty && status === "idle" ? "No changes to save" : undefined}
+            disabledReason={loading ? "Loading settings" : saveDisabledReason || (!dirty && status === "idle" ? "No changes to save" : undefined)}
             data-verify={needsVerify ? "" : undefined}
           >
             {needsVerify ? "Verify and save" : "Save"}

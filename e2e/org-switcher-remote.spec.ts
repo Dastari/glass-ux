@@ -42,6 +42,7 @@ test("bounded remote directory searches, pages, retries and retains selection @r
   await expect(
     demo.getByLabel("Organisation: Juniper Lab", { exact: true }),
   ).toBeVisible();
+  await expect(input).toHaveCount(0);
   await demo.getByRole("button", { name: "Simulate read failure" }).click();
   await demo.getByLabel("Organisation: Juniper Lab", { exact: true }).click();
   await expect(page.getByRole("alert")).toContainText(
@@ -59,6 +60,7 @@ test("bounded remote directory searches, pages, retries and retains selection @r
     exact: true,
   });
   await expect(all).toBeVisible();
+  await expect(input).toHaveCount(0);
   await all.click();
   await input.press("Escape");
   await expect(all).toBeFocused();

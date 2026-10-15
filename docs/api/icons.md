@@ -89,6 +89,7 @@ All icons share IconProps. Import only the named icons your interface uses; mean
 - **IconInfo** — Info icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconInspector** — Inspector icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconIntegrations** — Integrations icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconItalic** — Italic icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconKey** — Key icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconKeyboard** — Keyboard icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconLaptop** — Laptop icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.

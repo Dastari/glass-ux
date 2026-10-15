@@ -7,13 +7,18 @@ import {
   type Ref,
 } from "react";
 import { cx } from "../../lib/cx.js";
-import { IconChevronDown, IconCode } from "../../icons/generated/icons.js";
+import {
+  IconChevronDown,
+  IconCode,
+  IconItalic,
+} from "../../icons/generated/icons.js";
 import { Button } from "../button/index.js";
 import { Field } from "../field/index.js";
 import { useBoundField, type FieldChrome } from "../form/context.js";
 import { Skeleton } from "../skeleton/index.js";
 import { Segmented } from "../segmented/index.js";
 import { RICH_TEXT_VIEWS } from "./view-options.js";
+import { BlockStyleLabel } from "./block-style.js";
 
 const Editor = lazy(() => import("./rich-text-editor.js"));
 
@@ -173,13 +178,13 @@ export function RichTextSkeleton({
               tooltip={false}
               tabIndex={-1}
             >
-              Paragraph
+              <BlockStyleLabel value="paragraph" />
             </Button>
             <Skeleton.Block height="100%" width="100%" />
           </div>
           {[
             <strong key="bold">B</strong>,
-            <em key="italic">I</em>,
+            null,
             null,
             <s key="strike">S</s>,
             null,
@@ -193,7 +198,13 @@ export function RichTextSkeleton({
               <Button
                 variant="ghost"
                 size="sm"
-                icon={label ? undefined : <IconCode />}
+                icon={
+                  label ? undefined : index === 1 ? (
+                    <IconItalic />
+                  ) : (
+                    <IconCode />
+                  )
+                }
                 aria-label="Loading formatting"
                 disabled
                 tooltip={false}

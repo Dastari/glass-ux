@@ -70,6 +70,8 @@ The source switch uses the shared Segmented control: labels and Eye/Code icons a
 widths, then named icons when that keeps formatting on one row. Formatting wraps only when
 the remaining width cannot fit its controls. Segmented still owns focus, names and the
 adaptive presentation. The skeleton uses the same control geometry and follows those rows.
+The block-style chooser reserves its widest label in the current control font, so switching
+between paragraphs, headings, quotes and code blocks does not move the formatting controls.
 Spacing, type, borders and corners continue to follow density, UI scale and appearance.
 
 The optional `uploadAttachment(file)` adapter belongs to the application. It uploads a File

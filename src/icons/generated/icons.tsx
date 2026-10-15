@@ -757,6 +757,11 @@ export const IconIntegrations = createIcon(
   </>
 )
 
+export const IconItalic = createIcon(
+  "italic",
+  <path d="M10 5h9M14 5l-4 14M5 19h9" />
+)
+
 export const IconKey = createIcon(
   "key",
   <>

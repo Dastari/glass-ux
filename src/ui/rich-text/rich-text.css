@@ -64,6 +64,16 @@
   .fa-rich-text-block {
     min-width: calc(var(--control-h-sm) * 3);
   }
+  .fa-rich-text-block-labels {
+    display: grid;
+    text-align: start;
+  }
+  .fa-rich-text-block-labels > span {
+    grid-area: 1 / 1;
+  }
+  .fa-rich-text-block-labels > :not([data-active]) {
+    visibility: hidden;
+  }
   .fa-rich-text-content {
     position: relative;
     min-width: 0;

@@ -84,6 +84,7 @@ export const iconRegistry = [
   { name: "info", Icon: icons.IconInfo },
   { name: "inspector", Icon: icons.IconInspector },
   { name: "integrations", Icon: icons.IconIntegrations },
+  { name: "italic", Icon: icons.IconItalic },
   { name: "key", Icon: icons.IconKey },
   { name: "keyboard", Icon: icons.IconKeyboard },
   { name: "laptop", Icon: icons.IconLaptop },

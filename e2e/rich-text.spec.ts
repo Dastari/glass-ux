@@ -1,6 +1,97 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+test("block styles keep the chooser and formatting geometry stable @responsive", async ({
+  page,
+}, testInfo) => {
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      "glass-ux.appearance.v1",
+      JSON.stringify({ mode: "light", uiScale: 1.125, density: "comfortable" }),
+    ),
+  );
+  await page.goto("/components/rich-text-input");
+  const demo = page.getByTestId("rich-text-demo");
+  const root = demo.locator(".fa-rich-text").first();
+  const editor = demo.getByRole("textbox", { name: "Welcome guide" });
+  const chooser = demo.getByRole("button", { name: "Paragraph style" });
+  const italic = demo.getByRole("button", { name: "Italic", exact: true });
+  await editor.fill("Stable formatting");
+  await expect(italic.locator("svg")).toBeVisible();
+  expect(await italic.locator("svg path").getAttribute("d")).toContain(
+    "M10 5h9",
+  );
+  for (const width of testInfo.project.name === "phone"
+    ? [320, 360]
+    : [360, 650, 800]) {
+    await root.evaluate((element, value) => {
+      element.style.width = `${value}px`;
+    }, width);
+    const before = await root.evaluate((element) => {
+      const chooser = element.querySelector<HTMLElement>(
+        ".fa-rich-text-block",
+      )!;
+      const italic = element.querySelector<HTMLElement>(
+        'button[aria-label="Italic"]',
+      )!;
+      return {
+        width: chooser.getBoundingClientRect().width,
+        italicX: italic.getBoundingClientRect().x,
+        height: element
+          .querySelector(".fa-rich-text-toolbar")!
+          .getBoundingClientRect().height,
+      };
+    });
+    for (const label of [
+      "Paragraph",
+      "Quote",
+      "Heading 1",
+      "Heading 2",
+      "Heading 3",
+      "Code block",
+    ]) {
+      await chooser.click();
+      await page
+        .getByRole("menuitemradio", { name: label, exact: true })
+        .click();
+      await expect(chooser.locator("[data-active]")).toHaveText(label);
+      const after = await root.evaluate((element) => {
+        const chooser = element.querySelector<HTMLElement>(
+          ".fa-rich-text-block",
+        )!;
+        const italic = element.querySelector<HTMLElement>(
+          'button[aria-label="Italic"]',
+        )!;
+        const toolbar = element.querySelector<HTMLElement>(
+          ".fa-rich-text-toolbar",
+        )!;
+        return {
+          width: chooser.getBoundingClientRect().width,
+          italicX: italic.getBoundingClientRect().x,
+          height: toolbar.getBoundingClientRect().height,
+          overflow: toolbar.scrollWidth > toolbar.clientWidth + 1,
+        };
+      });
+      expect(
+        Math.abs(after.width - before.width),
+        `${label} chooser at ${width}`,
+      ).toBeLessThanOrEqual(0.5);
+      expect(
+        Math.abs(after.italicX - before.italicX),
+        `${label} formatting at ${width}`,
+      ).toBeLessThanOrEqual(0.5);
+      expect(
+        Math.abs(after.height - before.height),
+        `${label} toolbar at ${width}`,
+      ).toBeLessThanOrEqual(0.5);
+      expect(after.overflow).toBe(false);
+    }
+    await root.screenshot({
+      path: `test-results/rich-text-0.5.1-${testInfo.project.name}-${width}.png`,
+    });
+  }
+});
+
 for (const mode of ["light", "dark"] as const) {
   for (const uiScale of [1, 1.125]) {
     test(`view switch collapses before formatting wraps in ${mode} at UI scale ${uiScale}`, async ({

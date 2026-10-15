@@ -39,6 +39,7 @@ import {
   IconCheck,
   IconChevronDown,
   IconCode,
+  IconItalic,
   IconLink,
   IconList,
   IconAttach,
@@ -51,17 +52,10 @@ import { Input } from "../input/index.js";
 import { Menu, MenuPrimitive } from "../menu/index.js";
 import { Popover } from "../popover/index.js";
 import { MarkdownImageNode } from "./image-node.js";
+import { BlockStyleLabel, RICH_TEXT_BLOCKS as BLOCKS } from "./block-style.js";
 import type { RichTextInputProps } from "./rich-text.js";
 import { isSafeRichTextUrl } from "./urls.js";
 
-const BLOCKS = [
-  { value: "paragraph", label: "Paragraph" },
-  { value: "h1", label: "Heading 1" },
-  { value: "h2", label: "Heading 2" },
-  { value: "h3", label: "Heading 3" },
-  { value: "quote", label: "Quote" },
-  { value: "code", label: "Code block" },
-];
 type Block = (typeof BLOCKS)[number]["value"];
 
 function Tool({
@@ -325,8 +319,7 @@ export function EditorToolbar({
                     aria-label="Paragraph style"
                     disabled={disabled}
                   >
-                    {BLOCKS.find((item) => item.value === block)?.label ??
-                      "Paragraph"}
+                    <BlockStyleLabel value={block} />
                   </Button>
                 }
               />
@@ -357,13 +350,12 @@ export function EditorToolbar({
         </Tool>
         <Tool
           label="Italic"
+          icon={<IconItalic />}
           active={marks.italic}
           disabled={disabled}
           shortcut="mod+i"
           onClick={() => format("italic")}
-        >
-          <em>I</em>
-        </Tool>
+        />
         <Tool
           label="Inline code"
           icon={<IconCode />}

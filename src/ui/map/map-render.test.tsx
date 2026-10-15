@@ -101,8 +101,9 @@ it("settles with omitted regions and still repaints when regions change", async 
       "ready",
     ),
   );
+  // The ready DOM can precede the passive data effect that paints the engine.
+  await waitFor(() => expect(engine.paints).toBeGreaterThan(0));
   const initial = engine.paints;
-  expect(initial).toBeGreaterThan(0);
   await act(async () => {
     rerender(<GeoMap {...props} label="Updated map label" />);
   });

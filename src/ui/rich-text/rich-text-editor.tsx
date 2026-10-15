@@ -1,13 +1,11 @@
 import { Field as BaseField } from "@base-ui/react/field";
 import { CodeNode } from "@lexical/code";
-import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
 } from "@lexical/markdown";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
-import { ClickableLinkPlugin } from "@lexical/react/LexicalClickableLinkPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
@@ -41,6 +39,8 @@ import { Segmented } from "../segmented/index.js";
 import { Textarea } from "../textarea/index.js";
 import { EditorToolbar } from "./editor-toolbar.js";
 import { MarkdownImageNode } from "./image-node.js";
+import { MARKDOWN_LINK_NODES } from "./link-node.js";
+import { LinkActivation } from "./link-activation.js";
 import { MARKDOWN_TRANSFORMERS } from "./markdown.js";
 import type { RichTextInputProps, RichTextView } from "./rich-text.js";
 import { isSafeRichTextUrl } from "./urls.js";
@@ -324,7 +324,7 @@ export default function RichTextEditor({
       CodeNode,
       ListNode,
       ListItemNode,
-      LinkNode,
+      ...MARKDOWN_LINK_NODES,
       MarkdownImageNode,
     ],
     theme: THEME,
@@ -410,7 +410,7 @@ export default function RichTextEditor({
           validateUrl={isSafeRichTextUrl}
           attributes={{ rel: "noopener noreferrer" }}
         />
-        <ClickableLinkPlugin disabled={!readOnly || disabled} />
+        <LinkActivation readOnly={readOnly} disabled={disabled} />
         <MarkdownShortcutPlugin transformers={MARKDOWN_TRANSFORMERS} />
       </LexicalComposer>
     </div>

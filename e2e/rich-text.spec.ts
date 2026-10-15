@@ -1,6 +1,183 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+test("quoted paragraphs are editable and save Markdown blockquotes @responsive", async ({
+  page,
+}) => {
+  await page.goto("/components/rich-text-input");
+  const demo = page.getByTestId("rich-text-quote-demo");
+  const editor = demo.getByRole("textbox", { name: "Quoted passage" });
+  const chooser = demo.getByRole("button", { name: /^Block style:/ });
+  await expect(editor.locator("blockquote")).toContainText("original speaker");
+  await editor.fill("Keep these quoted words");
+  await chooser.click();
+  await page
+    .getByRole("menuitemradio", { name: "Paragraph", exact: true })
+    .click();
+  await expect(editor.locator("blockquote")).toHaveCount(0);
+  await chooser.click();
+  await page.getByRole("menuitemradio", { name: "Quote", exact: true }).click();
+  await expect(chooser).toHaveAccessibleName("Block style: Quote");
+  await expect(editor.locator("blockquote")).toHaveText(
+    "Keep these quoted words",
+  );
+  await expect(demo.getByTestId("rich-text-quote-markdown")).toHaveText(
+    "> Keep these quoted words",
+  );
+  await demo.getByRole("button", { name: "Markdown", exact: true }).click();
+  await expect(editor).toHaveValue("> Keep these quoted words");
+  await editor.fill("> Edited quoted words\n\nAn ordinary response.");
+  await demo.getByRole("button", { name: "Visual", exact: true }).click();
+  await expect(editor.locator("blockquote")).toHaveText("Edited quoted words");
+  await expect(editor.locator("p")).toHaveText("An ordinary response.");
+});
+
+test("safe links stay editable, open deliberately and work read-only @responsive", async ({
+  page,
+  context,
+}) => {
+  await page.addInitScript(() => {
+    const calls: unknown[][] = [];
+    Reflect.set(window, "richTextOpenCalls", calls);
+    window.open = (...args) => {
+      calls.push(args);
+      return null;
+    };
+  });
+  await context.route("https://northstar.example/**", (route) =>
+    route.fulfill({
+      contentType: "text/html",
+      body: "<p>Fictional support guide.</p>",
+    }),
+  );
+  await page.goto("/components/rich-text-input");
+  const originalUrl = page.url();
+  const demo = page.getByTestId("rich-text-demo");
+  const editor = demo.getByRole("textbox", { name: "Welcome guide" });
+  const link = editor.getByRole("link", { name: "support guide" });
+  await link.click();
+  expect(page.url()).toBe(originalUrl);
+  expect(
+    await page.evaluate(() => Reflect.get(window, "richTextOpenCalls")),
+  ).toEqual([]);
+  await link.click({ modifiers: ["Control"] });
+  await link.click({ modifiers: ["Meta"] });
+  await link.click({ button: "middle" });
+  const expectedCall = [
+    "https://northstar.example/support",
+    "_blank",
+    "noopener,noreferrer",
+  ];
+  expect(
+    await page.evaluate(() => Reflect.get(window, "richTextOpenCalls")),
+  ).toEqual([expectedCall, expectedCall, expectedCall]);
+  await link.click();
+  await demo.getByRole("button", { name: "Edit link", exact: true }).click();
+  await page.getByRole("button", { name: "Open link", exact: true }).click();
+  expect(
+    await page.evaluate(() => Reflect.get(window, "richTextOpenCalls")),
+  ).toEqual([expectedCall, expectedCall, expectedCall, expectedCall]);
+  await page.keyboard.press("Escape");
+  const readOnly = page.getByRole("textbox", { name: "Read-only document" });
+  const publishedLink = readOnly.getByRole("link", { name: "support guide" });
+  await expect(publishedLink).toHaveAttribute("target", "_blank");
+  const nextPage = context.waitForEvent("page");
+  await publishedLink.click();
+  const opened = await nextPage;
+  await opened.waitForLoadState("domcontentloaded");
+  expect(opened.url()).toBe("https://northstar.example/support");
+  expect(
+    await opened.evaluate(() => ({
+      opener: window.opener,
+      referrer: document.referrer,
+    })),
+  ).toEqual({ opener: null, referrer: "" });
+  await opened.close();
+  await publishedLink.focus();
+  const keyboardPage = context.waitForEvent("page");
+  await publishedLink.press("Enter");
+  const keyboardOpened = await keyboardPage;
+  await keyboardOpened.waitForLoadState("domcontentloaded");
+  expect(keyboardOpened.url()).toBe("https://northstar.example/support");
+  await keyboardOpened.close();
+  const disabled = page
+    .getByRole("textbox", { name: "Disabled document" })
+    .getByRole("link", { name: "Support guide" });
+  // Exercise the blocked event despite the disabled editor's intentional ARIA state.
+  await disabled.dispatchEvent("click", { ctrlKey: true });
+  expect(
+    await page.evaluate(() => Reflect.get(window, "richTextOpenCalls")),
+  ).toHaveLength(4);
+  expect(page.url()).toBe(originalUrl);
+});
+
+test("blank link labels fall back to the address and malformed imports cannot activate", async ({
+  page,
+}) => {
+  await page.goto("/components/rich-text-input");
+  const demo = page.getByTestId("rich-text-demo");
+  const editor = demo.getByRole("textbox", { name: "Welcome guide" });
+  await editor.fill("   ");
+  await editor.press("ControlOrMeta+A");
+  await demo.getByRole("button", { name: "Edit link", exact: true }).click();
+  const address = page.getByRole("textbox", { name: "Link address" });
+  for (const value of [
+    "https:",
+    "https://",
+    "https:/northstar.example",
+    "mailto:",
+    "tel:letters",
+  ]) {
+    await address.fill(value);
+    await page.getByRole("button", { name: "Apply link" }).click();
+    await expect(address).toHaveAttribute("aria-invalid", "true");
+    await expect(editor.locator("a")).toHaveCount(0);
+  }
+  await address.fill("docs/guide?x=1");
+  await page.getByRole("button", { name: "Apply link" }).click();
+  await expect(editor.locator("a")).toHaveText("docs/guide?x=1");
+  await expect(editor.locator("a")).toHaveAttribute("href", "docs/guide?x=1");
+  await demo.getByRole("button", { name: "Markdown", exact: true }).click();
+  const source =
+    "[Relative](docs/guide?x=1) [Query](?mode=1) [Malformed](https:) [SMS](sms:+61355550100)";
+  await editor.fill(source);
+  await demo.getByRole("button", { name: "Visual", exact: true }).click();
+  await expect(editor.getByRole("link", { name: "Relative" })).toHaveAttribute(
+    "href",
+    "docs/guide?x=1",
+  );
+  await expect(editor.getByRole("link", { name: "Query" })).toHaveAttribute(
+    "href",
+    "?mode=1",
+  );
+  await expect(editor.locator("a:not([href])")).toHaveCount(2);
+  await demo.getByRole("button", { name: "Markdown", exact: true }).click();
+  await expect(editor).toHaveValue(source);
+});
+
+test("inserting a link at a caret leaves surrounding text unlinked", async ({
+  page,
+}) => {
+  await page.goto("/components/rich-text-input");
+  const demo = page.getByTestId("rich-text-demo");
+  const editor = demo.getByRole("textbox", { name: "Welcome guide" });
+  await editor.fill("Before after");
+  await demo.getByRole("button", { name: /^Block style:/ }).click();
+  await page
+    .getByRole("menuitemradio", { name: "Paragraph", exact: true })
+    .click();
+  await editor.press("Home");
+  for (let index = 0; index < 7; index++) await editor.press("ArrowRight");
+  await demo.getByRole("button", { name: "Edit link", exact: true }).click();
+  await page.getByRole("textbox", { name: "Link address" }).fill("/guide");
+  await page.getByRole("button", { name: "Apply link" }).click();
+  await expect(editor.locator("a")).toHaveText("/guide");
+  await expect(editor).toHaveText("Before /guideafter");
+  await expect(demo.getByTestId("rich-text-markdown")).toHaveText(
+    "Before [/guide](/guide)after",
+  );
+});
+
 test("block styles keep the chooser and formatting geometry stable @responsive", async ({
   page,
 }, testInfo) => {
@@ -14,7 +191,7 @@ test("block styles keep the chooser and formatting geometry stable @responsive",
   const demo = page.getByTestId("rich-text-demo");
   const root = demo.locator(".fa-rich-text").first();
   const editor = demo.getByRole("textbox", { name: "Welcome guide" });
-  const chooser = demo.getByRole("button", { name: "Paragraph style" });
+  const chooser = demo.getByRole("button", { name: /^Block style:/ });
   const italic = demo.getByRole("button", { name: "Italic", exact: true });
   await editor.fill("Stable formatting");
   await expect(italic.locator("svg")).toBeVisible();
@@ -228,7 +405,7 @@ test("visual formatting and source switching preserve Markdown", async ({
   await demo.getByRole("button", { name: "Visual", exact: true }).click();
   await expect(demo.getByTestId("rich-text-markdown")).toHaveText(original!);
   await editor.fill("Shared handover");
-  await demo.getByRole("button", { name: "Paragraph style" }).click();
+  await demo.getByRole("button", { name: /^Block style:/ }).click();
   await page
     .getByRole("menuitemradio", { name: "Paragraph", exact: true })
     .click();
@@ -279,7 +456,7 @@ test("external resets and toolbar keyboard actions use the current document", as
   );
   await demo.getByRole("button", { name: "Visual", exact: true }).click();
   await editor.fill("Keyboard draft");
-  await demo.getByRole("button", { name: "Paragraph style" }).click();
+  await demo.getByRole("button", { name: /^Block style:/ }).click();
   await page
     .getByRole("menuitemradio", { name: "Paragraph", exact: true })
     .click();
@@ -293,7 +470,7 @@ test("external resets and toolbar keyboard actions use the current document", as
   await expect(demo.getByTestId("rich-text-markdown")).toHaveText(
     "*Keyboard draft*",
   );
-  await demo.getByRole("button", { name: "Paragraph style" }).click();
+  await demo.getByRole("button", { name: /^Block style:/ }).click();
   await page
     .getByRole("menuitemradio", { name: "Heading 2", exact: true })
     .click();

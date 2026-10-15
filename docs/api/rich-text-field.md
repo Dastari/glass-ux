@@ -27,7 +27,7 @@ Markdown input bound to a string form field, with Field label and reserved valid
 | onViewChange | `((view: RichTextView) => void) \| undefined` | See type | no | — | Called when a person chooses Visual or Markdown. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |
 | placeholder | `string \| undefined` | See type | no | — | Prompt shown in an empty document. Default "Write a document…". |
-| readOnly | `boolean \| undefined` | false, true | no | — | Prevent edits while allowing reading, selection and source inspection. |
+| readOnly | `boolean \| undefined` | false, true | no | — | Prevent edits while allowing selection, source inspection and normal safe-link opening in a new tab. |
 | ref | `Ref<HTMLDivElement \| HTMLTextAreaElement> \| undefined` | See type | no | — | Receives the visible editing surface for focus. |
 | required | `boolean \| undefined` | false, true | no | — | Shows the required marker. Pass `required` to the control as well. |
 | resize | `boolean \| undefined` | false, true | no | — | Allow vertical resizing of the editing surface between its limits. Default true. |

@@ -3,7 +3,11 @@
 A Markdown document with an editable visual view and optional source view. The toolbar
 uses Glass UX Button, Segmented, Menu and Popover controls. Supports paragraphs,
 headings, quotes, fenced code, bold, italic, inline code, strike-through, lists,
-task lists, links and inline images. Unsupported syntax remains available in source.
+task lists, links and inline images. Choose Quote from Block style for Markdown blockquotes.
+Plain link clicks place the editing caret; Ctrl/⌘-click, middle-click or the link popover's
+Open link action opens a safe destination separately. Read-only links open on a normal click.
+HTTP(S), mailto:, tel: and relative destinations are syntax checked; applications own
+allowed-domain and other business policies. Unsupported syntax remains available in source.
 The editing engine loads only when this component renders.
 
 `import { RichTextInput } from "glass-ux/rich-text"`
@@ -21,7 +25,7 @@ The editing engine loads only when this component renders.
 | className | `string \| undefined` | See type | no | — | Outer layout classes. |
 | defaultValue | `string \| undefined` | See type | no | "" | Initial Markdown when the host does not control value. Default empty. |
 | defaultView | `RichTextView \| undefined` | "visual", "markdown" | no | — | Initial presentation for an uncontrolled view. Default visual. |
-| disabled | `boolean \| undefined` | false, true | no | — | Disable editing, toolbar controls and source switching. |
+| disabled | `boolean \| undefined` | false, true | no | — | Disable editing, link activation, toolbar controls and source switching. |
 | id | `string \| undefined` | See type | no | — | ID of the active editing surface. Field supplies a label when wrapped. |
 | invalid | `boolean \| undefined` | false, true | no | — | Mark a bare input invalid; RichTextField derives this from validation. |
 | maxHeight | `number \| undefined` | See type | no | 480 | Maximum content height, in CSS pixels; longer documents scroll. Default 480. |
@@ -33,7 +37,7 @@ The editing engine loads only when this component renders.
 | onValueChange | `((markdown: string) => void) \| undefined` | See type | no | — | The next Markdown after an edit. View changes do not rewrite the document. |
 | onViewChange | `((view: RichTextView) => void) \| undefined` | See type | no | — | Called when a person chooses Visual or Markdown. |
 | placeholder | `string \| undefined` | See type | no | — | Prompt shown in an empty document. Default "Write a document…". |
-| readOnly | `boolean \| undefined` | false, true | no | — | Prevent edits while allowing reading, selection and source inspection. |
+| readOnly | `boolean \| undefined` | false, true | no | — | Prevent edits while allowing selection, source inspection and normal safe-link opening in a new tab. |
 | ref | `Ref<HTMLDivElement \| HTMLTextAreaElement> \| undefined` | See type | no | — | Receives the visible editing surface for focus. |
 | required | `boolean \| undefined` | false, true | no | — | Announce that the document is required. Validate with richTextSchema. |
 | resize | `boolean \| undefined` | false, true | no | — | Allow vertical resizing of the editing surface between its limits. Default true. |

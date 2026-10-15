@@ -1,6 +1,10 @@
 import { Toolbar } from "@base-ui/react/toolbar";
 import { $createCodeNode, $isCodeNode } from "@lexical/code";
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
+import {
+  $createLinkNode,
+  $isLinkNode,
+  TOGGLE_LINK_COMMAND,
+} from "@lexical/link";
 import {
   $isListNode,
   INSERT_ORDERED_LIST_COMMAND,
@@ -45,6 +49,7 @@ import {
   IconAttach,
   IconRedo,
   IconUndo,
+  IconExternalLink,
 } from "../../icons/generated/icons.js";
 import { Button } from "../button/index.js";
 import { Field } from "../field/index.js";
@@ -54,7 +59,7 @@ import { Popover } from "../popover/index.js";
 import { MarkdownImageNode } from "./image-node.js";
 import { BlockStyleLabel, RICH_TEXT_BLOCKS as BLOCKS } from "./block-style.js";
 import type { RichTextInputProps } from "./rich-text.js";
-import { isSafeRichTextUrl } from "./urls.js";
+import { isSafeRichTextUrl, openRichTextLink } from "./urls.js";
 
 type Block = (typeof BLOCKS)[number]["value"];
 
@@ -121,6 +126,7 @@ export function EditorToolbar({
     link: false,
   });
   const [block, setBlock] = useState<Block>("paragraph");
+  const [blockOpen, setBlockOpen] = useState(false);
   const [list, setList] = useState<string | null>(null);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -132,6 +138,13 @@ export function EditorToolbar({
   const selection = useRef<BaseSelection | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const mounted = useRef(true);
+
+  useEffect(() => {
+    if (disabled) {
+      setLinkOpen(false);
+      setBlockOpen(false);
+    }
+  }, [disabled]);
 
   useEffect(() => {
     mounted.current = true;
@@ -219,6 +232,7 @@ export function EditorToolbar({
     editor.focus();
   };
   const changeBlock = (value: string) => {
+    if (disabled || !editor.isEditable()) return;
     editor.update(() => {
       restore();
       if (list) editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
@@ -235,6 +249,7 @@ export function EditorToolbar({
     editor.focus();
   };
   const applyLink = (remove = false) => {
+    if (disabled || !editor.isEditable()) return;
     const next = url.trim();
     if (!remove && !isSafeRichTextUrl(next)) {
       setLinkError("Use an https://, http://, mailto:, tel: or relative link");
@@ -246,11 +261,16 @@ export function EditorToolbar({
       if (
         !remove &&
         $isRangeSelection(current) &&
-        current.isCollapsed() &&
+        !current.getTextContent().trim() &&
         !marks.link
-      )
-        current.insertText(next);
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, remove ? null : next);
+      ) {
+        // Insert a dedicated node: toggling a link at a collapsed caret would wrap
+        // the surrounding text node as well as the newly inserted address.
+        const link = $createLinkNode(next);
+        link.append($createTextNode(next));
+        current.insertNodes([link]);
+        link.selectEnd();
+      } else editor.dispatchCommand(TOGGLE_LINK_COMMAND, remove ? null : next);
     });
     setLinkOpen(false);
     editor.focus();
@@ -305,7 +325,7 @@ export function EditorToolbar({
         aria-label="Text formatting"
         disabled={disabled}
       >
-        <Menu.Root>
+        <Menu.Root open={blockOpen && !disabled} onOpenChange={setBlockOpen}>
           <MenuPrimitive.Trigger
             render={
               <Toolbar.Button
@@ -316,7 +336,7 @@ export function EditorToolbar({
                     variant="ghost"
                     size="sm"
                     iconEnd={<IconChevronDown />}
-                    aria-label="Paragraph style"
+                    aria-label={`Block style: ${BLOCKS.find((item) => item.value === block)?.label ?? "Paragraph"}`}
                     disabled={disabled}
                   >
                     <BlockStyleLabel value={block} />
@@ -427,7 +447,7 @@ export function EditorToolbar({
           }}
         />
         <Popover.Root
-          open={linkOpen}
+          open={linkOpen && !disabled}
           onOpenChange={(open) => {
             if (open) {
               setLinkError(undefined);
@@ -468,10 +488,21 @@ export function EditorToolbar({
           />
           <Popover.Popup title="Link" size="sm" align="start">
             <div className="fa-rich-text-link-form">
-              <Field label="Link address" error={linkError}>
+              <Field
+                label="Link address"
+                error={linkError}
+                hint="Use HTTP(S), mailto:, tel:, a relative path, query or #anchor."
+              >
                 <Input
+                  disabled={disabled}
                   value={url}
-                  onValueChange={setUrl}
+                  onValueChange={(value) => {
+                    setUrl(value);
+                    if (linkError)
+                      setLinkError(
+                        isSafeRichTextUrl(value.trim()) ? undefined : linkError,
+                      );
+                  }}
                   placeholder="https://example.com"
                   autoComplete="off"
                   onKeyDown={(event) => {
@@ -482,18 +513,36 @@ export function EditorToolbar({
                   }}
                 />
               </Field>
-              <Button type="button" size="sm" onClick={() => applyLink()}>
+              <Button
+                type="button"
+                size="sm"
+                disabled={disabled}
+                onClick={() => applyLink()}
+              >
                 Apply link
               </Button>
               {marks.link ? (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => applyLink(true)}
-                >
-                  Remove link
-                </Button>
+                <>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    icon={<IconExternalLink />}
+                    disabled={disabled || !isSafeRichTextUrl(url.trim())}
+                    onClick={() => openRichTextLink(url.trim())}
+                  >
+                    Open link
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    disabled={disabled}
+                    onClick={() => applyLink(true)}
+                  >
+                    Remove link
+                  </Button>
+                </>
               ) : null}
             </div>
           </Popover.Popup>

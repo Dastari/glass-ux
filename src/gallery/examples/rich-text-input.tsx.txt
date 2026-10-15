@@ -73,6 +73,34 @@ function AttachmentDemo() {
   );
 }
 
+function QuoteDemo() {
+  const [markdown, setMarkdown] = useState(
+    "> Keep the original speaker’s wording clear.\n\nAdd your response below the quotation.",
+  );
+  return (
+    <div className="flex w-full min-w-0 flex-col gap-3" data-testid="rich-text-quote-demo">
+      <Field
+        label="Quoted passage"
+        nativeLabel={false}
+        hint="Choose Block style → Quote to quote a paragraph, or Paragraph to return to body text."
+      >
+        <RichTextInput
+          value={markdown}
+          onValueChange={setMarkdown}
+          minHeight={120}
+          maxHeight={240}
+        />
+      </Field>
+      <details>
+        <summary>Persisted Markdown</summary>
+        <pre className="gallery-usage" data-testid="rich-text-quote-markdown">
+          {markdown}
+        </pre>
+      </details>
+    </div>
+  );
+}
+
 export default function RichTextSection() {
   return (
     <SectionPage>
@@ -84,6 +112,13 @@ export default function RichTextSection() {
         <DocumentDemo />
       </Specimen>
 
+      <Specimen
+        title="Quoted text"
+        description="Quote paragraphs with the Block style menu or type > followed by a space. Quotations stay editable and save as Markdown blockquotes."
+        layout="stack"
+      >
+        <QuoteDemo />
+      </Specimen>
       <Specimen
         title="Attachments"
         description="A host upload adapter adds image or file URLs to Markdown. Glass UX does not store files or grant upload authority."
@@ -100,7 +135,9 @@ export default function RichTextSection() {
         </Field>
         <Field label="Read-only document" nativeLabel={false}>
           <RichTextInput
-            defaultValue={"## Published guide\n\nRead, select or inspect the **Markdown source**."}
+            defaultValue={
+              "## Published guide\n\nRead, select or inspect the **Markdown source**. Open the [support guide](https://northstar.example/support)."
+            }
             readOnly
             minHeight={100}
             maxHeight={220}
@@ -108,7 +145,7 @@ export default function RichTextSection() {
         </Field>
         <Field label="Disabled document" nativeLabel={false}>
           <RichTextInput
-            defaultValue="This guide is unavailable while the workspace loads."
+            defaultValue="This guide is unavailable while the workspace loads. [Support guide](https://northstar.example/support)."
             disabled
             minHeight={100}
             maxHeight={220}

@@ -52,9 +52,9 @@ export interface RichTextInputProps {
   sourceView?: boolean;
   /** Prompt shown in an empty document. Default "Write a document…". */
   placeholder?: string;
-  /** Prevent edits while allowing reading, selection and source inspection. */
+  /** Prevent edits while allowing selection, source inspection and normal safe-link opening in a new tab. */
   readOnly?: boolean;
-  /** Disable editing, toolbar controls and source switching. */
+  /** Disable editing, link activation, toolbar controls and source switching. */
   disabled?: boolean;
   /** Mark a bare input invalid; RichTextField derives this from validation. */
   invalid?: boolean;
@@ -100,7 +100,11 @@ export interface RichTextInputProps {
  * A Markdown document with an editable visual view and optional source view. The toolbar
  * uses Glass UX Button, Segmented, Menu and Popover controls. Supports paragraphs,
  * headings, quotes, fenced code, bold, italic, inline code, strike-through, lists,
- * task lists, links and inline images. Unsupported syntax remains available in source.
+ * task lists, links and inline images. Choose Quote from Block style for Markdown blockquotes.
+ * Plain link clicks place the editing caret; Ctrl/⌘-click, middle-click or the link popover's
+ * Open link action opens a safe destination separately. Read-only links open on a normal click.
+ * HTTP(S), mailto:, tel: and relative destinations are syntax checked; applications own
+ * allowed-domain and other business policies. Unsupported syntax remains available in source.
  * The editing engine loads only when this component renders.
  */
 export function RichTextInput({

@@ -50,8 +50,10 @@ focus leaves the editor and its toolbar. `readOnly` permits source inspection an
 
 The visual subset supports paragraphs, ATX headings 1–6, quotes, fenced code, bold, italic,
 strike-through, inline code, ordered/unordered/nested lists, task lists, inline links and
-inline images, including image titles. The paragraph menu creates headings 1–3, paragraphs,
-quotes and code blocks. Formatting buttons announce their pressed state. The toolbar uses
+inline images, including image titles. The Block style menu creates headings 1–3, paragraphs,
+quotes and code blocks, and announces the selected style. Choose Quote for a paragraph
+or type `>` followed by a space; it saves with Markdown’s `>` prefix. Choose Paragraph
+to leave the quote. Formatting buttons announce their pressed state. The toolbar uses
 Base UI roving focus with Left/Right arrows, and the shared menus/popovers support Escape.
 Ctrl/⌘ B and I format text; Ctrl/⌘ Z and Shift Ctrl/⌘ Z undo and redo visual edits. Markdown
 shortcuts work in the visual editor. Select source mode to edit tables, reference links,
@@ -78,9 +80,19 @@ The optional `uploadAttachment(file)` adapter belongs to the application. It upl
 and resolves `{ kind: "image" | "link", url, label }`. Images use `label` as alternative text;
 other attachments use it as link text. `attachmentAccept` configures the picker. The editor
 shows pending feedback and upload errors, and calls `onAttachmentError` for host reporting.
-Only safe HTTP(S) or relative image URLs are displayed. Links additionally accept mailto:
-and tel:. Executable, data and protocol-relative URLs cannot be inserted by the toolbar or
-adapter. Imported unsafe links retain their Markdown source and Lexical blocks navigation.
+Only syntactically valid HTTP(S) or relative image URLs are displayed. Links additionally
+accept mailto: and tel:. Relative paths, queries and #anchors resolve against the current
+page. HTTP(S) addresses require `://` and a valid host; whitespace, malformed percent escapes,
+backslashes, executable, data and protocol-relative URLs are rejected. The toolbar displays
+an error and leaves the document unchanged. A link without selected text uses its address
+as readable link text. Imported unsafe destinations remain in Markdown but have no active href.
+
+While editing, an ordinary click places the caret. Use Ctrl/⌘-click, middle-click, or select
+the link and choose Edit link → Open link to open it deliberately. Read-only links open on
+a normal click; selecting link text does not navigate. Links open in a new tab with
+`noopener,noreferrer`. Disabled documents do not activate links. The component owns basic
+URL syntax and scheme safety; the application owns trusted-domain rules, authorization,
+custom wording and any other business policy.
 Applications own storage, authorization, document IDs, revisions and save operations.
 
 `richTextSchema({ required, maxLength })` validates a Markdown string with shared empty and

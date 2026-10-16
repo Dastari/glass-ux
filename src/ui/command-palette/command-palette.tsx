@@ -118,6 +118,8 @@ export interface PaletteProviderProps {
 /**
  * Hosts the command palette: a registry of commands contributed by whatever is mounted,
  * ⌘K / Ctrl+K from anywhere to open it, and the registered commands' own shortcuts.
+ * The palette shortcut also works while a focusable disabled button has focus, without
+ * activating that button.
  * Mount once near the root; nested providers defer to the outer one.
  */
 export function PaletteProvider({ children, groupOrder = DEFAULT_ORDER }: PaletteProviderProps) {
@@ -146,8 +148,15 @@ function PaletteHost({ children, groupOrder }: Required<PaletteProviderProps>) {
   useEffect(() => {
     if (!owns) return
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented || event.repeat) return
-      if (matchesShortcut(event, "mod+k", platform)) {
+      if (event.repeat) return
+      const paletteShortcut = matchesShortcut(event, "mod+k", platform)
+      // Base UI cancels every non-Tab key on focusable disabled buttons. That blocks
+      // their activation, but must not make the global palette unavailable from them.
+      const disabledButton = event.target instanceof Element && event.target.closest(
+        'button[aria-disabled="true"], [role="button"][aria-disabled="true"]'
+      )
+      if (event.defaultPrevented && !(paletteShortcut && disabledButton)) return
+      if (paletteShortcut) {
         event.preventDefault()
         setOpen((current) => !current)
         return

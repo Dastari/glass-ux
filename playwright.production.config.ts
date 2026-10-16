@@ -12,6 +12,7 @@ export default defineConfig({
     "entity-settings-save.spec.ts",
     "map-attribution.spec.ts",
     "slider-production.spec.ts",
+    "palette-disabled.spec.ts",
   ],
   fullyParallel: true,
   workers: 2,

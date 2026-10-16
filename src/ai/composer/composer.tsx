@@ -330,6 +330,8 @@ function ComposerMenu({
         size="md"
         anchor={anchor}
         aria-label={label}
+        initialFocus={false}
+        finalFocus={false}
       >
         {children}
       </Popover.Popup>
@@ -660,8 +662,7 @@ export function Composer({
         disabled={disabled}
         aria-label={ariaLabel}
         aria-describedby={disabledReason ? `${id}-reason` : undefined}
-        role="combobox"
-        aria-expanded={Boolean(menu)}
+        aria-haspopup="listbox"
         aria-controls={menu ? `${id}-menu` : undefined}
         aria-activedescendant={
           menu && options ? `${id}-menu-${active}` : undefined

@@ -1,70 +1,114 @@
-import { useState } from "react";
-import {
-  MOCK_ORGANISATIONS,
-  toSwitcherOrganisation,
-} from "glass-ux/gallery/fixtures/organisations";
-import { WORKSPACE_SETTINGS } from "glass-ux/gallery/fixtures/brand";
-import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { AccountButton, SearchTrigger, TopBar, TopBarSettingsButton } from "glass-ux/shell";
-import { OrgSwitcher } from "glass-ux/shell/org-switcher/index";
-import { Breadcrumb } from "glass-ux/breadcrumb";
+import { Dialog } from "glass-ux/dialog";
+import { useState, useRef } from "react";
+import { ContainerLab, Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { PORTRAITS } from "glass-ux/gallery/fixtures/organisations";
+import { Avatar } from "glass-ux/avatar";
+import { IconBell, IconUser } from "glass-ux/icons";
+import { AccountButton } from "glass-ux/shell";
+import { Menu } from "glass-ux/menu";
+import { Button } from "glass-ux/button";
 
-const SWITCHER_ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
-
-function SpecimenTopBar() {
-  const [scope, setScope] = useState<string | null>("northstar");
+function AccountMenuSample({
+  name,
+  email,
+  avatarSrc,
+  unread = 0,
+}: {
+  name: string;
+  /** The account’s displayed email address. */
+  email?: string;
+  /** Profile image URL; an initials fallback is used when it is absent. */
+  avatarSrc?: string;
+  unread?: number;
+}) {
+  const [count, setCount] = useState(unread);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const accountRef = useRef<HTMLButtonElement>(null);
+  const closeProfileRef = useRef<HTMLButtonElement>(null);
   return (
-    <TopBar
-      scope={<OrgSwitcher organisations={SWITCHER_ORGS} value={scope} onValueChange={setScope} />}
-      breadcrumb={
-        <Breadcrumb
-          items={[
-            { id: "devices", label: "Devices", href: "#devices" },
-            { id: "c106", label: "NST-C106", href: "#c106" },
-            { id: "overview", label: "Overview" },
-          ]}
+    <>
+      <Menu.Root>
+        <Menu.Trigger
+          render={
+            <AccountButton
+              ref={accountRef}
+              name={name}
+              email={email}
+              avatarSrc={avatarSrc}
+              unread={count}
+            />
+          }
         />
-      }
-      search={
-        <SearchTrigger
-          placeholder="Search devices, organisations, tickets…"
-          shortcut="mod+shift+k"
-          onOpen={() => {}}
-        />
-      }
-      actions={
-        <>
-          <TopBarSettingsButton label={WORKSPACE_SETTINGS.label} data-keep="" />
-        </>
-      }
-      account={
-        <AccountButton name="Avery Quinn" email="avery.quinn@orbit.example.com.au" unread={3} />
-      }
-    />
+        <Menu.Popup align="end" finalFocus={profileOpen ? false : accountRef}>
+          <Menu.Item icon={<IconUser />} onClick={() => setProfileOpen(true)}>
+            View profile
+          </Menu.Item>
+          <Menu.Item
+            icon={<IconBell />}
+            disabledReason={count === 0 ? "No unread notifications" : undefined}
+            trail={count > 0 ? `${count} unread` : undefined}
+            onClick={() => setCount(0)}
+          >
+            Mark notifications read
+          </Menu.Item>
+        </Menu.Popup>
+      </Menu.Root>
+      <Dialog.Root open={profileOpen} onOpenChange={setProfileOpen}>
+        <Dialog.Popup size="sm" initialFocus={closeProfileRef} finalFocus={accountRef}>
+          <Dialog.Header title={`${name} profile`} />
+          <Dialog.Body>
+            <div className="flex min-w-0 items-center gap-3">
+              <Avatar name={name} src={avatarSrc} size="lg" decorative />
+              <div className="min-w-0 break-words">
+                <p className="type-label">{name}</p>
+                {email ? <p className="type-caption text-fg-muted">{email}</p> : null}
+              </div>
+            </div>
+          </Dialog.Body>
+          <Dialog.Footer>
+            <Dialog.Close render={<Button ref={closeProfileRef}>Close profile</Button>} />
+          </Dialog.Footer>
+        </Dialog.Popup>
+      </Dialog.Root>
+    </>
   );
 }
 
-/* ── Section ─────────────────────────────────────────────────────────────── */
-export default function AppShellSection() {
+export default function AccountButtonExample() {
   return (
     <SectionPage>
       <Specimen
-        title="Top bar"
-        description="The application context, on the canvas: nothing in it depends on the organisation. The switcher is the door to the organisation context below; Glass UX settings is the gear; notifications are the badge on the avatar. It adapts to its own width: the organisation folds to its avatar (with +N on its corner), the search field becomes a square and the account folds to its avatar."
-        wide
+        title="Account menu"
+        description="The account button is a Menu trigger. Email is optional; the host supplies the menu actions."
         layout="stack"
       >
-        {(["wide", "medium", "narrow"] as const).map((width) => (
-          <Example
-            key={width}
-            label={width === "wide" ? "Wide" : width === "medium" ? "Medium" : "Narrow"}
-          >
-            <div className="gallery-shell-topbar" data-width={width}>
-              <SpecimenTopBar />
-            </div>
-          </Example>
-        ))}
+        <Example label="Name and email">
+          <AccountMenuSample
+            name="Avery Quinn"
+            email="avery.quinn@orbit.example"
+            avatarSrc={PORTRAITS[1]}
+            unread={3}
+          />
+        </Example>
+        <Example label="Name only">
+          <AccountMenuSample name="Mira Rowan" avatarSrc={PORTRAITS[0]} />
+        </Example>
+        <Example label="Initials fallback">
+          <AccountMenuSample name="Casey Reed" email="casey.reed@orbit.example" />
+        </Example>
       </Specimen>
+      <ContainerLab
+        title="Account in narrow containers"
+        description="The avatar keeps its size while the name and email truncate with full-text tooltips."
+      >
+        {() => (
+          <AccountMenuSample
+            name="Sage Winter · Regional operations"
+            email="sage.winter@operations.orbit.example"
+            avatarSrc={PORTRAITS[7]}
+          />
+        )}
+      </ContainerLab>
     </SectionPage>
   );
 }

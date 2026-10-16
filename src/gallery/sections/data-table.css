@@ -13,6 +13,9 @@
     gap: var(--space-2);
   }
   .dt-demo-group {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
     gap: var(--space-half);
     padding: var(--space-half);
     border-radius: calc(var(--radius-control) + var(--space-half));

@@ -100,6 +100,7 @@ function Attachments({ attachments }: { attachments: AiAttachment[] }) {
                 name: file.name,
                 size: file.size,
                 mime: file.mime,
+                href: file.href,
               }}
             />
           ))}
@@ -386,7 +387,7 @@ export function Turn({
       {...rest}
       className={cx("fa-ai-turn", className)}
       data-turn={index}
-      aria-label={`Turn ${index}`}
+      aria-label={rest["aria-label"] ?? `Turn ${index}`}
     />
   );
 }

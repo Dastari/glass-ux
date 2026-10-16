@@ -9,6 +9,7 @@
     height: auto;
     padding: 0;
     overflow: clip;
+    container: rich-text / inline-size;
   }
   .fa-rich-text-toolbar {
     display: grid;
@@ -44,6 +45,17 @@
   }
   .fa-rich-text-toolbar > .fa-rich-text-status {
     grid-column: 1 / -1;
+  }
+  @container rich-text (width < 24rem) {
+    .fa-rich-text-toolbar:has(> .fa-rich-text-modes-slot) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .fa-rich-text-modes-slot {
+      grid-column: 1;
+      grid-row: 2;
+      justify-self: end;
+      width: calc(var(--control-h-sm) * 2 - var(--space-half) * 2);
+    }
   }
   .fa-rich-text-skeleton-action {
     position: relative;

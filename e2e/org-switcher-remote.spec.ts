@@ -10,9 +10,13 @@ test("bounded remote directory searches, pages, retries and retains selection @r
   const demo = page.getByTestId("org-switcher-remote");
   const trigger = demo.getByLabel("Organisation: Summit Loom", { exact: true });
   await trigger.click();
-  const input = page.getByRole("combobox", { name: "Search organisations" });
+  const popup =
+    page.viewportSize()!.width < 768
+      ? page.getByRole("dialog", { name: "Organisation", exact: true })
+      : page.locator(".fa-org-switcher-popup").filter({ visible: true });
+  const input = popup.getByRole("combobox", { name: "Search organisations" });
   const option = (name: string) =>
-    page.getByRole("option", { name, exact: true });
+    popup.getByRole("option", { name, exact: true });
   await expect(option("Harbour Works")).toBeVisible();
   await expect(option("Summit Loom")).toHaveCount(0);
   await input.press("Tab");

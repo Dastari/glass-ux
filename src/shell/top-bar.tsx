@@ -453,9 +453,10 @@ export interface AccountButtonProps extends Omit<
   ComponentProps<"button">,
   "children"
 > {
+  /** Display name for the signed-in account; also used for its accessible name and avatar fallback. */
   name: string;
-  /** The account’s displayed email address. */
-  email: string;
+  /** Optional second line beneath the name. Omit when the account has no public email address. */
+  email?: string;
   /** Profile image URL; an initials fallback is used when it is absent. */
   avatarSrc?: string;
   /** Unread notifications: a count on the avatar's corner (R5.2: the avatar carries them). */
@@ -463,8 +464,9 @@ export interface AccountButtonProps extends Omit<
 }
 
 /**
- * The signed-in user, with the notifications badge on the avatar. Spreads props on the
- * button, so it can be a Menu trigger: <Menu.Trigger render={<AccountButton … />} />.
+ * The signed-in user account: avatar, display name, optional email and notification count.
+ * Use as a Menu trigger for host-owned profile, preferences and sign-out actions:
+ * `<Menu.Trigger render={<AccountButton … />} />`. Native button props and refs are preserved.
  */
 export function AccountButton({
   name,
@@ -500,9 +502,7 @@ export function AccountButton({
       </span>
       <span className="fa-shell-account-text">
         <TruncatedText className="fa-shell-account-name">{name}</TruncatedText>
-        <TruncatedText className="fa-shell-account-email">
-          {email}
-        </TruncatedText>
+        {email ? <TruncatedText className="fa-shell-account-email">{email}</TruncatedText> : null}
       </span>
       <IconChevronDown className="fa-shell-account-chevron" />
     </button>

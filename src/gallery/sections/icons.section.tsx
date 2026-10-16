@@ -34,6 +34,7 @@ import {
   IconWarning,
 } from "../../icons/generated/icons.js"
 import { iconRegistry } from "../../icons/generated/registry.js"
+import { DEVICE_BRAND_KEYWORDS, DEVICE_BRAND_NAMES } from "../fixtures/device-brands.js"
 import { Button, ButtonGroup, FEEDBACK_HOLD_MS } from "../../ui/button/index.js"
 import type { IconComponent, IconSize } from "../../ui/icon/index.js"
 
@@ -54,6 +55,8 @@ const GROUPS: Array<[title: string, names: string[]]> = [
   ["People", ["user", "users", "user-plus"]],
   ["Data and files", ["chart-line", "chart-pie", "trend-up", "trend-down", "file", "file-text", "folder", "folder-open", "image", "code", "grid", "list", "map-pin"]],
   ["Appearance", ["sun", "moon", "system"]],
+  ["Social and company logos", ["adobe", "amazon", "anthropic", "apple", "bitbucket", "bluesky", "cloudflare", "discord", "docker", "dropbox", "facebook", "figma", "github", "gitlab", "google", "instagram", "linkedin", "mastodon", "meta", "microsoft", "notion", "npm", "openai", "pinterest", "reddit", "slack", "snapchat", "spotify", "stripe", "telegram", "threads", "tiktok", "twitch", "vercel", "whatsapp", "x", "youtube", "zoom"]],
+  ["Device manufacturers", DEVICE_BRAND_NAMES],
 ]
 
 function groupedIcons() {
@@ -102,7 +105,9 @@ export default function IconsSection() {
           ...group,
           entries: group.title.toLowerCase().includes(needle)
             ? group.entries
-            : group.entries.filter((entry) => entry.name.replaceAll("-", "").includes(needle.replaceAll(/[\s-]/g, ""))),
+            : group.entries.filter((entry) =>
+              `${entry.name} ${DEVICE_BRAND_KEYWORDS.get(entry.name) ?? ""}`
+                .replaceAll(/[\s-]/g, "").includes(needle.replaceAll(/[\s-]/g, ""))),
         }))
         .filter((group) => group.entries.length),
     [needle]
@@ -139,7 +144,7 @@ export default function IconsSection() {
               Line only
             </Button>
           </ButtonGroup>
-          <ButtonGroup attached aria-label="Preview size">
+          <ButtonGroup aria-label="Preview size" className="max-w-full flex-wrap">
             {SIZES.map(([value, px]) => (
               <Button
                 key={value}
@@ -284,7 +289,7 @@ export default function IconsSection() {
         dont={[
           "Pass a size or a stroke width to an icon inside a component.",
           "Reuse a glyph for a second meaning, or draw a near-duplicate of an existing one.",
-          "Use a brand mark (Windows, Microsoft) as an icon; brand marks live in public/brand.",
+          "Use a social or company icon for a generic action, device or status; it identifies that service only.",
           "Colour an icon for decoration; colour carries status or selection only.",
         ]}
       />

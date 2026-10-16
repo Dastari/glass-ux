@@ -5,6 +5,14 @@ description: Integrate Glass UX data tables, filters, charts, maps and topology 
 
 # Build data views
 
+Before composing UI, read and apply the installed package's `docs/ui-rules.md`, especially
+Screen content rules. These defaults apply to consuming websites and applications unless
+explicit user or project instructions say otherwise: do not overuse subheadings, add
+motivational/irrelevant/cheerful/promotional copy, overexplain the page, push primary content
+down with redundant framing, repeat a route title already named by navigation, or introduce
+content shifts that move buttons or menus. Use factual labels and reserve asynchronous
+content space. Deliberate long-form documents may contain necessary headings and prose.
+
 Read the installed API pages for `DataTable`, the selected chart or map, and
 `docs/data-filters.md` or `docs/map.md` as appropriate.
 

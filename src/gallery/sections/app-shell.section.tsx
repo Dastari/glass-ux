@@ -1,5 +1,6 @@
-import { useState, type ReactNode } from "react"
-import { MOCK_ORGANISATIONS, toSwitcherOrganisation } from "../fixtures/organisations.js"
+import { useContext, useState, type ReactNode } from "react"
+import { DemoScope } from "../demo-scope.js"
+import { MOCK_ORGANISATIONS, PORTRAITS, toSwitcherOrganisation } from "../fixtures/organisations.js"
 import { WORKSPACE_SETTINGS, ORGANISATION_SETTINGS, moduleRail } from "../fixtures/brand.js"
 import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { IconAi, IconArchive, IconAlerts, IconDashboard, IconEndpoint, IconFolder, IconHistory, IconNewChat, IconOrganisation, IconSearch, IconSettings, IconTickets,  } from "../../icons/generated/icons.js"
@@ -11,6 +12,7 @@ import { BrandMark } from "../../ui/brand/index.js"
 import { Breadcrumb } from "../../ui/breadcrumb/index.js"
 import { Button } from "../../ui/button/index.js"
 import { EmptyState } from "../../ui/empty-state/index.js"
+import { Menu } from "../../ui/menu/index.js"
 import { ENDPOINTS, endpointActions } from "./overlays.fixtures.js"
 
 /* ── Anatomy diagrams ────────────────────────────────────────────────────── */
@@ -57,6 +59,7 @@ const SPECIMEN_ITEMS = [
 const SPECIMEN_PROJECTS = ["Northstar Studio migration", "Patch Tuesday · October"]
 
 function RailAndDrawer() {
+  const scope = useContext(DemoScope)
   // SectionDrawer.Search: local state, the host filters its own rows and highlights the match.
   const [query, setQuery] = useState("")
   const needle = query.trim().toLocaleLowerCase("en-AU")
@@ -65,14 +68,14 @@ function RailAndDrawer() {
   const projects = SPECIMEN_PROJECTS.filter(keep)
   return (
     <div className="gallery-shell-sidebar">
-      <Rail.Root aria-label="Main (specimen)">
+      <Rail.Root aria-label={scope ? `Main (specimen): ${scope}` : "Main (specimen)"}>
         {RAIL_ITEMS.map((item) => (
           <Rail.Item key={item.label} icon={item.icon} label={item.label} shortcut={item.shortcut} active={item.label === "Assistant"} />
         ))}
         <Rail.Spacer />
         <Rail.Item icon={<IconSettings />} label={ORGANISATION_SETTINGS.label} shortcut={ORGANISATION_SETTINGS.shortcut} />
       </Rail.Root>
-      <SectionDrawer.Root aria-label="Assistant navigation (specimen)">
+      <SectionDrawer.Root aria-label={scope ? `Assistant navigation (specimen): ${scope}` : "Assistant navigation (specimen)"}>
         <SectionDrawer.Header icon={<BrandMark mark="ai" />} title="Assistant" />
         <SectionDrawer.Search noun="Assistant" value={query} onValueChange={setQuery} />
         <SectionDrawer.Body>
@@ -109,13 +112,16 @@ function RailAndDrawer() {
 
 const SWITCHER_ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation)
 
-function SpecimenTopBar() {
+function SpecimenTopBar({ label }: { label: string }) {
+  const demo = useContext(DemoScope)
   const [scope, setScope] = useState<string | null>("northstar")
+  const [unread, setUnread] = useState(3)
   return (
     <TopBar
       scope={<OrgSwitcher organisations={SWITCHER_ORGS} value={scope} onValueChange={setScope} />}
       breadcrumb={
         <Breadcrumb
+          aria-label={`Breadcrumb: ${demo ? `${demo}: ` : ""}${label}`}
           items={[
             { id: "devices", label: "Devices", href: "#devices" },
             { id: "c106", label: "NST-C106", href: "#c106" },
@@ -129,7 +135,14 @@ function SpecimenTopBar() {
           <TopBarSettingsButton label={WORKSPACE_SETTINGS.label} data-keep="" />
         </>
       }
-      account={<AccountButton name="Avery Quinn" email="avery.quinn@orbit.example.com.au" unread={3} />}
+      account={
+        <Menu.Root>
+          <Menu.Trigger render={<AccountButton name="Avery Quinn" email="avery.quinn@orbit.example.com.au" avatarSrc={PORTRAITS[1]} unread={unread} />} />
+          <Menu.Popup align="end">
+            <Menu.Item disabledReason={unread === 0 ? "No unread notifications" : undefined} onClick={() => setUnread(0)}>Mark notifications read</Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
+      }
     />
   )
 }
@@ -245,7 +258,7 @@ export default function AppShellSection() {
         {(["wide", "medium", "narrow"] as const).map((width) => (
           <Example key={width} label={width === "wide" ? "Wide" : width === "medium" ? "Medium" : "Narrow"}>
             <div className="gallery-shell-topbar" data-width={width}>
-              <SpecimenTopBar />
+              <SpecimenTopBar label={width} />
             </div>
           </Example>
         ))}

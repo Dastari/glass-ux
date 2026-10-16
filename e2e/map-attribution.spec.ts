@@ -21,7 +21,7 @@ test("scaled attribution stays inside a narrow map and retains full source links
     ),
   );
   await page.goto("components/geo-map");
-  const frame = page.getByTestId("map-attribution");
+  const frame = page.locator("#examples").getByTestId("map-attribution");
   await expect(frame.locator(".fa-map-attribution")).toBeAttached();
   await frame.evaluate((element) => {
     element.style.width = "362px";

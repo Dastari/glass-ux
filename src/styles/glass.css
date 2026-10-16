@@ -52,7 +52,11 @@
     --glass-edge: oklch(0.35 0.05 var(--neutral-h) / 0.1);
     --glass-rim: oklch(1 0 0 / 0.65);
     --glass-rim-top: oklch(1 0 0 / 0.95);
-    --glass-sheen: linear-gradient(180deg, oklch(1 0 0 / 0.38), oklch(1 0 0 / 0) 42%);
+    --glass-sheen: linear-gradient(
+      180deg,
+      oklch(1 0 0 / 0.38),
+      oklch(1 0 0 / 0) 42%
+    );
     --glass-saturate: 1.7;
     --surface-1: oklch(0.985 0.004 var(--neutral-h));
     --surface-2: oklch(0.998 0.002 var(--neutral-h));
@@ -90,7 +94,11 @@
     --glass-edge: oklch(0 0 0 / 0.38);
     --glass-rim: oklch(1 0 0 / 0.07);
     --glass-rim-top: oklch(1 0 0 / 0.17);
-    --glass-sheen: linear-gradient(180deg, oklch(1 0 0 / 0.055), oklch(1 0 0 / 0) 40%);
+    --glass-sheen: linear-gradient(
+      180deg,
+      oklch(1 0 0 / 0.055),
+      oklch(1 0 0 / 0) 40%
+    );
     --glass-saturate: 1.4;
     --surface-1: oklch(0.2 0.022 var(--neutral-h));
     --surface-2: oklch(0.225 0.022 var(--neutral-h));
@@ -98,9 +106,12 @@
     --sticky-fill: var(--surface-2);
 
     --shadow-1: 0 1px 2px oklch(0 0 0 / 0.3);
-    --shadow-2: 0 1px 2px oklch(0 0 0 / 0.25), 0 14px 34px -14px oklch(0 0 0 / 0.55);
-    --shadow-3: 0 2px 8px -2px oklch(0 0 0 / 0.35), 0 24px 52px -18px oklch(0 0 0 / 0.7);
-    --shadow-4: 0 4px 14px -4px oklch(0 0 0 / 0.4), 0 40px 90px -24px oklch(0 0 0 / 0.8);
+    --shadow-2:
+      0 1px 2px oklch(0 0 0 / 0.25), 0 14px 34px -14px oklch(0 0 0 / 0.55);
+    --shadow-3:
+      0 2px 8px -2px oklch(0 0 0 / 0.35), 0 24px 52px -18px oklch(0 0 0 / 0.7);
+    --shadow-4:
+      0 4px 14px -4px oklch(0 0 0 / 0.4), 0 40px 90px -24px oklch(0 0 0 / 0.8);
     --halo-colour: oklch(0.14 0.02 var(--neutral-h) / 0.92);
     --shadow-accent: 0 8px 24px -8px var(--accent-glow);
     --shadow-danger: 0 8px 24px -10px oklch(from var(--danger) l c h / 0.55);
@@ -110,7 +121,11 @@
 
   :root {
     /* Light that sits on coloured fills (primary, danger, success buttons), any mode. */
-    --sheen-solid: linear-gradient(180deg, oklch(1 0 0 / 0.16), oklch(1 0 0 / 0) 62%);
+    --sheen-solid: linear-gradient(
+      180deg,
+      oklch(1 0 0 / 0.16),
+      oklch(1 0 0 / 0) 62%
+    );
     --rim-light: oklch(1 0 0 / 0.3);
     --rim-shade: oklch(0 0 0 / 0.1);
     --seam-light: oklch(1 0 0 / 0.3);
@@ -132,7 +147,11 @@
     --glass-blur-float: 10px;
     --glass-fill-chrome: color-mix(in oklab, var(--surface-1) 82%, transparent);
     --glass-fill-panel: color-mix(in oklab, var(--surface-2) 85%, transparent);
-    --glass-fill-overlay: color-mix(in oklab, var(--surface-3) 94%, transparent);
+    --glass-fill-overlay: color-mix(
+      in oklab,
+      var(--surface-3) 94%,
+      transparent
+    );
   }
 
   :root[data-glass="solid"] {
@@ -161,7 +180,9 @@
     }
   }
 
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  @supports not (
+    (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+  ) {
     :root {
       --glass-fill-chrome: var(--surface-1);
       --glass-fill-panel: var(--surface-2);
@@ -212,7 +233,11 @@
     --glass-edge: oklch(0 0 0 / 0.3);
     --glass-rim: oklch(1 0 0 / 0.1);
     --glass-rim-top: oklch(1 0 0 / 0.22);
-    --glass-sheen: linear-gradient(180deg, oklch(1 0 0 / 0.08), oklch(1 0 0 / 0) 50%);
+    --glass-sheen: linear-gradient(
+      180deg,
+      oklch(1 0 0 / 0.08),
+      oklch(1 0 0 / 0) 50%
+    );
     color: oklch(0.97 0.005 var(--neutral-h));
   }
 
@@ -223,7 +248,11 @@
      show sharp text through it). Set data-moving only for the gesture: the blur returns
      when the layer comes to rest (docs/performance.md). */
   :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float)[data-moving] {
-    --_fill: color-mix(in oklab, var(--surface-2) var(--glass-moving-mix), var(--canvas));
+    --_fill: color-mix(
+      in oklab,
+      var(--surface-2) var(--glass-moving-mix),
+      var(--canvas)
+    );
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -241,14 +270,18 @@
       position: relative; /* component position rules win: they come later in the cascade */
       isolation: isolate;
       background-clip: border-area; /* its own fill only under the edge, which ::before covers */
-      box-shadow: var(--_shadow); /* elevation only; the rims move to ::before */
+      box-shadow: var(
+        --_shadow
+      ); /* elevation only; the rims move to ::before */
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
     }
     :is(.glass-panel, .glass-chrome, .glass-detached)::before {
       content: "";
       position: absolute;
-      inset: calc(var(--border-width) * -1); /* the border box, so the radius matches */
+      inset: calc(
+        var(--border-width) * -1
+      ); /* the border box, so the radius matches */
       z-index: -1;
       border: var(--border-width) solid var(--glass-edge);
       border-radius: inherit;
@@ -261,7 +294,8 @@
       box-shadow:
         inset 0 1px 0 0 var(--glass-rim-top),
         inset 0 0 0 var(--border-width) var(--glass-rim);
-      -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--_blur))
+        saturate(var(--glass-saturate));
       backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
     }
     :is(.glass-panel, .glass-chrome, .glass-detached)[data-moving]::before {
@@ -271,7 +305,8 @@
     /* A leaving toast fades with opacity, which makes it ::before's backdrop root, so the
        blur would sample only the toast itself: it blurs on the element while it leaves. */
     .glass-detached[data-ending-style] {
-      -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--_blur))
+        saturate(var(--glass-saturate));
       backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
     }
     .glass-detached[data-ending-style]::before {
@@ -325,15 +360,27 @@
      icons get a halo in the canvas colour — so it reads on any image, light or dark, in
      either mode. Components need no special casing: they only read the roles below. */
   .over-imagery {
-    --glass-fill-control: color-mix(in oklab, var(--surface-3) 84%, transparent);
-    --glass-fill-control-hover: color-mix(in oklab, var(--surface-3) 94%, transparent);
+    --glass-fill-control: color-mix(
+      in oklab,
+      var(--surface-3) 84%,
+      transparent
+    );
+    --glass-fill-control-hover: color-mix(
+      in oklab,
+      var(--surface-3) 94%,
+      transparent
+    );
     --glass-fill-inset: color-mix(in oklab, var(--surface-2) 72%, transparent);
     --fill-hover: color-mix(in oklab, var(--surface-3) 72%, transparent);
     --fill-press: color-mix(in oklab, var(--surface-3) 88%, transparent);
     --fill-muted: color-mix(in oklab, var(--surface-2) 64%, transparent);
     --line: color-mix(in oklab, var(--fg) 26%, transparent);
     --accent-soft: color-mix(in oklab, var(--accent) 18%, var(--surface-3));
-    --accent-soft-hover: color-mix(in oklab, var(--accent) 26%, var(--surface-3));
+    --accent-soft-hover: color-mix(
+      in oklab,
+      var(--accent) 26%,
+      var(--surface-3)
+    );
     --success-soft: color-mix(in oklab, var(--success) 18%, var(--surface-3));
     --warning-soft: color-mix(in oklab, var(--warning) 22%, var(--surface-3));
     --danger-soft: color-mix(in oklab, var(--danger) 18%, var(--surface-3));
@@ -348,45 +395,173 @@
       0 0 1rem var(--halo-colour);
   }
   .over-imagery :where(svg) {
-    filter: drop-shadow(0 0 1px var(--halo-colour)) drop-shadow(0 0 0.375rem var(--halo-colour));
+    filter: drop-shadow(0 0 1px var(--halo-colour))
+      drop-shadow(0 0 0.375rem var(--halo-colour));
   }
   /* Controls over imagery are not inside a blurred layer, so they may frost what is behind. */
   .over-imagery :where(.glass-control, .fa-control) {
-    -webkit-backdrop-filter: blur(var(--glass-blur-float)) saturate(var(--glass-saturate));
-    backdrop-filter: blur(var(--glass-blur-float)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur-float))
+      saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur-float))
+      saturate(var(--glass-saturate));
   }
   /* Solid fills already carry their own contrast. */
-  .over-imagery :where(.fa-btn[data-variant="primary"], .fa-btn[data-variant="danger"], .fa-btn[data-variant="success"], .fa-btn[data-variant="warning"]) {
+  .over-imagery
+    :where(
+      .fa-btn[data-variant="primary"],
+      .fa-btn[data-variant="danger"],
+      .fa-btn[data-variant="success"],
+      .fa-btn[data-variant="warning"]
+    ) {
     text-shadow: none;
   }
-  .over-imagery :where(.fa-btn[data-variant="primary"], .fa-btn[data-variant="danger"], .fa-btn[data-variant="success"], .fa-btn[data-variant="warning"]) :where(svg) {
+  .over-imagery
+    :where(
+      .fa-btn[data-variant="primary"],
+      .fa-btn[data-variant="danger"],
+      .fa-btn[data-variant="success"],
+      .fa-btn[data-variant="warning"]
+    )
+    :where(svg) {
     filter: none;
   }
 
   /* ── The canvas ──────────────────────────────────────────────────────────── */
-  .canvas-ambient {
-    background-color: var(--canvas);
-    background-image:
+  .canvas-ambient,
+  .canvas-background,
+  :is(.canvas-ambient, .canvas-background)[data-background="silk"] {
+    --canvas-image:
       radial-gradient(
         46% 58% at 92% 4%,
-        color-mix(in oklab, var(--ambient-1) calc(var(--ambient-strength) * 100%), transparent),
+        color-mix(
+          in oklab,
+          var(--ambient-1) calc(var(--ambient-strength) * 100%),
+          transparent
+        ),
         transparent 72%
       ),
       radial-gradient(
         42% 52% at 6% 96%,
-        color-mix(in oklab, var(--ambient-2) calc(var(--ambient-strength) * 100%), transparent),
+        color-mix(
+          in oklab,
+          var(--ambient-2) calc(var(--ambient-strength) * 100%),
+          transparent
+        ),
         transparent 72%
       ),
       radial-gradient(
         36% 46% at 0% 22%,
-        color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 100%), transparent),
+        color-mix(
+          in oklab,
+          var(--ambient-3) calc(var(--ambient-strength) * 100%),
+          transparent
+        ),
         transparent 70%
       ),
       radial-gradient(
         34% 40% at 62% 104%,
-        color-mix(in oklab, var(--ambient-1) calc(var(--ambient-strength) * 60%), transparent),
+        color-mix(
+          in oklab,
+          var(--ambient-1) calc(var(--ambient-strength) * 60%),
+          transparent
+        ),
         transparent 70%
       );
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+  }
+  :where(:root[data-background="mesh"])
+    :is(.canvas-ambient, .canvas-background),
+  :is(.canvas-ambient, .canvas-background)[data-background="mesh"] {
+    --canvas-image:
+      radial-gradient(
+        ellipse at 15% 15%,
+        color-mix(in oklab, var(--ambient-1) 85%, transparent),
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse at 88% 28%,
+        color-mix(in oklab, var(--ambient-2) 80%, transparent),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse at 44% 92%,
+        color-mix(in oklab, var(--ambient-3) 90%, transparent),
+        transparent 68%
+      );
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+  }
+  :where(:root[data-background="grid"])
+    :is(.canvas-ambient, .canvas-background),
+  :is(.canvas-ambient, .canvas-background)[data-background="grid"] {
+    --canvas-image:
+      linear-gradient(
+        color-mix(in oklab, var(--line) 45%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--line) 45%, transparent) 1px,
+        transparent 1px
+      ),
+      radial-gradient(ellipse at 80% 0%, var(--ambient-1), transparent 65%);
+    --canvas-image-size: 2rem 2rem, 2rem 2rem, 100% 100%;
+    --canvas-image-position: center;
+  }
+  :where(:root[data-background="contours"])
+    :is(.canvas-ambient, .canvas-background),
+  :is(.canvas-ambient, .canvas-background)[data-background="contours"] {
+    --canvas-image:
+      repeating-radial-gradient(
+        ellipse at 12% 20%,
+        transparent 0 2.4rem,
+        color-mix(in oklab, var(--silk) 65%, transparent) 2.4rem
+          calc(2.4rem + 1px),
+        transparent calc(2.4rem + 1px) 4.8rem
+      ),
+      radial-gradient(ellipse at 10% 20%, var(--ambient-2), transparent 65%),
+      radial-gradient(ellipse at 95% 90%, var(--ambient-1), transparent 70%);
+    --canvas-image-size: 160% 180%, 100% 100%, 100% 100%;
+    --canvas-image-position: center;
+  }
+  :where(:root[data-background="facets"])
+    :is(.canvas-ambient, .canvas-background),
+  :is(.canvas-ambient, .canvas-background)[data-background="facets"] {
+    --canvas-image:
+      linear-gradient(
+        155deg,
+        transparent 40%,
+        color-mix(in oklab, var(--ambient-1) 70%, transparent) 40% 61%,
+        transparent 61%
+      ),
+      linear-gradient(
+        25deg,
+        transparent 35%,
+        color-mix(in oklab, var(--ambient-2) 60%, transparent) 35% 64%,
+        transparent 64%
+      ),
+      linear-gradient(
+        120deg,
+        color-mix(in oklab, var(--ambient-3) 80%, transparent),
+        transparent 70%
+      );
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+  }
+  :where(:root[data-background="plain"])
+    :is(.canvas-ambient, .canvas-background),
+  :is(.canvas-ambient, .canvas-background)[data-background="plain"] {
+    --canvas-image: none;
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+  }
+  .canvas-ambient,
+  .canvas-background {
+    background-color: var(--canvas);
+    background-image: var(--canvas-image);
+    background-size: var(--canvas-image-size);
+    background-position: var(--canvas-image-position);
     background-attachment: fixed;
   }
   /* Silk: flowing hairlines painted in the canvas colour role --silk (a mask keeps them
@@ -400,6 +575,9 @@
     mask: url("../assets/canvas/silk.svg") center / cover no-repeat;
   }
   :root[data-glass="solid"] .canvas-silk {
+    display: none;
+  }
+  :root[data-background]:not([data-background="silk"]) .canvas-silk {
     display: none;
   }
 }

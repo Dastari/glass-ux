@@ -5,6 +5,14 @@ description: Integrate Glass UX into an existing or new React application, inclu
 
 # Adopt Glass UX
 
+Before composing UI, read and apply the installed package's `docs/ui-rules.md`, especially
+Screen content rules. These defaults apply to consuming websites and applications unless
+explicit user or project instructions say otherwise: do not overuse subheadings, add
+motivational/irrelevant/cheerful/promotional copy, overexplain the page, push primary content
+down with redundant framing, repeat a route title already named by navigation, or introduce
+content shifts that move buttons or menus. Use factual labels and reserve asynchronous
+content space. Deliberate long-form documents may contain necessary headings and prose.
+
 Find the installed `glass-ux` package and read its `README.md`, `docs/getting-started.md` and
 `docs/integration.md`. Those files match the installed release. Use its `docs/api/README.md`
 to find component contracts; the live site is supplementary when versions differ.

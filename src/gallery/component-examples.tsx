@@ -1,6 +1,7 @@
 import {
   IdentityCell,
   TextCell,
+  TwoLineCell,
   NumericCell,
   RelativeTime,
   SparklineCell,
@@ -39,7 +40,9 @@ import { defineActions, resolveActions } from "../lib/actions/actions.js";
 import { Dialog } from "../ui/dialog/index.js";
 import { useState, useRef } from "react";
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox";
-import { SectionPage, Specimen } from "./kit.js";
+import { ContainerLab, Example, SectionPage, Specimen } from "./kit.js";
+import { PORTRAITS } from "./fixtures/organisations.js";
+import { Avatar } from "../ui/avatar/index.js";
 import { AiGallery } from "./sections/ai.kit.js";
 import { ASKS, RESULTS, E, NOW, SOURCES } from "./sections/ai.fixtures.js";
 import { DEMO_MAP_CONFIG } from "./fixtures/map.js";
@@ -47,6 +50,8 @@ import {
   IconSparkle,
   IconSearch,
   IconOrganisation,
+  IconBell,
+  IconUser,
 } from "../icons/generated/icons.js";
 import { toast } from "../ui/toast/index.js";
 const CHOICES = [
@@ -55,6 +60,7 @@ const CHOICES = [
 ];
 import {
   AppShell,
+  AccountButton,
   Inspector,
   InspectorToggle,
   Rail,
@@ -128,6 +134,7 @@ import {
   SourcesProvider,
   StatusGlyph,
   TurnNavigator,
+  UserMessage,
 } from "../ai/index.js";
 import { Input, InputSkeleton, NormalisedInput } from "../ui/input/index.js";
 import { Menu, MenuItemContent, MenuPreview } from "../ui/menu/index.js";
@@ -1643,7 +1650,11 @@ export function ShellBrandExample() {
   return (
     <SectionPage>
       <Specimen title="ShellBrand" layout="stack">
-        <ShellBrand label="Meridian Studio" mark={<IconOrganisation />} />
+        <ShellBrand
+          label="Meridian Studio"
+          href="#examples"
+          mark={<IconOrganisation />}
+        />
       </Specimen>
     </SectionPage>
   );
@@ -1867,7 +1878,124 @@ export function TurnNavigatorExample() {
   );
 }
 
+function AccountMenuSample({
+  name,
+  email,
+  avatarSrc,
+  unread = 0,
+}: {
+  name: string;
+  /** The account’s displayed email address. */
+  email?: string;
+  /** Profile image URL; an initials fallback is used when it is absent. */
+  avatarSrc?: string;
+  unread?: number;
+}) {
+  const [count, setCount] = useState(unread);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const accountRef = useRef<HTMLButtonElement>(null);
+  const closeProfileRef = useRef<HTMLButtonElement>(null);
+  return (
+    <>
+      <Menu.Root>
+        <Menu.Trigger
+          render={
+            <AccountButton
+              ref={accountRef}
+              name={name}
+              email={email}
+              avatarSrc={avatarSrc}
+              unread={count}
+            />
+          }
+        />
+        <Menu.Popup align="end" finalFocus={profileOpen ? false : accountRef}>
+          <Menu.Item icon={<IconUser />} onClick={() => setProfileOpen(true)}>
+            View profile
+          </Menu.Item>
+          <Menu.Item
+            icon={<IconBell />}
+            disabledReason={count === 0 ? "No unread notifications" : undefined}
+            trail={count > 0 ? `${count} unread` : undefined}
+            onClick={() => setCount(0)}
+          >
+            Mark notifications read
+          </Menu.Item>
+        </Menu.Popup>
+      </Menu.Root>
+      <Dialog.Root open={profileOpen} onOpenChange={setProfileOpen}>
+        <Dialog.Popup
+          size="sm"
+          initialFocus={closeProfileRef}
+          finalFocus={accountRef}
+        >
+          <Dialog.Header title={`${name} profile`} />
+          <Dialog.Body>
+            <div className="flex min-w-0 items-center gap-3">
+              <Avatar name={name} src={avatarSrc} size="lg" decorative />
+              <div className="min-w-0 break-words">
+                <p className="type-label">{name}</p>
+                {email ? (
+                  <p className="type-caption text-fg-muted">{email}</p>
+                ) : null}
+              </div>
+            </div>
+          </Dialog.Body>
+          <Dialog.Footer>
+            <Dialog.Close
+              render={<Button ref={closeProfileRef}>Close profile</Button>}
+            />
+          </Dialog.Footer>
+        </Dialog.Popup>
+      </Dialog.Root>
+    </>
+  );
+}
+
+export function AccountButtonExample() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Account menu"
+        description="The account button is a Menu trigger. Email is optional; the host supplies the menu actions."
+        layout="stack"
+      >
+        <Example label="Name and email">
+          <AccountMenuSample
+            name="Avery Quinn"
+            email="avery.quinn@orbit.example"
+            avatarSrc={PORTRAITS[1]}
+            unread={3}
+          />
+        </Example>
+        <Example label="Name only">
+          <AccountMenuSample name="Mira Rowan" avatarSrc={PORTRAITS[0]} />
+        </Example>
+        <Example label="Initials fallback">
+          <AccountMenuSample
+            name="Casey Reed"
+            email="casey.reed@orbit.example"
+          />
+        </Example>
+      </Specimen>
+      <ContainerLab
+        title="Account in narrow containers"
+        description="The avatar keeps its size while the name and email truncate with full-text tooltips."
+      >
+        {() => (
+          <AccountMenuSample
+            name="Sage Winter · Regional operations"
+            email="sage.winter@operations.orbit.example"
+            avatarSrc={PORTRAITS[7]}
+          />
+        )}
+      </ContainerLab>
+    </SectionPage>
+  );
+}
+
 export function AppShellExample() {
+  const scope = "Shell";
   return (
     <SectionPage>
       <Specimen
@@ -1877,10 +2005,17 @@ export function AppShellExample() {
       >
         <div className="relative h-120 w-full overflow-hidden">
           <AppShell
+            contentAs="div"
             className="h-full!"
-            brand={<ShellBrand label="Meridian" mark={<IconOrganisation />} />}
+            brand={
+              <ShellBrand
+                label="Meridian"
+                href="#examples"
+                mark={<IconOrganisation />}
+              />
+            }
             rail={
-              <Rail.Root aria-label="Sample navigation">
+              <Rail.Root aria-label={`${scope} sample navigation`}>
                 <Rail.Item label="Projects" icon={<IconOrganisation />} />
               </Rail.Root>
             }
@@ -1891,7 +2026,7 @@ export function AppShellExample() {
               />
             }
             inspector={
-              <Inspector title="Exhibition details">
+              <Inspector title={`${scope} exhibition details`}>
                 <p>Three rooms, 42 reservations.</p>
               </Inspector>
             }
@@ -1905,6 +2040,7 @@ export function AppShellExample() {
 }
 
 export function InspectorExample() {
+  const scope = "Inspector";
   return (
     <SectionPage>
       <Specimen
@@ -1914,10 +2050,17 @@ export function InspectorExample() {
       >
         <div className="relative h-120 w-full overflow-hidden">
           <AppShell
+            contentAs="div"
             className="h-full!"
-            brand={<ShellBrand label="Meridian" mark={<IconOrganisation />} />}
+            brand={
+              <ShellBrand
+                label="Meridian"
+                href="#examples"
+                mark={<IconOrganisation />}
+              />
+            }
             rail={
-              <Rail.Root aria-label="Sample navigation">
+              <Rail.Root aria-label={`${scope} sample navigation`}>
                 <Rail.Item label="Projects" icon={<IconOrganisation />} />
               </Rail.Root>
             }
@@ -1928,7 +2071,7 @@ export function InspectorExample() {
               />
             }
             inspector={
-              <Inspector title="Exhibition details">
+              <Inspector title={`${scope} exhibition details`}>
                 <p>Three rooms, 42 reservations.</p>
               </Inspector>
             }
@@ -1942,6 +2085,7 @@ export function InspectorExample() {
 }
 
 export function InspectorToggleExample() {
+  const scope = "Inspector toggle";
   return (
     <SectionPage>
       <Specimen
@@ -1951,10 +2095,17 @@ export function InspectorToggleExample() {
       >
         <div className="relative h-120 w-full overflow-hidden">
           <AppShell
+            contentAs="div"
             className="h-full!"
-            brand={<ShellBrand label="Meridian" mark={<IconOrganisation />} />}
+            brand={
+              <ShellBrand
+                label="Meridian"
+                href="#examples"
+                mark={<IconOrganisation />}
+              />
+            }
             rail={
-              <Rail.Root aria-label="Sample navigation">
+              <Rail.Root aria-label={`${scope} sample navigation`}>
                 <Rail.Item label="Projects" icon={<IconOrganisation />} />
               </Rail.Root>
             }
@@ -1965,7 +2116,7 @@ export function InspectorToggleExample() {
               />
             }
             inspector={
-              <Inspector title="Exhibition details">
+              <Inspector title={`${scope} exhibition details`}>
                 <p>Three rooms, 42 reservations.</p>
               </Inspector>
             }
@@ -2364,6 +2515,47 @@ export function TextCellExample() {
         <TextCell>Short label</TextCell>
       </Specimen>
     </SectionPage>
+  );
+}
+export function TwoLineCellExample() {
+  return (
+    <SectionPage>
+      <Specimen title="Value and supporting text" layout="stack">
+        <div className="max-w-full w-70">
+          <TwoLineCell
+            title="Windows 11 Business"
+            subtitle="Version 24H2 · 64-bit"
+          />
+        </div>
+        <TwoLineCell title="No supporting text" />
+      </Specimen>
+    </SectionPage>
+  );
+}
+
+export function UserMessageExample() {
+  return (
+    <AiGallery>
+      <SectionPage>
+        <Specimen title="Editable user message" layout="stack">
+          <UserMessage
+            message={{
+              id: "sample-user-message",
+              role: "user",
+              createdAt: NOW,
+              state: "complete",
+              blocks: [
+                {
+                  kind: "markdown",
+                  text: "List the exhibitions scheduled for next month.",
+                },
+              ],
+            }}
+            editable
+          />
+        </Specimen>
+      </SectionPage>
+    </AiGallery>
   );
 }
 export function NumericCellExample() {

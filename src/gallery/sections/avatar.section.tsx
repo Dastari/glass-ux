@@ -1,31 +1,32 @@
 import { ContainerLab, Example, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
 import { Avatar, AvatarGroup, AvatarSkeleton, type AvatarSize } from "../../ui/avatar/index.js"
+import { PORTRAITS } from "../fixtures/organisations.js"
 
 const SIZES: AvatarSize[] = ["xs", "sm", "md", "lg", "xl"]
 const PEOPLE = [
-  { name: "Avery Quinn" },
-  { name: "Mira Rowan" },
-  { name: "Ellis Park" },
-  { name: "Noa Finch" },
-  { name: "Rory Lake" },
-  { name: "Casey Reed" },
-  { name: "Sage Winter" },
+  { name: "Avery Quinn", src: PORTRAITS[1] },
+  { name: "Mira Rowan", src: PORTRAITS[0] },
+  { name: "Ellis Park", src: PORTRAITS[3] },
+  { name: "Noa Finch", src: PORTRAITS[4] },
+  { name: "Rory Lake", src: PORTRAITS[5] },
+  { name: "Casey Reed", src: PORTRAITS[6] },
+  { name: "Sage Winter", src: PORTRAITS[7] },
 ]
 
 export default function AvatarSection() {
   return (
     <SectionPage>
-      <Specimen title="Sizes" description="xs 20 · sm 24 · md 32 · lg 40 · xl 56. Initials sit on a tint chosen from the name, drawn from the palette's ambient and accent roles.">
+      <Specimen title="Sizes" description="xs 20 · sm 24 · md 32 · lg 40 · xl 56. Sample portraits at each size; the final avatar shows initials when no image is supplied.">
         {SIZES.map((size) => (
           <Example key={size} label={size}>
-            <Avatar name="Avery Quinn" size={size} />
-            <Avatar name="Mira Rowan" size={size} />
+            <Avatar name="Avery Quinn" src={PORTRAITS[1]} size={size} />
+            <Avatar name="Mira Rowan" src={PORTRAITS[0]} size={size} />
             <Avatar name="AzureAD\EllisPark" size={size} />
           </Example>
         ))}
       </Specimen>
 
-      <Specimen title="Tints" description="Deterministic: the same person always gets the same tint, in every palette and mode.">
+      <Specimen title="Tints" description="Without profile images, the same person always gets the same initials and tint in every palette and mode.">
         {PEOPLE.map((person) => (
           <Avatar key={person.name} name={person.name} size="lg" />
         ))}
@@ -33,12 +34,12 @@ export default function AvatarSection() {
       </Specimen>
 
       <Specimen title="Presence" description="The shared status dot on the corner: online, away, busy, offline.">
-        <Avatar name="Avery Quinn" size="lg" presence="online" />
-        <Avatar name="Mira Rowan" size="lg" presence="away" />
-        <Avatar name="Ellis Park" size="lg" presence="busy" />
-        <Avatar name="Noa Finch" size="lg" presence="offline" />
-        <Avatar name="Avery Quinn" size="sm" presence="online" />
-        <Avatar name="Noa Finch" size="sm" presence="offline" />
+        <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="lg" presence="online" />
+        <Avatar name="Mira Rowan" src={PORTRAITS[0]} size="lg" presence="away" />
+        <Avatar name="Ellis Park" src={PORTRAITS[3]} size="lg" presence="busy" />
+        <Avatar name="Noa Finch" src={PORTRAITS[4]} size="lg" presence="offline" />
+        <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="sm" presence="online" />
+        <Avatar name="Noa Finch" src={PORTRAITS[4]} size="sm" presence="offline" />
       </Specimen>
 
       <Specimen title="Groups" description="Who is watching or connected. Faces overlap with a surface ring; the rest collapse into +N with their names in the label.">
@@ -56,22 +57,26 @@ export default function AvatarSection() {
       <Specimen title="Loading" description="The skeleton is the same circle.">
         <Example label="Skeleton · loaded">
           <AvatarSkeleton size="lg" />
-          <Avatar name="Avery Quinn" size="lg" />
+          <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="lg" />
           <AvatarSkeleton size="md" />
-          <Avatar name="Avery Quinn" size="md" />
+          <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="md" />
         </Example>
-        <SwapSlot id="avatar" skeleton={<AvatarSkeleton size="lg" />} loaded={<Avatar name="Avery Quinn" size="lg" />} />
+        <SwapSlot id="avatar" skeleton={<AvatarSkeleton size="lg" />} loaded={<Avatar name="Avery Quinn" src={PORTRAITS[1]} size="lg" />} />
       </Specimen>
 
-      <Specimen title="Over imagery" description="Tints are opaque palette colours, so initials stay legible on any content." backdrop>
-        <Avatar name="Avery Quinn" size="xl" presence="online" />
-        <AvatarGroup people={PEOPLE} max={4} size="md" />
+      <Specimen title="Over imagery" description="Initials use opaque palette colours; portrait groups keep a surface ring over imagery." backdrop>
+        <Example label="Initials without an image">
+          <Avatar name="Avery Quinn" size="xl" presence="online" />
+        </Example>
+        <Example label="Profile images">
+          <AvatarGroup people={PEOPLE} max={4} size="md" />
+        </Example>
       </Specimen>
 
       <ContainerLab description="Avatars keep their size; a group never wraps.">
         {() => (
           <div className="flex items-center gap-3 p-2">
-            <Avatar name="Avery Quinn" presence="online" />
+            <Avatar name="Avery Quinn" src={PORTRAITS[1]} presence="online" />
             <AvatarGroup people={PEOPLE} max={4} />
           </div>
         )}

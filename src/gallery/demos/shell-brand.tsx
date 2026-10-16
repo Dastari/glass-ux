@@ -8,7 +8,7 @@ export default function ShellBrandExample() {
   return (
     <SectionPage>
       <Specimen title="ShellBrand" layout="stack">
-        <ShellBrand label="Meridian Studio" mark={<IconOrganisation />} />
+        <ShellBrand label="Meridian Studio" href="#examples" mark={<IconOrganisation />} />
       </Specimen>
     </SectionPage>
   );

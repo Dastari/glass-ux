@@ -16,11 +16,11 @@ for (const mode of ["light", "dark"] as const) {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("components/system-notice/");
-    await expect(page.locator("main h1")).toHaveText("SystemNotice");
-    await expect(page.locator("#examples")).toContainText(
+    await expect(page.locator("main h1")).toHaveText("AssistantMessage");
+    await expect(page.locator("#system-notice")).toContainText(
       "Conversation notices",
     );
-    await expect(page.locator("#examples")).not.toContainText("A turn");
+    await expect(page.locator("#system-notice")).not.toContainText("A turn");
     const toolbar = page.getByRole("region", { name: "Appearance controls" });
     await toolbar
       .getByRole("button", {
@@ -75,7 +75,7 @@ for (const mode of ["light", "dark"] as const) {
     await expect(root).toHaveAttribute("data-palette", "ruby");
     await expect(root).toHaveAttribute("data-mode", mode);
     await expect(code).toHaveAttribute("data-highlighted", "");
-    await expect(page.locator("#examples [role='note']")).toHaveCount(2);
+    await expect(page.locator("#system-notice [role='note']")).toHaveCount(2);
     expect(errors).toEqual([]);
     await page.screenshot({
       path: `test-results/production/palettes-${mode}.png`,
@@ -122,7 +122,10 @@ test("usage and guide code highlight from lazy chunks under the deployment base 
       failed.push(`${response.status()} ${response.url()}`);
   });
   await page.goto("components/action-menu/#usage");
-  const usage = page.locator("#usage .fa-ai-code pre").first();
+  const usage = page
+    .locator("#usage-action-menu")
+    .locator("..")
+    .locator(".fa-ai-code pre");
   await expect(usage).toHaveAttribute("data-highlighted", "");
   await expect(
     usage.locator('span[style*="--fa-code-token-keyword"]').first(),
@@ -140,7 +143,9 @@ test("the supplied brand mark, favicon and sharing image load under the deployme
   page,
 }) => {
   await page.goto("guides/getting-started/");
-  const logo = page.locator(".gallery-brand svg[data-brand='glass-ux']");
+  const logo = page
+    .getByRole("navigation", { name: "Component navigation", exact: true })
+    .locator("svg[data-brand='glass-ux']");
   await expect(logo).toBeVisible();
   await expect(logo).toHaveAttribute("data-tones", "brand");
   expect(await logo.locator("linearGradient").count()).toBe(2);

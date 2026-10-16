@@ -5,6 +5,13 @@ material, radius and padding; `Panel.Header`, `Panel.Body` and `Panel.Footer` su
 own insets. Drawer search and body slots also own their spacing. Adding a glass material
 class to an arbitrary element supplies appearance only, without those layout defaults.
 
+Apply the [screen content rules](ui-rules.md#screen-content-rules) when composing any screen.
+Keep primary content near the top: no stacked decorative headings, repeated route titles,
+non-informational slogans or paragraphs explaining obvious controls. This is the default
+for consuming applications unless explicit user or project instructions say otherwise.
+Reserve geometry for asynchronous content so loading, validation, live updates, hover and
+focus do not move buttons or menus after the user has targeted them.
+
 | Purpose                        | Use                                                    | Theme role                          |
 | ------------------------------ | ------------------------------------------------------ | ----------------------------------- |
 | Navigation pane                | `Surface material="chrome" padding="panel"`            | `--inset-panel`, `--radius-surface` |
@@ -38,6 +45,20 @@ export function ComponentDirectory() {
 ```
 
 ## CSS names and verification
+
+The canvas background is a persisted appearance preference. Choose `silk` (the existing
+ambient fields and line overlay), `mesh`, `grid`, `contours`, `facets` or `plain` with
+`configureAppearance({ defaults: { background: "grid" } })` or
+`useAppearance().update({ background: "grid" })`. `BACKGROUNDS` and `BACKGROUND_LABELS`
+are exported from `glass-ux/appearance` for application controls. The boot script applies
+the choice before first paint, alongside palette and mode.
+
+Put `class="canvas-ambient"` (or `canvas-background`) on the application canvas. Keep the
+existing `<div class="canvas-silk" aria-hidden="true"></div>` behind the shell for Silk's
+line overlay; it hides automatically for other backgrounds and Solid material. All styles
+use semantic palette tokens and require no remote images. A bounded preview can set
+`data-background="contours"` locally and `background-attachment: scroll` without changing
+the application's preference.
 
 Glass UX includes Ocean, Aurora, Emerald, Sunset, Graphite and Ruby palettes. Select a
 palette through `configureAppearance` or the appearance provider, and use semantic roles

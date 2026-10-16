@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { DemoScope } from "glass-ux/gallery/demo-scope";
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { IconOperatingSystem, IconRefresh, IconSoftware, IconWindows } from "glass-ux/icons";
 import { Button, ButtonGroup } from "glass-ux/button";
@@ -243,7 +252,16 @@ function EndpointsDemo() {
 }
 
 /* ── A plain table on local state, used in the frames ─────────────────────────────── */
-function FrameTable({ id, pageSize = 25 }: { id: string; pageSize?: number }) {
+function FrameTable({
+  id,
+  pageSize = 25,
+  label,
+}: {
+  id: string;
+  pageSize?: number;
+  label?: string;
+}) {
+  const scope = useContext(DemoScope);
   const [state, setState] = useState<DataTableState>({
     sorting: [{ id: "lastSeen", desc: true }],
     filters: [],
@@ -264,7 +282,7 @@ function FrameTable({ id, pageSize = 25 }: { id: string; pageSize?: number }) {
   return (
     <DataTable<Endpoint>
       id={id}
-      label="Endpoints"
+      label={["Endpoints preview", scope, label].filter(Boolean).join(": ")}
       rows={page?.rows ?? []}
       rowCount={page?.rowCount}
       columns={endpointColumns}
@@ -502,6 +520,7 @@ function SoftwareTable({
   id?: string;
   defaultHiddenColumns?: readonly string[];
 } = {}) {
+  const scope = useContext(DemoScope);
   const [search, setSearch] = useState("");
   const rows = useMemo(
     () => searchRows(SOFTWARE, search, SOFTWARE_SEARCH, softwareColumns),
@@ -510,7 +529,7 @@ function SoftwareTable({
   return (
     <DataTable<Software>
       id={id}
-      label="Installed software"
+      label={scope ? `Installed software: ${scope}` : "Installed software"}
       rows={rows}
       rowCount={rows.length}
       columns={softwareColumns}
@@ -585,7 +604,7 @@ function DataTableSection() {
                 data-testid={`dt-${frame.id}`}
                 style={{ height: `${frame.rem}rem` }}
               >
-                <FrameTable id={`gallery-endpoints-${frame.id}`} />
+                <FrameTable id={`gallery-endpoints-${frame.id}`} label={frame.label} />
               </div>
               <figcaption className="gallery-example-label">{frame.label}</figcaption>
             </figure>

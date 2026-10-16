@@ -19,7 +19,7 @@ for (const appearance of [
   { density: "comfortable", uiScale: 1, radiusScale: 1, borderWidth: 1 },
   { density: "compact", uiScale: 1.125, radiusScale: 1.4, borderWidth: 1.5 },
 ]) {
-  test(`catalogue follows theme geometry in ${appearance.density} density`, async ({
+  test(`showcase follows theme geometry in ${appearance.density} density`, async ({
     page,
   }) => {
     await page.addInitScript(
@@ -35,7 +35,7 @@ for (const appearance of [
     const geometry = await page.evaluate(() => {
       const sidebar = document.querySelector<HTMLElement>(".docs-sidebar")!;
       const card = document.querySelector<HTMLElement>(
-        ".gallery-catalogue-card",
+        ".showcase-metrics > .fa-surface",
       )!;
       const probe = document.createElement("div");
       probe.style.cssText =
@@ -53,6 +53,8 @@ for (const appearance of [
         padding: panel.paddingLeft,
         radius: panel.borderTopLeftRadius,
       };
+      probe.style.padding = "var(--space-3)";
+      const drawerInset = panel.paddingLeft;
       const measured = (element: HTMLElement) => {
         const style = getComputedStyle(element);
         return {
@@ -62,7 +64,7 @@ for (const appearance of [
         };
       };
       const groups = [
-        ...document.querySelectorAll(".gallery-catalogue-group"),
+        ...document.querySelectorAll(".showcase-section-heading"),
       ].map((element) => {
         const style = getComputedStyle(element);
         return {
@@ -74,13 +76,18 @@ for (const appearance of [
         expected,
         tile,
         sidebar: measured(sidebar),
+        drawerInset,
+        drawerSearchInset: getComputedStyle(
+          sidebar.querySelector(".fa-shell-drawer-search")!,
+        ).paddingLeft,
         card: measured(card),
         groups,
       };
       probe.remove();
       return result;
     });
-    expect(geometry.sidebar).toEqual(geometry.expected);
+    expect(geometry.sidebar).toEqual({ ...geometry.expected, padding: "0px" });
+    expect(geometry.drawerSearchInset).toBe(geometry.drawerInset);
     expect(geometry.card).toEqual({
       ...geometry.tile,
       border: geometry.expected.border,
@@ -108,10 +115,23 @@ test("article and static rail have safe insets and the 64px desktop gap @respons
     .boundingBox();
   expect(rail!.x - layout!.x).toBeGreaterThan(0);
   expect(rail!.y - layout!.y).toBeGreaterThan(0);
-  const padding = await page
-    .locator(".gallery-component-document")
-    .evaluate((element) => parseFloat(getComputedStyle(element).paddingLeft));
-  expect(padding).toBeGreaterThan(0);
+  const insets = await page
+    .locator(".gallery-document-layout")
+    .evaluate((element) => {
+      const article = element.querySelector(".gallery-component-document")!;
+      return {
+        outer: parseFloat(getComputedStyle(element).paddingRight),
+        article: parseFloat(getComputedStyle(article).paddingLeft),
+        heading: article.querySelector("h1")!.getBoundingClientRect().left,
+        start: article.getBoundingClientRect().left,
+      };
+    });
+  expect(insets.outer).toBeGreaterThan(0);
+  expect(insets.article).toBe(0);
+  expect(insets.heading).toBeCloseTo(insets.start, 1);
+  expect(article!.x + article!.width).toBeLessThanOrEqual(
+    layout!.x + layout!.width - insets.outer + 1,
+  );
   if (testInfo.project.name === "desktop")
     expect(article!.x - rail!.x - rail!.width).toBeCloseTo(64, 0);
   await page.screenshot({
@@ -146,11 +166,9 @@ test("size previews stack by footprint and usage code has paragraph spacing", as
     expect(boxes[i]!.x).toBeCloseTo(boxes[0]!.x, 0);
     expect(boxes[i]!.y).toBeGreaterThan(boxes[i - 1]!.bottom);
   }
-  await expect(page.locator("#usage .fa-ai-code")).toBeAttached();
-  const paragraph = await page
-    .locator("#usage .gallery-usage-example > p")
-    .boundingBox();
-  const code = await page.locator("#usage .fa-ai-code").boundingBox();
+  await expect(page.locator("#usage .fa-ai-code").first()).toBeAttached();
+  const paragraph = await page.locator("#usage > p").boundingBox();
+  const code = await page.locator("#usage .fa-ai-code").first().boundingBox();
   expect(code!.y - paragraph!.y - paragraph!.height).toBeGreaterThan(0);
 });
 

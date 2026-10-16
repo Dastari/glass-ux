@@ -160,7 +160,7 @@ export default function ButtonSection() {
           </ButtonGroup>
         </Example>
         <Example label="Header actions">
-          <ButtonGroup>
+          <ButtonGroup className="max-w-full flex-wrap">
             <Button variant="ghost" icon={<IconMoreHorizontal />} aria-label="More" />
             <Button iconEnd={<IconChevronDown />}>More actions</Button>
             <Button variant="primary" icon={<IconEndpoint />}>

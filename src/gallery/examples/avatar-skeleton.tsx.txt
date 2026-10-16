@@ -1,5 +1,6 @@
 import { Example, SectionPage, Specimen, SwapSlot } from "glass-ux/gallery/kit";
 import { Avatar, AvatarSkeleton } from "glass-ux/avatar";
+import { PORTRAITS } from "glass-ux/gallery/fixtures/organisations";
 
 export default function AvatarSection() {
   return (
@@ -7,14 +8,14 @@ export default function AvatarSection() {
       <Specimen title="Loading" description="The skeleton is the same circle.">
         <Example label="Skeleton · loaded">
           <AvatarSkeleton size="lg" />
-          <Avatar name="Avery Quinn" size="lg" />
+          <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="lg" />
           <AvatarSkeleton size="md" />
-          <Avatar name="Avery Quinn" size="md" />
+          <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="md" />
         </Example>
         <SwapSlot
           id="avatar"
           skeleton={<AvatarSkeleton size="lg" />}
-          loaded={<Avatar name="Avery Quinn" size="lg" />}
+          loaded={<Avatar name="Avery Quinn" src={PORTRAITS[1]} size="lg" />}
         />
       </Specimen>
     </SectionPage>

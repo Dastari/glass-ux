@@ -6,8 +6,15 @@ navigation callbacks connect markers to the host application.
 
 Supply a `MapConfig` containing the basemap, region URL template, attribution and zoom
 limits. `basemap: null` draws region outlines and points without an external tile service.
-The demo uses this mode and fictional Northstar and Cedar Vale sites. Natural Earth
-region outlines are public-domain geographic data, not customer locations.
+The live demos use [OpenFreeMap's public vector tiles](https://openfreemap.org/) with
+no API key or account, alongside fictional Northstar and Cedar Vale sites. The dedicated
+outline-only specimen retains `basemap: null`. Natural Earth region outlines are
+public-domain geographic data, not customer locations.
+
+Map backgrounds request tiles and label glyphs from `tiles.openfreemap.org`. The gallery
+configures that provider explicitly; the component library does not select one for an
+application. The maps retain the OpenStreetMap and OpenMapTiles credits. If the provider
+is blocked by a network or content-security policy, its backgrounds cannot render.
 
 The static docs bundle includes its own `/geo/admin1/{country}/{code}.json` files. A
 package consumer must serve the needed region files or provide a different `regions`
@@ -27,6 +34,6 @@ interaction. Zoom buttons collapse separately below 20rem wide or 16rem tall; be
 8rem tall the other map controls also disappear.
 
 MapLibre loads lazily. Use the `glassUx()` Vite plugin for its worker asset imports.
-The [Map component page](https://dastari.github.io/glass-ux/components/map/) provides live
+The [Map component page](https://dastari.github.io/glass-ux/components/geo-map/) provides live
 examples, complete source and the exact typed contract for `MapConfig`, `MapPoint` and
 component props.

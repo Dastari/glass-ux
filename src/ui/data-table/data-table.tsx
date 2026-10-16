@@ -1458,6 +1458,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
             count={Math.min(skeletonCount, 6)}
             layout={cards}
             selectable={selectable}
+            actions={hasActions || Boolean(renderRowActions)}
           />
         </div>
       ) : (

@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useContext, useState, type ReactNode } from "react";
+import { DemoScope } from "glass-ux/gallery/demo-scope";
 import { ORGANISATION_SETTINGS, moduleRail } from "glass-ux/gallery/fixtures/brand";
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 import {
@@ -31,6 +32,7 @@ const SPECIMEN_ITEMS = [
 const SPECIMEN_PROJECTS = ["Northstar Studio migration", "Patch Tuesday · October"];
 
 function RailAndDrawer() {
+  const scope = useContext(DemoScope);
   // SectionDrawer.Search: local state, the host filters its own rows and highlights the match.
   const [query, setQuery] = useState("");
   const needle = query.trim().toLocaleLowerCase("en-AU");
@@ -39,7 +41,7 @@ function RailAndDrawer() {
   const projects = SPECIMEN_PROJECTS.filter(keep);
   return (
     <div className="gallery-shell-sidebar">
-      <Rail.Root aria-label="Main (specimen)">
+      <Rail.Root aria-label={scope ? `Main (specimen): ${scope}` : "Main (specimen)"}>
         {RAIL_ITEMS.map((item) => (
           <Rail.Item
             key={item.label}
@@ -56,7 +58,11 @@ function RailAndDrawer() {
           shortcut={ORGANISATION_SETTINGS.shortcut}
         />
       </Rail.Root>
-      <SectionDrawer.Root aria-label="Assistant navigation (specimen)">
+      <SectionDrawer.Root
+        aria-label={
+          scope ? `Assistant navigation (specimen): ${scope}` : "Assistant navigation (specimen)"
+        }
+      >
         <SectionDrawer.Header icon={<BrandMark mark="ai" />} title="Assistant" />
         <SectionDrawer.Search noun="Assistant" value={query} onValueChange={setQuery} />
         <SectionDrawer.Body>

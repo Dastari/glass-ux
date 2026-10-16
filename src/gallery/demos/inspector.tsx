@@ -12,6 +12,7 @@ import {
 } from "../../shell/index.js";
 
 export default function InspectorExample() {
+  const scope = "Inspector";
   return (
     <SectionPage>
       <Specimen
@@ -21,10 +22,11 @@ export default function InspectorExample() {
       >
         <div className="relative h-120 w-full overflow-hidden">
           <AppShell
+            contentAs="div"
             className="h-full!"
-            brand={<ShellBrand label="Meridian" mark={<IconOrganisation />} />}
+            brand={<ShellBrand label="Meridian" href="#examples" mark={<IconOrganisation />} />}
             rail={
-              <Rail.Root aria-label="Sample navigation">
+              <Rail.Root aria-label={`${scope} sample navigation`}>
                 <Rail.Item label="Projects" icon={<IconOrganisation />} />
               </Rail.Root>
             }
@@ -35,7 +37,7 @@ export default function InspectorExample() {
               />
             }
             inspector={
-              <Inspector title="Exhibition details">
+              <Inspector title={`${scope} exhibition details`}>
                 <p>Three rooms, 42 reservations.</p>
               </Inspector>
             }

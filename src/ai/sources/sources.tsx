@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useId, type ReactNode } from "react";
 import { IconExternalLink } from "../../icons/generated/icons.js";
 import { cx } from "../../lib/cx.js";
 import { TruncatedText } from "../../ui/truncated-text/index.js";
@@ -19,10 +19,6 @@ export function SourcesProvider({
   children: ReactNode;
 }) {
   return <SourcesContext value={sources ?? []}>{children}</SourcesContext>;
-}
-
-function sourceId(index: number) {
-  return `source-${index}`;
 }
 
 /**
@@ -95,14 +91,15 @@ export function SourceList({
   className?: string;
 }) {
   const resolver = useEntityResolver();
+  const listId = useId();
   return (
-    <section className={cx("fa-ai-sources", className)} aria-label="Sources">
+    <section className={cx("fa-ai-sources", className)}>
       <h4 className="fa-overline fa-ai-sources-title">Sources</h4>
       <ol className="fa-ai-sources-list">
         {sources.map((source) => {
           const external = safeExternalHref(source.href);
           return (
-            <li key={source.id} id={sourceId(source.index)}>
+            <li key={source.id} id={`${listId}-source-${source.index}`}>
               <a
                 className="glass-control fa-pressable fa-ai-source"
                 href={external ?? source.href}

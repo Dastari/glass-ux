@@ -158,8 +158,34 @@ masking.
 - Status icons: `success` (check in a circle), `warning` (triangle), `error` (× in a
   circle), `info`, `help`, `pending` (dashed ring) and `offline` (slashed circle). They
   take status colours from their container: a tile tone, a badge, a toast or a row tone.
-- Brand marks (Windows, Microsoft) are not icons. They live in `public/brand`.
-  `operating-system` is the generic fallback.
+- Social and company identifiers have custom monochrome adaptations in the icon set.
+  They identify the named service, account or destination; do not use them as generic
+  action, device or status metaphors. `operating-system` remains the generic OS fallback.
+  Full-colour application branding and supplied official artwork belong in `public/brand`.
+
+## Company and manufacturer icons
+
+Author these in `scripts/icon-authoring/defs/brands.mjs`, then run the authoring build
+and `pnpm icons`. They follow the same 24 grid, live area, circular arcs, rounded stroke,
+optional tint and size compensation as the rest of the set. Brand letterforms and symbols
+may require angles other than 45°; preserve their identifying geometry without adding
+freehand Béziers, embedded text, gradients or hard-coded brand colours. Use deliberate
+joins for connected symbol parts and simplify detail until the identifier reads at 14px.
+
+File names use the service's familiar lower-case name (`github`, `linkedin`, `youtube`).
+Generated imports follow the existing casing rule: `IconGithub`, `IconLinkedin`,
+`IconYoutube`. Review them in the **Social and company logos** gallery group in both
+modes, every size, and with tint disabled. Put an accessible service name on icon-only
+links; decorative icons beside a visible service name remain unlabelled.
+
+Device manufacturers are authored in `device-computers-network.mjs` and
+`device-printers-voip.mjs` in the same directory and filed under **Device manufacturers**.
+Search also accepts device classes such as `VoIP`, `printer`, `network`, `NAS` and `UPS`,
+and common aliases such as `Polycom` and `WD`. Use a simplified geometric monogram when
+a wordmark has no standalone symbol; avoid squeezing a full word into the icon frame.
+Manufacturer names with several words use hyphens (`tp-link`, `western-digital`), yielding
+`IconTpLink` and `IconWesternDigital`. These identifiers describe the manufacturer;
+keep a generic device icon available when the manufacturer is unknown.
 
 ## Naming
 

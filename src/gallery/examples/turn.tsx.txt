@@ -1,3 +1,5 @@
+import { useContext, type ReactNode } from "react";
+import { DemoScope } from "glass-ux/gallery/demo-scope";
 import { AssistantMessage, Turn, UserMessage, type AiMessage } from "glass-ux/ai";
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { CONVERSATION, MODEL, NOW } from "glass-ux/gallery/sections/ai.fixtures";
@@ -15,6 +17,15 @@ const base = (extra: Partial<AiMessage>): AiMessage => ({
   ...extra,
 });
 
+function SampleTurn({ children }: { children: ReactNode }) {
+  const scope = useContext(DemoScope);
+  return (
+    <Turn index={1} aria-label={scope ? `${scope}: Turn 1` : "Turn 1"}>
+      {children}
+    </Turn>
+  );
+}
+
 export default function AiMessagesSection() {
   return (
     <AiGallery>
@@ -27,12 +38,12 @@ export default function AiMessagesSection() {
         >
           <div className="ai-stack">
             {first ? (
-              <Turn index={1}>
+              <SampleTurn>
                 <UserMessage message={first.user} editable />
                 {first.replies.map((message) => (
                   <AssistantMessage key={message.id} message={message} latest />
                 ))}
-              </Turn>
+              </SampleTurn>
             ) : null}
           </div>
         </Specimen>
@@ -41,7 +52,7 @@ export default function AiMessagesSection() {
           {() => (
             <LabScroll>
               {first ? (
-                <Turn index={1}>
+                <SampleTurn>
                   <UserMessage message={first.user} />
                   <AssistantMessage
                     message={base({
@@ -55,7 +66,7 @@ export default function AiMessagesSection() {
                     })}
                     latest
                   />
-                </Turn>
+                </SampleTurn>
               ) : null}
             </LabScroll>
           )}

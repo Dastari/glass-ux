@@ -16,3 +16,19 @@ licence texts are retained under `src/assets/fonts/licences/` and in the release
 
 The ambient canvas is repository-authored SVG. The geographic outlines copied into the docs
 site come from Natural Earth and retain the attribution provided by each map configuration.
+
+Social and company icons are original geometric adaptations authored in
+`scripts/icon-authoring/defs/brands.mjs`, using the same monochrome icon frame as the UI
+set. No external logo SVGs or icon packages are bundled. Identity references include the
+[Google Brand Resource Center](https://about.google/brand-resource-center/),
+[Microsoft brand assets](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks),
+[Meta brand resources](https://about.meta.com/brand/resources/),
+[X Brand Toolkit](https://about.x.com/en/who-we-are/brand-toolkit), and
+[GitHub Brand Toolkit](https://brand.github.com/foundations/logo).
+
+Device manufacturer identifiers use original geometric symbols and monograms in
+`scripts/icon-authoring/defs/device-computers-network.mjs` and
+`scripts/icon-authoring/defs/device-printers-voip.mjs`. References include manufacturers'
+own sites, such as [Dell](https://www.dell.com/), [HP](https://www.hp.com/),
+[Cisco](https://www.cisco.com/), [Ubiquiti](https://ui.com/),
+[Yealink](https://www.yealink.com/) and [Kyocera](https://global.kyocera.com/).

@@ -272,12 +272,15 @@ export function SkeletonCards({
   count,
   layout,
   selectable,
+  actions,
 }: {
   /** Item count shown by the component. */
   count: number;
   /** Layout or presentation mode. */
   layout: CardLayout;
   selectable: boolean;
+  /** Reserve the row-action controls while the host loads records. */
+  actions: boolean;
 }) {
   return (
     <>
@@ -306,6 +309,20 @@ export function SkeletonCards({
                   />
                 </div>
               ) : null}
+              <div className="fa-dt-card-actions">
+                {Array.from(
+                  {
+                    length: Number(layout.details.length > 0) + Number(actions),
+                  },
+                  (_, action) => (
+                    <Skeleton.Block
+                      key={action}
+                      className="fa-dt-skel-action"
+                      radius="control"
+                    />
+                  ),
+                )}
+              </div>
             </div>
             {layout.meta.length ? (
               <dl className="fa-dt-card-meta">

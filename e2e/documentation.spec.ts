@@ -31,7 +31,7 @@ for (const id of [
       .getByRole("link", { name: "API", exact: true })
       .click();
     await expect(page.locator(".gallery-api-table").first()).toBeVisible();
-    await expect(page.locator(".gallery-api")).not.toContainText(
+    await expect(page.locator("#api")).not.toContainText(
       "See the typed contract for this property.",
     );
     expect(errors).toEqual([]);
@@ -44,7 +44,7 @@ test("component search and deep-link navigation @responsive", async ({
   if (testInfo.project.name === "phone")
     await page.getByRole("button", { name: "Browse", exact: true }).click();
   await page
-    .getByRole("searchbox", { name: "Find a component" })
+    .getByRole("searchbox", { name: "Search documentation" })
     .fill("SwatchPicker");
   await page
     .getByRole("navigation", { name: "Components" })
@@ -92,7 +92,7 @@ for (const id of [
 test("icons have one Foundations page", async ({ page }) => {
   await page.goto("/foundations/icons");
   await expect(
-    page.getByRole("heading", { name: "Icons", exact: true }),
+    page.getByRole("heading", { name: "Icons", exact: true, level: 1 }),
   ).toBeVisible();
   await expect(
     page
@@ -122,7 +122,7 @@ test("the document keeps its sections, readable header and outside rail @respons
   ).toBeAttached();
   await expect(
     document.getByRole("heading", {
-      name: "VerticalTabNav",
+      name: "VerticalTabs",
       exact: true,
       level: 1,
     }),
@@ -194,7 +194,7 @@ test("loading entity settings has an accessible named group", async ({
   page,
 }) => {
   await page.goto("/components/entity-settings-dialog");
-  const loading = page.getByRole("group", {
+  const loading = page.locator("#examples").getByRole("group", {
     name: "Loading settings",
     exact: true,
   });
@@ -203,5 +203,13 @@ test("loading entity settings has an accessible named group", async ({
   const result = await new AxeBuilder({ page })
     .include('[aria-label="Loading settings"]')
     .analyze();
-  expect(result.violations.map((v) => v.id)).toEqual([]);
+  expect(
+    result.violations.map((v) => ({
+      id: v.id,
+      nodes: v.nodes.map((node) => ({
+        target: node.target,
+        summary: node.failureSummary,
+      })),
+    })),
+  ).toEqual([]);
 });

@@ -20,10 +20,10 @@ const SCOPES: WindowScopes = {
   },
 };
 
-function ScopedWindow({ scope }: { scope: string }) {
+function ScopedWindow({ scope, label }: { scope: string; label: string }) {
   return (
     <WindowScopeProvider value={SCOPES}>
-      <WindowFrame.Root focused state="floating" aria-label="Terminal">
+      <WindowFrame.Root focused state="floating" aria-label={label}>
         <WindowFrame.AppBar
           icon={<IconTerminal />}
           title="Terminal"
@@ -46,17 +46,17 @@ export default function OrgSwitcherSection() {
       >
         <Example label="Another organisation (in Cedar Vale)">
           <div className="gallery-shell-window">
-            <ScopedWindow scope="northstar" />
+            <ScopedWindow scope="northstar" label="Northstar Studio terminal" />
           </div>
         </Example>
         <Example label="The current organisation: no chip">
           <div className="gallery-shell-window">
-            <ScopedWindow scope="cedarvale" />
+            <ScopedWindow scope="cedarvale" label="Cedar Vale terminal" />
           </div>
         </Example>
         <Example label="A narrow window keeps the avatar">
           <div className="gallery-shell-window" data-width="phone">
-            <ScopedWindow scope="northstar" />
+            <ScopedWindow scope="northstar" label="Compact Northstar Studio terminal" />
           </div>
         </Example>
       </Specimen>

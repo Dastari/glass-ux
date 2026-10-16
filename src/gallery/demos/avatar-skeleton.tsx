@@ -2,6 +2,7 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { Example, SectionPage, Specimen, SwapSlot } from "../kit.js";
 import { Avatar, AvatarSkeleton } from "../../ui/avatar/index.js";
+import { PORTRAITS } from "../fixtures/organisations.js";
 
 export default function AvatarSection() {
   return (
@@ -9,14 +10,14 @@ export default function AvatarSection() {
       <Specimen title="Loading" description="The skeleton is the same circle.">
         <Example label="Skeleton · loaded">
           <AvatarSkeleton size="lg" />
-          <Avatar name="Avery Quinn" size="lg" />
+          <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="lg" />
           <AvatarSkeleton size="md" />
-          <Avatar name="Avery Quinn" size="md" />
+          <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="md" />
         </Example>
         <SwapSlot
           id="avatar"
           skeleton={<AvatarSkeleton size="lg" />}
-          loaded={<Avatar name="Avery Quinn" size="lg" />}
+          loaded={<Avatar name="Avery Quinn" src={PORTRAITS[1]} size="lg" />}
         />
       </Specimen>
     </SectionPage>

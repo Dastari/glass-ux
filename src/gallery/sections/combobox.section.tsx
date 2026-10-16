@@ -170,14 +170,14 @@ export default function ComboboxSection() {
       <Specimen title="Sizes" description="Chips are as tall as the inner buttons, so a one-line box keeps its height.">
         {SIZES.map((size) => (
           <Example key={size} label={size}>
-            <MultiSelect size={size} options={TAGS} defaultValue={["production", "kiosk"]} aria-label={`Tags ${size}`} className="w-72" />
+            <MultiSelect size={size} options={TAGS} defaultValue={["production", "kiosk"]} aria-label={`Tags ${size}`} className="w-72 max-w-full" />
           </Example>
         ))}
       </Specimen>
 
       <Specimen title="Over glass and imagery" backdrop>
-        <Combobox options={ORGANISATIONS} defaultValue="northstar" aria-label="Organisation over imagery" className="w-72" />
-        <MultiSelect options={TAGS} defaultValue={["production", "all-in-one"]} aria-label="Tags over imagery" className="w-72" />
+        <Combobox options={ORGANISATIONS} defaultValue="northstar" aria-label="Organisation over imagery" className="w-72 max-w-full" />
+        <MultiSelect options={TAGS} defaultValue={["production", "all-in-one"]} aria-label="Tags over imagery" className="w-72 max-w-full" />
       </Specimen>
 
       <ContainerLab>

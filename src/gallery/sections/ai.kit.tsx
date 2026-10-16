@@ -3,7 +3,8 @@
  * a scrolling lab cell (a conversation column scrolls; it never clips) and links to the
  * full-screen /preview/ai templates.
  */
-import type { ReactNode } from "react"
+import { useContext, type ReactNode } from "react"
+import { DemoScope } from "../demo-scope.js"
 import { IconPopOut } from "../../icons/generated/icons.js"
 import { ConversationHandlersProvider, EntityResolverProvider, type ConversationHandlers } from "../../ai/index.js"
 import { toast } from "../../ui/toast/index.js"
@@ -39,9 +40,10 @@ export function AiGallery({ children, handlers }: { children: ReactNode; handler
 
 /** A lab cell's content: a column that scrolls inside the box, like a conversation does. */
 export function LabScroll({ children }: { children: ReactNode }) {
+  const scope = useContext(DemoScope)
   return (
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scroll region must be keyboard scrollable (R20.6)
-    <div className="ai-lab-scroll" data-scroll-container tabIndex={0} role="region" aria-label="Lab content">
+    <div className="ai-lab-scroll" data-scroll-container tabIndex={0} role="region" aria-label={scope ? `${scope}: Lab content` : "Lab content"}>
       {children}
     </div>
   )

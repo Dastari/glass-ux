@@ -1,4 +1,5 @@
 import demoLogoUrl from "../assets/glass-ux.svg?url"
+import { PORTRAITS } from "../fixtures/organisations.js"
 import type { ReactNode } from "react"
 import { ContainerLab, Example, Matrix, OnCanvas, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
 import { IconArchive, IconCode, IconCopy, IconOrganisation, IconPopOut, IconTickets, IconUser } from "../../icons/generated/icons.js"
@@ -108,7 +109,7 @@ export default function EntityIdentitySection() {
             columns={["Compact", "Row", "Chip", "Icon"]}
             rows={STATES.map((example) => ({
               label: example.label,
-              cells: Tiers({ props: entity(example.item, { icon: example.icon, state: example.state, facts: example.facts, count: example.count }) }),
+              cells: Tiers({ props: entity(example.item, { icon: example.icon, portrait: example.item === PERSON ? { name: PERSON.name, src: PORTRAITS[1] } : undefined, state: example.state, facts: example.facts, count: example.count }) }),
             }))}
           />
         </div>

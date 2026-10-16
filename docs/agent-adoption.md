@@ -5,6 +5,13 @@ with the installed `README.md` and `llms.txt`, then read the relevant API page a
 file before writing a component call. The live site is useful for examples and visual review;
 the installed package is authoritative for the version being integrated.
 
+Before composing a screen, apply the [screen content rules](ui-rules.md#screen-content-rules).
+Every bundled skill carries these defaults: restrained headings, informational copy, no
+feature-explaining filler, primary content near the top, no duplicate route titles, and no
+content shifts that move interaction targets. Explicit user or project instructions may
+specify a different presentation; a generic request for a website does not imply slogans
+or promotional copy. Deliberate long-form documents may contain necessary structure and prose.
+
 ## Install project skills
 
 ```sh

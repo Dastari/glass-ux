@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path class="t" d="M4 20V13.5A7 7 0 0 1 11 6.5L12 3.5L15.5 7L20.5 10.5V14H16.5L13 20Z"/>
+  <path d="M4 20V13.5A7 7 0 0 1 11 6.5L12 3.5L15.5 7L20.5 10.5V14H16.5L13 20Z"/>
+  <path d="M9.5 7L7 12"/>
+  <circle class="d" cx="14" cy="10.5" r="1"/>
+</svg>

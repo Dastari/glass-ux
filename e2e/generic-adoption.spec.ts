@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { componentDestination } from "../src/gallery/component-families.js";
 
 for (const id of [
   "tone-dot",
@@ -16,10 +17,11 @@ for (const id of [
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(`/components/${id}`);
+    const section = `#${componentDestination(id).hash ?? "examples"}`;
     await expect(
-      page.locator("#examples .gallery-specimen").first(),
+      page.locator(`${section} .gallery-specimen`).first(),
     ).toBeVisible();
-    const bounds = await page.locator("#examples").evaluate((element) => {
+    const bounds = await page.locator(section).evaluate((element) => {
       const article = element.closest(".gallery-component-document")!;
       const rect = article.getBoundingClientRect();
       return [
@@ -39,7 +41,7 @@ for (const id of [
       expect(rect.left).toBeGreaterThanOrEqual(rect.articleLeft - 1);
       expect(rect.right).toBeLessThanOrEqual(rect.articleRight + 1);
     }
-    await page.locator("#examples").screenshot({
+    await page.locator(section).screenshot({
       path: `.handoff/adoption-audit-20261015/generic-${id}-${testInfo.project.name}.png`,
     });
     expect(errors).toEqual([]);
@@ -212,17 +214,21 @@ test("date/time asks use the stated zone and shared radio keyboard paths @respon
   page,
 }) => {
   await page.goto("/components/date-time-ask");
-  await expect(page.locator("#examples")).toContainText("Australia/Hobart");
+  await expect(page.locator("#date-time-ask")).toContainText(
+    "Australia/Hobart",
+  );
   await expect(
     page
-      .locator("#examples")
+      .locator("#date-time-ask")
       .getByRole("textbox", { name: "Date", exact: true }),
   ).toBeVisible();
   const accessibility = await new AxeBuilder({ page })
-    .include("#examples")
+    .include("#date-time-ask")
     .analyze();
   expect(accessibility.violations).toEqual([]);
-  const group = page.getByRole("radiogroup", { name: "Suggested times" });
+  const group = page
+    .locator("#date-time-ask")
+    .getByRole("radiogroup", { name: "Suggested times" });
   const first = group.getByRole("radio").first();
   await first.focus();
   await first.press("Space");
@@ -233,10 +239,10 @@ test("date/time asks use the stated zone and shared radio keyboard paths @respon
     "true",
   );
   await page
-    .locator("#examples")
+    .locator("#date-time-ask")
     .getByRole("button", { name: "Schedule", exact: true })
     .click();
-  await expect(page.locator("#examples .fa-ai-ask-record")).toContainText(
+  await expect(page.locator("#date-time-ask .fa-ai-ask-record")).toContainText(
     "Scheduled",
   );
 });
@@ -245,19 +251,21 @@ test("entity asks use shared combobox keyboard selection @responsive", async ({
   page,
 }) => {
   await page.goto("/components/entity-picker-ask");
-  const input = page.locator("#examples").getByRole("combobox");
+  const input = page.locator("#entity-picker-ask").getByRole("combobox");
   await input.fill("NST-C106");
   await input.press("ArrowDown");
-  await expect(page.getByRole("option").first()).toBeVisible();
+  await expect(
+    page.getByRole("option").filter({ visible: true }).first(),
+  ).toBeVisible();
   await input.press("Enter");
   const submit = page
-    .locator("#examples .fa-ai-ask-footer")
+    .locator("#entity-picker-ask .fa-ai-ask-footer")
     .getByRole("button", { name: "Use this endpoint", exact: true });
   await expect(submit).toBeEnabled();
   await submit.click();
-  await expect(page.locator("#examples .fa-ai-ask-record")).toContainText(
-    "Chose",
-  );
+  await expect(
+    page.locator("#entity-picker-ask .fa-ai-ask-record"),
+  ).toContainText("Chose");
 });
 
 test("desktop identity and badge stay visible over imagery @responsive", async ({
@@ -304,7 +312,7 @@ test("tab bar retains five touch targets inside a narrow container @responsive",
   page,
 }) => {
   await page.goto("/components/tab-bar");
-  const bar = page.getByRole("navigation", {
+  const bar = page.locator("#tab-bar").getByRole("navigation", {
     name: "Main (specimen)",
     exact: true,
   });
@@ -344,10 +352,10 @@ test("tone markers use semantic colours and honor reduced motion @responsive", a
 }) => {
   await page.goto("/components/tone-dot");
   await expect(
-    page.locator("#examples .fa-status-dot[data-marker='dot'][aria-label]"),
+    page.locator("#tone-dot .fa-status-dot[data-marker='dot'][aria-label]"),
   ).toHaveCount(7);
   const colours = await page
-    .locator("#examples .fa-status-dot[data-marker='dot'][aria-label]")
+    .locator("#tone-dot .fa-status-dot[data-marker='dot'][aria-label]")
     .evaluateAll((elements) =>
       elements.map((element) => {
         const tone = element.getAttribute("data-tone")!;
@@ -376,7 +384,7 @@ test("tone markers use semantic colours and honor reduced motion @responsive", a
     document.documentElement.dataset.motion = "reduced";
   });
   const motion = await page
-    .locator("#examples .fa-status-dot[data-marker='pulse']")
+    .locator("#tone-dot .fa-status-dot[data-marker='pulse']")
     .first()
     .evaluate((element) => ({
       duration: getComputedStyle(element, "::after").animationDuration,
@@ -391,6 +399,7 @@ test("window chooser uses a bottom sheet with native row activation @responsive"
 }, testInfo) => {
   await page.goto("/components/window-switcher");
   await page
+    .locator("#window-switcher")
     .getByRole("button", { name: "Switch window", exact: true })
     .click();
   const sheet = page.getByRole("dialog", { name: "Windows", exact: true });
@@ -405,6 +414,7 @@ test("window chooser uses a bottom sheet with native row activation @responsive"
   await page.keyboard.press("Enter");
   await expect(sheet).toBeHidden();
   await page
+    .locator("#window-switcher")
     .getByRole("button", { name: "Switch window", exact: true })
     .click();
   await expect(sheet).toBeVisible();
@@ -417,10 +427,10 @@ test("assistant result charts share keyboard readouts and table access @responsi
   page,
 }, testInfo) => {
   await page.goto("/components/result-chart");
-  const chart = page.locator("#examples .fa-chart");
+  const chart = page.locator("#result-chart .fa-chart");
   await expect(chart).toHaveAttribute("data-tier", /compact|full/);
   const height = await page
-    .locator("#examples .fa-ai-result-chart")
+    .locator("#result-chart .fa-ai-result-chart")
     .evaluate((element) => element.getBoundingClientRect().height);
   expect(height).toBeGreaterThan(100);
   if ((await chart.getAttribute("data-tier")) === "full") {
@@ -435,6 +445,7 @@ test("assistant result charts share keyboard readouts and table access @responsi
     );
     await expect(plot).toHaveAttribute("aria-valuetext", /ms/);
     await page
+      .locator("#result-chart")
       .getByRole("button", { name: "View as table", exact: true })
       .click();
     await expect(chart.locator("[data-chart-table='visible']")).toBeVisible();
@@ -449,7 +460,7 @@ test("assistant result charts share keyboard readouts and table access @responsi
     await expect(fallback.locator("tbody tr")).not.toHaveCount(0);
     await expect(chart.getByRole("table")).toHaveCount(1);
   }
-  await page.locator("#examples .fa-ai-result").screenshot({
+  await page.locator("#result-chart .fa-ai-result").screenshot({
     path: `.handoff/adoption-audit-20261015/generic-result-chart-${testInfo.project.name}.png`,
   });
 });

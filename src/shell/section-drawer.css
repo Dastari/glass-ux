@@ -84,6 +84,14 @@
     min-height: 0;
     padding: var(--space-1) var(--space-3) var(--space-3);
   }
+  /* Sheet body/footer slots own the inset; their inner drawer parts add none. */
+  .fa-shell-drawer-body[data-placement="sheet"],
+  .fa-shell-drawer-footer[data-placement="sheet"] {
+    padding: 0;
+  }
+  .fa-shell-drawer-footer[data-placement="sheet"] {
+    width: 100%;
+  }
   /* fill: the last child takes the remaining height and scrolls itself. */
   .fa-shell-drawer-body[data-fill] {
     overflow: hidden;

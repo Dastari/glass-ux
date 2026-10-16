@@ -803,7 +803,13 @@
   .fa-dt:not([data-selectable]) .fa-dt-card-head {
     grid-template-columns: minmax(0, 1fr) auto auto;
   }
+  .fa-dt-card-head > :is(.fa-check, .fa-dt-skel-check) {
+    grid-column: 1;
+    grid-row: 1;
+  }
   .fa-dt-card-title {
+    grid-column: 2;
+    grid-row: 1;
     display: flex;
     align-items: center;
     min-width: 0;
@@ -814,23 +820,64 @@
     align-items: center;
     min-width: 0;
   }
+  .fa-dt-card-status {
+    grid-column: 3;
+    grid-row: 1;
+  }
   .fa-dt-card-actions {
+    grid-column: 4;
+    grid-row: 1;
     gap: var(--space-1);
   }
-  /* Narrow cards: the status drops under the title so the name keeps its room. */
+  .fa-dt-card-actions:empty {
+    display: none;
+  }
+  .fa-dt:not([data-selectable]) .fa-dt-card-title {
+    grid-column: 1;
+  }
+  .fa-dt:not([data-selectable]) .fa-dt-card-status {
+    grid-column: 2;
+  }
+  .fa-dt:not([data-selectable]) .fa-dt-card-actions {
+    grid-column: 3;
+  }
+  .fa-dt-skel-action {
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+  }
+  /* Give narrow cards separate title, status and action rows. Explicit placement
+     keeps optional selection/status slots from taking the title's only column. */
   @container fa-dt (inline-size < 22rem) {
     .fa-dt-card-head {
-      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-columns: auto minmax(0, 1fr);
     }
     .fa-dt-card-status {
       grid-row: 2;
       grid-column: 2;
     }
+    .fa-dt-card-actions,
+    .fa-dt:not([data-selectable]) .fa-dt-card-actions {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      justify-content: flex-end;
+    }
     .fa-dt:not([data-selectable]) .fa-dt-card-head {
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr);
     }
     .fa-dt:not([data-selectable]) .fa-dt-card-status {
       grid-column: 1;
+    }
+  }
+  @container fa-dt (inline-size < 16rem) {
+    .fa-dt-card-head > :is(.fa-check, .fa-dt-skel-check) {
+      grid-row: 2;
+    }
+    .fa-dt-card-title,
+    .fa-dt:not([data-selectable]) .fa-dt-card-title {
+      grid-column: 1 / -1;
+    }
+    .fa-dt[data-mode="cards"] .fa-dt-card-meta {
+      padding-inline-start: 0;
     }
   }
   .fa-dt-card-subtitle {

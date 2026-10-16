@@ -163,6 +163,11 @@
     display: flex;
     gap: var(--gap-panels);
     height: 34rem;
+    width: 100%;
+    min-width: 0;
+  }
+  .gallery-shell-sidebar > .fa-shell-drawer {
+    flex: 1 1 0;
   }
   .gallery-shell-sidebar > .fa-shell-rail {
     flex: none;

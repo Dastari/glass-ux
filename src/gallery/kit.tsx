@@ -3,8 +3,9 @@
  * follows one layout: a page header, then specimens (a labelled glass panel holding live
  * examples), then the rules and the tokens the component reads.
  */
-import { useEffect, useState, type ReactNode } from "react";
+import { useContext, useEffect, useState, type ReactNode } from "react";
 import { cx } from "../lib/cx.js";
+import { DemoScope } from "./demo-scope.js";
 import { Button } from "../ui/button/index.js";
 
 export function SectionPage({ children }: { children: ReactNode }) {
@@ -33,10 +34,11 @@ export function Specimen({
   wide,
   className,
 }: SpecimenProps) {
+  const scope = useContext(DemoScope);
   return (
     <section
       className={cx("gallery-specimen", className)}
-      aria-label={title}
+      aria-label={scope ? `${scope}: ${title}` : title}
       data-wide={wide ? "" : undefined}
     >
       <header className="gallery-specimen-header">
@@ -50,7 +52,9 @@ export function Specimen({
         data-layout={layout}
         data-backdrop={backdrop ? "" : undefined}
       >
-        {children}
+        <DemoScope value={scope ? `${scope}: ${title}` : title}>
+          {children}
+        </DemoScope>
       </div>
     </section>
   );
@@ -71,10 +75,11 @@ export function OnCanvas({
   children: ReactNode;
   className?: string;
 }) {
+  const scope = useContext(DemoScope);
   return (
     <section
       className={cx("flex min-w-0 flex-col gap-4 px-5 py-2", className)}
-      aria-label={title}
+      aria-label={scope ? `${scope}: ${title}` : title}
       data-wide=""
       data-canvas-specimen=""
     >
@@ -161,9 +166,14 @@ export function Matrix({
   /** Records or matrix rows in display order. */
   rows: Array<{ label: string; cells: ReactNode[] }>;
 }) {
+  const scope = useContext(DemoScope);
   return (
+    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- comparison grids scroll horizontally on phones
     <div
       className="gallery-matrix"
+      tabIndex={0}
+      role="region"
+      aria-label={scope ? `${scope}: Comparison` : "Comparison"}
       style={{
         gridTemplateColumns: `var(--gallery-matrix-label) repeat(${columns.length}, max-content)`,
       }}
@@ -313,7 +323,7 @@ export const CONTAINER_PRESETS: ContainerPreset[] = [
 
 /**
  * Render a component inside each preset box (size containers, so the component's
- * @container rules respond on both axes) plus a free frame you can drag to resize.
+ * container queries respond on both axes) plus a free frame you can drag to resize.
  * e2e/containers.spec.ts scans every [data-lab-frame] for clipped text.
  */
 export function ContainerLab({
@@ -327,6 +337,8 @@ export function ContainerLab({
   presets?: ContainerPreset[];
   children: ReactNode | ((preset: ContainerPreset | null) => ReactNode);
 }) {
+  const scope = useContext(DemoScope);
+  const label = scope ? `${scope}: ${title}` : title;
   const render = (preset: ContainerPreset | null) =>
     typeof children === "function" ? children(preset) : children;
   return (
@@ -337,7 +349,7 @@ export function ContainerLab({
         className="gallery-lab"
         tabIndex={0}
         role="region"
-        aria-label={`${title} frames`}
+        aria-label={`${label} frames`}
       >
         {[...presets]
           .sort((a, b) => a.width * a.height - b.width * b.height)
@@ -352,7 +364,9 @@ export function ContainerLab({
                 data-lab-frame={preset.id}
                 style={{ width: preset.width, height: preset.height }}
               >
-                {render(preset)}
+                <DemoScope value={`${label}: ${preset.label}`}>
+                  {render(preset)}
+                </DemoScope>
               </div>
               <figcaption className="gallery-example-label">
                 {preset.label}
@@ -366,7 +380,7 @@ export function ContainerLab({
             data-resizable=""
             style={{ width: 420, height: 220 }}
           >
-            {render(null)}
+            <DemoScope value={`${label}: Free frame`}>{render(null)}</DemoScope>
           </div>
           <figcaption className="gallery-example-label">
             Free — drag the corner

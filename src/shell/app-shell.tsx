@@ -90,6 +90,8 @@ export interface AppShellProps {
   topBar: ReactNode
   /** The workspace: normally <Workspace primary={<Outlet />} />. */
   children: ReactNode
+  /** Workspace element. Use div when embedding a shell inside an existing main landmark. @defaultValue "main" */
+  contentAs?: "main" | "div"
   /** Context pane (Inspector), docked beside the workspace on wide screens. */
   inspector?: ReactNode
   /** Phone navigation (TabBar). */
@@ -118,6 +120,7 @@ export function AppShell({
   drawer,
   topBar,
   children,
+  contentAs: Content = "main",
   inspector,
   tabBar,
   drawerShortcut = "mod+b",
@@ -221,7 +224,7 @@ export function AppShell({
               <DrawerHandle shellRef={shellRef} open={drawerOpen} onToggle={toggleDrawer} />
             </>
           ) : null}
-          <main className="fa-shell-slot-work">{children}</main>
+          <Content className="fa-shell-slot-work">{children}</Content>
           {inspector ? (
             <div className="fa-shell-slot-inspector" inert={docked && !inspectorOpen}>
               {inspector}

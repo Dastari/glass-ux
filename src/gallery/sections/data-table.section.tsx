@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
+import { useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
+import { DemoScope } from "../demo-scope.js"
 import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { IconOperatingSystem, IconRefresh, IconSoftware, IconWindows } from "../../icons/generated/icons.js"
 import { Badge } from "../../ui/badge/index.js"
@@ -195,7 +196,8 @@ function EndpointsDemo() {
 }
 
 /* ── A plain table on local state, used in the frames ─────────────────────────────── */
-function FrameTable({ id, pageSize = 25 }: { id: string; pageSize?: number }) {
+function FrameTable({ id, pageSize = 25, label }: { id: string; pageSize?: number; label?: string }) {
+  const scope = useContext(DemoScope)
   const [state, setState] = useState<DataTableState>({
     sorting: [{ id: "lastSeen", desc: true }],
     filters: [],
@@ -211,7 +213,7 @@ function FrameTable({ id, pageSize = 25 }: { id: string; pageSize?: number }) {
   return (
     <DataTable<Endpoint>
       id={id}
-      label="Endpoints"
+      label={["Endpoints preview", scope, label].filter(Boolean).join(": ")}
       rows={page?.rows ?? []}
       rowCount={page?.rowCount}
       columns={endpointColumns}
@@ -365,12 +367,13 @@ const softwareColumns = softwareCol.columns([
 
 /** A fully loaded list: searched in the browser with the server's semantics (§8). */
 function SoftwareTable({ id = "gallery-software", defaultHiddenColumns }: { id?: string; defaultHiddenColumns?: readonly string[] } = {}) {
+  const scope = useContext(DemoScope)
   const [search, setSearch] = useState("")
   const rows = useMemo(() => searchRows(SOFTWARE, search, SOFTWARE_SEARCH, softwareColumns), [search])
   return (
     <DataTable<Software>
       id={id}
-      label="Installed software"
+      label={scope ? `Installed software: ${scope}` : "Installed software"}
       rows={rows}
       rowCount={rows.length}
       columns={softwareColumns}
@@ -440,7 +443,7 @@ function DataTableSection() {
           {HEIGHTS.map((frame) => (
             <figure key={frame.id} className="gallery-lab-cell dt-demo-height">
               <div className="gallery-lab-frame" data-lab-frame={frame.id} data-testid={`dt-${frame.id}`} style={{ height: `${frame.rem}rem` }}>
-                <FrameTable id={`gallery-endpoints-${frame.id}`} />
+                <FrameTable id={`gallery-endpoints-${frame.id}`} label={frame.label} />
               </div>
               <figcaption className="gallery-example-label">{frame.label}</figcaption>
             </figure>

@@ -385,6 +385,7 @@ writeFileSync(
   "# Icons\n\n" +
     iconApi.description +
     '\n\n`import { IconSearch } from "glass-ux/icons"`\n\n' +
+    'Company and manufacturer icons use the same props, for example `IconGithub`, `IconGoogle`, `IconDell`, `IconCisco` and `IconYealink`. They identify the named company and inherit the current colour. The gallery also supports device-class searches such as `printer`, `VoIP`, `network` and `UPS`. See [the icon authoring guide](../icon-spec.md) for geometry and review rules.\n\n' +
     iconApi.props
       .filter((prop) => !prop.inherited)
       .map(
@@ -479,11 +480,12 @@ for (const guide of [
   "integration",
   "agent-adoption",
   "layout-contract",
+  "ui-rules",
 ])
   cpSync(`docs/${guide}.md`, `src/gallery/guides/${guide}.md`);
 writeFileSync(
   "llms.txt",
-  "# Glass UX\n\nTyped React components, compound slots, themes and interaction rules. Read docs from the installed package to match its version.\n\n- [Getting started](docs/getting-started.md)\n- [Existing applications](docs/integration.md)\n- [Agent adoption](docs/agent-adoption.md)\n- [API index](docs/api/README.md)\n- [Design rules](docs/ui-rules.md)\n- [Theme and layout](docs/layout-contract.md)\n- [Typed form inputs](docs/components/README.md)\n- [Markdown rich text editing](docs/components/rich-text.md)\n- [Compact compositions](docs/components/compact-compositions.md)\n- [Adoption skill](skills/glass-ux-adopt/SKILL.md)\n- [Component selection skill](skills/glass-ux-components/SKILL.md)\n- [Forms skill](skills/glass-ux-forms/SKILL.md)\n- [Data views skill](skills/glass-ux-data/SKILL.md)\n- [Assistant UI skill](skills/glass-ux-assistant/SKILL.md)\n- [Authoring skill](skills/glass-ux-author/SKILL.md)\n",
+  "# Glass UX\n\nTyped React components, compound slots, themes and interaction rules. Read docs from the installed package to match its version.\n\nBefore composing UI, apply the screen content rules in docs/ui-rules.md. Unless explicitly\ninstructed otherwise: do not overuse subheadings, invent motivational or promotional copy,\noverexplain the page, push primary content down with redundant framing, repeat a route title\nalready visible in navigation, or introduce content shifts that move buttons or menus.\n\n- [Getting started](docs/getting-started.md)\n- [Existing applications](docs/integration.md)\n- [Agent adoption](docs/agent-adoption.md)\n- [API index](docs/api/README.md)\n- [Design rules](docs/ui-rules.md)\n- [Theme and layout](docs/layout-contract.md)\n- [Typed form inputs](docs/components/README.md)\n- [Markdown rich text editing](docs/components/rich-text.md)\n- [Compact compositions](docs/components/compact-compositions.md)\n- [Adoption skill](skills/glass-ux-adopt/SKILL.md)\n- [Component selection skill](skills/glass-ux-components/SKILL.md)\n- [Forms skill](skills/glass-ux-forms/SKILL.md)\n- [Data views skill](skills/glass-ux-data/SKILL.md)\n- [Assistant UI skill](skills/glass-ux-assistant/SKILL.md)\n- [Authoring skill](skills/glass-ux-author/SKILL.md)\n",
 );
 const app = await Application.bootstrapWithPlugins({
   entryPoints: [

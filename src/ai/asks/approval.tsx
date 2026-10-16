@@ -311,7 +311,7 @@ export function ApprovalCard({ ask }: { ask: Approval }) {
             />
           ) : null}
           <p className="fa-hint">
-            Approval applies once, to this exact command and endpoint.
+            Approval applies once, to this action and its selected targets.
           </p>
           {ask.stepUp ? (
             <Notice tone="info" compact>

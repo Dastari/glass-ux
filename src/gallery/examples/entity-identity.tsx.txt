@@ -1,4 +1,5 @@
 import demoLogoUrl from "glass-ux/gallery/assets/glass-ux.svg?url";
+import { PORTRAITS } from "glass-ux/gallery/fixtures/organisations";
 import type { ReactNode } from "react";
 import {
   ContainerLab,
@@ -219,6 +220,8 @@ export default function EntityIdentitySection() {
               cells: Tiers({
                 props: entity(example.item, {
                   icon: example.icon,
+                  portrait:
+                    example.item === PERSON ? { name: PERSON.name, src: PORTRAITS[1] } : undefined,
                   state: example.state,
                   facts: example.facts,
                   count: example.count,

@@ -70,7 +70,7 @@ export default function ComboboxSection() {
               options={TAGS}
               defaultValue={["production", "kiosk"]}
               aria-label={`Tags ${size}`}
-              className="w-72"
+              className="w-72 max-w-full"
             />
           </Example>
         ))}
@@ -81,13 +81,13 @@ export default function ComboboxSection() {
           options={ORGANISATIONS}
           defaultValue="northstar"
           aria-label="Organisation over imagery"
-          className="w-72"
+          className="w-72 max-w-full"
         />
         <MultiSelect
           options={TAGS}
           defaultValue={["production", "all-in-one"]}
           aria-label="Tags over imagery"
-          className="w-72"
+          className="w-72 max-w-full"
         />
       </Specimen>
 

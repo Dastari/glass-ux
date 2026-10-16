@@ -1,6 +1,100 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+for (const width of [320, 1440]) {
+  test(`${width}px: shared documentation drawer keeps search and API links pinned @responsive`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "glass-ux.appearance.v1",
+        JSON.stringify({
+          uiScale: 1.25,
+          density: "compact",
+          motion: "reduced",
+        }),
+      );
+      localStorage.setItem(
+        "workspace.shell.v1",
+        JSON.stringify({
+          collapsed: { "docs.guides": true, "docs.components": true },
+        }),
+      );
+    });
+    await page.goto("./");
+    const openDirectory = async () => {
+      if (width < 768)
+        await page.getByRole("button", { name: "Browse", exact: true }).click();
+    };
+    await openDirectory();
+    const directory = page.locator(".docs-directory");
+    const search = directory.getByRole("searchbox", {
+      name: "Search documentation",
+    });
+    await expect(
+      directory.getByRole("button", { name: /^Guides/ }),
+    ).toHaveAttribute("aria-expanded", "false");
+    await search.fill("Getting started");
+    await expect(
+      directory.getByRole("link", { name: "Getting started", exact: true }),
+    ).toBeVisible();
+    await search.fill("PanelHeader");
+    const panel = directory.getByRole("link", { name: "Panel", exact: true });
+    await expect(panel).toBeVisible();
+    await search.press("ArrowDown");
+    await expect(panel).toBeFocused();
+    await panel.press("Enter");
+    await expect(page).toHaveURL(/\/components\/panel#panel-header$/);
+    await page.reload();
+    await openDirectory();
+    const components = directory.getByRole("button", { name: /^Components/ });
+    await expect(components).toHaveAttribute("aria-expanded", "false");
+    await components.click();
+    await expect(panel).toHaveAttribute("aria-current", "page");
+    const api = directory.getByRole("link", {
+      name: "API reference",
+      exact: true,
+    });
+    const before = {
+      search: await search.boundingBox(),
+      api: await api.boundingBox(),
+    };
+    const scroll =
+      width < 768
+        ? directory.locator(".fa-dialog-body")
+        : directory.locator(".docs-directory-scroll");
+    await scroll.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
+    await expect
+      .poll(() => scroll.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
+    await expect(search).toBeVisible();
+    await expect(api).toBeVisible();
+    expect((await search.boundingBox())!.y).toBeCloseTo(before.search!.y, 1);
+    expect((await api.boundingBox())!.y).toBeCloseTo(before.api!.y, 1);
+    if (width < 768) {
+      const insets = await directory
+        .locator(".fa-shell-drawer-body, .fa-shell-drawer-footer")
+        .evaluateAll((elements) =>
+          elements.map((element) => getComputedStyle(element).paddingLeft),
+        );
+      expect(insets).toEqual(["0px", "0px"]);
+      const edges = await directory
+        .locator(".fa-shell-drawer-body, .fa-shell-drawer-footer")
+        .evaluateAll((elements) =>
+          elements.map((element) => element.getBoundingClientRect().left),
+        );
+      expect(edges[0]).toBeCloseTo(edges[1]!, 1);
+    }
+    const result = await new AxeBuilder({ page })
+      .include(width < 768 ? ".docs-navigation-dialog" : ".docs-sidebar")
+      .analyze();
+    expect(result.violations.map((violation) => violation.id)).toEqual([]);
+  });
+}
+
 for (const width of [320, 390, 1920]) {
   for (const mode of ["light", "dark"] as const) {
     test(`${width}px ${mode}: search filters every documentation destination`, async ({
@@ -50,7 +144,7 @@ for (const width of [320, 390, 1920]) {
       await search.fill(" typedoc ");
       await expect(
         directory.getByRole("link", {
-          name: "Types and helpers (TypeDoc)",
+          name: "API reference",
           exact: true,
         }),
       ).toBeVisible();

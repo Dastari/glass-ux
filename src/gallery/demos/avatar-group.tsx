@@ -2,15 +2,16 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { ContainerLab, Example, SectionPage, Specimen } from "../kit.js";
 import { Avatar, AvatarGroup } from "../../ui/avatar/index.js";
+import { PORTRAITS } from "../fixtures/organisations.js";
 
 const PEOPLE = [
-  { name: "Avery Quinn" },
-  { name: "Mira Rowan" },
-  { name: "Ellis Park" },
-  { name: "Noa Finch" },
-  { name: "Rory Lake" },
-  { name: "Casey Reed" },
-  { name: "Sage Winter" },
+  { name: "Avery Quinn", src: PORTRAITS[1] },
+  { name: "Mira Rowan", src: PORTRAITS[0] },
+  { name: "Ellis Park", src: PORTRAITS[3] },
+  { name: "Noa Finch", src: PORTRAITS[4] },
+  { name: "Rory Lake", src: PORTRAITS[5] },
+  { name: "Casey Reed", src: PORTRAITS[6] },
+  { name: "Sage Winter", src: PORTRAITS[7] },
 ];
 
 export default function AvatarSection() {
@@ -33,17 +34,21 @@ export default function AvatarSection() {
 
       <Specimen
         title="Over imagery"
-        description="Tints are opaque palette colours, so initials stay legible on any content."
+        description="Initials use opaque palette colours; portrait groups keep a surface ring over imagery."
         backdrop
       >
-        <Avatar name="Avery Quinn" size="xl" presence="online" />
-        <AvatarGroup people={PEOPLE} max={4} size="md" />
+        <Example label="Initials without an image">
+          <Avatar name="Avery Quinn" size="xl" presence="online" />
+        </Example>
+        <Example label="Profile images">
+          <AvatarGroup people={PEOPLE} max={4} size="md" />
+        </Example>
       </Specimen>
 
       <ContainerLab description="Avatars keep their size; a group never wraps.">
         {() => (
           <div className="flex items-center gap-3 p-2">
-            <Avatar name="Avery Quinn" presence="online" />
+            <Avatar name="Avery Quinn" src={PORTRAITS[1]} presence="online" />
             <AvatarGroup people={PEOPLE} max={4} />
           </div>
         )}

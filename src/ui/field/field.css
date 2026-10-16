@@ -72,6 +72,10 @@
     flex: 1 1 auto;
     min-width: 0;
   }
+  .fa-field-message-slot > * {
+    min-width: 0;
+    max-width: 100%;
+  }
   .fa-field-message-text {
     min-width: 0;
     overflow: hidden;

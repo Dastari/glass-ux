@@ -43,7 +43,7 @@ export function ResultFrame({ result, icon, meta, copyText, csv, footer, flush =
   const handlers = useConversationHandlers()
   const line = [result.source, meta].filter(Boolean).join(" · ")
   return (
-    <AiCard.Root breakout className="fa-ai-result" data-type={result.type} aria-label={result.title}>
+    <AiCard.Root breakout className="fa-ai-result" data-type={result.type} role="group" aria-label={result.title}>
       <AiCard.Header
         icon={icon}
         title={result.title}

@@ -56,6 +56,8 @@ export interface AiAttachment {
   state?: "uploading" | "scanning" | "ready" | "rejected";
   /** Image preview (object URL while composing, thumbnail once released). */
   previewUrl?: string;
+  /** Original file download URL supplied by the host; may be a browser object URL. The host owns its lifetime. */
+  href?: string;
   /** RejectionCode, in words. */
   reason?: string;
 }

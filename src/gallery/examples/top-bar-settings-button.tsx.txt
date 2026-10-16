@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { DemoScope } from "glass-ux/gallery/demo-scope";
 import {
   MOCK_ORGANISATIONS,
+  PORTRAITS,
   toSwitcherOrganisation,
 } from "glass-ux/gallery/fixtures/organisations";
 import { WORKSPACE_SETTINGS } from "glass-ux/gallery/fixtures/brand";
@@ -8,16 +10,20 @@ import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { AccountButton, SearchTrigger, TopBar, TopBarSettingsButton } from "glass-ux/shell";
 import { OrgSwitcher } from "glass-ux/shell/org-switcher/index";
 import { Breadcrumb } from "glass-ux/breadcrumb";
+import { Menu } from "glass-ux/menu";
 
 const SWITCHER_ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
 
-function SpecimenTopBar() {
+function SpecimenTopBar({ label }: { label: string }) {
+  const demo = useContext(DemoScope);
   const [scope, setScope] = useState<string | null>("northstar");
+  const [unread, setUnread] = useState(3);
   return (
     <TopBar
       scope={<OrgSwitcher organisations={SWITCHER_ORGS} value={scope} onValueChange={setScope} />}
       breadcrumb={
         <Breadcrumb
+          aria-label={`Breadcrumb: ${demo ? `${demo}: ` : ""}${label}`}
           items={[
             { id: "devices", label: "Devices", href: "#devices" },
             { id: "c106", label: "NST-C106", href: "#c106" },
@@ -38,7 +44,26 @@ function SpecimenTopBar() {
         </>
       }
       account={
-        <AccountButton name="Avery Quinn" email="avery.quinn@orbit.example.com.au" unread={3} />
+        <Menu.Root>
+          <Menu.Trigger
+            render={
+              <AccountButton
+                name="Avery Quinn"
+                email="avery.quinn@orbit.example.com.au"
+                avatarSrc={PORTRAITS[1]}
+                unread={unread}
+              />
+            }
+          />
+          <Menu.Popup align="end">
+            <Menu.Item
+              disabledReason={unread === 0 ? "No unread notifications" : undefined}
+              onClick={() => setUnread(0)}
+            >
+              Mark notifications read
+            </Menu.Item>
+          </Menu.Popup>
+        </Menu.Root>
       }
     />
   );
@@ -60,7 +85,7 @@ export default function AppShellSection() {
             label={width === "wide" ? "Wide" : width === "medium" ? "Medium" : "Narrow"}
           >
             <div className="gallery-shell-topbar" data-width={width}>
-              <SpecimenTopBar />
+              <SpecimenTopBar label={width} />
             </div>
           </Example>
         ))}

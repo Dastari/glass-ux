@@ -1,8 +1,18 @@
 # Component docs
 
 One page per library component that needs more than its TSDoc: what it is for, how to bind it
-to a form and validate it, its value, and its behaviour. The gallery (each component’s own documentation page) shows every
-state; these pages are what a person or an AI agent reads before using a component.
+to a form and validate it, its value, and its behaviour. The gallery groups each base
+component and its related exports in one document, with live examples, section navigation
+and individual API references. It shows every state; these pages are what a person or an
+AI agent reads before using a component.
+
+The gallery keeps slots, providers, variants and loading states with their base component,
+including related exports from separate package entries. For example, Button includes
+ButtonLink and CopyButton; Combobox includes MultiSelect, TagInput, Autocomplete and shared
+option parts; DataTable includes its cell renderers. A helper nested under another helper
+stays in the same document. Independent controls such as Select and Pagination retain
+their own pages. Existing per-export URLs still open the matching example, usage or API
+inside the family document.
 
 Every form control follows the same pattern (R15):
 

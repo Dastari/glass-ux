@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState, type ReactNode } from "react"
+import { DemoScope } from "../demo-scope.js"
 import { IconLayers } from "../../icons/generated/icons.js"
 import { AssistantMessage, CodeBlock, MessageSkeleton, Reasoning, SystemNotice, Turn, UserMessage, type AiMessage } from "../../ai/index.js"
 import { ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
@@ -77,6 +78,11 @@ function StreamingDemo() {
   )
 }
 
+function SampleTurn({ children }: { children: ReactNode }) {
+  const scope = useContext(DemoScope)
+  return <Turn index={1} aria-label={scope ? `${scope}: Turn 1` : "Turn 1"}>{children}</Turn>
+}
+
 export default function AiMessagesSection() {
   return (
     <AiGallery>
@@ -88,12 +94,12 @@ export default function AiMessagesSection() {
         <Specimen title="A turn" description="The prompt is a compact glass-control bubble on the right with its attachments above. The answer has no bubble: the AI mark in the gutter, prose across the reading column; tables, charts, images and code break out wider in a conversation. Actions sit under each message and show on hover, focus and always on the latest answer." wide layout="bare">
           <div className="ai-stack">
             {first ? (
-              <Turn index={1}>
+              <SampleTurn>
                 <UserMessage message={first.user} editable />
                 {first.replies.map((message) => (
                   <AssistantMessage key={message.id} message={message} latest />
                 ))}
-              </Turn>
+              </SampleTurn>
             ) : null}
           </div>
         </Specimen>
@@ -143,10 +149,10 @@ export default function AiMessagesSection() {
           {() => (
             <LabScroll>
               {first ? (
-                <Turn index={1}>
+                <SampleTurn>
                   <UserMessage message={first.user} />
                   <AssistantMessage message={base({ id: "lab", blocks: [{ kind: "markdown", text: "**6 endpoints** at [Northstar Studio](/organisations/northstar) have not checked in for more than 24 hours." }] })} latest />
-                </Turn>
+                </SampleTurn>
               ) : null}
             </LabScroll>
           )}

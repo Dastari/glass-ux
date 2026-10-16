@@ -11,7 +11,7 @@ shared keyboard and accessibility conventions.
 Install the versioned package attached to a [GitHub release](https://github.com/Dastari/glass-ux/releases).
 
 ```sh
-pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.6.4/glass-ux-0.6.4.tgz
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.6.5/glass-ux-0.6.5.tgz
 ```
 
 React 19 and React DOM 19 are peer dependencies. The tested integration uses Vite 8
@@ -56,8 +56,11 @@ their props and controlled/uncontrolled state contracts.
 - [Component API index](docs/api/README.md), generated from the exported TypeScript types.
 - [Typed input guides](docs/components/README.md).
 - [Design and accessibility rules](docs/ui-rules.md).
-- [Live documentation site](https://dastari.github.io/glass-ux/): a separate page for each
-  public component, live examples, props, defaults, callbacks and compound slots.
+- [Live documentation site](https://dastari.github.io/glass-ux/): an interactive studio showcase,
+  assistant chat, mobile preview and map workspace with editable notes. Six palette-aware
+  canvas backgrounds are available through appearance preferences. Component family pages
+  combine related examples with
+  section navigation and individual API references for every public export.
 
 The `glass-ux/gallery` entry supplies the same catalogue and demos to consuming applications.
 Applications can combine it with their own component sections.

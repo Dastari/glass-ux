@@ -15,6 +15,7 @@ Server-side sorting and pages, columns that fold by priority into “+N” and t
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | columns | `readonly DataTableColumn<T>[]` | See type | yes | — | Typed column definitions, including rendering, sorting, priorities and filters. |
 | cursor | `CursorPagination \| undefined` | See type | no | — | Switch the pager to cursor mode. |
+| defaultHiddenColumns | `readonly string[] \| undefined` | See type | no | — | Column ids initially folded into row/card details. Saved user choices take precedence, including an explicitly empty hidden list. Reset columns restores these defaults. Columns with hideable=false remain visible. |
 | defaultState | `Partial<DataTableState> \| undefined` | See type | no | — | Initial uncontrolled view state. |
 | density | `DataTableDensity \| undefined` | "compact", "comfortable" | no | — | Row density for this table. Uncontrolled tables persist the user's choice. |
 | emptyAction | `ReactNode` | See type | no | — | The primary action for the unfiltered empty state ("Enrol a device"). |

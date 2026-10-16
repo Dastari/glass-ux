@@ -364,16 +364,17 @@ const softwareColumns = softwareCol.columns([
 ])
 
 /** A fully loaded list: searched in the browser with the server's semantics (§8). */
-function SoftwareTable() {
+function SoftwareTable({ id = "gallery-software", defaultHiddenColumns }: { id?: string; defaultHiddenColumns?: readonly string[] } = {}) {
   const [search, setSearch] = useState("")
   const rows = useMemo(() => searchRows(SOFTWARE, search, SOFTWARE_SEARCH, softwareColumns), [search])
   return (
     <DataTable<Software>
-      id="gallery-software"
+      id={id}
       label="Installed software"
       rows={rows}
       rowCount={rows.length}
       columns={softwareColumns}
+      defaultHiddenColumns={defaultHiddenColumns}
       getRowId={(row) => row.id}
       state={{ search }}
       onStateChange={(next, change) => {
@@ -414,6 +415,15 @@ function DataTableSection() {
         wide
       >
         <ResponsiveDemo />
+      </Specimen>
+
+      <Specimen
+        title="Default columns"
+        description="Installed and Size start in row details. The column chooser keeps every field available, saves explicit choices and restores the application's defaults with Reset columns. Cards keep those fields in their own expandable details."
+        layout="bare"
+        wide
+      >
+        <SoftwareTable id="gallery-default-columns" defaultHiddenColumns={["installed", "sizeMb"]} />
       </Specimen>
 
       <Specimen

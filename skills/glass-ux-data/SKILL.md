@@ -13,6 +13,17 @@ operators to what the backend can execute. In a paged view the application suppl
 counts and server paging/filtering; filtering one downloaded page does not filter the dataset.
 Use URL-state adapters with the host router when the state should be shareable.
 
+Let navigation name the view: omit repeated headings and introductory paragraphs.
+Use a bounded workspace with one primary table. Put related facts in the same row;
+give independent datasets separate routed tabs. Table compositions use the padded
+scroll/body slot. `WindowFrame.Body variant="fill"` removes that inset intentionally
+for viewers, so do not choose it merely to make a table consume available space.
+
+Make technical/internal identifier columns optional initially with
+`defaultHiddenColumns`. Keep the column definitions so the chooser and expandable
+row/card details retain those values. Saved explicit choices, including all-visible,
+win over defaults; Reset columns restores the application's defaults.
+
 The table's row, context and bulk actions read one `ActionSet`. Use shared cells for identity,
 numbers, times, states and sparklines. Treat loading, empty and error states as part of the
 same bounded body rather than inserting content that moves the layout.

@@ -814,6 +814,9 @@
     align-items: center;
     min-width: 0;
   }
+  .fa-dt-card-actions {
+    gap: var(--space-1);
+  }
   /* Narrow cards: the status drops under the title so the name keeps its room. */
   @container fa-dt (inline-size < 22rem) {
     .fa-dt-card-head {

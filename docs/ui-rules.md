@@ -12,6 +12,8 @@ that definition in its header, menus, context menu and command palette.
 
 Use specific labels, outcome-naming actions and actionable errors. Empty states state facts.
 Accessible names identify the control even when its visible content is an icon.
+When navigation or a routed tab already names the view, begin with its content;
+do not repeat that name as a heading or add an introductory paragraph that restates it.
 
 ## R3 · Tokens and themes
 
@@ -29,6 +31,10 @@ Solid, and use the imagery context over media. Headings and navigation sit on th
 The shell owns the viewport; content scrolls within its own container. Show a section drawer
 only when it contains real navigation. Applications own URLs, navigation and scope changes.
 Use routed tabs for places and local tabs for presentation choices.
+Keep data workspaces bounded around one primary table. Project related facts into
+columns of one row; put independent datasets in separate routed tabs. Use the padded
+scroll/body slot for table compositions. `WindowFrame.Body variant="fill"` deliberately
+removes the inset for edge-to-edge viewers; it is not the padded table composition.
 
 ## R7–R8 · Containers and text
 
@@ -65,6 +71,10 @@ typed input on blur so the caret stays stable. Labels and validation remain acce
 Columns define filtering, search and priority explicitly. The host supplies paging, server
 filters and subscriptions. Never filter one page as if it were the full server result.
 Update loaded values in place; connection state belongs to the relevant view.
+Keep technical or internal identifiers optional by default with
+`DataTable.defaultHiddenColumns`. Retain them in the column chooser and expandable
+row/card details. Saved user choices take precedence; Reset columns restores the
+application defaults.
 
 ## R18–R21 · Motion, icons and accessibility
 

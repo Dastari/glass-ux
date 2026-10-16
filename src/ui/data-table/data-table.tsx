@@ -340,7 +340,10 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   );
 
   /* ── Preferences: widths, hidden, pins, density (per table id) ────────────────── */
-  const [preferences, updatePreferences] = useTablePreferences(id);
+  const [preferences, updatePreferences] = useTablePreferences(
+    id,
+    props.defaultHiddenColumns,
+  );
   const density = props.density ?? preferences.density ?? undefined;
 
   /* ── Column metadata (ids resolved the way TanStack does) ─────────────────────── */
@@ -404,7 +407,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     () =>
       new Set(
         preferences.hidden.filter(
-          (columnId) => metaById.get(columnId)?.meta.hideable !== false,
+          (columnId) =>
+            metaById.has(columnId) &&
+            metaById.get(columnId)?.meta.hideable !== false,
         ),
       ),
     [preferences.hidden, metaById],
@@ -496,7 +501,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       layoutColumns,
       contentWidth - chrome - trailWidth(1),
     );
-    if (!first.autoHidden.length) return { ...first, trailButtons: 1 };
+    if (!first.autoHidden.length && !userHidden.size)
+      return { ...first, trailButtons: 1 };
     return {
       ...computeColumnLayout(
         layoutColumns,
@@ -505,7 +511,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       trailButtons: 2,
     };
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- trailWidth is derived from buttonRem
-  }, [layoutColumns, contentWidth, chrome, buttonRem]);
+  }, [layoutColumns, contentWidth, chrome, buttonRem, userHidden]);
 
   const visibleColumns = useMemo(
     () => columnInfos(layout.visible, metaById, pinnedSet),
@@ -513,22 +519,34 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     [layout.visible.join("\u0000"), metaById, pinnedSet],
   );
   const hiddenColumns = useMemo(
-    () => columnInfos(layout.autoHidden, metaById, new Set()),
+    () =>
+      columnInfos(
+        layoutColumns
+          .filter(
+            (column) =>
+              userHidden.has(column.id) ||
+              layout.autoHidden.includes(column.id),
+          )
+          .map((column) => column.id),
+        metaById,
+        new Set(),
+      ),
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- keyed by the id lists
-    [layout.autoHidden.join("\u0000"), metaById],
+    [layoutColumns, layout.autoHidden.join("\u0000"), userHidden, metaById],
   );
   const cardColumns = useMemo(
     () =>
       columnInfos(
-        orderColumns(definitions, pinnedIds)
-          .map((entry) => entry.id)
-          .filter((columnId) => !userHidden.has(columnId)),
+        orderColumns(definitions, pinnedIds).map((entry) => entry.id),
         metaById,
         new Set(),
       ),
-    [definitions, pinnedIds, userHidden, metaById],
+    [definitions, pinnedIds, metaById],
   );
-  const cards = useMemo(() => cardLayout(cardColumns), [cardColumns]);
+  const cards = useMemo(
+    () => cardLayout(cardColumns, userHidden),
+    [cardColumns, userHidden],
+  );
 
   const detailRem = detailHeight(
     hiddenColumns.length,
@@ -1038,7 +1056,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         updatePreferences((current) => ({
           ...current,
           widths: {},
-          hidden: [],
+          hidden: [...(latest.current.props.defaultHiddenColumns ?? [])],
           pinned: null,
         })),
       openFilter: (columnId) => {
@@ -1315,7 +1333,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       case "ArrowRight":
         if (
           hit.kind === "row" &&
-          hiddenColumns.length &&
+          (mode === "cards" ? cards.details.length : hiddenColumns.length) &&
           !expandAll &&
           !expanded.has(hit.rowId)
         ) {
@@ -1326,7 +1344,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       case "ArrowLeft":
         if (
           hit.kind === "row" &&
-          hiddenColumns.length &&
+          (mode === "cards" ? cards.details.length : hiddenColumns.length) &&
           expanded.has(hit.rowId)
         ) {
           event.preventDefault();
@@ -1522,6 +1540,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           }
           noun={noun}
           layout={cards}
+          expanded={expanded}
+          expandAll={expandAll}
           selection={selection}
           selectable={selectable}
           activeIndex={active}
@@ -1571,10 +1591,24 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     [definitions, pinnedIds],
   );
   const autoHiddenSet = useMemo(
-    () => new Set(layout.autoHidden),
-    [layout.autoHidden],
+    () =>
+      new Set(
+        mode === "cards"
+          ? cards.details.map((column) => column.id)
+          : layout.autoHidden,
+      ),
+    [mode, cards.details, layout.autoHidden],
   );
   const effectiveDensity = density ?? globalDensity();
+  const settingsMenu = (
+    <SettingsMenu
+      columns={settingsColumns}
+      userHidden={userHidden}
+      autoHidden={autoHiddenSet}
+      density={effectiveDensity}
+      controller={headerController}
+    />
+  );
 
   return (
     // oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- delegated: "/" anywhere inside the table focuses its search (R16.8)
@@ -1600,7 +1634,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       style={rootVars}
     >
       <span ref={probeRef} className="fa-dt-probe" aria-hidden />
-      {toolbar || hasFilterBar || searchBinding ? (
+      {toolbar || hasFilterBar || searchBinding || mode === "cards" ? (
         <div className="fa-dt-toolbar">
           {hasFilterBar || searchBinding ? (
             <FilterBar
@@ -1609,7 +1643,12 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
               search={searchBinding}
             />
           ) : null}
-          {toolbar ? <div className="fa-dt-toolbar-end">{toolbar}</div> : null}
+          {toolbar || mode === "cards" ? (
+            <div className="fa-dt-toolbar-end">
+              {toolbar}
+              {mode === "cards" ? settingsMenu : null}
+            </div>
+          ) : null}
         </div>
       ) : null}
       <div className="fa-dt-frame">
@@ -1648,15 +1687,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                 columnMenu={columnMenu}
                 controller={headerController}
                 filtered={filtered}
-                settings={
-                  <SettingsMenu
-                    columns={settingsColumns}
-                    userHidden={userHidden}
-                    autoHidden={autoHiddenSet}
-                    density={effectiveDensity}
-                    controller={headerController}
-                  />
-                }
+                settings={settingsMenu}
               />
             </div>
           ) : null}

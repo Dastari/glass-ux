@@ -1,64 +1,93 @@
-import type { RowData } from "@tanstack/react-table"
-import type { Row, RowSelectionState } from "@tanstack/react-table"
-import { memo, type ReactElement } from "react"
-import { Skeleton } from "../skeleton/index.js"
-import { CellPlaceholder } from "./body.js"
-import { SelectCheckbox } from "./checkbox.js"
-import { countRender } from "./debug.js"
-import type { DataTableFeatures } from "./features.js"
-import { GroupLine } from "./group-rows.js"
-import type { GroupedItem } from "./grouping.js"
-import { cellContent, type ColumnInfo, type RowController } from "./row.js"
-import type { DataTableNoun } from "./types.js"
+import type { RowData } from "@tanstack/react-table";
+import type { Row, RowSelectionState } from "@tanstack/react-table";
+import { memo, type ReactElement } from "react";
+import { IconChevronDown, IconChevronUp } from "../../icons/generated/icons.js";
+import { Button } from "../button/index.js";
+import { Skeleton } from "../skeleton/index.js";
+import { CellPlaceholder } from "./body.js";
+import { SelectCheckbox } from "./checkbox.js";
+import { countRender } from "./debug.js";
+import type { DataTableFeatures } from "./features.js";
+import { GroupLine } from "./group-rows.js";
+import type { GroupedItem } from "./grouping.js";
+import { cellContent, type ColumnInfo, type RowController } from "./row.js";
+import type { DataTableNoun } from "./types.js";
 
 /** Which columns fill which slot of a card, from each column's `cardRole`. */
 export interface CardLayout {
-  title: ColumnInfo | undefined
+  title: ColumnInfo | undefined;
   /** Data shown beneath or beside the title. */
-  subtitle: ColumnInfo | undefined
+  subtitle: ColumnInfo | undefined;
   /** Current operation or connection status. */
-  status: ColumnInfo | undefined
+  status: ColumnInfo | undefined;
   /** Supporting data displayed with the item. */
-  meta: readonly ColumnInfo[]
+  meta: readonly ColumnInfo[];
+  /** Remaining fields, including application defaults and user-hidden columns. */
+  details: readonly ColumnInfo[];
 }
 
-export function cardLayout(columns: readonly ColumnInfo[]): CardLayout {
-  const byRole = (role: string) => columns.find((column) => column.meta.cardRole === role)
-  const title = byRole("title") ?? columns[0]
+export function cardLayout(
+  columns: readonly ColumnInfo[],
+  hidden: ReadonlySet<string> = new Set(),
+): CardLayout {
+  const visible = columns.filter((column) => !hidden.has(column.id));
+  const byRole = (role: string) =>
+    visible.find((column) => column.meta.cardRole === role);
+  const title = byRole("title") ?? visible[0];
+  const subtitle = byRole("subtitle");
+  const status = byRole("status");
+  const meta = visible.filter(
+    (column) => column.meta.cardRole === "meta" && column !== title,
+  );
+  const shown = new Set([title, subtitle, status, ...meta]);
   return {
     title,
-    subtitle: byRole("subtitle"),
-    status: byRole("status"),
-    meta: columns.filter((column) => column.meta.cardRole === "meta" && column !== title),
-  }
+    subtitle,
+    status,
+    meta,
+    details: columns.filter((column) => !shown.has(column)),
+  };
 }
 
 interface CardProps<T extends RowData> {
-  row: Row<DataTableFeatures, T>
-  original: T
-  rowId: string
+  row: Row<DataTableFeatures, T>;
+  original: T;
+  rowId: string;
   /** Index of the current item. */
-  index: number
-  ariaRowIndex: number
+  index: number;
+  ariaRowIndex: number;
   /** Layout or presentation mode. */
-  layout: CardLayout
-  selectable: boolean
+  layout: CardLayout;
+  selectable: boolean;
   /** The selected state or collection. */
-  selected: boolean
+  selected: boolean;
   /** Marks the current destination or active choice. */
-  active: boolean
-  label: string
-  controller: RowController
+  active: boolean;
+  expanded: boolean;
+  label: string;
+  controller: RowController;
 }
 
-function CardView<T extends RowData>({ row, rowId, index, ariaRowIndex, layout, selectable, selected, active, label, controller }: CardProps<T>) {
-  countRender("cards")
-  const cells = row.getAllCellsByColumnId()
-  const tabIndex = active ? 0 : -1
+function CardView<T extends RowData>({
+  row,
+  rowId,
+  index,
+  ariaRowIndex,
+  layout,
+  selectable,
+  selected,
+  active,
+  expanded,
+  label,
+  controller,
+}: CardProps<T>) {
+  countRender("cards");
+  const cells = row.getAllCellsByColumnId();
+  const tabIndex = active ? 0 : -1;
   const render = (column: ColumnInfo | undefined) => {
-    const cell = column ? cells[column.id] : undefined
-    return cell ? cellContent(cell) : null
-  }
+    const cell = column ? cells[column.id] : undefined;
+    return cell ? cellContent(cell) : null;
+  };
   const element = (
     <div
       role="row"
@@ -78,7 +107,9 @@ function CardView<T extends RowData>({ row, rowId, index, ariaRowIndex, layout, 
               checked={selected}
               label={`Select ${label}`}
               tabIndex={tabIndex}
-              onToggle={(value, { shift }) => controller.toggleRow(rowId, value, shift)}
+              onToggle={(value, { shift }) =>
+                controller.toggleRow(rowId, value, shift)
+              }
             />
           ) : null}
           <div className="fa-dt-card-title" data-col={layout.title?.key}>
@@ -89,7 +120,23 @@ function CardView<T extends RowData>({ row, rowId, index, ariaRowIndex, layout, 
               {render(layout.status)}
             </div>
           ) : null}
-          <div className="fa-dt-card-actions">{controller.renderActions(rowId, label, tabIndex)}</div>
+          <div className="fa-dt-card-actions">
+            {layout.details.length ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={expanded ? <IconChevronUp /> : <IconChevronDown />}
+                aria-label={`${expanded ? "Hide" : "Show"} ${layout.details.length} more fields for ${label}`}
+                aria-expanded={expanded}
+                tabIndex={tabIndex}
+                data-dt-interactive=""
+                onClick={() => controller.toggleExpanded(rowId)}
+              >
+                +{layout.details.length}
+              </Button>
+            ) : null}
+            {controller.renderActions(rowId, label, tabIndex)}
+          </div>
         </div>
         {layout.subtitle ? (
           <div className="fa-dt-card-subtitle" data-col={layout.subtitle.key}>
@@ -99,7 +146,25 @@ function CardView<T extends RowData>({ row, rowId, index, ariaRowIndex, layout, 
         {layout.meta.length ? (
           <dl className="fa-dt-card-meta">
             {layout.meta.map((column) => (
-              <div key={column.id} className="fa-dt-card-field" data-col={column.key}>
+              <div
+                key={column.id}
+                className="fa-dt-card-field"
+                data-col={column.key}
+              >
+                <dt className="fa-dt-card-label">{column.meta.label}</dt>
+                <dd className="fa-dt-card-value">{render(column)}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+        {expanded && layout.details.length ? (
+          <dl className="fa-dt-card-meta fa-dt-card-details">
+            {layout.details.map((column) => (
+              <div
+                key={column.id}
+                className="fa-dt-card-field"
+                data-col={column.key}
+              >
                 <dt className="fa-dt-card-label">{column.meta.label}</dt>
                 <dd className="fa-dt-card-value">{render(column)}</dd>
               </div>
@@ -108,8 +173,8 @@ function CardView<T extends RowData>({ row, rowId, index, ariaRowIndex, layout, 
         ) : null}
       </div>
     </div>
-  )
-  return controller.wrap(rowId, element)
+  );
+  return controller.wrap(rowId, element);
 }
 
 export const DataCard = memo(
@@ -122,14 +187,17 @@ export const DataCard = memo(
     a.selectable === b.selectable &&
     a.selected === b.selected &&
     a.active === b.active &&
+    a.expanded === b.expanded &&
     a.label === b.label &&
-    a.controller === b.controller
-) as <T extends RowData>(props: CardProps<T>) => ReactElement
+    a.controller === b.controller,
+) as <T extends RowData>(props: CardProps<T>) => ReactElement;
 
 export function CardList<T extends RowData>({
   rows,
   items,
   layout,
+  expanded,
+  expandAll,
   selection,
   selectable,
   activeIndex,
@@ -139,21 +207,30 @@ export function CardList<T extends RowData>({
   noun,
 }: {
   /** Records or matrix rows in display order. */
-  rows: readonly Row<DataTableFeatures, T>[]
+  rows: readonly Row<DataTableFeatures, T>[];
   /** Grouped tables: group headers and "Show more" lines between the cards. */
-  items?: readonly GroupedItem<Row<DataTableFeatures, T>>[] | null
+  items?: readonly GroupedItem<Row<DataTableFeatures, T>>[] | null;
   /** Layout or presentation mode. */
-  layout: CardLayout
-  selection: RowSelectionState
-  selectable: boolean
-  activeIndex: number
-  firstRowIndex: number
-  controller: RowController
-  getLabel: (row: T) => string
+  layout: CardLayout;
+  expanded: ReadonlySet<string>;
+  expandAll: boolean;
+  selection: RowSelectionState;
+  selectable: boolean;
+  activeIndex: number;
+  firstRowIndex: number;
+  controller: RowController;
+  getLabel: (row: T) => string;
   /** Singular and plural names used in counts and accessible labels. */
-  noun: DataTableNoun
+  noun: DataTableNoun;
 }) {
-  const lines = items ?? rows.map((row): GroupedItem<Row<DataTableFeatures, T>> => ({ kind: "row", key: row.id, row, group: "" }))
+  const lines =
+    items ??
+    rows.map((row): GroupedItem<Row<DataTableFeatures, T>> => ({
+      kind: "row",
+      key: row.id,
+      row,
+      group: "",
+    }));
   return (
     <>
       {lines.map((item, index) =>
@@ -169,6 +246,7 @@ export function CardList<T extends RowData>({
             selectable={selectable}
             selected={selection[item.row.id] === true}
             active={index === activeIndex}
+            expanded={expandAll || expanded.has(item.row.id)}
             label={getLabel(item.row.original)}
             controller={controller}
           />
@@ -183,27 +261,49 @@ export function CardList<T extends RowData>({
             noun={noun}
             controller={controller}
           />
-        )
+        ),
       )}
     </>
-  )
+  );
 }
 
 /** Card placeholders with the same slots as a real card. */
-export function SkeletonCards({ count, layout, selectable }: { count: number; layout: CardLayout; selectable: boolean }) {
+export function SkeletonCards({
+  count,
+  layout,
+  selectable,
+}: {
+  /** Item count shown by the component. */
+  count: number;
+  /** Layout or presentation mode. */
+  layout: CardLayout;
+  selectable: boolean;
+}) {
   return (
     <>
       {Array.from({ length: count }, (_, index) => (
-        <div key={index} className="glass-control fa-dt-card fa-dt-skel-card" aria-hidden>
+        <div
+          key={index}
+          className="glass-control fa-dt-card fa-dt-skel-card"
+          aria-hidden
+        >
           <div className="fa-dt-card-cell">
             <div className="fa-dt-card-head">
-              {selectable ? <Skeleton.Block className="fa-dt-skel-check" radius="check" /> : null}
+              {selectable ? (
+                <Skeleton.Block className="fa-dt-skel-check" radius="check" />
+              ) : null}
               <div className="fa-dt-card-title">
-                <CellPlaceholder kind={layout.title?.meta.skeleton ?? "text"} seed={index} />
+                <CellPlaceholder
+                  kind={layout.title?.meta.skeleton ?? "text"}
+                  seed={index}
+                />
               </div>
               {layout.status ? (
                 <div className="fa-dt-card-status">
-                  <CellPlaceholder kind={layout.status.meta.skeleton} seed={index} />
+                  <CellPlaceholder
+                    kind={layout.status.meta.skeleton}
+                    seed={index}
+                  />
                 </div>
               ) : null}
             </div>
@@ -213,7 +313,10 @@ export function SkeletonCards({ count, layout, selectable }: { count: number; la
                   <div key={column.id} className="fa-dt-card-field">
                     <dt className="fa-dt-card-label">{column.meta.label}</dt>
                     <dd className="fa-dt-card-value">
-                      <CellPlaceholder kind={column.meta.skeleton} seed={index + columnIndex} />
+                      <CellPlaceholder
+                        kind={column.meta.skeleton}
+                        seed={index + columnIndex}
+                      />
                     </dd>
                   </div>
                 ))}
@@ -223,5 +326,5 @@ export function SkeletonCards({ count, layout, selectable }: { count: number; la
         </div>
       ))}
     </>
-  )
+  );
 }

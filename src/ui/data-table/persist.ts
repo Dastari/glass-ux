@@ -1,63 +1,85 @@
-import { useCallback, useLayoutEffect, useState } from "react"
-import type { DataTableDensity } from "./types.js"
+import { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import type { DataTableDensity } from "./types.js";
 
 /**
  * Per-user table preferences (R16.3): column widths, hidden columns, pins and density,
  * stored per table id. Widths are rem.
  */
 export interface TablePreferences {
-  widths: Record<string, number>
+  widths: Record<string, number>;
   /** Keeps the item out of the visible layout. */
-  hidden: string[]
+  hidden: string[];
   /** Pinned column ids, or null for the column definitions' defaults. */
-  pinned: string[] | null
-  density: DataTableDensity | null
+  pinned: string[] | null;
+  density: DataTableDensity | null;
 }
 
-export const EMPTY_PREFERENCES: TablePreferences = { widths: {}, hidden: [], pinned: null, density: null }
+export const EMPTY_PREFERENCES: TablePreferences = {
+  widths: {},
+  hidden: [],
+  pinned: null,
+  density: null,
+};
 
-let storageKeyPrefix = "glass-ux.table"
+let storageKeyPrefix = "glass-ux.table";
 
 /** Configure the application's table preference namespace before rendering tables. */
 export function configureDataTables(options: { storageKeyPrefix?: string }) {
-  storageKeyPrefix = options.storageKeyPrefix ?? "glass-ux.table"
+  storageKeyPrefix = options.storageKeyPrefix ?? "glass-ux.table";
 }
 
-const storageKey = (id: string) => `${storageKeyPrefix}.${id}.v1`
-const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
+const storageKey = (id: string) => `${storageKeyPrefix}.${id}.v1`;
+const useIsomorphicLayoutEffect =
+  typeof window === "undefined" ? () => {} : useLayoutEffect;
 
-function sanitise(value: unknown): TablePreferences {
-  if (!value || typeof value !== "object") return EMPTY_PREFERENCES
-  const raw = value as Partial<Record<keyof TablePreferences, unknown>>
-  const widths: Record<string, number> = {}
+function sanitise(
+  value: unknown,
+  defaults: TablePreferences,
+): TablePreferences {
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    return defaults;
+  const raw = value as Partial<Record<keyof TablePreferences, unknown>>;
+  const widths: Record<string, number> = {};
   if (raw.widths && typeof raw.widths === "object") {
     for (const [key, width] of Object.entries(raw.widths)) {
-      if (typeof width === "number" && Number.isFinite(width) && width > 0) widths[key] = width
+      if (typeof width === "number" && Number.isFinite(width) && width > 0)
+        widths[key] = width;
     }
   }
-  const strings = (list: unknown) => (Array.isArray(list) ? list.filter((item): item is string => typeof item === "string") : [])
+  const strings = (list: unknown) =>
+    Array.isArray(list)
+      ? list.filter((item): item is string => typeof item === "string")
+      : [];
   return {
     widths,
-    hidden: strings(raw.hidden),
+    hidden: Array.isArray(raw.hidden) ? strings(raw.hidden) : defaults.hidden,
     pinned: Array.isArray(raw.pinned) ? strings(raw.pinned) : null,
-    density: raw.density === "compact" || raw.density === "comfortable" ? raw.density : null,
-  }
+    density:
+      raw.density === "compact" || raw.density === "comfortable"
+        ? raw.density
+        : null,
+  };
 }
 
-export function readPreferences(id: string): TablePreferences {
+export function readPreferences(
+  id: string,
+  defaults: TablePreferences = EMPTY_PREFERENCES,
+): TablePreferences {
   try {
-    return sanitise(JSON.parse(localStorage.getItem(storageKey(id)) ?? "null"))
+    return sanitise(
+      JSON.parse(localStorage.getItem(storageKey(id)) ?? "null"),
+      defaults,
+    );
   } catch {
-    return EMPTY_PREFERENCES
+    return defaults;
   }
 }
 
 function writePreferences(id: string, preferences: TablePreferences) {
   try {
-    const empty =
-      !Object.keys(preferences.widths).length && !preferences.hidden.length && preferences.pinned === null && preferences.density === null
-    if (empty) localStorage.removeItem(storageKey(id))
-    else localStorage.setItem(storageKey(id), JSON.stringify(preferences))
+    // An empty hidden list is an explicit opt-in to every column. Keep it even
+    // when the other preferences are empty so application defaults cannot undo it.
+    localStorage.setItem(storageKey(id), JSON.stringify(preferences));
   } catch {
     // Storage full or blocked: preferences last for this session only.
   }
@@ -67,23 +89,37 @@ function writePreferences(id: string, preferences: TablePreferences) {
  * Preferences for a table id. Loads before the first paint (a layout effect, so server
  * rendering and hydration see the defaults) and writes through on every change.
  */
-export function useTablePreferences(id: string) {
-  const [preferences, setPreferences] = useState<TablePreferences>(EMPTY_PREFERENCES)
+export function useTablePreferences(
+  id: string,
+  defaultHiddenColumns: readonly string[] = EMPTY_PREFERENCES.hidden,
+) {
+  // Callers may pass an inline array. Reload only when its contents change.
+  const hiddenKey = JSON.stringify(defaultHiddenColumns);
+  const defaults = useMemo<TablePreferences>(
+    () => ({
+      ...EMPTY_PREFERENCES,
+      hidden: [...new Set<string>(JSON.parse(hiddenKey))],
+    }),
+    [hiddenKey],
+  );
+  const [preferences, setPreferences] = useState<TablePreferences>(
+    () => defaults,
+  );
 
   useIsomorphicLayoutEffect(() => {
-    setPreferences(readPreferences(id))
-  }, [id])
+    setPreferences(readPreferences(id, defaults));
+  }, [id, defaults]);
 
   const update = useCallback(
     (updater: (current: TablePreferences) => TablePreferences) => {
       setPreferences((current) => {
-        const next = updater(current)
-        writePreferences(id, next)
-        return next
-      })
+        const next = updater(current);
+        writePreferences(id, next);
+        return next;
+      });
     },
-    [id]
-  )
+    [id],
+  );
 
-  return [preferences, update] as const
+  return [preferences, update] as const;
 }

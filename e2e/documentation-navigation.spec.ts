@@ -132,6 +132,8 @@ for (const width of [320, 390, 1920]) {
         "Theme and layout contract",
       );
       if (width < 768)
+        await expect(page.locator(".docs-navigation-dialog")).toHaveCount(0);
+      if (width < 768)
         await page.getByRole("button", { name: "Browse", exact: true }).click();
       await expect(search).toHaveValue("");
       await search.fill("FOUNDATIONS");
@@ -175,8 +177,20 @@ for (const width of [320, 390, 1920]) {
         .click();
       await expect(page).toHaveURL(/\/foundations\/space$/);
       await expect(page.locator("main h1")).toHaveText("Space and layout");
+      if (width < 768) {
+        // The route renders before the sheet's exit animation and focus trap finish.
+        await expect(page.locator(".docs-navigation-dialog")).toHaveCount(0);
+        await expect(
+          page.locator('[data-base-ui-focus-guard][data-type="inside"]'),
+        ).toHaveCount(0);
+      }
       const result = await new AxeBuilder({ page }).analyze();
-      expect(result.violations.map((violation) => violation.id)).toEqual([]);
+      expect(
+        result.violations.map(
+          (violation) =>
+            `${violation.id}: ${violation.nodes.map((node) => node.target.join(" ")).join(", ")}`,
+        ),
+      ).toEqual([]);
     });
 
     test(`${width}px ${mode}: API prop names stay on one line inside a scrollable table`, async ({

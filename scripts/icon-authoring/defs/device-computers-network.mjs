@@ -16,9 +16,10 @@ const rotate = (segments, degrees, centre = [12, 12]) => segments.map((s) => s.k
   : arc(rot(s.c, centre, degrees), s.r, s.a0 + degrees, s.a1 + degrees))
 
 def("dell", () => [
+  // The roundel's E leans back about 30 degrees, as in the wordmark.
   circle(12, 12, 9, "t"), circle(12, 12, 9),
-  path(d(rotate(pl([[15, 7.5], [9, 7.5], [9, 16.5], [15, 16.5]]), -45))),
-  path(d(rotate([line([9, 12], [14, 12])], -45))),
+  path(d(rotate(pl([[15, 7.5], [9, 7.5], [9, 16.5], [15, 16.5]]), -30))),
+  path(d(rotate([line([9, 12], [14, 12])], -30))),
 ])
 
 def("hp", () => [
@@ -29,7 +30,10 @@ def("hp", () => [
 def("hpe", () => [rect(3, 7, 18, 10, 0.75, "t"), rect(3, 7, 18, 10, 0.75)])
 
 def("lenovo", () => [
-  path("M3.5 5V19H10M13 19V5L20.5 19V5"),
+  // The wordmark sits in a box; keep the box and its opening "Le".
+  rect(2.5, 5.5, 19, 13, 1.5, "t"), rect(2.5, 5.5, 19, 13, 1.5),
+  path("M6.5 9V15H9.25"),
+  path(d([line([11.75, 12], [17.25, 12]), arc([14.5, 12], 2.75, 90, -220)])),
 ])
 
 def("asus", () => [
@@ -180,7 +184,8 @@ def("synology", () => [
 
 def("qnap", () => [
   rect(3.5, 3.5, 17, 17, 2.5, "t"), rect(3.5, 3.5, 17, 17, 2.5),
-  circle(11.5, 11.5, 4), path("M14.5 14.5L19 19"),
+  // A Q whose tail crosses the bowl, so it does not read as a search magnifier.
+  circle(11.25, 11.25, 4.25), path("M12.75 12.75L17 17"),
 ])
 
 def("seagate", () => [
@@ -214,5 +219,7 @@ def("vertiv", () => [
 ])
 
 def("schneider-electric", () => [
-  path("M17 6H10A3.5 3.5 0 0 0 10 13H14A3 3 0 0 1 14 19H7M3 9H5M19 16H21M12 2.5V4M12 21V22.5"),
+  // The SE monogram; a lone S with ticks read as a currency sign.
+  path("M11.25 4.5H7.25A3.75 3.75 0 0 0 7.25 12H7.5A3.75 3.75 0 0 1 7.5 19.5H3.5"),
+  path("M20.5 4.5H14.5V19.5H20.5M14.5 12H19.5"),
 ])

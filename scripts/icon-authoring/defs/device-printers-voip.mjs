@@ -155,8 +155,9 @@ def("honeywell", () => [
 ])
 
 def("bosch", () => [
+  // The double-T armature in its ring: two curved pole shoes joined by one web.
   circle(12, 12, 9),
-  path("M7.5 6.5V17.5M16.5 6.5V17.5M7.5 9.5H16.5M7.5 14.5H16.5"),
+  path(d([arc([12, 12], 6, 220, 320), arc([12, 12], 6, 40, 140), line([6, 12], [18, 12])])),
 ])
 
 def("sony", () => [

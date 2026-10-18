@@ -1,4 +1,4 @@
-import { arc, circle, d, dotEl, line, path, pl, poly, rect, rot, tinted } from "../lib.mjs"
+import { angleOf, arc, circle, cut, d, dotEl, intersect, line, nearPrims, path, pl, poly, rect, rot, tinted } from "../lib.mjs"
 
 // Original, monochrome adaptations for identifying external services. These use the
 // shared grid and circular geometry rather than importing third-party SVG artwork.
@@ -21,18 +21,27 @@ def("apple", () => {
   return [path(body, "t"), path(body), path("M12 4.5A4 4 0 0 1 15.5 2.5")]
 })
 
-def("amazon", () => [
-  circle(11, 10.5, 3.5),
-  path("M14.5 7V14.5L17 15.5"),
-  path("M4 18A14 14 0 0 0 20 17M16 16.5H20.5V21"),
-])
+def("amazon", () => {
+  // The lower-case a above the smile, which ends in an up-right arrowhead.
+  const tip = [20, 14.5]
+  const r = 12
+  const c = [tip[0] - r / Math.SQRT2, tip[1] - r / Math.SQRT2]
+  return [
+    circle(10.5, 9, 3.25),
+    path("M13.75 5.75V12.25"),
+    path(d([arc(c, r, 222, angleOf(c, tip))])),
+    path("M16.75 14.5H20V17.75"),
+  ]
+})
 
 def("meta", () => [
   path("M12 13.5L8.5 7.25A3 3 0 0 0 3.5 8.5A10 10 0 0 0 2.5 13A3.5 3.5 0 0 0 9 15L15 7.25A3 3 0 0 1 20 8.5A10 10 0 0 1 21 13A3.5 3.5 0 0 1 14.5 15L12 10.5"),
 ])
 
 def("facebook", () => [
-  path("M10.5 21V9A6 6 0 0 1 16.5 3H18M6 10.5H16.5"),
+  // The circular badge: the f's stem runs down to meet the rim, as in the app icon.
+  circle(12, 12, 9, "t"), circle(12, 12, 9),
+  path("M13 20.94V10A3 3 0 0 1 16 7H16.5M9.5 12.5H16.5"),
 ])
 
 def("instagram", () => [
@@ -81,12 +90,13 @@ def("reddit", () => [
 
 def("discord", () => {
   const body = outline([[7, 5.5], [17, 5.5], [21.25, 17.5], [17.5, 19.5], [15.5, 17], [8.5, 17], [6.5, 19.5], [2.75, 17.5]], 1)
-  return [path(body, "t"), path(body), dotEl(8, 11.5, 1.25), dotEl(16, 11.5, 1.25)]
+  return [path(body, "t"), path(body), dotEl(8.5, 12, 1.5), dotEl(15.5, 12, 1.5)]
 })
 
 def("telegram", () => {
-  const plane = outline([[2.75, 10.5], [21.25, 3.5], [17.5, 20.5], [11.5, 15], [7.5, 18.5], [7.5, 12.5]], 0.75)
-  return [path(plane, "t"), path(plane), path("M7.5 12.5L15 8.5M11.5 15L15 11.5")]
+  // The paper plane inside its circular badge.
+  const plane = outline([[6.25, 11.5], [17.5, 7], [15.5, 17], [11.75, 14.25], [9.5, 16.25], [9.5, 13]], 0.5)
+  return [circle(12, 12, 9, "t"), circle(12, 12, 9), path(plane), path("M9.5 13L14.5 10.25")]
 })
 
 def("bluesky", () => {
@@ -166,14 +176,19 @@ def("dropbox", () => {
 })
 
 def("zoom", () => [
-  rect(3, 6.5, 12, 11, 2, "t"), rect(3, 6.5, 12, 11, 2),
-  path(outline([[15, 10], [21, 6.5], [21, 17.5], [15, 14]], 0.75)),
+  // The app icon: a rounded square holding the video camera.
+  rect(3.5, 3.5, 17, 17, 2.5, "t"), rect(3.5, 3.5, 17, 17, 2.5),
+  rect(6.5, 9, 7, 6, 1.5),
+  path(outline([[13.5, 11], [17.5, 9], [17.5, 15], [13.5, 13]], 0.5)),
 ])
 
-def("adobe", () => [
-  path(outline([[3.5, 20.5], [10, 3.5], [14, 3.5], [20.5, 20.5], [15.5, 20.5], [12, 11], [8.5, 20.5]], 0.5), "t"),
-  path(outline([[3.5, 20.5], [10, 3.5], [14, 3.5], [20.5, 20.5], [15.5, 20.5], [12, 11], [8.5, 20.5]], 0.5)),
-])
+def("adobe", () => {
+  // The square mark: two flanking right triangles and the footed A between them.
+  const flanks = [[[3, 4], [9.75, 4], [3, 20]], [[21, 4], [14.25, 4], [21, 20]]]
+    .map((points) => outline(points, [1, 0.5, 0.5])).join("")
+  const a = outline([[12, 9.75], [16.25, 20], [13.5, 20], [12.25, 16.75], [9, 16.75]], 0.5)
+  return [path(flanks, "t"), path(flanks), path(a)]
+})
 
 def("docker", () => [
   path("M3 12H18A4 4 0 0 0 21.5 9L22 13H19A10 10 0 0 1 9.5 20A6.5 6.5 0 0 1 3 13.5Z", "t"),
@@ -181,22 +196,35 @@ def("docker", () => [
   path("M4 12V8H16V12M8 8V12M12 12V4H16V8"),
 ])
 
-def("npm", () => [
-  path("M3 5.5H21V17.5H14V20H10V17.5H3Z", "t"),
-  path("M3 5.5H21V17.5H14V20H10V17.5H3Z"),
-  path("M7 13.5V9.5M11 17.5V9.5H15V13.5M18 9.5V13.5"),
-])
+def("npm", () => {
+  // The square mark: the block n, its counter set right of centre.
+  const n = outline([[3.5, 19.5], [3.5, 5.5], [20.5, 5.5], [20.5, 19.5], [15.5, 19.5], [15.5, 10], [11, 10], [11, 19.5]], 1)
+  return [path(n, "t"), path(n)]
+})
 
 def("vercel", () => tinted(poly([[12, 3.5], [21, 20], [3, 20]], 0.75)))
 
-def("cloudflare", () => [
-  path("M4 18H19A3 3 0 0 0 19 12H17A5.5 5.5 0 0 0 6 12A3 3 0 0 0 4 18Z", "t"),
-  path("M4 18H19A3 3 0 0 0 19 12H17A5.5 5.5 0 0 0 6 12A3 3 0 0 0 4 18ZM2.5 21H21.5"),
-  path("M11.5 3V4M4 5.5L5 6.5M19 5.5L18 6.5"),
-])
+def("cloudflare", () => {
+  // The flat-based cloud with its slanted right edge, and the smaller cloud behind it.
+  const base = 17.25
+  const lobe = [5, 14.5], dome = [10, 12.25], foot = [13.25, base]
+  const [join] = intersect(lobe, 2.75, dome, 4.75)
+  const after = (a, from) => (a < from ? a + 360 : a)
+  const shoulder = [dome[0] + 4.75 * Math.sin(110 * Math.PI / 180), dome[1] - 4.75 * Math.cos(110 * Math.PI / 180)]
+  const main = [
+    line(foot, [lobe[0], base]),
+    arc(lobe, 2.75, 180, after(angleOf(lobe, join), 180)),
+    arc(dome, 4.75, angleOf(dome, join), 470),
+    line(shoulder, foot),
+  ]
+  const back = cut([arc([18.25, 14.5], 2.75, 250, 450), ...pl([[21, 14.5], [21, base], foot], 1.5)], nearPrims(main, 3))
+  return [path(d(main, true), "t"), path(d(main, true)), path(d(back))]
+})
 
 def("stripe", () => [
-  path("M18.5 5A10 10 0 0 0 9 3.5A4.25 4.25 0 0 0 7.5 11.5L15.5 14A3.5 3.5 0 0 1 14 21A10 10 0 0 1 5.5 19"),
+  // The app icon: a rounded square holding the slanted S.
+  rect(3.5, 3.5, 17, 17, 2.5, "t"), rect(3.5, 3.5, 17, 17, 2.5),
+  path("M15.5 8.5A6 6 0 0 0 10.75 7.5A2.25 2.25 0 0 0 9.75 11.5L14.25 12.75A2 2 0 0 1 13.25 16.5A6 6 0 0 1 8.5 15.5"),
 ])
 
 def("openai", () => {

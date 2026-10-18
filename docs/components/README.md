@@ -63,6 +63,9 @@ Building your own schema helper: `textRule(check, options)` and `numberRule(opti
 For populated entity forms, see [Entity settings dialogs](entity-settings.md), including
 editable drafts whose save action is unavailable.
 
+For sign-in, providers, two-factor codes, password reset and account creation, see
+[Login flow](login-flow.md).
+
 ## Navigation and choice
 
 | Page                              | Component                       | Collapse                                                                     |

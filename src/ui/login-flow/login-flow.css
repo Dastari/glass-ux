@@ -1,0 +1,256 @@
+/*
+ * LoginFlow — one authentication column on a panel Surface (or inside a host's Dialog,
+ * Sheet or Panel with surface={false}).
+ *
+ *   root        an inline-size container (login-flow) capped at --_measure; it fills a
+ *               narrower parent
+ *   surface     Surface padding="dialog"; narrow containers use the panel inset
+ *   header      host logo or product name, above the view
+ *   stage       holds one view. On a view change its height moves from the old view's to
+ *               the new one's and the view fades and slides in, on motion tokens (reduced
+ *               motion makes both instant). It clips only while the height moves.
+ *   view        heading · description · providers / divider / form · prompts
+ *   form        one field per row on the field rhythm; the block submit; the status line
+ *   status      two caption-free lines reserved under the primary action, so an error or
+ *               confirmation replaces empty space and never moves a button (R9)
+ *   providers   full-width buttons (list) or two columns of short ones (grid)
+ *
+ * Component tokens
+ *   --_measure       the flow's widest column
+ *   --_status-lines  lines reserved for the status message
+ *   --_shift         how far an entering view slides
+ */
+@layer components {
+  .fa-login {
+    --_measure: 26rem;
+    --_status-lines: 2;
+    --_shift: var(--space-4);
+    container: login-flow / inline-size;
+    inline-size: 100%;
+    max-inline-size: var(--_measure);
+    min-inline-size: 0;
+  }
+  .fa-login-surface {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-section);
+    min-inline-size: 0;
+  }
+  @container login-flow (width < 22rem) {
+    .fa-login-surface[data-padding="dialog"] {
+      padding: var(--inset-panel);
+    }
+  }
+  .fa-login-header {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-inline);
+    min-inline-size: 0;
+    color: var(--fg);
+  }
+  .fa-login-footer {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+
+  /* ── Stage and view transition ─────────────────────────────────────────── */
+  .fa-login-stage {
+    min-inline-size: 0;
+    transition: height var(--duration-base) var(--ease-standard);
+  }
+  .fa-login-stage[data-animating] {
+    overflow: clip;
+    overflow-clip-margin: var(--focus-ring-offset);
+  }
+  .fa-login-stage[data-enter] > .fa-login-view {
+    animation: fa-login-enter var(--duration-slow) var(--ease-enter) both;
+  }
+  .fa-login-stage[data-enter="back"] > .fa-login-view {
+    --_direction: -1;
+  }
+  @keyframes fa-login-enter {
+    from {
+      opacity: 0;
+      transform: translateX(calc(var(--_shift) * var(--_direction, 1)));
+    }
+  }
+
+  /* ── View ──────────────────────────────────────────────────────────────── */
+  .fa-login-view {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-fields);
+    min-inline-size: 0;
+  }
+  .fa-login-view:focus {
+    outline: none;
+  }
+  .fa-login-intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1-5);
+    min-inline-size: 0;
+  }
+  .fa-login-title {
+    margin: 0;
+    color: var(--fg);
+    font-size: var(--type-headline-size);
+    line-height: var(--type-headline-line);
+    font-weight: var(--type-headline-weight);
+    letter-spacing: var(--type-headline-tracking);
+    overflow-wrap: anywhere;
+  }
+  .fa-login-title:focus {
+    outline: none;
+  }
+  .fa-login-title:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-xs);
+  }
+  .fa-login-description {
+    margin: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    overflow-wrap: anywhere;
+  }
+  @container login-flow (width < 22rem) {
+    .fa-login-title {
+      font-size: var(--type-title-size);
+      line-height: var(--type-title-line);
+    }
+  }
+
+  /* ── Form and status ───────────────────────────────────────────────────── */
+  .fa-login-form {
+    /* The field rhythm of FormStack: fields reserve their own message line. */
+    --_row-gap: calc(var(--gap-fields) - var(--space-2));
+    display: flex;
+    flex-direction: column;
+    gap: var(--_row-gap);
+    min-inline-size: 0;
+  }
+  /* A code stays on one row: in a phone-width column its boxes narrow instead of wrapping. */
+  .fa-login .fa-otp {
+    flex-wrap: nowrap;
+  }
+  @container login-flow (width < 24rem) {
+    .fa-login .fa-otp {
+      --_box: var(--control-h-md);
+    }
+  }
+  .fa-login-status {
+    min-block-size: calc(var(--type-label-line) * var(--_status-lines));
+    margin-block-start: calc(var(--space-2) - var(--_row-gap, var(--gap-fields)));
+    min-inline-size: 0;
+  }
+  /* Outside a form (providers only, reset confirmation) the line follows the view gap. */
+  .fa-login-view > .fa-login-status {
+    margin-block-start: calc(var(--space-2) - var(--gap-fields));
+  }
+  .fa-login-status-text {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-1-5);
+    margin: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    overflow-wrap: anywhere;
+  }
+  .fa-login-status[data-tone="danger"] .fa-login-status-text {
+    color: var(--danger-text);
+  }
+  .fa-login-status[data-tone="success"] .fa-login-status-text {
+    color: var(--success-text);
+  }
+  .fa-login-status-icon {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--type-label-line);
+  }
+
+  /* ── Providers ─────────────────────────────────────────────────────────── */
+  .fa-login-providers {
+    display: grid;
+    gap: var(--gap-controls);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    min-inline-size: 0;
+  }
+  .fa-login-providers[data-layout="grid"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @container login-flow (width < 18rem) {
+    .fa-login-providers[data-layout="grid"] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .fa-login-providers > li {
+    min-inline-size: 0;
+  }
+  .fa-login-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-login-divider::before,
+  .fa-login-divider::after {
+    content: "";
+    flex: 1 1 0;
+    border-block-start: var(--divider);
+  }
+
+  /* ── Links, prompts and secondary actions ──────────────────────────────── */
+  .fa-login-link {
+    display: inline;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--accent-text);
+    font: inherit;
+    font-weight: var(--weight-medium);
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .fa-login-link:hover {
+    text-decoration: underline;
+  }
+  .fa-login-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-login-link[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: var(--disabled-opacity);
+    text-decoration: none;
+  }
+  .fa-login-switch {
+    margin: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    text-align: center;
+  }
+  .fa-login-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-controls) var(--space-4);
+    min-block-size: var(--control-h-sm);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  /* Back sits at the end, so the resend button's countdown never moves it. */
+  .fa-login-back {
+    margin-inline-start: auto;
+  }
+}

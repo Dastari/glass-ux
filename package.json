@@ -145,6 +145,10 @@
       "types": "./dist/ui/entity-settings/index.d.ts",
       "import": "./dist/ui/entity-settings/index.js"
     },
+    "./login-flow": {
+      "types": "./dist/ui/login-flow/index.d.ts",
+      "import": "./dist/ui/login-flow/index.js"
+    },
     "./skeleton": {
       "types": "./dist/ui/skeleton/index.d.ts",
       "import": "./dist/ui/skeleton/index.js"

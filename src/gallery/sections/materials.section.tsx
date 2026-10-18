@@ -41,7 +41,7 @@ export default function MaterialsSection() {
         </div>
       </Specimen>
 
-      <Specimen title="Light" description="Lit glass reflects a fine pointer: the highlight follows it across buttons, segments, choice cards and these tiles, and brightens on press. Under Still it rests at the top edge; Solid removes it.">
+      <Specimen title="Light" description="Lit glass reflects a fine pointer: a soft bloom follows it across buttons, segments, select triggers, choice cards and these tiles, and the rim nearest it catches a glint, tinted in light mode so it reads on white glass. It brightens on press. Under Still it rests at the top edge; Solid removes it.">
         <div className="materials-lit">
           {LIT.map(([material, use]) => (
             <div key={material} className={`materials-lit-tile fa-lit ${material}`}>
@@ -110,6 +110,7 @@ export default function MaterialsSection() {
           ["--glass-rim-bottom", "Shaded lower edge"],
           ["--glass-lens", "Inner lens glow (none in Solid)"],
           ["--specular", "Pointer highlight (none in Solid)"],
+          ["--specular-rim", "Rim glint nearest the pointer (none in Solid)"],
           ["--shadow-2", "Panel elevation"],
         ]}
       />

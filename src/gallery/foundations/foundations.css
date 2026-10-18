@@ -334,6 +334,14 @@
     width: 100%;
     max-width: 32rem;
   }
+  .motion-condense {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    width: 100%;
+    max-width: 24rem;
+  }
 
   .motion-curve-cell {
     display: flex;

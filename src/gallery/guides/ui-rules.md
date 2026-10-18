@@ -68,7 +68,9 @@ Use the shared glass materials. Avoid nesting blurred layers. Support Glass, Fro
 Solid, and use the imagery context over media. Headings and navigation sit on the canvas.
 Glass is more than blur: every material carries a lit top edge, a shaded lower edge and,
 on layers and cards, a soft inner lens glow. Interactive fills add `fa-lit` so a specular
-highlight follows a fine pointer. Solid and reduced transparency keep only the static rims.
+bloom follows a fine pointer and the rim nearest it catches a glint (tinted in light mode,
+so it reads on white glass); it never paints over text. Solid and reduced transparency keep
+only the static rims.
 An overlay rendered inside another layer takes an opaque fill instead of a second blur.
 
 ## R5–R6 · Shell and navigation
@@ -128,7 +130,9 @@ application defaults.
 Animate transform and opacity; honour reduced motion and transparency. Physical motion uses
 the spring tokens: selection indicators glide (`fa-glide`), presses spring back
 (`fa-pressable`), overlays materialise from their anchor (`fa-popup`) and leave on the exit
-tween. A disclosure's height (`fa-collapse`) is the one sanctioned layout animation.
+tween. A disclosure's height (`fa-collapse`) is the one sanctioned layout animation;
+anything else that travels moves with transform, or lays out once and animates the
+transform from where it was. List rows highlight at once and fade as they leave.
 Durations multiply by `--motion-scale`; script reads the same switch from
 `prefersReducedMotion()`, `motionScale()` and `tokenDuration()`. Under Still nothing moves,
 the pointer light stops tracking and skeletons hold still. Components size

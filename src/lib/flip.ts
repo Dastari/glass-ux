@@ -3,10 +3,15 @@ import { motionScale, tokenDuration } from "./motion.js"
 
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect
 
+/** A layout box in px, relative to the offset parent. */
 interface Box {
+  /** Left edge. */
   x: number
+  /** Top edge. */
   y: number
+  /** Width. */
   w: number
+  /** Height. */
   h: number
 }
 

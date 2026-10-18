@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 import { Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { IconEndpoint } from "../../icons/generated/icons.js"
+import { IconAi, IconEndpoint, IconTerminal } from "../../icons/generated/icons.js"
+import { TabBar } from "../../shell/index.js"
 import { Accordion } from "../../ui/accordion/index.js"
+import { Slider } from "../../ui/slider/index.js"
 import { ActionButton, Button } from "../../ui/button/index.js"
 import { Segmented } from "../../ui/segmented/index.js"
 import { Skeleton } from "../../ui/skeleton/index.js"
@@ -104,6 +106,21 @@ function FlashDemo() {
   )
 }
 
+/** A phone tab bar condensing on demand: transform and opacity only, so nothing re-lays out. */
+function CondenseDemo() {
+  const [condensed, setCondensed] = useState(false)
+  return (
+    <div className="motion-condense">
+      <TabBar.Root aria-label="Sample navigation" condensed={condensed}>
+        <TabBar.Item icon={<IconAi />} label="Assistant" />
+        <TabBar.Item icon={<IconEndpoint />} label="Devices" active />
+        <TabBar.Item icon={<IconTerminal />} label="Sessions" />
+      </TabBar.Root>
+      <Switch checked={condensed} onCheckedChange={setCondensed} label="Condensed" />
+    </div>
+  )
+}
+
 const RANGES = [
   { value: "1h", label: "1 hour" },
   { value: "24h", label: "24 hours" },
@@ -157,6 +174,12 @@ export default function MotionSection() {
           Save changes
         </ActionButton>
       </Specimen>
+      <Specimen title="Move without layout" description="Travelling things move with transform, so nothing around them is laid out again: slider ranges and thumbs, the snap preview, a condensing tab bar. Shell panes slide over the workspace and commit their column once." layout="stack">
+        <div className="motion-disclosure">
+          <Slider defaultValue={[20, 60]} step={10} marks thumbLabels={["From", "To"]} />
+        </div>
+        <CondenseDemo />
+      </Specimen>
       <Specimen title="Disclosure" description="Panels open on their measured height, the one sanctioned height animation, with the content fading in.">
         <div className="motion-disclosure">
           <Accordion.Root>
@@ -185,7 +208,7 @@ export default function MotionSection() {
         dont={[
           "Loop animations other than spinners and skeletons.",
           "Depend on an animation finishing for anything to work.",
-          "Animate layout (width, height, top) except a disclosure's height.",
+          "Animate layout (width, height, top, grid tracks) except a disclosure's height: move with transform, or lay out once and animate the transform from where it was.",
         ]}
       />
       <TokenTable

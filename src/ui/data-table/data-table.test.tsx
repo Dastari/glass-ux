@@ -176,3 +176,25 @@ describe("default-hidden table columns", () => {
     ).toHaveTextContent("ACORN-42");
   });
 });
+
+describe("status bar update time", () => {
+  it("reads a refresh newer than the shared clock as just now", () => {
+    render(
+      <TooltipProvider>
+        <DataTable
+          id="updated-at"
+          label="Devices"
+          rows={rows}
+          columns={columns}
+          getRowId={(row) => row.id}
+          rowCount={1}
+          height="auto"
+          selectable={false}
+          updatedAt={Date.now() + 5_000}
+        />
+      </TooltipProvider>,
+    );
+    expect(screen.getByText("Updated just now")).toBeInTheDocument();
+    expect(screen.queryByText(/Updated in/)).not.toBeInTheDocument();
+  });
+});

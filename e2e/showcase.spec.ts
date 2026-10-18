@@ -1,7 +1,15 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-test("studio demo supports live updates, projects, search and details @responsive", async ({
+const palette = async (page: Page, query: string) => {
+  await page.keyboard.press("ControlOrMeta+k");
+  const search = page.getByRole("combobox", { name: "Search commands" });
+  await expect(search).toBeFocused();
+  await search.fill(query);
+  return page.getByRole("dialog", { name: "Command palette" });
+};
+
+test("studio demo creates a project with typed fields and groups it by status @responsive", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -13,7 +21,7 @@ test("studio demo supports live updates, projects, search and details @responsiv
     .poll(() =>
       studio.locator(".fa-avatar:not(.fa-avatar-more)").evaluateAll(
         (avatars) =>
-          avatars.length >= 7 &&
+          avatars.length >= 4 &&
           avatars.every((avatar) => {
             const image = avatar.querySelector("img");
             return image?.complete && image.naturalWidth > 0;
@@ -21,33 +29,57 @@ test("studio demo supports live updates, projects, search and details @responsiv
       ),
     )
     .toBe(true);
+  // Two chart families on the overview: the hours trend and hours by discipline.
+  await expect(
+    studio.getByRole("figure", { name: "Studio hours over time" }),
+  ).toBeVisible();
+  await expect(
+    studio.getByRole("figure", { name: "Logged hours by discipline" }),
+  ).toBeVisible();
+  await expect(studio).toContainText("Hours by discipline");
+  await studio.getByRole("button", { name: "Month", exact: true }).click();
+  await expect(studio).toContainText("This month");
+
   await studio
     .getByRole("button", { name: "New project", exact: true })
     .click();
   const dialog = page.getByRole("dialog", { name: "New project" });
-  await expect(
-    dialog.getByRole("button", { name: "Create project", exact: true }),
-  ).toBeDisabled();
-  await dialog.getByRole("textbox", { name: "Project name" }).fill(" ");
-  await dialog.getByRole("textbox", { name: "Project name" }).press("Tab");
-  await expect(dialog).toContainText("Give your project a name.");
-  await dialog
-    .getByRole("textbox", { name: "Project name" })
-    .fill("Atlas field guide");
-  await dialog
-    .getByRole("button", { name: "Create project", exact: true })
-    .click();
-  await expect(dialog).toHaveCount(0);
-  await studio
-    .getByRole("button", { name: "Open Atlas field guide", exact: true })
-    .click();
-  const details = page.getByRole("dialog", {
-    name: "Atlas field guide",
+  const create = dialog.getByRole("button", {
+    name: "Create project",
     exact: true,
   });
-  await expect(details).toContainText("Avery Quinn");
-  await expect(details.locator(".fa-avatar-image")).toBeVisible();
-  await details.getByRole("button", { name: "Back to workspace" }).click();
+  await expect(create).toBeDisabled();
+  const name = dialog.getByRole("textbox", { name: "Project name" });
+  await name.fill(" ");
+  await name.press("Tab");
+  await expect(dialog).toContainText("Give your project a name.");
+  await name.fill("Atlas field guide");
+  await expect(
+    dialog.getByRole("textbox", { name: "Next milestone" }),
+  ).not.toHaveValue("");
+  const tags = dialog.getByRole("combobox", { name: "Tags" });
+  await tags.fill("Signage");
+  await tags.press("Enter");
+  await expect(dialog).toContainText("Signage");
+  // The footer stays reachable when the form is taller than a phone screen.
+  await create.scrollIntoViewIfNeeded();
+  await create.click();
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByText("Atlas field guide created")).toBeVisible();
+
+  await studio.getByRole("button", { name: "Projects", exact: true }).click();
+  await expect(studio.locator(".showcase-metrics")).toHaveCount(0);
+  const complete = studio.getByRole("button", {
+    name: /^Complete, 2 projects/,
+  });
+  await expect(complete).toHaveAttribute("aria-expanded", "false");
+  await expect(studio.getByText("Cedar house")).toHaveCount(0);
+  await complete.click();
+  await expect(studio.getByText("Cedar house")).toBeVisible();
+  await expect(
+    studio.getByRole("button", { name: /^In progress, 5 projects/ }),
+  ).toBeVisible();
+
   const search = studio.getByRole("searchbox");
   if (!(await search.isVisible()))
     await studio
@@ -55,30 +87,78 @@ test("studio demo supports live updates, projects, search and details @responsiv
       .first()
       .click();
   await search.fill("Observatory");
-  await expect(
-    studio.getByRole("button", { name: "Open The Observatory", exact: true }),
-  ).toBeVisible();
-  await expect(
-    studio.getByRole("button", { name: "Open Atlas field guide", exact: true }),
-  ).toHaveCount(0);
+  await expect(studio.getByText("The Observatory")).toBeVisible();
+  await expect(studio.getByText("Atlas field guide")).toHaveCount(0);
   await search.fill("");
-  await studio.getByRole("button", { name: "Projects", exact: true }).click();
-  await expect(studio.locator(".showcase-metrics")).toHaveCount(0);
-  await studio.getByRole("button", { name: "Overview", exact: true }).click();
-  await studio.getByRole("button", { name: "Month", exact: true }).click();
-  await expect(studio).toContainText("This month");
-  await expect(studio).toContainText("Last month");
+  await expect(studio.getByText("Atlas field guide")).toBeVisible();
+
   const live = studio.getByRole("switch", { name: "Live demo" });
+  await studio.getByRole("button", { name: "Overview", exact: true }).click();
   await live.click();
-  await expect(studio).toContainText("Live updates paused");
-  await page.clock.install();
-  const before = await studio.getByTestId("live-tick").textContent();
-  await page.clock.fastForward(6000);
-  await expect(studio.getByTestId("live-tick")).toHaveText(before!);
+  await expect(studio.getByTestId("live-hours")).toContainText("Paused");
   await live.click();
-  await page.clock.fastForward(6000);
-  await expect(studio.getByTestId("live-tick")).not.toHaveText(before!);
+  await expect(studio.getByTestId("live-hours")).toContainText("Live sample");
   expect(errors).toEqual([]);
+});
+
+test("project actions are shared by the row menu, sheet header and command palette @responsive", async ({
+  page,
+}) => {
+  await page.goto("./");
+  const studio = page.getByTestId("studio-workspace");
+  await studio.getByRole("button", { name: "Projects", exact: true }).click();
+  await studio
+    .getByRole("button", { name: "Actions for Meridian identity", exact: true })
+    .click();
+  const menu = page.getByRole("menu", {
+    name: "Actions for Meridian identity",
+  });
+  await expect(menu.getByRole("menuitem", { name: "Archive" })).toBeVisible();
+  await menu.getByRole("menuitem", { name: "Open project" }).click();
+  const sheet = page.getByRole("dialog", {
+    name: "Meridian identity",
+    exact: true,
+  });
+  await expect(sheet).toContainText("Avery Quinn");
+  await expect(sheet.locator(".fa-avatar-image").first()).toBeVisible();
+  await sheet
+    .getByRole("button", { name: "Request review", exact: true })
+    .click();
+  // The header confirms in place; the project's state changes everywhere.
+  await expect(sheet).toContainText("Waiting for client review");
+  await expect(sheet).toContainText("In review");
+  await sheet.getByRole("tab", { name: /Files/ }).click();
+  await expect(
+    sheet.getByRole("tree", { name: "Meridian identity files" }),
+  ).toContainText("Design");
+  await sheet.getByRole("tab", { name: "Activity", exact: true }).click();
+  await expect(
+    sheet.locator(".fa-activity-feed li, ol li").first(),
+  ).toBeVisible();
+  // While the project is open, its actions are in the palette under its name.
+  const commands = await palette(page, "complete");
+  await expect(
+    commands.getByRole("option", { name: /Mark complete/ }),
+  ).toBeVisible();
+  await commands.getByRole("option", { name: /Mark complete/ }).click();
+  await expect(
+    page.getByText("Meridian identity marked complete"),
+  ).toBeVisible();
+  await expect(sheet.getByRole("tab", { name: "Overview" })).toBeVisible();
+  await sheet.getByRole("tab", { name: "Overview" }).click();
+  await expect(sheet).toContainText("Complete");
+  await sheet.getByRole("button", { name: "Back to workspace" }).click();
+  await expect(sheet).toHaveCount(0);
+  // Projects are commands too: the palette opens one by name.
+  const projects = await palette(page, "Observ");
+  await projects.getByRole("option", { name: /The Observatory/ }).click();
+  await expect(
+    page.getByRole("dialog", { name: "The Observatory", exact: true }),
+  ).toContainText("Mira Chen");
+  const axe = await new AxeBuilder({ page })
+    .include('[role="dialog"]')
+    .analyze();
+  expect(axe.violations.map((item) => item.id)).toEqual([]);
 });
 
 test("assistant streams, stops, and adds an approved checklist to the phone @responsive", async ({
@@ -87,6 +167,15 @@ test("assistant streams, stops, and adds an approved checklist to the phone @res
   await page.goto("./#assistant");
   const assistant = page.getByTestId("studio-assistant");
   const phone = page.getByTestId("mobile-preview");
+  await expect(phone.getByTestId("checklist-source")).toHaveText(
+    "Review checklist",
+  );
+  const firstTask = phone.getByRole("checkbox", {
+    name: "Review the visual direction",
+  });
+  const offset = async () =>
+    (await firstTask.boundingBox())!.y - (await phone.boundingBox())!.y;
+  const before = await offset();
   await assistant
     .getByRole("button", { name: "Prepare a review checklist", exact: true })
     .click();
@@ -115,6 +204,8 @@ test("assistant streams, stops, and adds an approved checklist to the phone @res
     .getByRole("button", { name: "Approve once", exact: true })
     .click();
   await expect(phone).toContainText("Added by your assistant");
+  // The approval replaces the label in place: the tasks do not move.
+  expect(await offset()).toBeCloseTo(before, 0);
   await expect(phone).toContainText("0 of 4 completed");
   await phone
     .getByRole("checkbox", { name: "Share the identity guidelines" })

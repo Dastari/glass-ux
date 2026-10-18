@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, type ClipboardEvent, type FocusEvent, type M
 import { Field as BaseField } from "@base-ui/react/field"
 import { IconCheck, IconChevronDown, IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useControllable } from "../../lib/use-controllable.js"
 import { CopyButton } from "../copy-button/index.js"
 import { matches, OptionRow } from "../combobox/index.js"
 import { callingCodeOf, listCountries, MAIN_COUNTRY_FOR_CALLING_CODE, type Country } from "../country-select/countries.js"
@@ -140,9 +141,7 @@ export function PhoneInput({
   const lib = usePhoneLibrary()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [focused, setFocused] = useState(false)
-  const controlled = value !== undefined
-  const [inner, setInner] = useState(defaultValue)
-  const current = controlled ? value : inner
+  const [current, setCurrent] = useControllable(value, defaultValue, onValueChange)
   const [view, setView] = useState<Display>(() => displayOf(lib, current, defaultCountry, display))
   // The value the view shows, and whether it was laid out with the library.
   const [shown, setShown] = useState({ value: current, withLibrary: Boolean(lib) })
@@ -157,9 +156,8 @@ export function PhoneInput({
   }
 
   const emit = (next: string) => {
-    if (!controlled) setInner(next)
     setShown({ value: next, withLibrary: Boolean(lib) })
-    onValueChange?.(next)
+    setCurrent(next)
   }
 
   /** The value for a text, read in a country: E.164 when it parses, else the text as typed. */

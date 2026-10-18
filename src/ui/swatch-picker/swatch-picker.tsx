@@ -1,7 +1,8 @@
 import { Toggle } from "@base-ui/react/toggle"
 import { ToggleGroup } from "@base-ui/react/toggle-group"
-import { useState, type CSSProperties, type FocusEvent } from "react"
+import type { CSSProperties, FocusEvent } from "react"
 import { cx } from "../../lib/cx.js"
+import { useControllable } from "../../lib/use-controllable.js"
 import { useSettingRow } from "../setting-row/index.js"
 import { Tooltip } from "../tooltip/index.js"
 
@@ -60,8 +61,10 @@ export function SwatchPicker<V extends string = string>({
   id,
   ...aria
 }: SwatchPickerProps<V>) {
-  const [inner, setInner] = useState<V | undefined>(defaultValue)
-  const current = value === undefined ? inner : value
+  // null is a controlled "nothing picked"; only undefined leaves the picker uncontrolled.
+  const [current, setCurrent] = useControllable<V | null | undefined>(value, defaultValue, (next) => {
+    if (next != null) onValueChange?.(next)
+  })
   const row = useSettingRow()
   return (
     <ToggleGroup<V>
@@ -73,8 +76,7 @@ export function SwatchPicker<V extends string = string>({
       onValueChange={(next) => {
         const picked = next[0]
         if (picked === undefined) return
-        if (value === undefined) setInner(picked)
-        onValueChange?.(picked)
+        setCurrent(picked)
       }}
       disabled={disabled}
       onBlur={(event) => {

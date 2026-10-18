@@ -2,6 +2,7 @@ import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { useLayoutEffect, useRef, useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconChevronsUpDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useControllable } from "../../lib/use-controllable.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { Button } from "../button/index.js"
 import {
@@ -133,19 +134,13 @@ export function MultiSelect<V extends string = string>({
   ref,
   ...aria
 }: MultiSelectProps<V>) {
-  const [inner, setInner] = useState<V[]>(defaultValue ?? [])
+  const [current, commit] = useControllable<V[]>(value ?? undefined, defaultValue ?? [], onValueChange)
   const [query, setQuery] = useState("")
   const [focused, setFocused] = useState(false)
-  const current = value ?? inner
   const data = useOptionData(options, source, query, current)
   const items = useOptionCollection(data.items)
   const labels = current.map(data.labelOf)
   const { chipsRef, measureRef, visible } = useChipFit(labels, !wrap, focused)
-
-  const commit = (next: V[]) => {
-    if (value === undefined) setInner(next)
-    onValueChange?.(next)
-  }
 
   const shown = current.slice(0, visible)
   const hidden = current.slice(visible)

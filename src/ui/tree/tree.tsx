@@ -14,6 +14,7 @@ import {
 } from "react"
 import { IconChevronRight, IconFile, IconFolder, IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useControllable } from "../../lib/use-controllable.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { CountBadge, STATUS, StatusDot, type StatusKind } from "../badge/index.js"
 import { EmptyState } from "../empty-state/index.js"
@@ -153,20 +154,12 @@ export function Tree({
   className,
   "aria-label": label,
 }: TreeProps) {
-  const [uncontrolled, setUncontrolled] = useState<string[]>(defaultExpanded ?? [])
-  const expandedList = expandedProp ?? uncontrolled
+  const [expandedList, setExpandedList] = useControllable<string[]>(expandedProp ?? undefined, defaultExpanded ?? [], onExpandedChange)
   const expanded = useMemo(() => new Set(expandedList), [expandedList])
   const rows = useMemo(() => flattenTree(nodes, expanded, query), [nodes, expanded, query])
   const searching = query.trim() !== ""
 
-  const setExpanded = useCallback(
-    (next: Set<string>) => {
-      const list = [...next]
-      if (expandedProp === undefined) setUncontrolled(list)
-      onExpandedChange?.(list)
-    },
-    [expandedProp, onExpandedChange]
-  )
+  const setExpanded = useCallback((next: Set<string>) => setExpandedList([...next]), [setExpandedList])
   const toggle = useCallback(
     (row: FlatRow<TreeNode>, open = !row.expanded) => {
       if (!row.hasChildren || searching) return

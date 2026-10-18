@@ -11,6 +11,7 @@ import {
 } from "react"
 import { IconPlus } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useControllable } from "../../lib/use-controllable.js"
 import {
   ChipMeasure,
   ComboboxPopup,
@@ -110,8 +111,7 @@ export function TagInput({
   ref,
   ...aria
 }: TagInputProps) {
-  const [inner, setInner] = useState<string[]>(defaultValue ?? [])
-  const current = value ?? inner
+  const [current, commit] = useControllable<string[]>(value ?? undefined, defaultValue ?? [], onValueChange)
   const [query, setQuery] = useState("")
   const [open, setOpen] = useState(false)
   const [focused, setFocused] = useState(false)
@@ -141,11 +141,6 @@ export function TagInput({
       : null
   const items = createRow ? [createRow, ...offered] : offered
   const collection = useOptionCollection(items)
-
-  const commit = (next: string[]) => {
-    if (value === undefined) setInner(next)
-    onValueChange?.(next)
-  }
 
   const flashChip = (item: string) => {
     clearTimeout(flashTimer.current)

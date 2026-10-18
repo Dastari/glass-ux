@@ -14,11 +14,11 @@ import {
 } from "../../ui/data-table/index.js"
 import type { StatusKind as BadgeStatus } from "../../ui/badge/index.js"
 import type { Domain } from "../../ui/sparkline/index.js"
-import type { Endpoint, EndpointStatus } from "./data-table.fixtures.js"
+import type { Endpoint, EndpointHealth } from "./data-table.fixtures.js"
 import { endpointActions as sharedEndpointActions, type DemoEndpoint } from "./overlays.fixtures.js"
 
 /** The fixture's states drawn as the shared endpoint states (src/ui/badge STATUS). */
-export const STATUS: Record<EndpointStatus, { status: BadgeStatus; label: string }> = {
+export const STATUS: Record<EndpointHealth, { status: BadgeStatus; label: string }> = {
   online: { status: "online", label: "Online" },
   offline: { status: "offline", label: "Offline" },
   attention: { status: "warning", label: "Needs restart" },

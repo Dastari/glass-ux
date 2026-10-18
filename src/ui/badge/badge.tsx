@@ -49,11 +49,6 @@ export type StatusKind =
   | "connecting"
   | "live"
 
-/**
- * @deprecated Use `StatusKind`. Retained as an alias for existing consumers.
- */
-export type EndpointStatus = StatusKind
-
 interface StatusSpec {
   tone: BadgeTone
   marker: Exclude<BadgeMarker, "none">

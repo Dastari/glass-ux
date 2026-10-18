@@ -67,9 +67,6 @@ export type CustomFilterValue = unknown
 /** One condition in the shape your server's query accepts (a JSON object). */
 export type FilterCondition = Record<string, unknown>
 
-/** @deprecated Renamed to {@link FilterCondition}; this alias will be removed in the next release. */
-export type WhereInput = FilterCondition
-
 /** Returns a column's server condition for a filter value, or null to send nothing. */
 export type FilterConditionFn<V> = (value: V, context: FilterTimeContext) => FilterCondition | null
 
@@ -101,8 +98,6 @@ interface FilterSpecBase<V> {
    * `{ HostnameContains: "orb" }`), or null to send nothing.
    */
   toCondition?: FilterConditionFn<V>
-  /** @deprecated Renamed to `toCondition`; this alias will be removed in the next release. */
-  toWhere?: FilterConditionFn<V>
 }
 
 export interface TextFilterSpec extends FilterSpecBase<TextFilterValue> {
@@ -188,7 +183,8 @@ export interface FilterEditorProps<V> {
   label: string
 }
 
-interface CustomFilterSpecBase<V> {
+/** A column with its own editor, chip text, URL encoding and server condition. */
+export interface CustomFilterSpec<V = unknown> {
   /** Semantic entity or content kind, used to choose labels and rendering. */
   kind: "custom"
   field?: string
@@ -202,26 +198,12 @@ interface CustomFilterSpecBase<V> {
   decode: (raw: string) => V | null
   /** The same semantics as the server, for fully loaded local data. */
   matches?: (cellValue: unknown, value: V, context: FilterTimeContext) => boolean
+  /** Returns the column's server condition for a value, or null to send nothing. */
+  toCondition: FilterConditionFn<V>
 }
 
-/** A custom column's server mapping: `toCondition`, or the deprecated `toWhere`. */
-export type CustomFilterConditionSpec<V> =
-  | {
-      /** Returns the column's server condition for a value, or null to send nothing. */
-      toCondition: FilterConditionFn<V>
-      toWhere?: never
-    }
-  | {
-      /** @deprecated Renamed to `toCondition`; this alias will be removed in the next release. */
-      toWhere: FilterConditionFn<V>
-      toCondition?: never
-    }
-
-/** A column with its own editor, chip text, URL encoding and server condition. */
-export type CustomFilterSpec<V = unknown> = CustomFilterSpecBase<V> & CustomFilterConditionSpec<V>
-
 /** The options `filters.custom` accepts: a custom spec without its `kind`. */
-export type CustomFilterOptions<V = unknown> = Omit<CustomFilterSpecBase<V>, "kind"> & CustomFilterConditionSpec<V>
+export type CustomFilterOptions<V = unknown> = Omit<CustomFilterSpec<V>, "kind">
 
 export type FilterSpec =
   | TextFilterSpec

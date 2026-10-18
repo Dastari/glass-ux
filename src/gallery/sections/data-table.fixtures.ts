@@ -5,7 +5,7 @@
  */
 import type { SortingState } from "@tanstack/react-table"
 
-export type EndpointStatus = "online" | "offline" | "attention" | "error"
+export type EndpointHealth = "online" | "offline" | "attention" | "error"
 
 export interface Endpoint {
   id: string
@@ -22,7 +22,7 @@ export interface Endpoint {
   cpu: number[]
   agentVersion: string
   /** Current operation or connection status. */
-  status: EndpointStatus
+  status: EndpointHealth
   /** Selected assistant model or typed view model. */
   model: string
   memoryGb: number
@@ -145,11 +145,11 @@ function cpuSeries(random: Random, length = 20) {
   return out
 }
 
-function makeEndpoint(random: Random, used: Set<string>, now: number, index: number, forceStatus?: EndpointStatus): Endpoint {
+function makeEndpoint(random: Random, used: Set<string>, now: number, index: number, forceStatus?: EndpointHealth): Endpoint {
   const organisation = weighted(random, ORGANISATIONS.map((org) => [org, org.weight] as const))
   const special = index % 97 === 0 ? (index % 2 ? "SERVER" : "VM") : null
   const name = special ? code(random, used, `${organisation.prefix}-${special}`) : code(random, used, organisation.prefix)
-  const status = forceStatus ?? weighted<EndpointStatus>(random, STATUSES)
+  const status = forceStatus ?? weighted<EndpointHealth>(random, STATUSES)
   const [os, osVersion] = weighted<readonly [string, string]>(random, OPERATING_SYSTEMS)
   const server = os.startsWith("Windows Server")
   const shared = !server && random() < 0.16
@@ -216,7 +216,7 @@ export function generateEndpoints(count = 1284, seed = 20261013, now = Date.now(
 
 /* ── Sorting on the "server" ───────────────────────────────────────────────────── */
 const collator = new Intl.Collator("en-AU", { numeric: true, sensitivity: "base" })
-const STATUS_RANK: Record<EndpointStatus, number> = { error: 0, attention: 1, online: 2, offline: 3 }
+const STATUS_RANK: Record<EndpointHealth, number> = { error: 0, attention: 1, online: 2, offline: 3 }
 const ipValue = (ip: string) => ip.split(".").reduce((sum, part) => sum * 256 + Number(part), 0)
 const lastCpu = (endpoint: Endpoint) => endpoint.cpu[endpoint.cpu.length - 1] ?? -1
 
@@ -320,7 +320,7 @@ export function createEndpointServer(count = 1284) {
       for (let flips = 0; flips < 2 && pool.length; flips++) {
         const index = pool[Math.floor(random() * pool.length)]!
         const current = changes.get(index) ?? endpoints[index]!
-        const status: EndpointStatus = current.status === "online" ? (random() < 0.5 ? "attention" : "offline") : "online"
+        const status: EndpointHealth = current.status === "online" ? (random() < 0.5 ? "attention" : "offline") : "online"
         changes.set(index, {
           ...current,
           status,

@@ -38,8 +38,6 @@ interface Common<V> {
   nullable?: boolean
   /** Returns this column's hand-written server condition, or null to send nothing. */
   toCondition?: FilterConditionFn<V>
-  /** @deprecated Renamed to `toCondition`; this alias will be removed in the next release. */
-  toWhere?: FilterConditionFn<V>
 }
 
 const EMPTY: readonly EmptyOp[] = ["isEmpty", "isNotEmpty"]
@@ -148,6 +146,6 @@ export const filters = {
 
   /** Anything else: the column supplies the editor, summary, URL codec and server mapping. */
   custom<V>(spec: CustomFilterOptions<V>): CustomFilterSpec<V> {
-    return { kind: "custom", ...spec } as CustomFilterSpec<V>
+    return { kind: "custom", ...spec }
   },
 }

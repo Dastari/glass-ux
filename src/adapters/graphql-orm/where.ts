@@ -183,8 +183,7 @@ function uuidWhere(field: string, value: UuidFilterValue): WhereInput {
 
 /** One column's entry in the `And` list, or null to send nothing for it. */
 export function columnWhere(spec: FilterSpec, value: unknown, context: FilterTimeContext): WhereInput | null {
-  // `toWhere` is the deprecated name of `toCondition`.
-  const own = (spec.toCondition ?? spec.toWhere) as ((value: unknown, context: FilterTimeContext) => WhereInput | null) | undefined
+  const own = spec.toCondition as ((value: unknown, context: FilterTimeContext) => WhereInput | null) | undefined
   if (spec.kind === "custom") return own ? own(value, context) : null
   if (own) return own(value, context)
   switch (spec.kind) {
@@ -213,7 +212,7 @@ type Columns<T extends RowData> = readonly DataTableColumn<T>[] | readonly Filte
 export function searchWhere<T extends RowData>(query: string | undefined, spec: DataTableSearch<T> | undefined, columns: Columns<T> = []): WhereInput | null {
   const needle = normalizeSearch(query)
   if (!needle || !spec) return null
-  const own = spec.toCondition ?? spec.toWhere
+  const own = spec.toCondition
   if (own) return own(needle)
   const fields = searchFields(spec, columns)
   return fields.length ? { Or: fields.map(({ field }) => on(field, { Contains: needle })) } : null

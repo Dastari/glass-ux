@@ -1,6 +1,4 @@
 export {
-  POPUP_COLLISION_PADDING,
-  POPUP_OFFSET,
   Select,
   flattenOptions,
   type SelectGroup,

@@ -5,19 +5,6 @@ import { cx } from "../../lib/cx.js"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 
-/**
- * Gap between a field and its popup, in px, at `--ui-scale: 1`.
- * @deprecated Ignores `--ui-scale`. Library popups now measure `--popup-offset`; this constant
- * remains for consumers that positioned their own popups with it.
- */
-export const POPUP_OFFSET = 6
-/**
- * Distance a popup keeps from the viewport edge, in px, at `--ui-scale: 1`.
- * @deprecated Ignores `--ui-scale`. Library popups now measure `--popup-collision`; this
- * constant remains for consumers that positioned their own popups with it.
- */
-export const POPUP_COLLISION_PADDING = 8
-
 export type SelectSize = "sm" | "md" | "lg"
 
 export interface SelectOption<V extends string = string> {

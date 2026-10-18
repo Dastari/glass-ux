@@ -342,9 +342,12 @@ export function TagInput({
             )
           )}
           {hidden.length > 0 ? (
-            <span className="fa-chip" data-overflow="" title={hidden.join(", ")}>
-              <span className="fa-chip-label" aria-label={`${hidden.length} more: ${hidden.join(", ")}`}>
+            <span className="fa-chip" data-overflow="" title={hidden.map(data.labelOf).join(", ")}>
+              <span className="fa-chip-label" aria-hidden>
                 +{hidden.length}
+              </span>
+              <span className="sr-only">
+                {hidden.length} more: {hidden.map(data.labelOf).join(", ")}
               </span>
             </span>
           ) : null}

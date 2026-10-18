@@ -202,8 +202,11 @@ export function MultiSelect<V extends string = string>({
           ))}
           {hidden.length > 0 ? (
             <span className="fa-chip" data-overflow="" title={hidden.map(data.labelOf).join(", ")}>
-              <span className="fa-chip-label" aria-label={`${hidden.length} more: ${hidden.map(data.labelOf).join(", ")}`}>
+              <span className="fa-chip-label" aria-hidden>
                 +{hidden.length}
+              </span>
+              <span className="sr-only">
+                {hidden.length} more: {hidden.map(data.labelOf).join(", ")}
               </span>
             </span>
           ) : null}

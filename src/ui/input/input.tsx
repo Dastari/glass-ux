@@ -24,9 +24,13 @@ export interface InputProps extends Omit<BaseInput.Props, "className" | "size" |
   shortcut?: string
   /** Any other trailing content (a status, a small action). */
   trailing?: ReactNode
-  /** Show a clear button while the field has a value. */
+  /**
+   * Show a clear button while the field has a value. Escape also clears a filled field (and
+   * is then not propagated, so an enclosing dialog stays open); the button itself is a
+   * pointer affordance outside the tab order.
+   */
   clearable?: boolean
-  /** Called after the clear button empties the field. */
+  /** Called after the clear button or Escape empties the field. */
   onClear?: () => void
   /** Invalid outside a Field (inside a Field, set `error` on the Field instead). */
   invalid?: boolean
@@ -68,6 +72,7 @@ export function Input({
   disabled,
   revealed: revealedProp,
   onRevealedChange,
+  onKeyDown,
   ...rest
 }: InputProps) {
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -126,6 +131,16 @@ export function Input({
         readOnly={readOnly}
         disabled={disabled}
         aria-invalid={invalid || undefined}
+        onKeyDown={(event) => {
+          onKeyDown?.(event)
+          if (!clearable || readOnly || disabled || event.defaultPrevented || event.key !== "Escape") return
+          const input = event.currentTarget
+          if (input.value === "") return
+          event.preventDefault()
+          event.stopPropagation()
+          setNativeValue(input, "")
+          onClear?.()
+        }}
         onValueChange={(next, details) => {
           setInnerFilled(next !== "")
           onValueChange?.(next, details)
@@ -167,7 +182,7 @@ export interface SearchFieldProps extends Omit<InputProps, "type" | "icon" | "cl
  * Search box: magnifier, clear button while filled, Esc clears, optional ⌘K hint for the
  * top bar. Filtering lists, tables and the command palette all use this one field.
  */
-export function SearchField({ onKeyDown, placeholder = "Search", ...rest }: SearchFieldProps) {
+export function SearchField({ placeholder = "Search", ...rest }: SearchFieldProps) {
   return (
     <Input
       {...rest}
@@ -177,16 +192,6 @@ export function SearchField({ onKeyDown, placeholder = "Search", ...rest }: Sear
       placeholder={placeholder}
       autoComplete="off"
       spellCheck={false}
-      onKeyDown={(event) => {
-        onKeyDown?.(event)
-        if (event.defaultPrevented || event.key !== "Escape") return
-        const input = event.currentTarget
-        if (input.value === "") return
-        event.preventDefault()
-        event.stopPropagation()
-        setNativeValue(input, "")
-        rest.onClear?.()
-      }}
     />
   )
 }

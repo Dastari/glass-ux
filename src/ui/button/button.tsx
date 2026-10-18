@@ -65,6 +65,13 @@ export interface ButtonProps extends Omit<ComponentProps<typeof BaseButton>, "cl
    * reason is reachable by hover, focus and screen readers.
    */
   disabledReason?: string
+  /**
+   * Polite screen-reader announcement made when `status` settles from `pending` to
+   * `success` or `error`. Defaults to `successLabel`/`errorLabel`, then "Done"/"Failed".
+   * Pass `false` when the host announces the outcome itself. While `status` is set the
+   * visually hidden live region stays mounted beside the button and adds no geometry.
+   */
+  statusAnnouncement?: { success?: ReactNode; error?: ReactNode } | false
 }
 
 /**
@@ -90,6 +97,7 @@ export function Button({
   shortcut,
   disabledReason,
   focusableWhenDisabled,
+  statusAnnouncement,
   ...rest
 }: ButtonProps) {
   const hasLabel = children !== undefined && children !== null && children !== false
@@ -99,6 +107,13 @@ export function Button({
   const busy = active === "pending"
   const ariaLabel = rest["aria-label"]
   const isDisabled = Boolean(disabled || disabledReason)
+  const settled = useSettledStatus(active)
+  const announcement =
+    statusAnnouncement === false || !settled
+      ? null
+      : settled === "success"
+        ? (statusAnnouncement?.success ?? successLabel ?? "Done")
+        : (statusAnnouncement?.error ?? errorLabel ?? "Failed")
 
   if (import.meta.env.DEV && iconOnly && !ariaLabel) {
     console.error("Button: an icon-only button needs an aria-label (it also becomes its tooltip).")
@@ -145,12 +160,36 @@ export function Button({
   )
 
   const content = disabledReason ?? (tooltip === false ? null : (tooltip ?? (iconOnly ? ariaLabel : null)))
-  if (!content) return button
-  return (
+  const control = content ? (
     <Tooltip content={content} shortcut={shortcut}>
       {button}
     </Tooltip>
+  ) : (
+    button
   )
+  // A sibling, not a descendant: text inside the button would join its accessible name.
+  // The fragment shape stays the same when `status` toggles so the button is never remounted.
+  return (
+    <>
+      {control}
+      {tracksStatus && statusAnnouncement !== false ? (
+        <span className="sr-only fa-btn-live" aria-live="polite">
+          {announcement}
+        </span>
+      ) : null}
+    </>
+  )
+}
+
+/** The outcome a pending action settled on; cleared when the button rests or runs again. */
+function useSettledStatus(status: ButtonStatus): "success" | "error" | null {
+  const [settled, setSettled] = useState<"success" | "error" | null>(null)
+  const [previous, setPrevious] = useState(status)
+  if (previous !== status) {
+    setPrevious(status)
+    setSettled(status === "success" || status === "error" ? (previous === "pending" ? status : null) : null)
+  }
+  return settled
 }
 
 /**

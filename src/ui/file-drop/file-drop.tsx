@@ -1,9 +1,10 @@
 import { Field as BaseField } from "@base-ui/react/field"
-import { useRef, useState, type ComponentProps, type DragEvent, type ReactNode } from "react"
+import { useLayoutEffect, useRef, useState, type ComponentProps, type DragEvent, type ReactNode } from "react"
 import { IconClose, IconFile, IconUpload } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { Button } from "../button/index.js"
 import { Progress } from "../progress/index.js"
+import { TruncatedText } from "../truncated-text/index.js"
 import { describeAccept, formatBytes, screenFiles, type FileRejection } from "./files.js"
 
 export interface FileDropProps {
@@ -155,8 +156,50 @@ export interface FileRowProps extends Omit<ComponentProps<"li">, "children"> {
   onRemove?: () => void
 }
 
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
+
+/**
+ * Where focus goes when a focused row leaves the list: the next row's remove button (or row),
+ * then the previous one, then the drop zone's file input in the same container.
+ */
+function focusAfterRemoval(row: HTMLElement) {
+  const control = (item: Element | null) =>
+    item instanceof HTMLElement ? (item.querySelector<HTMLElement>("[data-file-remove]") ?? null) : null
+  const list = row.parentElement
+  const drop = list?.parentElement?.querySelector<HTMLElement>(".fa-file-drop-input:not(:disabled)")
+  const target = control(row.nextElementSibling) ?? control(row.previousElementSibling) ?? drop
+  target?.focus()
+}
+
+/** The outcome of an upload, kept in an always-mounted polite live region. */
+function useUploadAnnouncement(name: string, status: FileStatus, error?: string) {
+  const [announcement, setAnnouncement] = useState("")
+  const [previous, setPrevious] = useState(status)
+  if (previous !== status) {
+    setPrevious(status)
+    setAnnouncement(
+      status === "done" ? `${name} uploaded` : status === "error" ? `${name} failed: ${error ?? "Upload failed"}` : ""
+    )
+  }
+  return announcement
+}
+
 /** One file in a FileList: name, size and state, a progress bar of fixed height, remove. */
-export function FileRow({ name, size, status = "done", progress, error, onRemove, className, ...rest }: FileRowProps) {
+export function FileRow({ name, size, status = "done", progress, error, onRemove, className, ref, ...rest }: FileRowProps) {
+  const rowRef = useRef<HTMLLIElement | null>(null)
+  const setRow = (node: HTMLLIElement | null) => {
+    rowRef.current = node
+    if (typeof ref === "function") ref(node)
+    else if (ref) ref.current = node
+  }
+  const announcement = useUploadAnnouncement(name, status, error)
+  // Removing the focused row would drop focus to the document: hand it to a neighbour first.
+  useIsomorphicLayoutEffect(() => {
+    const row = rowRef.current
+    return () => {
+      if (row && row.contains(document.activeElement)) focusAfterRemoval(row)
+    }
+  }, [])
   const value = status === "done" ? 100 : status === "queued" ? 0 : (progress ?? null)
   const state =
     status === "uploading"
@@ -169,19 +212,15 @@ export function FileRow({ name, size, status = "done", progress, error, onRemove
           ? "Uploaded"
           : null
   return (
-    <li {...rest} className={cx("fa-file-row", className)} data-status={status}>
+    <li {...rest} ref={setRow} className={cx("fa-file-row", className)} data-status={status}>
       <span className="fa-file-row-icon" aria-hidden>
         <IconFile />
       </span>
       <div className="fa-file-row-main">
         <div className="fa-file-row-head">
-          <span className="fa-file-row-name" title={name}>
-            {name}
-          </span>
+          <TruncatedText className="fa-file-row-name">{name}</TruncatedText>
           {status === "error" ? (
-            <span className="fa-file-row-error" title={error}>
-              {error ?? "Upload failed"}
-            </span>
+            <TruncatedText className="fa-file-row-error">{error ?? "Upload failed"}</TruncatedText>
           ) : (
             <span className="fa-file-row-meta" data-numeric>
               {formatBytes(size)}
@@ -199,8 +238,18 @@ export function FileRow({ name, size, status = "done", progress, error, onRemove
         />
       </div>
       {onRemove ? (
-        <Button variant="ghost" size="sm" icon={<IconClose />} aria-label={`Remove ${name}`} onClick={onRemove} />
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<IconClose />}
+          aria-label={`Remove ${name}`}
+          data-file-remove=""
+          onClick={onRemove}
+        />
       ) : null}
+      <span className="sr-only" aria-live="polite">
+        {announcement}
+      </span>
     </li>
   )
 }

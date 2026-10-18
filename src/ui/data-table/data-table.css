@@ -1285,8 +1285,9 @@
     }
   }
 
-  /* The live region for reorder announcements: read, not seen. */
-  .fa-dt-announcer {
+  /* Read, not seen: the live region for reorder announcements and the grip column's name. */
+  .fa-dt-announcer,
+  .fa-dt-sr {
     position: absolute;
     width: var(--border-width);
     height: var(--border-width);

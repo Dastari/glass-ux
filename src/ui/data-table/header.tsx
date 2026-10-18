@@ -194,7 +194,12 @@ function HeaderView({
   const multi = sorting.length > 1
   return (
     <div role="row" className="fa-dt-row fa-dt-head-row" aria-rowindex={1}>
-      {reorderable ? <div role="columnheader" className="fa-dt-th fa-dt-grip" aria-label="Row order" /> : null}
+      {reorderable ? (
+        <div role="columnheader" className="fa-dt-th fa-dt-grip">
+          {/* Named in text, not aria-label: a header needs content (axe empty-table-header). */}
+          <span className="fa-dt-sr">Row order</span>
+        </div>
+      ) : null}
       {selectable ? (
         <div role="columnheader" className="fa-dt-th fa-dt-select">
           <SelectCheckbox

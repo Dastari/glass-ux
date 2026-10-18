@@ -346,6 +346,14 @@
     scrollbar-gutter: stable;
     contain: size layout;
   }
+  /* Contain the wheel only on an axis the rows scroll. Chromium treats any scroll container
+     with `contain` as the end of the scroll chain, even one with nothing to scroll: an auto
+     table (overflow-x: auto makes overflow-y compute to auto) or a fill table whose rows fit
+     would swallow the wheel instead of passing it to the page or panel around it. */
+  .fa-dt[data-height="auto"] .fa-dt-scroll,
+  .fa-dt:not([data-scrolled-top], [data-scrolled-bottom]) .fa-dt-scroll {
+    overscroll-behavior-y: auto;
+  }
   .fa-dt[data-height="auto"] .fa-dt-body {
     flex: none;
   }

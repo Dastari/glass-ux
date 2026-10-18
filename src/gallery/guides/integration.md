@@ -51,3 +51,12 @@ page, keep the component styles and override the document defaults in the host s
 
 Import this override after the library styles. The host continues to own page width, layout
 and scrolling; library documentation uses a centered document and its own scrolling region.
+
+## Scrolling regions
+
+Give each scrolling region one owner. A fill `DataTable` (the default), a scrolling `Panel`
+and a window body scroll inside themselves and need a parent with a definite height; flex and
+grid ancestors on the way need `min-height: 0` or a `minmax(0, 1fr)` track. Put a table in
+a pane that already scrolls with `height="auto"`, so the pane scrolls it. Leave `wheel` events
+to the browser on ancestors of these regions: a non-passive listener that calls
+`preventDefault()` stops every scroller inside it.

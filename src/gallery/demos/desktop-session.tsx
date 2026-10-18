@@ -36,7 +36,7 @@ function Desktop() {
         }))}
       />
       <DesktopSession
-        endpoint={E.c106Online}
+        target={E.c106Online}
         state={state}
         userEntity={E.mira}
         startedAt={NOW - 134000}

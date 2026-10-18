@@ -2,8 +2,9 @@
 
 Series identity for two or more series (a single series needs no legend: the title names
 it). Interactive at the full tier: each item toggles its series (aria-pressed); the legend
-is one tab stop and the arrow keys move between items (R11.5). The last visible series
-cannot be hidden, so the chart is never empty by accident.
+is one tab stop and the arrow keys move between items (R11.5). Keyboard focus emphasises
+a series the same way hover does. The last visible series cannot be hidden, so the chart
+is never empty by accident; its tooltip and description say why.
 
 `import { ChartLegend } from "glass-ux/charts"`
 

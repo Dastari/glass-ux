@@ -22,7 +22,7 @@ Markdown input bound to a string form field, with Field label and reserved valid
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
 | maxHeight | `number \| undefined` | See type | no | — | Maximum content height, in CSS pixels; longer documents scroll. Default 480. |
 | minHeight | `number \| undefined` | See type | no | — | Minimum content height, in CSS pixels. Default 160. Toolbar height is additional. |
-| onAttachmentError | `((error: unknown) => void) \| undefined` | See type | no | — | Reports an upload failure to the host; an inline message also explains it. |
+| onAttachmentError | `((error: unknown) => void) \| undefined` | See type | no | — | Reports an upload failure to the host instead of the default toast. The Attach button shows the failure in place, its tooltip carries the message and a status region announces it. |
 | onError | `((error: Error) => void) \| undefined` | See type | no | — | Receives an editing-engine error; the original Markdown remains available in source view. |
 | onViewChange | `((view: RichTextView) => void) \| undefined` | See type | no | — | Called when a person chooses Visual or Markdown. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |

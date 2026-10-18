@@ -11,12 +11,12 @@ A web address. A missing scheme is added on blur ("https://"); the URL is writte
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Layout only (width, grid placement). Applied to the control box. |
-| clearable | `boolean \| undefined` | false, true | no | — | Show a clear button while the field has a value. |
+| clearable | `boolean \| undefined` | false, true | no | — | Show a clear button while the field has a value. Escape also clears a filled field (and is then not propagated, so an enclosing dialog stays open); the button itself is a pointer affordance outside the tab order. |
 | defaultScheme | `string \| undefined` | See type | no | — | Added when the text has none. Default "https". |
 | defaultValue | `string \| undefined` | See type | no | "" | The initial value when using the component without controlling its state. |
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field (inside a Field, set `error` on the Field instead). |
-| onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button empties the field. |
+| onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
 | onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
 | openable | `boolean \| undefined` | false, true | no | true | An "Open in a new tab" button while the value is a valid URL (default true). |

@@ -7,11 +7,11 @@ import {
   NotificationDot,
   STATUS,
   StatusBadge,
-  type EndpointStatus,
+  type StatusKind,
 } from "../../ui/badge/index.js";
 import { Button } from "../../ui/button/index.js";
 
-const STATUSES = Object.keys(STATUS) as EndpointStatus[];
+const STATUSES = Object.keys(STATUS) as StatusKind[];
 
 export default function BadgeSection() {
   return (

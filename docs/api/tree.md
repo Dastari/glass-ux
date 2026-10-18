@@ -1,10 +1,10 @@
 # Tree
 
-The navigation tree (the sidebar's endpoints by organisation). Groups collapse; endpoint
-rows are two-line fa-item rows with a status dot on the device icon. Keyboard: ↑ ↓ move,
+The navigation tree (a sidebar's records grouped by owner). Groups collapse; leaf rows
+are fa-item rows, two lines with a description, with an optional status dot on the icon. Keyboard: ↑ ↓ move,
 → opens or enters a group, ← closes or returns to the parent, Home / End, Enter selects
 (toggles a group), and typing jumps to the next matching name. One row is tabbable (roving
-tabindex). Rows are virtualised, so thousands of endpoints cost only the rows on screen.
+tabindex). Rows are virtualised, so thousands of rows cost only the rows on screen.
 
 `import { Tree } from "glass-ux/tree"`
 

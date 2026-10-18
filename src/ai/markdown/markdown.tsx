@@ -221,6 +221,7 @@ const MarkdownSegment = memo(function MarkdownSegment({
   caret,
   wrapTableCells,
 }: {
+  /** Plain text rendered or copied by the component. */
   text: string;
   caret: boolean;
   wrapTableCells: boolean;

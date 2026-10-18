@@ -12,13 +12,13 @@ A domain ("northstar.example"), lower case; Unicode becomes punycode; a pasted U
 | --- | --- | --- | --- | --- | --- |
 | case | `"lower" \| "preserve" \| undefined` | "lower", "preserve" | no | — | "lower" (default for domains) or "preserve" (default for host names: "NST-C106"). |
 | className | `string \| undefined` | See type | no | — | Layout only (width, grid placement). Applied to the control box. |
-| clearable | `boolean \| undefined` | false, true | no | — | Show a clear button while the field has a value. |
+| clearable | `boolean \| undefined` | false, true | no | — | Show a clear button while the field has a value. Escape also clears a filled field (and is then not propagated, so an enclosing dialog stays open); the button itself is a pointer affordance outside the tab order. |
 | copyable | `boolean \| undefined` | false, true | no | false | A copy button while the value is valid (default false: names are short and visible). |
 | defaultValue | `string \| undefined` | See type | no | "" | The initial value when using the component without controlling its state. |
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | identifier | `boolean \| undefined` | false, true | no | — | Identifiers (addresses, hostnames) get tabular figures (R8.4). Default true. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field (inside a Field, set `error` on the Field instead). |
-| onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button empties the field. |
+| onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
 | onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |

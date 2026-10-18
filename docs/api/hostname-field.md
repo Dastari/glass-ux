@@ -13,7 +13,7 @@ HostnameInput bound to a string form field. Pair it with `hostnameSchema()`.
 | aside | `ReactNode` | See type | no | — | Right side of the label row: a live value readout or a small link. |
 | case | `"lower" \| "preserve" \| undefined` | "lower", "preserve" | no | — | "lower" (default for domains) or "preserve" (default for host names: "NST-C106"). |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| clearable | `boolean \| undefined` | false, true | no | — | Show a clear button while the field has a value. |
+| clearable | `boolean \| undefined` | false, true | no | — | Show a clear button while the field has a value. Escape also clears a filled field (and is then not propagated, so an enclosing dialog stays open); the button itself is a pointer affordance outside the tab order. |
 | copyable | `boolean \| undefined` | false, true | no | — | A copy button while the value is valid (default false: names are short and visible). |
 | fqdn | `boolean \| undefined` | false, true | no | — | Require a fully qualified name with a dot ("printer.northstar.local"). Default false. |
 | hint | `ReactNode` | See type | no | — | The message line's resting text. Only when the format or consequence is not obvious (R2.8). |
@@ -21,7 +21,7 @@ HostnameInput bound to a string form field. Pair it with `hostnameSchema()`.
 | identifier | `boolean \| undefined` | false, true | no | — | Identifiers (addresses, hostnames) get tabular figures (R8.4). Default true. |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
 | netbios | `boolean \| undefined` | false, true | no | false | Warn (as the hint) when a single-label name passes NetBIOS's 15 characters. Default false. |
-| onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button empties the field. |
+| onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |

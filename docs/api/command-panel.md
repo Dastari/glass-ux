@@ -14,7 +14,7 @@ the modal palette, and on its own in the gallery.
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | commands | `readonly PaletteCommand[]` | See type | yes | — | Available slash commands and their typed arguments. |
 | defaultQuery | `string \| undefined` | See type | no | "" | Starting query (gallery specimens). |
-| groupOrder | `readonly string[] \| undefined` | See type | no | DEFAULT_ORDER | Preferred order of command or action groups. |
+| groupOrder | `readonly string[] \| undefined` | See type | no | DEFAULT_ORDER | Preferred order of command or action groups; "*" marks where unlisted groups go. Defaults to `DEFAULT_PALETTE_GROUP_ORDER`. |
 | loading | `boolean \| undefined` | false, true | no | false | A source is still fetching: skeleton rows follow the results. |
 | onRun | `(command: PaletteCommand) => void` | See type | yes | — | Called when run occurs. The callback type specifies its arguments. |
 

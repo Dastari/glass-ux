@@ -12,7 +12,7 @@ Choose an organisation from a complete local hierarchy or a bounded server direc
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | labels | `Partial<SwitcherLabels> \| undefined` | See type | no | — | Display and accessibility labels supplied by the application. |
-| onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called when open change occurs. The callback type specifies its arguments. |
+| onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the next open state when the popup (or phone sheet) opens or closes, including the close after a choice. Pair with `open` to control it. |
 | onValueChange | `(value: string \| null) => void` | See type | yes | — | A choice was made (also when it is the current one: the caller may ignore it). |
 | open | `boolean \| undefined` | false, true | no | — | Controlled open state, so a palette command or a shortcut can open it. |
 | organisations | `readonly O[]` | See type | yes | — | Complete local hierarchy, or the loaded flat server results when remote is supplied. |

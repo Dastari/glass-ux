@@ -329,7 +329,7 @@ export interface SearchTriggerProps extends Omit<
   placeholder?: string;
   /** Opens from anywhere (R11.5). Default mod+k. */
   shortcut?: string;
-  /** Called when open occurs. The callback type specifies its arguments. */
+  /** Called when the person clicks the trigger or presses `shortcut` anywhere (unless a palette host already handled the key); open the command palette here. */
   onOpen: () => void;
 }
 

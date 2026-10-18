@@ -1,6 +1,6 @@
 # MenuPreview
 
-Actions in fa-item rows: icon, label, shortcut, submenus, toggles and choices — danger last, disabled rows say why.
+Static, non-interactive menu parts that render a menu's appearance in place, for documentation and previews.
 
 `import { MenuPreview } from "glass-ux/menu"`
 

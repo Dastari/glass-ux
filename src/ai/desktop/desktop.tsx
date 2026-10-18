@@ -50,6 +50,8 @@ export interface DesktopSessionProps {
   /** The device or workspace being viewed, as presentation data supplied by the host. Required unless the deprecated `endpoint` is given. */
   target?: EntityRef;
   /**
+   * The device or workspace being viewed, under its former name.
+   *
    * @deprecated Use `target`. Read only when `target` is absent.
    */
   endpoint?: EntityRef;
@@ -75,16 +77,16 @@ export interface DesktopSessionProps {
   pendingAction?: {
     label: string;
     effect: string;
-    /** Called when approve occurs. The callback type specifies its arguments. */
+    /** Called from Approve once; the button shows pending until the promise settles. Without it the button resolves immediately. */
     onApprove?: () => Promise<unknown>;
-    /** Called when deny occurs. The callback type specifies its arguments. */
+    /** Called from Deny; the button shows pending until the promise settles. Without it the button resolves immediately. */
     onDeny?: () => Promise<unknown>;
   };
-  /** Called when stop occurs. The callback type specifies its arguments. */
+  /** Called from Stop, shown in every state until the session has ended, expired or failed. */
   onStop?: () => void;
-  /** Called when take over occurs. The callback type specifies its arguments. */
+  /** Called from Take over, shown while the assistant is `controlling` or `awaiting-action`. */
   onTakeOver?: () => void;
-  /** Called when resume occurs. The callback type specifies its arguments. */
+  /** Called from Resume (`paused`) or Hand back to Assistant (`human`). */
   onResume?: () => void;
 }
 

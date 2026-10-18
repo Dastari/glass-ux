@@ -240,7 +240,7 @@ describe("search agrees with the server", () => {
   it("follows a custom mapping's own matches", () => {
     const prefix: DataTableSearch<Row> = {
       fields: [],
-      toWhere: (query) => ({ Hostname: { StartsWith: query } }),
+      toCondition: (query) => ({ Hostname: { StartsWith: query } }),
       matches: (row, query) => row.hostname !== null && row.hostname.toLowerCase().startsWith(query.toLowerCase()),
     }
     const rows = fixtures(now())

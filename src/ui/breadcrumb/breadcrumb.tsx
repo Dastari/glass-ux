@@ -38,7 +38,7 @@ export interface CrumbTarget {
   /** Opaque route options, rendered by `renderLink` (RouteBreadcrumb: TanStack link options). */
   link?: object
   href?: string
-  /** Called when select occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person activates the crumb or menu row; used only when neither `link` (with a renderer) nor `href` applies, so the target renders as a button. */
   onSelect?: () => void
 }
 
@@ -123,6 +123,7 @@ export interface BreadcrumbFold {
   anchor?: RefObject<HTMLElement | null>
 }
 
+/** Context through which a host folds itself into the breadcrumb; defaults to `{ folded: false }`. Provide it with a `BreadcrumbFold` value. */
 export const BreadcrumbFoldContext = createContext<BreadcrumbFold>({ folded: false })
 
 export interface BreadcrumbProps {

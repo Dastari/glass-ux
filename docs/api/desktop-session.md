@@ -12,11 +12,11 @@ while the AI holds the screen; nothing else in the conversation competes with th
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| endpoint | `EntityRef \| undefined` | See type | no | — | Endpoint presentation data supplied by the host. |
+| endpoint | `EntityRef \| undefined` | See type | no | — | The device or workspace being viewed, under its former name. |
 | leaseEndsAt | `number \| undefined` | See type | no | — | Unix ms the control lease ends (counts down while controlling). |
-| onResume | `(() => void) \| undefined` | See type | no | — | Called when resume occurs. The callback type specifies its arguments. |
-| onStop | `(() => void) \| undefined` | See type | no | — | Called when stop occurs. The callback type specifies its arguments. |
-| onTakeOver | `(() => void) \| undefined` | See type | no | — | Called when take over occurs. The callback type specifies its arguments. |
+| onResume | `(() => void) \| undefined` | See type | no | — | Called from Resume (`paused`) or Hand back to Assistant (`human`). |
+| onStop | `(() => void) \| undefined` | See type | no | — | Called from Stop, shown in every state until the session has ended, expired or failed. |
+| onTakeOver | `(() => void) \| undefined` | See type | no | — | Called from Take over, shown while the assistant is `controlling` or `awaiting-action`. |
 | pendingAction | `{ label: string; effect: string; onApprove?: () => Promise<unknown>; onDeny?: () => Promise<unknown>; } \| undefined` | See type | no | — | The consequential action waiting for approval (awaiting-action). |
 | reason | `string \| undefined` | See type | no | — | Why it paused, failed or ended, one line. |
 | screen | `ResultImage \| undefined` | See type | no | — | The latest frame. Its box keeps the frame's ratio, so frames never move the layout. |

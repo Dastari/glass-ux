@@ -33,8 +33,8 @@ Read-only (or `direction="from"` for backlinks) it lists the chips in a recessed
 | kinds | `readonly ReferenceKind[]` | See type | yes | — | The kinds that can be linked, in the order results group by. |
 | max | `number \| undefined` | See type | no | — | Most links allowed. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
-| onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when blur occurs. The callback type specifies its arguments. |
-| onValueChange | `((links: ReferenceLink<R>[]) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the search input loses focus, so a form can mark the field touched. |
+| onValueChange | `((links: ReferenceLink<R>[]) => void) \| undefined` | See type | no | — | Called with the full, de-duplicated list of links whenever one is added, removed or given another relation. Pair with `value` to control it; use `defaultValue` otherwise. |
 | placeholder | `string \| undefined` | See type | no | "Type @ to link" | The prompt shown while the value is empty. It does not replace the field’s label. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |

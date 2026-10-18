@@ -168,6 +168,12 @@ function columnVars(
   };
 }
 
+/**
+ * The windowed workspace: the routed `primary` view plus every open window from the
+ * enclosing `WindowManagerProvider`, tiled, floating or maximised, with the dock. On phones
+ * the focused window covers the screen and a switcher lists the rest. Reports its size to the
+ * manager so new windows are placed inside it.
+ */
 export function Workspace({
   primary,
   primaryLabel,
@@ -413,7 +419,7 @@ function PrimaryWindow({
   vars: Record<string, string | number>;
   /** Keeps the item out of the visible layout. */
   hidden: boolean;
-  /** Called when focus occurs. The callback type specifies its arguments. */
+  /** Called on any pointer press or focus inside the primary view (capture phase), so the manager can focus it. */
   onFocus: () => void;
   children: ReactNode;
 }) {

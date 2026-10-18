@@ -25,8 +25,8 @@ Arrow keys step, Shift/Page keys take large steps, Home/End jump to the ends.
 | max | `number \| undefined` | See type | no | 100 | Upper value or visible-item limit, as specified by the type. |
 | min | `number \| undefined` | See type | no | 0 | Lower allowed value. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
-| onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when blur occurs. The callback type specifies its arguments. |
-| onValueChange | `((value: number \| number[]) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when a thumb loses focus, so a form can mark the field touched. |
+| onValueChange | `((value: number \| number[]) => void) \| undefined` | See type | no | — | Called continuously while a thumb is dragged or stepped, with a number for one thumb or an array for a range. Pair with `value` to control it; use `defaultValue` otherwise. |
 | onValueCommitted | `((value: number \| number[]) => void) \| undefined` | See type | no | — | Fires once when the user lets go (or after a keyboard step). |
 | size | `ChoiceSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | step | `number \| undefined` | See type | no | 1 | Increment used by keyboard and stepper interaction. |

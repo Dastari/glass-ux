@@ -60,7 +60,7 @@ export interface SuggestionChipsProps extends Omit<
 > {
   /** Initial or ranked choices offered before a search. */
   suggestions: Suggestion[];
-  /** Called when select occurs. The callback type specifies its arguments. */
+  /** Called with the suggestion whose pill is pressed; the host normally puts its `prompt` in the composer. */
   onSelect: (suggestion: Suggestion) => void;
   /** Centre them (the landing) or start-align them (a scoped pane). */
   align?: "center" | "start";

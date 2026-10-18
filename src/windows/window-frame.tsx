@@ -243,13 +243,13 @@ export interface WindowControlsProps {
   title: string;
   /** Whether the window fills its available workspace. */
   maximised?: boolean;
-  /** Called when pop out occurs. The callback type specifies its arguments. */
+  /** Called when the person presses Pop out. The button is shown only when this is supplied and not `compact`. */
   onPopOut?: () => void;
-  /** Called when minimise occurs. The callback type specifies its arguments. */
+  /** Called when the person presses Minimise. The button is shown only when this is supplied. */
   onMinimise?: () => void;
-  /** Called when toggle maximise occurs. The callback type specifies its arguments. */
+  /** Called when the person presses Maximise or Restore (per `maximised`). The button is shown only when this is supplied and not `compact`. */
   onToggleMaximise?: () => void;
-  /** Called when close occurs. The callback type specifies its arguments. */
+  /** Called when the person presses Close; run close guards before removing the window. The button is shown only when this is supplied. */
   onClose?: () => void;
   /** Popped-out windows offer "Return to workspace" in place of pop-out. */
   onReturn?: () => void;
@@ -317,6 +317,12 @@ function Controls({
   );
 }
 
+/**
+ * The presentational parts of a window: `Root`, `AppBar` (icon, title, scope, actions and
+ * controls), `Body`, `StatusBar` with `StatusItem`, `StatusMeta` and `StatusGroup` (a live
+ * region), and `Controls`. It holds no window state; the workspace and pop-out wire it to
+ * the manager.
+ */
 export const WindowFrame = {
   Root,
   AppBar,

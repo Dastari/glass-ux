@@ -1,6 +1,12 @@
 # TopologyCanvas
 
-A pannable, zoomable tree map: a gateway, its switches and access points, then clients in blocks by kind, with link speeds where known and unknown links dashed.
+A pannable, zoomable network map that lays nodes out as a family tree with clustered blocks,
+with arrow-key navigation between nodes, selection, a right-click node menu, a minimap and
+an optional list view in the same box. It shows a skeleton while `nodes` is undefined.
+
+Keyboard: the arrow keys move between nodes like a family tree, Enter selects, Space
+toggles the selection, Escape clears it, + and − zoom, 0 fits the map, and Shift+F10 opens
+the focused node's menu.
 
 `import { TopologyCanvas } from "glass-ux/topology"`
 
@@ -22,8 +28,8 @@ A pannable, zoomable tree map: a gateway, its switches and access points, then c
 | nodeMenu | `((node: TopologyNode<T>) => TopologyNodeMenu \| undefined) \| undefined` | See type | no | — | The node's ActionSet for right-click. |
 | nodes | `readonly TopologyNode<T>[] \| undefined` | See type | yes | — | undefined while loading: the skeleton shows in the same box. |
 | onOpen | `((node: TopologyNode<T>) => void) \| undefined` | See type | no | — | Double-click (and the caller's Open action): the node's page. |
-| onSelect | `((id: string \| null) => void) \| undefined` | See type | no | — | Called when select occurs. The callback type specifies its arguments. |
-| onViewChange | `((view: TopologyView) => void) \| undefined` | See type | no | — | Called when view change occurs. The callback type specifies its arguments. |
+| onSelect | `((id: string \| null) => void) \| undefined` | See type | no | — | Called with the node id the person selects (click, Enter or Space), or `null` to clear: Space on the selected node, Escape, or a click on empty canvas. Pair with `selectedId` to show the selection. |
+| onViewChange | `((view: TopologyView) => void) \| undefined` | See type | no | — | Called with the view the person switches to from the view toggle in the map's controls; the toggle shows only when this is set. Pair with `view`. |
 | renderNode | `(node: TopologyNode<T>) => ReactNode` | See type | yes | — | The node's tile (an identity's icon tier). Keep it stable (useCallback). |
 | selectedId | `string \| null \| undefined` | See type | no | null | Stable identifier of the selected item. |
 | view | `TopologyView \| undefined` | "map", "list" | no | "map" | Currently selected presentation view. |

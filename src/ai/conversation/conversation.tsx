@@ -40,7 +40,7 @@ export function useConversationLog() {
 }
 
 export interface TurnAnchor {
-  /** Index of the current item. */
+  /** The turn's number: the `index` given to its Turn (its `data-turn`), which the navigator scrolls to. */
   index: number
   /** The prompt, one line, for the navigator's tooltip. */
   preview: string
@@ -321,7 +321,14 @@ export function ConversationLog({
  * The current turn is the accent dash; neighbours of the pointer grow so the target is easy
  * to hit. Each dash names its prompt in a tooltip; arrow keys, Home and End move.
  */
-export function TurnNavigator({ turns, active, onNavigate }: { turns: TurnAnchor[]; active: number; onNavigate: (index: number) => void }) {
+export function TurnNavigator({ turns, active, onNavigate }: {
+  /** One dash per prompt, in order: the turn's `index` (its Turn `index`) and a one-line preview for the tooltip. */
+  turns: TurnAnchor[]
+  /** The `index` of the current turn; its dash is the accent and the one Tab reaches. */
+  active: number
+  /** Called with a turn's `index` (not its position in `turns`) when its dash is clicked or reached with the arrow keys, Home or End. */
+  onNavigate: (index: number) => void
+}) {
   const refs = useRef<Array<HTMLButtonElement | null>>([])
   const [pointer, setPointer] = useState<number | null>(null)
   const move = (event: KeyboardEvent, position: number) => {

@@ -1,6 +1,8 @@
 # Sheet
 
-A glass pane from a screen edge: the inspector (right), the section drawer (left) or a short list of choices (bottom).
+A pane that slides in from a screen edge, built from parts: `Root` (state and `side`),
+`Trigger`, `Popup`, `Header`, `Body` (scrolls), `Footer` and `Close`. Swipe toward the
+edge, Esc or the scrim dismisses it.
 
 `import { Sheet } from "glass-ux/sheet"`
 
@@ -16,8 +18,8 @@ A glass pane from a screen edge: the inspector (right), the section drawer (left
 | children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | defaultOpen | `boolean \| undefined` | false, true | no | — | Opens the uncontrolled overlay initially. |
 | modal | `boolean \| undefined` | false, true | no | — | Whether the overlay traps focus and makes outside content inert. |
-| onOpenChange | `((open: boolean, details: DialogChangeDetails) => void) \| undefined` | See type | no | — | Called when open change occurs. The callback type specifies its arguments. |
-| onOpenChangeComplete | `((open: boolean) => void) \| undefined` | See type | no | — | Called when open change complete occurs. The callback type specifies its arguments. |
+| onOpenChange | `((open: boolean, details: DialogChangeDetails) => void) \| undefined` | See type | no | — | Called with the next open state and Base UI change details (the reason; `details.cancel()` keeps it open) when the trigger opens it or a swipe, Esc, the scrim or a close control dismisses it. Pair with `open` to control it. |
+| onOpenChangeComplete | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the final open state once the slide-in or slide-out animation has finished. |
 | open | `boolean \| undefined` | false, true | no | — | Controls whether the overlay is open. |
 | side | `SheetSide \| undefined` | "bottom", "left", "right" | no | "right" | `right` (default): inspector and secondary detail. `left`: the section drawer on tablets and phones. `bottom`: a short list of choices or actions (phone "More"). |
 

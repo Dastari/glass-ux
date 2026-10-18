@@ -41,7 +41,7 @@ Compose the primary application navigation rail from accessible items, separator
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| keys | `string` | See type | yes | — | Stable keys used to identify items. |
-| onTrigger | `() => void` | See type | yes | — | Event callback; the typed signature specifies its arguments. |
+| keys | `string` | See type | yes | — | The two-key sequence, space-separated and case-insensitive ("g m": press G, then M). |
+| onTrigger | `() => void` | See type | yes | — | Called when the person types the sequence outside a text field, without Ctrl, Alt or Meta held. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

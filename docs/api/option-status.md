@@ -13,7 +13,7 @@ a prompt for more characters. Rows are exactly one option tall.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | needsMore | `number \| undefined` | See type | no | 0 | Characters still needed before searching. |
-| onRetry | `(() => void) \| undefined` | See type | no | — | Called when retry occurs. The callback type specifies its arguments. |
+| onRetry | `(() => void) \| undefined` | See type | no | — | Called when Retry is pressed in the error row. Without it the error row has no Retry button. |
 | status | `SearchStatus` | "idle", "error", "loading", "refreshing" | yes | — | Current operation or connection status. |
 | twoLine | `boolean \| undefined` | false, true | no | false | Two-line rows: the skeleton matches them. |
 

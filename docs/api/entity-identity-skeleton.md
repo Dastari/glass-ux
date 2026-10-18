@@ -1,6 +1,6 @@
 # EntityIdentitySkeleton
 
-EntityIdentitySkeleton is part of the entity component family. Its typed API defines the data, state and application callbacks it accepts.
+Loading placeholder with the same boxes as the loaded identity at each tier; with `tier="auto"` (default) it measures its container like EntityIdentity. Also available as `EntityIdentity.Skeleton`.
 
 `import { EntityIdentitySkeleton } from "glass-ux/entity"`
 

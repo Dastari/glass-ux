@@ -19,7 +19,6 @@ import type {
   DateStorage,
   EmptyOp,
   FilterOption,
-  FilterTimeContext,
   NumberFilterSpec,
   NumberOp,
   OptionsFilterSpec,
@@ -28,7 +27,8 @@ import type {
   TextOp,
   UuidFilterSpec,
   UuidOp,
-  WhereInput,
+  FilterConditionFn,
+  CustomFilterOptions,
 } from "./types.js"
 import type { OptionSource } from "../../combobox/index.js"
 
@@ -36,7 +36,10 @@ interface Common<V> {
   field: string
   label?: string
   nullable?: boolean
-  toWhere?: (value: V, context: FilterTimeContext) => WhereInput | null
+  /** Returns this column's hand-written server condition, or null to send nothing. */
+  toCondition?: FilterConditionFn<V>
+  /** @deprecated Renamed to `toCondition`; this alias will be removed in the next release. */
+  toWhere?: FilterConditionFn<V>
 }
 
 const EMPTY: readonly EmptyOp[] = ["isEmpty", "isNotEmpty"]
@@ -63,6 +66,7 @@ export const DEFAULT_DATE_PRESETS: readonly DatePresetValue[] = [
   { op: "future" },
 ]
 
+/** Builders for column filter specs (`filters.text`, `options`, `number`, `date`, `boolean`, `uuid`, `custom`); each fills defaults such as `nullable: true` and the kind's operators. */
 export const filters = {
   /** An identifier or free text, through a StringFilter. */
   text(options: Common<TextFilterValue> & { operators?: readonly TextOp[]; placeholder?: string }): TextFilterSpec {
@@ -143,7 +147,7 @@ export const filters = {
   },
 
   /** Anything else: the column supplies the editor, summary, URL codec and server mapping. */
-  custom<V>(spec: Omit<CustomFilterSpec<V>, "kind">): CustomFilterSpec<V> {
-    return { kind: "custom", ...spec }
+  custom<V>(spec: CustomFilterOptions<V>): CustomFilterSpec<V> {
+    return { kind: "custom", ...spec } as CustomFilterSpec<V>
   },
 }

@@ -51,10 +51,12 @@ export function setRelativeDayLimit(days: number | undefined) {
   maxRelativeDays = days !== undefined && Number.isInteger(days) && days > 0 ? days : MAX_DAYS
 }
 
+/** Joins values with commas for the URL, escaping commas and backslashes inside a value with a backslash. */
 export function encodeList(values: readonly string[]) {
   return values.map((value) => value.replaceAll("\\", "\\\\").replaceAll(",", "\\,")).join(",")
 }
 
+/** Splits a comma-separated list made by `encodeList`, unescaping values; drops empty and duplicate values and keeps at most `MAX_LIST_VALUES`. */
 export function decodeList(text: string): string[] {
   const values: string[] = []
   let current = ""
@@ -96,6 +98,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /* ── Encode ──────────────────────────────────────────────────────────────────── */
 
+/** Encodes a column's filter value as its URL search-param text (`contains:8CC`, `between:20..80`, `recent:7`); a custom filter uses its own `encode`. Does not validate the value. */
 export function encodeFilter(spec: FilterSpec, value: unknown): string {
   if (spec.kind === "custom") return spec.encode(value)
   const filter = value as { op: string; value?: unknown; values?: string[]; min?: number; max?: number; days?: number; at?: string; start?: string; end?: string }

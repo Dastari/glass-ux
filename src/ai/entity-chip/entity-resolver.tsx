@@ -83,10 +83,15 @@ const NOOP: EntityResolver = {
 const ResolverContext = createContext<EntityResolver>(NOOP)
 
 /** Connect entity kinds, names, destinations, previews, search and actions to host-defined adapters. */
-export function EntityResolverProvider({ resolver, children }: { resolver: EntityResolver; children: ReactNode }) {
+export function EntityResolverProvider({ resolver, children }: {
+  /** The host adapter for entity kinds, previews, actions, navigation, search and rendering, read by every entity chip, link and picker below. */
+  resolver: EntityResolver
+  children: ReactNode
+}) {
   return <ResolverContext value={resolver}>{children}</ResolverContext>
 }
 
+/** The EntityResolver from the nearest EntityResolverProvider; without one, a no-op resolver with no kinds whose `open` and `openWindow` only log. */
 export function useEntityResolver() {
   return useContext(ResolverContext)
 }

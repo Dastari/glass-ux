@@ -51,9 +51,9 @@ export type DataTableDensity = "comfortable" | "compact";
 export interface CursorPagination {
   hasNext: boolean;
   hasPrevious: boolean;
-  /** Called when next occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person presses Next page (only while `hasNext`). */
   onNext: () => void;
-  /** Called when previous occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person presses Previous page (only while `hasPrevious`). */
   onPrevious: () => void;
   /** Return to the first page (shown when provided). */
   onFirst?: () => void;
@@ -106,7 +106,7 @@ export interface DataTableProps<T extends RowData> {
   refetching?: boolean;
   /** Shown in the body box with Retry. A string should say what failed and what to do. */
   error?: ReactNode;
-  /** Called when retry occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person presses Retry in the error state; the button shows only when this is set. */
   onRetry?: () => void;
   /**
    * One line for an empty result with nothing searched or filtered (R2.5), e.g. "No rows
@@ -180,7 +180,7 @@ export interface DataTableProps<T extends RowData> {
 
   /** Row density for this table. Uncontrolled tables persist the user's choice. */
   density?: DataTableDensity;
-  /** Called when density change occurs. The callback type specifies its arguments. */
+  /** Called with the density the person picks. Pair with `density` to control it; without `density` the table also stores the choice in its preferences. */
   onDensityChange?: (density: DataTableDensity) => void;
   /** "fill" (default) fills a parent with a definite height and scrolls inside. */
   height?: "fill" | "auto";
@@ -285,7 +285,7 @@ export interface DataTableFilterToggle {
   label: string;
   /** Controlled checked state. The type specifies whether mixed state is supported. */
   checked: boolean;
-  /** Called when checked change occurs. The callback type specifies its arguments. */
+  /** Called with the new state when the person toggles the menu row, and with `false` when they remove its chip or clear all filters. Pair with `checked`. */
   onCheckedChange: (checked: boolean) => void;
   /** The chip while on: "Including hidden". Without it, the toggle shows no chip. */
   summary?: string;

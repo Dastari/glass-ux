@@ -7,6 +7,10 @@ import { createFormHookContexts } from "@tanstack/react-form";
 import type { FieldProps } from "../field/index.js";
 import { firstError } from "./validation.js";
 
+/**
+ * TanStack Form's hook contexts for this kit: `fieldContext` and `formContext` carry the bound
+ * field and form; `useFieldContext` and `useFormContext` read them inside a field or form component.
+ */
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts();
 

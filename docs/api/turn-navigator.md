@@ -12,8 +12,8 @@ to hit. Each dash names its prompt in a tooltip; arrow keys, Home and End move.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| active | `number` | See type | yes | — | Marks the current destination or active choice. |
-| onNavigate | `(index: number) => void` | See type | yes | — | Event callback; the typed signature specifies its arguments. |
-| turns | `TurnAnchor[]` | See type | yes | — | Conversation turns represented by the view. |
+| active | `number` | See type | yes | — | The `index` of the current turn; its dash is the accent and the one Tab reaches. |
+| onNavigate | `(index: number) => void` | See type | yes | — | Called with a turn's `index` (not its position in `turns`) when its dash is clicked or reached with the arrow keys, Home or End. |
+| turns | `TurnAnchor[]` | See type | yes | — | One dash per prompt, in order: the turn's `index` (its Turn `index`) and a one-line preview for the tooltip. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

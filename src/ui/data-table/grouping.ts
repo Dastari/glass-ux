@@ -44,8 +44,10 @@ export interface DataTableGroupState {
   shown: Record<string, number>
 }
 
+/** Group state with every group expanded and none showing extra rows. */
 export const EMPTY_GROUP_STATE: DataTableGroupState = { collapsed: [], shown: {} }
 
+/** Rows a group shows before "Show more" when `grouping.pageSize` is not set. */
 export const DEFAULT_GROUP_PAGE_SIZE = 25
 
 /** One line of a grouped body: a group header, a row, or a group's "Show more". */
@@ -167,6 +169,7 @@ export function encodeCollapsed(collapsed: readonly string[]) {
   return collapsed.length ? collapsed.map(escapeId).join(",") : undefined
 }
 
+/** Reads the `collapsed` search param made by `encodeCollapsed` into unique group ids; anything but a string gives `[]`. */
 export function decodeCollapsed(value: unknown): string[] {
   if (typeof value !== "string") return []
   return [...new Set(splitList(value))]
@@ -178,6 +181,7 @@ export function encodeShown(shown: Readonly<Record<string, number>>) {
   return entries.length ? entries.map(([id, count]) => `${escapeId(id)}:${count}`).join(",") : undefined
 }
 
+/** Reads the `shown` search param made by `encodeShown`; keeps only pairs with a non-empty id and a whole count from 1 to 10,000. */
 export function decodeShown(value: unknown): Record<string, number> {
   if (typeof value !== "string" && typeof value !== "number") return {}
   const out: Record<string, number> = {}

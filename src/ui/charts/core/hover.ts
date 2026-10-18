@@ -7,11 +7,12 @@ import { useState, useSyncExternalStore } from "react"
 
 export interface Store<T> {
   get: () => T
-  /** Shared action definitions used by menus, headers and the command palette. */
+  /** Replaces the value and notifies subscribers; does nothing when `next` is the same value (`Object.is`). */
   set: (next: T) => void
   subscribe: (listener: () => void) => () => void
 }
 
+/** Creates a store holding `initial`; subscribers are notified only when `set` receives a different value. */
 export function createStore<T>(initial: T): Store<T> {
   let value = initial
   const listeners = new Set<() => void>()
@@ -31,6 +32,7 @@ export function createStore<T>(initial: T): Store<T> {
   }
 }
 
+/** Subscribes the component to `store` and returns its current value, re-rendering when it changes. */
 export function useStoreValue<T>(store: Store<T>): T {
   return useSyncExternalStore(store.subscribe, store.get, store.get)
 }
@@ -50,6 +52,7 @@ export interface Hover {
 
 export type HoverStore = Store<Hover | null>
 
+/** Returns a hover store, created once per component and starting at `null` (nothing hovered). */
 export function useHoverStore(): HoverStore {
   const [store] = useState(() => createStore<Hover | null>(null))
   return store

@@ -1,6 +1,6 @@
 # WindowScopeProvider
 
-Everything in the workspace is a window: tiled, floating, snapped, maximised, minimised to the dock or popped out.
+Supplies the current scope and how to draw a scope to the window layer's scope chips and dock groups. A null or undefined `value` turns scope labelling off.
 
 `import { WindowScopeProvider } from "glass-ux/windows"`
 

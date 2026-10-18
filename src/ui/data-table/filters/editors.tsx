@@ -201,6 +201,7 @@ export function BooleanEditor({ spec, label, value, onChange, onCommit }: Editor
 
 /* ── Dispatcher ──────────────────────────────────────────────────────────────── */
 
+/** Renders the editor for a column's filter kind (text, number, date, boolean, options, uuid or the column's custom editor). */
 export function FilterEditor(props: EditorProps<FilterSpec, unknown>) {
   const { spec } = props
   switch (spec.kind) {

@@ -1,6 +1,6 @@
 # FilterEditor
 
-Server-side sorting and pages, columns that fold by priority into “+N” and then cards, resizable and pinned columns, bulk actions and live rows.
+Renders the editor for a column's filter kind (text, number, date, boolean, options, uuid or the column's custom editor).
 
 `import { FilterEditor } from "glass-ux/data-table"`
 

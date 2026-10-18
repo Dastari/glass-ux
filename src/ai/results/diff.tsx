@@ -12,7 +12,10 @@ const SIGN = { add: "+", remove: "−", context: " " } as const
  * danger tint, added lines on the success tint, the sign in the gutter so the change reads
  * without colour too. The target is a context chip; the counts are the data line.
  */
-export function ResultDiff({ result }: { result: DiffResult }) {
+export function ResultDiff({ result }: {
+  /** The diff result: `lines` in order (added, removed or context), an optional `target` entity shown as a chip, and the title used in the accessible name. */
+  result: DiffResult
+}) {
   const added = result.lines.filter((line) => line.type === "add").length
   const removed = result.lines.filter((line) => line.type === "remove").length
   const numbered: Array<{ before: number; after: number }> = []

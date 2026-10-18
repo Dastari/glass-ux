@@ -27,12 +27,12 @@ export interface SwatchPickerProps<V extends string = string> {
   /** The chosen swatch. `null` when none is (a custom colour is in use). */
   value?: V | null
   defaultValue?: V
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the chosen swatch's `value` when the person picks one; pressing the current swatch does not deselect it. Pair with `value` to control it. */
   onValueChange?: (value: V) => void
   /** sm 32 for toolbars, md 40 beside fields and segmented controls (default). */
   size?: SwatchPickerSize
   disabled?: boolean
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called with the focus event when focus leaves the whole picker, not when it moves between swatches. For form libraries' touched state. */
   onBlur?: (event: FocusEvent<HTMLDivElement>) => void
   /** Layout only. */
   className?: string

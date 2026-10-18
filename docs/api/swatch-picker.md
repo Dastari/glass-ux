@@ -19,8 +19,8 @@ names it, like a segmented control.
 | defaultValue | `V \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
-| onBlur | `((event: FocusEvent<HTMLDivElement>) => void) \| undefined` | See type | no | — | Called when blur occurs. The callback type specifies its arguments. |
-| onValueChange | `((value: V) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onBlur | `((event: FocusEvent<HTMLDivElement>) => void) \| undefined` | See type | no | — | Called with the focus event when focus leaves the whole picker, not when it moves between swatches. For form libraries' touched state. |
+| onValueChange | `((value: V) => void) \| undefined` | See type | no | — | Called with the chosen swatch's `value` when the person picks one; pressing the current swatch does not deselect it. Pair with `value` to control it. |
 | options | `SwatchOption<V>[]` | See type | yes | — | The available choices, including their values and visible labels. |
 | size | `SwatchPickerSize \| undefined` | "sm", "md" | no | "md" | sm 32 for toolbars, md 40 beside fields and segmented controls (default). |
 | value | `V \| null \| undefined` | See type | no | — | The chosen swatch. `null` when none is (a custom colour is in use). |

@@ -28,8 +28,8 @@ caret. libphonenumber-js loads with the first phone control.
 | invalid | `boolean \| undefined` | false, true | no | — | Marks the control invalid. Pair it with an accessible validation message. |
 | kind | `PhoneKind \| undefined` | "mobile", "any" | no | "any" | Mobile numbers only (placeholder and icon; MobileField and mobileSchema check the type). |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
-| onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when blur occurs. The callback type specifies its arguments. |
-| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the number input loses focus, after its text is reformatted. |
+| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called on each keystroke, paste, country or extension change with the E.164 value (";ext=" appended when there is one), or the text as typed while it cannot be read. Pair with `value` to control it; use `defaultValue` otherwise. |
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | priority | `readonly string[] \| undefined` | See type | no | — | Countries listed first in the picker. Default: the default country, then AU and NZ. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |

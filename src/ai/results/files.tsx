@@ -35,7 +35,10 @@ export function fileType(name: string) {
 }
 
 /** One downloadable file: type glyph, name, size and type, and a download button. */
-export function FileRowItem({ file }: { file: ResultFile }) {
+export function FileRowItem({ file }: {
+  /** The file to list: `name` and `mime` pick the glyph and type, `size` is in bytes, and `href` makes the button a download link. */
+  file: ResultFile
+}) {
   return (
     <li className="fa-ai-file">
       <span className="fa-tile-icon fa-ai-file-icon" aria-hidden>
@@ -62,7 +65,10 @@ export function FileRowItem({ file }: { file: ResultFile }) {
 }
 
 /** Files the agent produced (GlassUxAiShareFile) or collected, ready to download. */
-export function ResultFiles({ result }: { result: FilesResult }) {
+export function ResultFiles({ result }: {
+  /** The files result: each of its `files` becomes a FileRowItem, and the count is the data line. */
+  result: FilesResult
+}) {
   return (
     <ResultFrame result={result} icon={<IconFile />} meta={`${formatNumber(result.files.length)} ${result.files.length === 1 ? "file" : "files"}`}>
       <ul className="fa-ai-files">

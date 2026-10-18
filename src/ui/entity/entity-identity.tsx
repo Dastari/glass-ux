@@ -117,7 +117,7 @@ export interface EntityIdentityProps<T = unknown> extends Omit<HTMLAttributes<HT
   maxActions?: number
   /** Where the identity opens. Click and Enter follow it; `onOpen` intercepts plain clicks. */
   href?: string
-  /** Called when open occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person opens the identity. With `href`, it intercepts plain left clicks (modified clicks follow the link); without it, the title or row becomes a button. */
   onOpen?: () => void
   /** Header and compact title element. Default: h1 for the header, h2 for compact. */
   heading?: EntityHeading
@@ -288,11 +288,11 @@ interface Parts<T> {
   targets: readonly T[]
   maxActions?: number
   href?: string
-  /** Called when open occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person opens the identity. With `href`, it intercepts plain left clicks (modified clicks follow the link); without it, the title or row becomes a button. */
   onOpen?: () => void
   heading?: EntityHeading
   size?: "inline" | "sm"
-  /** Called when remove occurs. The callback type specifies its arguments. */
+  /** Chip only: called with no arguments when the person presses the chip's remove button; a removable chip has no link. */
   onRemove?: () => void
   /** Preview content or its availability. */
   preview?: boolean
@@ -817,6 +817,7 @@ function SkeletonTier({ tier, facts = true, metric, actions, tabs, size = "inlin
   }
 }
 
+/** Loading placeholder with the same boxes as the loaded identity at each tier; with `tier="auto"` (default) it measures its container like EntityIdentity. Also available as `EntityIdentity.Skeleton`. */
 function EntityIdentitySkeleton({ tier = "auto", fill, ...props }: EntityIdentitySkeletonProps) {
   const { ref, tier: resolved, measured } = useAutoTier(fill)
   if (tier !== "auto") return <SkeletonTier {...props} tier={tier} />

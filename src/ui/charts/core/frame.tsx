@@ -37,7 +37,7 @@ export interface ChartCommonProps extends Omit<ComponentProps<"figure">, "childr
   emptyText?: ReactNode
   /** What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". */
   errorText?: ReactNode
-  /** Called when retry occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. */
   onRetry?: () => void
 }
 
@@ -191,7 +191,12 @@ function HeadSkeleton({ tier }: { tier: ChartTier }) {
  * The plot's placeholder: the chart's own shape in the plot's exact box (R9.3), so swapping
  * in the data moves nothing. Built from Skeleton parts; the shimmer is the page's one beat.
  */
-export function PlotSkeleton({ kind, tier }: { kind: ChartKind; tier: ChartTier }) {
+export function PlotSkeleton({ kind, tier }: {
+  /** Chart shape family; picks the placeholder marks. */
+  kind: ChartKind
+  /** Size tier of the box; axes placeholders show only in `full` for line, column, scatter and heatmap charts. */
+  tier: ChartTier
+}) {
   const axes = tier === "full" && (kind === "line" || kind === "column" || kind === "scatter" || kind === "heatmap")
   let marks: ReactNode
   switch (kind) {

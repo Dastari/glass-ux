@@ -62,7 +62,9 @@ export const LATITUDE_RANGE = "Latitude must be between -90 and 90"
 export const LONGITUDE_RANGE = "Longitude must be between -180 and 180"
 export const COORDINATES_EXAMPLE = "Enter a latitude and longitude, such as -42.88334, 147.32688"
 
+/** Whether a number is a finite latitude between -90 and 90 degrees inclusive. */
 export const isLatitude = (value: number) => Number.isFinite(value) && value >= -90 && value <= 90
+/** Whether a number is a finite longitude between -180 and 180 degrees inclusive. */
 export const isLongitude = (value: number) => Number.isFinite(value) && value >= -180 && value <= 180
 
 /** Coordinates inside a map link, or null. */

@@ -36,7 +36,7 @@ export interface InputProps extends Omit<BaseInput.Props, "className" | "size" |
   invalid?: boolean
   /** Password boxes: whether the value shows as text. Leave unset for the box's own toggle. */
   revealed?: boolean
-  /** Called when revealed change occurs. The callback type specifies its arguments. */
+  /** Called with the new state when the show/hide password button is pressed. Pair with `revealed` to control it. */
   onRevealedChange?: (revealed: boolean) => void
 }
 

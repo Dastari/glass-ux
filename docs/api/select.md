@@ -23,8 +23,8 @@ enough to need typing.
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
 | onBlur | `((event: FocusEvent<HTMLButtonElement>) => void) \| undefined` | See type | no | — | Fires when focus leaves the select while it is closed (not when its popup opens). |
-| onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called when open change occurs. The callback type specifies its arguments. |
-| onValueChange | `((value: V \| null) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called with true when the popup opens and false when it closes. |
+| onValueChange | `((value: V \| null) => void) \| undefined` | See type | no | — | Called with the chosen option's value when one is picked. Pair with `value` to control it; use `defaultValue` otherwise. |
 | options | `SelectOptions<V>` | See type | yes | — | The available choices, including their values and visible labels. |
 | placeholder | `string \| undefined` | See type | no | "Choose…" | Shown while nothing is chosen. Name the choice ("Choose an environment"), not "Select…". |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |

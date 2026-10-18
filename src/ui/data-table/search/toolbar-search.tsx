@@ -124,7 +124,7 @@ export interface ToolbarSearchProps {
   /** The toolbar is too narrow for the field: an icon button (or the chip) opens it. */
   narrow: boolean
   expanded: boolean
-  /** Called when expanded change occurs. The callback type specifies its arguments. */
+  /** Called with `true` when the narrow field opens (the button or chip, or a focus request) and `false` when focus leaves it or Escape is pressed in an empty field. Pair with `expanded`. */
   onExpandedChange: (expanded: boolean) => void
   ref?: Ref<HTMLDivElement>
 }

@@ -45,7 +45,9 @@ configureDataTables({ storageKeyPrefix: "my-app.table" });
 ## Keep a manual order in host data
 
 `reorder={{ onReorder }}` adds a grip column (and a grip on cards) for pointer, touch and
-keyboard reordering. The table reports one `DataTableRowMove` per drop: `from`/`to` indexes
+keyboard reordering. From the keyboard, focus a grip and press Space to lift the row, the arrow keys
+to move it, Space to drop it and Escape to cancel; Alt with an arrow key moves a row one place
+without lifting it. The table reports one `DataTableRowMove` per drop: `from`/`to` indexes
 in `rows`, the new `rows`, and `previousId`/`nextId` so a server can store "after X". Update
 local data with `move.rows` or `moveRow(rows, move.from, move.to)`. Return a promise to save
 it: the move shows while pending and reverts, with a toast or your `onError`, on rejection.
@@ -57,8 +59,10 @@ and is not written to the URL.
 ## Adapt the server shape
 
 The table's filter and search state is backend-neutral: each column's `FilterSpec` names the
-server field and, if needed, its own `toWhere` condition. Server adapters are separate,
-optional entries that depend on `glass-ux/data-table`, never the reverse.
+server field and, if needed, its own `toCondition`, which returns a `FilterCondition` (a
+plain JSON object in your server's shape) or null to send nothing. A `DataTableSearch` takes
+the same `toCondition` for its query. Server adapters are separate, optional entries that
+depend on `glass-ux/data-table`, never the reverse.
 
 `glass-ux/adapters/graphql-orm` maps the declared filter state to a GraphQL `Where` shape
 (`toWhere`, `toFilterInput`, `columnWhere` and `searchWhere`) and evaluates a `Where` in
@@ -68,7 +72,9 @@ write an adapter for your API. Set your server's longest relative-day window wit
 `configureDataTables({ maxRelativeDays })`.
 
 Migration: replace `glass-ux/lib/graphql-orm/where` and `glass-ux/lib/graphql-orm/evaluate`
-with `glass-ux/adapters/graphql-orm`; the exported names are unchanged.
+with `glass-ux/adapters/graphql-orm`; the adapter's exported names are unchanged. In core
+specs, `toWhere` is now `toCondition` and the `WhereInput` type is now `FilterCondition`. The
+old names remain as deprecated aliases for one release.
 
 Declare mappings explicitly. A missing server capability should produce a deliberate UI
 choice rather than a filter that silently does nothing. Always apply tenant and access

@@ -22,9 +22,9 @@ export interface EntityOptionListProps {
   active: number;
   /** The selected state or collection. */
   selected: (entity: EntityRef) => boolean;
-  /** Called when pick occurs. The callback type specifies its arguments. */
+  /** Called with the entity the person clicks or presses Enter or Space on; adding or removing the pick is up to the caller. */
   onPick: (entity: EntityRef) => void;
-  /** Called when active occurs. The callback type specifies its arguments. */
+  /** Called with the zero-based index of the row under the pointer. Pair with `active` to move the highlight. */
   onActive: (index: number) => void;
   /** Content shown when there are no matching items. */
   empty?: string;
@@ -103,7 +103,10 @@ export function EntityOptionList({
  * Pick one or more entities: a search field over the application's resolver, the agent's
  * suggestions as the starting list, and the picks as removable chips.
  */
-export function EntityPickerAsk({ ask }: { ask: Ask }) {
+export function EntityPickerAsk({ ask }: {
+  /** The entity ask: the question, the `entityKind` searched through the entity resolver, the agent's `suggestions` and whether `multiple` picks are allowed. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
+  ask: Ask;
+}) {
   const id = useId();
   const resolver = useEntityResolver();
   const { answered, submit, record } = useAskAnswer(ask);

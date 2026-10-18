@@ -80,7 +80,15 @@ export function ChartTooltip({ store, anchor, children }: ChartTooltipProps) {
 }
 
 /** The standard tooltip body: a heading (the x or category), then one row per series. */
-export function TooltipBody({ title, meta, rows, footer }: { title?: ReactNode; meta?: ReactNode; rows: readonly TooltipRow[]; footer?: ReactNode }) {
+export function TooltipBody({ title, meta, rows, footer }: {
+  title?: ReactNode
+  /** Secondary text beside the title in the heading (a time range, a unit). */
+  meta?: ReactNode
+  /** One row per series: swatch, value, label and optional detail, in order. */
+  rows: readonly TooltipRow[]
+  /** Content below the rows (a total, a hint); omitted when empty. */
+  footer?: ReactNode
+}) {
   return (
     <>
       {title || meta ? (

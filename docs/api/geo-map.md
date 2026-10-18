@@ -1,6 +1,8 @@
 # GeoMap
 
-Points with a status anywhere in the world, clustered with a status ring, over a token-themed vector basemap with the home region glowing in the data hue.
+A MapLibre map of status points, framed on a home region, with clustered markers coloured by
+worst status, hover and pinned popups, keyboard navigation between markers and an optional
+list view in the same box. It shows the region silhouette while loading.
 
 `import { GeoMap } from "glass-ux/map"`
 
@@ -20,8 +22,8 @@ Points with a status anywhere in the world, clustered with a status ring, over a
 | list | `ReactNode` | See type | no | — | The list view: the caller's table, with a ViewToggle in its toolbar. |
 | loading | `boolean \| undefined` | false, true | no | false | The points are still loading: the silhouette stays, markers wait. |
 | noun | `MapNoun \| undefined` | See type | no | { one: "site", other: "sites" } | Singular and plural names used in counts and accessible labels. |
-| onSelect | `((point: MapPoint<T> \| null) => void) \| undefined` | See type | no | — | Called when select occurs. The callback type specifies its arguments. |
-| onViewChange | `((view: "map" \| "list") => void) \| undefined` | See type | no | — | Called when view change occurs. The callback type specifies its arguments. |
+| onSelect | `((point: MapPoint<T> \| null) => void) \| undefined` | See type | no | — | Called with the point whose popup the person pins: a click, Enter or Space on its marker, or choosing it from a cluster popup. Hover and focus previews do not call it. Pair with `selectedId` to show the selection. |
+| onViewChange | `((view: "map" \| "list") => void) \| undefined` | See type | no | — | Called with the view the person asks for ("list" or "map") from the view toggle, or "list" from the failure notice when the map cannot start. The toggle shows only when this is set. Pair with `view`. |
 | points | `readonly MapPoint<T>[]` | See type | yes | — | Geographical or chart points. |
 | pulses | `Readonly<Record<string, number>> \| undefined` | See type | no | — | Per point, a counter that changes when its status changes: the marker pulses once. |
 | regions | `readonly MapRegion[] \| undefined` | See type | no | NO_REGIONS | Other regions to outline faintly (the regions that hold points). Defaults to an empty list. |

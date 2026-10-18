@@ -41,6 +41,11 @@ export interface OrgTree<O extends SwitcherOrganisation = SwitcherOrganisation> 
 
 const byName = (a: SwitcherOrganisation, b: SwitcherOrganisation) => a.name.localeCompare(b.name, "en-AU", { sensitivity: "base" })
 
+/**
+ * Builds the organisation tree from a flat list. An organisation whose parent is missing
+ * from the list (or is itself) becomes a root; roots and siblings sort by name; cycles are
+ * drawn once. Descendant lookups are cached.
+ */
 export function buildOrgTree<O extends SwitcherOrganisation>(organisations: readonly O[]): OrgTree<O> {
   const byId = new Map(organisations.map((org) => [org.id, org]))
   const children = new Map<string, O[]>()
@@ -196,6 +201,7 @@ export interface SwitcherLabels {
   organisations: string
 }
 
+/** The switcher's English group and scope labels, used when `labels` is not supplied. */
 export const DEFAULT_SWITCHER_LABELS: SwitcherLabels = {
   all: "All organisations",
   allShort: "All",

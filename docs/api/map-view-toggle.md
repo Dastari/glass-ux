@@ -10,8 +10,8 @@
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| onViewChange | `(view: "map" \| "list") => void` | See type | yes | — | Event callback; the typed signature specifies its arguments. |
+| onViewChange | `(view: "map" \| "list") => void` | See type | yes | — | Called with the view the person switches to. |
 | size | `"sm" \| "md" \| undefined` | "sm", "md" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-| view | `"map" \| "list"` | "map", "list" | yes | — | Currently selected presentation view. |
+| view | `"map" \| "list"` | "map", "list" | yes | — | The view currently shown; the button offers the other one (an icon button on the map, "View as map" in the list). |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

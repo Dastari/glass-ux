@@ -91,6 +91,7 @@ export function DialogClosePart({
   return <BaseDialog.Close className={className} render={render} />
 }
 
+/** Returns how the enclosing dialog renders: `"dialog"` (centred, the default outside any dialog), `"sheet"` (phone bottom sheet) or `"side"`. */
 export function useDialogMode() {
   return useContext(ModeContext)
 }
@@ -100,9 +101,9 @@ export function useDialogMode() {
 export interface DialogRootProps {
   open?: boolean
   defaultOpen?: boolean
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with the next open state and Base UI change details (the reason; `details.cancel()` keeps it open) when the trigger, Esc, an outside press, a close control or a sheet swipe opens or dismisses it. Pair with `open` to control it. */
   onOpenChange?: (open: boolean, details: DialogChangeDetails) => void
-  /** Called when open change complete occurs. The callback type specifies its arguments. */
+  /** Called with the final open state once the open or close animation has finished. */
   onOpenChangeComplete?: (open: boolean) => void
   /** Default true. `false` lets the page stay interactive (rare; prefer a Popover or Sheet). */
   modal?: boolean
@@ -415,6 +416,11 @@ function DialogPreview({
   )
 }
 
+/**
+ * A modal dialog built from parts: `Root` (state; a bottom sheet on phones by default),
+ * `Trigger`, `Popup`, `Header`, `Body` (scrolls), `Footer`, `Title`, `Description` and
+ * `Close`. `Preview` renders the same parts statically for documentation.
+ */
 export const Dialog = {
   Root: DialogRoot,
   Trigger: BaseDialog.Trigger,

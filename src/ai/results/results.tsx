@@ -15,7 +15,10 @@ import { ResultMetrics } from "./metrics.js"
 import { INLINE_ROWS, ResultTable } from "./table.js"
 
 /** Render any tool result by its type. */
-export function ResultBlock({ result }: { result: AiResult }) {
+export function ResultBlock({ result }: {
+  /** The tool result to render; its `type` picks the result component. */
+  result: AiResult
+}) {
   switch (result.type) {
     case "table":
       return <ResultTable result={result} />
@@ -49,7 +52,10 @@ export function ResultBlock({ result }: { result: AiResult }) {
  * picks table, detail, value or redaction, and recognised Glass UX types upgrade to entity
  * cards and lists (resolvePreview).
  */
-export function GenericResult({ preview }: { preview: ToolPreview }) {
+export function GenericResult({ preview }: {
+  /** The tool's raw preview: its JSON `value` (or `null` when withheld), disclosure hints and preview cap, resolved to a result with the entity resolver. */
+  preview: ToolPreview
+}) {
   const resolver = useEntityResolver()
   return <ResultBlock result={resolvePreview(preview, resolver)} />
 }

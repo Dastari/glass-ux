@@ -23,7 +23,10 @@ const LEVEL_WORDS: Record<LogLine["level"], string> = {
  * and the message in monospace. Long output shows its last lines first; expanding shows
  * the rest above. Copy takes every line.
  */
-export function ResultLog({ result }: { result: LogResult }) {
+export function ResultLog({ result }: {
+  /** The log result: `lines` in order, each with a level, the text and an optional time; the line and error counts are the data line. */
+  result: LogResult
+}) {
   const [expanded, setExpanded] = useState(false)
   const collapsible = result.lines.length > TAIL + 2
   const lines = collapsible && !expanded ? result.lines.slice(-TAIL) : result.lines

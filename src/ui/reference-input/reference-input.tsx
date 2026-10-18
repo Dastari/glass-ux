@@ -40,7 +40,10 @@ export interface ReferenceChipOptions {
 export interface ReferenceInputProps<R extends string = string> {
   value?: ReferenceLink<R>[]
   defaultValue?: ReferenceLink<R>[]
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the full, de-duplicated list of links whenever one is added, removed or given
+   * another relation. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (links: ReferenceLink<R>[]) => void
   /** The kinds that can be linked, in the order results group by. */
   kinds: readonly ReferenceKind[]
@@ -78,7 +81,7 @@ export interface ReferenceInputProps<R extends string = string> {
   invalid?: boolean
   name?: string
   id?: string
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when the search input loses focus, so a form can mark the field touched. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   /** Layout only. Applied to the control box. */
   className?: string
@@ -154,7 +157,7 @@ interface RelationMenuProps<R extends string> {
   link: ReferenceLink<R>
   label: string
   options: readonly ReferenceRelation<R>[]
-  /** Called when change occurs. The callback type specifies its arguments. */
+  /** Called with the relation chosen from the menu. */
   onChange: (relation: R) => void
 }
 

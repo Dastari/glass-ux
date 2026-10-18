@@ -26,7 +26,7 @@ replaces the total with that slice's value and share.
 | format | `((value: number) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | maxSlices | `number \| undefined` | See type | no | 6 | Slices past this fold into "Other" (part-to-whole reads at six or fewer). |
-| onRetry | `(() => void) \| undefined` | See type | no | — | Called when retry occurs. The callback type specifies its arguments. |
+| onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | totalLabel | `string \| undefined` | See type | no | "Total" | Label under the centre total ("Endpoints"). |

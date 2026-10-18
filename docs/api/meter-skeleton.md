@@ -11,6 +11,6 @@ Same rows and heights as a loaded Meter.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| layout | `"inline" \| "stacked" \| undefined` | "inline", "stacked" | no | "stacked" | Layout or presentation mode. |
+| layout | `"inline" \| "stacked" \| undefined` | "inline", "stacked" | no | "stacked" | The layout of the Meter it stands in for (default `stacked`). |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

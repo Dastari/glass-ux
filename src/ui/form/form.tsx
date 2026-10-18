@@ -836,6 +836,11 @@ function CancelButton({
   );
 }
 
+/**
+ * TanStack Form's hooks bound to the kit: `useAppForm` creates a form whose `AppField` offers
+ * every bound field (TextField, AddressField…) and whose `AppForm` offers SubmitButton and
+ * CancelButton; `withForm` and `withFieldGroup` build form sections that receive such a form.
+ */
 export const { useAppForm, withForm, withFieldGroup } = createFormHook({
   fieldContext,
   formContext,

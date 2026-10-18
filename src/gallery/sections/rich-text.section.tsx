@@ -289,7 +289,7 @@ export default function RichTextSection() {
       <Specimen
         title="Markdown support"
         layout="stack"
-        description="Paragraphs, ATX headings 1–6, quotes, fenced code, bold, italic, strike-through, inline code, ordered and unordered lists, task lists, inline links and inline images. The paragraph menu creates headings 1–3. Links may use HTTP(S), mailto:, tel: or relative paths; images accept HTTP(S) or relative paths."
+        description="Paragraphs, headings, quotes, fenced code, inline formatting, ordered, unordered and task lists, links and images. The paragraph menu creates headings 1–3."
       >
         <p>
           Switching views preserves the supplied source exactly. Visual edits

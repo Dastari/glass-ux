@@ -34,9 +34,9 @@ function FieldControl({
   value: string;
   /** Marks the control invalid. Pair it with an accessible validation message. */
   invalid: boolean;
-  /** Called when change occurs. The callback type specifies its arguments. */
+  /** Called with the field's new value as a string; numbers are stringified and a cleared value is `""`. */
   onChange: (value: string) => void;
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when the control loses focus; marks the field touched so its validation shows. Number fields do not fire it. */
   onBlur: () => void;
 }) {
   switch (field.kind) {
@@ -97,7 +97,10 @@ function FieldControl({
  * capped at the form measure (R15). Values the agent already knows arrive pre-filled.
  * Required fields validate on blur, then as you type; submitting focuses the first gap.
  */
-export function FormAsk({ ask }: { ask: Ask<"form"> }) {
+export function FormAsk({ ask }: {
+  /** The form ask: the question and its `fields`, one per row, with values the agent knows pre-filled. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
+  ask: Ask<"form">;
+}) {
   const id = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const { answered, submit, record } = useAskAnswer(ask);
@@ -205,7 +208,10 @@ export function FormAsk({ ask }: { ask: Ask<"form"> }) {
  * When something should happen: the agent's suggested times as one-tap choices, or an exact
  * date and time, in the stated time zone.
  */
-export function DateTimeAsk({ ask }: { ask: Ask<"datetime"> }) {
+export function DateTimeAsk({ ask }: {
+  /** The date-time ask: the question, suggested times, the IANA `timezone` they are read in and an optional `earliest` bound. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
+  ask: Ask<"datetime">;
+}) {
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [choice, setChoice] = useState<string | null>(null);
@@ -331,7 +337,10 @@ export function DateTimeAsk({ ask }: { ask: Ask<"datetime"> }) {
  * step inside the card, never a dialog (R13.8): the soft entry point turns the consequence
  * into a danger notice and the footer into Back and the solid danger button. Esc goes back.
  */
-export function ConfirmAsk({ ask }: { ask: Ask<"confirm"> }) {
+export function ConfirmAsk({ ask }: {
+  /** The confirmation ask: the question, `consequence`, `confirmLabel` and `tone`; `danger` adds the in-card second step. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
+  ask: Ask<"confirm">;
+}) {
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [confirming, setConfirming] = useState(false);
@@ -435,7 +444,10 @@ export function ConfirmAsk({ ask }: { ask: Ask<"confirm"> }) {
  * A free-text clarification: the agent's question, its best guesses as one-tap answers, and
  * a field for anything else. Enter sends; Shift+Enter adds a line.
  */
-export function ClarifyAsk({ ask }: { ask: Ask<"clarify"> }) {
+export function ClarifyAsk({ ask }: {
+  /** The clarification ask: the question, optional `suggestions` as one-tap answers and the free-text `placeholder`. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
+  ask: Ask<"clarify">;
+}) {
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [text, setText] = useState("");

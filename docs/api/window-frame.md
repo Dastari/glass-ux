@@ -1,6 +1,9 @@
 # WindowFrame
 
-Everything in the workspace is a window: tiled, floating, snapped, maximised, minimised to the dock or popped out.
+The presentational parts of a window: `Root`, `AppBar` (icon, title, scope, actions and
+controls), `Body`, `StatusBar` with `StatusItem`, `StatusMeta` and `StatusGroup` (a live
+region), and `Controls`. It holds no window state; the workspace and pop-out wire it to
+the manager.
 
 `import { WindowFrame } from "glass-ux/windows"`
 
@@ -78,11 +81,11 @@ Everything in the workspace is a window: tiled, floating, snapped, maximised, mi
 | compact | `boolean \| undefined` | false, true | no | false | Phones: minimise reads as "back to workspace" and maximise is implicit. |
 | leading | `ReactNode` | See type | no | — | Extra controls before the standard ones (the phone window switcher). |
 | maximised | `boolean \| undefined` | false, true | no | false | Whether the window fills its available workspace. |
-| onClose | `(() => void) \| undefined` | See type | no | — | Called when close occurs. The callback type specifies its arguments. |
-| onMinimise | `(() => void) \| undefined` | See type | no | — | Called when minimise occurs. The callback type specifies its arguments. |
-| onPopOut | `(() => void) \| undefined` | See type | no | — | Called when pop out occurs. The callback type specifies its arguments. |
+| onClose | `(() => void) \| undefined` | See type | no | — | Called when the person presses Close; run close guards before removing the window. The button is shown only when this is supplied. |
+| onMinimise | `(() => void) \| undefined` | See type | no | — | Called when the person presses Minimise. The button is shown only when this is supplied. |
+| onPopOut | `(() => void) \| undefined` | See type | no | — | Called when the person presses Pop out. The button is shown only when this is supplied and not `compact`. |
 | onReturn | `(() => void) \| undefined` | See type | no | — | Popped-out windows offer "Return to workspace" in place of pop-out. |
-| onToggleMaximise | `(() => void) \| undefined` | See type | no | — | Called when toggle maximise occurs. The callback type specifies its arguments. |
+| onToggleMaximise | `(() => void) \| undefined` | See type | no | — | Called when the person presses Maximise or Restore (per `maximised`). The button is shown only when this is supplied and not `compact`. |
 | title | `string` | See type | yes | — | The heading or title content. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

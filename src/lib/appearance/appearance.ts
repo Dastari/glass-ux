@@ -12,7 +12,9 @@
  */
 import { FONT_DEFAULTS, FONT_OPTIONS, FONT_PRELOAD } from "./fonts.js";
 
+/** Colour modes a person can choose; `system` follows the operating system's light or dark setting. */
 export const MODES = ["system", "light", "dark"] as const;
+/** Palette ids the appearance controls offer and stored preferences accept; `definePalette` appends application palettes. */
 export const PALETTES: string[] = [
   "ocean",
   "aurora",
@@ -21,8 +23,11 @@ export const PALETTES: string[] = [
   "graphite",
   "ruby",
 ];
+/** Spacing densities: `comfortable` (the default) or `compact`. */
 export const DENSITIES = ["comfortable", "compact"] as const;
+/** Material transparency levels, from translucent glass (`full`) to opaque (`solid`); labels are in GLASS_LABELS. */
 export const GLASS_LEVELS = ["full", "reduced", "solid"] as const;
+/** Motion preferences; `system` follows the operating system's reduced-motion setting. */
 export const MOTION_LEVELS = ["system", "full", "reduced"] as const;
 /** Palette-aware canvas styles, from textured to plain. */
 export const BACKGROUNDS = [
@@ -51,6 +56,7 @@ export type Density = (typeof DENSITIES)[number];
 export type GlassLevel = (typeof GLASS_LEVELS)[number];
 export type MotionLevel = (typeof MOTION_LEVELS)[number];
 
+/** Accepted font ids per role, from FONT_OPTIONS; `display` also accepts "match" (use the interface face). */
 export const FONT_IDS = {
   sans: FONT_OPTIONS.sans.map((option) => option.id) as string[],
   display: [
@@ -85,6 +91,7 @@ export interface Appearance {
   fontMono: string;
 }
 
+/** The library's built-in appearance, before project defaults, locks or stored preferences apply. */
 export const BASE_APPEARANCE: Appearance = {
   mode: "system",
   palette: "graphite",
@@ -121,20 +128,25 @@ export function configureAppearance(next: AppearanceConfig) {
   APPEARANCE_STORAGE_KEY = next.storageKey ?? "glass-ux.appearance.v1";
 }
 
+/** The project's current defaults and locks, as last set by `configureAppearance` (both empty until then). */
 export function appearanceConfig() {
   return config;
 }
 
+/** The appearance with no stored preferences: the built-in values, then the project's defaults, then its locks. Reset returns to this. */
 export function defaultAppearance(): Appearance {
   return { ...BASE_APPEARANCE, ...config.defaults, ...config.locked };
 }
 
+/** Whether the project has fixed this knob with `configureAppearance({ locked })`, so preferences cannot change it. */
 export function isLocked(key: keyof Appearance) {
   return key in config.locked;
 }
 
+/** The localStorage key preferences are stored under: `glass-ux.appearance.v1` unless `configureAppearance` sets `storageKey`. */
 export let APPEARANCE_STORAGE_KEY = "glass-ux.appearance.v1";
 
+/** Display names for each palette id, as appearance controls show them; `definePalette` adds application palettes. */
 export const PALETTE_LABELS: Record<Palette, string> = {
   ocean: "Ocean",
   aurora: "Aurora",
@@ -162,6 +174,11 @@ const pick = <T extends string>(
   fallback: T,
 ): T => (options.includes(value as T) ? (value as T) : fallback);
 
+/**
+ * Read any value (typically parsed stored preferences) as a complete Appearance: unknown
+ * options fall back to the project defaults, numbers are clamped to their ranges and
+ * locked knobs always take the project's values.
+ */
 export function normalizeAppearance(input: unknown): Appearance {
   const raw = (
     typeof input === "object" && input !== null ? input : {}
@@ -188,6 +205,7 @@ export function normalizeAppearance(input: unknown): Appearance {
   return { ...value, ...config.locked };
 }
 
+/** The mode actually shown: `light` or `dark`, using `prefersDark` (the operating system setting) when `mode` is `system`. */
 export function resolveMode(
   mode: Mode,
   prefersDark: boolean,

@@ -10,10 +10,10 @@
  * call it on every fetch so a live table's "last 7 days" keeps rolling.
  *
  * Hand-written inputs (`EndpointFilterInput { HostnameContains }`) have no `And`: give
- * each column a `toWhere` and merge the entries with `toFilterInput`.
+ * each column a `toCondition` and merge the entries with `toFilterInput`.
  *
  * The toolbar search (R16.8) is one more `And` entry, first: an `Or` of `Contains` across the
- * table's identifying fields (`searchWhere`), or the search's own `toWhere`.
+ * table's identifying fields (`searchWhere`), or the search's own `toCondition`.
  *
  *   toWhere(state.filters, columns, { search: { query: state.search, spec: DEVICE_SEARCH } })
  *   // { And: [{ Or: [{ Name: { Contains: "orb" } }, { Serial: { Contains: "orb" } }] }, { Os: { InList: [...] } }] }
@@ -38,10 +38,11 @@ import type {
   OptionsFilterValue,
   TextFilterValue,
   UuidFilterValue,
-  WhereInput,
+  FilterCondition,
 } from "../../ui/data-table/filters/types.js"
 
-export type { WhereInput }
+/** A graphql-orm `Where` input: the core {@link FilterCondition} under its server name. */
+export type WhereInput = FilterCondition
 
 export interface WhereOptions {
   /** "Now" for date presets (default: the moment of the call). */
@@ -182,8 +183,10 @@ function uuidWhere(field: string, value: UuidFilterValue): WhereInput {
 
 /** One column's entry in the `And` list, or null to send nothing for it. */
 export function columnWhere(spec: FilterSpec, value: unknown, context: FilterTimeContext): WhereInput | null {
-  if (spec.kind === "custom") return spec.toWhere(value, context)
-  if (spec.toWhere) return (spec.toWhere as (value: unknown, context: FilterTimeContext) => WhereInput | null)(value, context)
+  // `toWhere` is the deprecated name of `toCondition`.
+  const own = (spec.toCondition ?? spec.toWhere) as ((value: unknown, context: FilterTimeContext) => WhereInput | null) | undefined
+  if (spec.kind === "custom") return own ? own(value, context) : null
+  if (own) return own(value, context)
   switch (spec.kind) {
     case "text":
       return textWhere(spec.field, value as TextFilterValue)
@@ -205,12 +208,13 @@ type Columns<T extends RowData> = readonly DataTableColumn<T>[] | readonly Filte
 /**
  * The toolbar search's entry (docs/data-filters.md §8): `{ Or: [{ Name: { Contains: q } }, …] }`
  * across the search's fields (`Contains` ignores case on the server), or the search's own
- * `toWhere`. Null for an empty query, or when no field resolves.
+ * `toCondition`. Null for an empty query, or when no field resolves.
  */
 export function searchWhere<T extends RowData>(query: string | undefined, spec: DataTableSearch<T> | undefined, columns: Columns<T> = []): WhereInput | null {
   const needle = normalizeSearch(query)
   if (!needle || !spec) return null
-  if (spec.toWhere) return spec.toWhere(needle)
+  const own = spec.toCondition ?? spec.toWhere
+  if (own) return own(needle)
   const fields = searchFields(spec, columns)
   return fields.length ? { Or: fields.map(({ field }) => on(field, { Contains: needle })) } : null
 }
@@ -241,9 +245,9 @@ export function toWhere<T extends RowData>(filters: ColumnFiltersState, columns:
 }
 
 /**
- * For hand-written filter inputs (no `And`): each column's `toWhere` entry merged into one
+ * For hand-written filter inputs (no `And`): each column's `toCondition` entry merged into one
  * object, e.g. `{ HostnameContains: "orb", Providers: ["SAMPLE"] }`. A search merges in its
- * own `toWhere` entry (give the search one; the default `Or` needs a generated list).
+ * own `toCondition` entry (give the search one; the default `Or` needs a generated list).
  */
 export function toFilterInput<T extends RowData>(filters: ColumnFiltersState, columns: Columns<T>, options: WhereOptions = {}): WhereInput {
   return Object.assign({}, ...searchEntry(columns, options), ...columnEntries(filters, columns, options)) as WhereInput

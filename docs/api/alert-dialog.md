@@ -18,8 +18,8 @@ cancels; outside presses do nothing. While the action runs, it cannot be dismiss
 | failureTitle | `string \| undefined` | See type | no | — | Title of the failure toast. Default: "<confirmLabel> failed". |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | onConfirm | `() => unknown` | See type | yes | — | Runs in place: the confirm button shows pending, then ✓ and the dialog closes. If it throws, the button shakes ✕, the dialog stays open and the reason goes to a toast. |
-| onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called when open change occurs. The callback type specifies its arguments. |
-| onOpenChangeComplete | `((open: boolean) => void) \| undefined` | See type | no | — | Called when open change complete occurs. The callback type specifies its arguments. |
+| onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the next open state when the trigger opens it, Cancel or Esc dismisses it, or it closes after `onConfirm` succeeds. Not called for dismissals while the action runs. Pair with `open` to control it. |
+| onOpenChangeComplete | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the final open state once the open or close animation has finished. |
 | open | `boolean \| undefined` | false, true | no | — | Controls whether the overlay is open. |
 | pendingLabel | `string \| undefined` | See type | no | — | Label shown while the asynchronous action runs. Its width is reserved with the other feedback labels. |
 | title | `ReactNode` | See type | yes | — | Names the target: "Remove NST-C106 from Northstar Studio?" (R12.4). |

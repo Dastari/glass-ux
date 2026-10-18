@@ -1,6 +1,8 @@
 # Popover
 
-Small, contextual, non-blocking content next to its trigger: a filter, a peek, a short form.
+Small, contextual, non-blocking content built from parts on Base UI's popover: `Root`
+(state), `Trigger`, `Popup` (positioned, with an optional title and close button),
+`Close` and `Description`. `Preview` renders a static surface for documentation.
 
 `import { Popover } from "glass-ux/popover"`
 

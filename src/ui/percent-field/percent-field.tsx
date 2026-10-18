@@ -7,7 +7,10 @@ export interface PercentInputProps extends Omit<NumberFieldProps, "format" | "un
   scale?: "whole" | "fraction"
   value?: number | null
   defaultValue?: number
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the percentage in the `scale` of the value (90, or 0.9 for fraction), or null when
+   * empty, as it is typed, stepped or scrubbed. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: number | null) => void
   /** Decimal places shown and kept. Default 0. */
   decimals?: number

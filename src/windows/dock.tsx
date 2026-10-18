@@ -144,7 +144,15 @@ function DockItem({
   );
 }
 
-export function Dock({ onOpenSwitcher }: { onOpenSwitcher?: () => void }) {
+/**
+ * The strip of open windows, grouped by scope when a `WindowScopeProvider` is present.
+ * Clicking an item focuses, restores or minimises its window; a middle click closes it.
+ * Renders nothing while no windows are open.
+ */
+export function Dock({ onOpenSwitcher }: {
+  /** Called when the person presses the "All windows" button; open the `WindowSwitcher` here. The button is shown only when this is supplied. */
+  onOpenSwitcher?: () => void;
+}) {
   const windows = useWindows();
   const focusedId = useFocusedWindowId();
   const scopes = useWindowScopes();
@@ -211,7 +219,7 @@ export function WindowSwitcher({
   primaryLabel = "Current page",
 }: {
   open: boolean;
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with the next open state when the sheet is dismissed (swipe, Esc, scrim) and with false after the person chooses a window. Pair with `open`. */
   onOpenChange: (open: boolean) => void;
   /** Visible label for the primary action. */
   primaryLabel?: string;

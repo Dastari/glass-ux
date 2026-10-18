@@ -25,9 +25,9 @@ the boxes themselves; nothing moves.
 | length | `number \| undefined` | See type | no | 6 | Number of boxes. Default 6. |
 | mask | `boolean \| undefined` | false, true | no | false | Show dots instead of characters (a PIN). Default false. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
-| onBlur | `(() => void) \| undefined` | See type | no | — | Called when blur occurs. The callback type specifies its arguments. |
+| onBlur | `(() => void) \| undefined` | See type | no | — | Called when focus leaves the group of boxes, not when it moves between them. |
 | onComplete | `((value: string) => void) \| undefined` | See type | no | — | Called once every box is filled (typed, pasted or autofilled). |
-| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the code entered so far (upper case when alphanumeric) on each typed, deleted or pasted character. Pair with `value` to control it; use `defaultValue` otherwise. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
 | size | `"md" \| "lg" \| undefined` | "md", "lg" | no | "lg" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |

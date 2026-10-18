@@ -41,7 +41,10 @@ export const splitValues = (text: string) =>
 export interface TagInputProps {
   value?: string[]
   defaultValue?: string[]
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the full list of tags whenever one is added, edited or removed; typing alone does
+   * not call it. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (values: string[]) => void
   /** Static suggestions, filtered as you type. Optional: free entry works without any. */
   suggestions?: OptionItem[]
@@ -70,7 +73,7 @@ export interface TagInputProps {
   invalid?: boolean
   name?: string
   id?: string
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when the text input loses focus, so a form can mark the field touched. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   /** Layout only. Applied to the control box. */
   className?: string

@@ -81,7 +81,7 @@ function Tool({
   disabled?: boolean;
   /** Keyboard shortcut shown with the control, using the host platform’s modifier keys. */
   shortcut?: string;
-  /** Called when click occurs. The callback type specifies its arguments. */
+  /** Called when the button is pressed; it does not take focus from the editor. */
   onClick: () => void;
 }) {
   return (

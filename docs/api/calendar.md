@@ -22,7 +22,7 @@ week come from the locale.
 | max | `string \| undefined` | See type | no | — | Upper value or visible-item limit, as specified by the type. |
 | min | `string \| undefined` | See type | no | — | Earliest and latest selectable days. |
 | mode | `"single" \| "range" \| undefined` | "single", "range" | no | — | Active display or interaction mode. |
-| onValueChange | `((value: IsoDate) => void) \| ((value: DateRange) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onValueChange | `((value: IsoDate) => void) \| ((value: DateRange) => void) \| undefined` | See type | no | — | Called with the ISO date when an enabled day is chosen by click or keyboard. Called with the ordered range once the second day is chosen; choosing the first day only anchors it. |
 | today | `string \| undefined` | See type | no | todayIso() | The day marked as today (default: the user's local day). |
 | value | `string \| DateRange \| null \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 

@@ -110,6 +110,7 @@ export interface SeriesStats {
   last: number
 }
 
+/** The lowest, highest, mean and last values of a series, or null when it is empty. */
 export function seriesStats(data: readonly number[]): SeriesStats | null {
   if (data.length === 0) return null
   let min = Infinity

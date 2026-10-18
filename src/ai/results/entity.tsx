@@ -27,7 +27,10 @@ type EntitiesResult = Extract<AiResult, { type: "entities" }>;
  * One entity as a card: its glyph and live state, the data subtitle, a few facts and the
  * entity's own actions (R12: ActionBar from the same definition as its page header).
  */
-export function ResultEntity({ result }: { result: EntityResult }) {
+export function ResultEntity({ result }: {
+  /** The entity result: the `entity`, an optional `subtitle` and its `facts`; the resolver's `render` may replace the card body and supplies the actions. */
+  result: EntityResult;
+}) {
   const resolver = useEntityResolver();
   const set = resolver.actions(result.entity.kind);
   const custom = resolver.render?.(result.entity, "card", {
@@ -89,7 +92,10 @@ export function ResultEntity({ result }: { result: EntityResult }) {
  * A list of entities as compact rows: glyph with status, name (a context link), a data
  * detail, the state, and the row ⋯ menu — with the same menu on right-click (R11.6).
  */
-export function ResultEntities({ result }: { result: EntitiesResult }) {
+export function ResultEntities({ result }: {
+  /** The entity-list result: the `entities` shown as rows, each with an optional `detail`, and `total` for the count (defaults to the number of entities). */
+  result: EntitiesResult;
+}) {
   const resolver = useEntityResolver();
   const handlers = useConversationHandlers();
   const first = result.entities[0];

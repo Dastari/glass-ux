@@ -12,6 +12,7 @@ import { Badge } from "../ui/badge/index.js";
 import { usePhoneLayout } from "../lib/use-media-query.js";
 import { CodeBlock } from "../ai/code-block/index.js";
 
+/** The generated component catalogue: each public component's family, entry point, description and prop table, as rendered by the documentation pages. */
 export const componentCatalogue = catalogue;
 interface Prop {
   name: string;

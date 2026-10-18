@@ -31,7 +31,7 @@ Rows that do not fit in a ranked list fold into a "+N more" line — nothing is 
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | labels | `boolean \| undefined` | false, true | no | — | Values at the bar tips. Defaults on for horizontal bars (ranked lists), off for columns. |
 | layout | `"grouped" \| "stacked" \| undefined` | "grouped", "stacked" | no | "grouped" | Several series side by side, or stacked as parts of a total. |
-| onRetry | `(() => void) \| undefined` | See type | no | — | Called when retry occurs. The callback type specifies its arguments. |
+| onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | orientation | `"horizontal" \| "vertical" \| undefined` | "horizontal", "vertical" | no | "vertical" | `vertical` columns (time and ordered categories) or `horizontal` bars (ranked lists). |
 | series | `readonly BarSeries[]` | See type | yes | — | Chart series with stable identifiers, labels and typed values. |
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |

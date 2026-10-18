@@ -3,11 +3,11 @@
  * against the table's identifying fields and combined with the column filters.
  */
 import type { RowData } from "@tanstack/react-table"
-import type { WhereInput } from "../filters/types.js"
+import type { FilterCondition } from "../filters/types.js"
 
 /** A searched field that is not one of the table's columns ("Code" on an organisation). */
 export interface SearchFieldRef<T> {
-  /** The `Where` key (PascalCase), matched with `Contains`. */
+  /** The server field name (PascalCase), matched with `Contains`. */
   field: string
   /** Read the value from a row, for fully loaded lists (`matchesSearch`, `searchRows`). */
   value?: (row: T) => unknown
@@ -17,7 +17,7 @@ export interface SearchFieldRef<T> {
 export interface DataTableSearch<T extends RowData = any> {
   /**
    * The identifying fields the query matches, each with a case-insensitive `Contains`, any
-   * one of them enough. A string is a column id: its filter's `field` is the `Where` key and
+   * one of them enough. A string is a column id: its filter's `field` is the server field and
    * its accessor the local value. Columns the current column set does not have (a view
    * without that column) are skipped. `{ field, value }` adds a field that is not a column.
    */
@@ -27,10 +27,12 @@ export interface DataTableSearch<T extends RowData = any> {
   /**
    * Replace the default `Or` of `Contains` with your own entry: a hand-written input
    * (`{ HostnameContains: query }`), or null when the query goes to an entity's search
-   * resolver instead of the `Where`. Give `matches` too if a fully loaded list uses it.
+   * resolver instead of the filter condition. Give `matches` too if a fully loaded list uses it.
    */
-  toWhere?: (query: string) => WhereInput | null
-  /** Local matching for a custom `toWhere`: the rows the server would return. */
+  toCondition?: (query: string) => FilterCondition | null
+  /** @deprecated Renamed to `toCondition`; this alias will be removed in the next release. */
+  toWhere?: (query: string) => FilterCondition | null
+  /** Local matching for a custom `toCondition`: the rows the server would return. */
   matches?: (row: T, query: string) => boolean
 }
 

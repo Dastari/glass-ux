@@ -9,11 +9,11 @@ import { formatRange, pageCountOf } from "./range.js"
 export interface PaginationCursor {
   hasNext: boolean
   hasPrevious: boolean
-  /** Called when next occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person presses Next page (only while `hasNext`). */
   onNext: () => void
-  /** Called when previous occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person presses Previous page (only while `hasPrevious`). */
   onPrevious: () => void
-  /** Called when first occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person presses First page; omit it to hide that button in cursor mode. */
   onFirst?: () => void
 }
 
@@ -28,9 +28,9 @@ export interface PaginationProps extends Omit<ComponentProps<"nav">, "children">
   rowCount?: number
   /** Page-size choices offered by pagination. */
   pageSizes?: readonly number[]
-  /** Called when page change occurs. The callback type specifies its arguments. */
+  /** Called with the zero-based index of the page the person asks for (first, previous, next, last or page jump); not used in cursor mode. Pair with `pageIndex` to control it. */
   onPageChange?: (pageIndex: number) => void
-  /** Called when page size change occurs. The callback type specifies its arguments. */
+  /** Called with the rows-per-page the person picks from `pageSizes`. The page-size menu shows only when this is set, there are two or more choices and the pager is not compact. Pair with `pageSize`. */
   onPageSizeChange?: (pageSize: number) => void
   /** Cursor mode: next/previous only, no last page or page jump. */
   cursor?: PaginationCursor
@@ -134,7 +134,7 @@ function PageSizeSelect({
 }: {
   value: number
   options: readonly number[]
-  /** Called when change occurs. The callback type specifies its arguments. */
+  /** Called with the chosen page size. */
   onChange: (value: number) => void
   disabled: boolean
 }) {
@@ -175,7 +175,7 @@ function PageJump({
 }: {
   pageIndex: number
   pageCount: number
-  /** Called when change occurs. The callback type specifies its arguments. */
+  /** Called with the zero-based index of the typed page, clamped to the page count, on Enter or blur; not called when it equals the current page or the text is not a number. */
   onChange: (pageIndex: number) => void
   disabled: boolean
 }) {

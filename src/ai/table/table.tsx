@@ -5,6 +5,7 @@ import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 /** Plain numbers, percentages, sizes and durations align to the end in tabular figures. */
 const NUMERIC = /^[-+]?[\d.,  ]+\s?(%|[kMGT]?B|ms|s|min|h|days?|GB|MB|°C)?$/
 
+/** Whether cell text reads as a number (optionally with %, a byte size, a duration or °C), so it aligns to the end in tabular figures. */
 export function looksNumeric(text: string) {
   const value = text.trim()
   return value.length > 0 && value.length < 24 && NUMERIC.test(value)

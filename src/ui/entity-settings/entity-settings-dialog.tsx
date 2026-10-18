@@ -65,7 +65,7 @@ export interface EntitySettingsTab {
 
 export interface EntitySettingsDialogProps {
   open: boolean
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with the next open state: `false` on Cancel (after the form resets) or on dismissal, which first asks to discard unsaved changes. Pair with `open`. */
   onOpenChange: (open: boolean) => void
   /** The form every tab edits: one `useAppForm` with the entity's Zod schema. */
   form: EntitySettingsForm
@@ -75,7 +75,7 @@ export interface EntitySettingsDialogProps {
   tab?: string
   /** Initially selected tab. */
   defaultTab?: string
-  /** Called when tab change occurs. The callback type specifies its arguments. */
+  /** Called with the `value` of the tab the person selects. Pair with `tab` to control it; without `tab` the dialog tracks the tab itself. */
   onTabChange?: (tab: string) => void
   /** The entity's identity tile: its glyph or photo with the state dot. */
   media?: ReactNode

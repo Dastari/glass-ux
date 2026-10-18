@@ -16,6 +16,7 @@ export type ChoiceSize = "sm" | "md" | "lg";
  * hostname). Never widen a control to fill a row beside another.
  */
 export type FieldWidth = "short" | "medium" | "full";
+/** The `data-width` value for a control's width: the width itself, or undefined for full (the default). */
 export const widthAttr = (width: FieldWidth | undefined) =>
   width && width !== "full" ? width : undefined;
 export type FieldSize = "sm" | "md" | "lg";
@@ -348,6 +349,7 @@ export interface ChoiceRowProps {
   children: ReactNode;
 }
 
+/** The id ChoiceRow gives a control's description: `${controlId}-description`, for `aria-describedby`. */
 export const descriptionId = (controlId: string) => `${controlId}-description`;
 
 /**

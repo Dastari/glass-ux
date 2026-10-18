@@ -12,7 +12,7 @@ export interface SettingsDialogProps {
   /** Control that opens the overlay or action. */
   trigger?: ReactElement
   open?: boolean
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with the next open state when the dialog opens or closes. While `dirty`, a dismissal first asks to discard and only reports false once the person confirms. Pair with `open` to control it. */
   onOpenChange?: (open: boolean) => void
   icon?: ReactNode
   /** "Agent settings" */
@@ -33,7 +33,7 @@ export interface SettingsDialogProps {
   footerStart?: ReactNode
   /** Guard closing while there are unsaved changes. */
   dirty?: boolean
-  /** Called when discard occurs. The callback type specifies its arguments. */
+  /** Called when the person confirms discarding unsaved changes, just before the dialog closes; revert the form here. */
   onDiscard?: () => void
   size?: Extract<DialogSize, "lg" | "xl">
 }
@@ -90,7 +90,7 @@ interface SettingsSectionsProps {
   section?: string | undefined
   /** Initially active section. */
   defaultSection?: string | undefined
-  /** Called when section change occurs. The callback type specifies its arguments. */
+  /** Called with the chosen section's `value` when the person switches section; the pane scrolls back to the top. Pair with `section` to control it. */
   onSectionChange?: ((section: string) => void) | undefined
   label: string
   /** Keep every section mounted (hidden when not current), so one form spans them all. */

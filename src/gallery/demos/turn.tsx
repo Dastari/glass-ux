@@ -34,7 +34,7 @@ export default function AiMessagesSection() {
       <SectionPage>
         <Specimen
           title="A turn"
-          description="The prompt is a compact glass-control bubble on the right with its attachments above. The answer has no bubble: the AI mark in the gutter, prose across the reading column; tables, charts, images and code break out wider in a conversation. Actions sit under each message and show on hover, focus and always on the latest answer."
+          description="The prompt is a compact bubble on the right with its attachments above. The answer has no bubble; tables, charts, images and code break out wider. Message actions show on hover and focus, and always on the latest answer."
           wide
           layout="bare"
         >

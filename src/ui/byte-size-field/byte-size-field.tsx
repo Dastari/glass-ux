@@ -9,7 +9,10 @@ export interface ByteSizeInputProps extends Omit<InputProps, "value" | "defaultV
   /** Bytes; null when empty; NaN while the text cannot be read. */
   value?: number | null
   defaultValue?: number | null
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called on each keystroke with the parsed size in whole bytes, null when the text is empty, or
+   * NaN while it cannot be read. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (bytes: number | null) => void
   /** How sizes are written back: decimal (default: kB, MB, GB, as disks are sold) or binary (KiB, MiB, GiB, as memory is). */
   base?: ByteBase

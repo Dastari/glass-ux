@@ -14,10 +14,15 @@ export type AiSurface = "canvas" | "panel" | "float"
 const SurfaceContext = createContext<AiSurface>("panel")
 
 /** Choose the surrounding canvas, panel or floating surface so assistant cards use the appropriate material. */
-export function AiSurfaceProvider({ surface, children }: { surface: AiSurface; children: ReactNode }) {
+export function AiSurfaceProvider({ surface, children }: {
+  /** Where the cards below are drawn: `canvas` (glass-panel), `panel` (glass-control) or `float` (glass-overlay). */
+  surface: AiSurface
+  children: ReactNode
+}) {
   return <SurfaceContext value={surface}>{children}</SurfaceContext>
 }
 
+/** The AiSurface from the nearest AiSurfaceProvider; `panel` when there is none. */
 export function useAiSurface() {
   return useContext(SurfaceContext)
 }

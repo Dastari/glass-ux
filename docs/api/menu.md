@@ -1,6 +1,8 @@
 # Menu
 
-Actions in fa-item rows: icon, label, shortcut, submenus, toggles and choices — danger last, disabled rows say why.
+A dropdown menu of actions built from parts on Base UI's menu: `Root` (state), `Trigger`,
+`Popup`, items (`Item`, `LinkItem`, `CheckboxItem`, `RadioGroup`/`RadioItem`), `Group`,
+`GroupLabel`, `Separator` and `Submenu`. Disabled items can show their reason.
 
 `import { Menu } from "glass-ux/menu"`
 

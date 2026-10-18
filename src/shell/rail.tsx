@@ -89,7 +89,10 @@ function Root({ className, children, ...rest }: RailProps) {
 }
 
 /** The keys of a shortcut, as keycaps: "g e" → G E; "mod+k" → Ctrl K. */
-export function ShortcutKeys({ shortcut }: { shortcut: string }) {
+export function ShortcutKeys({ shortcut }: {
+  /** The shortcut: space-separated steps of a sequence ("g e"), each a `+`-joined chord ("mod+k"). */
+  shortcut: string
+}) {
   return (
     <span className="fa-shell-keys">
       {shortcut.split(" ").map((part, index) => (
@@ -207,7 +210,12 @@ function Spacer() {
  * A rail-wide sequence shortcut with no item of its own ("g m" switches the product's
  * module). It shares the rail's sequence handling, so it never collides with an item's.
  */
-function Shortcut({ keys, onTrigger }: { keys: string; onTrigger: () => void }) {
+function Shortcut({ keys, onTrigger }: {
+  /** The two-key sequence, space-separated and case-insensitive ("g m": press G, then M). */
+  keys: string
+  /** Called when the person types the sequence outside a text field, without Ctrl, Alt or Meta held. */
+  onTrigger: () => void
+}) {
   const registry = useContext(RailShortcuts)
   const latest = useRef(onTrigger)
   useEffect(() => {

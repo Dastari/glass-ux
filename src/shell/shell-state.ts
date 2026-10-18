@@ -22,11 +22,14 @@ export interface ShellPrefs {
   collapsed: Readonly<Record<string, boolean>>
 }
 
+/** The localStorage key the shell preferences are saved under, per browser. */
 export const SHELL_STORAGE_KEY = "workspace.shell.v1"
+/** Preferences before anything is saved: drawer open at the default width, inspector following its breakpoint default, no groups collapsed. */
 export const DEFAULT_SHELL_PREFS: ShellPrefs = { drawer: "open", drawerWidth: null, inspector: null, collapsed: {} }
 
 /** Drawer width limits in rem (mirrors --_drawer-min / --_drawer-max in app-shell.css). */
 export const DRAWER_MIN_REM = 14
+/** The widest the section drawer can be dragged, in rem; saved widths are clamped to it. */
 export const DRAWER_MAX_REM = 28
 
 export function normaliseShellPrefs(input: unknown): ShellPrefs {
@@ -88,6 +91,11 @@ export function applyShellAttributes(root: HTMLElement, prefs: ShellPrefs) {
   else root.style.setProperty("--shell-drawer", `${prefs.drawerWidth}rem`)
 }
 
+/**
+ * Merges a patch (or the result of a function of the current preferences) into the shell
+ * preferences, normalises it (clamping the drawer width), saves it to localStorage when
+ * available, applies it to `<html>` and notifies `useShellPrefs` subscribers.
+ */
 export function updateShellPrefs(patch: Partial<ShellPrefs> | ((current: ShellPrefs) => Partial<ShellPrefs>)) {
   const current = read()
   const next = normaliseShellPrefs({ ...current, ...(typeof patch === "function" ? patch(current) : patch) })
@@ -104,6 +112,7 @@ export function readShellPrefs() {
   return read()
 }
 
+/** Returns the saved shell preferences and re-renders when they change, in this tab or another. Server rendering returns `DEFAULT_SHELL_PREFS`. */
 export function useShellPrefs(): ShellPrefs {
   return useSyncExternalStore(subscribe, read, () => DEFAULT_SHELL_PREFS)
 }

@@ -71,6 +71,7 @@ export interface WindowManagerState {
   rev: number
 }
 
+/** The reserved window id for the routed page view, which can hold focus like a window but is never a window entry. */
 export const PRIMARY_WINDOW_ID = "primary"
 
 export type WindowStatusTone = "success" | "warning" | "danger" | "info" | "neutral"

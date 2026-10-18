@@ -89,6 +89,7 @@ export function configureBrand(next: BrandConfig) {
   };
 }
 
+/** The brand configuration set by `configureBrand`, with defaults filled in (no marks, palette tones, graphite). */
 export function brandConfig(): Readonly<Required<BrandConfig>> {
   return config;
 }

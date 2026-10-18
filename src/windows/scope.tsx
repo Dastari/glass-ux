@@ -28,10 +28,12 @@ export interface WindowScopes {
 
 const WindowScopeContext = createContext<WindowScopes | null>(null)
 
+/** Supplies the current scope and how to draw a scope to the window layer's scope chips and dock groups. A null or undefined `value` turns scope labelling off. */
 export function WindowScopeProvider({ value, children }: { value: WindowScopes | null | undefined; children: ReactNode }) {
   return <WindowScopeContext value={value ?? null}>{children}</WindowScopeContext>
 }
 
+/** Returns the scopes from the enclosing `WindowScopeProvider`, or null when none is provided. */
 export function useWindowScopes(): WindowScopes | null {
   return useContext(WindowScopeContext)
 }
@@ -47,7 +49,10 @@ export function describeScope(scopes: WindowScopes | null, scope: string | null)
  * the window belongs to a scope other than the current one. Narrow windows keep the avatar,
  * and the tooltip names it. Part of the app bar's drag surface, like the title.
  */
-export function WindowScopeChip({ scope }: { scope: string | null }) {
+export function WindowScopeChip({ scope }: {
+  /** The window's scope id (`WindowEntry.scope`), or null for an unscoped window, which shows no chip. */
+  scope: string | null
+}) {
   const scopes = useWindowScopes()
   if (!scope || !scopes || scope === scopes.current) return null
   const info = describeScope(scopes, scope)

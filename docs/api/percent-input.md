@@ -22,8 +22,8 @@ whole percent, or a fraction with `scale="fraction"`; bounds are in the same sca
 | max | `number \| undefined` | See type | no | — | Upper value or visible-item limit, as specified by the type. |
 | min | `number \| undefined` | See type | no | — | Lower allowed value. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
-| onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when blur occurs. The callback type specifies its arguments. |
-| onValueChange | `((value: number \| null) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the text input loses focus, so a form can mark the field touched. |
+| onValueChange | `((value: number \| null) => void) \| undefined` | See type | no | — | Called with the percentage in the `scale` of the value (90, or 0.9 for fraction), or null when empty, as it is typed, stepped or scrubbed. Pair with `value` to control it; use `defaultValue` otherwise. |
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |

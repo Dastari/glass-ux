@@ -196,17 +196,17 @@ export default function LoginFlowSection() {
         <UsernameFlow />
       </Specimen>
 
-      <Specimen title="Providers only" description="Without onSignIn there is no password form. From four providers the buttons use two columns with short names; their accessible names keep “Continue with …”.">
+      <Specimen title="Providers only" description="Providers only, with no password form. Four or more providers use two columns with short names; accessible names keep “Continue with …”.">
         <ProvidersOnlyFlow />
       </Specimen>
 
-      <Specimen title="Account creation" description="onSignUp enables the view and its link. Name, email, a new password with strength, confirmation and a required terms statement with a host link. avery@orbit.example is already taken.">
+      <Specimen title="Account creation" description="Name, email, a new password with strength and confirmation, and a required terms statement. avery@orbit.example is already taken.">
         <SignUpFlow />
       </Specimen>
 
       <Specimen
         title="Forgot password"
-        description={`Request a reset, then enter the code and a new password because onResetPassword is supplied. The demo code is ${DEMO_CODE}. Resend waits out a 20-second cooldown; a successful reset returns to sign-in with a confirmation.`}
+        description={`Request a reset, then enter the code (${DEMO_CODE}) and a new password. Resend has a 20-second cooldown; a successful reset returns to sign-in.`}
       >
         <ResetFlow />
       </Specimen>

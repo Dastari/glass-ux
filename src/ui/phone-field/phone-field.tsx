@@ -29,7 +29,11 @@ export interface PhoneInputProps {
   /** E.164 ("+61412345678"), with ";ext=204" for an extension. While the text cannot be read, the text as typed. */
   value?: string
   defaultValue?: string
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called on each keystroke, paste, country or extension change with the E.164 value (";ext="
+   * appended when there is one), or the text as typed while it cannot be read. Pair with `value`
+   * to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: string) => void
   /** The country of national numbers until the person picks another: the workspace's own. Default "AU". */
   defaultCountry?: string
@@ -58,7 +62,7 @@ export interface PhoneInputProps {
   invalid?: boolean
   name?: string
   id?: string
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when the number input loses focus, after its text is reformatted. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   /** Layout only. */
   className?: string
@@ -311,7 +315,7 @@ export function PhoneInput({
 
 interface CountryPickerProps {
   value: string
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the chosen ISO 3166-1 alpha-2 code, or null when the selection is cleared. */
   onValueChange: (country: string | null) => void
   countries?: readonly string[]
   priority: readonly string[]

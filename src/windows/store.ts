@@ -216,6 +216,12 @@ function nextFocus(windows: readonly WindowEntry[], exclude?: string) {
   return visibleByRecency(windows).find((entry) => entry.id !== exclude)?.id ?? PRIMARY_WINDOW_ID
 }
 
+/**
+ * Creates a window manager store: open windows, focus, layout and close guards, with
+ * optional localStorage persistence (`storageKey`) and cross-tab sync over a
+ * BroadcastChannel. Nothing is loaded or synced until `connect()`, which
+ * `WindowManagerProvider` calls on the client.
+ */
 export function createWindowManager(options: WindowManagerOptions = {}): WindowManager {
   const storageKey = options.storageKey ?? null
   const channelName = options.channelName === undefined ? storageKey : options.channelName

@@ -79,11 +79,13 @@ export const parseHostname = (text: string, options: HostnameOptions = {}) => ch
 /** A domain name with at least two labels and an alphabetic top-level domain. */
 export const parseDomain = (text: string, options: Omit<HostnameOptions, "fqdn"> = {}) => check(text, options, "domain")
 
+/** The host name in ASCII (punycode) form, without scheme, path, port or trailing dot, or null when it is not valid. Case is kept unless `options.case` is "lower". */
 export function normaliseHostname(text: string, options: HostnameOptions = {}) {
   const result = parseHostname(text, options)
   return result.ok ? result.value : null
 }
 
+/** The domain in lower-case ASCII (punycode) form, without scheme, path, port or trailing dot, or null when it is not valid. */
 export function normaliseDomain(text: string, options: Omit<HostnameOptions, "fqdn"> = {}) {
   const result = parseDomain(text, options)
   return result.ok ? result.value : null

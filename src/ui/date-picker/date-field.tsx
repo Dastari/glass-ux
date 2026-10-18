@@ -41,7 +41,7 @@ export interface DateFieldProps extends DateFieldCommon {
   onValueChange?: (value: IsoDate | null) => void
   placeholder?: string
   name?: string
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when the text input loses focus, after the typed date has been committed. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   ref?: Ref<HTMLInputElement>
 }

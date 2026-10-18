@@ -111,7 +111,10 @@ function toText(result: TableResult) {
  * priority as the card narrows, and rows becoming a compact list in very narrow cards.
  * "Show all 1,284" opens the full DataTable in a window.
  */
-export function ResultTable({ result }: { result: TableResult }) {
+export function ResultTable({ result }: {
+  /** The table result: `columns`, `rows` (the first 8 show inline), `total` for the count and Show all, and an optional row `noun`. */
+  result: TableResult;
+}) {
   const handlers = useConversationHandlers();
   const rows = result.rows.slice(0, INLINE_ROWS);
   const noun = result.noun ?? { one: "row", other: "rows" };

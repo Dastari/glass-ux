@@ -71,9 +71,9 @@ interface TreemapPlotProps {
   store: HoverStore
   fmt: ValueFormat
   label: string
-  /** Called when drill occurs. The callback type specifies its arguments. */
+  /** Called with the node to drill into when the person activates a tile (click, Enter or Space): the tile's node if it has children, otherwise its parent below the focus; not called when neither applies. */
   onDrill: (node: Node) => void
-  /** Called when up occurs. The callback type specifies its arguments. */
+  /** Called with no arguments on Escape, to go up one level. Omit at the root. */
   onUp?: () => void
 }
 

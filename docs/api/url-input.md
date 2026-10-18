@@ -17,8 +17,8 @@ A web address. A missing scheme is added on blur ("https://"); the URL is writte
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field (inside a Field, set `error` on the Field instead). |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
-| onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
-| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called with the new state when the show/hide password button is pressed. Pair with `revealed` to control it. |
+| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the text as typed on each keystroke, and with its canonical form on blur when that differs. Pair with `value` to control it; use `defaultValue` otherwise. |
 | openable | `boolean \| undefined` | false, true | no | true | An "Open in a new tab" button while the value is a valid URL (default true). |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | requireTld | `boolean \| undefined` | false, true | no | — | Require a host with a dot or "localhost" (default true): rejects "https://intranet". |

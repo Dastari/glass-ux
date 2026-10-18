@@ -166,7 +166,7 @@ export function ResendButton({
   label: string
   sent: ReactNode
   cooldown: Cooldown
-  /** Called when resend occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person presses the button; sends again and resolves to the outcome. On success the cooldown starts and, without an outcome message, `sent` is shown. */
   onResend: () => Promise<LoginOutcome | void>
   setMessage: (message: LoginMessage | undefined) => void
 }) {

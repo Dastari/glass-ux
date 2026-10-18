@@ -199,6 +199,7 @@ export interface SecretValue {
   value: string
 }
 
+/** The initial form value for a secret: `stored` says whether the server holds one; the action is "keep" with no new value. */
 export const secretValue = (stored: boolean): SecretValue => ({ stored, action: "keep", value: "" })
 
 /** Will a value be stored after saving? */

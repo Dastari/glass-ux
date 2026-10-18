@@ -39,6 +39,10 @@ function randomBelow(max: number, random: RandomSource): number {
   }
 }
 
+/**
+ * A random password of `length` characters (default 20) from the chosen character sets, with at
+ * least one from each. Throws when every set is turned off. `random` replaces the crypto source in tests.
+ */
 export function generatePassword(options: GenerateOptions = {}, random: RandomSource = defaultRandom): string {
   const unambiguous = options.unambiguous ?? true
   const chosen = (Object.keys(SETS) as Array<keyof typeof SETS>)

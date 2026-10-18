@@ -24,7 +24,7 @@ quiet hours read as quiet. A step legend sits in the head.
 | format | `((value: number) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). |
 | formatColumn | `((column: XValue) => string) \| undefined` | See type | no | — | Format a column for labels and the readout. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
-| onRetry | `(() => void) \| undefined` | See type | no | — | Called when retry occurs. The callback type specifies its arguments. |
+| onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | rowLabel | `string \| undefined` | See type | no | "Category" | Accessible name or label definition for a row. |
 | rows | `readonly string[]` | See type | yes | — | One label per row: alert categories, services, endpoints. |
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |

@@ -12,7 +12,7 @@ One file in a FileList: name, size and state, a progress bar of fixed height, re
 | --- | --- | --- | --- | --- | --- |
 | error | `string \| undefined` | See type | no | — | What went wrong, in place of the size line ("Upload failed — retry when online"). |
 | name | `string` | See type | yes | — | The component’s name or native form field name, as specified by its value type. |
-| onRemove | `(() => void) \| undefined` | See type | no | — | Called when remove occurs. The callback type specifies its arguments. |
+| onRemove | `(() => void) \| undefined` | See type | no | — | Called when the row's remove button is pressed. Without it the row has no remove button. |
 | progress | `number \| null \| undefined` | See type | no | — | 0–100 while uploading; null for unknown. |
 | size | `number` | See type | yes | — | Bytes. |
 | status | `FileStatus \| undefined` | "done", "error", "queued", "uploading" | no | "done" | Current operation or connection status. |

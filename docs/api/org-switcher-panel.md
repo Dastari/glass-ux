@@ -11,7 +11,7 @@ The switcher's list, always open, for a sheet, a page or the gallery.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | labels | `Partial<SwitcherLabels> \| undefined` | See type | no | — | Display and accessibility labels supplied by the application. |
-| onValueChange | `(value: string \| null) => void` | See type | yes | — | Called when value change occurs. The callback type specifies its arguments. |
+| onValueChange | `(value: string \| null) => void` | See type | yes | — | Called with the chosen organisation id, or null for all organisations, when the person picks a row (also when it is the current one). |
 | organisations | `readonly O[]` | See type | yes | — | Complete local hierarchy, or the loaded flat server results when remote is supplied. |
 | recent | `readonly string[] \| undefined` | See type | no | [] | Previously selected IDs, ordered most recent first. |
 | remote | `OrgSwitcherRemote \| undefined` | See type | no | — | Controlled server search and paging; parent links and local recents are ignored. |

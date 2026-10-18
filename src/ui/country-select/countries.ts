@@ -39,6 +39,7 @@ export interface CountryEntry {
   iso: boolean
 }
 
+/** Every known country and territory code with its calling code, including phone-only territories (`iso: false`). */
 export const COUNTRY_TABLE: readonly CountryEntry[] = TABLE.split(" ").map((pair) => {
   const [code = "", callingCode = ""] = pair.split(":")
   return { code: code.replace("*", ""), callingCode, iso: !code.endsWith("*") }
@@ -68,6 +69,7 @@ export const MAIN_COUNTRY_FOR_CALLING_CODE: Readonly<Record<string, string>> = {
   "599": "CW",
 }
 
+/** Whether a code, in any case, is in `COUNTRY_TABLE`, phone-only territories included. */
 export const isCountryCode = (code: string) => BY_CODE.has(code.toUpperCase())
 
 /** "61" for AU; "" when unknown. */

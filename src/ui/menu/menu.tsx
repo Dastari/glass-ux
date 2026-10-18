@@ -322,6 +322,11 @@ export function reasonRuns(reasons: ReadonlyArray<string | null | undefined>): n
   return owner
 }
 
+/**
+ * A dropdown menu of actions built from parts on Base UI's menu: `Root` (state), `Trigger`,
+ * `Popup`, items (`Item`, `LinkItem`, `CheckboxItem`, `RadioGroup`/`RadioItem`), `Group`,
+ * `GroupLabel`, `Separator` and `Submenu`. Disabled items can show their reason.
+ */
 export const Menu = {
   Root: BaseMenu.Root,
   Trigger: BaseMenu.Trigger,
@@ -337,6 +342,7 @@ export const Menu = {
   Submenu: MenuSubmenu,
 }
 
+/** Static, non-interactive menu parts that render a menu's appearance in place, for documentation and previews. */
 export const MenuPreview = {
   Surface: PreviewSurface,
   Item: PreviewItem,

@@ -753,7 +753,7 @@ function DataTableSection() {
     <SectionPage>
       <Specimen
         title="Endpoints"
-        description="1,284 endpoints from a mock server (300–700 ms). Sort, page and resize; Shift-click headers to multi-sort and rows to select a range. State lives in the URL. The identity column is each endpoint's device identity; the ⋯ menu, right-click and the bulk bar run the endpoint class's actions from the device registry."
+        description="1,284 endpoints from a mock server (300–700 ms). Sort, page, resize and select; Shift-click multi-sorts headers and selects a range of rows. State lives in the URL. The ⋯ menu, right-click and the bulk bar run the endpoint actions."
         layout="bare"
         wide
       >
@@ -792,7 +792,7 @@ function DataTableSection() {
 
       <Specimen
         title="Reorderable rows"
-        description="Drag a row by its grip, or focus the grip and press Space, the arrow keys and Space again; Alt with an arrow key moves one place. The host owns the order and receives each move with its new index and neighbours. Running jobs are locked. Sorting by Estimate disables reordering and the grips say why. Server saves after 600 ms; Server fails reverts the move."
+        description="Drag a row by its grip, or move it from the keyboard. The host owns the order and saves each move. Running jobs are locked, and sorting by Estimate disables reordering. Server saves after 600 ms; Server fails reverts the move."
         layout="bare"
         wide
       >

@@ -10,7 +10,10 @@ export type NumberFieldSize = "sm" | "md" | "lg"
 export interface NumberFieldProps {
   value?: number | null
   defaultValue?: number
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the parsed number, or null when the box is empty, as it is typed, stepped or
+   * scrubbed. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: number | null) => void
   /** Lower allowed value. */
   min?: number
@@ -39,7 +42,7 @@ export interface NumberFieldProps {
   invalid?: boolean
   name?: string
   id?: string
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when the text input loses focus, so a form can mark the field touched. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   /** Layout only. */
   className?: string

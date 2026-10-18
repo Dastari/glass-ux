@@ -152,7 +152,7 @@ export interface FileRowProps extends Omit<ComponentProps<"li">, "children"> {
   progress?: number | null
   /** What went wrong, in place of the size line ("Upload failed — retry when online"). */
   error?: string
-  /** Called when remove occurs. The callback type specifies its arguments. */
+  /** Called when the row's remove button is pressed. Without it the row has no remove button. */
   onRemove?: () => void
 }
 

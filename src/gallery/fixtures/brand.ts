@@ -12,6 +12,7 @@ export const BRAND_SOURCES = {
   wordmark: { ...DEMO_LOGO, id: "glass-ux-wordmark" },
   ai: { ...DEMO_LOGO, id: "glass-ux-assistant" },
 };
+/** Registers the gallery's fictional Glass UX marks with the brand registry and selects brand tones with the aurora palette. */
 export function configureDemoBrand() {
   configureBrand({
     marks: BRAND_SOURCES,

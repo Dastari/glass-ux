@@ -10,7 +10,7 @@ The command search field. A button that looks like a field: it opens the palette
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| onOpen | `() => void` | See type | yes | — | Called when open occurs. The callback type specifies its arguments. |
+| onOpen | `() => void` | See type | yes | — | Called when the person clicks the trigger or presses `shortcut` anywhere (unless a palette host already handled the key); open the command palette here. |
 | placeholder | `string \| undefined` | See type | no | "Search…" | The prompt shown while the value is empty. It does not replace the field’s label. |
 | shortcut | `string \| undefined` | See type | no | "mod+k" | Opens from anywhere (R11.5). Default mod+k. |
 

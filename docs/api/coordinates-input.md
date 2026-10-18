@@ -23,8 +23,8 @@ the device's location (the browser asks for permission; a blocked site says how 
 | map | `MapConfig \| undefined` | See type | no | — | The map for "Pick on map". Without it there is no picker. |
 | mapFallback | `LngLatBox \| undefined` | See type | no | — | The area the picker shows when there is no point yet ([west, south, east, north]). |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
-| onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
-| onValueChange | `((value: LatLng \| null) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called with the new state when the show/hide password button is pressed. Pair with `revealed` to control it. |
+| onValueChange | `((value: LatLng \| null) => void) \| undefined` | See type | no | — | Called on each keystroke, map pick or located position with the parsed point, null when the text is empty, or UNREADABLE (or the out-of-range numbers read) while it is invalid. Pair with `value` to control it; use `defaultValue` otherwise. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | revealed | `boolean \| undefined` | false, true | no | — | Password boxes: whether the value shows as text. Leave unset for the box's own toggle. |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard hint shown while the field is empty and unfocused ("mod+k" → ⌘K / Ctrl K). |

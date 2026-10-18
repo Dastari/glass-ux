@@ -22,7 +22,7 @@ The trigger keeps its own accessible name; the tooltip repeats it visually.
 | content | `ReactNode` | See type | yes | — | One line: the control's name, or why it is disabled. Never interactive content (R13.5). |
 | describe | `boolean \| undefined` | false, true | no | — | Link the open tooltip to the trigger with aria-describedby. Default: only when the content is text that differs from the trigger's aria-label (a reason, extra detail) — a tooltip that repeats the name would be announced twice. |
 | enabled | `boolean \| undefined` | false, true | no | true | Set false to suppress the tooltip (for example while text is not truncated). |
-| onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called when open change occurs. The callback type specifies its arguments. |
+| onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the next open state when the tooltip shows (hover or focus, after the delay) or hides. Pair with `open` to control it. |
 | open | `boolean \| undefined` | false, true | no | — | Controls whether the overlay is open. |
 | shortcut | `string \| undefined` | See type | no | — | A keyboard shortcut drawn after the text in keycaps ("mod+k"). |
 | side | `"top" \| "bottom" \| "left" \| "right" \| undefined` | "top", "bottom", "left", "right" | no | "top" | Preferred side of the anchor; collision handling may choose another side. |

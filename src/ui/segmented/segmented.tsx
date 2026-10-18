@@ -44,7 +44,7 @@ export interface SegmentedProps<V extends string = string> {
   options: Array<SegmentedOption<V>>
   value?: V
   defaultValue?: V
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the chosen option's `value` when the person picks a segment (or a menu item in the collapsed form); pressing the current segment does not deselect it. Pair with `value` to control it. */
   onValueChange?: (value: V) => void
   size?: SegmentedSize
   /** Show icons only; labels become accessible names. Still folds to the menu when even the icons do not fit. */
@@ -58,7 +58,7 @@ export interface SegmentedProps<V extends string = string> {
   invalid?: boolean
   /** The chosen segment's tint. Status tones only when the modes are statuses (R3.3). */
   tone?: ChoiceTone
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called with the focus event when focus leaves the whole control, not when it moves between segments. For form libraries' touched state. */
   onBlur?: (event: FocusEvent<HTMLDivElement>) => void
   /** Layout only. */
   className?: string

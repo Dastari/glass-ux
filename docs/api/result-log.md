@@ -12,6 +12,6 @@ the rest above. Copy takes every line.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| result | `ResultBase & { type: "log"; lines: LogLine[]; }` | See type | yes | — | Typed result, including disclosure and rendering metadata. |
+| result | `ResultBase & { type: "log"; lines: LogLine[]; }` | See type | yes | — | The log result: `lines` in order, each with a level, the text and an optional time; the line and error counts are the data line. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

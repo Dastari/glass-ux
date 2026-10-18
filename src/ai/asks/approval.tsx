@@ -130,7 +130,10 @@ function Expiry({ at, onExpire }: { at: number; onExpire: () => void }) {
  * Decisions confirm in the button, then the card folds into its record, which shows the run
  * and updates in place.
  */
-export function ApprovalCard({ ask }: { ask: Approval }) {
+export function ApprovalCard({ ask }: {
+  /** The approval request and its current state; once decided the card folds into its record. */
+  ask: Approval;
+}) {
   const id = useId();
   const handlers = useConversationHandlers();
   const dock = useAskDockApi();

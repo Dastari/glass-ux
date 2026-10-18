@@ -19,8 +19,8 @@ resizes the dialog.
 | footer | `ReactNode` | See type | no | — | Footer actions, primary last: Cancel, then an ActionButton "Save changes". |
 | footerStart | `ReactNode` | See type | no | — | Footer start slot (Reset to defaults). |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
-| onDiscard | `(() => void) \| undefined` | See type | no | — | Called when discard occurs. The callback type specifies its arguments. |
-| onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called when open change occurs. The callback type specifies its arguments. |
+| onDiscard | `(() => void) \| undefined` | See type | no | — | Called when the person confirms discarding unsaved changes, just before the dialog closes; revert the form here. |
+| onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the next open state when the dialog opens or closes. While `dirty`, a dismissal first asks to discard and only reports false once the person confirms. Pair with `open` to control it. |
 | onSectionChange | `((section: string) => void) \| undefined` | See type | no | — | Write the section to the URL when it is a place (R6.2). |
 | open | `boolean \| undefined` | false, true | no | — | Controls whether the overlay is open. |
 | section | `string \| undefined` | See type | no | — | Active section identifier. |

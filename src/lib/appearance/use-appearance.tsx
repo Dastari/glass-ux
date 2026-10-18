@@ -104,6 +104,11 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
   return <AppearanceContext.Provider value={value}>{children}</AppearanceContext.Provider>
 }
 
+/**
+ * The current appearance from AppearanceProvider: `appearance`, `update(patch)` (normalised
+ * and stored), `reset()` (clears stored preferences) and `resolvedMode` (`light` or `dark`).
+ * Throws outside an AppearanceProvider.
+ */
 export function useAppearance() {
   const context = useContext(AppearanceContext)
   if (!context) throw new Error("useAppearance must be used inside AppearanceProvider")

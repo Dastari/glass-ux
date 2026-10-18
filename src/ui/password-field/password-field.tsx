@@ -14,7 +14,10 @@ export type PasswordPurpose = "current" | "new"
 export interface PasswordInputProps extends Omit<InputProps, "type" | "value" | "defaultValue" | "onValueChange" | "autoComplete" | "clearable"> {
   value?: string
   defaultValue?: string
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the password on each keystroke and when Generate fills it. Pair with `value` to
+   * control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: string) => void
   /**
    * current: signing in or confirming (autocomplete="current-password"). new: setting one
@@ -29,7 +32,7 @@ export interface PasswordInputProps extends Omit<InputProps, "type" | "value" | 
   generate?: boolean | GenerateOptions
   /** A copy button while there is a value. Default: on when Generate is. */
   copyable?: boolean
-  /** Called when strength change occurs. The callback type specifies its arguments. */
+  /** Called with a fresh estimate whenever the password changes, while strength is measured (`strength`, or a new password). */
   onStrengthChange?: (strength: Strength) => void
 }
 

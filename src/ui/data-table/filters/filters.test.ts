@@ -120,7 +120,7 @@ describe("URL codec", () => {
         if (raw === "boom") throw new Error("bad")
         return Number.isInteger(Number(raw)) ? Number(raw) : null
       },
-      toWhere: (value) => ({ PatchLevelGte: value }),
+      toCondition: (value) => ({ PatchLevelGte: value }),
     })
     expect(decodeFilter(custom, "2")).toBe(2)
     expect(decodeFilter(custom, "x")).toBeNull()

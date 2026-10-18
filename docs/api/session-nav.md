@@ -22,16 +22,16 @@ narrowest up); the content never widens it.
 | counts | `{ conversations: number; archived: number; } \| undefined` | See type | no | — | Counts grouped by category or status. |
 | initialQuery | `string \| undefined` | See type | no | "" | Start with this search (templates, deep links). |
 | loading | `boolean \| undefined` | false, true | no | false | Shows loading feedback in the space reserved for the content. |
-| onArchive | `((session: AiSession) => void) \| undefined` | See type | no | — | Called when archive occurs. The callback type specifies its arguments. |
-| onDelete | `((session: AiSession) => Promise<void> \| void) \| undefined` | See type | no | — | Called when delete occurs. The callback type specifies its arguments. |
-| onNewChat | `(() => void) \| undefined` | See type | no | — | Called when new chat occurs. The callback type specifies its arguments. |
-| onOpenSettings | `(() => void) \| undefined` | See type | no | — | Called when open settings occurs. The callback type specifies its arguments. |
-| onOpenWindow | `((session: AiSession) => void) \| undefined` | See type | no | — | Called when open window occurs. The callback type specifies its arguments. |
-| onRename | `((session: AiSession, title: string) => void) \| undefined` | See type | no | — | Called when rename occurs. The callback type specifies its arguments. |
-| onRestore | `((session: AiSession) => void) \| undefined` | See type | no | — | Called when restore occurs. The callback type specifies its arguments. |
-| onSelect | `((session: AiSession) => void) \| undefined` | See type | no | — | Called when select occurs. The callback type specifies its arguments. |
-| onSelectProject | `((project: AiProject) => void) \| undefined` | See type | no | — | Called when select project occurs. The callback type specifies its arguments. |
-| onViewChange | `((view: SessionView) => void) \| undefined` | See type | no | — | Called when view change occurs. The callback type specifies its arguments. |
+| onArchive | `((session: AiSession) => void) \| undefined` | See type | no | — | Called with the session from its Archive action, offered for sessions that are not archived. |
+| onDelete | `((session: AiSession) => Promise<void> \| void) \| undefined` | See type | no | — | Called with the session after the person confirms Delete; unavailable while its response is working. A returned promise keeps the action pending until it settles. |
+| onNewChat | `(() => void) \| undefined` | See type | no | — | Called from New chat; the button is shown only when this is supplied. |
+| onOpenSettings | `(() => void) \| undefined` | See type | no | — | Called from the AI settings row at the foot of the list; the row is shown only when this is supplied. |
+| onOpenWindow | `((session: AiSession) => void) \| undefined` | See type | no | — | Called with the session from its Open in window action; the action is shown only when this is supplied. |
+| onRename | `((session: AiSession, title: string) => void) \| undefined` | See type | no | — | Called with the session and its new trimmed title when an inline rename (Rename or F2) is committed with Enter or blur; not called when the title is empty, unchanged or the edit is cancelled with Esc. Supplying it enables renaming. |
+| onRestore | `((session: AiSession) => void) \| undefined` | See type | no | — | Called with the session from its Restore action, offered for archived sessions. |
+| onSelect | `((session: AiSession) => void) \| undefined` | See type | no | — | Called with the session whose row is clicked or activated with Enter. Pair with `activeId` to mark it current. |
+| onSelectProject | `((project: AiProject) => void) \| undefined` | See type | no | — | Called with the project whose row is pressed in the Projects group. |
+| onViewChange | `((view: SessionView) => void) \| undefined` | See type | no | — | Called with `conversations` or `archived` when the person picks Conversation history or Archived chats. Pair with `view` to switch the list. |
 | projects | `AiProject[] \| undefined` | See type | no | [] | Projects offered by the host. |
 | sessions | `AiSession[]` | See type | yes | — | Conversations or sessions shown in the navigation. |
 | view | `SessionView \| undefined` | "conversations", "archived" | no | "conversations" | Currently selected presentation view. |

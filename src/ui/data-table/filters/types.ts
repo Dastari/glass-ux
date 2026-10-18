@@ -65,7 +65,13 @@ export type CustomFilterValue = unknown
 /* ── Server mapping inputs ───────────────────────────────────────────────────── */
 
 /** One condition in the shape your server's query accepts (a JSON object). */
-export type WhereInput = Record<string, unknown>
+export type FilterCondition = Record<string, unknown>
+
+/** @deprecated Renamed to {@link FilterCondition}; this alias will be removed in the next release. */
+export type WhereInput = FilterCondition
+
+/** Returns a column's server condition for a filter value, or null to send nothing. */
+export type FilterConditionFn<V> = (value: V, context: FilterTimeContext) => FilterCondition | null
 
 export interface FilterTimeContext {
   /** "Now" for presets. Recomputed on every query so a live window keeps rolling. */
@@ -94,7 +100,9 @@ interface FilterSpecBase<V> {
    * Hand-written server inputs: return this column's condition yourself (for example
    * `{ HostnameContains: "orb" }`), or null to send nothing.
    */
-  toWhere?: (value: V, context: FilterTimeContext) => WhereInput | null
+  toCondition?: FilterConditionFn<V>
+  /** @deprecated Renamed to `toCondition`; this alias will be removed in the next release. */
+  toWhere?: FilterConditionFn<V>
 }
 
 export interface TextFilterSpec extends FilterSpecBase<TextFilterValue> {
@@ -180,7 +188,7 @@ export interface FilterEditorProps<V> {
   label: string
 }
 
-export interface CustomFilterSpec<V = unknown> {
+interface CustomFilterSpecBase<V> {
   /** Semantic entity or content kind, used to choose labels and rendering. */
   kind: "custom"
   field?: string
@@ -192,10 +200,28 @@ export interface CustomFilterSpec<V = unknown> {
   encode: (value: V) => string
   /** Validate and decode a URL value; null drops it. */
   decode: (raw: string) => V | null
-  toWhere: (value: V, context: FilterTimeContext) => WhereInput | null
   /** The same semantics as the server, for fully loaded local data. */
   matches?: (cellValue: unknown, value: V, context: FilterTimeContext) => boolean
 }
+
+/** A custom column's server mapping: `toCondition`, or the deprecated `toWhere`. */
+export type CustomFilterConditionSpec<V> =
+  | {
+      /** Returns the column's server condition for a value, or null to send nothing. */
+      toCondition: FilterConditionFn<V>
+      toWhere?: never
+    }
+  | {
+      /** @deprecated Renamed to `toCondition`; this alias will be removed in the next release. */
+      toWhere: FilterConditionFn<V>
+      toCondition?: never
+    }
+
+/** A column with its own editor, chip text, URL encoding and server condition. */
+export type CustomFilterSpec<V = unknown> = CustomFilterSpecBase<V> & CustomFilterConditionSpec<V>
+
+/** The options `filters.custom` accepts: a custom spec without its `kind`. */
+export type CustomFilterOptions<V = unknown> = Omit<CustomFilterSpecBase<V>, "kind"> & CustomFilterConditionSpec<V>
 
 export type FilterSpec =
   | TextFilterSpec
@@ -214,6 +240,7 @@ export interface NoFilter {
 
 export type ColumnFilterSetting = FilterSpec | NoFilter
 
+/** Whether a column's filter setting is `{ none: reason }` (the column cannot be filtered). */
 export const isNoFilter = (setting: ColumnFilterSetting | undefined): setting is NoFilter =>
   Boolean(setting && typeof setting === "object" && "none" in setting)
 
@@ -228,4 +255,5 @@ export interface FilterColumn {
   getValue?: (row: never) => unknown
 }
 
+/** The filter's display name: the spec's `label`, or the column header. */
 export const filterLabel = (column: Pick<FilterColumn, "header" | "spec">) => column.spec.label ?? column.header

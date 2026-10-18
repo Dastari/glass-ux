@@ -4,7 +4,7 @@ import { useControllable } from "./use-controllable.js"
 export interface ParsedTextOptions<T> {
   value: T | undefined
   defaultValue: T
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the parsed value on every text change, including the empty or unreadable value; tidying the text does not call it. Pair with `value` to control it. */
   onValueChange?: (value: T) => void
   /** Text → value. Empty text and unreadable text map to whatever the control stores for them (null, NaN…). */
   parse: (text: string) => T

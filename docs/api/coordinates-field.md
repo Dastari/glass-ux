@@ -22,7 +22,7 @@ CoordinatesInput bound to a `{ lat, lng } | null` form field. Pair it with `coor
 | map | `MapConfig \| undefined` | See type | no | — | The map for "Pick on map". Without it there is no picker. |
 | mapFallback | `LngLatBox \| undefined` | See type | no | — | The area the picker shows when there is no point yet ([west, south, east, north]). |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
-| onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
+| onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called with the new state when the show/hide password button is pressed. Pair with `revealed` to control it. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | required | `boolean \| undefined` | false, true | no | — | Shows the required marker. Pass `required` to the control as well. |

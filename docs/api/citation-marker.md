@@ -11,6 +11,6 @@ names the source; activating it opens the source (external sources in a new tab)
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| index | `number` | See type | yes | — | Index of the current item. |
+| index | `number` | See type | yes | — | The footnote number, matched against `index` in the message's sources; an unmatched number renders as a plain superscript. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

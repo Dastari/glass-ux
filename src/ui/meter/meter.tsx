@@ -84,7 +84,11 @@ export function Meter({
 }
 
 /** Same rows and heights as a loaded Meter. */
-export function MeterSkeleton({ layout = "stacked", className }: { layout?: "stacked" | "inline"; className?: string }) {
+export function MeterSkeleton({ layout = "stacked", className }: {
+  /** The layout of the Meter it stands in for (default `stacked`). */
+  layout?: "stacked" | "inline"
+  className?: string
+}) {
   return (
     <div className={cx("fa-meter", className)} data-layout={layout} aria-hidden data-skeleton="">
       {layout === "stacked" ? (

@@ -23,6 +23,7 @@ export function useMediaQuery(query: string, serverValue = false): boolean {
 /** The phone breakpoint from tailwind-theme.css (--breakpoint-md, 48rem). */
 export const PHONE_QUERY = "(width < 48rem)"
 
+/** Whether the viewport is phone-sized (narrower than 48rem); `false` on the server and the first client render. For viewport-positioned overlays only. */
 export function usePhoneLayout() {
   return useMediaQuery(PHONE_QUERY)
 }

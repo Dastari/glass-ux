@@ -47,6 +47,7 @@ export interface AddressValue {
 export const ADDRESS_TEXT_PARTS = ["line1", "line2", "locality", "postcode"] as const
 export type AddressTextPart = (typeof ADDRESS_TEXT_PARTS)[number]
 
+/** Returns a blank address with no location, set to `country` when given and an empty country otherwise. */
 export function emptyAddress(country?: AddressCountry): AddressValue {
   return {
     line1: "",

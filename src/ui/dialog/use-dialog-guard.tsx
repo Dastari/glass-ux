@@ -4,7 +4,7 @@ import type { DialogChangeDetails } from "./dialog.js"
 
 export interface DialogGuardOptions {
   open: boolean
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Your setter for `open`. Called with true on open, and with false on a dismissal while clean or after the person confirms the discard; a dirty dismissal asks first instead. */
   onOpenChange: (open: boolean) => void
   /** True while the dialog holds unsaved changes. */
   dirty: boolean

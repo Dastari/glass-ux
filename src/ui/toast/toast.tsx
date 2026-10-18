@@ -144,7 +144,13 @@ export function Toaster() {
 }
 
 /** A static toast for documentation. Same classes and layout, no timers. */
-export function ToastPreview({ tone = "info", title, description, action }: { tone?: ToastTone; title: string; description?: string; action?: string }) {
+export function ToastPreview({ tone = "info", title, description, action }: {
+  tone?: ToastTone
+  title: string
+  description?: string
+  /** Label of the toast's action button, drawn inert; omit for a toast without an action. */
+  action?: string
+}) {
   return (
     <div className="glass-overlay glass-detached fa-toast fa-toast-preview" data-tone={tone} role="presentation">
       <div className="fa-toast-content">

@@ -1,6 +1,8 @@
 # Dock
 
-Everything in the workspace is a window: tiled, floating, snapped, maximised, minimised to the dock or popped out.
+The strip of open windows, grouped by scope when a `WindowScopeProvider` is present.
+Clicking an item focuses, restores or minimises its window; a middle click closes it.
+Renders nothing while no windows are open.
 
 `import { Dock } from "glass-ux/windows"`
 
@@ -10,6 +12,6 @@ Everything in the workspace is a window: tiled, floating, snapped, maximised, mi
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| onOpenSwitcher | `(() => void) \| undefined` | See type | no | — | Event callback; the typed signature specifies its arguments. |
+| onOpenSwitcher | `(() => void) \| undefined` | See type | no | — | Called when the person presses the "All windows" button; open the `WindowSwitcher` here. The button is shown only when this is supplied. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

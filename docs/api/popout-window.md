@@ -1,6 +1,9 @@
 # PopoutWindow
 
-Everything in the workspace is a window: tiled, floating, snapped, maximised, minimised to the dock or popped out.
+Renders window `id` filling its own browser window, for the pop-out route. It registers
+as the window's pop-out host while mounted, sets the document title from the window's
+title, subtitle, scope and `productName`, and closes the browser window once the window
+is closed from the workspace. Render it inside a `WindowManagerProvider`.
 
 `import { PopoutWindow } from "glass-ux/windows"`
 

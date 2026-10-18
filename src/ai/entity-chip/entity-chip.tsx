@@ -213,7 +213,10 @@ export function EntityChip({
 }
 
 /** The entity's state as a badge: its live status or its toned state (ticket, alert). */
-export function EntityStateBadge({ entity }: { entity: EntityRef }) {
+export function EntityStateBadge({ entity }: {
+  /** The entity whose `status` (preferred) or toned `state` is shown; renders nothing when it has neither. */
+  entity: EntityRef;
+}) {
   if (entity.status) return <StatusBadge status={entity.status} size="sm" />;
   if (entity.state) {
     return (

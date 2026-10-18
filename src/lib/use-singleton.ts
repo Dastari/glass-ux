@@ -16,6 +16,11 @@ const subscribe = (listener: () => void) => {
   return () => listeners.delete(listener)
 }
 
+/**
+ * Whether this instance owns the named slot: `true` for the first mounted instance only,
+ * so hosts mounted more than once render a single copy. Ownership passes to the next
+ * instance when the owner unmounts; `false` on the server.
+ */
 export function useSingleton(slot: string): boolean {
   const id = useId()
   useEffect(() => {

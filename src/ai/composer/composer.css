@@ -183,7 +183,7 @@
     flex: none;
     width: var(--control-h-sm);
     height: var(--control-h-sm);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-media);
     object-fit: cover;
   }
   .fa-ai-attachment-icon {

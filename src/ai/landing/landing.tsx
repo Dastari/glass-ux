@@ -86,7 +86,7 @@ export function SuggestionChips({
         <button
           key={suggestion.id}
           type="button"
-          className="glass-control fa-pressable fa-ai-suggestion"
+          className="glass-control fa-pressable fa-lit fa-ai-suggestion"
           onClick={() => onSelect(suggestion)}
         >
           {suggestion.icon ? (

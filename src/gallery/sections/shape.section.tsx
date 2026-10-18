@@ -46,6 +46,17 @@ export default function ShapeSection() {
       <TokenTable
         tokens={[
           ["--radius-scale", "Multiplies every radius"],
+          ["--radius-compact", "xs controls; the floor of nested corners"],
+          ["--radius-chip", "Code, keycaps, flags and links inside text"],
+          ["--radius-line", "Highlighted rows in code, logs, JSON and tables"],
+          ["--radius-mark", "Data cells, entity marks, the plot area"],
+          ["--radius-skeleton", "Skeleton bars and blocks"],
+          ["--radius-media", "Images and attachment thumbnails"],
+          ["--radius-tail", "A message bubble's speaker corner"],
+          ["--radius-icon", "Icon boxes the height of a small control"],
+          ["--radius-tile-icon", "The tile icon"],
+          ["--radius-thumb", "Miniatures: snap layouts, swatches"],
+          ["--radius-elbow", "The bend of a routed connector"],
           ["--border-width", "Every hairline"],
           ["--focus-ring-width", "Keyboard focus ring"],
           ["--focus-halo", "Text-entry focus halo"],

@@ -23,7 +23,7 @@
   }
   .fa-ai-json-row {
     white-space: nowrap;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-line);
   }
   .fa-ai-json-row:focus-visible {
     outline: var(--focus-ring-width) solid var(--accent-ring);

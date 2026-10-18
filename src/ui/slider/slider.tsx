@@ -100,6 +100,11 @@ export function Slider({
         : []
   const labelled = markList.some((mark) => mark.label)
   const range = values.length > 1
+  const fraction = (current: number | undefined, fallback: number) => Math.min(1, Math.max(0, ((current ?? fallback) - min) / span))
+  // The range and thumbs move with transform (slider.css), from the values' fractions;
+  // Base UI's inline left/width are pinned so a step never re-lays out the track.
+  const from = range ? fraction(values[0], min) : 0
+  const to = fraction(values[values.length - 1], min)
 
   return (
     <BaseSlider.Root
@@ -126,7 +131,13 @@ export function Slider({
     >
       <BaseSlider.Control ref={setControl} className="fa-slider-control">
         <BaseSlider.Track className="fa-slider-track">
-          <BaseSlider.Indicator className="fa-slider-indicator" />
+          <BaseSlider.Indicator
+            className="fa-slider-indicator"
+            data-range={range ? "" : undefined}
+            style={{ insetInlineStart: 0, width: "100%", "--_from": from, "--_to": to } as CSSProperties}
+          >
+            <span className="fa-slider-fill" />
+          </BaseSlider.Indicator>
           {markList.map((mark) => (
             <span
               key={mark.value}
@@ -149,6 +160,7 @@ export function Slider({
               key={index}
               index={index}
               className="fa-slider-thumb"
+              style={{ insetInlineStart: 0, "--_f": fraction(current, min) } as CSSProperties}
               onBlur={onBlur}
               getAriaValueText={(formatted, raw) => show(raw)}
               {...(range ? { "aria-label": thumbLabels?.[index] ?? (index === 0 ? "Minimum" : "Maximum") } : aria)}

@@ -333,7 +333,7 @@
     position: relative;
     container-type: size;
     overflow: hidden;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-thumb);
     outline: var(--border-width) dashed var(--line-strong);
     outline-offset: var(--space-1);
   }

@@ -39,7 +39,7 @@
   }
   .fa-window-icon {
     --tile-icon-box: var(--control-h-sm);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-icon);
     transition: color var(--duration-fast) var(--ease-standard);
   }
   .fa-window-icon > svg {

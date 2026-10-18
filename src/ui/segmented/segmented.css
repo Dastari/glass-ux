@@ -21,7 +21,7 @@
     /* component tokens */
     --_h: var(--control-h-md);
     --_pad: var(--space-half);
-    --_r: max(var(--radius-xs), calc(var(--radius-control) - var(--_pad)));
+    --_r: max(var(--radius-compact), calc(var(--radius-control) - var(--_pad)));
     --_icon: var(--icon-md);
     --_font: var(--type-body-size);
     --_line: var(--type-body-line);

@@ -118,7 +118,7 @@
     width: var(--control-h-sm);
     height: var(--control-h-sm);
     margin-block: calc((var(--type-body-line) - var(--control-h-sm)) / 2) 0;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-icon);
   }
   .fa-radio-card-icon > .fa-icon {
     width: var(--icon-md);

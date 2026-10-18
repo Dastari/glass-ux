@@ -145,7 +145,7 @@
     height: var(--control-h-xs);
     padding: 0;
     border: 0;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-compact);
     background: none;
     color: var(--fg-subtle);
     outline-offset: calc(var(--focus-ring-width) * -1);

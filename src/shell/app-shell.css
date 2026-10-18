@@ -4,17 +4,38 @@
  *   "brand top    top  top"      row 1: on the canvas (brand mark, TopBar)
  *   "rail  drawer work insp"     row 2: rail on the canvas; drawer, windows, inspector
  *
- * Track count never changes, so collapsing the drawer or inspector animates the columns.
- * Gaps live inside the drawer and inspector tracks (a collapsed track takes its gap
- * with it), so the workspace edge never sits a double gap away.
+ * Track count never changes. Opening or closing the drawer or inspector never animates the
+ * columns (that would lay out the whole workspace every frame): the pane slides with
+ * transform over the workspace and its track commits once, while the pane covers the
+ * edge that moves. Closing commits at once and the pane slides away over the widened
+ * workspace; opening slides the pane in over the workspace and commits when it lands
+ * (the tracks are registered lengths, so a 0s transition with a delay holds the old
+ * track). Gaps live inside the drawer and inspector tracks (a collapsed track takes its
+ * gap with it), so the workspace edge never sits a double gap away.
  *
  * Component tokens
  *   --_drawer-min / --_drawer-max   the drawer's width limits (mirrored in shell-state.ts)
  *   --_drawer       the drawer's width: the user's --shell-drawer, default --sidebar-w
  *   --_drawer-col   its track: width + gap when open, 0 when collapsed
  *   --_insp-col     the inspector's track: width + gap when shown, 0 otherwise
+ *   --_drawer-commit / --_insp-commit
+ *                   how long a track waits before it commits: the slide when opening, 0s
+ *                   when closing
+ *   --fa-shell-drawer-track / --fa-shell-inspector-track
+ *                   the registered copies the grid reads, so each commits on its own delay
  *   --_tabbar-space room reserved under the workspace for the floating phone tab bar
  */
+@property --fa-shell-drawer-track {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --fa-shell-inspector-track {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 @layer components {
   /* R6.3: only the routed view cross-fades between routes; the shell stays live. AppShell
      sets data-shell on <html> while it is mounted (not :root:has(), which Chromium re-checks
@@ -41,8 +62,12 @@
     --_drawer-col: calc(var(--_drawer) + var(--gap-panels));
     --_insp-col: 0px;
     --_tabbar-space: 0px;
+    --_drawer-commit: var(--duration-base);
+    --_insp-commit: 0s;
+    --fa-shell-drawer-track: var(--_drawer-col);
+    --fa-shell-inspector-track: var(--_insp-col);
     display: grid;
-    grid-template-columns: var(--sidebar-w-rail) var(--_drawer-col) minmax(0, 1fr) var(--_insp-col);
+    grid-template-columns: var(--sidebar-w-rail) var(--fa-shell-drawer-track) minmax(0, 1fr) var(--fa-shell-inspector-track);
     grid-template-rows: var(--topbar-h) minmax(0, 1fr);
     grid-template-areas:
       "brand top top top"
@@ -51,7 +76,9 @@
     padding: var(--safe-top) max(var(--page-gutter), var(--safe-right)) max(var(--page-gutter), var(--safe-bottom))
       max(var(--space-1), var(--safe-left));
     overflow: hidden;
-    transition: grid-template-columns var(--duration-base) var(--ease-standard);
+    transition-property: --fa-shell-drawer-track, --fa-shell-inspector-track;
+    transition-duration: 0s;
+    transition-delay: var(--_drawer-commit), var(--_insp-commit);
   }
   .fa-shell[data-resizing] {
     transition: none;
@@ -62,6 +89,7 @@
   :root[data-shell-drawer="closed"] .fa-shell:not([data-drawer-preview="open"]),
   .fa-shell[data-drawer-preview="closed"] {
     --_drawer-col: 0px;
+    --_drawer-commit: 0s;
   }
 
   /* The top bar and the rail sit on the canvas: corner marks there are cut out of it. */
@@ -91,21 +119,34 @@
     flex-direction: column;
     min-height: 0;
   }
+  /* The drawer's slot reaches over the workspace column, so its pane can slide over the
+     workspace while the track commits. It clips sideways only (at the rail and at the
+     workspace's far edge), so the pane's shadow still falls below, and takes no pointer
+     events itself. */
   .fa-shell-slot-drawer {
-    grid-area: drawer;
+    grid-row: 2;
+    grid-column: 2 / 4;
+    z-index: var(--z-raised);
     display: flex;
     min-width: 0;
     min-height: 0;
-    padding-inline-end: var(--gap-panels);
-    /* Clip sideways only, so the pane keeps its width (no reflow) while it collapses
-       and its shadow still falls below. */
     overflow-x: clip;
+    pointer-events: none;
     transition: visibility 0s linear 0s;
+  }
+  .fa-shell-slot-drawer > * {
+    pointer-events: auto;
+    transition: transform var(--duration-base) var(--ease-enter);
   }
   :root[data-shell-drawer="closed"] .fa-shell:not([data-drawer-preview="open"]) .fa-shell-slot-drawer,
   .fa-shell[data-drawer-preview="closed"] .fa-shell-slot-drawer {
     visibility: hidden;
     transition-delay: var(--duration-base);
+  }
+  :root[data-shell-drawer="closed"] .fa-shell:not([data-drawer-preview="open"]) .fa-shell-slot-drawer > *,
+  .fa-shell[data-drawer-preview="closed"] .fa-shell-slot-drawer > * {
+    transform: translateX(calc(-100% - var(--gap-panels)));
+    transition-timing-function: var(--ease-exit);
   }
   .fa-shell-drawer-handle {
     grid-row: 2;
@@ -155,36 +196,54 @@
     flex: 1 1 auto;
   }
 
+  /* The inspector mirrors the drawer: its slot reaches over the workspace and its pane
+     slides in from the far edge. */
   .fa-shell-slot-inspector {
-    grid-area: insp;
+    grid-row: 2;
+    grid-column: 3 / 5;
+    z-index: var(--z-raised);
     display: flex;
+    justify-content: flex-end;
     min-width: 0;
     min-height: 0;
-    padding-inline-start: var(--gap-panels);
     overflow-x: clip;
+    pointer-events: none;
     visibility: hidden;
     transition: visibility 0s linear var(--duration-base);
   }
   .fa-shell-slot-inspector > * {
     flex: none;
     width: var(--inspector-w);
+    pointer-events: auto;
+    transform: translateX(calc(100% + var(--page-gutter)));
+    transition: transform var(--duration-base) var(--ease-exit);
   }
   @media (width >= 120rem) {
     :root:not([data-shell-inspector="closed"]) .fa-shell[data-has-inspector] {
       --_insp-col: calc(var(--inspector-w) + var(--gap-panels));
+      --_insp-commit: var(--duration-base);
     }
     :root:not([data-shell-inspector="closed"]) .fa-shell-slot-inspector {
       visibility: visible;
       transition-delay: 0s;
     }
+    :root:not([data-shell-inspector="closed"]) .fa-shell-slot-inspector > * {
+      transform: none;
+      transition-timing-function: var(--ease-enter);
+    }
   }
   @media (width >= 80rem) {
     :root[data-shell-inspector="open"] .fa-shell[data-has-inspector] {
       --_insp-col: calc(var(--inspector-w) + var(--gap-panels));
+      --_insp-commit: var(--duration-base);
     }
     :root[data-shell-inspector="open"] .fa-shell-slot-inspector {
       visibility: visible;
       transition-delay: 0s;
+    }
+    :root[data-shell-inspector="open"] .fa-shell-slot-inspector > * {
+      transform: none;
+      transition-timing-function: var(--ease-enter);
     }
   }
   @media (width < 80rem) {

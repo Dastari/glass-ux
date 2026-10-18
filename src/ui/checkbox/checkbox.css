@@ -5,7 +5,8 @@
  *   ticked     the tone gradient pops in on the spring curve (it overshoots, then
  *              settles), a soft tone glow rises under it and the ✓ is drawn
  *   mixed      the same fill; the bar is drawn
- *   pressed    shrinks to --press-scale · invalid: danger edge · disabled: --disabled-opacity
+ *   pressed    shrinks to --press-scale and springs back · invalid: danger edge ·
+ *              disabled: --disabled-opacity
  *
  * Sizes  sm 16 · md 18 (--check-size) · lg 22.  Tones  accent · success · warning · danger.
  */
@@ -36,9 +37,10 @@
     cursor: pointer;
     outline-offset: var(--focus-ring-offset);
     vertical-align: middle;
+    /* A press goes in on the instant tween and springs back on release, like a button. */
     transition-property: border-color, background-color, box-shadow, transform;
-    transition-duration: var(--duration-fast);
-    transition-timing-function: var(--ease-standard);
+    transition-duration: var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-release);
+    transition-timing-function: var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-bounce);
   }
   .fa-check[data-size="sm"],
   .fa-radio[data-size="sm"] {

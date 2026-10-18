@@ -2188,7 +2188,7 @@ export function PopoutWindowExample() {
         layout="stack"
       >
         <WindowManagerProvider manager={manager}>
-          <div className="relative h-90 w-full">
+          <div className="relative h-90 w-full contain-layout">
             <PopoutWindow id={id} />
           </div>
         </WindowManagerProvider>

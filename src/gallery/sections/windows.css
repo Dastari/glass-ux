@@ -162,7 +162,7 @@
     width: 7.5rem;
     height: 4.5rem;
     padding: var(--_inset);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-thumb);
     background-color: var(--glass-fill-inset);
     box-shadow: inset 0 0 0 var(--border-width) var(--line);
     container-type: size;
@@ -173,7 +173,7 @@
     top: calc(var(--_inset) + var(--_fy) * 100cqh + var(--_gt) * var(--_half-gap));
     width: calc(var(--_fw) * 100cqw - (var(--_gl) + var(--_gr)) * var(--_half-gap));
     height: calc(var(--_fh) * 100cqh - (var(--_gt) + var(--_gb)) * var(--_half-gap));
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-mark);
     background-color: var(--accent-soft);
     box-shadow: inset 0 0 0 var(--border-width) var(--accent-line);
   }

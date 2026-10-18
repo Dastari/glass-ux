@@ -46,7 +46,7 @@
     padding-inline: var(--inset-dialog);
   }
   .fa-shell-drawer-match {
-    border-radius: calc(var(--radius-xs) / 2);
+    border-radius: calc(var(--radius-chip) / 2);
     background-color: var(--accent-soft-hover);
     color: inherit;
     font-weight: var(--weight-semibold);

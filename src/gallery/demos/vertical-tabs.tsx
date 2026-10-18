@@ -10,6 +10,7 @@ import {
   IconRefresh,
   IconSettings,
 } from "../../icons/generated/icons.js";
+import { Surface } from "../../ui/surface/index.js";
 import { VerticalTabs, type VerticalTabItem } from "../../ui/vertical-tabs/index.js";
 
 const AGENT: VerticalTabItem[] = [
@@ -32,9 +33,14 @@ const STATES: VerticalTabItem[] = [
 function Panels({ items, host = "LMN-7C71" }: { items: VerticalTabItem[]; host?: string }) {
   return items.map((item) => (
     <VerticalTabs.Panel key={item.value} value={item.value}>
-      <div className="glass-inset flex h-40 items-start rounded-tile p-tile type-caption text-fg-muted">
+      <Surface
+        material="inset"
+        radius="tile"
+        padding="tile"
+        className="flex h-40 items-start type-caption text-fg-muted"
+      >
         {item.label} · {host}
-      </div>
+      </Surface>
     </VerticalTabs.Panel>
   ));
 }

@@ -38,7 +38,7 @@
     --fa-topology-cluster-pad: var(--space-3);
     --fa-topology-cluster-header: var(--space-6);
     --fa-topology-cluster-gap: var(--space-1);
-    --fa-topology-link-radius: var(--radius-md);
+    --fa-topology-link-radius: var(--radius-elbow);
     --fa-topology-fit-padding: var(--space-6);
     --fa-topology-fade: var(--space-4);
     --_in-top: var(--fa-topology-inset-top, 0px);

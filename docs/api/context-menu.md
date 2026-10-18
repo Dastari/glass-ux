@@ -31,7 +31,7 @@ so a row's ⋯ menu and its context menu are indistinguishable (R11.6).
 | alignOffset | `number \| undefined` | See type | no | — | Alignment offset from the anchor, in CSS pixels. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | side | `import("@base-ui/react/internals/useAnchorPositioning").Side \| undefined` | "top", "bottom", "left", "right", "inline-end", "inline-start" | no | — | Preferred side of the anchor; collision handling may choose another side. |
-| sideOffset | `number \| undefined` | See type | no | — | Gap between the overlay and its anchor, in CSS pixels. |
+| sideOffset | `number \| undefined` | See type | no | — | Gap between the overlay and its anchor, in CSS pixels. Defaults to `--popup-offset`. |
 
 ## ContextMenu.Item
 

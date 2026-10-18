@@ -7,8 +7,8 @@
  *   bubble  a glass value bubble above the thumb while dragging or keyboard-focused
  *   ticks   optional dots on the track, labels underneath
  *
- * Keyboard and track-press steps glide (the range and thumb ease to the new value);
- * dragging follows the pointer exactly. Thumbs align to the track's edges, so nothing
+ * Keyboard and track-press steps glide (the range and thumb ease to the new value, with
+ * transform only); dragging follows the pointer exactly. Thumbs align to the track's edges, so nothing
  * overhangs the box the slider is given; ticks use the same geometry.
  */
 @layer components {
@@ -56,19 +56,51 @@
     background-color: var(--_well);
     box-shadow: var(--_well-shadow);
   }
+  /* Movement is transform only (the compositor runs it; no layout per frame). The track is
+     the size container, so 100cqi is its length, and a value at fraction f sits at
+     --_thumb / 2 + f * (100cqi - --_thumb), the edge-aligned thumb centre (ticks use the
+     same formula). slider.tsx pins Base UI's inline left/width and writes the fractions:
+     the indicator is a track-length clip moved to the range start, and the fill inside it
+     a track-length pill moved so its end meets the range end. */
+  .fa-slider-track {
+    container-type: inline-size;
+  }
+  .fa-slider {
+    --_dir: 1;
+  }
+  .fa-slider:dir(rtl) {
+    --_dir: -1;
+  }
   .fa-slider-indicator {
+    --_at-from: calc(var(--_thumb) / 2 + var(--_from, 0) * (100cqi - var(--_thumb)));
+    --_at-to: calc(var(--_thumb) / 2 + var(--_to, 0) * (100cqi - var(--_thumb)));
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+    filter: drop-shadow(0 0 var(--space-1) var(--_on-glow));
+    transform: translateX(calc(var(--_dir) * var(--_at-from) * var(--_ranged, 0)));
+  }
+  .fa-slider-indicator[data-range] {
+    --_ranged: 1;
+  }
+  .fa-slider-fill {
+    display: block;
     height: 100%;
     border-radius: inherit;
     background-color: var(--_on);
     background-image: var(--_on-fill);
-    box-shadow:
-      inset 0 var(--border-width) 0 0 var(--rim-light),
-      0 0 var(--space-2) calc(var(--space-half) * -1) var(--_on-glow);
+    box-shadow: inset 0 var(--border-width) 0 0 var(--rim-light);
+    transform: translateX(
+      calc(var(--_dir) * (var(--_at-to) - var(--_at-from) * var(--_ranged, 0) - 100cqi))
+    );
+  }
+  .fa-slider-thumb {
+    transform: translateX(calc(var(--_dir) * (var(--_thumb) / 2 + var(--_f, 0) * (100cqi - var(--_thumb)))));
   }
 
   /* Glide between values unless the pointer is driving. */
-  .fa-slider:not([data-dragging]) :is(.fa-slider-indicator, .fa-slider-thumb) {
-    transition-property: inset-inline-start, inset-inline-end, left, right, width, transform, box-shadow;
+  .fa-slider:not([data-dragging]) :is(.fa-slider-indicator, .fa-slider-fill, .fa-slider-thumb) {
+    transition-property: transform;
     transition-duration: var(--duration-base);
     transition-timing-function: var(--ease-standard);
   }
@@ -154,7 +186,7 @@
     min-width: var(--control-h-sm);
     padding: var(--space-half) var(--space-2);
     border: var(--border-width) solid var(--glass-edge);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-tooltip);
     background-color: var(--glass-fill-overlay);
     background-image: var(--glass-sheen);
     box-shadow:

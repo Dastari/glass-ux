@@ -15,6 +15,7 @@ import {
 import { IconClose } from "../../icons/generated/icons.js"
 import { resolveActions, splitForHeader, type ActionSet } from "../../lib/actions/actions.js"
 import { cx } from "../../lib/cx.js"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { observeElementSize } from "../../lib/resize-observer.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { ActionBar, ActionContextMenu, ActionMenu, useActionRunner } from "../actions/index.js"
@@ -31,8 +32,6 @@ const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : use
 /** Hover delay before a chip's preview card opens: quicker than a tooltip, it is the point of the chip. */
 const PREVIEW_DELAY_MS = 400
 const PREVIEW_CLOSE_MS = 150
-/** px gap between chip and card, mirroring --space-2. */
-const PREVIEW_GAP = 8
 
 /** A state discovered for the entity: the agent, SNMP, an integration. */
 export interface EntityState {
@@ -564,6 +563,7 @@ function keyOpen(onOpen?: () => void) {
 
 function ChipTier<T>({ parts, dom }: TierProps<T>) {
   const { name, title, kind, icon, portrait, state, actions, targets, href, onOpen, size = "inline", onRemove, preview = true, slots } = parts
+  const popup = usePopupMetrics()
   const label = accessibleName(name, kind, state)
   const glyph = <EntityGlyph icon={icon} portrait={portrait} state={state} labelled={false} badge={slots?.badge} className="fa-entity-chip-glyph" />
   const common = { ...dom, ...stateData(state), className: cx("fa-entity", dom.className), "data-tier": "chip", "data-size": size }
@@ -613,7 +613,7 @@ function ChipTier<T>({ parts, dom }: TierProps<T>) {
     <BasePreviewCard.Root>
       {withMenu}
       <BasePreviewCard.Portal>
-        <BasePreviewCard.Positioner className="fa-entity-preview-positioner" sideOffset={PREVIEW_GAP} collisionPadding={PREVIEW_GAP}>
+        <BasePreviewCard.Positioner className="fa-entity-preview-positioner" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BasePreviewCard.Popup className="glass-overlay fa-popup fa-entity-preview">
             <PreviewContent parts={parts} />
           </BasePreviewCard.Popup>

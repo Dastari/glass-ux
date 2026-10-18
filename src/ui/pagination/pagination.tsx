@@ -2,6 +2,7 @@ import { Select } from "@base-ui/react/select"
 import { useState, type ComponentProps } from "react"
 import { IconCheck, IconChevronLeft, IconChevronRight, IconChevronsUpDown, IconPageFirst, IconPageLast } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Button } from "../button/index.js"
 import { Skeleton } from "../skeleton/index.js"
 import { formatRange, pageCountOf } from "./range.js"
@@ -139,6 +140,7 @@ function PageSizeSelect({
   disabled: boolean
 }) {
   const items = options.map((option) => ({ value: option, label: `${option} per page` }))
+  const popup = usePopupMetrics()
   return (
     <Select.Root items={items} value={value} onValueChange={(next) => next !== null && onChange(next as number)} disabled={disabled}>
       <Select.Trigger className="fa-control fa-pager-size" data-size="sm" aria-label="Rows per page">
@@ -148,7 +150,7 @@ function PageSizeSelect({
         </Select.Icon>
       </Select.Trigger>
       <Select.Portal>
-        <Select.Positioner className="fa-pager-positioner" sideOffset={6} alignItemWithTrigger={false} side="top" align="end">
+        <Select.Positioner className="fa-pager-positioner" sideOffset={popup.offset} collisionPadding={popup.collisionPadding} alignItemWithTrigger={false} side="top" align="end">
           <Select.Popup className="glass-overlay fa-popup fa-pager-popup">
             <Select.List>
               {items.map((item) => (

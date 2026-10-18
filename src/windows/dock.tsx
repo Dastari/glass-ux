@@ -115,7 +115,7 @@ function DockItem({
       <Tooltip content={detail ? `${title} · ${detail}` : title} side="top">
         <button
           type="button"
-          className="fa-pressable fa-wm-dock-item"
+          className="fa-pressable fa-lit fa-wm-dock-item"
           data-window-id={entry.id}
           data-active={active ? "" : undefined}
           data-minimised={entry.minimised ? "" : undefined}

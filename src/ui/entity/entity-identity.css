@@ -133,7 +133,7 @@
   }
   /* Its placeholder is the glyph's square, as the tree's is. */
   .fa-entity-glyph.fa-skel-block {
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-skeleton);
   }
   /* In a list row the glyph lights up with the row, as fa-item's own icons do. */
   :is(.fa-item:is(:hover, [data-highlighted], [data-selected], [data-popup-open]), .fa-entity[data-tier="row"][data-interactive]:hover) .fa-entity-glyph {
@@ -177,7 +177,7 @@
     place-items: center;
     width: var(--_mark);
     height: var(--_mark);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-mark);
     background-color: var(--surface-3);
     box-shadow: 0 0 0 var(--border-width) var(--line);
     color: var(--fg-muted);
@@ -199,7 +199,7 @@
     max-width: 100%;
     padding: 0;
     border: 0;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-chip);
     background: none;
     color: inherit;
     font: inherit;

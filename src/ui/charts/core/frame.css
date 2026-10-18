@@ -107,7 +107,7 @@
   .fa-chart-hit {
     position: absolute;
     inset: 0;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-mark);
     outline-offset: var(--focus-ring-offset);
     touch-action: pan-y;
   }
@@ -229,7 +229,7 @@
   .fa-chart-skel-area {
     position: absolute;
     inset: 0;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-skeleton);
     /* A soft hill: reads as a series, not a slab. */
     clip-path: polygon(0 100%, 0 70%, 10% 56%, 22% 64%, 34% 40%, 46% 52%, 58% 30%, 70% 44%, 82% 24%, 92% 34%, 100% 20%, 100% 100%);
   }

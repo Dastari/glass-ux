@@ -21,6 +21,9 @@
   .fa-surface[data-radius="dialog"] {
     border-radius: var(--radius-dialog);
   }
+  .fa-surface[data-padding="overlay"] {
+    padding: var(--inset-overlay);
+  }
   .fa-surface[data-padding="tile"] {
     padding: var(--inset-tile);
   }

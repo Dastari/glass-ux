@@ -24,6 +24,11 @@
  * dialogs, toasts, tooltips). Each is a sampled damped spring in linear() with a
  * cubic-bezier fallback, and runs on a duration token, so Still stops it like any other.
  *
+ * Layout: nothing animates width, height, position or grid tracks except a disclosure's
+ * height (fa-collapse). Travelling things move with transform (slider range and thumbs,
+ * the tab bar condensing, the shell's panes sliding over a track that commits once), or lay
+ * out once and play the inverse transform (useFlip, src/lib/flip.ts: the snap preview).
+ *
  * Performance (docs/performance.md): an animation that repeats forever animates only
  * transform and opacity, which the compositor runs without the main thread. Animating
  * box-shadow, colours or sizes forever restyles and repaints the page on every frame for as

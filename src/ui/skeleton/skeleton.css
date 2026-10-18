@@ -57,7 +57,7 @@
        box of the text role — so the placeholder reads as the same size as the text and
        swapping it for the text changes nothing. */
     height: min(calc(var(--_line) - var(--space-1)), calc(var(--_size) * 1.15));
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-skeleton);
   }
   .fa-skel-line[data-last] .fa-skel-bar {
     width: var(--_w, 100%);

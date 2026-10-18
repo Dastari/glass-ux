@@ -18,7 +18,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-chip);
   }
   .fa-email-suggestion:hover {
     text-decoration: underline;

@@ -68,6 +68,15 @@ such as `--accent-text` in components. Application palettes can be registered wi
 Tailwind's `p-panel` utility reads `--inset-panel`. It is not a CSS variable named `--p-panel`.
 Use `--inset-tile`, `--inset-panel`, `--inset-dialog`, semantic gap roles and radius roles in
 host CSS. Keep geometry responsive to density, UI scale, radius scale and line weight.
+Radius roles name what the corner belongs to: `--radius-control`, `--radius-tile`,
+`--radius-surface`, `--radius-overlay`, `--radius-dialog`, `--radius-item`, `--radius-check`
+and `--radius-tooltip`, plus the small roles `--radius-compact` (xs controls),
+`--radius-chip` (code, keycaps and links inside text), `--radius-line` (highlighted rows in
+code, logs and tables), `--radius-mark` (data cells and small marks), `--radius-skeleton`,
+`--radius-media`, `--radius-tail`, `--radius-icon`, `--radius-tile-icon`, `--radius-thumb` and
+`--radius-elbow`. The steps `--radius-xs` … `--radius-2xl` belong to `tokens.css`;
+`pnpm tokens:check` rejects them elsewhere. `Surface padding="overlay"` with
+`radius="overlay"` holds `.fa-item` rows with nested corners.
 
 ```sh
 pnpm exec glass-ux check-layout src

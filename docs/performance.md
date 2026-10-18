@@ -23,6 +23,24 @@ Gliding indicators clip a single element (`fa-glide`) between two registered edg
 instead of animating its width. Keep `fa-lit` off blurred layers: repainting inside a
 layer redraws its blur pass.
 
+Apart from a disclosure's height and window state changes, nothing animates layout. Slider
+ranges and thumbs move with transform against their track's container width; the workspace
+snap preview lays out once at its new zone and plays the inverse transform; the phone tab
+bar condenses with transform and opacity. The shell's drawer and inspector never animate
+grid tracks: the pane slides over the workspace and its track commits once (immediately
+when closing, after the slide when opening), so the workspace is laid out once per toggle
+rather than every frame. Window geometry changes between states (tile, snap, maximise)
+still transition `left`/`top`/`width`/`height`, because their content must reflow to the
+new size; they run once per state change and never during a drag.
+
+Edge refraction through an SVG displacement filter (`backdrop-filter: url(#…)`) was
+prototyped and left out. It renders only in Chromium; at the library's blur radii the
+bent rim is barely visible except over sharp text; sampling outside the box mirrors the
+backdrop at the edge; and with content moving beneath it, it roughly doubled the
+compositor's draw time and multiplied compositor-thread work several times over
+a blur-only layer in a software-rendered trace. Thicker rims, the lens glow and the
+pointer light carry the material instead.
+
 When authoring components, run `pnpm css-perf:check` and `pnpm tokens:check`. Avoid root
 `:has()` selectors and universal sibling selectors. Use stable row IDs and preserve data
 identity across updates. The library's tests cover table layout and filter semantics;

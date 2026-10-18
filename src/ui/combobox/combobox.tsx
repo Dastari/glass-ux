@@ -2,9 +2,10 @@ import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { useMemo, useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconCheck, IconChevronsUpDown, IconClose } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Button } from "../button/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
-import { POPUP_COLLISION_PADDING, POPUP_OFFSET, type SelectSize } from "../select/index.js"
+import type { SelectSize } from "../select/index.js"
 import { OptionMore, OptionRow, OptionStatus, groupOptions, hasSecondLine, statusAnnouncement } from "./option-row.js"
 import { matches, useOptionSearch, type OptionItem, type OptionSearch, type OptionSource } from "./source.js"
 
@@ -108,13 +109,14 @@ export function ComboboxPopup<V extends string = string>({
   const twoLine = hasSecondLine(items)
   const grouped = groupOptions(items) !== null
   const quiet = status === "loading" || status === "error" || (search?.needsMore ?? 0) > 0
+  const popup = usePopupMetrics()
   return (
     <BaseCombobox.Portal>
       <BaseCombobox.Positioner
         className="fa-select-positioner"
         align="start"
-        sideOffset={POPUP_OFFSET}
-        collisionPadding={POPUP_COLLISION_PADDING}
+        sideOffset={popup.offset}
+        collisionPadding={popup.collisionPadding}
       >
         <BaseCombobox.Popup
           className="glass-overlay fa-popup fa-combobox-popup"

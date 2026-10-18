@@ -5,7 +5,7 @@ export type SurfaceMaterial =
   "chrome" | "panel" | "card" | "overlay" | "float" | "control" | "inset";
 export type SurfaceRadius =
   "control" | "tile" | "surface" | "overlay" | "dialog" | "none";
-export type SurfacePadding = "none" | "tile" | "panel" | "dialog";
+export type SurfacePadding = "none" | "overlay" | "tile" | "panel" | "dialog";
 
 type SurfaceProps<T extends ElementType> = {
   /** Semantic element rendered by the polymorphic component. */
@@ -14,7 +14,7 @@ type SurfaceProps<T extends ElementType> = {
   material?: SurfaceMaterial;
   /** Semantic corner-radius role. */
   radius?: SurfaceRadius;
-  /** Semantic padding role. */
+  /** Semantic padding role. `overlay` is the item-list inset; pair it with `radius="overlay"` so `.fa-item` rows nest. */
   padding?: SurfacePadding;
   /** Make this surface a size container so its contents can respond with @container. */
   container?: boolean;

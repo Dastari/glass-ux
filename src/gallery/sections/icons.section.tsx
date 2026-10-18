@@ -37,6 +37,7 @@ import { iconRegistry } from "../../icons/generated/registry.js"
 import { DEVICE_BRAND_KEYWORDS, DEVICE_BRAND_NAMES } from "../fixtures/device-brands.js"
 import { Button, ButtonGroup, FEEDBACK_HOLD_MS } from "../../ui/button/index.js"
 import type { IconComponent, IconSize } from "../../ui/icon/index.js"
+import { Surface } from "../../ui/surface/index.js"
 
 type Entry = (typeof iconRegistry)[number]
 const BY_NAME = new Map<string, Entry["Icon"]>(iconRegistry.map((entry) => [entry.name, entry.Icon]))
@@ -243,7 +244,7 @@ export default function IconsSection() {
           </Button>
         </div>
         <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, calc(var(--unit) * 64)), 1fr))" }}>
-          <div className="glass-inset flex flex-col self-start rounded-tile p-1.5">
+          <Surface material="inset" radius="overlay" padding="overlay" className="flex flex-col self-start">
             <Row icon={<IconDashboard size="lg" tint={tint} />}>Dashboard</Row>
             <Row icon={<IconEndpoint size="lg" tint={tint} />} current>
               Endpoints
@@ -254,8 +255,8 @@ export default function IconsSection() {
             <Row icon={<IconReporting size="lg" tint={tint} />}>Reporting</Row>
             <Row icon={<IconTickets size="lg" tint={tint} />}>Tickets</Row>
             <Row icon={<IconAi size="lg" tint={tint} />}>Assistant</Row>
-          </div>
-          <div className="glass-inset flex flex-col self-start rounded-tile p-1.5">
+          </Surface>
+          <Surface material="inset" radius="overlay" padding="overlay" className="flex flex-col self-start">
             <Row icon={<IconRemoteControl tint={tint} />}>Connect</Row>
             <Row icon={<IconViewOnly tint={tint} />}>View only</Row>
             <Row icon={<IconFileTransfer tint={tint} />}>File transfer</Row>
@@ -267,7 +268,7 @@ export default function IconsSection() {
             <Row icon={<IconTrash tint={tint} />} tone="danger">
               Remove device
             </Row>
-          </div>
+          </Surface>
           <div className="grid content-start gap-3">
             <DetailTile icon={<IconCpu tint={tint} />} label="Processor" value="Intel Core i5-8500T @ 2.10 GHz" />
             <DetailTile icon={<IconMemory tint={tint} />} label="Physical memory" value="7.8 GB" />
@@ -412,13 +413,13 @@ function Row({
 
 function DetailTile({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="glass-control flex min-w-0 items-center gap-3 rounded-tile p-3">
+    <Surface material="control" radius="tile" padding="tile" className="flex min-w-0 items-center gap-3">
       <span className="fa-tile-icon">{icon}</span>
       <span className="flex min-w-0 flex-col">
         <span className="type-caption text-fg-muted">{label}</span>
         <span className="type-label truncate">{value}</span>
       </span>
-    </div>
+    </Surface>
   )
 }
 

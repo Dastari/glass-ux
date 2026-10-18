@@ -24,7 +24,9 @@
  *   7. grain: fine noise that kills gradient banding and gives the frosted texture
  *   8. shadow: a soft, tinted elevation shadow sized by material
  *   9. light: interactive fills with fa-lit (recipes.css) reflect a fine pointer as a
- *      specular highlight (--specular, --specular-solid on coloured fills)
+ *      specular bloom (--specular) and a glint on the rim nearest it (--specular-rim,
+ *      accent-tinted in light mode so it reads on white glass); coloured fills use
+ *      --specular-solid and --specular-solid-rim
  *
  * Optics degrade with the material: Frosted keeps rims, lens and light over less blur;
  * Solid and the OS "reduce transparency" setting keep the static rims only (lens and
@@ -70,6 +72,7 @@
       oklch(1 0 0 / 0) 42%
     );
     --specular: oklch(1 0 0 / 0.95);
+    --specular-rim: oklch(from var(--accent) 0.66 calc(c * 0.85) h / 0.95);
     --glass-saturate: 1.7;
     --surface-1: oklch(0.985 0.004 var(--neutral-h));
     --surface-2: oklch(0.998 0.002 var(--neutral-h));
@@ -116,6 +119,7 @@
       oklch(1 0 0 / 0) 40%
     );
     --specular: oklch(1 0 0 / 0.2);
+    --specular-rim: oklch(1 0 0 / 0.55);
     --glass-saturate: 1.4;
     --surface-1: oklch(0.2 0.022 var(--neutral-h));
     --surface-2: oklch(0.225 0.022 var(--neutral-h));
@@ -151,7 +155,9 @@
     --glass-lens-size: 0.75rem;
     --glass-lens-float: oklch(1 0 0 / 0.08);
     --specular-size: 5rem;
+    --specular-rim-size: 3.5rem;
     --specular-solid: oklch(1 0 0 / 0.3);
+    --specular-solid-rim: oklch(1 0 0 / 0.7);
     --seam-light: oklch(1 0 0 / 0.3);
     --glass-blur-chrome: 28px;
     --glass-blur-panel: 22px;
@@ -199,7 +205,9 @@
     --glass-lens: transparent;
     --glass-lens-float: transparent;
     --specular: transparent;
+    --specular-rim: transparent;
     --specular-solid: transparent;
+    --specular-solid-rim: transparent;
   }
 
   @media (prefers-reduced-transparency: reduce) {
@@ -222,7 +230,9 @@
       --glass-lens: transparent;
       --glass-lens-float: transparent;
       --specular: transparent;
+      --specular-rim: transparent;
       --specular-solid: transparent;
+      --specular-solid-rim: transparent;
     }
   }
 

@@ -121,7 +121,7 @@
   .fa-chart-path-link {
     height: var(--control-h-xs);
     border: 0;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-compact);
     background: transparent;
     color: var(--fg-muted);
     font: inherit;

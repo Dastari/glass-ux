@@ -331,7 +331,7 @@
   .fa-ai-ask-dock-summary {
     padding: 0;
     border: 0;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-chip);
     background: none;
     color: var(--fg);
     font: inherit;

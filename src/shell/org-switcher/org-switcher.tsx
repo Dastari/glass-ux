@@ -34,11 +34,8 @@ import {
 } from "../../icons/generated/icons.js";
 import { Highlight } from "../../ui/combobox/index.js";
 import { cx } from "../../lib/cx.js";
+import { usePopupMetrics } from "../../lib/popup-metrics.js";
 import { useMediaQuery } from "../../lib/use-media-query.js";
-import {
-  POPUP_COLLISION_PADDING,
-  POPUP_OFFSET,
-} from "../../ui/select/index.js";
 import { Sheet } from "../../ui/sheet/index.js";
 import { TruncatedText } from "../../ui/truncated-text/index.js";
 import { SHELL_QUERIES } from "../queries.js";
@@ -416,6 +413,7 @@ function SwitcherList({
   onOpenChangeComplete,
   trigger,
 }: SwitcherListProps) {
+  const popup = usePopupMetrics();
   const [localQuery, setLocalQuery] = useState("");
   const query = remote?.query ?? localQuery;
   const setQuery = remote?.onQueryChange ?? setLocalQuery;
@@ -532,8 +530,8 @@ function SwitcherList({
             <Combobox.Positioner
               className="fa-select-positioner"
               align="start"
-              sideOffset={POPUP_OFFSET}
-              collisionPadding={POPUP_COLLISION_PADDING}
+              sideOffset={popup.offset}
+              collisionPadding={popup.collisionPadding}
             >
               <Combobox.Popup
                 className="glass-overlay fa-popup fa-org-switcher-popup"

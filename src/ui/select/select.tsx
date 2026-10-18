@@ -2,11 +2,20 @@ import { Select as BaseSelect } from "@base-ui/react/select"
 import { useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconCheck, IconChevronsUpDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 
-/** Gap between a field and its popup, in px. Mirrors --space-1-5. */
+/**
+ * Gap between a field and its popup, in px, at `--ui-scale: 1`.
+ * @deprecated Ignores `--ui-scale`. Library popups now measure `--popup-offset`; this constant
+ * remains for consumers that positioned their own popups with it.
+ */
 export const POPUP_OFFSET = 6
-/** Distance a popup keeps from the viewport edge, in px. Mirrors --space-2. */
+/**
+ * Distance a popup keeps from the viewport edge, in px, at `--ui-scale: 1`.
+ * @deprecated Ignores `--ui-scale`. Library popups now measure `--popup-collision`; this
+ * constant remains for consumers that positioned their own popups with it.
+ */
 export const POPUP_COLLISION_PADDING = 8
 
 export type SelectSize = "sm" | "md" | "lg"
@@ -114,6 +123,7 @@ export function Select<V extends string = string>({
   const [open, setOpen] = useState(false)
   const flat = flattenOptions(options)
   const find = (current: V | null) => flat.find((option) => option.value === current)
+  const popup = usePopupMetrics()
 
   return (
     <BaseSelect.Root<V>
@@ -135,7 +145,7 @@ export function Select<V extends string = string>({
       <BaseSelect.Trigger
         {...aria}
         ref={ref}
-        className={cx("fa-control fa-select-trigger", className)}
+        className={cx("fa-control fa-lit fa-select-trigger", className)}
         data-size={size}
         data-width={widthAttr(width)}
         data-readonly={readOnly ? "" : undefined}
@@ -173,8 +183,8 @@ export function Select<V extends string = string>({
           className="fa-select-positioner"
           alignItemWithTrigger={false}
           align="start"
-          sideOffset={POPUP_OFFSET}
-          collisionPadding={POPUP_COLLISION_PADDING}
+          sideOffset={popup.offset}
+          collisionPadding={popup.collisionPadding}
         >
           <BaseSelect.Popup className="glass-overlay fa-popup fa-select-popup">
             <BaseSelect.List className="fa-select-list">

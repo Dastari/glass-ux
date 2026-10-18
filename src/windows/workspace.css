@@ -184,9 +184,10 @@
     box-shadow: inset 0 0 0 var(--border-width-strong) var(--accent-line);
     opacity: 0;
     pointer-events: none;
-    transition-property: left, top, width, height, opacity;
-    transition-duration: var(--duration-fast);
-    transition-timing-function: var(--ease-standard);
+    /* Between zones it moves with transform only: useFlip (src/lib/flip.ts) lays it out
+       once at the new zone and plays the inverse transform back to none. */
+    transform-origin: 0 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
   }
   .fa-wm-snap-preview[data-visible] {
     opacity: 1;
@@ -202,7 +203,7 @@
     display: flex;
     gap: var(--space-2);
     padding: var(--_pad);
-    border-radius: calc(var(--radius-sm) + var(--_pad));
+    border-radius: calc(var(--radius-thumb) + var(--_pad));
     translate: -50% 0;
     pointer-events: none;
     transition-property: opacity, transform;
@@ -236,7 +237,7 @@
     width: var(--_w);
     height: var(--_h);
     padding: var(--_inset);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-thumb);
     background-color: var(--glass-fill-inset);
     box-shadow: inset 0 0 0 var(--border-width) var(--line);
     container-type: size;
@@ -255,7 +256,7 @@
     height: calc(
       var(--_fh) * 100cqh - (var(--_gt) + var(--_gb)) * var(--_half-gap)
     );
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-mark);
     background-color: var(--glass-fill-control);
     box-shadow: inset 0 0 0 var(--border-width) var(--line);
     transition-property: background-color, box-shadow;

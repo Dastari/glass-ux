@@ -29,7 +29,7 @@
     height: var(--control-h-xs);
     padding-inline: var(--space-1-5);
     border: 0;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-compact);
     background: transparent;
     color: var(--fg-muted);
     font: inherit;
@@ -203,7 +203,7 @@
     inset: 0;
     overflow: auto;
     overscroll-behavior: contain;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-mark);
   }
   .fa-chart-table {
     width: 100%;

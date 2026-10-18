@@ -1,39 +1,27 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Link } from "@tanstack/react-router";
-import { componentDestination } from "glass-ux/gallery";
 import {
   useAppearance,
   BACKGROUNDS,
   BACKGROUND_LABELS,
 } from "glass-ux/appearance";
-import {
-  Surface,
-  Panel,
-  PanelHeader,
-  PanelBody,
-  PanelFooter,
-} from "glass-ux/surface";
+import { Surface, Panel, PanelHeader } from "glass-ux/surface";
 import { Button } from "glass-ux/button";
 import { ButtonLink } from "glass-ux/button-link";
 import { Badge } from "glass-ux/badge";
-import { Avatar, AvatarGroup } from "glass-ux/avatar";
-import { Metric } from "glass-ux/metric";
-import { AreaChart } from "glass-ux/charts";
-import { ActivityFeed } from "glass-ux/activity-feed";
-import {
-  DataTable,
-  createDataTableColumns,
-  localPage,
-  filters,
-  type DataTableState,
-  type DataTableSearch,
-} from "glass-ux/data-table";
-import { Progress, ProgressRing } from "glass-ux/progress";
+import { Avatar } from "glass-ux/avatar";
+import { ProgressRing } from "glass-ux/progress";
 import { Dialog } from "glass-ux/dialog";
 import { Field } from "glass-ux/field";
-import { Form, formBehaviour, textRule, useAppForm } from "glass-ux/form";
 import { Segmented } from "glass-ux/segmented";
-import { Switch } from "glass-ux/switch";
 import { Checkbox } from "glass-ux/checkbox";
 import { Slider } from "glass-ux/slider";
 import { toast } from "glass-ux/toast";
@@ -56,615 +44,29 @@ import {
 } from "glass-ux/ai";
 import {
   IconArrowRight,
-  IconArrowUpRight,
-  IconChartLine,
   IconFolder,
   IconGrid,
   IconPhone,
-  IconPlus,
   IconRefresh,
   IconUser,
 } from "glass-ux/icons";
 import {
   studioProjects,
   studioPeople,
-  studioPortrait,
   weeklyHours,
   previousHours,
   taskNames,
   type StudioProject,
 } from "./showcase-data";
+import {
+  ComponentLinks,
+  ProjectSheet,
+  StudioWorkspace,
+} from "./showcase-studio";
 import "./showcase.css";
-import { NetworkWorkspace } from "./showcase-network";
 
-const statusTone = (status: StudioProject["status"]) =>
-  status === "Complete"
-    ? "success"
-    : status === "In review"
-      ? "warning"
-      : "accent";
-const col = createDataTableColumns<StudioProject>();
-const columns = col.columns([
-  col.accessor("name", {
-    header: "Project",
-    width: 18,
-    minWidth: 12,
-    priority: 1,
-    cardRole: "title",
-    sortable: true,
-    cell: ({ row }) => (
-      <span className="showcase-project-name">
-        <span>{row.original.name}</span>
-        <span className="type-caption text-fg-muted">
-          {row.original.category}
-        </span>
-      </span>
-    ),
-    filter: filters.text({ field: "name" }),
-  }),
-  col.accessor("owner", {
-    header: "Lead",
-    width: 12,
-    priority: 3,
-    sortable: true,
-    cell: ({ row }) => (
-      <span className="showcase-person">
-        <Avatar
-          name={row.original.owner}
-          src={studioPortrait(row.original.owner)}
-          size="xs"
-          decorative
-        />
-        {row.original.owner}
-      </span>
-    ),
-    filter: filters.options({
-      field: "owner",
-      options: studioPeople.map(({ name }) => ({ value: name, label: name })),
-    }),
-  }),
-  col.accessor("status", {
-    header: "Status",
-    width: 9,
-    priority: 2,
-    cardRole: "status",
-    sortable: true,
-    cell: ({ getValue }) => (
-      <Badge size="sm" tone={statusTone(getValue())} marker="dot">
-        {getValue()}
-      </Badge>
-    ),
-    filter: filters.options({
-      field: "status",
-      options: ["In progress", "In review", "Complete"].map((value) => ({
-        value,
-        label: value,
-      })),
-    }),
-  }),
-  col.accessor("progress", {
-    header: "Progress",
-    width: 9,
-    priority: 3,
-    sortable: true,
-    cell: ({ row }) => (
-      <Progress
-        value={row.original.progress}
-        aria-label={`${row.original.name} progress`}
-        size="sm"
-      />
-    ),
-    filter: filters.number({
-      server: "int",
-      field: "progress",
-      min: 0,
-      max: 100,
-    }),
-  }),
-  col.accessor("hours", {
-    header: "Hours",
-    width: 5,
-    priority: 4,
-    align: "end",
-    sortable: true,
-    filter: filters.number({ server: "int", field: "hours", min: 0 }),
-  }),
-]);
-const projectSearch: DataTableSearch<StudioProject> = {
-  fields: [
-    { field: "name", value: (row) => row.name },
-    { field: "owner", value: (row) => row.owner },
-    { field: "category", value: (row) => row.category },
-  ],
-  placeholder: "Search projects or people",
-};
-
-function ComponentLinks({ items }: { items: Array<[string, string]> }) {
-  return (
-    <div
-      className="showcase-component-links"
-      aria-label="Components in this demo"
-    >
-      {items.map(([id, label]) => {
-        const destination = componentDestination(id);
-        return (
-          <Link
-            key={id}
-            to="/components/$component"
-            params={{ component: destination.id }}
-            hash={destination.hash}
-          >
-            {label}
-            <IconArrowUpRight />
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
-
-function ProjectDialog({
-  project,
-  onClose,
-}: {
-  project: StudioProject | null;
-  onClose: () => void;
-}) {
-  return (
-    <Dialog.Root
-      open={!!project}
-      onOpenChange={(open) => {
-        if (!open) onClose();
-      }}
-    >
-      <Dialog.Popup size="sm">
-        <Dialog.Header
-          title={project?.name ?? "Project"}
-          subtitle={project?.category}
-          icon={<IconFolder />}
-        />
-        <Dialog.Body>
-          {project ? (
-            <div className="showcase-stack">
-              <div className="showcase-row">
-                <Avatar
-                  name={project.owner}
-                  src={studioPortrait(project.owner)}
-                  decorative
-                />
-                <div>
-                  <p className="type-label">{project.owner}</p>
-                  <p className="type-caption text-fg-muted">Project lead</p>
-                </div>
-                <Badge tone={statusTone(project.status)}>
-                  {project.status}
-                </Badge>
-              </div>
-              <Progress
-                value={project.progress}
-                label="Project progress"
-                meta={`${project.hours} hours logged`}
-              />
-            </div>
-          ) : null}
-        </Dialog.Body>
-        <Dialog.Footer>
-          <Button onClick={onClose}>Back to workspace</Button>
-        </Dialog.Footer>
-      </Dialog.Popup>
-    </Dialog.Root>
-  );
-}
-
-const projectNameRule = textRule(() => ({ ok: true }), {
-  required: true,
-  requiredMessage: "Give your project a name.",
-});
-
-function NewProject({
-  open,
-  onOpenChange,
-  onAdd,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onAdd: (name: string) => void;
-}) {
-  const form = useAppForm({
-    ...formBehaviour,
-    defaultValues: { name: "" },
-    onSubmit: ({ value }) => {
-      onAdd(value.name.trim());
-      onOpenChange(false);
-    },
-  });
-  return (
-    <Dialog.Root
-      open={open}
-      onOpenChange={onOpenChange}
-      onOpenChangeComplete={(value) => {
-        if (!value) form.reset({ name: "" });
-      }}
-    >
-      <Dialog.Popup size="sm">
-        <Dialog.Header
-          title="New project"
-          subtitle="Meridian Studio"
-          icon={<IconPlus />}
-        />
-        <Form form={form}>
-          <Dialog.Body>
-            <form.AppField
-              name="name"
-              validators={{ onDynamic: projectNameRule }}
-            >
-              {(field) => (
-                <field.TextField
-                  label="Project name"
-                  maxLength={80}
-                  placeholder="Atlas field guide"
-                />
-              )}
-            </form.AppField>
-          </Dialog.Body>
-          <Dialog.Footer>
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <form.SubmitButton variant="primary">
-              Create project
-            </form.SubmitButton>
-          </Dialog.Footer>
-        </Form>
-      </Dialog.Popup>
-    </Dialog.Root>
-  );
-}
-
-function StudioWorkspace({
-  projects,
-  onAdd,
-}: {
-  projects: StudioProject[];
-  onAdd: (name: string) => void;
-}) {
-  const [view, setView] = useState<"overview" | "projects">("overview");
-  const [period, setPeriod] = useState<"week" | "month">("week");
-  const [live, setLive] = useState(true);
-  const [tick, setTick] = useState(0);
-  const [adding, setAdding] = useState(false);
-  const [opened, setOpened] = useState<StudioProject | null>(null);
-  const [state, setState] = useState<DataTableState>({
-    sorting: [],
-    filters: [],
-    pagination: { pageIndex: 0, pageSize: 5 },
-    selection: {},
-    search: "",
-  });
-  useEffect(() => {
-    if (!live) return;
-    const timer = setInterval(() => setTick((value) => value + 1), 5000);
-    return () => clearInterval(timer);
-  }, [live]);
-  const series = weeklyHours.map(
-    (value, index) => value + (index === weeklyHours.length - 1 ? tick % 7 : 0),
-  );
-  const page = useMemo(
-    () => localPage(projects, columns, state, projectSearch),
-    [projects, state],
-  );
-  const completed = projects.filter(
-    (project) => project.status === "Complete",
-  ).length;
-  return (
-    <section
-      id="workspace"
-      className="showcase-section"
-      aria-labelledby="workspace-title"
-    >
-      <div className="showcase-section-heading">
-        <div>
-          <h2 id="workspace-title">Application demo</h2>
-        </div>
-      </div>
-      <div className="showcase-workspace" data-testid="studio-workspace">
-        <div className="showcase-workspace-bar">
-          <div className="showcase-row">
-            <span className="showcase-studio-mark">
-              <IconGrid />
-            </span>
-            <div>
-              <p className="type-label">Meridian Studio</p>
-              <p className="type-caption text-fg-muted">
-                {projects.length} projects · {studioPeople.length} people
-              </p>
-            </div>
-          </div>
-          <div className="showcase-row">
-            <AvatarGroup people={studioPeople} size="sm" />
-            <Button
-              variant="primary"
-              icon={<IconPlus />}
-              onClick={() => setAdding(true)}
-            >
-              New project
-            </Button>
-          </div>
-        </div>
-        <div className="showcase-workspace-tools">
-          <Segmented
-            aria-label="Studio view"
-            value={view}
-            onValueChange={setView}
-            options={[
-              { value: "overview", label: "Overview", icon: <IconChartLine /> },
-              { value: "projects", label: "Projects", icon: <IconFolder /> },
-            ]}
-          />
-          <Switch
-            size="sm"
-            label="Live demo"
-            checked={live}
-            onCheckedChange={setLive}
-          />
-        </div>
-        {view === "overview" ? (
-          <>
-            <div className="showcase-metrics">
-              <Surface material="card" radius="tile" padding="tile">
-                <div className="showcase-metric">
-                  <Metric
-                    label="Active projects"
-                    value={projects.length - completed}
-                    delta={2}
-                    deltaUnit=""
-                    deltaLabel="this month"
-                    better="up"
-                    data={[2, 3, 3, 4, 4, 5, projects.length - completed]}
-                  />
-                </div>
-              </Surface>
-              <Surface material="card" radius="tile" padding="tile">
-                <div className="showcase-metric">
-                  <Metric
-                    label="Studio hours"
-                    value={series.at(-1)!}
-                    unit="h"
-                    delta={12}
-                    deltaUnit="%"
-                    deltaLabel="vs last week"
-                    data={series}
-                    range={live ? "Live sample" : "Paused"}
-                  />
-                </div>
-              </Surface>
-              <Surface material="card" radius="tile" padding="tile">
-                <div className="showcase-metric">
-                  <Metric
-                    label="Projects delivered"
-                    value={completed}
-                    delta={1}
-                    deltaUnit=""
-                    deltaLabel="this week"
-                    data={[0, 0, 1, 1, 1, 2, completed]}
-                  />
-                </div>
-              </Surface>
-            </div>
-            <div className="showcase-dashboard-grid">
-              <Panel>
-                <PanelHeader
-                  className="showcase-chart-header"
-                  title="Studio hours"
-                  description={
-                    period === "week"
-                      ? "This week and last week"
-                      : "This month and last month"
-                  }
-                  level={3}
-                  actions={
-                    <Segmented
-                      size="sm"
-                      aria-label="Chart period"
-                      value={period}
-                      onValueChange={setPeriod}
-                      options={[
-                        { value: "week", label: "Week" },
-                        { value: "month", label: "Month" },
-                      ]}
-                    />
-                  }
-                />
-                <PanelBody>
-                  <div className="showcase-chart">
-                    <AreaChart
-                      label="Studio hours over time"
-                      x={series.slice(-7).map((_, i) => i + 1)}
-                      series={[
-                        {
-                          key: "current",
-                          label: period === "week" ? "This week" : "This month",
-                          data: series
-                            .slice(-7)
-                            .map(
-                              (value) => value * (period === "month" ? 3 : 1),
-                            ),
-                        },
-                        {
-                          key: "previous",
-                          label: period === "week" ? "Last week" : "Last month",
-                          data: previousHours
-                            .slice(-7)
-                            .map(
-                              (value) => value * (period === "month" ? 3 : 1),
-                            ),
-                        },
-                      ]}
-                      unit="h"
-                      formatX={(value) =>
-                        period === "week"
-                          ? (["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][
-                              value - 1
-                            ] ?? "Sun")
-                          : `${value * 4} Oct`
-                      }
-                    />
-                  </div>
-                </PanelBody>
-              </Panel>
-              <Panel>
-                <PanelHeader title="Recent activity" level={3} />
-                <PanelBody>
-                  <ActivityFeed
-                    items={[
-                      {
-                        id: "review",
-                        icon: (
-                          <Avatar
-                            name="Mira Chen"
-                            src={studioPortrait("Mira Chen")}
-                            size="xs"
-                            decorative
-                          />
-                        ),
-                        content: (
-                          <>
-                            <strong>Mira</strong> shared The Observatory for
-                            review.
-                          </>
-                        ),
-                        at: Date.now() - 180000,
-                      },
-                      {
-                        id: "complete",
-                        icon: (
-                          <Avatar
-                            name="Noah Reed"
-                            src={studioPortrait("Noah Reed")}
-                            size="xs"
-                            decorative
-                          />
-                        ),
-                        content: (
-                          <>
-                            <strong>Noah</strong> wrapped up Cedar house.
-                          </>
-                        ),
-                        at: Date.now() - 1800000,
-                      },
-                      {
-                        id: "guidelines",
-                        icon: (
-                          <Avatar
-                            name="Avery Quinn"
-                            src={studioPortrait("Avery Quinn")}
-                            size="xs"
-                            decorative
-                          />
-                        ),
-                        content: (
-                          <>
-                            <strong>Avery</strong> added the Meridian
-                            guidelines.
-                          </>
-                        ),
-                        at: Date.now() - 3600000,
-                      },
-                    ]}
-                  />
-                </PanelBody>
-                <PanelFooter className="showcase-activity-footer">
-                  <Badge
-                    tone={live ? "success" : "neutral"}
-                    marker={live ? "pulse" : "ring"}
-                  >
-                    {live ? "Sample data is live" : "Live updates paused"}
-                  </Badge>
-                  <span
-                    className="type-caption text-fg-muted"
-                    data-testid="live-tick"
-                  >
-                    Update {tick + 1}
-                  </span>
-                </PanelFooter>
-              </Panel>
-            </div>
-          </>
-        ) : null}
-        <Panel>
-          {view === "overview" ? (
-            <PanelHeader title="Projects" level={3} />
-          ) : null}
-          <PanelBody>
-            <div className="showcase-projects">
-              <DataTable
-                id="docs-studio-projects"
-                label="Studio projects"
-                rows={page.rows}
-                rowCount={page.count}
-                columns={columns}
-                state={state}
-                onStateChange={setState}
-                search={projectSearch}
-                getRowId={(row) => row.id}
-                getRowLabel={(row) => row.name}
-                onRowOpen={setOpened}
-                pageSizes={[5, 10, 25]}
-                noun={{ one: "project", other: "projects" }}
-                renderRowActions={(row) => (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={<IconArrowUpRight />}
-                    aria-label={`Open ${row.name}`}
-                    onClick={() => setOpened(row)}
-                  />
-                )}
-                renderBulkActions={(rows, clear) => (
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      toast.success(
-                        `${rows.length} project${rows.length === 1 ? "" : "s"} added to your demo review.`,
-                      );
-                      clear();
-                    }}
-                  >
-                    Add to review
-                  </Button>
-                )}
-              />
-            </div>
-          </PanelBody>
-        </Panel>
-      </div>
-      <ComponentLinks
-        items={[
-          ["data-table", "Data table"],
-          ["area-chart", "Charts"],
-          ["metric", "Metrics"],
-          ["surface", "Surfaces"],
-          ["dialog", "Dialogs"],
-        ]}
-      />
-      <ProjectDialog project={opened} onClose={() => setOpened(null)} />
-      <NewProject
-        open={adding}
-        onOpenChange={setAdding}
-        onAdd={(name) => {
-          onAdd(name);
-          setState((value) => ({
-            ...value,
-            search: "",
-            filters: [],
-            sorting: [],
-            pagination: { ...value.pagination, pageIndex: 0 },
-          }));
-        }}
-      />
-    </section>
-  );
-}
+// The network demo (map, topology, windows) loads after the page, in a reserved box.
+const NetworkWorkspace = lazy(() => import("./showcase-network"));
 
 const MODEL = { name: "Studio assistant", runtime: "Scripted demo" };
 const firstPrompt: AiMessage = {
@@ -1284,7 +686,7 @@ function StudioAssistant({
             </Dialog.Footer>
           </Dialog.Popup>
         </Dialog.Root>
-        <ProjectDialog
+        <ProjectSheet
           project={contextProject}
           onClose={() => setContextProject(null)}
         />
@@ -1380,11 +782,15 @@ function MobileProject({
         />
         {tab === "tasks" ? (
           <div className="showcase-phone-tasks">
-            {checklist ? (
-              <Badge tone="success" marker="dot">
-                Added by your assistant
-              </Badge>
-            ) : null}
+            {/* Always present, so an approval replaces the label without moving the tasks. */}
+            <Badge
+              tone={checklist ? "success" : "neutral"}
+              marker={checklist ? "dot" : "ring"}
+              className="showcase-task-source"
+              data-testid="checklist-source"
+            >
+              {checklist ? "Added by your assistant" : "Review checklist"}
+            </Badge>
             {taskNames.map((task, index) => (
               <div className="showcase-task" key={task}>
                 <span>
@@ -1568,21 +974,38 @@ export function Showcase() {
       </header>
       <StudioWorkspace
         projects={projects}
-        onAdd={(name) => {
+        onAdd={(input) =>
           setProjects((items) => [
             {
               id: `project-${Date.now()}`,
-              name,
-              owner: "Avery Quinn",
+              name: input.name,
+              owner: input.owner,
               status: "In progress",
-              category: "New project",
+              category: input.category,
               progress: 0,
               hours: 0,
+              dueIn: input.due
+                ? Math.round(
+                    (new Date(`${input.due}T12:00`).getTime() - Date.now()) /
+                      86_400_000,
+                  )
+                : 14,
+              team: input.team.length ? input.team : [input.owner],
+              tags: input.tags,
             },
             ...items,
-          ]);
-          toast.success(`${name} created in the demo workspace.`);
-        }}
+          ])
+        }
+        onUpdate={(ids, patch) =>
+          setProjects((items) =>
+            items.map((item) =>
+              ids.includes(item.id) ? { ...item, ...patch } : item,
+            ),
+          )
+        }
+        onArchive={(ids) =>
+          setProjects((items) => items.filter((item) => !ids.includes(item.id)))
+        }
       />
       <section
         id="assistant"
@@ -1629,16 +1052,38 @@ export function Showcase() {
           </div>
         </div>
       </section>
-      <NetworkWorkspace />
-      <ComponentLinks
-        items={[
-          ["geo-map", "Maps"],
-          ["top-bar", "Top bar"],
-          ["workspace", "Windows"],
-          ["rich-text-input", "Rich text"],
-          ["account-button", "Account"],
-        ]}
-      />
+      <section
+        id="network"
+        className="showcase-section"
+        aria-labelledby="network-title"
+      >
+        <div className="showcase-section-heading">
+          <h2 id="network-title">Network operations</h2>
+        </div>
+        <Suspense
+          fallback={
+            <div
+              className="network-frame-placeholder"
+              role="status"
+              aria-label="Loading the network workspace"
+            />
+          }
+        >
+          <NetworkWorkspace />
+        </Suspense>
+        <ComponentLinks
+          items={[
+            ["geo-map", "Maps"],
+            ["topology", "Topology"],
+            ["data-table", "Live tables"],
+            ["detail-tile", "Detail tiles"],
+            ["action-bar", "Shared actions"],
+            ["command-palette", "Command palette"],
+            ["workspace", "Windows"],
+            ["rich-text-input", "Rich text"],
+          ]}
+        />
+      </section>
       <AppearanceLab />
       <footer className="showcase-footer">
         <p className="type-caption text-fg-muted">

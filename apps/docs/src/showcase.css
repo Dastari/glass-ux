@@ -161,6 +161,24 @@
   .showcase-row > .fa-badge {
     margin-inline-start: auto;
   }
+  .showcase-sheet-actions {
+    display: flex;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+  /* The form sits between the dialog and its body/footer: keep the flex chain so the body
+     scrolls and the footer stays reachable on short screens. */
+  .showcase-dialog-form {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .showcase-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
   .showcase-component-links {
     display: flex;
     flex-wrap: wrap;
@@ -266,6 +284,9 @@
     gap: var(--space-5);
     flex: 1;
   }
+  .showcase-task-source {
+    align-self: flex-start;
+  }
   .showcase-task {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
@@ -335,6 +356,12 @@
     inset: 0;
     background: var(--silk);
     mask: url("glass-ux/assets/canvas/silk.svg") center / cover no-repeat;
+  }
+  /* The network workspace's box while its chunk loads (same height as .network-frame). */
+  .network-frame-placeholder {
+    height: clamp(38rem, 88svh, 54rem);
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-surface);
   }
   .showcase-footer {
     display: flex;
@@ -425,6 +452,9 @@
     }
     .showcase-projects {
       height: clamp(26rem, 75svh, 36rem);
+    }
+    .network-frame-placeholder {
+      height: clamp(34rem, 82svh, 46rem);
     }
   }
 }

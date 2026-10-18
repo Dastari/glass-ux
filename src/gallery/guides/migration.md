@@ -89,6 +89,14 @@ describe that server's `Where` input and are not deprecated.
   column priority. Below 36rem the toolbar stays on one row and search folds to an icon.
 - **Motion.** Popups, dialogs, toasts and indicators use spring easing; under Still or the
   operating system's reduced-motion setting they remain instant, as before.
+- **SwatchPicker folds instead of wrapping.** By default (`collapse="auto"`) the swatches
+  stay on one line, and when they do not fit the box they are given the picker becomes one
+  menu button showing the chosen swatch. It used to wrap onto more lines. Pass
+  `collapse="none"` to keep every swatch and wrap, for example in a phone sheet. The picker
+  also follows `SegmentedCollapseContext`, so a host that forces `"menu"` (the TopBar's module
+  slot on a phone) folds a picker placed there; its own `collapse` prop wins. Tests that
+  find swatches by name in a narrow box should open the menu (`Palette: Ocean`) and pick the
+  `menuitemradio` instead.
 
 ### Package contents
 

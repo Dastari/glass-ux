@@ -55,6 +55,17 @@ Upgrade steps: [migration guide, 0.6 → 0.7](docs/migration.md#06--07).
 - `Surface padding="overlay"`; radius roles `--radius-chip`, `--radius-mark`,
   `--radius-tile-icon`, `--radius-thumb`, `--radius-tooltip` and others, with every component
   using a role; `--popup-collision`.
+- `SwatchPicker` is container-aware, like `Segmented`: when its swatches do not fit, it
+  folds to one menu button showing the chosen swatch, whose menu lists every swatch with its
+  name and a check on the chosen one. `collapse` (`"auto"` by default, `"menu"`, `"none"`)
+  and `SegmentedCollapseContext` choose the form; the button keeps its width whatever the
+  value. New types `SwatchPickerCollapse` and `SwatchPickerForm`.
+- The `fa-fit-row` recipe: one line of controls that give way in order (`fa-fit-1` first …
+  `fa-fit-5` last) instead of overflowing; container-aware controls fold as they are
+  squeezed.
+- `glass-ux/lib/fit-form` (`fitForm`, `nextFitForm`, `useFitForm`): the measuring that
+  `Segmented` and `SwatchPicker` share, with the hysteresis that keeps a control from
+  flipping between forms.
 - A migration guide and this changelog, shipped in the package.
 
 ### Changed
@@ -103,6 +114,10 @@ Upgrade steps: [migration guide, 0.6 → 0.7](docs/migration.md#06--07).
 - Map attribution entries are separated and sized for small maps.
 - Workspace stacking in phone sheet mode stays below popovers, toasts and tooltips.
 - Toast exits use the fast exit timing; tooltips follow the overlay motion vocabulary.
+- The documentation site's header toolbar no longer runs off the right edge: the palette
+  folds to its menu first, then density, animations and material; the background select
+  truncates last; and where even the folded controls do not fit, one Appearance button
+  holds them.
 
 ### Performance
 

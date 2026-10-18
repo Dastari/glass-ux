@@ -183,11 +183,11 @@ def("zoom", () => [
 ])
 
 def("adobe", () => {
-  // The square mark: two flanking right triangles and the footed A between them.
+  // The square mark: two tall flanking triangles, and between them a smaller A wedge
+  // whose right leg reaches the base and whose left leg ends in a horizontal crossbar.
   const flanks = [[[3, 4], [9.75, 4], [3, 20]], [[21, 4], [14.25, 4], [21, 20]]]
     .map((points) => outline(points, [1, 0.5, 0.5])).join("")
-  const a = outline([[12, 9.75], [16.25, 20], [13.5, 20], [12.25, 16.75], [9, 16.75]], 0.5)
-  return [path(flanks, "t"), path(flanks), path(a)]
+  return [path(flanks, "t"), path(flanks), path("M16.25 20L12 9.75L9 16.75H13.5")]
 })
 
 def("docker", () => [
@@ -205,20 +205,25 @@ def("npm", () => {
 def("vercel", () => tinted(poly([[12, 3.5], [21, 20], [3, 20]], 0.75)))
 
 def("cloudflare", () => {
-  // The flat-based cloud with its slanted right edge, and the smaller cloud behind it.
+  // One flat-based silhouette with two humps: the large front cloud, its slanted right
+  // edge standing on the shared baseline, and a smaller cloud tucked behind its shoulder.
+  // The rear hump is knocked out 3 units where it passes behind the front cloud.
   const base = 17.25
-  const lobe = [5, 14.5], dome = [10, 12.25], foot = [13.25, base]
+  const lobe = [5, 14.5], dome = [10, 12.25], foot = [13.25, base], rear = [17.5, 13.75]
   const [join] = intersect(lobe, 2.75, dome, 4.75)
   const after = (a, from) => (a < from ? a + 360 : a)
   const shoulder = [dome[0] + 4.75 * Math.sin(110 * Math.PI / 180), dome[1] - 4.75 * Math.cos(110 * Math.PI / 180)]
-  const main = [
-    line(foot, [lobe[0], base]),
+  const front = [
     arc(lobe, 2.75, 180, after(angleOf(lobe, join), 180)),
     arc(dome, 4.75, angleOf(dome, join), 470),
     line(shoulder, foot),
   ]
-  const back = cut([arc([18.25, 14.5], 2.75, 250, 450), ...pl([[21, 14.5], [21, base], foot], 1.5)], nearPrims(main, 3))
-  return [path(d(main, true), "t"), path(d(main, true)), path(d(back))]
+  const hump = cut([arc(rear, 3.5, 270, 540)], nearPrims(front, 3))
+  return [
+    path(d([line(foot, [lobe[0], base]), ...front], true), "t"),
+    path(d(front)),
+    path(d([...hump, line([rear[0], base], [lobe[0], base])])),
+  ]
 })
 
 def("stripe", () => [

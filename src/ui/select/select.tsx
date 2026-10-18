@@ -144,7 +144,7 @@ export function Select<V extends string = string>({
       <BaseSelect.Trigger
         {...aria}
         ref={ref}
-        className={cx("fa-control fa-select-trigger", className)}
+        className={cx("fa-control fa-lit fa-select-trigger", className)}
         data-size={size}
         data-width={widthAttr(width)}
         data-readonly={readOnly ? "" : undefined}

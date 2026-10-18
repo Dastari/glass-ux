@@ -247,6 +247,7 @@
      and softer on coloured fills, where it must not wash out the label. */
   .fa-btn:is([data-variant="primary"], [data-variant="danger"], [data-variant="success"], [data-variant="warning"]) {
     --_specular: var(--specular-solid);
+    --_specular-rim: var(--specular-solid-rim);
   }
 
   /* Small buttons keep a finger-sized target on touch screens (R20.4) without growing:

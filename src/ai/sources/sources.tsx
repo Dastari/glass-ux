@@ -101,7 +101,7 @@ export function SourceList({
           return (
             <li key={source.id} id={`${listId}-source-${source.index}`}>
               <a
-                className="glass-control fa-pressable fa-ai-source"
+                className="glass-control fa-pressable fa-lit fa-ai-source"
                 href={external ?? source.href}
                 target={external ? "_blank" : undefined}
                 rel={external ? "noopener noreferrer" : undefined}

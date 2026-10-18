@@ -1,8 +1,9 @@
 /*
  * Dock — open windows at the foot of the workspace (R14.4), and the rows of the phone
  * window switcher (a Dialog, so a bottom sheet on phones).
- * Items are icon squares (the window kind's icon, its status dot on the corner): hover fill,
- * the focused window pressed with an accent bar under it, minimised ones dimmed. The name is
+ * Items are icon squares (the window kind's icon, its status dot on the corner): lit glass
+ * (fa-lit) with a hover fill, the focused window pressed with an accent bar under it (on
+ * ::before; ::after is the light), minimised ones dimmed. The name is
  * in the tooltip and the accessible name. With scopes, windows group by organisation: each
  * group leads with the organisation's avatar, and groups are separated by space, never a line
  * (R5.8).
@@ -80,7 +81,7 @@
     background-color: var(--fill-press);
     color: var(--fg);
   }
-  .fa-wm-dock-item[data-active]::after {
+  .fa-wm-dock-item[data-active]::before {
     position: absolute;
     inset-block-end: var(--space-half);
     inset-inline: 30%;

@@ -64,33 +64,57 @@
   }
 
   /* ── Lit glass ───────────────────────────────────────────────────────────── */
-  /* A specular highlight on the glass under a fine pointer. installPointerLight writes
-     --light-x/--light-y on the hovered element only (rAF-throttled) and stops when motion
-     is reduced; without it the light rests at the top edge, where the sheen comes from.
-     It paints beneath the content (z-index -1 in the element's own stacking context) and
-     is transparent in Solid and under reduced transparency (--specular). The element
-     must be positioned; components that need ::after for something else do not use it. */
+  /* Glass that catches a fine pointer's light, in two layers on the element's ::after:
+     a soft bloom over the fill (--specular) and a tighter glint where the light meets the
+     rim (--specular-rim, painted on the border stroke only), which is what reads on white
+     glass in light mode, where a white bloom on a white fill cannot. installPointerLight
+     writes --light-x/--light-y on the hovered element only (rAF-throttled) and stops when
+     motion is reduced; without it the light rests at the top edge, where the sheen comes
+     from. Both layers paint beneath the content (z-index -1 in the element's own stacking
+     context), never over text, and are transparent in Solid and under reduced
+     transparency. The element must be positioned; components that need ::after for
+     something else do not use it. */
   .fa-lit {
     isolation: isolate;
   }
   @media (hover: hover) and (pointer: fine) {
     .fa-lit::after {
+      --_at: var(--light-x, 50%) var(--light-y, 0%);
       content: "";
       position: absolute;
       inset: calc(var(--border-width) * -1);
       z-index: -1;
+      border: var(--border-width-strong) solid transparent;
       border-radius: inherit;
       background-image: radial-gradient(
-        circle var(--specular-size) at var(--light-x, 50%) var(--light-y, 0%),
+        circle var(--specular-size) at var(--_at),
         var(--_specular, var(--specular)),
         transparent
       );
+      background-origin: border-box;
+      background-clip: border-box;
       opacity: 0;
       pointer-events: none;
       transition: opacity var(--duration-base) var(--ease-standard);
     }
+    @supports (background-clip: border-area) {
+      .fa-lit::after {
+        background-image:
+          radial-gradient(
+            circle var(--specular-rim-size) at var(--_at),
+            var(--_specular-rim, var(--specular-rim)),
+            transparent
+          ),
+          radial-gradient(
+            circle var(--specular-size) at var(--_at),
+            var(--_specular, var(--specular)),
+            transparent
+          );
+        background-clip: border-area, border-box;
+      }
+    }
     .fa-lit:hover:not(:disabled, [data-disabled], [aria-disabled="true"])::after {
-      opacity: 0.75;
+      opacity: 0.8;
     }
     /* Pressing presses the light into the glass: it brightens where the pointer is. */
     .fa-lit:active:not(:disabled, [data-disabled], [aria-disabled="true"])::after {
@@ -243,7 +267,9 @@
     line-height: var(--type-caption-line);
     font-variant-numeric: tabular-nums;
   }
-  /* A row whose submenu is open stays highlighted while focus is in the submenu. */
+  /* A row whose submenu is open stays highlighted while focus is in the submenu. The
+     highlight arrives at once and fades as it leaves, so a fast pointer or a held arrow key
+     leaves a short trail instead of waiting for the fill; a press darkens it. */
   .fa-item:is(:hover, [data-highlighted], [data-popup-open]):not([data-disabled]) {
     background-color: var(--fill-hover);
   }

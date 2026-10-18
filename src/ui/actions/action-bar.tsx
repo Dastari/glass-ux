@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react"
+import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react"
 import { IconChevronDown, IconMoreHorizontal } from "../../icons/generated/icons.js"
 import { resolveActions, splitForHeader, type ActionSet, type ResolvedAction, type ResolvedGroup } from "../../lib/actions/actions.js"
 import { cx } from "../../lib/cx.js"
@@ -204,8 +204,9 @@ export function ActionBar<T>({ set, targets, label, maxButtons = 3, className, o
   const { count, level } = fit(groups, maxButtons, available ?? width, widths)
   const { promoted, overflow } = splitForHeader(groups, count)
 
-  // The width the bar wants with every candidate showing. As its flex-basis it lets a
-  // header give the actions their room first and truncate the title's subtitle instead.
+  // The width the bar wants with every candidate showing. As its preferred width (not a
+  // flex-basis, which a column container would apply to its height) it lets a header give
+  // the actions their room first and truncate the title's subtitle instead.
   const total = groups.reduce((sum, group) => sum + group.actions.length, 0)
   const fullWidth = widths
     ? candidates.reduce((sum, action) => sum + (widths.buttons.get(action.id) ?? 0), 0) +
@@ -243,7 +244,7 @@ export function ActionBar<T>({ set, targets, label, maxButtons = 3, className, o
     <div
       ref={barRef}
       className={cx("fa-action-bar", className)}
-      style={fullWidth && available === undefined ? { flexBasis: Math.ceil(fullWidth) } : undefined}
+      style={fullWidth && available === undefined ? ({ "--_full": `${Math.ceil(fullWidth)}px` } as CSSProperties) : undefined}
       data-sizing={available === undefined ? undefined : "container"}
       data-level={level}
       data-count={count}

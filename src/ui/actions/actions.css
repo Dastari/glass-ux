@@ -16,7 +16,12 @@
     display: flex;
     flex: 0 1 auto;
     justify-content: flex-end;
+    /* --_full: the measured width with every candidate button showing (action-bar.tsx).
+       A width rather than a flex-basis, so a column flex parent keeps the bar one control
+       tall; a row parent shrinks it from there and it folds buttons into More. */
+    width: var(--_full, auto);
     min-width: var(--control-h-md);
+    max-width: 100%;
     height: var(--control-h-md);
     margin-inline-start: auto;
   }

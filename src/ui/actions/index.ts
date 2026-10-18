@@ -1,3 +1,13 @@
+export {
+  ACTION_GROUPS,
+  defineActions,
+  type ActionContext,
+  type ActionDefinition,
+  type ActionGroup,
+  type ActionSet,
+  type ActionSurface,
+  type ConfirmSpec,
+} from "../../lib/actions/actions.js"
 export { ActionBar, type ActionBarLevel, type ActionBarProps } from "./action-bar.js"
 export { ActionContextMenu, type ActionContextMenuProps } from "./action-context-menu.js"
 export { ActionMenu, ActionMenuItems, ActionMenuPreview, type ActionMenuItemsProps, type ActionMenuProps, type ActionRunHandler } from "./action-menu.js"

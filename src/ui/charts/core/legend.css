@@ -202,7 +202,7 @@
     position: absolute;
     inset: 0;
     overflow: auto;
-    overscroll-behavior: contain;
+    /* Wheel containment comes from [data-scroll-container]: only along an overflowing axis. */
     border-radius: var(--radius-mark);
   }
   .fa-chart-table {

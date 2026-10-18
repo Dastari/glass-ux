@@ -28,6 +28,13 @@ give independent datasets separate routed tabs. Table compositions use the padde
 scroll/body slot. `WindowFrame.Body variant="fill"` removes that inset intentionally
 for viewers, so do not choose it merely to make a table consume available space.
 
+Decide which element scrolls. A fill table (the default) scrolls its own rows, so its parent
+needs a definite height: every flex or grid ancestor between it and the bounded pane needs
+`min-height: 0` (or a `minmax(0, 1fr)` track), or the body collapses and shows no rows.
+Inside a pane or page that already scrolls, use `height="auto"` and let that pane scroll. Do
+not cancel `wheel` events on an ancestor of a table (canvas zoom, custom scrolling); the
+table's rows and the pane around it rely on the browser's own wheel scrolling.
+
 Make technical/internal identifier columns optional initially with
 `defaultHiddenColumns`. Keep the column definitions so the chooser and expandable
 row/card details retain those values. Saved explicit choices, including all-visible,

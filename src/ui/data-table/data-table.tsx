@@ -47,6 +47,7 @@ import {
   type MenuContent,
 } from "./actions-menu.js";
 import { BodyMessage, RetryButton, SkeletonRows, VirtualRows } from "./body.js";
+import { useHeaderWheel } from "./wheel.js";
 import {
   CARD_INLINE_STATUS_REM,
   CardList,
@@ -1860,6 +1861,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
 
   /* ── Scroll: sync the header, show edges, keep the reader in place ────────────── */
   const edges = useScrollEdges(scrollRef);
+  useHeaderWheel(headRef, scrollRef, mode === "table");
   const onScroll = () => {
     if (headRef.current && scrollRef.current)
       headRef.current.scrollLeft = scrollRef.current.scrollLeft;

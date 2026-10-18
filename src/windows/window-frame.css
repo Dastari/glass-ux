@@ -146,9 +146,9 @@
     min-height: 0;
     container: window-body / size;
   }
+  /* Wheel containment comes from [data-scroll-container]: only while the body overflows. */
   .fa-window-body[data-variant="scroll"] {
     overflow-y: auto;
-    overscroll-behavior: contain;
     padding: var(--space-1) var(--_pad) var(--_pad);
   }
   .fa-window-body[data-variant="fill"] {

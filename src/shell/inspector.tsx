@@ -73,6 +73,8 @@ function InspectorPane({
         className="fa-shell-inspector-body"
         data-fill={fill ? "" : undefined}
         data-scroll-container={fill ? undefined : ""}
+        data-scrolled-top={edges.top ? "" : undefined}
+        data-scrolled-bottom={edges.bottom ? "" : undefined}
       >
         {children}
       </div>

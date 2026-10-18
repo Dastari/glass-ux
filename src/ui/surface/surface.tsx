@@ -1,5 +1,15 @@
-import type { ComponentProps, ElementType, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useImperativeHandle,
+  useRef,
+  type ComponentProps,
+  type ElementType,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import { cx } from "../../lib/cx.js";
+import { useScrollEdges } from "../../lib/use-scroll-edges.js";
 
 export type SurfaceMaterial =
   "chrome" | "panel" | "card" | "overlay" | "float" | "control" | "inset";
@@ -57,14 +67,20 @@ export interface PanelProps extends ComponentProps<"section"> {
  */
 export function Panel({ scroll = false, className, ...rest }: PanelProps) {
   return (
-    <section
-      {...rest}
-      className={cx("glass-panel fa-surface fa-panel", className)}
-      data-radius="surface"
-      data-scroll={scroll ? "" : undefined}
-    />
+    <PanelScroll value={scroll}>
+      <section
+        {...rest}
+        className={cx("glass-panel fa-surface fa-panel", className)}
+        data-radius="surface"
+        data-scroll={scroll ? "" : undefined}
+      />
+    </PanelScroll>
   );
 }
+
+/** Whether the enclosing Panel scrolls its body. */
+const PanelScroll = createContext(false);
+const NO_ELEMENT: RefObject<HTMLElement | null> = { current: null };
 
 export interface PanelHeaderProps extends Omit<
   ComponentProps<"header">,
@@ -107,8 +123,22 @@ export function PanelHeader({
 }
 
 /** The content slot of a Panel, with consistent padding and support for a bounded scrolling parent. */
-export function PanelBody({ className, ...rest }: ComponentProps<"div">) {
-  return <div {...rest} className={cx("fa-panel-body", className)} />;
+export function PanelBody({ className, ref, ...rest }: ComponentProps<"div">) {
+  const own = useRef<HTMLDivElement>(null);
+  useImperativeHandle(ref, () => own.current!, []);
+  // A scrolling body publishes its edges: it contains the wheel only while it overflows.
+  const edges = useScrollEdges(useContext(PanelScroll) ? own : NO_ELEMENT);
+  return (
+    <div
+      {...rest}
+      ref={own}
+      className={cx("fa-panel-body", className)}
+      data-scrolled-top={edges.top ? "" : undefined}
+      data-scrolled-bottom={edges.bottom ? "" : undefined}
+      data-scrolled-left={edges.left ? "" : undefined}
+      data-scrolled-right={edges.right ? "" : undefined}
+    />
+  );
 }
 
 /** The supporting content and actions slot at the bottom of a Panel. */

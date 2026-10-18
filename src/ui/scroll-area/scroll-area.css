@@ -20,9 +20,16 @@
   .fa-scroll-viewport {
     width: 100%;
     height: 100%;
-    overscroll-behavior: contain;
     scrollbar-gutter: auto;
     outline: none;
+  }
+  /* Contain the wheel only along an axis that overflows (the root carries the edges), so an
+     area whose content fits passes the wheel to the page around it. */
+  .fa-scroll:is([data-scrolled-top], [data-scrolled-bottom]) > .fa-scroll-viewport {
+    overscroll-behavior-y: contain;
+  }
+  .fa-scroll:is([data-scrolled-left], [data-scrolled-right]) > .fa-scroll-viewport {
+    overscroll-behavior-x: contain;
   }
   .fa-scroll-viewport:focus-visible {
     outline: var(--focus-ring-width) solid var(--accent-ring);

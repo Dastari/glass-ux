@@ -1,8 +1,8 @@
 /**
  * The search's fields, resolved against a column set, and local matching for fully loaded
  * lists with the server's semantics: a case-insensitive `Contains` on any field, and an empty
- * value (null, undefined) never matches. `src/lib/graphql-orm/parity.test.ts` checks it
- * against the `Where` that `searchWhere` sends.
+ * value (null, undefined) never matches. Server adapters test their translation against it
+ * (`src/adapters/graphql-orm/parity.test.ts`).
  */
 import type { RowData } from "@tanstack/react-table"
 import type { DataTableColumn } from "../columns.js"

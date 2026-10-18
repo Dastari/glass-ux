@@ -22,13 +22,13 @@ export interface DataTableState {
   /**
    * Server-side column filters (R16.7): TanStack's column filter state, one entry per
    * filtered column, each value in the shape of the column's filter kind. Changing a
-   * filter returns to the first page. Turn it into a query with `toWhere` (graphql-orm).
+   * filter returns to the first page. Map it to your server's query in an adapter.
    */
   filters: ColumnFiltersState;
   /**
    * The toolbar search query (R16.8), trimmed; "" or absent when there is none. It narrows
-   * with the filters (both must hold) and, like them, returns to the first page. Turn it
-   * into a query with `toWhere(filters, columns, { search: { query, spec } })`.
+   * with the filters (both must hold) and, like them, returns to the first page. Send it
+   * with the filters through the same server adapter.
    */
   search?: string;
   /** Offset pagination: zero-based page index and page size. */
@@ -109,12 +109,12 @@ export interface DataTableProps<T extends RowData> {
   /** Called when retry occurs. The callback type specifies its arguments. */
   onRetry?: () => void;
   /**
-   * One line for an empty result with nothing searched or filtered (R2.5): "No endpoints
-   * enrolled". While searching or filtering the table says so itself (`No devices match
-   * "orb-7" and 2 filters`) and offers Clear search and Clear filters instead.
+   * One line for an empty result with nothing searched or filtered (R2.5), e.g. "No rows
+   * yet". While searching or filtering the table says so itself, with the `noun` (`No rows
+   * match "q3" and 2 filters`), and offers Clear search and Clear filters instead.
    */
   emptyMessage?: ReactNode;
-  /** The primary action for the unfiltered empty state ("Enrol a device"). */
+  /** The primary action for the unfiltered empty state ("Add a row"). */
   emptyAction?: ReactNode;
 
   /** Show checkboxes and allow selection (default true). */
@@ -167,7 +167,15 @@ export interface DataTableProps<T extends RowData> {
    * group's loaded rows, as `groupOf` assigns them.
    */
   grouping?: DataTableGrouping<T>;
-  /** Accessible label for a row ("NST-C106"). Defaults to the first column's text. */
+  /**
+   * Row reordering by drag and keyboard (opt-in): a grip column before the checkboxes, also in
+   * cards. The host owns the order and receives each move; see `DataTableReorder`.
+   */
+  reorder?: DataTableReorder<T>;
+  /**
+   * Accessible label for a row ("NST-C106"): selection, actions and the reorder grip and
+   * announcements use it. Defaults to the first column's text.
+   */
   getRowLabel?: (row: T) => string;
 
   /** Row density for this table. Uncontrolled tables persist the user's choice. */
@@ -202,6 +210,72 @@ export interface DataTableProps<T extends RowData> {
   /** Below this width (rem) rows become cards (default 36). */
   cardBreakpoint?: number;
   className?: string;
+}
+
+/**
+ * One row move, reported once on release (R14: the drag itself renders nothing). The host owns
+ * the order: apply it to its data (`move.rows`, or `moveRow(rows, move.from, move.to)`) and
+ * pass the new `rows` back; persist it on the server as "put `rowId` after `previousId`".
+ */
+export interface DataTableRowMove<T> {
+  /** The moved row. */
+  row: T;
+  /** Its id (`getRowId`). */
+  rowId: string;
+  /** Its index in `rows` before the move. */
+  from: number;
+  /** Its index in `rows` after the move. */
+  to: number;
+  /** The row now directly before it, or null when it moved to the start (of its group). */
+  previousId: string | null;
+  /** The row now directly after it, or null when it moved to the end (of its group). */
+  nextId: string | null;
+  /** `rows` with the move applied: pass it back as `rows` for local data. */
+  rows: T[];
+  /** With `reorder.withinGroups`: the group the row moved within. */
+  group?: string;
+  /** How the move was made. */
+  source: "pointer" | "keyboard";
+}
+
+/**
+ * Row reordering (opt-in): a grip in a leading column that drags (mouse, touch and pen) or
+ * lifts with the keyboard (Space or Enter lifts and drops, ↑ ↓ Home End move, Escape cancels,
+ * Alt+↑/↓ moves one place at once), with screen-reader announcements. The table shows the move
+ * at once; when `onReorder` returns a promise the move stays on screen while it is pending and
+ * is undone, with a toast, if it rejects.
+ *
+ * Reordering needs the visible order to be the manual order, so the grips are disabled, with
+ * the reason as their tooltip (R11.3), while the table is sorted, searched or filtered, grouped
+ * (unless `withinGroups`), shows one page of several (unless `withinPage`), holds live rows
+ * behind "N new", or is saving the previous move. The order is the host's data: the table
+ * persists none of it (column preferences are unaffected).
+ */
+export interface DataTableReorder<T> {
+  /**
+   * Called on drop with the move. Update `rows` in the same call for local data. Return a
+   * promise to persist it: the move shows until the promise settles and is reverted when it
+   * rejects (a rejection's `Error.message` is the toast's description).
+   */
+  onReorder: (move: DataTableRowMove<T>) => void | Promise<unknown>;
+  /** Rows that may move (default: all). A locked row's grip is disabled; other rows can still pass it. */
+  canReorder?: (row: T) => boolean;
+  /** Why a row is locked: its grip's tooltip (default "This row is locked in place"). */
+  lockedReason?: (row: T) => string;
+  /** Turn reordering off without removing the grips: true, or the reason to show. */
+  disabled?: boolean | string;
+  /** Grouped tables: move rows within their own group instead of disabling reordering. */
+  withinGroups?: boolean;
+  /**
+   * Paged tables: move rows within the current page instead of disabling reordering. The move's
+   * neighbour ids place the row on the server; the indexes are this page's.
+   */
+  withinPage?: boolean;
+  /**
+   * Report a rejected move yourself. By default a danger toast names the row and the reason.
+   * The move has already been reverted.
+   */
+  onError?: (error: unknown, move: DataTableRowMove<T>) => void;
 }
 
 /** An on/off filter that is not a column: "Show hidden" (). */

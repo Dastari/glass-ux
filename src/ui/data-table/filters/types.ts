@@ -2,8 +2,8 @@
  * The column filter model (R16.7, docs/data-filters.md). A filter value is plain,
  * serialisable data whose shape depends on the column's kind; the column's `FilterSpec`
  * says how to edit it, summarise it, put it in the URL, test a value against it and send
- * it to the server. Nothing here knows about a particular backend: the graphql-orm
- * mapping lives in `~/lib/graphql-orm`.
+ * it to the server. Nothing here knows about a particular backend: a server adapter (an
+ * optional entry such as `glass-ux/adapters/graphql-orm`, or your own) reads these specs.
  */
 import type { ComponentType } from "react"
 import type { OptionItem, OptionSource } from "../../combobox/index.js"
@@ -64,7 +64,7 @@ export type CustomFilterValue = unknown
 
 /* ── Server mapping inputs ───────────────────────────────────────────────────── */
 
-/** A backend filter input object, e.g. a graphql-orm `…WhereInput` entry. */
+/** One condition in the shape your server's query accepts (a JSON object). */
 export type WhereInput = Record<string, unknown>
 
 export interface FilterTimeContext {
@@ -74,9 +74,9 @@ export interface FilterTimeContext {
 
 /** How a column stores a point in time on the server. */
 export type DateStorage =
-  /** RFC 3339 UTC text (`2026-10-13T00:00:00Z`) through a DateFilter. */
+  /** RFC 3339 UTC text (`2026-10-13T00:00:00Z`). */
   | "rfc3339"
-  /** Whole seconds since the epoch through an IntFilter (`ChangedAtEpoch`). */
+  /** Whole seconds since the epoch, stored as an integer (`ChangedAtEpoch`). */
   | "epoch-seconds"
   /** A calendar date without a time (`2026-10-13`). Presets use the server's calendar predicates. */
   | "calendar-date"
@@ -84,15 +84,15 @@ export type DateStorage =
 /* ── Specs ───────────────────────────────────────────────────────────────────── */
 
 interface FilterSpecBase<V> {
-  /** The server field this column filters on: the `Where` key, PascalCase (`Hostname`). */
+  /** The server field this column filters on, as the server names it (`Hostname`). */
   field: string
   /** Names the filter in chips and the editor. Defaults to the column header. */
   label?: string
   /** Offer "is empty" and "is not empty" (default true; boolean: false). */
   nullable: boolean
   /**
-   * Hand-written server inputs: return this column's entry yourself (for example
-   * `{ HostnameContains: "orb" }` for `EndpointFilterInput`), or null to send nothing.
+   * Hand-written server inputs: return this column's condition yourself (for example
+   * `{ HostnameContains: "orb" }`), or null to send nothing.
    */
   toWhere?: (value: V, context: FilterTimeContext) => WhereInput | null
 }
@@ -108,7 +108,7 @@ export interface TextFilterSpec extends FilterSpecBase<TextFilterValue> {
 export interface NumberFilterSpec extends FilterSpecBase<NumberFilterValue> {
   /** Semantic entity or content kind, used to choose labels and rendering. */
   kind: "number"
-  /** The graphql-orm filter behind the field: IntFilter holds whole numbers only. */
+  /** How the server stores the field: "int" holds whole numbers only, so values round. */
   server: "int" | "decimal"
   /** The unit the cell shows (`%`, `GB`, `days`). Values are entered and summarised in it. */
   unit?: string

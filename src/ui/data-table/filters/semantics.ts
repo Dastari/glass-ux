@@ -1,7 +1,7 @@
 /**
- * What a filter means, in one place: unit conversion, Int rounding and time windows.
- * `matches` (local data) and the server mapping (`~/lib/graphql-orm/where`) both read
- * these, so a filter selects the same rows in the browser as on the server.
+ * What a filter means, in one place: unit conversion, integer rounding and time windows.
+ * `matches` (local data) and server adapters both read these, so a filter selects the same
+ * rows in the browser as on the server.
  */
 import { addDays, isIsoDate, todayIso, type IsoDate } from "../../date-picker/calendar-date.js"
 import type {
@@ -137,9 +137,9 @@ export interface DayBounds {
 }
 
 /**
- * The days a filter selects on a calendar-date column, relative to `today`. These mirror
- * graphql-orm's calendar predicates: IsToday, RecentDays N (N days ending today),
- * LteRelative (on or before a day) and InFuture (from tomorrow).
+ * The days a filter selects on a calendar-date column, relative to `today`: today, the N
+ * days ending today, on or before a day, and from tomorrow. A server adapter maps them to
+ * its own calendar predicates.
  */
 export function dayBounds(value: Exclude<TimeValue, { op: "last24h" }>, today: IsoDate): DayBounds {
   switch (value.op) {

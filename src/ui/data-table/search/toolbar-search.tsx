@@ -1,8 +1,8 @@
 /**
  * The table's search field (R16.8): the shared SearchField at the start of the toolbar.
  *
- * Wide     [🔍 Search devices…  /]  a fixed width, so typing never moves the toolbar.
- * Narrow   [🔍] an icon button, or the "Search: orb-7" chip while a query is active; either
+ * Wide     [🔍 Search rows…  /]  a fixed width, so typing never moves the toolbar.
+ * Narrow   [🔍] an icon button, or the "Search: q3" chip while a query is active; either
  *          opens the field over the toolbar line (the line keeps its height and its
  *          controls keep their places underneath). Esc on an empty field, or leaving it,
  *          closes it again.
@@ -28,7 +28,7 @@ export interface ToolbarSearchBinding {
   value: string
   /** Run a query now: it becomes the state, and the table returns to the first page. */
   onChange: (query: string) => void
-  /** "Search devices": the field's accessible name. */
+  /** "Search rows" (from the table's noun): the field's accessible name. */
   label: string
   placeholder: string
   handle?: RefObject<SearchHandle | null>

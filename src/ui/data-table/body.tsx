@@ -47,6 +47,10 @@ export interface VirtualRowsProps<T extends RowData> {
   containerProps: HTMLAttributes<HTMLDivElement>
   /** Wrap the rowgroup (the context-menu trigger renders it). */
   wrapContainer: (element: ReactElement) => ReactElement
+  /** Reorderable tables: a row's grip state ("" available, else the reason). */
+  gripOf?: (row: Row<DataTableFeatures, T>) => string
+  /** Bumps when row-level renderers change (memoised rows redraw). */
+  revision: object
 }
 
 /**
@@ -77,6 +81,8 @@ export function VirtualRows<T extends RowData>({
   colSpan,
   containerProps,
   wrapContainer,
+  gripOf,
+  revision,
 }: VirtualRowsProps<T>) {
   const isExpanded = useCallback(
     (row: Row<DataTableFeatures, T> | undefined) => Boolean(row && hidden.length && (expandAll || expanded.has(row.id))),
@@ -140,6 +146,7 @@ export function VirtualRows<T extends RowData>({
         }
         const row = item ? item.row : rows[virtual.index]
         if (!row) return null
+        const next = rowAt(virtual.index + 1)
         return (
           <DataRow<T>
             key={row.id}
@@ -157,6 +164,9 @@ export function VirtualRows<T extends RowData>({
             expanded={isExpanded(row)}
             label={getLabel(row.original)}
             controller={controller}
+            grip={gripOf?.(row)}
+            selectedNext={next ? selection[next.id] === true : false}
+            revision={revision}
           />
         )
       })}
@@ -189,7 +199,20 @@ export function CellPlaceholder({ kind, seed }: { kind: CellSkeleton; seed: numb
 }
 
 /** Skeleton rows in the exact row box (R9.3, R16.4). */
-export function SkeletonRows({ count, columns, selectable }: { count: number; columns: readonly ColumnInfo[]; selectable: boolean }) {
+export function SkeletonRows({
+  count,
+  columns,
+  selectable,
+  grip = false,
+}: {
+  /** Item count shown by the component. */
+  count: number
+  /** Typed column definitions, including rendering, sorting, priorities and filters. */
+  columns: readonly ColumnInfo[]
+  selectable: boolean
+  /** Reserve the reorder grip column. */
+  grip?: boolean
+}) {
   return (
     <>
       {Array.from({ length: count }, (_, index) => (
@@ -199,6 +222,7 @@ export function SkeletonRows({ count, columns, selectable }: { count: number; co
           aria-hidden
           style={{ transform: `translateY(calc(var(--_row-h) * ${index}))` }}
         >
+          {grip ? <div className="fa-dt-cell fa-dt-grip" /> : null}
           {selectable ? (
             <div className="fa-dt-cell fa-dt-select">
               <Skeleton.Block className="fa-dt-skel-check" radius="check" />

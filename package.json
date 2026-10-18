@@ -501,6 +501,10 @@
       "types": "./dist/shell/org-switcher/index.d.ts",
       "import": "./dist/shell/org-switcher/index.js"
     },
+    "./adapters/graphql-orm": {
+      "types": "./dist/adapters/graphql-orm/index.d.ts",
+      "import": "./dist/adapters/graphql-orm/index.js"
+    },
     "./lib/appearance": {
       "types": "./dist/lib/appearance/index.d.ts",
       "import": "./dist/lib/appearance/index.js"

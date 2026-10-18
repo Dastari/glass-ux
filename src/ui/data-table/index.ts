@@ -45,7 +45,8 @@ export {
   type LayoutColumn,
   type LayoutResult,
 } from "./layout.js";
-export { configureDataTables } from "./persist.js";
+export { configureDataTables, type DataTableConfiguration } from "./persist.js";
+export { moveRow } from "./reorder.js";
 export { resolveRowActions, type RowActionsOf } from "./row-actions.js";
 export * from "./search/index.js";
 export type {
@@ -54,6 +55,8 @@ export type {
   DataTableFilterToggle,
   DataTableNoun,
   DataTableProps,
+  DataTableReorder,
+  DataTableRowMove,
   DataTableState,
   DataTableStateChange,
 } from "./types.js";

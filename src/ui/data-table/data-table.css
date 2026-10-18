@@ -16,11 +16,19 @@
  *           block-size query re-styles the table (docs/performance.md).
  * Density   per table (data-density) or inherited from the root; coarse pointers never
  *           go below --target-min.
+ * Reorder   opt-in grip column before the checkboxes (data-reorderable). A gesture sets
+ *           data-reordering on the root; lines move with `translate` written by reorder.ts
+ *           (React owns `transform`), and data-reorder-settling drops every transition for
+ *           the frame in which the committed order replaces the displaced one.
  */
 @layer components {
   .fa-dt {
     /* The checkbox column. Mirrors SELECT_WIDTH in data-table.tsx. */
     --fa-dt-select-w: calc(var(--check-size) + var(--space-3) * 2);
+    /* The reorder grip column: the checkbox column's width. Mirrors GRIP_WIDTH. */
+    --fa-dt-grip-w: calc(var(--check-size) + var(--space-3) * 2);
+    /* Everything before the first data column. */
+    --fa-dt-lead-w: calc(var(--fa-dt-grip-w) + var(--fa-dt-select-w));
     /* The trailing actions cell: one or two sm buttons. Mirrors trailWidth(). */
     --fa-dt-trail-w: calc(var(--control-h-sm) + var(--space-2) * 2);
     /* The "+N" detail: minimum field width, value line. Mirror DETAIL in data-table.tsx. */
@@ -32,6 +40,8 @@
     --_head-base: var(--row-h-header);
     --_row-h: var(--_row-base);
     --_head-h: var(--_head-base);
+    /* The grip's height: an sm control, finger-sized on coarse pointers. */
+    --_grip-h: var(--control-h-sm);
     --_cell-px: var(--space-3);
     /* Row hairlines are lighter than --line: they only separate, never frame. */
     --_hairline: color-mix(in oklab, var(--line) 70%, transparent);
@@ -59,6 +69,9 @@
   }
   .fa-dt:not([data-selectable]) {
     --fa-dt-select-w: 0rem;
+  }
+  .fa-dt:not([data-reorderable]) {
+    --fa-dt-grip-w: 0rem;
   }
 
   /* ── Density ────────────────────────────────────────────────────────────────── */
@@ -270,15 +283,17 @@
   .fa-dt-resize::after {
     content: "";
     position: absolute;
-    top: 25%;
-    bottom: 25%;
+    top: var(--space-1-5);
+    bottom: var(--space-1-5);
     left: 50%;
     width: var(--border-width-strong);
     translate: -50% 0;
+    /* Half height at rest; the active line grows to full height (transform, not top/bottom). */
+    scale: 1 0.6;
     border-radius: var(--radius-full);
     background-color: var(--line-strong);
     opacity: 0;
-    transition-property: opacity, background-color, top, bottom;
+    transition-property: opacity, background-color, scale;
     transition-duration: var(--duration-fast);
     transition-timing-function: var(--ease-standard);
   }
@@ -287,8 +302,7 @@
   }
   .fa-dt-resize:is(:hover, :focus-visible)::after,
   .fa-dt[data-resizing] .fa-dt-th:has(.fa-dt-resize:active) .fa-dt-resize::after {
-    top: var(--space-1-5);
-    bottom: var(--space-1-5);
+    scale: 1 1;
     width: var(--focus-ring-width);
     background-color: var(--accent);
     opacity: 1;
@@ -404,7 +418,7 @@
     border-start-start-radius: 0;
     border-start-end-radius: 0;
   }
-  .fa-dt-rows > .fa-dt-row[data-selected]:has(+ .fa-dt-row[data-selected]) {
+  .fa-dt-rows > .fa-dt-row[data-selected-next] {
     border-end-start-radius: 0;
     border-end-end-radius: 0;
   }
@@ -443,6 +457,15 @@
   .fa-dt-th.fa-dt-select {
     height: 100%;
   }
+  .fa-dt-grip {
+    flex: none;
+    justify-content: center;
+    width: var(--fa-dt-grip-w);
+    padding-inline: 0;
+  }
+  .fa-dt-th.fa-dt-grip {
+    height: 100%;
+  }
   .fa-dt-trail {
     flex: none;
     justify-content: flex-end;
@@ -464,13 +487,18 @@
     z-index: var(--z-raised);
   }
   .fa-dt[data-pinned] .fa-dt-select {
-    inset-inline-start: 0;
+    inset-inline-start: var(--fa-dt-grip-w);
   }
-  .fa-dt[data-scrolled-left] .fa-dt-rows > .fa-dt-row :is(.fa-dt-cell[data-pinned], .fa-dt-select) {
+  .fa-dt[data-pinned] .fa-dt-grip {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: var(--z-raised);
+  }
+  .fa-dt[data-scrolled-left] .fa-dt-rows > .fa-dt-row :is(.fa-dt-cell[data-pinned], .fa-dt-select, .fa-dt-grip) {
     background: linear-gradient(var(--_bg), var(--_bg)), var(--_sticky-base);
     box-shadow: inset 0 var(--border-width) 0 var(--_sep);
   }
-  .fa-dt[data-scrolled-left] .fa-dt-head :is(.fa-dt-th[data-pinned], .fa-dt-select) {
+  .fa-dt[data-scrolled-left] .fa-dt-head :is(.fa-dt-th[data-pinned], .fa-dt-select, .fa-dt-grip) {
     background: linear-gradient(var(--glass-fill-inset), var(--glass-fill-inset)), var(--_sticky-base);
   }
   .fa-dt[data-scrolled-left] .fa-dt-th[data-edge] {
@@ -508,7 +536,7 @@
     position: absolute;
     top: var(--_row-h);
     bottom: 0;
-    inset-inline: var(--fa-dt-select-w) var(--fa-dt-trail-w);
+    inset-inline: var(--fa-dt-lead-w) var(--fa-dt-trail-w);
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(var(--fa-dt-detail-field), 1fr));
     align-content: start;
@@ -636,7 +664,7 @@
   }
   /* "Show more" lines up with the first column's content. */
   .fa-dt-more-cell {
-    padding-inline-start: calc(var(--fa-dt-select-w) + var(--_cell-px) - var(--space-2-5));
+    padding-inline-start: calc(var(--fa-dt-lead-w) + var(--_cell-px) - var(--space-2-5));
   }
   .fa-dt-more-meta {
     flex: none;
@@ -761,6 +789,8 @@
 
   /* ── Cards (below the card breakpoint) ──────────────────────────────────────── */
   .fa-dt-cards {
+    /* Positioned: cards measure their offsets from here and the drag ghost sits here. */
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
@@ -1024,5 +1054,199 @@
     align-content: center;
     padding-top: 0;
     box-shadow: none;
+  }
+
+  /* ── Reordering: the grip, the lifted row and the lines that part for it ─────── */
+  .fa-dt-grip-button {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--control-h-sm);
+    height: var(--_grip-h);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: var(--fg-subtle);
+    cursor: grab;
+    outline: none;
+    /* The grip takes the gesture: no scrolling, text selection or callout from it. */
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    transition-property: background-color, color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-dt-grip-button > .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  .fa-dt-grip-button:not([aria-disabled="true"]):hover {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-dt-grip-button:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-dt-grip-button[aria-disabled="true"] {
+    color: var(--fg-disabled);
+    cursor: not-allowed;
+  }
+  @media (pointer: coarse) {
+    .fa-dt {
+      --_grip-h: max(var(--control-h-sm), var(--target-min));
+    }
+    .fa-dt-grip-button {
+      width: 100%;
+    }
+  }
+  .fa-dt[data-reordering] {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .fa-dt[data-reordering="pointer"],
+  .fa-dt[data-reordering="pointer"] .fa-dt-grip-button {
+    cursor: grabbing;
+  }
+
+  /* Lines part for the moving row: `translate` written by reorder.ts, eased by the tokens. */
+  .fa-dt[data-reordering] .fa-dt-rows > [data-item],
+  .fa-dt[data-reordering] .fa-dt-cards > [data-item] {
+    transition-property: translate, background-color, border-color;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-dt[data-reorder-settling] .fa-dt-rows > [data-item],
+  .fa-dt[data-reorder-settling] .fa-dt-cards > [data-item],
+  .fa-dt[data-reorder-scrolling] .fa-dt-rows > [data-item],
+  .fa-dt[data-reorder-scrolling] .fa-dt-cards > [data-item] {
+    transition-property: none;
+  }
+  /* Separators would mark the old order while rows are displaced. */
+  .fa-dt[data-reordering] .fa-dt-rows > .fa-dt-row {
+    --_sep: transparent;
+  }
+
+  /* The pointer drag's ghost: a copy of the row on an opaque fill, following the pointer. */
+  .fa-dt-rows > .fa-dt-row.fa-dt-ghost,
+  .fa-dt-cards > .fa-dt-card.fa-dt-ghost {
+    z-index: var(--z-sticky);
+    pointer-events: none;
+    --_sep: transparent;
+  }
+  .fa-dt-rows > .fa-dt-row.fa-dt-ghost {
+    background: linear-gradient(var(--_bg), var(--_bg)), var(--surface-2);
+  }
+  .fa-dt-cards > .fa-dt-card.fa-dt-ghost {
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+    background-color: var(--surface-2);
+  }
+  .fa-dt-ghost[data-settling] {
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+  /* The lift: a shadow and an accent edge that fade in (opacity, on a layer of their own). */
+  :is(.fa-dt-ghost, [data-reorder-lifted])::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow:
+      var(--shadow-3),
+      inset 0 0 0 var(--border-width) var(--accent-line);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-dt-ghost[data-lifted]::after {
+    opacity: 1;
+  }
+  /* The keyboard lift moves the row itself, raised over the rows it passes. */
+  .fa-dt-rows > .fa-dt-row[data-reorder-lifted] {
+    z-index: var(--z-sticky);
+    background: linear-gradient(var(--_bg), var(--_bg)), var(--surface-2);
+  }
+  .fa-dt-cards > .fa-dt-card[data-reorder-lifted] {
+    z-index: var(--z-sticky);
+    background-color: var(--surface-2);
+  }
+  [data-reorder-lifted]::after {
+    opacity: 1;
+    animation: fa-fade-in var(--duration-fast) var(--ease-standard) both;
+  }
+  /* Where the dragged row will land: its own element, emptied, as a slot. */
+  .fa-dt-rows > .fa-dt-row[data-reorder-placeholder],
+  .fa-dt-cards > .fa-dt-card[data-reorder-placeholder] {
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+  }
+  [data-reorder-placeholder] > * {
+    opacity: 0;
+  }
+  [data-reorder-placeholder]::after {
+    content: "";
+    position: absolute;
+    inset: var(--space-half);
+    border: var(--border-width) dashed var(--accent-line);
+    border-radius: var(--radius-item);
+    background-color: var(--accent-soft);
+    pointer-events: none;
+  }
+  .fa-dt-cards > [data-reorder-placeholder]::after {
+    inset: 0;
+    border-radius: var(--radius-tile);
+  }
+  /* A move the server rejected: the row flashes where it returned to. */
+  [data-reorder-failed]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--danger-soft);
+    pointer-events: none;
+    /* fa-fade-in played backwards: the tint fades out. */
+    animation: fa-fade-in calc(var(--duration-slower) * 2.5) var(--ease-standard) reverse both;
+  }
+
+  /* Cards: the grip leads the card, level with its title row. */
+  .fa-dt[data-reorderable] .fa-dt-card {
+    display: flex;
+    align-items: stretch;
+  }
+  .fa-dt[data-reorderable] .fa-dt-card-cell {
+    flex: 1 1 auto;
+    padding-inline-start: var(--space-1);
+  }
+  .fa-dt-card-grip {
+    display: flex;
+    flex: none;
+    align-items: flex-start;
+    /* Centred on the title row (one sm control tall), whatever the grip's touch height. */
+    padding-block-start: calc(var(--space-3) + (var(--control-h-sm) - var(--_grip-h)) / 2);
+    padding-inline-start: var(--space-1-5);
+  }
+  .fa-dt-grip-space {
+    width: var(--control-h-sm);
+    height: var(--_grip-h);
+  }
+  @media (pointer: coarse) {
+    .fa-dt-card-grip .fa-dt-grip-button {
+      width: var(--control-h-sm);
+    }
+  }
+
+  /* The live region for reorder announcements: read, not seen. */
+  .fa-dt-announcer {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }

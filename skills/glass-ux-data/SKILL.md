@@ -32,6 +32,12 @@ Make technical/internal identifier columns optional initially with
 row/card details retain those values. Saved explicit choices, including all-visible,
 win over defaults; Reset columns restores the application's defaults.
 
+For a manual order (queues, playlists, priorities), pass `reorder={{ onReorder }}` and keep
+the order in host data: apply `move.rows` (or `moveRow`) and persist `previousId`/`nextId`.
+Return a promise for server saves; a rejection reverts the move. Do not add your own drag
+handles or disable sorting UI; the grips explain why they are off while sorted, filtered,
+searched, grouped or paged.
+
 The table's row, context and bulk actions read one `ActionSet`. Use shared cells for identity,
 numbers, times, states and sparklines. Treat loading, empty and error states as part of the
 same bounded body rather than inserting content that moves the layout.

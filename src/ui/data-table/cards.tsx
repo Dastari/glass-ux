@@ -10,6 +10,7 @@ import { countRender } from "./debug.js";
 import type { DataTableFeatures } from "./features.js";
 import { GroupLine } from "./group-rows.js";
 import type { GroupedItem } from "./grouping.js";
+import { GripButton } from "./reorder-handle.js";
 import { cellContent, type ColumnInfo, type RowController } from "./row.js";
 import type { DataTableNoun } from "./types.js";
 
@@ -66,6 +67,10 @@ interface CardProps<T extends RowData> {
   expanded: boolean;
   label: string;
   controller: RowController;
+  /** Reorderable tables: "" when the grip is available, else why not. */
+  grip?: string;
+  /** Bumps when row-level renderers change. */
+  revision?: object;
 }
 
 function CardView<T extends RowData>({
@@ -80,6 +85,7 @@ function CardView<T extends RowData>({
   expanded,
   label,
   controller,
+  grip,
 }: CardProps<T>) {
   countRender("cards");
   const cells = row.getAllCellsByColumnId();
@@ -100,6 +106,18 @@ function CardView<T extends RowData>({
       data-item="row"
       data-selected={selected ? "" : undefined}
     >
+      {grip !== undefined && controller.grip ? (
+        <div role="gridcell" className="fa-dt-card-grip">
+          <GripButton
+            rowId={rowId}
+            index={index}
+            label={label}
+            tabIndex={tabIndex}
+            reason={grip}
+            grip={controller.grip}
+          />
+        </div>
+      ) : null}
       <div role="gridcell" className="fa-dt-card-cell">
         <div className="fa-dt-card-head">
           {selectable ? (
@@ -189,7 +207,9 @@ export const DataCard = memo(
     a.active === b.active &&
     a.expanded === b.expanded &&
     a.label === b.label &&
-    a.controller === b.controller,
+    a.controller === b.controller &&
+    a.grip === b.grip &&
+    a.revision === b.revision,
 ) as <T extends RowData>(props: CardProps<T>) => ReactElement;
 
 export function CardList<T extends RowData>({
@@ -205,6 +225,8 @@ export function CardList<T extends RowData>({
   controller,
   getLabel,
   noun,
+  gripOf,
+  revision,
 }: {
   /** Records or matrix rows in display order. */
   rows: readonly Row<DataTableFeatures, T>[];
@@ -222,6 +244,10 @@ export function CardList<T extends RowData>({
   getLabel: (row: T) => string;
   /** Singular and plural names used in counts and accessible labels. */
   noun: DataTableNoun;
+  /** Reorderable tables: a row's grip state ("" available, else the reason). */
+  gripOf?: (row: Row<DataTableFeatures, T>) => string;
+  /** Bumps when row-level renderers change. */
+  revision: object;
 }) {
   const lines =
     items ??
@@ -249,6 +275,8 @@ export function CardList<T extends RowData>({
             expanded={expandAll || expanded.has(item.row.id)}
             label={getLabel(item.row.original)}
             controller={controller}
+            grip={gripOf?.(item.row)}
+            revision={revision}
           />
         ) : (
           <GroupLine
@@ -273,6 +301,7 @@ export function SkeletonCards({
   layout,
   selectable,
   actions,
+  grip = false,
 }: {
   /** Item count shown by the component. */
   count: number;
@@ -281,6 +310,8 @@ export function SkeletonCards({
   selectable: boolean;
   /** Reserve the row-action controls while the host loads records. */
   actions: boolean;
+  /** Reserve the reorder grip. */
+  grip?: boolean;
 }) {
   return (
     <>
@@ -290,6 +321,11 @@ export function SkeletonCards({
           className="glass-control fa-dt-card fa-dt-skel-card"
           aria-hidden
         >
+          {grip ? (
+            <div className="fa-dt-card-grip">
+              <span className="fa-dt-grip-space" />
+            </div>
+          ) : null}
           <div className="fa-dt-card-cell">
             <div className="fa-dt-card-head">
               {selectable ? (

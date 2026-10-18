@@ -1,6 +1,11 @@
 # DataTable
 
-Server-side sorting and pages, columns that fold by priority into “+N” and then cards, resizable and pinned columns, bulk actions and live rows.
+The one data table (R16). Server-side sorting and pagination, container-aware columns
+(priority hiding → "+N" detail → card list), resizable and pinnable columns persisted
+per user, selection with a bulk bar over the status bar, row ⋯ and right-click menus
+from the entity's ActionSet, live updates that flash in place, and loading, empty and
+error states that keep the table's box, and opt-in row reordering by drag or keyboard
+(`reorder`) that leaves the order to the host.
 
 `import { DataTable } from "glass-ux/data-table"`
 
@@ -18,13 +23,13 @@ Server-side sorting and pages, columns that fold by priority into “+N” and t
 | defaultHiddenColumns | `readonly string[] \| undefined` | See type | no | — | Column ids initially folded into row/card details. Saved user choices take precedence, including an explicitly empty hidden list. Reset columns restores these defaults. Columns with hideable=false remain visible. |
 | defaultState | `Partial<DataTableState> \| undefined` | See type | no | — | Initial uncontrolled view state. |
 | density | `DataTableDensity \| undefined` | "compact", "comfortable" | no | — | Row density for this table. Uncontrolled tables persist the user's choice. |
-| emptyAction | `ReactNode` | See type | no | — | The primary action for the unfiltered empty state ("Enrol a device"). |
-| emptyMessage | `ReactNode` | See type | no | "No rows" | One line for an empty result with nothing searched or filtered (R2.5): "No endpoints enrolled". While searching or filtering the table says so itself (`No devices match "orb-7" and 2 filters`) and offers Clear search and Clear filters instead. |
+| emptyAction | `ReactNode` | See type | no | — | The primary action for the unfiltered empty state ("Add a row"). |
+| emptyMessage | `ReactNode` | See type | no | "No rows" | One line for an empty result with nothing searched or filtered (R2.5), e.g. "No rows yet". While searching or filtering the table says so itself, with the `noun` (`No rows match "q3" and 2 filters`), and offers Clear search and Clear filters instead. |
 | error | `ReactNode` | See type | no | — | Shown in the body box with Retry. A string should say what failed and what to do. |
 | filterToggles | `readonly DataTableFilterToggle[] \| undefined` | See type | no | — | On/off filters that are not a column ("Show hidden"): rows in the Filters menu, and a chip while on. Clear filters turns them off too. |
 | getRowActions | `((row: T) => ActionSet<T> \| undefined) \| undefined` | See type | no | — | Per-row ActionSets, for rows of different kinds (a device list: an endpoint's set is not a printer's). It replaces `actions`. One row's ⋯ and right-click resolve its own set, so they match its header exactly. A selection of several kinds (right-click inside it, the bulk bar) offers the actions every kind's set resolves, bulk in each, and each kind runs its own definition against its own rows (`resolveRowActions`). Keep the sets stable: the same object for every row of a kind. |
 | getRowId | `(row: T) => string` | See type | yes | — | Returns a stable row identifier for selection, live updates and preferences. |
-| getRowLabel | `((row: T) => string) \| undefined` | See type | no | — | Accessible label for a row ("NST-C106"). Defaults to the first column's text. |
+| getRowLabel | `((row: T) => string) \| undefined` | See type | no | — | Accessible label for a row ("NST-C106"): selection, actions and the reorder grip and announcements use it. Defaults to the first column's text. |
 | grouping | `DataTableGrouping<T> \| undefined` | See type | no | — | Group the rows (server-side, docs/data-filters.md §7): a header row per group with its count from the server, which collapses (click, Enter or Space; ← and → on the header; Alt-click toggles every group). Each expanded group shows its first `pageSize` rows and a "Show more" line while the server has more; the pager gives way to a count. The collapsed groups and "Show more" counts are the `groups` state slice (in the URL with `useTableUrlState({ grouped: true })`). Pass `rows` in group order: each expanded group's loaded rows, as `groupOf` assigns them. |
 | height | `"auto" \| "fill" \| undefined` | "auto", "fill" | no | "fill" | "fill" (default) fills a parent with a definite height and scrolls inside. |
 | id | `string` | See type | yes | — | Stable id: persists column widths, hidden columns, pins and density per user. |
@@ -43,6 +48,7 @@ Server-side sorting and pages, columns that fold by priority into “+N” and t
 | renderBulkActions | `((rows: T[], clear: () => void) => ReactNode) \| undefined` | See type | no | — | Replace the bulk bar's action buttons. |
 | renderRowActions | `((row: T) => ReactNode) \| undefined` | See type | no | — | Replace the ⋯ menu for a row (render your own trigger, e.g. a shared ActionMenu). |
 | renderRowContextMenu | `((row: T, targets: T[]) => ReactNode) \| undefined` | See type | no | — | Replace the context menu's content for a row (or the selection it belongs to). It is placed inside the shared ContextMenu popup, so build it from Menu parts. |
+| reorder | `DataTableReorder<T> \| undefined` | See type | no | — | Row reordering by drag and keyboard (opt-in): a grip column before the checkboxes, also in cards. The host owns the order and receives each move; see `DataTableReorder`. |
 | rowCount | `number \| undefined` | See type | no | — | Total rows on the server (offset pagination). |
 | rows | `readonly T[]` | See type | yes | — | The current page of rows, already sorted and paged by the server. |
 | rowWrapper | `((row: T, children: ReactElement) => ReactElement) \| undefined` | See type | no | — | Wrap each row element (e.g. in the shared ActionContextMenu). Must render `children`. |

@@ -492,7 +492,7 @@ const app = await Application.bootstrapWithPlugins({
     ...entries.map((e) => e.file),
     "src/vite.ts",
     "src/gallery/index.ts",
-    "src/lib/graphql-orm/where.ts",
+    "src/adapters/graphql-orm/index.ts",
   ],
   tsconfig: "tsconfig.json",
   name: "Glass UX",

@@ -1,4 +1,5 @@
 import { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import { setRelativeDayLimit } from "./filters/codec.js";
 import type { DataTableDensity } from "./types.js";
 
 /**
@@ -23,9 +24,21 @@ export const EMPTY_PREFERENCES: TablePreferences = {
 
 let storageKeyPrefix = "glass-ux.table";
 
-/** Configure the application's table preference namespace before rendering tables. */
-export function configureDataTables(options: { storageKeyPrefix?: string }) {
+/** Application-wide DataTable settings (`configureDataTables`). */
+export interface DataTableConfiguration {
+  /** Namespace for stored column preferences (default "glass-ux.table"). */
+  storageKeyPrefix?: string;
+  /**
+   * The longest "last N days" / "more than N days ago" span a date filter accepts, from the
+   * URL or the editor (default 36,600, about a century). Set your server's limit.
+   */
+  maxRelativeDays?: number;
+}
+
+/** Configure the application's table preference namespace and filter limits before rendering tables. */
+export function configureDataTables(options: DataTableConfiguration) {
   storageKeyPrefix = options.storageKeyPrefix ?? "glass-ux.table";
+  setRelativeDayLimit(options.maxRelativeDays);
 }
 
 const storageKey = (id: string) => `${storageKeyPrefix}.${id}.v1`;

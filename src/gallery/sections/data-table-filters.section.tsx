@@ -1,7 +1,7 @@
 import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
 import { useEffect, useMemo, useState } from "react"
 import { Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { toWhere, type WhereInput } from "../../lib/graphql-orm/where.js"
+import { toWhere, type WhereInput } from "../../adapters/graphql-orm/index.js"
 import { Disclosure } from "../../ui/accordion/index.js"
 import { DataTable, FilterEditor, filterColumns, useTableUrlState, type DataTableState, type FilterSpec } from "../../ui/data-table/index.js"
 import { Popover } from "../../ui/popover/index.js"

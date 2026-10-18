@@ -5,9 +5,14 @@
     width: 100%;
     max-width: 100%;
     container-type: inline-size;
+    /* Size containment has no content width: where the meter sizes to its content (a
+       card's field line), it takes this width instead of collapsing to its reading. */
+    contain-intrinsic-inline-size: 6rem;
     min-width: 0;
   }
-  @container (width < 8rem) {
+  /* The track gives way only when it would be shorter than its reading ("100%" needs
+     about 2.5rem); a column at its minimum width keeps the bar. */
+  @container (width < 5.5rem) {
     .fa-meter-cell .fa-meter-track {
       display: none;
     }

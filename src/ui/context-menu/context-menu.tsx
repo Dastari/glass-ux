@@ -1,5 +1,6 @@
 import { ContextMenu as BaseContextMenu } from "@base-ui/react/context-menu"
 import { useRef, type ComponentProps, type KeyboardEvent, type MouseEvent } from "react"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Menu, type MenuPopupProps } from "../menu/index.js"
 
 /** How long a native contextmenu that follows our keyboard-opened one is ignored. */
@@ -64,7 +65,9 @@ function ContextMenuTrigger({ onKeyDown, onContextMenuCapture, ...rest }: Contex
 
 /** The context menu surface: identical to Menu.Popup, positioned at the pointer. */
 function ContextMenuPopup(props: MenuPopupProps) {
-  return <Menu.Popup sideOffset={2} align="start" {...props} />
+  // Half the trigger gap: the pointer rests just outside the first row, not on its edge.
+  const { pointerOffset } = usePopupMetrics()
+  return <Menu.Popup sideOffset={pointerOffset} align="start" {...props} />
 }
 
 /**

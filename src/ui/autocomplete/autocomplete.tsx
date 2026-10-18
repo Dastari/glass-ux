@@ -2,6 +2,7 @@ import { Autocomplete as BaseAutocomplete } from "@base-ui/react/autocomplete"
 import { useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconClose } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Button } from "../button/index.js"
 import {
   OptionMore,
@@ -17,7 +18,7 @@ import {
   type OptionSource,
 } from "../combobox/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
-import { POPUP_COLLISION_PADDING, POPUP_OFFSET, type SelectSize } from "../select/index.js"
+import type { SelectSize } from "../select/index.js"
 
 export interface AutocompleteProps<V extends string = string> {
   /** Static suggestions, filtered as you type. */
@@ -89,6 +90,7 @@ export function Autocomplete<V extends string = string>({
   ref,
   ...aria
 }: AutocompleteProps<V>) {
+  const popup = usePopupMetrics()
   const [inner, setInner] = useState(defaultValue ?? "")
   const text = value ?? inner
   const search = useOptionSearch(source, text)
@@ -160,8 +162,8 @@ export function Autocomplete<V extends string = string>({
         <BaseAutocomplete.Positioner
           className="fa-select-positioner"
           align="start"
-          sideOffset={POPUP_OFFSET}
-          collisionPadding={POPUP_COLLISION_PADDING}
+          sideOffset={popup.offset}
+          collisionPadding={popup.collisionPadding}
         >
           <BaseAutocomplete.Popup
             className="glass-overlay fa-popup fa-combobox-popup"

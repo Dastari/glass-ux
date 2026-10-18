@@ -1,15 +1,18 @@
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip"
 import { useId, useState, useSyncExternalStore, type ComponentProps, type ReactElement, type ReactNode } from "react"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Kbd } from "../kbd/index.js"
 
 /** Hover delay before the first tooltip opens. Later ones in the same group open at once. */
 export const TOOLTIP_DELAY_MS = 500
 /** A neighbour opens instantly if the previous tooltip closed less than this long ago. */
 const GROUP_TIMEOUT_MS = 400
-/** px offsets mirroring tokens: --space-2 with an arrow, --space-1-5 without. */
-const OFFSET_WITH_ARROW = 8
-const OFFSET = 6
-const COLLISION_PADDING = 8
+/**
+ * The arrow's height in rem, matching `--_ah` on .fa-tooltip-arrow. The arrow protrudes this
+ * far beyond the bubble, so it is added to --popup-offset: the arrow tip keeps the same gap
+ * from the trigger as an arrowless bubble's edge.
+ */
+const ARROW_HEIGHT_REM = 0.375
 
 type Mode = "light" | "dark"
 
@@ -150,14 +153,15 @@ interface TooltipPopupProps {
 /** Portal + positioner + the inverted glass bubble. */
 export function TooltipPopup({ id, side, align, arrow, children, anchor }: TooltipPopupProps) {
   const mode = useInvertedMode()
+  const popup = usePopupMetrics()
   return (
     <BaseTooltip.Portal>
       <BaseTooltip.Positioner
         className="fa-tooltip-positioner"
         side={side}
         align={align}
-        sideOffset={arrow ? OFFSET_WITH_ARROW : OFFSET}
-        collisionPadding={COLLISION_PADDING}
+        sideOffset={arrow ? popup.offset + ARROW_HEIGHT_REM * popup.rem : popup.offset}
+        collisionPadding={popup.collisionPadding}
         anchor={anchor}
       >
         <BaseTooltip.Popup id={id} role="tooltip" className="glass-overlay fa-tooltip" data-mode={mode}>

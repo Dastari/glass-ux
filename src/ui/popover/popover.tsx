@@ -2,11 +2,8 @@ import { Popover as BasePopover } from "@base-ui/react/popover"
 import type { ComponentProps, ReactNode } from "react"
 import { IconClose } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Button } from "../button/index.js"
-
-/** px offsets mirroring tokens: the trigger gap (--space-2) and the viewport margin. */
-const POPUP_GAP = 8
-const COLLISION_PADDING = 8
 
 export type PopoverSize = "sm" | "md" | "lg"
 
@@ -25,18 +22,19 @@ export interface PopoverPopupProps extends Omit<ComponentProps<typeof BasePopove
 
 /**
  * Small, contextual, non-blocking content (R13.5): a filter, a detail peek, a short form.
- * Closes on Esc and outside press. No arrow — the popup sits 8px from its trigger and
+ * Closes on Esc and outside press. No arrow — the popup sits `--popup-offset` from its trigger and
  * grows out of it (transform-origin), which already says where it came from.
  */
 function PopoverPopup({ title, size = "md", side = "bottom", align = "center", anchor, className, children, ...rest }: PopoverPopupProps) {
+  const popup = usePopupMetrics()
   return (
     <BasePopover.Portal>
       <BasePopover.Positioner
         className="fa-popover-positioner"
         side={side}
         align={align}
-        sideOffset={POPUP_GAP}
-        collisionPadding={COLLISION_PADDING}
+        sideOffset={popup.offset}
+        collisionPadding={popup.collisionPadding}
         anchor={anchor}
       >
         <BasePopover.Popup {...rest} className={cx("glass-overlay fa-popup fa-popover", className)} data-size={size}>

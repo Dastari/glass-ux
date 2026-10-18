@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, type ClipboardEvent, type FocusEvent, type M
 import { Field as BaseField } from "@base-ui/react/field"
 import { IconCheck, IconChevronDown, IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { CopyButton } from "../copy-button/index.js"
 import { matches, OptionRow } from "../combobox/index.js"
@@ -11,7 +12,6 @@ import { callingCodeOf, listCountries, MAIN_COUNTRY_FOR_CALLING_CODE, type Count
 import { CountryFlag } from "../country-select/flag.js"
 import { Field, widthAttr, type FieldWidth } from "../field/index.js"
 import { useBoundField, type FieldChrome } from "../form/context.js"
-import { POPUP_COLLISION_PADDING, POPUP_OFFSET } from "../select/index.js"
 import {
   countryOfValue,
   examplePhone,
@@ -322,6 +322,7 @@ interface CountryPickerProps {
 
 function CountryPicker({ value, onValueChange, countries, priority, flags, disabled, readOnly }: CountryPickerProps) {
   const [query, setQuery] = useState("")
+  const popup = usePopupMetrics()
   const list = useMemo(
     () => listCountries({ phone: true, only: countries, priority: priority.filter((code, index) => priority.indexOf(code) === index) }),
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- identity follows the codes
@@ -360,7 +361,7 @@ function CountryPicker({ value, onValueChange, countries, priority, flags, disab
         {readOnly ? null : <IconChevronDown className="fa-phone-chevron" />}
       </BaseCombobox.Trigger>
       <BaseCombobox.Portal>
-        <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={POPUP_OFFSET} collisionPadding={POPUP_COLLISION_PADDING}>
+        <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BaseCombobox.Popup className="glass-overlay fa-popup fa-phone-country-popup" aria-label="Choose a country">
             <div className="fa-control fa-input fa-phone-country-search" data-size="sm">
               <IconSearch />

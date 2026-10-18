@@ -3,6 +3,7 @@ import type { ComponentProps, MouseEvent, ReactNode } from "react";
 import { IconClose, IconPopOut } from "../../icons/generated/icons.js";
 import { resolveActions, splitForHeader } from "../../lib/actions/actions.js";
 import { cx } from "../../lib/cx.js";
+import { usePopupMetrics } from "../../lib/popup-metrics.js";
 import { ActionContextMenu, useActionRunner } from "../../ui/actions/index.js";
 import { Badge, StatusBadge, StatusDot } from "../../ui/badge/index.js";
 import { FactList } from "../../ui/fact-list/index.js";
@@ -15,8 +16,6 @@ import { useEntityResolver, type EntityPreview } from "./entity-resolver.js";
 /** Hover delay before the preview opens; quicker than a tooltip, it is the point of the chip. */
 const PREVIEW_DELAY_MS = 400;
 const PREVIEW_CLOSE_MS = 150;
-/** px gap between chip and card, mirroring --space-2. */
-const PREVIEW_GAP = 8;
 
 export type EntityChipSize = "inline" | "sm";
 
@@ -110,6 +109,7 @@ export function EntityChip({
   ...rest
 }: EntityChipProps) {
   const resolver = useEntityResolver();
+  const popup = usePopupMetrics();
   const custom = resolver.render?.(
     entity,
     variant === "plain" ? "row" : "chip",
@@ -197,8 +197,8 @@ export function EntityChip({
       <PreviewCard.Portal>
         <PreviewCard.Positioner
           className="fa-ai-preview-positioner"
-          sideOffset={PREVIEW_GAP}
-          collisionPadding={PREVIEW_GAP}
+          sideOffset={popup.offset}
+          collisionPadding={popup.collisionPadding}
         >
           <PreviewCard.Popup className="glass-overlay fa-popup fa-ai-preview">
             <EntityPreviewContent

@@ -2,17 +2,17 @@ import { Menu as BaseMenu } from "@base-ui/react/menu"
 import { useId, type ComponentProps, type ReactNode } from "react"
 import { IconCheck, IconChevronRight } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Kbd, useAriaShortcut } from "../kbd/index.js"
 
 /*
- * Offsets are px because the positioner takes numbers. They mirror tokens:
- *   POPUP_GAP       the space between a trigger and its menu (--space-1-5)
- *   SUBMENU_INSET   --inset-overlay + --border-width, so a submenu's first row lines up
+ * Positioners take px numbers, so offsets are measured from tokens by usePopupMetrics and
+ * follow --ui-scale, density and line weight:
+ *   offset          the space between a trigger and its menu (--popup-offset)
+ *   submenuInset    --inset-overlay + --border-width, so a submenu's first row lines up
  *                   with the row that opened it
+ *   collision       the distance kept from the viewport edge (--popup-collision)
  */
-const POPUP_GAP = 6
-const SUBMENU_INSET = 7
-const COLLISION_PADDING = 8
 
 export type MenuItemTone = "default" | "danger"
 
@@ -63,23 +63,24 @@ export interface MenuPopupProps extends Omit<ComponentProps<typeof BaseMenu.Popu
   side?: ComponentProps<typeof BaseMenu.Positioner>["side"]
   /** Alignment of the overlay relative to its anchor. */
   align?: ComponentProps<typeof BaseMenu.Positioner>["align"]
-  /** Gap between the overlay and its anchor, in CSS pixels. */
+  /** Gap between the overlay and its anchor, in CSS pixels. Defaults to `--popup-offset`. */
   sideOffset?: number
   /** Alignment offset from the anchor, in CSS pixels. */
   alignOffset?: number
 }
 
 /** Portal + positioner + glass popup. Works for Menu, ContextMenu and submenus alike. */
-function MenuPopup({ side, align = "start", sideOffset = POPUP_GAP, alignOffset = 0, className, children, ...rest }: MenuPopupProps) {
+function MenuPopup({ side, align = "start", sideOffset, alignOffset = 0, className, children, ...rest }: MenuPopupProps) {
+  const popup = usePopupMetrics()
   return (
     <BaseMenu.Portal>
       <BaseMenu.Positioner
         className="fa-menu-positioner"
         side={side}
         align={align}
-        sideOffset={sideOffset}
+        sideOffset={sideOffset ?? popup.offset}
         alignOffset={alignOffset}
-        collisionPadding={COLLISION_PADDING}
+        collisionPadding={popup.collisionPadding}
       >
         <BaseMenu.Popup {...rest} className={cx("glass-overlay fa-popup fa-menu", className)}>
           {children}
@@ -224,6 +225,7 @@ function MenuSubmenu({ icon, label, disabled, disabledReason, reasonShown = true
   const ownReasonId = useId()
   const reasonId = sharedReasonId ?? ownReasonId
   const isDisabled = Boolean(disabled || disabledReason)
+  const { submenuInset } = usePopupMetrics()
   return (
     <>
       <BaseMenu.SubmenuRoot disabled={isDisabled}>
@@ -237,7 +239,7 @@ function MenuSubmenu({ icon, label, disabled, disabledReason, reasonShown = true
             {label}
           </MenuItemContent>
         </BaseMenu.SubmenuTrigger>
-        <MenuPopup side="inline-end" align="start" sideOffset={0} alignOffset={-SUBMENU_INSET}>
+        <MenuPopup side="inline-end" align="start" sideOffset={0} alignOffset={-submenuInset}>
           {children}
         </MenuPopup>
       </BaseMenu.SubmenuRoot>

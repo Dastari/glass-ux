@@ -3,12 +3,12 @@ import { useEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type 
 import { IconCheck, IconChevronDown, IconPlus } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { tokenDuration } from "../../lib/motion.js"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Button } from "../button/index.js"
 import { OptionMore, OptionRow, OptionStatus, groupOptions, hasSecondLine, statusAnnouncement, useOptionCollection, useOptionSearch, type OptionItem, type OptionSource } from "../combobox/index.js"
 import { EntityIdentity } from "../entity/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import { Menu } from "../menu/index.js"
-import { POPUP_COLLISION_PADDING, POPUP_OFFSET } from "../select/index.js"
 import {
   addLinks,
   dedupeLinks,
@@ -220,6 +220,7 @@ export function ReferenceInput<R extends string = string>({
   ref,
   ...aria
 }: ReferenceInputProps<R>) {
+  const popup = usePopupMetrics()
   const readOnly = Boolean(readOnlyProp) || direction === "from"
   const [inner, setInner] = useState<ReferenceLink<R>[]>(defaultValue ?? [])
   const links = value ?? inner
@@ -473,7 +474,7 @@ export function ReferenceInput<R extends string = string>({
       </BaseCombobox.InputGroup>
 
       <BaseCombobox.Portal>
-        <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={POPUP_OFFSET} collisionPadding={POPUP_COLLISION_PADDING}>
+        <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BaseCombobox.Popup className="glass-overlay fa-popup fa-combobox-popup fa-ref-popup" aria-busy={status === "loading" || status === "refreshing" || undefined} data-status={status}>
             {filterable ? (
               <div className="fa-ref-kinds" role="group" aria-label="Kind">

@@ -240,6 +240,7 @@
     --control-px-md: 0.75rem;
     --item-h: 2rem;
     --row-h: 2.5rem;
+    --popup-collision: var(--space-2); /* distance a popup keeps from the viewport edge */
     --row-h-header: 2.25rem;
     --tile-icon-box: 2.25rem;
     --inset-panel: var(--space-4);

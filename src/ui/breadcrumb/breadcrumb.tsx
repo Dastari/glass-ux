@@ -22,6 +22,7 @@ import {
   IconSearch,
 } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { NavMenuPopup } from "../tabs/nav-menu.js"
 import { Tooltip } from "../tooltip/index.js"
@@ -450,6 +451,7 @@ interface TrailMenuProps {
  * returns to the button.
  */
 function TrailMenu({ items, label, header, scope, anchor }: TrailMenuProps) {
+  const popup = usePopupMetrics()
   const [open, setOpen] = useState(false)
   const after = useRef<(() => void) | null>(null)
   const current = items[items.length - 1]!
@@ -486,8 +488,8 @@ function TrailMenu({ items, label, header, scope, anchor }: TrailMenuProps) {
           className="fa-crumb-trail-positioner"
           side="bottom"
           align="start"
-          sideOffset={anchor ? 0 : TRAIL_GAP}
-          collisionPadding={TRAIL_COLLISION_PADDING}
+          sideOffset={anchor ? 0 : popup.offset}
+          collisionPadding={popup.collisionPadding}
           anchor={anchor}
           data-anchored={anchor ? "" : undefined}
         >
@@ -522,10 +524,6 @@ function TrailMenu({ items, label, header, scope, anchor }: TrailMenuProps) {
     </Popover.Root>
   )
 }
-
-/** px offsets mirroring tokens: the trigger gap (--space-1-5) and the viewport margin (--space-2). */
-const TRAIL_GAP = 6
-const TRAIL_COLLISION_PADDING = 8
 
 function TrailRow({ crumb, depth, current, onLeave }: { crumb: Crumb; depth: number; current: boolean; onLeave: () => void }) {
   const body = (

@@ -38,9 +38,9 @@ The control measures the box it is given and shows the widest form that fits:
     phone);
   - `"none"` never collapses: the segments scroll sideways inside the track (the old
     behaviour).
-- **`SegmentedCollapseContext`** lets a host set `collapse` for every control inside it. The
-  top bar provides `"menu"` around its module slot when it folds under 34rem. A `collapse` prop
-  on the control wins.
+- **`SegmentedCollapseContext`** lets a host set `collapse` for every control inside it
+  (Segmented and SwatchPicker). The top bar provides `"menu"` around its module slot when it
+  folds under 34rem. A `collapse` prop on the control wins.
 - `block` controls fill their box and share it equally, so they never collapse.
 - `iconOnly` starts at icons and still folds to the menu when even the icons do not fit.
 
@@ -53,7 +53,13 @@ The measurement:
   so the control never flips back and forth.
 
 `fitSegmented({ room, full, icons })` and `nextSegmentedForm(shown, …)` are the pure parts,
-unit-tested in `segmented.test.ts`.
+unit-tested in `segmented.test.ts`. They are the shared `fitForm` and `nextFitForm`
+(`glass-ux/lib/fit-form`) with the segmented control's forms; `useFitForm` runs the
+measurement for Segmented and SwatchPicker alike.
+
+In a toolbar, put the controls in a `fa-fit-row` and give each a fit class (`fa-fit-1` gives
+way first): a row that lets its children overflow never squeezes them, so nothing folds. See
+[Swatch picker → In a toolbar](swatch-picker.md#in-a-toolbar).
 
 ## Behaviour
 

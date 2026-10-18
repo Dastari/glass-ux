@@ -1,5 +1,13 @@
 import { createRoot } from "react-dom/client";
-import { lazy, Suspense, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  lazy,
+  Suspense,
+  use,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   createRootRoute,
   createRoute,
@@ -28,6 +36,7 @@ import { Select } from "glass-ux/select";
 import { Button } from "glass-ux/button";
 import { ButtonLink } from "glass-ux/button-link";
 import { Dialog } from "glass-ux/dialog";
+import { Popover } from "glass-ux/popover";
 import { usePhoneLayout } from "glass-ux/lib/use-media-query";
 import { DrawerPlacement, SectionDrawer } from "glass-ux/shell";
 import { BrandMark } from "glass-ux/brand";
@@ -145,6 +154,9 @@ function DirectoryGroup({
   );
 }
 
+/** The expanded controls' size: md in the phone sheet, sm in the desktop popover. */
+const ChoiceSize = createContext<"sm" | "md">("md");
+
 function AppearanceChoices<V extends string>({
   label,
   value,
@@ -156,6 +168,7 @@ function AppearanceChoices<V extends string>({
   options: Array<{ value: V; label: string; icon?: ReactNode }>;
   onValueChange: (value: V) => void;
 }) {
+  const size = use(ChoiceSize);
   return (
     <div className="docs-appearance-control">
       <span className="type-label">{label}</span>
@@ -164,6 +177,7 @@ function AppearanceChoices<V extends string>({
           <Button
             key={option.value}
             variant={value === option.value ? "soft" : "secondary"}
+            size={size}
             icon={option.icon}
             aria-pressed={value === option.value}
             onClick={() => onValueChange(option.value)}
@@ -178,6 +192,7 @@ function AppearanceChoices<V extends string>({
 
 function Toolbar({ expanded = false }: { expanded?: boolean }) {
   const { appearance, update } = useAppearance();
+  const choiceSize = use(ChoiceSize);
   if (expanded)
     return (
       <div
@@ -200,6 +215,8 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
           <span className="type-label">Palette</span>
           <SwatchPicker
             aria-label="Palette"
+            size={choiceSize}
+            collapse="none"
             value={appearance.palette}
             onValueChange={(palette) => update({ palette, accentHue: null })}
             options={PALETTES.map((palette) => ({
@@ -248,12 +265,14 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
         />
       </div>
     );
+  // One line that gives way in order (fa-fit-row): the palette folds to its menu first, then
+  // density, animations and material; the background select truncates last; the mode switch
+  // keeps its icons.
   return (
     <div
-      className="docs-toolbar"
+      className="docs-toolbar fa-fit-row"
       role="region"
       aria-label="Appearance controls"
-      tabIndex={0}
     >
       <Segmented
         size="sm"
@@ -269,6 +288,7 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <SwatchPicker
         size="sm"
+        className="fa-fit-1"
         aria-label="Palette"
         value={appearance.palette}
         onValueChange={(palette) => update({ palette, accentHue: null })}
@@ -280,6 +300,7 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <Segmented
         size="sm"
+        className="fa-fit-4"
         aria-label="Material"
         value={appearance.glass}
         onValueChange={(glass) => update({ glass })}
@@ -291,6 +312,7 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <Segmented
         size="sm"
+        className="fa-fit-3"
         aria-label="Animations"
         value={appearance.motion === "reduced" ? "reduced" : "full"}
         onValueChange={(motion) => update({ motion })}
@@ -301,6 +323,7 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <Segmented
         size="sm"
+        className="fa-fit-2"
         aria-label="Density"
         value={appearance.density}
         onValueChange={(density) => update({ density })}
@@ -311,7 +334,7 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <Select
         size="sm"
-        className="docs-background-select"
+        className="docs-background-select fa-fit-5"
         aria-label="Background"
         value={appearance.background ?? "silk"}
         onValueChange={(background) => {
@@ -325,6 +348,41 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
     </div>
   );
 }
+/**
+ * The desktop header's appearance controls: the toolbar while its folded controls fit
+ * (a container query on this box), else one Appearance button whose popover holds them.
+ */
+function HeaderAppearance() {
+  return (
+    <div className="docs-header-appearance">
+      <Toolbar />
+      <Popover.Root>
+        <Popover.Trigger
+          render={
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<IconSettings />}
+              className="docs-appearance-button"
+            >
+              Appearance
+            </Button>
+          }
+        />
+        <Popover.Popup
+          align="end"
+          size="lg"
+          className="docs-appearance-popover"
+        >
+          <ChoiceSize value="sm">
+            <Toolbar expanded />
+          </ChoiceSize>
+        </Popover.Popup>
+      </Popover.Root>
+    </div>
+  );
+}
+
 function Layout() {
   const [query, setQuery] = useState("");
   const [browse, setBrowse] = useState(false);
@@ -589,7 +647,7 @@ function Layout() {
                 {!phone ? (
                   <header className="gallery-header docs-header">
                     <RepositoryLink />
-                    <Toolbar />
+                    <HeaderAppearance />
                   </header>
                 ) : null}
                 <div

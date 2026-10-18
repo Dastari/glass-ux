@@ -188,7 +188,8 @@ follows a fine pointer and a glint on the rim nearest it.
   a wide desktop pane.
 - **R7.6** A control with several forms collapses within the box it is given: Segmented steps
   from labels to icons to a menu, SwatchPicker from swatches to a menu. A toolbar must let its
-  controls shrink (`min-width: 0`) so they see a constrained box, and must never overflow.
+  controls shrink so they see a constrained box, and must never overflow: use the `fa-fit-row`
+  recipe and mark the order in which controls give way (`fa-fit-1` first).
 
 ## R8 · Text and figures
 

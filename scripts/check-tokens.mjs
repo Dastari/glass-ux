@@ -59,6 +59,20 @@ for (const file of walk(src)) {
   }
   if (file.endsWith(".css") && cssScopes.some((scope) => file.startsWith(scope))) {
     let inComment = false
+    // A declaration may continue over several lines (box-shadow lists, gradients): collect
+    // it up to its semicolon and check the joined value, reported at its first line.
+    let pending = null
+    const check = ({ text, line, allowed }) => {
+      if (allowed) return
+      const declaration = text.match(/^\s*([a-z-]+)\s*:\s*([\s\S]+?);?\s*$/i)
+      if (!declaration || declaration[1].startsWith("--")) return
+      const value = declaration[2].replace(/url\([^)]*\)/g, "")
+      if (RAW_COLOUR.test(value)) violations.push(`${rel(file)}:${line}  raw colour in ${declaration[1]}`)
+      const length = value.match(/(?<![\w-])(?!0(?:px|rem|em)\b)\d*\.?\d+(?:px|rem|em)\b/)
+      if (length) violations.push(`${rel(file)}:${line}  raw length ${length[0]} in ${declaration[1]}`)
+      const duration = value.match(/(?<![\w-])(?!0s\b)\d*\.?\d+m?s\b/)
+      if (duration) violations.push(`${rel(file)}:${line}  raw duration ${duration[0]} in ${declaration[1]}`)
+    }
     lines.forEach((line, index) => {
       let text = line
       if (inComment) {
@@ -71,16 +85,23 @@ for (const file of walk(src)) {
         inComment = true
         text = text.slice(0, text.indexOf("/*"))
       }
-      if (line.includes("tokens:allow")) return
-      const declaration = text.match(/^\s*([a-z-]+)\s*:\s*(.+?);?\s*$/i)
-      if (!declaration || declaration[1].startsWith("--")) return
-      const value = declaration[2].replace(/url\([^)]*\)/g, "")
-      if (RAW_COLOUR.test(value)) violations.push(`${rel(file)}:${index + 1}  raw colour in ${declaration[1]}`)
-      const length = value.match(/(?<![\w-])(?!0(?:px|rem|em)\b)\d*\.?\d+(?:px|rem|em)\b/)
-      if (length) violations.push(`${rel(file)}:${index + 1}  raw length ${length[0]} in ${declaration[1]}`)
-      const duration = value.match(/(?<![\w-])(?!0s\b)\d*\.?\d+m?s\b/)
-      if (duration) violations.push(`${rel(file)}:${index + 1}  raw duration ${duration[0]} in ${declaration[1]}`)
+      const allowed = line.includes("tokens:allow")
+      if (pending) {
+        pending.text += ` ${text.trim()}`
+        pending.allowed ||= allowed
+        if (/[;{}]/.test(text)) {
+          check(pending)
+          pending = null
+        }
+        return
+      }
+      if (/^\s*[a-z-]+\s*:/i.test(text) && !/[;{}]\s*$/.test(text)) {
+        pending = { text: text.trimEnd(), line: index + 1, allowed }
+        return
+      }
+      check({ text, line: index + 1, allowed })
     })
+    if (pending) check(pending)
   }
 }
 

@@ -3,6 +3,7 @@ import { ToggleGroup } from "@base-ui/react/toggle-group"
 import { createContext, use, useId, useLayoutEffect, useRef, useState, type FocusEvent, type ReactNode } from "react"
 import { IconCheck, IconChevronDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useGlide } from "../../lib/glide.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 import { Menu, MenuPrimitive } from "../menu/index.js"
 import { useSettingRow } from "../setting-row/index.js"
@@ -154,7 +155,6 @@ export function Segmented<V extends string = string>({
   const rootRef = useRef<HTMLDivElement | null>(null)
   const measureRef = useRef<HTMLDivElement | null>(null)
   const [measured, setMeasured] = useState<SegmentedForm>(iconOnly && canIcons ? "icons" : "full")
-  const [ready, setReady] = useState(false)
   const edges = useScrollEdges(rootRef)
   // In a SettingRow, the row's label and description name the control.
   const row = useSettingRow()
@@ -170,28 +170,9 @@ export function Segmented<V extends string = string>({
     onValueChange?.(picked)
   }
 
-  // Slide the indicator to the pressed segment (CSS variables, no re-render per frame).
-  useIsoLayoutEffect(() => {
-    const root = rootRef.current
-    if (!root || form === "menu") return
-    const place = () => {
-      const pressed = root.querySelector<HTMLElement>(":scope > [data-pressed]")
-      if (!pressed) {
-        root.style.setProperty("--_w", "0")
-        return
-      }
-      root.style.setProperty("--_x", `${pressed.offsetLeft}px`)
-      root.style.setProperty("--_w", `${pressed.offsetWidth}px`)
-      // Flush styles before transitions switch on, so the first placement never slides.
-      void root.offsetWidth
-      setReady(true)
-    }
-    place()
-    const observer = new ResizeObserver(place)
-    observer.observe(root)
-    for (const child of root.children) observer.observe(child)
-    return () => observer.disconnect()
-  }, [current, form, options.length])
+  // The indicator glides to the pressed segment (its own CSS variables; no re-render per frame).
+  const indicatorRef = useRef<HTMLSpanElement | null>(null)
+  const ready = useGlide(indicatorRef, "[data-pressed]", "x", [current, form, options.length])
 
   // Container awareness: the widest form that fits the box (fitSegmented). The natural widths
   // come from an off-screen row, so they are known whatever the form shown.
@@ -337,13 +318,13 @@ export function Segmented<V extends string = string>({
       data-scroll-right={edges.right ? "" : undefined}
       data-ready={ready ? "" : undefined}
     >
-      <span className="fa-segmented-indicator" aria-hidden />
+      <span ref={indicatorRef} className="fa-segmented-indicator fa-glide" aria-hidden hidden={!ready} />
       {options.map((option) => (
         <Toggle
           key={option.value}
           value={option.value}
           disabled={option.disabled}
-          className="fa-segmented-item"
+          className="fa-segmented-item fa-lit"
           aria-label={compact ? option.label : undefined}
           title={compact ? option.label : undefined}
         >

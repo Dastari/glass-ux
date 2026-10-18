@@ -76,7 +76,7 @@ export function Progress({
           </div>
         ) : null}
         <BaseProgress.Track className="fa-progress-track">
-          <BaseProgress.Indicator className="fa-progress-indicator" />
+          <BaseProgress.Indicator className={cx("fa-progress-indicator", value === null && "fa-shimmer")} />
         </BaseProgress.Track>
       </BaseProgress.Root>
       {meta || action ? (

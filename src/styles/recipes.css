@@ -3,9 +3,17 @@
  *
  * A recipe is a class that several components share so they behave identically:
  *
- *   fa-pressable   anything you click: state transitions, press scale, disabled
+ *   fa-pressable   anything you click: state transitions, press scale (springs back on
+ *                  release), disabled
+ *   fa-lit         glass that catches the pointer's light: a specular highlight that follows
+ *                  a fine pointer (installPointerLight) on fill materials and solid buttons
+ *   fa-glide       a selection indicator that glides between items and stretches like a
+ *                  drop of liquid on the way (Segmented, Tabs, VerticalTabs; glide.ts)
+ *   fa-collapse    a disclosure panel's height animation (the documented exception)
+ *   fa-shimmer     a placeholder's sweeping highlight (transform on ::after, one beat)
  *   fa-item        a row in any list: menus, selects, combobox, navigation, tree, command
- *   fa-popup       any floating surface: menus, selects, popovers, combobox lists
+ *   fa-popup       any floating surface: menus, selects, popovers, combobox lists; it
+ *                  materialises out of its anchor on a spring
  *   fa-control     any box you type or pick into: input, textarea, select trigger, date
  *   fa-tile-icon   the soft square behind an icon in tiles, list rows and dialogs
  *   fa-label / fa-hint / fa-overline   text roles around controls
@@ -16,23 +24,181 @@
  * [data-disabled], [data-invalid], [data-focused], [data-pressed], [data-popup-open].
  */
 
+/* The glide recipe's edges are registered so each can transition on its own timing. */
+@property --glide-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --glide-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 @layer components {
   /* ── Pressable ───────────────────────────────────────────────────────────── */
+  /* Press goes in on the instant tween and comes back on the bounce spring: the control
+     gives under the pointer and rebounds a fraction past rest, like a gel. */
   .fa-pressable {
     cursor: pointer;
     user-select: none;
     touch-action: manipulation;
-    transition-property: background-color, border-color, color, box-shadow, transform, opacity;
-    transition-duration: var(--duration-fast);
-    transition-timing-function: var(--ease-standard);
+    transition-property: background-color, border-color, color, box-shadow, opacity, transform;
+    transition-duration:
+      var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast),
+      var(--duration-fast), var(--duration-release);
+    transition-timing-function:
+      var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard),
+      var(--ease-standard), var(--ease-bounce);
   }
   .fa-pressable:active:not(:disabled, [data-disabled], [aria-disabled="true"]) {
     transform: scale(var(--_press, var(--press-scale)));
     transition-duration: var(--duration-instant);
+    transition-timing-function: var(--ease-standard);
   }
+
   .fa-pressable:is(:disabled, [data-disabled], [aria-disabled="true"]) {
     cursor: not-allowed;
     opacity: var(--disabled-opacity);
+  }
+
+  /* ── Lit glass ───────────────────────────────────────────────────────────── */
+  /* A specular highlight on the glass under a fine pointer. installPointerLight writes
+     --light-x/--light-y on the hovered element only (rAF-throttled) and stops when motion
+     is reduced; without it the light rests at the top edge, where the sheen comes from.
+     It paints beneath the content (z-index -1 in the element's own stacking context) and
+     is transparent in Solid and under reduced transparency (--specular). The element
+     must be positioned; components that need ::after for something else do not use it. */
+  .fa-lit {
+    isolation: isolate;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .fa-lit::after {
+      content: "";
+      position: absolute;
+      inset: calc(var(--border-width) * -1);
+      z-index: -1;
+      border-radius: inherit;
+      background-image: radial-gradient(
+        circle var(--specular-size) at var(--light-x, 50%) var(--light-y, 0%),
+        var(--_specular, var(--specular)),
+        transparent
+      );
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--duration-base) var(--ease-standard);
+    }
+    .fa-lit:hover:not(:disabled, [data-disabled], [aria-disabled="true"])::after {
+      opacity: 0.75;
+    }
+    /* Pressing presses the light into the glass: it brightens where the pointer is. */
+    .fa-lit:active:not(:disabled, [data-disabled], [aria-disabled="true"])::after {
+      opacity: 1;
+      transition-duration: var(--duration-instant);
+    }
+  }
+
+  /* ── Glide ───────────────────────────────────────────────────────────────── */
+  /* A selection indicator that travels by its two edges along one axis. It spans the
+     container (or --glide-extent) and shows only the part between --glide-start and
+     --glide-end, its offsets from the container's start and end, through clip-path: no
+     layout runs while it moves, and the clip keeps its rounded ends (--glide-radius).
+     The edges are registered lengths (top of this file) with their own transitions: moving
+     forward the leading edge springs ahead and the trailing edge follows later, so the
+     indicator stretches on the way and gathers itself on arrival; moving back the roles
+     swap. The direction comes from data-direction (glide.ts) or Base UI's
+     data-activation-direction. Keep it hidden until first placed, so it appears in place.
+     Paint stays inside the clip: put an outer glow on the container, not the indicator. */
+  .fa-glide {
+    --_lead: calc(var(--duration-glide) * 0.7);
+    --_trail: var(--duration-glide);
+    --_lag: calc(var(--duration-instant) * 0.5);
+    --_inset: var(--glide-inset, 0px);
+    --_round: var(--glide-radius, 0px);
+    position: absolute;
+    pointer-events: none;
+    transition-property: --glide-start, --glide-end;
+    transition-duration: var(--duration-glide);
+    transition-timing-function: var(--ease-glide);
+  }
+  .fa-glide:not([data-axis="y"]) {
+    left: 0;
+    width: var(--glide-extent, 100%);
+    clip-path: inset(
+      0 calc(var(--glide-end) + var(--_inset)) 0 calc(var(--glide-start) + var(--_inset))
+        round var(--_round)
+    );
+  }
+  .fa-glide[data-axis="y"] {
+    top: 0;
+    height: var(--glide-extent, 100%);
+    clip-path: inset(
+      calc(var(--glide-start) + var(--_inset)) 0 calc(var(--glide-end) + var(--_inset)) 0
+        round var(--_round)
+    );
+  }
+  .fa-glide:is([data-direction="forward"], [data-activation-direction="right"], [data-activation-direction="down"]) {
+    transition-duration: var(--_trail), var(--_lead);
+    transition-delay: var(--_lag), 0s;
+  }
+  .fa-glide:is([data-direction="backward"], [data-activation-direction="left"], [data-activation-direction="up"]) {
+    transition-duration: var(--_lead), var(--_trail);
+    transition-delay: 0s, var(--_lag);
+  }
+
+  /* ── Collapse ────────────────────────────────────────────────────────────── */
+  /* A disclosure panel opening and closing (Accordion, Disclosure, section drawer groups,
+     reasoning and tool details). The one sanctioned height animation: the content below
+     must move with the panel, which no transform can do. It runs once per toggle on
+     Base UI's measured --collapsible-panel-height (a component may point --_collapse-h at
+     another measure, as Accordion does) and the content fades with it. */
+  .fa-collapse {
+    --_collapse-h: var(--collapsible-panel-height);
+    height: var(--_collapse-h);
+    overflow: hidden;
+    transition-property: height, opacity;
+    transition-duration: var(--duration-base), var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-collapse:is([data-starting-style], [data-ending-style]) {
+    height: 0;
+    opacity: 0;
+  }
+
+  /* ── Shimmer ─────────────────────────────────────────────────────────────── */
+  /* A highlight sweeping across a placeholder or an indeterminate bar. The band is the
+     element's own ::after, moved with transform (compositor only: nothing repaints while it
+     runs); installShimmerSync() starts every sweep on the document clock so they share one
+     beat. --shimmer-shine colours the band. Under Still the sweep stops and only the base
+     fill remains. */
+  .fa-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .fa-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(
+      100deg,
+      transparent 20%,
+      var(--shimmer-shine, var(--skel-shine)) 50%,
+      transparent 80%
+    );
+    transform: translateX(-100%);
+    pointer-events: none;
+    animation: fa-sweep var(--duration-shimmer) ease-in-out infinite;
+  }
+  :root[data-motion="reduced"] .fa-shimmer::after {
+    animation: none;
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) .fa-shimmer::after {
+      animation: none;
+      opacity: 0;
+    }
   }
 
   /* ── Item ────────────────────────────────────────────────────────────────── */
@@ -130,8 +296,8 @@
     outline: none;
     transform-origin: var(--transform-origin, top center);
     transition-property: opacity, transform;
-    transition-duration: var(--duration-base);
-    transition-timing-function: var(--ease-enter);
+    transition-duration: var(--duration-fast), var(--duration-materialise);
+    transition-timing-function: var(--ease-standard), var(--ease-materialise);
   }
   .fa-popup[data-side="top"] {
     --_enter-y: var(--overlay-enter-shift);
@@ -139,9 +305,14 @@
   .fa-popup:is([data-side="left"], [data-side="right"], [data-side="inline-start"], [data-side="inline-end"]) {
     --_enter-y: 0px;
   }
+  /* Materialise: out of the anchor (Base UI's --transform-origin), shorter along the axis
+     that points away from the trigger, then a spring to full size. */
   .fa-popup[data-starting-style] {
     opacity: 0;
-    transform: translateY(var(--_enter-y)) scale(var(--overlay-enter-scale));
+    transform: translateY(var(--_enter-y)) scale(var(--overlay-enter-scale), var(--overlay-enter-squash));
+  }
+  .fa-popup:is([data-side="left"], [data-side="right"], [data-side="inline-start"], [data-side="inline-end"])[data-starting-style] {
+    transform: scale(var(--overlay-enter-squash), var(--overlay-enter-scale));
   }
   .fa-popup[data-ending-style] {
     opacity: 0;
@@ -179,12 +350,15 @@
     pointer-events: none;
     transform-origin: var(--transform-origin, top center);
     transition-property: opacity, transform;
-    transition-duration: var(--duration-base);
-    transition-timing-function: var(--ease-enter);
+    transition-duration: var(--duration-fast), var(--duration-materialise);
+    transition-timing-function: var(--ease-standard), var(--ease-materialise);
   }
   [data-side]:has(> .fa-popup[data-starting-style])::before {
     opacity: 0;
-    transform: translateY(var(--_lift)) scale(var(--overlay-enter-scale));
+    transform: translateY(var(--_lift)) scale(var(--overlay-enter-scale), var(--overlay-enter-squash));
+  }
+  :is([data-side="left"], [data-side="right"], [data-side="inline-start"], [data-side="inline-end"]):has(> .fa-popup[data-starting-style])::before {
+    transform: scale(var(--overlay-enter-squash), var(--overlay-enter-scale));
   }
   [data-side]:has(> .fa-popup[data-ending-style])::before {
     opacity: 0;
@@ -222,6 +396,7 @@
     border: var(--border-width) solid var(--glass-edge);
     box-shadow:
       inset 0 1px 0 0 var(--glass-rim-top),
+      inset 0 calc(var(--border-width) * -1) 0 0 var(--glass-rim-bottom),
       var(--shadow-1);
     color: var(--fg);
     font-size: var(--type-body-size);

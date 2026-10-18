@@ -22,6 +22,7 @@ import {
   type RefObject,
 } from "react"
 import { flushSync } from "react-dom"
+import { scaledDuration } from "../lib/motion.js"
 import { DRAG_THRESHOLD, EDGE_SNAP, snapBarHit, type DragStore } from "./drag.js"
 import { clamp, edgeSnapTarget, type EdgeTarget } from "./geometry.js"
 import { WindowContext, useWindowManager, type WindowContextValue } from "./react.js"
@@ -158,7 +159,7 @@ function settleFrame(frame: HTMLElement, state: "dragging" | "resizing", animate
     if (event.target === frame && (event.propertyName === "left" || event.propertyName === "width")) done()
   }
   // Fallback when nothing transitions (reduced motion, geometry already in place).
-  const timer = setTimeout(done, 600)
+  const timer = setTimeout(done, scaledDuration(600) + 50)
   frame.addEventListener("transitionend", onEnd)
 }
 

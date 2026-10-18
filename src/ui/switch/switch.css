@@ -4,7 +4,8 @@
  *   off    a recessed glass well (inner shadow, 3:1 edge) with a glossy glass bead
  *   on     the tone gradient sweeps in from the left behind the bead (clip-path), with
  *          the primary button's top highlight and a soft tone glow
- *   bead   travels on --ease-spring; while pressed it stretches toward its destination
+ *   bead   travels on --ease-spring; while pressed it stretches toward its destination and
+ *          flattens into a droplet, springing back round on --ease-bounce
  *   icons  optional ✓ / ✕ inside the bead (md and lg), crossfading with the state
  *
  * Tones accent · success · warning · danger (shared tone tokens in field.css).
@@ -100,13 +101,20 @@
     box-shadow: var(--_bead-shadow);
     transition:
       transform var(--duration-slow) var(--ease-spring),
-      width var(--duration-base) var(--ease-spring);
+      width var(--duration-base) var(--ease-spring),
+      scale var(--duration-release) var(--ease-bounce);
   }
   .fa-switch[data-checked] .fa-switch-thumb {
     transform: translateX(var(--_travel));
   }
+  /* Pressed, the bead becomes a droplet: it stretches toward its destination and flattens
+     a little, then springs back round on release. */
   .fa-switch:active:not([data-disabled], [data-readonly]) {
     --_thumb-w: calc(var(--_thumb) + var(--_h) * 0.22);
+  }
+  .fa-switch:active:not([data-disabled], [data-readonly]) .fa-switch-thumb {
+    scale: 1 0.9;
+    transition-duration: var(--duration-slow), var(--duration-base), var(--duration-fast);
   }
 
   .fa-switch-icon {

@@ -33,6 +33,7 @@ import type { CameraMove, FitPadding, MapEngine, MarkerSlot } from "./engine.js"
 import { isNavKey, nextMarker } from "./nav.js"
 import { boxContains, boxOfPoints, ringsOf, ringsToPath, viewBoxOf, type LngLatBox } from "./projection.js"
 import { CLUSTER_STEPS, MARKER_LABEL_ZOOM, pointsToGeoJSON, type MapStyleInput } from "./style.js"
+import { tokenDuration } from "../../lib/motion.js"
 import { observeAppearance, readLength, readMapTheme } from "./theme.js"
 import type { MapAttribution, MapCluster, MapConfig, MapFrame, MapPoint, MapRegion } from "./types.js"
 
@@ -147,13 +148,7 @@ const pointKey = (id: string) => `p:${id}`
 /** The camera's timing from the motion tokens (R18.3): --duration-slower × 2, nothing under Still. */
 function cameraMove(root: HTMLElement | null): CameraMove {
   if (!root) return { animate: false, duration: 0 }
-  const probe = document.createElement("span")
-  probe.style.transitionDuration = "var(--duration-slower)"
-  probe.hidden = true
-  root.append(probe)
-  const seconds = Number.parseFloat(getComputedStyle(probe).transitionDuration)
-  probe.remove()
-  const duration = Number.isFinite(seconds) ? seconds * 1000 * 2 : 0
+  const duration = tokenDuration("--duration-slower", 0, root) * 2
   return { animate: duration > 40, duration }
 }
 

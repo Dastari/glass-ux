@@ -38,7 +38,6 @@
     font-weight: var(--weight-medium);
     white-space: nowrap;
     outline-offset: calc(var(--focus-ring-width) * -1);
-    transition: opacity var(--duration-fast) var(--ease-standard);
   }
   .fa-chart[data-tier="compact"] .fa-chart-legend-item {
     height: auto;
@@ -53,6 +52,10 @@
   }
   .fa-chart-legend-item[data-off] {
     color: var(--fg-subtle);
+  }
+  /* Static items fade when dimmed; buttons get the same from fa-pressable with their press. */
+  .fa-chart-legend-item:not(.fa-pressable) {
+    transition: opacity var(--duration-fast) var(--ease-standard);
   }
   .fa-chart-legend-item[data-dim] {
     opacity: 0.55;

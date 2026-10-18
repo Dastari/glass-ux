@@ -137,7 +137,7 @@ export function AskDock({ className }: { className?: string }) {
       <div className="fa-ai-ask-dock-bar">
         <PendingGlyph ask={current} />
         {collapsed ? (
-          <button type="button" className="fa-ai-ask-dock-summary" aria-expanded={false} aria-controls={`${id}-body`} onClick={() => dock.setCollapsed(false)}>
+          <button type="button" className="fa-ai-ask-dock-summary fa-pressable" aria-expanded={false} aria-controls={`${id}-body`} onClick={() => dock.setCollapsed(false)}>
             <TruncatedText>{current.question}</TruncatedText>
           </button>
         ) : (

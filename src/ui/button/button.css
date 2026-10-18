@@ -242,6 +242,28 @@
     --_bg: oklch(from var(--warning) l c h / 0.24);
   }
 
+  /* ── Light ─────────────────────────────────────────────────────────────── */
+  /* Every button is lit glass (fa-lit): the pointer's highlight is brighter on glass fills
+     and softer on coloured fills, where it must not wash out the label. */
+  .fa-btn:is([data-variant="primary"], [data-variant="danger"], [data-variant="success"], [data-variant="warning"]) {
+    --_specular: var(--specular-solid);
+  }
+
+  /* Small buttons keep a finger-sized target on touch screens (R20.4) without growing:
+     the hit area extends to --target-min vertically, and sideways for icon-only buttons.
+     (::after is the specular highlight only on fine pointers.) */
+  @media (pointer: coarse) {
+    .fa-btn:is([data-size="xs"], [data-size="sm"])::after {
+      content: "";
+      position: absolute;
+      inset-block: min(0px, calc((var(--_h) - var(--target-min)) / 2));
+      inset-inline: 0;
+    }
+    .fa-btn[data-icon-only]:is([data-size="xs"], [data-size="sm"])::after {
+      inset-inline: min(0px, calc((var(--_h) - var(--target-min)) / 2));
+    }
+  }
+
   /* ── Feedback ──────────────────────────────────────────────────────────── */
   .fa-btn-stack {
     display: grid;

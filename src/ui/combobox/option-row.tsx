@@ -88,7 +88,7 @@ export interface OptionStatusProps {
 export function OptionStatus({ status, twoLine = false, needsMore = 0, onRetry }: OptionStatusProps) {
   return (
     <>
-      {status === "refreshing" ? <div className="fa-option-progress" aria-hidden /> : null}
+      {status === "refreshing" ? <div className="fa-option-progress fa-shimmer" aria-hidden /> : null}
       {status === "loading" ? (
         <div className="fa-option-skeletons" aria-hidden>
           {[72, 54, 64, 46].map((width) => (

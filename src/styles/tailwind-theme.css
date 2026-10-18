@@ -136,6 +136,9 @@
   --ease-enter: var(--ease-enter);
   --ease-exit: var(--ease-exit);
   --ease-spring: var(--ease-spring);
+  --ease-glide: var(--ease-glide);
+  --ease-bounce: var(--ease-bounce);
+  --ease-materialise: var(--ease-materialise);
 }
 
 /* Composite type roles: size + line + weight + tracking in one class. */

@@ -5,5 +5,5 @@ export const meta: SectionMeta = {
   title: "Materials",
   group: "Foundations",
   order: 50,
-  summary: "Five glass materials and four elevations; Glass, Frosted and Solid.",
+  summary: "Glass materials, light and elevation; Glass, Frosted and Solid.",
 }

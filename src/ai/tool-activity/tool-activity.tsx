@@ -294,7 +294,7 @@ export function ToolCallRow({
           />
         ) : null}
       </Collapsible.Trigger>
-      <Collapsible.Panel className="fa-ai-tool-panel">
+      <Collapsible.Panel className="fa-collapse fa-ai-tool-panel">
         <ToolDetails call={call} />
       </Collapsible.Panel>
     </Collapsible.Root>
@@ -393,7 +393,7 @@ export function ToolGroup({
           />
         ) : null}
       </Collapsible.Trigger>
-      <Collapsible.Panel className="fa-ai-tool-panel">
+      <Collapsible.Panel className="fa-collapse fa-ai-tool-panel">
         <div className="fa-ai-tool-list">
           {calls.map((call) => (
             <ToolCallRow key={call.id} call={call} />

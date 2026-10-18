@@ -501,7 +501,7 @@ function Group({
         </Collapsible.Trigger>
         {actions}
       </div>
-      <Collapsible.Panel className="fa-shell-drawer-group-panel">
+      <Collapsible.Panel className="fa-collapse fa-shell-drawer-group-panel">
         {children}
       </Collapsible.Panel>
     </Collapsible.Root>

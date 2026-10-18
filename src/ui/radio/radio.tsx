@@ -119,7 +119,7 @@ export function RadioCard<V extends string = string>({ title, description, icon,
       nativeButton
       // oxlint-disable-next-line jsx-a11y/control-has-associated-label -- named by its title (aria-labelledby)
       render={<button type="button" />}
-      className={cx("fa-radio-card", className)}
+      className={cx("fa-radio-card fa-lit", className)}
       data-tone={tone === "accent" ? undefined : tone}
       aria-labelledby={`${id}-title`}
       aria-describedby={description ? `${id}-description` : undefined}

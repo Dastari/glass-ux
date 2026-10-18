@@ -8,8 +8,10 @@
  *         part, an inline-size container) / footer (tertiary left, actions right)
  * Edges   no dividers; the header and footer show a hairline only while content scrolls
  *         beneath them (data-scrolled-top / data-scrolled-bottom, R5.8)
- * Motion  enters like every floating surface (scale from --overlay-enter-scale, rise
- *         --overlay-enter-shift, --duration-base on --ease-enter) and exits faster
+ * Motion  materialises like every floating surface (scale from --overlay-enter-scale, rise
+ *         --overlay-enter-shift, --duration-materialise on the --ease-materialise spring)
+ *         and exits faster on --ease-exit. Edge sheets slide on --ease-enter: a spring's
+ *         overshoot would lift them off their edge.
  * Nesting a parent recedes (scale + dim) behind the dialog it opened; two deep at most
  * Phones  data-sheet: a bottom sheet with a grab handle, swipe to dismiss, footer pinned
  *         above the safe area (R13.4)
@@ -60,8 +62,8 @@
     color: var(--fg);
     outline: none;
     transition-property: opacity, transform;
-    transition-duration: var(--duration-base);
-    transition-timing-function: var(--ease-enter);
+    transition-duration: var(--duration-fast), var(--duration-materialise);
+    transition-timing-function: var(--ease-standard), var(--ease-materialise);
   }
   .fa-dialog[data-size="sm"] {
     --_w: 25rem;

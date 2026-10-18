@@ -1,7 +1,8 @@
 import { useStore } from "@tanstack/react-form"
 import { useCallback, useEffect, useRef, useState, type ComponentType, type PropsWithChildren, type ReactNode } from "react"
 import { IconLock, IconRefresh, IconWarning } from "../../icons/generated/icons.js"
-import { ActionButton, Button, FEEDBACK_HOLD_MS, type ButtonStatus } from "../button/index.js"
+import { ActionButton, Button, type ButtonStatus } from "../button/index.js"
+import { feedbackHold } from "../../lib/motion.js"
 import { Dialog, SettingsSections, useDialogGuard, type SettingsSection } from "../dialog/index.js"
 import { FieldSkeleton } from "../field/index.js"
 import { blurThenChange } from "../form/index.js"
@@ -233,7 +234,7 @@ export function EntitySettingsDialog({
   const hold = (next: ButtonStatus) => {
     setStatus(next)
     clearTimeout(holdTimer.current)
-    holdTimer.current = setTimeout(() => setStatus("idle"), FEEDBACK_HOLD_MS)
+    holdTimer.current = setTimeout(() => setStatus("idle"), feedbackHold())
   }
 
   /** Open the first tab with an error (the current one if it has any) and focus its field. */
@@ -249,7 +250,7 @@ export function EntitySettingsDialog({
   const markSaved = (saved: readonly string[]) => {
     clearTimeout(savedTimer.current)
     setSavedTabs(saved)
-    savedTimer.current = setTimeout(() => setSavedTabs([]), FEEDBACK_HOLD_MS)
+    savedTimer.current = setTimeout(() => setSavedTabs([]), feedbackHold())
   }
 
   const save = async () => {

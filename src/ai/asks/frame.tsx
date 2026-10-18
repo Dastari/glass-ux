@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { cx } from "../../lib/cx.js";
+import { scaledDuration } from "../../lib/motion.js";
 import { AiCard, type AiCardTone } from "../card/index.js";
 import { RelativeTime } from "../../ui/data-table/cells/relative-time.js";
 import { TruncatedText } from "../../ui/truncated-text/index.js";
@@ -183,7 +184,7 @@ export function AskShell({
       setPhase("closed");
       setHeight(null);
     };
-    const fallback = setTimeout(done, 1000);
+    const fallback = setTimeout(done, scaledDuration(1000) + 50);
     element.addEventListener("transitionend", done, { once: true });
     return () => {
       cancelAnimationFrame(frame);

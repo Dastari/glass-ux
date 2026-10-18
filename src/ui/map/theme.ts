@@ -54,15 +54,6 @@ export function readLength(root: HTMLElement, token: string, fallback = 0): numb
   return Number.isFinite(width) && width > 0 ? width : fallback
 }
 
-/**
- * The motion knob (R18.3): 1 normally, near zero under "Still" or the OS setting. Camera
- * moves multiply their duration by it and jump when it is near zero.
- */
-export function readMotionScale(root: HTMLElement): number {
-  const value = Number.parseFloat(getComputedStyle(root).getPropertyValue("--motion-scale"))
-  return Number.isFinite(value) ? value : 1
-}
-
 /** Re-read the theme when the appearance changes: mode, palette, glass, motion, density. */
 export function observeAppearance(root: HTMLElement, onChange: () => void): () => void {
   const targets = new Set<Element>([document.documentElement])

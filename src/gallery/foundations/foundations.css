@@ -307,6 +307,34 @@
     border-radius: var(--radius-control);
   }
 
+  .materials-lit {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: var(--gap-tiles);
+    width: 100%;
+  }
+  .materials-lit-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--space-1);
+    min-height: 7rem;
+    padding: var(--inset-tile);
+    border-radius: var(--radius-tile);
+  }
+  .materials-lit-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-controls);
+    width: 100%;
+  }
+  .motion-disclosure {
+    width: 100%;
+    max-width: 32rem;
+  }
+
   .motion-curve-cell {
     display: flex;
     flex-direction: column;

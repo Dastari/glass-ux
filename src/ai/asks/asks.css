@@ -338,6 +338,7 @@
     font-weight: var(--weight-medium);
     text-align: start;
     cursor: pointer;
+    --_press: calc(1 - (1 - var(--press-scale)) / 3); /* a wide row presses shallower */
   }
   .fa-ai-ask-dock-summary:focus-visible {
     outline: var(--focus-ring-width) solid var(--accent-ring);

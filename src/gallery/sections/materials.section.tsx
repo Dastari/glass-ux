@@ -1,6 +1,17 @@
 import { Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { IconEndpoint } from "../../icons/generated/icons.js"
 import { Button } from "../../ui/button/index.js"
+import { Segmented } from "../../ui/segmented/index.js"
+
+const LIT: Array<[string, string]> = [
+  ["glass-control", "Control fill"],
+  ["glass-card", "Card"],
+]
+const MODES = [
+  { value: "control", label: "Control" },
+  { value: "view", label: "View only" },
+  { value: "files", label: "Files" },
+]
 
 const LAYERS: Array<[string, string]> = [
   ["glass-chrome", "Sidebar, top bar, dock"],
@@ -16,7 +27,7 @@ const FILLS: Array<[string, string]> = [
 export default function MaterialsSection() {
   return (
     <SectionPage>
-      <Specimen title="Layer materials" description="Layers blur what is behind them. A layer never sits inside another layer." backdrop wide>
+      <Specimen title="Layer materials" description="Layers blur what is behind them. A lit top edge, a shaded lower edge and a soft inner lens glow give them thickness. A layer never sits inside another layer." backdrop wide>
         <div className="materials-grid">
           {LAYERS.map(([material, use]) => (
             <div key={material} className={`materials-card ${material}`}>
@@ -27,6 +38,22 @@ export default function MaterialsSection() {
               <span className="type-caption materials-use">{use}</span>
             </div>
           ))}
+        </div>
+      </Specimen>
+
+      <Specimen title="Light" description="Lit glass reflects a fine pointer: the highlight follows it across buttons, segments, choice cards and these tiles, and brightens on press. Under Still it rests at the top edge; Solid removes it.">
+        <div className="materials-lit">
+          {LIT.map(([material, use]) => (
+            <div key={material} className={`materials-lit-tile fa-lit ${material}`}>
+              <code className="type-label">{material} fa-lit</code>
+              <span className="type-caption text-fg-muted">{use}</span>
+            </div>
+          ))}
+        </div>
+        <div className="materials-lit-controls">
+          <Button variant="primary">Connect</Button>
+          <Button variant="secondary">View only</Button>
+          <Segmented options={MODES} defaultValue="control" aria-label="Session mode" />
         </div>
       </Specimen>
 
@@ -62,6 +89,7 @@ export default function MaterialsSection() {
       <Rules
         do={[
           "Use the material classes; they read every glass token.",
+          "Add fa-lit to a positioned, interactive fill to let it catch the pointer's light.",
           "Keep every screen usable in Solid (Settings or reduce transparency).",
           "Put glass over the ambient canvas or imagery so it has something to bend.",
         ]}
@@ -79,6 +107,9 @@ export default function MaterialsSection() {
           ["--glass-fill-panel", "Panel tint"],
           ["--glass-edge", "Outer hairline"],
           ["--glass-rim-top", "Top highlight"],
+          ["--glass-rim-bottom", "Shaded lower edge"],
+          ["--glass-lens", "Inner lens glow (none in Solid)"],
+          ["--specular", "Pointer highlight (none in Solid)"],
           ["--shadow-2", "Panel elevation"],
         ]}
       />

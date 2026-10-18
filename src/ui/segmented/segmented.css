@@ -3,8 +3,8 @@
  *
  *   track      recessed glass well, control height and radius (lines up with fields)
  *   indicator  a lit glass pill tinted with the tone (accent by default) and its edge; it
- *              slides between segments on the spring curve (placed by measuring the
- *              pressed segment)
+ *              glides between segments (fa-glide: the leading edge springs ahead, the
+ *              trailing edge follows, so it stretches like a drop on the way)
  *   segments   button weight; muted until chosen, accent text when chosen
  *
  * Sizes sm 32 · md 40 · lg 48.
@@ -170,23 +170,13 @@
       var(--shadow-1),
       0 var(--space-half) var(--space-2) calc(var(--space-half) * -1) oklch(from var(--_on) l c h / 0.22);
   }
+  /* The glide clips everything outside the pill, so the indicator keeps its inner light and
+     tone edge; the outer lift comes from the segment's own contrast against the well. */
   .fa-segmented-indicator {
-    position: absolute;
+    --glide-radius: var(--_r);
     z-index: 0;
     top: var(--_pad);
     bottom: var(--_pad);
-    left: 0;
-    width: var(--_w, 0);
-    border-radius: var(--_r);
-    opacity: 0;
-    transform: translateX(var(--_x, 0));
-    pointer-events: none;
-  }
-  .fa-segmented[data-ready] > .fa-segmented-indicator {
-    opacity: 1;
-    transition:
-      transform var(--duration-base) var(--ease-spring),
-      width var(--duration-base) var(--ease-spring);
   }
 
   /* ── Menu form: the chosen pill as a menu button ──────────────────────────── */

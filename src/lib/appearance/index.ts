@@ -1,3 +1,5 @@
 export * from './appearance.js'
 export * from './fonts.js'
 export * from './use-appearance.js'
+export * from './optics.js'
+export { feedbackHold, installShimmerSync, motionScale, prefersReducedMotion, scaledDuration, tokenDuration } from '../motion.js'

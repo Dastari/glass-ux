@@ -229,8 +229,10 @@ const iconsTsx =
   icons
     .map((icon) => {
       const body = icon.elements.map(renderElement)
-      const children = body.length === 1 ? body[0] : `<>\n    ${body.join("\n    ")}\n  </>`
-      return `export const Icon${pascal(icon.name)} = createIcon(\n  "${icon.name}",\n  ${children}\n)\n`
+      const children = body.length === 1 ? body[0] : `(\n    <>\n      ${body.join("\n      ")}\n    </>\n  )`
+      // Pure call + lazily created children: an unused icon leaves no top-level work behind,
+      // so importing one icon does not bundle the whole set.
+      return `export const Icon${pascal(icon.name)} = /* @__PURE__ */ createIcon(\n  "${icon.name}",\n  () => ${children}\n)\n`
     })
     .join("\n")
 

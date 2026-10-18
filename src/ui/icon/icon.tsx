@@ -14,8 +14,24 @@ export interface IconProps extends Omit<SVGProps<SVGSVGElement>, "children" | "r
 
 export type IconComponent = ((props: IconProps) => ReactNode) & { iconName: string }
 
-/** Wrap generated SVG children in the shared Glass UX icon frame. */
-export function createIcon(name: string, children: ReactNode): IconComponent {
+/**
+ * Wrap SVG children in the shared Glass UX icon frame.
+ *
+ * `children` may be the SVG content or a function that returns it. The generated icon set
+ * passes a function so the content is created on first render, which lets bundlers drop
+ * every icon a module does not use.
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export function createIcon(name: string, children: ReactNode | (() => ReactNode)): IconComponent {
+  let content: ReactNode
+  let resolved = false
+  const resolve = (): ReactNode => {
+    if (!resolved) {
+      content = typeof children === "function" ? children() : children
+      resolved = true
+    }
+    return content
+  }
   function GlassUxIcon({ size, label, tint = true, className, ...rest }: IconProps) {
     return (
       <svg
@@ -34,7 +50,7 @@ export function createIcon(name: string, children: ReactNode): IconComponent {
         aria-hidden={label ? undefined : true}
         {...rest}
       >
-        {children}
+        {resolve()}
       </svg>
     )
   }

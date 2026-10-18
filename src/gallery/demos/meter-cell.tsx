@@ -36,9 +36,9 @@ export default function MeterCellSection() {
       </Specimen>
       <Specimen
         title="Narrow cell"
-        description="Below eight rem, the track gives way while the reading and exact breakdown remain reachable."
+        description="Below 5.5rem, the track gives way while the reading and exact breakdown remain reachable."
       >
-        <div className="w-24">
+        <div className="w-20">
           <MeterCell
             label="Seats used"
             value={8}

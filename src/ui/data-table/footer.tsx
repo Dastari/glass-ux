@@ -13,7 +13,9 @@ import { useNow } from "./use-now.js"
 function UpdatedAt({ value }: { value: Date | number }) {
   const now = useNow()
   const time = value instanceof Date ? value.getTime() : value
-  const relative = formatRelative(time, now || time)
+  // The shared clock ticks every 15 s: a refresh newer than its last tick is "just now",
+  // never "in less than a minute".
+  const relative = formatRelative(time, Math.max(now || time, time))
   return (
     <span className="fa-dt-status-item" suppressHydrationWarning>
       {relative === "just now" ? "Updated just now" : `Updated ${relative}`}

@@ -1,5 +1,4 @@
 import { useRef } from "react"
-import { cx } from "../../../lib/cx.js"
 import { useScrollEdges } from "../../../lib/use-scroll-edges.js"
 
 export interface ChartTableColumn {
@@ -32,7 +31,14 @@ export interface ChartTableProps {
  * inside it.
  */
 export function ChartTable({ model, caption, visible = false }: ChartTableProps) {
-  if (!visible) return <TableMarkup model={model} caption={caption} visible={false} />
+  // A table ignores sr-only's 1px width and lays out at its content width, which would widen
+  // a narrow page; a block wrapper clips it.
+  if (!visible)
+    return (
+      <div className="sr-only">
+        <TableMarkup model={model} caption={caption} visible={false} />
+      </div>
+    )
   return <VisibleTable model={model} caption={caption} />
 }
 
@@ -57,7 +63,7 @@ function VisibleTable({ model, caption }: { model: ChartTableModel; caption: str
 
 function TableMarkup({ model, caption, visible }: { model: ChartTableModel; caption: string; visible: boolean }) {
   return (
-    <table className={cx(visible ? "fa-chart-table" : "sr-only")} data-chart-table={visible ? "visible" : "fallback"}>
+    <table className={visible ? "fa-chart-table" : undefined} data-chart-table={visible ? "visible" : "fallback"}>
       <caption className={visible ? "sr-only" : undefined}>{caption}</caption>
       <thead>
         <tr>

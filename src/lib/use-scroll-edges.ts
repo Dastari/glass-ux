@@ -1,4 +1,5 @@
 import { useEffect, useState, type RefObject } from "react"
+import { observeElementSizes } from "./resize-observer.js"
 
 export interface ScrollEdges {
   /** Content is scrolled away from the top (show the header edge). */
@@ -68,7 +69,7 @@ export function useScrollEdges(
     }
     measure()
     element.addEventListener("scroll", measure, { passive: true })
-    const resize = new ResizeObserver(measure)
+    const resize = observeElementSizes(measure)
     resize.observe(element)
     for (const child of element.children) resize.observe(child)
     return () => {

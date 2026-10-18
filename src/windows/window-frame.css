@@ -131,10 +131,10 @@
   }
 
   /* R5.8: the app bar and status bar edges show only while content scrolls beneath. */
-  .fa-window:has(.fa-window-body[data-scrolled-top]) .fa-window-appbar {
+  .fa-window[data-scrolled-top] .fa-window-appbar {
     box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
   }
-  .fa-window:has(.fa-window-body[data-scrolled-bottom]) .fa-window-status {
+  .fa-window[data-scrolled-bottom] .fa-window-status {
     box-shadow: inset 0 var(--border-width) 0 var(--line);
   }
 

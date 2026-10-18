@@ -25,6 +25,7 @@ import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useSta
 import { createPortal } from "react-dom"
 import { IconClose, IconGlobe, IconHome, IconInfo, IconList, IconMapPin, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { observeElementSize } from "../../lib/resize-observer.js"
 import { Button } from "../button/index.js"
 import { Menu } from "../menu/index.js"
 import { Popover } from "../popover/index.js"
@@ -578,7 +579,7 @@ export function GeoMap<T>({
     if (!root || phase !== "ready") return
     let frameId = 0
     let last = { width: root.clientWidth, height: root.clientHeight }
-    const observer = new ResizeObserver(() => {
+    const unobserve = observeElementSize(root, () => {
       const size = { width: root.clientWidth, height: root.clientHeight }
       if (size.width === last.width && size.height === last.height) return
       last = size
@@ -590,10 +591,9 @@ export function GeoMap<T>({
         if (onFrame.current) engine.fit(latest.current.frameBox, fitPadding(), FIT_MAX_ZOOM, { animate: false, duration: 0 })
       })
     })
-    observer.observe(root)
     return () => {
       cancelAnimationFrame(frameId)
-      observer.disconnect()
+      unobserve()
     }
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- reads the latest frame through refs
   }, [phase])

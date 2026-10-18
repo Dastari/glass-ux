@@ -150,8 +150,9 @@ function Body({
   ...rest
 }: WindowBodyProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const edges = useScrollEdges(ref);
   const scrolls = variant === "scroll";
+  // The frame mirrors the edges, so its app bar and status bar rules need no :has().
+  const edges = useScrollEdges(ref, { root: scrolls ? ".fa-window" : undefined });
   // While content overflows, the body takes keyboard focus so it can be scrolled without
   // a pointer (WCAG 2.1.1), even when nothing inside it is focusable.
   const overflowing = scrolls && (edges.top || edges.bottom);

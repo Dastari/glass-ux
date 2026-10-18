@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { cx } from "../../lib/cx.js";
-import { observeElementSize } from "../../lib/use-element-size.js";
+import { observeElementSize } from "../../lib/resize-observer.js";
 import { Tooltip } from "../tooltip/index.js";
 import { splitMiddle } from "./split.js";
 

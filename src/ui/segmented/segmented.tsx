@@ -3,6 +3,8 @@ import { ToggleGroup } from "@base-ui/react/toggle-group"
 import { createContext, use, useId, useLayoutEffect, useRef, useState, type FocusEvent, type ReactNode } from "react"
 import { IconCheck, IconChevronDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useControllable } from "../../lib/use-controllable.js"
+import { observeElementSizes } from "../../lib/resize-observer.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 import { Menu, MenuPrimitive } from "../menu/index.js"
 import { useSettingRow } from "../setting-row/index.js"
@@ -146,8 +148,9 @@ export function Segmented<V extends string = string>({
   id,
   ...aria
 }: SegmentedProps<V>) {
-  const [inner, setInner] = useState<V | undefined>(defaultValue ?? options[0]?.value)
-  const current = value ?? inner
+  const [current, setCurrent] = useControllable<V | undefined>(value ?? undefined, defaultValue ?? options[0]?.value, (next) => {
+    if (next !== undefined) onValueChange?.(next)
+  })
   const hostCollapse = use(SegmentedCollapseContext)
   const collapse = collapseProp ?? hostCollapse ?? "auto"
   const canIcons = options.every((option) => option.icon)
@@ -165,10 +168,7 @@ export function Segmented<V extends string = string>({
   const form: SegmentedForm = collapse === "menu" ? "menu" : auto ? measured : iconOnly && canIcons ? "icons" : "full"
   const compact = form === "icons"
 
-  const choose = (picked: V) => {
-    if (value === undefined) setInner(picked)
-    onValueChange?.(picked)
-  }
+  const choose = (picked: V) => setCurrent(picked)
 
   // Slide the indicator to the pressed segment (CSS variables, no re-render per frame).
   useIsoLayoutEffect(() => {
@@ -187,7 +187,7 @@ export function Segmented<V extends string = string>({
       setReady(true)
     }
     place()
-    const observer = new ResizeObserver(place)
+    const observer = observeElementSizes(place)
     observer.observe(root)
     for (const child of root.children) observer.observe(child)
     return () => observer.disconnect()
@@ -222,7 +222,7 @@ export function Segmented<V extends string = string>({
       if (!frame) frame = requestAnimationFrame(check)
     }
     check()
-    const observer = new ResizeObserver(schedule)
+    const observer = observeElementSizes(schedule)
     observer.observe(root)
     observer.observe(parent)
     observer.observe(measure)

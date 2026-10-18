@@ -27,6 +27,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { IconFullscreen, IconLayers, IconList, IconNetwork, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { resolveActions, type ActionSet } from "../../lib/actions/actions.js"
 import { cx } from "../../lib/cx.js"
+import { observeElementSize } from "../../lib/resize-observer.js"
 import { ActionMenuItems } from "../actions/index.js"
 import { Button } from "../button/index.js"
 import { ContextMenu } from "../context-menu/index.js"
@@ -448,9 +449,7 @@ export function TopologyCanvas<T>({
       if (!framePending.current() && !refitRef.current()) apply()
     }
     measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(stage)
-    return () => observer.disconnect()
+    return observeElementSize(stage, measure)
   }, [apply])
 
   /** Fit a new map (the first layout, or a new frameKey) once its box has a size. True when it did. */

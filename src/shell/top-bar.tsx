@@ -55,6 +55,7 @@ import {
 } from "../icons/generated/icons.js";
 import { useAppearance } from "../lib/appearance/use-appearance.js";
 import { cx } from "../lib/cx.js";
+import { observeElementSizes } from "../lib/resize-observer.js";
 import { Avatar } from "../ui/avatar/index.js";
 import { CountBadge } from "../ui/badge/index.js";
 import {
@@ -263,7 +264,7 @@ function useBarFit(ref: RefObject<HTMLElement | null>): BarFit {
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(measure);
     };
-    const resize = new ResizeObserver(schedule);
+    const resize = observeElementSizes(schedule);
     const observeChildren = () => {
       resize.disconnect();
       resize.observe(bar);

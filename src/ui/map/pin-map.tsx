@@ -16,6 +16,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react"
 import { createPortal } from "react-dom"
 import { IconMapPin, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { observeElementSize } from "../../lib/resize-observer.js"
 import { Button } from "../button/index.js"
 import type { PinEngine } from "./pin-engine.js"
 import { observeAppearance, readMapTheme } from "./theme.js"
@@ -150,9 +151,7 @@ export function PinMap({ config, value, onValueChange, label, zoom = 16, fallbac
   useEffect(() => {
     const root = rootRef.current
     if (!engine || !root || typeof ResizeObserver === "undefined") return
-    const observer = new ResizeObserver(() => engine.resize())
-    observer.observe(root)
-    return () => observer.disconnect()
+    return observeElementSize(root, () => engine.resize())
   }, [engine])
 
   const onPinKey = (event: KeyboardEvent<HTMLButtonElement>) => {

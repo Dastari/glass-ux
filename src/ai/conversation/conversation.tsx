@@ -12,6 +12,7 @@ import {
 } from "react"
 import { IconArrowDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { observeElementSizes } from "../../lib/resize-observer.js"
 import { Tooltip } from "../../ui/tooltip/index.js"
 import { AskDock, AskDockProvider } from "../asks/index.js"
 import { AiSurfaceProvider, type AiSurface } from "../surface/index.js"
@@ -152,7 +153,7 @@ export function ConversationLog({
       setNarrow(root.clientWidth < NARROW_REM * rem)
     }
     apply()
-    const observer = new ResizeObserver(apply)
+    const observer = observeElementSizes(apply)
     observer.observe(float)
     observer.observe(root)
     return () => observer.disconnect()
@@ -164,7 +165,7 @@ export function ConversationLog({
     const column = columnRef.current
     if (!element || !column) return
     lastHeight.current = column.offsetHeight
-    const observer = new ResizeObserver(() => {
+    const observer = observeElementSizes(() => {
       const height = column.offsetHeight
       const grew = height > lastHeight.current + 1
       lastHeight.current = height

@@ -19,7 +19,6 @@ import type {
   DateStorage,
   EmptyOp,
   FilterOption,
-  FilterTimeContext,
   NumberFilterSpec,
   NumberOp,
   OptionsFilterSpec,

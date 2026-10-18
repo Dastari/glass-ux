@@ -16,11 +16,11 @@ import {
   type ReactNode,
 } from "react";
 import { cx } from "../../lib/cx.js";
+import { feedbackHold } from "../../lib/motion.js";
 import { AddressField } from "../address-field/index.js";
 import { Autocomplete } from "../autocomplete/index.js";
 import {
   Button,
-  FEEDBACK_HOLD_MS,
   type ButtonProps,
   type ButtonStatus,
 } from "../button/index.js";
@@ -934,7 +934,7 @@ export function Form({
   const hold = (next: ButtonStatus) => {
     setStatus(next);
     clearTimeout(timer.current);
-    timer.current = setTimeout(() => setStatus("idle"), FEEDBACK_HOLD_MS);
+    timer.current = setTimeout(() => setStatus("idle"), feedbackHold());
   };
 
   const submit = async () => {

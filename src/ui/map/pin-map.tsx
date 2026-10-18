@@ -18,6 +18,7 @@ import { IconMapPin, IconZoomIn, IconZoomOut } from "../../icons/generated/icons
 import { cx } from "../../lib/cx.js"
 import { Button } from "../button/index.js"
 import type { PinEngine } from "./pin-engine.js"
+import { tokenDuration } from "../../lib/motion.js"
 import { observeAppearance, readMapTheme } from "./theme.js"
 import type { LngLatBox, MapConfig } from "./types.js"
 
@@ -54,13 +55,7 @@ type Phase = "loading" | "ready" | "failed"
 /** Camera timing from the motion tokens: --duration-slow, nothing under Still (R18.3). */
 function cameraMove(root: HTMLElement | null) {
   if (!root) return { animate: false, duration: 0 }
-  const probe = document.createElement("span")
-  probe.style.transitionDuration = "var(--duration-slow)"
-  probe.hidden = true
-  root.append(probe)
-  const seconds = Number.parseFloat(getComputedStyle(probe).transitionDuration)
-  probe.remove()
-  const duration = Number.isFinite(seconds) ? seconds * 1000 : 0
+  const duration = tokenDuration("--duration-slow", 0, root)
   return { animate: duration > 40, duration }
 }
 

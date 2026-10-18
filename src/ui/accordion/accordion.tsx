@@ -48,7 +48,7 @@ function AccordionItem({ title, icon, meta, level = 3, className, children, ...r
           <TriggerContent title={title} icon={icon} meta={meta} />
         </BaseAccordion.Trigger>
       </BaseAccordion.Header>
-      <BaseAccordion.Panel className="fa-accordion-panel">
+      <BaseAccordion.Panel className="fa-collapse fa-accordion-panel">
         <div className="fa-accordion-content">{children}</div>
       </BaseAccordion.Panel>
     </BaseAccordion.Item>
@@ -77,7 +77,7 @@ export function Disclosure({ title, icon, meta, className, children, ...rest }: 
       <Collapsible.Trigger className="fa-item fa-accordion-trigger">
         <TriggerContent title={title} icon={icon} meta={meta} />
       </Collapsible.Trigger>
-      <Collapsible.Panel className="fa-accordion-panel" data-collapsible="">
+      <Collapsible.Panel className="fa-collapse fa-accordion-panel" data-collapsible="">
         <div className="fa-accordion-content">{children}</div>
       </Collapsible.Panel>
     </Collapsible.Root>

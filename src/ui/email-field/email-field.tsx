@@ -33,7 +33,7 @@ export interface EmailSuggestionProps {
 export function EmailSuggestion({ suggestion, onAccept }: EmailSuggestionProps) {
   const at = suggestion.lastIndexOf("@")
   return (
-    <button type="button" className="fa-email-suggestion" onClick={() => onAccept(suggestion)}>
+    <button type="button" className="fa-email-suggestion fa-pressable" onClick={() => onAccept(suggestion)}>
       Did you mean {suggestion.slice(0, at + 1)}
       <strong>{suggestion.slice(at + 1)}</strong>?
     </button>

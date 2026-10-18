@@ -39,7 +39,7 @@ export function ButtonLink({
 }: ButtonLinkProps) {
   const props = {
     ...rest,
-    className: cx("fa-btn fa-pressable", className),
+    className: cx("fa-btn fa-pressable fa-lit", className),
     "data-variant": variant,
     "data-size": size,
     "data-block": block ? "" : undefined,

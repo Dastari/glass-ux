@@ -204,14 +204,6 @@
     height: var(--border-width-strong);
   }
 
-  .fa-ai-tool-panel {
-    height: var(--collapsible-panel-height);
-    overflow: hidden;
-    transition: height var(--duration-base) var(--ease-standard);
-  }
-  .fa-ai-tool-panel:is([data-starting-style], [data-ending-style]) {
-    height: 0;
-  }
   .fa-ai-tool-panel > * {
     margin: var(--space-1) 0 var(--space-2)
       calc(var(--space-2) + var(--_glyph) + var(--space-2-5));

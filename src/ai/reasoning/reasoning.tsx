@@ -33,7 +33,7 @@ export function Reasoning({ reasoning, defaultOpen = false, className }: Reasoni
         </span>
         <IconChevronRight className="fa-ai-reasoning-chevron" />
       </Collapsible.Trigger>
-      <Collapsible.Panel className="fa-ai-reasoning-panel">
+      <Collapsible.Panel className="fa-collapse fa-ai-reasoning-panel">
         <p className="fa-ai-reasoning-text">{reasoning.summary}</p>
       </Collapsible.Panel>
     </Collapsible.Root>

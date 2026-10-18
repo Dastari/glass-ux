@@ -14,8 +14,15 @@
  *           opacity on a ring of its own (a ::after the size of the dot, filled with --_pulse)
  *
  * Every duration is multiplied by --motion-scale, so reduced motion is one knob.
- * Skeleton shimmer is attached to the viewport so every skeleton on the page sweeps in
- * the same beat.
+ * Shimmer (fa-shimmer in recipes.css) sweeps a highlight across a placeholder with transform
+ * on its own ::after; installShimmerSync() locks every sweep to the document clock so the
+ * page's skeletons pulse in one beat.
+ *
+ * Physical motion (springs, tokens.css): --ease-spring for toggles and ticks, --ease-glide
+ * for selection indicators (fa-glide), --ease-bounce for a press springing back
+ * (fa-pressable), --ease-materialise for overlays emerging from their anchor (fa-popup,
+ * dialogs, toasts, tooltips). Each is a sampled damped spring in linear() with a
+ * cubic-bezier fallback, and runs on a duration token, so Still stops it like any other.
  *
  * Performance (docs/performance.md): an animation that repeats forever animates only
  * transform and opacity, which the compositor runs without the main thread. Animating
@@ -25,12 +32,22 @@
  */
 
 @layer base {
+  /* Legacy background sweep (repaints every frame); kept for host styles that use it.
+     Library components use the compositor sweep below via the fa-shimmer recipe. */
   @keyframes fa-shimmer {
     from {
       background-position: -60vw 0;
     }
     to {
       background-position: 60vw 0;
+    }
+  }
+  @keyframes fa-sweep {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
     }
   }
   @keyframes fa-spin {
@@ -113,6 +130,14 @@
   @keyframes fa-grow {
     from {
       transform: var(--_grow-from, scaleY(0));
+    }
+  }
+  /* A focus ring landing: it closes in from a wider, transparent ring (base.css). Only the
+     outline animates, once, when focus arrives. */
+  @keyframes fa-ring-in {
+    from {
+      outline-color: transparent;
+      outline-width: calc(var(--focus-ring-width) * 3);
     }
   }
   /* A value that just changed from a live update. */

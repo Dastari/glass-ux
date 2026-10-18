@@ -167,17 +167,21 @@ function speechRecognition(): (new () => Recognition) | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-/** Microphone level (0–1) and speech-to-text where the browser offers it. */
+/**
+ * Microphone level and speech-to-text where the browser offers it. The level (0–1) is
+ * written each frame to the meter element's own --_level (meterRef), never to React state,
+ * so the composer does not re-render 60 times a second while dictating.
+ */
 function useDictation(onText: (text: string) => void) {
   const [active, setActive] = useState(false);
-  const [level, setLevel] = useState(0);
+  const meterRef = useRef<HTMLSpanElement | null>(null);
   const stopRef = useRef<(() => void) | null>(null);
 
   const stop = useCallback(() => {
     stopRef.current?.();
     stopRef.current = null;
     setActive(false);
-    setLevel(0);
+    meterRef.current?.style.setProperty("--_level", "0");
   }, []);
 
   const start = useCallback(async () => {
@@ -194,7 +198,7 @@ function useDictation(onText: (text: string) => void) {
       let peak = 0;
       for (const value of data)
         peak = Math.max(peak, Math.abs(value - 128) / 128);
-      setLevel(Math.min(1, peak * 2.2));
+      meterRef.current?.style.setProperty("--_level", Math.min(1, peak * 2.2).toFixed(2));
       frame = requestAnimationFrame(tick);
     };
     tick();
@@ -228,16 +232,20 @@ function useDictation(onText: (text: string) => void) {
     microphoneAvailable,
     notOnServer,
   );
-  return { active, level, start, stop, supported };
+  return { active, meterRef, start, stop, supported };
 }
 
-/** Five bars that follow the microphone level (a level readout, not decoration). */
-function LevelMeter({ level }: { level: number }) {
+/**
+ * Five bars that follow the microphone level (a level readout, not decoration). A live
+ * level is written to the element by useDictation; `level` fixes it (gallery preview).
+ */
+function LevelMeter({ level, meterRef }: { level?: number; meterRef?: RefObject<HTMLSpanElement | null> }) {
   return (
     <span
+      ref={meterRef}
       className="fa-ai-level"
       aria-hidden
-      style={{ "--_level": level.toFixed(2) } as CSSProperties}
+      style={level === undefined ? undefined : ({ "--_level": level.toFixed(2) } as CSSProperties)}
     >
       {[0.55, 0.85, 1, 0.75, 0.5].map((weight, index) => (
         <span key={index} style={{ "--_w": weight } as CSSProperties} />
@@ -844,7 +852,7 @@ export function Composer({
         </div>
         <div className="fa-ai-composer-send">
           {listening ? (
-            <LevelMeter level={dictationPreview ?? dictation.level} />
+            <LevelMeter level={dictationPreview} meterRef={dictation.meterRef} />
           ) : null}
           <Button
             variant={listening ? "soft" : "secondary"}

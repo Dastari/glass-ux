@@ -2,6 +2,7 @@ import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { useEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type ReactNode, type Ref } from "react"
 import { IconCheck, IconChevronDown, IconPlus } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { tokenDuration } from "../../lib/motion.js"
 import { Button } from "../button/index.js"
 import { OptionMore, OptionRow, OptionStatus, groupOptions, hasSecondLine, statusAnnouncement, useOptionCollection, useOptionSearch, type OptionItem, type OptionSource } from "../combobox/index.js"
 import { EntityIdentity } from "../entity/index.js"
@@ -26,7 +27,8 @@ import {
 } from "./references.js"
 
 /** How long a duplicate's existing chip flashes (mirrors --duration-slower). */
-const FLASH_MS = 900
+/** The flash runs --duration-slower (reference-input.css); clear it just after. */
+const flashMs = () => tokenDuration("--duration-slower", 450) + 50
 
 export interface ReferenceChipOptions {
   /** Chips in the input are sm (24px), like the AI composer's context chips. */
@@ -247,7 +249,7 @@ export function ReferenceInput<R extends string = string>({
     clearTimeout(flashTimer.current)
     setFlash(null)
     requestAnimationFrame(() => setFlash(key))
-    flashTimer.current = setTimeout(() => setFlash(null), FLASH_MS)
+    flashTimer.current = setTimeout(() => setFlash(null), flashMs())
   }
 
   const relationOf = (target: ReferenceTarget) => (relations ? initialRelation(target, relations, fallback) : fallback)

@@ -2,8 +2,8 @@
  * Tabs (L2) and TabNav.
  *
  * A strip of icon + label tabs at --control-h-md. Inactive tabs are muted, the active tab
- * takes accent text and a sliding accent underline (Base UI's --active-tab-* variables; the
- * router TabNav sets the same variables). Hover shows the shared fill as a pill inside the
+ * takes accent text and a gliding accent underline (fa-glide on Base UI's --active-tab-*
+ * edges; the router TabNav places the same recipe with glide.ts). Hover shows the shared fill as a pill inside the
  * tab, never a filled active pill. Tabs never wrap: what does not fit moves into "More".
  */
 @layer components {
@@ -121,24 +121,15 @@
     min-width: 0;
   }
 
+  /* The underline glides (fa-glide): its leading edge springs to the new tab and the
+     trailing edge follows, so it stretches across the gap and gathers on arrival. */
   .fa-tabs-indicator {
-    position: absolute;
+    --glide-start: var(--active-tab-left);
+    --glide-end: var(--active-tab-right);
+    --glide-inset: var(--space-2);
+    --glide-radius: var(--radius-full);
     inset-block-end: 0;
-    inset-inline-start: 0;
-    width: var(--active-tab-width, 0);
     height: var(--_indicator-h);
-    translate: var(--active-tab-left, 0) 0;
-    pointer-events: none;
-    transition:
-      translate var(--duration-base) var(--ease-standard),
-      width var(--duration-base) var(--ease-standard);
-  }
-  .fa-tabs-indicator::before {
-    content: "";
-    position: absolute;
-    inset-block: 0;
-    inset-inline: var(--space-2);
-    border-radius: var(--radius-full);
     background-image: linear-gradient(90deg, var(--accent), var(--accent-2));
   }
 

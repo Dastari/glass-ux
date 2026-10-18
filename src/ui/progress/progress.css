@@ -98,12 +98,9 @@
   }
   .fa-progress[data-indeterminate] .fa-progress-indicator {
     width: 100%;
+    --shimmer-shine: var(--accent);
     background-color: var(--accent-soft-hover);
-    background-image: linear-gradient(100deg, transparent 20%, var(--accent) 50%, transparent 80%);
-    background-size: 40vw 100%;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    animation: fa-shimmer var(--duration-shimmer) ease-in-out infinite;
+    background-image: none;
   }
 
   /* Skeleton parts. */

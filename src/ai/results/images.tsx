@@ -23,7 +23,7 @@ export function ImageTile({ image, onOpen, cover = false, className }: { image: 
   return (
     <figure className={cx("fa-ai-image", className)}>
       {onOpen ? (
-        <button type="button" className="fa-ai-image-button" onClick={onOpen} aria-label={`Open ${image.alt}`}>
+        <button type="button" className="fa-ai-image-button fa-pressable" onClick={onOpen} aria-label={`Open ${image.alt}`}>
           {body}
         </button>
       ) : (

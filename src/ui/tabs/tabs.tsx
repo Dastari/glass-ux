@@ -6,12 +6,10 @@ import {
   use,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type ComponentProps,
-  type CSSProperties,
   type KeyboardEvent,
   type ReactElement,
   type ReactNode,
@@ -19,14 +17,13 @@ import {
 } from "react"
 import { IconChevronDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useGlide } from "../../lib/glide.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { CountBadge } from "../badge/index.js"
 import { Skeleton } from "../skeleton/index.js"
 import { NavMenuPopup } from "./nav-menu.js"
 import { fitItems, useChildWidths } from "./overflow.js"
 import { rovingKeyDown } from "./roving.js"
-
-const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
 
 export interface TabItem {
   value: string
@@ -214,7 +211,7 @@ function TabsList({ items, className, ...rest }: TabsListProps) {
             </BaseTabs.Tab>
           ) : null
         )}
-        <BaseTabs.Indicator className="fa-tabs-indicator" />
+        <BaseTabs.Indicator className="fa-tabs-indicator fa-glide" />
       </BaseTabs.List>
       {hidden.length > 0 ? (
         <Menu.Root>
@@ -290,20 +287,11 @@ export function TabNav<T extends TabItem>({ items, value, renderLink, className,
   const activeIndex = items.findIndex((item) => item.value === value)
   const { barRef, measureRef, visible, hidden, solo } = useTabOverflow(items, activeIndex)
   const listRef = useRef<HTMLDivElement>(null)
-  const [indicator, setIndicator] = useState<CSSProperties>({})
+  const indicatorRef = useRef<HTMLSpanElement>(null)
   const tabbable = activeIndex >= 0 ? activeIndex : items.findIndex((_, index) => visible.has(index))
 
-  // Mirror Base UI's indicator variables so the same CSS slides the underline.
-  useIsomorphicLayoutEffect(() => {
-    const list = listRef.current
-    const active = list?.querySelector<HTMLElement>("[data-active]")
-    if (!list || !active) {
-      setIndicator((current) => (Object.keys(current).length ? {} : current))
-      return
-    }
-    const next = { "--active-tab-left": `${active.offsetLeft}px`, "--active-tab-width": `${active.offsetWidth}px` } as CSSProperties
-    setIndicator((current) => (JSON.stringify(current) === JSON.stringify(next) ? current : next))
-  })
+  // The same glide as Base UI's indicator, placed on the active link.
+  const placed = useGlide(indicatorRef, "[data-active]", "x", [value, activeIndex, visible.size, solo])
 
   return (
     <nav aria-label={rest["aria-label"]} className={cx("fa-tabs", className)}>
@@ -327,7 +315,7 @@ export function TabNav<T extends TabItem>({ items, value, renderLink, className,
               </Fragment>
             )
           })}
-          {activeIndex >= 0 ? <span className="fa-tabs-indicator" style={indicator} aria-hidden /> : null}
+          {activeIndex >= 0 ? <span ref={indicatorRef} className="fa-tabs-indicator fa-glide" aria-hidden hidden={!placed} /> : null}
         </div>
         {hidden.length > 0 ? (
           <Menu.Root>

@@ -66,6 +66,10 @@ and locked preferences with `configureAppearance`. The default palette is Graphi
 
 Use the shared glass materials. Avoid nesting blurred layers. Support Glass, Frosted and
 Solid, and use the imagery context over media. Headings and navigation sit on the canvas.
+Glass is more than blur: every material carries a lit top edge, a shaded lower edge and,
+on layers and cards, a soft inner lens glow. Interactive fills add `fa-lit` so a specular
+highlight follows a fine pointer. Solid and reduced transparency keep only the static rims.
+An overlay rendered inside another layer takes an opaque fill instead of a second blur.
 
 ## R5–R6 · Shell and navigation
 
@@ -121,7 +125,13 @@ application defaults.
 
 ## R18–R21 · Motion, icons and accessibility
 
-Animate transform and opacity; honour reduced motion and transparency. Components size
+Animate transform and opacity; honour reduced motion and transparency. Physical motion uses
+the spring tokens: selection indicators glide (`fa-glide`), presses spring back
+(`fa-pressable`), overlays materialise from their anchor (`fa-popup`) and leave on the exit
+tween. A disclosure's height (`fa-collapse`) is the one sanctioned layout animation.
+Durations multiply by `--motion-scale`; script reads the same switch from
+`prefersReducedMotion()`, `motionScale()` and `tokenDuration()`. Under Still nothing moves,
+the pointer light stops tracking and skeletons hold still. Components size
 their icons. Meet WCAG 2.2 AA in both modes and every supported material. Preserve accessible
 names, focus return, keyboard paths and touch targets. Test narrow and wide containers.
 

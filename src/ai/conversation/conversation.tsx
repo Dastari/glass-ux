@@ -12,6 +12,7 @@ import {
 } from "react"
 import { IconArrowDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { prefersReducedMotion, scaledDuration } from "../../lib/motion.js"
 import { Tooltip } from "../../ui/tooltip/index.js"
 import { AskDock, AskDockProvider } from "../asks/index.js"
 import { AiSurfaceProvider, type AiSurface } from "../surface/index.js"
@@ -22,9 +23,7 @@ const PIN_THRESHOLD = 48
 /** Below this width (in rem) the ask dock starts folded to one line. */
 const NARROW_REM = 30
 
-const reducedMotion = () =>
-  typeof document !== "undefined" &&
-  (document.documentElement.dataset.motion === "reduced" || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+const reducedMotion = () => typeof document !== "undefined" && prefersReducedMotion()
 
 interface LogApi {
   scrollToBottom: (smooth?: boolean) => void
@@ -214,7 +213,7 @@ export function ConversationLog({
       if (event.target === float && event.propertyName === "transform") done()
     }
     float.addEventListener("transitionend", onEnd)
-    const fallback = setTimeout(done, 1200)
+    const fallback = setTimeout(done, scaledDuration(1200) + 50)
     return () => {
       clearTimeout(fallback)
       done()

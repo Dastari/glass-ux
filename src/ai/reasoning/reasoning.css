@@ -49,14 +49,6 @@
   .fa-ai-reasoning-trigger[data-panel-open] .fa-ai-reasoning-chevron {
     rotate: 90deg;
   }
-  .fa-ai-reasoning-panel {
-    height: var(--collapsible-panel-height);
-    overflow: hidden;
-    transition: height var(--duration-base) var(--ease-standard);
-  }
-  .fa-ai-reasoning-panel:is([data-starting-style], [data-ending-style]) {
-    height: 0;
-  }
   .fa-ai-reasoning-text {
     max-width: var(--measure);
     margin: var(--space-1) 0 var(--space-1) var(--space-3);

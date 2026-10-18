@@ -40,7 +40,7 @@ function SkeletonText({ type = "body", lines = 1, width, className, style, ...re
     >
       {Array.from({ length: lines }, (_, index) => (
         <span key={index} className="fa-skel-line" data-last={index === lines - 1 ? "" : undefined}>
-          <span className="fa-skel fa-skel-bar" />
+          <span className="fa-skel fa-shimmer fa-skel-bar" />
         </span>
       ))}
     </span>
@@ -62,7 +62,7 @@ function SkeletonBlock({ width, height, radius = "control", className, style, ..
     <span
       aria-hidden
       {...rest}
-      className={cx("fa-skel fa-skel-block", className)}
+      className={cx("fa-skel fa-shimmer fa-skel-block", className)}
       data-radius={radius}
       style={{ ...style, width: len(width), height: len(height) }}
     />
@@ -74,7 +74,7 @@ function SkeletonCircle({ size = 32, className, style, ...rest }: Omit<SkeletonB
     <span
       aria-hidden
       {...rest}
-      className={cx("fa-skel fa-skel-block", className)}
+      className={cx("fa-skel fa-shimmer fa-skel-block", className)}
       data-radius="full"
       style={{ ...style, width: len(size), height: len(size) }}
     />

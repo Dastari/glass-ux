@@ -10,6 +10,7 @@ import {
 } from "react"
 import { IconCheck, IconError, IconSpinner } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { feedbackHold } from "../../lib/motion.js"
 import { Tooltip } from "../tooltip/index.js"
 
 export type ButtonVariant =
@@ -26,7 +27,7 @@ export type ButtonVariant =
 export type ButtonSize = "xs" | "sm" | "md" | "lg"
 export type ButtonStatus = "idle" | "pending" | "success" | "error"
 
-/** Mirrors --feedback-hold in tokens.css. */
+/** The default of --feedback-hold in tokens.css. Timers read the token itself (`feedbackHold`), so a host that changes it is honoured. */
 export const FEEDBACK_HOLD_MS = 1800
 
 export interface ButtonProps extends Omit<ComponentProps<typeof BaseButton>, "className"> {
@@ -119,7 +120,7 @@ export function Button({
       focusableWhenDisabled={busy || Boolean(disabledReason) || focusableWhenDisabled}
       aria-busy={busy || undefined}
       aria-description={disabledReason}
-      className={cx("fa-btn fa-pressable", className)}
+      className={cx("fa-btn fa-pressable fa-lit", className)}
       data-variant={variant}
       data-size={size}
       data-shape={shape === "circle" ? "circle" : undefined}
@@ -155,10 +156,10 @@ export function Button({
 
 /**
  * Drive a button's feedback from an async action: pending while it runs, then ✓ or ✕
- * for FEEDBACK_HOLD_MS before resting. Errors are handed to `onError` (normally a toast);
+ * for `holdMs` (default: the --feedback-hold token) before resting. Errors are handed to `onError` (normally a toast);
  * the button itself only signals that something failed.
  */
-export function useActionFeedback(holdMs = FEEDBACK_HOLD_MS) {
+export function useActionFeedback(holdMs?: number) {
   const [status, setStatus] = useState<ButtonStatus>("idle")
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   useEffect(() => () => clearTimeout(timer.current), [])
@@ -176,7 +177,7 @@ export function useActionFeedback(holdMs = FEEDBACK_HOLD_MS) {
         onError?.(error)
         return false
       } finally {
-        timer.current = setTimeout(() => setStatus("idle"), holdMs)
+        timer.current = setTimeout(() => setStatus("idle"), holdMs ?? feedbackHold())
       }
     },
     // oxlint-disable-next-line react/memo-dependencies -- holdMs is read in `finally`

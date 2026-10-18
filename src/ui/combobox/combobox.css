@@ -72,22 +72,14 @@
     z-index: var(--z-raised);
     height: var(--space-half);
     margin: calc(var(--inset-overlay) * -1) calc(var(--inset-overlay) * -1) var(--space-half);
+    --shimmer-shine: var(--accent);
     background-color: var(--accent-soft);
-    background-image: linear-gradient(90deg, transparent 20%, var(--accent) 50%, transparent 80%);
-    background-size: 40vw 100%;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    animation: fa-shimmer var(--duration-shimmer) ease-in-out infinite;
   }
   :root[data-motion="reduced"] .fa-option-progress {
-    animation: none;
-    background-image: none;
     background-color: var(--accent-line);
   }
   @media (prefers-reduced-motion: reduce) {
     :root:not([data-motion="full"]) .fa-option-progress {
-      animation: none;
-      background-image: none;
       background-color: var(--accent-line);
     }
   }

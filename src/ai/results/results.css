@@ -226,6 +226,7 @@
     border-radius: var(--radius-control);
     background: none;
     cursor: zoom-in;
+    --_press: calc(1 - (1 - var(--press-scale)) / 3); /* a large tile presses shallower */
   }
   .fa-ai-image-button:focus-visible {
     outline: var(--focus-ring-width) solid var(--accent-ring);

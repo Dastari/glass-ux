@@ -1,6 +1,6 @@
 # AppearanceProvider
 
-Provide persisted appearance preferences and synchronize theme, palette, density, motion and typography with the document.
+Provide persisted appearance preferences and synchronize theme, palette, density, motion and typography with the document. Also installs the pointer light for lit glass (`installPointerLight`) and the shared shimmer beat (`installShimmerSync`).
 
 `import { AppearanceProvider } from "glass-ux/appearance"`
 

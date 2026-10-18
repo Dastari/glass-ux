@@ -35,7 +35,7 @@
   .fa-ai-composer:focus-within {
     border-color: var(--accent-line);
     box-shadow:
-      inset 0 1px 0 0 var(--glass-rim-top),
+      inset 0 var(--border-width) 0 0 var(--glass-rim-top),
       0 0 0 var(--focus-halo) var(--accent-soft),
       var(--_shadow, var(--shadow-2));
   }
@@ -155,12 +155,14 @@
     gap: var(--space-half);
     height: var(--icon-md);
   }
+  /* Each bar is full height and scaled (compositor only); a floor keeps a dot at silence. */
   .fa-ai-level > span {
     width: var(--space-half);
-    height: max(var(--space-half), calc(var(--_w) * var(--_level) * 100%));
+    height: 100%;
     border-radius: var(--radius-full);
     background-color: var(--accent);
-    transition: height var(--duration-instant) linear;
+    transform: scaleY(max(0.12, calc(var(--_w) * var(--_level))));
+    transition: transform var(--duration-instant) linear;
   }
 
   /* Attachments */

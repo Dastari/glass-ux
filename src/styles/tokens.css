@@ -205,15 +205,28 @@
     --duration-shimmer: 1.6s;
     --feedback-hold: 1800ms; /* how long a button shows ✓ or ✕ before resting */
 
+    /* Physical motion: a spring needs longer than a tween to show its settle. */
+    --duration-glide: calc(420ms * var(--motion-scale)); /* selection indicators travelling */
+    --duration-materialise: calc(340ms * var(--motion-scale)); /* overlays emerging */
+    --duration-release: calc(360ms * var(--motion-scale)); /* a pressed control springing back */
+
     --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* most state changes */
     --ease-enter: cubic-bezier(0.16, 1, 0.3, 1); /* things arriving: decelerate */
     --ease-exit: cubic-bezier(0.4, 0, 1, 1); /* things leaving: accelerate */
-    --ease-spring: cubic-bezier(0.34, 1.45, 0.64, 1); /* ticks, toggles, small overshoot */
+    /* Springs. Without linear() support these cubic-bezier approximations apply; the
+       @supports block below replaces them with sampled damped springs (from rest). */
+    --ease-spring: cubic-bezier(0.34, 1.45, 0.64, 1); /* ticks, toggles: ζ 0.55, 13% overshoot */
+    --ease-glide: cubic-bezier(0.25, 1.2, 0.4, 1); /* indicators: ζ 0.7, 5% overshoot */
+    --ease-bounce: cubic-bezier(0.3, 1.8, 0.55, 1); /* press release, pops: ζ 0.45, 20% */
+    --ease-materialise: cubic-bezier(0.2, 1.05, 0.35, 1); /* overlays: ζ 0.82, 1% */
 
     --duration-spin: 0.8s;
     --spinner-delay: 120ms; /* spinners appear only if work outlasts this */
     --press-scale: 0.97;
     --overlay-enter-scale: 0.96;
+    /* Overlays emerge from their anchor: the axis pointing away from the trigger starts
+       shorter than the other, so the surface pours out of it rather than zooming. */
+    --overlay-enter-squash: 0.9;
     --overlay-enter-shift: 0.375rem;
     --popup-offset: var(--space-1-5); /* gap between a trigger and its popup */
     --disabled-opacity: 0.45;
@@ -238,6 +251,33 @@
     :root {
       --control-h-md: var(--target-min);
       --item-h: var(--target-min);
+    }
+  }
+
+  /* Damped springs sampled at 0.4% tolerance (x(t) from rest, settled at t = 1). */
+  @supports (transition-timing-function: linear(0, 1)) {
+    :root {
+      --ease-spring: linear(
+        0, 0.006 1%, 0.036 2.5%, 0.067 3.5%, 0.127 5%, 0.254 7.5%, 0.572 13%, 0.681 15%,
+        0.804 17.5%, 0.888 19.5%, 0.959 21.5%, 1.029 24%, 1.069 26%, 1.103 28.5%, 1.125 32%,
+        1.121 36%, 1.103 39.5%, 1.019 52%, 0.999 56.5%, 0.987 61.5%, 0.984 68.5%, 0.999 88.5%, 1
+      );
+      --ease-glide: linear(
+        0, 0.008 1.5%, 0.029 3%, 0.062 4.5%, 0.119 6.5%, 0.223 9.5%, 0.475 16%, 0.585 19%,
+        0.685 22%, 0.772 25%, 0.846 28%, 0.905 31%, 0.952 34%, 0.988 37%, 1.013 40%,
+        1.032 43.5%, 1.046 51%, 1.006 80.5%, 1
+      );
+      --ease-bounce: linear(
+        0, 0.01 1%, 0.038 2%, 0.082 3%, 0.138 4%, 0.277 6%, 0.643 10.5%, 0.759 12%, 0.897 14%,
+        0.984 15.5%, 1.057 17%, 1.131 19%, 1.168 20.5%, 1.197 22.5%, 1.204 25%, 1.187 27.5%,
+        1.154 30%, 1.055 36%, 1.013 39%, 0.979 42.5%, 0.961 46%, 0.961 51.5%, 0.996 63%,
+        1.008 70%, 1
+      );
+      --ease-materialise: linear(
+        0, 0.006 1.5%, 0.021 3%, 0.055 5%, 0.099 7%, 0.193 10.5%, 0.52 21.5%, 0.612 25%,
+        0.692 28.5%, 0.753 31.5%, 0.813 35%, 0.862 38.5%, 0.902 42%, 0.941 46.5%, 0.968 51%,
+        0.989 56%, 1.002 61.5%, 1.011 76%, 1.004 99.5%, 1
+      );
     }
   }
 

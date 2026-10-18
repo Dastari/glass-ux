@@ -7,6 +7,8 @@ import {
   resolveMode,
   type Appearance,
 } from "./appearance.js"
+import { installShimmerSync } from "../motion.js"
+import { installPointerLight } from "./optics.js"
 
 interface AppearanceContextValue {
   appearance: Appearance
@@ -65,7 +67,7 @@ function subscribeScheme(notify: () => void) {
   return () => query.removeEventListener("change", notify)
 }
 
-/** Provide persisted appearance preferences and synchronize theme, palette, density, motion and typography with the document. */
+/** Provide persisted appearance preferences and synchronize theme, palette, density, motion and typography with the document. Also installs the pointer light for lit glass (`installPointerLight`) and the shared shimmer beat (`installShimmerSync`). */
 export function AppearanceProvider({ children }: { children: ReactNode }) {
   const appearance = useSyncExternalStore(subscribeAppearance, readAppearance, serverAppearance)
   const prefersDark = useSyncExternalStore(
@@ -83,6 +85,11 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.documentElement.dataset.hydrated = ""
   }, [])
+
+  // Lit glass follows a fine pointer; it checks the motion and material switches itself.
+  useEffect(() => installPointerLight(), [])
+  // Skeleton shimmers sweep in one beat.
+  useEffect(() => installShimmerSync(), [])
 
   const update = useCallback((patch: Partial<Appearance>) => {
     writeAppearance(normalizeAppearance({ ...readAppearance(), ...patch }))

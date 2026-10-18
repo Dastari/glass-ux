@@ -1,7 +1,7 @@
 /*
- * Skeleton. One shimmer for the whole page: the highlight is attached to the viewport
- * (background-attachment: fixed), so every placeholder sweeps in the same beat instead of
- * each blinking on its own clock.
+ * Skeleton. Each placeholder is the fa-shimmer recipe: a highlight band on its ::after,
+ * moved with transform so the sweep never repaints, and started on the document clock
+ * (installShimmerSync) so every placeholder on the page sweeps in the same beat.
  */
 @layer base {
   :root,
@@ -19,16 +19,6 @@
   .fa-skel {
     display: block;
     background-color: var(--skel-base);
-    background-image: linear-gradient(
-      100deg,
-      transparent 20%,
-      var(--skel-shine) 50%,
-      transparent 80%
-    );
-    background-size: 40vw 100%;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    animation: fa-shimmer var(--duration-shimmer) ease-in-out infinite;
   }
   .fa-skel-block {
     flex: none;
@@ -103,14 +93,5 @@
   .fa-skel-text[data-type="mono"] {
     --_size: var(--type-mono-size);
     --_line: var(--type-mono-line);
-  }
-
-  :root[data-motion="reduced"] .fa-skel {
-    animation: none;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    :root:not([data-motion="full"]) .fa-skel {
-      animation: none;
-    }
   }
 }

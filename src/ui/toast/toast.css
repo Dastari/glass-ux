@@ -2,7 +2,8 @@
  * Toast — glass-overlay cards in one viewport: bottom-right on desktop, top on phones.
  * At most three; behind the front toast they peek out as a scaled stack, and the stack
  * fans out while hovered or focused (timers pause meanwhile). The tone shows in the tile
- * icon only — the card itself stays neutral glass.
+ * icon only — the card itself stays neutral glass. Toasts arrive on the materialise
+ * spring and leave on the exit tween.
  */
 @layer components {
   .fa-toast-viewport {
@@ -50,9 +51,11 @@
         calc(var(--toast-swipe-movement-y) + (var(--toast-index) * var(--_peek) + var(--_shrink) * var(--_height)) * var(--_dir))
       )
       scale(var(--_scale));
+    /* Arrivals and restacking settle on the materialise spring; exits use the exit
+       vocabulary below (--duration-fast on --ease-exit). */
     transition:
-      transform var(--duration-slower) var(--ease-enter),
-      opacity var(--duration-slow) var(--ease-standard),
+      transform var(--duration-slower) var(--ease-materialise),
+      opacity var(--duration-base) var(--ease-standard),
       height var(--duration-fast) var(--ease-standard);
   }
   .fa-toast-viewport[data-position="top"] .fa-toast {
@@ -87,6 +90,7 @@
   }
   .fa-toast[data-ending-style] {
     opacity: 0;
+    transition-duration: var(--duration-fast);
     transition-timing-function: var(--ease-exit);
   }
   .fa-toast[data-ending-style][data-swipe-direction="right"] {

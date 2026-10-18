@@ -3,7 +3,9 @@
  *
  * rail    fa-item rows (icon, label, optional count) beside the content. The current row
  *         takes accent-soft and accent text plus a slim accent bar on its inline-start edge —
- *         the same "you are here" mark as the sidebar and the tree. The rail scrolls.
+ *         the same "you are here" mark as the sidebar and the tree. The rail scrolls. Once
+ *         measured, the mark is one indicator that glides between rows (fa-glide, axis y);
+ *         until then the current row paints it itself.
  * chips   below 36rem of container width: a horizontally scrolling strip of outlined chips
  *         above the content, with soft fades at scrolled edges.
  * select  below 36rem with more than six sections: a picker (menu) above the content.
@@ -33,9 +35,28 @@
     overscroll-behavior: contain;
   }
   .fa-vtabs-list {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--space-half);
+  }
+  /* The current-row fill as one gliding pill (rail and icons layouts); the current row keeps
+     its accent bar, which grows in as the pill arrives. */
+  .fa-vtabs-indicator {
+    --glide-start: var(--active-tab-top);
+    --glide-end: var(--active-tab-bottom);
+    --glide-radius: var(--radius-item);
+    inset-inline: 0;
+    background-color: var(--accent-soft);
+  }
+  .fa-vtabs[data-layout="chips"] .fa-vtabs-indicator {
+    display: none;
+  }
+  .fa-vtabs:not([data-layout="chips"]) .fa-vtabs-list:has(> .fa-vtabs-indicator:not([hidden])) .fa-vtab[data-active] {
+    background-color: transparent;
+  }
+  .fa-vtabs:not([data-layout="chips"]) .fa-vtabs-list:has(> .fa-vtabs-indicator:not([hidden])) .fa-vtab[data-active]:hover {
+    background-color: var(--fill-hover);
   }
   .fa-vtab {
     border: 0;
@@ -81,6 +102,7 @@
     width: var(--_bar-w);
     border-radius: var(--radius-full);
     background-color: var(--accent);
+    animation: fa-grow var(--duration-glide) var(--ease-spring) both;
   }
   .fa-vtabs-content {
     min-width: 0;

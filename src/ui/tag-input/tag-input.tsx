@@ -11,6 +11,7 @@ import {
 } from "react"
 import { IconPlus } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { tokenDuration } from "../../lib/motion.js"
 import {
   ChipMeasure,
   ComboboxPopup,
@@ -151,7 +152,8 @@ export function TagInput({
     clearTimeout(flashTimer.current)
     setFlash(null)
     requestAnimationFrame(() => setFlash(item))
-    flashTimer.current = setTimeout(() => setFlash(null), 900)
+    // The flash runs --duration-slower (multi-select.css); clear it just after.
+    flashTimer.current = setTimeout(() => setFlash(null), tokenDuration("--duration-slower", 450) + 50)
   }
 
   /** Add values, skipping blanks and duplicates (which flash), up to `max`. */

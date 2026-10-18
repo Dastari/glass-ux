@@ -128,7 +128,7 @@
     border-radius: var(--radius-full);
     background-color: var(--glass-fill-control);
     box-shadow:
-      inset 0 1px 0 0 var(--glass-rim-top),
+      inset 0 var(--border-width) 0 0 var(--glass-rim-top),
       var(--shadow-1);
     color: var(--fg);
     font: inherit;

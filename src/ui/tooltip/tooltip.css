@@ -26,17 +26,35 @@
     text-wrap: balance;
     overflow-wrap: anywhere;
     pointer-events: none;
+    /* The overlay vocabulary at tooltip scale: it materialises out of its anchor, moving
+       half the overlay shift away from the trigger, and leaves faster than it came. */
+    --_shift: calc(var(--overlay-enter-shift) * 0.5);
+    --_from-x: 0px;
+    --_from-y: var(--_shift);
     transform-origin: var(--transform-origin, bottom center);
     transition-property: opacity, transform;
-    transition-duration: var(--duration-fast);
-    transition-timing-function: var(--ease-enter);
+    transition-duration: var(--duration-fast), var(--duration-base);
+    transition-timing-function: var(--ease-standard), var(--ease-materialise);
   }
-  .fa-tooltip[data-starting-style],
+  .fa-tooltip[data-side="bottom"] {
+    --_from-y: calc(var(--_shift) * -1);
+  }
+  .fa-tooltip:is([data-side="left"], [data-side="inline-start"]) {
+    --_from-x: var(--_shift);
+    --_from-y: 0px;
+  }
+  .fa-tooltip:is([data-side="right"], [data-side="inline-end"]) {
+    --_from-x: calc(var(--_shift) * -1);
+    --_from-y: 0px;
+  }
+  .fa-tooltip[data-starting-style] {
+    opacity: 0;
+    transform: translate(var(--_from-x), var(--_from-y)) scale(var(--overlay-enter-scale));
+  }
   .fa-tooltip[data-ending-style] {
     opacity: 0;
-    transform: scale(var(--overlay-enter-scale));
-  }
-  .fa-tooltip[data-ending-style] {
+    transform: scale(0.98);
+    transition-duration: var(--duration-fast);
     transition-timing-function: var(--ease-exit);
   }
   /* Moving between grouped tooltips swaps them without animating. */

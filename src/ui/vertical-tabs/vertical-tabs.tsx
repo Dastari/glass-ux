@@ -14,6 +14,7 @@ import {
 } from "react"
 import { IconChevronsUpDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useGlide } from "../../lib/glide.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 import { CountBadge } from "../badge/index.js"
@@ -227,6 +228,7 @@ function VerticalTabsRoot({ items, value, defaultValue, onValueChange, layout: f
         ) : null}
         <ListScroller hidden={layout === "select"} value={current} layout={layout}>
           <BaseTabs.List className="fa-vtabs-list" aria-label={label}>
+            <BaseTabs.Indicator className="fa-vtabs-indicator fa-glide" data-axis="y" />
             {items.map((item) => (
               <Tooltip key={item.value} content={item.label} side="right" enabled={layout === "icons"}>
                 <BaseTabs.Tab value={item.value} disabled={item.disabled} className="fa-item fa-vtab">
@@ -297,6 +299,8 @@ export function VerticalTabNav<T extends VerticalTabItem>({ items, value, render
   const activeIndex = items.findIndex((item) => item.value === value)
   const tabbable = activeIndex >= 0 ? activeIndex : 0
   const orientation = layout === "chips" ? "horizontal" : "vertical"
+  const indicatorRef = useRef<HTMLSpanElement>(null)
+  const placed = useGlide(indicatorRef, "[data-active]", "y", [value, activeIndex, layout, items.length])
 
   return (
     <div ref={rootRef} className={cx("fa-vtabs", className)} data-layout={layout}>
@@ -323,6 +327,7 @@ export function VerticalTabNav<T extends VerticalTabItem>({ items, value, render
         ) : null}
         <ListScroller as="nav" label={label} hidden={layout === "select"} value={value} layout={layout}>
           <div className="fa-vtabs-list" data-roving-group="">
+            <span ref={indicatorRef} className="fa-vtabs-indicator fa-glide" aria-hidden hidden={!placed || layout === "chips"} />
             {items.map((item, index) => {
               const active = index === activeIndex
               return (

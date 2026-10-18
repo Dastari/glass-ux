@@ -16,10 +16,19 @@
  *   1. backdrop: blur + saturation so the ambient canvas glows through instead of greying
  *   2. fill: a white (light) or smoke (dark) tint sized for readable text
  *   3. edge: an outer hairline that defines the shape against bright backgrounds
- *   4. rim: an inner hairline plus a brighter top highlight — the "thickness" of the glass
- *   5. sheen: a soft top-down gradient so large panes read as convex
- *   6. grain: fine noise that kills gradient banding and gives the frosted texture
- *   7. shadow: a soft, tinted elevation shadow sized by material
+ *   4. rim: an inner hairline, a lit top edge and a shaded lower edge — the "thickness"
+ *      of the glass (--glass-rim-top, --glass-rim-bottom)
+ *   5. lens: a soft inner glow along the edge, where thick curved glass gathers light
+ *      (--glass-lens; layers and cards)
+ *   6. sheen: a soft top-down gradient so large panes read as convex
+ *   7. grain: fine noise that kills gradient banding and gives the frosted texture
+ *   8. shadow: a soft, tinted elevation shadow sized by material
+ *   9. light: interactive fills with fa-lit (recipes.css) reflect a fine pointer as a
+ *      specular highlight (--specular, --specular-solid on coloured fills)
+ *
+ * Optics degrade with the material: Frosted keeps rims, lens and light over less blur;
+ * Solid and the OS "reduce transparency" setting keep the static rims only (lens and
+ * specular become transparent, fills opaque, grain off).
  *
  * Rules
  *   - Only LAYER materials blur, and a layer never sits inside another layer. A blurred
@@ -47,16 +56,20 @@
     --glass-fill-overlay: oklch(0.995 0.003 var(--neutral-h) / 0.82);
     --glass-fill-float: oklch(0.2 0.02 var(--neutral-h) / 0.55);
     --glass-fill-control: oklch(1 0 0 / 0.7);
+    --glass-fill-card: color-mix(in oklab, var(--surface-2) 82%, transparent);
     --glass-fill-control-hover: oklch(1 0 0 / 0.9);
     --glass-fill-inset: oklch(0.35 0.04 var(--neutral-h) / 0.045);
     --glass-edge: oklch(0.35 0.05 var(--neutral-h) / 0.1);
     --glass-rim: oklch(1 0 0 / 0.65);
     --glass-rim-top: oklch(1 0 0 / 0.95);
+    --glass-rim-bottom: oklch(0.35 0.05 var(--neutral-h) / 0.09);
+    --glass-lens: oklch(1 0 0 / 0.42);
     --glass-sheen: linear-gradient(
       180deg,
       oklch(1 0 0 / 0.38),
       oklch(1 0 0 / 0) 42%
     );
+    --specular: oklch(1 0 0 / 0.95);
     --glass-saturate: 1.7;
     --surface-1: oklch(0.985 0.004 var(--neutral-h));
     --surface-2: oklch(0.998 0.002 var(--neutral-h));
@@ -89,16 +102,20 @@
     --glass-fill-overlay: oklch(0.235 0.025 var(--neutral-h) / 0.84);
     --glass-fill-float: oklch(0.14 0.02 var(--neutral-h) / 0.6);
     --glass-fill-control: oklch(1 0 0 / 0.06);
+    --glass-fill-card: color-mix(in oklab, var(--surface-2) 82%, transparent);
     --glass-fill-control-hover: oklch(1 0 0 / 0.1);
     --glass-fill-inset: oklch(0 0 0 / 0.2);
     --glass-edge: oklch(0 0 0 / 0.38);
     --glass-rim: oklch(1 0 0 / 0.07);
     --glass-rim-top: oklch(1 0 0 / 0.17);
+    --glass-rim-bottom: oklch(0 0 0 / 0.28);
+    --glass-lens: oklch(1 0 0 / 0.06);
     --glass-sheen: linear-gradient(
       180deg,
       oklch(1 0 0 / 0.055),
       oklch(1 0 0 / 0) 40%
     );
+    --specular: oklch(1 0 0 / 0.2);
     --glass-saturate: 1.4;
     --surface-1: oklch(0.2 0.022 var(--neutral-h));
     --surface-2: oklch(0.225 0.022 var(--neutral-h));
@@ -128,6 +145,13 @@
     );
     --rim-light: oklch(1 0 0 / 0.3);
     --rim-shade: oklch(0 0 0 / 0.1);
+    /* Optics. The lens is a soft inner glow along the edge, where thick curved glass
+       concentrates light; the specular highlight is the pointer's reflection on lit
+       controls (fa-lit, recipes.css), --specular-solid on coloured fills. */
+    --glass-lens-size: 0.75rem;
+    --glass-lens-float: oklch(1 0 0 / 0.08);
+    --specular-size: 5rem;
+    --specular-solid: oklch(1 0 0 / 0.3);
     --seam-light: oklch(1 0 0 / 0.3);
     --glass-blur-chrome: 28px;
     --glass-blur-panel: 22px;
@@ -164,7 +188,18 @@
     --glass-fill-panel: var(--surface-2);
     --glass-fill-overlay: var(--surface-3);
     --glass-fill-float: oklch(0.2 0.02 var(--neutral-h));
+    --glass-fill-card: var(--surface-2);
     --glass-grain: none;
+  }
+  /* Opaque material: the static rims stay; light neither passes through nor reflects.
+     Mode islands re-declare the optics, so they are switched off on them too. */
+  :root[data-glass="solid"],
+  :root[data-glass="solid"] [data-mode] {
+    --glass-fill-card: var(--surface-2);
+    --glass-lens: transparent;
+    --glass-lens-float: transparent;
+    --specular: transparent;
+    --specular-solid: transparent;
   }
 
   @media (prefers-reduced-transparency: reduce) {
@@ -177,6 +212,17 @@
       --glass-fill-chrome: var(--surface-1);
       --glass-fill-panel: var(--surface-2);
       --glass-fill-overlay: var(--surface-3);
+      --glass-fill-float: oklch(0.2 0.02 var(--neutral-h));
+      --glass-fill-card: var(--surface-2);
+      --glass-grain: none;
+    }
+    :root:not([data-glass="full"]),
+    :root:not([data-glass="full"]) [data-mode] {
+      --glass-fill-card: var(--surface-2);
+      --glass-lens: transparent;
+      --glass-lens-float: transparent;
+      --specular: transparent;
+      --specular-solid: transparent;
     }
   }
 
@@ -187,6 +233,9 @@
       --glass-fill-chrome: var(--surface-1);
       --glass-fill-panel: var(--surface-2);
       --glass-fill-overlay: var(--surface-3);
+      --glass-fill-float: oklch(0.2 0.02 var(--neutral-h));
+      --glass-fill-card: var(--surface-2);
+      --glass-grain: none;
     }
   }
 }
@@ -205,10 +254,24 @@
     border: var(--border-width) solid var(--glass-edge);
     box-shadow:
       inset 0 1px 0 0 var(--glass-rim-top),
+      inset 0 calc(var(--border-width) * -1) 0 0 var(--glass-rim-bottom),
       inset 0 0 0 var(--border-width) var(--glass-rim),
+      inset 0 0 var(--glass-lens-size) 0 var(--glass-lens),
       var(--_shadow);
     -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
     backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
+  }
+
+  /* Nothing inside a layer blurs again: a layer resets the frost that controls over imagery
+     use, and an overlay rendered inside another layer (a dock, pill or composer within a
+     pane) takes an opaque overlay fill instead of a second blur pass. */
+  :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float) {
+    --_frost: none;
+  }
+  :is(.glass-chrome, .glass-panel, .glass-float) .glass-overlay {
+    --_fill: var(--surface-3);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .glass-chrome {
@@ -233,6 +296,8 @@
     --glass-edge: oklch(0 0 0 / 0.3);
     --glass-rim: oklch(1 0 0 / 0.1);
     --glass-rim-top: oklch(1 0 0 / 0.22);
+    --glass-rim-bottom: oklch(0 0 0 / 0.3);
+    --glass-lens: var(--glass-lens-float);
     --glass-sheen: linear-gradient(
       180deg,
       oklch(1 0 0 / 0.08),
@@ -293,7 +358,9 @@
         100% 100%;
       box-shadow:
         inset 0 1px 0 0 var(--glass-rim-top),
-        inset 0 0 0 var(--border-width) var(--glass-rim);
+        inset 0 calc(var(--border-width) * -1) 0 0 var(--glass-rim-bottom),
+        inset 0 0 0 var(--border-width) var(--glass-rim),
+        inset 0 0 var(--glass-lens-size) 0 var(--glass-lens);
       -webkit-backdrop-filter: blur(var(--_blur))
         saturate(var(--glass-saturate));
       backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
@@ -325,9 +392,10 @@
 
   /* A card in a scrolling list of many (conversation results, card grids, board cards):
      the panel's look — rim, sheen, grain, elevation — without a backdrop blur, so a long
-     list costs no blur passes. The fill is near-opaque to stay readable without blur. */
+     list costs no blur passes. The fill is near-opaque to stay readable without blur, and
+     opaque in Solid, under reduced transparency and without backdrop-filter support. */
   .glass-card {
-    background-color: color-mix(in oklab, var(--surface-2) 82%, transparent);
+    background-color: var(--glass-fill-card);
     background-image: var(--glass-grain), var(--glass-sheen);
     background-size:
       160px 160px,
@@ -335,8 +403,23 @@
     border: var(--border-width) solid var(--glass-edge);
     box-shadow:
       inset 0 1px 0 0 var(--glass-rim-top),
+      inset 0 calc(var(--border-width) * -1) 0 0 var(--glass-rim-bottom),
       inset 0 0 0 var(--border-width) var(--glass-rim),
+      inset 0 0 var(--glass-lens-size) 0 var(--glass-lens),
       var(--shadow-2);
+  }
+
+  /* A card that is itself a link or button lifts a little under the pointer (transform
+     only, so nothing around it moves) and springs back. */
+  .glass-card:is(a[href], button, [role="button"]) {
+    transition: transform var(--duration-release) var(--ease-bounce);
+  }
+  @media (hover: hover) {
+    .glass-card:is(a[href], button, [role="button"]):hover {
+      transform: translateY(calc(var(--border-width) * -2));
+      transition-duration: var(--duration-fast);
+      transition-timing-function: var(--ease-standard);
+    }
   }
 
   /* Fill-only materials: safe to nest anywhere. */
@@ -345,6 +428,7 @@
     border: var(--border-width) solid var(--glass-edge);
     box-shadow:
       inset 0 1px 0 0 var(--glass-rim-top),
+      inset 0 calc(var(--border-width) * -1) 0 0 var(--glass-rim-bottom),
       var(--shadow-1);
   }
   .glass-inset {
@@ -398,12 +482,17 @@
     filter: drop-shadow(0 0 1px var(--halo-colour))
       drop-shadow(0 0 0.375rem var(--halo-colour));
   }
-  /* Controls over imagery are not inside a blurred layer, so they may frost what is behind. */
+  /* Controls over imagery frost what is behind them, unless they already sit inside a
+     blurred layer (which resets --_frost to none). */
   .over-imagery :where(.glass-control, .fa-control) {
-    -webkit-backdrop-filter: blur(var(--glass-blur-float))
-      saturate(var(--glass-saturate));
-    backdrop-filter: blur(var(--glass-blur-float))
-      saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: var(
+      --_frost,
+      blur(var(--glass-blur-float)) saturate(var(--glass-saturate))
+    );
+    backdrop-filter: var(
+      --_frost,
+      blur(var(--glass-blur-float)) saturate(var(--glass-saturate))
+    );
   }
   /* Solid fills already carry their own contrast. */
   .over-imagery

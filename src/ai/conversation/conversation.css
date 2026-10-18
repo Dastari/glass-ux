@@ -243,27 +243,30 @@
     background: none;
     cursor: pointer;
   }
+  /* The dash grows toward the turn in view with transform (it never relays out the rail). */
   .fa-ai-turn-dash > span {
-    width: var(--space-2);
+    width: var(--space-8);
     height: var(--space-half);
     border-radius: var(--radius-full);
     background-color: var(--line-strong);
-    transition-property: width, background-color;
+    transform: scaleX(0.25);
+    transform-origin: left center;
+    transition-property: transform, background-color;
     transition-duration: var(--duration-fast);
     transition-timing-function: var(--ease-standard);
   }
   .fa-ai-turn-dash[data-near="2"] > span {
-    width: var(--space-4);
+    transform: scaleX(0.5);
   }
   .fa-ai-turn-dash[data-near="1"] > span {
-    width: var(--space-6);
+    transform: scaleX(0.75);
   }
   .fa-ai-turn-dash[data-near="0"] > span {
-    width: var(--space-8);
+    transform: none;
     background-color: var(--fg-muted);
   }
   .fa-ai-turn-dash[aria-current="step"] > span {
-    width: calc(var(--space-6) + var(--space-1));
+    transform: scaleX(0.875);
     background-color: var(--accent);
   }
   .fa-ai-turn-dash:focus-visible {

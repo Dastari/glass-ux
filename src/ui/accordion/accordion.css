@@ -3,8 +3,8 @@
  *
  * The trigger is a full-width fa-item row: chevron (rotates 90° when open), optional icon,
  * title at label weight, trailing meta. Items are separated by a half step of space and
- * the shared hover fill — no dividers (R5.8). Panels animate their height on
- * --duration-base and indent their content to the title.
+ * the shared hover fill — no dividers (R5.8). Panels open with the shared fa-collapse
+ * recipe and indent their content to the title.
  */
 @layer components {
   .fa-accordion {
@@ -59,16 +59,9 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .fa-accordion-panel {
-    height: var(--accordion-panel-height);
-    overflow: hidden;
-    transition: height var(--duration-base) var(--ease-standard);
-  }
-  .fa-accordion-panel[data-collapsible] {
-    height: var(--collapsible-panel-height);
-  }
-  .fa-accordion-panel:is([data-starting-style], [data-ending-style]) {
-    height: 0;
+  /* Height animation comes from the shared collapse recipe (recipes.css). */
+  .fa-accordion-panel:not([data-collapsible]) {
+    --_collapse-h: var(--accordion-panel-height);
   }
   .fa-accordion-content {
     padding: var(--space-1) var(--space-2-5) var(--space-3) var(--_indent);

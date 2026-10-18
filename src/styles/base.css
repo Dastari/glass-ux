@@ -58,6 +58,7 @@
   :where(:focus-visible) {
     outline: var(--focus-ring-width) solid var(--accent-ring);
     outline-offset: var(--focus-ring-offset);
+    animation: fa-ring-in var(--duration-base) var(--ease-glide);
   }
   :where(:focus:not(:focus-visible)) {
     outline: none;

@@ -874,34 +874,26 @@ export function Composer({
                 : void dictation.start().catch(() => {})
             }
           />
-          {busy ? (
-            <Button
-              variant="secondary"
-              shape="circle"
-              size={size}
-              icon={<IconStop />}
-              className="fa-ai-composer-stop"
-              aria-label="Stop response"
-              shortcut="esc"
-              status={run === "stopping" ? "pending" : undefined}
-              onClick={onStop}
-            />
-          ) : (
-            <Button
-              variant="primary"
-              shape="circle"
-              size={size}
-              icon={<IconArrowUp />}
-              className="fa-ai-composer-submit"
-              aria-label="Send"
-              shortcut="enter"
-              status={run === "sending" ? "pending" : undefined}
-              disabledReason={
-                disabledReason ?? (canSend ? undefined : "Type a message first")
-              }
-              onClick={() => void send()}
-            />
-          )}
+          {/* One button that swaps face and handler, so focus survives send ⇄ stop. */}
+          <Button
+            variant={busy ? "secondary" : "primary"}
+            shape="circle"
+            size={size}
+            icon={busy ? <IconStop /> : <IconArrowUp />}
+            className={busy ? "fa-ai-composer-stop" : "fa-ai-composer-submit"}
+            aria-label={busy ? "Stop response" : "Send"}
+            shortcut={busy ? "esc" : "enter"}
+            status={
+              run === (busy ? "stopping" : "sending") ? "pending" : undefined
+            }
+            disabledReason={
+              busy
+                ? undefined
+                : (disabledReason ??
+                  (canSend ? undefined : "Type a message first"))
+            }
+            onClick={busy ? onStop : () => void send()}
+          />
         </div>
       </div>
       {status ? <div className="fa-ai-composer-status">{status}</div> : null}

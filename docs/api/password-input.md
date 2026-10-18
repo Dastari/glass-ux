@@ -19,7 +19,7 @@ the form.
 | generate | `boolean \| GenerateOptions \| undefined` | See type | no | false | A Generate button (cryptographically random), with these options. Default off. |
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field (inside a Field, set `error` on the Field instead). |
-| onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button empties the field. |
+| onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
 | onStrengthChange | `((strength: Strength) => void) \| undefined` | See type | no | — | Called when strength change occurs. The callback type specifies its arguments. |
 | onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |

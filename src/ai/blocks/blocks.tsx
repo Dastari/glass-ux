@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react"
 import { Notice } from "../../ui/notice/index.js"
 import { AskCard } from "../asks/index.js"
 import { Markdown } from "../markdown/index.js"
@@ -29,8 +30,12 @@ function blockKey(block: AiBlock, index: number) {
  * diffs, logs and metrics break out wider (data-breakout). The streaming caret follows the
  * last prose block of a streaming message.
  */
-export function MessageBlocks({ message }: { message: AiMessage }) {
-  const sources = message.blocks.flatMap((block) => (block.kind === "sources" ? block.sources : []))
+export const MessageBlocks = memo(function MessageBlocks({ message }: { message: AiMessage }) {
+  // A stable list keeps citation markers from re-rendering when other message fields change.
+  const sources = useMemo(
+    () => message.blocks.flatMap((block) => (block.kind === "sources" ? block.sources : [])),
+    [message.blocks],
+  )
   const lastProse = message.blocks.reduce((last, block, index) => (block.kind === "markdown" ? index : last), -1)
   const streaming = message.state === "streaming"
   return (
@@ -68,4 +73,4 @@ export function MessageBlocks({ message }: { message: AiMessage }) {
       })}
     </SourcesProvider>
   )
-}
+})

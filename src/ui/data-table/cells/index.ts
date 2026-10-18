@@ -6,6 +6,7 @@ export {
   StatusBadge,
   type EndpointStatus,
   type StatusBadgeProps,
+  type StatusKind,
 } from "./status-badge.js";
 export {
   EMPTY_CELL,

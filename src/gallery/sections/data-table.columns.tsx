@@ -11,8 +11,8 @@ import {
   StatusBadge,
   TextCell,
   TwoLineCell,
-  type EndpointStatus as BadgeStatus,
 } from "../../ui/data-table/index.js"
+import type { StatusKind as BadgeStatus } from "../../ui/badge/index.js"
 import type { Domain } from "../../ui/sparkline/index.js"
 import type { Endpoint, EndpointStatus } from "./data-table.fixtures.js"
 import { endpointActions as sharedEndpointActions, type DemoEndpoint } from "./overlays.fixtures.js"

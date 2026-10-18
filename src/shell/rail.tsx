@@ -24,7 +24,7 @@ import { cx } from "../lib/cx.js"
 import { BrandMark } from "../ui/brand/index.js"
 import { Kbd } from "../ui/kbd/index.js"
 import { Tooltip } from "../ui/tooltip/index.js"
-import { useOptionalShell } from "./app-shell.js"
+import { ShellFocusContext, useOptionalShell } from "./app-shell.js"
 
 /** A sequence's target: the element to click (a rail item), or a command. */
 type ShortcutRegistry = Map<string, () => Pick<HTMLElement, "click"> | null>
@@ -121,7 +121,16 @@ export interface RailItemProps extends Omit<ComponentProps<"button">, "children"
 function Item({ icon, label, shortcut, active = false, render, badge, disabledReason, className, onClick, ...rest }: RailItemProps) {
   const shell = useOptionalShell()
   const registry = useContext(RailShortcuts)
+  const focusTargets = useContext(ShellFocusContext)
   const ref = useRef<HTMLElement>(null)
+
+  // The current section's item reopens its drawer, so collapsing the drawer from inside
+  // returns focus here (AppShell).
+  useEffect(() => {
+    const element = ref.current
+    if (!active || !focusTargets || !element) return
+    return focusTargets.registerDrawerReturn(element)
+  }, [active, focusTargets])
 
   useEffect(() => {
     if (!shortcut || !registry) return

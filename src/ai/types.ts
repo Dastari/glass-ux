@@ -3,7 +3,7 @@
  * results, sources and questions into these shapes. Glass UX assumes no backend schema
  * or transport; see docs/ai-ui.md for the integration contracts and handler boundaries.
  */
-import type { BadgeTone, EndpointStatus } from "../ui/badge/index.js";
+import type { BadgeTone, StatusKind } from "../ui/badge/index.js";
 import type { IconComponent } from "../ui/icon/index.js";
 
 /* ── Entities ─────────────────────────────────────────────────────────────── */
@@ -18,7 +18,7 @@ export interface EntityRef {
   id: string;
   label: string;
   /** Live status for the glyph's dot (endpoints, agents). */
-  status?: EndpointStatus;
+  status?: StatusKind;
   /** One neutral data meta: a version ("129.0"), a count. */
   meta?: string;
   /** A toned state: a ticket's "Open", an alert's "Critical". */

@@ -247,7 +247,7 @@ const FAMILIES: Family[] = [
     status: "Planned",
     example: (
       <DesktopSession
-        endpoint={E.c106Online}
+        target={E.c106Online}
         state="controlling"
         userEntity={E.mira}
         startedAt={NOW - 134_000}

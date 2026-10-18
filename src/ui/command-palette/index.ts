@@ -1,5 +1,6 @@
 export {
   CommandPanel,
+  DEFAULT_PALETTE_GROUP_ORDER,
   PaletteProvider,
   useCommandPalette,
   usePaletteCommands,

@@ -1,5 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import { cx } from "../../lib/cx.js"
+import { observeElementSizes } from "../../lib/resize-observer.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { Surface } from "../surface/index.js"
 import { FlowContext, useCooldown, type FlowValue, type LoginMessage } from "./flow-context.js"
@@ -91,8 +92,8 @@ function useViewTransition(view: LoginView, autoFocus: boolean) {
   // Keep the resting height current as messages, errors and fonts arrive.
   useEffect(() => {
     const content = stage.current
-    if (!content || typeof ResizeObserver === "undefined") return
-    const observer = new ResizeObserver(() => {
+    if (!content) return
+    const observer = observeElementSizes(() => {
       const element = content.firstElementChild as HTMLElement | null
       if (element && !content.hasAttribute("data-animating")) height.current = element.offsetHeight
     })

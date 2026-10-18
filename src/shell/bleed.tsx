@@ -22,6 +22,7 @@
  */
 import { useCallback, useLayoutEffect, useState } from "react"
 import { cx } from "../lib/cx.js"
+import { observeElementSizes } from "../lib/resize-observer.js"
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
 
@@ -88,7 +89,7 @@ export function useBleedInsets(layer: HTMLElement | null, enabled: boolean): Ble
     if (!enabled || !layer) return
     const view = layer.parentElement
     if (!view) return
-    const observer = new ResizeObserver(() => measure())
+    const observer = observeElementSizes(() => measure())
     const observed = new Set<Element>()
     const observe = (target: Element) => {
       if (observed.has(target)) return

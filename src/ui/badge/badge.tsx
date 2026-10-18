@@ -38,7 +38,8 @@ function BadgeMarkerGlyph({ marker }: { marker: BadgeMarker }) {
 
 // ── Status ──────────────────────────────────────────────────────────────────
 
-export type EndpointStatus =
+/** A connection or operational state shown by `StatusBadge`, `StatusDot` and tree rows. */
+export type StatusKind =
   | "online"
   | "offline"
   | "warning"
@@ -48,14 +49,19 @@ export type EndpointStatus =
   | "connecting"
   | "live"
 
+/**
+ * @deprecated Use `StatusKind`. Retained as an alias for existing consumers.
+ */
+export type EndpointStatus = StatusKind
+
 interface StatusSpec {
   tone: BadgeTone
   marker: Exclude<BadgeMarker, "none">
   label: string
 }
 
-/** One definition of how each endpoint state looks, shared by badges, dots and the tree. */
-export const STATUS: Record<EndpointStatus, StatusSpec> = {
+/** One definition of how each status looks, shared by badges, dots and the tree. */
+export const STATUS: Record<StatusKind, StatusSpec> = {
   online: { tone: "success", marker: "dot", label: "Online" },
   offline: { tone: "neutral", marker: "dot", label: "Offline" },
   warning: { tone: "warning", marker: "dot", label: "Warning" },
@@ -68,10 +74,10 @@ export const STATUS: Record<EndpointStatus, StatusSpec> = {
 
 export interface StatusBadgeProps extends Omit<BadgeProps, "tone" | "marker" | "icon"> {
   /** Current operation or connection status. */
-  status: EndpointStatus
+  status: StatusKind
 }
 
-/** An endpoint's state as a badge. The label defaults to the state name. */
+/** A status as a badge. The label defaults to the state name. */
 export function StatusBadge({ status, children, ...rest }: StatusBadgeProps) {
   const spec = STATUS[status]
   return (
@@ -83,7 +89,7 @@ export function StatusBadge({ status, children, ...rest }: StatusBadgeProps) {
 
 export interface StatusDotProps extends Omit<ComponentProps<"span">, "children"> {
   /** Current operation or connection status. */
-  status: EndpointStatus
+  status: StatusKind
   /** Accessible name. Omit when a visible label already says the state. */
   label?: string
   /** Sit on the corner of an icon or avatar, ringed in the surface colour. */

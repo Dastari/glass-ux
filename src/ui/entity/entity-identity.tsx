@@ -15,6 +15,7 @@ import {
 import { IconClose } from "../../icons/generated/icons.js"
 import { resolveActions, splitForHeader, type ActionSet } from "../../lib/actions/actions.js"
 import { cx } from "../../lib/cx.js"
+import { observeElementSize } from "../../lib/resize-observer.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { ActionBar, ActionContextMenu, ActionMenu, useActionRunner } from "../actions/index.js"
 import { Avatar } from "../avatar/index.js"
@@ -392,14 +393,13 @@ function useHeaderFit(rowRef: RefObject<HTMLDivElement | null>, hasMetric: boole
   useIsomorphicLayoutEffect(() => {
     const row = rowRef.current
     if (!row || typeof ResizeObserver === "undefined") return
-    const observer = new ResizeObserver(() => measure())
-    observer.observe(row)
+    const unobserve = observeElementSize(row, () => measure())
     // Web fonts change the natural widths without resizing the row.
     let live = true
     void document.fonts?.ready.then(() => live && measure())
     return () => {
       live = false
-      observer.disconnect()
+      unobserve()
     }
   }, [rowRef, measure])
   return hasMetric ? fit : { metric: true, available: fit.available }

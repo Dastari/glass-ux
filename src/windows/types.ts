@@ -5,7 +5,7 @@
  * plus its layout; React nodes, callbacks and credentials never enter the store, the
  * storage key or the sync channel.
  */
-import type { EndpointStatus } from "../ui/badge/index.js"
+import type { StatusKind } from "../ui/badge/index.js"
 import type { SnapZone } from "./geometry.js"
 
 /** Parameters a window kind needs to rebuild itself. Primitives only. */
@@ -83,7 +83,7 @@ export const WINDOW_TONE_STATUS = {
   danger: "error",
   info: "connecting",
   neutral: "offline",
-} as const satisfies Record<WindowStatusTone, EndpointStatus>
+} as const satisfies Record<WindowStatusTone, StatusKind>
 
 /** The live state a window publishes for its dock entry (not persisted). */
 export interface WindowIndicator {

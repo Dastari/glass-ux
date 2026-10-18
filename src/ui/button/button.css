@@ -357,21 +357,21 @@
   .fa-btn-group[data-attached] {
     gap: 0;
   }
-  .fa-btn-group[data-attached] > .fa-btn:not(:first-child) {
+  .fa-btn-group[data-attached] > .fa-btn:not(:nth-child(1 of .fa-btn)) {
     border-start-start-radius: 0;
     border-end-start-radius: 0;
     margin-inline-start: calc(var(--border-width) * -1);
   }
-  .fa-btn-group[data-attached] > .fa-btn:not(:last-child) {
+  .fa-btn-group[data-attached] > .fa-btn:not(:nth-last-child(1 of .fa-btn)) {
     border-start-end-radius: 0;
     border-end-end-radius: 0;
   }
   /* A split primary keeps one continuous gradient with a light seam. */
-  .fa-btn-group[data-attached] > .fa-btn[data-variant="primary"]:not(:first-child) {
+  .fa-btn-group[data-attached] > .fa-btn[data-variant="primary"]:not(:nth-child(1 of .fa-btn)) {
     --_from: color-mix(in oklch, var(--accent), var(--accent-2));
     border-inline-start-color: var(--seam-light);
   }
-  .fa-btn-group[data-attached] > .fa-btn[data-variant="primary"]:not(:last-child) {
+  .fa-btn-group[data-attached] > .fa-btn[data-variant="primary"]:not(:nth-last-child(1 of .fa-btn)) {
     --_to: color-mix(in oklch, var(--accent), var(--accent-2));
   }
   .fa-btn-group[data-attached] > .fa-btn:focus-visible {

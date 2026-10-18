@@ -1,6 +1,6 @@
 import { ContainerLab, Example, Matrix, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { IconBell, IconShield } from "../../icons/generated/icons.js"
-import { Badge, CountBadge, NotificationDot, STATUS, StatusBadge, StatusDot, type BadgeTone, type EndpointStatus } from "../../ui/badge/index.js"
+import { Badge, CountBadge, NotificationDot, STATUS, StatusBadge, StatusDot, type BadgeTone, type StatusKind } from "../../ui/badge/index.js"
 import { Button } from "../../ui/button/index.js"
 
 const TONES: BadgeTone[] = ["neutral", "accent", "success", "warning", "danger", "info"]
@@ -12,7 +12,7 @@ const TONE_LABEL: Record<BadgeTone, string> = {
   danger: "Agent outdated",
   info: "Beta channel",
 }
-const STATUSES = Object.keys(STATUS) as EndpointStatus[]
+const STATUSES = Object.keys(STATUS) as StatusKind[]
 
 export default function BadgeSection() {
   return (

@@ -51,11 +51,12 @@ import {
   IconUndo,
   IconExternalLink,
 } from "../../icons/generated/icons.js";
-import { Button } from "../button/index.js";
+import { Button, useActionFeedback } from "../button/index.js";
 import { Field } from "../field/index.js";
 import { Input } from "../input/index.js";
 import { Menu, MenuPrimitive } from "../menu/index.js";
 import { Popover } from "../popover/index.js";
+import { toast } from "../toast/index.js";
 import { MarkdownImageNode } from "./image-node.js";
 import { BlockStyleLabel, RICH_TEXT_BLOCKS as BLOCKS } from "./block-style.js";
 import type { RichTextInputProps } from "./rich-text.js";
@@ -133,7 +134,8 @@ export function EditorToolbar({
   const [linkOpen, setLinkOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [linkError, setLinkError] = useState<string>();
-  const [uploading, setUploading] = useState(false);
+  const upload = useActionFeedback();
+  const uploading = upload.status === "pending";
   const [uploadError, setUploadError] = useState<string>();
   const selection = useRef<BaseSelection | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -277,10 +279,9 @@ export function EditorToolbar({
   };
   const attach = async (file: File) => {
     if (!uploadAttachment) return;
-    setUploading(true);
     setUploadError(undefined);
     const saved = selection.current?.clone() ?? null;
-    try {
+    await upload.run(async () => {
       const attachment = await uploadAttachment(file);
       if (!isSafeRichTextUrl(attachment.url, attachment.kind === "image"))
         throw new Error(
@@ -305,17 +306,18 @@ export function EditorToolbar({
         }
       });
       editor.focus();
-    } catch (error) {
+    }, (error) => {
       if (!mounted.current) return;
-      setUploadError(
+      const message =
         error instanceof Error
           ? error.message
-          : "The file could not be attached. Try again.",
-      );
-      onAttachmentError?.(error);
-    } finally {
-      if (mounted.current) setUploading(false);
-    }
+          : "The file could not be attached. Try again.";
+      // Reported in place (the Attach button's error face and tooltip) and in a toast,
+      // never as an injected row that would push the editor down.
+      setUploadError(message);
+      if (onAttachmentError) onAttachmentError(error);
+      else toast.danger("File not attached", { description: message });
+    });
   };
 
   return (
@@ -577,7 +579,13 @@ export function EditorToolbar({
                 variant="ghost"
                 icon={<IconAttach />}
                 aria-label="Attach file"
-                status={uploading ? "pending" : "idle"}
+                status={upload.status}
+                statusAnnouncement={false}
+                tooltip={
+                  upload.status === "error" && uploadError
+                    ? uploadError
+                    : undefined
+                }
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => fileRef.current?.click()}
               />
@@ -600,8 +608,8 @@ export function EditorToolbar({
           }}
         />
       ) : null}
-      {uploadError ? (
-        <span className="fa-rich-text-status" data-error="" role="status">
+      {uploadAttachment ? (
+        <span className="sr-only" role="status">
           {uploadError}
         </span>
       ) : null}

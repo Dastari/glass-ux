@@ -25,6 +25,7 @@ import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useSta
 import { createPortal } from "react-dom"
 import { IconClose, IconGlobe, IconHome, IconInfo, IconList, IconMapPin, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { observeElementSize } from "../../lib/resize-observer.js"
 import { Button } from "../button/index.js"
 import { Menu } from "../menu/index.js"
 import { Popover } from "../popover/index.js"
@@ -573,7 +574,7 @@ export function GeoMap<T>({
     if (!root || phase !== "ready") return
     let frameId = 0
     let last = { width: root.clientWidth, height: root.clientHeight }
-    const observer = new ResizeObserver(() => {
+    const unobserve = observeElementSize(root, () => {
       const size = { width: root.clientWidth, height: root.clientHeight }
       if (size.width === last.width && size.height === last.height) return
       last = size
@@ -585,10 +586,9 @@ export function GeoMap<T>({
         if (onFrame.current) engine.fit(latest.current.frameBox, fitPadding(), FIT_MAX_ZOOM, { animate: false, duration: 0 })
       })
     })
-    observer.observe(root)
     return () => {
       cancelAnimationFrame(frameId)
-      observer.disconnect()
+      unobserve()
     }
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- reads the latest frame through refs
   }, [phase])
@@ -921,6 +921,8 @@ export function GeoMap<T>({
 
   const counts = useMemo(() => countStatuses(points), [points])
   const failed = phase === "failed"
+  /** Why the zoom and reset controls are unavailable (R12): they need a started map. */
+  const controlsReason = phase === "ready" ? undefined : failed ? "The map could not start" : "The map is loading"
 
   return (
     <div
@@ -953,9 +955,9 @@ export function GeoMap<T>({
         ) : null}
         <div className="fa-map-overlay over-imagery">
           <div className="fa-map-controls" role="toolbar" aria-label="Map controls" aria-orientation="vertical">
-            <Button variant="secondary" icon={<IconZoomIn />} aria-label="Zoom in" onClick={() => zoomBy(1)} disabled={phase !== "ready"} data-map-control="zoom-in" />
-            <Button variant="secondary" icon={<IconZoomOut />} aria-label="Zoom out" onClick={() => zoomBy(-1)} disabled={phase !== "ready"} data-map-control="zoom-out" />
-            <Button variant="secondary" icon={frame === "points" ? <IconGlobe /> : <IconHome />} aria-label={resetLabel} onClick={() => fitTo(frameBox)} disabled={phase !== "ready"} data-map-control="reset" />
+            <Button variant="secondary" icon={<IconZoomIn />} aria-label="Zoom in" onClick={() => zoomBy(1)} disabledReason={controlsReason} data-map-control="zoom-in" />
+            <Button variant="secondary" icon={<IconZoomOut />} aria-label="Zoom out" onClick={() => zoomBy(-1)} disabledReason={controlsReason} data-map-control="zoom-out" />
+            <Button variant="secondary" icon={frame === "points" ? <IconGlobe /> : <IconHome />} aria-label={resetLabel} onClick={() => fitTo(frameBox)} disabledReason={controlsReason} data-map-control="reset" />
             {onViewChange ? <MapViewToggle view="map" onViewChange={onViewChange} /> : null}
           </div>
           {outside.length && phase === "ready" ? (

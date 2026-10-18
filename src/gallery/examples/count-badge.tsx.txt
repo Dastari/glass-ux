@@ -1,15 +1,9 @@
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { IconBell, IconShield } from "glass-ux/icons";
-import {
-  CountBadge,
-  NotificationDot,
-  STATUS,
-  StatusBadge,
-  type EndpointStatus,
-} from "glass-ux/badge";
+import { CountBadge, NotificationDot, STATUS, StatusBadge, type StatusKind } from "glass-ux/badge";
 import { Button } from "glass-ux/button";
 
-const STATUSES = Object.keys(STATUS) as EndpointStatus[];
+const STATUSES = Object.keys(STATUS) as StatusKind[];
 
 export default function BadgeSection() {
   return (

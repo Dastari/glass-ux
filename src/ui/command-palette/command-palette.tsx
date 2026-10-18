@@ -26,7 +26,7 @@ export interface PaletteCommand {
   /** Unique across everything registered at once. */
   id: string
   label: string
-  /** "Navigation", "Actions", "Endpoints", or a target's name for its actions. */
+  /** Group heading: "Navigation", "Actions", a host-defined record group, or a target's name for its actions. */
   group: string
   icon?: ReactNode
   /** Secondary data shown after the label: a hostname, a path, a parent menu. */
@@ -59,8 +59,13 @@ type GroupEntry = {
 const RECENT_KEY = "command-palette.recent.v1"
 const RECENT_LIMIT = 5
 const RECENT_GROUP = "Recent"
-/** Default group order. Groups not listed (a selected target's actions) come straight after Recent. */
-const DEFAULT_ORDER = [RECENT_GROUP, "*", "Actions", "Navigation", "Endpoints", "Organisations"]
+/**
+ * Default palette group order: Recent, then every group not listed (a selected target's actions
+ * and host record groups, in registration order), then the generic Actions and Navigation groups.
+ * Hosts extend it through `groupOrder`, e.g. `[...DEFAULT_PALETTE_GROUP_ORDER, "Projects"]`.
+ */
+export const DEFAULT_PALETTE_GROUP_ORDER: readonly string[] = [RECENT_GROUP, "*", "Actions", "Navigation"]
+const DEFAULT_ORDER = DEFAULT_PALETTE_GROUP_ORDER
 
 /* ── Registry ───────────────────────────────────────────────────────────────── */
 
@@ -111,7 +116,7 @@ const PaletteContext = createContext<PaletteContextValue | null>(null)
 
 export interface PaletteProviderProps {
   children: ReactNode
-  /** Group order; "*" marks where unlisted groups go. */
+  /** Group order; "*" marks where unlisted groups go. Defaults to `DEFAULT_PALETTE_GROUP_ORDER`. */
   groupOrder?: readonly string[]
 }
 
@@ -335,7 +340,7 @@ export interface CommandPanelProps {
   onRun: (command: PaletteCommand) => void
   /** A source is still fetching: skeleton rows follow the results. */
   loading?: boolean
-  /** Preferred order of command or action groups. */
+  /** Preferred order of command or action groups; "*" marks where unlisted groups go. Defaults to `DEFAULT_PALETTE_GROUP_ORDER`. */
   groupOrder?: readonly string[]
   /** Starting query (gallery specimens). */
   defaultQuery?: string

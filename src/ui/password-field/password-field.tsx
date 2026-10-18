@@ -123,10 +123,14 @@ export function PasswordInput({
           <>
             {trailing}
             {capsLock ? (
-              <span className="fa-password-caps" role="status">
+              <span className="fa-password-caps" aria-hidden>
                 Caps Lock is on
               </span>
             ) : null}
+            {/* Always mounted, so assistive technology registers it before the message arrives. */}
+            <span className="sr-only" role="status">
+              {capsLock ? "Caps Lock is on" : ""}
+            </span>
             {generateOptions && editable ? (
               <Button
                 variant="ghost"

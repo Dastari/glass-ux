@@ -86,7 +86,11 @@ export interface RichTextInputProps {
   uploadAttachment?: (file: File) => Promise<RichTextAttachment>;
   /** File picker accept attribute used by the upload adapter. Default unrestricted. */
   attachmentAccept?: string;
-  /** Reports an upload failure to the host; an inline message also explains it. */
+  /**
+   * Reports an upload failure to the host instead of the default toast. The Attach button
+   * shows the failure in place, its tooltip carries the message and a status region
+   * announces it.
+   */
   onAttachmentError?: (error: unknown) => void;
   /** Receives an editing-engine error; the original Markdown remains available in source view. */
   onError?: (error: Error) => void;

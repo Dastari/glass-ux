@@ -31,7 +31,7 @@ The editing engine loads only when this component renders.
 | maxHeight | `number \| undefined` | See type | no | 480 | Maximum content height, in CSS pixels; longer documents scroll. Default 480. |
 | minHeight | `number \| undefined` | See type | no | 160 | Minimum content height, in CSS pixels. Default 160. Toolbar height is additional. |
 | name | `string \| undefined` | See type | no | — | Native form field name; its value is Markdown. |
-| onAttachmentError | `((error: unknown) => void) \| undefined` | See type | no | — | Reports an upload failure to the host; an inline message also explains it. |
+| onAttachmentError | `((error: unknown) => void) \| undefined` | See type | no | — | Reports an upload failure to the host instead of the default toast. The Attach button shows the failure in place, its tooltip carries the message and a status region announces it. |
 | onBlur | `((event: FocusEvent<HTMLDivElement>) => void) \| undefined` | See type | no | — | Called when focus leaves the complete editor, including its toolbar. |
 | onError | `((error: Error) => void) \| undefined` | See type | no | — | Receives an editing-engine error; the original Markdown remains available in source view. |
 | onValueChange | `((markdown: string) => void) \| undefined` | See type | no | — | The next Markdown after an edit. View changes do not rewrite the document. |

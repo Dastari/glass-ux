@@ -17,6 +17,7 @@ import { useAppearance } from "../../lib/appearance/use-appearance.js";
 import { ActionProvider, usePaletteActions } from "../../ui/actions/index.js";
 import {
   CommandPanel,
+  DEFAULT_PALETTE_GROUP_ORDER,
   PaletteProvider,
   usePaletteCommands,
   useRegisteredCommands,
@@ -25,6 +26,8 @@ import {
 import { toast } from "../../ui/toast/index.js";
 import { ENDPOINTS, endpointActions } from "../sections/overlays.fixtures.js";
 
+/** The host places its record group after the generic groups. */
+const GROUP_ORDER = [...DEFAULT_PALETTE_GROUP_ORDER, "Endpoints"];
 const GROUP_ICON: Record<string, ReactNode> = {
   Foundations: <IconLayers />,
   Components: <IconGrid />,
@@ -106,6 +109,7 @@ function InlinePanel({ query, loading: forceLoading }: { query?: string; loading
         commands={commands}
         loading={forceLoading ?? loading}
         defaultQuery={query}
+        groupOrder={GROUP_ORDER}
         onRun={(command) => void command.run()}
       />
     </div>
@@ -118,7 +122,7 @@ export default function CommandPaletteSection() {
   const current = ENDPOINTS.find((item) => item.id === selected) ?? ENDPOINTS[0]!;
   return (
     <ActionProvider>
-      <PaletteProvider>
+      <PaletteProvider groupOrder={GROUP_ORDER}>
         <DemoCommands selected={selected} onSelect={setSelected} loading={loading} />
         <SectionPage>
           <Specimen

@@ -3,7 +3,7 @@
  * Latency is random within a range so loading and refreshing states are visible.
  */
 import { IconEndpoint, IconLaptop, IconOrganisation, IconServer } from "../../icons/generated/icons.js"
-import { StatusDot, type EndpointStatus } from "../../ui/badge/index.js"
+import { StatusDot, type StatusKind } from "../../ui/badge/index.js"
 import { filterOptions, type OptionItem, type OptionSource } from "../../ui/combobox/index.js"
 import { ORGANISATIONS } from "./forms.fixtures.js"
 
@@ -35,12 +35,12 @@ const SITES = [
   { prefix: "SHM", org: "St Helens Marina", domain: "SHM" },
 ]
 const PEOPLE = ["MiraRowan", "EllisPark", "AveryQuinn", "Front Counter", "Reception", "JordanLee", "SamNguyen", "AlexChen", "PriyaShah", "Kiosk"]
-const STATUSES: EndpointStatus[] = ["online", "online", "online", "offline", "warning", "online", "maintenance"]
+const STATUSES: StatusKind[] = ["online", "online", "online", "offline", "warning", "online", "maintenance"]
 const STATUS_LABEL: Record<string, string> = { online: "Online", offline: "Offline", warning: "Warning", maintenance: "Maintenance" }
 
 export interface MockEndpoint extends OptionItem {
   /** Current operation or connection status. */
-  status: EndpointStatus
+  status: StatusKind
 }
 
 /** 1,284 endpoints across the client organisations. */

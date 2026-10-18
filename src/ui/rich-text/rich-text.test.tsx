@@ -450,15 +450,21 @@ describe("Markdown value contract", () => {
         onValueChange={change}
       />,
     );
+    // The status region is mounted before the failure so the message is announced.
+    const status = screen.getByRole("status");
+    expect(status).toBeEmptyDOMElement();
     const file = new File(["fictional fixture"], "guide.pdf", {
       type: "application/pdf",
     });
     fireEvent.change(screen.getByLabelText("File attachment"), {
       target: { files: [file] },
     });
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      failure.message,
-    );
+    await waitFor(() => expect(status).toHaveTextContent(failure.message));
+    // The failure is shown in place on the Attach button, not as an inserted row.
+    expect(document.querySelector(".fa-rich-text-status[data-error]")).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Attach file" }),
+    ).toHaveAttribute("data-status", "error");
     expect(upload).toHaveBeenCalledWith(file);
     expect(report).toHaveBeenCalledWith(failure);
     expect(change).not.toHaveBeenCalled();

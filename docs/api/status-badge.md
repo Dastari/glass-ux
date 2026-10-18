@@ -1,6 +1,6 @@
 # StatusBadge
 
-An endpoint's state as a badge. The label defaults to the state name.
+A status as a badge. The label defaults to the state name.
 
 `import { StatusBadge } from "glass-ux/badge"`
 
@@ -11,6 +11,6 @@ An endpoint's state as a badge. The label defaults to the state name.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | size | `BadgeSize \| undefined` | "sm", "md" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-| status | `EndpointStatus` | "warning", "error", "online", "offline", "installing", "maintenance", "connecting", "live" | yes | — | Current operation or connection status. |
+| status | `StatusKind` | "warning", "error", "online", "offline", "installing", "maintenance", "connecting", "live" | yes | — | Current operation or connection status. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

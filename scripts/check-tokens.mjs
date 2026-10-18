@@ -11,6 +11,10 @@
  *   - every other declaration must use tokens: no raw colours, no px/rem/em lengths except 0,
  *     no ms/s durations except 0s
  *
+ * Gallery CSS (src/gallery) and documentation application CSS (apps/docs/src) follow the
+ * same colour and duration rules. Their specimen frames and reading columns may use fixed
+ * lengths, so lengths are not checked there.
+ *
  * Escape hatch for a genuine exception: put `tokens:allow <reason>` in a comment on the
  * same line, or `tokens:allow-file <reason>` in the file's first comment for code whose job
  * is colour or unit maths. Reviewers see every use.
@@ -33,7 +37,9 @@ function walk(dir) {
 const rel = (p) => relative(root, p)
 const skipTs = (p) =>
   /\/(generated|styles|pwa)\//.test(p) || p.endsWith("routeTree.gen.ts") || /\.(test|spec)\.tsx?$/.test(p)
+const docsSrc = join(root, "apps", "docs", "src")
 const cssScopes = ["ui", "shell", "windows", "features", "ai", "glassUx"].map((d) => join(src, d))
+const presentationScopes = [join(src, "gallery"), docsSrc]
 
 const RAW_COLOUR = /#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?)\(|\boklch\((?!from var)/
 // A string that *is* a CSS length/duration ("13px", "0 2rem", "300ms"), or any length
@@ -41,7 +47,9 @@ const RAW_COLOUR = /#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?)\(|\boklch\((?!from var
 const TS_UNIT_LITERAL = /["'`]\s*-?\d*\.?\d+(?:px|rem|ms)(?:\s+-?\d*\.?\d+(?:px|rem|ms)?)*\s*["'`]|style=\{\{[^}]*\d(?:px|rem|ms)\b/
 const ARBITRARY = /\b[\w:-]+-\[(?!var\(--)[^\]]+\]/
 
-for (const file of walk(src)) {
+const docsCss = walk(docsSrc).filter((file) => file.endsWith(".css"))
+
+for (const file of [...walk(src), ...docsCss]) {
   const source = readFileSync(file, "utf8")
   if (/tokens:allow-file\s+\S/.test(source.slice(0, 600))) continue
   const lines = source.split("\n")
@@ -57,7 +65,8 @@ for (const file of walk(src)) {
       if (TS_UNIT_LITERAL.test(line)) violations.push(`${rel(file)}:${index + 1}  raw length/duration: ${trimmed.slice(0, 90)}`)
     })
   }
-  if (file.endsWith(".css") && cssScopes.some((scope) => file.startsWith(scope))) {
+  const component = cssScopes.some((scope) => file.startsWith(scope))
+  if (file.endsWith(".css") && (component || presentationScopes.some((scope) => file.startsWith(scope)))) {
     let inComment = false
     // A declaration may continue over several lines (box-shadow lists, gradients): collect
     // it up to its semicolon and check the joined value, reported at its first line.
@@ -68,7 +77,7 @@ for (const file of walk(src)) {
       if (!declaration || declaration[1].startsWith("--")) return
       const value = declaration[2].replace(/url\([^)]*\)/g, "")
       if (RAW_COLOUR.test(value)) violations.push(`${rel(file)}:${line}  raw colour in ${declaration[1]}`)
-      const length = value.match(/(?<![\w-])(?!0(?:px|rem|em)\b)\d*\.?\d+(?:px|rem|em)\b/)
+      const length = component && value.match(/(?<![\w-])(?!0(?:px|rem|em)\b)\d*\.?\d+(?:px|rem|em)\b/)
       if (length) violations.push(`${rel(file)}:${line}  raw length ${length[0]} in ${declaration[1]}`)
       const duration = value.match(/(?<![\w-])(?!0s\b)\d*\.?\d+m?s\b/)
       if (duration) violations.push(`${rel(file)}:${line}  raw duration ${duration[0]} in ${declaration[1]}`)

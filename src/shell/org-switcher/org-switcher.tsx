@@ -238,9 +238,12 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
     onValueChange(next);
   };
   // Said once when the scope changes from elsewhere (a search result in another organisation).
-  const announcement = changed.active ? (
-    <span className="sr-only" role="status">{`Now in ${scope.name}`}</span>
-  ) : null;
+  // The status node stays mounted so the message is announced when its text arrives.
+  const announcement = (
+    <span className="sr-only" role="status">
+      {changed.active ? `Now in ${scope.name}` : ""}
+    </span>
+  );
 
   if (phone) {
     return (

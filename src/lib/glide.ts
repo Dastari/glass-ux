@@ -1,4 +1,5 @@
 import { useLayoutEffect, useEffect, useState, type DependencyList, type RefObject } from "react"
+import { observeElementSizes } from "./resize-observer.js"
 
 /** The axis a glide indicator travels along. */
 export type GlideAxis = "x" | "y"
@@ -64,20 +65,11 @@ export function useGlide(indicator: RefObject<HTMLElement | null>, selector: str
       setPlaced(placeGlide(element, target, axis))
     }
     place()
-    let frame = 0
-    const observer = new ResizeObserver(() => {
-      if (!frame)
-        frame = requestAnimationFrame(() => {
-          frame = 0
-          place()
-        })
-    })
+    // The shared observer coalesces a frame's size changes into one call.
+    const observer = observeElementSizes(place)
     observer.observe(parent)
     for (const child of parent.children) if (child !== element) observer.observe(child)
-    return () => {
-      if (frame) cancelAnimationFrame(frame)
-      observer.disconnect()
-    }
+    return () => observer.disconnect()
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the caller lists what moves the target
   }, [indicator, selector, axis, ...deps])
   return placed

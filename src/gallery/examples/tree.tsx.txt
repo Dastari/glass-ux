@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState, type ReactElement } from "react";
 import { ContainerLab, SectionPage, Specimen, SwapSlot } from "glass-ux/gallery/kit";
+import { IconEndpoint, IconOrganisation } from "glass-ux/icons";
 import { CountBadge } from "glass-ux/badge";
 import { SearchField } from "glass-ux/input";
 import { ActionContextMenu } from "glass-ux/actions";
@@ -20,6 +21,7 @@ function byOrganisation(endpoints: DemoEndpoint[]): TreeNode[] {
   return ORGANISATIONS.map((org) => ({
     id: `org:${org}`,
     label: org,
+    icon: <IconOrganisation />,
     children: endpoints
       .filter((endpoint) => endpoint.organisation === org)
       .map((endpoint) => ({
@@ -27,6 +29,7 @@ function byOrganisation(endpoints: DemoEndpoint[]): TreeNode[] {
         label: endpoint.name,
         description: endpoint.user,
         status: endpoint.status,
+        icon: <IconEndpoint />,
       })),
   }));
 }

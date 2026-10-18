@@ -9,7 +9,7 @@ import {
 import { ActionButton, Button } from "../../ui/button/index.js";
 import { DateField } from "../../ui/date-picker/index.js";
 import { Field } from "../../ui/field/index.js";
-import { FormStack } from "../../ui/form/index.js";
+import { FormStack } from "../../ui/form/layout.js";
 import { Input } from "../../ui/input/index.js";
 import { Notice } from "../../ui/notice/index.js";
 import { NumberField } from "../../ui/number-field/index.js";

@@ -2,7 +2,7 @@ import { IconGrid, IconPopOut } from "../../icons/generated/icons.js";
 import {
   Badge,
   StatusBadge,
-  type EndpointStatus,
+  type StatusKind,
 } from "../../ui/badge/index.js";
 import { Button } from "../../ui/button/index.js";
 import { EMPTY_CELL, TextCell } from "../../ui/data-table/cells/text.js";
@@ -63,7 +63,7 @@ function Cell({
         <TextCell>{String(value)}</TextCell>
       );
     case "status":
-      return <StatusBadge status={String(value) as EndpointStatus} size="sm" />;
+      return <StatusBadge status={String(value) as StatusKind} size="sm" />;
     case "badge":
       return <Badge size="sm">{String(value)}</Badge>;
     case "time":

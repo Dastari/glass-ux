@@ -28,6 +28,7 @@ import {
 import { flushSync } from "react-dom";
 import { IconWindows } from "../icons/generated/icons.js";
 import { cx } from "../lib/cx.js";
+import { observeElementSize } from "../lib/resize-observer.js";
 import { PHONE_QUERY, useMediaQuery } from "../lib/use-media-query.js";
 import { Button } from "../ui/button/index.js";
 import { createDragStore, type DragStore } from "./drag.js";
@@ -127,9 +128,7 @@ function useStageMetrics(stage: HTMLElement | null): StageMetrics {
         if (announce) notify();
       };
       update(false);
-      const observer = new ResizeObserver(() => update(true));
-      observer.observe(stage);
-      return () => observer.disconnect();
+      return observeElementSize(stage, () => update(true));
     },
     [stage],
   );

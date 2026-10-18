@@ -12,13 +12,13 @@ DurationInput bound to a `number | null` (seconds) form field. Pair it with `dur
 | --- | --- | --- | --- | --- | --- |
 | aside | `ReactNode` | See type | no | — | Right side of the label row: a live value readout or a small link. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| clearable | `boolean \| undefined` | false, true | no | — | Show a clear button while the field has a value. |
+| clearable | `boolean \| undefined` | false, true | no | — | Show a clear button while the field has a value. Escape also clears a filled field (and is then not propagated, so an enclosing dialog stays open); the button itself is a pointer affordance outside the tab order. |
 | defaultUnit | `DurationUnit \| undefined` | "s", "d", "w", "h", "m" | no | — | The unit of a bare number ("90" → 90 minutes). Default "m". |
 | describe | `boolean \| undefined` | false, true | no | true | Spell the value out as the hint when none is given ("1 hour 30 minutes"). Default true. |
 | hint | `ReactNode` | See type | no | — | The message line's resting text. Only when the format or consequence is not obvious (R2.8). |
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
-| onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button empties the field. |
+| onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |

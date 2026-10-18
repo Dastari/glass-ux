@@ -27,6 +27,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { IconFullscreen, IconLayers, IconList, IconNetwork, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { resolveActions, type ActionSet } from "../../lib/actions/actions.js"
 import { cx } from "../../lib/cx.js"
+import { observeElementSize } from "../../lib/resize-observer.js"
 import { ActionMenuItems } from "../actions/index.js"
 import { Button } from "../button/index.js"
 import { ContextMenu } from "../context-menu/index.js"
@@ -303,6 +304,8 @@ export function TopologyCanvas<T>({
   const index = useMemo(() => (layout ? indexTopology(layout) : null), [layout])
   // Laid out, and the chrome over it known: until then the loading shape holds the box.
   const ready = Boolean(layout && nodes) && !pending
+  /** Why the zoom, fit and minimap controls are unavailable (R12). */
+  const controlsReason = ready ? undefined : "The map is loading"
   const empty = ready && !nodes?.length
 
   /* ── The camera: one transform per frame ────────────────────────────────── */
@@ -446,9 +449,7 @@ export function TopologyCanvas<T>({
       if (!framePending.current() && !refitRef.current()) apply()
     }
     measure()
-    const observer = new ResizeObserver(measure)
-    observer.observe(stage)
-    return () => observer.disconnect()
+    return observeElementSize(stage, measure)
   }, [apply])
 
   /** Fit a new map (the first layout, or a new frameKey) once its box has a size. True when it did. */
@@ -823,9 +824,9 @@ export function TopologyCanvas<T>({
             </div>
           ) : null}
           <div className="fa-topology-controls" role="toolbar" aria-label="Map controls" aria-orientation="vertical">
-            <Button variant="secondary" icon={<IconZoomIn />} aria-label="Zoom in" shortcut="+" onClick={() => zoomAt(ZOOM_STEP, undefined, true)} disabled={!ready} data-topology-control="zoom-in" />
-            <Button variant="secondary" icon={<IconZoomOut />} aria-label="Zoom out" shortcut="-" onClick={() => zoomAt(1 / ZOOM_STEP, undefined, true)} disabled={!ready} data-topology-control="zoom-out" />
-            <Button variant="secondary" icon={<IconFullscreen />} aria-label="Fit to view" shortcut="0" onClick={() => fit(true)} disabled={!ready} data-topology-control="fit" />
+            <Button variant="secondary" icon={<IconZoomIn />} aria-label="Zoom in" shortcut="+" onClick={() => zoomAt(ZOOM_STEP, undefined, true)} disabledReason={controlsReason} data-topology-control="zoom-in" />
+            <Button variant="secondary" icon={<IconZoomOut />} aria-label="Zoom out" shortcut="-" onClick={() => zoomAt(1 / ZOOM_STEP, undefined, true)} disabledReason={controlsReason} data-topology-control="zoom-out" />
+            <Button variant="secondary" icon={<IconFullscreen />} aria-label="Fit to view" shortcut="0" onClick={() => fit(true)} disabledReason={controlsReason} data-topology-control="fit" />
             {minimap ? (
               <Button
                 variant="secondary"
@@ -834,7 +835,7 @@ export function TopologyCanvas<T>({
                 tooltip={showMinimap ? "Minimap: shown while part of the map is out of view" : "Minimap: off"}
                 aria-pressed={showMinimap}
                 onClick={() => setShowMinimap((value) => !value)}
-                disabled={!ready}
+                disabledReason={controlsReason}
                 data-topology-control="minimap"
               />
             ) : null}

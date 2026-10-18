@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { IconEndpoint } from "../../../icons/generated/icons.js"
-import { STATUS, type EndpointStatus } from "../../badge/index.js"
+import { STATUS, type StatusKind } from "../../badge/index.js"
 import { EntityIdentity } from "../../entity/index.js"
 
 export interface IdentityCellProps {
@@ -11,7 +11,7 @@ export interface IdentityCellProps {
   /** Entity glyph. Defaults to a generic monitor glyph; pass the entity's own icon without a size. */
   icon?: ReactNode
   /** Live state, drawn as the shared status dot on the glyph's corner. */
-  status?: EndpointStatus
+  status?: StatusKind
   /** Accessible text for the status dot. Defaults to the state's name ("Online"). */
   statusLabel?: string
 }

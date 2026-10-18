@@ -57,14 +57,14 @@
   /* ── Stage and view transition ─────────────────────────────────────────── */
   .fa-login-stage {
     min-inline-size: 0;
-    transition: height var(--duration-base) var(--ease-standard);
+    transition: height var(--duration-glide) var(--ease-glide);
   }
   .fa-login-stage[data-animating] {
     overflow: clip;
     overflow-clip-margin: var(--focus-ring-offset);
   }
   .fa-login-stage[data-enter] > .fa-login-view {
-    animation: fa-login-enter var(--duration-slow) var(--ease-enter) both;
+    animation: fa-login-enter var(--duration-materialise) var(--ease-materialise) both;
   }
   .fa-login-stage[data-enter="back"] > .fa-login-view {
     --_direction: -1;

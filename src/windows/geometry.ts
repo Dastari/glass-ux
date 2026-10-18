@@ -6,7 +6,7 @@
  * size container, so a fractional rectangle becomes CSS with container units and needs no
  * measurement: it renders correctly on the first frame and follows every resize for free.
  */
-import type { Rect, WindowEntry } from "./types.js"
+import type { Rect } from "./types.js"
 
 /** A rectangle as fractions (0–1) of the workspace. */
 export interface FracRect {
@@ -200,19 +200,4 @@ export function defaultFloatingRect(
     w,
     h,
   }
-}
-
-/** Keep a free rectangle reachable: at least its app bar inside the workspace. */
-export function fitRect(rect: Rect, width: number, height: number, minSize: { w: number; h: number }): Rect {
-  const w = clamp(rect.w, Math.min(minSize.w, width), width)
-  const h = clamp(rect.h, Math.min(minSize.h, height), height)
-  return { x: clamp(rect.x, 0, width - w), y: clamp(rect.y, 0, height - h), w, h }
-}
-
-/** Windows that render above the tiled layer, bottom to top. */
-export function stackOrder(windows: readonly WindowEntry[]) {
-  return windows
-    .filter((entry) => !entry.poppedOut && entry.layout !== "tiled")
-    .toSorted((a, b) => a.z - b.z)
-    .map((entry) => entry.id)
 }

@@ -6,6 +6,11 @@
  * not inherited, so the content is not re-styled) and left/top/width/height while
  * resizing. The material drops its backdrop blur while it moves (data-moving, glass.css).
  * The store is updated once, on release (docs/performance.md).
+ *
+ * The keyboard reaches the same gestures (WCAG 2.1.1, 2.5.7): the window menu (right-click
+ * the app bar, or Shift+F10 / the Menu key inside it or on the frame) offers Move and
+ * Resize. The arrow keys then nudge the frame (Shift for a finer step), Enter commits
+ * through the same store update a pointer release makes, and Escape cancels.
  */
 import {
   createContext,
@@ -31,6 +36,7 @@ import type { Rect, WindowEntry } from "./types.js"
 import { WindowScopeChip } from "./scope.js"
 import { WindowContentHost } from "./window-content.js"
 import { WindowFrame } from "./window-frame.js"
+import { ContextMenu } from "../ui/context-menu/index.js"
 
 /** What the workspace hands every window: where it is drawn and how to reach the stage. */
 export interface WorkspaceLink {
@@ -332,6 +338,120 @@ function useWindowResize(entry: WindowEntry, frameRef: RefObject<HTMLElement | n
   }
 }
 
+/** Arrow-key step while moving or resizing from the keyboard; Shift takes a finer step. */
+const KEY_STEP = 16
+const FINE_KEY_STEP = 2
+const KEY_DELTAS: Record<string, [number, number]> = {
+  ArrowLeft: [-1, 0],
+  ArrowRight: [1, 0],
+  ArrowUp: [0, -1],
+  ArrowDown: [0, 1],
+}
+
+type KeyboardGesture = "move" | "resize"
+
+const GESTURE_HINTS: Record<KeyboardGesture, string> = {
+  move: "Moving window. Arrow keys move it, Enter places it, Escape cancels.",
+  resize: "Resizing window. Arrow keys change its size, Enter keeps it, Escape cancels.",
+}
+
+/**
+ * Move or resize a window from the keyboard. Like the pointer gestures, nudges write the
+ * frame's styles only; Enter commits once through the store, Escape restores the start.
+ * While active, the keys are captured at the document so the window's content does not see
+ * them; a pointer press anywhere commits.
+ */
+function useKeyboardGesture(
+  entry: WindowEntry,
+  frameRef: RefObject<HTMLElement | null>,
+  manager: WindowManager,
+  link: WorkspaceLink,
+  announce: (message: string) => void
+) {
+  const minSize = getWindowKind(entry.kind)?.minSize ?? DEFAULT_MIN_WINDOW_SIZE
+  // Ends the active gesture: commit, cancel, or (null, on unmount) only drop the listeners.
+  const stopRef = useRef<((commit: boolean | null) => void) | null>(null)
+  useEffect(() => () => stopRef.current?.(null), [])
+
+  return (gesture: KeyboardGesture) => {
+    stopRef.current?.(true)
+    const frame = frameRef.current
+    const stage = link.stageRef.current
+    if (!frame || !stage || link.sheet) return
+    manager.focus(entry.id)
+    const stageBox = stage.getBoundingClientRect()
+    const start = relativeRect(frame, stage)
+    if (entry.layout !== "floating" || entry.snap) flushSync(() => manager.float(entry.id, start))
+    let next = start
+    const state = gesture === "move" ? "dragging" : "resizing"
+
+    const write = () => {
+      if (gesture === "move") {
+        frame.style.translate = `${next.x - start.x}px ${next.y - start.y}px`
+      } else {
+        frame.style.left = `${next.x}px`
+        frame.style.top = `${next.y}px`
+        frame.style.width = `${next.w}px`
+        frame.style.height = `${next.h}px`
+      }
+    }
+
+    const stop = (commit: boolean | null) => {
+      stopRef.current = null
+      document.removeEventListener("keydown", onKeyDown, true)
+      document.removeEventListener("pointerdown", onPointerDown, true)
+      delete frame.dataset.keyboardGesture
+      if (commit === null) return
+      if (frame.isConnected) {
+        flushSync(() => manager.float(entry.id, commit ? next : start))
+        settleFrame(frame, state, false)
+      }
+      const noun = gesture === "move" ? "Move" : "Resize"
+      announce(commit ? `${noun} finished.` : `${noun} cancelled.`)
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      const delta = KEY_DELTAS[event.key]
+      // Tab finishes the gesture and lets focus move on.
+      if (event.key === "Tab") return stop(true)
+      if (!delta && event.key !== "Enter" && event.key !== "Escape") return
+      event.preventDefault()
+      event.stopPropagation()
+      if (event.key === "Enter") return stop(true)
+      if (event.key === "Escape") return stop(false)
+      if (!delta) return
+      const step = event.shiftKey ? FINE_KEY_STEP : KEY_STEP
+      const [dx, dy] = [delta[0] * step, delta[1] * step]
+      if (gesture === "move") {
+        next = {
+          ...next,
+          x: clamp(next.x + dx, 0, Math.max(0, stageBox.width - next.w)),
+          y: clamp(next.y + dy, 0, Math.max(0, stageBox.height - next.h)),
+        }
+      } else {
+        next = {
+          ...next,
+          w: clamp(next.w + dx, minSize.w, Math.max(minSize.w, stageBox.width - next.x)),
+          h: clamp(next.h + dy, minSize.h, Math.max(minSize.h, stageBox.height - next.y)),
+        }
+      }
+      write()
+    }
+    const onPointerDown = () => stop(true)
+
+    frame.dataset[state] = ""
+    frame.dataset.moving = ""
+    frame.dataset.keyboardGesture = gesture
+    document.addEventListener("keydown", onKeyDown, true)
+    document.addEventListener("pointerdown", onPointerDown, true)
+    stopRef.current = stop
+    announce(GESTURE_HINTS[gesture])
+    frame.focus({ preventScroll: true })
+  }
+}
+
+const isMenuKey = (event: { key: string; shiftKey: boolean }) => event.key === "ContextMenu" || (event.shiftKey && event.key === "F10")
+
 /** The workspace builds `vars` afresh on every render; compare them by value. */
 function sameWindowProps(a: ManagedWindowProps, b: ManagedWindowProps) {
   if (a.entry !== b.entry || a.focused !== b.focused || a.geometry !== b.geometry || a.hidden !== b.hidden) return false
@@ -355,6 +475,12 @@ export const ManagedWindow = memo(function ManagedWindow({ entry, focused, geome
   const { title, subtitle, icon: Icon } = describeWindow(entry.kind, entry.params)
   const beginDrag = useWindowDrag(entry, frameRef, manager, link)
   const beginResize = useWindowResize(entry, frameRef, manager, link)
+  // Gesture hints go straight to an always-mounted live region: no re-render per gesture.
+  const liveRef = useRef<HTMLSpanElement>(null)
+  const beginKeyboardGesture = useKeyboardGesture(entry, frameRef, manager, link, (message) => {
+    if (liveRef.current) liveRef.current.textContent = message
+  })
+  const appBarRef = useRef<HTMLElement>(null)
 
   const context = useMemo<WindowContextValue>(
     () => ({ id: entry.id, kind: entry.kind, params: entry.params, actionsSlot, statusSlot, host: "workspace" }),
@@ -393,36 +519,61 @@ export const ManagedWindow = memo(function ManagedWindow({ entry, focused, geome
       style={toStyle(vars)}
       onPointerDownCapture={() => manager.focus(entry.id)}
       onFocusCapture={() => manager.focus(entry.id)}
+      onKeyDown={(event) => {
+        // The frame itself holds focus after the dock or a shortcut focuses the window:
+        // the menu key opens the window menu from there too.
+        if (event.target !== event.currentTarget || link.sheet || !isMenuKey(event)) return
+        event.preventDefault()
+        appBarRef.current?.querySelector<HTMLElement>("button")?.dispatchEvent(
+          new window.KeyboardEvent("keydown", { key: "F10", shiftKey: true, bubbles: true, cancelable: true })
+        )
+      }}
     >
-      <WindowFrame.AppBar
-        icon={Icon ? <Icon /> : null}
-        title={title}
-        subtitle={subtitle}
-        scope={<WindowScopeChip scope={entry.scope} />}
-        titleId={titleId}
-        actionsRef={setActionsSlot}
-        onPointerDown={beginDrag}
-        onDoubleClick={(event) => {
-          if (link.sheet || (event.target as Element).closest(NO_DRAG)) return
-          manager.toggleMaximise(entry.id)
-        }}
-        controls={
-          <WindowFrame.Controls
-            title={title}
-            maximised={maximised}
-            compact={link.sheet}
-            leading={link.sheet ? link.sheetLeading : undefined}
-            onPopOut={manager.canPopOut(entry.id) ? () => popOut(manager, entry, frameRef.current) : undefined}
-            onMinimise={() => manager.minimise(entry.id)}
-            onToggleMaximise={() => manager.toggleMaximise(entry.id)}
-            onClose={() => void manager.close(entry.id)}
-          />
-        }
-      />
+      <ContextMenu.Root disabled={link.sheet}>
+        <ContextMenu.Trigger
+          render={
+            <WindowFrame.AppBar
+              ref={appBarRef}
+              icon={Icon ? <Icon /> : null}
+              title={title}
+              subtitle={subtitle}
+              scope={<WindowScopeChip scope={entry.scope} />}
+              titleId={titleId}
+              actionsRef={setActionsSlot}
+              onPointerDown={beginDrag}
+              onDoubleClick={(event) => {
+                if (link.sheet || (event.target as Element).closest(NO_DRAG)) return
+                manager.toggleMaximise(entry.id)
+              }}
+              controls={
+                <WindowFrame.Controls
+                  title={title}
+                  maximised={maximised}
+                  compact={link.sheet}
+                  leading={link.sheet ? link.sheetLeading : undefined}
+                  onPopOut={manager.canPopOut(entry.id) ? () => popOut(manager, entry, frameRef.current) : undefined}
+                  onMinimise={() => manager.minimise(entry.id)}
+                  onToggleMaximise={() => manager.toggleMaximise(entry.id)}
+                  onClose={() => void manager.close(entry.id)}
+                />
+              }
+            />
+          }
+        />
+        <ContextMenu.Popup aria-label={`Window menu for ${title}`}>
+          <ContextMenu.Item onClick={() => beginKeyboardGesture("move")}>Move</ContextMenu.Item>
+          <ContextMenu.Item onClick={() => beginKeyboardGesture("resize")}>Resize</ContextMenu.Item>
+          <ContextMenu.Separator />
+          <ContextMenu.Item onClick={() => manager.toggleMaximise(entry.id)}>{maximised ? "Restore" : "Maximise"}</ContextMenu.Item>
+          <ContextMenu.Item onClick={() => manager.minimise(entry.id)}>Minimise</ContextMenu.Item>
+          <ContextMenu.Item onClick={() => void manager.close(entry.id)}>Close</ContextMenu.Item>
+        </ContextMenu.Popup>
+      </ContextMenu.Root>
       <WindowContext.Provider value={context}>
         <WindowContentHost id={entry.id} kind={entry.kind} params={entry.params} />
       </WindowContext.Provider>
       <WindowFrame.StatusBar ref={setStatusSlot} />
+      <span ref={liveRef} className="sr-only" role="status" aria-live="polite" />
       {resizable
         ? EDGES.map((edge) => (
             <span

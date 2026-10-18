@@ -14,7 +14,8 @@
  *   --_px        one CSS pixel, to turn unitless geometry into lengths
  *   --_half-gap  half the panel gap, given up on interior edges
  *   --_z-*       stacking inside the stage (an isolated context): tiled windows sit at 1,
- *                floating ones at 10 + their rank, then handles, preview, drag, snap bar
+ *                floating ones at 10 + their rank, then handles, preview, drag, snap bar;
+ *                on phones the stage is not isolated, so they map onto the shell's z tokens
  */
 @layer components {
   .fa-wm-workspace {
@@ -296,6 +297,12 @@
   /* Size containment makes the stage the containing block of fixed descendants, so on
      phones the stage gives it up and sheets cover the viewport. */
   .fa-wm-workspace[data-sheet] .fa-wm-workspace-stage {
+    /* Without isolation the stage's local stacking values would compete with the page's:
+       keep them on the shell layer, below backdrops, popovers, toasts and tooltips. */
+    --_z-handle: var(--z-raised);
+    --_z-preview: calc(var(--z-shell) + 2);
+    --_z-drag: calc(var(--z-shell) + 2);
+    --_z-bar: calc(var(--z-shell) + 3);
     container-type: normal;
     isolation: auto;
   }

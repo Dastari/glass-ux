@@ -21,7 +21,7 @@ Vertical columns.
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | labels | `boolean \| undefined` | false, true | no | — | Values at the bar tips. Defaults on for horizontal bars (ranked lists), off for columns. |
 | layout | `"grouped" \| "stacked" \| undefined` | "grouped", "stacked" | no | — | Several series side by side, or stacked as parts of a total. |
-| onRetry | `(() => void) \| undefined` | See type | no | — | Called when retry occurs. The callback type specifies its arguments. |
+| onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | series | `readonly BarSeries[]` | See type | yes | — | Chart series with stable identifiers, labels and typed values. |
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | — | Controlled view state, including loading, empty and error states. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |

@@ -11,6 +11,6 @@ The whole canvas while there is nothing to give it yet (no label, no nodes): the
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| insets | `TopologyInsets \| null \| undefined` | See type | no | — | Space reserved around the content or plot. |
+| insets | `TopologyInsets \| null \| undefined` | See type | no | — | Page chrome over the canvas in CSS pixels, matching the TopologyCanvas's `insets`; `null` marks them as still being measured. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

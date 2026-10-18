@@ -30,11 +30,11 @@ and Cancel / Save. One form spans every tab, so Save sends one document.
 | form | `EntitySettingsForm` | See type | yes | — | The form every tab edits: one `useAppForm` with the entity's Zod schema. |
 | loading | `boolean \| undefined` | false, true | no | false | The document is loading: every tab shows its skeleton and Save waits. |
 | media | `ReactNode` | See type | no | — | The entity's identity tile: its glyph or photo with the state dot. |
-| onOpenChange | `(open: boolean) => void` | See type | yes | — | Called when open change occurs. The callback type specifies its arguments. |
+| onOpenChange | `(open: boolean) => void` | See type | yes | — | Called with the next open state: `false` on Cancel (after the form resets) or on dismissal, which first asks to discard unsaved changes. Pair with `open`. |
 | onReload | `((fields: readonly string[]) => Promise<void>) \| undefined` | See type | no | — | After a conflict (SettingsConflictError), reload the documents behind these fields: they take the server's values and lose their edits; every other edit stays. |
 | onSaved | `(() => void) \| undefined` | See type | no | — | After a save is confirmed (the saved values are the new baseline). |
 | onSaveError | `((error: unknown) => void) \| undefined` | See type | no | — | A save failed: the Save button shows ✕; put the reason in a toast here. |
-| onTabChange | `((tab: string) => void) \| undefined` | See type | no | — | Called when tab change occurs. The callback type specifies its arguments. |
+| onTabChange | `((tab: string) => void) \| undefined` | See type | no | — | Called with the `value` of the tab the person selects. Pair with `tab` to control it; without `tab` the dialog tracks the tab itself. |
 | onVerify | `(() => Promise<void>) \| undefined` | See type | no | — | The step-up: resolves once verified, throws if it was declined or failed. |
 | open | `boolean` | false, true | yes | — | Controls whether the overlay is open. |
 | preview | `boolean \| undefined` | false, true | no | false | Render in the page flow, open and non-modal (gallery specimens). |

@@ -240,7 +240,7 @@ export default function TopologySection() {
     <SectionPage>
       <Specimen
         title="An office network"
-        description="Rows top to bottom: the gateway, its switch, then the access point and the client blocks. Link speeds show where a source reports them; wireless links are dotted and unknown links dashed. Click a node to select it (its way up turns accent), double-click to open it, right-click for its actions. Keyboard: arrows move like a family tree, Enter selects, + − 0 zoom and fit, Shift+F10 opens the menu."
+        description="Rows top to bottom: the gateway, its switch, then the access point and the client blocks. Wireless links are dotted, unknown links dashed, and speeds show where reported. Click selects a node and its path up, double-click opens it, right-click shows its actions."
         wide
       >
         <Panel className="h-140 w-full" data-testid="topology-office">

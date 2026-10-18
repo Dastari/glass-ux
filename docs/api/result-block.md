@@ -10,6 +10,6 @@ Render any tool result by its type.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| result | `AiResult` | See type | yes | — | Typed result, including disclosure and rendering metadata. |
+| result | `AiResult` | See type | yes | — | The tool result to render; its `type` picks the result component. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

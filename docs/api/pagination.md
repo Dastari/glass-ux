@@ -17,8 +17,8 @@ page size, then the jump field, then the first/last buttons fold away.
 | disabled | `boolean \| undefined` | false, true | no | false | Disables interaction while retaining the component’s disabled appearance. |
 | label | `string \| undefined` | See type | no | "Pages" | Names the navigation landmark, e.g. "Endpoint pages". |
 | loading | `boolean \| undefined` | false, true | no | false | First load: the range is a placeholder and the buttons wait. |
-| onPageChange | `((pageIndex: number) => void) \| undefined` | See type | no | — | Called when page change occurs. The callback type specifies its arguments. |
-| onPageSizeChange | `((pageSize: number) => void) \| undefined` | See type | no | — | Called when page size change occurs. The callback type specifies its arguments. |
+| onPageChange | `((pageIndex: number) => void) \| undefined` | See type | no | — | Called with the zero-based index of the page the person asks for (first, previous, next, last or page jump); not used in cursor mode. Pair with `pageIndex` to control it. |
+| onPageSizeChange | `((pageSize: number) => void) \| undefined` | See type | no | — | Called with the rows-per-page the person picks from `pageSizes`. The page-size menu shows only when this is set, there are two or more choices and the pager is not compact. Pair with `pageSize`. |
 | pageIndex | `number` | See type | yes | — | Zero-based page index. |
 | pageRows | `number` | See type | yes | — | Rows on the current page (the last page may be short). |
 | pageSize | `number` | See type | yes | — | Number of records per page. |

@@ -1,6 +1,8 @@
 # VerticalTabs
 
-L3 navigation: a section rail that becomes chips, or a picker past six sections, in narrow containers.
+Sections held in component state: `Root` (the selected value, controlled or uncontrolled;
+a rail, chip strip or picker depending on its own width) and `Panel`. For sections that
+are routes, use `RouteVerticalTabs`.
 
 `import { VerticalTabs } from "glass-ux/vertical-tabs"`
 
@@ -16,7 +18,7 @@ L3 navigation: a section rail that becomes chips, or a picker past six sections,
 | defaultValue | `string \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | items | `VerticalTabItem[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
 | layout | `VerticalTabsLayout \| undefined` | "select", "rail", "icons", "chips" | no | — | Force a layout instead of following the container. |
-| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the chosen section's `value` when the person selects a tab, chip or picker item. Pair with `value` to control it. |
 | value | `string \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 
 ## VerticalTabs.Panel

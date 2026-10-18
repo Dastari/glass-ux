@@ -11,8 +11,8 @@ One image in its reserved aspect-ratio box: it never moves anything when it load
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| cover | `boolean \| undefined` | false, true | no | false | Cover image or cover rendering options. |
-| image | `ResultImage` | See type | yes | — | Image content or media definition. |
-| onOpen | `(() => void) \| undefined` | See type | no | — | Event callback; the typed signature specifies its arguments. |
+| cover | `boolean \| undefined` | false, true | no | false | Crop to a 16:10 box from the top instead of fitting the image at its own ratio. Defaults to `false`. |
+| image | `ResultImage` | See type | yes | — | The image: `src` and `alt`, `width` and `height` in pixels for the reserved ratio, and an optional `caption`. |
+| onOpen | `(() => void) \| undefined` | See type | no | — | Called when the image is pressed; supplying it makes the image a button named "Open {alt}". |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

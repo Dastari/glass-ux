@@ -11,6 +11,6 @@ entity's own actions (R12: ActionBar from the same definition as its page header
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| result | `ResultBase & { type: "entity"; entity: import("../types.js").EntityRef; subtitle?: string; facts: Array<{ label: string; value: string; }>; }` | See type | yes | — | Typed result, including disclosure and rendering metadata. |
+| result | `ResultBase & { type: "entity"; entity: import("../types.js").EntityRef; subtitle?: string; facts: Array<{ label: string; value: string; }>; }` | See type | yes | — | The entity result: the `entity`, an optional `subtitle` and its `facts`; the resolver's `render` may replace the card body and supplies the actions. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

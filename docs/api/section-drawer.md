@@ -31,7 +31,7 @@ Compose a section navigation drawer with header, search, groups, items, body and
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | noun | `string` | See type | yes | — | What the list holds, plural: "organisations" names the field "Search organisations". |
-| onValueChange | `(value: string) => void` | See type | yes | — | Called when value change occurs. The callback type specifies its arguments. |
+| onValueChange | `(value: string) => void` | See type | yes | — | Called with the new query as the person types, and with "" when Esc clears the field. Pair with `value`. |
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | value | `string` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |
 

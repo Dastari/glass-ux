@@ -12,6 +12,6 @@ reflows by the card's width, never a fixed column count (R5.5).
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| result | `ResultBase & { type: "metrics"; metrics: import("../types.js").ResultMetricItem[]; }` | See type | yes | — | Typed result, including disclosure and rendering metadata. |
+| result | `ResultBase & { type: "metrics"; metrics: import("../types.js").ResultMetricItem[]; }` | See type | yes | — | The metrics result: each of its `metrics` becomes a Metric tile (label, value, unit, delta and optional sparkline data). |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

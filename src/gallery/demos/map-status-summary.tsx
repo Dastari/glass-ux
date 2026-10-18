@@ -170,7 +170,7 @@ export default function MapSection() {
     <SectionPage>
       <OnCanvas
         title="Home region"
-        description="The map sits on the canvas with no material of its own, so the ambient fields show through as the sea. The home region glows in the data hue (--chart-1, never the brand) as a wide blurred halo, a medium glow and a crisp core; basemap water, roads and places fade in as you zoom and the outline steps back. Sites outside Tasmania (Port Melbourne, Blenheim) are a pan away, counted in the pill at the bottom."
+        description="The map has no material of its own, so the canvas shows through as the sea. The home region glows in the data hue, and basemap detail fades in as you zoom. Sites outside Tasmania are counted in the pill at the bottom."
       >
         <LiveMap id="map-hero" />
       </OnCanvas>
@@ -245,7 +245,7 @@ export default function MapSection() {
         <ListViewExample />
       </Specimen>
 
-      <ContainerLab description="The map fills whatever box it is given. Below 16rem tall or 20rem wide the zoom buttons go (pinch and scroll still zoom); under 8rem tall all controls go. Credits use their minimal labels below 30rem wide or 16rem tall, wrap within the available width, and retain their complete source links under ⓘ. Everywhere the line folds to ⓘ after five seconds or the first interaction.">
+      <ContainerLab description="The map fills whatever box it is given. In small boxes the zoom buttons and then the other controls drop out, while pinch and scroll still zoom, and the credits shorten without losing their source links.">
         {() => <LiveMap id="map-lab" className="gallery-map-fill" />}
       </ContainerLab>
     </SectionPage>

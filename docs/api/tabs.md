@@ -1,6 +1,8 @@
 # Tabs
 
-L2 navigation: icon tabs with a sliding accent underline. They never wrap; overflow moves into More.
+In-page tabs on Base UI's tabs: `Root` (selected value, controlled or uncontrolled),
+`List` (the tab strip from `items`; tabs that do not fit move to a More menu) and
+`Panel`. For tabs that are routes, use `TabNav`.
 
 `import { Tabs } from "glass-ux/tabs"`
 

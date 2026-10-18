@@ -158,7 +158,7 @@ export default function BreadcrumbSection() {
 
       <Specimen
         title="Current place only"
-        description="The last step: only the current place, its icon and a chevron, as one button. Its popup holds the trail as an indented tree, root first; every level navigates and a level with siblings carries Switch. On a phone the top bar folds its context into it (BreadcrumbFoldContext): the module switch at full width and the organisation, which opens the switcher, sit above the trail, and the popup drops from the bar at its full width. Esc closes it and focus returns to the button."
+        description="The narrowest step: the current place as one button. Its popup holds the whole trail; every level navigates and a level with siblings offers Switch. On phones the top bar also folds its module switch and organisation into the popup."
         layout="stack"
         wide
       >

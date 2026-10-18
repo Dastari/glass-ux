@@ -164,7 +164,7 @@ export default function DataTableFiltersSection() {
     <SectionPage>
       <Specimen
         title="Devices"
-        description="400 devices behind a mock graphql-orm server: the table builds the Where object, the server evaluates it over every row and returns one page. Search from the toolbar (/ focuses it), or filter from a column's menu, the Filters button, a chip, or right-click a value. The search and the filters combine, and live in the URL with the sort and the page."
+        description="400 devices behind a mock graphql-orm server that evaluates the table's Where and returns one page. Search from the toolbar, or filter from a column menu, the Filters button, a chip or a right-click. Search, filters, sort and page live in the URL."
         layout="bare"
         wide
       >

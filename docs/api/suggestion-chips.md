@@ -11,7 +11,7 @@ Prompt suggestions as glass pills: one tap puts the prompt in the composer.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | align | `"center" \| "start" \| undefined` | "center", "start" | no | "center" | Centre them (the landing) or start-align them (a scoped pane). |
-| onSelect | `(suggestion: Suggestion) => void` | See type | yes | — | Called when select occurs. The callback type specifies its arguments. |
+| onSelect | `(suggestion: Suggestion) => void` | See type | yes | — | Called with the suggestion whose pill is pressed; the host normally puts its `prompt` in the composer. |
 | suggestions | `Suggestion[]` | See type | yes | — | Initial or ranked choices offered before a search. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

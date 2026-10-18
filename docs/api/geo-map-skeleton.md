@@ -11,7 +11,7 @@ The map's box before anything is known: the same size, a silhouette when the reg
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| insets | `MapInsets \| undefined` | See type | no | — | Space reserved around the content or plot. |
-| region | `MapRegion \| null \| undefined` | See type | no | — | Geographical region to display. |
+| insets | `MapInsets \| undefined` | See type | no | — | Page chrome over the map in CSS pixels, matching the GeoMap's `insets` so the placeholder frames the same way. |
+| region | `MapRegion \| null \| undefined` | See type | no | — | Region drawn as a silhouette; omit or pass `null` for an empty box. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

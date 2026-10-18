@@ -19,7 +19,7 @@ is never empty by accident; its tooltip and description say why.
 | hidden | `ReadonlySet<string> \| undefined` | See type | no | — | Keys currently hidden. |
 | items | `readonly LegendItem[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
 | layout | `"list" \| "row" \| undefined` | "list", "row" | no | "row" | `row`: one line in the head, truncating; `list`: a column with values (pie, donut). |
-| onActive | `((key: string \| null) => void) \| undefined` | See type | no | — | Called when active occurs. The callback type specifies its arguments. |
+| onActive | `((key: string \| null) => void) \| undefined` | See type | no | — | Called with an item's key when the pointer enters it or it takes keyboard focus, and with `null` when the pointer leaves or focus moves away. Pair with `active` to control the highlight. |
 | onToggle | `((key: string) => void) \| undefined` | See type | no | — | Makes the legend a toolbar of toggles (full tier). Omit for a passive key. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

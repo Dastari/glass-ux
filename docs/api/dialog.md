@@ -1,6 +1,8 @@
 # Dialog
 
-Focused tasks in a glass frame: icon header, one scrolling body, a pinned footer — a bottom sheet on phones.
+A modal dialog built from parts: `Root` (state; a bottom sheet on phones by default),
+`Trigger`, `Popup`, `Header`, `Body` (scrolls), `Footer`, `Title`, `Description` and
+`Close`. `Preview` renders the same parts statically for documentation.
 
 `import { Dialog } from "glass-ux/dialog"`
 
@@ -17,8 +19,8 @@ Focused tasks in a glass frame: icon header, one scrolling body, a pinned footer
 | defaultOpen | `boolean \| undefined` | false, true | no | — | Opens the uncontrolled overlay initially. |
 | disablePointerDismissal | `boolean \| undefined` | false, true | no | — | Keep the dialog open on outside press (Esc still closes). |
 | modal | `boolean \| undefined` | false, true | no | — | Default true. `false` lets the page stay interactive (rare; prefer a Popover or Sheet). |
-| onOpenChange | `((open: boolean, details: DialogChangeDetails) => void) \| undefined` | See type | no | — | Called when open change occurs. The callback type specifies its arguments. |
-| onOpenChangeComplete | `((open: boolean) => void) \| undefined` | See type | no | — | Called when open change complete occurs. The callback type specifies its arguments. |
+| onOpenChange | `((open: boolean, details: DialogChangeDetails) => void) \| undefined` | See type | no | — | Called with the next open state and Base UI change details (the reason; `details.cancel()` keeps it open) when the trigger, Esc, an outside press, a close control or a sheet swipe opens or dismisses it. Pair with `open` to control it. |
+| onOpenChangeComplete | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the final open state once the open or close animation has finished. |
 | open | `boolean \| undefined` | false, true | no | — | Controls whether the overlay is open. |
 | sheet | `boolean \| "auto" \| undefined` | false, true, "auto" | no | "auto" | `auto` (default) renders a bottom sheet with a grab handle on phones (< 48rem) and a centred dialog elsewhere (R13.4). Force either with true/false. |
 

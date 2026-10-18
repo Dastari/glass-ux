@@ -1,6 +1,6 @@
 # ButtonGroup
 
-The only button. Six variants, three sizes, and in-place pending → ✓ / ✕ feedback.
+A row of related buttons in a `role="group"` container, spaced apart or, with `attached`, joined into one control.
 
 `import { ButtonGroup } from "glass-ux/button"`
 

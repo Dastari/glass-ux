@@ -33,14 +33,14 @@ Width  container-aware down to the docked pane: labels drop to icons, the model 
 | maxRows | `number \| undefined` | See type | no | 10 | Rows before the composer scrolls. |
 | minRows | `number \| undefined` | See type | no | 1 | Rows shown when empty (the landing composer uses 2). |
 | model | `ComposerModel \| undefined` | See type | no | — | The workspace's model: read-only here, set in AI settings. |
-| onAttach | `((files: File[]) => void) \| undefined` | See type | no | — | Called when attach occurs. The callback type specifies its arguments. |
-| onContextChange | `((context: EntityRef[]) => void) \| undefined` | See type | no | — | Called when context change occurs. The callback type specifies its arguments. |
+| onAttach | `((files: File[]) => void) \| undefined` | See type | no | — | Called with the files chosen in the file picker (filtered by `accept`). Supplying it shows the Attach button; add them to `attachments` to show them. |
+| onContextChange | `((context: EntityRef[]) => void) \| undefined` | See type | no | — | Called with the whole new context list when an entity is added (an |
 | onEditLast | `(() => void) \| undefined` | See type | no | — | ↑ in an empty composer edits the last prompt. |
-| onOpenSettings | `(() => void) \| undefined` | See type | no | — | Called when open settings occurs. The callback type specifies its arguments. |
-| onRemoveAttachment | `((id: string) => void) \| undefined` | See type | no | — | Called when remove attachment occurs. The callback type specifies its arguments. |
+| onOpenSettings | `(() => void) \| undefined` | See type | no | — | Called from the AI settings button in the model popover; the button is shown only when this is supplied. |
+| onRemoveAttachment | `((id: string) => void) \| undefined` | See type | no | — | Called with the attachment `id` when the person removes its chip; the chip shows a remove button only when this is supplied. |
 | onSend | `((text: string) => void \| Promise<void>) \| undefined` | See type | no | — | Called with the trimmed text; clear the composer by resolving. |
-| onStop | `(() => void) \| undefined` | See type | no | — | Called when stop occurs. The callback type specifies its arguments. |
-| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onStop | `(() => void) \| undefined` | See type | no | — | Called when the person stops a running response: the Stop button or Esc while `run` is `running` or `stopping` and no menu is open. |
+| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the full text on every edit, pick from a menu, dictation and the clear after a send (`""`). Pair with `value` to control it. |
 | placeholder | `string \| undefined` | See type | no | "Ask Assistant…" | The prompt shown while the value is empty. It does not replace the field’s label. |
 | run | `RunState \| undefined` | "idle", "running", "sending", "stopping" | no | "idle" | Operation invoked by the component. |
 | size | `"md" \| "lg" \| undefined` | "md", "lg" | no | "md" | md: conversations and panes · lg: the landing hero (bigger send circle). |

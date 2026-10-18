@@ -26,8 +26,8 @@ onValueChange and the group's accessible name are the same in every form.
 | iconOnly | `boolean \| undefined` | false, true | no | false | Show icons only; labels become accessible names. Still folds to the menu when even the icons do not fit. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
-| onBlur | `((event: FocusEvent<HTMLDivElement>) => void) \| undefined` | See type | no | — | Called when blur occurs. The callback type specifies its arguments. |
-| onValueChange | `((value: V) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onBlur | `((event: FocusEvent<HTMLDivElement>) => void) \| undefined` | See type | no | — | Called with the focus event when focus leaves the whole control, not when it moves between segments. For form libraries' touched state. |
+| onValueChange | `((value: V) => void) \| undefined` | See type | no | — | Called with the chosen option's `value` when the person picks a segment (or a menu item in the collapsed form); pressing the current segment does not deselect it. Pair with `value` to control it. |
 | options | `SegmentedOption<V>[]` | See type | yes | — | The available choices, including their values and visible labels. |
 | size | `SegmentedSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | The chosen segment's tint. Status tones only when the modes are statuses (R3.3). |

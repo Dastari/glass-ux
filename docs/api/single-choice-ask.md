@@ -10,6 +10,6 @@ One choice from a few options, each with a sentence: radio cards that reflow by 
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| ask | `{ type: "single"; options: ChoiceOption[]; layout?: "cards" \| "list"; } & { id: string; question: string; detail?: string; status?: import("../types.js").AskState; answer?: string; answeredBy?: string; answeredByEntity?: import("../types.js").EntityRef; answeredAt?: number; submitLabel?: string; }` | See type | yes | — | The typed request and its current resolution state. |
+| ask | `{ type: "single"; options: ChoiceOption[]; layout?: "cards" \| "list"; } & { id: string; question: string; detail?: string; status?: import("../types.js").AskState; answer?: string; answeredBy?: string; answeredByEntity?: import("../types.js").EntityRef; answeredAt?: number; submitLabel?: string; }` | See type | yes | — | The single-choice ask: the question and its `options`. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

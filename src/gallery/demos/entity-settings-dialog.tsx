@@ -292,7 +292,7 @@ export default function EntitySettingsSection() {
     <SectionPage>
       <Specimen
         title="Settings dialog"
-        description="An lg dialog: the entity's identity tile, Settings and a data subtitle; an L3 rail; one form across the tabs. A tab with unsaved changes shows a neutral dot, one with errors a danger dot. Save stays disabled until something changes, then confirms in place; closing with changes asks first. On phones it is a bottom sheet with the tabs as chips."
+        description="A large dialog with the entity's identity, a tab rail and one form across the tabs. Tabs mark unsaved changes and errors; Save enables after a change, and closing with changes asks first. On phones it is a bottom sheet with the tabs as chips."
       >
         <Button icon={<IconSettings />} onClick={() => setOpen(true)} data-testid="relay-open">
           Open relay settings

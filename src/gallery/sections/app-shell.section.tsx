@@ -250,11 +250,11 @@ export default function AppShellSection() {
         )}
       </ContainerLab>
 
-      <Specimen title="Rail and section drawer" description="The rail is icon-only on the canvas; every item has a tooltip with its label and shortcut. Its bottom gear opens the current organisation's Settings dialog, disabled under All organisations with the reason. The drawer holds the section's navigation: drag its edge to resize, below its minimum it snaps closed; mod+B or the current rail item toggles it.">
+      <Specimen title="Rail and section drawer" description="An icon-only rail with labelled tooltips, and a resizable drawer for the section's navigation. The rail's gear opens the current organisation's settings. mod+B or the current rail item toggles the drawer.">
         <RailAndDrawer />
       </Specimen>
 
-      <Specimen title="Top bar" description="The application context, on the canvas: nothing in it depends on the organisation. The switcher is the door to the organisation context below; Glass UX settings is the gear; notifications are the badge on the avatar. It adapts to its own width: the organisation folds to its avatar (with +N on its corner), the search field becomes a square and the account folds to its avatar." wide layout="stack">
+      <Specimen title="Top bar" description="The application context: organisation switcher, search, settings and the account with its notification badge. As the bar narrows, the organisation and account fold to avatars and search to a button." wide layout="stack">
         {(["wide", "medium", "narrow"] as const).map((width) => (
           <Example key={width} label={width === "wide" ? "Wide" : width === "medium" ? "Medium" : "Narrow"}>
             <div className="gallery-shell-topbar" data-width={width}>

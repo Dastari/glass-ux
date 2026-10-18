@@ -23,7 +23,7 @@ not a day (or is outside min/max) turns the box invalid and keeps what was typed
 | max | `string \| undefined` | See type | no | — | Upper value or visible-item limit, as specified by the type. |
 | min | `string \| undefined` | See type | no | — | Lower allowed value. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
-| onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when blur occurs. The callback type specifies its arguments. |
+| onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the text input loses focus, after the typed date has been committed. |
 | onValueChange | `((value: IsoDate \| null) => void) \| undefined` | See type | no | — | Called with a valid day, or null when the field is emptied. Typing commits on blur or Enter. |
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |

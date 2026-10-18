@@ -10,6 +10,6 @@
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| more | `number` | See type | yes | — | Count or definition of remaining items. |
+| more | `number` | See type | yes | — | How many results were left out of the list; nothing renders when 0 or less. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

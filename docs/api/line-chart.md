@@ -28,7 +28,7 @@ box grows.
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | markers | `readonly Marker[] \| undefined` | See type | no | — | Events on the x axis. |
 | now | `Date \| undefined` | See type | no | — | "Now" for relative times in the readout. Defaults to the clock. |
-| onRetry | `(() => void) \| undefined` | See type | no | — | Called when retry occurs. The callback type specifies its arguments. |
+| onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | series | `readonly LineSeries[]` | See type | yes | — | Chart series with stable identifiers, labels and typed values. |
 | stacked | `boolean \| undefined` | false, true | no | — | Stack the series as bands (parts of a total). Implies area. |
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |

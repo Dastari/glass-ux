@@ -20,9 +20,9 @@ the form.
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field (inside a Field, set `error` on the Field instead). |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
-| onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called when revealed change occurs. The callback type specifies its arguments. |
-| onStrengthChange | `((strength: Strength) => void) \| undefined` | See type | no | — | Called when strength change occurs. The callback type specifies its arguments. |
-| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called with the new state when the show/hide password button is pressed. Pair with `revealed` to control it. |
+| onStrengthChange | `((strength: Strength) => void) \| undefined` | See type | no | — | Called with a fresh estimate whenever the password changes, while strength is measured (`strength`, or a new password). |
+| onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the password on each keystroke and when Generate fills it. Pair with `value` to control it; use `defaultValue` otherwise. |
 | purpose | `PasswordPurpose \| undefined` | "current", "new" | no | "new" | current: signing in or confirming (autocomplete="current-password"). new: setting one (autocomplete="new-password", password managers offer to generate and save). Default "new". |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | revealed | `boolean \| undefined` | false, true | no | — | Password boxes: whether the value shows as text. Leave unset for the box's own toggle. |

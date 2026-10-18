@@ -1,6 +1,6 @@
 # PinMap
 
-Points with a status anywhere in the world, clustered with a status ring, over a token-themed vector basemap with the home region glowing in the data hue.
+A map with one draggable pin for choosing a location: drag, click or nudge it with the arrow keys (Shift moves further). Controlled through `value`; without `onValueChange` it is a read-only preview.
 
 `import { PinMap } from "glass-ux/map"`
 

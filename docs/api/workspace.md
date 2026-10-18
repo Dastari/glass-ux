@@ -1,6 +1,9 @@
 # Workspace
 
-Everything in the workspace is a window: tiled, floating, snapped, maximised, minimised to the dock or popped out.
+The windowed workspace: the routed `primary` view plus every open window from the
+enclosing `WindowManagerProvider`, tiled, floating or maximised, with the dock. On phones
+the focused window covers the screen and a switcher lists the rest. Reports its size to the
+manager so new windows are placed inside it.
 
 `import { Workspace } from "glass-ux/windows"`
 

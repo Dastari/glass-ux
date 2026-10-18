@@ -22,7 +22,7 @@ instead: it gives every part its own form field.
 | homeCountry | `string \| undefined` | See type | no | "AU" | The country of a new address and the one not written on one-line addresses. Default "AU". |
 | label | `ReactNode` | See type | yes | — | The lookup's label. |
 | map | `MapConfig \| undefined` | See type | no | — | Show a map with the pin (MapLibre, lazy). Omit for no map. |
-| onValueChange | `((value: AddressValue) => void) \| undefined` | See type | no | — | Called when value change occurs. The callback type specifies its arguments. |
+| onValueChange | `((value: AddressValue) => void) \| undefined` | See type | no | — | Called with the whole updated address whenever any part changes. Pair with `value` to control it; use `defaultValue` otherwise. |
 | optional | `boolean \| undefined` | false, true | no | — | Shows the optional-field indication without changing validation. |
 | placeholder | `string \| undefined` | See type | no | — | The lookup's placeholder. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |

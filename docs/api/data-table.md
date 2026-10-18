@@ -38,8 +38,8 @@ error states that keep the table's box, and opt-in row reordering by drag or key
 | loading | `boolean \| undefined` | false, true | no | false | First load: skeleton rows in the final shape. |
 | noun | `DataTableNoun \| undefined` | See type | no | — | Noun for counts in the status bar ("1,284 endpoints"). |
 | onAction | `((action: ResolvedAction<T>, targets: readonly T[], surface: ActionSurface) => void) \| undefined` | See type | no | — | Run actions yourself. By default every surface uses the shared runner: confirm in an AlertDialog, run, then report with a toast (R12.4, R12.5). With `onAction`, the confirmation and the feedback are the caller's. |
-| onDensityChange | `((density: DataTableDensity) => void) \| undefined` | See type | no | — | Called when density change occurs. The callback type specifies its arguments. |
-| onRetry | `(() => void) \| undefined` | See type | no | — | Called when retry occurs. The callback type specifies its arguments. |
+| onDensityChange | `((density: DataTableDensity) => void) \| undefined` | See type | no | — | Called with the density the person picks. Pair with `density` to control it; without `density` the table also stores the choice in its preferences. |
+| onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state; the button shows only when this is set. |
 | onRowOpen | `((row: T) => void) \| undefined` | See type | no | — | Enter or double-click on a row. |
 | onStateChange | `((state: DataTableState, change: DataTableStateChange) => void) \| undefined` | See type | no | — | Called with the next full state and the slice that changed. |
 | pageSizes | `readonly number[] \| undefined` | See type | no | DEFAULT_PAGE_SIZES | Page-size choices offered by pagination. |

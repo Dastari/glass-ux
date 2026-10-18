@@ -132,7 +132,7 @@ export default function AiSessionsSection() {
 
         <Specimen
           title="Drawer"
-          description="New chat, search, the two views with counts, projects, sessions by day. A spinner while working, a warning dot waiting for you, a danger dot after a failed run, an accent dot and bold title when unread. ⋯ and right-click carry the session actions. The drawer sets the width: at its narrowest, default and widest, everything fits and titles truncate."
+          description="New chat, search, two views with counts, projects and sessions by day. Sessions show when they are working, waiting for you, failed or unread; ⋯ and right-click carry their actions. Shown at the drawer's narrowest, default and widest widths."
           layout="row"
           wide
         >

@@ -9,7 +9,6 @@ import {
   rmSync,
 } from "node:fs";
 import { join } from "node:path";
-import { propDescriptions } from "./document-props.mjs";
 import { generateComponentDemos } from "./component-demos.mjs";
 import { literalOptions } from "./docs-api-options.mjs";
 
@@ -191,12 +190,12 @@ function signatureApi(type, at) {
             description:
               doc(prop) ||
               descriptions[name] ||
-              propDescriptions[name] ||
-              (/^on[A-Z]/.test(name)
-                ? "Event callback; the typed signature specifies its arguments."
-                : !own
-                  ? "Native React DOM property. Its accepted values are specified by the type."
-                  : ""),
+              // Own props must be documented at their declaration; check-docs fails otherwise.
+              (own
+                ? ""
+                : /^on[A-Z]/.test(name)
+                  ? "Native React DOM event handler."
+                  : "Native React DOM property. Its accepted values are specified by the type."),
             inherited: !own,
           };
         })

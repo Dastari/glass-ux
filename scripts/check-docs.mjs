@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import ts from "typescript";
+import { undocumentedExports } from "./export-docs.mjs";
 const components = JSON.parse(
   readFileSync("src/gallery/api.generated.json", "utf8"),
 );
@@ -74,10 +75,27 @@ for (const file of [
       failures.push(`${file}: missing link ${link}`);
   }
 }
+// Every public runtime export carries its own TSDoc (generated icons share one comment).
+failures.push(...undocumentedExports());
+// Generated placeholder prose is not documentation: describe the payload and timing instead.
+const PLACEHOLDERS = [
+  /The callback type specifies its arguments/,
+  /Event callback; the typed signature specifies its arguments/,
+];
+for (const file of walk("src").filter(
+  (f) => /\.tsx?$/.test(f) && !f.includes("/generated/"),
+)) {
+  const text = readFileSync(file, "utf8");
+  for (const pattern of PLACEHOLDERS)
+    for (const match of text.matchAll(new RegExp(pattern, "g")))
+      failures.push(
+        `${file}:${text.slice(0, match.index).split("\n").length}: placeholder documentation`,
+      );
+}
 if (failures.length) {
   console.error(failures.join("\n"));
   process.exit(1);
 }
 console.log(
-  `docs: ${components.length} documented components, typed props, slots and live demo pages; Markdown links resolve`,
+  `docs: ${components.length} documented components, typed props, slots and live demo pages; public runtime exports have TSDoc; Markdown links resolve`,
 );

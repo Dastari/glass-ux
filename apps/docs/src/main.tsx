@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { useRef, useState, type ReactNode } from "react";
+import { lazy, Suspense, useRef, useState, type ReactNode } from "react";
 import {
   createRootRoute,
   createRoute,
@@ -40,17 +40,50 @@ import {
   IconGithub,
   IconCode,
 } from "glass-ux/icons";
-import {
-  ComponentDocumentation,
-  FoundationDocumentation,
-  configureDemoBrand,
-  LibraryGuide,
-  libraryGuides,
-  sections,
-  componentFamilies,
-} from "glass-ux/gallery";
+import { Skeleton } from "glass-ux/skeleton";
+// Navigation reads metadata modules only; each route's content loads on demand.
+import { sections } from "glass-ux/gallery/registry";
+import { componentFamilies } from "glass-ux/gallery/component-families";
+import { libraryGuides } from "glass-ux/gallery/library-guides";
+import { configureDemoBrand } from "glass-ux/gallery/fixtures/brand";
 import "./styles.css";
-import { Showcase } from "./showcase";
+
+const Showcase = lazy(() =>
+  import("./showcase").then((module) => ({ default: module.Showcase })),
+);
+const ComponentDocumentation = lazy(() =>
+  import("glass-ux/gallery/documentation").then((module) => ({
+    default: module.ComponentDocumentation,
+  })),
+);
+const FoundationDocumentation = lazy(() =>
+  import("glass-ux/gallery/documentation").then((module) => ({
+    default: module.FoundationDocumentation,
+  })),
+);
+const LibraryGuide = lazy(() =>
+  import("glass-ux/gallery/guide").then((module) => ({
+    default: module.LibraryGuide,
+  })),
+);
+
+/**
+ * A route's placeholder while its code loads: the document column's heading and opening
+ * lines, in the place the page will occupy, so the shell and toolbar never move.
+ */
+function RouteLoading() {
+  return (
+    <div
+      className="docs-route-loading"
+      role="status"
+      aria-label="Loading the page"
+    >
+      <Skeleton.Text type="display" width="45%" />
+      <Skeleton.Text lines={3} />
+      <Skeleton.Block className="docs-route-loading-block" radius="surface" />
+    </div>
+  );
+}
 
 configureDemoBrand();
 configureAppearance({ defaults: { palette: "ocean" } });
@@ -566,7 +599,9 @@ function Layout() {
                   role="region"
                   aria-label="Documentation content"
                 >
-                  <Outlet />
+                  <Suspense fallback={<RouteLoading />}>
+                    <Outlet />
+                  </Suspense>
                 </div>
               </main>
               {phone ? (

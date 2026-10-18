@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { componentDestination } from "glass-ux/gallery";
+import { componentDestination } from "glass-ux/gallery/component-families";
 import { Surface, Panel, PanelHeader, PanelBody } from "glass-ux/surface";
 import { Button } from "glass-ux/button";
 import { Badge } from "glass-ux/badge";

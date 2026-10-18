@@ -9,7 +9,10 @@ export interface DurationInputProps extends Omit<InputProps, "value" | "defaultV
   /** Seconds; null when empty; NaN while the text cannot be read. */
   value?: number | null
   defaultValue?: number | null
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called on each keystroke with the parsed duration in whole seconds, null when the text is empty,
+   * or NaN while it cannot be read. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (seconds: number | null) => void
   /** Units written back, largest first (default d, h, m). Seconds below the smallest round. */
   units?: readonly DurationUnit[]

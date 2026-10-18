@@ -13,9 +13,9 @@ const SideContext = createContext<SheetSide>("right")
 export interface SheetRootProps {
   open?: boolean
   defaultOpen?: boolean
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with the next open state and Base UI change details (the reason; `details.cancel()` keeps it open) when the trigger opens it or a swipe, Esc, the scrim or a close control dismisses it. Pair with `open` to control it. */
   onOpenChange?: (open: boolean, details: DialogChangeDetails) => void
-  /** Called when open change complete occurs. The callback type specifies its arguments. */
+  /** Called with the final open state once the slide-in or slide-out animation has finished. */
   onOpenChangeComplete?: (open: boolean) => void
   /** Whether the overlay traps focus and makes outside content inert. */
   modal?: boolean
@@ -58,6 +58,11 @@ function SheetPopup({ size = "md", ...rest }: SheetPopupProps) {
   return <DialogSurface {...rest} mode="side" kind="side" size={size} edge={side} />
 }
 
+/**
+ * A pane that slides in from a screen edge, built from parts: `Root` (state and `side`),
+ * `Trigger`, `Popup`, `Header`, `Body` (scrolls), `Footer` and `Close`. Swipe toward the
+ * edge, Esc or the scrim dismisses it.
+ */
 export const Sheet = {
   Root: SheetRoot,
   Trigger: Drawer.Trigger,

@@ -138,7 +138,7 @@ export interface OrgSwitcherProps<
   recent?: readonly string[];
   /** Controlled open state, so a palette command or a shortcut can open it. */
   open?: boolean;
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with the next open state when the popup (or phone sheet) opens or closes, including the close after a choice. Pair with `open` to control it. */
   onOpenChange?: (open: boolean) => void;
   /** Display and accessibility labels supplied by the application. */
   labels?: Partial<SwitcherLabels>;
@@ -381,14 +381,14 @@ interface SwitcherListProps {
   /** Display and accessibility labels supplied by the application. */
   labels: SwitcherLabels;
   placeholder: string;
-  /** Called when choose occurs. The callback type specifies its arguments. */
+  /** Called with the chosen organisation id, or null for all organisations, when the person picks a row. */
   onChoose: (value: string | null) => void;
   /** In a sheet (phones) or a page: the list is always shown, without a popup. */
   inline?: boolean;
   /** Inline in a sheet: the panel takes the sheet's insets. */
   placement?: "sheet" | "page";
   open?: boolean;
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with the next open state when the popup opens or is dismissed; closing clears a local search query. */
   onOpenChange?: (open: boolean) => void;
   /** The popup finished closing (or opening): its animations are done. */
   onOpenChangeComplete?: (open: boolean) => void;
@@ -592,7 +592,7 @@ export interface OrgSwitcherPanelProps<
   remote?: OrgSwitcherRemote;
   /** Selected organisation ID, or null for the all-organisations scope. */
   value: string | null;
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the chosen organisation id, or null for all organisations, when the person picks a row (also when it is the current one). */
   onValueChange: (value: string | null) => void;
   /** Previously selected IDs, ordered most recent first. */
   recent?: readonly string[];

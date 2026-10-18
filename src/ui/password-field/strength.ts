@@ -22,6 +22,7 @@ export interface Strength {
   bits: number
 }
 
+/** The strength label for each score, indexed 0 ("Too weak") to 4 ("Strong"). */
 export const STRENGTH_LABELS: readonly string[] = ["Too weak", "Weak", "Fair", "Good", "Strong"]
 
 /** The commonest passwords and their stems (lower case, l33t undone). */

@@ -64,7 +64,12 @@ export function OptionChip({ label, icon, invalid, flash, readOnly, onEdit }: Op
 }
 
 /** A chip-shaped twin used only to measure how many chips fit (no behaviour, hidden). */
-export function ChipMeasure({ label, icon, removable = true }: { label: string; icon?: ReactNode; removable?: boolean }) {
+export function ChipMeasure({ label, icon, removable = true }: {
+  label: string
+  icon?: ReactNode
+  /** Reserve the remove button's width (default true); false for read-only chips. */
+  removable?: boolean
+}) {
   return (
     <span className="fa-chip" data-measure="chip">
       {icon}

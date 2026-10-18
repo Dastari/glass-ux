@@ -8,6 +8,7 @@ export type EmailResult = { ok: true; value: string } | { ok: false; error: stri
 const LOCAL = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]{1,64}$/
 const LABEL = /^(?!-)[a-z0-9-]{1,63}(?<!-)$/i
 
+/** The sample address quoted in validation messages and used as a placeholder. */
 export const EMAIL_EXAMPLE = "name@example.com.au"
 
 /** Validate and normalise: trimmed, the domain in lower case (the local part keeps its case). */
@@ -29,6 +30,7 @@ export function parseEmail(text: string): EmailResult {
   return { ok: true, value: `${local}@${domain}` }
 }
 
+/** The address trimmed with its domain in lower case and any `mailto:` removed, or null when it is not a valid email. */
 export function normaliseEmail(text: string): string | null {
   const result = parseEmail(text)
   return result.ok ? result.value : null

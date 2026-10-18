@@ -15,10 +15,12 @@ export type LngLatBox = readonly [west: number, south: number, east: number, nor
 /** Mercator stops at ±85.0511°, where the world is square. */
 export const MAX_LATITUDE = 85.051129
 
+/** Web Mercator x in unit space for a longitude in degrees: 0 at −180°, 1 at 180°. */
 export function projectX(lng: number): number {
   return (lng + 180) / 360
 }
 
+/** Web Mercator y in unit space for a latitude in degrees, clamped to ±`MAX_LATITUDE`: 0 at the north edge, 1 at the south (y down). */
 export function projectY(lat: number): number {
   const clamped = Math.max(-MAX_LATITUDE, Math.min(MAX_LATITUDE, lat))
   const sin = Math.sin((clamped * Math.PI) / 180)
@@ -40,6 +42,7 @@ export interface UnitBox {
   h: number
 }
 
+/** Projects a [west, south, east, north] box in degrees to a unit-space box with its top-left corner at (west, north); width and height are never zero. */
 export function projectBox([west, south, east, north]: LngLatBox): UnitBox {
   const x = projectX(west)
   const y = projectY(north)
@@ -49,6 +52,7 @@ export function projectBox([west, south, east, north]: LngLatBox): UnitBox {
 /** The SVG viewBox for a box, in a scaled unit space so path numbers stay readable. */
 export const SVG_SCALE = 10000
 
+/** The SVG `viewBox` string for a box: its projection scaled by `SVG_SCALE`. */
 export function viewBoxOf(box: LngLatBox): string {
   const { x, y, w, h } = projectBox(box)
   const f = (value: number) => Number((value * SVG_SCALE).toFixed(4))

@@ -76,7 +76,7 @@ export function RowContextMenu<T extends RowData>({
   trigger: ReactElement
   /** Content rendered by this slot or overlay. */
   content: MenuContent<T> | null
-  /** Called when run occurs. The callback type specifies its arguments. */
+  /** The table's `onAction`, called when the person chooses an action in the context menu; without it the shared runner runs the action. */
   onRun: ActionRunHandler<T> | undefined
   /** Decide per event; call `details.cancel()` to keep the native menu (no row under the pointer). */
   onOpenChange?: (open: boolean, details: ContextMenuPrimitive.Root.ChangeEventDetails) => void

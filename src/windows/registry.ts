@@ -48,7 +48,9 @@ type AnyKind = WindowKindDefinition<WindowParams>
 const kinds = new Map<string, AnyKind>()
 const listeners = new Set<() => void>()
 
+/** Floating size, in CSS pixels, for a kind that sets no `size`. */
 export const DEFAULT_WINDOW_SIZE = { w: 760, h: 520 }
+/** Smallest resizable size, in CSS pixels, for a kind that sets no `minSize`. */
 export const DEFAULT_MIN_WINDOW_SIZE = { w: 320, h: 200 }
 
 /** Register a kind. Re-registering the same kind replaces it (hot reload). */
@@ -58,10 +60,12 @@ export function registerWindowKind<P extends WindowParams>(definition: WindowKin
   return definition
 }
 
+/** Returns the registered definition for `kind`, or `undefined` when it has not been registered. */
 export function getWindowKind(kind: string): AnyKind | undefined {
   return kinds.get(kind)
 }
 
+/** Returns every registered window kind definition, in registration order. */
 export function listWindowKinds(): AnyKind[] {
   return [...kinds.values()]
 }

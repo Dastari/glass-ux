@@ -66,12 +66,14 @@ export interface ShellContextValue {
 
 const ShellContext = createContext<ShellContextValue | null>(null)
 
+/** Returns the enclosing `AppShell`'s layout state: breakpoints, drawer and inspector state with their setters. Throws when used outside `AppShell`. */
 export function useShell(): ShellContextValue {
   const context = useContext(ShellContext)
   if (!context) throw new Error("useShell must be used inside AppShell")
   return context
 }
 
+/** Like `useShell`, but returns `null` instead of throwing when there is no enclosing `AppShell`. */
 export function useOptionalShell() {
   return useContext(ShellContext)
 }
@@ -319,7 +321,7 @@ function DrawerHandle({
   ref?: RefObject<HTMLDivElement | null>
   shellRef: RefObject<HTMLDivElement | null>
   open: boolean
-  /** Called when toggle occurs. The callback type specifies its arguments. */
+  /** Called when the person double-clicks the handle or presses Enter or Space on it, to open or close the drawer. Dragging writes the drawer preference directly instead. */
   onToggle: () => void
 }) {
   const [dragging, setDragging] = useState(false)

@@ -61,9 +61,9 @@ const serverGeocoder = () => (defaultGeocoder ??= createServerGeocoder())
 
 export interface PartBinding<T> {
   value: T
-  /** Called when change occurs. The callback type specifies its arguments. */
+  /** Called with the part's new value whenever it changes. */
   onChange: (value: T) => void
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when the part's control loses focus, so a form can mark it touched. */
   onBlur: () => void
   error?: string
   /** The form field's name ("general.address.line1"), when bound. */
@@ -130,7 +130,7 @@ export function applySuggestion(current: AddressValue, suggestion: AddressSugges
 
 interface EditorProps extends AddressOptions {
   value: AddressValue
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the whole updated address when a suggestion is picked, the country changes or the pin moves. */
   onValueChange: (value: AddressValue) => void
   parts: AddressParts
   /** The lookup row's label ("Address", "Site address"). */
@@ -372,9 +372,9 @@ function AddressMap({
   map: MapConfig
   fallback?: LngLatBox
   lookupPoint: GeoPoint | null
-  /** Called when place occurs. The callback type specifies its arguments. */
+  /** Called with the new position when the pin is dropped, nudged with the arrow keys or placed by a click. Not passed to the map when disabled. */
   onPlace: (point: GeoPoint) => void
-  /** Called when reset occurs. The callback type specifies its arguments. */
+  /** Called when "Reset pin" is pressed, to return the pin to the position from the lookup. */
   onReset: () => void
   disabled?: boolean
 }) {
@@ -416,7 +416,10 @@ function AddressMap({
 export interface AddressInputProps extends AddressOptions {
   value?: AddressValue
   defaultValue?: AddressValue
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the whole updated address whenever any part changes. Pair with `value` to control
+   * it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: AddressValue) => void
   /** The lookup's label. */
   label: ReactNode

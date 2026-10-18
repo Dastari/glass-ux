@@ -20,7 +20,7 @@ export interface PinEngineOptions {
   /** Label fade in ms (0 under the motion switch). */
   fadeDuration: number
   draggable: boolean
-  /** Called when load occurs. The callback type specifies its arguments. */
+  /** Called once with no arguments when the map has loaded its style. */
   onLoad: () => void
   /** The pin was dropped (drag end) or placed by a click. */
   onPlace: (point: { lng: number; lat: number }) => void

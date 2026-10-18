@@ -240,6 +240,7 @@ export interface NoFilter {
 
 export type ColumnFilterSetting = FilterSpec | NoFilter
 
+/** Whether a column's filter setting is `{ none: reason }` (the column cannot be filtered). */
 export const isNoFilter = (setting: ColumnFilterSetting | undefined): setting is NoFilter =>
   Boolean(setting && typeof setting === "object" && "none" in setting)
 
@@ -254,4 +255,5 @@ export interface FilterColumn {
   getValue?: (row: never) => unknown
 }
 
+/** The filter's display name: the spec's `label`, or the column header. */
 export const filterLabel = (column: Pick<FilterColumn, "header" | "spec">) => column.spec.label ?? column.header

@@ -7,7 +7,10 @@ export interface MoneyInputProps extends Omit<NumberFieldProps, "format" | "unit
   /** Minor units (cents). Null when empty. */
   value?: number | null
   defaultValue?: number
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the amount in minor units (integer cents), or null when the box is empty, as it is
+   * typed, stepped or scrubbed. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (minor: number | null) => void
   /** ISO 4217. Default AUD. */
   currency?: string

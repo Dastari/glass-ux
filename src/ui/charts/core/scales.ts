@@ -73,6 +73,7 @@ export function allIntegers(values: Iterable<number | null | undefined>): boolea
   return any
 }
 
+/** Calendar-aligned tick dates across `domain` for an axis `length` px long, aiming for one tick per `spacing` px (default 88; at least two). */
 export function timeTicks(domain: readonly [Date, Date], length: number, spacing = X_TICK_SPACING): Date[] {
   const count = Math.max(2, Math.floor(length / spacing))
   return scaleTime().domain(domain).ticks(count)

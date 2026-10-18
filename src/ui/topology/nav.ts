@@ -44,6 +44,7 @@ export interface TopologyIndex {
 
 const parentKey = (parentId: string | null) => parentId ?? ""
 
+/** Indexes a laid-out topology for keyboard navigation and drawing: nodes and clusters by id, rows left to right, what hangs below each node, each parent's blocks and the drawing order. */
 export function indexTopology(layout: TopologyLayout): TopologyIndex {
   const nodes = new Map(layout.nodes.map((node) => [node.id, node] as const))
   const clusters = new Map(layout.clusters.map((cluster) => [cluster.id, cluster] as const))

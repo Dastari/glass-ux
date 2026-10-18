@@ -71,7 +71,7 @@ function MarkdownState({
   editable,
 }: {
   value: string;
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the document as Markdown after each edit that changes it; not for updates applied from `value`. */
   onValueChange?: (value: string) => void;
   editable: boolean;
 }) {

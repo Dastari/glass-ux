@@ -67,29 +67,29 @@ export interface SessionNavProps {
   activeId?: string;
   /** Currently selected presentation view. */
   view?: SessionView;
-  /** Called when view change occurs. The callback type specifies its arguments. */
+  /** Called with `conversations` or `archived` when the person picks Conversation history or Archived chats. Pair with `view` to switch the list. */
   onViewChange?: (view: SessionView) => void;
   /** Counts grouped by category or status. */
   counts?: { conversations: number; archived: number };
   /** Shows loading feedback in the space reserved for the content. */
   loading?: boolean;
-  /** Called when new chat occurs. The callback type specifies its arguments. */
+  /** Called from New chat; the button is shown only when this is supplied. */
   onNewChat?: () => void;
-  /** Called when select occurs. The callback type specifies its arguments. */
+  /** Called with the session whose row is clicked or activated with Enter. Pair with `activeId` to mark it current. */
   onSelect?: (session: AiSession) => void;
-  /** Called when rename occurs. The callback type specifies its arguments. */
+  /** Called with the session and its new trimmed title when an inline rename (Rename or F2) is committed with Enter or blur; not called when the title is empty, unchanged or the edit is cancelled with Esc. Supplying it enables renaming. */
   onRename?: (session: AiSession, title: string) => void;
-  /** Called when archive occurs. The callback type specifies its arguments. */
+  /** Called with the session from its Archive action, offered for sessions that are not archived. */
   onArchive?: (session: AiSession) => void;
-  /** Called when restore occurs. The callback type specifies its arguments. */
+  /** Called with the session from its Restore action, offered for archived sessions. */
   onRestore?: (session: AiSession) => void;
-  /** Called when delete occurs. The callback type specifies its arguments. */
+  /** Called with the session after the person confirms Delete; unavailable while its response is working. A returned promise keeps the action pending until it settles. */
   onDelete?: (session: AiSession) => Promise<void> | void;
-  /** Called when open window occurs. The callback type specifies its arguments. */
+  /** Called with the session from its Open in window action; the action is shown only when this is supplied. */
   onOpenWindow?: (session: AiSession) => void;
-  /** Called when select project occurs. The callback type specifies its arguments. */
+  /** Called with the project whose row is pressed in the Projects group. */
   onSelectProject?: (project: AiProject) => void;
-  /** Called when open settings occurs. The callback type specifies its arguments. */
+  /** Called from the AI settings row at the foot of the list; the row is shown only when this is supplied. */
   onOpenSettings?: () => void;
   /** Start with this search (templates, deep links). */
   initialQuery?: string;
@@ -169,7 +169,7 @@ function RenameField({
   onDone,
 }: {
   session: AiSession;
-  /** Called when done occurs. The callback type specifies its arguments. */
+  /** Called once with the new trimmed title, or `null` when the edit is cancelled with Esc or the title is empty or unchanged. */
   onDone: (title: string | null) => void;
 }) {
   const [value, setValue] = useState(session.title);
@@ -488,7 +488,10 @@ export function SessionNav({
 }
 
 /** The session list's loading rows: overline and title rows in their final box. */
-export function SessionNavSkeleton({ rows = 6 }: { rows?: number }) {
+export function SessionNavSkeleton({ rows = 6 }: {
+  /** Number of placeholder title rows. Defaults to 6. */
+  rows?: number;
+}) {
   return (
     <div className="fa-ai-sessions-group" aria-hidden>
       <span className="fa-ai-sessions-label">

@@ -13,6 +13,7 @@ import FONT_ASSET_9 from "../../assets/fonts/inter-tight-5.3.0-latin-wght-normal
 import FONT_ASSET_10 from "../../assets/fonts/jetbrains-mono-5.3.0-latin-wght-normal.woff2?url"
 import FONT_ASSET_11 from "../../assets/fonts/geist-mono-5.3.0-latin-wght-normal.woff2?url"
 
+/** The bundled font families per role (`sans`, `display`, `mono`) as `{ id, label }`, in menu order. */
 export const FONT_OPTIONS = {
   "sans": [
     {
@@ -102,6 +103,7 @@ export const FONT_OPTIONS = {
   ]
 } as const
 
+/** The family id each role uses unless the project or person chooses another; `display` "match" uses the interface face. */
 export const FONT_DEFAULTS = {"sans":"inter","display":"match","mono":"jetbrains-mono"} as const
 
 /** The latin file for each family, preloaded for the active choice so it never flashes. */

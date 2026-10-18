@@ -30,7 +30,7 @@ export interface ChartLegendProps {
   layout?: "row" | "list"
   /** Highlight one item (the hovered segment). */
   active?: string | null
-  /** Called when active occurs. The callback type specifies its arguments. */
+  /** Called with an item's key when the pointer enters it or it takes keyboard focus, and with `null` when the pointer leaves or focus moves away. Pair with `active` to control the highlight. */
   onActive?: (key: string | null) => void
   className?: string
 }
@@ -38,7 +38,15 @@ export interface ChartLegendProps {
 const LOCK_REASON = "At least one series stays visible"
 
 /** The swatch alone: identity is a coloured mark beside text, never coloured text. */
-export function Swatch({ slot, tone, shape = "box", hidden = false }: { slot?: number; tone?: string; shape?: SwatchShape; hidden?: boolean }) {
+export function Swatch({ slot, tone, shape = "box", hidden = false }: {
+  /** Categorical slot 1–8; defaults to 1. Ignored when `tone` is set. */
+  slot?: number
+  tone?: string
+  /** Mark shape to mirror; defaults to "box". */
+  shape?: SwatchShape
+  /** Shows the swatch as switched off (its series is hidden); defaults to false. */
+  hidden?: boolean
+}) {
   return <span className="fa-chart-swatch" data-shape={shape} data-off={hidden ? "" : undefined} {...seriesAttrs(slot, tone)} aria-hidden />
 }
 

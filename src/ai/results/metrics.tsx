@@ -10,7 +10,10 @@ type MetricsResult = Extract<AiResult, { type: "metrics" }>
  * a definite height, so Metric picks its own tier (value + delta + sparkline) and the grid
  * reflows by the card's width, never a fixed column count (R5.5).
  */
-export function ResultMetrics({ result }: { result: MetricsResult }) {
+export function ResultMetrics({ result }: {
+  /** The metrics result: each of its `metrics` becomes a Metric tile (label, value, unit, delta and optional sparkline data). */
+  result: MetricsResult
+}) {
   const copy = result.metrics.map((metric) => `${metric.label}: ${metric.value === null ? "—" : formatMetric(metric.value, metric.unit)}`).join("\n")
   return (
     <ResultFrame result={result} icon={<IconGauge />} copyText={copy}>

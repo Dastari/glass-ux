@@ -26,7 +26,10 @@ export interface MultiSelectProps<V extends string = string> {
   source?: OptionSource<V>
   value?: V[]
   defaultValue?: V[]
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the full list of chosen values, in order, whenever one is added or removed. Pair
+   * with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: V[]) => void
   /** Shown while nothing is chosen. */
   placeholder?: string
@@ -50,7 +53,7 @@ export interface MultiSelectProps<V extends string = string> {
   invalid?: boolean
   name?: string
   id?: string
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when the text input loses focus, so a form can mark the field touched. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   /** Layout only. Applied to the control box. */
   className?: string

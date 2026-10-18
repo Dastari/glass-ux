@@ -45,6 +45,11 @@ export function EntityHeader({ icon, iconStatus, title, status, subtitle, action
 }
 
 /** The header's loading state: the same boxes as the loaded header (R9.3). */
-export function EntityHeaderSkeleton({ subtitle = true, tabs = false }: { subtitle?: boolean; tabs?: boolean }) {
+export function EntityHeaderSkeleton({ subtitle = true, tabs = false }: {
+  /** Reserve the subtitle (facts) line, matching a loaded header that has one. Defaults to `true`. */
+  subtitle?: boolean
+  /** Reserve the tab row, matching a loaded header that has tabs. Defaults to `false`. */
+  tabs?: boolean
+}) {
   return <EntityIdentity.Skeleton tier="header" facts={subtitle} tabs={tabs} />
 }

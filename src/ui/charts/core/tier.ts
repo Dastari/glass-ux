@@ -20,8 +20,10 @@ export interface TierRule {
   fullHeight: number
 }
 
+/** Default tier thresholds in rem, matching Metric's container queries: micro below 5rem high or 10rem wide, full at 20rem wide and 12rem high. */
 export const DEFAULT_TIERS: TierRule = { microHeight: 5, microWidth: 10, fullWidth: 20, fullHeight: 12 }
 
+/** Returns the tier for a box `width` × `height` in px, converting to rem with `rem` px per rem (default 16) and applying `rule` (default `DEFAULT_TIERS`). */
 export function chartTier(width: number, height: number, rem = 16, rule: TierRule = DEFAULT_TIERS): ChartTier {
   const w = width / rem
   const h = height / rem

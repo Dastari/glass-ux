@@ -60,7 +60,7 @@ function BulkButton<T extends RowData>({
   targets: T[]
   label: string
   narrow: boolean
-  /** Called when run occurs. The callback type specifies its arguments. */
+  /** The table's `onAction`, called with the action, the selected rows and `"bulk"` when the person presses the button; without it the shared runner runs the action. */
   onRun: ActionRunHandler<T> | undefined
 }) {
   const { start } = useActionRunner()
@@ -165,9 +165,9 @@ export interface FooterProps<T extends RowData> {
   pageSizes: readonly number[]
   /** Controlled cursor or crosshair state. */
   cursor?: PaginationCursor
-  /** Called when page change occurs. The callback type specifies its arguments. */
+  /** Called with the zero-based index of the page the person asks for. Pair with `pageIndex`. */
   onPageChange: (pageIndex: number) => void
-  /** Called when page size change occurs. The callback type specifies its arguments. */
+  /** Called with the rows-per-page the person picks from `pageSizes`. Pair with `pageSize`. */
   onPageSizeChange: (pageSize: number) => void
   compact: boolean
   disabled: boolean

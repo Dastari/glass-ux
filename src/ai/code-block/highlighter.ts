@@ -55,11 +55,13 @@ export const LANGUAGE_LABELS: Record<string, string> = {
   text: "Text",
 }
 
+/** The bundled grammar for a language name or alias (case-insensitive, e.g. `ps1` → `powershell`), or `null` when none is bundled and the code stays plain. */
 export function resolveLanguage(language: string | undefined) {
   const key = (language ?? "").toLowerCase().trim()
   return ALIASES[key] ?? null
 }
 
+/** The display name for a code block's language label: the bundled grammar's name, otherwise the given name as written, or "Text" when none is given. */
 export function languageLabel(language: string | undefined) {
   const resolved = resolveLanguage(language)
   if (resolved) return LANGUAGE_LABELS[resolved] ?? resolved
@@ -90,6 +92,10 @@ function whenIdle() {
 let loading: Promise<HighlighterCore> | null = null
 const grammars = new Map<string, Promise<void>>()
 
+/**
+ * Load the shared Shiki highlighter once, after the browser is idle, with the CSS-variable
+ * theme (`--fa-code-*`) and no grammars; later calls return the same promise.
+ */
 export function loadHighlighter(): Promise<HighlighterCore> {
   loading ??= (async () => {
     await whenIdle()

@@ -42,9 +42,9 @@ export interface AlertDialogProps {
   trigger?: ReactElement
   open?: boolean
   defaultOpen?: boolean
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with the next open state when the trigger opens it, Cancel or Esc dismisses it, or it closes after `onConfirm` succeeds. Not called for dismissals while the action runs. Pair with `open` to control it. */
   onOpenChange?: (open: boolean) => void
-  /** Called when open change complete occurs. The callback type specifies its arguments. */
+  /** Called with the final open state once the open or close animation has finished. */
   onOpenChangeComplete?: (open: boolean) => void
   /** Names the target: "Remove NST-C106 from Northstar Studio?" (R12.4). */
   title: ReactNode
@@ -162,7 +162,7 @@ interface AlertLayoutProps {
   pendingLabel?: string | undefined
   /** Current operation or connection status. */
   status: ButtonStatus
-  /** Called when confirm occurs. The callback type specifies its arguments. */
+  /** Called when the person presses the confirm button. */
   onConfirm?: () => void
 }
 

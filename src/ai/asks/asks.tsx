@@ -22,7 +22,10 @@ import { AskRecord } from "./frame.js"
  * answered the marker becomes the record. On its own (outside a ConversationLog) the card
  * renders here.
  */
-export function AskCard({ ask }: { ask: AiAsk }) {
+export function AskCard({ ask }: {
+  /** The ask to render; its `type` picks the card. Inside a ConversationLog a pending ask moves to the ask dock and leaves a marker here. */
+  ask: AiAsk
+}) {
   const dock = useAskDockApi()
   const placement = useContext(AskPlacementContext)
   const resolution = useAskResolution(ask.id)
@@ -81,7 +84,11 @@ function PendingGlyph({ ask }: { ask: AiAsk }) {
  * box as the record it becomes, and Review, which brings the ask to the front of the dock
  * and moves focus to it. Never a second interactive copy.
  */
-export function AskMarker({ ask, className }: { ask: AiAsk; className?: string }) {
+export function AskMarker({ ask, className }: {
+  /** The pending ask the dock holds; supplies the waiting label, the question and the id Review brings to the front. */
+  ask: AiAsk
+  className?: string
+}) {
   const dock = useAskDockApi()
   return (
     <AskRecord

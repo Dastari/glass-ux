@@ -62,7 +62,7 @@ export interface TooltipProps extends TriggerProps {
   /** Set false to suppress the tooltip (for example while text is not truncated). */
   enabled?: boolean
   open?: boolean
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with the next open state when the tooltip shows (hover or focus, after the delay) or hides. Pair with `open` to control it. */
   onOpenChange?: (open: boolean) => void
   /** A pointer towards the trigger. On by default: tooltips label small, similar targets. */
   arrow?: boolean
@@ -170,7 +170,14 @@ export function TooltipPopup({ id, side, align, arrow, children, anchor }: Toolt
 }
 
 /** A static tooltip bubble for documentation and screenshots. Same classes, no behaviour. */
-export function TooltipPreview({ content, shortcut, side = "top" }: { content: ReactNode; shortcut?: string; side?: "top" | "bottom" }) {
+export function TooltipPreview({ content, shortcut, side = "top" }: {
+  /** The bubble's text: a control's name or why it is disabled. */
+  content: ReactNode
+  /** A keyboard shortcut drawn after the text in keycaps ("mod+k"). */
+  shortcut?: string
+  /** Which side of the (imagined) trigger the bubble sits on; the arrow points back at it. Defaults to `"top"`. */
+  side?: "top" | "bottom"
+}) {
   const mode = useInvertedMode()
   return (
     <div className="fa-tooltip-preview" data-side={side}>

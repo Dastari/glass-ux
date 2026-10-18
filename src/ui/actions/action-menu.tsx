@@ -45,7 +45,7 @@ interface RowProps<T> {
   reasonShown: boolean
   /** ID of the element explaining the current state. */
   reasonId: string
-  /** Called when run occurs. The callback type specifies its arguments. */
+  /** Called with the action, targets and surface after the menu closes when the person chooses the row; undefined runs it with the shared runner instead. */
   onRun: ActionRunHandler<T> | undefined
 }
 
@@ -93,7 +93,7 @@ function ActionRows<T>({
   targets: readonly T[]
   /** Rendering context, such as a page, card or docked pane. */
   surface: ActionSurface
-  /** Called when run occurs. The callback type specifies its arguments. */
+  /** Passed to each row (and into submenus): called with the chosen action, targets and surface; undefined uses the shared runner. */
   onRun: ActionRunHandler<T> | undefined
 }) {
   const base = useId()

@@ -10,7 +10,7 @@ export interface SelectCheckboxProps {
   checked: boolean
   indeterminate?: boolean
   label: string
-  /** Called when toggle occurs. The callback type specifies its arguments. */
+  /** Called with the new checked state when the person toggles the box, and whether Shift was held (to select a range). */
   onToggle: (checked: boolean, modifiers: { shift: boolean }) => void
   tabIndex?: number
 }

@@ -61,9 +61,9 @@ export function EditorForm({
 }: {
   children: ReactNode
   draft: () => unknown
-  /** Called when commit occurs. The callback type specifies its arguments. */
+  /** Called with the complete `draft()` value on submit (Enter) or when the registered flush runs; not called while the draft is null. */
   onCommit: (value: never) => void
-  /** Called when flush occurs. The callback type specifies its arguments. */
+  /** Called after each render with a function that commits the current draft, and with `null` on unmount; the popover calls it when it closes by a click outside. */
   onFlush?: (apply: (() => void) | null) => void
 }) {
   useEffect(() => {

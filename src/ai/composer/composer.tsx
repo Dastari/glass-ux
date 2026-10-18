@@ -68,11 +68,11 @@ export interface ComposerModel {
 export interface ComposerProps {
   value?: string;
   defaultValue?: string;
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the full text on every edit, pick from a menu, dictation and the clear after a send (`""`). Pair with `value` to control it. */
   onValueChange?: (value: string) => void;
   /** Called with the trimmed text; clear the composer by resolving. */
   onSend?: (text: string) => void | Promise<void>;
-  /** Called when stop occurs. The callback type specifies its arguments. */
+  /** Called when the person stops a running response: the Stop button or Esc while `run` is `running` or `stopping` and no menu is open. */
   onStop?: () => void;
   /** ↑ in an empty composer edits the last prompt. */
   onEditLast?: () => void;
@@ -85,17 +85,17 @@ export interface ComposerProps {
   maxRows?: number;
   /** The conversation's scope and references, as chips above the text. */
   context?: EntityRef[];
-  /** Called when context change occurs. The callback type specifies its arguments. */
+  /** Called with the whole new context list when an entity is added (an @-mention or the Context search) or removed. Supplying it shows the Context menu and removable chips; pair with `context`. */
   onContextChange?: (context: EntityRef[]) => void;
   /** The workspace's model: read-only here, set in AI settings. */
   model?: ComposerModel;
-  /** Called when open settings occurs. The callback type specifies its arguments. */
+  /** Called from the AI settings button in the model popover; the button is shown only when this is supplied. */
   onOpenSettings?: () => void;
   /** Attachments selected for the message. */
   attachments?: AiAttachment[];
-  /** Called when attach occurs. The callback type specifies its arguments. */
+  /** Called with the files chosen in the file picker (filtered by `accept`). Supplying it shows the Attach button; add them to `attachments` to show them. */
   onAttach?: (files: File[]) => void;
-  /** Called when remove attachment occurs. The callback type specifies its arguments. */
+  /** Called with the attachment `id` when the person removes its chip; the chip shows a remove button only when this is supplied. */
   onRemoveAttachment?: (id: string) => void;
   /** Accepted file types for Attach (GlassUxAiAttachmentConfiguration.SupportedFormats). */
   accept?: string;
@@ -268,9 +268,9 @@ function CommandList({
   commands: SlashCommand[];
   /** Marks the current destination or active choice. */
   active: number;
-  /** Called when pick occurs. The callback type specifies its arguments. */
+  /** Called with the command the person clicks or presses Enter or Space on. */
   onPick: (command: SlashCommand) => void;
-  /** Called when active occurs. The callback type specifies its arguments. */
+  /** Called with the zero-based index of the row under the pointer. Pair with `active` to move the highlight. */
   onActive: (index: number) => void;
 }) {
   if (!commands.length)
@@ -321,7 +321,7 @@ function ComposerMenu({
   /** Anchor used to position floating content. */
   anchor: RefObject<HTMLElement | null>;
   open: boolean;
-  /** Called when close occurs. The callback type specifies its arguments. */
+  /** Called when the popover asks to close (Esc or a press outside); set `open` to false in response. */
   onClose: () => void;
   label: string;
   children: ReactNode;
@@ -356,7 +356,7 @@ export function AttachmentChip({
 }: {
   /** The attachment identifier, label, media type and availability. */
   attachment: AiAttachment;
-  /** Called when remove occurs. The callback type specifies its arguments. */
+  /** Called when the remove button is pressed; without it the chip has no remove button. */
   onRemove?: () => void;
 }) {
   const uploading =

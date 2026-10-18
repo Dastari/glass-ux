@@ -53,7 +53,7 @@ export interface MarkerSlot {
 }
 
 export interface EngineCallbacks {
-  /** Called when load occurs. The callback type specifies its arguments. */
+  /** Called once with no arguments when the map has loaded its style, after the first marker sync. */
   onLoad: () => void
   /** The user started moving the camera (drag, wheel, pinch, keyboard). */
   onUserMove: () => void
@@ -61,7 +61,7 @@ export interface EngineCallbacks {
   onMove: () => void
   /** The camera came to rest. */
   onMoveEnd: () => void
-  /** Called when markers occurs. The callback type specifies its arguments. */
+  /** Called with every visible marker slot (points and clusters, each with its host element) when the set, sizes or counts change; not called when they are unchanged. */
   onMarkers: (markers: MarkerSlot[]) => void
   /** A click on the map, off every marker. */
   onBackgroundClick: () => void

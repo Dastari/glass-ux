@@ -15,6 +15,7 @@ export interface SettingRowContextValue {
  * label and description. Field-aware controls (Switch, Select, NumberField) need nothing.
  */
 export const SettingRowContext = createContext<SettingRowContextValue | null>(null)
+/** The enclosing SettingRow's label and description ids, or null outside one. */
 export const useSettingRow = () => useContext(SettingRowContext)
 
 export interface SettingRowProps extends Omit<ComponentProps<"div">, "children"> {

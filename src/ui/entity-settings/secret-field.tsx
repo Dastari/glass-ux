@@ -8,9 +8,9 @@ import type { SecretValue } from "./settings-state.js"
 
 export interface SecretInputProps {
   value: SecretValue
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the whole next secret state when the person types, Replaces, Clears, keeps the current value or undoes; `stored` is passed through unchanged. */
   onValueChange: (value: SecretValue) => void
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called with the blur event of the password box or the action buttons; pass the form field's `handleBlur`. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   /** Available width or named width tier. */
   width?: FieldWidth

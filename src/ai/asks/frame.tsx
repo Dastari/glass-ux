@@ -33,7 +33,7 @@ export interface AskLayoutProps {
   className?: string;
   /** The second step of a destructive or MFA approval is showing (Esc goes back). */
   confirming?: boolean;
-  /** Called when key down occurs. The callback type specifies its arguments. */
+  /** Key handler on the card root, called for keys pressed anywhere inside it; approvals and confirmations use it for Esc to go back. */
   onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void;
 }
 

@@ -68,6 +68,7 @@ export function splitPhoneValue(value: string | null | undefined): PhoneValuePar
   return match ? { number: match[1] ?? "", extension: match[2] ?? "" } : { number: text, extension: "" }
 }
 
+/** Joins a number and an extension into one value ("+61362345678;ext=204"); non-digits in the extension are dropped, and the number is returned alone when either part is empty. */
 export function joinPhoneValue(number: string, extension: string): string {
   const digits = extension.replace(/\D/g, "")
   return number && digits ? `${number};ext=${digits}` : number

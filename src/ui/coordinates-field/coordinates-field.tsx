@@ -17,6 +17,7 @@ const PinMap = lazy(() => import("../map/pin-map.js").then((module) => ({ defaul
 /** What the control holds while its text cannot be read: NaN, or the out-of-range numbers it read. */
 export const UNREADABLE: LatLng = { lat: Number.NaN, lng: Number.NaN }
 
+/** Whether a point is present and both its latitude and longitude are finite numbers. Does not check the ranges. */
 export const isReadable = (value: LatLng | null | undefined): value is LatLng => Boolean(value) && Number.isFinite(value?.lat) && Number.isFinite(value?.lng)
 
 const samePoint = (a: LatLng | null, b: LatLng | null) =>
@@ -96,7 +97,11 @@ export interface CoordinatesInputProps extends Omit<InputProps, "value" | "defau
   /** The point; null when empty. While the text cannot be read it is UNREADABLE (NaN), or the out-of-range numbers. */
   value?: LatLng | null
   defaultValue?: LatLng | null
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called on each keystroke, map pick or located position with the parsed point, null when the
+   * text is empty, or UNREADABLE (or the out-of-range numbers read) while it is invalid. Pair with
+   * `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: LatLng | null) => void
   /** The map for "Pick on map". Without it there is no picker. */
   map?: MapConfig

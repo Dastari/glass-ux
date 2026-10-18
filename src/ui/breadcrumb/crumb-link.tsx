@@ -14,6 +14,7 @@ export interface RouteCrumb extends Crumb {
   siblings?: RouteCrumbSibling[]
 }
 
+/** `RenderCrumbLink` for TanStack Router: renders a target's `link` as a `Link` marked active only on an exact match; returns null when the target has no `link`. */
 export function renderRouteCrumbLink(target: CrumbTarget, props: CrumbLinkRenderProps) {
   if (!target.link) return null
   // Ancestors are never "the current page": only an exact match would be.

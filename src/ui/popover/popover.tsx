@@ -68,6 +68,11 @@ function PopoverPreview({ title, size = "md", children }: { title?: ReactNode; s
   )
 }
 
+/**
+ * Small, contextual, non-blocking content built from parts on Base UI's popover: `Root`
+ * (state), `Trigger`, `Popup` (positioned, with an optional title and close button),
+ * `Close` and `Description`. `Preview` renders a static surface for documentation.
+ */
 export const Popover = {
   Root: BasePopover.Root,
   Trigger: BasePopover.Trigger,

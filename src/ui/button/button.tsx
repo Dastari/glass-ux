@@ -259,6 +259,7 @@ export interface ButtonGroupProps extends ComponentProps<"div"> {
   attached?: boolean
 }
 
+/** A row of related buttons in a `role="group"` container, spaced apart or, with `attached`, joined into one control. */
 export function ButtonGroup({ attached = false, className, ...rest }: ButtonGroupProps) {
   return (
     <div

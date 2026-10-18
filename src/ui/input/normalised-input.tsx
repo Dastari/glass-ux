@@ -4,7 +4,10 @@ import { Input, type InputProps } from "./input.js"
 export interface NormalisedInputProps extends Omit<InputProps, "value" | "defaultValue" | "onValueChange"> {
   value?: string
   defaultValue?: string
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the text as typed on each keystroke, and with its canonical form on blur when that
+   * differs. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: string) => void
   /**
    * The canonical form of the text, or null when it cannot be read (it is then left exactly

@@ -66,6 +66,7 @@ export const DEFAULT_DATE_PRESETS: readonly DatePresetValue[] = [
   { op: "future" },
 ]
 
+/** Builders for column filter specs (`filters.text`, `options`, `number`, `date`, `boolean`, `uuid`, `custom`); each fills defaults such as `nullable: true` and the kind's operators. */
 export const filters = {
   /** An identifier or free text, through a StringFilter. */
   text(options: Common<TextFilterValue> & { operators?: readonly TextOp[]; placeholder?: string }): TextFilterSpec {

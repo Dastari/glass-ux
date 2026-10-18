@@ -5,6 +5,7 @@
  */
 
 export const PORT_MIN = 1
+/** The highest TCP or UDP port number. */
 export const PORT_MAX = 65535
 
 /** Port → service name, as people say it. */

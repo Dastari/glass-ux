@@ -9,6 +9,7 @@ export const THIN_SPACE = "\u2009";
 const integer = new Intl.NumberFormat("en-AU", { maximumFractionDigits: 0 });
 const decimals = new Map<number, Intl.NumberFormat>();
 
+/** Formats a number in Australian English with exactly `fractionDigits` decimals (default 0, which rounds to a whole number). */
 export function formatNumber(value: number, fractionDigits = 0) {
   if (fractionDigits === 0) return integer.format(value);
   let format = decimals.get(fractionDigits);
@@ -22,6 +23,7 @@ export function formatNumber(value: number, fractionDigits = 0) {
   return format.format(value);
 }
 
+/** Formats a number with its unit after a thin space (`7.8 GB`), or directly after it for `%`; without a unit, the number alone. */
 export function formatWithUnit(
   value: number,
   unit?: string,

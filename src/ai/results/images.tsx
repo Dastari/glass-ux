@@ -12,7 +12,15 @@ type ImagesResult = Extract<AiResult, { type: "images" }>
 const ZOOMS = [1, 1.5, 2, 3] as const
 
 /** One image in its reserved aspect-ratio box: it never moves anything when it loads. */
-export function ImageTile({ image, onOpen, cover = false, className }: { image: ResultImage; onOpen?: () => void; cover?: boolean; className?: string }) {
+export function ImageTile({ image, onOpen, cover = false, className }: {
+  /** The image: `src` and `alt`, `width` and `height` in pixels for the reserved ratio, and an optional `caption`. */
+  image: ResultImage
+  /** Called when the image is pressed; supplying it makes the image a button named "Open {alt}". */
+  onOpen?: () => void
+  /** Crop to a 16:10 box from the top instead of fitting the image at its own ratio. Defaults to `false`. */
+  cover?: boolean
+  className?: string
+}) {
   const [loaded, setLoaded] = useState(false)
   const box = { "--_ratio": `${image.width} / ${image.height}` } as CSSProperties
   const body = (
@@ -39,10 +47,10 @@ interface LightboxProps {
   images: ResultImage[]
   /** Index of the current item. */
   index: number
-  /** Called when index change occurs. The callback type specifies its arguments. */
+  /** Called with the zero-based index to show next, from previous / next or ← → (wrapping at the ends). Pair with `index`. */
   onIndexChange: (index: number) => void
   open: boolean
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with `false` when the person dismisses the dialog, for example with Esc. Pair with `open`. */
   onOpenChange: (open: boolean) => void
 }
 
@@ -119,7 +127,10 @@ function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
  * height); several form a grid of equal tiles. Every box reserves its aspect ratio, and
  * a click opens the lightbox.
  */
-export function ResultImages({ result }: { result: ImagesResult }) {
+export function ResultImages({ result }: {
+  /** The images result: one of its `images` fills the card; several form a grid of cropped tiles. */
+  result: ImagesResult
+}) {
   const [open, setOpen] = useState(false)
   const [index, setIndex] = useState(0)
   const single = result.images.length === 1

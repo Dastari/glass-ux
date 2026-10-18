@@ -14,7 +14,7 @@ export interface AiStatusStripProps {
   retryAt?: number;
   /** Current retry attempt. */
   attempt?: number;
-  /** Called when retry occurs. The callback type specifies its arguments. */
+  /** Called from Retry now, shown whenever `stream` is not `connected` and this is supplied. */
   onRetry?: () => void;
   /** Remaining capacity and its warning state. */
   budget?: AiBudget;

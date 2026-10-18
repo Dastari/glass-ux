@@ -22,6 +22,7 @@ export function phoneSchema(options: PhoneSchemaOptions = {}) {
   return textRule((value) => checkPhone(value, kind), { required: options.required, requiredMessage: kind === "mobile" ? "Enter a mobile number" : "Enter a phone number" })
 }
 
+/** `phoneSchema` with `kind: "mobile"`: also refuses numbers that are not mobiles once the library has loaded. */
 export function mobileSchema(options: Omit<PhoneSchemaOptions, "kind"> = {}) {
   return phoneSchema({ ...options, kind: "mobile" })
 }

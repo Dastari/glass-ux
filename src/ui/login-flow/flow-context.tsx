@@ -119,9 +119,9 @@ export interface RunOptions {
   form?: ServerErrorForm
   /** Host field names → this form's field names. */
   fields?: Partial<Record<LoginFieldName, string>>
-  /** Called when success occurs. The callback type specifies its arguments. */
+  /** Called with the success outcome after the action resolves successfully (a void result counts as success); not called if the component has unmounted. */
   onSuccess?: (outcome: LoginSuccess) => void
-  /** Called when two factor occurs. The callback type specifies its arguments. */
+  /** Called with the challenge (if any) when the action reports that a second factor is needed. */
   onTwoFactor?: (challenge: TwoFactorChallenge | undefined) => void
 }
 

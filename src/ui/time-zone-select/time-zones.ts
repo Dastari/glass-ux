@@ -65,6 +65,10 @@ function abbreviationOf(id: string, at: Date, locale: string): string | undefine
   }
 }
 
+/**
+ * Facts about an IANA zone at a moment (default: now): its city and area from the id, its UTC
+ * offset in minutes and as text, and its short name in `locale` (default en-AU) when it has one.
+ */
 export function describeTimeZone(id: string, options: { at?: Date; locale?: string } = {}): TimeZoneInfo {
   const at = options.at ?? new Date()
   const parts = id.split("/")

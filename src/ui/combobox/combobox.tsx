@@ -152,7 +152,10 @@ export interface ComboboxProps<V extends string = string> {
   source?: OptionSource<V>
   value?: V | null
   defaultValue?: V | null
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the chosen option's value when one is picked, or null when the selection is
+   * cleared. Typing alone does not call it. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: V | null) => void
   placeholder?: string
   size?: SelectSize
@@ -171,7 +174,7 @@ export interface ComboboxProps<V extends string = string> {
   invalid?: boolean
   name?: string
   id?: string
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when the text input loses focus, so a form can mark the field touched. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   /** Layout only. Applied to the control box. */
   className?: string

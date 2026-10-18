@@ -336,7 +336,7 @@ function Label({ text, indices }: { text: string; indices: number[] }) {
 export interface CommandPanelProps {
   /** Available slash commands and their typed arguments. */
   commands: readonly PaletteCommand[]
-  /** Called when run occurs. The callback type specifies its arguments. */
+  /** Called with the chosen command when the person clicks it or presses Enter on it; not called for disabled commands. The panel does not call `command.run` itself. */
   onRun: (command: PaletteCommand) => void
   /** A source is still fetching: skeleton rows follow the results. */
   loading?: boolean
@@ -479,7 +479,7 @@ interface CommandPaletteProps {
   /** External store observed by the component. */
   store: PaletteStore
   open: boolean
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with the next open state when the palette is dismissed (Esc, outside press, close) or closes after a command is chosen; the command runs once closing finishes. */
   onOpenChange: (open: boolean) => void
   /** Preferred order of command or action groups. */
   groupOrder: readonly string[]

@@ -118,7 +118,7 @@ function Header({
 
 export interface SectionDrawerSearchProps {
   value: string;
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the new query as the person types, and with "" when Esc clears the field. Pair with `value`. */
   onValueChange: (value: string) => void;
   /** What the list holds, plural: "organisations" names the field "Search organisations". */
   noun: string;

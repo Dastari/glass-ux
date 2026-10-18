@@ -30,11 +30,16 @@ const ManagerContext = createContext<WindowManager | null>(null)
  * Provide a window manager to the tree and connect it (load the persisted layout, join
  * cross-tab sync) before the first paint after hydration.
  */
-export function WindowManagerProvider({ manager, children }: { manager: WindowManager; children: ReactNode }) {
+export function WindowManagerProvider({ manager, children }: {
+  /** The store from `createWindowManager`. Create it once (module scope or a ref); a new instance reconnects. */
+  manager: WindowManager
+  children: ReactNode
+}) {
   useIsomorphicLayoutEffect(() => manager.connect(), [manager])
   return <ManagerContext.Provider value={manager}>{children}</ManagerContext.Provider>
 }
 
+/** Returns the window manager from the enclosing `WindowManagerProvider`. Throws outside one; use `useOptionalWindowManager` where there may be none. */
 export function useWindowManager(): WindowManager {
   const manager = useContext(ManagerContext)
   if (!manager) throw new Error("useWindowManager must be used inside WindowManagerProvider")
@@ -56,11 +61,15 @@ export function useWindowState<T>(selector: (state: WindowManagerState) => T): T
   )
 }
 
+/** Returns the open windows in dock order, re-rendering when the list or any entry changes. */
 export const useWindows = () => useWindowState((state) => state.windows)
+/** Returns the id of the focused window (`PRIMARY_WINDOW_ID` for the routed view, or null), tracked per tab and re-rendering when focus moves. */
 export const useFocusedWindowId = () => useWindowState((state) => state.focusedId)
+/** Returns the entry for window `id`, or `undefined` when no such window is open. */
 export const useWindowEntry = (id: string) =>
   useWindowState((state) => state.windows.find((entry) => entry.id === id))
 
+/** Returns the status indicator a window body has set for window `id` (tone and label, shown on its dock item), or `undefined` when none is set. */
 export function useWindowIndicator(id: string): WindowIndicator | undefined {
   const manager = useWindowManager()
   return useSyncExternalStore(
@@ -85,6 +94,7 @@ export interface WindowContextValue {
   host: "workspace" | "popout" | "specimen"
 }
 
+/** The window a body renders in: its id, kind, params, app-bar and status-bar portal slots and host. Provided by the workspace, pop-out and specimen frames; read it with `useWindow`. */
 export const WindowContext = createContext<WindowContextValue | null>(null)
 
 /** The window this component renders in. Throws outside a window body. */

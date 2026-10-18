@@ -56,6 +56,7 @@ export const MAP_DETAIL_ZOOM = 10.5
 const HOVER_OPEN_MS = 60
 const HOVER_CLOSE_MS = 220
 
+/** Default status labels: Critical, Warning, Healthy and Offline (for unknown). */
 export const DEFAULT_STATUS_LABELS: Readonly<Record<MapStatus, string>> = {
   danger: "Critical",
   warning: "Warning",
@@ -103,7 +104,7 @@ export interface GeoMapProps<T> {
   frameKey?: string
   /** Stable identifier of the selected item. */
   selectedId?: string | null
-  /** Called when select occurs. The callback type specifies its arguments. */
+  /** Called with the point whose popup the person pins: a click, Enter or Space on its marker, or choosing it from a cluster popup. Hover and focus previews do not call it. Pair with `selectedId` to show the selection. */
   onSelect?: (point: MapPoint<T> | null) => void
   /** Renders details for an individual map point. */
   renderPopup: (point: MapPoint<T>, context: MapPopupContext) => ReactNode
@@ -117,7 +118,7 @@ export interface GeoMapProps<T> {
   noun?: MapNoun
   /** "map" (default) or "list": the list replaces the map in the same box. */
   view?: "map" | "list"
-  /** Called when view change occurs. The callback type specifies its arguments. */
+  /** Called with the view the person asks for ("list" or "map") from the view toggle, or "list" from the failure notice when the map cannot start. The toggle shows only when this is set. Pair with `view`. */
   onViewChange?: (view: "map" | "list") => void
   /** The list view: the caller's table, with a ViewToggle in its toolbar. */
   list?: ReactNode
@@ -194,7 +195,13 @@ export function MapSilhouette({ region, box }: MapSilhouetteProps) {
 }
 
 /** The map's box before anything is known: the same size, a silhouette when the region is. */
-export function GeoMapSkeleton({ region, insets, className }: { region?: MapRegion | null; insets?: MapInsets; className?: string }) {
+export function GeoMapSkeleton({ region, insets, className }: {
+  /** Region drawn as a silhouette; omit or pass `null` for an empty box. */
+  region?: MapRegion | null
+  /** Page chrome over the map in CSS pixels, matching the GeoMap's `insets` so the placeholder frames the same way. */
+  insets?: MapInsets
+  className?: string
+}) {
   return (
     <div className={cx("fa-map", className)} style={insetStyle(insets)} data-phase="waiting" aria-hidden>
       <div className="fa-map-stage">
@@ -222,15 +229,15 @@ interface MarkerProps {
   active: boolean
   open: boolean
   pulse: number
-  /** Called when key down occurs. The callback type specifies its arguments. */
+  /** Called with the key event and the marker's slot: arrow keys move to the nearest marker in that direction, Enter or Space pins the popup, Escape closes it. */
   onKeyDown: (event: KeyboardEvent<HTMLButtonElement>, slot: MarkerSlot) => void
-  /** Called when activate occurs. The callback type specifies its arguments. */
+  /** Called with the marker's slot on click: a point pins its popup, a cluster zooms in until it splits. */
   onActivate: (slot: MarkerSlot) => void
-  /** Called when hover occurs. The callback type specifies its arguments. */
+  /** Called with the marker's slot when the pointer enters it and `null` when it leaves; opens or closes the preview after a short delay. */
   onHover: (slot: MarkerSlot | null) => void
-  /** Called when focus occurs. The callback type specifies its arguments. */
+  /** Called with the marker's slot when it takes focus; makes it the tab stop and previews its popup unless one is pinned. */
   onFocus: (slot: MarkerSlot) => void
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the marker loses focus; closes an unpinned preview unless focus moved into it. */
   onBlur: () => void
 }
 
@@ -284,7 +291,13 @@ function MarkerButton({ slot, label, text, status, counts, selected, active, ope
 /* ── Controls ───────────────────────────────────────────────────────────────── */
 
 /** "View as list" / "View as map": in the map's controls, and in the list's toolbar. */
-export function MapViewToggle({ view, onViewChange, size = "md" }: { view: "map" | "list"; onViewChange: (view: "map" | "list") => void; size?: "sm" | "md" }) {
+export function MapViewToggle({ view, onViewChange, size = "md" }: {
+  /** The view currently shown; the button offers the other one (an icon button on the map, "View as map" in the list). */
+  view: "map" | "list"
+  /** Called with the view the person switches to. */
+  onViewChange: (view: "map" | "list") => void
+  size?: "sm" | "md"
+}) {
   return view === "map" ? (
     <Button variant="secondary" size={size} icon={<IconList />} aria-label="View as list" data-map-control="view" onClick={() => onViewChange("list")} />
   ) : (
@@ -349,6 +362,11 @@ function Attribution({ config, folded }: { config: MapConfig; folded: boolean })
 
 /* ── The map ────────────────────────────────────────────────────────────────── */
 
+/**
+ * A MapLibre map of status points, framed on a home region, with clustered markers coloured by
+ * worst status, hover and pinned popups, keyboard navigation between markers and an optional
+ * list view in the same box. It shows the region silhouette while loading.
+ */
 export function GeoMap<T>({
   label,
   config,
@@ -999,11 +1017,11 @@ export function GeoMap<T>({
 interface MapPopupProps {
   label: string
   pinned: boolean
-  /** Called when close occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person presses the pinned popup's Close button. */
   onClose: () => void
-  /** Called when pointer enter occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the pointer enters the popup, so a pending hover close can be cancelled. */
   onPointerEnter: () => void
-  /** Called when pointer leave occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the pointer leaves the popup, so an unpinned preview can close. */
   onPointerLeave: () => void
   children: ReactNode
 }
@@ -1046,9 +1064,9 @@ interface DefaultClusterPopupProps<T> {
   labels: Readonly<Record<MapStatus, string>>
   /** Singular and plural names used in counts and accessible labels. */
   noun: MapNoun
-  /** Called when zoom occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the person presses Zoom in; the map zooms until the cluster splits. */
   onZoom: () => void
-  /** Called when open occurs. The callback type specifies its arguments. */
+  /** Called with the point the person chooses from the list (the first eight points); the map flies to it and opens its popup. */
   onOpen: (point: MapPoint<T>) => void
 }
 
@@ -1078,7 +1096,12 @@ export function DefaultClusterPopup<T>({ cluster, size, counts, labels, noun, on
 }
 
 /** Status counts as dot · number · label chips (clusters, popups, legends). */
-export function MapStatusSummary({ counts, labels = DEFAULT_STATUS_LABELS }: { counts: StatusCounts; labels?: Readonly<Record<MapStatus, string>> }) {
+export function MapStatusSummary({ counts, labels = DEFAULT_STATUS_LABELS }: {
+  /** Points per status; statuses with zero are left out. */
+  counts: StatusCounts
+  /** Label per status; defaults to `DEFAULT_STATUS_LABELS`. */
+  labels?: Readonly<Record<MapStatus, string>>
+}) {
   return (
     <ul className="fa-map-status-summary">
       {MAP_STATUSES.filter((status) => counts[status] > 0).map((status) => (

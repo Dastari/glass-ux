@@ -61,6 +61,7 @@ export interface MacFacts {
   broadcast: boolean
 }
 
+/** Reads the address bits of a MAC given as 12 hex digits: locally administered, multicast and broadcast. */
 export function macFacts(digits: string): MacFacts {
   const first = Number.parseInt(digits.slice(0, 2), 16)
   return {

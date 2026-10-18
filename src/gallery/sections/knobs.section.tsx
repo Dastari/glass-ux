@@ -22,7 +22,7 @@ interface KnobProps {
   step: number;
   /** Unit displayed with a numeric value. */
   unit?: string;
-  /** Called when change occurs. The callback type specifies its arguments. */
+  /** Called with the new value, in the knob's unit, as the person drags or steps the slider. */
   onChange: (value: number) => void;
 }
 

@@ -129,7 +129,13 @@ export function hierarchyTable(focus: Node, fmt: ValueFormat, label = "Name"): C
  * node. One line at the head's height; the middle collapses to "…" when the path is long and
  * every crumb truncates with an ellipsis.
  */
-export function DrillPathBar({ trail, onSelect, label = "Drill path" }: { trail: readonly Node[]; onSelect: (depth: number) => void; label?: string }) {
+export function DrillPathBar({ trail, onSelect, label = "Drill path" }: {
+  /** Root first, focused node last, as `useDrill().trail` returns it; the last node renders as the current place. */
+  trail: readonly Node[]
+  /** Called with the zero-based depth of the ancestor the person clicks (0 is the root); not called for the current node. Pass `useDrill().to`. */
+  onSelect: (depth: number) => void
+  label?: string
+}) {
   const last = trail.length - 1
   const shown = trail.length > 4 ? [0, -1, last - 1, last] : trail.map((_, index) => index)
   return (

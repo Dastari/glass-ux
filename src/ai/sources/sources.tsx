@@ -25,7 +25,10 @@ export function SourcesProvider({
  * A footnote marker in assistant text (`[^2]`): a small numbered pill. Hover or focus
  * names the source; activating it opens the source (external sources in a new tab).
  */
-export function CitationMarker({ index }: { index: number }) {
+export function CitationMarker({ index }: {
+  /** The footnote number, matched against `index` in the message's sources; an unmatched number renders as a plain superscript. */
+  index: number;
+}) {
   const source = useContext(SourcesContext).find(
     (item) => item.index === index,
   );

@@ -24,6 +24,7 @@ export const ENTITY_TIER_LIMITS = {
   compactHeight: 4.5,
 } as const
 
+/** Picks the tier for a box `widthRem` × `heightRem` in rem using `ENTITY_TIER_LIMITS`; pass `null` height for a flowing box, which yields only icon, compact or header. */
 export function selectEntityTier(widthRem: number, heightRem: number | null): EntityTier {
   const limits = ENTITY_TIER_LIMITS
   if (widthRem < limits.iconWidth) return "icon"

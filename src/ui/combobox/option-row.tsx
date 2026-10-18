@@ -10,7 +10,12 @@ import { Skeleton } from "../skeleton/index.js"
 import { matchRanges, type OptionItem, type SearchStatus } from "./source.js"
 
 /** `text` with the parts matching `query` emphasised (case- and diacritic-insensitive). */
-export function Highlight({ text, query }: { text: string; query: string }) {
+export function Highlight({ text, query }: {
+  /** The text to show. */
+  text: string
+  /** The search text whose matches are marked; blank marks nothing. */
+  query: string
+}) {
   const ranges = query.trim() ? matchRanges(text, query) : []
   if (ranges.length === 0) return <>{text}</>
   const parts: ReactNode[] = []
@@ -76,7 +81,7 @@ export interface OptionStatusProps {
   twoLine?: boolean
   /** Characters still needed before searching. */
   needsMore?: number
-  /** Called when retry occurs. The callback type specifies its arguments. */
+  /** Called when Retry is pressed in the error row. Without it the error row has no Retry button. */
   onRetry?: () => void
 }
 
@@ -122,7 +127,10 @@ export function OptionStatus({ status, twoLine = false, needsMore = 0, onRetry }
 }
 
 /** "1,272 more — refine your search", under a truncated result list. */
-export function OptionMore({ more }: { more: number }) {
+export function OptionMore({ more }: {
+  /** How many results were left out of the list; nothing renders when 0 or less. */
+  more: number
+}) {
   if (more <= 0) return null
   return <div className="fa-option-more">{more.toLocaleString("en-AU")} more — refine your search</div>
 }

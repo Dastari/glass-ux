@@ -62,6 +62,7 @@ function cameraMove(root: HTMLElement | null) {
 
 const describe = (point: PinPoint) => `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`
 
+/** A map with one draggable pin for choosing a location: drag, click or nudge it with the arrow keys (Shift moves further). Controlled through `value`; without `onValueChange` it is a read-only preview. */
 export function PinMap({ config, value, onValueChange, label, zoom = 16, fallback = WORLD, className }: PinMapProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)

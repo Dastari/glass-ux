@@ -52,10 +52,15 @@ const DEFAULTS: ConversationHandlers = {
 const HandlersContext = createContext<ConversationHandlers>(DEFAULTS)
 
 /** Connect assistant interaction events to host callbacks for answers, approvals, retries, feedback and opening results. */
-export function ConversationHandlersProvider({ handlers, children }: { handlers: Partial<ConversationHandlers>; children: ReactNode }) {
+export function ConversationHandlersProvider({ handlers, children }: {
+  /** The host callbacks to use; any left out keep the defaults (async actions resolve at once, window requests are logged). */
+  handlers: Partial<ConversationHandlers>
+  children: ReactNode
+}) {
   return <HandlersContext value={{ ...DEFAULTS, ...handlers }}>{children}</HandlersContext>
 }
 
+/** The ConversationHandlers from the nearest ConversationHandlersProvider, merged over the defaults; without a provider, actions resolve at once and windows are logged. */
 export function useConversationHandlers() {
   return useContext(HandlersContext)
 }

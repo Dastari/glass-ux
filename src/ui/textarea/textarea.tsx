@@ -10,7 +10,7 @@ export interface TextareaProps
   className?: string
   value?: string
   defaultValue?: string
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the text on each keystroke. Pair with `value` to control it; use `defaultValue` otherwise. */
   onValueChange?: (value: string) => void
   /** Rows shown when empty. One row is exactly one control height. */
   minRows?: number

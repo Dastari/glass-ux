@@ -381,7 +381,10 @@ export function Turn({
   index,
   className,
   ...rest
-}: ComponentProps<"section"> & { index: number }) {
+}: ComponentProps<"section"> & {
+  /** The turn's number, written to `data-turn` for the navigator's TurnAnchor `index` and used in the default label "Turn {index}". */
+  index: number;
+}) {
   return (
     <section
       {...rest}

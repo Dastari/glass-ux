@@ -23,6 +23,7 @@ export function isoParts(text: string): { year: number; month: number; day: numb
   return { year, month, day }
 }
 
+/** Whether a value is a `YYYY-MM-DD` string naming a real calendar day (rejects 2026-02-30). */
 export const isIsoDate = (text: unknown): boolean => typeof text === "string" && isoParts(text) !== null
 
 export function daysInMonth(year: number, month: number) {
@@ -58,8 +59,10 @@ export function addMonths(iso: IsoDate, months: number): IsoDate {
   return `${pad(year, 4)}-${pad(month)}-${pad(Math.min(parts.day, daysInMonth(year, month)))}`
 }
 
+/** Orders two ISO dates for sorting: -1 when `a` is earlier, 1 when later, 0 when the same day. */
 export const compareIso = (a: IsoDate, b: IsoDate) => (a < b ? -1 : a > b ? 1 : 0)
 
+/** The local calendar day of `now` (default: the current moment) as an ISO date. */
 export const todayIso = (now: Date = new Date()) => toIsoDate(now)
 
 /** Clamp a day into [min, max] (either bound optional). */

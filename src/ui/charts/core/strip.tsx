@@ -14,7 +14,15 @@ export interface StripItem {
  * A part-to-whole in one line: the micro tier of pie, donut, treemap and sunburst. Segments in
  * order, separated by the 2px surface gap, the whole bar's ends rounded.
  */
-export function ProportionStrip({ items, width, height, rem }: { items: readonly StripItem[]; width: number; height: number; rem: number }) {
+export function ProportionStrip({ items, width, height, rem }: {
+  items: readonly StripItem[]
+  /** Width of the strip's box in px; segments share it after the 2px gaps. */
+  width: number
+  /** Height of the box in px; the bar is centred in it, at most 0.5rem thick. */
+  height: number
+  /** px per rem, for the bar's thickness. */
+  rem: number
+}) {
   const thick = Math.min(0.5 * rem, height)
   const y = (height - thick) / 2
   const segments = useMemo(() => {

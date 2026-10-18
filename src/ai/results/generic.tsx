@@ -372,7 +372,7 @@ export function Redacted({
   onReveal,
 }: {
   value: RedactedValue;
-  /** Called when reveal occurs. The callback type specifies its arguments. */
+  /** Called from Reveal; without it the button is disabled with the value's `reason`. */
   onReveal?: () => void;
 }) {
   return (
@@ -399,7 +399,10 @@ type ValueResult = Extract<AiResult, { type: "value" }>;
 type JsonResult = Extract<AiResult, { type: "json" }>;
 
 /** A single figure or short text from a tool (a count, a state), or a withheld preview. */
-export function ResultValue({ result }: { result: ValueResult }) {
+export function ResultValue({ result }: {
+  /** The value result: a `label` and a number (shown as a metric with `unit`), a string, or `null` (shown as "—"); `redacted` replaces the value with the withheld treatment. */
+  result: ValueResult;
+}) {
   const text =
     result.value === null
       ? "—"
@@ -438,7 +441,10 @@ export function ResultValue({ result }: { result: ValueResult }) {
 }
 
 /** The last resort: the preview as a JSON tree. */
-export function ResultJson({ result }: { result: JsonResult }) {
+export function ResultJson({ result }: {
+  /** The JSON result: any JSON `value`, shown as a tree labelled by the title; `truncated` adds a note that the server cut it short. */
+  result: JsonResult;
+}) {
   return (
     <ResultFrame
       result={result}

@@ -55,6 +55,7 @@ export function parseUrl(text: string, options: UrlOptions = {}): UrlResult {
   return { ok: true, value, addedScheme }
 }
 
+/** The canonical URL (scheme added when missing, trailing slash dropped from a bare host), or null when it is not a valid web address. */
 export function normaliseUrl(text: string, options: UrlOptions = {}): string | null {
   const result = parseUrl(text, options)
   return result.ok ? result.value : null

@@ -74,7 +74,7 @@ export interface TopologyCanvasProps<T> {
   describeNode?: (node: TopologyNode<T>) => string
   /** Stable identifier of the selected item. */
   selectedId?: string | null
-  /** Called when select occurs. The callback type specifies its arguments. */
+  /** Called with the node id the person selects (click, Enter or Space), or `null` to clear: Space on the selected node, Escape, or a click on empty canvas. Pair with `selectedId` to show the selection. */
   onSelect?: (id: string | null) => void
   /** Double-click (and the caller's Open action): the node's page. */
   onOpen?: (node: TopologyNode<T>) => void
@@ -84,7 +84,7 @@ export interface TopologyCanvasProps<T> {
   frameKey?: unknown
   /** Currently selected presentation view. */
   view?: TopologyView
-  /** Called when view change occurs. The callback type specifies its arguments. */
+  /** Called with the view the person switches to from the view toggle in the map's controls; the toggle shows only when this is set. Pair with `view`. */
   onViewChange?: (view: TopologyView) => void
   /** The list view's content: a DataTable of the same nodes, with TopologyViewToggle in its toolbar. */
   list?: ReactNode
@@ -123,7 +123,13 @@ function insetStyle(insets: TopologyInsets | null | undefined): CSSProperties | 
 }
 
 /** "View as list" / "View as map": in the map's controls, and in the list's toolbar. */
-export function TopologyViewToggle({ view, onViewChange, size = "md" }: { view: TopologyView; onViewChange: (view: TopologyView) => void; size?: "sm" | "md" }) {
+export function TopologyViewToggle({ view, onViewChange, size = "md" }: {
+  /** The view currently shown; the button offers the other one (an icon button on the map, "View as map" in the list). */
+  view: TopologyView
+  /** Called with the view the person switches to. */
+  onViewChange: (view: TopologyView) => void
+  size?: "sm" | "md"
+}) {
   return view === "map" ? (
     <Button variant="secondary" size={size} icon={<IconList />} aria-label="View as list" data-topology-control="view" onClick={() => onViewChange("list")} />
   ) : (
@@ -155,7 +161,11 @@ export function TopologySkeleton({ className }: { className?: string }) {
 }
 
 /** The whole canvas while there is nothing to give it yet (no label, no nodes): the same box and loading shape. */
-export function TopologyCanvasSkeleton({ insets, className }: { insets?: TopologyInsets | null; className?: string }) {
+export function TopologyCanvasSkeleton({ insets, className }: {
+  /** Page chrome over the canvas in CSS pixels, matching the TopologyCanvas's `insets`; `null` marks them as still being measured. */
+  insets?: TopologyInsets | null
+  className?: string
+}) {
   return (
     <div className={cx("fa-topology", className)} style={insetStyle(insets)} data-insets={insets === null ? "pending" : undefined}>
       <TopologySkeleton />
@@ -225,6 +235,15 @@ const NodeView = memo(function NodeView({ node, box, origin, selected, tabbable,
   )
 })
 
+/**
+ * A pannable, zoomable network map that lays nodes out as a family tree with clustered blocks,
+ * with arrow-key navigation between nodes, selection, a right-click node menu, a minimap and
+ * an optional list view in the same box. It shows a skeleton while `nodes` is undefined.
+ *
+ * Keyboard: the arrow keys move between nodes like a family tree, Enter selects, Space
+ * toggles the selection, Escape clears it, + and − zoom, 0 fits the map, and Shift+F10 opens
+ * the focused node's menu.
+ */
 export function TopologyCanvas<T>({
   label,
   nodes,

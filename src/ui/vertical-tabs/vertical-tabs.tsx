@@ -168,7 +168,7 @@ export interface VerticalTabsRootProps extends Omit<ComponentProps<"div">, "defa
   items: VerticalTabItem[]
   value?: string
   defaultValue?: string
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the chosen section's `value` when the person selects a tab, chip or picker item. Pair with `value` to control it. */
   onValueChange?: (value: string) => void
   /** Names the rail, e.g. "Agent settings sections". */
   "aria-label": string
@@ -250,6 +250,11 @@ function VerticalTabsPanel({ className, ...rest }: ComponentProps<typeof BaseTab
   return <BaseTabs.Panel {...rest} className={cx("fa-vtabs-panel", className)} />
 }
 
+/**
+ * Sections held in component state: `Root` (the selected value, controlled or uncontrolled;
+ * a rail, chip strip or picker depending on its own width) and `Panel`. For sections that
+ * are routes, use `RouteVerticalTabs`.
+ */
 export const VerticalTabs = {
   Root: VerticalTabsRoot,
   Panel: VerticalTabsPanel,
@@ -265,7 +270,7 @@ export interface VerticalTabLinkRenderProps {
   "data-roving"?: ""
   "aria-current"?: "page"
   tabIndex?: number
-  /** Called when key down occurs. The callback type specifies its arguments. */
+  /** The roving-focus key handler (arrow keys move between rows). Pass it to the link's `onKeyDown`, chaining any handler of your own. */
   onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void
   children?: ReactNode
 }

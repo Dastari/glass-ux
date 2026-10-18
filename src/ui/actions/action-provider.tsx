@@ -91,6 +91,7 @@ export function ActionProvider({
   );
 }
 
+/** Returns the nearest `ActionProvider`'s services (navigate, toast, openWindow, confirm). Without a provider, navigation and window opening are only logged to the console. */
 export function useActionServices(): ActionServices {
   return useContext(ServicesContext) ?? FALLBACK;
 }

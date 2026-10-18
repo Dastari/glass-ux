@@ -13,7 +13,10 @@ export interface SliderProps {
   /** A number for one thumb, a pair for a range. */
   value?: number | number[]
   defaultValue?: number | number[]
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called continuously while a thumb is dragged or stepped, with a number for one thumb or an
+   * array for a range. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: number | number[]) => void
   /** Fires once when the user lets go (or after a keyboard step). */
   onValueCommitted?: (value: number | number[]) => void
@@ -41,7 +44,7 @@ export interface SliderProps {
   disabled?: boolean
   name?: string
   id?: string
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when a thumb loses focus, so a form can mark the field touched. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   /** Layout only. */
   className?: string

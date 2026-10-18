@@ -78,9 +78,9 @@ interface SunburstPlotProps {
   fmt: ValueFormat
   label: string
   rings: number
-  /** Called when drill occurs. The callback type specifies its arguments. */
+  /** Called with the arc's node when the person activates an arc that has children (click, Enter or Space); not called for leaves. */
   onDrill: (node: Node) => void
-  /** Called when up occurs. The callback type specifies its arguments. */
+  /** Called with no arguments on Escape or when the centre is activated, to go up one level. Omit at the root, which also hides the "go up" hint. */
   onUp?: () => void
 }
 

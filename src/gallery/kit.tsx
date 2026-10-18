@@ -8,6 +8,7 @@ import { cx } from "../lib/cx.js";
 import { DemoScope } from "./demo-scope.js";
 import { Button } from "../ui/button/index.js";
 
+/** The page wrapper every gallery section renders its header and specimens inside. */
 export function SectionPage({ children }: { children: ReactNode }) {
   return <div className="gallery-page">{children}</div>;
 }
@@ -25,6 +26,7 @@ export interface SpecimenProps {
   className?: string;
 }
 
+/** A titled gallery panel of live examples, labelled with the demo scope when one is set; `layout` arranges the examples and `backdrop` paints busy content behind them. */
 export function Specimen({
   title,
   description,

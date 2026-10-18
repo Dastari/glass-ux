@@ -62,6 +62,7 @@ export type DataTableColumn<T extends RowData> = ColumnDef<DataTableFeatures, T,
 
 const round = (value: number) => Math.round(value * 100) / 100
 
+/** Resolves a column spec into its column meta, applying defaults: width 10rem, min 0.8× and max 2.5× width, priority 3 (1 when pinned), start alignment, ellipsis truncation and a filter only when the column can be filtered. */
 export function resolveColumnMeta(spec: DataColumnSpec<never, never>): DataColumnMeta {
   const width = spec.width ?? 10
   const minWidth = Math.min(spec.minWidth ?? round(width * 0.8), width)

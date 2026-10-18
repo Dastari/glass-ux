@@ -169,6 +169,7 @@ export function photonToSuggestions(features: readonly PhotonFeature[], query = 
   return out
 }
 
+/** The public Photon instance, the default `url` for `createPhotonGeocoder`. Requests to it reach a third party. */
 export const PHOTON_PUBLIC_URL = "https://photon.komoot.io"
 
 const PHOTON_ATTRIBUTION: GeocoderAttribution = {

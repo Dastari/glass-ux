@@ -26,6 +26,7 @@ export function defineEntityKinds<K extends EntityKinds>(kinds: K): K {
 
 const UNKNOWN: EntityKindSpec = { icon: IconLink, noun: "Item", plural: "Items", segment: "" }
 
+/** The registered spec (glyph, nouns, route segment) for an entity kind; unregistered kinds get a link glyph, "Item"/"Items" and no route. */
 export function kindSpec(kinds: EntityKinds, kind: EntityKind): EntityKindSpec {
   return kinds[kind] ?? UNKNOWN
 }
@@ -65,6 +66,7 @@ export function safeExternalHref(href: string | undefined): string | null {
   }
 }
 
+/** A URL's host name without a leading `www.` ("docs.example.com"); returns the input unchanged when it is not a valid absolute URL. */
 export function hostOf(href: string) {
   try {
     return new URL(href).hostname.replace(/^www\./, "")

@@ -25,6 +25,7 @@ export function statusClusterProperties(): Record<string, [string, unknown]> {
   return Object.fromEntries(MAP_STATUSES.map((status) => [countKey(status), ["+", ["case", ["==", ["get", STATUS_PROPERTY], status], 1, 0]]]))
 }
 
+/** Status counts that are all zero. Shared; do not mutate. */
 export const EMPTY_COUNTS: StatusCounts = { danger: 0, warning: 0, healthy: 0, unknown: 0 }
 
 /** The counts from a cluster's properties (or a single point's status). */
@@ -52,12 +53,14 @@ export function sumCounts(list: Iterable<StatusCounts>): StatusCounts {
   return total
 }
 
+/** Counts points by their `status`. */
 export function countStatuses(points: Iterable<{ status: MapStatus }>): StatusCounts {
   const total = { danger: 0, warning: 0, healthy: 0, unknown: 0 }
   for (const point of points) total[point.status] += 1
   return total
 }
 
+/** The number of points across all statuses. */
 export const totalOf = (counts: StatusCounts) => MAP_STATUSES.reduce((sum, status) => sum + counts[status], 0)
 
 /**

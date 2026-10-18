@@ -20,6 +20,7 @@ export interface FracRect {
 
 const THIRD = 1 / 3
 
+/** The snap zones a window can be tiled into, each a rectangle as fractions (0–1) of the workspace. */
 export const SNAP_ZONES = {
   "left-half": { x: 0, y: 0, w: 0.5, h: 1 },
   "right-half": { x: 0.5, y: 0, w: 0.5, h: 1 },
@@ -48,6 +49,7 @@ export const SNAP_LAYOUTS: ReadonlyArray<{ label: string; zones: readonly SnapZo
   { label: "Quarters", zones: ["top-left", "top-right", "bottom-left", "bottom-right"] },
 ]
 
+/** English names for each snap zone, for the snap bar's accessible names and tooltips. */
 export const SNAP_ZONE_LABELS: Record<SnapZone, string> = {
   "left-half": "Left half",
   "right-half": "Right half",

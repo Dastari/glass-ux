@@ -12,7 +12,10 @@ export type OtpStatus = "error" | "success"
 export interface OtpInputProps {
   value?: string
   defaultValue?: string
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the code entered so far (upper case when alphanumeric) on each typed, deleted or
+   * pasted character. Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: string) => void
   /** Called once every box is filled (typed, pasted or autofilled). */
   onComplete?: (value: string) => void
@@ -36,7 +39,7 @@ export interface OtpInputProps {
   invalid?: boolean
   name?: string
   id?: string
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when focus leaves the group of boxes, not when it moves between them. */
   onBlur?: () => void
   className?: string
   /** Accessible name when a visible label does not name the control. */

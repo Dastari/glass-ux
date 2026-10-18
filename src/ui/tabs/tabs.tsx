@@ -46,7 +46,7 @@ export interface TabLinkRenderProps {
   "data-roving"?: ""
   "aria-current"?: "page"
   tabIndex?: number
-  /** Called when key down occurs. The callback type specifies its arguments. */
+  /** The roving-focus key handler (arrow keys move between tabs). Pass it to the link's `onKeyDown`, chaining any handler of your own. */
   onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void
   children?: ReactNode
 }
@@ -257,6 +257,11 @@ function TabsPanel({ className, ...rest }: ComponentProps<typeof BaseTabs.Panel>
   return <BaseTabs.Panel {...rest} className={cx("fa-tabs-panel", className)} />
 }
 
+/**
+ * In-page tabs on Base UI's tabs: `Root` (selected value, controlled or uncontrolled),
+ * `List` (the tab strip from `items`; tabs that do not fit move to a More menu) and
+ * `Panel`. For tabs that are routes, use `TabNav`.
+ */
 export const Tabs = {
   Root: TabsRoot,
   List: TabsList,

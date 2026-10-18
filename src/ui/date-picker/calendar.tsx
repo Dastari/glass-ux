@@ -42,7 +42,7 @@ export interface CalendarSingleProps extends CalendarCommon {
   /** Active display or interaction mode. */
   mode?: "single"
   value?: IsoDate | null
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the ISO date when an enabled day is chosen by click or keyboard. */
   onValueChange?: (value: IsoDate) => void
 }
 
@@ -50,7 +50,7 @@ export interface CalendarRangeProps extends CalendarCommon {
   /** Active display or interaction mode. */
   mode: "range"
   value?: DateRange | null
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the ordered range once the second day is chosen; choosing the first day only anchors it. */
   onValueChange?: (value: DateRange) => void
 }
 

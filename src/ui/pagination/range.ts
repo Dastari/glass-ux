@@ -2,6 +2,7 @@
 const EN_DASH = "\u2013"
 const number = new Intl.NumberFormat("en-AU", { maximumFractionDigits: 0 })
 
+/** Number of pages for `rowCount` rows at `pageSize` per page; at least 1, even for no rows. */
 export function pageCountOf(rowCount: number, pageSize: number) {
   return Math.max(1, Math.ceil(rowCount / Math.max(1, pageSize)))
 }

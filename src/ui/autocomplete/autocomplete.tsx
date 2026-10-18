@@ -27,7 +27,10 @@ export interface AutocompleteProps<V extends string = string> {
   /** The text. Not limited to the suggestions. */
   value?: string
   defaultValue?: string
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /**
+   * Called with the raw text on each keystroke, clear, or when a suggestion fills the field (with
+   * its label or value, per `fill`). Pair with `value` to control it; use `defaultValue` otherwise.
+   */
   onValueChange?: (value: string) => void
   /** Called when a suggestion is chosen, with the option. */
   onPick?: (item: OptionItem<V>) => void
@@ -50,7 +53,7 @@ export interface AutocompleteProps<V extends string = string> {
   invalid?: boolean
   name?: string
   id?: string
-  /** Called when blur occurs. The callback type specifies its arguments. */
+  /** Called when the text input loses focus, so a form can mark the field touched. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   /** Layout only. Applied to the control box. */
   className?: string

@@ -77,7 +77,10 @@ function OptionIcon({ option }: { option: ChoiceOption }) {
 }
 
 /** One choice from a few options, each with a sentence: radio cards that reflow by width. */
-export function SingleChoiceAsk({ ask }: { ask: Ask<"single"> }) {
+export function SingleChoiceAsk({ ask }: {
+  /** The single-choice ask: the question and its `options`. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
+  ask: Ask<"single">;
+}) {
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [value, setValue] = useState<string | null>(null);
@@ -134,7 +137,10 @@ export function SingleChoiceAsk({ ask }: { ask: Ask<"single"> }) {
 }
 
 /** Several items from a list, with Select all. Checkboxes are for picking items (R15.4). */
-export function MultiChoiceAsk({ ask }: { ask: Ask<"multi"> }) {
+export function MultiChoiceAsk({ ask }: {
+  /** The multiple-choice ask: the question, its `options` and `min`, the fewest picks that can be sent (default 1). Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
+  ask: Ask<"multi">;
+}) {
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const all = ask.options.map((option) => option.value);
@@ -211,7 +217,10 @@ export function MultiChoiceAsk({ ask }: { ask: Ask<"multi"> }) {
  * Quick replies: a handful of short answers as pills. One tap answers; nothing else to
  * submit. The agent still accepts a typed reply in the composer.
  */
-export function QuickRepliesAsk({ ask }: { ask: Ask<"quick"> }) {
+export function QuickRepliesAsk({ ask }: {
+  /** The quick-reply ask: the question and the `options` shown as pills; one tap answers. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
+  ask: Ask<"quick">;
+}) {
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [pending, setPending] = useState<string | null>(null);
@@ -259,7 +268,10 @@ export function QuickRepliesAsk({ ask }: { ask: Ask<"quick"> }) {
  * Put options in order (rollout groups, fallback printers). Each row moves with its arrow
  * buttons or Alt+↑ / Alt+↓; the grip shows it can be reordered.
  */
-export function RankAsk({ ask }: { ask: Ask<"rank"> }) {
+export function RankAsk({ ask }: {
+  /** The ranking ask: the question and its `options` in their starting order; the answer is the reordered list. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
+  ask: Ask<"rank">;
+}) {
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [order, setOrder] = useState(ask.options);

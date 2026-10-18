@@ -59,9 +59,9 @@ export interface TreeRowRenderProps {
   "aria-posinset": number
   "aria-selected"?: boolean
   "aria-disabled"?: boolean
-  /** Called when click occurs. The callback type specifies its arguments. */
+  /** Called with the click event; the tree selects an endpoint or toggles a group, and prevents navigation for a disabled row. */
   onClick: (event: MouseEvent<HTMLElement>) => void
-  /** Called when focus occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the row takes focus; it becomes the tree's tab stop. */
   onFocus: () => void
   children: ReactNode
 }
@@ -83,7 +83,7 @@ export interface TreeProps {
   "aria-label": string
   /** Stable identifier of the selected item. */
   selectedId?: string | null
-  /** Called when select occurs. The callback type specifies its arguments. */
+  /** Called with the endpoint (leaf) the person activates by click, Enter or Space; not for groups, which toggle, or disabled rows. A linked row also navigates. Pair with `selectedId` to show the selection. */
   onSelect?: (node: TreeNode) => void
   /**
    * Render endpoint rows as links (a TanStack Router `<Link>` in the app). Return null to
@@ -107,7 +107,7 @@ export interface TreeProps {
   expanded?: string[]
   /** Initially expanded nodes when expansion is uncontrolled. */
   defaultExpanded?: string[]
-  /** Called when expanded change occurs. The callback type specifies its arguments. */
+  /** Called with the full list of open group ids whenever a group opens or closes (click, Enter, Space or the arrow keys); groups do not toggle while searching. Pair with `expanded` to control it. */
   onExpandedChange?: (expanded: string[]) => void
   /** Filter text from the search field above the tree. Matching branches open and the
    *  match is highlighted. */
@@ -356,9 +356,9 @@ interface TreeRowProps {
   renderLink?: TreeProps["renderLink"]
   rowWrapper?: TreeProps["rowWrapper"]
   renderContent?: TreeProps["renderContent"]
-  /** Called when click occurs. The callback type specifies its arguments. */
+  /** Called with the row's click event: select an endpoint or toggle a group. */
   onClick: (event: MouseEvent<HTMLElement>) => void
-  /** Called when focus occurs. The callback type specifies its arguments. */
+  /** Called with no arguments when the row takes focus, to make it the tab stop. */
   onFocus: () => void
 }
 

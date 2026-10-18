@@ -35,6 +35,12 @@ export interface PopoutWindowProps {
   scopes?: WindowScopes;
 }
 
+/**
+ * Renders window `id` filling its own browser window, for the pop-out route. It registers
+ * as the window's pop-out host while mounted, sets the document title from the window's
+ * title, subtitle, scope and `productName`, and closes the browser window once the window
+ * is closed from the workspace. Render it inside a `WindowManagerProvider`.
+ */
 export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
   const manager = useWindowManager();
   const entry = useWindowEntry(id);

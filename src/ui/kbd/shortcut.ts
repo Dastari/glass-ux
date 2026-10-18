@@ -32,6 +32,7 @@ const ALIASES: Record<string, string> = {
   spacebar: "space",
 }
 
+/** Parses a shortcut string such as `"mod+shift+K"` into its modifiers and key, case-insensitively and with aliases normalised (`escape` → `esc`, `up` → `arrowup`); the last non-modifier part is the key. */
 export function parseShortcut(shortcut: string): ParsedShortcut {
   const parts = shortcut
     .toLowerCase()
@@ -141,6 +142,7 @@ export function matchesShortcut(
   return (EVENT_KEY[pressed] ?? pressed) === key
 }
 
+/** Returns "mac" on macOS and iOS devices (from the user-agent platform), otherwise "other"; "other" when there is no `navigator` (server rendering). */
 export function detectPlatform(): Platform {
   if (typeof navigator === "undefined") return "other"
   const data = (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData

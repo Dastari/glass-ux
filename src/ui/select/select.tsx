@@ -31,6 +31,7 @@ export type SelectOptions<V extends string = string> = Array<SelectOption<V>> | 
 const isGroups = <V extends string>(options: SelectOptions<V>): options is Array<SelectGroup<V>> =>
   options.length > 0 && "options" in (options[0] as object)
 
+/** The options as one flat list: group options in order when grouped, the list unchanged otherwise. */
 export function flattenOptions<V extends string>(options: SelectOptions<V>): Array<SelectOption<V>> {
   return isGroups(options) ? options.flatMap((group) => group.options) : options
 }
@@ -39,7 +40,7 @@ export interface SelectProps<V extends string = string> {
   options: SelectOptions<V>
   value?: V | null
   defaultValue?: V | null
-  /** Called when value change occurs. The callback type specifies its arguments. */
+  /** Called with the chosen option's value when one is picked. Pair with `value` to control it; use `defaultValue` otherwise. */
   onValueChange?: (value: V | null) => void
   /** Shown while nothing is chosen. Name the choice ("Choose an environment"), not "Select…". */
   placeholder?: string
@@ -57,7 +58,7 @@ export interface SelectProps<V extends string = string> {
   id?: string
   /** Fires when focus leaves the select while it is closed (not when its popup opens). */
   onBlur?: (event: FocusEvent<HTMLButtonElement>) => void
-  /** Called when open change occurs. The callback type specifies its arguments. */
+  /** Called with true when the popup opens and false when it closes. */
   onOpenChange?: (open: boolean) => void
   /** Layout only. Applied to the trigger. */
   className?: string

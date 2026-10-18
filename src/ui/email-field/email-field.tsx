@@ -25,7 +25,7 @@ export function EmailInput({ placeholder = EMAIL_EXAMPLE, icon, autoComplete = "
 export interface EmailSuggestionProps {
   /** The address someone probably meant ("avery@gmail.com"). */
   suggestion: string
-  /** Called when accept occurs. The callback type specifies its arguments. */
+  /** Called with `suggestion` when the hint is pressed, to replace the typed address with it. */
   onAccept: (suggestion: string) => void
 }
 

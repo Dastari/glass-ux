@@ -174,11 +174,11 @@ export function Calendar(props: CalendarProps) {
   return (
     <div className={cx("fa-calendar", className)} data-mode={props.mode ?? "single"} data-picking={anchor ? "" : undefined}>
       <div className="fa-calendar-head">
-        <Button variant="ghost" size="sm" icon={<IconChevronLeft />} aria-label="Previous month" disabled={prevDisabled} onClick={() => showMonth(-1)} />
+        <Button variant="ghost" size="sm" icon={<IconChevronLeft />} aria-label="Previous month" disabledReason={prevDisabled ? "No earlier dates can be chosen" : undefined} onClick={() => showMonth(-1)} />
         <div className="fa-calendar-title" aria-live="polite">
           {title}
         </div>
-        <Button variant="ghost" size="sm" icon={<IconChevronRight />} aria-label="Next month" disabled={nextDisabled} onClick={() => showMonth(1)} />
+        <Button variant="ghost" size="sm" icon={<IconChevronRight />} aria-label="Next month" disabledReason={nextDisabled ? "No later dates can be chosen" : undefined} onClick={() => showMonth(1)} />
       </div>
       <div
         role="grid"

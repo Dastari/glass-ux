@@ -926,6 +926,8 @@ export function GeoMap<T>({
 
   const counts = useMemo(() => countStatuses(points), [points])
   const failed = phase === "failed"
+  /** Why the zoom and reset controls are unavailable (R12): they need a started map. */
+  const controlsReason = phase === "ready" ? undefined : failed ? "The map could not start" : "The map is loading"
 
   return (
     <div
@@ -958,9 +960,9 @@ export function GeoMap<T>({
         ) : null}
         <div className="fa-map-overlay over-imagery">
           <div className="fa-map-controls" role="toolbar" aria-label="Map controls" aria-orientation="vertical">
-            <Button variant="secondary" icon={<IconZoomIn />} aria-label="Zoom in" onClick={() => zoomBy(1)} disabled={phase !== "ready"} data-map-control="zoom-in" />
-            <Button variant="secondary" icon={<IconZoomOut />} aria-label="Zoom out" onClick={() => zoomBy(-1)} disabled={phase !== "ready"} data-map-control="zoom-out" />
-            <Button variant="secondary" icon={frame === "points" ? <IconGlobe /> : <IconHome />} aria-label={resetLabel} onClick={() => fitTo(frameBox)} disabled={phase !== "ready"} data-map-control="reset" />
+            <Button variant="secondary" icon={<IconZoomIn />} aria-label="Zoom in" onClick={() => zoomBy(1)} disabledReason={controlsReason} data-map-control="zoom-in" />
+            <Button variant="secondary" icon={<IconZoomOut />} aria-label="Zoom out" onClick={() => zoomBy(-1)} disabledReason={controlsReason} data-map-control="zoom-out" />
+            <Button variant="secondary" icon={frame === "points" ? <IconGlobe /> : <IconHome />} aria-label={resetLabel} onClick={() => fitTo(frameBox)} disabledReason={controlsReason} data-map-control="reset" />
             {onViewChange ? <MapViewToggle view="map" onViewChange={onViewChange} /> : null}
           </div>
           {outside.length && phase === "ready" ? (

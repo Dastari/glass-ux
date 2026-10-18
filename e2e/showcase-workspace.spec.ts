@@ -429,6 +429,62 @@ test("network notes, account and profile keep focus and edits @responsive", asyn
   ).toContainText("Confirm the uplink replacement.");
 });
 
+test("network account menu switches accounts through the sign-in flow @responsive", async ({
+  page,
+}) => {
+  // Still motion: the dialog is measured at rest, not while it materialises.
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      "glass-ux.appearance.v1",
+      JSON.stringify({ motion: "reduced" }),
+    ),
+  );
+  await page.goto("./#network");
+  const workspace = page.getByTestId("network-workspace");
+  const account = workspace.getByRole("button", {
+    name: "Account: Avery Quinn",
+    exact: true,
+  });
+  await account.click();
+  await page
+    .getByRole("menuitem", { name: "Switch account", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog", { name: "Switch account" });
+  await expect(dialog).toContainText("Signed in as avery@example.com");
+  const email = dialog.getByRole("textbox", { name: "Email" });
+  await expect(email).toBeFocused();
+  // The current account is refused on its field; the button stays put.
+  const signIn = dialog.getByRole("button", { name: "Sign in", exact: true });
+  await dialog.evaluate((element) =>
+    Promise.all(
+      element
+        .getAnimations({ subtree: true })
+        .map((animation) => animation.finished),
+    ),
+  );
+  const before = await signIn.boundingBox();
+  await email.fill("avery@example.com");
+  await dialog.getByLabel("Password", { exact: true }).fill("sample-pass");
+  await signIn.click();
+  await expect(dialog).toContainText("Already signed in as avery@example.com.");
+  expect(await signIn.boundingBox()).toEqual(before);
+  await email.fill("mira@example.com");
+  await dialog.getByLabel("Password", { exact: true }).fill("sample-pass");
+  await signIn.click();
+  await expect(dialog).toHaveCount(0);
+  const switched = workspace.getByRole("button", {
+    name: "Account: Mira Chen",
+    exact: true,
+  });
+  await expect(switched).toBeFocused();
+  await expect(page.getByText("Signed in as Mira Chen").first()).toBeVisible();
+  await switched.click();
+  await page.getByRole("menuitem", { name: "Profile", exact: true }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Mira Chen", exact: true }),
+  ).toContainText("Network engineer");
+});
+
 test("background styles paint differently, follow palette and mode, and survive reload @responsive", async ({
   page,
 }) => {

@@ -28,7 +28,8 @@ import {
 import {
   ActionBar,
   usePaletteActions,
-  type ActionMenuProps,
+  defineActions,
+  type ActionSet,
 } from "glass-ux/actions";
 import {
   usePaletteCommands,
@@ -72,8 +73,6 @@ import {
   type ProjectStatus,
   type StudioProject,
 } from "./showcase-data";
-
-type ActionSet<T> = ActionMenuProps<T>["set"];
 
 const DAY = 86_400_000;
 const dueAt = (project: StudioProject) => Date.now() + project.dueIn * DAY;
@@ -254,10 +253,9 @@ export function useProjectActions({
 }) {
   const handlers = useRef({ open, update, archive });
   handlers.current = { open, update, archive };
-  return useMemo<ActionSet<StudioProject>>(
-    () => ({
-      entity: "project",
-      actions: [
+  return useMemo(
+    () =>
+      defineActions<StudioProject>("project", [
         {
           id: "open",
           label: "Open project",
@@ -339,8 +337,7 @@ export function useProjectActions({
               ? `${targets[0]?.name} archived`
               : `${targets.length} projects archived`,
         },
-      ],
-    }),
+      ]),
     [],
   );
 }
@@ -498,14 +495,12 @@ export function ProjectSheet({
             <Sheet.Body>
               <div className="showcase-stack" data-testid="project-sheet">
                 {actions ? (
-                  <div className="showcase-sheet-actions">
-                    <ActionBar
-                      set={actions}
-                      targets={[current]}
-                      label={current.name}
-                      maxButtons={2}
-                    />
-                  </div>
+                  <ActionBar
+                    set={actions}
+                    targets={[current]}
+                    label={current.name}
+                    maxButtons={2}
+                  />
                 ) : null}
                 {current.status !== "Complete" && current.dueIn < 0 ? (
                   <Notice tone="danger" compact title="Milestone overdue">
@@ -669,7 +664,7 @@ function NewProject({
           subtitle="Meridian Studio"
           icon={<IconPlus />}
         />
-        <Form form={form} className="showcase-dialog-form">
+        <Form form={form}>
           <Dialog.Body>
             <div className="showcase-form">
               <form.AppField
@@ -763,16 +758,22 @@ function NewProject({
 
 /* ── Workspace ─────────────────────────────────────────────────────────────── */
 
+/** Simulated save time for a priority change. */
+const SAVE_ORDER_MS = 450;
+
 export function StudioWorkspace({
   projects,
   onAdd,
   onUpdate,
   onArchive,
+  onMove,
 }: {
   projects: StudioProject[];
   onAdd: (input: NewProjectInput) => void;
   onUpdate: (ids: readonly string[], patch: Partial<StudioProject>) => void;
   onArchive: (ids: readonly string[]) => void;
+  /** Place a project after `previousId` (or first) within its status group. */
+  onMove: (id: string, previousId: string | null) => void;
 }) {
   const [view, setView] = useState<"overview" | "projects">("overview");
   const [period, setPeriod] = useState<"week" | "month">("week");
@@ -1070,6 +1071,17 @@ export function StudioWorkspace({
                 getRowLabel={(row) => row.name}
                 onRowOpen={open}
                 actions={actions}
+                // Each status group's order is its priority; the move saves after a delay.
+                reorder={{
+                  withinGroups: true,
+                  onReorder: (move) =>
+                    new Promise<void>((resolve) =>
+                      window.setTimeout(() => {
+                        onMove(move.rowId, move.previousId);
+                        resolve();
+                      }, SAVE_ORDER_MS),
+                    ),
+                }}
                 noun={{ one: "project", other: "projects" }}
                 emptyMessage="No projects yet"
                 emptyAction={

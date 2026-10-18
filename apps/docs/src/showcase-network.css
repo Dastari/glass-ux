@@ -68,7 +68,32 @@
   .network-detail-body {
     flex: 1;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
     padding-block-start: 0;
+  }
+  /* In the pane the detail fills the body's height; the event feed takes what the metric
+     leaves and scrolls there (faded edges) instead of running off the pane's bottom. */
+  .network-detail-body > .network-detail {
+    flex: 1 1 auto;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .network-detail-body > .network-detail:has(> .fa-notice) {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .network-detail-body .network-detail-side {
+    align-self: stretch;
+    min-height: 0;
+  }
+  .network-detail-body .network-detail-section:has(> .network-event-scroll) {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .network-event-scroll {
+    flex: 1 1 auto;
+    /* Room for at least one event before the pane itself scrolls. */
+    min-height: calc(var(--unit) * 14);
   }
   .network-table {
     grid-area: table;
@@ -149,11 +174,6 @@
     flex-direction: column;
     gap: var(--gap-section);
   }
-  .network-sheet-actions {
-    display: flex;
-    justify-content: flex-end;
-    min-width: 0;
-  }
   .network-sheet .network-detail {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -203,14 +223,20 @@
     .network-body > .fa-shell-rail {
       display: none;
     }
+    /* Phones: the map is an overview strip; the site cards get the height. */
     .network-sites {
       grid-template:
-        "map" minmax(0, 1fr)
-        "table" minmax(0, 1.9fr)
+        "map" minmax(0, 0.7fr)
+        "table" minmax(0, 2fr)
         / minmax(0, 1fr);
+      gap: var(--space-2);
     }
     .network-frame > .fa-shell-topbar {
       padding-inline: var(--space-1);
+    }
+    /* One inset between the pane edge and the cards, not a panel inset plus a card's. */
+    .network-table-body {
+      padding: var(--space-2);
     }
   }
   @media (width < 48rem) {

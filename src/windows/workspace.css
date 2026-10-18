@@ -184,9 +184,10 @@
     box-shadow: inset 0 0 0 var(--border-width-strong) var(--accent-line);
     opacity: 0;
     pointer-events: none;
-    transition-property: left, top, width, height, opacity;
-    transition-duration: var(--duration-fast);
-    transition-timing-function: var(--ease-standard);
+    /* Between zones it moves with transform only: useFlip (src/lib/flip.ts) lays it out
+       once at the new zone and plays the inverse transform back to none. */
+    transform-origin: 0 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
   }
   .fa-wm-snap-preview[data-visible] {
     opacity: 1;

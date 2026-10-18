@@ -28,6 +28,7 @@ import {
 import { flushSync } from "react-dom";
 import { IconWindows } from "../icons/generated/icons.js";
 import { cx } from "../lib/cx.js";
+import { useFlip } from "../lib/flip.js";
 import { observeElementSize } from "../lib/resize-observer.js";
 import { PHONE_QUERY, useMediaQuery } from "../lib/use-media-query.js";
 import { Button } from "../ui/button/index.js";
@@ -562,6 +563,9 @@ function useDrag(drag: DragStore) {
 /** The snap bar (layouts to drop onto) and the live preview of where the window will land. */
 function SnapOverlay({ drag }: { drag: DragStore }) {
   const { id, target, layout } = useDrag(drag);
+  const previewRef = useRef<HTMLDivElement>(null);
+  // The preview moves between zones with transform only (measured, then inverted).
+  useFlip(previewRef, `${id ?? ""}|${target ?? ""}`);
   if (!id) return null;
   const preview: FracRect | null =
     target === "maximise"
@@ -574,6 +578,7 @@ function SnapOverlay({ drag }: { drag: DragStore }) {
   return (
     <>
       <div
+        ref={previewRef}
         className="fa-wm-snap-preview"
         data-geometry="frac"
         data-visible={preview ? "" : undefined}

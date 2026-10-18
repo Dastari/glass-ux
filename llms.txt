@@ -13,6 +13,8 @@ already visible in navigation, or introduce content shifts that move buttons or 
 - [API index](docs/api/README.md)
 - [Design rules](docs/ui-rules.md)
 - [Theme and layout](docs/layout-contract.md)
+- [Migration](docs/migration.md)
+- [Changelog](CHANGELOG.md)
 - [Typed form inputs](docs/components/README.md)
 - [Markdown rich text editing](docs/components/rich-text.md)
 - [Compact compositions](docs/components/compact-compositions.md)

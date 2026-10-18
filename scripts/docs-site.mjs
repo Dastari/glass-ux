@@ -28,6 +28,7 @@ for (const route of [
   "guides/agent-adoption",
   "guides/layout-contract",
   "guides/ui-rules",
+  "guides/migration",
   ...foundationIds.map((id) => `foundations/${id}`),
 ]) {
   const dir = `apps/docs/dist/${route}`;

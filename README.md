@@ -11,7 +11,7 @@ shared keyboard and accessibility conventions.
 Install the versioned package attached to a [GitHub release](https://github.com/Dastari/glass-ux/releases).
 
 ```sh
-pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.6.5/glass-ux-0.6.5.tgz
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.7.0/glass-ux-0.7.0.tgz
 ```
 
 React 19 and React DOM 19 are peer dependencies. The tested integration uses Vite 8
@@ -56,6 +56,7 @@ Optional server adapters are separate entries. The graphql-orm filter mapping mo
 - [Migrating an existing application](docs/integration.md).
 - [Theme geometry and layout verification](docs/layout-contract.md).
 - [AI agent skills and adoption](docs/agent-adoption.md).
+- [Changelog](CHANGELOG.md) and [migration guide](docs/migration.md) for upgrades.
 
 - [Component API index](docs/api/README.md), generated from the exported TypeScript types.
 - [Typed input guides](docs/components/README.md).

@@ -1,1 +1,8 @@
-export { SwatchPicker, type SwatchOption, type SwatchPickerProps, type SwatchPickerSize } from "./swatch-picker.js"
+export {
+  SwatchPicker,
+  type SwatchOption,
+  type SwatchPickerCollapse,
+  type SwatchPickerForm,
+  type SwatchPickerProps,
+  type SwatchPickerSize,
+} from "./swatch-picker.js"

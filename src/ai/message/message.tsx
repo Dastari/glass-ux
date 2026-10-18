@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from "react";
+import { memo, type ComponentProps, type ReactNode } from "react";
 import {
   IconEdit,
   IconPopOut,
@@ -124,7 +124,7 @@ export interface UserMessageProps extends Omit<
  * A prompt: a compact glass-control bubble on the right, attachments above it, and edit
  * and copy below on hover or focus (always on touch).
  */
-export function UserMessage({
+export const UserMessage = memo(function UserMessage({
   message,
   editable = false,
   className,
@@ -172,7 +172,7 @@ export function UserMessage({
       </div>
     </article>
   );
-}
+});
 
 /* ── Assistant ────────────────────────────────────────────────────────────── */
 
@@ -224,7 +224,7 @@ export interface AssistantMessageProps extends Omit<
  * and retention show in place as the message's last block. Copy, regenerate, feedback and
  * "Open in window" sit below with the time and model.
  */
-export function AssistantMessage({
+export const AssistantMessage = memo(function AssistantMessage({
   message,
   activity,
   latest = false,
@@ -346,7 +346,7 @@ export function AssistantMessage({
       </div>
     </article>
   );
-}
+});
 
 /* ── System notice and turns ──────────────────────────────────────────────── */
 

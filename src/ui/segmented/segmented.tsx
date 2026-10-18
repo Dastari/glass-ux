@@ -1,10 +1,10 @@
 import { Toggle } from "@base-ui/react/toggle"
 import { ToggleGroup } from "@base-ui/react/toggle-group"
-import { createContext, use, useId, useLayoutEffect, useRef, useState, type FocusEvent, type ReactNode } from "react"
+import { createContext, use, useId, useRef, type FocusEvent, type ReactNode } from "react"
 import { IconCheck, IconChevronDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useGlide } from "../../lib/glide.js"
-import { observeElementSizes } from "../../lib/resize-observer.js"
+import { fitForm, nextFitForm, overflowsOwnBox, useFitForm } from "../../lib/fit-form.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 import { Menu, MenuPrimitive } from "../menu/index.js"
@@ -70,8 +70,9 @@ export interface SegmentedProps<V extends string = string> {
 }
 
 /**
- * Lets a host decide the form for the controls inside it: the top bar folds its module
- * switch to the menu on a phone. A `collapse` prop on the control wins.
+ * Lets a host decide the form for the controls inside it (Segmented and SwatchPicker): the
+ * top bar folds its module switch to the menu on a phone. A `collapse` prop on the control
+ * wins.
  */
 export const SegmentedCollapseContext = createContext<SegmentedCollapse | undefined>(undefined)
 
@@ -84,20 +85,20 @@ export interface SegmentedFit {
   icons: number | null
 }
 
+/** The forms, widest first. */
+const SEGMENTED_FORMS = ["full", "icons", "menu"] as const satisfies readonly SegmentedForm[]
+
 /** The widest form that fits: full, then icons (when every option has one), then the menu. */
 export function fitSegmented({ room, full, icons }: SegmentedFit): SegmentedForm {
-  if (full <= room + 0.5) return "full"
-  if (icons !== null && icons <= room + 0.5) return "icons"
-  return "menu"
+  return fitForm(SEGMENTED_FORMS, { full, icons }, room)
 }
-
-const FORM_RANK: Record<SegmentedForm, number> = { full: 0, icons: 1, menu: 2 }
 
 /**
  * The next form, from what is shown now. `overflowing`: the shown form spills out of its own
  * box (a flex row whose siblings take part of the parent), so its own width is the room. A
  * form that overflowed is not tried again until the parent grows past the room it failed in,
- * so the control never flips back and forth.
+ * so the control never flips back and forth. The shared `nextFitForm` (`glass-ux/lib/fit-form`)
+ * with the segmented control's forms.
  */
 export function nextSegmentedForm(
   shown: SegmentedForm,
@@ -105,22 +106,7 @@ export function nextSegmentedForm(
   failed: { form: SegmentedForm; room: number } | null
 ): { form: SegmentedForm; failed: { form: SegmentedForm; room: number } | null } {
   const { full, icons, parentRoom, ownRoom, overflowing } = fit
-  if (overflowing) {
-    const form = fitSegmented({ room: ownRoom, full, icons })
-    return { form: FORM_RANK[form] > FORM_RANK[shown] ? form : "menu", failed: { form: shown, room: parentRoom } }
-  }
-  const blocked = failed && parentRoom <= failed.room + 0.5 ? failed : null
-  const form = fitSegmented({ room: parentRoom, full, icons })
-  if (blocked && FORM_RANK[form] <= FORM_RANK[blocked.form]) return { form: shown, failed: blocked }
-  return { form, failed: blocked }
-}
-
-const useIsoLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
-
-/** The content width of an element (inside its padding). */
-function contentWidth(element: HTMLElement) {
-  const style = getComputedStyle(element)
-  return element.clientWidth - (Number.parseFloat(style.paddingLeft) || 0) - (Number.parseFloat(style.paddingRight) || 0)
+  return nextFitForm(SEGMENTED_FORMS, shown, { widths: { full, icons }, parentRoom, ownRoom, overflowing }, failed)
 }
 
 /**
@@ -157,7 +143,6 @@ export function Segmented<V extends string = string>({
   const canIcons = options.every((option) => option.icon)
   const rootRef = useRef<HTMLDivElement | null>(null)
   const measureRef = useRef<HTMLDivElement | null>(null)
-  const [measured, setMeasured] = useState<SegmentedForm>(iconOnly && canIcons ? "icons" : "full")
   const edges = useScrollEdges(rootRef)
   // In a SettingRow, the row's label and description name the control.
   const row = useSettingRow()
@@ -165,6 +150,26 @@ export function Segmented<V extends string = string>({
   const signature = options.map((option) => `${option.value}:${option.label}:${option.icon ? 1 : 0}`).join("|")
 
   const auto = collapse === "auto" && !block
+  // Container awareness: the widest form that fits the box (fitSegmented, through the shared
+  // useFitForm). The natural widths come from an off-screen row, so they are known whatever
+  // the form shown.
+  const measured = useFitForm<SegmentedForm>({
+    forms: SEGMENTED_FORMS,
+    initial: iconOnly && canIcons ? "icons" : "full",
+    enabled: auto,
+    ref: rootRef,
+    observe: [measureRef],
+    signature: `${signature}|${iconOnly ? 1 : 0}`,
+    measure: (root, shown) => {
+      const pad = Number.parseFloat(getComputedStyle(root).paddingLeft) || 0
+      const segment = root.clientHeight - pad * 2
+      const full = iconOnly && canIcons ? Number.POSITIVE_INFINITY : (measureRef.current?.scrollWidth ?? 0)
+      const icons = canIcons ? segment * options.length + pad * 2 : null
+      // The segments' own extent: scrollWidth would also count the indicator mid-slide.
+      const last = root.querySelector<HTMLElement>(":scope > .fa-segmented-item:last-of-type")
+      return { widths: { full, icons }, overflowing: shown !== "menu" && overflowsOwnBox(root, last) }
+    },
+  })
   const form: SegmentedForm = collapse === "menu" ? "menu" : auto ? measured : iconOnly && canIcons ? "icons" : "full"
   const compact = form === "icons"
 
@@ -173,45 +178,6 @@ export function Segmented<V extends string = string>({
   // The indicator glides to the pressed segment (its own CSS variables; no re-render per frame).
   const indicatorRef = useRef<HTMLSpanElement | null>(null)
   const ready = useGlide(indicatorRef, "[data-pressed]", "x", [current, form, options.length])
-
-  // Container awareness: the widest form that fits the box (fitSegmented). The natural widths
-  // come from an off-screen row, so they are known whatever the form shown.
-  const failed = useRef<{ form: SegmentedForm; room: number } | null>(null)
-  useIsoLayoutEffect(() => {
-    const root = rootRef.current
-    const parent = root?.parentElement
-    const measure = measureRef.current
-    if (!auto || !root || !parent || !measure) return
-    let frame = 0
-    const check = () => {
-      frame = 0
-      const pad = Number.parseFloat(getComputedStyle(root).paddingLeft) || 0
-      const segment = root.clientHeight - pad * 2
-      const full = iconOnly && canIcons ? Number.POSITIVE_INFINITY : measure.scrollWidth
-      const icons = canIcons ? segment * options.length + pad * 2 : null
-      // Measure outside the state updater: it must stay pure (React may run it twice), and the
-      // DOM tells which form is on screen now.
-      const shown = (root.getAttribute("data-form") as SegmentedForm | null) ?? "full"
-      // The segments' own extent: scrollWidth would also count the indicator mid-slide.
-      const last = root.querySelector<HTMLElement>(":scope > .fa-segmented-item:last-of-type")
-      const overflowing = shown !== "menu" && last !== null && last.offsetLeft + last.offsetWidth + pad > root.clientWidth + 1
-      const next = nextSegmentedForm(shown, { full, icons, parentRoom: contentWidth(parent), ownRoom: root.clientWidth, overflowing }, failed.current)
-      failed.current = next.failed
-      setMeasured(next.form)
-    }
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(check)
-    }
-    check()
-    const observer = observeElementSizes(schedule)
-    observer.observe(root)
-    observer.observe(parent)
-    observer.observe(measure)
-    return () => {
-      if (frame) cancelAnimationFrame(frame)
-      observer.disconnect()
-    }
-  }, [auto, iconOnly, canIcons, signature, options.length, form])
 
   const shared = {
     id,

@@ -1,4 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
+
+// GLASS_UX_DEV_PORT lets parallel checkouts each run and test their own dev server.
+const port = Number(process.env.GLASS_UX_DEV_PORT ?? 4220);
+const baseURL = `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: "./e2e",
   testIgnore: "production.spec.ts",
@@ -8,7 +13,7 @@ export default defineConfig({
   expect: { timeout: 15000 },
   outputDir: "test-results/development",
   reporter: [["list"]],
-  use: { baseURL: "http://127.0.0.1:4220", trace: "retain-on-failure" },
+  use: { baseURL, trace: "retain-on-failure" },
   projects: [
     {
       name: "desktop",
@@ -24,8 +29,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm --filter glass-ux-docs dev",
-    url: "http://127.0.0.1:4220",
+    command: `pnpm --filter glass-ux-docs exec vite --host 127.0.0.1 --port ${port}`,
+    url: baseURL,
     reuseExistingServer: true,
     timeout: 60000,
   },

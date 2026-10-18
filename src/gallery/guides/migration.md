@@ -3,7 +3,76 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
-## 0.7.2 → 0.7.3
+## 0.7 → 0.8
+
+0.8.0 renames the organisation switcher to a generic context switcher and removes the
+names deprecated in 0.7. Neither has an alias, so update imports, props and CSS before
+upgrading. Coming from 0.7.0 or 0.7.1, also read the 0.7.x sections below.
+
+### Required changes
+
+**`OrgSwitcher` is `ContextSwitcher`.** It switches any context: organisations, projects,
+workspaces. Import it from `glass-ux/shell` or the new `glass-ux/shell/context-switcher`
+entry. `glass-ux/shell/org-switcher` is gone.
+
+```diff
+- import { OrgSwitcher, useRecentOrganisations } from "glass-ux/shell";
++ import { ContextSwitcher, useRecentContexts } from "glass-ux/shell";
+
+- <OrgSwitcher organisations={orgs} searchPlaceholder="Find a customer" … />
++ <ContextSwitcher items={orgs} labels={{ placeholder: "Find a customer" }} … />
+```
+
+| 0.7                                            | 0.8                                                 |
+| ---------------------------------------------- | --------------------------------------------------- |
+| `OrgSwitcher`, `OrgSwitcherProps`              | `ContextSwitcher`, `ContextSwitcherProps`           |
+| `OrgSwitcherPanel`, `OrgSwitcherPanelProps`    | `ContextSwitcherPanel`, `ContextSwitcherPanelProps` |
+| `OrgSwitcherRemote`                            | `ContextSwitcherRemote`                             |
+| `OrgAvatar`, `OrgAvatarProps`, `OrgAvatarSize` | `ContextAvatar`, `ContextAvatarProps`, `ContextAvatarSize` |
+| `describeOrgScope`                             | `describeContext`                                   |
+| `SwitcherOrganisation`                         | `ContextItem`                                       |
+| `OrgTree`, `OrgTint`                           | `ContextTree`, `ContextTint`                        |
+| `buildOrgTree`                                 | `buildContextTree`                                  |
+| `orgCode`, `orgInitials`, `orgTint`            | `contextCode`, `contextInitials`, `contextTint`     |
+| `useRecentOrganisations`                       | `useRecentContexts`                                 |
+| `glass-ux/shell/org-switcher`                  | `glass-ux/shell/context-switcher`                   |
+
+Props and fields:
+
+- `organisations` is `items` on `ContextSwitcher` and `ContextSwitcherPanel`.
+- `searchPlaceholder` is gone; pass `labels={{ placeholder: "…" }}`.
+- `OrgAvatar`'s `org` prop is `ContextAvatar`'s `item`.
+- `ContextTree.ordered` entries are `{ item, depth }` (were `{ org, depth }`).
+- A `SwitcherRow` carries `item` (was `org`), and its `kind` is `"item"` (was
+  `"organisation"`). The list rows' `data-kind` attribute follows.
+- `describeContext` returns `item` (was `org`).
+- `SwitcherLabels.organisations` is `group`, and `SwitcherLabels` gains keys for every
+  word the switcher shows or announces. Partial `labels` props still merge over the
+  defaults. Code that builds a whole `SwitcherLabels` (for `switcherGroups`) should start
+  from `switcherLabels(noun)` or `DEFAULT_SWITCHER_LABELS`.
+
+CSS: `.fa-org-switcher*` classes are `.fa-context-switcher*`, and `.fa-org-avatar*` are
+`.fa-context-avatar*`. Update stylesheets and test selectors that name them.
+
+Unchanged: with no `labels`, the switcher still speaks of organisations, so its accessible
+names ("Organisation: Northstar Studio", "Search organisations") and the default words stay
+the same. `useRecentContexts` reads the same storage format under your key, so saved recents
+survive.
+
+**Deprecated names from 0.7 are removed.**
+
+| Removed                                        | Use                                                                       |
+| ---------------------------------------------- | ------------------------------------------------------------------------- |
+| `toWhere` on DataTable filter and search specs | `toCondition`                                                             |
+| `WhereInput` from `glass-ux/data-table`        | `FilterCondition`                                                         |
+| `EndpointStatus` (badge, data-table)           | `StatusKind`                                                              |
+| DesktopSession `endpoint` prop                 | `target`                                                                  |
+| `POPUP_OFFSET`, `POPUP_COLLISION_PADDING`      | Popups read `--popup-offset` and `--popup-collision`; override the tokens |
+
+`CustomFilterSpec` now requires `toCondition`. The GraphQL adapter keeps its own
+`toWhere()` function and `WhereInput` type.
+
+### Other changes
 
 No code changes are required. Drag and drop is a new entry, `glass-ux/drag-drop`. The
 redrawn company and manufacturer icons keep their names; review screenshots that include

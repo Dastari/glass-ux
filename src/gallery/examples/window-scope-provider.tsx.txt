@@ -1,10 +1,7 @@
-import {
-  MOCK_ORGANISATIONS,
-  toSwitcherOrganisation,
-} from "glass-ux/gallery/fixtures/organisations";
+import { MOCK_ORGANISATIONS, toContextItem } from "glass-ux/gallery/fixtures/organisations";
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { IconTerminal } from "glass-ux/icons";
-import { OrgAvatar } from "glass-ux/shell/org-switcher/index";
+import { ContextAvatar } from "glass-ux/shell/context-switcher/index";
 import {
   WindowFrame,
   WindowScopeChip,
@@ -12,12 +9,12 @@ import {
   type WindowScopes,
 } from "glass-ux/windows";
 
-const ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
+const ORGS = MOCK_ORGANISATIONS.map(toContextItem);
 const SCOPES: WindowScopes = {
   current: "cedarvale",
   describe: (id) => {
     const org = ORGS.find((item) => item.id === id);
-    return org ? { label: org.name, avatar: <OrgAvatar org={org} size="xs" /> } : undefined;
+    return org ? { label: org.name, avatar: <ContextAvatar item={org} size="xs" /> } : undefined;
   },
 };
 
@@ -36,7 +33,7 @@ function ScopedWindow({ scope, label }: { scope: string; label: string }) {
   );
 }
 
-export default function OrgSwitcherSection() {
+export default function ContextSwitcherSection() {
   return (
     <SectionPage>
       <Specimen

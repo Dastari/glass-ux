@@ -304,8 +304,8 @@ const sectionByFamily = {
 };
 function sectionFor(component) {
   const name = component.name.toLowerCase();
-  if (component.family === "shell" && /orgswitcher|orgavatar/.test(name))
-    return "org-switcher";
+  if (component.family === "shell" && /contextswitcher|contextavatar/.test(name))
+    return "context-switcher";
   if (component.family === "icons") return "icons";
   if (
     component.family === "charts" &&

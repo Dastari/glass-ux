@@ -1,10 +1,10 @@
-import type { SwitcherOrganisation } from '../../shell/org-switcher/index.js'
-export const MOCK_ORGANISATIONS: SwitcherOrganisation[] = [
+import type { ContextItem } from '../../shell/context-switcher/index.js'
+export const MOCK_ORGANISATIONS: ContextItem[] = [
  {id:'northstar',name:'Northstar Studio',code:'NST'}, {id:'north-branch',name:'Northstar Annex',parentId:'northstar'},
  {id:'cedarvale',name:'Cedar Vale Collective',code:'CDV'}, {id:'orbit',name:'Orbit Workspace',code:'ORB'},
  {id:'mossbridge',name:'Mossbridge Workshop',code:'MOS'}, {id:'lumen',name:'Lumen Fieldworks',code:'LMN'}
 ]
-export const toSwitcherOrganisation = (value: SwitcherOrganisation) => value
+export const toContextItem = (value: ContextItem) => value
 export const PORTRAITS = [new URL("../assets/portraits/feab4fd97387d2f5-192.webp", import.meta.url).href,
 new URL("../assets/portraits/cbf27adc675e7b25-192.webp", import.meta.url).href,
 new URL("../assets/portraits/8ad46f910079e080-192.webp", import.meta.url).href,

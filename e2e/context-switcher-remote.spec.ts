@@ -6,14 +6,14 @@ test("bounded remote directory searches, pages, retries and retains selection @r
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("components/org-switcher");
-  const demo = page.getByTestId("org-switcher-remote");
+  await page.goto("components/context-switcher");
+  const demo = page.getByTestId("context-switcher-remote");
   const trigger = demo.getByLabel("Organisation: Summit Loom", { exact: true });
   await trigger.click();
   const popup =
     page.viewportSize()!.width < 768
       ? page.getByRole("dialog", { name: "Organisation", exact: true })
-      : page.locator(".fa-org-switcher-popup").filter({ visible: true });
+      : page.locator(".fa-context-switcher-popup").filter({ visible: true });
   const input = popup.getByRole("combobox", { name: "Search organisations" });
   const option = (name: string) =>
     popup.getByRole("option", { name, exact: true });
@@ -117,8 +117,8 @@ for (const geometry of [
         ),
       geometry,
     );
-    await page.goto("components/org-switcher");
-    const demo = page.getByTestId("org-switcher-remote");
+    await page.goto("components/context-switcher");
+    const demo = page.getByTestId("context-switcher-remote");
     await demo.getByLabel("Organisation: Summit Loom", { exact: true }).click();
     await expect(
       page.getByRole("option", { name: "Harbour Works", exact: true }),
@@ -126,7 +126,7 @@ for (const geometry of [
     const popup =
       geometry.width < 768
         ? page.getByRole("dialog", { name: "Organisation", exact: true })
-        : page.locator(".fa-org-switcher-popup").filter({ visible: true });
+        : page.locator(".fa-context-switcher-popup").filter({ visible: true });
     const box = await popup.evaluate((element) => {
       const rect = element.getBoundingClientRect();
       const option = element
@@ -168,3 +168,40 @@ for (const geometry of [
     });
   });
 }
+
+test("a project switcher speaks of projects, has no All row and passes axe @responsive", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("components/context-switcher");
+  const empty = page.getByLabel("Project: Choose a project", { exact: true });
+  await expect(empty).toBeVisible({ timeout: 30_000 });
+  await expect(empty).toContainText("Choose a project");
+
+  const trigger = page.getByLabel("Project: Harbour survey", { exact: true });
+  await trigger.click();
+  const phone = (page.viewportSize()?.width ?? 1920) < 768;
+  const popup = phone
+    ? page.getByRole("dialog", { name: "Project", exact: true })
+    : page.locator(".fa-context-switcher-popup").filter({ visible: true });
+  await expect(popup).toBeVisible();
+  if (!phone) await expect(popup).toHaveAttribute("aria-label", "Choose a project");
+  const search = popup.getByRole("combobox", { name: "Search projects" });
+  await expect(search).toHaveAttribute("placeholder", "Find a project");
+  await expect(popup.getByRole("group", { name: "Projects" })).toBeVisible();
+  await expect(popup.getByRole("option", { name: /^All/ })).toHaveCount(0);
+  await expect(popup.getByRole("option", { name: "Harbour survey" })).toHaveAttribute("aria-selected", "true");
+
+  expect(
+    (await new AxeBuilder({ page }).analyze()).violations.map((issue) => ({
+      id: issue.id,
+      targets: issue.nodes.map((node) => node.target),
+    })),
+  ).toEqual([]);
+
+  await search.fill("lant");
+  await popup.getByRole("option", { name: "Lantern archive" }).click();
+  await expect(page.getByLabel("Project: Lantern archive", { exact: true })).toBeFocused();
+  expect(errors).toEqual([]);
+});

@@ -86,8 +86,8 @@
 @import "../ui/vertical-tabs/vertical-tabs.css";
 @import "../shell/app-shell.css";
 @import "../shell/bleed.css";
+@import "../shell/context-switcher/context-switcher.css";
 @import "../shell/inspector.css";
-@import "../shell/org-switcher/org-switcher.css";
 @import "../shell/rail.css";
 @import "../shell/section-drawer.css";
 @import "../shell/tab-bar.css";

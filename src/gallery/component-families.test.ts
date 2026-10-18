@@ -99,7 +99,7 @@ describe("component documentation families", () => {
       "surface",
       "panel",
       "entity-header",
-      "org-switcher",
+      "context-switcher",
       "markdown",
       "json-tree",
     ]) {

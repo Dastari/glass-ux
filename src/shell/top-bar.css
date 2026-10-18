@@ -281,17 +281,17 @@
       flex: none;
       --_scope-max: none;
     }
-    .fa-shell-topbar-scope .fa-org-switcher-name {
+    .fa-shell-topbar-scope .fa-context-switcher-name {
       display: none;
     }
-    .fa-shell-topbar-scope .fa-org-switcher-code {
+    .fa-shell-topbar-scope .fa-context-switcher-code {
       display: inline;
     }
-    .fa-shell-topbar-scope .fa-org-switcher {
+    .fa-shell-topbar-scope .fa-context-switcher {
       position: relative;
     }
     /* "+N" rides on the avatar's corner, like a count badge. */
-    .fa-shell-topbar-scope .fa-org-switcher-includes {
+    .fa-shell-topbar-scope .fa-context-switcher-includes {
       position: absolute;
       inset-block-start: 0;
       inset-inline-start: calc(
@@ -358,10 +358,10 @@
       flex: 1 1 0;
     }
     .fa-shell-topbar-sep,
-    .fa-shell-topbar-scope .fa-org-switcher-chevron {
+    .fa-shell-topbar-scope .fa-context-switcher-chevron {
       display: none;
     }
-    .fa-shell-topbar-scope .fa-org-switcher {
+    .fa-shell-topbar-scope .fa-context-switcher {
       padding-inline: var(--space-1-5);
     }
     /* The organisation's trigger moves into the trail popup; its live region stays. */

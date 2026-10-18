@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   MOCK_ORGANISATIONS,
-  toSwitcherOrganisation,
+  toContextItem,
 } from "../fixtures/organisations.js";
 import {
   ContainerLab,
@@ -11,22 +11,24 @@ import {
   Specimen,
   TokenTable,
 } from "../kit.js";
-import { IconTerminal } from "../../icons/generated/icons.js";
+import { IconFolder, IconTerminal } from "../../icons/generated/icons.js";
 import {
-  OrgAvatar,
-  OrgSwitcher,
-  OrgSwitcherPanel,
-  type OrgTint,
-} from "../../shell/org-switcher/index.js";
+  ContextAvatar,
+  ContextSwitcher,
+  ContextSwitcherPanel,
+  switcherLabels,
+  type ContextItem,
+  type ContextTint,
+} from "../../shell/context-switcher/index.js";
 import {
   WindowFrame,
   WindowScopeChip,
   WindowScopeProvider,
   type WindowScopes,
 } from "../../windows/index.js";
-import { RemoteOrgSwitcherExample } from "./org-switcher-remote.js";
+import { RemoteContextSwitcherExample } from "./context-switcher-remote.js";
 
-const ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
+const ORGS = MOCK_ORGANISATIONS.map(toContextItem);
 const RECENT = ["cedarvale", "mossbridge", "orbit"];
 const byId = (id: string) => ORGS.find((org) => org.id === id)!;
 
@@ -34,8 +36,8 @@ const byId = (id: string) => ORGS.find((org) => org.id === id)!;
 function Switcher({ initial }: { initial: string | null }) {
   const [value, setValue] = useState<string | null>(initial);
   return (
-    <OrgSwitcher
-      organisations={ORGS}
+    <ContextSwitcher
+      items={ORGS}
       value={value}
       onValueChange={setValue}
       recent={RECENT}
@@ -47,8 +49,8 @@ function Panel() {
   const [value, setValue] = useState<string | null>("northstar");
   return (
     <div className="glass-overlay gallery-switcher-panel" data-clip-boundary="">
-      <OrgSwitcherPanel
-        organisations={ORGS}
+      <ContextSwitcherPanel
+        items={ORGS}
         value={value}
         onValueChange={setValue}
         recent={RECENT}
@@ -62,7 +64,7 @@ const SCOPES: WindowScopes = {
   describe: (id) => {
     const org = ORGS.find((item) => item.id === id);
     return org
-      ? { label: org.name, avatar: <OrgAvatar org={org} size="xs" /> }
+      ? { label: org.name, avatar: <ContextAvatar item={org} size="xs" /> }
       : undefined;
   },
 };
@@ -82,7 +84,30 @@ function ScopedWindow({ scope, label }: { scope: string; label: string }) {
   );
 }
 
-export default function OrgSwitcherSection() {
+const PROJECT_LABELS = switcherLabels({ one: "project", other: "projects" });
+const PROJECTS: ContextItem[] = [
+  { id: "atlas", name: "Atlas redesign", icon: <IconFolder />, meta: "12 tasks" },
+  { id: "atlas-web", name: "Atlas website", parentId: "atlas", icon: <IconFolder />, meta: "5 tasks" },
+  { id: "harbour", name: "Harbour survey", icon: <IconFolder />, meta: "3 tasks" },
+  { id: "lantern", name: "Lantern archive", icon: <IconFolder />, meta: "8 tasks" },
+];
+
+/** A project switcher: its own noun, no "all" row, a folder on each tile. */
+function ProjectSwitcher({ initial }: { initial: string | null }) {
+  const [value, setValue] = useState<string | null>(initial);
+  return (
+    <ContextSwitcher
+      items={PROJECTS}
+      value={value}
+      onValueChange={setValue}
+      labels={PROJECT_LABELS}
+      all={false}
+      icon={<IconFolder />}
+    />
+  );
+}
+
+export default function ContextSwitcherSection() {
   return (
     <SectionPage>
       <Specimen
@@ -117,35 +142,52 @@ export default function OrgSwitcherSection() {
         description="A bounded flat directory: the host searches, cancels stale requests and loads one more page at a time. Summit Loom remains selected outside the first page. Search for coastal to match an alternate name, or simulate a read failure and retry. No parent or descendant relationship is inferred."
         layout="bare"
       >
-        <RemoteOrgSwitcherExample />
+        <RemoteContextSwitcherExample />
+      </Specimen>
+
+      <Specimen
+        title="Other contexts"
+        description="The same switcher for projects: switcherLabels builds every word from the noun, all={false} drops the All row, and each project shows a folder on its tint. Until a project is chosen the trigger reads Choose a project."
+        wide
+      >
+        <Example label="Nothing chosen">
+          <ProjectSwitcher initial={null} />
+        </Example>
+        <Example label="A project">
+          <ProjectSwitcher initial="harbour" />
+        </Example>
+        <Example label="A parent includes its sub-project">
+          <ProjectSwitcher initial="atlas" />
+        </Example>
       </Specimen>
 
       <Specimen
         title="Avatar"
-        description="A rounded square, so an organisation never reads as a person. Initials sit in ink on one of the eight identity colours (never the data hues); a logo replaces them. In a narrow top bar the trigger shows the avatar and the short code (“NST”)."
+        description="A rounded square, so an organisation or project never reads as a person. Initials or an icon sit in ink on one of the eight identity colours (never the data hues); a logo replaces them. In a narrow top bar the trigger shows the avatar and the short code (“NST”)."
       >
         <Example label="Sizes">
           <div className="gallery-avatar-row">
             {(["xs", "sm", "md", "lg"] as const).map((size) => (
-              <OrgAvatar key={size} org={byId("northstar")} size={size} />
+              <ContextAvatar key={size} item={byId("northstar")} size={size} />
             ))}
           </div>
         </Example>
         <Example label="Tints">
           <div className="gallery-avatar-row">
-            {([1, 2, 3, 4, 5, 6, 7, 8] as OrgTint[]).map((tint) => (
-              <OrgAvatar
+            {([1, 2, 3, 4, 5, 6, 7, 8] as ContextTint[]).map((tint) => (
+              <ContextAvatar
                 key={tint}
-                org={{ ...byId("cedarvale"), tint }}
+                item={{ ...byId("cedarvale"), tint }}
                 size="md"
               />
             ))}
           </div>
         </Example>
-        <Example label="Logo · All organisations">
+        <Example label="Logo · Icon · All organisations">
           <div className="gallery-avatar-row">
-            <OrgAvatar org={byId("orbit")} size="md" />
-            <OrgAvatar org={null} size="md" />
+            <ContextAvatar item={byId("orbit")} size="md" />
+            <ContextAvatar item={PROJECTS[2]!} size="md" />
+            <ContextAvatar item={null} size="md" />
           </div>
         </Example>
       </Specimen>
@@ -186,13 +228,14 @@ export default function OrgSwitcherSection() {
       <Rules
         do={[
           "Put the switcher first in the top bar and let the breadcrumb continue from it.",
-          "Keep the scope in the URL (/o/$org/…); the switcher only reports a choice.",
+          "Keep the scope in the URL (/o/$org/…, /p/$project/…); the switcher only reports a choice.",
           "Keep the user's place when switching: the same section, the same entity if it is in scope.",
-          "Label every window and list row from another organisation with its avatar or name.",
+          "Label every window and list row from another context with its avatar or name.",
+          "Name the context with switcherLabels so every visible and announced word matches it.",
         ]}
         dont={[
-          "Narrow settings, appearance or window layout by the organisation (R6.9).",
-          "Close, pause or reload a window when the organisation changes.",
+          "Narrow settings, appearance or window layout by the context (R6.9).",
+          "Close, pause or reload a window when the context changes.",
           "Keep the scope in storage: each browser tab keeps its own.",
         ]}
       />

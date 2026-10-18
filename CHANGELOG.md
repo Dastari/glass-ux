@@ -4,9 +4,34 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## 0.7.3
+## 0.8.0
+
+### Breaking changes
+
+Upgrade steps: [migration guide, 0.7 → 0.8](docs/migration.md#07--08).
+
+- `OrgSwitcher` is now `ContextSwitcher`, a switcher for any context people work in:
+  organisations, projects, workspaces. Every related export, the
+  `glass-ux/shell/org-switcher` entry and the `.fa-org-switcher*` / `.fa-org-avatar*`
+  classes are renamed, with no aliases. Its `organisations` prop is `items`, and
+  `searchPlaceholder` moved into `labels.placeholder`. Rows carry `item` instead of `org`,
+  with kind `"item"` instead of `"organisation"`, and the group label key
+  `organisations` is `group`.
+- The names deprecated in 0.7 are removed: `toWhere` on DataTable filter and search specs
+  (use `toCondition`), `WhereInput` from `glass-ux/data-table` (use `FilterCondition`),
+  `EndpointStatus` (use `StatusKind`), DesktopSession's `endpoint` prop (use `target`), and
+  `POPUP_OFFSET` / `POPUP_COLLISION_PADDING` (popups read `--popup-offset` and
+  `--popup-collision`). The GraphQL adapter's own `toWhere()` and `WhereInput` are unchanged.
 
 ### Added
+
+- `ContextSwitcher` takes `labels` for every word it shows or announces: the trigger's
+  accessible name, the phone sheet's title, search, the empty, loading and failure messages,
+  and "Load more". `switcherLabels({ one: "project", other: "projects" })` builds the whole
+  set from a noun. `all={false}` drops the "all" row; until something is chosen, the trigger
+  reads `labels.choose` ("Choose a project"). `icon` sets the "all" glyph, and a
+  `ContextItem` can carry its own `icon`, which sits on its tint in place of initials. The
+  catalogue page (`/components/context-switcher`) shows a project switcher.
 
 - Drag and drop, in `glass-ux/drag-drop`. `DragDropProvider` scopes it; `Draggable` makes
   any element carry one of your objects with a `type`; `DropZone` makes any element a target;

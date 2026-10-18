@@ -218,7 +218,7 @@
   }
 }
 
-/* ── Brand marks and the organisation switcher (brand, org-switcher sections) ── */
+/* ── Brand marks and the context switcher (brand, context-switcher sections) ── */
 @layer components {
   .gallery-mark-lg {
     --_size: var(--space-12);

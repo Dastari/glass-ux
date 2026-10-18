@@ -13,7 +13,7 @@ for (const id of [
   "data-table",
   "line-chart",
   "assistant-pane",
-  "org-switcher",
+  "context-switcher",
   "reference-input",
 ]) {
   test(`${id} has its own demo and full API`, async ({ page }) => {

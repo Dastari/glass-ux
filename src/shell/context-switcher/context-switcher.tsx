@@ -1,10 +1,11 @@
 /**
- * OrgSwitcher — the tenant scope in the top bar (R5.2, R6.9). First after the logo, so the
- * organisation you are in is always visible: its avatar and name, "All organisations" when
+ * ContextSwitcher — the context you work in, in the top bar (R5.2, R6.9): an organisation,
+ * a project, a workspace. First after the logo, so the context you are in is always
+ * visible: its avatar and name, "All organisations" (or the host's "all" label) when
  * unscoped, and "+3" when a parent includes its children. The breadcrumb continues from it.
  *
  *   trigger   [avatar] Northstar Studio (+3) ⇅     on the canvas, like a crumb
- *   popup     search · All organisations · Recent · the parent/child tree     (fa-popup)
+ *   popup     search · All … · Recent · the parent/child tree     (fa-popup)
  *   phone     the same list in a bottom Sheet
  *
  * Behaviour is Base UI's Combobox with the input inside the popup: typing filters, arrows
@@ -12,8 +13,9 @@
  * choice (`onValueChange`); the application decides where that goes (keeping your place,
  * R6.6) and owns the URL.
  *
- * Generic: it knows organisations as a tree of { id, name, parentId, avatar }. The product
- * supplies them (a directory adapter) and the labels.
+ * Generic: it knows contexts as a tree of { id, name, parentId, avatar }. The product
+ * supplies them (a directory adapter), the words (`labels`, or `switcherLabels(noun)`), the
+ * "all" glyph (`icon`) and whether an "all" row exists (`all`).
  */
 import { Combobox } from "@base-ui/react/combobox";
 import {
@@ -41,77 +43,86 @@ import { TruncatedText } from "../../ui/truncated-text/index.js";
 import { SHELL_QUERIES } from "../queries.js";
 import {
   DEFAULT_SWITCHER_LABELS,
-  buildOrgTree,
-  orgCode,
-  orgInitials,
-  orgTint,
+  buildContextTree,
+  contextCode,
+  contextInitials,
+  contextTint,
   switcherGroups,
-  type OrgTree,
+  type ContextItem,
+  type ContextTree,
   type SwitcherGroup,
   type SwitcherLabels,
-  type SwitcherOrganisation,
   type SwitcherRow,
 } from "./model.js";
 import {
   RemoteFeedback,
   remoteGroups,
-  type OrgSwitcherRemote,
+  type ContextSwitcherRemote,
 } from "./remote.js";
 
 /* ── Avatar ─────────────────────────────────────────────────────────────── */
 
-export type OrgAvatarSize = "xs" | "sm" | "md" | "lg";
+/** The avatar's size: xs 20 · sm 24 · md 32 · lg 40. */
+export type ContextAvatarSize = "xs" | "sm" | "md" | "lg";
 
-export interface OrgAvatarProps extends Omit<
+export interface ContextAvatarProps extends Omit<
   ComponentProps<"span">,
   "children"
 > {
-  /** The organisation, or null for "All organisations". */
-  org: Pick<
-    SwitcherOrganisation,
-    "id" | "name" | "avatarSrc" | "initials" | "tint"
+  /** The context, or null for the "all" scope. */
+  item: Pick<
+    ContextItem,
+    "id" | "name" | "avatarSrc" | "icon" | "initials" | "tint"
   > | null;
   /** xs 20 (lists, chips) · sm 24 (top bar, dock) · md 32 · lg 40 (page headers). */
-  size?: OrgAvatarSize;
+  size?: ContextAvatarSize;
   /** Hidden from assistive tech (default): a visible name sits beside it. */
   decorative?: boolean;
+  /** The glyph for the "all" scope (default the organisation glyph). */
+  icon?: ReactNode;
+  /** The accessible name for the "all" scope when not decorative (default "All organisations"). */
+  allLabel?: string;
 }
 
 /**
- * An organisation's avatar: its logo, or its initials on its tint. A rounded square, so an
- * organisation never reads as a person (people are round, ui/avatar). All organisations is
- * the organisation glyph on a neutral tile.
+ * A context's avatar: its logo, its icon or its initials on its tint. A rounded square, so
+ * an organisation or project never reads as a person (people are round, ui/avatar). The
+ * "all" scope is a glyph on a neutral tile.
  */
-export function OrgAvatar({
-  org,
+export function ContextAvatar({
+  item,
   size = "sm",
   decorative = true,
+  icon,
+  allLabel = DEFAULT_SWITCHER_LABELS.all,
   className,
   ...rest
-}: OrgAvatarProps) {
+}: ContextAvatarProps) {
   return (
     <span
       {...rest}
-      className={cx("fa-org-avatar", className)}
+      className={cx("fa-context-avatar", className)}
       data-size={size}
-      data-tint={org ? orgTint(org) : "all"}
-      data-logo={org?.avatarSrc ? "" : undefined}
+      data-tint={item ? contextTint(item) : "all"}
+      data-logo={item?.avatarSrc ? "" : undefined}
       role={decorative ? undefined : "img"}
-      aria-label={decorative ? undefined : (org?.name ?? "All organisations")}
+      aria-label={decorative ? undefined : (item?.name ?? allLabel)}
       aria-hidden={decorative ? true : undefined}
     >
-      {org === null ? (
-        <IconOrganisation />
-      ) : org.avatarSrc ? (
+      {item === null ? (
+        (icon ?? <IconOrganisation />)
+      ) : item.avatarSrc ? (
         <img
-          className="fa-org-avatar-image"
-          src={org.avatarSrc}
+          className="fa-context-avatar-image"
+          src={item.avatarSrc}
           alt=""
           draggable={false}
         />
+      ) : item.icon ? (
+        <span className="fa-context-avatar-icon">{item.icon}</span>
       ) : (
-        <span className="fa-org-avatar-initials">
-          {org.initials ?? orgInitials(org.name)}
+        <span className="fa-context-avatar-initials">
+          {item.initials ?? contextInitials(item.name)}
         </span>
       )}
     </span>
@@ -120,49 +131,51 @@ export function OrgAvatar({
 
 /* ── Switcher ───────────────────────────────────────────────────────────── */
 
-export interface OrgSwitcherProps<
-  O extends SwitcherOrganisation = SwitcherOrganisation,
-> {
+export interface ContextSwitcherProps<I extends ContextItem = ContextItem> {
   /** Complete local hierarchy, or the loaded flat server results when remote is supplied. */
-  organisations: readonly O[];
+  items: readonly I[];
   /** Controlled server search/paging. Bypasses local filtering and ignores parent links and recents. */
-  remote?: OrgSwitcherRemote;
-  /** The current scope: an organisation id, or null for all organisations. */
+  remote?: ContextSwitcherRemote;
+  /** The current scope: a context id, or null for all (or none, when `all` is false). */
   value: string | null;
   /** A choice was made (also when it is the current one: the caller may ignore it). */
   onValueChange: (value: string | null) => void;
-  /** Recently chosen organisation ids, most recent first (useRecentOrganisations). */
+  /** Recently chosen context ids, most recent first (useRecentContexts). */
   recent?: readonly string[];
   /** Controlled open state, so a palette command or a shortcut can open it. */
   open?: boolean;
   /** Called with the next open state when the popup (or phone sheet) opens or closes, including the close after a choice. Pair with `open` to control it. */
   onOpenChange?: (open: boolean) => void;
-  /** Display and accessibility labels supplied by the application. */
+  /** The words it shows and announces. Default: organisations. Build a set for another noun
+   *  with `switcherLabels({ one: "project", other: "projects" })`; single overrides merge
+   *  over the default. */
   labels?: Partial<SwitcherLabels>;
-  /** Placeholder of the search field. */
-  searchPlaceholder?: string;
+  /** Offer an "all" row that clears the scope (default true). Without it, null means nothing
+   *  is chosen yet and the trigger reads `labels.choose`. */
+  all?: boolean;
+  /** The glyph for the "all" scope and for nothing chosen (default the organisation glyph). */
+  icon?: ReactNode;
   className?: string;
 }
 
-/** The trigger's text: "Northstar Studio" and how many it includes. */
-export function describeOrgScope(
-  tree: OrgTree,
+/** The trigger's text for a scope: its name, short code, how many it includes and its accessible name. */
+export function describeContext(
+  tree: ContextTree,
   value: string | null,
   labels: SwitcherLabels = DEFAULT_SWITCHER_LABELS,
+  all = true,
 ) {
-  const org = value ? tree.byId.get(value) : undefined;
-  const includes = org ? tree.descendantsOf(org.id).length : 0;
-  const name = org?.name ?? labels.all;
-  const code = org ? orgCode(org) : labels.allShort;
-  const accessible = includes
-    ? `${name} and ${includes} ${includes === 1 ? "organisation" : "organisations"} under it`
-    : name;
-  return { org: org ?? null, name, code, includes, accessible };
+  const item = value ? tree.byId.get(value) : undefined;
+  const includes = item ? tree.descendantsOf(item.id).length : 0;
+  const name = item?.name ?? (value !== null ? labels.missing : all ? labels.all : labels.choose);
+  const code = item ? contextCode(item) : value !== null ? "?" : all ? labels.allShort : labels.title;
+  const accessible = includes ? labels.includes(name, includes) : name;
+  return { item: item ?? null, name, code, includes, accessible };
 }
 
-/** Choose an organisation from a complete local hierarchy or a bounded server directory. */
-export function OrgSwitcher<O extends SwitcherOrganisation>({
-  organisations,
+/** Choose a context (an organisation, a project, a workspace) from a complete local hierarchy or a bounded server directory. */
+export function ContextSwitcher<I extends ContextItem>({
+  items,
   remote,
   value,
   onValueChange,
@@ -170,14 +183,15 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
   open: openProp,
   onOpenChange,
   labels: labelsProp,
-  searchPlaceholder = "Find an organisation",
+  all = true,
+  icon,
   className,
-}: OrgSwitcherProps<O>) {
+}: ContextSwitcherProps<I>) {
   const labels = useMemo(
     () => ({ ...DEFAULT_SWITCHER_LABELS, ...labelsProp }),
     [labelsProp],
   );
-  const tree = useMemo(() => buildOrgTree(organisations), [organisations]);
+  const tree = useMemo(() => buildContextTree(items), [items]);
   const phone = useMediaQuery(SHELL_QUERIES.phone);
   const [innerOpen, setInnerOpen] = useState(false);
   const open = openProp ?? innerOpen;
@@ -185,7 +199,7 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
     if (openProp === undefined) setInnerOpen(next);
     onOpenChange?.(next);
   };
-  const selectedOrg =
+  const selectedItem =
     value === null
       ? undefined
       : remote?.selected?.id === value
@@ -194,38 +208,38 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
   const scope =
     remote && value !== null
       ? {
-          org: selectedOrg ?? null,
-          name: selectedOrg?.name ?? "Organisation unavailable",
-          code: selectedOrg ? orgCode(selectedOrg) : "?",
+          item: selectedItem ?? null,
+          name: selectedItem?.name ?? labels.missing,
+          code: selectedItem ? contextCode(selectedItem) : "?",
           includes: 0,
-          accessible: selectedOrg?.name ?? "Organisation unavailable",
+          accessible: selectedItem?.name ?? labels.missing,
         }
-      : describeOrgScope(tree, value, labels);
+      : describeContext(tree, value, labels, all);
   const changed = useExternalChange(value);
   const fresh = useFreshAfterClose();
 
   const trigger = (
-    <span className="fa-org-switcher-face">
-      <OrgAvatar org={scope.org} size="sm" />
-      <TruncatedText className="fa-org-switcher-name" tooltipSide="bottom">
+    <span className="fa-context-switcher-face">
+      <ContextAvatar item={scope.item} icon={icon} size="sm" />
+      <TruncatedText className="fa-context-switcher-name" tooltipSide="bottom">
         {scope.name}
       </TruncatedText>
       {/* A narrow bar shows the short code instead of the name (top-bar.css). */}
-      <span className="fa-org-switcher-code" aria-hidden>
+      <span className="fa-context-switcher-code" aria-hidden>
         {scope.code}
       </span>
       {scope.includes ? (
-        <span className="fa-org-switcher-includes" aria-hidden>
+        <span className="fa-context-switcher-includes" aria-hidden>
           +{scope.includes}
         </span>
       ) : null}
-      <IconChevronsUpDown className="fa-org-switcher-chevron" />
+      <IconChevronsUpDown className="fa-context-switcher-chevron" />
     </span>
   );
   const triggerProps = {
     ref: fresh.triggerRef,
-    className: cx("fa-org-switcher fa-pressable", className),
-    "aria-label": `Organisation: ${scope.accessible}`,
+    className: cx("fa-context-switcher fa-pressable", className),
+    "aria-label": `${labels.title}: ${scope.accessible}`,
     "data-scope": value ?? "all",
     "data-changed": changed.active ? "" : undefined,
   };
@@ -234,11 +248,11 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
     changed.chose(next);
     onValueChange(next);
   };
-  // Said once when the scope changes from elsewhere (a search result in another organisation).
+  // Said once when the scope changes from elsewhere (a search result in another context).
   // The status node stays mounted so the message is announced when its text arrives.
   const announcement = (
     <span className="sr-only" role="status">
-      {changed.active ? `Now in ${scope.name}` : ""}
+      {changed.active ? labels.changed(scope.name) : ""}
     </span>
   );
 
@@ -261,16 +275,17 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
           onOpenChange={(next) => setOpen(next)}
         >
           <Sheet.Popup size="md">
-            <Sheet.Header title="Organisation" />
+            <Sheet.Header title={labels.title} />
             {/* Straight in the sheet, not in a Sheet.Body: the search stays put and the list scrolls. */}
             <SwitcherList
               tree={tree}
-              organisations={organisations}
+              items={items}
               remote={remote}
               value={value}
               recent={recent}
               labels={labels}
-              placeholder={searchPlaceholder}
+              all={all}
+              icon={icon}
               inline
               placement="sheet"
               onChoose={choose}
@@ -287,12 +302,13 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
         key={fresh.generation}
         onOpenChangeComplete={fresh.onOpenChangeComplete}
         tree={tree}
-        organisations={organisations}
+        items={items}
         remote={remote}
         value={value}
         recent={recent}
         labels={labels}
-        placeholder={searchPlaceholder}
+        all={all}
+        icon={icon}
         open={open}
         onOpenChange={setOpen}
         onChoose={choose}
@@ -309,7 +325,7 @@ export function OrgSwitcher<O extends SwitcherOrganisation>({
  * A fresh Combobox after every close. Base UI 1.9's AriaCombobox hands useListNavigation an
  * inline `onNavigate`; the hook's memoised `floating` handlers share a closure context with it,
  * so each open/close pins the previous render's whole scope, its unmounted listbox included
- * (about 400 detached nodes and 46 listeners per organisation switch, docs/performance.md).
+ * (about 400 detached nodes and 46 listeners per switch, docs/performance.md).
  * Remounting the root once the close has finished drops the chain; focus goes back to the new
  * trigger when the switcher had it.
  */
@@ -333,7 +349,7 @@ function useFreshAfterClose() {
     const active = document.activeElement;
     refocus.current =
       active === trigger.current ||
-      Boolean(active?.closest(".fa-org-switcher-popup"));
+      Boolean(active?.closest(".fa-context-switcher-popup"));
     setGeneration((current) => current + 1);
   };
   return { generation, triggerRef, onOpenChangeComplete };
@@ -344,8 +360,8 @@ const CHANGE_HIGHLIGHT_MS = 1600;
 
 /**
  * Notices a scope change that did not come from this switcher (a search result or a link in
- * another organisation, Back and Forward), so the trigger can highlight it briefly (R6.9):
- * the user is told the organisation changed under them. A choice made in the switcher is
+ * another context, Back and Forward), so the trigger can highlight it briefly (R6.9):
+ * the user is told the context changed under them. A choice made in the switcher is
  * expected, so it is not highlighted.
  */
 function useExternalChange(value: string | null) {
@@ -370,15 +386,18 @@ function useExternalChange(value: string | null) {
 }
 
 interface SwitcherListProps {
-  tree: OrgTree;
-  organisations: readonly SwitcherOrganisation[];
-  remote?: OrgSwitcherRemote;
+  tree: ContextTree;
+  items: readonly ContextItem[];
+  remote?: ContextSwitcherRemote;
   value: string | null;
   recent: readonly string[];
   /** Display and accessibility labels supplied by the application. */
   labels: SwitcherLabels;
-  placeholder: string;
-  /** Called with the chosen organisation id, or null for all organisations, when the person picks a row. */
+  /** Lead with the "all" row. */
+  all: boolean;
+  /** The "all" glyph. */
+  icon?: ReactNode;
+  /** Called with the chosen context id, or null for all, when the person picks a row. */
   onChoose: (value: string | null) => void;
   /** In a sheet (phones) or a page: the list is always shown, without a popup. */
   inline?: boolean;
@@ -395,16 +414,17 @@ interface SwitcherListProps {
 
 /**
  * The searchable list: a popup under the trigger, or inline (the phone sheet, the gallery).
- * Exported as OrgSwitcherPanel for documentation and for pages that pick a scope in place.
+ * Exported as ContextSwitcherPanel for documentation and for pages that pick a scope in place.
  */
 function SwitcherList({
   tree,
-  organisations,
+  items,
   remote,
   value,
   recent,
   labels,
-  placeholder,
+  all,
+  icon,
   onChoose,
   inline = false,
   placement = "page",
@@ -420,9 +440,9 @@ function SwitcherList({
   const groups = useMemo(
     () =>
       remote
-        ? remoteGroups(organisations, remote, labels)
-        : switcherGroups(tree, { query, recent, value, labels }),
-    [tree, query, recent, value, labels, remote, organisations],
+        ? remoteGroups(items, remote, labels, all)
+        : switcherGroups(tree, { query, recent, value, labels, all }),
+    [tree, query, recent, value, labels, remote, items, all],
   );
   // The selected row is the tree's, never the Recent copy, so it is marked once.
   const selected = useMemo(
@@ -438,40 +458,40 @@ function SwitcherList({
 
   const body = (
     <>
-      <div className="fa-org-switcher-search">
+      <div className="fa-context-switcher-search">
         <IconSearch />
         <Combobox.Input
           ref={inputRef}
-          className="fa-org-switcher-input"
-          placeholder={placeholder}
-          aria-label="Search organisations"
+          className="fa-context-switcher-input"
+          placeholder={labels.placeholder}
+          aria-label={labels.search}
         />
       </div>
       <Combobox.Status className="sr-only">
         {remote
           ? remote.loading
-            ? "Loading organisations"
+            ? labels.loading
             : remote.error
-              ? "Organisation directory unavailable"
-              : `${organisations.length} loaded ${organisations.length === 1 ? "result" : "results"}${remote.hasNextPage ? "; more available" : ""}`
+              ? labels.unavailable
+              : `${items.length} loaded ${items.length === 1 ? "result" : "results"}${remote.hasNextPage ? "; more available" : ""}`
           : query.trim()
             ? `${count} ${count === 1 ? "result" : "results"}`
             : ""}
       </Combobox.Status>
       {!remote && (
-        <Combobox.Empty className="fa-org-switcher-empty">
-          {query.trim() ? `No organisations match “${query.trim()}”` : null}
+        <Combobox.Empty className="fa-context-switcher-empty">
+          {query.trim() ? labels.noMatch(query.trim()) : null}
         </Combobox.Empty>
       )}
       <Combobox.List
-        className="fa-org-switcher-list"
+        className="fa-context-switcher-list"
         data-inline={inline ? "" : undefined}
       >
         {(group: SwitcherGroup) => (
           <Combobox.Group
             key={group.value || "all"}
             items={group.items}
-            className="fa-org-switcher-group"
+            className="fa-context-switcher-group"
           >
             {group.value ? (
               <Combobox.GroupLabel className="fa-popup-group-label">
@@ -480,14 +500,14 @@ function SwitcherList({
             ) : null}
             <Combobox.Collection>
               {(row: SwitcherRow) => (
-                <SwitcherItem key={row.key} row={row} query={query} />
+                <SwitcherItem key={row.key} row={row} query={query} icon={icon} />
               )}
             </Combobox.Collection>
           </Combobox.Group>
         )}
       </Combobox.List>
       {remote ? (
-        <RemoteFeedback remote={remote} count={organisations.length} />
+        <RemoteFeedback remote={remote} count={items.length} labels={labels} />
       ) : null}
     </>
   );
@@ -517,7 +537,7 @@ function SwitcherList({
     >
       {inline ? (
         <div
-          className="fa-org-switcher-panel"
+          className="fa-context-switcher-panel"
           data-inline=""
           data-placement={placement}
         >
@@ -534,8 +554,8 @@ function SwitcherList({
               collisionPadding={popup.collisionPadding}
             >
               <Combobox.Popup
-                className="glass-overlay fa-popup fa-org-switcher-popup"
-                aria-label="Choose an organisation"
+                className="glass-overlay fa-popup fa-context-switcher-popup"
+                aria-label={labels.popup}
                 initialFocus={inputRef}
               >
                 {body}
@@ -548,11 +568,19 @@ function SwitcherList({
   );
 }
 
-function SwitcherItem({ row, query }: { row: SwitcherRow; query: string }) {
+function SwitcherItem({
+  row,
+  query,
+  icon,
+}: {
+  row: SwitcherRow;
+  query: string;
+  icon?: ReactNode;
+}) {
   return (
     <Combobox.Item
       value={row}
-      className="fa-item fa-org-switcher-item"
+      className="fa-item fa-context-switcher-item"
       data-depth={row.depth || undefined}
       data-kind={row.kind}
       data-two-line={row.detail ? "" : undefined}
@@ -560,70 +588,72 @@ function SwitcherItem({ row, query }: { row: SwitcherRow; query: string }) {
         row.depth ? ({ "--_depth": row.depth } as CSSProperties) : undefined
       }
     >
-      <OrgAvatar org={row.org ?? null} size="sm" />
-      <span className="fa-org-switcher-text">
+      <ContextAvatar item={row.item ?? null} icon={icon} size="sm" />
+      <span className="fa-context-switcher-text">
         <TruncatedText className="fa-item-label">
           <Highlight text={row.label} query={query} />
         </TruncatedText>
         {row.detail ? (
-          <TruncatedText className="fa-org-switcher-detail">
+          <TruncatedText className="fa-context-switcher-detail">
             <Highlight text={row.detail} query={query} />
           </TruncatedText>
         ) : null}
       </span>
-      {row.org?.meta ? (
-        <span className="fa-item-trail">{row.org.meta}</span>
+      {row.item?.meta ? (
+        <span className="fa-item-trail">{row.item.meta}</span>
       ) : null}
-      <Combobox.ItemIndicator className="fa-org-switcher-check">
+      <Combobox.ItemIndicator className="fa-context-switcher-check">
         <IconCheck />
       </Combobox.ItemIndicator>
     </Combobox.Item>
   );
 }
 
-export interface OrgSwitcherPanelProps<
-  O extends SwitcherOrganisation = SwitcherOrganisation,
-> {
+export interface ContextSwitcherPanelProps<I extends ContextItem = ContextItem> {
   /** Complete local hierarchy, or the loaded flat server results when remote is supplied. */
-  organisations: readonly O[];
+  items: readonly I[];
   /** Controlled server search and paging; parent links and local recents are ignored. */
-  remote?: OrgSwitcherRemote;
-  /** Selected organisation ID, or null for the all-organisations scope. */
+  remote?: ContextSwitcherRemote;
+  /** Selected context id, or null for the "all" scope (or none, when `all` is false). */
   value: string | null;
-  /** Called with the chosen organisation id, or null for all organisations, when the person picks a row (also when it is the current one). */
+  /** Called with the chosen context id, or null for all, when the person picks a row (also when it is the current one). */
   onValueChange: (value: string | null) => void;
-  /** Previously selected IDs, ordered most recent first. */
+  /** Previously selected ids, ordered most recent first. */
   recent?: readonly string[];
-  /** Display and accessibility labels supplied by the application. */
+  /** The words it shows and announces; see ContextSwitcher's `labels`. */
   labels?: Partial<SwitcherLabels>;
-  /** Prompt in the searchable hierarchy. Defaults to "Find an organisation". */
-  searchPlaceholder?: string;
+  /** Offer an "all" row (default true). */
+  all?: boolean;
+  /** The glyph for the "all" scope (default the organisation glyph). */
+  icon?: ReactNode;
 }
 
 /** The switcher's list, always open, for a sheet, a page or the gallery. */
-export function OrgSwitcherPanel<O extends SwitcherOrganisation>({
-  organisations,
+export function ContextSwitcherPanel<I extends ContextItem>({
+  items,
   remote,
   value,
   onValueChange,
   recent = [],
   labels: labelsProp,
-  searchPlaceholder = "Find an organisation",
-}: OrgSwitcherPanelProps<O>) {
+  all = true,
+  icon,
+}: ContextSwitcherPanelProps<I>) {
   const labels = useMemo(
     () => ({ ...DEFAULT_SWITCHER_LABELS, ...labelsProp }),
     [labelsProp],
   );
-  const tree = useMemo(() => buildOrgTree(organisations), [organisations]);
+  const tree = useMemo(() => buildContextTree(items), [items]);
   return (
     <SwitcherList
       tree={tree}
-      organisations={organisations}
+      items={items}
       remote={remote}
       value={value}
       recent={recent}
       labels={labels}
-      placeholder={searchPlaceholder}
+      all={all}
+      icon={icon}
       inline
       onChoose={onValueChange}
     />

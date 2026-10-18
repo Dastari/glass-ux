@@ -72,7 +72,7 @@ For sign-in, providers, two-factor codes, password reset and account creation, s
 | --------------------------------- | ------------------------------- | ---------------------------------------------------------------------------- |
 | [Segmented control](segmented.md) | `Segmented`                     | full → icons → menu button                                                   |
 | [Breadcrumb](breadcrumb.md)       | `Breadcrumb`, `RouteBreadcrumb` | full → middle → ‹ parent · current → current place with the trail in a popup |
-| [Organisation switcher](org-switcher.md) | `OrgSwitcher`, `OrgSwitcherPanel` | Complete local hierarchy or bounded server directory; phone sheet |
+| [Context switcher](context-switcher.md) | `ContextSwitcher`, `ContextSwitcherPanel` | Organisations, projects or any context; complete local hierarchy or bounded server directory; phone sheet |
 
 ## Interaction
 

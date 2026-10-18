@@ -131,7 +131,7 @@ const groups: Record<string, string[]> = {
   ],
   "entity-header": ["entity-header-skeleton"],
   inspector: ["inspector-toggle"],
-  "org-switcher": ["org-avatar", "org-switcher-panel"],
+  "context-switcher": ["context-avatar", "context-switcher-panel"],
   "assistant-pane": ["ai-hero", "ai-mark"],
   "ai-card": ["ai-surface-provider"],
   "conversation-log": [

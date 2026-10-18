@@ -2,19 +2,15 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { useContext, useState } from "react";
 import { DemoScope } from "../demo-scope.js";
-import {
-  MOCK_ORGANISATIONS,
-  PORTRAITS,
-  toSwitcherOrganisation,
-} from "../fixtures/organisations.js";
+import { MOCK_ORGANISATIONS, PORTRAITS, toContextItem } from "../fixtures/organisations.js";
 import { WORKSPACE_SETTINGS } from "../fixtures/brand.js";
 import { Example, SectionPage, Specimen } from "../kit.js";
 import { AccountButton, SearchTrigger, TopBar, TopBarSettingsButton } from "../../shell/index.js";
-import { OrgSwitcher } from "../../shell/org-switcher/index.js";
+import { ContextSwitcher } from "../../shell/context-switcher/index.js";
 import { Breadcrumb } from "../../ui/breadcrumb/index.js";
 import { Menu } from "../../ui/menu/index.js";
 
-const SWITCHER_ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
+const SWITCHER_ORGS = MOCK_ORGANISATIONS.map(toContextItem);
 
 function SpecimenTopBar({ label }: { label: string }) {
   const demo = useContext(DemoScope);
@@ -22,7 +18,7 @@ function SpecimenTopBar({ label }: { label: string }) {
   const [unread, setUnread] = useState(3);
   return (
     <TopBar
-      scope={<OrgSwitcher organisations={SWITCHER_ORGS} value={scope} onValueChange={setScope} />}
+      scope={<ContextSwitcher items={SWITCHER_ORGS} value={scope} onValueChange={setScope} />}
       breadcrumb={
         <Breadcrumb
           aria-label={`Breadcrumb: ${demo ? `${demo}: ` : ""}${label}`}

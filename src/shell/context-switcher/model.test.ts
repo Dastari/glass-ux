@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { buildOrgTree, matchRank, orgInitials, orgTint, pushRecent, scopeIds, switcherGroups, type SwitcherOrganisation } from "./model.js"
+import { buildContextTree, contextInitials, contextTint, matchRank, pushRecent, scopeIds, switcherGroups, switcherLabels, type ContextItem } from "./model.js"
 
-const ORGS: SwitcherOrganisation[] = [
+const ORGS: ContextItem[] = [
   { id: "northstar", name: "Northstar Studio" },
   { id: "cedar-annex", name: "Cedar Vale Library", parentId: "northstar" },
   { id: "mossbridge", name: "Mossbridge Visitor Centre", parentId: "northstar" },
@@ -11,11 +11,11 @@ const ORGS: SwitcherOrganisation[] = [
   { id: "orphan", name: "Orphan Clinic", parentId: "hidden" },
 ]
 
-const tree = buildOrgTree(ORGS)
+const tree = buildContextTree(ORGS)
 
-describe("organisation tree", () => {
+describe("context tree", () => {
   it("orders roots by name with children under their parent, at any depth", () => {
-    expect(tree.ordered.map(({ org, depth }) => `${depth}:${org.id}`)).toEqual([
+    expect(tree.ordered.map(({ item, depth }) => `${depth}:${item.id}`)).toEqual([
       "0:cedarvale",
       "0:northstar",
       "1:cedar-annex",
@@ -27,7 +27,7 @@ describe("organisation tree", () => {
   })
 
   it("treats a parent the user cannot see as a root", () => {
-    expect(tree.ordered.find(({ org }) => org.id === "orphan")?.depth).toBe(0)
+    expect(tree.ordered.find(({ item }) => item.id === "orphan")?.depth).toBe(0)
   })
 
   it("includes every descendant in a parent's scope (R6.9)", () => {
@@ -39,7 +39,7 @@ describe("organisation tree", () => {
   })
 
   it("survives a cycle in the data", () => {
-    const cyclic = buildOrgTree([
+    const cyclic = buildContextTree([
       { id: "a", name: "A", parentId: "b" },
       { id: "b", name: "B", parentId: "a" },
     ])
@@ -80,16 +80,55 @@ describe("switcher rows", () => {
 
 describe("identity", () => {
   it("draws initials and a stable tint", () => {
-    expect(orgInitials("Northstar Studio")).toBe("NS")
-    expect(orgInitials("The Hobart Clinic")).toBe("HC")
-    expect(orgInitials("Huon")).toBe("HU")
-    expect(orgTint({ id: "northstar" })).toBe(orgTint({ id: "northstar" }))
-    expect(orgTint({ id: "northstar", tint: 3 })).toBe(3)
+    expect(contextInitials("Northstar Studio")).toBe("NS")
+    expect(contextInitials("The Hobart Clinic")).toBe("HC")
+    expect(contextInitials("Huon")).toBe("HU")
+    expect(contextTint({ id: "northstar" })).toBe(contextTint({ id: "northstar" }))
+    expect(contextTint({ id: "northstar", tint: 3 })).toBe(3)
   })
 
   it("keeps recents unique and capped", () => {
     expect(pushRecent(["a", "b", "c"], "b", 3)).toEqual(["b", "a", "c"])
     expect(pushRecent(["a", "b", "c"], "d", 3)).toEqual(["d", "a", "b"])
     expect(pushRecent(["a"], null)).toEqual(["a"])
+  })
+})
+
+describe("other contexts", () => {
+  const projects = buildContextTree<ContextItem>([
+    { id: "atlas", name: "Atlas redesign" },
+    { id: "atlas-web", name: "Atlas website", parentId: "atlas" },
+    { id: "harbour", name: "Harbour survey" },
+  ])
+  const labels = switcherLabels({ one: "project", other: "projects" })
+
+  it("builds every label from the noun, with the right article", () => {
+    expect(labels).toMatchObject({
+      all: "All projects",
+      group: "Projects",
+      title: "Project",
+      choose: "Choose a project",
+      placeholder: "Find a project",
+      search: "Search projects",
+      missing: "Project unavailable",
+      loadMore: "Load more projects",
+    })
+    expect(labels.noMatch("zz")).toBe("No projects match “zz”")
+    expect(labels.includes("Atlas redesign", 1)).toBe("Atlas redesign and 1 project under it")
+    expect(labels.includes("Atlas redesign", 2)).toBe("Atlas redesign and 2 projects under it")
+    expect(switcherLabels({ one: "organisation", other: "organisations" }).choose).toBe("Choose an organisation")
+    expect(switcherLabels({ one: "hour", other: "hours", article: "an" }).placeholder).toBe("Find an hour")
+  })
+
+  it("leaves out the all row when asked, in the list and in search", () => {
+    const groups = switcherGroups(projects, { labels, all: false })
+    expect(groups.map((group) => group.value)).toEqual(["Projects"])
+    expect(groups[0]!.items.map((row) => [row.kind, row.value, row.depth])).toEqual([
+      ["item", "atlas", 0],
+      ["item", "atlas-web", 1],
+      ["item", "harbour", 0],
+    ])
+    expect(switcherGroups(projects, { labels, all: false, query: "all" })).toEqual([])
+    expect(switcherGroups(projects, { labels, query: "all" })[0]!.items[0]).toMatchObject({ kind: "all", label: "All projects" })
   })
 })

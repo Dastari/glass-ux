@@ -1,14 +1,14 @@
 /*
- * OrgSwitcher and OrgAvatar.
+ * ContextSwitcher and ContextAvatar: the context (organisation, project, workspace) in the top bar.
  *
  *   trigger  on the canvas, like a crumb but heavier: the avatar, the name in the label role
  *            at semibold, "+N" when a parent includes its children, and the switch chevron.
  *            In a narrow top bar (< 70rem) it keeps the avatar, the short code and "+N".
  *   popup    glass-overlay fa-popup: a search row, then fa-item rows (avatar · name · data ·
  *            ✓). Children indent under their parent; the ✓ column is always reserved.
- *   avatar   a rounded square (people are round): a logo, or initials in ink on the
- *            organisation's tint, one of the eight identity colours (src/styles/identity.css,
- *            never the data hues). All organisations is the glyph on a neutral tile.
+ *   avatar   a rounded square (people are round): a logo, or an icon or initials in ink on
+ *            the context's tint, one of the eight identity colours (src/styles/identity.css,
+ *            never the data hues). The "all" scope is its glyph on a neutral tile.
  *
  * Component tokens
  *   --_size        the avatar's box
@@ -20,7 +20,7 @@
  */
 @layer components {
   /* ── Avatar ────────────────────────────────────────────────────────────── */
-  .fa-org-avatar {
+  .fa-context-avatar {
     --_size: 1.5rem;
     --_tint: var(--identity-1);
     position: relative;
@@ -36,63 +36,68 @@
     color: var(--fg);
     user-select: none;
   }
-  .fa-org-avatar[data-size="xs"] {
+  .fa-context-avatar[data-size="xs"] {
     --_size: 1.25rem;
   }
   /* Small faces need a larger share to stay legible. */
-  .fa-org-avatar:is([data-size="xs"], [data-size="sm"])
-    .fa-org-avatar-initials {
+  .fa-context-avatar:is([data-size="xs"], [data-size="sm"])
+    .fa-context-avatar-initials {
     --_ratio: 0.46;
   }
-  .fa-org-avatar[data-size="md"] {
+  .fa-context-avatar[data-size="md"] {
     --_size: 2rem;
   }
-  .fa-org-avatar[data-size="lg"] {
+  .fa-context-avatar[data-size="lg"] {
     --_size: 2.5rem;
   }
-  .fa-org-avatar[data-tint="2"] {
+  .fa-context-avatar[data-tint="2"] {
     --_tint: var(--identity-2);
   }
-  .fa-org-avatar[data-tint="3"] {
+  .fa-context-avatar[data-tint="3"] {
     --_tint: var(--identity-3);
   }
-  .fa-org-avatar[data-tint="4"] {
+  .fa-context-avatar[data-tint="4"] {
     --_tint: var(--identity-4);
   }
-  .fa-org-avatar[data-tint="5"] {
+  .fa-context-avatar[data-tint="5"] {
     --_tint: var(--identity-5);
   }
-  .fa-org-avatar[data-tint="6"] {
+  .fa-context-avatar[data-tint="6"] {
     --_tint: var(--identity-6);
   }
-  .fa-org-avatar[data-tint="7"] {
+  .fa-context-avatar[data-tint="7"] {
     --_tint: var(--identity-7);
   }
-  .fa-org-avatar[data-tint="8"] {
+  .fa-context-avatar[data-tint="8"] {
     --_tint: var(--identity-8);
   }
-  .fa-org-avatar[data-tint="all"] {
+  .fa-context-avatar[data-tint="all"] {
     background-color: var(--glass-fill-inset);
     color: var(--fg-muted);
   }
-  .fa-org-avatar > svg {
+  .fa-context-avatar > svg,
+  .fa-context-avatar-icon > svg {
     width: calc(var(--_size) * 0.66);
     height: calc(var(--_size) * 0.66);
   }
-  .fa-org-avatar-image {
+  .fa-context-avatar-icon {
+    display: inline-grid;
+    place-items: center;
+  }
+  .fa-context-avatar-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
   /* A logo stands on its own: no tint tile or edge behind it, and never cropped. */
-  .fa-org-avatar[data-logo] {
+  .fa-context-avatar[data-logo] {
     background-color: transparent;
     box-shadow: none;
   }
-  .fa-org-avatar[data-logo] .fa-org-avatar-image {
+  .fa-context-avatar[data-logo] .fa-context-avatar-image {
     object-fit: contain;
   }
-  .fa-org-avatar-initials {
+  .fa-context-avatar-initials {
     --_ratio: 0.42; /* initials' size as a share of the face */
     font-size: calc(var(--_size) * var(--_ratio));
     line-height: 1;
@@ -101,7 +106,7 @@
   }
 
   /* ── Trigger ───────────────────────────────────────────────────────────── */
-  .fa-org-switcher {
+  .fa-context-switcher {
     --_name-max: 18rem;
     --_avatar: 1.5rem; /* the trigger's avatar (size sm) */
     display: inline-flex;
@@ -118,39 +123,39 @@
     text-align: start;
     cursor: pointer;
   }
-  .fa-org-switcher:hover {
+  .fa-context-switcher:hover {
     background-color: var(--fill-hover);
   }
-  .fa-org-switcher:is([data-popup-open], [aria-expanded="true"]) {
+  .fa-context-switcher:is([data-popup-open], [aria-expanded="true"]) {
     background-color: var(--fill-press);
   }
-  .fa-org-switcher:focus-visible {
+  .fa-context-switcher:focus-visible {
     outline: var(--focus-ring-width) solid var(--accent-ring);
     outline-offset: var(--focus-ring-offset);
   }
-  .fa-org-switcher-face {
+  .fa-context-switcher-face {
     display: flex;
     align-items: center;
     gap: var(--space-2);
     min-width: 0;
   }
-  .fa-org-switcher-name {
+  .fa-context-switcher-name {
     max-width: var(--_name-max);
     font-size: var(--type-label-size);
     line-height: var(--type-label-line);
     font-weight: var(--weight-semibold);
   }
-  /* The scope changed from elsewhere (a search result in another organisation): the trigger
-     lights up for a moment (OrgSwitcher holds data-changed for 1.6s), so the change is seen.
+  /* The scope changed from elsewhere (a search result in another context): the trigger
+     lights up for a moment (ContextSwitcher holds data-changed for 1.6s), so the change is seen.
      A highlight, not motion, so it shows under the motion switch too. */
-  .fa-org-switcher[data-changed] {
+  .fa-context-switcher[data-changed] {
     background-color: var(--accent-soft-hover);
     box-shadow: inset 0 0 0 var(--border-width) var(--accent-line);
     transition-duration: var(--duration-instant);
   }
 
   /* The short code ("NST") replaces the name in a narrow top bar (top-bar.css). */
-  .fa-org-switcher-code {
+  .fa-context-switcher-code {
     display: none;
     font-size: var(--type-label-size);
     line-height: var(--type-label-line);
@@ -158,7 +163,7 @@
     letter-spacing: var(--type-caption-tracking);
     white-space: nowrap;
   }
-  .fa-org-switcher-includes {
+  .fa-context-switcher-includes {
     flex: none;
     padding: 0 var(--space-1-5);
     border-radius: var(--radius-full);
@@ -169,7 +174,7 @@
     font-weight: var(--weight-medium);
     font-variant-numeric: tabular-nums;
   }
-  .fa-org-switcher-chevron {
+  .fa-context-switcher-chevron {
     flex: none;
     width: var(--icon-sm);
     height: var(--icon-sm);
@@ -177,7 +182,7 @@
   }
 
   /* ── Popup and inline panel ────────────────────────────────────────────── */
-  .fa-org-switcher-popup {
+  .fa-context-switcher-popup {
     --_w: 24rem;
     --_h: 30rem;
     display: flex;
@@ -189,16 +194,16 @@
   }
   /* Inline (a sheet, a page): the panel fills what it is given; the search stays put and the
      list scrolls. */
-  .fa-org-switcher-panel {
+  .fa-context-switcher-panel {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
     min-height: 0;
   }
-  .fa-org-switcher-panel[data-placement="sheet"] {
+  .fa-context-switcher-panel[data-placement="sheet"] {
     padding: 0 var(--inset-dialog) var(--inset-dialog);
   }
-  .fa-org-switcher-search {
+  .fa-context-switcher-search {
     display: flex;
     flex: none;
     align-items: center;
@@ -206,16 +211,16 @@
     padding: var(--space-1-5) var(--space-3) var(--space-1-5) var(--space-4);
     box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
   }
-  .fa-org-switcher-panel[data-inline] .fa-org-switcher-search {
+  .fa-context-switcher-panel[data-inline] .fa-context-switcher-search {
     padding-inline: var(--space-2-5);
   }
-  .fa-org-switcher-search > svg {
+  .fa-context-switcher-search > svg {
     flex: none;
     width: var(--icon-md);
     height: var(--icon-md);
     color: var(--fg-muted);
   }
-  .fa-org-switcher-input {
+  .fa-context-switcher-input {
     flex: 1 1 auto;
     min-width: 0;
     height: var(--control-h-md);
@@ -228,11 +233,11 @@
     line-height: var(--type-body-line);
     outline: none;
   }
-  .fa-org-switcher-input::placeholder {
+  .fa-context-switcher-input::placeholder {
     color: var(--fg-subtle);
     opacity: 1;
   }
-  .fa-org-switcher-list {
+  .fa-context-switcher-list {
     flex: 1 1 auto;
     min-height: 0;
     padding: var(--space-1) var(--inset-overlay) var(--inset-overlay);
@@ -240,79 +245,79 @@
     overscroll-behavior: contain;
     scroll-padding-block: var(--space-8) var(--inset-overlay);
   }
-  .fa-org-switcher-list[data-inline] {
+  .fa-context-switcher-list[data-inline] {
     padding-inline: 0;
   }
-  .fa-org-switcher-list:empty {
+  .fa-context-switcher-list:empty {
     display: none;
   }
-  .fa-org-switcher-group + .fa-org-switcher-group {
+  .fa-context-switcher-group + .fa-context-switcher-group {
     margin-top: var(--space-1);
   }
-  .fa-org-switcher-item {
+  .fa-context-switcher-item {
     --_indent: var(--space-6);
     padding-inline-start: calc(
       var(--space-2-5) + var(--_indent) * var(--_depth, 0)
     );
   }
-  .fa-org-switcher-text {
+  .fa-context-switcher-text {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
     min-width: 0;
   }
-  .fa-org-switcher-text > .fa-item-label {
+  .fa-context-switcher-text > .fa-item-label {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .fa-org-switcher-detail {
+  .fa-context-switcher-detail {
     min-width: 0;
     color: var(--fg-subtle);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
   }
-  .fa-org-switcher-item > .fa-item-trail {
+  .fa-context-switcher-item > .fa-item-trail {
     flex: none;
     white-space: nowrap;
   }
-  .fa-org-switcher-item[data-two-line] {
+  .fa-context-switcher-item[data-two-line] {
     padding-block: var(--space-1);
   }
-  .fa-org-switcher-check {
+  .fa-context-switcher-check {
     display: inline-grid;
     flex: none;
     place-items: center;
     width: var(--icon-sm);
     color: var(--accent-text);
   }
-  .fa-org-switcher-check > svg {
+  .fa-context-switcher-check > svg {
     width: var(--icon-sm);
     height: var(--icon-sm);
   }
   /* The ✓ column stays reserved when nothing is checked, so rows never shift. */
-  .fa-org-switcher-item:not([data-selected])::after {
+  .fa-context-switcher-item:not([data-selected])::after {
     content: "";
     flex: none;
     width: var(--icon-sm);
   }
-  .fa-org-switcher-empty:not(:empty) {
+  .fa-context-switcher-empty:not(:empty) {
     padding: var(--space-6) var(--space-4);
     color: var(--fg-muted);
     text-align: center;
   }
-  .fa-org-switcher-feedback {
+  .fa-context-switcher-feedback {
     display: flex;
     flex: none;
     flex-direction: column;
     gap: var(--gap-controls);
     padding: var(--inset-overlay);
   }
-  .fa-org-switcher-feedback:empty {
+  .fa-context-switcher-feedback:empty {
     display: none;
   }
-  .fa-org-switcher-feedback .fa-org-switcher-empty {
+  .fa-context-switcher-feedback .fa-context-switcher-empty {
     margin: 0;
     padding: var(--space-3) var(--space-2);
   }

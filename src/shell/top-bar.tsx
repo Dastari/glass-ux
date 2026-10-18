@@ -5,7 +5,7 @@ import { TruncatedText } from "../ui/truncated-text/index.js";
  * is independent of the organisation; everything below it (rail, drawer, workspace) is the
  * organisation context. Left to right:
  *   leading     the drawer toggle on tablets and phones
- *   scope       the organisation switcher (OrgSwitcher): the door between the two contexts,
+ *   scope       the context switcher (ContextSwitcher): the door between the two contexts,
  *               always visible, first after the logo. The breadcrumb continues from it.
  *   breadcrumb  the universal breadcrumb, always at the same x (R6.4)
  *   search      SearchTrigger (opens the command palette; global, across organisations)
@@ -79,9 +79,9 @@ export interface TopBarProps extends Omit<
   /** Before the scope: the product's module switch (a Segmented: RMM · PSA · CHAT). Folds to its menu on a phone. */
   module?: ReactNode;
   /**
-   * The tenant scope: an OrgSwitcher. The breadcrumb follows it after a separator. On a phone
-   * its trigger leaves the bar for the breadcrumb's trail: give the Breadcrumb a `scope` that
-   * opens the switcher.
+   * The context you work in: a ContextSwitcher (organisation, project, workspace). The
+   * breadcrumb follows it after a separator. On a phone its trigger leaves the bar for the
+   * breadcrumb's trail: give the Breadcrumb a `scope` that opens the switcher.
    */
   scope?: ReactNode;
   /** A Breadcrumb. On a phone it shows only the current place; give it a `header` (the module switch) and a `scope`. */

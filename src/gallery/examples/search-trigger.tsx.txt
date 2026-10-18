@@ -3,16 +3,16 @@ import { DemoScope } from "glass-ux/gallery/demo-scope";
 import {
   MOCK_ORGANISATIONS,
   PORTRAITS,
-  toSwitcherOrganisation,
+  toContextItem,
 } from "glass-ux/gallery/fixtures/organisations";
 import { WORKSPACE_SETTINGS } from "glass-ux/gallery/fixtures/brand";
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { AccountButton, SearchTrigger, TopBar, TopBarSettingsButton } from "glass-ux/shell";
-import { OrgSwitcher } from "glass-ux/shell/org-switcher/index";
+import { ContextSwitcher } from "glass-ux/shell/context-switcher/index";
 import { Breadcrumb } from "glass-ux/breadcrumb";
 import { Menu } from "glass-ux/menu";
 
-const SWITCHER_ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation);
+const SWITCHER_ORGS = MOCK_ORGANISATIONS.map(toContextItem);
 
 function SpecimenTopBar({ label }: { label: string }) {
   const demo = useContext(DemoScope);
@@ -20,7 +20,7 @@ function SpecimenTopBar({ label }: { label: string }) {
   const [unread, setUnread] = useState(3);
   return (
     <TopBar
-      scope={<OrgSwitcher organisations={SWITCHER_ORGS} value={scope} onValueChange={setScope} />}
+      scope={<ContextSwitcher items={SWITCHER_ORGS} value={scope} onValueChange={setScope} />}
       breadcrumb={
         <Breadcrumb
           aria-label={`Breadcrumb: ${demo ? `${demo}: ` : ""}${label}`}

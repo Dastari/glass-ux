@@ -1,5 +1,5 @@
 /*
- * Identity colours — the tints of organisation and person avatars (OrgAvatar, Avatar).
+ * Identity colours — the tints of context and person avatars (ContextAvatar, Avatar).
  *
  * Identity is not data and not status, so it has its own eight hues. They derive from the
  * palette's data hue (--chart-h) like the data colours, at fixed offsets in a different order,

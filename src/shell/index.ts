@@ -37,4 +37,4 @@ export {
   type TopBarProps,
 } from "./top-bar.js"
 export { SHELL_QUERIES } from "./queries.js"
-export * from "./org-switcher/index.js"
+export * from "./context-switcher/index.js"

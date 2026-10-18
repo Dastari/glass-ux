@@ -15,7 +15,7 @@ import {
 } from "../../icons/generated/icons.js";
 import { defineActions } from "../../lib/actions/actions.js";
 import { cx } from "../../lib/cx.js";
-import { orgCode } from "../../shell/org-switcher/model.js";
+import { contextCode } from "../../shell/context-switcher/model.js";
 import { ActionContextMenu, ActionMenu } from "../../ui/actions/index.js";
 import { CountBadge } from "../../ui/badge/index.js";
 import { Button } from "../../ui/button/index.js";
@@ -45,7 +45,7 @@ function bucket(time: number, now: number) {
 /** Words that do not make a client code ("Council of the Arts" → "CA"). */
 /** The same fallback short code as the shell organisation switcher. */
 export function organisationCode(name: string) {
-  return orgCode({ name });
+  return contextCode({ name });
 }
 
 const ACTIVITY_WORDS = {

@@ -1,26 +1,28 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../ui/button/index.js";
 import {
-  OrgSwitcher,
-  type SwitcherOrganisation,
-} from "../../shell/org-switcher/index.js";
+  ContextSwitcher,
+  type ContextItem,
+} from "../../shell/context-switcher/index.js";
 
 const DIRECTORY = [
   { id: "harbour-works", name: "Harbour Works", keywords: ["coastal"] },
   { id: "juniper-lab", name: "Juniper Lab", keywords: ["research"] },
   { id: "cedar-orbit", name: "Cedar Orbit", keywords: ["design"] },
   { id: "summit-loom", name: "Summit Loom", keywords: ["textiles"] },
-] satisfies SwitcherOrganisation[];
+] satisfies ContextItem[];
+
+const REMOTE_LABELS = { placeholder: "Name or alternate name" };
 
 /** Fictional cancellable adapter. A real host supplies authenticated bounded reads. */
-export function RemoteOrgSwitcherExample() {
+export function RemoteContextSwitcherExample() {
   const [value, setValue] = useState<string | null>("summit-loom");
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(2);
   const [attempt, setAttempt] = useState(0);
   const [fail, setFail] = useState(false);
   const [page, setPage] = useState<{
-    items: SwitcherOrganisation[];
+    items: ContextItem[];
     /** Count or definition of remaining items. */
     more: boolean;
     /** Shows loading feedback in the space reserved for the content. */
@@ -68,14 +70,14 @@ export function RemoteOrgSwitcherExample() {
   }, [query, limit, fail, attempt]);
   return (
     <div
-      data-testid="org-switcher-remote"
+      data-testid="context-switcher-remote"
       className="flex flex-col items-start gap-controls"
     >
-      <OrgSwitcher
-        organisations={page.items}
+      <ContextSwitcher
+        items={page.items}
         value={value}
         onValueChange={setValue}
-        searchPlaceholder="Name or alternate name"
+        labels={REMOTE_LABELS}
         remote={{
           query,
           onQueryChange: (next) => {

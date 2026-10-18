@@ -10,9 +10,9 @@ import {
   vi,
 } from "vitest";
 import { TooltipProvider } from "../../ui/tooltip/index.js";
-import { OrgSwitcher, OrgSwitcherPanel } from "./org-switcher.js";
-import { DEFAULT_SWITCHER_LABELS, type SwitcherOrganisation } from "./model.js";
-import { remoteGroups, type OrgSwitcherRemote } from "./remote.js";
+import { ContextSwitcher, ContextSwitcherPanel } from "./context-switcher.js";
+import { DEFAULT_SWITCHER_LABELS, type ContextItem } from "./model.js";
+import { remoteGroups, type ContextSwitcherRemote } from "./remote.js";
 
 vi.mock("../../lib/use-media-query.js", () => ({ useMediaQuery: () => false }));
 beforeAll(() => {
@@ -32,13 +32,13 @@ beforeAll(() => {
 });
 afterEach(cleanup);
 afterAll(() => vi.unstubAllGlobals());
-const rows: SwitcherOrganisation[] = [
+const rows: ContextItem[] = [
   { id: "z", name: "Zinnia Workshop", parentId: "a" },
   { id: "a", name: "Acorn Guild" },
 ];
 const remote = (
-  changes: Partial<OrgSwitcherRemote> = {},
-): OrgSwitcherRemote => ({
+  changes: Partial<ContextSwitcherRemote> = {},
+): ContextSwitcherRemote => ({
   query: "server-only alias",
   onQueryChange: vi.fn(),
   loading: false,
@@ -79,8 +79,8 @@ describe("bounded organisation directory", () => {
   it("retains an authoritative selected identity outside the loaded page without descendants", () => {
     render(
       <TooltipProvider>
-        <OrgSwitcher
-          organisations={rows}
+        <ContextSwitcher
+          items={rows}
           value="elsewhere"
           onValueChange={vi.fn()}
           remote={remote({
@@ -97,8 +97,8 @@ describe("bounded organisation directory", () => {
   it("never presents an unresolved or mismatched selected identity as All", () => {
     const view = render(
       <TooltipProvider>
-        <OrgSwitcher
-          organisations={[]}
+        <ContextSwitcher
+          items={[]}
           value="private"
           onValueChange={vi.fn()}
           remote={remote({
@@ -115,8 +115,8 @@ describe("bounded organisation directory", () => {
     ).not.toBeInTheDocument();
     view.rerender(
       <TooltipProvider>
-        <OrgSwitcher
-          organisations={[]}
+        <ContextSwitcher
+          items={[]}
           value={null}
           onValueChange={vi.fn()}
           remote={remote()}
@@ -131,8 +131,8 @@ describe("bounded organisation directory", () => {
     const source = remote({ hasNextPage: true });
     render(
       <TooltipProvider>
-        <OrgSwitcherPanel
-          organisations={rows}
+        <ContextSwitcherPanel
+          items={rows}
           value={null}
           onValueChange={vi.fn()}
           remote={source}
@@ -159,8 +159,8 @@ describe("bounded organisation directory", () => {
     });
     const view = render(
       <TooltipProvider>
-        <OrgSwitcherPanel
-          organisations={rows}
+        <ContextSwitcherPanel
+          items={rows}
           value={null}
           onValueChange={vi.fn()}
           remote={source}
@@ -180,8 +180,8 @@ describe("bounded organisation directory", () => {
     expect(source.onRetry).toHaveBeenCalledOnce();
     view.rerender(
       <TooltipProvider>
-        <OrgSwitcherPanel
-          organisations={[]}
+        <ContextSwitcherPanel
+          items={[]}
           value={null}
           onValueChange={vi.fn()}
           remote={remote({ query: "no match" })}

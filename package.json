@@ -1,6 +1,6 @@
 {
   "name": "glass-ux",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "description": "A typed React design system for glass interfaces, data applications and assistant experiences.",
   "type": "module",
   "license": "MIT",
@@ -502,9 +502,9 @@
       "types": "./dist/ai/status-strip/index.d.ts",
       "import": "./dist/ai/status-strip/index.js"
     },
-    "./shell/org-switcher": {
-      "types": "./dist/shell/org-switcher/index.d.ts",
-      "import": "./dist/shell/org-switcher/index.js"
+    "./shell/context-switcher": {
+      "types": "./dist/shell/context-switcher/index.d.ts",
+      "import": "./dist/shell/context-switcher/index.js"
     },
     "./adapters/graphql-orm": {
       "types": "./dist/adapters/graphql-orm/index.d.ts",

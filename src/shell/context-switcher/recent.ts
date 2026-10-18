@@ -2,11 +2,11 @@ import { useCallback, useSyncExternalStore } from "react"
 import { pushRecent } from "./model.js"
 
 /**
- * Recently chosen organisations, most recent first, kept per browser under `storageKey`
- * (namespace it per user) and shared by every tab. The current scope itself lives in the
- * URL, never here: this is only the switcher's Recent group.
+ * Recently chosen contexts, most recent first, kept per browser under `storageKey`
+ * (namespace it per user and per kind of context) and shared by every tab. The current
+ * scope itself lives in the URL, never here: this is only the switcher's Recent group.
  */
-export function useRecentOrganisations(storageKey: string, limit = 6) {
+export function useRecentContexts(storageKey: string, limit = 6) {
   const subscribe = useCallback(
     (notify: () => void) => {
       const onStorage = (event: StorageEvent) => {
@@ -41,7 +41,7 @@ export function useRecentOrganisations(storageKey: string, limit = 6) {
   return { recent, remember }
 }
 
-const LOCAL_EVENT = "fa-recent-organisations"
+const LOCAL_EVENT = "fa-recent-contexts"
 
 function read(key: string): string | null {
   try {

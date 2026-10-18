@@ -1,11 +1,11 @@
 import { useContext, useState, type ReactNode } from "react"
 import { DemoScope } from "../demo-scope.js"
-import { MOCK_ORGANISATIONS, PORTRAITS, toSwitcherOrganisation } from "../fixtures/organisations.js"
+import { MOCK_ORGANISATIONS, PORTRAITS, toContextItem } from "../fixtures/organisations.js"
 import { WORKSPACE_SETTINGS, ORGANISATION_SETTINGS, moduleRail } from "../fixtures/brand.js"
 import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { IconAi, IconArchive, IconAlerts, IconDashboard, IconEndpoint, IconFolder, IconHistory, IconNewChat, IconOrganisation, IconSearch, IconSettings, IconTickets,  } from "../../icons/generated/icons.js"
 import { AccountButton, EntityHeader, EntityHeaderSkeleton, Rail, SearchTrigger, SectionDrawer, TabBar, TopBar, TopBarSettingsButton,  } from "../../shell/index.js"
-import { OrgSwitcher } from "../../shell/org-switcher/index.js"
+import { ContextSwitcher } from "../../shell/context-switcher/index.js"
 import { ActionBar } from "../../ui/actions/index.js"
 import { StatusBadge, StatusDot } from "../../ui/badge/index.js"
 import { BrandMark } from "../../ui/brand/index.js"
@@ -110,7 +110,7 @@ function RailAndDrawer() {
   )
 }
 
-const SWITCHER_ORGS = MOCK_ORGANISATIONS.map(toSwitcherOrganisation)
+const SWITCHER_ORGS = MOCK_ORGANISATIONS.map(toContextItem)
 
 function SpecimenTopBar({ label }: { label: string }) {
   const demo = useContext(DemoScope)
@@ -118,7 +118,7 @@ function SpecimenTopBar({ label }: { label: string }) {
   const [unread, setUnread] = useState(3)
   return (
     <TopBar
-      scope={<OrgSwitcher organisations={SWITCHER_ORGS} value={scope} onValueChange={setScope} />}
+      scope={<ContextSwitcher items={SWITCHER_ORGS} value={scope} onValueChange={setScope} />}
       breadcrumb={
         <Breadcrumb
           aria-label={`Breadcrumb: ${demo ? `${demo}: ` : ""}${label}`}
@@ -190,7 +190,7 @@ const SLOTS: Array<[string, string]> = [
   ["AppShell.brand", "ShellBrand: the product mark over the rail (the configured BrandMark product mark by default)."],
   ["AppShell.rail", "Rail.Root with Rail.Item (icon, label, shortcut, active, render link) and Rail.Spacer."],
   ["AppShell.drawer", "SectionDrawer for the current section; omit for none. Docked, resizable and collapsible on desktops, a left Sheet below. SectionDrawer.Search (between Header and Body, fixed while the list scrolls) filters the list with local state: / or ⌘F / Ctrl F focuses it from anywhere in the drawer, ↓ enters the list, Esc clears and then returns focus; highlight with SectionDrawer.Match, or hand the query to a Tree. SectionDrawer.Body fill hands the height to a Tree that scrolls itself; useDrawerDismiss closes the sheet after a choice."],
-  ["AppShell.topBar", "TopBar with scope (OrgSwitcher: the organisation in the URL, first after the logo), breadcrumb (RouteBreadcrumb after the scope, fed from route matches), search (SearchTrigger → useCommandPalette().open), actions and account (AccountButton with the shared Avatar, a Menu trigger)."],
+  ["AppShell.topBar", "TopBar with scope (ContextSwitcher: the organisation or project in the URL, first after the logo), breadcrumb (RouteBreadcrumb after the scope, fed from route matches), search (SearchTrigger → useCommandPalette().open), actions and account (AccountButton with the shared Avatar, a Menu trigger)."],
   ["Workspace.scopes", "The current organisation and how to draw one. Windows from another organisation show its chip; the dock groups by organisation (R14.4)."],
   ["AppShell.children", "The Workspace: primary (the routed view) and the dock."],
   ["AppShell.inspector", "Inspector (title, icon, actions, footer). Docked at 80rem and wider, a Sheet below."],

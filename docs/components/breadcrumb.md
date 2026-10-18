@@ -13,7 +13,7 @@ targets as router links; the core `Breadcrumb` is router-agnostic.
   items={crumbs}
   // Only shown when the top bar folds its context into the trail (phones):
   header={<Segmented block size="sm" aria-label="Module" … />}
-  scope={{ label: "Northstar Studio", icon: <OrgAvatar … />, "aria-label": "Organisation: …. Switch organisation", onSelect: openSwitcher }}
+  scope={{ label: "Northstar Studio", icon: <ContextAvatar … />, "aria-label": "Organisation: …. Switch organisation", onSelect: openSwitcher }}
 />
 ```
 

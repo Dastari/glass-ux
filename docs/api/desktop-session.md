@@ -12,7 +12,6 @@ while the AI holds the screen; nothing else in the conversation competes with th
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| endpoint | `EntityRef \| undefined` | See type | no | — | The device or workspace being viewed, under its former name. |
 | leaseEndsAt | `number \| undefined` | See type | no | — | Unix ms the control lease ends (counts down while controlling). |
 | onResume | `(() => void) \| undefined` | See type | no | — | Called from Resume (`paused`) or Hand back to Assistant (`human`). |
 | onStop | `(() => void) \| undefined` | See type | no | — | Called from Stop, shown in every state until the session has ended, expired or failed. |
@@ -23,7 +22,7 @@ while the AI holds the screen; nothing else in the conversation competes with th
 | startedAt | `number` | See type | yes | — | Unix ms the session started (the timer ticks while active). |
 | state | `DesktopState` | "expired", "failed", "observing", "controlling", "awaiting-action", "paused", "human", "ended" | yes | — | Controlled view state, including loading, empty and error states. |
 | steps | `DesktopStep[]` | See type | yes | — | Ordered steps representing the progress or reasoning sequence. |
-| target | `EntityRef \| undefined` | See type | no | — | The device or workspace being viewed, as presentation data supplied by the host. Required unless the deprecated `endpoint` is given. |
+| target | `EntityRef` | See type | yes | — | The device or workspace being viewed, as presentation data supplied by the host. |
 | user | `string \| undefined` | See type | no | — | Who is signed in on the target ("AzureAD\\MiraRowan"). |
 | userEntity | `EntityRef \| undefined` | See type | no | — | Resolved signed-in person identity, rendered through the host entity adapter. |
 | userIdentity | `ReactNode` | See type | no | — | Host identity adapter, e.g. an account chip, when the signed-in value is a legacy account string. |

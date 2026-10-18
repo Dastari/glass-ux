@@ -73,8 +73,8 @@ write an adapter for your API. Set your server's longest relative-day window wit
 
 Migration: replace `glass-ux/lib/graphql-orm/where` and `glass-ux/lib/graphql-orm/evaluate`
 with `glass-ux/adapters/graphql-orm`; the adapter's exported names are unchanged. In core
-specs, `toWhere` is now `toCondition` and the `WhereInput` type is now `FilterCondition`. The
-old names remain as deprecated aliases for one release.
+specs, `toWhere` is now `toCondition` and the `WhereInput` type is now `FilterCondition`; 0.8
+removed the old names.
 
 Declare mappings explicitly. A missing server capability should produce a deliberate UI
 choice rather than a filter that silently does nothing. Always apply tenant and access

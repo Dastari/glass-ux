@@ -21,7 +21,9 @@ Upgrade steps: [migration guide, 0.7 → 0.8](docs/migration.md#07--08).
   (use `toCondition`), `WhereInput` from `glass-ux/data-table` (use `FilterCondition`),
   `EndpointStatus` (use `StatusKind`), DesktopSession's `endpoint` prop (use `target`), and
   `POPUP_OFFSET` / `POPUP_COLLISION_PADDING` (popups read `--popup-offset` and
-  `--popup-collision`). The GraphQL adapter's own `toWhere()` and `WhereInput` are unchanged.
+  `--popup-collision`). `CustomFilterConditionSpec` is removed and `CustomFilterSpec` is an
+  interface requiring `toCondition`; DesktopSession's `target` is required. The GraphQL
+  adapter's own `toWhere()` and `WhereInput` are unchanged.
 
 ### Added
 

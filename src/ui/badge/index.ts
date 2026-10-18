@@ -10,7 +10,6 @@ export {
   type BadgeSize,
   type BadgeTone,
   type CountBadgeProps,
-  type EndpointStatus,
   type NotificationDotProps,
   type StatusBadgeProps,
   type StatusDotProps,

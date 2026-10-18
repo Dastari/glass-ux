@@ -69,8 +69,25 @@ survive.
 | DesktopSession `endpoint` prop                 | `target`                                                                  |
 | `POPUP_OFFSET`, `POPUP_COLLISION_PADDING`      | Popups read `--popup-offset` and `--popup-collision`; override the tokens |
 
-`CustomFilterSpec` now requires `toCondition`. The GraphQL adapter keeps its own
-`toWhere()` function and `WhereInput` type.
+```diff
+- filters.text({ field: "Hostname", toWhere: (value) => … })
++ filters.text({ field: "Hostname", toCondition: (value) => … })
+- import type { WhereInput } from "glass-ux/data-table";
++ import type { FilterCondition } from "glass-ux/data-table";
+- import type { EndpointStatus } from "glass-ux/badge";
++ import type { StatusKind } from "glass-ux/badge";
+- <DesktopSession endpoint={device} … />
++ <DesktopSession target={device} … />
+```
+
+- `CustomFilterSpec` is an interface again and requires `toCondition`, so an interface may
+  extend it. `CustomFilterConditionSpec`, the 0.7 union of the two names, is removed: use
+  `CustomFilterSpec`, or `CustomFilterOptions` for the `filters.custom` argument.
+- `DesktopSession`'s `target` is now required.
+- `POPUP_OFFSET` and `POPUP_COLLISION_PADDING` have no replacement export. Positioning code
+  of your own should read the `--popup-offset` and `--popup-collision` tokens, which follow
+  UI scale and density.
+- The GraphQL adapter keeps its own `toWhere()` function and `WhereInput` type.
 
 ### Other changes
 

@@ -284,14 +284,4 @@ describe("search → Or of Contains (R16.8)", () => {
     const resolver: DataTableSearch = { fields: ["name"], toCondition: () => null }
     expect(toWhere([], columns, { search: { query: "orb", spec: resolver } })).toBeUndefined()
   })
-
-  it("still honours the deprecated toWhere name", () => {
-    const search: DataTableSearch = { fields: [], toWhere: (query) => ({ HostnameContains: query }) }
-    const custom: FilterColumn = {
-      id: "provider",
-      header: "Provider",
-      spec: filters.custom<string>({ editor: () => null, summary: (value) => value, encode: (value) => value, decode: (raw) => raw, toWhere: (value) => ({ Provider: value }) }),
-    }
-    expect(toFilterInput([{ id: "provider", value: "SAMPLE" }], [custom], { search: { query: "orb", spec: search } })).toEqual({ HostnameContains: "orb", Provider: "SAMPLE" })
-  })
 })

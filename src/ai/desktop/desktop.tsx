@@ -47,14 +47,8 @@ export interface DesktopStep {
 }
 
 export interface DesktopSessionProps {
-  /** The device or workspace being viewed, as presentation data supplied by the host. Required unless the deprecated `endpoint` is given. */
-  target?: EntityRef;
-  /**
-   * The device or workspace being viewed, under its former name.
-   *
-   * @deprecated Use `target`. Read only when `target` is absent.
-   */
-  endpoint?: EntityRef;
+  /** The device or workspace being viewed, as presentation data supplied by the host. */
+  target: EntityRef;
   /** Controlled view state, including loading, empty and error states. */
   state: DesktopState;
   /** Who is signed in on the target ("AzureAD\\MiraRowan"). */
@@ -132,7 +126,6 @@ const resolved = () => Promise.resolve();
  */
 export function DesktopSession({
   target,
-  endpoint,
   state,
   user,
   userEntity,
@@ -147,8 +140,7 @@ export function DesktopSession({
   onTakeOver,
   onResume,
 }: DesktopSessionProps) {
-  const subject = target ?? endpoint;
-  const title = TITLES[state](subject?.label ?? "");
+  const title = TITLES[state](target.label);
   const active = state !== "ended" && state !== "expired" && state !== "failed";
   const now = useNow(active, 1000);
   const elapsed = formatElapsed(Math.max(0, now - startedAt));
@@ -190,7 +182,7 @@ export function DesktopSession({
           </span>
         }
       >
-        {subject ? <EntityChip entity={subject} size="sm" /> : null}
+        <EntityChip entity={target} size="sm" />
       </AiCard.Header>
       <AiCard.Body className="fa-ai-desktop-body">
         <div

@@ -23,7 +23,7 @@ function Desktop() {
         options={DESKTOP_STATES.map((value) => ({ value, label: value === "awaiting-action" ? "Approval" : value[0]!.toUpperCase() + value.slice(1) }))}
       />
       <DesktopSession
-        endpoint={E.c106Online}
+        target={E.c106Online}
         state={state}
         user="AzureAD\\MiraRowan"
         startedAt={NOW - 134_000}

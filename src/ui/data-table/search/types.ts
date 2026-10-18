@@ -30,8 +30,6 @@ export interface DataTableSearch<T extends RowData = any> {
    * resolver instead of the filter condition. Give `matches` too if a fully loaded list uses it.
    */
   toCondition?: (query: string) => FilterCondition | null
-  /** @deprecated Renamed to `toCondition`; this alias will be removed in the next release. */
-  toWhere?: (query: string) => FilterCondition | null
   /** Local matching for a custom `toCondition`: the rows the server would return. */
   matches?: (row: T, query: string) => boolean
 }

@@ -4,7 +4,6 @@ export { RelativeTime, type RelativeTimeProps } from "./relative-time.js";
 export { SparklineCell, type SparklineCellProps } from "./sparkline.js";
 export {
   StatusBadge,
-  type EndpointStatus,
   type StatusBadgeProps,
   type StatusKind,
 } from "./status-badge.js";

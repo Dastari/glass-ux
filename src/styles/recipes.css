@@ -190,6 +190,43 @@
     opacity: 0;
   }
 
+  /* ── Fit row ─────────────────────────────────────────────────────────────── */
+  /* One line of controls that give way in a set order instead of overflowing (R7): a
+     toolbar of Segmented, SwatchPicker and Select. Children keep their width unless they
+     carry a fit class; the row's shortfall goes to the lowest-numbered child still able
+     to shrink (each step's flex-shrink is a thousand times the next, so it goes almost
+     wholly to one). A container-aware control that is squeezed folds to its next form
+     (Segmented → icons → menu, SwatchPicker → menu) and stops shrinking, so the shortfall
+     moves on to the next number. A control that truncates instead (a Select) sets its own
+     min-width. The row must take its width from its container, not from its content
+     (flex: 1 1 0, or a definite width), so a folded control unfolds when the container
+     grows. */
+  .fa-fit-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--gap-controls);
+    min-width: 0;
+  }
+  .fa-fit-row > * {
+    flex: 0 0 auto;
+  }
+  .fa-fit-row > .fa-fit-1 {
+    flex-shrink: 1000000000000;
+  }
+  .fa-fit-row > .fa-fit-2 {
+    flex-shrink: 1000000000;
+  }
+  .fa-fit-row > .fa-fit-3 {
+    flex-shrink: 1000000;
+  }
+  .fa-fit-row > .fa-fit-4 {
+    flex-shrink: 1000;
+  }
+  .fa-fit-row > .fa-fit-5 {
+    flex-shrink: 1;
+  }
+
   /* ── Shimmer ─────────────────────────────────────────────────────────────── */
   /* A highlight sweeping across a placeholder or an indeterminate bar. The band is the
      element's own ::after, moved with transform (compositor only: nothing repaints while it

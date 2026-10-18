@@ -24,6 +24,8 @@ Choose components by their job: `Button` and shared actions for outcomes, `Field
 inputs for editing, `EntityIdentity` for generic entities, `EmptyState` for no results,
 `Notice` for information belonging to a place, and the window status bar for connection state.
 Use the shell and window primitives only when the application needs that structure.
+For sign-in, providers, two-factor codes, password reset and sign-up, use `LoginFlow` with
+the application's callbacks (`docs/components/login-flow.md`) rather than assembling fields.
 
 Compose documented slots rather than reproducing their markup or styling internals.
 Provide accessible names for icon-only controls. A disabled action carries its reason.

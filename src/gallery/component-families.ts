@@ -39,6 +39,7 @@ const familyRoots: Record<string, string> = {
   "hostname-field": "hostname-field",
   input: "input",
   "ip-field": "ip-field",
+  "login-flow": "login-flow",
   "mac-field": "mac-address-field",
   map: "geo-map",
   menu: "menu",

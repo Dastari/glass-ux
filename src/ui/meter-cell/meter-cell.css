@@ -1,5 +1,7 @@
 @layer components {
   .fa-meter-cell {
+    /* component token: the width the meter takes where it sizes to its content */
+    --_content-w: 6rem;
     display: block;
     flex: 1 1 auto;
     width: 100%;
@@ -7,7 +9,7 @@
     container-type: inline-size;
     /* Size containment has no content width: where the meter sizes to its content (a
        card's field line), it takes this width instead of collapsing to its reading. */
-    contain-intrinsic-inline-size: 6rem;
+    contain-intrinsic-inline-size: var(--_content-w);
     min-width: 0;
   }
   /* The track gives way only when it would be shorter than its reading ("100%" needs

@@ -34,8 +34,6 @@
     /* The "+N" detail: minimum field width, value line. Mirror DETAIL in data-table.tsx. */
     --fa-dt-detail-field: 11rem;
     --fa-dt-detail-value: 1.5rem;
-    /* Minimum width of a label/value pair in a card. */
-    --fa-dt-card-field: 7.5rem;
     --_row-base: var(--row-h);
     --_head-base: var(--row-h-header);
     --_row-h: var(--_row-base);

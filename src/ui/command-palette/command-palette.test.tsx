@@ -11,7 +11,13 @@ import {
 } from "vitest";
 import { Button } from "../button/index.js";
 import { TooltipProvider } from "../tooltip/index.js";
-import { PaletteProvider, usePaletteCommands } from "./command-palette.js";
+import {
+  CommandPanel,
+  DEFAULT_PALETTE_GROUP_ORDER,
+  PaletteProvider,
+  usePaletteCommands,
+  type PaletteCommand,
+} from "./command-palette.js";
 
 beforeAll(() => {
   vi.stubGlobal(
@@ -114,5 +120,41 @@ describe("global command palette shortcut", () => {
       screen.queryByRole("dialog", { name: "Command palette" }),
     ).toBeNull();
     expect(run).not.toHaveBeenCalled();
+  });
+});
+
+describe("command panel group order", () => {
+  const command = (id: string, group: string): PaletteCommand => ({
+    id,
+    label: id,
+    group,
+    run: () => undefined,
+  });
+  const commands = [
+    command("go-home", "Navigation"),
+    command("new-item", "Actions"),
+    command("alpha", "Projects"),
+    command("beta", "Endpoints"),
+  ];
+  const labels = () =>
+    [...document.querySelectorAll(".fa-palette-group .fa-popup-group-label")].map(
+      (node) => node.textContent,
+    );
+
+  it("places host groups in registration order before the generic groups", () => {
+    expect(DEFAULT_PALETTE_GROUP_ORDER).toEqual(["Recent", "*", "Actions", "Navigation"]);
+    render(<CommandPanel commands={commands} onRun={() => undefined} />);
+    expect(labels()).toEqual(["Projects", "Endpoints", "Actions", "Navigation"]);
+  });
+
+  it("accepts a host group order", () => {
+    render(
+      <CommandPanel
+        commands={commands}
+        onRun={() => undefined}
+        groupOrder={[...DEFAULT_PALETTE_GROUP_ORDER, "Endpoints"]}
+      />,
+    );
+    expect(labels()).toEqual(["Projects", "Actions", "Navigation", "Endpoints"]);
   });
 });

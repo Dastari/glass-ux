@@ -47,11 +47,15 @@ export interface DesktopStep {
 }
 
 export interface DesktopSessionProps {
-  /** Endpoint presentation data supplied by the host. */
-  endpoint: EntityRef;
+  /** The device or workspace being viewed, as presentation data supplied by the host. Required unless the deprecated `endpoint` is given. */
+  target?: EntityRef;
+  /**
+   * @deprecated Use `target`. Read only when `target` is absent.
+   */
+  endpoint?: EntityRef;
   /** Controlled view state, including loading, empty and error states. */
   state: DesktopState;
-  /** Who is signed in on the endpoint ("AzureAD\\MiraRowan"). */
+  /** Who is signed in on the target ("AzureAD\\MiraRowan"). */
   user?: string;
   /** Resolved signed-in person identity, rendered through the host entity adapter. */
   userEntity?: EntityRef;
@@ -120,11 +124,12 @@ const BADGES: Record<DesktopState, string> = {
 const resolved = () => Promise.resolve();
 
 /**
- * The live desktop block: the endpoint's screen with a state badge on it, the steps the
+ * The live desktop block: the target's screen with a state badge on it, the steps the
  * assistant took and is taking, and a large Stop. Stop and Take over are always reachable
  * while the AI holds the screen; nothing else in the conversation competes with them.
  */
 export function DesktopSession({
+  target,
   endpoint,
   state,
   user,
@@ -140,6 +145,8 @@ export function DesktopSession({
   onTakeOver,
   onResume,
 }: DesktopSessionProps) {
+  const subject = target ?? endpoint;
+  const title = TITLES[state](subject?.label ?? "");
   const active = state !== "ended" && state !== "expired" && state !== "failed";
   const now = useNow(active, 1000);
   const elapsed = formatElapsed(Math.max(0, now - startedAt));
@@ -154,12 +161,12 @@ export function DesktopSession({
       breakout
       className="fa-ai-desktop"
       data-state={state}
-      aria-label={TITLES[state](endpoint.label)}
+      aria-label={title}
     >
       <AiCard.Header
         icon={state === "observing" ? <IconEye /> : <IconRemoteControl />}
         iconTile
-        title={TITLES[state](endpoint.label)}
+        title={title}
         meta={
           <span className="fa-ai-desktop-meta">
             {userIdentity || userEntity || user ? (
@@ -181,7 +188,7 @@ export function DesktopSession({
           </span>
         }
       >
-        <EntityChip entity={endpoint} size="sm" />
+        {subject ? <EntityChip entity={subject} size="sm" /> : null}
       </AiCard.Header>
       <AiCard.Body className="fa-ai-desktop-body">
         <div

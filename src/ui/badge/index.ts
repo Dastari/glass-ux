@@ -14,4 +14,5 @@ export {
   type NotificationDotProps,
   type StatusBadgeProps,
   type StatusDotProps,
+  type StatusKind,
 } from "./badge.js"

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router"
 import { useMemo, useState, type ReactElement } from "react"
 import { ContainerLab, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
+import { IconEndpoint, IconOrganisation } from "../../icons/generated/icons.js"
 import { CountBadge } from "../../ui/badge/index.js"
 import { SearchField } from "../../ui/input/index.js"
 import { ActionContextMenu } from "../../ui/actions/index.js"
@@ -12,9 +13,10 @@ function byOrganisation(endpoints: DemoEndpoint[]): TreeNode[] {
   return ORGANISATIONS.map((org) => ({
     id: `org:${org}`,
     label: org,
+    icon: <IconOrganisation />,
     children: endpoints
       .filter((endpoint) => endpoint.organisation === org)
-      .map((endpoint) => ({ id: endpoint.id, label: endpoint.name, description: endpoint.user, status: endpoint.status })),
+      .map((endpoint) => ({ id: endpoint.id, label: endpoint.name, description: endpoint.user, status: endpoint.status, icon: <IconEndpoint /> })),
   }))
 }
 

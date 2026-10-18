@@ -13,7 +13,7 @@ import {
   IconSoftware,
   IconTerminal,
 } from "../../icons/generated/icons.js"
-import type { EndpointStatus } from "../../ui/badge/index.js"
+import type { StatusKind } from "../../ui/badge/index.js"
 import type { TabItem } from "../../ui/tabs/index.js"
 
 export const ENDPOINT_TABS: TabItem[] = [
@@ -39,7 +39,7 @@ export interface DemoEndpoint {
   name: string
   user: string
   /** Current operation or connection status. */
-  status: EndpointStatus
+  status: StatusKind
   organisation: string
 }
 
@@ -59,7 +59,7 @@ export const ENDPOINTS: DemoEndpoint[] = [
 
 const PREFIXES = ["NST", "CDV", "ORB", "BP"] as const
 const PEOPLE = ["MiraRowan", "EllisPark", "RoryLake", "NoaFinch", "CaseyReed", "SageWinter", "LiamHoward", "NoahPage"]
-const STATES: EndpointStatus[] = ["online", "online", "online", "offline", "online", "warning", "online", "offline", "online", "installing"]
+const STATES: StatusKind[] = ["online", "online", "online", "offline", "online", "warning", "online", "offline", "online", "installing"]
 
 /** `count` endpoints spread over the organisations — enough to prove virtualisation. */
 export function manyEndpoints(count: number): DemoEndpoint[] {

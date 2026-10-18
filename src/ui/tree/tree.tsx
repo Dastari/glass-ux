@@ -12,10 +12,10 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react"
-import { IconChevronRight, IconEndpoint, IconOrganisation, IconSearch } from "../../icons/generated/icons.js"
+import { IconChevronRight, IconFile, IconFolder, IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useElementSize } from "../../lib/use-element-size.js"
-import { CountBadge, STATUS, StatusDot, type EndpointStatus } from "../badge/index.js"
+import { CountBadge, STATUS, StatusDot, type StatusKind } from "../badge/index.js"
 import { EmptyState } from "../empty-state/index.js"
 import { Skeleton } from "../skeleton/index.js"
 import { flattenTree, typeahead, type FlatRow } from "./flatten.js"
@@ -30,10 +30,10 @@ export interface TreeNode {
    * match takes the row's second line, highlighted, so the reason it matched is visible.
    */
   keywords?: readonly string[]
-  /** Leading icon. Defaults: organisation for groups, endpoint for leaves. */
+  /** Leading icon. Defaults: a folder for groups, a file for leaves. Supply a domain icon per node. */
   icon?: ReactNode
   /** A status dot on the icon's corner. */
-  status?: EndpointStatus
+  status?: StatusKind
   children?: TreeNode[]
   disabled?: boolean
 }
@@ -132,11 +132,11 @@ function Highlight({ text, range }: { text: string; range: readonly [number, num
 }
 
 /**
- * The navigation tree (the sidebar's endpoints by organisation). Groups collapse; endpoint
- * rows are two-line fa-item rows with a status dot on the device icon. Keyboard: ↑ ↓ move,
+ * The navigation tree (a sidebar's records grouped by owner). Groups collapse; leaf rows
+ * are fa-item rows, two lines with a description, with an optional status dot on the icon. Keyboard: ↑ ↓ move,
  * → opens or enters a group, ← closes or returns to the parent, Home / End, Enter selects
  * (toggles a group), and typing jumps to the next matching name. One row is tabbable (roving
- * tabindex). Rows are virtualised, so thousands of endpoints cost only the rows on screen.
+ * tabindex). Rows are virtualised, so thousands of rows cost only the rows on screen.
  */
 export function Tree({
   nodes,
@@ -404,7 +404,7 @@ function TreeRow({ row, start, selected, focused, renderLink, rowWrapper, render
     <>
       {chevron}
       <span className="fa-tree-icon">
-        {node.icon ?? (row.hasChildren ? <IconOrganisation /> : <IconEndpoint />)}
+        {node.icon ?? (row.hasChildren ? <IconFolder /> : <IconFile />)}
         {node.status ? <StatusDot status={node.status} label={STATUS[node.status].label} overlay /> : null}
       </span>
       <span className="fa-tree-text">

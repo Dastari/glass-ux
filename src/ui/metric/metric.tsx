@@ -100,7 +100,7 @@ export function Metric({
           {range ? <span className="fa-metric-range">{range}</span> : null}
         </div>
         <div className="fa-metric-figure">
-          <data className="fa-metric-value" value={shown ?? undefined} aria-live={hover !== null ? "polite" : undefined}>
+          <data className="fa-metric-value" value={shown ?? undefined}>
             {shown === null || shown === undefined ? "—" : fmt(shown)}
           </data>
           {hover !== null ? (
@@ -139,6 +139,12 @@ export function Metric({
           </div>
         ) : null}
       </div>
+      {/* Always mounted: the hovered reading is announced when it replaces the value. */}
+      <span className="sr-only" aria-live="polite">
+        {hover !== null && shown !== null && shown !== undefined
+          ? `${fmt(shown)}, ${times?.[hover] ?? `${data.length - 1 - hover} samples ago`}`
+          : ""}
+      </span>
     </div>
   )
 }

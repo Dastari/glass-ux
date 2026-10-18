@@ -88,12 +88,16 @@ export function SettingRow({
         {control !== undefined ? (
           <div className="fa-setting-row-control">
             {status !== undefined ? (
-              <span className="fa-setting-row-status" aria-live="polite" data-status={status}>
-                {status === "pending" ? <IconSpinner className="fa-setting-row-spinner" label="Saving" /> : null}
-                {status === "success" ? <IconCheck className="fa-setting-row-check" label="Saved" /> : null}
-                {status === "error" ? <IconClose label="Not saved" /> : null}
+              <span className="fa-setting-row-status" aria-hidden data-status={status}>
+                {status === "pending" ? <IconSpinner className="fa-setting-row-spinner" /> : null}
+                {status === "success" ? <IconCheck className="fa-setting-row-check" /> : null}
+                {status === "error" ? <IconClose /> : null}
               </span>
             ) : null}
+            {/* Always mounted with the control, so the save outcome is announced when it changes. */}
+            <span className="sr-only" role="status">
+              {status === "pending" ? "Saving" : status === "success" ? "Saved" : status === "error" ? "Not saved" : ""}
+            </span>
             <SettingRowContext.Provider value={{ labelId, descriptionId: hasDescription ? descriptionId : undefined }}>
               {control}
             </SettingRowContext.Provider>

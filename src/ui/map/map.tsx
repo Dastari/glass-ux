@@ -318,6 +318,12 @@ function Attribution({ config, folded }: { config: MapConfig; folded: boolean })
                   {" · "}
                 </span>
               ) : null}
+              {/* Small maps: consecutive minimal credits keep a separator too. */}
+              {credit.minimal && compact.slice(0, index).some((before) => before.minimal) ? (
+                <span className="fa-map-credit-minimal" aria-hidden>
+                  {" · "}
+                </span>
+              ) : null}
               {credit.short ? <span className="fa-map-credit-short">{link(credit, credit.short)}</span> : null}
               {credit.minimal ? <span className="fa-map-credit-minimal">{link(credit, credit.minimal)}</span> : null}
             </span>

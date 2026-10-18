@@ -494,6 +494,10 @@
     white-space: normal;
     overflow-wrap: anywhere;
   }
+  /* The " · " between credits starts a flex item's line: keep its spaces. */
+  .fa-map-credit > [aria-hidden] {
+    white-space: pre;
+  }
   .fa-map-attribution > .fa-button {
     flex-shrink: 0;
   }
@@ -540,6 +544,11 @@
     }
     .fa-map-credit-minimal {
       display: inline;
+    }
+    /* A small map's credits stay legible without taking a band of the map. */
+    .fa-map-attribution {
+      font-size: var(--type-overline-size);
+      line-height: var(--type-overline-line);
     }
   }
   /* A row-sized map: no controls; the credits as everywhere else. */

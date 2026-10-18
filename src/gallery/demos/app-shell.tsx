@@ -7,6 +7,7 @@ import {
   Inspector,
   InspectorToggle,
   Rail,
+  SectionDrawer,
   ShellBrand,
   TopBar,
 } from "../../shell/index.js";
@@ -17,7 +18,7 @@ export default function AppShellExample() {
     <SectionPage>
       <Specimen
         title="AppShell"
-        description="A bounded working shell. Open the inspector from the top bar to inspect the fictional exhibition."
+        description="A bounded working shell with a section drawer. Open the inspector from the top bar to inspect the fictional exhibition."
         layout="stack"
       >
         <div className="relative h-120 w-full overflow-hidden">
@@ -29,6 +30,17 @@ export default function AppShellExample() {
               <Rail.Root aria-label={`${scope} sample navigation`}>
                 <Rail.Item label="Projects" icon={<IconOrganisation />} />
               </Rail.Root>
+            }
+            drawer={
+              <SectionDrawer.Root aria-label={`${scope} sample sections`}>
+                <SectionDrawer.Header title="Projects" />
+                <SectionDrawer.Body>
+                  <SectionDrawer.List>
+                    <SectionDrawer.Item label="Exhibition" count={3} active />
+                    <SectionDrawer.Item label="Archive" />
+                  </SectionDrawer.List>
+                </SectionDrawer.Body>
+              </SectionDrawer.Root>
             }
             topBar={
               <TopBar

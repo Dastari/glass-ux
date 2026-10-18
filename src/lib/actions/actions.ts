@@ -120,18 +120,25 @@ export function defineActions<T>(entity: string, actions: readonly ActionDefinit
   return { entity, actions }
 }
 
+/** One action as a surface shows it: its label resolved for the targets, and its visible children. */
 export interface ResolvedAction<T> {
+  /** The definition it came from; pass it to the action runner. */
   definition: ActionDefinition<T>
+  /** The definition's id; a split action's own run inside its submenu ends in `:self`. */
   id: string
+  /** The label, resolved for the targets when the definition's label is a function. */
   label: string
   /** Explains why the action is unavailable; the control remains focusable so the reason is accessible. */
   disabledReason: string | null
+  /** Visible children in definition order; a split action lists its own run first. */
   children: ResolvedAction<T>[]
 }
 
+/** The visible actions of one group, in definition order. */
 export interface ResolvedGroup<T> {
+  /** The group, one of `ACTION_GROUPS`. */
   group: ActionGroup
-  /** Supporting actions rendered in the action slot. */
+  /** The group's visible actions, unavailable ones included with their `disabledReason`. */
   actions: ResolvedAction<T>[]
 }
 
@@ -159,7 +166,15 @@ function resolveOne<T>(action: ActionDefinition<T>, targets: readonly T[], surfa
   }
 }
 
-/** Visible actions for these targets on this surface, grouped in the fixed order. */
+/**
+ * The actions a surface shows for these targets, grouped in `ACTION_GROUPS` order with empty
+ * groups left out. An action is left out when its `surfaces` omit this surface, it is not
+ * `bulk` and several targets are selected, its `visible` returns false, or none of its
+ * children are visible. Unavailable actions stay, with a `disabledReason`. No targets gives
+ * no groups.
+ *
+ * Use it to build command lists and to test an action set without rendering a menu.
+ */
 export function resolveActions<T>(set: ActionSet<T>, targets: readonly T[], surface: ActionSurface): ResolvedGroup<T>[] {
   if (!targets.length) return []
   return ACTION_GROUPS.map((group) => ({

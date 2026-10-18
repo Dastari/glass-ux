@@ -9,7 +9,7 @@ import {
   IconRouter,
   IconServer,
 } from "glass-ux/icons";
-import { defineActions } from "glass-ux/lib/actions/actions";
+import { defineActions } from "glass-ux/actions";
 import { EntityIdentity, type EntityState } from "glass-ux/entity";
 import { Panel } from "glass-ux/surface";
 import {

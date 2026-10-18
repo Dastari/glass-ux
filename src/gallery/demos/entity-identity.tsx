@@ -21,7 +21,7 @@ import {
   IconTickets,
   IconUser,
 } from "../../icons/generated/icons.js";
-import { defineActions } from "../../lib/actions/actions.js";
+import { defineActions } from "../../ui/actions/index.js";
 import {
   EntityIdentity,
   type EntityIdentityProps,

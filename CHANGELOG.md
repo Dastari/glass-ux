@@ -4,6 +4,34 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.7.1
+
+### Fixed
+
+- A docked `Inspector` stretched across the whole workspace in 0.7.0, covering the routed
+  view and taking its clicks, whenever the inspector showed (by default from 120rem, or
+  opened from 80rem). AppShell now sizes the panes in its drawer and inspector slots to
+  `--_drawer` and `--inspector-w` whatever order the stylesheets load in, so a pane's own
+  `flex` no longer stretches it over the workspace. A browser test docks both panes at
+  1920×1080 and 1366×768.
+- `WindowBodySkeleton`, which `WindowContentHost` shows while a window's body loads, named
+  itself "Loading window" on an element with no role, so axe reported
+  `aria-prohibited-attr`. It is now a busy `status` with that name. A unit test and a browser
+  test with axe cover a window whose body has not loaded.
+
+### Added
+
+- `resolveActions` and its `ResolvedGroup` and `ResolvedAction` types are exported from
+  `glass-ux/actions`, alongside `defineActions`, for command lists and tests. Replace deep
+  imports from `glass-ux/lib/actions/actions`.
+
+### Changed
+
+- The AppShell catalogue demo includes a section drawer, and usage examples import action
+  sets from `glass-ux/actions`.
+- The WindowBodySkeleton catalogue demo shows the skeleton at its loading size, and in a
+  window whose body is still loading.
+
 ## 0.7.0
 
 ### Breaking changes

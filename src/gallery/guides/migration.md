@@ -3,6 +3,18 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.7.0 → 0.7.1
+
+No code changes are required.
+
+- Remove any workaround that pinned the docked Inspector's or drawer's width; AppShell sizes
+  both panes again.
+- Import `resolveActions` from `glass-ux/actions` instead of
+  `glass-ux/lib/actions/actions`.
+- A window body that is still loading is now announced as a `status` named "Loading
+  window". Tests that find it by role should query `getByRole("status", { name: "Loading
+  window" })`.
+
 ## 0.6 → 0.7
 
 ### Required changes

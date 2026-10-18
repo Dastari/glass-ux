@@ -12,7 +12,13 @@ import {
   ConversationHandlersProvider,
 } from "../ai/index.js";
 import { demoResolver } from "./sections/ai.fixtures.js";
-import { ActionMenu, ActionProvider } from "../ui/actions/index.js";
+import {
+  ActionMenu,
+  ActionMenuItems,
+  ActionProvider,
+  defineActions,
+  resolveActions,
+} from "../ui/actions/index.js";
 import { ConfirmHost, confirm } from "../ui/alert-dialog/index.js";
 import { Toaster } from "../ui/toast/index.js";
 import {
@@ -36,7 +42,6 @@ const SAMPLE_ACTIONS = defineActions<{ id: string }>("exhibitions", [
   },
 ]);
 import { HitLayer } from "../ui/charts/index.js";
-import { defineActions, resolveActions } from "../lib/actions/actions.js";
 import { Dialog } from "../ui/dialog/index.js";
 import { useState, useRef } from "react";
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox";
@@ -64,6 +69,7 @@ import {
   Inspector,
   InspectorToggle,
   Rail,
+  SectionDrawer,
   ShellBrand,
   ShortcutKeys,
   ThemeToggle,
@@ -146,7 +152,6 @@ import {
   TooltipPrimitive,
   TooltipProvider,
 } from "../ui/tooltip/index.js";
-import { ActionMenuItems } from "../ui/actions/index.js";
 import {
   ChartFrame,
   ChartLegend,
@@ -1132,17 +1137,37 @@ export function SessionNavSkeletonExample() {
   );
 }
 
+function makeLoadingWindowDemo() {
+  registerWindowKind({
+    kind: "docs.loading",
+    icon: IconOrganisation,
+    title: () => "Exhibition notes",
+    // Never resolves, so the window keeps showing its loading body.
+    load: () => new Promise<never>(() => {}),
+  });
+  const manager = createWindowManager({ storageKey: null, channelName: null });
+  const id = manager.open({ kind: "docs.loading", params: {} });
+  return { manager, id };
+}
+
 export function WindowBodySkeletonExample() {
+  const [{ manager, id }] = useState(makeLoadingWindowDemo);
   return (
     <SectionPage>
       <Specimen
         title="WindowBodySkeleton"
-        description="The loading state keeps the corresponding content dimensions while data arrives."
+        description="The loading state keeps the corresponding content dimensions while data arrives. WindowContentHost shows it until a kind's body loads; the window's body never does."
         layout="stack"
       >
-        <div className="h-45 w-full">
+        <div className="flex h-45 w-full flex-col">
           <WindowBodySkeleton />
         </div>
+        <WindowManagerProvider manager={manager}>
+          <WindowFrame.Root className="h-60">
+            <WindowFrame.AppBar title="Exhibition notes" />
+            <WindowContentHost id={id} kind="docs.loading" params={{}} />
+          </WindowFrame.Root>
+        </WindowManagerProvider>
       </Specimen>
     </SectionPage>
   );
@@ -2000,7 +2025,7 @@ export function AppShellExample() {
     <SectionPage>
       <Specimen
         title="AppShell"
-        description="A bounded working shell. Open the inspector from the top bar to inspect the fictional exhibition."
+        description="A bounded working shell with a section drawer. Open the inspector from the top bar to inspect the fictional exhibition."
         layout="stack"
       >
         <div className="relative h-120 w-full overflow-hidden">
@@ -2018,6 +2043,17 @@ export function AppShellExample() {
               <Rail.Root aria-label={`${scope} sample navigation`}>
                 <Rail.Item label="Projects" icon={<IconOrganisation />} />
               </Rail.Root>
+            }
+            drawer={
+              <SectionDrawer.Root aria-label={`${scope} sample sections`}>
+                <SectionDrawer.Header title="Projects" />
+                <SectionDrawer.Body>
+                  <SectionDrawer.List>
+                    <SectionDrawer.Item label="Exhibition" count={3} active />
+                    <SectionDrawer.Item label="Archive" />
+                  </SectionDrawer.List>
+                </SectionDrawer.Body>
+              </SectionDrawer.Root>
             }
             topBar={
               <TopBar

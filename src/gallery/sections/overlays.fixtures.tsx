@@ -22,7 +22,7 @@ import {
   IconViewOnly,
   IconWake,
 } from "../../icons/generated/icons.js"
-import { defineActions } from "../../lib/actions/actions.js"
+import { defineActions } from "../../ui/actions/index.js"
 
 export interface DemoEndpoint {
   id: string

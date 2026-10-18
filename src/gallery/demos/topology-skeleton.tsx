@@ -11,7 +11,7 @@ import {
   IconRouter,
   IconServer,
 } from "../../icons/generated/icons.js";
-import { defineActions } from "../../lib/actions/actions.js";
+import { defineActions } from "../../ui/actions/index.js";
 import { EntityIdentity, type EntityState } from "../../ui/entity/index.js";
 import {
   TopologyCanvas,

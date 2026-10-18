@@ -134,7 +134,12 @@
     pointer-events: none;
     transition: visibility 0s linear 0s;
   }
-  .fa-shell-slot-drawer > * {
+  /* The slot is wider than the pane, so the shell sizes its child. `.fa-shell >` outranks a
+     pane's own `flex`/`width` (Inspector, SectionDrawer or a host's pane) whatever order
+     the stylesheets load in. */
+  .fa-shell > .fa-shell-slot-drawer > * {
+    flex: none;
+    width: var(--_drawer);
     pointer-events: auto;
     transition: transform var(--duration-base) var(--ease-enter);
   }
@@ -211,7 +216,7 @@
     visibility: hidden;
     transition: visibility 0s linear var(--duration-base);
   }
-  .fa-shell-slot-inspector > * {
+  .fa-shell > .fa-shell-slot-inspector > * {
     flex: none;
     width: var(--inspector-w);
     pointer-events: auto;

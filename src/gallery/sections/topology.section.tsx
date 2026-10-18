@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react"
 import { ContainerLab, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
 import { IconAccessPoint, IconDeskPhone, IconEndpoint, IconNetworkSwitch, IconPrinter, IconRouter, IconServer } from "../../icons/generated/icons.js"
-import { defineActions } from "../../lib/actions/actions.js"
+import { defineActions } from "../../ui/actions/index.js"
 import { EntityIdentity, type EntityState } from "../../ui/entity/index.js"
 import { Panel } from "../../ui/surface/index.js"
 import { TopologyCanvas, TopologySkeleton, TopologyViewToggle, type TopologyClusterSpec, type TopologyNode, type TopologyNodeMenu, type TopologyView } from "../../ui/topology/index.js"

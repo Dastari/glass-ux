@@ -3,7 +3,7 @@ import { PORTRAITS } from "../fixtures/organisations.js"
 import type { ReactNode } from "react"
 import { ContainerLab, Example, Matrix, OnCanvas, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
 import { IconArchive, IconCode, IconCopy, IconOrganisation, IconPopOut, IconTickets, IconUser } from "../../icons/generated/icons.js"
-import { defineActions } from "../../lib/actions/actions.js"
+import { defineActions } from "../../ui/actions/index.js"
 import { EntityIdentity, type EntityIdentityProps, type EntityState } from "../../ui/entity/index.js"
 import { toast } from "../../ui/toast/index.js"
 

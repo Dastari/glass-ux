@@ -102,10 +102,13 @@ export const WindowContentHost = memo(
     a.id === b.id && a.kind === b.kind && sameParams(a.params, b.params),
 );
 
-/** The loading state of a window body: the scroll body's padding and a few lines. */
+/**
+ * The loading state of a window body: the scroll body's padding and a few lines. It is a
+ * busy status named "Loading window", so assistive technology hears why the body is empty.
+ */
 export function WindowBodySkeleton() {
   return (
-    <WindowFrame.Body aria-busy="true" aria-label="Loading window">
+    <WindowFrame.Body role="status" aria-busy="true" aria-label="Loading window">
       <div className="fa-window-skeleton">
         <Skeleton.Text type="subtitle" width="40%" />
         <Skeleton.Text lines={3} width="70%" />

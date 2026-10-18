@@ -31,7 +31,7 @@ import {
   IconWake,
   IconWarning,
 } from "../../icons/generated/icons.js";
-import { defineActions, type ActionSet } from "../../lib/actions/actions.js";
+import { defineActions, type ActionSet } from "../../ui/actions/index.js";
 import { toast } from "../../ui/toast/index.js";
 import {
   defineEntityKinds,

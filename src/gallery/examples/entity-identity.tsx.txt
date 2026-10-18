@@ -19,7 +19,7 @@ import {
   IconTickets,
   IconUser,
 } from "glass-ux/icons";
-import { defineActions } from "glass-ux/lib/actions/actions";
+import { defineActions } from "glass-ux/actions";
 import { EntityIdentity, type EntityIdentityProps, type EntityState } from "glass-ux/entity";
 import { toast } from "glass-ux/toast";
 

@@ -2,7 +2,7 @@
 import { useMemo } from "react"
 import { EntityIdentity } from "../../ui/entity/index.js"
 import { IconEndpoint } from "../../icons/generated/icons.js"
-import { defineActions, type ActionDefinition, type ActionSet } from "../../lib/actions/actions.js"
+import { defineActions, type ActionDefinition, type ActionSet } from "../../ui/actions/index.js"
 import {
   createDataTableColumns,
   NumericCell,

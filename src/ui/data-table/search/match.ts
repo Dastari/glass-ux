@@ -11,7 +11,7 @@ import type { FilterColumn } from "../filters/types.js"
 import { normalizeSearch, type DataTableSearch } from "./types.js"
 
 export interface ResolvedSearchField<T> {
-  /** The `Where` key. */
+  /** The server field name. */
   field: string
   /** The row's value, when the column (or the ref) can read it. */
   getValue?: (row: T) => unknown
@@ -20,7 +20,7 @@ export interface ResolvedSearchField<T> {
 // oxlint-disable-next-line typescript/no-explicit-any -- any row type: only the filter specs are read
 type Columns = readonly DataTableColumn<any>[] | readonly FilterColumn[]
 
-/** Each searched field's `Where` key and value reader, in the order the spec lists them. */
+/** Each searched field's server field name and value reader, in the order the spec lists them. */
 export function searchFields<T extends RowData>(spec: DataTableSearch<T>, columns: Columns = []): Array<ResolvedSearchField<T>> {
   const byId = new Map(asFilterColumns(columns).map((column) => [column.id, column]))
   const seen = new Set<string>()

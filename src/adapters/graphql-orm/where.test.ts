@@ -190,11 +190,11 @@ describe("toWhere", () => {
 
   it("lets a column write a hand-written input, and merges those with toFilterInput", () => {
     const handWritten: FilterColumn[] = [
-      { id: "hostname", header: "Endpoint", spec: filters.text({ field: "Hostname", operators: ["contains"], toWhere: (value) => ("value" in value ? { HostnameContains: value.value } : null) }) },
+      { id: "hostname", header: "Endpoint", spec: filters.text({ field: "Hostname", operators: ["contains"], toCondition: (value) => ("value" in value ? { HostnameContains: value.value } : null) }) },
       {
         id: "contact",
         header: "Last contact",
-        spec: filters.date({ field: "SampleLastContact", storage: "rfc3339", toWhere: (value) => (value.op === "olderThan" ? { SampleLastContactOlderThanDays: value.days } : null) }),
+        spec: filters.date({ field: "SampleLastContact", storage: "rfc3339", toCondition: (value) => (value.op === "olderThan" ? { SampleLastContactOlderThanDays: value.days } : null) }),
       },
       {
         id: "provider",
@@ -204,7 +204,7 @@ describe("toWhere", () => {
           summary: (value, label) => `${label}: ${value.join(", ")}`,
           encode: (value) => value.join(","),
           decode: (raw) => raw.split(","),
-          toWhere: (value) => ({ Providers: value }),
+          toCondition: (value) => ({ Providers: value }),
         }),
       },
     ]
@@ -276,12 +276,22 @@ describe("search → Or of Contains (R16.8)", () => {
   })
 
   it("takes the search's own mapping: a hand-written input, or nothing for a search resolver", () => {
-    const handWritten: DataTableSearch = { fields: [], toWhere: (query) => ({ HostnameContains: query }) }
+    const handWritten: DataTableSearch = { fields: [], toCondition: (query) => ({ HostnameContains: query }) }
     expect(toFilterInput([{ id: "os", value: { op: "in", values: ["macOS 15"] } }], columns, { search: { query: " orb ", spec: handWritten } })).toEqual({
       HostnameContains: "orb",
       Os: { InList: ["macOS 15"] },
     })
-    const resolver: DataTableSearch = { fields: ["name"], toWhere: () => null }
+    const resolver: DataTableSearch = { fields: ["name"], toCondition: () => null }
     expect(toWhere([], columns, { search: { query: "orb", spec: resolver } })).toBeUndefined()
+  })
+
+  it("still honours the deprecated toWhere name", () => {
+    const search: DataTableSearch = { fields: [], toWhere: (query) => ({ HostnameContains: query }) }
+    const custom: FilterColumn = {
+      id: "provider",
+      header: "Provider",
+      spec: filters.custom<string>({ editor: () => null, summary: (value) => value, encode: (value) => value, decode: (raw) => raw, toWhere: (value) => ({ Provider: value }) }),
+    }
+    expect(toFilterInput([{ id: "provider", value: "SAMPLE" }], [custom], { search: { query: "orb", spec: search } })).toEqual({ HostnameContains: "orb", Provider: "SAMPLE" })
   })
 })

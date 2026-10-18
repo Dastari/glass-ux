@@ -28,7 +28,8 @@ import type {
   TextOp,
   UuidFilterSpec,
   UuidOp,
-  WhereInput,
+  FilterConditionFn,
+  CustomFilterOptions,
 } from "./types.js"
 import type { OptionSource } from "../../combobox/index.js"
 
@@ -36,7 +37,10 @@ interface Common<V> {
   field: string
   label?: string
   nullable?: boolean
-  toWhere?: (value: V, context: FilterTimeContext) => WhereInput | null
+  /** Returns this column's hand-written server condition, or null to send nothing. */
+  toCondition?: FilterConditionFn<V>
+  /** @deprecated Renamed to `toCondition`; this alias will be removed in the next release. */
+  toWhere?: FilterConditionFn<V>
 }
 
 const EMPTY: readonly EmptyOp[] = ["isEmpty", "isNotEmpty"]
@@ -143,7 +147,7 @@ export const filters = {
   },
 
   /** Anything else: the column supplies the editor, summary, URL codec and server mapping. */
-  custom<V>(spec: Omit<CustomFilterSpec<V>, "kind">): CustomFilterSpec<V> {
-    return { kind: "custom", ...spec }
+  custom<V>(spec: CustomFilterOptions<V>): CustomFilterSpec<V> {
+    return { kind: "custom", ...spec } as CustomFilterSpec<V>
   },
 }

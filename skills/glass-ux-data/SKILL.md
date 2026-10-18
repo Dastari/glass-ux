@@ -17,7 +17,8 @@ Read the installed API pages for `DataTable`, the selected chart or map, and
 `docs/data-filters.md` or `docs/map.md` as appropriate.
 
 Define stable row identifiers, typed columns, priorities, search fields and filters. Match
-operators to what the backend can execute. In a paged view the application supplies total
+operators to what the backend can execute; give a filter or search a `toCondition` when the
+server needs a hand-written `FilterCondition`. In a paged view the application supplies total
 counts and server paging/filtering; filtering one downloaded page does not filter the dataset.
 Use URL-state adapters with the host router when the state should be shareable.
 

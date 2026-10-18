@@ -29,7 +29,7 @@
     transition: box-shadow var(--duration-fast) var(--ease-standard);
   }
   /* With a search, the scroll edge sits under the field instead (it stays put). */
-  .fa-shell-drawer:not(:has(.fa-shell-drawer-search)):has(.fa-shell-drawer-body[data-scrolled-top]) .fa-shell-drawer-header {
+  .fa-shell-drawer[data-scrolled-top]:not(:has(.fa-shell-drawer-search)) .fa-shell-drawer-header {
     box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
   }
   .fa-shell-drawer-search {
@@ -38,7 +38,7 @@
     padding: 0 var(--space-3) var(--space-2);
     transition: box-shadow var(--duration-fast) var(--ease-standard);
   }
-  .fa-shell-drawer:has(.fa-shell-drawer-body[data-scrolled-top]) .fa-shell-drawer-search {
+  .fa-shell-drawer[data-scrolled-top] .fa-shell-drawer-search {
     box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
   }
   /* In the sheet it lines up with the sheet's header and body. */
@@ -110,7 +110,7 @@
     padding: var(--space-2) var(--space-3) var(--space-3);
     transition: box-shadow var(--duration-fast) var(--ease-standard);
   }
-  .fa-shell-drawer:has(.fa-shell-drawer-body[data-scrolled-bottom]) .fa-shell-drawer-footer {
+  .fa-shell-drawer[data-scrolled-bottom] .fa-shell-drawer-footer {
     box-shadow: inset 0 var(--border-width) 0 var(--line);
   }
 

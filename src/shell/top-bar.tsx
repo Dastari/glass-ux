@@ -31,6 +31,8 @@ import { TruncatedText } from "../ui/truncated-text/index.js";
  * ghost icon. A running timer keeps its place; the module button then leaves for the trail.
  */
 import {
+  useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -67,7 +69,7 @@ import {
   usePlatform,
 } from "../ui/kbd/index.js";
 import { SegmentedCollapseContext } from "../ui/segmented/index.js";
-import { useOptionalShell } from "./app-shell.js";
+import { ShellFocusContext, useOptionalShell } from "./app-shell.js";
 
 export interface TopBarProps extends Omit<
   ComponentProps<"header">,
@@ -424,6 +426,15 @@ export function InspectorToggle({
   const open = shell?.inspectorOpen ?? false;
   const available = shell?.inspectorAvailable ?? false;
   const setOpen = shell?.setInspectorOpen;
+  const focusTargets = useContext(ShellFocusContext);
+  // Hiding the docked inspector from inside it returns focus here (AppShell).
+  const registerReturn = useCallback(
+    (element: HTMLButtonElement | null) => {
+      if (!focusTargets || !element) return;
+      return focusTargets.registerInspectorReturn(element);
+    },
+    [focusTargets],
+  );
   useEffect(() => {
     if (!shortcut || !available || !setOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
@@ -438,6 +449,7 @@ export function InspectorToggle({
   if (!shell?.inspectorAvailable) return null;
   return (
     <Button
+      ref={registerReturn}
       className="fa-shell-topbar-inspector-toggle"
       variant={open ? "soft" : "ghost"}
       icon={icon ?? <IconInspector />}

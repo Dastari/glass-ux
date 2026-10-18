@@ -76,6 +76,27 @@ export function useOptionalShell() {
   return useContext(ShellContext)
 }
 
+/**
+ * Internal: the controls that reopen a docked pane. Hiding a pane makes its slot inert, so
+ * when focus is inside it the shell first moves focus to the control that brings it back
+ * (the inspector toggle; the current rail item or the drawer handle) instead of the body.
+ */
+export interface ShellFocusTargets {
+  /** Registers the control that reopens the inspector; returns its unregistration. */
+  registerInspectorReturn: (element: HTMLElement) => () => void
+  /** Registers the control that reopens the section drawer; returns its unregistration. */
+  registerDrawerReturn: (element: HTMLElement) => () => void
+}
+
+export const ShellFocusContext = createContext<ShellFocusTargets | null>(null)
+
+/** Focuses the element if it can take focus (connected, not inert or hidden); reports success. */
+const tryFocus = (element: HTMLElement | null | undefined) => {
+  if (!element?.isConnected || element.closest("[inert], [hidden]")) return false
+  element.focus()
+  return document.activeElement === element
+}
+
 /** Where a SectionDrawer renders: docked in the shell, or in the slide-over sheet. */
 export const DrawerPlacement = createContext<"pane" | "sheet">("pane")
 
@@ -135,6 +156,34 @@ export function AppShell({
   const [sheetOpen, setSheetOpen] = useState(false)
   const [overlayInspector, setOverlayInspector] = useState(false)
   const shellRef = useRef<HTMLDivElement>(null)
+  const drawerSlotRef = useRef<HTMLDivElement>(null)
+  const inspectorSlotRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLElement>(null)
+  const handleRef = useRef<HTMLDivElement>(null)
+  const inspectorReturn = useRef<HTMLElement | null>(null)
+  const drawerReturn = useRef<HTMLElement | null>(null)
+  const focusTargets = useMemo<ShellFocusTargets>(() => {
+    const register = (slot: { current: HTMLElement | null }) => (element: HTMLElement) => {
+      slot.current = element
+      return () => {
+        if (slot.current === element) slot.current = null
+      }
+    }
+    return { registerInspectorReturn: register(inspectorReturn), registerDrawerReturn: register(drawerReturn) }
+  }, [])
+  /**
+   * Before a docked slot turns inert, move focus out of it to the control that reopens it,
+   * or to the workspace, so keyboard and screen-reader users are not dropped on the body.
+   */
+  const returnFocusFrom = useCallback((slot: HTMLElement | null, ...targets: (HTMLElement | null)[]) => {
+    const active = typeof document === "undefined" ? null : document.activeElement
+    if (!slot || !active || !slot.contains(active)) return
+    if (targets.some(tryFocus)) return
+    const content = contentRef.current
+    if (!content) return
+    if (!content.hasAttribute("tabindex")) content.tabIndex = -1
+    content.focus()
+  }, [])
 
   // Mirror stored preferences onto <html> (the boot script did this before first paint;
   // this keeps it in step with other tabs).
@@ -152,26 +201,36 @@ export function AppShell({
 
   const hasDrawer = Boolean(drawer)
   const drawerOpen = desktop ? prefs.drawer === "open" : sheetOpen
+  const returnFromDrawer = useCallback(
+    () => returnFocusFrom(drawerSlotRef.current, drawerReturn.current, handleRef.current),
+    [returnFocusFrom]
+  )
   const setDrawerOpen = useCallback(
     (open: boolean) => {
-      if (desktop) updateShellPrefs({ drawer: open ? "open" : "closed" })
-      else setSheetOpen(open)
+      if (desktop) {
+        if (!open) returnFromDrawer()
+        updateShellPrefs({ drawer: open ? "open" : "closed" })
+      } else setSheetOpen(open)
     },
-    [desktop]
+    [desktop, returnFromDrawer]
   )
   const toggleDrawer = useCallback(() => {
-    if (desktop) updateShellPrefs((current) => ({ drawer: current.drawer === "open" ? "closed" : "open" }))
-    else setSheetOpen((open) => !open)
-  }, [desktop])
+    if (desktop) {
+      if (readShellPrefs().drawer === "open") returnFromDrawer()
+      updateShellPrefs((current) => ({ drawer: current.drawer === "open" ? "closed" : "open" }))
+    } else setSheetOpen((open) => !open)
+  }, [desktop, returnFromDrawer])
 
   const inspectorAvailable = Boolean(inspector)
   const inspectorOpen = docked ? (prefs.inspector === null ? wide : prefs.inspector === "open") : overlayInspector
   const setInspectorOpen = useCallback(
     (open: boolean) => {
-      if (docked) updateShellPrefs({ inspector: open ? "open" : "closed" })
-      else setOverlayInspector(open)
+      if (docked) {
+        if (!open) returnFocusFrom(inspectorSlotRef.current, inspectorReturn.current)
+        updateShellPrefs({ inspector: open ? "open" : "closed" })
+      } else setOverlayInspector(open)
     },
-    [docked]
+    [docked, returnFocusFrom]
   )
 
   useEffect(() => {
@@ -204,6 +263,7 @@ export function AppShell({
 
   return (
     <ShellContext.Provider value={value}>
+      <ShellFocusContext.Provider value={focusTargets}>
       <TooltipProvider>
         <div
           ref={shellRef}
@@ -218,15 +278,15 @@ export function AppShell({
           <div className="fa-shell-slot-rail">{rail}</div>
           {hasDrawer && desktop ? (
             <>
-              <div className="fa-shell-slot-drawer" inert={!drawerOpen}>
+              <div ref={drawerSlotRef} className="fa-shell-slot-drawer" inert={!drawerOpen}>
                 <DrawerPlacement.Provider value="pane">{drawer}</DrawerPlacement.Provider>
               </div>
-              <DrawerHandle shellRef={shellRef} open={drawerOpen} onToggle={toggleDrawer} />
+              <DrawerHandle ref={handleRef} shellRef={shellRef} open={drawerOpen} onToggle={toggleDrawer} />
             </>
           ) : null}
-          <Content className="fa-shell-slot-work">{children}</Content>
+          <Content ref={contentRef as RefObject<HTMLElement & HTMLDivElement>} className="fa-shell-slot-work">{children}</Content>
           {inspector ? (
-            <div className="fa-shell-slot-inspector" inert={docked && !inspectorOpen}>
+            <div ref={inspectorSlotRef} className="fa-shell-slot-inspector" inert={docked && !inspectorOpen}>
               {inspector}
             </div>
           ) : null}
@@ -240,6 +300,7 @@ export function AppShell({
           </Sheet.Root>
         ) : null}
       </TooltipProvider>
+      </ShellFocusContext.Provider>
     </ShellContext.Provider>
   )
 }
@@ -250,10 +311,12 @@ export function AppShell({
  * While dragging only a custom property on the shell changes, so nothing re-renders.
  */
 function DrawerHandle({
+  ref,
   shellRef,
   open,
   onToggle,
 }: {
+  ref?: RefObject<HTMLDivElement | null>
   shellRef: RefObject<HTMLDivElement | null>
   open: boolean
   /** Called when toggle occurs. The callback type specifies its arguments. */
@@ -339,6 +402,7 @@ function DrawerHandle({
   const widthRem = prefs.drawerWidth ?? defaultDrawerRem()
   return (
     <div
+      ref={ref}
       role="separator"
       tabIndex={0}
       aria-orientation="vertical"

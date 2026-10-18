@@ -318,7 +318,8 @@ function Body({
 }: SectionDrawerBodyProps) {
   const placement = useContext(DrawerPlacement);
   const ref = useRef<HTMLDivElement>(null);
-  const edges = useScrollEdges(ref);
+  // The drawer root mirrors the edges, so its header, search and footer select on it.
+  const edges = useScrollEdges(ref, { root: ".fa-shell-drawer" });
   if (placement === "sheet") {
     return (
       <Sheet.Body>

@@ -137,7 +137,7 @@
     height: auto;
     margin: 0;
     padding: 0;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-chip);
     background: none;
     box-shadow: none;
     font-size: inherit;

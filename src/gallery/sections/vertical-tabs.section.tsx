@@ -9,6 +9,7 @@ import {
   IconRefresh,
   IconSettings,
 } from "../../icons/generated/icons.js"
+import { Surface } from "../../ui/surface/index.js"
 import { RouteVerticalTabs, VerticalTabs, type RouteVerticalTabItem, type VerticalTabItem } from "../../ui/vertical-tabs/index.js"
 
 const AGENT: VerticalTabItem[] = [
@@ -38,9 +39,9 @@ function SectionOutlet() {
   const search = useSearch({ strict: false }) as { section?: string }
   const item = AGENT.find((entry) => entry.value === (search.section ?? "general"))
   return (
-    <div className="glass-inset flex h-40 items-start rounded-tile p-tile type-caption text-fg-muted">
+    <Surface material="inset" radius="tile" padding="tile" className="flex h-40 items-start type-caption text-fg-muted">
       {item?.label} · /endpoints/orb-7c71/settings/{search.section ?? "general"}
-    </div>
+    </Surface>
   )
 }
 
@@ -54,9 +55,9 @@ const STATES: VerticalTabItem[] = [
 function Panels({ items, host = "LMN-7C71" }: { items: VerticalTabItem[]; host?: string }) {
   return items.map((item) => (
     <VerticalTabs.Panel key={item.value} value={item.value}>
-      <div className="glass-inset flex h-40 items-start rounded-tile p-tile type-caption text-fg-muted">
+      <Surface material="inset" radius="tile" padding="tile" className="flex h-40 items-start type-caption text-fg-muted">
         {item.label} · {host}
-      </div>
+      </Surface>
     </VerticalTabs.Panel>
   ))
 }

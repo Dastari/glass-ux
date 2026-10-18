@@ -3,6 +3,7 @@
  * TierRow live in gallery/kit, shared with Metric) and a dashboard tile grid.
  */
 import type { ReactNode } from "react"
+import { Surface } from "../../ui/surface/index.js"
 import { SwapSlot, tierBoxClass } from "../kit.js"
 
 /** Loading → loaded in place, at compact, full and micro, for the skeleton test (R9.3). */
@@ -22,5 +23,5 @@ export function TileGrid({ children }: { children: ReactNode }) {
 }
 
 export function Tile({ children }: { children: ReactNode }) {
-  return <div className="glass-control charts-tile rounded-tile p-tile">{children}</div>
+  return <Surface material="control" radius="tile" padding="tile" className="charts-tile">{children}</Surface>
 }

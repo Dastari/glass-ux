@@ -102,7 +102,7 @@
     --_dot: 0.4375rem;
   }
   .fa-tree-icon.fa-skel-block {
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-skeleton);
   }
 
   .fa-tree-text {
@@ -140,7 +140,7 @@
     opacity: 0.8;
   }
   .fa-tree-mark {
-    border-radius: calc(var(--radius-xs) / 2);
+    border-radius: calc(var(--radius-chip) / 2);
     background-color: var(--accent-soft-hover);
     color: inherit;
     font-weight: var(--weight-semibold);

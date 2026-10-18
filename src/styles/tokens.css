@@ -84,7 +84,18 @@
     --radius-item: max(var(--radius-xs), calc(var(--radius-overlay) - var(--inset-overlay)));
     --radius-check: var(--radius-xs);
     --radius-badge: var(--radius-full);
-    --radius-tooltip: var(--radius-sm);
+    --radius-tooltip: var(--radius-sm); /* tooltips and value bubbles */
+    --radius-compact: var(--radius-xs); /* xs-height controls; the floor of nested corners */
+    --radius-chip: var(--radius-xs); /* inside text: code, keycaps, flags, chips, link outlines */
+    --radius-line: var(--radius-xs); /* a highlighted line or row in code, logs, JSON, tables */
+    --radius-mark: var(--radius-xs); /* small filled shapes: data cells, entity marks, the plot */
+    --radius-skeleton: var(--radius-xs); /* skeleton bars and blocks */
+    --radius-media: var(--radius-xs); /* images and attachment thumbnails in content */
+    --radius-tail: var(--radius-xs); /* the speaker-side corner of a message bubble */
+    --radius-icon: var(--radius-sm); /* an icon box the height of a small control */
+    --radius-tile-icon: var(--radius-md); /* the tile icon at its default box */
+    --radius-thumb: var(--radius-sm); /* miniatures: snap layouts, swatches, diagrams */
+    --radius-elbow: var(--radius-md); /* the bend of a routed connector */
 
     /* ── Borders and focus ─────────────────────────────────────────────────── */
     --border-width-strong: calc(var(--border-width) * 1.5);
@@ -229,6 +240,7 @@
     --overlay-enter-squash: 0.9;
     --overlay-enter-shift: 0.375rem;
     --popup-offset: var(--space-1-5); /* gap between a trigger and its popup */
+    --popup-collision: var(--space-2); /* distance a popup keeps from the viewport edge */
     --disabled-opacity: 0.45;
   }
 
@@ -240,7 +252,6 @@
     --control-px-md: 0.75rem;
     --item-h: 2rem;
     --row-h: 2.5rem;
-    --popup-collision: var(--space-2); /* distance a popup keeps from the viewport edge */
     --row-h-header: 2.25rem;
     --tile-icon-box: 2.25rem;
     --inset-panel: var(--space-4);

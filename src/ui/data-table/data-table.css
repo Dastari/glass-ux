@@ -526,7 +526,7 @@
     position: absolute;
     inset: var(--space-1-5) var(--space-1);
     z-index: -1;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-line);
     pointer-events: none;
     animation: fa-flash calc(var(--duration-slower) * 2.5) var(--ease-standard) both;
   }

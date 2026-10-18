@@ -2,6 +2,7 @@ import { Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { IconEndpoint } from "../../icons/generated/icons.js"
 import { ActionContextMenu, ActionMenu, ActionMenuPreview, ActionProvider } from "../../ui/actions/index.js"
 import { StatusBadge } from "../../ui/badge/index.js"
+import { Surface } from "../../ui/surface/index.js"
 import { Kbd } from "../../ui/kbd/index.js"
 import { TruncatedText } from "../../ui/truncated-text/index.js"
 import { ENDPOINTS, endpointActions, type DemoEndpoint } from "./overlays.fixtures.js"
@@ -9,11 +10,14 @@ import { ENDPOINTS, endpointActions, type DemoEndpoint } from "./overlays.fixtur
 function EndpointCard({ endpoint }: { endpoint: DemoEndpoint }) {
   return (
     <ActionContextMenu set={endpointActions} targets={[endpoint]} label={endpoint.name}>
-      <div
+      <Surface
+        material="control"
+        radius="tile"
+        padding="tile"
         // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focusable so Shift+F10 and the Menu key reach its context menu
         tabIndex={0}
         aria-label={`${endpoint.name}, ${endpoint.online ? "online" : "offline"}. Context menu: Shift+F10.`}
-        className="glass-control flex w-72 max-w-full min-w-0 items-center gap-3 rounded-tile p-3 outline-offset-2"
+        className="flex w-72 max-w-full min-w-0 items-center gap-3 outline-offset-2"
       >
         <span className="fa-tile-icon">
           <IconEndpoint />
@@ -26,7 +30,7 @@ function EndpointCard({ endpoint }: { endpoint: DemoEndpoint }) {
         </span>
         <StatusBadge status={endpoint.online ? "online" : "offline"} size="sm" />
         <ActionMenu set={endpointActions} targets={[endpoint]} label={endpoint.name} />
-      </div>
+      </Surface>
     </ActionContextMenu>
   )
 }

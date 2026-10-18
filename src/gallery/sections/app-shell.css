@@ -38,7 +38,7 @@
     place-items: center;
     min-width: 0;
     padding: var(--space-1-5);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-thumb);
     text-align: center;
   }
   .gallery-shell-diagram [data-canvas] {

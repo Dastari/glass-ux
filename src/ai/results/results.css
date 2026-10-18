@@ -300,7 +300,7 @@
     max-height: var(--_stage-img);
     width: auto;
     height: auto;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-media);
   }
   .fa-ai-lightbox-stage[data-zoomed] {
     place-items: start;
@@ -380,7 +380,7 @@
     gap: var(--space-2);
     min-width: max-content;
     padding-inline: var(--space-2);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-line);
   }
   .fa-ai-diff-line[data-type="add"] {
     background-color: var(--success-soft);
@@ -438,7 +438,7 @@
     grid-template-columns: max-content 7ch minmax(0, 1fr);
     gap: var(--space-3);
     padding-inline: var(--space-2);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-line);
   }
   .fa-ai-log-line[data-level="error"] {
     background-color: var(--danger-soft);

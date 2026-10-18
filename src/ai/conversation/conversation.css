@@ -239,7 +239,7 @@
     height: var(--space-4);
     padding: 0;
     border: 0;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-compact);
     background: none;
     cursor: pointer;
   }

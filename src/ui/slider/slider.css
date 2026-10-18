@@ -154,7 +154,7 @@
     min-width: var(--control-h-sm);
     padding: var(--space-half) var(--space-2);
     border: var(--border-width) solid var(--glass-edge);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-tooltip);
     background-color: var(--glass-fill-overlay);
     background-image: var(--glass-sheen);
     box-shadow:

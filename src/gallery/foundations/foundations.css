@@ -24,7 +24,7 @@
   .colour-palette-bar {
     width: 100%;
     height: var(--space-6);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-thumb);
     background-image: linear-gradient(100deg, var(--accent), var(--accent-2));
     box-shadow: var(--shadow-accent);
   }
@@ -88,7 +88,7 @@
   .colour-swatch {
     width: var(--tile-icon-box);
     height: var(--control-h-sm);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-thumb);
     box-shadow: inset 0 0 0 var(--border-width) var(--line);
   }
   .colour-ratio {
@@ -194,7 +194,7 @@
   }
   .space-bar {
     height: var(--space-3);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-mark);
     background: var(--fill-press);
   }
   .space-bar[data-tone="accent"] {
@@ -213,7 +213,7 @@
   }
   .space-height-box {
     width: var(--space-2);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-mark);
     background: var(--accent-line);
   }
   .space-height code {
@@ -369,7 +369,7 @@
   .motion-flash {
     align-self: flex-start;
     padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-thumb);
     animation: fa-flash var(--duration-slower) var(--ease-standard);
   }
 

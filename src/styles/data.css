@@ -73,7 +73,7 @@
     --chart-gap: calc(var(--border-width) * 2); /* surface gap between touching marks */
     --chart-bar-max: 1.5rem; /* a bar or column never grows thicker than this */
     --chart-bar-radius: calc(var(--unit) * var(--radius-scale)); /* the data end; the baseline stays square */
-    --chart-tile-radius: var(--radius-xs); /* treemap tiles and heatmap cells */
+    --chart-tile-radius: var(--radius-mark); /* treemap tiles and heatmap cells */
     --chart-grid: var(--line); /* gridlines: hairlines, low emphasis */
     --chart-baseline: var(--line-strong); /* the zero line and crosshair */
     --chart-track: var(--fill-muted); /* gauge and radial-bar tracks, the empty heat cell */

@@ -161,7 +161,7 @@
     place-items: center;
     width: var(--control-h-sm);
     height: var(--control-h-sm);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-icon);
     background-color: var(--glass-fill-inset);
     color: var(--fg-muted);
   }

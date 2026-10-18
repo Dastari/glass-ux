@@ -30,7 +30,7 @@
     height: var(--_h);
     padding-inline: var(--space-1);
     border: var(--border-width) solid var(--line);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-chip);
     background-color: var(--glass-fill-inset);
     box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
     color: var(--fg-muted);

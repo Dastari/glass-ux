@@ -76,7 +76,7 @@
     --_icon-stroke: calc(var(--icon-stroke) * 1.2);
     --_font: var(--type-caption-size);
     --_line: var(--type-caption-line);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-compact);
   }
   .fa-btn[data-size="sm"] {
     --_h: var(--control-h-sm);

@@ -85,7 +85,7 @@
     flex: none;
     margin-inline-start: auto;
     padding: 0 var(--space-1-5);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-chip);
     background-color: var(--fill-muted);
     color: var(--fg-muted);
     font-size: var(--type-caption-size);
@@ -128,7 +128,7 @@
   }
   .fa-ai-session-menu .fa-btn {
     --_h: var(--control-h-xs);
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-compact);
   }
   .fa-ai-session:is(:hover, :focus-within) .fa-ai-session-menu,
   .fa-ai-session-menu:has([data-popup-open]) {

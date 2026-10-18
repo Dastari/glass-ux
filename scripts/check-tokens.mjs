@@ -15,6 +15,11 @@
  * same colour and duration rules. Their specimen frames and reading columns may use fixed
  * lengths, so lengths are not checked there.
  *
+ * Radius (CSS, TS and TSX under src and apps/docs/src): components pick a radius role
+ * (--radius-control, --radius-chip, …), never a step. `var(--radius-xs|sm|md|lg|xl|2xl)` and
+ * Tailwind `rounded-*-xs…2xl` classes are allowed only in src/styles/tokens.css, which maps
+ * roles to steps, and the Tailwind bridge src/styles/tailwind-theme.css.
+ *
  * Escape hatch for a genuine exception: put `tokens:allow <reason>` in a comment on the
  * same line, or `tokens:allow-file <reason>` in the file's first comment for code whose job
  * is colour or unit maths. Reviewers see every use.
@@ -45,6 +50,9 @@ const RAW_COLOUR = /#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?)\(|\boklch\((?!from var
 // A string that *is* a CSS length/duration ("13px", "0 2rem", "300ms"), or any length
 // inside a style={{ … }} object. Prose that mentions "8px" is fine.
 const TS_UNIT_LITERAL = /["'`]\s*-?\d*\.?\d+(?:px|rem|ms)(?:\s+-?\d*\.?\d+(?:px|rem|ms)?)*\s*["'`]|style=\{\{[^}]*\d(?:px|rem|ms)\b/
+// A radius step used directly instead of a role, as a CSS variable or a Tailwind class.
+const RADIUS_STEP = /var\(--radius-(?:xs|sm|md|lg|xl|2xl)\)|\brounded(?:-[a-z]{1,2})?-(?:xs|sm|md|lg|xl|2xl)\b/
+const radiusStepAllowed = new Set(["src/styles/tokens.css", "src/styles/tailwind-theme.css"])
 const ARBITRARY = /\b[\w:-]+-\[(?!var\(--)[^\]]+\]/
 
 const docsCss = walk(docsSrc).filter((file) => file.endsWith(".css"))
@@ -53,6 +61,13 @@ for (const file of [...walk(src), ...docsCss]) {
   const source = readFileSync(file, "utf8")
   if (/tokens:allow-file\s+\S/.test(source.slice(0, 600))) continue
   const lines = source.split("\n")
+  if (/\.(css|tsx?|mts)$/.test(file) && !radiusStepAllowed.has(rel(file)) && !/\.(test|spec)\.tsx?$/.test(file)) {
+    lines.forEach((line, index) => {
+      if (line.includes("tokens:allow")) return
+      const step = line.match(RADIUS_STEP)
+      if (step) violations.push(`${rel(file)}:${index + 1}  radius step ${step[0]}: use a radius role (tokens.css)`)
+    })
+  }
   if (/\.(tsx?|mts)$/.test(file) && !skipTs(file)) {
     lines.forEach((line, index) => {
       if (line.includes("tokens:allow")) return

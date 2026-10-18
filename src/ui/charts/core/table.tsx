@@ -51,6 +51,9 @@ function VisibleTable({ model, caption }: { model: ChartTableModel; caption: str
       className="fa-chart-table-scroll"
       data-scroll-container=""
       data-scrolled-top={edges.top ? "" : undefined}
+      data-scrolled-bottom={edges.bottom ? "" : undefined}
+      data-scrolled-left={edges.left ? "" : undefined}
+      data-scrolled-right={edges.right ? "" : undefined}
       role="region"
       aria-label={`${caption} · table`}
       // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scroll region must be keyboard scrollable (R20.6)

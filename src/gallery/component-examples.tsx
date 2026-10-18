@@ -2462,6 +2462,18 @@ export function PanelExample() {
           </PanelFooter>
         </Panel>
       </Specimen>
+      <Specimen title="Scrolling body" layout="stack">
+        <Panel scroll className="h-64">
+          <PanelHeader title="Loan requests" />
+          <PanelBody>
+            <ul className="flex flex-col gap-2">
+              {Array.from({ length: 14 }, (_, index) => (
+                <li key={index}>Loan request {index + 101}: two prints</li>
+              ))}
+            </ul>
+          </PanelBody>
+        </Panel>
+      </Specimen>
     </SectionPage>
   );
 }

@@ -77,7 +77,16 @@
   /* Scroll containers reserve their scrollbar so content never jumps sideways (R9.5). */
   [data-scroll-container] {
     overflow-y: auto;
-    overscroll-behavior: contain;
     scrollbar-gutter: stable;
+  }
+  /* They contain the wheel only along an axis whose content overflows, as published by
+     useScrollEdges (data-scrolled-*). Chromium ends the scroll chain at any scroll container
+     with `contain`, even one with nothing to scroll, so a region whose content fits would
+     otherwise swallow the wheel meant for the page or pane around it. */
+  [data-scroll-container]:is([data-scrolled-top], [data-scrolled-bottom]) {
+    overscroll-behavior-y: contain;
+  }
+  [data-scroll-container]:is([data-scrolled-left], [data-scrolled-right]) {
+    overscroll-behavior-x: contain;
   }
 }

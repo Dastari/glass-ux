@@ -95,7 +95,14 @@
   }
   .fa-panel[data-scroll] > .fa-panel-body {
     overflow-y: auto;
-    overscroll-behavior: contain;
+  }
+  /* Contain the wheel only along an axis that overflows (PanelBody publishes the edges), so
+     a body whose content fits passes the wheel to the page around the panel. */
+  .fa-panel[data-scroll] > .fa-panel-body:is([data-scrolled-top], [data-scrolled-bottom]) {
+    overscroll-behavior-y: contain;
+  }
+  .fa-panel[data-scroll] > .fa-panel-body:is([data-scrolled-left], [data-scrolled-right]) {
+    overscroll-behavior-x: contain;
   }
   .fa-panel-footer {
     display: flex;

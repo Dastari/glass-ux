@@ -32,7 +32,6 @@
   .fa-vtabs-scroll {
     min-height: 0;
     overflow-y: auto;
-    overscroll-behavior: contain;
   }
   .fa-vtabs-list {
     position: relative;

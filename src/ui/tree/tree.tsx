@@ -16,6 +16,7 @@ import { IconChevronRight, IconFile, IconFolder, IconSearch } from "../../icons/
 import { cx } from "../../lib/cx.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { useElementSize } from "../../lib/use-element-size.js"
+import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 import { CountBadge, STATUS, StatusDot, type StatusKind } from "../badge/index.js"
 import { EmptyState } from "../empty-state/index.js"
 import { Skeleton } from "../skeleton/index.js"
@@ -179,6 +180,8 @@ export function Tree({
 
   // ── Row geometry from tokens (probes), then virtualisation ───────────────
   const scrollRef = useRef<HTMLDivElement>(null)
+  // Published on the scroller: it contains the wheel only while its rows overflow.
+  const edges = useScrollEdges(scrollRef)
   const groupProbe = useRef<HTMLDivElement>(null)
   const leafProbe = useRef<HTMLDivElement>(null)
   const twoLineProbe = useRef<HTMLDivElement>(null)
@@ -303,7 +306,7 @@ export function Tree({
   const items = virtualizer.getVirtualItems()
   return (
     <div className={cx("fa-tree", className)}>
-      <div ref={scrollRef} className="fa-tree-scroll" role="tree" aria-label={label} tabIndex={-1} onKeyDown={onKeyDown} data-scroll-container>
+      <div ref={scrollRef} className="fa-tree-scroll" role="tree" aria-label={label} tabIndex={-1} onKeyDown={onKeyDown} data-scroll-container data-scrolled-top={edges.top ? "" : undefined} data-scrolled-bottom={edges.bottom ? "" : undefined}>
         <div role="presentation" className="fa-tree-canvas" style={{ height: virtualizer.getTotalSize() }}>
           {items.map((item) => {
             const row = rows[item.index]

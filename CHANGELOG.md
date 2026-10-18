@@ -4,6 +4,36 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.7.3
+
+### Added
+
+- Drag and drop, in `glass-ux/drag-drop`. `DragDropProvider` scopes it; `Draggable` makes
+  any element carry one of your objects with a `type`; `DropZone` makes any element a target;
+  `DragHandle` limits where a drag starts. Hooks `useDraggable`, `useDropZone`,
+  `useDragDropMonitor` and `useActiveDrag` cover elements you already render.
+  - `sort="vertical" | "horizontal" | "grid"` makes a zone's Draggables an ordered list,
+    row or grid: lifted items leave a gap that closes, the zone under the item opens a gap
+    where it will land, and after the drop every item animates to its new place.
+  - Zones filter with `accept` and refuse reactively with `validate` and `disabled`, showing
+    `ready`, `disabled`, `error` (with a reason under the preview) and `pending` states as
+    data attributes. `appearance` is `"outline"`, `"fill"` or `"none"`, which shows no drop
+    chrome at all.
+  - Every drag reports `onDragStart`, `onDragMove`, `onDragOver`, `onDrop`, `onDragCancel`
+    (with a reason) and `onDragEnd`. `onDrop` may return `false` or a promise; reject with
+    `DropError` to show why it failed.
+  - Mouse, pen, touch (long press, or at once on a DragHandle) and keyboard (Space lifts,
+    arrows move within and across zones). Moves are announced; Escape cancels and the item
+    flies home. Auto-scroll near the edges of scroll containers and the page.
+  - `applyDrop`, `moveItem` and `insertItem` apply a drop to your data.
+  - Guide: `docs/components/drag-drop.md`. Catalogue: the DropZone page.
+
+### Changed
+
+- Company icons redrawn to match each brand's recognised square or app-icon mark: Adobe,
+  Amazon, Cloudflare, Discord, Facebook, npm, Stripe, Telegram and Zoom; and manufacturer
+  icons Bosch, Dell, Lenovo, QNAP and Schneider Electric. Names and exports are unchanged.
+
 ## 0.7.2
 
 ### Added

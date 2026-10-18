@@ -1,0 +1,548 @@
+import { useRef, useState } from "react";
+import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { Badge } from "glass-ux/badge";
+import { Button } from "glass-ux/button";
+import { Surface } from "glass-ux/surface";
+import { Switch } from "glass-ux/switch";
+import {
+  DragDropProvider,
+  DragHandle,
+  Draggable,
+  DropError,
+  DropZone,
+  applyDrop,
+  moveItem,
+  useDragDropMonitor,
+  type DropEvent,
+  type DropZoneAppearance,
+} from "glass-ux/drag-drop";
+import { IconFile, IconImage, IconTrash } from "glass-ux/icons";
+
+interface Task {
+  id: string;
+  title: string;
+  tag: string;
+}
+
+const BOARD: Record<string, Task[]> = {
+  backlog: [
+    { id: "t1", title: "Calibrate kiln sensor", tag: "Studio" },
+    { id: "t2", title: "Draft gallery wall labels", tag: "Copy" },
+    { id: "t3", title: "Order linen canvas", tag: "Supplies" },
+  ],
+  doing: [
+    { id: "t4", title: "Photograph glaze tests", tag: "Studio" },
+    { id: "t5", title: "Frame print series", tag: "Framing" },
+  ],
+  done: [{ id: "t6", title: "Book courier for crates", tag: "Logistics" }],
+};
+const COLUMNS = [
+  { id: "backlog", label: "Backlog" },
+  { id: "doing", label: "In progress", limit: 3 },
+  { id: "done", label: "Done" },
+] as const;
+
+/** The last lifecycle events, newest first, in a log of fixed height. */
+function EventLog() {
+  const [lines, setLines] = useState<string[]>([]);
+  const push = (line: string) => setLines((current) => [line, ...current].slice(0, 5));
+  useDragDropMonitor({
+    onDragStart: (event) =>
+      push(
+        `start · ${event.item.label} from ${event.source.zoneId ?? "—"} #${event.source.index ?? "—"} (${event.input})`,
+      ),
+    onDragOver: (event) => {
+      if (event.target.zoneId !== event.previous.zoneId)
+        push(
+          `over · ${event.target.zoneId ?? "nothing"}${event.status && event.status !== "ready" ? ` (${event.status})` : ""}`,
+        );
+    },
+    onDrop: (event) => push(`drop · ${event.target.zoneId} #${event.target.index ?? "—"}`),
+    onDragCancel: (event) => push(`cancel · ${event.reason}`),
+    onDragEnd: (event) => push(`end · ${event.outcome}`),
+  });
+  return (
+    <ol
+      className="flex h-36 w-full flex-col gap-1 overflow-hidden font-mono text-xs text-[var(--fg-muted)]"
+      aria-label="Drag events"
+    >
+      {lines.length === 0 ? (
+        <li>Drag a card to see its lifecycle events.</li>
+      ) : (
+        lines.map((line, index) => <li key={`${index}-${line}`}>{line}</li>)
+      )}
+    </ol>
+  );
+}
+
+function TaskCard({ task }: { task: Task }) {
+  return (
+    <Draggable
+      id={task.id}
+      type="task"
+      data={task}
+      label={task.title}
+      render={<Surface as="li" material="card" radius="tile" padding="tile" />}
+      className="flex flex-col items-start gap-1.5"
+    >
+      <span className="text-sm font-medium">{task.title}</span>
+      <Badge size="sm">{task.tag}</Badge>
+    </Draggable>
+  );
+}
+
+function Board() {
+  const [lists, setLists] = useState(BOARD);
+  const drop = (event: DropEvent) =>
+    setLists((current) => applyDrop(current, event, (task: Task) => task.id));
+  return (
+    <DragDropProvider>
+      <div className="grid w-full gap-4 md:grid-cols-4">
+        {COLUMNS.map((column) => {
+          const tasks = lists[column.id] ?? [];
+          const limit = "limit" in column ? column.limit : undefined;
+          return (
+            <section
+              key={column.id}
+              className="flex min-w-0 flex-col gap-2"
+              aria-label={column.label}
+            >
+              <h3 className="flex items-center justify-between text-sm font-medium">
+                {column.label}
+                <Badge size="sm" tone={limit && tasks.length >= limit ? "warning" : "neutral"}>
+                  {limit ? `${tasks.length} / ${limit}` : tasks.length}
+                </Badge>
+              </h3>
+              <DropZone
+                id={column.id}
+                label={column.label}
+                sort="vertical"
+                accept="task"
+                validate={(drag) =>
+                  limit && tasks.length >= limit && drag.source.zoneId !== column.id
+                    ? { status: "error", reason: `${column.label} is full` }
+                    : true
+                }
+                onDrop={drop}
+                render={<ul />}
+                className="flex min-h-40 flex-col gap-2 rounded-[var(--radius-tile)] p-1"
+              >
+                {tasks.map((task) => (
+                  <TaskCard key={task.id} task={task} />
+                ))}
+              </DropZone>
+            </section>
+          );
+        })}
+        <EventLog />
+      </div>
+    </DragDropProvider>
+  );
+}
+
+interface Asset {
+  id: string;
+  name: string;
+  kind: "image" | "document";
+}
+
+const ASSETS: Asset[] = [
+  { id: "f1", name: "north-wall.jpg", kind: "image" },
+  { id: "f2", name: "loan-agreement.pdf", kind: "document" },
+  { id: "f3", name: "crate-detail.png", kind: "image" },
+  { id: "f4", name: "condition-report.docx", kind: "document" },
+];
+
+function AssetChip({ asset }: { asset: Asset }) {
+  return (
+    <Draggable
+      id={asset.id}
+      type={asset.kind}
+      data={asset}
+      label={asset.name}
+      className="flex items-center gap-2 rounded-[var(--radius-chip)] border border-[var(--line)] bg-[var(--glass-fill-control)] px-2.5 py-1.5 text-sm"
+    >
+      {asset.kind === "image" ? <IconImage /> : <IconFile />}
+      {asset.name}
+    </Draggable>
+  );
+}
+
+function Filtering() {
+  const [loose, setLoose] = useState(ASSETS);
+  const [filed, setFiled] = useState<Record<string, Asset[]>>({ images: [], documents: [] });
+  const [locked, setLocked] = useState(false);
+  const file = (zone: "images" | "documents") => (event: DropEvent<Asset>) => {
+    setLoose((current) => current.filter((asset) => asset.id !== event.item.id));
+    setFiled((current) => ({ ...current, [zone]: [...(current[zone] ?? []), event.item.data] }));
+  };
+  return (
+    <DragDropProvider>
+      <div className="flex w-full flex-col gap-4">
+        <div className="flex min-h-10 flex-wrap gap-2" aria-label="Unfiled">
+          {loose.map((asset) => (
+            <AssetChip key={asset.id} asset={asset} />
+          ))}
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {(
+            [
+              { id: "images", label: "Images", accept: "image" },
+              { id: "documents", label: "Documents", accept: "document" },
+            ] as const
+          ).map((zone) => (
+            <DropZone<Asset>
+              key={zone.id}
+              id={zone.id}
+              label={zone.label}
+              accept={zone.accept}
+              onDrop={file(zone.id)}
+              className="flex min-h-24 flex-col gap-1 rounded-[var(--radius-tile)] border border-[var(--line)] p-3"
+            >
+              <span className="text-sm font-medium">{zone.label}</span>
+              {(filed[zone.id] ?? []).map((asset) => (
+                <span key={asset.id} className="text-xs text-[var(--fg-muted)]">
+                  {asset.name}
+                </span>
+              ))}
+            </DropZone>
+          ))}
+          <DropZone<Asset>
+            id="archive"
+            label="Archive"
+            disabled={locked ? "Archive is locked" : false}
+            onDrop={(event) =>
+              setLoose((current) => current.filter((asset) => asset.id !== event.item.id))
+            }
+            className="flex min-h-24 flex-col items-start justify-between gap-2 rounded-[var(--radius-tile)] border border-[var(--line)] p-3"
+          >
+            <span className="flex items-center gap-2 text-sm font-medium">
+              <IconTrash /> Archive
+            </span>
+            <Switch size="sm" checked={locked} onCheckedChange={setLocked} label="Locked" />
+          </DropZone>
+        </div>
+        <div>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setLoose(ASSETS);
+              setFiled({ images: [], documents: [] });
+            }}
+          >
+            Reset
+          </Button>
+        </div>
+      </div>
+    </DragDropProvider>
+  );
+}
+
+function AppearanceZone({ appearance }: { appearance: DropZoneAppearance }) {
+  const [count, setCount] = useState(0);
+  return (
+    <DropZone
+      id={`appearance-${appearance}`}
+      label={`${appearance} zone`}
+      appearance={appearance}
+      onDrop={() => setCount((value) => value + 1)}
+      className="grid h-24 w-44 place-items-center rounded-[var(--radius-tile)] border border-[var(--line)] text-sm"
+    >
+      {(state) => (
+        <span
+          className={
+            state.over && state.status === "ready"
+              ? "text-[var(--accent-text)]"
+              : "text-[var(--fg-muted)]"
+          }
+        >
+          {state.status === "ready"
+            ? state.over
+              ? "Release to drop"
+              : "Drop here"
+            : `${count} dropped`}
+        </span>
+      )}
+    </DropZone>
+  );
+}
+
+function Appearances() {
+  return (
+    <DragDropProvider>
+      <div className="flex w-full flex-wrap items-center gap-4">
+        <Draggable
+          id="specimen-token"
+          label="Sample token"
+          className="rounded-[var(--radius-chip)] border border-[var(--line)] bg-[var(--glass-fill-control)] px-3 py-2 text-sm"
+        >
+          Sample token
+        </Draggable>
+        {(["outline", "fill", "none"] as const).map((appearance) => (
+          <Example key={appearance} label={appearance}>
+            <AppearanceZone appearance={appearance} />
+          </Example>
+        ))}
+      </div>
+    </DragDropProvider>
+  );
+}
+
+const SWATCHES = ["Ochre", "Slate", "Moss", "Brick", "Linen", "Ink", "Clay", "Sage"];
+
+function RowAndGrid() {
+  const [row, setRow] = useState(["Sketch", "Review", "Glaze", "Fire", "Ship"]);
+  const [grid, setGrid] = useState(SWATCHES);
+  return (
+    <DragDropProvider>
+      <div className="flex w-full flex-col gap-6">
+        <DropZone
+          id="stages"
+          label="Stages"
+          sort="horizontal"
+          appearance="none"
+          onDrop={(event) =>
+            setRow((current) => moveItem(current, event.source.index ?? 0, event.target.index ?? 0))
+          }
+          className="flex flex-wrap gap-2"
+          aria-label="Stages"
+        >
+          {row.map((stage) => (
+            <Draggable
+              key={stage}
+              id={`stage-${stage}`}
+              label={stage}
+              className="rounded-[var(--radius-chip)] border border-[var(--line)] bg-[var(--glass-fill-control)] px-3 py-1.5 text-sm"
+            >
+              {stage}
+            </Draggable>
+          ))}
+        </DropZone>
+        <DropZone
+          id="swatches"
+          label="Swatches"
+          sort="grid"
+          appearance="none"
+          onDrop={(event) =>
+            setGrid((current) =>
+              moveItem(current, event.source.index ?? 0, event.target.index ?? 0),
+            )
+          }
+          className="grid w-full max-w-md grid-cols-4 gap-2"
+          aria-label="Swatches"
+        >
+          {grid.map((name, index) => (
+            <Draggable
+              key={name}
+              id={`swatch-${name}`}
+              label={name}
+              render={<Surface material="card" radius="tile" padding="tile" />}
+              className="grid aspect-square place-items-center text-sm"
+            >
+              <span className="flex flex-col items-center gap-1">
+                <span
+                  className="size-6 rounded-full"
+                  style={{ background: `var(--identity-${(index % 6) + 1})` }}
+                  aria-hidden
+                />
+                {name}
+              </span>
+            </Draggable>
+          ))}
+        </DropZone>
+      </div>
+    </DragDropProvider>
+  );
+}
+
+function Handles() {
+  const [rows, setRows] = useState(["Front gallery", "Print room", "Courtyard", "Loading bay"]);
+  const [opened, setOpened] = useState<string | null>(null);
+  return (
+    <DragDropProvider>
+      <div className="flex w-full max-w-md flex-col gap-2">
+        <DropZone
+          id="rooms"
+          label="Rooms"
+          sort="vertical"
+          render={<ul />}
+          onDrop={(event) =>
+            setRows((current) =>
+              moveItem(current, event.source.index ?? 0, event.target.index ?? 0),
+            )
+          }
+          className="flex flex-col gap-1"
+        >
+          {rows.map((room) => (
+            <Draggable
+              key={room}
+              id={`room-${room}`}
+              label={room}
+              render={<li />}
+              className="flex items-center gap-2 rounded-[var(--radius-item)] border border-[var(--line)] bg-[var(--glass-fill-control)] py-1 pe-1 ps-1 text-sm"
+            >
+              <DragHandle />
+              <span className="min-w-0 flex-1 truncate">{room}</span>
+              <Button size="sm" variant="ghost" onClick={() => setOpened(room)}>
+                Open
+              </Button>
+            </Draggable>
+          ))}
+        </DropZone>
+        <p className="h-5 text-xs text-[var(--fg-muted)]" aria-live="polite">
+          {opened ? `Opened ${opened}` : ""}
+        </p>
+      </div>
+    </DragDropProvider>
+  );
+}
+
+const PALETTE = [
+  { id: "heading", label: "Heading" },
+  { id: "image", label: "Image" },
+  { id: "quote", label: "Quote" },
+];
+
+function CopyAndAsync() {
+  const [blocks, setBlocks] = useState<
+    Array<{
+      id: string;
+      label: string;
+    }>
+  >([{ id: "b0", label: "Heading" }]);
+  const next = useRef(1);
+  return (
+    <DragDropProvider>
+      <div className="grid w-full gap-4 sm:grid-cols-3">
+        <ul className="flex flex-col gap-2" aria-label="Blocks">
+          {PALETTE.map((block) => (
+            <Draggable
+              key={block.id}
+              id={`palette-${block.id}`}
+              type="block"
+              data={block}
+              label={block.label}
+              effect="copy"
+              render={<li />}
+              className="rounded-[var(--radius-item)] border border-dashed border-[var(--line-strong)] px-3 py-2 text-sm"
+            >
+              {block.label}
+            </Draggable>
+          ))}
+        </ul>
+        <DropZone<{
+          id: string;
+          label: string;
+        }>
+          id="page"
+          label="Page"
+          sort="vertical"
+          accept="block"
+          render={<ol />}
+          validate={(drag) =>
+            blocks.length >= 6 && drag.source.zoneId !== "page"
+              ? { status: "error", reason: "A page holds six blocks" }
+              : true
+          }
+          onDrop={(event) => {
+            if (event.source.zoneId === "page") {
+              setBlocks((current) =>
+                moveItem(current, event.source.index ?? 0, event.target.index ?? 0),
+              );
+              return;
+            }
+            const block = { id: `b${next.current++}`, label: event.item.data.label };
+            setBlocks((current) => [
+              ...current.slice(0, event.target.index ?? current.length),
+              block,
+              ...current.slice(event.target.index ?? current.length),
+            ]);
+            // A save that fails for images: the zone shows the error and the host restores its data.
+            return new Promise<void>((resolve, reject) =>
+              window.setTimeout(() => {
+                if (block.label !== "Image") return resolve();
+                setBlocks((current) => current.filter((entry) => entry.id !== block.id));
+                reject(new DropError("Images need an uploaded file first"));
+              }, 900),
+            );
+          }}
+          className="flex min-h-48 flex-col gap-2 rounded-[var(--radius-tile)] border border-[var(--line)] p-2 sm:col-span-2"
+        >
+          {blocks.map((block) => (
+            <Draggable
+              key={block.id}
+              id={block.id}
+              type="block"
+              data={block}
+              label={block.label}
+              render={<li />}
+              className="rounded-[var(--radius-item)] bg-[var(--glass-fill-control)] px-3 py-2 text-sm"
+            >
+              {block.label}
+            </Draggable>
+          ))}
+        </DropZone>
+      </div>
+    </DragDropProvider>
+  );
+}
+
+export default function DragDropSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Board"
+        description="Cards lift out of their column and the others close up; the column under the card opens a gap where it will land. In progress holds three cards, so it shows an error with its reason while full. Keyboard: Space lifts, arrows move within and across columns, Space drops, Escape cancels."
+        layout="stack"
+        wide
+      >
+        <Board />
+      </Specimen>
+
+      <Specimen
+        title="Filtered targets"
+        description="Each zone accepts a type. Zones that do not take the dragged type read as disabled; the archive takes everything until it is locked, and says why."
+        layout="stack"
+        wide
+      >
+        <Filtering />
+      </Specimen>
+
+      <Specimen
+        title="Appearances"
+        description="outline (default), fill, and none, which shows no drop chrome at all. The render function receives the zone's state for custom content."
+        layout="stack"
+        wide
+      >
+        <Appearances />
+      </Specimen>
+
+      <Specimen
+        title="Rows and grids"
+        description='sort="horizontal" for a wrapping row of chips, sort="grid" for uniform cells. Both use appearance="none".'
+        layout="stack"
+        wide
+      >
+        <RowAndGrid />
+      </Specimen>
+
+      <Specimen
+        title="Handles"
+        description="A DragHandle makes the grip the only place to start a drag, so the row's buttons keep working. On touch the grip drags at once; whole-item handles lift after a short press so lists still scroll."
+        layout="stack"
+      >
+        <Handles />
+      </Specimen>
+
+      <Specimen
+        title="Copies and saving"
+        description='effect="copy" leaves the palette in place. The page saves each drop: it shows pending while saving, and an image fails to show the error state.'
+        layout="stack"
+        wide
+      >
+        <CopyAndAsync />
+      </Specimen>
+    </SectionPage>
+  );
+}

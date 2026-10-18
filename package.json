@@ -1,6 +1,6 @@
 {
   "name": "glass-ux",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "A typed React design system for glass interfaces, data applications and assistant experiences.",
   "type": "module",
   "license": "MIT",
@@ -89,6 +89,10 @@
     "./file-drop": {
       "types": "./dist/ui/file-drop/index.d.ts",
       "import": "./dist/ui/file-drop/index.js"
+    },
+    "./drag-drop": {
+      "types": "./dist/ui/drag-drop/index.d.ts",
+      "import": "./dist/ui/drag-drop/index.js"
     },
     "./tree": {
       "types": "./dist/ui/tree/index.d.ts",

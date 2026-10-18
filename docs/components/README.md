@@ -73,3 +73,9 @@ For sign-in, providers, two-factor codes, password reset and account creation, s
 | [Segmented control](segmented.md) | `Segmented`                     | full → icons → menu button                                                   |
 | [Breadcrumb](breadcrumb.md)       | `Breadcrumb`, `RouteBreadcrumb` | full → middle → ‹ parent · current → current place with the trail in a popup |
 | [Organisation switcher](org-switcher.md) | `OrgSwitcher`, `OrgSwitcherPanel` | Complete local hierarchy or bounded server directory; phone sheet |
+
+## Interaction
+
+| Page                            | Components                                            | Notes                                                                    |
+| ------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
+| [Drag and drop](drag-drop.md)   | `DragDropProvider`, `Draggable`, `DragHandle`, `DropZone` | Typed objects, sortable lists and grids, reactive zone states, keyboard and touch |

@@ -3,6 +3,12 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.7.2 → 0.7.3
+
+No code changes are required. Drag and drop is a new entry, `glass-ux/drag-drop`. The
+redrawn company and manufacturer icons keep their names; review screenshots that include
+them.
+
 ## 0.7.1 → 0.7.2
 
 No code changes are required. Meters stay neutral while healthy unless you pass

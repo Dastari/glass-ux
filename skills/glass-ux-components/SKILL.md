@@ -41,3 +41,9 @@ For compact facts, activity, clickable rows, chip overflow, semantic dots, link 
 table meters, read `docs/components/compact-compositions.md` and the selected API page.
 Use these compositions before copying private class recipes. `TruncatedText` accepts rich
 nodes; `Field.warning` uses its reserved message slot.
+
+For moving objects between places (boards, reorderable lists, palettes, trays), use
+`glass-ux/drag-drop` (`docs/components/drag-drop.md`): `Draggable` items carrying your object
+and a type, `DropZone` targets that filter with `accept`, refuse with `validate`/`disabled`
+and a reason, and sort with `sort`. Apply `onDrop` to your data synchronously with
+`applyDrop` or `moveItem`, and keep a menu action for the same move.

@@ -1,0 +1,260 @@
+/*
+ * Drag and drop: Draggable, DragHandle, DropZone and the drag preview.
+ *
+ *   item      [data-dnd-handle] takes focus and the gesture; while dragged the item keeps its
+ *             place empty ([data-dnd-source="move"]) or stays ([data-dnd-source="copy"])
+ *   preview   a copy on the page layer following the pointer: lifts with a shadow and a
+ *             slight scale, flies to its slot on drop and home on cancel
+ *   zone      data-drop-state idle · ready · disabled · error · pending, data-drop-over,
+ *             data-drop-reason. Appearance outline (dashed accent edge, solid + tint when
+ *             over), fill (tint when over) or none (no chrome). ::before paints the edge and
+ *             tint under the content; ::after is, in a sortable zone gaining an item, the extra
+ *             slot the zone grows by. Why a zone refuses the item rides under the preview
+ *
+ * The manager moves items with `translate` animations and writes the states, so nothing
+ * here re-renders React (R18.5). Every transition reads the motion tokens.
+ */
+@layer components {
+  /* ── Items and handles ──────────────────────────────────────────────────────────── */
+  [data-dnd-handle] {
+    cursor: grab;
+    /* The handle takes the gesture: no text selection or callout from it. */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  [data-dnd-handle][aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+  .fa-dnd-item[data-dnd-handle] {
+    outline: none;
+  }
+  .fa-dnd-item[data-dnd-handle]:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  [data-dnd-source="move"] {
+    opacity: 0;
+  }
+  [data-dnd-source="copy"] {
+    opacity: var(--disabled-opacity);
+  }
+
+  .fa-dnd-handle {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: var(--fg-subtle);
+    outline: none;
+    /* A grip drags at once on touch, so it never scrolls. */
+    touch-action: none;
+    transition-property: background-color, color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-dnd-handle > .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  .fa-dnd-handle:not([aria-disabled="true"]):hover {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-dnd-handle:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-dnd-handle[aria-disabled="true"] {
+    color: var(--fg-disabled);
+  }
+  @media (pointer: coarse) {
+    .fa-dnd-handle {
+      min-width: var(--target-min);
+      min-height: var(--target-min);
+    }
+  }
+
+  /* While anything is dragged the cursor follows the verdict everywhere, and nothing selects. */
+  :root[data-dnd] {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  :root[data-dnd="dragging"][data-dnd-input="pointer"],
+  :root[data-dnd="dragging"][data-dnd-input="pointer"] * {
+    cursor: grabbing !important; /* tokens:allow the drag owns the cursor over every element */
+  }
+  :root[data-dnd="blocked"][data-dnd-input="pointer"],
+  :root[data-dnd="blocked"][data-dnd-input="pointer"] * {
+    cursor: not-allowed !important;
+  }
+
+  /* ── The preview ────────────────────────────────────────────────────────────────── */
+  .fa-dnd-ghost {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-toast);
+    margin: 0;
+    pointer-events: none;
+    will-change: transform;
+    transition: scale var(--duration-fast) var(--ease-spring);
+  }
+  .fa-dnd-ghost[data-lifted] {
+    scale: 1.02;
+  }
+  .fa-dnd-ghost[data-input="keyboard"] {
+    transition:
+      transform var(--duration-fast) var(--ease-standard),
+      scale var(--duration-fast) var(--ease-spring);
+  }
+  .fa-dnd-ghost[data-settling] {
+    transition:
+      transform var(--duration-base) var(--ease-standard),
+      scale var(--duration-base) var(--ease-standard),
+      opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-dnd-ghost[data-fade] {
+    opacity: 0;
+    scale: 0.92;
+  }
+  /* The lift: a shadow and an accent edge that fade in on a layer of their own. */
+  .fa-dnd-ghost::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow:
+      var(--shadow-3),
+      inset 0 0 0 var(--border-width) var(--accent-line);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-dnd-ghost[data-lifted]::after {
+    opacity: 1;
+  }
+  .fa-dnd-ghost[data-input="keyboard"][data-lifted]::after {
+    box-shadow:
+      var(--shadow-3),
+      0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+  /* Why the zone under the item refuses it, carried just below the item. */
+  .fa-dnd-ghost[data-reason]::before {
+    content: attr(data-reason);
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    left: 0;
+    max-width: max(100%, calc(var(--space-16) * 3));
+    padding: var(--space-half) var(--space-2);
+    overflow: hidden;
+    border-radius: var(--radius-badge);
+    background-color: var(--surface-2);
+    box-shadow:
+      var(--shadow-2),
+      inset 0 0 0 var(--border-width) var(--line);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    animation: fa-fade-in var(--duration-fast) var(--ease-standard) both;
+  }
+  .fa-dnd-ghost[data-status="error"]::before {
+    color: var(--danger-text);
+    box-shadow:
+      var(--shadow-2),
+      inset 0 0 0 var(--border-width) var(--danger-line);
+  }
+  .fa-dnd-ghost[data-settling]::before {
+    content: none;
+  }
+  .fa-dnd-ghost-copy {
+    pointer-events: none;
+  }
+  .fa-dnd-preview {
+    width: max-content;
+  }
+
+  /* ── Zones ──────────────────────────────────────────────────────────────────────── */
+  .fa-dnd-zone {
+    position: relative;
+    /* The edge and tint paint above the zone's own background and under its content. */
+    isolation: isolate;
+  }
+  .fa-dnd-zone::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border: var(--border-width-strong) dashed transparent;
+    border-radius: inherit;
+    background-color: transparent;
+    pointer-events: none;
+    transition-property: border-color, background-color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-dnd-zone[data-appearance="none"]::before {
+    content: none;
+  }
+
+  /* outline: every zone that takes the item shows a quiet edge; the one under it lights up. */
+  .fa-dnd-zone[data-appearance="outline"][data-drop-state="ready"]::before,
+  .fa-dnd-zone[data-appearance="outline"][data-drop-state="pending"]::before {
+    border-color: var(--accent-line);
+  }
+  .fa-dnd-zone[data-appearance="outline"][data-drop-state="ready"][data-drop-over]::before {
+    border-style: solid;
+    border-color: var(--accent);
+    background-color: var(--accent-soft);
+  }
+  .fa-dnd-zone[data-appearance="outline"][data-drop-state="error"]::before {
+    border-color: var(--danger-line);
+  }
+  .fa-dnd-zone[data-appearance="outline"][data-drop-state="error"][data-drop-over]::before {
+    border-style: solid;
+    background-color: var(--danger-soft);
+  }
+  .fa-dnd-zone[data-appearance="outline"][data-drop-state="disabled"][data-drop-over]::before {
+    border-color: color-mix(in oklab, var(--fg-subtle) 45%, transparent);
+    background-color: var(--fill-muted);
+  }
+
+  /* fill: no edges, only the tint under the item. */
+  .fa-dnd-zone[data-appearance="fill"][data-drop-state="ready"][data-drop-over]::before {
+    background-color: var(--accent-soft);
+  }
+  .fa-dnd-zone[data-appearance="fill"][data-drop-state="error"][data-drop-over]::before {
+    background-color: var(--danger-soft);
+  }
+  .fa-dnd-zone[data-appearance="fill"][data-drop-state="disabled"][data-drop-over]::before {
+    background-color: var(--fill-muted);
+  }
+
+  /* A sortable zone gaining an item grows by one slot, so its last item stays inside it. */
+  .fa-dnd-zone[data-dnd-receiving]::after {
+    content: "";
+    display: block;
+    flex: none;
+    inline-size: var(--_dnd-space-inline, auto);
+    block-size: var(--_dnd-space-block, auto);
+    pointer-events: none;
+  }
+
+  /* Read, not seen. */
+  .fa-dnd-announcer {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

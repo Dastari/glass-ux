@@ -17,11 +17,13 @@ import {
   IconSoftware,
   IconWindows,
 } from "../../icons/generated/icons.js";
+import { Badge } from "../../ui/badge/index.js";
 import { Button, ButtonGroup } from "../../ui/button/index.js";
 import {
   createDataTableColumns,
   DataTable,
   IdentityCell,
+  moveRow,
   NumericCell,
   RelativeTime,
   TextCell,
@@ -30,6 +32,7 @@ import {
   useTableUrlState,
   type DataTableDensity,
   type DataTableGroup,
+  type DataTableRowMove,
   type DataTableSearch,
   type DataTableState,
 } from "../../ui/data-table/index.js";
@@ -54,8 +57,8 @@ const NO_ROWS: Endpoint[] = [];
 type Simulate = "data" | "loading" | "empty" | "error";
 
 /**
- * The toolbar search (R16.8): the fields the mock server's `search` matches. With graphql-orm
- * this is an `Or` of `Contains` on each (`toWhere(…, { search })`).
+ * The toolbar search (R16.8): the fields the mock server's `search` matches. With the optional
+ * graphql-orm adapter this is an `Or` of `Contains` on each (`toWhere(…, { search })`).
  */
 const ENDPOINT_SEARCH: DataTableSearch<Endpoint> = {
   fields: [
@@ -414,6 +417,200 @@ function GroupedDemo() {
   );
 }
 
+/* ── Reorderable rows: a job queue the host owns, saved locally or on a mock server ───── */
+interface QueueJob {
+  id: string;
+  title: string;
+  team: string;
+  /** Controlled view state, including loading, empty and error states. */
+  state: "running" | "queued" | "held";
+  minutes: number;
+}
+
+const QUEUE: QueueJob[] = [
+  { id: "q1", title: "Rebuild search index", team: "Platform", state: "running", minutes: 18 },
+  { id: "q2", title: "Rotate TLS certificates", team: "Security", state: "queued", minutes: 6 },
+  { id: "q3", title: "Archive March audit logs", team: "Compliance", state: "queued", minutes: 25 },
+  { id: "q4", title: "Resize thumbnail cache", team: "Media", state: "queued", minutes: 12 },
+  { id: "q5", title: "Sync partner catalogue", team: "Commerce", state: "held", minutes: 9 },
+  { id: "q6", title: "Recalculate usage invoices", team: "Billing", state: "queued", minutes: 31 },
+  { id: "q7", title: "Vacuum analytics tables", team: "Data", state: "queued", minutes: 14 },
+  { id: "q8", title: "Refresh map tiles", team: "Maps", state: "queued", minutes: 22 },
+];
+const TASKS = ["Reindex", "Backfill", "Compact", "Export", "Verify", "Snapshot", "Prune", "Replay"];
+const AREAS = [
+  "orders",
+  "sessions",
+  "invoices",
+  "events",
+  "assets",
+  "contacts",
+  "tickets",
+  "metrics",
+];
+const TEAMS = ["Platform", "Data", "Billing", "Media", "Security", "Commerce"];
+const LONG_QUEUE: QueueJob[] = Array.from({ length: 400 }, (_, index) => ({
+  id: `l${index + 1}`,
+  title: `${TASKS[index % TASKS.length]} ${AREAS[(index * 3) % AREAS.length]} shard ${index + 1}`,
+  team: TEAMS[(index * 5) % TEAMS.length]!,
+  state: index === 0 ? "running" : index % 11 === 4 ? "held" : "queued",
+  minutes: 4 + ((index * 7) % 37),
+}));
+const STATE_LABEL = { running: "Running", queued: "Queued", held: "Held" } as const;
+const STATE_TONE = { running: "info", queued: "neutral", held: "warning" } as const;
+const queueCol = createDataTableColumns<
+  QueueJob & {
+    position: number;
+  }
+>();
+const queueColumns = queueCol.columns([
+  queueCol.accessor("position", {
+    header: "#",
+    width: 3.5,
+    minWidth: 3,
+    align: "end",
+    priority: 1,
+    cardRole: "meta",
+    flash: false,
+    cell: ({ getValue }) => <NumericCell value={getValue()} />,
+  }),
+  queueCol.accessor("title", { header: "Job", pin: true, width: 16, cardRole: "title" }),
+  queueCol.accessor("team", { header: "Team", priority: 2, width: 9, cardRole: "subtitle" }),
+  queueCol.accessor("state", {
+    header: "State",
+    priority: 2,
+    width: 7,
+    cardRole: "status",
+    skeleton: "badge",
+    cell: ({ getValue }) => (
+      <Badge tone={STATE_TONE[getValue()]} marker="dot" size="sm">
+        {STATE_LABEL[getValue()]}
+      </Badge>
+    ),
+  }),
+  queueCol.accessor("minutes", {
+    header: "Estimate",
+    priority: 3,
+    width: 7,
+    align: "end",
+    sortable: true,
+    cardRole: "meta",
+    cell: ({ getValue }) => <NumericCell value={getValue()} unit="min" />,
+  }),
+]);
+
+type Saving = "local" | "server" | "fail";
+
+const SAVE_LATENCY = 600;
+
+function ReorderDemo() {
+  const [long, setLong] = useState(false);
+  const [queue, setQueue] = useState<QueueJob[]>(QUEUE);
+  const [saving, setSaving] = useState<Saving>("server");
+  const [cards, setCards] = useState(false);
+  const [sorting, setSorting] = useState<DataTableState["sorting"]>([]);
+  const [last, setLast] = useState("No moves yet");
+  const rows = useMemo(() => {
+    const positioned = queue.map((job, index) => ({ ...job, position: index + 1 }));
+    const sort = sorting[0];
+    return sort
+      ? positioned.toSorted((a, b) => (a.minutes - b.minutes) * (sort.desc ? -1 : 1))
+      : positioned;
+  }, [queue, sorting]);
+  const describe = (move: DataTableRowMove<QueueJob>) => {
+    const after = move.previousId ? queue.find((job) => job.id === move.previousId)?.title : null;
+    return `${move.row.title}: ${move.from + 1} → ${move.to + 1}${after ? `, after ${after}` : ", first"}`;
+  };
+  return (
+    <div className="dt-demo">
+      <div className="dt-demo-controls" role="group" aria-label="Reorder options">
+        <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="Saving">
+          {(["local", "server", "fail"] as const).map((value) => (
+            <Toggle key={value} pressed={saving === value} onClick={() => setSaving(value)}>
+              {value === "local" ? "Local" : value === "server" ? "Server" : "Server fails"}
+            </Toggle>
+          ))}
+        </ButtonGroup>
+        <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="Layout">
+          <Toggle pressed={!cards} onClick={() => setCards(false)}>
+            Table
+          </Toggle>
+          <Toggle pressed={cards} onClick={() => setCards(true)}>
+            Cards
+          </Toggle>
+        </ButtonGroup>
+        <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="Queue length">
+          {([false, true] as const).map((value) => (
+            <Toggle
+              key={String(value)}
+              pressed={long === value}
+              onClick={() => {
+                setLong(value);
+                setQueue(value ? LONG_QUEUE : QUEUE);
+              }}
+            >
+              {value ? "400 jobs" : "8 jobs"}
+            </Toggle>
+          ))}
+        </ButtonGroup>
+        <output className="dt-demo-request" data-testid="dt-reorder-last">
+          {last}
+        </output>
+      </div>
+      <div
+        className="gallery-lab-frame dt-demo-reorder"
+        data-testid="dt-reorder"
+        data-cards={cards ? "" : undefined}
+      >
+        <DataTable<
+          QueueJob & {
+            position: number;
+          }
+        >
+          id="gallery-queue-reorder"
+          label="Job queue"
+          rows={rows}
+          rowCount={rows.length}
+          columns={queueColumns}
+          getRowId={(job) => job.id}
+          getRowLabel={(job) => job.title}
+          state={{ sorting }}
+          onStateChange={(next, change) => {
+            if (change === "sorting") setSorting(next.sorting);
+          }}
+          pageSizes={[500]}
+          noun={{ one: "job", other: "jobs" }}
+          reorder={{
+            canReorder: (job) => job.state !== "running",
+            lockedReason: () => "Running jobs keep their place",
+            onReorder: (move) => {
+              const apply = () => setQueue((current) => moveRow(current, move.from, move.to));
+              if (saving === "local") {
+                apply();
+                setLast(describe(move));
+                return;
+              }
+              setLast(`Saving ${move.row.title}…`);
+              return new Promise<void>((resolve, reject) =>
+                window.setTimeout(() => {
+                  if (saving === "fail") {
+                    setLast(`${move.row.title}: not saved`);
+                    reject(new Error("The queue service did not respond."));
+                    return;
+                  }
+                  apply();
+                  setLast(describe(move));
+                  resolve();
+                }, SAVE_LATENCY),
+              );
+            },
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 const HEIGHTS = [
   { id: "short", label: "Short pane · 13rem: one-line pager", rem: 13 },
   { id: "strip", label: "Strip · 3.5rem: status bar only", rem: 3.5 },
@@ -591,6 +788,15 @@ function DataTableSection() {
         wide
       >
         <GroupedDemo />
+      </Specimen>
+
+      <Specimen
+        title="Reorderable rows"
+        description="Drag a row by its grip, or focus the grip and press Space, the arrow keys and Space again; Alt with an arrow key moves one place. The host owns the order and receives each move with its new index and neighbours. Running jobs are locked. Sorting by Estimate disables reordering and the grips say why. Server saves after 600 ms; Server fails reverts the move."
+        layout="bare"
+        wide
+      >
+        <ReorderDemo />
       </Specimen>
 
       <Specimen

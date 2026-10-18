@@ -70,4 +70,13 @@
   .dt-demo-grouped {
     height: calc(var(--row-h) * 11);
   }
+  /* Reorderable rows: a pane of about ten rows; Cards narrows it below the card breakpoint. */
+  .dt-demo-reorder {
+    max-width: 100%;
+    height: calc(var(--row-h) * 12);
+  }
+  .dt-demo-reorder[data-cards] {
+    width: 24rem;
+    height: 36rem;
+  }
 }

@@ -6,6 +6,7 @@ import { SelectCheckbox } from "./checkbox.js"
 import { countRender } from "./debug.js"
 import type { DataColumnMeta, DataTableFeatures } from "./features.js"
 import { columnStyle } from "./layout.js"
+import { GripButton, type GripController } from "./reorder-handle.js"
 
 /** Everything a row needs to know about one visible column; stable per layout. */
 export interface ColumnInfo {
@@ -29,6 +30,8 @@ export interface RowController {
   toggleGroup: (groupId: string, all: boolean) => void
   /** Grouped tables: the group's "Show more". */
   showMore: (groupId: string) => void
+  /** Reorderable tables: what every grip shares. */
+  grip?: GripController
 }
 
 export interface DataRowProps<T extends RowData> {
@@ -53,6 +56,12 @@ export interface DataRowProps<T extends RowData> {
   expanded: boolean
   label: string
   controller: RowController
+  /** Reorderable tables: "" when the row's grip is available, else why not. Undefined: no grip column. */
+  grip?: string
+  /** The next line is a selected row (joins the selection band without a sibling :has()). */
+  selectedNext?: boolean
+  /** Bumps when row-level renderers (actions, wrapper) change, so memoised rows redraw. */
+  revision?: object
 }
 
 export function renderCellContent(content: ReactNode) {
@@ -99,6 +108,8 @@ function DataRowView<T extends RowData>({
   expanded,
   label,
   controller,
+  grip,
+  selectedNext = false,
 }: DataRowProps<T>) {
   countRender("rows")
   const ref = useRef<HTMLDivElement>(null)
@@ -133,9 +144,15 @@ function DataRowView<T extends RowData>({
       data-index={index}
       data-item="row"
       data-selected={selected ? "" : undefined}
+      data-selected-next={selected && selectedNext ? "" : undefined}
       data-expanded={expanded ? "" : undefined}
       style={{ transform: `translateY(${top}px)` }}
     >
+      {grip !== undefined && controller.grip ? (
+        <div role="gridcell" className="fa-dt-cell fa-dt-grip">
+          <GripButton rowId={rowId} index={index} label={label} tabIndex={tabIndex} reason={grip} grip={controller.grip} />
+        </div>
+      ) : null}
       {selectable ? (
         <div role="gridcell" className="fa-dt-cell fa-dt-select">
           <SelectCheckbox
@@ -212,7 +229,10 @@ function rowPropsEqual<T extends RowData>(a: DataRowProps<T>, b: DataRowProps<T>
     a.active === b.active &&
     a.expanded === b.expanded &&
     a.label === b.label &&
-    a.controller === b.controller
+    a.controller === b.controller &&
+    a.grip === b.grip &&
+    a.selectedNext === b.selectedNext &&
+    a.revision === b.revision
   )
 }
 

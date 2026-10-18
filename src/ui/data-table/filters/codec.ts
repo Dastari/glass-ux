@@ -34,8 +34,22 @@ import type {
 
 /** Most values a list filter keeps (the rest of a giant paste is dropped). */
 export const MAX_LIST_VALUES = 500
-/** graphql-orm's calendar span limit (RecentDays, WithinDays). */
+/**
+ * Default longest relative-day span a filter accepts (about a century). Hosts whose server
+ * allows less set `configureDataTables({ maxRelativeDays })`.
+ */
 export const MAX_DAYS = 36_600
+let maxRelativeDays = MAX_DAYS
+
+/** The longest relative-day span a filter accepts now (`configureDataTables`). */
+export function relativeDayLimit() {
+  return maxRelativeDays
+}
+
+/** Set the relative-day limit; a missing or invalid value restores the default. */
+export function setRelativeDayLimit(days: number | undefined) {
+  maxRelativeDays = days !== undefined && Number.isInteger(days) && days > 0 ? days : MAX_DAYS
+}
 
 export function encodeList(values: readonly string[]) {
   return values.map((value) => value.replaceAll("\\", "\\\\").replaceAll(",", "\\,")).join(",")
@@ -155,7 +169,7 @@ function decodeDate(op: string, rest: string | null, spec: DateFilterSpec): Date
     case "recent":
     case "olderThan": {
       const days = finite(rest ?? undefined)
-      return days !== null && Number.isInteger(days) && days >= 1 && days <= MAX_DAYS ? { op, days } : null
+      return days !== null && Number.isInteger(days) && days >= 1 && days <= maxRelativeDays ? { op, days } : null
     }
   }
   if (!(spec.operators as readonly string[]).includes(op)) return null

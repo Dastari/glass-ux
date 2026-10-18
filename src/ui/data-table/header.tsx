@@ -57,6 +57,8 @@ export interface HeaderProps {
   /** Filtered column ids: their headers show the filter glyph. */
   filtered: ReadonlySet<string>
   settings: ReactNode
+  /** Draw the reorder grip column's header. */
+  reorderable?: boolean
 }
 
 function SortGlyph({ direction }: { direction: false | "asc" | "desc" }) {
@@ -187,10 +189,12 @@ function HeaderView({
   controller,
   filtered,
   settings,
+  reorderable = false,
 }: HeaderProps) {
   const multi = sorting.length > 1
   return (
     <div role="row" className="fa-dt-row fa-dt-head-row" aria-rowindex={1}>
+      {reorderable ? <div role="columnheader" className="fa-dt-th fa-dt-grip" aria-label="Row order" /> : null}
       {selectable ? (
         <div role="columnheader" className="fa-dt-th fa-dt-select">
           <SelectCheckbox
@@ -225,8 +229,7 @@ function HeaderView({
             size="sm"
             className="fa-dt-more"
             aria-pressed={expandedAll}
-            aria-label={expandedAll ? `Hide ${hiddenCount} more columns in rows` : `Show ${hiddenCount} more columns in rows`}
-            title={expandedAll ? "Hide fields that do not fit" : "Show fields that do not fit"}
+            aria-label={`Show ${hiddenCount} more columns in rows`}
             onClick={controller.toggleExpandAll}
           >
             +{hiddenCount}

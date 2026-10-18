@@ -4,11 +4,11 @@ import { STATUS, type EndpointStatus } from "../../badge/index.js"
 import { EntityIdentity } from "../../entity/index.js"
 
 export interface IdentityCellProps {
-  /** The entity's name: hostname, person, organisation. */
+  /** The entity's name: a record, person or organisation. */
   title: ReactNode
-  /** Data only (R2.2): `AzureAD\MiraRowan`, never a description. */
+  /** Data only (R2.2): an owner, path or identifier, never a description. */
   subtitle?: ReactNode
-  /** Entity glyph. Defaults to the endpoint monitor. Pass the icon without a size. */
+  /** Entity glyph. Defaults to a generic monitor glyph; pass the entity's own icon without a size. */
   icon?: ReactNode
   /** Live state, drawn as the shared status dot on the glyph's corner. */
   status?: EndpointStatus

@@ -24,6 +24,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactElement,
 } from "react";
+import { flushSync } from "react-dom";
 import {
   IconArrowUp,
   IconMoreHorizontal,
@@ -38,6 +39,8 @@ import { useElementSize } from "../../lib/use-element-size.js";
 import { useScrollEdges } from "../../lib/use-scroll-edges.js";
 import { Button } from "../button/index.js";
 import { Menu, MenuPrimitive } from "../menu/index.js";
+import { toast } from "../toast/index.js";
+import { TooltipPopup, TooltipPrimitive } from "../tooltip/index.js";
 import {
   RowActionsMenu,
   RowContextMenu,
@@ -98,6 +101,21 @@ import {
   measureContentWidth,
   startPointerResize,
 } from "./resize.js";
+import {
+  applyMove,
+  clampLine,
+  moveRow,
+  positionText,
+  reorderMessages,
+  reorderUnavailable,
+  revealSlot,
+  ReorderSession,
+  startPointerReorder,
+  type LineBox,
+  type PointerReorder,
+  type ReorderIds,
+} from "./reorder.js";
+import type { GripController } from "./reorder-handle.js";
 import { columnInfos, type RowController } from "./row.js";
 import { resolveRowActions } from "./row-actions.js";
 import {
@@ -111,6 +129,7 @@ import type {
   DataTableDensity,
   DataTableFilterToggle,
   DataTableProps,
+  DataTableRowMove,
   DataTableState,
   DataTableStateChange,
 } from "./types.js";
@@ -118,6 +137,9 @@ import type {
 /* ── Geometry mirrored from data-table.css (rem at --ui-scale 1, scaled by the root size) ── */
 /** --fa-dt-select-w: the checkbox column. */
 const SELECT_WIDTH = 2.625;
+/** --fa-dt-grip-w: the reorder grip column (the checkbox column's width). */
+const GRIP_WIDTH = 2.625;
+const LOCKED_REASON = "This row is locked in place";
 /** --space-1 and --space-2: gaps and padding in the trailing cell. */
 const TRAIL_GAP = 0.25;
 const TRAIL_PAD = 1;
@@ -175,6 +197,37 @@ function globalDensity(): DataTableDensity {
     : "comfortable";
 }
 
+/** A move shown before the host's rows reflect it (pending: its promise has not settled). */
+interface ShownMove extends ReorderIds {
+  /** The `rows` it was made on: once settled, new rows from the host replace it. */
+  source: readonly unknown[];
+  /** Current operation or connection status. */
+  status: "pending" | "settled";
+  token: number;
+}
+
+/** What a lifted row needs: its line, its range, and how to measure the lines. */
+interface Lift {
+  rowId: string;
+  label: string;
+  line: number;
+  first: number;
+  last: number;
+  group?: { id: string; label: string };
+  root: HTMLElement;
+  container: HTMLElement;
+  element: HTMLElement;
+  measure: (index: number) => LineBox;
+  gap: number;
+}
+
+type ActiveReorder =
+  | { kind: "pointer"; rowId: string; key: unknown; drag: PointerReorder }
+  | { kind: "keyboard"; rowId: string; key: unknown; lift: Lift; session: ReorderSession };
+
+const isThenable = (value: unknown): value is PromiseLike<unknown> =>
+  typeof (value as { then?: unknown } | null | undefined)?.then === "function";
+
 interface Metrics {
   /** Current pixel size of one rem used for layout measurement. */
   rem: number;
@@ -184,14 +237,16 @@ interface Metrics {
   bodyHeight: number;
 }
 
+const NO_TOGGLES: readonly DataTableFilterToggle[] = [];
+
 /**
  * The one data table (R16). Server-side sorting and pagination, container-aware columns
  * (priority hiding → "+N" detail → card list), resizable and pinnable columns persisted
  * per user, selection with a bulk bar over the status bar, row ⋯ and right-click menus
  * from the entity's ActionSet, live updates that flash in place, and loading, empty and
- * error states that keep the table's box.
+ * error states that keep the table's box, and opt-in row reordering by drag or keyboard
+ * (`reorder`) that leaves the order to the host.
  */
-const NO_TOGGLES: readonly DataTableFilterToggle[] = [];
 
 export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const {
@@ -225,7 +280,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     status,
     cardBreakpoint = 36,
     className,
+    reorder,
   } = props;
+  const reorderable = Boolean(reorder);
   const domId = useId();
 
   /* ── State: each slice controlled by the caller or owned here ─────────────────── */
@@ -495,7 +552,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const contentWidth = measured
     ? (size.width - metrics.gutter) / metrics.rem
     : 0;
-  const chrome = selectable ? SELECT_WIDTH : 0;
+  const chrome = (selectable ? SELECT_WIDTH : 0) + (reorderable ? GRIP_WIDTH : 0);
   const layout = useMemo(() => {
     const first = computeColumnLayout(
       layoutColumns,
@@ -558,16 +615,19 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     const vars: Record<string, string> = columnVars(
       layoutColumns,
       layout.visible,
-      { selectWidth: selectable ? "var(--fa-dt-select-w)" : null },
+      {
+        selectWidth:
+          selectable || reorderable ? "var(--fa-dt-lead-w)" : null,
+      },
     );
     const mins = layout.visible.map(
       (columnId) => `var(${cssVar.min(columnKey(columnId))})`,
     );
     vars["--fa-dt-min-w"] =
-      `calc(${[...(selectable ? ["var(--fa-dt-select-w)"] : []), ...mins, "var(--fa-dt-trail-w)"].join(" + ")})`;
+      `calc(${[...(selectable || reorderable ? ["var(--fa-dt-lead-w)"] : []), ...mins, "var(--fa-dt-trail-w)"].join(" + ")})`;
     vars["--fa-dt-detail-h"] = `${detailRem}rem`;
     return vars as CSSProperties;
-  }, [layoutColumns, layout.visible, selectable, detailRem]);
+  }, [layoutColumns, layout.visible, selectable, reorderable, detailRem]);
 
   /* ── Live rows (R9.4) ─────────────────────────────────────────────────────────── */
   // A new sort, filter or page is a new result that starts at the top. Collapsing a group or
@@ -591,7 +651,18 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     live,
     isScrolledAway,
   });
-  const data = liveRows.rows as T[];
+  // A move the host has not reflected in `rows` yet shows on top of them (optimistic display).
+  const [shownMove, setShownMove] = useState<ShownMove | null>(null);
+  const moveActive =
+    shownMove !== null &&
+    (shownMove.status === "pending" || shownMove.source === rows);
+  const data = useMemo(
+    () =>
+      (moveActive && shownMove
+        ? applyMove(liveRows.rows, getRowId, shownMove)
+        : liveRows.rows) as T[],
+    [liveRows.rows, moveActive, shownMove, getRowId],
+  );
 
   /* ── TanStack Table v9 ────────────────────────────────────────────────────────── */
   const getRowIdRef = useRef(getRowId);
@@ -753,6 +824,42 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     [search, searchQuery, setSearch, noun.other],
   );
   const searching = Boolean(search) && searchQuery !== "";
+
+  /* ── Reordering: why it is unavailable, and each row's grip ───────────────────── */
+  const reorderReason = reorder
+    ? reorderUnavailable({
+        disabled: reorder.disabled,
+        sorted: sorting.length > 0,
+        searched: searching,
+        filtered: filters.length > 0 || toggles.some((toggle) => toggle.checked),
+        grouped: Boolean(grouping) && !reorder.withinGroups,
+        paged:
+          !grouping &&
+          !reorder.withinPage &&
+          (Boolean(cursor) ||
+            pagination.pageIndex > 0 ||
+            (rowCount !== undefined && rowCount > rows.length)),
+        held: liveRows.pending > 0,
+        saving: shownMove?.status === "pending",
+      })
+    : null;
+  const canReorder = reorder?.canReorder;
+  const lockedReason = reorder?.lockedReason;
+  const reasonOf = useCallback(
+    (row: T) =>
+      reorderReason ??
+      (canReorder && !canReorder(row)
+        ? lockedReason?.(row) || LOCKED_REASON
+        : ""),
+    [reorderReason, canReorder, lockedReason],
+  );
+  const gripOf = useMemo(
+    () =>
+      reorderable
+        ? (row: Row<DataTableFeatures, T>) => reasonOf(row.original)
+        : undefined,
+    [reorderable, reasonOf],
+  );
   const onRootKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     if (
       event.key !== "/" ||
@@ -809,6 +916,10 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     metaById,
     getLabel,
     filterController,
+    reasonOf,
+    mode,
+    rowHeight: metrics.rowHeight,
+    data,
   });
   latest.current = {
     props,
@@ -823,6 +934,10 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     metaById,
     getLabel,
     filterController,
+    reasonOf,
+    mode,
+    rowHeight: metrics.rowHeight,
+    data,
   };
 
   /** The row's actions: its own set (`getRowActions`), else the table's. */
@@ -831,6 +946,12 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     return current.getRowActions ? current.getRowActions(row) : current.actions;
   }, []);
   const hasActions = Boolean(actions || getRowActions);
+  // Rows are memoised on their data; when a row-level renderer changes (permissions arrive, a
+  // new wrapper) every row must redraw. Keep these props stable between renders.
+  const rowRevision = useMemo(
+    () => ({}),
+    [actions, getRowActions, renderRowActions, props.rowWrapper],
+  );
 
   // Menus and the bulk bar run actions with the shared runner (confirm → run → toast);
   // `onAction` replaces it. Stable, so an inline `onAction` never re-renders a menu.
@@ -904,6 +1025,363 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       anchor.current = rowId;
     },
     [setSelection],
+  );
+
+  /* ── Reordering: lift, move, drop (pointer and keyboard) ─────────────────────── */
+  const announcerRef = useRef<HTMLDivElement>(null);
+  const reorderRef = useRef<ActiveReorder | null>(null);
+  const moveToken = useRef(0);
+  const [gripTooltip] = useState(() =>
+    TooltipPrimitive.createHandle<string>(),
+  );
+
+  /** Say it in the live region; the same message twice is still announced. */
+  const announce = useCallback((message: string) => {
+    const region = announcerRef.current;
+    if (!region) return;
+    region.textContent =
+      region.textContent === message ? `${message}\u00a0` : message;
+  }, []);
+
+  /** Everything a lift needs, the reason it cannot happen, or null (the row is gone). */
+  const prepareLift = useCallback((rowId: string): Lift | string | null => {
+    const current = latest.current;
+    const row = current.rowsById.get(rowId);
+    const root = rootRef.current;
+    const scroller = scrollRef.current;
+    if (row === undefined || !root || !scroller) return null;
+    const reason = current.reasonOf(row);
+    if (reason) return reason;
+    const lines = current.lines;
+    const line = lines
+      ? lines.findIndex((entry) => entry.kind === "row" && entry.row.id === rowId)
+      : current.order.indexOf(rowId);
+    if (line < 0) return null;
+    let first = 0;
+    let last = current.lineCount - 1;
+    let group: Lift["group"];
+    const entry = lines?.[line];
+    if (lines && entry?.kind === "row") {
+      const inGroup = (index: number) => {
+        const other = lines[index];
+        return other?.kind === "row" && other.group === entry.group;
+      };
+      first = line;
+      last = line;
+      while (inGroup(first - 1)) first--;
+      while (inGroup(last + 1)) last++;
+      const found = current.props.grouping?.groups.find(
+        (candidate) => candidate.id === entry.group,
+      );
+      group = { id: entry.group, label: found?.label ?? entry.group };
+    }
+    const cards = current.mode === "cards";
+    const container = scroller.querySelector<HTMLElement>(
+      cards ? ".fa-dt-cards" : ".fa-dt-rows",
+    );
+    const element = container?.querySelector<HTMLElement>(
+      `:scope > [data-item="row"][data-index="${line}"]`,
+    );
+    if (!container || !element) return null;
+    let measure: Lift["measure"];
+    let gap = 0;
+    if (cards) {
+      const boxes = new Map<number, LineBox>();
+      for (const child of container.children)
+        if (child instanceof HTMLElement && child.dataset.index !== undefined)
+          boxes.set(Number(child.dataset.index), {
+            start: child.offsetTop,
+            size: child.offsetHeight,
+          });
+      measure = (index) => boxes.get(index) ?? { start: 0, size: 0 };
+      gap = Number.parseFloat(getComputedStyle(container).rowGap) || 0;
+    } else {
+      const height = current.rowHeight;
+      measure = (index) => {
+        const item = virtualizerRef.current?.measurementsCache[index];
+        return item
+          ? { start: item.start, size: item.size }
+          : { start: index * height, size: height };
+      };
+    }
+    return {
+      rowId,
+      label: current.getLabel(row),
+      line,
+      first,
+      last,
+      group,
+      root,
+      container,
+      element,
+      measure,
+      gap,
+    };
+  }, []);
+
+  const positionOf = (lift: Lift, line: number) =>
+    positionText(line - lift.first + 1, lift.last - lift.first + 1, lift.group?.label);
+
+  /** Report the move to the host and show it at once; a rejected promise reverts it. */
+  const commitMove = useCallback(
+    (lift: Lift, target: number, source: DataTableRowMove<T>["source"]) => {
+      const current = latest.current;
+      const position = positionOf(lift, target);
+      if (target === lift.line) {
+        announce(reorderMessages.dropped(lift.label, position));
+        return;
+      }
+      const hostRows = current.props.rows;
+      const idOf = getRowIdRef.current;
+      const targetLine = current.lines?.[target];
+      const targetId = current.lines
+        ? targetLine?.kind === "row"
+          ? targetLine.row.id
+          : undefined
+        : current.order[target];
+      const from = hostRows.findIndex((row) => idOf(row) === lift.rowId);
+      const to = hostRows.findIndex((row) => idOf(row) === targetId);
+      const moved = hostRows[from];
+      if (from < 0 || to < 0 || moved === undefined) return;
+      const nextRows = moveRow(hostRows, from, to);
+      const groupOf = current.props.grouping?.groupOf;
+      const neighbour = (row: T | undefined) =>
+        row !== undefined &&
+        (!lift.group || !groupOf || groupOf(row) === lift.group.id)
+          ? idOf(row)
+          : null;
+      const move: DataTableRowMove<T> = {
+        row: moved,
+        rowId: lift.rowId,
+        from,
+        to,
+        previousId: neighbour(nextRows[to - 1]),
+        nextId: neighbour(nextRows[to + 1]),
+        rows: nextRows,
+        group: lift.group?.id,
+        source,
+      };
+      const token = ++moveToken.current;
+      let result: unknown;
+      flushSync(() => {
+        result = current.props.reorder?.onReorder(move);
+        setShownMove({
+          rowId: move.rowId,
+          previousId: move.previousId,
+          nextId: move.nextId,
+          source: hostRows,
+          status: isThenable(result) ? "pending" : "settled",
+          token,
+        });
+        setActiveIndex(target);
+      });
+      announce(reorderMessages.dropped(lift.label, position));
+      if (!isThenable(result)) return;
+      result.then(
+        () =>
+          setShownMove((shown) =>
+            shown?.token === token ? { ...shown, status: "settled" } : shown,
+          ),
+        (error: unknown) => {
+          flushSync(() => {
+            setShownMove((shown) => (shown?.token === token ? null : shown));
+            setActiveIndex(lift.line);
+          });
+          const reason = error instanceof Error ? error.message : undefined;
+          announce(
+            reorderMessages.failed(
+              lift.label,
+              positionOf(lift, lift.line),
+              reason,
+            ),
+          );
+          const onError = latest.current.props.reorder?.onError;
+          if (onError) onError(error, move);
+          else
+            toast.danger(`${lift.label} was not moved`, {
+              description: reason || "The new order was not saved.",
+            });
+          const element = scrollRef.current?.querySelector<HTMLElement>(
+            `[data-item="row"][data-index="${lift.line}"]`,
+          );
+          if (element) {
+            element.setAttribute("data-reorder-failed", "");
+            element.addEventListener(
+              "animationend",
+              () => element.removeAttribute("data-reorder-failed"),
+              { once: true },
+            );
+          }
+        },
+      );
+    },
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- positionOf is pure; everything else is read through refs
+    [announce],
+  );
+
+  const gripController = useMemo<GripController>(
+    () => ({
+      tooltip: gripTooltip,
+      helpId: `${domId}-reorder-help`,
+      idBase: `${domId}-reorder-why`,
+      pointerDown: (rowId, event) => {
+        if (reorderRef.current) return;
+        const lift = prepareLift(rowId);
+        if (!lift || typeof lift === "string" || !scrollRef.current) return;
+        const drag = startPointerReorder(event.nativeEvent, {
+          ...lift,
+          from: lift.line,
+          handle: event.currentTarget,
+          scroller: scrollRef.current,
+          onStart: () => {
+            setActiveIndex(lift.line);
+            announce(
+              reorderMessages.lifted(lift.label, positionOf(lift, lift.line), true),
+            );
+          },
+          onTarget: (target) =>
+            announce(reorderMessages.moved(lift.label, positionOf(lift, target))),
+          onDrop: (target) => {
+            reorderRef.current = null;
+            commitMove(lift, target, "pointer");
+          },
+          onCancel: () => {
+            if (reorderRef.current?.kind !== "pointer") return;
+            reorderRef.current = null;
+            announce(
+              reorderMessages.cancelled(lift.label, positionOf(lift, lift.line)),
+            );
+          },
+        });
+        if (drag)
+          reorderRef.current = {
+            kind: "pointer",
+            rowId,
+            key: latest.current.data,
+            drag,
+          };
+      },
+      keyDown: (rowId, event) => {
+        const active =
+          reorderRef.current?.kind === "keyboard" &&
+          reorderRef.current.rowId === rowId
+            ? reorderRef.current
+            : null;
+        const key = event.key;
+        if (!active) {
+          const lifting = key === " " || key === "Enter";
+          const quick =
+            event.altKey && (key === "ArrowUp" || key === "ArrowDown");
+          if ((!lifting && !quick) || reorderRef.current) return;
+          event.preventDefault();
+          event.stopPropagation();
+          const lift = prepareLift(rowId);
+          if (typeof lift === "string") return announce(lift);
+          if (!lift) return;
+          if (quick) {
+            const target = clampLine(
+              lift.line + (key === "ArrowUp" ? -1 : 1),
+              lift.first,
+              lift.last,
+            );
+            return commitMove(lift, target, "keyboard");
+          }
+          const session = new ReorderSession({
+            ...lift,
+            from: lift.line,
+            mode: "keyboard",
+          });
+          reorderRef.current = {
+            kind: "keyboard",
+            rowId,
+            key: latest.current.data,
+            lift,
+            session,
+          };
+          announce(
+            reorderMessages.lifted(lift.label, positionOf(lift, lift.line)),
+          );
+          return;
+        }
+        const { lift, session } = active;
+        switch (key) {
+          case "ArrowUp":
+          case "ArrowDown":
+          case "Home":
+          case "End": {
+            event.preventDefault();
+            event.stopPropagation();
+            const target =
+              key === "Home"
+                ? lift.first
+                : key === "End"
+                  ? lift.last
+                  : session.target + (key === "ArrowUp" ? -1 : 1);
+            if (!session.setTarget(target)) return;
+            revealSlot(
+              lift.container,
+              lift.container,
+              session.slot(),
+              lift.measure(lift.line).size,
+            );
+            announce(
+              reorderMessages.moved(lift.label, positionOf(lift, session.target)),
+            );
+            return;
+          }
+          case " ":
+          case "Enter":
+            event.preventDefault();
+            event.stopPropagation();
+            reorderRef.current = null;
+            commitMove(lift, session.target, "keyboard");
+            session.finish(false);
+            return;
+          case "Escape":
+            event.preventDefault();
+            event.stopPropagation();
+            reorderRef.current = null;
+            session.finish(true);
+            announce(
+              reorderMessages.cancelled(lift.label, positionOf(lift, lift.line)),
+            );
+            return;
+          default:
+        }
+      },
+      blur: (rowId) => {
+        const active = reorderRef.current;
+        if (active?.kind !== "keyboard" || active.rowId !== rowId) return;
+        reorderRef.current = null;
+        active.session.finish(true);
+        announce(
+          reorderMessages.cancelled(
+            active.lift.label,
+            positionOf(active.lift, active.lift.line),
+          ),
+        );
+      },
+    }),
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- positionOf is pure; the rest are stable
+    [gripTooltip, domId, prepareLift, commitMove, announce],
+  );
+
+  // Rows replaced, or the layout switched, mid-gesture: the line indexes no longer hold.
+  useLayoutEffect(() => {
+    const active = reorderRef.current;
+    if (!active || active.key === data) return;
+    reorderRef.current = null;
+    if (active.kind === "pointer") active.drag.cancel();
+    else active.session.finish(false);
+  });
+  useLayoutEffect(
+    () => () => {
+      const active = reorderRef.current;
+      reorderRef.current = null;
+      if (active?.kind === "pointer") active.drag.cancel();
+      else active?.session.finish(false);
+    },
+    [mode],
   );
 
   const rowController = useMemo<RowController>(
@@ -981,8 +1459,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           ),
         );
       },
+      grip: reorderable ? gripController : undefined,
     }),
-    [toggleRow, rowMenu, actionsOf, setGroups],
+    [toggleRow, rowMenu, actionsOf, setGroups, reorderable, gripController],
   );
 
   const commitWidth = useCallback(
@@ -1414,7 +1893,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const totalRows = grouping
     ? undefined
     : (rowCount ?? (cursor ? undefined : data.length));
-  const colCount = visibleColumns.length + (selectable ? 2 : 1);
+  const colCount =
+    visibleColumns.length + (selectable ? 2 : 1) + (reorderable ? 1 : 0);
 
   const rowsContainerProps = {
     onClick: onRowsClick,
@@ -1459,6 +1939,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
             layout={cards}
             selectable={selectable}
             actions={hasActions || Boolean(renderRowActions)}
+            grip={reorderable}
           />
         </div>
       ) : (
@@ -1472,6 +1953,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
             count={skeletonCount}
             columns={visibleColumns}
             selectable={selectable}
+            grip={reorderable}
           />
         </div>
       );
@@ -1549,6 +2031,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           firstRowIndex={firstRowIndex}
           controller={rowController}
           getLabel={getLabel}
+          gripOf={gripOf}
+          revision={rowRevision}
         />
       </div>,
     );
@@ -1578,6 +2062,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         getLabel={getLabel}
         containerProps={rowsContainerProps}
         wrapContainer={wrapRows}
+        gripOf={gripOf}
+        revision={rowRevision}
       />
     );
   }
@@ -1622,6 +2108,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       data-mode={mode}
       data-density={density}
       data-selectable={selectable ? "" : undefined}
+      data-reorderable={reorderable ? "" : undefined}
       data-trail={layout.trailButtons}
       data-pinned={
         visibleColumns.some((column) => column.pinned) ? "" : undefined
@@ -1689,6 +2176,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                 controller={headerController}
                 filtered={filtered}
                 settings={settingsMenu}
+                reorderable={reorderable}
               />
             </div>
           ) : null}
@@ -1773,6 +2261,26 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         />
       ) : null}
       {hasFilterBar ? <FilterPopover controller={filterController} /> : null}
+      {reorderable ? (
+        <>
+          <span id={`${domId}-reorder-help`} hidden>
+            {reorderMessages.instructions}
+          </span>
+          <div
+            ref={announcerRef}
+            className="fa-dt-announcer"
+            aria-live="assertive"
+            aria-atomic="true"
+          />
+          <TooltipPrimitive.Root handle={gripTooltip} disableHoverablePopup>
+            {({ payload }) => (
+              <TooltipPopup side="top" align="center" arrow>
+                {payload ?? null}
+              </TooltipPopup>
+            )}
+          </TooltipPrimitive.Root>
+        </>
+      ) : null}
     </div>
   );
 }

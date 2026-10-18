@@ -11,6 +11,7 @@ import {
   IconRefresh,
   IconSettings,
 } from "../../icons/generated/icons.js";
+import { Surface } from "../../ui/surface/index.js";
 import {
   RouteVerticalTabs,
   type RouteVerticalTabItem,
@@ -45,9 +46,14 @@ function SectionOutlet() {
   };
   const item = AGENT.find((entry) => entry.value === (search.section ?? "general"));
   return (
-    <div className="glass-inset flex h-40 items-start rounded-tile p-tile type-caption text-fg-muted">
+    <Surface
+      material="inset"
+      radius="tile"
+      padding="tile"
+      className="flex h-40 items-start type-caption text-fg-muted"
+    >
       {item?.label} · /endpoints/orb-7c71/settings/{search.section ?? "general"}
-    </div>
+    </Surface>
   );
 }
 

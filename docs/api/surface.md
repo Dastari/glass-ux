@@ -14,7 +14,7 @@ caller's. Prefer Panel for content panes — it adds the header/body/footer slot
 | as | `T \| undefined` | See type | no | — | Semantic element rendered by the polymorphic component. |
 | container | `boolean \| undefined` | false, true | no | false | Make this surface a size container so its contents can respond with |
 | material | `SurfaceMaterial \| undefined` | "control", "chrome", "panel", "card", "overlay", "float", "inset" | no | "panel" | Shared glass material. Use card for repeated tiles: the panel rim and fill without backdrop blur. |
-| padding | `SurfacePadding \| undefined` | "dialog", "none", "tile", "panel" | no | "none" | Semantic padding role. |
+| padding | `SurfacePadding \| undefined` | "dialog", "none", "tile", "panel", "overlay" | no | "none" | Semantic padding role. `overlay` is the item-list inset; pair it with `radius="overlay"` so `.fa-item` rows nest. |
 | radius | `SurfaceRadius \| undefined` | "dialog", "none", "control", "tile", "surface", "overlay" | no | "surface" | Semantic corner-radius role. |
 
 Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

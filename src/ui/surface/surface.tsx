@@ -128,8 +128,12 @@ export function PanelBody({ className, ref, ...rest }: ComponentProps<"div">) {
   useImperativeHandle(ref, () => own.current!, []);
   // A scrolling body publishes its edges: it contains the wheel only while it overflows.
   const edges = useScrollEdges(useContext(PanelScroll) ? own : NO_ELEMENT);
+  // While it overflows it is a scroll region, so it takes focus for the keyboard (R20.6).
+  const overflows = edges.top || edges.bottom || edges.left || edges.right;
   return (
+    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scroll region must be keyboard scrollable (R20.6)
     <div
+      tabIndex={overflows ? 0 : undefined}
       {...rest}
       ref={own}
       className={cx("fa-panel-body", className)}

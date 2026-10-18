@@ -28,6 +28,20 @@ has upgrade steps in the [migration guide](docs/migration.md).
   - `applyDrop`, `moveItem` and `insertItem` apply a drop to your data.
   - Guide: `docs/components/drag-drop.md`. Catalogue: the DropZone page.
 
+### Fixed
+
+- The mouse wheel did nothing over a DataTable whose rows did not need to scroll: an
+  `height="auto"` table, or a fill table whose rows fit, inside a page, panel or window that
+  scrolls. Its scroller set `overscroll-behavior: contain`, and Chromium ends the scroll chain
+  at any container with `contain`, even one with nothing to scroll, so only the pane's
+  scrollbar moved it. The table now contains the wheel vertically only while its rows
+  overflow. A wheel over the header row now scrolls the rows.
+- The same trap is gone from `[data-scroll-container]`, scrolling `Panel` bodies,
+  `ScrollArea`, scroll-style window bodies, the docked inspector body, `Tree`, vertical tab
+  lists and the chart table view: each contains the wheel only along an axis whose content
+  overflows. `PanelBody` in a `Panel scroll` publishes `data-scrolled-*` edge attributes and, while its content overflows, takes keyboard focus so it can be scrolled from the keyboard (R20.6).
+  Overlays (popups, dialogs, the command palette) still always contain it.
+
 ### Changed
 
 - Company icons redrawn to match each brand's recognised square or app-icon mark: Adobe,

@@ -4,14 +4,7 @@ import { Notice } from "../ui/notice/index.js";
 import { Skeleton } from "../ui/skeleton/index.js";
 import { DOCUMENTATION_VERSION } from "./release.generated.js";
 
-/** The human guides shipped with the release, in navigation order; each `id` is a guide `LibraryGuide` can load and `title` is its navigation label. */
-export const libraryGuides = [
-  { id: "getting-started", title: "Getting started" },
-  { id: "integration", title: "Existing applications" },
-  { id: "agent-adoption", title: "AI agent adoption" },
-  { id: "layout-contract", title: "Theme and layout" },
-  { id: "ui-rules", title: "Design rules" },
-] as const;
+export { libraryGuides } from "./library-guides.js";
 
 /** A version-matched human guide from the installed release. */
 export function LibraryGuide({ id }: { id: string }) {

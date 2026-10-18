@@ -402,3 +402,57 @@ test("appearance controls change rendered showcase colours and geometry", async 
     "0px",
   );
 });
+
+test("studio projects reorder within their status group and keep the saved order", async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      "glass-ux.appearance.v1",
+      JSON.stringify({ motion: "reduced" }),
+    ),
+  );
+  await page.goto("./");
+  const studio = page.getByTestId("studio-workspace");
+  await studio.getByRole("button", { name: "Projects", exact: true }).click();
+  const table = studio.locator(".fa-dt");
+  const inProgress = () =>
+    table.locator('[data-item="row"]').evaluateAll((rows) =>
+      rows
+        .toSorted(
+          (a, b) =>
+            Number((a as HTMLElement).dataset.index) -
+            Number((b as HTMLElement).dataset.index),
+        )
+        .map(
+          (row) =>
+            row.querySelector(".showcase-project-name > span")?.textContent,
+        )
+        .slice(0, 4),
+    );
+  expect(await inProgress()).toEqual([
+    "Meridian identity",
+    "Fieldwork journal",
+    "Sundial collection",
+    "Tideline festival",
+  ]);
+  const grip = table.getByRole("button", {
+    name: "Reorder Tideline festival",
+  });
+  await grip.focus();
+  await page.keyboard.press("Alt+ArrowUp");
+  await expect(table.locator(".fa-dt-announcer")).toHaveText(
+    /Dropped Tideline festival at position 3 of 4/,
+  );
+  await expect(grip).toBeFocused();
+  // The move saves into the demo's project list: it survives a view change.
+  await expect(grip).not.toHaveAttribute("aria-disabled");
+  await studio.getByRole("button", { name: "Overview", exact: true }).click();
+  await studio.getByRole("button", { name: "Projects", exact: true }).click();
+  expect(await inProgress()).toEqual([
+    "Meridian identity",
+    "Fieldwork journal",
+    "Tideline festival",
+    "Sundial collection",
+  ]);
+});

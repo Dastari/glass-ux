@@ -47,7 +47,12 @@ import {
   type MenuContent,
 } from "./actions-menu.js";
 import { BodyMessage, RetryButton, SkeletonRows, VirtualRows } from "./body.js";
-import { CardList, cardLayout, SkeletonCards } from "./cards.js";
+import {
+  CARD_INLINE_STATUS_REM,
+  CardList,
+  cardLayout,
+  SkeletonCards,
+} from "./cards.js";
 import {
   columnIdOf,
   resolveColumnMeta,
@@ -600,9 +605,10 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       ),
     [definitions, pinnedIds, metaById],
   );
+  const inlineStatus = measured && widthRem < CARD_INLINE_STATUS_REM;
   const cards = useMemo(
-    () => cardLayout(cardColumns, userHidden),
-    [cardColumns, userHidden],
+    () => cardLayout(cardColumns, userHidden, { inlineStatus }),
+    [cardColumns, userHidden, inlineStatus],
   );
 
   const detailRem = detailHeight(

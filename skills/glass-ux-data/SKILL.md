@@ -39,7 +39,14 @@ Return a promise for server saves; a rejection reverts the move. Do not add your
 handles or disable sorting UI; the grips explain why they are off while sorted, filtered,
 searched, grouped or paged.
 
-The table's row, context and bulk actions read one `ActionSet`. Use shared cells for identity,
+Below `cardBreakpoint` the table renders cards. Mark one column `cardRole: "title"` and,
+where useful, `"subtitle"` and `"status"`. Other columns with priority 1–3 flow as compact
+label/value pairs, lowest priority number first, so give the facts a phone user scans
+(latency, devices, due date) priority 2. Priority 4–5 columns and `cardRole: "hidden"` sit
+behind the card's "+N" toggle; hide a field the title already shows.
+
+The table's row, context and bulk actions read one `ActionSet`, declared with
+`defineActions` from `glass-ux/actions`. Use shared cells for identity,
 numbers, times, states and sparklines. Treat loading, empty and error states as part of the
 same bounded body rather than inserting content that moves the layout.
 

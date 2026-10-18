@@ -161,19 +161,6 @@
   .showcase-row > .fa-badge {
     margin-inline-start: auto;
   }
-  .showcase-sheet-actions {
-    display: flex;
-    justify-content: flex-end;
-    min-width: 0;
-  }
-  /* The form sits between the dialog and its body/footer: keep the flex chain so the body
-     scrolls and the footer stays reachable on short screens. */
-  .showcase-dialog-form {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    min-height: 0;
-  }
   .showcase-form {
     display: flex;
     flex-direction: column;

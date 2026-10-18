@@ -19,17 +19,23 @@ export interface CardLayout {
   title: ColumnInfo | undefined;
   /** Data shown beneath or beside the title. */
   subtitle: ColumnInfo | undefined;
-  /** Current operation or connection status. */
+  /** Current operation or connection status, beside the title. */
   status: ColumnInfo | undefined;
-  /** Supporting data displayed with the item. */
+  /** Supporting data shown on the card's field line, most important first. */
   meta: readonly ColumnInfo[];
+  /** Narrow cards: the status column, leading the field line instead of the title row. */
+  inlineStatus?: ColumnInfo;
   /** Remaining fields, including application defaults and user-hidden columns. */
   details: readonly ColumnInfo[];
 }
 
+/** Below this width (rem) a card's status leaves the title row for the field line. */
+export const CARD_INLINE_STATUS_REM = 22;
+
 export function cardLayout(
   columns: readonly ColumnInfo[],
   hidden: ReadonlySet<string> = new Set(),
+  { inlineStatus = false }: { inlineStatus?: boolean } = {},
 ): CardLayout {
   const visible = columns.filter((column) => !hidden.has(column.id));
   const byRole = (role: string) =>
@@ -37,17 +43,29 @@ export function cardLayout(
   const title = byRole("title") ?? visible[0];
   const subtitle = byRole("subtitle");
   const status = byRole("status");
-  const meta = visible.filter(
-    (column) => column.meta.cardRole === "meta" && column !== title,
-  );
+  // The most important fields lead the card's field line (priority 1 → 5, then the
+  // definition order), so a narrow card shows them first.
+  const meta = visible
+    .filter((column) => column.meta.cardRole === "meta" && column !== title)
+    .map((column, order) => ({ column, order }))
+    .toSorted(
+      (a, b) =>
+        a.column.meta.priority - b.column.meta.priority || a.order - b.order,
+    )
+    .map(({ column }) => column);
   const shown = new Set([title, subtitle, status, ...meta]);
-  return {
-    title,
-    subtitle,
-    status,
-    meta,
-    details: columns.filter((column) => !shown.has(column)),
-  };
+  const details = columns.filter((column) => !shown.has(column));
+  // A narrow title row keeps its width for the title: the status badge leads the fields.
+  if (inlineStatus && status)
+    return {
+      title,
+      subtitle,
+      status: undefined,
+      meta: [status, ...meta],
+      inlineStatus: status,
+      details,
+    };
+  return { title, subtitle, status, meta, details };
 }
 
 interface CardProps<T extends RowData> {
@@ -94,6 +112,39 @@ function CardView<T extends RowData>({
     const cell = column ? cells[column.id] : undefined;
     return cell ? cellContent(cell) : null;
   };
+  const fields = (columns: readonly ColumnInfo[], className: string) => (
+    <dl className={className}>
+      {columns.map((column) => (
+        <div
+          key={column.id}
+          className="fa-dt-card-field"
+          data-col={column.key}
+          data-status={column === layout.inlineStatus ? "" : undefined}
+        >
+          <dt className="fa-dt-card-label">{column.meta.label}</dt>
+          <dd className="fa-dt-card-value">{render(column)}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+  // The fields flow on one wrapping line, which the "+N" toggle ends; a card without
+  // fields keeps the toggle beside its actions.
+  const fieldLine = layout.meta.length > 0;
+  const more = layout.details.length ? (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="fa-dt-card-more"
+      icon={expanded ? <IconChevronUp /> : <IconChevronDown />}
+      aria-label={`${expanded ? "Hide" : "Show"} ${layout.details.length} more fields for ${label}`}
+      aria-expanded={expanded}
+      tabIndex={tabIndex}
+      data-dt-interactive=""
+      onClick={() => controller.toggleExpanded(rowId)}
+    >
+      +{layout.details.length}
+    </Button>
+  ) : null;
   const element = (
     <div
       role="row"
@@ -119,7 +170,10 @@ function CardView<T extends RowData>({
         </div>
       ) : null}
       <div role="gridcell" className="fa-dt-card-cell">
-        <div className="fa-dt-card-head">
+        <div
+          className="fa-dt-card-head"
+          data-subtitle={layout.subtitle ? "" : undefined}
+        >
           {selectable ? (
             <SelectCheckbox
               checked={selected}
@@ -133,62 +187,30 @@ function CardView<T extends RowData>({
           <div className="fa-dt-card-title" data-col={layout.title?.key}>
             {render(layout.title)}
           </div>
+          {layout.subtitle ? (
+            <div className="fa-dt-card-subtitle" data-col={layout.subtitle.key}>
+              {render(layout.subtitle)}
+            </div>
+          ) : null}
           {layout.status ? (
             <div className="fa-dt-card-status" data-col={layout.status.key}>
               {render(layout.status)}
             </div>
           ) : null}
           <div className="fa-dt-card-actions">
-            {layout.details.length ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={expanded ? <IconChevronUp /> : <IconChevronDown />}
-                aria-label={`${expanded ? "Hide" : "Show"} ${layout.details.length} more fields for ${label}`}
-                aria-expanded={expanded}
-                tabIndex={tabIndex}
-                data-dt-interactive=""
-                onClick={() => controller.toggleExpanded(rowId)}
-              >
-                +{layout.details.length}
-              </Button>
-            ) : null}
+            {fieldLine ? null : more}
             {controller.renderActions(rowId, label, tabIndex)}
           </div>
         </div>
-        {layout.subtitle ? (
-          <div className="fa-dt-card-subtitle" data-col={layout.subtitle.key}>
-            {render(layout.subtitle)}
+        {fieldLine ? (
+          <div className="fa-dt-card-body" data-more={more ? "" : undefined}>
+            {fields(layout.meta, "fa-dt-card-meta")}
+            {more}
           </div>
         ) : null}
-        {layout.meta.length ? (
-          <dl className="fa-dt-card-meta">
-            {layout.meta.map((column) => (
-              <div
-                key={column.id}
-                className="fa-dt-card-field"
-                data-col={column.key}
-              >
-                <dt className="fa-dt-card-label">{column.meta.label}</dt>
-                <dd className="fa-dt-card-value">{render(column)}</dd>
-              </div>
-            ))}
-          </dl>
-        ) : null}
-        {expanded && layout.details.length ? (
-          <dl className="fa-dt-card-meta fa-dt-card-details">
-            {layout.details.map((column) => (
-              <div
-                key={column.id}
-                className="fa-dt-card-field"
-                data-col={column.key}
-              >
-                <dt className="fa-dt-card-label">{column.meta.label}</dt>
-                <dd className="fa-dt-card-value">{render(column)}</dd>
-              </div>
-            ))}
-          </dl>
-        ) : null}
+        {expanded && layout.details.length
+          ? fields(layout.details, "fa-dt-card-meta fa-dt-card-details")
+          : null}
       </div>
     </div>
   );
@@ -327,7 +349,10 @@ export function SkeletonCards({
             </div>
           ) : null}
           <div className="fa-dt-card-cell">
-            <div className="fa-dt-card-head">
+            <div
+              className="fa-dt-card-head"
+              data-subtitle={layout.subtitle ? "" : undefined}
+            >
               {selectable ? (
                 <Skeleton.Block className="fa-dt-skel-check" radius="check" />
               ) : null}
@@ -337,6 +362,11 @@ export function SkeletonCards({
                   seed={index}
                 />
               </div>
+              {layout.subtitle ? (
+                <div className="fa-dt-card-subtitle">
+                  <Skeleton.Text type="caption" width="40%" />
+                </div>
+              ) : null}
               {layout.status ? (
                 <div className="fa-dt-card-status">
                   <CellPlaceholder
@@ -348,7 +378,9 @@ export function SkeletonCards({
               <div className="fa-dt-card-actions">
                 {Array.from(
                   {
-                    length: Number(layout.details.length > 0) + Number(actions),
+                    length:
+                      Number(layout.details.length > 0 && !layout.meta.length) +
+                      Number(actions),
                   },
                   (_, action) => (
                     <Skeleton.Block
@@ -361,19 +393,36 @@ export function SkeletonCards({
               </div>
             </div>
             {layout.meta.length ? (
-              <dl className="fa-dt-card-meta">
-                {layout.meta.map((column, columnIndex) => (
-                  <div key={column.id} className="fa-dt-card-field">
-                    <dt className="fa-dt-card-label">{column.meta.label}</dt>
-                    <dd className="fa-dt-card-value">
-                      <CellPlaceholder
-                        kind={column.meta.skeleton}
-                        seed={index + columnIndex}
-                      />
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+              <div
+                className="fa-dt-card-body"
+                data-more={layout.details.length ? "" : undefined}
+              >
+                <dl className="fa-dt-card-meta">
+                  {layout.meta.map((column, columnIndex) => (
+                    <div
+                      key={column.id}
+                      className="fa-dt-card-field"
+                      data-status={
+                        column === layout.inlineStatus ? "" : undefined
+                      }
+                    >
+                      <dt className="fa-dt-card-label">{column.meta.label}</dt>
+                      <dd className="fa-dt-card-value">
+                        <CellPlaceholder
+                          kind={column.meta.skeleton}
+                          seed={index + columnIndex}
+                        />
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                {layout.details.length ? (
+                  <Skeleton.Block
+                    className="fa-dt-skel-action fa-dt-card-more"
+                    radius="control"
+                  />
+                ) : null}
+              </div>
             ) : null}
           </div>
         </div>

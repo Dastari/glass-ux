@@ -32,6 +32,10 @@ for (const appearance of [
     );
     await page.goto("/");
     await expect(page.locator("html[data-hydrated]")).toBeAttached();
+    // The showcase route loads its code after the shell.
+    await expect(
+      page.locator(".showcase-metrics > .fa-surface").first(),
+    ).toBeVisible();
     const geometry = await page.evaluate(() => {
       const sidebar = document.querySelector<HTMLElement>(".docs-sidebar")!;
       const card = document.querySelector<HTMLElement>(

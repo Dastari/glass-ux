@@ -113,7 +113,7 @@ describe("DataTable reorder", () => {
     expect(handle).not.toHaveAttribute("aria-disabled");
     const help = document.getElementById(handle.getAttribute("aria-describedby")!);
     expect(help?.textContent).toMatch(/Space to lift/);
-    expect(view.container.querySelector('.fa-dt-th.fa-dt-grip')).toHaveAttribute("aria-label", "Row order");
+    expect(view.container.querySelector('.fa-dt-th.fa-dt-grip')).toHaveTextContent("Row order");
     expect(view.container.querySelector(".fa-dt-grid")).toHaveAttribute("aria-colcount", "5");
   });
 

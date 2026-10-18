@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type ReactNode,
   type RefObject,
 } from "react";
 import { BrandMark } from "glass-ux/brand";
@@ -24,6 +25,9 @@ import { Notice } from "glass-ux/notice";
 import { EmptyState } from "glass-ux/empty-state";
 import { ActivityFeed, type ActivityItem } from "glass-ux/activity-feed";
 import { MeterCell } from "glass-ux/meter-cell";
+import { ScrollArea } from "glass-ux/scroll-area";
+import { LoginError, LoginFlow, loginProvider } from "glass-ux/login-flow";
+import { toast } from "glass-ux/toast";
 import { Segmented } from "glass-ux/segmented";
 import { Menu } from "glass-ux/menu";
 import { Tooltip } from "glass-ux/tooltip";
@@ -32,7 +36,8 @@ import { EntityIdentity, type EntityState } from "glass-ux/entity";
 import {
   ActionBar,
   usePaletteActions,
-  type ActionMenuProps,
+  defineActions,
+  type ActionSet,
 } from "glass-ux/actions";
 import {
   useCommandPalette,
@@ -115,8 +120,6 @@ import {
 import "./showcase-network.css";
 
 /* ── Model ─────────────────────────────────────────────────────────────────── */
-
-type ActionSet<T> = ActionMenuProps<T>["set"];
 
 export interface SiteRow extends NetworkSite {
   status: SiteStatus;
@@ -384,6 +387,8 @@ const siteColumns = siteCol.columns([
     priority: 3,
     width: 8,
     maxWidth: 11,
+    // A card's title already names the town and region.
+    cardRole: "hidden",
     sortable: true,
     filter: filters.options({
       field: "region",
@@ -701,37 +706,34 @@ function DeviceTile({ node }: { node: TopologyNode<Device> }) {
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 type DeviceTarget = { name: string; online: boolean; kind: DeviceKind };
-const deviceActions: ActionSet<DeviceTarget> = {
-  entity: "device",
-  actions: [
-    {
-      id: "ping",
-      label: "Ping",
-      icon: IconSignal,
-      group: "connect",
-      disabledReason: ([device]) =>
-        device && !device.online ? `${device.name} is offline` : null,
-      run: () => wait(600),
-      successMessage: ([device]) => `${device?.name} replied in 4 ms`,
-    },
-    {
-      id: "restart",
-      label: "Restart",
-      icon: IconRestart,
-      group: "manage",
-      disabledReason: ([device]) =>
-        device && !device.online ? `${device.name} is offline` : null,
-      confirm: ([device]) => ({
-        title: `Restart ${device?.name}?`,
-        body: "Connected clients reconnect after about a minute.",
-        confirmLabel: "Restart",
-        tone: "warning",
-      }),
-      run: () => wait(900),
-      successMessage: ([device]) => `${device?.name} is restarting`,
-    },
-  ],
-};
+const deviceActions = defineActions<DeviceTarget>("device", [
+  {
+    id: "ping",
+    label: "Ping",
+    icon: IconSignal,
+    group: "connect",
+    disabledReason: ([device]) =>
+      device && !device.online ? `${device.name} is offline` : null,
+    run: () => wait(600),
+    successMessage: ([device]) => `${device?.name} replied in 4 ms`,
+  },
+  {
+    id: "restart",
+    label: "Restart",
+    icon: IconRestart,
+    group: "manage",
+    disabledReason: ([device]) =>
+      device && !device.online ? `${device.name} is offline` : null,
+    confirm: ([device]) => ({
+      title: `Restart ${device?.name}?`,
+      body: "Connected clients reconnect after about a minute.",
+      confirmLabel: "Restart",
+      tone: "warning",
+    }),
+    run: () => wait(900),
+    successMessage: ([device]) => `${device?.name} is restarting`,
+  },
+]);
 
 function SiteDevices({ site }: { site: NetworkSite }) {
   const nodes = useMemo(() => siteDevices(site), [site]);
@@ -849,14 +851,38 @@ function SiteAlert({
   );
 }
 
+/** A feed that scrolls within the detail pane's remaining height, faded at its edges. */
+function EventList({
+  bounded,
+  label,
+  children,
+}: {
+  bounded: boolean;
+  label: string;
+  children: ReactNode;
+}) {
+  return bounded ? (
+    <div className="network-event-scroll">
+      <ScrollArea edges="fade" aria-label={label}>
+        {children}
+      </ScrollArea>
+    </div>
+  ) : (
+    children
+  );
+}
+
 function SiteDetails({
   site,
   events,
   onAcknowledge,
+  bounded = false,
 }: {
   site: SiteRow;
   events: readonly EventRow[];
   onAcknowledge: (sites: readonly SiteRow[]) => void;
+  /** In the fixed-height detail pane: the events scroll in their own faded region. */
+  bounded?: boolean;
 }) {
   const offline = site.devices - site.online;
   const first = site.samples[0];
@@ -919,10 +945,12 @@ function SiteDetails({
           aria-labelledby={`events-${site.id}`}
         >
           <h4 id={`events-${site.id}`}>Events</h4>
-          <ActivityFeed
-            items={eventItems(events)}
-            empty="No events in the last 2 days"
-          />
+          <EventList bounded={bounded} label={`${site.label} events`}>
+            <ActivityFeed
+              items={eventItems(events)}
+              empty="No events in the last 2 days"
+            />
+          </EventList>
         </section>
       </div>
     </div>
@@ -961,7 +989,12 @@ function NetworkSummary({
         aria-labelledby="network-open-alerts"
       >
         <h4 id="network-open-alerts">Open alerts</h4>
-        <ActivityFeed items={eventItems(open, onSite)} empty="No open alerts" />
+        <EventList bounded label="Open alerts">
+          <ActivityFeed
+            items={eventItems(open, onSite)}
+            empty="No open alerts"
+          />
+        </EventList>
       </section>
     </div>
   );
@@ -1162,6 +1195,88 @@ function SelectionCommands({
 
 type View = "sites" | "events";
 
+/* ── Accounts ──────────────────────────────────────────────────────────────── */
+
+interface NetworkAccount {
+  name: string;
+  email: string;
+  role: string;
+}
+const NETWORK_ACCOUNTS: readonly NetworkAccount[] = [
+  { name: "Avery Quinn", email: "avery@example.com", role: "Operations lead" },
+  { name: "Mira Chen", email: "mira@example.com", role: "Network engineer" },
+];
+/** How long the signed-in confirmation shows before the dialog closes. */
+const SWITCH_CONFIRM_MS = 700;
+
+/** Sign in as another account without leaving the workspace. */
+function SwitchAccountDialog({
+  open,
+  onOpenChange,
+  current,
+  onSwitch,
+  finalFocus,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  current: NetworkAccount;
+  onSwitch: (account: NetworkAccount) => void;
+  finalFocus: RefObject<HTMLButtonElement | null>;
+}) {
+  const switchTo = (account: NetworkAccount) =>
+    window.setTimeout(() => onSwitch(account), SWITCH_CONFIRM_MS);
+  const other =
+    NETWORK_ACCOUNTS.find((account) => account.email !== current.email) ??
+    current;
+  return (
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Popup size="sm" initialFocus={false} finalFocus={finalFocus}>
+        <Dialog.Header
+          title="Switch account"
+          subtitle={`Signed in as ${current.email}`}
+        />
+        <Dialog.Body>
+          <LoginFlow
+            key={current.email}
+            surface={false}
+            heading={false}
+            autoFocus
+            providers={[loginProvider("microsoft")]}
+            onProviderSignIn={async () => {
+              await wait(800);
+              switchTo(other);
+            }}
+            onSignIn={async ({ identifier }) => {
+              await wait(700);
+              const email = identifier.trim().toLowerCase();
+              const account = NETWORK_ACCOUNTS.find(
+                (item) => item.email === email,
+              );
+              if (!account)
+                throw new LoginError(
+                  "No Meridian network account uses this email.",
+                );
+              if (account.email === current.email)
+                return {
+                  status: "error",
+                  field: "identifier",
+                  message: `Already signed in as ${account.email}.`,
+                };
+              switchTo(account);
+            }}
+            footer={
+              <p className="type-caption text-fg-muted">
+                Sample accounts: avery@example.com and mira@example.com, with
+                any password.
+              </p>
+            }
+          />
+        </Dialog.Body>
+      </Dialog.Popup>
+    </Dialog.Root>
+  );
+}
+
 export default function NetworkWorkspace() {
   const [manager] = useState(() =>
     createWindowManager({
@@ -1188,6 +1303,8 @@ export default function NetworkWorkspace() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [notes, setNotes] = useState(NETWORK_NOTES);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [switching, setSwitching] = useState(false);
+  const [user, setUser] = useState(NETWORK_ACCOUNTS[0]!);
   const [acknowledged, setAcknowledged] = useState<ReadonlySet<string>>(
     () => new Set(),
   );
@@ -1402,10 +1519,9 @@ export default function NetworkWorkspace() {
     acknowledgeEvents,
     openDevices,
   };
-  const siteActions = useMemo<ActionSet<SiteRow>>(
-    () => ({
-      entity: "site",
-      actions: [
+  const siteActions = useMemo(
+    () =>
+      defineActions<SiteRow>("site", [
         {
           id: "details",
           label: "Show details",
@@ -1482,14 +1598,12 @@ export default function NetworkWorkspace() {
           run: () => wait(1200),
           successMessage: ([site]) => `${site?.code}-GW01 is restarting`,
         },
-      ],
-    }),
+      ]),
     [],
   );
-  const eventActions = useMemo<ActionSet<EventRow>>(
-    () => ({
-      entity: "event",
-      actions: [
+  const eventActions = useMemo(
+    () =>
+      defineActions<EventRow>("event", [
         {
           id: "acknowledge",
           label: "Acknowledge",
@@ -1519,8 +1633,7 @@ export default function NetworkWorkspace() {
           run: ([event]) =>
             handlers.current.select(event?.siteId ?? null, true),
         },
-      ],
-    }),
+      ]),
     [],
   );
 
@@ -1568,6 +1681,7 @@ export default function NetworkWorkspace() {
       site={selected}
       events={siteEvents}
       onAcknowledge={acknowledge}
+      bounded
     />
   ) : (
     <NetworkSummary
@@ -1782,18 +1896,24 @@ export default function NetworkWorkspace() {
                   render={
                     <AccountButton
                       ref={account}
-                      name="Avery Quinn"
-                      email="avery@example.com"
-                      avatarSrc={studioPortrait("Avery Quinn")}
+                      name={user.name}
+                      email={user.email}
+                      avatarSrc={studioPortrait(user.name)}
                     />
                   }
                 />
-                <Menu.Popup finalFocus={profileOpen ? false : account}>
+                <Menu.Popup
+                  finalFocus={profileOpen || switching ? false : account}
+                >
                   <Menu.Item onClick={() => setProfileOpen(true)}>
                     Profile
                   </Menu.Item>
                   <Menu.Item onClick={openNotes}>
                     Network review notes
+                  </Menu.Item>
+                  <Menu.Separator />
+                  <Menu.Item onClick={() => setSwitching(true)}>
+                    Switch account
                   </Menu.Item>
                 </Menu.Popup>
               </Menu.Root>
@@ -1883,14 +2003,12 @@ export default function NetworkWorkspace() {
                         className="network-sheet"
                         data-testid="network-detail"
                       >
-                        <div className="network-sheet-actions">
-                          <ActionBar
-                            set={siteActions}
-                            targets={[selected]}
-                            label={selected.label}
-                            maxButtons={2}
-                          />
-                        </div>
+                        <ActionBar
+                          set={siteActions}
+                          targets={[selected]}
+                          label={selected.label}
+                          maxButtons={2}
+                        />
                         <SiteDetails
                           site={selected}
                           events={siteEvents}
@@ -1909,16 +2027,13 @@ export default function NetworkWorkspace() {
               initialFocus={closeProfile}
               finalFocus={account}
             >
-              <Dialog.Header title="Avery Quinn" subtitle="avery@example.com" />
+              <Dialog.Header title={user.name} subtitle={user.email} />
               <Dialog.Body>
                 <div className="network-person">
-                  <Avatar
-                    name="Avery Quinn"
-                    src={studioPortrait("Avery Quinn")}
-                  />
+                  <Avatar name={user.name} src={studioPortrait(user.name)} />
                   <FactList
                     facts={[
-                      { label: "Role", value: "Operations lead" },
+                      { label: "Role", value: user.role },
                       { label: "Workspace", value: "Meridian network" },
                     ]}
                   />
@@ -1934,6 +2049,17 @@ export default function NetworkWorkspace() {
               </Dialog.Footer>
             </Dialog.Popup>
           </Dialog.Root>
+          <SwitchAccountDialog
+            open={switching}
+            onOpenChange={setSwitching}
+            current={user}
+            finalFocus={account}
+            onSwitch={(next) => {
+              setUser(next);
+              setSwitching(false);
+              toast.success(`Signed in as ${next.name}`);
+            }}
+          />
         </div>
       </WindowManagerProvider>
     </NetworkContext>

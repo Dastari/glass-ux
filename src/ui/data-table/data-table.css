@@ -34,8 +34,6 @@
     /* The "+N" detail: minimum field width, value line. Mirror DETAIL in data-table.tsx. */
     --fa-dt-detail-field: 11rem;
     --fa-dt-detail-value: 1.5rem;
-    /* Minimum width of a label/value pair in a card. */
-    --fa-dt-card-field: 7.5rem;
     --_row-base: var(--row-h);
     --_head-base: var(--row-h-header);
     --_row-h: var(--_row-base);
@@ -119,6 +117,13 @@
     gap: var(--gap-controls);
     min-width: 0;
     padding-bottom: var(--space-3);
+  }
+  /* A narrow toolbar stays one line: the strip yields to the table's own tools (the column
+     chooser, host buttons) and its search folds to an icon that opens over the strip. */
+  @container fa-dt (inline-size < 36rem) {
+    .fa-dt > .fa-dt-toolbar > .fa-dt-filterbar {
+      --_basis: calc(var(--control-h-sm) * 4);
+    }
   }
 
   .fa-dt-frame {
@@ -816,33 +821,53 @@
     outline: var(--focus-ring-width) solid var(--accent-ring);
     outline-offset: var(--focus-ring-offset);
   }
+  /* A card: [check] title (subtitle beneath) · status · actions, then one wrapping line
+     of label/value fields ending in the "+N" toggle. Empty grid tracks take no room: the
+     slots space themselves with margins, so optional selection, subtitle and status need
+     no layout variants. */
   .fa-dt-card-cell {
+    --_card-py: var(--space-2-5);
+    /* Fields start under the title, past the checkbox. */
+    --_card-indent: calc(var(--check-size) + var(--space-2-5));
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-2);
     min-width: 0;
-    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-3);
+    padding: var(--_card-py) var(--space-3);
+  }
+  .fa-dt:not([data-selectable]) .fa-dt-card-cell {
+    --_card-indent: 0rem;
   }
   .fa-dt-card-head {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "check title status actions";
     align-items: center;
-    gap: var(--space-1) var(--space-2-5);
     min-width: 0;
+    min-height: var(--control-h-sm);
   }
-  .fa-dt:not([data-selectable]) .fa-dt-card-head {
-    grid-template-columns: minmax(0, 1fr) auto auto;
+  .fa-dt-card-head[data-subtitle] {
+    grid-template-areas:
+      "check title status actions"
+      "check subtitle status actions";
   }
   .fa-dt-card-head > :is(.fa-check, .fa-dt-skel-check) {
-    grid-column: 1;
-    grid-row: 1;
+    grid-area: check;
+    margin-inline-end: var(--space-2-5);
   }
   .fa-dt-card-title {
-    grid-column: 2;
-    grid-row: 1;
+    grid-area: title;
     display: flex;
     align-items: center;
     min-width: 0;
+  }
+  .fa-dt-card-subtitle {
+    grid-area: subtitle;
+    display: flex;
+    min-width: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
   }
   .fa-dt-card-status,
   .fa-dt-card-actions {
@@ -851,92 +876,106 @@
     min-width: 0;
   }
   .fa-dt-card-status {
-    grid-column: 3;
-    grid-row: 1;
+    grid-area: status;
+    margin-inline-start: var(--space-2-5);
   }
   .fa-dt-card-actions {
-    grid-column: 4;
-    grid-row: 1;
+    grid-area: actions;
     gap: var(--space-1);
+    margin-inline-start: var(--space-1-5);
   }
   .fa-dt-card-actions:empty {
     display: none;
-  }
-  .fa-dt:not([data-selectable]) .fa-dt-card-title {
-    grid-column: 1;
-  }
-  .fa-dt:not([data-selectable]) .fa-dt-card-status {
-    grid-column: 2;
-  }
-  .fa-dt:not([data-selectable]) .fa-dt-card-actions {
-    grid-column: 3;
   }
   .fa-dt-skel-action {
     width: var(--control-h-sm);
     height: var(--control-h-sm);
   }
-  /* Give narrow cards separate title, status and action rows. Explicit placement
-     keeps optional selection/status slots from taking the title's only column. */
-  @container fa-dt (inline-size < 22rem) {
-    .fa-dt-card-head {
-      grid-template-columns: auto minmax(0, 1fr);
+  /* Narrow cards (below CARD_INLINE_STATUS_REM, in JS) move the status badge to the head
+     of the field line, so the title keeps the row beside its actions. The narrowest give
+     the title the whole first line; selection and actions share the last. */
+  @container fa-dt (inline-size < 16rem) {
+    .fa-dt-card-head,
+    .fa-dt-card-head[data-subtitle] {
+      grid-template-areas:
+        "title title title title"
+        "subtitle subtitle subtitle subtitle"
+        "check status . actions";
+      row-gap: var(--space-1);
     }
     .fa-dt-card-status {
-      grid-row: 2;
-      grid-column: 2;
+      margin-inline-start: 0;
     }
-    .fa-dt-card-actions,
-    .fa-dt:not([data-selectable]) .fa-dt-card-actions {
-      grid-column: 1 / -1;
-      grid-row: 3;
-      justify-content: flex-end;
-    }
-    .fa-dt:not([data-selectable]) .fa-dt-card-head {
-      grid-template-columns: minmax(0, 1fr);
-    }
-    .fa-dt:not([data-selectable]) .fa-dt-card-status {
-      grid-column: 1;
+    .fa-dt-card-cell {
+      --_card-indent: 0rem;
     }
   }
-  @container fa-dt (inline-size < 16rem) {
-    .fa-dt-card-head > :is(.fa-check, .fa-dt-skel-check) {
-      grid-row: 2;
-    }
-    .fa-dt-card-title,
-    .fa-dt:not([data-selectable]) .fa-dt-card-title {
-      grid-column: 1 / -1;
-    }
-    .fa-dt[data-mode="cards"] .fa-dt-card-meta {
-      padding-inline-start: 0;
-    }
-  }
-  .fa-dt-card-subtitle {
-    display: flex;
+
+  /* The field line: label/value pairs flow and wrap, most important first. */
+  .fa-dt-card-body {
+    /* The "+N" toggle's box, reserved at the end of the last field line. */
+    --_more-w: calc(var(--control-h-sm) * 2.25);
+    position: relative;
     min-width: 0;
-    color: var(--fg-muted);
-    font-size: var(--type-caption-size);
+    padding-inline-start: var(--_card-indent);
   }
   .fa-dt-card-meta {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--fa-dt-card-field)), 1fr));
-    gap: var(--space-2) var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-3);
+    min-width: 0;
     margin: 0;
-    padding-inline-start: calc(var(--check-size) + var(--space-2-5));
   }
-  .fa-dt:not([data-selectable]) .fa-dt-card-meta {
-    padding-inline-start: 0;
+  /* A trend reads at a glance in less width than a table column gives it. */
+  .fa-dt-card-value .fa-dt-spark,
+  .fa-dt-skel-card .fa-dt-card-value .fa-dt-skel-spark {
+    --_w: 3rem;
+  }
+  /* The toggle ends the last field line: a placeholder holds its room in the flow (or takes
+     a line of its own), and the toggle sits over it without making the line taller. */
+  .fa-dt-card-body[data-more] > .fa-dt-card-meta::after {
+    content: "";
+    flex: none;
+    width: var(--_more-w);
+    height: var(--fa-dt-detail-value);
+    margin-inline-start: auto;
+  }
+  .fa-dt-card-body > .fa-dt-card-more {
+    position: absolute;
+    inset-inline-end: 0;
+    bottom: calc((var(--fa-dt-detail-value) - var(--control-h-sm)) / 2);
+    justify-content: center;
+    width: var(--_more-w);
+  }
+  .fa-dt-card-details {
+    padding-block-start: var(--space-2);
+    padding-inline-start: var(--_card-indent);
+    border-top: var(--border-width) solid var(--_hairline);
   }
   .fa-dt-card-field {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1-5);
     min-width: 0;
+    max-width: 100%;
   }
   .fa-dt-card-label {
+    flex: 0 1 auto;
     overflow: hidden;
     color: var(--fg-subtle);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
     text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* The status badge names itself; its label stays for assistive technology. */
+  .fa-dt-card-field[data-status] > .fa-dt-card-label {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
     white-space: nowrap;
   }
   .fa-dt-card-value {
@@ -946,6 +985,10 @@
     min-height: var(--fa-dt-detail-value);
     margin: 0;
     font-size: var(--type-label-size);
+  }
+  /* Placeholder values have no content width of their own. */
+  .fa-dt-skel-card .fa-dt-card-value {
+    width: calc(var(--space-4) * 4);
   }
 
   /* ── Footer: the table's status bar ─────────────────────────────────────────── */
@@ -1227,7 +1270,7 @@
     flex: none;
     align-items: flex-start;
     /* Centred on the title row (one sm control tall), whatever the grip's touch height. */
-    padding-block-start: calc(var(--space-3) + (var(--control-h-sm) - var(--_grip-h)) / 2);
+    padding-block-start: calc(var(--space-2-5) + (var(--control-h-sm) - var(--_grip-h)) / 2);
     padding-inline-start: var(--space-1-5);
   }
   .fa-dt-grip-space {
@@ -1240,8 +1283,9 @@
     }
   }
 
-  /* The live region for reorder announcements: read, not seen. */
-  .fa-dt-announcer {
+  /* Read, not seen: the live region for reorder announcements and the grip column's name. */
+  .fa-dt-announcer,
+  .fa-dt-sr {
     position: absolute;
     width: var(--border-width);
     height: var(--border-width);

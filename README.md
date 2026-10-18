@@ -60,11 +60,13 @@ Optional server adapters are separate entries. The graphql-orm filter mapping mo
 - [Component API index](docs/api/README.md), generated from the exported TypeScript types.
 - [Typed input guides](docs/components/README.md).
 - [Design and accessibility rules](docs/ui-rules.md).
-- [Live documentation site](https://dastari.github.io/glass-ux/): an interactive studio showcase,
-  assistant chat, mobile preview and map workspace with editable notes. Six palette-aware
-  canvas backgrounds are available through appearance preferences. Component family pages
-  combine related examples with
-  section navigation and individual API references for every public export.
+- [Live documentation site](https://dastari.github.io/glass-ux/): a studio workspace (charts,
+  a grouped project table with drag-to-reorder priorities, sheets and a typed form dialog),
+  a scripted assistant chat beside a phone preview, a live network-operations workspace
+  (map, site table, device topology windows, review notes and account switching with
+  `LoginFlow`) and appearance controls for the six canvas backgrounds, UI scale, corner
+  radius and line weight. Component family pages combine related examples with section navigation and
+  API references for every public export.
 
 The `glass-ux/gallery` entry supplies the same catalogue and demos to consuming applications.
 Applications can combine it with their own component sections.

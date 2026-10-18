@@ -113,12 +113,11 @@ test("the document keeps its sections, readable header and outside rail @respons
   const scroller = page.locator(".docs-content");
   // Wait for the example with the same title, so this assertion also covers the
   // fully loaded document instead of depending on lazy-loading timing.
+  // The family section and its specimen share the title: wait for the specimen's.
   await expect(
-    document.getByRole("heading", {
-      name: "VerticalTabNav",
-      exact: true,
-      level: 2,
-    }),
+    document
+      .locator(".gallery-specimen-header")
+      .getByRole("heading", { name: "VerticalTabNav", exact: true, level: 2 }),
   ).toBeAttached();
   await expect(
     document.getByRole("heading", {

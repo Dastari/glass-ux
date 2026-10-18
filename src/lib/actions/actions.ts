@@ -79,14 +79,34 @@ export interface ActionDefinition<T> {
   successMessage?: (targets: readonly T[]) => string
 }
 
+/**
+ * One entity type's actions, declared once and read by every renderer: `ActionMenu`,
+ * `ActionContextMenu`, `ActionBar`, `usePaletteActions`, a DataTable's `actions` and bulk
+ * bar. Create it with {@link defineActions}, at module scope or memoised.
+ *
+ * @typeParam T - The entity the actions run against (a table row, a selected record).
+ */
 export interface ActionSet<T> {
-  /** Entity reference supplied by the host. */
+  /** Entity type name, such as "site"; groups the actions in the command palette. */
   readonly entity: string
-  /** Supporting actions rendered in the action slot. */
+  /** The entity's actions in definition order; renderers group and order them. */
   readonly actions: readonly ActionDefinition<T>[]
 }
 
-/** Declare an entity's actions once. `entity` names the type for palette grouping. */
+/**
+ * Declare an entity's actions once (R12). `entity` names the type for palette grouping.
+ * Throws when more than one action is `primary` or two actions share an id.
+ *
+ * @example
+ * ```ts
+ * import { defineActions } from "glass-ux/actions"
+ *
+ * export const siteActions = defineActions<Site>("site", [
+ *   { id: "open", label: "Show details", group: "open", run: ([site]) => open(site) },
+ *   { id: "acknowledge", label: "Acknowledge alerts", group: "manage", primary: true, bulk: true, run: acknowledge },
+ * ])
+ * ```
+ */
 export function defineActions<T>(entity: string, actions: readonly ActionDefinition<T>[]): ActionSet<T> {
   const primaries = actions.filter((action) => action.primary)
   if (primaries.length > 1) {

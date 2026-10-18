@@ -316,6 +316,10 @@ export interface DialogBodyProps extends Omit<ComponentProps<"div">, "ref"> {
  * The only part that scrolls. It is an inline-size container, so its content lays out
  * against the dialog's width. While content runs under the header or footer, that edge
  * shows a hairline (R5.8).
+ *
+ * A form dialog wraps the body and footer in one `<Form>` (or `<form>`) placed directly in
+ * `Dialog.Popup`, so Enter and the footer's submit button submit it. The form continues the
+ * dialog's column: the body still scrolls and the footer stays visible on short screens.
  */
 function DialogBody({ flush, className, children, ...rest }: DialogBodyProps) {
   const ref = useRef<HTMLDivElement>(null)

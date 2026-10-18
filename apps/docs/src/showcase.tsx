@@ -1006,6 +1006,18 @@ export function Showcase() {
         onArchive={(ids) =>
           setProjects((items) => items.filter((item) => !ids.includes(item.id)))
         }
+        onMove={(id, previousId) =>
+          setProjects((items) => {
+            const moved = items.find((item) => item.id === id);
+            if (!moved) return items;
+            const rest = items.filter((item) => item.id !== id);
+            // First in its group: before the group's current first project.
+            const at = previousId
+              ? rest.findIndex((item) => item.id === previousId) + 1
+              : rest.findIndex((item) => item.status === moved.status);
+            return rest.toSpliced(Math.max(0, at), 0, moved);
+          })
+        }
       />
       <section
         id="assistant"

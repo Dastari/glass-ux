@@ -42,12 +42,33 @@ import { configureDataTables } from "glass-ux/data-table";
 configureDataTables({ storageKeyPrefix: "my-app.table" });
 ```
 
+## Keep a manual order in host data
+
+`reorder={{ onReorder }}` adds a grip column (and a grip on cards) for pointer, touch and
+keyboard reordering. The table reports one `DataTableRowMove` per drop: `from`/`to` indexes
+in `rows`, the new `rows`, and `previousId`/`nextId` so a server can store "after X". Update
+local data with `move.rows` or `moveRow(rows, move.from, move.to)`. Return a promise to save
+it: the move shows while pending and reverts, with a toast or your `onError`, on rejection.
+Lock rows with `canReorder` and explain them with `lockedReason`. The grips are disabled,
+with the reason as their tooltip, while sorted, searched, filtered, grouped (unless
+`withinGroups`), paged (unless `withinPage`) or saving. The order is not a table preference
+and is not written to the URL.
+
 ## Adapt the server shape
 
-The optional pure helpers in `glass-ux/lib/graphql-orm/where` map the declared filter state
-to a GraphQL `Where` shape: `toWhere`, `toFilterInput`, `toOrderBy` and `searchWhere`.
-They do not connect to a server, generate a schema or require a particular backend. Use
-them only when your server accepts those shapes. Otherwise write an adapter for your API.
+The table's filter and search state is backend-neutral: each column's `FilterSpec` names the
+server field and, if needed, its own `toWhere` condition. Server adapters are separate,
+optional entries that depend on `glass-ux/data-table`, never the reverse.
+
+`glass-ux/adapters/graphql-orm` maps the declared filter state to a GraphQL `Where` shape
+(`toWhere`, `toFilterInput`, `columnWhere` and `searchWhere`) and evaluates a `Where` in
+memory for mock servers (`evaluateWhere`). It does not connect to a server, generate a schema
+or require a particular backend. Use it only when your server accepts those shapes. Otherwise
+write an adapter for your API. Set your server's longest relative-day window with
+`configureDataTables({ maxRelativeDays })`.
+
+Migration: replace `glass-ux/lib/graphql-orm/where` and `glass-ux/lib/graphql-orm/evaluate`
+with `glass-ux/adapters/graphql-orm`; the exported names are unchanged.
 
 Declare mappings explicitly. A missing server capability should produce a deliberate UI
 choice rather than a filter that silently does nothing. Always apply tenant and access

@@ -16,7 +16,7 @@ import type {
 import { ResultFrame } from "./frame.js";
 
 /**
- * Data classification, lowest to highest (graphql-orm-ai disclosure.rs). A tool's browser
+ * Data classification, lowest to highest. A tool's browser
  * preview carries a cap; anything classified above it is withheld from the browser.
  */
 export const CLASSIFICATIONS = [

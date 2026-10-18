@@ -4,8 +4,7 @@
  * row with graphql-orm's semantics (evaluateWhere), sorts, and returns one page.
  */
 import type { SortingState } from "@tanstack/react-table"
-import { evaluateWhere } from "../../lib/graphql-orm/evaluate.js"
-import type { WhereInput } from "../../lib/graphql-orm/where.js"
+import { evaluateWhere, type WhereInput } from "../../adapters/graphql-orm/index.js"
 import type { OptionItem, OptionSource } from "../../ui/combobox/index.js"
 
 export interface Device {

@@ -46,6 +46,10 @@ Supply `TooltipProvider`, `ActionProvider`, `PaletteProvider` and `AppearancePro
 the application root when using their respective components. See the component API for
 their props and controlled/uncontrolled state contracts.
 
+Optional server adapters are separate entries. The graphql-orm filter mapping moved from
+`glass-ux/lib/graphql-orm/where` and `…/evaluate` to `glass-ux/adapters/graphql-orm`; see
+[Data tables, filters and server adapters](docs/data-filters.md).
+
 ## Documentation and demos
 
 - [Installation, providers and your first form](docs/getting-started.md).

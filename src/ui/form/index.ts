@@ -1,8 +1,5 @@
 export {
   Form,
-  FormActions,
-  FormGroup,
-  FormStack,
   fieldContext,
   formBehaviour,
   formContext,
@@ -15,10 +12,8 @@ export {
   type CancelButtonProps,
   type ComboboxFieldProps,
   type CheckboxFieldProps,
-  type FormGroupProps,
   type MultiSelectFieldProps,
   type TagInputFieldProps,
-  type FormStackProps,
   type FormInstance,
   type FormProps,
   type NumberFieldBoundProps,
@@ -31,6 +26,7 @@ export {
   type TextFieldProps,
   type TextareaFieldProps,
 } from "./form.js"
+export { FormActions, FormGroup, FormStack, type FormGroupProps, type FormStackProps } from "./layout.js"
 export { blurThenChange, firstError, focusFirstInvalid, messageFor } from "./validation.js"
 export { useBoundField, type FieldChrome } from "./context.js"
 export { asCheck, numberRule, textRule, type Check, type RuleOptions } from "./rules.js"

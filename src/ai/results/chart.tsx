@@ -1,22 +1,14 @@
+import { lazy, Suspense } from "react";
 import { IconChartLine, IconReporting } from "../../icons/generated/icons.js";
-import { ColumnChart, LineChart } from "../../ui/charts/index.js";
+import { Skeleton } from "../../ui/skeleton/index.js";
 import type { AiResult, ChartSeries } from "../types.js";
 import { ResultFrame } from "./frame.js";
 type ChartResult = Extract<AiResult, { type: "chart" }>;
+// The chart family (d3 scales and formatters) loads with the first chart result; the frame and
+// its actions render at once and the plot box keeps its reserved height while it loads.
+const ChartPlot = lazy(() => import("./chart-plot.js"));
 /** Assistant result adapted into the shared chart family, with stable series and keyboard/table access. */
 export function ResultChart({ result }: { result: ChartResult }) {
-  const series = result.series.map((item, index) => ({
-    key: `series-${index}`,
-    label: item.name,
-    data: item.values,
-    tone: item.tone === "accent" ? undefined : item.tone,
-  }));
-  const common = {
-    label: result.title,
-    series,
-    domain: result.domain,
-    unit: result.unit,
-  };
   return (
     <ResultFrame
       result={result}
@@ -31,16 +23,9 @@ export function ResultChart({ result }: { result: ChartResult }) {
       ].join("\n")}
     >
       <div className="fa-ai-result-chart">
-        {result.chart === "bar" ? (
-          <ColumnChart {...common} categories={result.labels} />
-        ) : (
-          <LineChart
-            {...common}
-            x={result.labels.map((_, index) => index)}
-            xLabel="Sample"
-            formatX={(index) => result.labels[Math.round(index)] ?? ""}
-          />
-        )}
+        <Suspense fallback={<Skeleton.Block width="100%" height="100%" radius="tile" />}>
+          <ChartPlot result={result} />
+        </Suspense>
       </div>
     </ResultFrame>
   );

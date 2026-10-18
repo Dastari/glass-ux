@@ -272,6 +272,10 @@
      leaves a short trail instead of waiting for the fill; a press darkens it. */
   .fa-item:is(:hover, [data-highlighted], [data-popup-open]):not([data-disabled]) {
     background-color: var(--fill-hover);
+    transition-duration: var(--duration-instant);
+  }
+  .fa-item:active:not([data-disabled], [data-selected], [data-active], [aria-current="page"]) {
+    background-color: var(--fill-press);
   }
   .fa-item:is(:hover, [data-highlighted], [data-popup-open]):not([data-disabled]) > svg {
     color: var(--fg);

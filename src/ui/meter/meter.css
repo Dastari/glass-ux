@@ -1,8 +1,9 @@
 /*
  * Meter — a level in a range (disk, memory, seats).
  *
- * Neutral (fg-subtle) while healthy so the page is calm; warning and danger once the value
- * crosses its thresholds (default 75% / 90%). A hairline tick marks the warning threshold on
+ * Neutral (fg-subtle) while healthy so the page is calm, or the first data colour
+ * (data-tone="data") where the level is the data being compared; warning and danger once the
+ * value crosses its thresholds (default 75% / 90%), whatever the tone. A hairline tick marks the warning threshold on
  * the track. Stacked: label + reading above a 6px bar. Inline: bar + reading on one line.
  */
 @layer components {
@@ -15,6 +16,9 @@
     gap: var(--space-1-5);
     min-width: 0;
     width: 100%;
+  }
+  .fa-meter[data-tone="data"][data-level="normal"] {
+    --_bar: var(--chart-1);
   }
   .fa-meter[data-level="warning"] {
     --_bar: var(--warning);

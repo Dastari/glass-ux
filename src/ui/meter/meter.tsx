@@ -27,15 +27,20 @@ export interface MeterProps {
   /** `stacked`: label and reading above the bar. `inline`: bar then reading on one line —
    *  for table cells and dense lists. */
   layout?: "stacked" | "inline"
+  /** The bar's colour below the warning threshold. `neutral` (default) keeps a healthy level
+   *  calm; `data` uses the first data colour (`--chart-1`) where the level is itself the data
+   *  being compared, such as disk use in a table. Warning and danger apply past their
+   *  thresholds either way. */
+  tone?: "neutral" | "data"
   /** Accessible name when there is no visible label. */
   "aria-label"?: string
   className?: string
 }
 
 /**
- * A level within a known range: disk, memory, licence seats. Neutral while healthy; the bar
- * turns warning and danger as it crosses its thresholds, and the threshold is marked on the
- * track so the reader sees how close it is.
+ * A level within a known range: disk, memory, licence seats. Neutral while healthy (or the
+ * data colour with `tone="data"`); the bar turns warning and danger as it crosses its
+ * thresholds, and the threshold is marked on the track so the reader sees how close it is.
  */
 export function Meter({
   value,
@@ -45,6 +50,7 @@ export function Meter({
   warningAt = 0.75,
   dangerAt = 0.9,
   layout = "stacked",
+  tone = "neutral",
   className,
   "aria-label": ariaLabel,
 }: MeterProps) {
@@ -60,6 +66,7 @@ export function Meter({
       className={cx("fa-meter", className)}
       data-level={level}
       data-layout={layout}
+      data-tone={tone === "data" ? tone : undefined}
       style={{ "--_warn-at": `${warningAt * 100}%` } as CSSProperties}
     >
       {layout === "stacked" ? (

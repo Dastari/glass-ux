@@ -4,6 +4,16 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.7.2
+
+### Added
+
+- `Meter` and `MeterCell` take `tone`: `"neutral"` (default, unchanged) or `"data"`. With
+  `tone="data"` a healthy level uses the first data colour, `--chart-1`, for columns that
+  compare levels such as disk use; warning and danger still apply past `warningAt` and
+  `dangerAt`. Design rule R3.9 says when to use it. The Meter and MeterCell catalogue pages
+  show both tones.
+
 ## 0.7.1
 
 ### Fixed

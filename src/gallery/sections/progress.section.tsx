@@ -72,6 +72,14 @@ export default function ProgressSection() {
         </div>
       </Specimen>
 
+      <Specimen title="Data colour" description='tone="data" draws a healthy level in the first data colour where levels are compared; warning and danger still apply.' layout="stack">
+        <div className="flex w-75 max-w-full flex-col gap-3">
+          <Meter tone="data" layout="inline" value={34} aria-label="Archive volume" />
+          <Meter tone="data" layout="inline" value={81} aria-label="Media volume" />
+          <Meter tone="data" layout="inline" value={96} aria-label="Scratch volume" />
+        </div>
+      </Specimen>
+
       <Specimen title="Loading" description="Skeletons keep the exact rows: the head line, the track and the data line with its action." wide>
         <div className="grid w-full grid-cols-2 gap-6">
           <SwapSlot

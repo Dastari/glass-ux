@@ -109,6 +109,9 @@ screenshot or accessibility check does not establish layout stability.
   UI scale, radius and line weight. Do not override them for one screen.
 - **R3.8** Red belongs to danger and the accent to selection. Categorical colours (series,
   organisations, tags) avoid both.
+- **R3.9** A level (Meter, MeterCell, Gauge) is neutral while healthy, so a calm page stays
+  calm. Pass `tone="data"` to Meter or MeterCell only where the healthy level is the data
+  being compared, such as a disk column; warning and danger still apply past the thresholds.
 
 ## R4 · Materials
 

@@ -3,6 +3,11 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.7.1 → 0.7.2
+
+No code changes are required. Meters stay neutral while healthy unless you pass
+`tone="data"`.
+
 ## 0.7.0 → 0.7.1
 
 No code changes are required.

@@ -5,7 +5,11 @@ export interface MeterCellProps extends Omit<MeterProps, "layout" | "label"> {
   /** Accessible measurement name. */ label: string;
   /** Full tooltip breakdown; defaults to the visible reading. */ description?: string;
 }
-/** A responsive table meter: the reading remains when the narrow cell drops its track. */
+/**
+ * A responsive table meter: the reading remains when the narrow cell drops its track. It
+ * takes Meter's thresholds and `tone`; pass `tone="data"` where the column compares levels
+ * in the data colour.
+ */
 export function MeterCell({
   label,
   description,

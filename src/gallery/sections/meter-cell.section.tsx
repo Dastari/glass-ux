@@ -33,16 +33,55 @@ export default function MeterCellSection() {
         </div>
       </Specimen>
       <Specimen
+        title="Data colour"
+        description='tone="data" draws a healthy level in the first data colour, for columns that compare levels. Warning and danger still apply past 75% and 90%.'
+      >
+        <div className="flex w-full max-w-xl flex-col gap-controls">
+          <MeterCell
+            tone="data"
+            label="Archive volume used"
+            value={24}
+            max={50}
+            valueText="24 GB of 50 GB"
+            description="26 GB available"
+          />
+          <MeterCell
+            tone="data"
+            label="Media volume used"
+            value={42}
+            max={50}
+            valueText="42 GB of 50 GB"
+            description="8 GB available"
+          />
+          <MeterCell
+            tone="data"
+            label="Scratch volume used"
+            value={49}
+            max={50}
+            valueText="49 GB of 50 GB"
+            description="1 GB available"
+          />
+        </div>
+      </Specimen>
+      <Specimen
         title="Narrow cell"
         description="Below 5.5rem, the track gives way while the reading and exact breakdown remain reachable."
       >
-        <div className="w-20">
+        <div className="flex w-20 flex-col gap-controls">
           <MeterCell
             label="Seats used"
             value={8}
             max={10}
             valueText="8 / 10"
             description="8 assigned seats of 10 purchased; 2 available"
+          />
+          <MeterCell
+            tone="data"
+            label="Rooms booked"
+            value={3}
+            max={10}
+            valueText="3 / 10"
+            description="3 rooms booked of 10; 7 available"
           />
         </div>
       </Specimen>

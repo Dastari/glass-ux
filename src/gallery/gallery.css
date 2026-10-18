@@ -166,7 +166,7 @@
   .gallery-specimen-body[data-backdrop] {
     padding: var(--space-6);
     border-radius: var(--radius-tile);
-    background:
+    background: /* tokens:allow — vivid specimen backdrop from the palette ambient hues */
       radial-gradient(
         40% 70% at 20% 30%,
         oklch(0.7 0.18 var(--ambient-1-h) / 0.85),

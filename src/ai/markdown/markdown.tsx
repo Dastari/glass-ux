@@ -1,4 +1,12 @@
-import { Fragment, memo, useMemo, type ComponentProps, type ReactNode } from "react";
+import {
+  Fragment,
+  memo,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  type ComponentProps,
+  type ReactNode,
+} from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
@@ -202,6 +210,27 @@ const wrappingComponents: Components = {
   ),
 };
 
+/** In documents (`anchors`), a `#fragment` link jumps within the page. */
+function withAnchors(map: Components): Components {
+  const link = map.a as (props: {
+    href?: string;
+    children?: ReactNode;
+  }) => ReactNode;
+  return {
+    ...map,
+    a: ({ href, children }) =>
+      href?.startsWith("#") && !/^#cite-\d{1,3}$/.test(href) ? (
+        <a className="fa-ai-link" href={href}>
+          {children}
+        </a>
+      ) : (
+        link({ href, children })
+      ),
+  };
+}
+const anchorComponents = withAnchors(components);
+const anchorWrappingComponents = withAnchors(wrappingComponents);
+
 export interface MarkdownProps extends Omit<ComponentProps<"div">, "children"> {
   /** Assistant markdown (GFM). Raw HTML is ignored and the tree is sanitised. */
   text: string;
@@ -209,6 +238,22 @@ export interface MarkdownProps extends Omit<ComponentProps<"div">, "children"> {
   streaming?: boolean;
   /** Wrap table text within the available column widths. Default false uses single-line cells with truncation tooltips; use true for readable documents. */
   wrapTableCells?: boolean;
+  /**
+   * Give headings GitHub-style ids (`## R1 · Consistency` → `#r1--consistency`, repeats
+   * suffixed `-1`, `-2`) and render `#fragment` links as in-page links. For documents read at
+   * length; leave it off for messages, where several on one page would repeat ids and a
+   * fragment link has no target. Default false: fragment links render as plain text.
+   */
+  anchors?: boolean;
+}
+
+/** GitHub's heading slug: lower case, punctuation and symbols removed, each space a hyphen. */
+export function headingSlug(text: string): string {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{M}\p{N}\p{Pc} -]/gu, "")
+    .replace(/ /g, "-");
 }
 
 const remarkPlugins = [remarkGfm];
@@ -220,17 +265,27 @@ const MarkdownSegment = memo(function MarkdownSegment({
   text,
   caret,
   wrapTableCells,
+  anchors,
 }: {
   /** Plain text rendered or copied by the component. */
   text: string;
   caret: boolean;
   wrapTableCells: boolean;
+  anchors: boolean;
 }) {
   return (
     <ReactMarkdown
       remarkPlugins={remarkPlugins}
       rehypePlugins={caret ? streamingRehypePlugins : rehypePlugins}
-      components={wrapTableCells ? wrappingComponents : components}
+      components={
+        anchors
+          ? wrapTableCells
+            ? anchorWrappingComponents
+            : anchorComponents
+          : wrapTableCells
+            ? wrappingComponents
+            : components
+      }
       skipHtml
     >
       {prepare(text)}
@@ -243,7 +298,8 @@ const MarkdownSegment = memo(function MarkdownSegment({
  * reference and footnote definitions, and HTML blocks that end only at their closing
  * marker. Text containing any of them is parsed as one document.
  */
-const UNSPLITTABLE = /^ {0,3}\[[^\]\n]+\]:|<(?:!|\?|pre[\s>]|script[\s>]|style[\s>]|textarea[\s>])/im;
+const UNSPLITTABLE =
+  /^ {0,3}\[[^\]\n]+\]:|<(?:!|\?|pre[\s>]|script[\s>]|style[\s>]|textarea[\s>])/im;
 /** A line that would continue a list or an indented block after a blank line. */
 const CONTINUES = /^(?:\s|[-+*](?:[ \t]|$)|\d{1,9}[.)](?:[ \t]|$))/;
 const FENCE = /^ {0,3}(`{3,}|~{3,})/;
@@ -288,7 +344,10 @@ export function splitMarkdownBlocks(text: string): string[] {
     }
     blank = false;
     const open = line.match(FENCE);
-    if (open && !(open[1]![0] === "`" && line.slice(open[0].length).includes("`")))
+    if (
+      open &&
+      !(open[1]![0] === "`" && line.slice(open[0].length).includes("`"))
+    )
       fence = open[1]!;
   }
   segments.push(lines.slice(start).join("\n"));
@@ -304,7 +363,11 @@ function hasCaretText(segment: string) {
   for (const raw of segment.split("\n")) {
     const fence = raw.match(FENCE);
     if (inFence) {
-      if (fence && fence[1]![0] === inFence[0] && fence[1]!.length >= inFence.length)
+      if (
+        fence &&
+        fence[1]![0] === inFence[0] &&
+        fence[1]!.length >= inFence.length
+      )
         inFence = null;
       continue;
     }
@@ -335,9 +398,27 @@ export const Markdown = memo(function Markdown({
   text,
   streaming = false,
   wrapTableCells = false,
+  anchors = false,
   className,
+  ref,
   ...rest
 }: MarkdownProps) {
+  // Heading ids are assigned over the whole document in order, so repeats across separately
+  // parsed segments are numbered as GitHub numbers them.
+  const root = useRef<HTMLDivElement | null>(null);
+  useLayoutEffect(() => {
+    const element = root.current;
+    if (!anchors || !element) return;
+    const seen = new Map<string, number>();
+    for (const heading of element.querySelectorAll<HTMLElement>(
+      ".fa-ai-md-heading",
+    )) {
+      const base = headingSlug(heading.textContent ?? "");
+      const count = seen.get(base) ?? 0;
+      seen.set(base, count + 1);
+      heading.id = count ? `${base}-${count}` : base;
+    }
+  }, [anchors, text]);
   // Completed blocks keep their text while an answer streams, so only the growing tail
   // (and the block holding the caret) parses again on each update.
   const segments = useMemo(() => splitMarkdownBlocks(text), [text]);
@@ -352,6 +433,11 @@ export const Markdown = memo(function Markdown({
   return (
     <div
       {...rest}
+      ref={(element) => {
+        root.current = element;
+        if (typeof ref === "function") return ref(element);
+        if (ref) ref.current = element;
+      }}
       className={cx("fa-ai-md", className)}
       data-streaming={streaming ? "" : undefined}
       data-wrap-table-cells={wrapTableCells ? "" : undefined}
@@ -364,6 +450,7 @@ export const Markdown = memo(function Markdown({
             text={segment}
             caret={index === caretIndex}
             wrapTableCells={wrapTableCells}
+            anchors={anchors}
           />
         </Fragment>
       ))}

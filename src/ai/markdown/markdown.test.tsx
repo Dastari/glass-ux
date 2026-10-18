@@ -1,6 +1,8 @@
+// @vitest-environment jsdom
+import { render } from "@testing-library/react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it } from "vitest"
-import { Markdown, splitMarkdownBlocks } from "./markdown.js"
+import { headingSlug, Markdown, splitMarkdownBlocks } from "./markdown.js"
 
 // A leading link reference definition renders nothing but makes the text unsplittable,
 // which yields the single-document parse used as the reference.
@@ -44,4 +46,25 @@ describe("Markdown streaming segments", () => {
       }
     }
   }, 60_000)
+})
+
+describe("Markdown anchors", () => {
+  it("slugs headings as GitHub does", () => {
+    expect(headingSlug("R1 · Consistency")).toBe("r1--consistency")
+    expect(headingSlug("0.6 → 0.7")).toBe("06--07")
+    expect(headingSlug("Before you ship")).toBe("before-you-ship")
+  })
+
+  it("leaves fragment links and heading ids off by default", () => {
+    const { container } = render(<Markdown text={"## Intro\n\n[Jump](#intro)"} />)
+    expect(container.querySelector("h2")?.id).toBe("")
+    expect(container.querySelector('a[href="#intro"]')).toBeNull()
+  })
+
+  it("links fragments to numbered heading ids across segments", () => {
+    const text = "## Required changes\n\nOne\n\n## Required changes\n\nTwo\n\n[Second](#required-changes-1)"
+    const { container } = render(<Markdown anchors text={text} />)
+    expect([...container.querySelectorAll("h2")].map((h) => h.id)).toEqual(["required-changes", "required-changes-1"])
+    expect(container.querySelector('a[href="#required-changes-1"]')?.textContent).toBe("Second")
+  })
 })

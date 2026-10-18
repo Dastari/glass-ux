@@ -92,10 +92,32 @@ for (const file of walk("src").filter(
         `${file}:${text.slice(0, match.index).split("\n").length}: placeholder documentation`,
       );
 }
+// Rule citations (R5 or R5.8) in code and docs name a rule defined in docs/ui-rules.md.
+const rules = readFileSync("docs/ui-rules.md", "utf8");
+const definedRules = new Set([
+  ...[...rules.matchAll(/^## (R\d+) ·/gm)].map((m) => m[1]),
+  ...[...rules.matchAll(/\*\*(R\d+\.\d+)\*\*/g)].map((m) => m[1]),
+]);
+for (const file of ["src", "apps/docs/src", "docs", "skills", "e2e"]
+  .flatMap((dir) => walk(dir))
+  .filter(
+    (f) =>
+      /\.(?:tsx?|css|md)$/.test(f) &&
+      !f.includes("/generated/") &&
+      !f.startsWith("docs/api/") &&
+      !f.startsWith("src/gallery/api"),
+  )) {
+  const text = readFileSync(file, "utf8");
+  for (const match of text.matchAll(/\bR\d{1,2}(?:\.\d+)?\b/g))
+    if (!definedRules.has(match[0]))
+      failures.push(
+        `${file}:${text.slice(0, match.index).split("\n").length}: ${match[0]} is not a rule in docs/ui-rules.md`,
+      );
+}
 if (failures.length) {
   console.error(failures.join("\n"));
   process.exit(1);
 }
 console.log(
-  `docs: ${components.length} documented components, typed props, slots and live demo pages; public runtime exports have TSDoc; Markdown links resolve`,
+  `docs: ${components.length} documented components, typed props, slots and live demo pages; public runtime exports have TSDoc; Markdown links and rule citations resolve`,
 );

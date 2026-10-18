@@ -55,6 +55,7 @@ Upgrade steps: [migration guide, 0.6 → 0.7](docs/migration.md#06--07).
 - `Surface padding="overlay"`; radius roles `--radius-chip`, `--radius-mark`,
   `--radius-tile-icon`, `--radius-thumb`, `--radius-tooltip` and others, with every component
   using a role; `--popup-collision`.
+- `Markdown` `anchors`: GitHub-style heading ids and in-page `#fragment` links for documents.
 - A migration guide and this changelog, shipped in the package.
 
 ### Changed
@@ -78,6 +79,11 @@ Upgrade steps: [migration guide, 0.6 → 0.7](docs/migration.md#06--07).
 - Unavailable map, topology, calendar and chart legend controls stay focusable and state why.
 - `check-docs` fails on missing or placeholder documentation and on public runtime exports
   without TSDoc; every public prop and export is documented.
+
+- The design rules are rewritten as numbered, scannable rules. Every rule number cited in
+  code and documentation is defined, with new rules for using the library (R22),
+  authentication (R23) and releases (R24.4), and a pre-ship checklist. `check-docs` fails
+  when code or docs cite a rule that does not exist.
 
 ### Deprecated
 

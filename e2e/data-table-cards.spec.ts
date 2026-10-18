@@ -29,33 +29,50 @@ for (const density of ["comfortable", "compact"] as const) {
       const card = table.locator(".fa-dt-card:not(.fa-dt-skel-card)").first();
       await expect(card).toBeVisible();
       const title = card.locator(".fa-dt-card-title");
-      const status = card.locator(".fa-dt-card-status .fa-badge-label");
+      // Narrow cards lead the field line with the status badge (its label kept for
+      // assistive technology), so the title keeps the row beside its actions.
+      const status = card.locator(
+        ".fa-dt-card-field[data-status] .fa-badge-label",
+      );
       await expect(status).toBeVisible();
+      await expect(
+        card.locator(".fa-dt-card-field[data-status] .fa-dt-card-label"),
+      ).toHaveText("Status");
       const geometry = await card.evaluate((element) => {
+        const box = (selector: string) =>
+          element.querySelector(selector)!.getBoundingClientRect();
         const bounds = element.getBoundingClientRect();
-        const title = element
-          .querySelector(".fa-dt-card-title")!
-          .getBoundingClientRect();
-        const actions = element
-          .querySelector(".fa-dt-card-actions")!
-          .getBoundingClientRect();
-        const status = element
-          .querySelector(".fa-dt-card-status")!
-          .getBoundingClientRect();
+        const title = box(".fa-dt-card-title");
+        const actions = box(".fa-dt-card-actions");
+        const status = box(".fa-dt-card-field[data-status]");
+        const fields = [
+          ...element.querySelectorAll(".fa-dt-card-meta > .fa-dt-card-field"),
+        ].map((field) => field.getBoundingClientRect());
         return {
           titleWidth: title.width,
+          titleRight: title.right,
+          titleTop: title.top,
           titleBottom: title.bottom,
           statusTop: status.top,
-          statusBottom: status.bottom,
           actionsTop: actions.top,
+          actionsLeft: actions.left,
           actionsRight: actions.right,
+          left: bounds.left,
           right: bounds.right,
+          fieldsInside: fields.every(
+            (field) => field.left >= bounds.left && field.right <= bounds.right,
+          ),
         };
       });
       expect(geometry.titleWidth).toBeGreaterThanOrEqual(140);
       expect(geometry.statusTop).toBeGreaterThanOrEqual(geometry.titleBottom);
-      expect(geometry.actionsTop).toBeGreaterThanOrEqual(geometry.statusBottom);
       expect(geometry.actionsRight).toBeLessThanOrEqual(geometry.right);
+      expect(geometry.fieldsInside).toBe(true);
+      // Actions share the title's row only beside it, never over it.
+      if (geometry.actionsTop < geometry.titleBottom)
+        expect(geometry.actionsLeft).toBeGreaterThanOrEqual(
+          geometry.titleRight - 0.5,
+        );
       const details = card.getByRole("button", {
         name: /(?:Show|Hide) \d+ more fields/,
       });
@@ -109,3 +126,50 @@ for (const density of ["comfortable", "compact"] as const) {
     await expect(card.locator(".fa-dt-card-details")).toContainText("512");
   });
 }
+
+test("phone cards keep one toolbar line, the subtitle under the title and short fields on one line", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 393, height: 852 });
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      "glass-ux.appearance.v1",
+      JSON.stringify({ mode: "light", motion: "reduced" }),
+    ),
+  );
+  await page.goto("./components/data-table");
+
+  // The search folds to an icon beside the table's own tools; nothing wraps.
+  const main = page.locator("#examples").getByTestId("dt-main");
+  await expect(main.locator(".fa-dt")).toHaveAttribute("data-mode", "cards");
+  const toolbar = main.locator(".fa-dt-toolbar");
+  const lineTops = () =>
+    toolbar.evaluate((element) =>
+      [...element.querySelectorAll("button")]
+        .filter((button) => button.getBoundingClientRect().width > 0)
+        .map((button) => Math.round(button.getBoundingClientRect().top)),
+    );
+  await expect.poll(async () => new Set(await lineTops()).size).toBe(1);
+  const columns = toolbar.getByRole("button", { name: "Columns and density" });
+  const before = await columns.boundingBox();
+  await toolbar.getByRole("button", { name: /^Search/ }).click();
+  await expect(toolbar.getByRole("searchbox")).toBeFocused();
+  expect(await columns.boundingBox()).toEqual(before);
+
+  const reorder = page.getByTestId("dt-reorder");
+  await reorder.scrollIntoViewIfNeeded();
+  const card = reorder.locator('.fa-dt-card[data-item="row"]').first();
+  await expect(card).toBeVisible();
+  const title = (await card.locator(".fa-dt-card-title").boundingBox())!;
+  const subtitle = (await card.locator(".fa-dt-card-subtitle").boundingBox())!;
+  expect(subtitle.y).toBeGreaterThanOrEqual(title.y + title.height - 0.5);
+  expect(subtitle.y - (title.y + title.height)).toBeLessThan(8);
+  expect(Math.abs(subtitle.x - title.x)).toBeLessThan(1);
+  const fieldTops = await card
+    .locator(".fa-dt-card-meta > .fa-dt-card-field")
+    .evaluateAll((fields) =>
+      fields.map((field) => Math.round(field.getBoundingClientRect().top)),
+    );
+  expect(fieldTops.length).toBeGreaterThanOrEqual(2);
+  expect(new Set(fieldTops).size).toBe(1);
+});

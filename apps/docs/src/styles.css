@@ -53,9 +53,51 @@
     flex-wrap: nowrap;
     justify-content: flex-end;
   }
-  .docs-header .docs-toolbar {
-    flex: 0 1 auto;
+  /* The toolbar takes the header's free width, not its content's, so folded controls unfold
+     when the window grows (fa-fit-row). Below the width of every control folded, the
+     toolbar gives way to one Appearance button whose popover holds the same controls. */
+  .docs-header-appearance {
+    container-type: inline-size;
+    display: flex;
+    flex: 1 1 0;
+    justify-content: flex-end;
+    align-items: center;
     min-width: 0;
+  }
+  .docs-header .docs-toolbar {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: flex-end;
+  }
+  .docs-header-appearance > .docs-appearance-button {
+    display: none;
+  }
+  @container (width < 37rem) {
+    .docs-header .docs-toolbar {
+      display: none;
+    }
+    .docs-header-appearance > .docs-appearance-button {
+      display: inline-flex;
+    }
+  }
+  /* The popover is for a fine pointer: the controls keep their own heights, not the phone
+     sheet's 44px targets. */
+  .fa-popover.docs-appearance-popover {
+    --_w: 30rem;
+  }
+  .docs-appearance-popover .docs-toolbar[data-expanded] {
+    gap: var(--space-3);
+  }
+  .docs-appearance-popover .docs-appearance-control {
+    gap: var(--space-1-5);
+  }
+  .docs-appearance-popover .docs-appearance-options > .fa-btn,
+  .docs-appearance-popover .docs-appearance-control .fa-swatch-picker-item {
+    min-width: 0;
+    min-height: 0;
+  }
+  .docs-appearance-popover .docs-appearance-control .fa-swatch-picker {
+    gap: var(--space-half);
   }
   .docs-repository-link {
     width: var(--control-h-sm);
@@ -97,19 +139,15 @@
     padding-inline: var(--space-2-5);
   }
   .docs-toolbar {
-    flex: none;
     display: flex;
     flex-wrap: nowrap;
-    overflow-x: auto;
     align-items: center;
     gap: var(--gap-controls);
   }
-  .docs-toolbar > * {
-    flex-shrink: 0;
-  }
+  /* The background select gives way last, truncating its value. */
   .docs-background-select {
-    width: auto;
-    min-width: 7rem;
+    width: 7rem;
+    min-width: 5.5rem;
   }
   .docs-toolbar[data-expanded] {
     display: flex;

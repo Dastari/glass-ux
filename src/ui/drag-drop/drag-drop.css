@@ -80,51 +80,75 @@
     }
   }
 
-  /* While anything is dragged the cursor follows the verdict everywhere, and nothing selects. */
-  :root[data-dnd] {
+  /* The shield: a transparent sheet over the page during a pointer drag (top layer). It owns
+     the cursor and hover, so the page under the pointer neither restyles nor hit-tests. */
+  .fa-dnd-shield {
+    position: fixed;
+    inset: 0;
+    width: auto;
+    height: auto;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background: transparent;
+    cursor: grabbing;
     user-select: none;
     -webkit-user-select: none;
   }
-  :root[data-dnd="dragging"][data-dnd-input="pointer"],
-  :root[data-dnd="dragging"][data-dnd-input="pointer"] * {
-    cursor: grabbing !important; /* tokens:allow the drag owns the cursor over every element */
-  }
-  :root[data-dnd="blocked"][data-dnd-input="pointer"],
-  :root[data-dnd="blocked"][data-dnd-input="pointer"] * {
-    cursor: not-allowed !important;
+  .fa-dnd-shield[data-blocked] {
+    cursor: not-allowed;
   }
 
   /* ── The preview ────────────────────────────────────────────────────────────────── */
+  /* In the top layer (popover) where supported: undo the popover defaults. The ghost only
+     moves (transform, a compositor-only update); .fa-dnd-lift inside it scales and casts the
+     shadow, so the scale never multiplies the position. */
   .fa-dnd-ghost {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0 auto auto 0;
     z-index: var(--z-toast);
+    max-width: none;
+    max-height: none;
     margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    color: inherit;
     pointer-events: none;
     will-change: transform;
+  }
+  .fa-dnd-lift {
+    position: relative;
+    width: 100%;
+    height: 100%;
     transition: scale var(--duration-fast) var(--ease-spring);
   }
-  .fa-dnd-ghost[data-lifted] {
+  .fa-dnd-ghost[data-lifted] > .fa-dnd-lift {
     scale: 1.02;
   }
   .fa-dnd-ghost[data-input="keyboard"] {
-    transition:
-      transform var(--duration-fast) var(--ease-standard),
-      scale var(--duration-fast) var(--ease-spring);
+    transition: transform var(--duration-fast) var(--ease-standard);
   }
   .fa-dnd-ghost[data-settling] {
     transition:
       transform var(--duration-base) var(--ease-standard),
-      scale var(--duration-base) var(--ease-standard),
       opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-dnd-ghost[data-settling] > .fa-dnd-lift {
+    transition: scale var(--duration-base) var(--ease-standard);
   }
   .fa-dnd-ghost[data-fade] {
     opacity: 0;
+  }
+  .fa-dnd-ghost[data-fade] > .fa-dnd-lift {
     scale: 0.92;
   }
   /* The lift: a shadow and an accent edge that fade in on a layer of their own. */
-  .fa-dnd-ghost::after {
+  .fa-dnd-lift::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -136,10 +160,10 @@
     pointer-events: none;
     transition: opacity var(--duration-fast) var(--ease-standard);
   }
-  .fa-dnd-ghost[data-lifted]::after {
+  .fa-dnd-ghost[data-lifted] > .fa-dnd-lift::after {
     opacity: 1;
   }
-  .fa-dnd-ghost[data-input="keyboard"][data-lifted]::after {
+  .fa-dnd-ghost[data-input="keyboard"][data-lifted] > .fa-dnd-lift::after {
     box-shadow:
       var(--shadow-3),
       0 0 0 var(--focus-ring-width) var(--accent-ring);

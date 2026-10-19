@@ -3,6 +3,11 @@
  * session at a time, pointer and keyboard input, hit-testing, the preview ("ghost"), sortable
  * zones that part and close up, auto-scroll, announcements and the lifecycle events.
  *
+ * Pointer frames read no layout: zone rectangles, their clipping and their scroll containers
+ * are measured at the lift and again only after a scroll, a resize or a zone growing, and
+ * hit-testing is arithmetic on those. The preview and a transparent shield live in the top
+ * layer; the shield owns the cursor and hover, so nothing under the pointer restyles.
+ *
  * Nothing renders while a gesture runs (R18.5): the preview moves with `transform`, items move
  * with `translate` animations written straight onto their elements, and zone and item states
  * are data attributes. React hears about discrete changes only (a lift, a zone's status, the
@@ -100,6 +105,47 @@ interface ZoneLayout {
   slot: Box | null
   applied: Map<HTMLElement, Shift>
   animations: Map<HTMLElement, Animation>
+  /** Where each running animation started and ends, to retarget it without reading styles. */
+  motion: Map<HTMLElement, { from: Shift; to: Shift }>
+}
+
+/** A viewport rectangle. */
+interface Edges {
+  top: number
+  right: number
+  bottom: number
+  left: number
+}
+
+/** A zone's place on screen, measured once and again only after scrolling or resizing. */
+interface ZoneGeometry {
+  zone: ZoneRecord
+  /** The zone's border box. */
+  rect: Box
+  /** The part of it that can be seen: clipped by its scroll containers and the viewport. */
+  clip: Edges
+  /** Its content origin (border box + border − scroll), for slot and index maths. */
+  origin: { x: number; y: number }
+  /** Zones it is nested in, so the innermost one wins. */
+  depth: number
+}
+
+/** A container that may scroll near its edges during a pointer drag (null: the page). */
+interface ScrollerGeometry {
+  node: HTMLElement | null
+  rect: Edges
+  canX: boolean
+  canY: boolean
+  depth: number
+}
+
+/** A scroll ancestor of a zone, with what its style allows. */
+interface Ancestor {
+  node: HTMLElement
+  clips: boolean
+  scrollX: boolean
+  scrollY: boolean
+  depth: number
 }
 
 interface Session {
@@ -113,8 +159,24 @@ interface Session {
   size: { w: number; h: number }
   grab: { x: number; y: number }
   pointer: { x: number; y: number }
+  /** Where the preview is drawn: the pointer, led by the browser's predicted position. */
+  drawn: { x: number; y: number }
+  /** When the pointer last moved (ms), so a prediction that ran ahead settles back. */
+  movedAt: number
+  /** The pointer moved since the last frame's targeting. */
+  moved: boolean
   start: { x: number; y: number }
   ghost: HTMLElement
+  /** The last preview position written, so unchanged frames write nothing. */
+  ghostAt: string
+  /** A transparent top-layer sheet over the page during a pointer drag: it owns the cursor and
+   *  hover, so nothing under the pointer restyles while the item moves. */
+  shield: HTMLElement | null
+  geometry: Map<string, ZoneGeometry>
+  scrollers: ScrollerGeometry[]
+  geometryDirty: boolean
+  sourceRect: Box
+  ancestors: Map<HTMLElement, Ancestor[]>
   layouts: Map<string, ZoneLayout>
   verdicts: Map<string, Verdict>
   over: ZoneRecord | null
@@ -127,7 +189,6 @@ interface Session {
   duration: number
   easing: string
   cleanup: Array<() => void>
-  scrollers: { from: Element | null; chain: HTMLElement[] }
 }
 
 interface Pending {
@@ -150,6 +211,10 @@ const TOUCH_SLOP = 8
 /** The band along a scroller's edge that scrolls it (px), and the top speed (px per frame). */
 const EDGE = 48
 const MAX_SPEED = 18
+/** How far the preview may lead the pointer along its predicted path (px). */
+const LEAD = 24
+/** After this long without a pointer move (ms), a preview that ran ahead settles on the pointer. */
+const LEAD_HOLD = 24
 /** Elements inside a draggable that keep their own pointer behaviour. */
 const INTERACTIVE = "button, a[href], input, select, textarea, label, [contenteditable]:not([contenteditable='false']), [data-dnd-ignore]"
 
@@ -182,11 +247,20 @@ const domOrder = (a: Element, b: Element) => (a === b ? 0 : a.compareDocumentPos
 const px = (value: number) => `${Math.round(value * 100) / 100}px`
 const translateValue = (shift: Shift) => `${px(shift.x)} ${px(shift.y)}`
 
-function parseTranslate(value: string): Shift | null {
-  if (!value || value === "none") return ZERO
-  const [x, y] = value.split(/\s+/).map((part) => Number.parseFloat(part))
-  if (x === undefined || !Number.isFinite(x)) return null
-  return { x, y: y !== undefined && Number.isFinite(y) ? y : 0 }
+const lerp = (from: Shift, to: Shift, t: number): Shift => ({ x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t })
+const inside = (edges: Edges, x: number, y: number) => x >= edges.left && x < edges.right && y >= edges.top && y < edges.bottom
+const boxOf = (rect: DOMRect): Box => ({ x: rect.left, y: rect.top, w: rect.width, h: rect.height })
+
+/** Show an element in the top layer, above dialogs and outside every ancestor's transform. */
+function raise(element: HTMLElement) {
+  document.body.append(element)
+  if (typeof element.showPopover !== "function") return
+  element.setAttribute("popover", "manual")
+  try {
+    element.showPopover()
+  } catch {
+    // Already open, or not supported in this context: it stays a fixed element in the body.
+  }
 }
 
 /** The longest transition on an element (ms), with a frame of slack. */
@@ -204,23 +278,68 @@ const isScroller = (node: HTMLElement, axis: "x" | "y") => {
   return /(auto|scroll|overlay)/.test(overflow) && (axis === "y" ? node.scrollHeight > node.clientHeight + 1 : node.scrollWidth > node.clientWidth + 1)
 }
 
+/** The nearest element under a point that can scroll along the wheel's axis, else the page. */
+function wheelTarget(from: Element | null, dx: number, dy: number): HTMLElement | null {
+  for (let node = from instanceof HTMLElement ? from : (from?.parentElement ?? null); node && node !== document.body && node !== document.documentElement; node = node.parentElement)
+    if ((dy !== 0 && isScroller(node, "y")) || (dx !== 0 && isScroller(node, "x"))) return node
+  return null
+}
+
+/**
+ * The transparent sheet over the page during a pointer drag. It shows the drag cursor, keeps
+ * hover effects and hit-testing off everything beneath, and passes the wheel through to the
+ * scroll container under the pointer.
+ */
+function makeShield() {
+  const shield = document.createElement("div")
+  shield.className = "fa-dnd-shield"
+  shield.setAttribute("aria-hidden", "true")
+  shield.addEventListener(
+    "wheel",
+    (event) => {
+      if (event.ctrlKey) return
+      event.preventDefault()
+      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1
+      const dx = event.deltaX * unit
+      const dy = event.deltaY * unit
+      shield.style.pointerEvents = "none"
+      const under = document.elementFromPoint(event.clientX, event.clientY)
+      shield.style.pointerEvents = ""
+      const target = wheelTarget(under, dx, dy)
+      if (target) target.scrollBy(dx, dy)
+      else window.scrollBy(dx, dy)
+    },
+    { passive: false }
+  )
+  raise(shield)
+  return shield
+}
+
 /** A copy of the element that follows the pointer: inert, unlabelled, outside every query. */
-function makeGhost(element: HTMLElement, rect: DOMRect, custom: boolean, input: DragInput) {
+function makeGhost(element: HTMLElement, rect: DOMRect, custom: boolean, input: DragInput, grab: { x: number; y: number }) {
   const ghost = document.createElement("div")
   ghost.className = "fa-dnd-ghost"
   ghost.setAttribute("aria-hidden", "true")
   ghost.setAttribute("inert", "")
   ghost.dataset.input = input
   const style = getComputedStyle(element)
+  // Two layers: the outer one only moves (a transform the compositor updates without
+  // re-layerizing the page); the inner one carries the lift's scale and shadow. Scaling the
+  // outer one would scale its translation too, and the preview would drift from the pointer.
+  const lift = document.createElement("div")
+  lift.className = "fa-dnd-lift"
+  // The lift scales about the point that was grabbed, so it stays under the pointer.
+  lift.style.transformOrigin = `${px(grab.x)} ${px(grab.y)}`
+  ghost.append(lift)
   let host: HTMLElement | null = null
   if (custom) {
     host = document.createElement("div")
     host.className = "fa-dnd-preview"
-    ghost.append(host)
+    lift.append(host)
   } else {
     ghost.style.width = px(rect.width)
     ghost.style.height = px(rect.height)
-    ghost.style.borderRadius = style.borderRadius
+    lift.style.borderRadius = style.borderRadius
     const clone = element.cloneNode(true) as HTMLElement
     for (const node of [clone, ...clone.querySelectorAll<HTMLElement>("*")]) {
       node.removeAttribute("id")
@@ -240,9 +359,9 @@ function makeGhost(element: HTMLElement, rect: DOMRect, custom: boolean, input: 
     clone.style.translate = "none"
     clone.style.opacity = "1"
     clone.classList.add("fa-dnd-ghost-copy")
-    ghost.append(clone)
+    lift.append(clone)
   }
-  document.body.append(ghost)
+  raise(ghost)
   return { ghost, host }
 }
 
@@ -501,6 +620,7 @@ export class DragDropManager {
     const verdict = over ? session.verdicts.get(over.id) : undefined
     const blocked = over !== null && verdict?.status !== "ready"
     document.documentElement.setAttribute("data-dnd", blocked ? "blocked" : "dragging")
+    session.shield?.toggleAttribute("data-blocked", blocked)
     // The reason travels with the item, where the person is looking.
     const ghost = session.ghost
     if (blocked && verdict?.reason) {
@@ -565,6 +685,7 @@ export class DragDropManager {
       slot: null,
       applied: new Map(),
       animations: new Map(),
+      motion: new Map(),
     }
   }
 
@@ -580,7 +701,11 @@ export class DragDropManager {
     let from = previous
     const running = layout.animations.get(element)
     if (running) {
-      from = parseTranslate(getComputedStyle(element).translate) ?? previous
+      // Retarget from where it is drawn now, read from the animation's own timing (the
+      // eased progress), never from computed style, which would force a style recalc.
+      const motion = layout.motion.get(element)
+      const progress = running.effect?.getComputedTiming().progress
+      if (motion && typeof progress === "number") from = lerp(motion.from, motion.to, progress)
       running.cancel()
     }
     const animation = element.animate([{ translate: translateValue(from) }, { translate: translateValue(shift) }], {
@@ -589,11 +714,13 @@ export class DragDropManager {
       fill: "forwards",
     })
     layout.animations.set(element, animation)
+    layout.motion.set(element, { from, to: shift })
   }
 
   private resetLayout(layout: ZoneLayout) {
     for (const animation of layout.animations.values()) animation.cancel()
     layout.animations.clear()
+    layout.motion.clear()
     for (const element of layout.applied.keys()) element.style.removeProperty("translate")
     layout.applied.clear()
     const element = layout.zone.element
@@ -623,6 +750,8 @@ export class DragDropManager {
       const element = zone.element
       if (!element) continue
       const grows = insert !== null && layout.removed === null
+      // A zone that grows or shrinks moves what follows it: measure again next frame.
+      if (grows !== element.hasAttribute("data-dnd-receiving")) session.geometryDirty = true
       element.toggleAttribute("data-dnd-receiving", grows)
       if (grows && slot) {
         if (layout.sort === "horizontal") {
@@ -653,6 +782,7 @@ export class DragDropManager {
       if (layout) session.layouts.set(id, layout)
     }
     session.dirty.clear()
+    session.geometryDirty = true
     this.applyLayouts(true)
   }
 
@@ -662,7 +792,7 @@ export class DragDropManager {
     if (!zone?.element) return null
     const layout = session.layouts.get(zone.id)
     if (!layout?.slot) return null
-    const origin = this.zoneOrigin(zone.element)
+    const origin = session.geometry.get(zone.id)?.origin ?? this.zoneOrigin(zone.element)
     return { x: origin.x + layout.slot.x, y: origin.y + layout.slot.y, w: layout.slot.w, h: layout.slot.h }
   }
 
@@ -700,28 +830,111 @@ export class DragDropManager {
     this.emit("onDragOver", event)
   }
 
-  /** The zone under the pointer: the innermost one that takes this type, else the innermost one. */
-  private hitZone(x: number, y: number) {
-    const hit = document.elementFromPoint(x, y)
+  /** A zone's scroll ancestors and how deep it is, worked out once per drag (style reads). */
+  private ancestorsOf(element: HTMLElement): Ancestor[] {
     const session = this.session as Session
-    let fallback: ZoneRecord | null = null
-    for (let node: Element | null = hit; node; node = node.parentElement) {
-      const zone = this.zoneByElement.get(node)
-      if (!zone || this.zones.get(zone.id) !== zone) continue
-      fallback ??= zone
-      if (!session.verdicts.get(zone.id)?.typeBlocked) return { zone, hit }
+    const cached = session.ancestors.get(element)
+    if (cached) return cached
+    // Zones share most of their ancestors: build the list from the parent's, so each element's
+    // style is read once per drag.
+    const parent = element.parentElement
+    if (!parent || parent === document.body || parent === document.documentElement) {
+      session.ancestors.set(element, [])
+      return []
     }
-    return { zone: fallback, hit }
+    const above = this.ancestorsOf(parent)
+    const style = getComputedStyle(parent)
+    const scrollX = /(auto|scroll|overlay)/.test(style.overflowX)
+    const scrollY = /(auto|scroll|overlay)/.test(style.overflowY)
+    const clips = style.overflowX !== "visible" || style.overflowY !== "visible"
+    let depth = 0
+    for (let node: HTMLElement | null = parent; node && node !== document.body; node = node.parentElement) depth++
+    const list = clips ? [{ node: parent, clips, scrollX, scrollY, depth }, ...above] : above
+    session.ancestors.set(element, list)
+    return list
+  }
+
+  /**
+   * Measure where every zone and scroll container is. Runs at the start and again only after
+   * something scrolled, the window resized or a zone grew, so ordinary pointer frames read no
+   * layout at all.
+   */
+  private measureGeometry() {
+    const session = this.session as Session
+    session.geometryDirty = false
+    session.geometry.clear()
+    const viewport: Edges = { top: 0, left: 0, bottom: window.innerHeight, right: window.innerWidth }
+    const rects = new Map<HTMLElement, DOMRect>()
+    const rectOf = (node: HTMLElement) => {
+      let rect = rects.get(node)
+      if (!rect) {
+        rect = node.getBoundingClientRect()
+        rects.set(node, rect)
+      }
+      return rect
+    }
+    const scrollers = new Map<HTMLElement, ScrollerGeometry>()
+    for (const zone of this.zones.values()) {
+      const element = zone.element
+      if (!element?.isConnected) continue
+      const rect = rectOf(element)
+      const clip: Edges = { top: Math.max(rect.top, viewport.top), left: Math.max(rect.left, viewport.left), bottom: Math.min(rect.bottom, viewport.bottom), right: Math.min(rect.right, viewport.right) }
+      let depth = 0
+      for (let node = element.parentElement; node; node = node.parentElement) if (this.zoneByElement.has(node)) depth++
+      for (const ancestor of this.ancestorsOf(element)) {
+        const outer = rectOf(ancestor.node)
+        clip.top = Math.max(clip.top, outer.top)
+        clip.left = Math.max(clip.left, outer.left)
+        clip.bottom = Math.min(clip.bottom, outer.bottom)
+        clip.right = Math.min(clip.right, outer.right)
+        if ((ancestor.scrollX || ancestor.scrollY) && !scrollers.has(ancestor.node)) {
+          const node = ancestor.node
+          scrollers.set(node, {
+            node,
+            rect: { top: outer.top, left: outer.left, bottom: outer.bottom, right: outer.right },
+            canX: ancestor.scrollX && node.scrollWidth > node.clientWidth + 1,
+            canY: ancestor.scrollY && node.scrollHeight > node.clientHeight + 1,
+            depth: ancestor.depth,
+          })
+        }
+      }
+      session.geometry.set(zone.id, {
+        zone,
+        rect: boxOf(rect),
+        clip,
+        origin: { x: rect.left + element.clientLeft - element.scrollLeft, y: rect.top + element.clientTop - element.scrollTop },
+        depth,
+      })
+    }
+    const page = document.scrollingElement
+    session.scrollers = [...scrollers.values()].sort((a, b) => b.depth - a.depth)
+    if (page) session.scrollers.push({ node: null, rect: viewport, canX: page.scrollWidth > window.innerWidth, canY: page.scrollHeight > window.innerHeight, depth: -1 })
+    if (session.element.isConnected) session.sourceRect = boxOf(rectOf(session.element))
+  }
+
+  /** The zone under a point: the innermost visible one that takes this type, else the innermost one. */
+  private hitZone(x: number, y: number) {
+    const session = this.session as Session
+    let best: ZoneGeometry | null = null
+    let fallback: ZoneGeometry | null = null
+    for (const geometry of session.geometry.values()) {
+      if (!inside(geometry.clip, x, y) || this.zones.get(geometry.zone.id) !== geometry.zone) continue
+      if (!fallback || geometry.depth > fallback.depth) fallback = geometry
+      if (session.verdicts.get(geometry.zone.id)?.typeBlocked) continue
+      if (!best || geometry.depth > best.depth) best = geometry
+    }
+    return (best ?? fallback)?.zone ?? null
   }
 
   private pointerTarget() {
     const session = this.session as Session
     const { x, y } = session.pointer
-    const { zone, hit } = this.hitZone(x, y)
+    const zone = this.hitZone(x, y)
     let index: number | null = null
     const layout = zone ? session.layouts.get(zone.id) : undefined
-    if (zone?.element && layout) {
-      const origin = this.zoneOrigin(zone.element)
+    const geometry = zone ? session.geometry.get(zone.id) : undefined
+    if (layout && geometry) {
+      const origin = geometry.origin
       const centre = { x: x - session.grab.x + session.size.w / 2 - origin.x, y: y - session.grab.y + session.size.h / 2 - origin.y }
       index = insertionIndex(layout.sort, layout.boxes, layout.removed, centre, { gap: layout.gap, rowGap: layout.rowGap, origin: layout.origin, size: session.size, rtl: layout.rtl })
     }
@@ -730,23 +943,19 @@ export class DragDropManager {
       const verdict = zone ? session.verdicts.get(zone.id) : undefined
       this.announce(this.announcements.moved(session.item, this.place(zone, index), verdict && verdict.status !== "ready" ? (verdict.reason ?? "") : null))
     }
-    return hit
   }
 
   /* ── Auto-scroll ────────────────────────────────────────────────────────────────── */
 
-  private autoScrollStep(hit: Element | null) {
+  /** Scroll the innermost container (or the page) whose edge the pointer has moved into. */
+  private autoScrollStep() {
     const session = this.session as Session
     if (!this.autoScroll) return
-    if (session.scrollers.from !== hit) {
-      const chain: HTMLElement[] = []
-      for (let node = hit instanceof HTMLElement ? hit : (hit?.parentElement ?? null); node && node !== document.body && node !== document.documentElement; node = node.parentElement)
-        if (isScroller(node, "y") || isScroller(node, "x")) chain.push(node)
-      session.scrollers = { from: hit, chain }
-    }
     const { x, y } = session.pointer
     const speed = (distance: number, band: number) => MAX_SPEED * Math.min(1, (band - distance) / band) ** 2
-    const run = (rect: { top: number; bottom: number; left: number; right: number }, scroll: (dx: number, dy: number) => void, canX: boolean, canY: boolean) => {
+    for (const scroller of session.scrollers) {
+      const { rect, canX, canY, node } = scroller
+      if ((!canX && !canY) || !inside(rect, x, y)) continue
       const bandY = Math.min(EDGE, (rect.bottom - rect.top) / 4)
       const bandX = Math.min(EDGE, (rect.right - rect.left) / 4)
       let dy = 0
@@ -756,17 +965,15 @@ export class DragDropManager {
       else if (canY && y > rect.bottom - bandY && y > session.start.y) dy = speed(rect.bottom - y, bandY)
       if (canX && x < rect.left + bandX && x < session.start.x) dx = -speed(x - rect.left, bandX)
       else if (canX && x > rect.right - bandX && x > session.start.x) dx = speed(rect.right - x, bandX)
-      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return false
-      scroll(Math.round(dx), Math.round(dy))
-      return true
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) continue
+      const target = node ?? document.scrollingElement
+      if (!target) continue
+      const before = target.scrollTop + target.scrollLeft
+      if (node) node.scrollBy(Math.round(dx), Math.round(dy))
+      else window.scrollBy(Math.round(dx), Math.round(dy))
+      // At its end already: let an outer container take the scroll.
+      if (target.scrollTop + target.scrollLeft !== before) return
     }
-    for (const node of session.scrollers.chain) {
-      const rect = node.getBoundingClientRect()
-      const before = node.scrollTop + node.scrollLeft
-      if (run(rect, (dx, dy) => node.scrollBy(dx, dy), isScroller(node, "x"), isScroller(node, "y")) && node.scrollTop + node.scrollLeft !== before) return
-    }
-    const page = document.scrollingElement
-    if (page) run({ top: 0, left: 0, bottom: window.innerHeight, right: window.innerWidth }, (dx, dy) => window.scrollBy(dx, dy), page.scrollWidth > window.innerWidth, page.scrollHeight > window.innerHeight)
   }
 
   /* ── The frame loop ─────────────────────────────────────────────────────────────── */
@@ -776,34 +983,44 @@ export class DragDropManager {
     let x: number
     let y: number
     if (session.input === "pointer") {
-      x = session.pointer.x - session.grab.x
-      y = session.pointer.y - session.grab.y
+      x = session.drawn.x - session.grab.x
+      y = session.drawn.y - session.grab.y
     } else {
       const slot = this.slotRect(session.over)
-      const zoneElement = session.over?.element
+      const geometry = session.over ? session.geometry.get(session.over.id) : undefined
       if (slot) {
         x = slot.x
         y = slot.y
-      } else if (zoneElement && session.over?.id !== session.source.zoneId) {
-        const rect = zoneElement.getBoundingClientRect()
-        x = rect.left + (rect.width - session.size.w) / 2
-        y = rect.top + (rect.height - session.size.h) / 2
+      } else if (geometry && session.over?.id !== session.source.zoneId) {
+        x = geometry.rect.x + (geometry.rect.w - session.size.w) / 2
+        y = geometry.rect.y + (geometry.rect.h - session.size.h) / 2
       } else {
-        const rect = session.element.getBoundingClientRect()
-        x = rect.left
-        y = rect.top
+        x = session.sourceRect.x
+        y = session.sourceRect.y
       }
     }
-    session.ghost.style.transform = `translate3d(${px(x)}, ${px(y)}, 0)`
+    const at = `translate3d(${px(x)}, ${px(y)}, 0)`
+    if (at === session.ghostAt) return
+    session.ghostAt = at
+    session.ghost.style.transform = at
   }
 
-  private tick = () => {
+  private tick = (now: number) => {
     const session = this.session
     if (!session || session.ending) return
     this.remeasureDirty()
+    if (session.geometryDirty) {
+      this.measureGeometry()
+      session.moved = true
+    }
     if (session.input === "pointer") {
-      const hit = this.pointerTarget()
-      this.autoScrollStep(hit)
+      // A preview that ran ahead along a predicted path settles on the pointer once it stops.
+      if (now - session.movedAt > LEAD_HOLD && (session.drawn.x !== session.pointer.x || session.drawn.y !== session.pointer.y)) session.drawn = session.pointer
+      if (session.moved) {
+        session.moved = false
+        this.pointerTarget()
+      }
+      this.autoScrollStep()
     }
     this.placeGhost()
     session.frame = requestAnimationFrame(this.tick)
@@ -822,9 +1039,12 @@ export class DragDropManager {
     const effect = options.effect ?? "move"
     const zone = record.zoneId !== null ? (this.zones.get(record.zoneId) ?? null) : null
     const custom = options.preview !== undefined && options.preview !== null
-    const { ghost, host } = makeGhost(element, rect, custom, input)
     const root = document.documentElement
     const start = pointer ?? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+    const grab = { x: start.x - rect.left, y: start.y - rect.top }
+    // The shield goes up first so the preview stacks above it in the top layer.
+    const shield = input === "pointer" ? makeShield() : null
+    const { ghost, host } = makeGhost(element, rect, custom, input, grab)
     const session: Session = {
       record,
       item,
@@ -834,10 +1054,20 @@ export class DragDropManager {
       source: { zoneId: zone?.id ?? null, index: null },
       element,
       size: { w: rect.width, h: rect.height },
-      grab: { x: start.x - rect.left, y: start.y - rect.top },
+      grab,
       pointer: start,
+      drawn: start,
+      movedAt: 0,
+      moved: true,
       start,
       ghost,
+      ghostAt: "",
+      shield,
+      geometry: new Map(),
+      scrollers: [],
+      geometryDirty: true,
+      sourceRect: boxOf(rect),
+      ancestors: new Map(),
       layouts: new Map(),
       verdicts: new Map(),
       over: null,
@@ -849,7 +1079,6 @@ export class DragDropManager {
       duration: tokenDuration("--duration-base", 200),
       easing: getComputedStyle(root).getPropertyValue("--ease-standard").trim() || "ease",
       cleanup: [],
-      scrollers: { from: null, chain: [] },
     }
     this.session = session
     // Measure every sortable zone before anything moves.
@@ -865,6 +1094,7 @@ export class DragDropManager {
     session.index = session.source.index
     for (const candidate of this.zones.values()) this.evaluate(candidate)
     this.applyLayouts(true)
+    this.measureGeometry()
 
     element.setAttribute("data-dnd-source", effect)
     root.setAttribute("data-dnd", "dragging")
@@ -884,11 +1114,19 @@ export class DragDropManager {
     const blur = () => {
       if (this.session === session && !session.ending && session.input === "pointer") this.cancel("interrupted")
     }
+    // Scrolling or resizing moves the zones: measure them again on the next frame.
+    const invalidate = () => {
+      session.geometryDirty = true
+    }
     window.addEventListener("keydown", escape, true)
     window.addEventListener("blur", blur)
+    document.addEventListener("scroll", invalidate, { capture: true, passive: true })
+    window.addEventListener("resize", invalidate)
     session.cleanup.push(() => {
       window.removeEventListener("keydown", escape, true)
       window.removeEventListener("blur", blur)
+      document.removeEventListener("scroll", invalidate, { capture: true })
+      window.removeEventListener("resize", invalidate)
     })
 
     record.dragging = true
@@ -995,6 +1233,24 @@ export class DragDropManager {
     if (!session || session.ending || session.input !== "pointer") return
     if (event.cancelable) event.preventDefault()
     session.pointer = { x: event.clientX, y: event.clientY }
+    // Draw the preview a little along the browser's predicted path (Chromium), capped, so it
+    // keeps up with the pointer instead of trailing it by a frame.
+    const predicted = typeof event.getPredictedEvents === "function" ? event.getPredictedEvents() : []
+    const ahead = predicted[predicted.length - 1]
+    let dx = 0
+    let dy = 0
+    if (ahead) {
+      dx = ahead.clientX - event.clientX
+      dy = ahead.clientY - event.clientY
+      const distance = Math.hypot(dx, dy)
+      if (distance > LEAD) {
+        dx *= LEAD / distance
+        dy *= LEAD / distance
+      }
+    }
+    session.drawn = { x: event.clientX + dx, y: event.clientY + dy }
+    session.movedAt = event.timeStamp
+    session.moved = true
     this.placeGhost()
     this.emit("onDragMove", { ...session.info, pointer: session.pointer, target: { zoneId: session.over?.id ?? null, index: session.index } })
   }
@@ -1250,6 +1506,7 @@ export class DragDropManager {
   private teardown(session: Session) {
     for (const layout of session.layouts.values()) this.resetLayout(layout)
     session.ghost.remove()
+    session.shield?.remove()
     session.element.removeAttribute("data-dnd-source")
     session.record.element?.removeAttribute("data-dnd-source")
     const root = document.documentElement

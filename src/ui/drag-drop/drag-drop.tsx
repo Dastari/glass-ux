@@ -2,6 +2,7 @@ import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useId,
@@ -125,8 +126,9 @@ export function useDraggable<T = unknown>(options: DraggableOptions<T> & { grip?
   })
   useIsoLayoutEffect(() => manager.registerDraggable(record), [manager, record])
   useIsoLayoutEffect(() => manager.attachDraggable(record, element, handle, options.grip ?? true), [manager, record, element, handle, options.grip])
+  const subscribeDraggable = useCallback((listener: () => void) => manager.subscribeDraggable(record, listener), [manager, record])
   const dragging = useSyncExternalStore(
-    (listener) => manager.subscribeDraggable(record, listener),
+    subscribeDraggable,
     () => record.dragging,
     () => false
   )
@@ -250,11 +252,12 @@ export interface UseDropZoneResult {
 /**
  * Make any element a drop zone. Its state is also written to the element as
  * `data-drop-state` (idle, ready, disabled, error, pending), `data-drop-over` and
- * `data-drop-reason`, so CSS can style it without a re-render. Pass `trackIndex` to re-render
+ * `data-drop-reason`, so CSS can style it without a re-render. Pass `trackState: false` when
+ * nothing reads `state`, so the zone never re-renders during a drag. Pass `trackIndex` to re-render
  * as the insertion index changes; otherwise it re-renders only when the status changes.
  * Wrap the zone's content in `DropZoneScope` (DropZone does) so Draggables inside join it.
  */
-export function useDropZone<T = unknown>(options: DropZoneOptions<T>, { trackIndex = false }: { trackIndex?: boolean } = {}): UseDropZoneResult {
+export function useDropZone<T = unknown>(options: DropZoneOptions<T>, { trackIndex = false, trackState = true }: { trackIndex?: boolean; trackState?: boolean } = {}): UseDropZoneResult {
   const { manager } = useProvider("useDropZone")
   const zone = useMemo<ZoneRecord>(() => manager.createZone(options.id, options as DropZoneOptions<unknown>), [manager, options.id]) // oxlint-disable-line react-hooks/exhaustive-deps -- the record lives as long as the id; options update below
   const [element, setElement] = useState<HTMLElement | null>(null)
@@ -264,13 +267,18 @@ export function useDropZone<T = unknown>(options: DropZoneOptions<T>, { trackInd
   })
   useIsoLayoutEffect(() => manager.registerZone(zone), [manager, zone])
   useIsoLayoutEffect(() => manager.attachZone(zone, element), [manager, zone, element])
+  // Without trackState nothing re-renders during a drag: the zone's look comes from the
+  // data attributes the manager writes.
+  const subscribe = useCallback((listener: () => void) => (trackState ? manager.subscribeZone(zone, listener) : () => {}), [manager, zone, trackState])
   const state = useSyncExternalStore(
-    (listener) => manager.subscribeZone(zone, listener),
-    () => (trackIndex ? zone.state : zone.summary),
-    () => zone.summary
+    subscribe,
+    () => (trackState ? (trackIndex ? zone.state : zone.summary) : IDLE_STATE),
+    () => IDLE_STATE
   )
   return { ref: setElement, state }
 }
+
+const IDLE_STATE: DropZoneState = { status: "idle", over: false, reason: null, item: null, index: null }
 
 /** Props for {@link DropZoneScope}. */
 export interface DropZoneScopeProps {
@@ -327,7 +335,7 @@ export function DropZone<T = unknown>({
   ...rest
 }: DropZoneProps<T>) {
   const functional = typeof children === "function"
-  const zone = useDropZone<T>({ id, label, accept, validate, disabled, sort, onDragEnter, onDragLeave, onDragOver, onDrop }, { trackIndex: functional })
+  const zone = useDropZone<T>({ id, label, accept, validate, disabled, sort, onDragEnter, onDragLeave, onDragOver, onDrop }, { trackIndex: functional, trackState: functional })
   const content = functional ? children(zone.state) : children
   return useRender({
     defaultTagName: "div",

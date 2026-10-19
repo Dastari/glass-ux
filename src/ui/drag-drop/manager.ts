@@ -159,10 +159,6 @@ interface Session {
   size: { w: number; h: number }
   grab: { x: number; y: number }
   pointer: { x: number; y: number }
-  /** Where the preview is drawn: the pointer, led by the browser's predicted position. */
-  drawn: { x: number; y: number }
-  /** When the pointer last moved (ms), so a prediction that ran ahead settles back. */
-  movedAt: number
   /** The pointer moved since the last frame's targeting. */
   moved: boolean
   start: { x: number; y: number }
@@ -175,9 +171,12 @@ interface Session {
   geometry: Map<string, ZoneGeometry>
   scrollers: ScrollerGeometry[]
   geometryDirty: boolean
-  /** A zone found covered by something else (a menu, a sticky header) at the last check,
-   *  until the geometry changes. */
-  occluded: string | null
+  /** The last real hit-test: the arithmetic candidate, the zone actually visible there, and
+   *  where the pointer was. Between checks the visible zone stands while the candidate does. */
+  verified: { candidate: ZoneRecord | null; zone: ZoneRecord | null; x: number; y: number } | null
+  /** When zones were last measured (ms). */
+  measuredAt: number
+  observer: ResizeObserver | null
   sourceRect: Box
   ancestors: Map<HTMLElement, Ancestor[]>
   layouts: Map<string, ZoneLayout>
@@ -214,10 +213,10 @@ const TOUCH_SLOP = 8
 /** The band along a scroller's edge that scrolls it (px), and the top speed (px per frame). */
 const EDGE = 48
 const MAX_SPEED = 18
-/** How far the preview may lead the pointer along its predicted path (px). */
-const LEAD = 24
-/** After this long without a pointer move (ms), a preview that ran ahead settles on the pointer. */
-const LEAD_HOLD = 24
+/** Pointer travel (px) after which the zone under it is confirmed with a real hit-test. */
+const VERIFY_TRAVEL = 16
+/** How often (ms) zones are measured again while the pointer moves, for changes nothing reports. */
+const GEOMETRY_TTL = 250
 /** Elements inside a draggable that keep their own pointer behaviour. */
 const INTERACTIVE = "button, a[href], input, select, textarea, label, [contenteditable]:not([contenteditable='false']), [data-dnd-ignore]"
 
@@ -254,15 +253,22 @@ const lerp = (from: Shift, to: Shift, t: number): Shift => ({ x: from.x + (to.x 
 const inside = (edges: Edges, x: number, y: number) => x >= edges.left && x < edges.right && y >= edges.top && y < edges.bottom
 const boxOf = (rect: DOMRect): Box => ({ x: rect.left, y: rect.top, w: rect.width, h: rect.height })
 
-/** Show an element in the top layer, above dialogs and outside every ancestor's transform. */
-function raise(element: HTMLElement) {
-  document.body.append(element)
+/**
+ * Show an element in the top layer, above dialogs and outside every ancestor's transform. In
+ * an open modal <dialog> it mounts inside the dialog, since everything outside is inert.
+ * Without popover support it stays a fixed element at the top of the stacking order.
+ */
+function raise(element: HTMLElement, from: Element) {
+  const modal = from.closest("dialog")
+  const host = modal && modal.matches(":modal") ? modal : document.body
+  host.append(element)
   if (typeof element.showPopover !== "function") return
   element.setAttribute("popover", "manual")
   try {
     element.showPopover()
   } catch {
-    // Already open, or not supported in this context: it stays a fixed element in the body.
+    // Not allowed here: a closed popover would stay hidden, so fall back to a fixed element.
+    element.removeAttribute("popover")
   }
 }
 
@@ -281,11 +287,28 @@ const isScroller = (node: HTMLElement, axis: "x" | "y") => {
   return /(auto|scroll|overlay)/.test(overflow) && (axis === "y" ? node.scrollHeight > node.clientHeight + 1 : node.scrollWidth > node.clientWidth + 1)
 }
 
-/** The nearest element under a point that can scroll along the wheel's axis, else the page. */
-function wheelTarget(from: Element | null, dx: number, dy: number): HTMLElement | null {
-  for (let node = from instanceof HTMLElement ? from : (from?.parentElement ?? null); node && node !== document.body && node !== document.documentElement; node = node.parentElement)
-    if ((dy !== 0 && isScroller(node, "y")) || (dx !== 0 && isScroller(node, "x"))) return node
-  return null
+/**
+ * Scroll by a wheel delta from the element under the pointer outwards, as the browser would:
+ * each axis goes to the innermost container that can still move that way, what is left
+ * passes outward, and `overscroll-behavior: contain | none` on a scrolling container stops it.
+ */
+function chainScroll(from: Element | null, dx: number, dy: number) {
+  let restX = dx
+  let restY = dy
+  for (let node = from instanceof HTMLElement ? from : (from?.parentElement ?? null); node && node !== document.body && node !== document.documentElement && (restX || restY); node = node.parentElement) {
+    const style = getComputedStyle(node)
+    if (restY && /(auto|scroll|overlay)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1) {
+      const before = node.scrollTop
+      node.scrollTop = before + restY
+      restY = style.overscrollBehaviorY === "auto" ? restY - (node.scrollTop - before) : 0
+    }
+    if (restX && /(auto|scroll|overlay)/.test(style.overflowX) && node.scrollWidth > node.clientWidth + 1) {
+      const before = node.scrollLeft
+      node.scrollLeft = before + restX
+      restX = style.overscrollBehaviorX === "auto" ? restX - (node.scrollLeft - before) : 0
+    }
+  }
+  if (restX || restY) window.scrollBy(restX, restY)
 }
 
 /**
@@ -293,7 +316,7 @@ function wheelTarget(from: Element | null, dx: number, dy: number): HTMLElement 
  * hover effects and hit-testing off everything beneath, and passes the wheel through to the
  * scroll container under the pointer.
  */
-function makeShield() {
+function makeShield(from: Element) {
   const shield = document.createElement("div")
   shield.className = "fa-dnd-shield"
   shield.setAttribute("aria-hidden", "true")
@@ -308,13 +331,11 @@ function makeShield() {
       shield.style.pointerEvents = "none"
       const under = document.elementFromPoint(event.clientX, event.clientY)
       shield.style.pointerEvents = ""
-      const target = wheelTarget(under, dx, dy)
-      if (target) target.scrollBy(dx, dy)
-      else window.scrollBy(dx, dy)
+      chainScroll(under, dx, dy)
     },
     { passive: false }
   )
-  raise(shield)
+  raise(shield, from)
   return shield
 }
 
@@ -364,7 +385,7 @@ function makeGhost(element: HTMLElement, rect: DOMRect, custom: boolean, input: 
     clone.classList.add("fa-dnd-ghost-copy")
     lift.append(clone)
   }
-  raise(ghost)
+  raise(ghost, element)
   return { ghost, host }
 }
 
@@ -389,6 +410,7 @@ export class DragDropManager {
   private session: Session | null = null
   private pending: Pending | null = null
   private flips = new Set<Animation>()
+  private selfScroll = new WeakMap<HTMLElement, { session: Session; scrollX: boolean; scrollY: boolean; depth: number }>()
   private timers = new Set<number>()
   private lastAnnouncement = ""
 
@@ -464,6 +486,7 @@ export class DragDropManager {
       const current = this.session
       if (current) {
         current.layouts.delete(zone.id)
+        current.geometryDirty = true
         if (current.over === zone) this.setTarget(null, null)
       }
     }
@@ -477,6 +500,7 @@ export class DragDropManager {
     element.setAttribute("data-dnd-zone", "")
     this.writeZone(zone)
     this.markDirty(zone.id)
+    this.session?.observer?.observe(element)
     return () => {
       this.zoneByElement.delete(element)
       if (zone.element === element) zone.element = null
@@ -782,7 +806,10 @@ export class DragDropManager {
       if (!zone) continue
       if (!session.verdicts.has(id)) this.evaluate(zone)
       const layout = this.measure(zone)
-      if (layout) session.layouts.set(id, layout)
+      if (layout) {
+        session.layouts.set(id, layout)
+        for (const item of layout.elements) session.observer?.observe(item)
+      }
     }
     session.dirty.clear()
     session.geometryDirty = true
@@ -833,6 +860,19 @@ export class DragDropManager {
     this.emit("onDragOver", event)
   }
 
+  /** Whether an element scrolls its own content, read once per drag. */
+  private ownScroll(element: HTMLElement) {
+    const session = this.session as Session
+    const cached = this.selfScroll.get(element)
+    if (cached && cached.session === session) return cached
+    const style = getComputedStyle(element)
+    let depth = 0
+    for (let node: HTMLElement | null = element; node && node !== document.body; node = node.parentElement) depth++
+    const entry = { session, scrollX: /(auto|scroll|overlay)/.test(style.overflowX), scrollY: /(auto|scroll|overlay)/.test(style.overflowY), depth }
+    this.selfScroll.set(element, entry)
+    return entry
+  }
+
   /** A zone's scroll ancestors and how deep it is, worked out once per drag (style reads). */
   private ancestorsOf(element: HTMLElement): Ancestor[] {
     const session = this.session as Session
@@ -865,7 +905,8 @@ export class DragDropManager {
   private measureGeometry() {
     const session = this.session as Session
     session.geometryDirty = false
-    session.occluded = null
+    session.verified = null
+    session.measuredAt = performance.now()
     session.geometry.clear()
     const viewport: Edges = { top: 0, left: 0, bottom: window.innerHeight, right: window.innerWidth }
     const rects = new Map<HTMLElement, DOMRect>()
@@ -902,6 +943,16 @@ export class DragDropManager {
           })
         }
       }
+      // A zone that scrolls its own content auto-scrolls too.
+      const own = this.ownScroll(element)
+      if ((own.scrollX || own.scrollY) && !scrollers.has(element))
+        scrollers.set(element, {
+          node: element,
+          rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right },
+          canX: own.scrollX && element.scrollWidth > element.clientWidth + 1,
+          canY: own.scrollY && element.scrollHeight > element.clientHeight + 1,
+          depth: own.depth,
+        })
       session.geometry.set(zone.id, {
         zone,
         rect: boxOf(rect),
@@ -931,26 +982,39 @@ export class DragDropManager {
   }
 
   /**
-   * Whether the zone is what the person sees at a point, not covered by a menu or a sticky
-   * header. One real hit-test under the shield, made only when the target zone would change.
+   * The zone a real hit-test finds at a point, under the shield: the innermost one that takes
+   * this type, else the innermost one, as the arithmetic test chooses, but respecting whatever
+   * covers the page there (a menu, a sticky header, an overlapping sibling).
    */
-  private uncovered(zone: ZoneRecord, x: number, y: number) {
+  private realHit(x: number, y: number) {
     const session = this.session as Session
-    if (session.occluded === zone.id) return false
     const shield = session.shield
     if (shield) shield.style.pointerEvents = "none"
     const hit = document.elementFromPoint(x, y)
     if (shield) shield.style.pointerEvents = ""
-    const visible = !hit || zone.element === hit || zone.element?.contains(hit) === true
-    if (!visible) session.occluded = zone.id
-    return visible
+    let fallback: ZoneRecord | null = null
+    for (let node: Element | null = hit; node; node = node.parentElement) {
+      const zone = this.zoneByElement.get(node)
+      if (!zone || this.zones.get(zone.id) !== zone) continue
+      fallback ??= zone
+      if (!session.verdicts.get(zone.id)?.typeBlocked) return zone
+    }
+    return fallback
   }
 
   private pointerTarget() {
     const session = this.session as Session
     const { x, y } = session.pointer
-    let zone = this.hitZone(x, y)
-    if (zone && zone !== session.over && !this.uncovered(zone, x, y)) zone = null
+    // Arithmetic on cached rectangles every frame; a real hit-test only when that answer
+    // changes or the pointer has travelled, so covers and overlaps are respected.
+    const candidate = this.hitZone(x, y)
+    const last = session.verified
+    let zone: ZoneRecord | null
+    if (last && last.candidate === candidate && Math.hypot(x - last.x, y - last.y) < VERIFY_TRAVEL) zone = last.zone
+    else {
+      zone = candidate ? this.realHit(x, y) : null
+      session.verified = { candidate, zone, x, y }
+    }
     let index: number | null = null
     const layout = zone ? session.layouts.get(zone.id) : undefined
     const geometry = zone ? session.geometry.get(zone.id) : undefined
@@ -1004,8 +1068,8 @@ export class DragDropManager {
     let x: number
     let y: number
     if (session.input === "pointer") {
-      x = session.drawn.x - session.grab.x
-      y = session.drawn.y - session.grab.y
+      x = session.pointer.x - session.grab.x
+      y = session.pointer.y - session.grab.y
     } else {
       const slot = this.slotRect(session.over)
       const geometry = session.over ? session.geometry.get(session.over.id) : undefined
@@ -1034,9 +1098,12 @@ export class DragDropManager {
       this.measureGeometry()
       session.moved = true
     }
+    // Things that move zones without resizing or scrolling (content above them changing
+    // size, a transform) are caught by measuring again now and then while the pointer moves.
+    if (session.moved && now - session.measuredAt > GEOMETRY_TTL) {
+      this.measureGeometry()
+    }
     if (session.input === "pointer") {
-      // A preview that ran ahead along a predicted path settles on the pointer once it stops.
-      if (now - session.movedAt > LEAD_HOLD && (session.drawn.x !== session.pointer.x || session.drawn.y !== session.pointer.y)) session.drawn = session.pointer
       // Reads before writes: auto-scroll reads scroll positions before targeting writes
       // attributes, gaps and growth, so no frame forces a layout in between.
       this.autoScrollStep()
@@ -1066,7 +1133,7 @@ export class DragDropManager {
     const start = pointer ?? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
     const grab = { x: start.x - rect.left, y: start.y - rect.top }
     // The shield goes up first so the preview stacks above it in the top layer.
-    const shield = input === "pointer" ? makeShield() : null
+    const shield = input === "pointer" ? makeShield(element) : null
     const { ghost, host } = makeGhost(element, rect, custom, input, grab)
     const session: Session = {
       record,
@@ -1079,8 +1146,6 @@ export class DragDropManager {
       size: { w: rect.width, h: rect.height },
       grab,
       pointer: start,
-      drawn: start,
-      movedAt: 0,
       moved: true,
       start,
       ghost,
@@ -1089,7 +1154,9 @@ export class DragDropManager {
       geometry: new Map(),
       scrollers: [],
       geometryDirty: true,
-      occluded: null,
+      verified: null,
+      measuredAt: 0,
+      observer: null,
       sourceRect: boxOf(rect),
       ancestors: new Map(),
       layouts: new Map(),
@@ -1138,9 +1205,30 @@ export class DragDropManager {
     const blur = () => {
       if (this.session === session && !session.ending && session.input === "pointer") this.cancel("interrupted")
     }
-    // Scrolling or resizing moves the zones: measure them again on the next frame.
+    // Scrolling or resizing moves the zones: measure them again on the next frame. A zone or
+    // item that changes size also re-measures its layout.
     const invalidate = () => {
       session.geometryDirty = true
+    }
+    if (typeof ResizeObserver === "function") {
+      let first = true
+      const observer = new ResizeObserver((entries) => {
+        // The first callback reports the initial sizes.
+        if (first) {
+          first = false
+          return
+        }
+        session.geometryDirty = true
+        // An item that changed size (new content, a reflow) re-measures its zone's layout. A
+        // zone that only grew by the slot it opened for the item does not, so the gap's
+        // animation is not cut short.
+        for (const entry of entries)
+          for (const layout of session.layouts.values()) if (layout.elements.includes(entry.target as HTMLElement)) session.dirty.add(layout.zone.id)
+      })
+      for (const candidate of this.zones.values()) if (candidate.element) observer.observe(candidate.element)
+      for (const layout of session.layouts.values()) for (const item of layout.elements) observer.observe(item)
+      session.observer = observer
+      session.cleanup.push(() => observer.disconnect())
     }
     window.addEventListener("keydown", escape, true)
     window.addEventListener("blur", blur)
@@ -1257,23 +1345,6 @@ export class DragDropManager {
     if (!session || session.ending || session.input !== "pointer") return
     if (event.cancelable) event.preventDefault()
     session.pointer = { x: event.clientX, y: event.clientY }
-    // Draw the preview a little along the browser's predicted path (Chromium), capped, so it
-    // keeps up with the pointer instead of trailing it by a frame.
-    const predicted = typeof event.getPredictedEvents === "function" ? event.getPredictedEvents() : []
-    const ahead = predicted[predicted.length - 1]
-    let dx = 0
-    let dy = 0
-    if (ahead) {
-      dx = ahead.clientX - event.clientX
-      dy = ahead.clientY - event.clientY
-      const distance = Math.hypot(dx, dy)
-      if (distance > LEAD) {
-        dx *= LEAD / distance
-        dy *= LEAD / distance
-      }
-    }
-    session.drawn = { x: event.clientX + dx, y: event.clientY + dy }
-    session.movedAt = event.timeStamp
     session.moved = true
     this.placeGhost()
     this.emit("onDragMove", { ...session.info, pointer: session.pointer, target: { zoneId: session.over?.id ?? null, index: session.index } })

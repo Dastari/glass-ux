@@ -4,6 +4,33 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.8.1
+
+### Fixed
+
+- Drag and drop: the preview now stays exactly under the pointer. It moved with `transform`
+  while the lift used the `scale` property, which scaled the translation too. The preview sat
+  2% of its screen position away from the pointer (about 15 px mid-screen) and lurched while
+  the lift's spring eased in.
+- Drag and drop is smoother. A lift no longer restyles the whole document: a root cursor rule
+  took 70–300 ms on large pages. Pointer frames read no layout, using cached zone geometry and
+  arithmetic hit-testing. In the documentation Board profile, the engine's per-frame work fell
+  from 1.3 ms to 0.1 ms (median) and dropped frames at 4× CPU throttling from 13% to under 2%.
+  Every effect is unchanged.
+- Drag and drop: the preview and a transparent cursor shield render in the top layer
+  (`popover`), above dialogs and outside ancestor transforms. They mount inside an open modal
+  `<dialog>`. The shield passes the wheel to the scroll container under the pointer.
+- Drag and drop: a drop zone covered by a menu or sticky header no longer takes the item where
+  it cannot be seen, and a zone that scrolls its own content auto-scrolls.
+- Component documentation shows a specimen that several related exports share once. A related
+  export whose examples are all above links to them. The DropZone page showed its Board three
+  times.
+
+### Added
+
+- `useDropZone(options, { trackState: false })` skips React re-renders for a zone whose state
+  nothing reads; `DropZone` does this unless its children are a render function.
+
 ## 0.8.0
 
 ### Breaking changes

@@ -14,7 +14,7 @@ export default function AiAsksSection() {
           description="Every ask folds into one line once resolved: the decision in words, who, when. The fold animates from the ask's height. While it waits in the dock, its place shows the same line with Review."
           layout="stack"
           wide
-          specimenKey="ai-asks:default:1"
+          specimenKey="ai-asks:default:0"
         >
           <AskCard ask={ASKS.singleDone} />
           <AskCard ask={ASKS.multiDone} />

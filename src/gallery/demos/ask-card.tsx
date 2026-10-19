@@ -47,13 +47,7 @@ export default function AiAsksSection() {
     <AiGallery>
       <SectionPage>
         {ALL.map(([title, description, ask]) => (
-          <Specimen
-            key={title}
-            title={title}
-            description={description}
-            layout="stack"
-            specimenKey="ai-asks:default:0"
-          >
+          <Specimen key={title} title={title} description={description} layout="stack">
             <AskCard ask={ask} />
           </Specimen>
         ))}
@@ -63,7 +57,7 @@ export default function AiAsksSection() {
           description="Every ask folds into one line once resolved: the decision in words, who, when. The fold animates from the ask's height. While it waits in the dock, its place shows the same line with Review."
           layout="stack"
           wide
-          specimenKey="ai-asks:default:1"
+          specimenKey="ai-asks:default:0"
         >
           <AskCard ask={ASKS.singleDone} />
           <AskCard ask={ASKS.multiDone} />
@@ -76,7 +70,7 @@ export default function AiAsksSection() {
           title="Docked width"
           description="Asks at 26rem: radio cards stack, forms keep one field per row."
           layout="bare"
-          specimenKey="ai-asks:default:4"
+          specimenKey="ai-asks:default:3"
         >
           <DockedColumn>
             <AskCard ask={{ ...ASKS.single, id: "docked-single" }} />
@@ -86,7 +80,7 @@ export default function AiAsksSection() {
 
         <ContainerLab
           description="Asks in fixed boxes scroll inside them; controls never squeeze side by side."
-          specimenKey="ai-asks:default:5"
+          specimenKey="ai-asks:default:4"
         >
           {() => (
             <LabScroll>

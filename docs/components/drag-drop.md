@@ -126,6 +126,27 @@ or `interrupted`) and `onDragEnd`, which always comes last with `outcome` `"drop
 draggables receive `onDragStart` and `onDragEnd`. `useActiveDrag()` returns the drag in
 progress for UI that appears only while dragging.
 
-Nothing re-renders per frame. The preview moves with `transform`, items move with
-`translate` animations and zone states are data attributes; React hears about a lift, a
-zone's status change and the end.
+## Performance
+
+A pointer frame reads no layout and re-renders nothing (R18.5):
+
+- **Cached geometry:** zone rectangles, their clipping and their scroll containers are
+  measured at the lift. They are measured again after a scroll, a resize, a zone or item
+  changing size, and every 250 ms while the pointer moves. Hit-testing is arithmetic on those
+  rectangles.
+- **Covers are respected:** a real hit-test confirms the zone whenever the answer changes or
+  the pointer has travelled, so menus, sticky headers and overlapping zones still win.
+- **Preview in the top layer:** the preview moves with `transform` on its own layer, and the
+  lift's scale and shadow sit on an inner layer. Being in the top layer puts it above dialogs
+  and outside ancestor transforms.
+- **Shield:** during a pointer drag, a transparent top-layer shield owns the cursor and hover,
+  so the page under the pointer neither restyles nor hit-tests. It passes the wheel to the
+  scroll container under the pointer, chaining outward like the browser.
+- **Items** move with `translate` animations and zone states are data attributes.
+- **React** hears about a lift, a zone's status change and the end. A `DropZone` re-renders
+  only when its children are a render function; with `useDropZone`, pass
+  `trackState: false` when nothing reads `state`.
+
+Native HTML5 drag and drop is not used. Its drag image is a bitmap snapshot taken at the
+lift, so it could not keep the lift animation, the live reason under the preview, keyboard
+dragging or the touch gestures.

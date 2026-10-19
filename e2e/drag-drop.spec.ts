@@ -184,8 +184,12 @@ test("on touch a long press lifts a card and a quick swipe scrolls instead @resp
 test("the preview stays under the pointer far from the origin, in the top layer, and the wheel still scrolls", async ({ page }) => {
   const board = await open(page);
   const card = column(board, "Backlog").locator("li").first();
+  // Hover first: a card lifts a little under the pointer, so measure it where it is grabbed.
+  const rest = (await card.boundingBox())!;
+  await page.mouse.move(rest.x + 30, rest.y + 16);
+  await page.waitForTimeout(300);
   const box = (await card.boundingBox())!;
-  const grab = { x: 30, y: 16 };
+  const grab = { x: rest.x + 30 - box.x, y: rest.y + 16 - box.y };
   await page.mouse.move(box.x + grab.x, box.y + grab.y);
   await page.mouse.down();
   // Far right, where a scale applied to the position would show as a large drift.
@@ -211,20 +215,75 @@ test("the preview stays under the pointer far from the origin, in the top layer,
   await expect(page.locator(".fa-dnd-ghost, .fa-dnd-shield")).toHaveCount(0);
 });
 
-test("a zone covered by something else does not take the item", async ({ page }) => {
+/** Lift the first Backlog card and leave the pointer down. */
+async function lift(page: Page, board: Locator) {
+  const card = column(board, "Backlog").locator("li").first();
+  const box = (await card.boundingBox())!;
+  await page.mouse.move(box.x + 30, box.y + 16);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 40, box.y + 22, { steps: 4 });
+  await expect(page.locator(".fa-dnd-ghost")).toHaveCount(1);
+  return { x: box.x + 40, y: box.y + 22 };
+}
+
+async function glide(page: Page, from: { x: number; y: number }, to: { x: number; y: number }) {
+  await page.mouse.move(to.x, to.y, { steps: Math.max(4, Math.round(Math.hypot(to.x - from.x, to.y - from.y) / 12)) });
+  await page.waitForTimeout(120);
+  return to;
+}
+
+test("a partly covered zone takes the item only where it can be seen, in either order", async ({ page }) => {
   const board = await open(page);
   const done = column(board, "Done");
-  const doneBox = (await done.boundingBox())!;
-  // A fixed panel over the Done column, as a menu or sticky header would be.
+  const box = (await done.boundingBox())!;
+  // A fixed panel over the top half of Done, as a menu or sticky header would be.
   await page.evaluate(({ x, y, w, h }) => {
     const cover = document.createElement("div");
-    cover.id = "cover";
     Object.assign(cover.style, { position: "fixed", left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px`, zIndex: "50", background: "white" });
     document.body.append(cover);
-  }, { x: doneBox.x, y: doneBox.y, w: doneBox.width, h: doneBox.height });
-  const card = column(board, "Backlog").locator("li").first();
-  await carry(page, card, { x: doneBox.x + doneBox.width / 2, y: doneBox.y + 30 });
+  }, { x: box.x, y: box.y, w: box.width, h: box.height / 2 });
+  const covered = { x: box.x + box.width / 2, y: box.y + box.height * 0.25 };
+  const exposed = { x: box.x + box.width / 2, y: box.y + box.height * 0.8 };
+  let at = await lift(page, board);
+  at = await glide(page, at, covered);
+  await expect(done).not.toHaveAttribute("data-drop-over", "");
+  at = await glide(page, at, exposed);
+  await expect(done).toHaveAttribute("data-drop-over", "");
+  at = await glide(page, at, covered);
   await expect(done).not.toHaveAttribute("data-drop-over", "");
   await page.mouse.up();
   expect(await titles(done)).toEqual(["Book courier for crates"]);
+});
+
+test("a zone that grows during a drag takes the item in its new area", async ({ page }) => {
+  const board = await open(page);
+  const done = column(board, "Done");
+  const box = (await done.boundingBox())!;
+  let at = await lift(page, board);
+  // Live data makes Done much taller while the card is in the air.
+  await done.evaluate((element) => (element.style.minHeight = "40rem"));
+  const below = { x: box.x + box.width / 2, y: box.y + box.height + 120 };
+  at = await glide(page, at, below);
+  await expect(done).toHaveAttribute("data-drop-over", "");
+  await page.mouse.up();
+  await expect(done.locator("li")).toHaveCount(2);
+});
+
+test("a zone that scrolls its own content auto-scrolls, and the wheel chains outward from it", async ({ page }) => {
+  const board = await open(page);
+  const backlog = column(board, "Backlog");
+  await backlog.evaluate((element) => Object.assign(element.style, { maxHeight: "7rem", overflowY: "auto" }));
+  const box = (await backlog.boundingBox())!;
+  let at = await lift(page, board);
+  // Into the zone's own bottom edge: it scrolls itself.
+  at = await glide(page, at, { x: box.x + box.width / 2, y: box.y + box.height - 6 });
+  await expect.poll(() => backlog.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+  // At its end, the wheel passes on to the page column around it.
+  await backlog.evaluate((element) => (element.scrollTop = element.scrollHeight));
+  const scroller = page.locator(".docs-content");
+  const before = await scroller.evaluate((element) => element.scrollTop);
+  await page.mouse.wheel(0, 200);
+  await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).toBeGreaterThan(before);
+  await page.keyboard.press("Escape");
+  await page.mouse.up();
 });

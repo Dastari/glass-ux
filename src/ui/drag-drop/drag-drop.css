@@ -82,7 +82,15 @@
 
   /* The shield: a transparent sheet over the page during a pointer drag (top layer). It owns
      the cursor and hover, so the page under the pointer neither restyles nor hit-tests. */
+  /* In the top layer stacking order does not apply; without popover support these keep the
+     preview and the shield above everything else on the page. */
+  .fa-dnd-shield,
+  .fa-dnd-ghost {
+    --_dnd-z-shield: 2147483646;
+    --_dnd-z-ghost: 2147483647;
+  }
   .fa-dnd-shield {
+    z-index: var(--_dnd-z-shield);
     position: fixed;
     inset: 0;
     width: auto;
@@ -109,7 +117,7 @@
   .fa-dnd-ghost {
     position: fixed;
     inset: 0 auto auto 0;
-    z-index: var(--z-toast);
+    z-index: var(--_dnd-z-ghost);
     max-width: none;
     max-height: none;
     margin: 0;

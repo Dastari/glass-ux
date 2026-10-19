@@ -106,13 +106,7 @@ export default function AiApprovalsSection() {
         </Specimen>
 
         {STATES.map(([title, description, ask]) => (
-          <Specimen
-            key={title}
-            title={title}
-            description={description}
-            layout="stack"
-            specimenKey="ai-approvals:default:1"
-          >
+          <Specimen key={title} title={title} description={description} layout="stack">
             {ask.state === "pending" || ask.state === "approved" ? (
               <ApprovalCard ask={ask} />
             ) : (
@@ -125,7 +119,7 @@ export default function AiApprovalsSection() {
           title="Destructive, with step-up"
           description="Danger tone. Review and approve is the soft entry point; it turns the effect into a danger notice and the footer into Back and the one solid danger button, inside the card. The MFA note stays. Esc goes back."
           layout="stack"
-          specimenKey="ai-approvals:default:2"
+          specimenKey="ai-approvals:default:1"
         >
           <ApprovalCard ask={APPROVAL_DANGER} />
         </Specimen>
@@ -134,7 +128,7 @@ export default function AiApprovalsSection() {
           title="Step-up only"
           description="Assured tier on a consequential action: the same second step in the warning tone."
           layout="stack"
-          specimenKey="ai-approvals:default:3"
+          specimenKey="ai-approvals:default:2"
         >
           <ApprovalCard
             ask={{ ...APPROVAL("pending"), id: "step-up", stepUp: true, allowForSession: false }}
@@ -145,7 +139,7 @@ export default function AiApprovalsSection() {
           title="Docked width"
           description="The same card at 26rem: the switch row drops below its text, the command wraps."
           layout="bare"
-          specimenKey="ai-approvals:default:5"
+          specimenKey="ai-approvals:default:4"
         >
           <DockedColumn>
             <ApprovalCard ask={{ ...APPROVAL("pending"), id: "docked" }} />
@@ -154,7 +148,7 @@ export default function AiApprovalsSection() {
 
         <ContainerLab
           description="Approvals in fixed boxes scroll inside them; nothing is cut off."
-          specimenKey="ai-approvals:default:6"
+          specimenKey="ai-approvals:default:5"
         >
           {() => (
             <LabScroll>

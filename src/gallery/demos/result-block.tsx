@@ -68,7 +68,6 @@ export default function AiResultsSection() {
             description={description}
             layout="stack"
             wide={result.type === "table" || result.type === "images"}
-            specimenKey="ai-results:default:0"
           >
             <ResultBlock result={result} />
           </Specimen>
@@ -78,7 +77,7 @@ export default function AiResultsSection() {
           title="Docked width"
           description="The same results at the docked assistant's width (26rem)."
           layout="bare"
-          specimenKey="ai-results:default:2"
+          specimenKey="ai-results:default:1"
         >
           <DockedColumn>
             <ResultBlock result={RESULTS.offline} />
@@ -92,7 +91,7 @@ export default function AiResultsSection() {
           title="Over imagery"
           description="Cards keep their contrast over a busy backdrop."
           backdrop
-          specimenKey="ai-results:default:3"
+          specimenKey="ai-results:default:2"
         >
           <div className="ai-stack">
             <ResultBlock result={RESULTS.files} />
@@ -101,7 +100,7 @@ export default function AiResultsSection() {
 
         <ContainerLab
           description="Results in fixed boxes: the column scrolls inside the box, tables become lists, charts drop their value axis."
-          specimenKey="ai-results:default:4"
+          specimenKey="ai-results:default:3"
         >
           {() => (
             <LabScroll>

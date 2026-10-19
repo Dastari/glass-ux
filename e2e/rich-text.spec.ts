@@ -358,13 +358,10 @@ for (const mode of ["light", "dark"] as const) {
         demo.getByRole("textbox", { name: "Welcome guide" }),
       ).toHaveAttribute("contenteditable", "true");
       await page.goto("/components/rich-text-skeleton");
-      const slot = page
-        .locator("#rich-text-skeleton")
-        .getByTestId("rich-text-loading-slot");
-      await page
-        .locator("#rich-text-skeleton")
-        .getByTestId("rich-text-loading-swap")
-        .focus();
+      // The family page shows a shared specimen once: the skeleton's loading swap may sit in the
+      // examples above its own section, which links to it.
+      const slot = page.getByTestId("rich-text-loading-slot");
+      await page.getByTestId("rich-text-loading-swap").focus();
       await page.keyboard.press("Tab");
       expect(
         await page.evaluate(
@@ -380,10 +377,7 @@ for (const mode of ["light", "dark"] as const) {
         const before = await slot
           .locator(".fa-rich-text-toolbar")
           .evaluate((element) => element.getBoundingClientRect().height);
-        await page
-          .locator("#rich-text-skeleton")
-          .getByTestId("rich-text-loading-swap")
-          .click();
+        await page.getByTestId("rich-text-loading-swap").click();
         await expect(slot.locator("[contenteditable='true']")).toBeVisible();
         const after = await slot
           .locator(".fa-rich-text-toolbar")
@@ -392,10 +386,7 @@ for (const mode of ["light", "dark"] as const) {
           Math.abs(before - after),
           `skeleton toolbar at ${width}px`,
         ).toBeLessThanOrEqual(1);
-        await page
-          .locator("#rich-text-skeleton")
-          .getByTestId("rich-text-loading-swap")
-          .click();
+        await page.getByTestId("rich-text-loading-swap").click();
         await expect(slot.locator(".fa-rich-text[data-loading]")).toBeVisible();
       }
     });

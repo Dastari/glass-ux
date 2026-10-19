@@ -3,6 +3,15 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.8.0 → 0.8.1
+
+No code changes are required.
+
+- The drag preview now renders in the top layer. Remove any z-index you set to raise it over
+  dialogs.
+- During a pointer drag a transparent shield covers the page and shows the cursor. Hover
+  styles under the pointer pause until the drop.
+
 ## 0.7 → 0.8
 
 0.8.0 renames the organisation switcher to a generic context switcher and removes the

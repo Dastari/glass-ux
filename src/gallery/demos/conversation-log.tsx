@@ -94,7 +94,7 @@ export default function AiApprovalsSection() {
           description="Never modal: the card waits in the ask dock above the composer, the transcript keeps a marker with Review at its place, and the agent carries on with work that does not depend on it."
           wide
           layout="stack"
-          specimenKey="ai-approvals:default:4"
+          specimenKey="ai-approvals:default:3"
         >
           <DockedApproval />
         </Specimen>

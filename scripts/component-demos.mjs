@@ -124,7 +124,10 @@ export async function generateComponentDemos(program, checker, components) {
     const rootName = explicit ? explicit.name.text : "default";
     const base = story.fileName.split("/").pop().replace(/\.(section\.)?tsx$/, "");
     const specimenKeys = new Map();
+    // A specimen inside a nested function (a .map callback, a render prop) can render more
+    // than once, so it has no single identity: leave it unkeyed and never hidden.
     const numberSpecimens = (n) => {
+      if (n !== root && (ts.isArrowFunction(n) || ts.isFunctionExpression(n))) return;
       const tag = ts.isJsxElement(n)
         ? n.openingElement.tagName.getText(story)
         : ts.isJsxSelfClosingElement(n)

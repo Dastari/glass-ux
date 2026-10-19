@@ -5,10 +5,14 @@ import { Example, SectionPage, Specimen } from "../kit.js";
 import {
   Calendar,
   addDays,
+  formatTimeText,
+  timeSlots,
   todayIso,
   type DateRange,
   type IsoDate,
+  type TimeValue,
 } from "../../ui/date-picker/index.js";
+import { TimeList } from "../../ui/date-picker/time-list.js";
 
 const today = todayIso();
 
@@ -52,6 +56,35 @@ function RangeCalendar() {
   );
 }
 
+function DateTimePickerPreview() {
+  const [day, setDay] = useState<IsoDate>(addDays(today, 2));
+  const [time, setTime] = useState<TimeValue>("09:30");
+  const times = timeSlots({ step: 30, min: "07:00", max: "19:00" });
+  return (
+    <Example label={`${day}T${time}`}>
+      <div
+        className="glass-overlay fa-popup fa-popover fa-popover-preview fa-date-popover fa-date-time-popover"
+        data-size="sm"
+      >
+        <div className="fa-popover-body">
+          <div className="fa-date-time-picker">
+            <Calendar value={day} onValueChange={setDay} aria-label="Change window day" />
+            <div className="fa-date-time-times">
+              <TimeList
+                times={times}
+                value={time}
+                format={(next) => formatTimeText(next)}
+                onPick={setTime}
+                aria-label="Change window time"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </Example>
+  );
+}
+
 export default function DatePickerSection() {
   return (
     <SectionPage>
@@ -72,6 +105,14 @@ export default function DatePickerSection() {
             </div>
           </div>
         </Example>
+      </Specimen>
+
+      <Specimen
+        title="Calendar and times"
+        description="The date-and-time popup: the calendar beside the times, which wrap below it in a narrow popup. Picking a time closes it."
+        specimenKey="date-picker:default:4"
+      >
+        <DateTimePickerPreview />
       </Specimen>
     </SectionPage>
   );

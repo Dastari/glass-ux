@@ -1,0 +1,80 @@
+import { z } from "zod";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { addDays, dateTimeSchema, todayIso, type WallClock } from "glass-ux/date-picker";
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+const today = todayIso();
+const SYDNEY = "Australia/Sydney";
+
+function DateTimesDemo() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: {
+      starts: `${addDays(today, 2)}T21:00` as WallClock | null,
+      freeze: "2026-10-04T02:30" as WallClock | null,
+      call: null as WallClock | null,
+    },
+    validators: {
+      onDynamic: z.object({
+        starts: dateTimeSchema({ required: true, min: `${today}T00:00`, timeZone: SYDNEY }),
+        freeze: dateTimeSchema({ timeZone: SYDNEY }),
+        call: dateTimeSchema({ timeZone: "America/New_York" }),
+      }),
+    },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form
+      form={form}
+      aria-label="Maintenance schedule"
+      className="w-full"
+      data-testid="date-time-form"
+    >
+      <FormStack>
+        <form.AppField name="starts">
+          {(field) => (
+            <field.DateTimeField
+              label="Maintenance starts"
+              required
+              timeZone={SYDNEY}
+              min={`${today}T00:00`}
+              step={30}
+            />
+          )}
+        </form.AppField>
+        <form.AppField name="freeze">
+          {(field) => <field.DateTimeField label="Change freeze ends" optional timeZone={SYDNEY} />}
+        </form.AppField>
+        <form.AppField name="call">
+          {(field) => (
+            <field.DateTimeField
+              label="Vendor call"
+              optional
+              timeZone="America/New_York"
+              defaultTime="09:00"
+              step={30}
+            />
+          )}
+        </form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  );
+}
+
+export default function DatePickerSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Date and time"
+        description="One label and one message line for both parts. The value is a wall clock (2026-10-21T21:00); with a time zone the box shows its abbreviation on that day and the hint names the zone. A time the clocks skip reads forward and is explained; a repeated time reads as the first."
+        layout="stack"
+      >
+        <DateTimesDemo />
+      </Specimen>
+    </SectionPage>
+  );
+}

@@ -7,14 +7,15 @@ import {
   IconWarning,
 } from "../../icons/generated/icons.js";
 import { ActionButton, Button } from "../../ui/button/index.js";
-import { DateField } from "../../ui/date-picker/index.js";
+import { DateTimeInput } from "../../ui/date-picker/date-time-input.js";
+import { instantToWallClock } from "../../ui/date-picker/zoned-time.js";
 import { Field } from "../../ui/field/index.js";
 import { FormStack } from "../../ui/form/layout.js";
 import { Input } from "../../ui/input/index.js";
 import { Notice } from "../../ui/notice/index.js";
 import { NumberField } from "../../ui/number-field/index.js";
 import { RadioCard, RadioGroup } from "../../ui/radio/index.js";
-import { resolveDateTime, dateInTimezone } from "./date-time.js";
+import { resolveDateTime } from "./date-time.js";
 import { Select } from "../../ui/select/index.js";
 import { Textarea } from "../../ui/textarea/index.js";
 import type { AiAsk, FormField } from "../types.js";
@@ -215,10 +216,9 @@ export function DateTimeAsk({ ask }: {
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [choice, setChoice] = useState<string | null>(null);
-  const [date, setDate] = useState<string | null>(null);
-  const [time, setTime] = useState("09:00");
+  // The exact entry: a wall clock in the ask's zone, or what the field could not accept.
+  const [custom, setCustom] = useState("");
   const suggestion = ask.suggestions.find((item) => item.value === choice);
-  const custom = date && time ? `${date}T${time}` : "";
   const chosen = resolveDateTime(suggestion?.value ?? custom, ask.timezone);
   const earliestValue =
     ask.earliest && ask.earliest !== "now"
@@ -285,7 +285,7 @@ export function DateTimeAsk({ ask }: {
               aria-label="Suggested times"
               onValueChange={(value) => {
                 setChoice(value);
-                setDate(null);
+                setCustom("");
               }}
             >
               {ask.suggestions.map((item) => (
@@ -297,31 +297,26 @@ export function DateTimeAsk({ ask }: {
               ))}
             </RadioGroup>
           </Field>
-          <Field label="Date" hint={ask.timezone}>
-            <DateField
-              value={date}
-              min={
-                earliest !== undefined
-                  ? dateInTimezone(earliest, ask.timezone)
-                  : undefined
-              }
-              onValueChange={(next) => {
-                setDate(next);
-                setChoice(null);
-              }}
-            />
-          </Field>
           <Field
-            label="Time"
+            label="Date and time"
             hint={ask.timezone}
             error={custom && error ? error : undefined}
           >
-            <Input
-              type="time"
-              width="short"
-              value={time}
+            <DateTimeInput
+              value={custom || null}
+              timeZone={ask.timezone}
+              defaultTime="09:00"
+              min={
+                earliest !== undefined
+                  ? instantToWallClock(earliest, ask.timezone) || undefined
+                  : undefined
+              }
               onValueChange={(next) => {
-                setTime(next);
+                setCustom(next ?? "");
+                setChoice(null);
+              }}
+              onReject={(entry) => {
+                setCustom(entry);
                 setChoice(null);
               }}
             />

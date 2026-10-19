@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { Calendar, addDays, todayIso, type DateRange, type IsoDate } from "glass-ux/date-picker";
+import {
+  Calendar,
+  addDays,
+  formatTimeText,
+  timeSlots,
+  todayIso,
+  type DateRange,
+  type IsoDate,
+  type TimeValue,
+} from "glass-ux/date-picker";
+import { TimeList } from "glass-ux/ui/date-picker/time-list";
 
 const today = todayIso();
 
@@ -44,6 +54,35 @@ function RangeCalendar() {
   );
 }
 
+function DateTimePickerPreview() {
+  const [day, setDay] = useState<IsoDate>(addDays(today, 2));
+  const [time, setTime] = useState<TimeValue>("09:30");
+  const times = timeSlots({ step: 30, min: "07:00", max: "19:00" });
+  return (
+    <Example label={`${day}T${time}`}>
+      <div
+        className="glass-overlay fa-popup fa-popover fa-popover-preview fa-date-popover fa-date-time-popover"
+        data-size="sm"
+      >
+        <div className="fa-popover-body">
+          <div className="fa-date-time-picker">
+            <Calendar value={day} onValueChange={setDay} aria-label="Change window day" />
+            <div className="fa-date-time-times">
+              <TimeList
+                times={times}
+                value={time}
+                format={(next) => formatTimeText(next)}
+                onPick={setTime}
+                aria-label="Change window time"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </Example>
+  );
+}
+
 export default function DatePickerSection() {
   return (
     <SectionPage>
@@ -63,6 +102,13 @@ export default function DatePickerSection() {
             </div>
           </div>
         </Example>
+      </Specimen>
+
+      <Specimen
+        title="Calendar and times"
+        description="The date-and-time popup: the calendar beside the times, which wrap below it in a narrow popup. Picking a time closes it."
+      >
+        <DateTimePickerPreview />
       </Specimen>
     </SectionPage>
   );

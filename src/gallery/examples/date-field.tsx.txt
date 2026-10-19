@@ -1,9 +1,17 @@
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { DateField, DateRangeField, addDays, todayIso } from "glass-ux/date-picker";
+import {
+  DateField,
+  DateRangeField,
+  DateTimeInput,
+  TimeInput,
+  addDays,
+  todayIso,
+} from "glass-ux/date-picker";
 import { Field } from "glass-ux/field";
 import { FormStack } from "glass-ux/form";
 
 const today = todayIso();
+const SYDNEY = "Australia/Sydney";
 
 export default function DatePickerSection() {
   return (
@@ -40,15 +48,31 @@ export default function DatePickerSection() {
 
       <Specimen
         title="Sizes"
-        description="The box follows the control sizes; the calendar keeps its own."
+        description="The box follows the control sizes; the calendar and the list keep their own."
       >
         <DateField size="sm" defaultValue={today} aria-label="Small" />
         <DateField size="md" defaultValue={today} aria-label="Medium" />
         <DateField size="lg" defaultValue={today} aria-label="Large" />
+        <TimeInput size="sm" defaultValue="09:30" aria-label="Small time" />
+        <TimeInput size="md" defaultValue="09:30" aria-label="Medium time" />
+        <TimeInput size="lg" defaultValue="09:30" aria-label="Large time" />
+        <DateTimeInput size="sm" defaultValue={`${today}T09:30`} aria-label="Small date and time" />
+        <DateTimeInput
+          size="md"
+          defaultValue={`${today}T09:30`}
+          aria-label="Medium date and time"
+        />
+        <DateTimeInput size="lg" defaultValue={`${today}T09:30`} aria-label="Large date and time" />
       </Specimen>
 
       <Specimen title="Over glass and imagery" backdrop>
         <DateField defaultValue={today} aria-label="Date over imagery" />
+        <TimeInput defaultValue="18:00" aria-label="Time over imagery" />
+        <DateTimeInput
+          defaultValue={`${today}T18:00`}
+          timeZone={SYDNEY}
+          aria-label="Date and time over imagery"
+        />
         <DateRangeField
           defaultValue={{ start: addDays(today, -7), end: today }}
           aria-label="Range over imagery"
@@ -60,6 +84,7 @@ export default function DatePickerSection() {
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center gap-2 px-1">
               <DateField size="sm" width="full" defaultValue={today} aria-label="Date" />
+              <TimeInput size="sm" width="full" defaultValue="09:30" aria-label="Time" />
             </div>
           ) : (
             <div className="h-full overflow-y-auto" data-scroll-container>
@@ -72,6 +97,12 @@ export default function DatePickerSection() {
                     defaultValue={{ start: addDays(today, -30), end: today }}
                     aria-label="Reporting period"
                   />
+                </Field>
+                <Field label="Maintenance starts">
+                  <DateTimeInput defaultValue={`${today}T21:00`} timeZone={SYDNEY} width="full" />
+                </Field>
+                <Field label="Depot opens">
+                  <TimeInput defaultValue="07:30" />
                 </Field>
               </FormStack>
             </div>

@@ -1,7 +1,8 @@
 /*
  * Date picker — Calendar (a month grid), DateField and DateRangeField (typed days with a
- * calendar popover). The popover is the shared Popover (glass-overlay + fa-popup); the
- * fields are fa-control boxes like Input.
+ * calendar popover), TimeInput (a typed time with a list of times) and DateTimeInput (both
+ * parts in one box, calendar beside the list). The popover is the shared Popover
+ * (glass-overlay + fa-popup); the fields are fa-control boxes like Input.
  *
  * Calendar  head (‹ month year ›) · weekday row · 6 × 7 day buttons. Selected days fill
  *           with the accent; a range draws a soft accent band between its ends.
@@ -153,5 +154,144 @@
   /* The calendar sizes its own popover. */
   .fa-popover.fa-date-popover {
     --_w: max-content;
+  }
+
+  /* ── Times ────────────────────────────────────────────────────────────────── */
+  .fa-time-input {
+    font-variant-numeric: tabular-nums;
+  }
+  /* A short field holds "12:45 pm" beside its list button. */
+  .fa-control.fa-time-field[data-width="short"] {
+    max-width: calc(var(--field-short) + var(--control-h-sm));
+  }
+  .fa-control.fa-time-field[data-seconds][data-width="short"] {
+    max-width: calc(var(--field-short) + var(--control-h-sm) * 2);
+  }
+
+  /* The list: fixed rows, windowed; only the rows in view are in the DOM. */
+  .fa-time-list,
+  .fa-date-time-popover {
+    /* component tokens: the list column and its visible rows */
+    --_list-w: 7.5rem;
+    --_list-h: calc(var(--item-h) * 7.5);
+  }
+  .fa-time-list {
+    position: relative;
+    width: var(--_list-w);
+    height: var(--_list-h);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    border-radius: var(--radius-item);
+    outline: none;
+  }
+  .fa-time-list-canvas {
+    position: relative;
+    width: 100%;
+  }
+  .fa-time-option {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    height: var(--item-h);
+    min-height: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-time-list-probe {
+    visibility: hidden;
+    pointer-events: none;
+  }
+  /* The highlight is the keyboard position: shown while the list has focus or under the pointer. */
+  .fa-time-list:not(:focus) .fa-time-option[data-highlighted]:not(:hover, [data-selected]) {
+    background-color: transparent;
+  }
+  .fa-time-list:not(:focus) .fa-time-option[data-selected][data-highlighted]:not(:hover) {
+    background-color: var(--accent-soft);
+  }
+  .fa-time-list-empty {
+    display: grid;
+    place-items: center;
+    height: auto;
+    min-height: var(--item-h);
+    padding-inline: var(--space-2);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-align: center;
+  }
+  /* The list drops from the whole box, at least as wide as it. */
+  .fa-popover.fa-time-popover[data-size] {
+    --_w: var(--anchor-width, 12rem);
+  }
+  .fa-time-popover .fa-time-list {
+    width: 100%;
+  }
+
+  /* ── Date and time in one box ─────────────────────────────────────────────── */
+  .fa-date-time-field {
+    /* component tokens: the typed parts */
+    --_date-w: 11ch;
+    --_time-w: 8.5ch;
+    --_zone-w: 0ch;
+  }
+  /* The parts share the box's gap. As a size container the zone can give way first in a narrow
+     box (it is also in the hint and the description); `width` keeps the box's intrinsic size. */
+  .fa-date-time-parts {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: inherit;
+    width: calc(var(--_date-w) + var(--_time-w) + var(--_zone-w));
+    min-width: 0;
+    container-type: inline-size;
+  }
+  .fa-date-time-field[data-zone] {
+    /* component token: room for the zone's abbreviation */
+    --_zone-w: 7ch;
+  }
+  @container (width < 12rem) {
+    .fa-date-time-zone {
+      display: none;
+    }
+  }
+  .fa-date-time-field .fa-date-time-date {
+    flex: 0 1 var(--_date-w);
+    min-width: 0;
+  }
+  .fa-date-time-field .fa-date-time-time {
+    flex: 1 1 var(--_time-w);
+    min-width: 0;
+  }
+  .fa-date-time-zone {
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  /* Calendar beside the times; the times wrap below it when the popup is narrow (phones). The
+     popup is as wide as both: its body is a size container, so it cannot size to content. */
+  .fa-popover.fa-date-time-popover[data-size] {
+    --_w: calc(var(--control-h-sm) * 7 + var(--space-3) + var(--_list-w) + var(--inset-tile) * 2 + var(--space-2));
+  }
+  .fa-date-time-picker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+  .fa-date-time-times {
+    position: relative;
+    flex: 1 0 auto;
+    width: var(--_list-w);
+    min-height: var(--_list-h);
+  }
+  .fa-date-time-times > .fa-time-list {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+  }
+  @container (width < 22rem) {
+    .fa-date-time-times {
+      min-height: calc(var(--item-h) * 4.5);
+    }
   }
 }

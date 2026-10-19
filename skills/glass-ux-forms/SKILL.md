@@ -17,8 +17,10 @@ Read the installed package's `docs/getting-started.md`, `docs/components/README.
 `docs/api/form.md` and the guide for the chosen typed input.
 
 Choose the control by its value contract. Money stores minor units, duration stores seconds,
-byte size stores bytes, phone values use E.164, dates use calendar-date strings, and structured
-addresses retain their parts. Do not convert those contracts into display strings in form state.
+byte size stores bytes, phone values use E.164, dates use calendar-date strings, times use
+`HH:mm`, a date and time is a wall clock (`2026-10-21T09:30`) with its IANA zone held beside it,
+and structured addresses retain their parts. Do not convert those contracts into display strings
+or instants in form state; resolve a wall clock with `resolveWallClock` when sending it.
 
 Use `useAppForm`, `formBehaviour`, the control's schema helper and `form.AppField` for a bound
 field. Use the bare input only when the host owns its state and field chrome. Normalisation

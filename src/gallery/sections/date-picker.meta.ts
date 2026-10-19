@@ -5,5 +5,5 @@ export const meta: SectionMeta = {
   title: "Date picker",
   group: "Components",
   order: 185,
-  summary: "Calendar days typed in the locale's order or picked from a month grid, singly or as a range.",
+  summary: "Calendar days, times of day and dates with times: typed as people write them or picked from a month grid and a list of times.",
 }

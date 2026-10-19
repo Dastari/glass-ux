@@ -34,6 +34,7 @@ import {
 } from "../combobox/index.js";
 import { CoordinatesField } from "../coordinates-field/index.js";
 import { CountryField } from "../country-select/index.js";
+import { DateTimeField, TimeField } from "../date-picker/fields.js";
 import { DurationField } from "../duration-field/index.js";
 import { EmailField } from "../email-field/index.js";
 import {
@@ -879,6 +880,8 @@ export const { useAppForm, withForm, withFieldGroup } = createFormHook({
     PercentField,
     CountryField,
     TimeZoneField,
+    TimeField,
+    DateTimeField,
   },
   formComponents: {
     SubmitButton,

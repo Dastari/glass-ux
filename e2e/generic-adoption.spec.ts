@@ -220,7 +220,7 @@ test("date/time asks use the stated zone and shared radio keyboard paths @respon
   await expect(
     page
       .locator("#date-time-ask")
-      .getByRole("textbox", { name: "Date", exact: true }),
+      .getByRole("textbox", { name: "Date and time Date", exact: true }),
   ).toBeVisible();
   const accessibility = await new AxeBuilder({ page })
     .include("#date-time-ask")

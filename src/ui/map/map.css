@@ -275,6 +275,15 @@
   }
 
   /* A cluster: its count on a disc, its statuses as a segmented ring. */
+  /* Solid and reduced transparency: clusters are opaque like every other surface. */
+  :root[data-glass="solid"] .fa-map-cluster {
+    background-color: var(--surface-3);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    :root:not([data-glass="full"]) .fa-map-cluster {
+      background-color: var(--surface-3);
+    }
+  }
   .fa-map-cluster {
     --_size: 2.25rem; /* a small cluster; md and lg step up with the count */
     position: relative;

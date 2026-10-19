@@ -22,6 +22,17 @@ has upgrade steps in the [migration guide](docs/migration.md).
   - **Reduced transparency:** the operating system's "reduce transparency" setting gets the
     same treatment as Solid.
   - **Regression test:** a browser test checks every component page in Solid, light and dark.
+- DataTable no longer makes the scroll container around it scroll by 8px (reported by FAME).
+  The closed bulk-action bar waited a step below its place, and transforms count as
+  scrollable overflow, so a table in a scrolling pane (vertical tabs, panels) gained a
+  second scrollbar. The bar now waits above its place and still settles in as it fades.
+  The table's hidden row-height probe no longer extends below a table shorter than one row.
+- The window dock's list no longer overflows itself by 1px: the items' rim light had no
+  room.
+- Map clusters are opaque in Solid.
+- A browser test fails if anything on a component page overflows its own box by a few pixels
+  beyond its visible content. That catches offsets, probes and decorations that add stray
+  scrollbars.
 - Markdown tables in documents (`wrapTableCells`) show every row and let the page scroll,
   instead of capping at 14 rows inside a scroll box with an opaque header. Header labels sit
   in the middle of the header row.

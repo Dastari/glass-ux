@@ -147,7 +147,8 @@ test("the supplied brand mark, favicon and sharing image load under the deployme
     .getByRole("navigation", { name: "Component navigation", exact: true })
     .locator("svg[data-brand='glass-ux']");
   await expect(logo).toBeVisible();
-  await expect(logo).toHaveAttribute("data-tones", "brand");
+  // The drawer's mark follows the selected palette.
+  await expect(logo).toHaveAttribute("data-tones", "palette");
   expect(await logo.locator("linearGradient").count()).toBe(2);
   const icons = await page
     .locator("link[rel='icon']")

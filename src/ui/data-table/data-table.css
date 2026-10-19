@@ -92,9 +92,11 @@
   }
 
   /* Measures --_row-h and the sm button for the virtualizer and the column budget. */
+  /* Anchored to the bottom: a row taller than a short table extends upwards, where it adds
+     no scrollable overflow to the table or its host. */
   .fa-dt-probe {
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
     width: var(--control-h-sm);
     height: var(--_row-h);
@@ -1064,7 +1066,10 @@
     background-color: var(--accent-soft);
     box-shadow: inset 0 0 0 var(--border-width) color-mix(in oklab, var(--accent-line) 55%, transparent);
     opacity: 0;
-    translate: 0 var(--space-2);
+    /* Closed, it waits a step above its place and settles down as it fades in. Above, not
+       below: an offset below the footer would count as scrollable overflow and give every
+       scroll container around the table a few pixels of scroll. */
+    translate: 0 calc(var(--space-2) * -1);
     pointer-events: none;
     transition-property: opacity, translate;
     transition-duration: var(--duration-fast);

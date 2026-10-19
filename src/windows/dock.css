@@ -29,8 +29,10 @@
     display: flex;
     gap: var(--space-3);
     min-width: 0;
-    margin: 0;
-    padding: 0;
+    /* Room for the items' rim light (fa-lit draws it a hairline outside each item), taken
+       back with the margin so nothing moves; otherwise the list overflows itself by 1px. */
+    margin: calc(var(--border-width) * -1);
+    padding: var(--border-width);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scrollbar-width: none;

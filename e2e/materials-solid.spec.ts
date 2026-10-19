@@ -71,6 +71,8 @@ for (const glass of materials)
             for (const pseudo of [null, "::before", "::after"] as const) {
               const cs = getComputedStyle(el, pseudo);
               if (pseudo && cs.content === "none") continue;
+              // Hairlines (separators, edges) are lines, not surfaces.
+              if (pseudo && (Number.parseFloat(cs.height) <= 2 || Number.parseFloat(cs.width) <= 2)) continue;
               const blur = cs.backdropFilter || (cs as unknown as { webkitBackdropFilter?: string }).webkitBackdropFilter || "none";
               if (blur !== "none") results.push({ kind: "blur", name: name(el), value: blur, pseudo: pseudo ?? undefined });
               const a = alpha(cs.backgroundColor);

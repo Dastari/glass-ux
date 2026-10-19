@@ -13,6 +13,7 @@ export default function AiComposerSection() {
           title="Status strip"
           description="Connection, budget and model as one caption line, the composer's last row (status): never a banner."
           layout="stack"
+          specimenKey="ai-composer:default:4"
         >
           <Composer
             model={MODEL}

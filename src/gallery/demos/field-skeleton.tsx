@@ -14,6 +14,7 @@ export default function FieldSection() {
         title="Loading"
         description="Each skeleton is the row's exact box: a label-role line, the control's height and the reserved message line (R9.3). Real row on the left, skeleton on the right."
         wide
+        specimenKey="field:default:6"
       >
         <div className="grid w-full grid-cols-2 gap-5" data-testid="skeleton-parity">
           <Field label="Device name" data-testid="real-input">

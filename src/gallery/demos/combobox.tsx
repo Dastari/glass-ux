@@ -24,6 +24,7 @@ export default function ComboboxSection() {
       <Specimen
         title="Combobox"
         description="Choose exactly one item. Static lists filter as you type (case and accents ignored, matches emphasised); a source searches the server. Arrows move, Enter chooses, Esc closes then clears."
+        specimenKey="combobox:default:1"
       >
         <FormStack>
           <Field label="Endpoint">
@@ -43,7 +44,7 @@ export default function ComboboxSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Sizes and states" wide>
+      <Specimen title="Sizes and states" wide specimenKey="combobox:default:2">
         <Matrix
           columns={["Empty", "Chosen", "Read-only", "Invalid", "Disabled"]}
           rows={SIZES.map((size) => ({
@@ -101,6 +102,7 @@ export default function ComboboxSection() {
       <Specimen
         title="List states"
         description="Open each one. Rows of every state are exactly one option tall, so nothing jumps when results arrive."
+        specimenKey="combobox:default:3"
       >
         <FormStack>
           <Field label="Loading" hint="Skeleton rows on the first load.">
@@ -137,7 +139,7 @@ export default function ComboboxSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="combobox:default:7">
         <Combobox
           options={ORGANISATIONS}
           defaultValue="northstar"
@@ -152,7 +154,7 @@ export default function ComboboxSection() {
         />
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="combobox:default:8">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-2 px-1">

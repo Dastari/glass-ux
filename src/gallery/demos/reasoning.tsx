@@ -74,6 +74,7 @@ export default function AiMessagesSection() {
           title="Reasoning and streaming"
           description="The reasoning summary folds to one line with the time it took. Streaming text appends after a static caret; earlier lines never reflow."
           layout="stack"
+          specimenKey="ai-messages:default:5"
         >
           <Reasoning
             reasoning={{

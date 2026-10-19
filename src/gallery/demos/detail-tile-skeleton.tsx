@@ -73,6 +73,7 @@ export default function DetailTileSection() {
         wide
         title="Loading"
         description="Each skeleton tile is the loaded tile's exact box: same icon box, same type roles, same lines."
+        specimenKey="detail-tile:default:2"
       >
         <div className="flex w-full flex-col gap-6">
           <LoadingFacts />

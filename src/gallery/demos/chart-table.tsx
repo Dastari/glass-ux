@@ -6,7 +6,11 @@ import { ChartTable } from "../../ui/charts/index.js";
 export default function ChartTableExample() {
   return (
     <SectionPage>
-      <Specimen title="ChartTable" layout="stack">
+      <Specimen
+        title="ChartTable"
+        layout="stack"
+        specimenKey="component-examples:ChartTableExample:0"
+      >
         <div className="h-60 w-full">
           <ChartTable
             visible

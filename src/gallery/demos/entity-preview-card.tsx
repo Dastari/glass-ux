@@ -13,6 +13,7 @@ export default function AiContextLinksSection() {
           title="Preview card"
           description="Identity, live state, three or four facts, two promoted actions from the entity's own action set, and Open in window."
           layout="row"
+          specimenKey="ai-context-links:default:2"
         >
           <EntityPreviewCard entity={E.c106} data={demoResolver.preview(E.c106)} />
           <EntityPreviewCard entity={E.t7102} data={demoResolver.preview(E.t7102)} />

@@ -10,6 +10,7 @@ export default function OptionChipExample() {
         title="OptionChip"
         description="A read-only chip requires no combobox context. Editable chips belong inside a Base UI Chips collection."
         layout="stack"
+        specimenKey="component-examples:OptionChipExample:0"
       >
         <OptionChip label="Northstar Studio" readOnly />
         <OptionChip label="Long sample project name" readOnly invalid="Archived project" />

@@ -9,7 +9,11 @@ export default function ImageTileExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="ImageTile" layout="stack">
+        <Specimen
+          title="ImageTile"
+          layout="stack"
+          specimenKey="component-examples:ImageTileExample:0"
+        >
           <ImageTile image={RESULTS.screen.images[0]!} />
         </Specimen>
       </SectionPage>

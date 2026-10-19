@@ -78,6 +78,7 @@ export default function TabsSection() {
       <Specimen
         title="Local tabs — the exception"
         description="State tabs are only for lightweight presentation toggles inside a component, where resetting on revisit loses nothing: a chart's range, JSON versus table. They look and behave identically."
+        specimenKey="tabs:default:3"
       >
         <ChartWithRange />
       </Specimen>
@@ -85,6 +86,7 @@ export default function TabsSection() {
       <Specimen
         title="Overflow keeps the active tab"
         description="The same overflow in local mode: Settings is active, so it is swapped into the strip."
+        specimenKey="tabs:default:4"
       >
         <div className="w-105 max-w-full">
           <LocalTabs initial="settings" />
@@ -94,6 +96,7 @@ export default function TabsSection() {
       <Specimen
         title="States"
         description="Counts use tabular figures. A disabled tab stays in place and is skipped by the arrow keys."
+        specimenKey="tabs:default:5"
       >
         <div className="w-full">
           <LocalTabs items={STATES} initial="software" />
@@ -103,6 +106,7 @@ export default function TabsSection() {
       <Specimen
         title="Loading"
         description="The skeleton strip occupies the same height and rhythm as the loaded strip. Swap them in place to compare."
+        specimenKey="tabs:default:6"
       >
         <div className="w-105 max-w-full">
           <SwapSlot
@@ -117,13 +121,17 @@ export default function TabsSection() {
         title="Over imagery"
         description="On a card over busy content the underline and text keep their contrast."
         backdrop
+        specimenKey="tabs:default:7"
       >
         <div className="glass-control w-130 max-w-full rounded-surface px-3">
           <LocalTabs items={SHORT} initial="software" />
         </div>
       </Specimen>
 
-      <ContainerLab description="Row, header, tile, pane and tall-narrow (local mode, so each box can hold its own active tab). The strip shows what fits plus More; in the narrowest boxes only the active tab and More remain.">
+      <ContainerLab
+        description="Row, header, tile, pane and tall-narrow (local mode, so each box can hold its own active tab). The strip shows what fits plus More; in the narrowest boxes only the active tab and More remain."
+        specimenKey="tabs:default:8"
+      >
         {() => <LocalTabs initial="activity" />}
       </ContainerLab>
     </SectionPage>

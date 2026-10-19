@@ -6,7 +6,11 @@ import { ChartFrame } from "../../ui/charts/index.js";
 export default function ChartFrameExample() {
   return (
     <SectionPage>
-      <Specimen title="ChartFrame" layout="stack">
+      <Specimen
+        title="ChartFrame"
+        layout="stack"
+        specimenKey="component-examples:ChartFrameExample:0"
+      >
         <div className="h-90 w-full">
           <ChartFrame
             kind="column"

@@ -52,6 +52,7 @@ export default function SegmentedSection() {
       <Specimen
         title="Variants"
         description="Text, icon and text, icons only (each segment keeps its name for screen readers and as a tooltip). Click to watch the pill slide."
+        specimenKey="segmented:default:0"
       >
         <Example label="Text">
           <Segmented options={ENABLED} defaultValue="enabled" aria-label="Remote control" />
@@ -67,6 +68,7 @@ export default function SegmentedSection() {
       <Specimen
         title="Sizes"
         description="sm 32 · md 40 · lg 48 — the same heights as Button and the fields, so it lines up in a toolbar or a form row."
+        specimenKey="segmented:default:1"
       >
         <Matrix
           columns={["Text", "Icons"]}
@@ -96,6 +98,7 @@ export default function SegmentedSection() {
       <Specimen
         title="Tones"
         description="The chosen pill takes the tone. Status tones only when the modes are statuses."
+        specimenKey="segmented:default:2"
       >
         <Matrix
           columns={["Chosen"]}
@@ -114,7 +117,7 @@ export default function SegmentedSection() {
         />
       </Specimen>
 
-      <Specimen title="States" layout="stack">
+      <Specimen title="States" layout="stack" specimenKey="segmented:default:3">
         <Example label="Full width (segments share the width)">
           <div className="w-full max-w-md">
             <Segmented block options={RANGES} defaultValue="24h" aria-label="Range" />
@@ -146,6 +149,7 @@ export default function SegmentedSection() {
         description="Measured against its box (R7): every label while they fit, then icons only when every option has one, then one menu button showing the chosen option. The menu lists the options with a check on the chosen one; the value and the group's name are the same in every form."
         layout="stack"
         wide
+        specimenKey="segmented:default:4"
       >
         {LADDER.map((step) => (
           <Example key={step.label} label={`${step.label} · with icons, then text only`}>
@@ -192,6 +196,7 @@ export default function SegmentedSection() {
       <Specimen
         title="Narrow boxes"
         description="When labels do not fit, segments with icons drop to icons; text-only segments become the menu. Drag the free frame in the container lab to watch it switch."
+        specimenKey="segmented:default:5"
       >
         <Example label="200 px, with icons">
           <div className="w-50">
@@ -205,12 +210,15 @@ export default function SegmentedSection() {
         </Example>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="segmented:default:6">
         <Segmented options={ENABLED} defaultValue="enabled" aria-label="Over imagery" />
         <Segmented options={VIEWS} iconOnly defaultValue="columns" aria-label="View over imagery" />
       </Specimen>
 
-      <ContainerLab description="Full in the pane; in the tile and the tall-narrow column the session modes drop to icons and the five ranges fold to their menu. Drag the free frame to walk the ladder: full → icons → menu.">
+      <ContainerLab
+        description="Full in the pane; in the tile and the tall-narrow column the session modes drop to icons and the five ranges fold to their menu. Drag the free frame to walk the ladder: full → icons → menu."
+        specimenKey="segmented:default:7"
+      >
         {(preset) =>
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center gap-2 px-2">

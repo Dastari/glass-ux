@@ -96,6 +96,7 @@ export default function AiComposerSection() {
           description="Enter sends · Shift+Enter new line · ↑ in an empty composer edits the last prompt · Esc stops a run or closes a menu · / for commands · @ to mention an endpoint, organisation or ticket."
           wide
           layout="stack"
+          specimenKey="ai-composer:default:0"
         >
           <LiveComposer />
         </Specimen>
@@ -105,6 +106,7 @@ export default function AiComposerSection() {
           description="The hero sits on the canvas; the composer is the landing's one card, with suggestions under it."
           wide
           layout="bare"
+          specimenKey="ai-composer:default:1"
         >
           <AiHero>
             <Composer
@@ -122,6 +124,7 @@ export default function AiComposerSection() {
           title="States"
           description="Running turns send into Stop; sending shows the spinner in place; a used budget disables the box and says why, without a banner."
           layout="stack"
+          specimenKey="ai-composer:default:2"
         >
           <Example label="Running">
             <Composer run="running" model={MODEL} onStop={() => {}} defaultValue="" />
@@ -146,6 +149,7 @@ export default function AiComposerSection() {
           title="Context and attachments"
           description="Scope and references as removable entity chips; attachments with upload progress, scanning and rejection in place."
           layout="stack"
+          specimenKey="ai-composer:default:3"
         >
           <Composer
             model={MODEL}
@@ -161,6 +165,7 @@ export default function AiComposerSection() {
           title="Status strip"
           description="Connection, budget and model as one caption line, the composer's last row (status): never a banner."
           layout="stack"
+          specimenKey="ai-composer:default:4"
         >
           <Composer
             model={MODEL}
@@ -184,6 +189,7 @@ export default function AiComposerSection() {
           title="Docked width"
           description="At 26rem the tools drop their labels and the model folds; at 20rem nothing else gives way."
           layout="bare"
+          specimenKey="ai-composer:default:5"
         >
           <DockedColumn>
             <Composer
@@ -197,7 +203,10 @@ export default function AiComposerSection() {
           </DockedColumn>
         </Specimen>
 
-        <ContainerLab description="The composer in fixed boxes: tools become icons, the model folds, the text keeps its box and scrolls.">
+        <ContainerLab
+          description="The composer in fixed boxes: tools become icons, the model folds, the text keeps its box and scrolls."
+          specimenKey="ai-composer:default:6"
+        >
           {() => (
             <LabScroll>
               <Composer

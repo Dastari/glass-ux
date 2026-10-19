@@ -13,6 +13,7 @@ export default function ResultEntityExample() {
           title="ResultEntity"
           description="This renderer displays one typed result. The sample is local fictional data; supply your own result and host handlers."
           layout="stack"
+          specimenKey="component-examples:ResultEntityExample:0"
         >
           <ResultEntity result={RESULTS.c106} />
         </Specimen>

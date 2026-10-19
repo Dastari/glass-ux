@@ -8,7 +8,11 @@ export default function TurnNavigatorExample() {
   const [active, setActive] = useState(0);
   return (
     <SectionPage>
-      <Specimen title="Navigate conversation turns" layout="stack">
+      <Specimen
+        title="Navigate conversation turns"
+        layout="stack"
+        specimenKey="component-examples:TurnNavigatorExample:0"
+      >
         <TurnNavigator
           turns={[
             { index: 1, preview: "Plan an exhibition" },

@@ -118,6 +118,49 @@ export async function generateComponentDemos(program, checker, components) {
       report.push({ id: component.id, name: component.name, covered: false });
       continue;
     }
+    // Number the specimens of the root in source order, so the same specimen gets the same
+    // key in every export's demo. A family document hides a specimen an earlier demo on the
+    // page already showed (HiddenSpecimens in demo-scope.ts).
+    const rootName = explicit ? explicit.name.text : "default";
+    const base = story.fileName.split("/").pop().replace(/\.(section\.)?tsx$/, "");
+    const specimenKeys = new Map();
+    const numberSpecimens = (n) => {
+      const tag = ts.isJsxElement(n)
+        ? n.openingElement.tagName.getText(story)
+        : ts.isJsxSelfClosingElement(n)
+          ? n.tagName.getText(story)
+          : null;
+      if (tag && scopes.has(tag)) {
+        const attributes = (ts.isJsxElement(n) ? n.openingElement : n).attributes.properties;
+        const titleAttribute = attributes.find((a) => ts.isJsxAttribute(a) && a.name.getText(story) === "title");
+        const title =
+          titleAttribute?.initializer && ts.isStringLiteral(titleAttribute.initializer)
+            ? titleAttribute.initializer.text
+            : tag === "ContainerLab"
+              ? "Container lab"
+              : tag;
+        specimenKeys.set(n, { key: `${base}:${rootName}:${specimenKeys.size}`, title });
+      }
+      ts.forEachChild(n, numberSpecimens);
+    };
+    numberSpecimens(root);
+    const kept = [];
+    const withKey = (n) => {
+      const entry = specimenKeys.get(ts.getOriginalNode(n));
+      if (!entry) return n;
+      if (!kept.some((k) => k.key === entry.key)) kept.push(entry);
+      const attribute = ts.factory.createJsxAttribute(ts.factory.createIdentifier("specimenKey"), ts.factory.createStringLiteral(entry.key));
+      if (ts.isJsxElement(n)) {
+        const open = n.openingElement;
+        return ts.factory.updateJsxElement(
+          n,
+          ts.factory.updateJsxOpeningElement(open, open.tagName, open.typeArguments, ts.factory.updateJsxAttributes(open.attributes, [...open.attributes.properties, attribute])),
+          n.children,
+          n.closingElement,
+        );
+      }
+      return ts.factory.updateJsxSelfClosingElement(n, n.tagName, n.typeArguments, ts.factory.updateJsxAttributes(n.attributes, [...n.attributes.properties, attribute]));
+    };
     const scope = (node) =>
       ts.transform(node, [
         (context) => {
@@ -149,7 +192,14 @@ export async function generateComponentDemos(program, checker, components) {
                   [],
                   ts.factory.createJsxJsxClosingFragment(),
                 );
+              if (scopes.has(tag)) return withKey(ts.visitEachChild(n, visit, context));
             }
+            if (
+              ts.isJsxSelfClosingElement(n) &&
+              scopes.has(n.tagName.getText(story)) &&
+              contains(n, component.name)
+            )
+              return withKey(n);
             if (
               ts.isJsxSelfClosingElement(n) &&
               removed.has(n.tagName.getText(story))
@@ -303,7 +353,8 @@ export async function generateComponentDemos(program, checker, components) {
         output +
         "\n",
     );
-    const publicCode = output.replace(
+    // The keys only steer the documentation page; usage examples do not show them.
+    const publicCode = output.replace(/\s*specimenKey="[^"]*"/g, "").replace(
       /(from\s+["'])([^"']+)(["'])/g,
       (_m, a, path, b) => {
         if (!path.startsWith(".")) return a + path + b;
@@ -330,6 +381,7 @@ export async function generateComponentDemos(program, checker, components) {
       name: component.name,
       covered: true,
       source: relative(process.cwd(), story.fileName),
+      specimens: kept,
     });
   }
   writeFileSync(

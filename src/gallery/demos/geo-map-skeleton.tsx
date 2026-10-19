@@ -39,6 +39,7 @@ export default function MapSection() {
         description="Before the map engine arrives, the home region's outline stands in, framed exactly as the map will frame it, so the map fades in over it without a shift. Never a spinner."
         layout="bare"
         wide
+        specimenKey="map:default:6"
       >
         <div className="gallery-map-frame" data-size="short" data-testid="map-skeleton">
           <GeoMapSkeleton region={tasmania} />

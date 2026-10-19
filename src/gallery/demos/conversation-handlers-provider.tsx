@@ -13,6 +13,7 @@ export default function ConversationHandlersProviderExample() {
         title="Wire assistant decisions to the host"
         description="Choose an answer. The host callback displays the submitted answer; no backend is called."
         layout="stack"
+        specimenKey="component-examples:ConversationHandlersProviderExample:0"
       >
         <ConversationHandlersProvider
           handlers={{

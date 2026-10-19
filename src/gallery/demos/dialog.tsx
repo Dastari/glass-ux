@@ -441,6 +441,7 @@ export default function DialogSection() {
       <Specimen
         title="Live"
         description="Esc, the close button and the backdrop close a dialog; focus returns to the button that opened it. Only the body scrolls; header and footer stay put."
+        specimenKey="dialog:default:0"
       >
         <Example label="Sizes">
           {SIZE_DEMOS.map((demo) => (
@@ -477,6 +478,7 @@ export default function DialogSection() {
       <Specimen
         title="Anatomy"
         description="Icon tile, a title and a data subtitle; one scrolling body; footer actions with the primary last. No dividers: the edges appear only while content scrolls beneath them."
+        specimenKey="dialog:default:1"
       >
         <Dialog.Preview size="md">
           <Dialog.Header
@@ -497,6 +499,7 @@ export default function DialogSection() {
       <Specimen
         title="Scroll edges"
         description="Content runs on below the fold, so the footer shows its hairline. Scroll the body: the header gains one too, and the footer's goes at the end."
+        specimenKey="dialog:default:2"
       >
         <Dialog.Preview size="md" height="short">
           <Dialog.Header
@@ -517,6 +520,7 @@ export default function DialogSection() {
         title="Settings dialog"
         description="An L3 rail of sections beside a scrolling pane, at a fixed height so switching sections never resizes it. In a narrow dialog — a phone sheet, a small window — the rail becomes chips."
         wide
+        specimenKey="dialog:default:3"
       >
         <Dialog.Preview size="xl" kind="settings">
           <Dialog.Header icon={<IconSettings />} title="Agent settings" subtitle="LMN-7C71" />
@@ -532,6 +536,7 @@ export default function DialogSection() {
         title="Over imagery"
         description="The frame is glass-overlay with the dialog elevation; text holds its contrast over busy content."
         backdrop
+        specimenKey="dialog:default:4"
       >
         <Dialog.Preview size="sm">
           <Dialog.Header icon={<IconEdit />} title="Rename endpoint" subtitle="NST-C106" />

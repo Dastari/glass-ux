@@ -29,6 +29,7 @@ export default function TextFieldsSection() {
       <Specimen
         title="Textarea"
         description="Grows with its content between minRows and maxRows, then scrolls inside itself. One row is exactly one field height."
+        specimenKey="text-fields:default:2"
       >
         <FormStack>
           <NotesField />
@@ -51,7 +52,7 @@ export default function TextFieldsSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="text-fields:default:4">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-2 px-1">

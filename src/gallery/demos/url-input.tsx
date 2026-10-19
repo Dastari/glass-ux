@@ -11,6 +11,7 @@ export default function UrlFieldSection() {
       <Specimen
         title="Scheme handling"
         description="Leave a field: https:// is added when the scheme is missing, the host lower-cased and a bare trailing slash dropped. Schemes that are not links (javascript:, data:) are refused."
+        specimenKey="url-field:default:0"
       >
         <FormStack className="w-full">
           <Field label="Printer web page" hint="An http:// address says it is not encrypted.">
@@ -22,7 +23,7 @@ export default function UrlFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="url-field:default:2">
         <FormStack>
           <Field label="Empty">
             <UrlInput />
@@ -41,7 +42,7 @@ export default function UrlFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="url-field:default:3">
         <FormStack>
           <Field label="Customer portal">
             <UrlInput defaultValue="https://northstar.example/portal" />
@@ -49,7 +50,7 @@ export default function UrlFieldSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="url-field:default:4">
         <div className="flex h-full items-center p-1">
           <UrlInput
             size="sm"

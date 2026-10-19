@@ -12,6 +12,7 @@ export default function ToasterExample() {
         title="Shared notification viewport"
         description="Mount once at the root; ActionProvider supplies this automatically. Activate a button to see a notification."
         layout="stack"
+        specimenKey="component-examples:ToasterExample:0"
       >
         <Toaster />
         <Button onClick={() => toast.success("Sample exhibition saved")}>Show success toast</Button>

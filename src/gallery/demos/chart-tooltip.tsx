@@ -14,6 +14,7 @@ export default function ChartTooltipExample() {
         title="Plot readout"
         description="Hover the stage or focus the button to open the chart tooltip."
         layout="stack"
+        specimenKey="component-examples:ChartTooltipExample:0"
       >
         <div
           ref={anchor}

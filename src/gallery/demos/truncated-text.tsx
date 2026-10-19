@@ -22,6 +22,7 @@ export default function TooltipSection() {
         title="Truncated text"
         description="Single-line labels end in an ellipsis. Hover them: only the ones that were actually cut show a tooltip with the full text."
         layout="grid"
+        specimenKey="tooltip:default:3"
       >
         <TruncateBox label="End (fits)">
           <TruncatedText>NST-C106</TruncatedText>
@@ -39,7 +40,10 @@ export default function TooltipSection() {
         </TruncateBox>
       </Specimen>
 
-      <ContainerLab description="TruncatedText in each box: names end in an ellipsis, identifiers keep both ends. Nothing is clipped without one.">
+      <ContainerLab
+        description="TruncatedText in each box: names end in an ellipsis, identifiers keep both ends. Nothing is clipped without one."
+        specimenKey="tooltip:default:4"
+      >
         {() => (
           <div className="flex h-full flex-col justify-center gap-1 p-2">
             <TruncatedText className="type-label">Cedar Vale Collective</TruncatedText>

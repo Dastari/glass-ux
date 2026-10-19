@@ -9,7 +9,11 @@ export default function EntityPreviewContentExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="EntityPreviewContent" layout="stack">
+        <Specimen
+          title="EntityPreviewContent"
+          layout="stack"
+          specimenKey="component-examples:EntityPreviewContentExample:0"
+        >
           <EntityPreviewContent entity={E.c106Online} />
         </Specimen>
       </SectionPage>

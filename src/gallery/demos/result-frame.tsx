@@ -10,7 +10,11 @@ export default function ResultFrameExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="ResultFrame" layout="stack">
+        <Specimen
+          title="ResultFrame"
+          layout="stack"
+          specimenKey="component-examples:ResultFrameExample:0"
+        >
           <ResultFrame
             result={RESULTS.health}
             icon={<IconSparkle />}

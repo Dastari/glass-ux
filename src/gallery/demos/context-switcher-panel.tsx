@@ -24,6 +24,7 @@ export default function ContextSwitcherSection() {
         title="List"
         description="The popup's contents: search, All organisations, Recent, then every organisation as a tree. Typing ranks matches by name, word, initials, then anywhere, and names a child's parent. Arrow keys move, Enter chooses, Esc closes. On phones the same list is a bottom sheet."
         layout="bare"
+        specimenKey="context-switcher:default:1"
       >
         <Panel />
       </Specimen>

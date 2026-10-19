@@ -109,6 +109,7 @@ export default function SettingRowSection() {
       <Specimen
         title="Every control type"
         description="Switches, segmented controls of up to four options, a read-only value with an action, a plain action, and a value on its own. The label names the control; the description says what it does."
+        specimenKey="setting-row:default:0"
       >
         <FormStack>
           <Rows />
@@ -118,6 +119,7 @@ export default function SettingRowSection() {
       <Specimen
         title="Saving in place"
         description="Setting rows that apply at once need no Save button (R15.11). Toggle one: a spinner after 120 ms, then a drawn ✓. The second fails: the switch rolls back, the row says why, and a toast names the target."
+        specimenKey="setting-row:default:1"
       >
         <FormStack>
           <SavingSwitch
@@ -136,6 +138,7 @@ export default function SettingRowSection() {
         title="Narrow boxes"
         description="When the text would get narrower than 12rem the control wraps under it; below 16rem it aligns to the start."
         layout="row"
+        specimenKey="setting-row:default:2"
       >
         <div className="w-60">
           <FormStack>
@@ -157,7 +160,7 @@ export default function SettingRowSection() {
         </div>
       </Specimen>
 
-      <Specimen title="Disabled and grouped">
+      <Specimen title="Disabled and grouped" specimenKey="setting-row:default:3">
         <FormStack>
           <FormGroup label="Updates">
             <SettingRow
@@ -187,7 +190,7 @@ export default function SettingRowSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="setting-row:default:5">
         {(preset) =>
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center px-3">

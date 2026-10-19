@@ -12,6 +12,7 @@ export default function AiCardExample() {
         title="AiCard"
         description="Compose the header, body and footer. The card reads its material from AiSurfaceProvider."
         layout="stack"
+        specimenKey="component-examples:AiCardExample:0"
       >
         <AiCard.Root>
           <AiCard.Header

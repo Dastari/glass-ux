@@ -8,7 +8,7 @@ import { MacAddressInput } from "../../ui/mac-field/index.js";
 export default function MacFieldSection() {
   return (
     <SectionPage>
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="mac-field:default:1">
         <FormStack>
           <Field label="Empty">
             <MacAddressInput width="medium" />
@@ -27,7 +27,7 @@ export default function MacFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="mac-field:default:2">
         <FormStack>
           <Field label="Desk phone">
             <MacAddressInput defaultValue="00:15:65:AA:BB:CC" width="medium" />
@@ -35,7 +35,7 @@ export default function MacFieldSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="mac-field:default:3">
         <div className="flex h-full items-center p-1">
           <MacAddressInput size="sm" defaultValue="00:15:65:AA:BB:CC" aria-label="MAC address" />
         </div>

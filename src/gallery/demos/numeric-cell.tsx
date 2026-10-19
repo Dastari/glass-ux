@@ -6,7 +6,11 @@ import { SectionPage, Specimen } from "../kit.js";
 export default function NumericCellExample() {
   return (
     <SectionPage>
-      <Specimen title="Formatted numeric table values" layout="stack">
+      <Specimen
+        title="Formatted numeric table values"
+        layout="stack"
+        specimenKey="component-examples:NumericCellExample:0"
+      >
         <NumericCell value={42} unit="places" />
         <NumericCell value={18.5} unit="GB" fractionDigits={1} />
       </Specimen>

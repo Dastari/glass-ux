@@ -6,7 +6,11 @@ import { SectionPage, Specimen } from "../kit.js";
 export default function PanelBodyExample() {
   return (
     <SectionPage>
-      <Specimen title="Panel body content" layout="stack">
+      <Specimen
+        title="Panel body content"
+        layout="stack"
+        specimenKey="component-examples:PanelBodyExample:0"
+      >
         <Panel>
           <PanelHeader title="Exhibition notes" />
           <PanelBody>

@@ -6,7 +6,11 @@ import { AiCard, AiSurfaceProvider } from "../../ai/index.js";
 export default function AiSurfaceProviderExample() {
   return (
     <SectionPage>
-      <Specimen title="AiSurfaceProvider" layout="stack">
+      <Specimen
+        title="AiSurfaceProvider"
+        layout="stack"
+        specimenKey="component-examples:AiSurfaceProviderExample:0"
+      >
         <AiSurfaceProvider surface="canvas">
           <AiCard.Root>
             <AiCard.Header title="On the canvas" />

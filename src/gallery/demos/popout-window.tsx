@@ -39,6 +39,7 @@ export default function PopoutWindowExample() {
         title="Standalone window host"
         description="A real application renders this component on its pop-out route with the same manager storage/channel as the workspace."
         layout="stack"
+        specimenKey="component-examples:PopoutWindowExample:0"
       >
         <WindowManagerProvider manager={manager}>
           <div className="relative h-90 w-full contain-layout">

@@ -62,6 +62,7 @@ export default function PhoneFieldSection() {
       <Specimen
         title="In a form"
         description="PhoneField and MobileField store E.164 (“+61412345678”, “+61362345678;ext=204”). mobileSchema refuses landlines; both check the number is valid for its country."
+        specimenKey="phone-field:default:2"
       >
         <ContactDemo />
       </Specimen>

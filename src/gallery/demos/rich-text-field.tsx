@@ -59,6 +59,7 @@ export default function RichTextSection() {
         title="In a form"
         description="Validation starts when focus leaves the complete editor. Empty documents are rejected; saving receives a Markdown string."
         layout="stack"
+        specimenKey="rich-text:default:1"
       >
         <DocumentForm />
       </Specimen>

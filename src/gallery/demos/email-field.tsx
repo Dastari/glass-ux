@@ -38,6 +38,7 @@ export default function EmailFieldSection() {
       <Specimen
         title="In a form"
         description="Leave each field to see its hint. The domain is lower-cased and mailto: dropped on blur."
+        specimenKey="email-field:default:1"
       >
         <EmailDemo />
       </Specimen>

@@ -8,7 +8,11 @@ export default function FileGlyphExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="FileGlyph" layout="stack">
+        <Specimen
+          title="FileGlyph"
+          layout="stack"
+          specimenKey="component-examples:FileGlyphExample:0"
+        >
           <FileGlyph name="exhibition-brief.pdf" mime="application/pdf" />
           <FileGlyph name="reservations.csv" mime="text/csv" />
         </Specimen>

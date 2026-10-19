@@ -9,7 +9,11 @@ export default function CitationMarkerExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="CitationMarker" layout="stack">
+        <Specimen
+          title="CitationMarker"
+          layout="stack"
+          specimenKey="component-examples:CitationMarkerExample:0"
+        >
           <SourcesProvider sources={SOURCES}>
             <p>
               The sample report includes a source

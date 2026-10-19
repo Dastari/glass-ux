@@ -12,6 +12,7 @@ export default function BadgeSection() {
         title="Endpoint status"
         description="One definition per state, shared by badges, dots, the tree and the dock. Only live and connecting pulse; installing spins. Reduced motion stops the pulse."
         layout="stack"
+        specimenKey="badge:default:1"
       >
         <Example label="StatusBadge · md">
           {STATUSES.map((status) => (

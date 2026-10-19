@@ -6,7 +6,11 @@ import { PrivilegedMark } from "../../ui/entity-settings/index.js";
 export default function PrivilegedMarkExample() {
   return (
     <SectionPage>
-      <Specimen title="PrivilegedMark" layout="stack">
+      <Specimen
+        title="PrivilegedMark"
+        layout="stack"
+        specimenKey="component-examples:PrivilegedMarkExample:0"
+      >
         <p>
           Restricted project setting <PrivilegedMark />
         </p>

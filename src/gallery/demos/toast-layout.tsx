@@ -7,7 +7,11 @@ import { ToastLayout } from "../../ui/toast/index.js";
 export default function ToastLayoutExample() {
   return (
     <SectionPage>
-      <Specimen title="ToastLayout" layout="stack">
+      <Specimen
+        title="ToastLayout"
+        layout="stack"
+        specimenKey="component-examples:ToastLayoutExample:0"
+      >
         <ToastLayout
           tone="success"
           title="Exhibition saved"

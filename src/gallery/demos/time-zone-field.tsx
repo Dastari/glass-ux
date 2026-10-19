@@ -46,6 +46,7 @@ export default function TimeZoneSelectSection() {
       <Specimen
         title="By city, with the offset now"
         description="Type a city or region. Each row shows the abbreviation and offset today, so daylight saving is visible; the hint shows the time there now."
+        specimenKey="time-zone-select:default:0"
       >
         <ZoneDemo />
       </Specimen>

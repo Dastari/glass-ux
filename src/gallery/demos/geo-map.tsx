@@ -170,6 +170,7 @@ export default function MapSection() {
       <OnCanvas
         title="Home region"
         description="The map has no material of its own, so the canvas shows through as the sea. The home region glows in the data hue, and basemap detail fades in as you zoom. Sites outside Tasmania are counted in the pill at the bottom."
+        specimenKey="map:default:0"
       >
         <LiveMap id="map-hero" />
       </OnCanvas>
@@ -178,6 +179,7 @@ export default function MapSection() {
         title="Attribution in narrow maps"
         description="The required minimal credit stays readable in narrow containers and at larger UI scales. The information control retains the complete source and licence links."
         layout="bare"
+        specimenKey="map:default:1"
       >
         <LiveMap id="map-attribution" config={ATTRIBUTION_CONFIG} />
       </Specimen>
@@ -187,6 +189,7 @@ export default function MapSection() {
         description="The style is generated from tokens at the map's own element, so a mode or palette island recolours it: the glow, water, roads and labels all follow. Glass, Frosted and Solid (the toolbar above) change only the controls; the map is never a material."
         layout="bare"
         wide
+        specimenKey="map:default:2"
       >
         <div className="gallery-map-islands">
           <Example label="Light">
@@ -211,11 +214,15 @@ export default function MapSection() {
         description="“View as list” swaps the map for the caller's table in the same box; “View as map” in the table's toolbar swaps back. The map keeps its camera while hidden."
         layout="bare"
         wide
+        specimenKey="map:default:5"
       >
         <ListViewExample />
       </Specimen>
 
-      <ContainerLab description="The map fills whatever box it is given. In small boxes the zoom buttons and then the other controls drop out, while pinch and scroll still zoom, and the credits shorten without losing their source links.">
+      <ContainerLab
+        description="The map fills whatever box it is given. In small boxes the zoom buttons and then the other controls drop out, while pinch and scroll still zoom, and the credits shorten without losing their source links."
+        specimenKey="map:default:8"
+      >
         {() => <LiveMap id="map-lab" className="gallery-map-fill" />}
       </ContainerLab>
     </SectionPage>

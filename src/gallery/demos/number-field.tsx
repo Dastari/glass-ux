@@ -14,6 +14,7 @@ export default function NumberFieldSection() {
         title="Sizes and states"
         description="↑ ↓ step, Shift steps by 10, Home and End jump to the bounds. Values clamp on blur."
         wide
+        specimenKey="number-field:default:0"
       >
         <Matrix
           columns={["Empty", "Value", "Read-only", "Invalid", "Disabled"]}
@@ -72,6 +73,7 @@ export default function NumberFieldSection() {
       <Specimen
         title="In a form"
         description='Numbers are short values: give them width="short" unless the unit or grouping needs more.'
+        specimenKey="number-field:default:1"
       >
         <FormStack>
           <Field label="Disk alert threshold" hint="Alert when a volume passes this.">
@@ -107,6 +109,7 @@ export default function NumberFieldSection() {
       <Specimen
         title="Scrub label"
         description="Drag the prefix sideways to change the value — for dense numeric inputs such as a resolution."
+        specimenKey="number-field:default:2"
       >
         <Example label="Remote resolution">
           <NumberField
@@ -140,7 +143,7 @@ export default function NumberFieldSection() {
         </Example>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="number-field:default:3">
         <NumberField
           defaultValue={90}
           unit="%"
@@ -155,7 +158,7 @@ export default function NumberFieldSection() {
         />
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="number-field:default:4">
         {(preset) =>
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center gap-2 px-1">

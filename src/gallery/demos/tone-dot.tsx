@@ -11,6 +11,7 @@ export default function ToneDotSection() {
       <Specimen
         title="Tones and markers"
         description="A shared state marker for activity, presence and informational measurements."
+        specimenKey="tone-dot:default:0"
       >
         <Matrix
           columns={["Dot", "Ring", "Live pulse"]}
@@ -25,6 +26,7 @@ export default function ToneDotSection() {
       <Specimen
         title="Visible equivalent labels"
         description="The decorative marker stays out of the accessibility tree when the text already names the state."
+        specimenKey="tone-dot:default:1"
       >
         <span className="inline-flex items-center gap-inline">
           <ToneDot tone="success" />

@@ -21,6 +21,7 @@ export default function AiSessionsSection() {
           title="Docked assistant"
           description="The pane beside an endpoint page, scoped to it: a new chat offers contextual suggestions. The composer floats over the bottom of the pane with the status line inside it."
           layout="bare"
+          specimenKey="ai-sessions:default:3"
         >
           <div className="ai-pane-sample">
             <AssistantPane

@@ -8,7 +8,11 @@ export default function ResultJsonExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="ResultJson" layout="stack">
+        <Specimen
+          title="ResultJson"
+          layout="stack"
+          specimenKey="component-examples:ResultJsonExample:0"
+        >
           <ResultJson
             result={{
               id: "sample-json",

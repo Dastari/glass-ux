@@ -41,11 +41,12 @@ export default function CoordinatesFieldSection() {
       <Specimen
         title="Paste anything"
         description="-42.88334, 147.32688 · 42°53′0″S 147°19′37″E · 42.88334S 147.32688E · a Google Maps, OpenStreetMap or Apple Maps link · geo:-42.88,147.33. Leave the field and it becomes decimal degrees; the hint shows DMS."
+        specimenKey="coordinates-field:default:0"
       >
         <PasteDemo />
       </Specimen>
 
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="coordinates-field:default:2">
         <FormStack>
           <Field label="Empty">
             <CoordinatesInput />
@@ -64,7 +65,7 @@ export default function CoordinatesFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="coordinates-field:default:3">
         <FormStack>
           <Field label="Site position">
             <CoordinatesInput
@@ -75,7 +76,7 @@ export default function CoordinatesFieldSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="coordinates-field:default:4">
         <div className="flex h-full items-center p-1">
           <CoordinatesInput
             size="sm"

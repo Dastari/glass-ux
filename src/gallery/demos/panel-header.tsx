@@ -8,7 +8,11 @@ import { Button } from "../../ui/button/index.js";
 export default function PanelHeaderExample() {
   return (
     <SectionPage>
-      <Specimen title="Panel heading and actions" layout="stack">
+      <Specimen
+        title="Panel heading and actions"
+        layout="stack"
+        specimenKey="component-examples:PanelHeaderExample:0"
+      >
         <Panel>
           <PanelHeader
             icon={<IconOrganisation />}

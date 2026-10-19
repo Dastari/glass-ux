@@ -76,6 +76,7 @@ export default function AppShellSection() {
         description="The application context: organisation switcher, search, settings and the account with its notification badge. As the bar narrows, the organisation and account fold to avatars and search to a button."
         wide
         layout="stack"
+        specimenKey="app-shell:default:4"
       >
         {(["wide", "medium", "narrow"] as const).map((width) => (
           <Example

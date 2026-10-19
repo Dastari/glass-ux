@@ -175,6 +175,9 @@ interface Session {
   geometry: Map<string, ZoneGeometry>
   scrollers: ScrollerGeometry[]
   geometryDirty: boolean
+  /** A zone found covered by something else (a menu, a sticky header) at the last check,
+   *  until the geometry changes. */
+  occluded: string | null
   sourceRect: Box
   ancestors: Map<HTMLElement, Ancestor[]>
   layouts: Map<string, ZoneLayout>
@@ -862,6 +865,7 @@ export class DragDropManager {
   private measureGeometry() {
     const session = this.session as Session
     session.geometryDirty = false
+    session.occluded = null
     session.geometry.clear()
     const viewport: Edges = { top: 0, left: 0, bottom: window.innerHeight, right: window.innerWidth }
     const rects = new Map<HTMLElement, DOMRect>()
@@ -926,10 +930,27 @@ export class DragDropManager {
     return (best ?? fallback)?.zone ?? null
   }
 
+  /**
+   * Whether the zone is what the person sees at a point, not covered by a menu or a sticky
+   * header. One real hit-test under the shield, made only when the target zone would change.
+   */
+  private uncovered(zone: ZoneRecord, x: number, y: number) {
+    const session = this.session as Session
+    if (session.occluded === zone.id) return false
+    const shield = session.shield
+    if (shield) shield.style.pointerEvents = "none"
+    const hit = document.elementFromPoint(x, y)
+    if (shield) shield.style.pointerEvents = ""
+    const visible = !hit || zone.element === hit || zone.element?.contains(hit) === true
+    if (!visible) session.occluded = zone.id
+    return visible
+  }
+
   private pointerTarget() {
     const session = this.session as Session
     const { x, y } = session.pointer
-    const zone = this.hitZone(x, y)
+    let zone = this.hitZone(x, y)
+    if (zone && zone !== session.over && !this.uncovered(zone, x, y)) zone = null
     let index: number | null = null
     const layout = zone ? session.layouts.get(zone.id) : undefined
     const geometry = zone ? session.geometry.get(zone.id) : undefined
@@ -1016,11 +1037,13 @@ export class DragDropManager {
     if (session.input === "pointer") {
       // A preview that ran ahead along a predicted path settles on the pointer once it stops.
       if (now - session.movedAt > LEAD_HOLD && (session.drawn.x !== session.pointer.x || session.drawn.y !== session.pointer.y)) session.drawn = session.pointer
+      // Reads before writes: auto-scroll reads scroll positions before targeting writes
+      // attributes, gaps and growth, so no frame forces a layout in between.
+      this.autoScrollStep()
       if (session.moved) {
         session.moved = false
         this.pointerTarget()
       }
-      this.autoScrollStep()
     }
     this.placeGhost()
     session.frame = requestAnimationFrame(this.tick)
@@ -1066,6 +1089,7 @@ export class DragDropManager {
       geometry: new Map(),
       scrollers: [],
       geometryDirty: true,
+      occluded: null,
       sourceRect: boxOf(rect),
       ancestors: new Map(),
       layouts: new Map(),

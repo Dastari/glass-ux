@@ -85,6 +85,7 @@ export default function DetailTileSection() {
         title="Detail grid"
         description="Icon in the shared tile box, caption label, value at medium weight and an optional second line. Columns follow the container — never a fixed count."
         wide
+        specimenKey="detail-tile:default:0"
       >
         <div className="w-full">
           <Facts />
@@ -94,6 +95,7 @@ export default function DetailTileSection() {
       <Specimen
         title="Values"
         description="Values wrap to two lines then end with an ellipsis; identifiers stay on one line. The full value is in the title."
+        specimenKey="detail-tile:default:1"
       >
         <div className="w-110 max-w-full">
           <DetailGrid min="lg">
@@ -123,6 +125,7 @@ export default function DetailTileSection() {
         wide
         title="Loading"
         description="Each skeleton tile is the loaded tile's exact box: same icon box, same type roles, same lines."
+        specimenKey="detail-tile:default:2"
       >
         <div className="flex w-full flex-col gap-6">
           <LoadingFacts />
@@ -149,6 +152,7 @@ export default function DetailTileSection() {
       <Specimen
         title="Without icons"
         description="Tiles narrower than 13rem drop the icon box. A list of plain facts can omit icons everywhere."
+        specimenKey="detail-tile:default:3"
       >
         <div className="w-110 max-w-full">
           <Facts facts={FACTS.slice(0, 6).map((fact) => ({ ...fact, icon: undefined }))} min="sm" />
@@ -159,13 +163,17 @@ export default function DetailTileSection() {
         title="Over imagery"
         description="Tiles are a fill material, so they sit inside any pane without stacking blur."
         backdrop
+        specimenKey="detail-tile:default:4"
       >
         <div className="w-full">
           <Facts facts={FACTS.slice(0, 4)} />
         </div>
       </Specimen>
 
-      <ContainerLab description="Columns reflow with the box; narrow tiles drop the icon; the pane and tall-narrow boxes scroll the grid inside themselves.">
+      <ContainerLab
+        description="Columns reflow with the box; narrow tiles drop the icon; the pane and tall-narrow boxes scroll the grid inside themselves."
+        specimenKey="detail-tile:default:5"
+      >
         {() => (
           <ScrollArea aria-label="NST-C106 details">
             <div className="p-2">

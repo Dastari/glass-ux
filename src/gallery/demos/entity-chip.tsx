@@ -27,6 +27,7 @@ export default function AiContextLinksSection() {
           title="Kinds"
           description="One glyph per kind (registered by the application), the live status dot on endpoints, a toned state on tickets and alerts, a version on software."
           wide
+          specimenKey="ai-context-links:default:0"
         >
           {KINDS.map(([label, entity]) => (
             <Example key={label} label={label}>
@@ -38,6 +39,7 @@ export default function AiContextLinksSection() {
         <Specimen
           title="Variants"
           description="chip for prose and the composer · plain for table cells and lists · removable for picked context."
+          specimenKey="ai-context-links:default:3"
         >
           <Example label="Inline (in a line of text)">
             <span>

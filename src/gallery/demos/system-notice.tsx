@@ -14,6 +14,7 @@ export default function AiMessagesSection() {
           title="Conversation notices"
           description="Quiet inline notices identify changes to conversation context. Use an icon and an optional timestamp; omit the timestamp for a persistent notice."
           layout="stack"
+          specimenKey="ai-messages:default:2"
         >
           <SystemNotice icon={<IconLayers />} at={NOW - 46 * 60000}>
             Sample document added to the conversation context

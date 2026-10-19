@@ -10,6 +10,7 @@ export default function InputSkeletonExample() {
         title="InputSkeleton"
         description="The loading state keeps the corresponding content dimensions while data arrives."
         layout="stack"
+        specimenKey="component-examples:InputSkeletonExample:0"
       >
         <div className="h-45 w-full">
           <InputSkeleton />

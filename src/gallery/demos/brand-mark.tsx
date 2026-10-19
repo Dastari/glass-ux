@@ -10,6 +10,7 @@ export default function BrandSection() {
       <Specimen
         title="Configured host mark"
         description="BrandMark renders the product mark configured by the consuming application. The standalone docs configure the Glass UX mark; an embedded gallery retains its host's branding."
+        specimenKey="brand:default:1"
       >
         <BrandMark mark="product" className="gallery-mark-lg" label="Configured product mark" />
       </Specimen>
@@ -18,6 +19,7 @@ export default function BrandSection() {
         title="Over imagery"
         description="Inside .over-imagery a mark gets the canvas halo every bare icon gets, so it reads on any image."
         backdrop
+        specimenKey="brand:default:4"
       >
         <Example label="Product">
           <BrandLogo source={BRAND_SOURCES.product} tones="brand" className="gallery-mark-lg" />

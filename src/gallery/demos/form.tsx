@@ -128,6 +128,7 @@ export default function FormSection() {
       <Specimen
         title="Validation flow"
         description="One field per row in a single column (R15.2). Leave a field to validate it; once it shows an error it re-checks as you type, so the message clears the moment it is fixed. Save validates everything and focuses the first problem. Errors replace hints in place — nothing moves."
+        specimenKey="form:default:0"
       >
         <ContactForm />
       </Specimen>
@@ -137,6 +138,7 @@ export default function FormSection() {
         presets={CONTAINER_PRESETS.filter(
           (preset) => preset.id !== "row" && preset.id !== "header",
         )}
+        specimenKey="form:default:2"
       >
         <div className="h-full overflow-y-auto p-3" data-scroll-container>
           <ContactForm />

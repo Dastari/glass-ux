@@ -14,6 +14,7 @@ export default function AiComposerSection() {
           description="The hero sits on the canvas; the composer is the landing's one card, with suggestions under it."
           wide
           layout="bare"
+          specimenKey="ai-composer:default:1"
         >
           <AiHero>
             <Composer
@@ -31,6 +32,7 @@ export default function AiComposerSection() {
           title="Docked width"
           description="At 26rem the tools drop their labels and the model folds; at 20rem nothing else gives way."
           layout="bare"
+          specimenKey="ai-composer:default:5"
         >
           <DockedColumn>
             <Composer

@@ -180,3 +180,51 @@ test("on touch a long press lifts a card and a quick swipe scrolls instead @resp
   expect(await titles(done)).toContain("Order linen canvas");
   expect(await titles(backlog)).not.toContain("Order linen canvas");
 });
+
+test("the preview stays under the pointer far from the origin, in the top layer, and the wheel still scrolls", async ({ page }) => {
+  const board = await open(page);
+  const card = column(board, "Backlog").locator("li").first();
+  const box = (await card.boundingBox())!;
+  const grab = { x: 30, y: 16 };
+  await page.mouse.move(box.x + grab.x, box.y + grab.y);
+  await page.mouse.down();
+  // Far right, where a scale applied to the position would show as a large drift.
+  const far = { x: page.viewportSize()!.width - 120, y: box.y + 40 };
+  for (let step = 1; step <= 20; step++) await page.mouse.move(box.x + grab.x + ((far.x - box.x - grab.x) * step) / 20, box.y + grab.y + ((far.y - box.y - grab.y) * step) / 20);
+  await page.waitForTimeout(400);
+  const preview = await page.locator(".fa-dnd-ghost").evaluate((ghost) => ({
+    rect: ghost.getBoundingClientRect().toJSON(),
+    topLayer: ghost.matches(":popover-open"),
+    shield: document.querySelector(".fa-dnd-shield")?.matches(":popover-open") ?? false,
+  }));
+  expect(Math.abs(preview.rect.x + grab.x - far.x)).toBeLessThan(1.5);
+  expect(Math.abs(preview.rect.y + grab.y - far.y)).toBeLessThan(1.5);
+  expect(preview.topLayer).toBe(true);
+  expect(preview.shield).toBe(true);
+  // The shield passes the wheel to the scroll container under the pointer.
+  const scroller = page.locator(".docs-content");
+  const before = await scroller.evaluate((element) => element.scrollTop);
+  await page.mouse.wheel(0, 300);
+  await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).toBeGreaterThan(before);
+  await page.keyboard.press("Escape");
+  await page.mouse.up();
+  await expect(page.locator(".fa-dnd-ghost, .fa-dnd-shield")).toHaveCount(0);
+});
+
+test("a zone covered by something else does not take the item", async ({ page }) => {
+  const board = await open(page);
+  const done = column(board, "Done");
+  const doneBox = (await done.boundingBox())!;
+  // A fixed panel over the Done column, as a menu or sticky header would be.
+  await page.evaluate(({ x, y, w, h }) => {
+    const cover = document.createElement("div");
+    cover.id = "cover";
+    Object.assign(cover.style, { position: "fixed", left: `${x}px`, top: `${y}px`, width: `${w}px`, height: `${h}px`, zIndex: "50", background: "white" });
+    document.body.append(cover);
+  }, { x: doneBox.x, y: doneBox.y, w: doneBox.width, h: doneBox.height });
+  const card = column(board, "Backlog").locator("li").first();
+  await carry(page, card, { x: doneBox.x + doneBox.width / 2, y: doneBox.y + 30 });
+  await expect(done).not.toHaveAttribute("data-drop-over", "");
+  await page.mouse.up();
+  expect(await titles(done)).toEqual(["Book courier for crates"]);
+});

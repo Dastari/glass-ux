@@ -11,6 +11,7 @@ export default function PasswordFieldSection() {
       <Specimen
         title="Reveal, Caps Lock and strength"
         description="The eye shows and hides the password (a tooltip names it; aria-pressed says which). With Caps Lock on, a note appears inside the box. New passwords get a strength bar along the box's lower edge; the words are in the message line."
+        specimenKey="password-field:default:0"
       >
         <FormStack className="w-full" data-testid="password-demo">
           <Field
@@ -35,6 +36,7 @@ export default function PasswordFieldSection() {
       <Specimen
         title="Generate and copy"
         description="Generate draws from the browser's cryptographic random source, reveals the result and offers Copy. Safari reads the matching password rules."
+        specimenKey="password-field:default:1"
       >
         <FormStack className="w-full">
           <Field label="Service account password">
@@ -43,7 +45,7 @@ export default function PasswordFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="password-field:default:3">
         <FormStack>
           <Field label="Empty">
             <PasswordInput width="medium" />
@@ -59,7 +61,7 @@ export default function PasswordFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="password-field:default:4">
         <FormStack>
           <Field label="New password">
             <PasswordInput defaultValue="x7#Qm9!vLp2@Rt8^Wk" generate width="medium" />
@@ -67,7 +69,7 @@ export default function PasswordFieldSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="password-field:default:5">
         <div className="flex h-full items-center p-1">
           <PasswordInput
             size="sm"

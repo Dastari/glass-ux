@@ -13,6 +13,7 @@ export default function ResultChartExample() {
           title="ResultChart"
           description="This renderer displays one typed result. The sample is local fictional data; supply your own result and host handlers."
           layout="stack"
+          specimenKey="component-examples:ResultChartExample:0"
         >
           <ResultChart result={RESULTS.latency} />
         </Specimen>

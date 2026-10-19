@@ -57,6 +57,7 @@ export default function OtpFieldSection() {
       <Specimen
         title="Submit on complete"
         description="With autoSubmit the last digit submits the form; the boxes show the outcome in place."
+        specimenKey="otp-field:default:1"
       >
         <VerifyDemo />
       </Specimen>

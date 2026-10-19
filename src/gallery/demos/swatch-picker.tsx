@@ -69,6 +69,7 @@ export default function SwatchPickerSection() {
       <Specimen
         title="Variants"
         description="Palettes paint their own accent gradient (each swatch is a palette island, right in both modes). Colours take a token. Hover or focus a swatch for its name."
+        specimenKey="swatch-picker:default:0"
       >
         <Example label="Palettes">
           <SwatchPicker options={PALETTE_OPTIONS} defaultValue="ocean" aria-label="Palette" />
@@ -81,6 +82,7 @@ export default function SwatchPickerSection() {
       <Specimen
         title="Sizes"
         description="sm 32 for toolbars (the design site's palette chooser) · md 40 beside fields and segmented controls."
+        specimenKey="swatch-picker:default:1"
       >
         <Matrix
           columns={["Palettes"]}
@@ -99,7 +101,7 @@ export default function SwatchPickerSection() {
         />
       </Specimen>
 
-      <Specimen title="States" layout="stack">
+      <Specimen title="States" layout="stack" specimenKey="swatch-picker:default:2">
         <Example label="In a setting row (the row's label names it)">
           <div className="w-full max-w-xl">
             <SettingRow
@@ -138,6 +140,7 @@ export default function SwatchPickerSection() {
         description="Measured against its box (R7), like the segmented control: every swatch while they fit, else one button showing the chosen swatch. Its menu lists the swatches with their names and a check on the chosen one. The button keeps its width whatever the value; the value and the group's name are the same in both forms."
         layout="stack"
         wide
+        specimenKey="swatch-picker:default:3"
       >
         {LADDER.map((step) => (
           <Example key={step.label} label={`${step.label} · md, then sm`}>
@@ -185,13 +188,14 @@ export default function SwatchPickerSection() {
         description="A fa-fit-row gives its controls a share of one line and squeezes them in order, fa-fit-1 first: the palette folds to its menu, then the range, then the density. Drag the frame's corner."
         layout="bare"
         wide
+        specimenKey="swatch-picker:default:4"
       >
         <div className="gallery-lab-frame" data-resizable="" style={{ width: 640, height: 56 }}>
           <FitToolbar label="Toolbar" />
         </div>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="swatch-picker:default:5">
         <SwatchPicker
           options={PALETTE_OPTIONS}
           defaultValue="emerald"
@@ -199,7 +203,10 @@ export default function SwatchPickerSection() {
         />
       </Specimen>
 
-      <ContainerLab description="In the row, the header and the free frame the palette shares a toolbar (fa-fit-row) and folds to its menu first; in the pane the swatches fit, and in the narrow column they fold. Drag the free frame to watch the order.">
+      <ContainerLab
+        description="In the row, the header and the free frame the palette shares a toolbar (fa-fit-row) and folds to its menu first; in the pane the swatches fit, and in the narrow column they fold. Drag the free frame to watch the order."
+        specimenKey="swatch-picker:default:6"
+      >
         {(preset) =>
           preset === null || preset.id === "row" || preset.id === "header" ? (
             <FitToolbar label={`Toolbar (${preset?.label ?? "free frame"})`} />

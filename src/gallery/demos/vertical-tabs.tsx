@@ -51,6 +51,7 @@ export default function VerticalTabsSection() {
       <Specimen
         title="Local sections — the exception"
         description="State-held sections only for lightweight toggles inside a component, where resetting on revisit loses nothing. Identical look and keyboard; the remaining specimens use this mode so each can hold its own state."
+        specimenKey="vertical-tabs:default:2"
       >
         <div className="w-full">
           <VerticalTabs.Root items={FOUR} defaultValue="updates" aria-label="Preview sections">
@@ -62,6 +63,7 @@ export default function VerticalTabsSection() {
       <Specimen
         title="Narrow: chips"
         description="Under 36rem of container width, up to six sections become a scrolling chip strip above the content."
+        specimenKey="vertical-tabs:default:3"
       >
         <div className="w-90 max-w-full">
           <VerticalTabs.Root
@@ -77,6 +79,7 @@ export default function VerticalTabsSection() {
       <Specimen
         title="Narrow: picker"
         description="More than six sections in a narrow container collapse to a picker that names the current section."
+        specimenKey="vertical-tabs:default:4"
       >
         <div className="w-90 max-w-full">
           <VerticalTabs.Root
@@ -92,6 +95,7 @@ export default function VerticalTabsSection() {
       <Specimen
         title="Icons only"
         description="For a collapsed side nav: square rows with the icon centred. The label stays the accessible name and appears as a tooltip on hover and focus."
+        specimenKey="vertical-tabs:default:5"
       >
         <div className="h-80 w-90 max-w-full">
           <VerticalTabs.Root
@@ -109,6 +113,7 @@ export default function VerticalTabsSection() {
         title="States"
         description="Counts sit at the trailing edge in tabular figures. Disabled sections stay in place and are skipped by the arrow keys."
         wide
+        specimenKey="vertical-tabs:default:6"
       >
         <div className="w-full">
           <VerticalTabs.Root
@@ -124,6 +129,7 @@ export default function VerticalTabsSection() {
       <ContainerLab
         title="Container lab · four sections"
         description="Rail in the pane; chips everywhere narrower than 36rem."
+        specimenKey="vertical-tabs:default:7"
       >
         {() => (
           <VerticalTabs.Root
@@ -139,6 +145,7 @@ export default function VerticalTabsSection() {
       <ContainerLab
         title="Container lab · seven sections"
         description="Rail in the pane; a picker everywhere narrower than 36rem."
+        specimenKey="vertical-tabs:default:8"
       >
         {() => (
           <VerticalTabs.Root

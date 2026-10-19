@@ -13,6 +13,7 @@ export default function ConfirmAskExample() {
           title="ConfirmAsk"
           description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision."
           layout="stack"
+          specimenKey="component-examples:ConfirmAskExample:0"
         >
           <ConfirmAsk ask={ASKS.confirm} />
         </Specimen>

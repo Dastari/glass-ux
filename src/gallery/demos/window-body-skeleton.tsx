@@ -33,6 +33,7 @@ export default function WindowBodySkeletonExample() {
         title="WindowBodySkeleton"
         description="The loading state keeps the corresponding content dimensions while data arrives. WindowContentHost shows it until a kind's body loads; the window's body never does."
         layout="stack"
+        specimenKey="component-examples:WindowBodySkeletonExample:0"
       >
         <div className="flex h-45 w-full flex-col">
           <WindowBodySkeleton />

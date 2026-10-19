@@ -13,7 +13,11 @@ export default function EntityOptionListExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="Selectable entity search rows" layout="stack">
+        <Specimen
+          title="Selectable entity search rows"
+          layout="stack"
+          specimenKey="component-examples:EntityOptionListExample:0"
+        >
           <Input
             aria-label="Search sample entities"
             onKeyDown={(event) => {

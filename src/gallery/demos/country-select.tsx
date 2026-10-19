@@ -8,7 +8,7 @@ import { FormStack } from "../../ui/form/index.js";
 export default function CountrySelectSection() {
   return (
     <SectionPage>
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="country-select:default:2">
         <FormStack>
           <Field label="Empty">
             <CountrySelect width="medium" />
@@ -27,13 +27,13 @@ export default function CountrySelectSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="country-select:default:3">
         <Field label="Country">
           <CountrySelect width="medium" defaultValue="AU" />
         </Field>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="country-select:default:4">
         <div className="flex h-full items-center p-1">
           <CountrySelect size="sm" defaultValue="AU" aria-label="Country" />
         </div>

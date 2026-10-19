@@ -133,6 +133,7 @@ export default function MapSection() {
         description="“View as list” swaps the map for the caller's table in the same box; “View as map” in the table's toolbar swaps back. The map keeps its camera while hidden."
         layout="bare"
         wide
+        specimenKey="map:default:5"
       >
         <ListViewExample />
       </Specimen>

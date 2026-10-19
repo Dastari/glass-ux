@@ -58,6 +58,7 @@ export default function TabsSection() {
       <OnCanvas
         title="On the canvas"
         description="Tabs are routes by default (R6.2): every tab is a link to its own URL, read back from the location. In the product the entity header and its tabs sit straight on the ambient canvas."
+        specimenKey="tabs:default:0"
       >
         <div className="flex min-w-0 flex-col gap-3">
           <EndpointHeader />
@@ -69,6 +70,7 @@ export default function TabsSection() {
         title="Route tabs (default)"
         description="Links in a nav landmark; the current one carries aria-current. A child route stays inside its tab. Arrow keys, Home, End and Space work exactly as in local tabs, and the rows in More are links too."
         wide
+        specimenKey="tabs:default:1"
       >
         <div className="w-full">
           <RouteTabs items={ROUTE_TABS} aria-label="NST-C106 pages" />
@@ -79,6 +81,7 @@ export default function TabsSection() {
       <Specimen
         title="Route tabs in a narrow header"
         description="At 420px the strip shows what fits plus More. Following a link from More swaps that tab into the strip; the active tab is never hidden."
+        specimenKey="tabs:default:2"
       >
         <div className="w-105 max-w-full">
           <RouteTabs items={ROUTE_TABS} aria-label="NST-C106 pages (narrow)" />

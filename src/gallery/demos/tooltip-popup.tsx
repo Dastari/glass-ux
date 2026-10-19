@@ -7,7 +7,11 @@ import { Button } from "../../ui/button/index.js";
 export default function TooltipPopupExample() {
   return (
     <SectionPage>
-      <Specimen title="Custom tooltip surface" layout="stack">
+      <Specimen
+        title="Custom tooltip surface"
+        layout="stack"
+        specimenKey="component-examples:TooltipPopupExample:0"
+      >
         <TooltipPrimitive.Root>
           <TooltipPrimitive.Trigger render={<Button>Hover for details</Button>} />
           <TooltipPopup side="top" align="center" arrow>

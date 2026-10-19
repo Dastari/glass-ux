@@ -13,6 +13,7 @@ export default function ComboboxSection() {
       <Specimen
         title="Autocomplete"
         description="Free text with suggestions as you type — search boxes, hostnames, paths. Choosing a suggestion fills the text; anything else may be typed. 1,284 endpoints answer in 150–600 ms; earlier results stay while new ones load (the thin line), and only the latest query ever renders."
+        specimenKey="combobox:default:0"
       >
         <FormStack>
           <Field label="Hostname" hint="Focus to see recent endpoints.">

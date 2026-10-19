@@ -41,6 +41,7 @@ export default function ChoiceSection() {
         title="Radio"
         description="The chosen circle fills with the tone and the dot springs in. Arrow keys move and choose."
         wide
+        specimenKey="choice:default:1"
       >
         <Matrix
           columns={["Not chosen", "Chosen", "Invalid", "Disabled", "Disabled, chosen"]}
@@ -70,6 +71,7 @@ export default function ChoiceSection() {
       <Specimen
         title="Tones"
         description="Accent by default. Success, warning and danger only when the choice itself is a status (R3.3)."
+        specimenKey="choice:default:2"
       >
         <Matrix
           columns={["Ticked", "Mixed", "Chosen", "Card"]}
@@ -107,7 +109,7 @@ export default function ChoiceSection() {
         />
       </Specimen>
 
-      <Specimen title="Radio group" layout="stack">
+      <Specimen title="Radio group" layout="stack" specimenKey="choice:default:4">
         <RadioGroup legend="When to install" defaultValue="window">
           <Radio value="now" label="Now" />
           <Radio
@@ -128,6 +130,7 @@ export default function ChoiceSection() {
         title="Radio cards"
         description="For options that need a sentence, typically in a dialog: Connect to NST-C106."
         layout="stack"
+        specimenKey="choice:default:5"
       >
         <div className="max-w-md">
           <SessionCards />
@@ -139,11 +142,12 @@ export default function ChoiceSection() {
         description="Horizontal cards reflow by container width and may carry an icon tile."
         layout="stack"
         wide
+        specimenKey="choice:default:6"
       >
         <SessionCards orientation="horizontal" />
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="choice:default:7">
         <div className="flex flex-col gap-3">
           <Checkbox label="Wake devices before patching" defaultChecked />
           <Checkbox label="Skip devices on battery" />
@@ -155,7 +159,7 @@ export default function ChoiceSection() {
         </div>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="choice:default:9">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-5 px-3">

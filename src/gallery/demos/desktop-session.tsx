@@ -100,6 +100,7 @@ export default function AiSessionsSection() {
           description="Planned (glass-ux-ai-desktop-control): the live screen with who holds control, the steps, a lease countdown and a large Stop. Grants and consequential actions are approvals."
           wide
           layout="stack"
+          specimenKey="ai-sessions:default:5"
         >
           <Desktop />
         </Specimen>

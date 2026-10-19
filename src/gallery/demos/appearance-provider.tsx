@@ -12,6 +12,7 @@ export default function AppearanceProviderExample() {
         title="AppearanceProvider"
         description="Mount once at the application root. The theme control updates the persisted appearance and document tokens."
         layout="stack"
+        specimenKey="component-examples:AppearanceProviderExample:0"
       >
         <AppearanceProvider>
           <ThemeToggle />

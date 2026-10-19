@@ -10,6 +10,7 @@ export default function OptionMoreExample() {
         title="OptionMore"
         description="The count prompts people to refine a search that has more matches than the current list."
         layout="stack"
+        specimenKey="component-examples:OptionMoreExample:0"
       >
         <OptionMore more={128} />
       </Specimen>

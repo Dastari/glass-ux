@@ -18,6 +18,7 @@ export default function ButtonSection() {
       <Specimen
         title="Groups and split buttons"
         description="Adjacent actions sit 8px apart. A split button joins the main action to its menu."
+        specimenKey="button:default:3"
       >
         <Example label="Split primary">
           <ButtonGroup attached>

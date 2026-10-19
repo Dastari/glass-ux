@@ -5,7 +5,7 @@
  */
 import { useContext, useEffect, useState, type ReactNode } from "react";
 import { cx } from "../lib/cx.js";
-import { DemoScope } from "./demo-scope.js";
+import { DemoScope, HiddenSpecimens, specimenAnchor } from "./demo-scope.js";
 import { Button } from "../ui/button/index.js";
 
 /** The page wrapper every gallery section renders its header and specimens inside. */
@@ -15,6 +15,8 @@ export function SectionPage({ children }: { children: ReactNode }) {
 
 export interface SpecimenProps {
   title: string;
+  /** Set by the demo generator: an earlier demo in the same document may hide this one. */
+  specimenKey?: string;
   description?: ReactNode;
   children: ReactNode;
   /** Lay examples out as a wrapping row (default) or a vertical stack. */
@@ -27,7 +29,13 @@ export interface SpecimenProps {
 }
 
 /** A titled gallery panel of live examples, labelled with the demo scope when one is set; `layout` arranges the examples and `backdrop` paints busy content behind them. */
-export function Specimen({
+export function Specimen(props: SpecimenProps) {
+  const hidden = useContext(HiddenSpecimens);
+  return props.specimenKey && hidden.has(props.specimenKey) ? null : <SpecimenPanel {...props} />;
+}
+
+function SpecimenPanel({
+  specimenKey,
   title,
   description,
   children,
@@ -39,6 +47,7 @@ export function Specimen({
   const scope = useContext(DemoScope);
   return (
     <section
+      id={specimenKey ? specimenAnchor(specimenKey) : undefined}
       className={cx("gallery-specimen", className)}
       aria-label={scope ? `${scope}: ${title}` : title}
       data-wide={wide ? "" : undefined}
@@ -71,15 +80,21 @@ export function OnCanvas({
   description,
   children,
   className,
+  specimenKey,
 }: {
   title: string;
   description?: ReactNode;
   children: ReactNode;
   className?: string;
+  /** Set by the demo generator: an earlier demo in the same document may hide this one. */
+  specimenKey?: string;
 }) {
   const scope = useContext(DemoScope);
+  const hidden = useContext(HiddenSpecimens);
+  if (specimenKey && hidden.has(specimenKey)) return null;
   return (
     <section
+      id={specimenKey ? specimenAnchor(specimenKey) : undefined}
       className={cx("flex min-w-0 flex-col gap-4 px-5 py-2", className)}
       aria-label={scope ? `${scope}: ${title}` : title}
       data-wide=""
@@ -328,12 +343,20 @@ export const CONTAINER_PRESETS: ContainerPreset[] = [
  * container queries respond on both axes) plus a free frame you can drag to resize.
  * e2e/containers.spec.ts scans every [data-lab-frame] for clipped text.
  */
-export function ContainerLab({
+export function ContainerLab(props: Parameters<typeof ContainerLabPanel>[0] & { specimenKey?: string }) {
+  const hidden = useContext(HiddenSpecimens);
+  const { specimenKey, ...rest } = props;
+  return specimenKey && hidden.has(specimenKey) ? null : <ContainerLabPanel {...rest} specimenKey={specimenKey} />;
+}
+
+function ContainerLabPanel({
   title = "Container lab",
   description = "The same component in a table row, a header, a grid tile, a pane and a tall narrow column. Drag the last frame's corner to resize freely.",
   presets = CONTAINER_PRESETS,
   children,
+  specimenKey,
 }: {
+  specimenKey?: string;
   title?: string;
   description?: string;
   presets?: ContainerPreset[];
@@ -344,7 +367,7 @@ export function ContainerLab({
   const render = (preset: ContainerPreset | null) =>
     typeof children === "function" ? children(preset) : children;
   return (
-    <Specimen title={title} description={description} layout="bare" wide>
+    <Specimen specimenKey={specimenKey} title={title} description={description} layout="bare" wide>
       {/* Presets keep their true widths, so on a phone the lab scrolls inside its panel instead of the page. */}
       {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scroll region must be keyboard scrollable (R20.6) */}
       <div

@@ -8,7 +8,11 @@ import { E } from "../sections/ai.fixtures.js";
 export default function EntityResolverProviderExample() {
   return (
     <SectionPage>
-      <Specimen title="Host-defined entity presentation" layout="stack">
+      <Specimen
+        title="Host-defined entity presentation"
+        layout="stack"
+        specimenKey="component-examples:EntityResolverProviderExample:0"
+      >
         <EntityResolverProvider resolver={demoResolver}>
           <EntityChip entity={E.northstar} />
           <EntityChip entity={E.mira} />

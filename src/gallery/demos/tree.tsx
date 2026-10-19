@@ -127,6 +127,7 @@ export default function TreeSection() {
       <Specimen
         title="Sidebar endpoints"
         description="Organisations collapse; endpoints are two-line rows with a status dot on the device. Search reveals matching branches and highlights the match. Keyboard: ↑ ↓, → ←, Home, End, Enter, and type a name to jump."
+        specimenKey="tree:default:0"
       >
         <SidebarTree />
       </Specimen>
@@ -134,6 +135,7 @@ export default function TreeSection() {
       <Specimen
         title="Links and actions"
         description="In the sidebar, endpoint rows are links (renderLink: middle-click and Enter work as links do) and right-click, long-press, Shift+F10 or the Menu key opens the endpoint's actions (rowWrapper with ActionContextMenu) — the same definition as its header."
+        specimenKey="tree:default:1"
       >
         <LinkedTree />
       </Specimen>
@@ -141,6 +143,7 @@ export default function TreeSection() {
       <Specimen
         title="2,400 endpoints"
         description="Rows are virtualised with fixed heights from tokens: only the rows in view (plus a few) are in the DOM, and the focused row is always kept."
+        specimenKey="tree:default:2"
       >
         <div className="h-140 w-72 max-w-full" data-testid="tree-many">
           <Tree
@@ -155,6 +158,7 @@ export default function TreeSection() {
       <Specimen
         title="Search states"
         description="A match by organisation shows its endpoints; no match shows one factual line in the tree's own box."
+        specimenKey="tree:default:3"
       >
         <SidebarTree initialQuery="northstar" height="h-80" />
         <SidebarTree initialQuery="orb-9" height="h-40" />
@@ -163,6 +167,7 @@ export default function TreeSection() {
       <Specimen
         title="Loading"
         description="Skeleton rows have the tree's exact heights, icon boxes and text roles. Swap in place to compare."
+        specimenKey="tree:default:4"
       >
         <div className="w-72 max-w-full">
           <SwapSlot
@@ -193,7 +198,10 @@ export default function TreeSection() {
         </div>
       </Specimen>
 
-      <ContainerLab description="The tree fills its box and scrolls inside it; names and users truncate with an ellipsis.">
+      <ContainerLab
+        description="The tree fills its box and scrolls inside it; names and users truncate with an ellipsis."
+        specimenKey="tree:default:5"
+      >
         {() => (
           <Tree
             nodes={NODES}

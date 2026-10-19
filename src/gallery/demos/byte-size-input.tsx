@@ -8,7 +8,7 @@ import { FormStack } from "../../ui/form/index.js";
 export default function ByteSizeFieldSection() {
   return (
     <SectionPage>
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="byte-size-field:default:1">
         <FormStack>
           <Field label="Empty">
             <ByteSizeInput />
@@ -24,13 +24,13 @@ export default function ByteSizeFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="byte-size-field:default:2">
         <Field label="Mailbox warning">
           <ByteSizeInput defaultValue={50e9} />
         </Field>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="byte-size-field:default:3">
         <div className="flex h-full items-center p-1">
           <ByteSizeInput size="sm" defaultValue={1.5e12} width="full" aria-label="Size" />
         </div>

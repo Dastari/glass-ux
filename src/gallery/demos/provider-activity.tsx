@@ -309,6 +309,7 @@ export default function AiCatalogueSection() {
           description="Tools are a federated catalogue of read-only GraphQL operations plus a few reviewed writes. A result renders by its declared disclosure (list → table, object → detail, scalar → value, above the preview class → withheld) and upgrades to entity renderers when its root type is a known Glass UX entity."
           wide
           layout="bare"
+          specimenKey="ai-catalogue:default:0"
         >
           <TableScroll label="Tool catalogue">
             <table className="fa-ai-table" data-wrap="">

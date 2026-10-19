@@ -19,9 +19,16 @@ for (const component of catalogue) {
     const examples = page.locator(
       destination.hash ? `#${destination.hash}` : "#examples",
     );
-    await expect(
-      examples.locator(".gallery-specimen, [data-canvas-specimen]").first(),
-    ).toBeAttached();
+    // A related export whose specimens an earlier demo on the page already showed links to
+    // them instead of repeating them.
+    const above = examples.locator("[data-shown-above] a");
+    if (await examples.locator("[data-shown-above]").count()) {
+      for (const href of await above.evaluateAll((links) => links.map((link) => link.getAttribute("href")!)))
+        await expect(page.locator(`${href}:is(.gallery-specimen, [data-canvas-specimen])`)).toBeAttached();
+    } else
+      await expect(
+        examples.locator(".gallery-specimen, [data-canvas-specimen]").first(),
+      ).toBeAttached();
     await expect(
       page
         .locator(`#usage-${component.id}`)

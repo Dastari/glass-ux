@@ -114,6 +114,7 @@ export default function ActionsSection() {
             title="Entity header"
             description="The highest-priority actions as buttons with the primary right-most; the rest under More actions. Narrow the frame (or drag its corner): buttons fold into More, More becomes ⋯, then everything collapses into one ⋯ — the primary never moves."
             wide
+            specimenKey="actions:default:1"
           >
             <HeaderDemo endpoint={endpoint} />
           </Specimen>
@@ -121,6 +122,7 @@ export default function ActionsSection() {
           <ContainerLab
             title="Header bar in every box"
             description="ActionBar measures its container, not the viewport: from all buttons in a pane down to a single ⋯ in a row or a tall narrow column."
+            specimenKey="actions:default:3"
           >
             {() => (
               <div className="flex h-full items-center p-1">

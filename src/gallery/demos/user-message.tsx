@@ -9,7 +9,11 @@ export default function UserMessageExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="Editable user message" layout="stack">
+        <Specimen
+          title="Editable user message"
+          layout="stack"
+          specimenKey="component-examples:UserMessageExample:0"
+        >
           <UserMessage
             message={{
               id: "sample-user-message",

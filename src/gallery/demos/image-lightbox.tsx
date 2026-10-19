@@ -13,7 +13,11 @@ export default function ImageLightboxExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="Inspect sample images" layout="stack">
+        <Specimen
+          title="Inspect sample images"
+          layout="stack"
+          specimenKey="component-examples:ImageLightboxExample:0"
+        >
           <Button onClick={() => setOpen(true)}>Open image viewer</Button>
           <ImageLightbox
             images={RESULTS.screens.images}

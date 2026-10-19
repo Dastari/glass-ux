@@ -47,6 +47,7 @@ export default function FieldSection() {
       <Specimen
         title="Anatomy"
         description="A stacked field: the label row (label · required or optional · aside), the control at the form column's width, then one reserved caption line for the hint, the error and the counter. One field per row (R15.2)."
+        specimenKey="field:default:0"
       >
         <FormStack>
           <Field label="Device name" required hint="Shown in lists and the breadcrumb.">
@@ -80,6 +81,7 @@ export default function FieldSection() {
       <Specimen
         title="Widths follow the content"
         description="Controls fill the form column. A value known to be short declares it: short ≈ 8 characters (port, year, PIN), medium ≈ 24rem (name, hostname). Never widen a control to fill a row (R15.6)."
+        specimenKey="field:default:1"
       >
         <FormStack>
           <Field label="Port" hint="1–65535">
@@ -103,6 +105,7 @@ export default function FieldSection() {
       <Specimen
         title="The message line never moves anything"
         description="The error replaces the hint in the same line, so the field below stays put. A long message truncates; its full text is in the tooltip."
+        specimenKey="field:default:2"
       >
         <StabilityDemo />
       </Specimen>
@@ -110,6 +113,7 @@ export default function FieldSection() {
       <Specimen
         title="Groups"
         description="Related rows sit under an overline group label, --gap-section apart — space and the label, never a divider (R15.8)."
+        specimenKey="field:default:3"
       >
         <FormStack>
           <FormGroup label="Network">
@@ -138,6 +142,7 @@ export default function FieldSection() {
       <Specimen
         title="Consent"
         description="A horizontal field is only for explicit consent: the checkbox, the statement and a message line for the error. Settings are switches in setting rows, never lone checkboxes (R15.4)."
+        specimenKey="field:default:4"
       >
         <FormStack>
           <Field
@@ -155,6 +160,7 @@ export default function FieldSection() {
       <Specimen
         title="Disabled and read-only"
         description="Disabled fades the whole field. Read-only keeps the value legible in a recessed well, still selectable."
+        specimenKey="field:default:5"
       >
         <FormStack>
           <Field label="Organisation" disabled>
@@ -170,6 +176,7 @@ export default function FieldSection() {
         title="Loading"
         description="Each skeleton is the row's exact box: a label-role line, the control's height and the reserved message line (R9.3). Real row on the left, skeleton on the right."
         wide
+        specimenKey="field:default:6"
       >
         <div className="grid w-full grid-cols-2 gap-5" data-testid="skeleton-parity">
           <Field label="Device name" data-testid="real-input">
@@ -194,7 +201,7 @@ export default function FieldSection() {
         </div>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="field:default:7">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center px-1">

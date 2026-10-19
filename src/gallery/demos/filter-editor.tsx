@@ -59,6 +59,7 @@ export default function DataTableFiltersSection() {
         description="One per kind, the same shape: condition, value, Clear and Apply. Checkbox lists, yes/no and date presets apply as you choose."
         layout="bare"
         wide
+        specimenKey="data-table-filters:default:2"
       >
         <EditorGallery />
       </Specimen>

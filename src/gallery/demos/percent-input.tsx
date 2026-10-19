@@ -8,7 +8,7 @@ import { PercentInput } from "../../ui/percent-field/index.js";
 export default function PercentFieldSection() {
   return (
     <SectionPage>
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="percent-field:default:1">
         <FormStack>
           <Field label="Empty">
             <PercentInput />
@@ -24,13 +24,13 @@ export default function PercentFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="percent-field:default:2">
         <Field label="Threshold">
           <PercentInput defaultValue={90} />
         </Field>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="percent-field:default:3">
         <div className="flex h-full items-center p-1">
           <PercentInput size="sm" defaultValue={90} width="full" aria-label="Threshold" />
         </div>

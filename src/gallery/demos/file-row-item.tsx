@@ -8,7 +8,11 @@ export default function FileRowItemExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="FileRowItem" layout="stack">
+        <Specimen
+          title="FileRowItem"
+          layout="stack"
+          specimenKey="component-examples:FileRowItemExample:0"
+        >
           <FileRowItem
             file={{
               id: "brief",

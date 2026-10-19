@@ -19,6 +19,7 @@ export default function BrandSection() {
         title="Marks"
         description="The Glass UX vector source generates both the static SVG and this inline BrandSource. Named marks share paths and gradients, so there is no image request or flash. A host configures its own product, wordmark and assistant marks."
         wide
+        specimenKey="brand:default:0"
       >
         <Example label="product">
           <BrandLogo
@@ -51,6 +52,7 @@ export default function BrandSection() {
         description="Palette follows the semantic brand roles. Brand keeps source-defined gradient colours; mono draws every path in the current text colour."
         wide
         layout="stack"
+        specimenKey="brand:default:2"
       >
         {TONES.map(([tones, label]) => (
           <Example key={tones} label={label}>
@@ -73,6 +75,7 @@ export default function BrandSection() {
         description="The primary half is the palette's accent, lifted in dark mode to keep 3:1 on the canvas; the secondary half is ink. Graphite's accent is ink, so its secondary moves to a mid grey. Switch the gallery's mode to see the other."
         wide
         layout="bare"
+        specimenKey="brand:default:3"
       >
         <div className="gallery-brand-matrix">
           {PALETTES.map((palette) => (
@@ -98,6 +101,7 @@ export default function BrandSection() {
         title="Over imagery"
         description="Inside .over-imagery a mark gets the canvas halo every bare icon gets, so it reads on any image."
         backdrop
+        specimenKey="brand:default:4"
       >
         <Example label="Product">
           <BrandLogo source={BRAND_SOURCES.product} tones="brand" className="gallery-mark-lg" />

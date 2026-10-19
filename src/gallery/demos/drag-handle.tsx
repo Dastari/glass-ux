@@ -60,6 +60,7 @@ export default function DragDropSection() {
         title="Handles"
         description="A DragHandle makes the grip the only place to start a drag, so the row's buttons keep working. On touch the grip drags at once; whole-item handles lift after a short press so lists still scroll."
         layout="stack"
+        specimenKey="drag-drop:default:4"
       >
         <Handles />
       </Specimen>

@@ -31,7 +31,11 @@ function DemoPaletteCommands() {
 export default function PaletteProviderExample() {
   return (
     <SectionPage>
-      <Specimen title="Register commands in a host" layout="stack">
+      <Specimen
+        title="Register commands in a host"
+        layout="stack"
+        specimenKey="component-examples:PaletteProviderExample:0"
+      >
         <PaletteProvider>
           <DemoPaletteCommands />
         </PaletteProvider>

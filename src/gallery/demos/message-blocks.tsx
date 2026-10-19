@@ -9,7 +9,11 @@ export default function MessageBlocksExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="MessageBlocks" layout="stack">
+        <Specimen
+          title="MessageBlocks"
+          layout="stack"
+          specimenKey="component-examples:MessageBlocksExample:0"
+        >
           <MessageBlocks
             message={{
               id: "sample-blocks",

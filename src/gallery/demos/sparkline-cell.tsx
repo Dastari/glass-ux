@@ -6,7 +6,11 @@ import { SectionPage, Specimen } from "../kit.js";
 export default function SparklineCellExample() {
   return (
     <SectionPage>
-      <Specimen title="Compact table trend" layout="stack">
+      <Specimen
+        title="Compact table trend"
+        layout="stack"
+        specimenKey="component-examples:SparklineCellExample:0"
+      >
         <div className="h-12 w-70">
           <SparklineCell
             values={[12, 18, 16, 24, 28, 22, 31]}

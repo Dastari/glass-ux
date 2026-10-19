@@ -27,13 +27,14 @@ export default function EmailFieldSection() {
       <Specimen
         title="Typo hint"
         description="Once focus leaves, a domain one or two keystrokes from a common provider — or from the organisation's own domain — offers the correction in the message line. Choosing it replaces the value; nothing moves."
+        specimenKey="email-field:default:0"
       >
         <FormStack className="w-full">
           <SuggestionDemo />
         </FormStack>
       </Specimen>
 
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="email-field:default:2">
         <FormStack>
           <Field label="Empty">
             <EmailInput />
@@ -52,7 +53,7 @@ export default function EmailFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="email-field:default:3">
         <FormStack>
           <Field label="Work email">
             <EmailInput defaultValue="mira.rowan@northstar.example" />
@@ -60,7 +61,7 @@ export default function EmailFieldSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="email-field:default:4">
         <div className="flex h-full items-center p-1">
           <EmailInput size="sm" defaultValue="mira.rowan@northstar.example" aria-label="Email" />
         </div>

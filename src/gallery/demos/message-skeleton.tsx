@@ -12,6 +12,7 @@ export default function AiMessagesSection() {
           title="Loading"
           description="A loading conversation draws its turns in their final boxes: the prompt bubble, prose lines and a card."
           layout="stack"
+          specimenKey="ai-messages:default:7"
         >
           <MessageSkeleton />
         </Specimen>

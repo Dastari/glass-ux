@@ -9,7 +9,11 @@ export default function AskDockExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="Pending questions above the composer" layout="stack">
+        <Specimen
+          title="Pending questions above the composer"
+          layout="stack"
+          specimenKey="component-examples:AskDockExample:0"
+        >
           <AskDockProvider>
             <AskCard ask={ASKS.single} />
             <AskCard ask={ASKS.quick} />

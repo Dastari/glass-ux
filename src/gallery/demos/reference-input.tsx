@@ -54,12 +54,12 @@ function Demo({ disabled = false, readOnly = false }: { disabled?: boolean; read
 export default function ReferenceInputSection() {
   return (
     <SectionPage>
-      <Specimen title="Linked items" layout="stack">
+      <Specimen title="Linked items" layout="stack" specimenKey="reference-input:default:0">
         <Demo />
         <Demo disabled />
         <Demo readOnly />
       </Specimen>
-      <ContainerLab>{() => <Demo />}</ContainerLab>
+      <ContainerLab specimenKey="reference-input:default:1">{() => <Demo />}</ContainerLab>
     </SectionPage>
   );
 }

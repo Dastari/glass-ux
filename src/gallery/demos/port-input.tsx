@@ -8,7 +8,7 @@ import { PortInput } from "../../ui/port-field/index.js";
 export default function PortFieldSection() {
   return (
     <SectionPage>
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="port-field:default:1">
         <FormStack>
           <Field label="Empty">
             <PortInput />
@@ -27,13 +27,13 @@ export default function PortFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="port-field:default:2">
         <Field label="Port">
           <PortInput defaultValue={443} />
         </Field>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="port-field:default:3">
         <div className="flex h-full items-center p-1">
           <PortInput size="sm" defaultValue={3268} width="full" aria-label="Port" />
         </div>

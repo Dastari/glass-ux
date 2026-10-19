@@ -13,6 +13,7 @@ export default function EntityPickerAskExample() {
           title="EntityPickerAsk"
           description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision."
           layout="stack"
+          specimenKey="component-examples:EntityPickerAskExample:0"
         >
           <EntityPickerAsk ask={ASKS.entity} />
         </Specimen>

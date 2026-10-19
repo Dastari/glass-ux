@@ -36,7 +36,11 @@ export default function WindowContentHostExample() {
   const [{ manager, id }] = useState(makeWindowDemo);
   return (
     <SectionPage>
-      <Specimen title="Load a registered window kind" layout="stack">
+      <Specimen
+        title="Load a registered window kind"
+        layout="stack"
+        specimenKey="component-examples:WindowContentHostExample:0"
+      >
         <WindowManagerProvider manager={manager}>
           <WindowFrame.Root>
             <WindowFrame.AppBar title="Exhibition notes" />

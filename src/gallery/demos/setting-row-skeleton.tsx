@@ -10,6 +10,7 @@ export default function SettingRowSection() {
       <Specimen
         title="Loading"
         description="The skeleton keeps the label, description and control boxes."
+        specimenKey="setting-row:default:4"
       >
         <FormStack>
           <SettingRowSkeleton />

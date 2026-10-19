@@ -8,7 +8,7 @@ import { DomainInput, HostnameInput } from "../../ui/hostname-field/index.js";
 export default function HostnameFieldSection() {
   return (
     <SectionPage>
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="hostname-field:default:1">
         <FormStack>
           <Field label="Empty">
             <HostnameInput width="medium" />

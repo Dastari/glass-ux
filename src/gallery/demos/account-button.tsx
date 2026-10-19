@@ -83,6 +83,7 @@ export default function AccountButtonExample() {
         title="Account menu"
         description="The account button is a Menu trigger. Email is optional; the host supplies the menu actions."
         layout="stack"
+        specimenKey="component-examples:AccountButtonExample:0"
       >
         <Example label="Name and email">
           <AccountMenuSample
@@ -102,6 +103,7 @@ export default function AccountButtonExample() {
       <ContainerLab
         title="Account in narrow containers"
         description="The avatar keeps its size while the name and email truncate with full-text tooltips."
+        specimenKey="component-examples:AccountButtonExample:1"
       >
         {() => (
           <AccountMenuSample

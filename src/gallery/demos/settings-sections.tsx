@@ -441,6 +441,7 @@ export default function DialogSection() {
       <Specimen
         title="Live"
         description="Esc, the close button and the backdrop close a dialog; focus returns to the button that opened it. Only the body scrolls; header and footer stay put."
+        specimenKey="dialog:default:0"
       >
         <Example label="Sizes">
           {SIZE_DEMOS.map((demo) => (
@@ -478,6 +479,7 @@ export default function DialogSection() {
         title="Settings dialog"
         description="An L3 rail of sections beside a scrolling pane, at a fixed height so switching sections never resizes it. In a narrow dialog — a phone sheet, a small window — the rail becomes chips."
         wide
+        specimenKey="dialog:default:3"
       >
         <Dialog.Preview size="xl" kind="settings">
           <Dialog.Header icon={<IconSettings />} title="Agent settings" subtitle="LMN-7C71" />

@@ -12,6 +12,7 @@ export default function ConfirmHostExample() {
         title="Promise-based confirmation"
         description="Mount one host at the application root. ActionProvider already supplies it; duplicate mounts are suppressed."
         layout="stack"
+        specimenKey="component-examples:ConfirmHostExample:0"
       >
         <ConfirmHost />
         <Button

@@ -13,6 +13,7 @@ export default function AiResultsSection() {
           description="Before data arrives each result holds its final box: the same header, the row count, the chart height, the image ratio."
           layout="stack"
           wide
+          specimenKey="ai-results:default:1"
         >
           <ResultSkeleton type="table" count={4} />
           <ResultSkeleton type="chart" />

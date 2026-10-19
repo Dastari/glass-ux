@@ -7,7 +7,7 @@ import { Checkbox } from "../../ui/checkbox/index.js";
 export default function FieldsetExample() {
   return (
     <SectionPage>
-      <Specimen title="Fieldset" layout="stack">
+      <Specimen title="Fieldset" layout="stack" specimenKey="component-examples:FieldsetExample:0">
         <Fieldset legend="Notifications">
           <ChoiceRow controlId="sample-notify" label="Send a reminder">
             <Checkbox id="sample-notify" />

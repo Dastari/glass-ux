@@ -108,11 +108,12 @@ export default function FileDropSection() {
         title="Upload"
         description="Drop files or activate the tile (Enter or Space) to browse. Try a file that is not .msi or .exe: the reason appears in the message line and the tile keeps its size."
         wide
+        specimenKey="file-drop:default:0"
       >
         <InstallerUpload />
       </Specimen>
 
-      <Specimen title="States" wide>
+      <Specimen title="States" wide specimenKey="file-drop:default:1">
         <div className="grid w-full grid-cols-2 gap-5">
           <Example label="Resting">
             <FileDrop onFiles={() => {}} accept=".msi,.exe" maxSize={MAX} aria-label="Resting" />
@@ -150,6 +151,7 @@ export default function FileDropSection() {
       <Specimen
         title="Compact"
         description="One field-height row for toolbars, table rows and narrow panes."
+        specimenKey="file-drop:default:2"
       >
         <div className="flex w-full max-w-lg flex-col gap-3">
           <FileDrop
@@ -168,13 +170,13 @@ export default function FileDropSection() {
         </div>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="file-drop:default:4">
         <div className="w-full max-w-md">
           <FileDrop onFiles={() => {}} maxSize={MAX} aria-label="Upload over imagery" />
         </div>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="file-drop:default:5">
         {(preset) =>
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center px-1">

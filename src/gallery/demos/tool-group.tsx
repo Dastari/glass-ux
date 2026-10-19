@@ -44,13 +44,17 @@ export default function AiToolsSection() {
           title="Groups"
           description="Consecutive calls fold into one summary row with their glyphs and total time; the count of running and failed calls stays visible."
           layout="stack"
+          specimenKey="ai-tools:default:2"
         >
           <ToolGroup calls={[TOOLS.org, TOOLS.endpoints, TOOLS.heartbeats, TOOLS.web]} />
           <ToolGroup calls={[TOOLS.eventlog, TOOLS.snapshot]} />
           <LiveGroup />
         </Specimen>
 
-        <ContainerLab description="Target names and the glyph stack drop below 30rem; the label truncates; the time stays.">
+        <ContainerLab
+          description="Target names and the glyph stack drop below 30rem; the label truncates; the time stays."
+          specimenKey="ai-tools:default:4"
+        >
           {() => (
             <LabScroll>
               <ToolGroup calls={[TOOLS.org, TOOLS.endpoints, TOOLS.heartbeats]} />

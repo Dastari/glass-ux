@@ -10,6 +10,7 @@ export default function VerticalTabNavExample() {
         title="VerticalTabNav"
         description="Navigation links are supplied by the host. These sample links jump to page anchors; a router can provide route links with the same props."
         layout="stack"
+        specimenKey="component-examples:VerticalTabNavExample:0"
       >
         <VerticalTabNav
           items={[

@@ -6,7 +6,11 @@ import { SectionPage, Specimen } from "../kit.js";
 export default function SurfaceExample() {
   return (
     <SectionPage>
-      <Specimen title="Theme-owned surface geometry" layout="stack">
+      <Specimen
+        title="Theme-owned surface geometry"
+        layout="stack"
+        specimenKey="component-examples:SurfaceExample:0"
+      >
         <Surface material="panel" padding="panel">
           Panel material, surface corners and the theme's panel inset.
         </Surface>

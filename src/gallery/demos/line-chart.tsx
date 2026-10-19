@@ -29,6 +29,7 @@ export default function LineChartSection() {
         title="LineChart"
         description="A focused example using fictional studio project measurements. Hover or use the keyboard to inspect values; the chart's table preserves the exact data."
         wide
+        specimenKey="chart-line-chart:default:0"
       >
         <div className="charts-pane" data-testid="chart-line-chart">
           {render()}
@@ -38,6 +39,7 @@ export default function LineChartSection() {
         title="Responsive sizes"
         description="The same LineChart adapts to row, tile and full-panel sizes."
         wide
+        specimenKey="chart-line-chart:default:1"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -45,6 +47,7 @@ export default function LineChartSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
+        specimenKey="chart-line-chart:default:2"
       >
         <SkeletonSwaps id="line-chart" render={render} />
         <div className="gallery-tiers">
@@ -56,7 +59,7 @@ export default function LineChartSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab>{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-line-chart:default:3">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

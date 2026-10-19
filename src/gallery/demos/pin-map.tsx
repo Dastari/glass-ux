@@ -15,7 +15,11 @@ export default function PinMapExample() {
   });
   return (
     <SectionPage>
-      <Specimen title="Choose a sample location" layout="stack">
+      <Specimen
+        title="Choose a sample location"
+        layout="stack"
+        specimenKey="component-examples:PinMapExample:0"
+      >
         <div className="h-90 w-full">
           <PinMap
             config={DEMO_MAP_CONFIG}

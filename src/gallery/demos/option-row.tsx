@@ -7,7 +7,11 @@ import { OptionRow } from "../../ui/combobox/index.js";
 export default function OptionRowExample() {
   return (
     <SectionPage>
-      <Specimen title="OptionRow" layout="stack">
+      <Specimen
+        title="OptionRow"
+        layout="stack"
+        specimenKey="component-examples:OptionRowExample:0"
+      >
         <div className="fa-item">
           <OptionRow
             item={{

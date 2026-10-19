@@ -11,6 +11,7 @@ export default function ContextMenuSection() {
         <Specimen
           title="Anatomy"
           description="Opens at the pointer — or under the focused element from the keyboard — and is otherwise identical to Menu."
+          specimenKey="context-menu:default:1"
         >
           <ActionMenuPreview
             set={endpointActions}

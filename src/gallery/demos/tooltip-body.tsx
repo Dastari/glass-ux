@@ -6,7 +6,11 @@ import { TooltipBody } from "../../ui/charts/index.js";
 export default function TooltipBodyExample() {
   return (
     <SectionPage>
-      <Specimen title="TooltipBody" layout="stack">
+      <Specimen
+        title="TooltipBody"
+        layout="stack"
+        specimenKey="component-examples:TooltipBodyExample:0"
+      >
         <div className="glass-overlay fa-chart-tooltip">
           <TooltipBody
             title="Week 1"

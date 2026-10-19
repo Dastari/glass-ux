@@ -43,6 +43,7 @@ export default function ContextSwitcherSection() {
         description="Windows sit above the scope (R14.4). A window from another organisation than the current one carries its chip; the dock groups windows by organisation behind each group's avatar."
         wide
         layout="stack"
+        specimenKey="context-switcher:default:5"
       >
         <Example label="Another organisation (in Cedar Vale)">
           <div className="gallery-shell-window">

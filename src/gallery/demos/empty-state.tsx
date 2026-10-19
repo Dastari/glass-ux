@@ -12,6 +12,7 @@ export default function EmptyStateSection() {
         title="In a pane"
         description="Centred in the content's own box: the icon in a soft tile, one line, the primary action."
         wide
+        specimenKey="empty-state:default:0"
       >
         <div className="flex w-full flex-wrap gap-6">
           <Example label="Large · ≥ 16rem tall">
@@ -40,6 +41,7 @@ export default function EmptyStateSection() {
         title="In a row"
         description="Under 10rem of height it becomes one row — a table body with no rows, a short list."
         layout="stack"
+        specimenKey="empty-state:default:1"
       >
         <div className="glass-inset h-12 w-150 max-w-full rounded-control">
           <EmptyState
@@ -59,6 +61,7 @@ export default function EmptyStateSection() {
         title="Error in place"
         description="A failed load takes the same box in danger tone, says what failed and offers the retry (R2.4, R9.1)."
         layout="stack"
+        specimenKey="empty-state:default:2"
       >
         <div className="glass-inset h-64 w-120 max-w-full rounded-tile">
           <EmptyState
@@ -80,7 +83,10 @@ export default function EmptyStateSection() {
         </div>
       </Specimen>
 
-      <ContainerLab description="Row in the row and header boxes; centred block in the tile and the tall column; large in the pane.">
+      <ContainerLab
+        description="Row in the row and header boxes; centred block in the tile and the tall column; large in the pane."
+        specimenKey="empty-state:default:3"
+      >
         {() => (
           <EmptyState
             icon={<IconSearch />}

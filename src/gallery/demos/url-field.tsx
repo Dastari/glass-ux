@@ -43,7 +43,7 @@ function UrlDemo() {
 export default function UrlFieldSection() {
   return (
     <SectionPage>
-      <Specimen title="In a form">
+      <Specimen title="In a form" specimenKey="url-field:default:1">
         <UrlDemo />
       </Specimen>
     </SectionPage>

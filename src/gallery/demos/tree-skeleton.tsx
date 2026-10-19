@@ -34,6 +34,7 @@ export default function TreeSection() {
       <Specimen
         title="Loading"
         description="Skeleton rows have the tree's exact heights, icon boxes and text roles. Swap in place to compare."
+        specimenKey="tree:default:4"
       >
         <div className="w-72 max-w-full">
           <SwapSlot

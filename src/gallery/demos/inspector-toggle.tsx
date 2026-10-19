@@ -19,6 +19,7 @@ export default function InspectorToggleExample() {
         title="InspectorToggle"
         description="A bounded working shell. Open the inspector from the top bar to inspect the fictional exhibition."
         layout="stack"
+        specimenKey="component-examples:InspectorToggleExample:0"
       >
         <div className="relative h-120 w-full overflow-hidden">
           <AppShell

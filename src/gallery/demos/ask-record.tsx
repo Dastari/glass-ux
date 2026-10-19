@@ -7,7 +7,11 @@ import { AskRecord } from "../../ai/index.js";
 export default function AskRecordExample() {
   return (
     <SectionPage>
-      <Specimen title="AskRecord" layout="stack">
+      <Specimen
+        title="AskRecord"
+        layout="stack"
+        specimenKey="component-examples:AskRecordExample:0"
+      >
         <AskRecord status="succeeded" by="Avery Quinn" at={NOW}>
           Selected the morning session.
         </AskRecord>

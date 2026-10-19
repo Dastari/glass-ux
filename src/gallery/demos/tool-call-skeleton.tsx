@@ -13,6 +13,7 @@ export default function AiToolsSection() {
           title="Provider activity"
           description="Between tool calls: working, waiting on an endpoint, retrying the provider, or searching the web. Replaced in place by the answer."
           layout="stack"
+          specimenKey="ai-tools:default:3"
         >
           <ProviderActivity status={{ state: "working", model: MODEL.name }} />
           <ProviderActivity

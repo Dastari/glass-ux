@@ -27,6 +27,7 @@ export default function TooltipSection() {
       <Specimen
         title="Live"
         description="Hover or focus a button. The first tooltip waits 500ms; moving along the toolbar shows the next one at once. Tooltips are an inverted island: dark on a light page, light on a dark one."
+        specimenKey="tooltip:default:0"
       >
         <Example label="Toolbar (grouped, instant after the first)">
           <div

@@ -73,6 +73,7 @@ export default function TypographySection() {
         description="Use a role class (type-title, type-caption…). Each sets size, line height, weight and tracking together. Its skeleton occupies exactly the same line box and covers the glyph height, so swapping between them moves nothing. Overlay draws the skeleton behind the text."
         layout="stack"
         wide
+        specimenKey="typography:default:1"
       >
         <div className="flex gap-controls" role="group" aria-label="Show">
           {(["text", "skeleton", "overlay"] as View[]).map((option) => (

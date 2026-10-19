@@ -14,7 +14,11 @@ export default function DrillPathBarExample() {
   const trail = [root, root.children![0]!, root.children![0]!.children![0]!].slice(0, depth + 1);
   return (
     <SectionPage>
-      <Specimen title="Navigate a hierarchy" layout="stack">
+      <Specimen
+        title="Navigate a hierarchy"
+        layout="stack"
+        specimenKey="component-examples:DrillPathBarExample:0"
+      >
         <DrillPathBar trail={trail} onSelect={setDepth} />
         <Button variant="ghost" onClick={() => setDepth(2)}>
           Reset path

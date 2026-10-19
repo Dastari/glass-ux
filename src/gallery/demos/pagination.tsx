@@ -54,13 +54,14 @@ export default function PaginationSection() {
         description="The range, the page size, then first / previous / page / next / last. Type a page and press Enter to jump."
         layout="stack"
         wide
+        specimenKey="pagination:default:0"
       >
         <div data-testid="pager-offset">
           <OffsetPager />
         </div>
       </Specimen>
 
-      <Specimen title="Modes and states" layout="stack" wide>
+      <Specimen title="Modes and states" layout="stack" wide specimenKey="pagination:default:1">
         <Example label="Cursor pages: no total, no last page">
           <div className="pager-demo-row" data-testid="pager-cursor">
             <CursorPager />
@@ -92,7 +93,10 @@ export default function PaginationSection() {
         </Example>
       </Specimen>
 
-      <ContainerLab description="The page size folds away first, then the page field, then first/last. The range and previous/next always stay.">
+      <ContainerLab
+        description="The page size folds away first, then the page field, then first/last. The range and previous/next always stay."
+        specimenKey="pagination:default:2"
+      >
         {() => <OffsetPager />}
       </ContainerLab>
     </SectionPage>

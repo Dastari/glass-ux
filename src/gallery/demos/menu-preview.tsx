@@ -14,6 +14,7 @@ export default function MenuSection() {
         <Specimen
           title="Toggles, choices and labels"
           description="Ticks and dots take the icon slot, so labels line up with icon rows."
+          specimenKey="menu:default:2"
         >
           <MenuPreview.Surface label="View">
             <MenuPreview.Group>

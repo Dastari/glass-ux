@@ -129,6 +129,7 @@ export default function CommandPaletteSection() {
             title="Anatomy"
             description="Search row, grouped results — icon, label with matched letters, data, shortcut — and keyboard hints. The frame keeps one height while results change."
             wide
+            specimenKey="command-palette:default:1"
           >
             <InlinePanel />
             <InlinePanel query="pow re" />
@@ -137,6 +138,7 @@ export default function CommandPaletteSection() {
           <Specimen
             title="Empty and loading"
             description="No match states the query in one line. A source still fetching shows rows of skeleton in the shape of results."
+            specimenKey="command-palette:default:2"
           >
             <InlinePanel query="orb-7" />
             <InlinePanel query="win" loading />

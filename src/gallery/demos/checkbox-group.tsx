@@ -35,6 +35,7 @@ export default function ChoiceSection() {
         title="With labels"
         description="Click the label or the box. A description makes the label a heading."
         layout="stack"
+        specimenKey="choice:default:3"
       >
         <Checkbox label="Wake devices before patching" defaultChecked />
         <Checkbox

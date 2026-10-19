@@ -7,7 +7,11 @@ import { ShellBrand } from "../../shell/index.js";
 export default function ShellBrandExample() {
   return (
     <SectionPage>
-      <Specimen title="ShellBrand" layout="stack">
+      <Specimen
+        title="ShellBrand"
+        layout="stack"
+        specimenKey="component-examples:ShellBrandExample:0"
+      >
         <ShellBrand label="Meridian Studio" href="#examples" mark={<IconOrganisation />} />
       </Specimen>
     </SectionPage>

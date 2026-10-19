@@ -60,6 +60,7 @@ export default function MapSection() {
       <Specimen
         title="Popups"
         description="The shared popup look (glass-overlay fa-popup), not MapLibre's. Hovering or focusing a marker previews it; clicking or Enter pins it and moves focus inside; Esc closes it and returns focus. The caller renders the content and can add detail once zoomed in."
+        specimenKey="map:default:4"
       >
         <Example label="Point">
           <div className="glass-overlay fa-popup fa-map-popup" data-pinned="">

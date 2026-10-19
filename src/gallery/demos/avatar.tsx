@@ -21,6 +21,7 @@ export default function AvatarSection() {
       <Specimen
         title="Sizes"
         description="xs 20 · sm 24 · md 32 · lg 40 · xl 56. Sample portraits at each size; the final avatar shows initials when no image is supplied."
+        specimenKey="avatar:default:0"
       >
         {SIZES.map((size) => (
           <Example key={size} label={size}>
@@ -34,6 +35,7 @@ export default function AvatarSection() {
       <Specimen
         title="Tints"
         description="Without profile images, the same person always gets the same initials and tint in every palette and mode."
+        specimenKey="avatar:default:1"
       >
         {PEOPLE.map((person) => (
           <Avatar key={person.name} name={person.name} size="lg" />
@@ -44,6 +46,7 @@ export default function AvatarSection() {
       <Specimen
         title="Presence"
         description="The shared status dot on the corner: online, away, busy, offline."
+        specimenKey="avatar:default:2"
       >
         <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="lg" presence="online" />
         <Avatar name="Mira Rowan" src={PORTRAITS[0]} size="lg" presence="away" />
@@ -53,7 +56,11 @@ export default function AvatarSection() {
         <Avatar name="Noa Finch" src={PORTRAITS[4]} size="sm" presence="offline" />
       </Specimen>
 
-      <Specimen title="Loading" description="The skeleton is the same circle.">
+      <Specimen
+        title="Loading"
+        description="The skeleton is the same circle."
+        specimenKey="avatar:default:4"
+      >
         <Example label="Skeleton · loaded">
           <AvatarSkeleton size="lg" />
           <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="lg" />
@@ -71,6 +78,7 @@ export default function AvatarSection() {
         title="Over imagery"
         description="Initials use opaque palette colours; portrait groups keep a surface ring over imagery."
         backdrop
+        specimenKey="avatar:default:5"
       >
         <Example label="Initials without an image">
           <Avatar name="Avery Quinn" size="xl" presence="online" />
@@ -80,7 +88,10 @@ export default function AvatarSection() {
         </Example>
       </Specimen>
 
-      <ContainerLab description="Avatars keep their size; a group never wraps.">
+      <ContainerLab
+        description="Avatars keep their size; a group never wraps."
+        specimenKey="avatar:default:6"
+      >
         {() => (
           <div className="flex items-center gap-3 p-2">
             <Avatar name="Avery Quinn" src={PORTRAITS[1]} presence="online" />

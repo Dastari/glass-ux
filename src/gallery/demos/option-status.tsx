@@ -7,7 +7,11 @@ import { OptionStatus } from "../../ui/combobox/index.js";
 export default function OptionStatusExample() {
   return (
     <SectionPage>
-      <Specimen title="OptionStatus" layout="stack">
+      <Specimen
+        title="OptionStatus"
+        layout="stack"
+        specimenKey="component-examples:OptionStatusExample:0"
+      >
         <OptionStatus status="loading" twoLine />
         <OptionStatus status="error" onRetry={() => toast.info("Demo retry requested")} />
         <OptionStatus status="idle" needsMore={2} />

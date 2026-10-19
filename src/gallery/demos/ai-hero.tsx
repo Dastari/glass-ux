@@ -14,6 +14,7 @@ export default function AiComposerSection() {
           description="The hero sits on the canvas; the composer is the landing's one card, with suggestions under it."
           wide
           layout="bare"
+          specimenKey="ai-composer:default:1"
         >
           <AiHero>
             <Composer

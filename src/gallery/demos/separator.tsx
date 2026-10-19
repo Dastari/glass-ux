@@ -20,6 +20,7 @@ export default function SeparatorSection() {
         title="Between action groups"
         description="R5.8 allows a divider in three places only: between action groups (a toolbar, a menu — at most two per menu), as table row lines, and as a scroll edge. Everywhere else, space separates."
         wide
+        specimenKey="separator:default:0"
       >
         <div
           className="glass-control flex h-12 items-center gap-1 rounded-control px-1.5"
@@ -38,7 +39,11 @@ export default function SeparatorSection() {
         </div>
       </Specimen>
 
-      <Specimen title="Horizontal" description="Full width, one hairline in --line.">
+      <Specimen
+        title="Horizontal"
+        description="Full width, one hairline in --line."
+        specimenKey="separator:default:1"
+      >
         <div className="flex w-80 flex-col gap-3">
           <span className="type-label">Restart agent</span>
           <Separator />

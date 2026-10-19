@@ -46,6 +46,7 @@ export default function EntitySettingsSection() {
       <Specimen
         title="Secret field"
         description="Write-only: a stored secret is never shown, only Set, with Replace and Clear. Replace swaps in an empty password box with Keep current."
+        specimenKey="entity-settings:default:5"
       >
         <Secrets />
       </Specimen>

@@ -9,6 +9,7 @@ export default function MeterCellSection() {
       <Specimen
         title="Measurements and thresholds"
         description="The shared meter carries its accessible name, exact reading, and warning/danger thresholds."
+        specimenKey="meter-cell:default:0"
       >
         <div className="flex w-full max-w-xl flex-col gap-controls">
           <MeterCell
@@ -37,6 +38,7 @@ export default function MeterCellSection() {
       <Specimen
         title="Data colour"
         description='tone="data" draws a healthy level in the first data colour, for columns that compare levels. Warning and danger still apply past 75% and 90%.'
+        specimenKey="meter-cell:default:1"
       >
         <div className="flex w-full max-w-xl flex-col gap-controls">
           <MeterCell
@@ -68,6 +70,7 @@ export default function MeterCellSection() {
       <Specimen
         title="Narrow cell"
         description="Below 5.5rem, the track gives way while the reading and exact breakdown remain reachable."
+        specimenKey="meter-cell:default:2"
       >
         <div className="flex w-20 flex-col gap-controls">
           <MeterCell

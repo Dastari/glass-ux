@@ -17,6 +17,7 @@ export default function AlertDialogSection() {
       <Specimen
         title="Anatomy"
         description="Tone tile, a title that names the target, one sentence, Cancel, then the confirm — the only solid danger button in the product."
+        specimenKey="alert-dialog:default:1"
       >
         <AlertDialogPreview
           tone="danger"
@@ -30,6 +31,7 @@ export default function AlertDialogSection() {
         title="Tones"
         description="Danger for destructive or irreversible work, warning when work is lost or someone is interrupted, default for a consequential but safe step."
         wide
+        specimenKey="alert-dialog:default:2"
       >
         <AlertDialogPreview
           tone="danger"
@@ -56,6 +58,7 @@ export default function AlertDialogSection() {
         title="States"
         description="The confirm button keeps its width from rest to pending to ✓ or ✕. On ✓ the dialog closes; on ✕ it stays and a toast gives the reason."
         wide
+        specimenKey="alert-dialog:default:3"
       >
         <AlertDialogPreview
           tone="danger"
@@ -81,7 +84,7 @@ export default function AlertDialogSection() {
         />
       </Specimen>
 
-      <Specimen title="Over imagery" backdrop>
+      <Specimen title="Over imagery" backdrop specimenKey="alert-dialog:default:4">
         <AlertDialogPreview
           tone="warning"
           title="Restart NST-C106?"

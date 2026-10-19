@@ -118,6 +118,7 @@ export default function AppShellSection() {
       <Specimen
         title="Rail and section drawer"
         description="An icon-only rail with labelled tooltips, and a resizable drawer for the section's navigation. The rail's gear opens the current organisation's settings. mod+B or the current rail item toggles the drawer."
+        specimenKey="app-shell:default:3"
       >
         <RailAndDrawer />
       </Specimen>

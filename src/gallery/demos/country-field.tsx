@@ -38,6 +38,7 @@ export default function CountrySelectSection() {
       <Specimen
         title="By name, with the flag"
         description="Every ISO 3166-1 country, named by the browser in the locale, the workspace's own first. Flags are SVG (Windows has no flag emoji) and load once, lazily, in a reserved box."
+        specimenKey="country-select:default:0"
       >
         <CountryDemo />
       </Specimen>

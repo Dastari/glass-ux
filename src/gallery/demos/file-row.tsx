@@ -108,6 +108,7 @@ export default function FileDropSection() {
         title="Upload"
         description="Drop files or activate the tile (Enter or Space) to browse. Try a file that is not .msi or .exe: the reason appears in the message line and the tile keeps its size."
         wide
+        specimenKey="file-drop:default:0"
       >
         <InstallerUpload />
       </Specimen>
@@ -115,6 +116,7 @@ export default function FileDropSection() {
       <Specimen
         title="File rows"
         description="Every row keeps its height: the bar is always there, and the state or the error replaces the size line in place."
+        specimenKey="file-drop:default:3"
       >
         <FileList className="w-full max-w-lg" aria-label="Uploads">
           <FileRow
@@ -142,7 +144,7 @@ export default function FileDropSection() {
         </FileList>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="file-drop:default:5">
         {(preset) =>
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center px-1">

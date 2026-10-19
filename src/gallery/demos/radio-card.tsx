@@ -39,6 +39,7 @@ export default function ChoiceSection() {
       <Specimen
         title="Tones"
         description="Accent by default. Success, warning and danger only when the choice itself is a status (R3.3)."
+        specimenKey="choice:default:2"
       >
         <Matrix
           columns={["Ticked", "Mixed", "Chosen", "Card"]}
@@ -80,6 +81,7 @@ export default function ChoiceSection() {
         title="Radio cards"
         description="For options that need a sentence, typically in a dialog: Connect to NST-C106."
         layout="stack"
+        specimenKey="choice:default:5"
       >
         <div className="max-w-md">
           <SessionCards />
@@ -91,11 +93,12 @@ export default function ChoiceSection() {
         description="Horizontal cards reflow by container width and may carry an icon tile."
         layout="stack"
         wide
+        specimenKey="choice:default:6"
       >
         <SessionCards orientation="horizontal" />
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="choice:default:9">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-5 px-3">

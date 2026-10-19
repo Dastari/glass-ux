@@ -118,6 +118,7 @@ export default function MenuSection() {
         <Specimen
           title="Live"
           description="Arrow keys move, → and ← open and close submenus, typing jumps to a row, Enter runs it, Esc closes and focus returns to the trigger."
+          specimenKey="menu:default:0"
         >
           <Example label="Endpoint actions (online)">
             <ActionMenu set={endpointActions} targets={[nst]} label={nst.name} size="md" />

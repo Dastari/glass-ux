@@ -11,6 +11,7 @@ export default function NoticeSection() {
         title="Tones"
         description="Info, success, warning and danger. Text stays in text colours; the icon and the soft fill carry the tone."
         layout="stack"
+        specimenKey="notice:default:0"
       >
         <div className="flex w-160 max-w-full flex-col gap-3">
           <Notice>
@@ -41,6 +42,7 @@ export default function NoticeSection() {
         title="Compact"
         description="One line at control height for dense places; the text truncates and the full sentence is in the title."
         layout="stack"
+        specimenKey="notice:default:1"
       >
         <div className="flex w-120 max-w-full flex-col gap-3">
           <Notice compact>Read-only: you are viewing Orbit Workspace as an auditor.</Notice>
@@ -50,7 +52,10 @@ export default function NoticeSection() {
         </div>
       </Specimen>
 
-      <ContainerLab description="Notices wrap in the tile and tall column; the compact one truncates.">
+      <ContainerLab
+        description="Notices wrap in the tile and tall column; the compact one truncates."
+        specimenKey="notice:default:2"
+      >
         {() => (
           <div className="flex flex-col gap-2">
             <Notice compact tone="warning">

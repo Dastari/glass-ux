@@ -6,7 +6,11 @@ import { ProportionStrip } from "../../ui/charts/index.js";
 export default function ProportionStripExample() {
   return (
     <SectionPage>
-      <Specimen title="ProportionStrip" layout="stack">
+      <Specimen
+        title="ProportionStrip"
+        layout="stack"
+        specimenKey="component-examples:ProportionStripExample:0"
+      >
         <svg viewBox="0 0 480 40" role="img" aria-label="Booked 60 percent, available 40 percent">
           <ProportionStrip
             width={480}

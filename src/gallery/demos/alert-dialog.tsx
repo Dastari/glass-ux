@@ -21,6 +21,7 @@ export default function AlertDialogSection() {
       <Specimen
         title="Live"
         description="Cancel takes focus first and Esc cancels. The confirm runs the action in place; while it runs the dialog cannot be dismissed."
+        specimenKey="alert-dialog:default:0"
       >
         <Example label="Danger · warning · default">
           <AlertDialog

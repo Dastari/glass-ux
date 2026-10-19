@@ -9,7 +9,11 @@ export default function AskDockProviderExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="Shared pending-question state" layout="stack">
+        <Specimen
+          title="Shared pending-question state"
+          layout="stack"
+          specimenKey="component-examples:AskDockProviderExample:0"
+        >
           <AskDockProvider>
             <AskCard ask={ASKS.single} />
             <AskCard ask={ASKS.multi} />

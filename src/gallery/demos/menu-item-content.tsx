@@ -7,7 +7,11 @@ import { MenuItemContent, MenuPreview } from "../../ui/menu/index.js";
 export default function MenuItemContentExample() {
   return (
     <SectionPage>
-      <Specimen title="MenuItemContent" layout="stack">
+      <Specimen
+        title="MenuItemContent"
+        layout="stack"
+        specimenKey="component-examples:MenuItemContentExample:0"
+      >
         <MenuPreview.Surface label="Sample actions">
           <div className="fa-item">
             <MenuItemContent icon={<IconSearch />} shortcut="mod+k">

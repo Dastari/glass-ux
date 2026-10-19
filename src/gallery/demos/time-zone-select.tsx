@@ -8,7 +8,7 @@ import { TimeZoneSelect } from "../../ui/time-zone-select/index.js";
 export default function TimeZoneSelectSection() {
   return (
     <SectionPage>
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="time-zone-select:default:1">
         <FormStack>
           <Field label="Empty">
             <TimeZoneSelect width="medium" />
@@ -21,13 +21,13 @@ export default function TimeZoneSelectSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="time-zone-select:default:2">
         <Field label="Time zone">
           <TimeZoneSelect width="medium" defaultValue="Australia/Hobart" />
         </Field>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="time-zone-select:default:3">
         <div className="flex h-full items-center p-1">
           <TimeZoneSelect
             size="sm"

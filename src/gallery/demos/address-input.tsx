@@ -58,6 +58,7 @@ export default function AddressFieldSection() {
       <Specimen
         title="Lookup"
         description="Type three characters and suggestions arrive from the geocoder, leaning towards the home region. Choosing one fills every field and drops the pin; the fields stay editable. Enter manually opens them without a lookup."
+        specimenKey="address-field:default:0"
       >
         <LookupDemo />
       </Specimen>
@@ -65,6 +66,7 @@ export default function AddressFieldSection() {
       <Specimen
         title="Filled, with the pin"
         description="Drag the pin, click the map or focus the pin and use the arrow keys: the position becomes “placed by hand” and Reset pin returns to the lookup's point."
+        specimenKey="address-field:default:1"
       >
         <FormStack className="w-full" data-testid="address-filled">
           <AddressInput
@@ -81,6 +83,7 @@ export default function AddressFieldSection() {
         title="States"
         description="Errors replace the hint in place; disabled keeps the layout."
         layout="grid"
+        specimenKey="address-field:default:3"
       >
         <FormStack>
           <AddressInput
@@ -100,7 +103,7 @@ export default function AddressFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="address-field:default:5">
         <FormStack>
           <AddressInput geocoder={demoGeocoder} label="Site address" defaultValue={HOBART_OFFICE} />
         </FormStack>
@@ -111,6 +114,7 @@ export default function AddressFieldSection() {
         presets={CONTAINER_PRESETS.filter(
           (preset) => preset.id !== "row" && preset.id !== "header",
         )}
+        specimenKey="address-field:default:6"
       >
         <div className="h-full overflow-y-auto p-3" data-scroll-container>
           <FormStack>

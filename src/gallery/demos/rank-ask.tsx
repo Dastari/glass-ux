@@ -13,6 +13,7 @@ export default function RankAskExample() {
           title="RankAsk"
           description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision."
           layout="stack"
+          specimenKey="component-examples:RankAskExample:0"
         >
           <RankAsk ask={ASKS.rank} />
         </Specimen>

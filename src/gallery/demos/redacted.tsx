@@ -12,6 +12,7 @@ export default function RedactedExample() {
           title="Redacted"
           description="Sensitive content is withheld by the host. The browser receives a typed redaction record instead of the secret."
           layout="stack"
+          specimenKey="component-examples:RedactedExample:0"
         >
           <Redacted value={{ redacted: true, reason: "Restricted demo value" }} />
         </Specimen>

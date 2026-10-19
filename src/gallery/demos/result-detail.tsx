@@ -13,6 +13,7 @@ export default function ResultDetailExample() {
           title="ResultDetail"
           description="This renderer displays one typed result. The sample is local fictional data; supply your own result and host handlers."
           layout="stack"
+          specimenKey="component-examples:ResultDetailExample:0"
         >
           <ResultDetail result={RESULTS.network} />
         </Specimen>

@@ -184,6 +184,7 @@ export default function EntityIdentitySection() {
       <OnCanvas
         title="Header"
         description="The entity page's header, on the canvas: tile, title and state, the data facts line, actions and tabs. Under 48rem the title steps down; under 30rem the tile goes and every action is one ⋯."
+        specimenKey="entity-identity:default:0"
       >
         <div className="gallery-entity-headers">
           <div className="gallery-entity-window">
@@ -200,6 +201,7 @@ export default function EntityIdentitySection() {
         description="One definition: the same glyph, state colour, name and actions at every size. Click or Enter opens; right-click or Shift+F10 opens the ⋯ menu's actions; the chip previews on hover or focus; the icon names itself in a tooltip."
         wide
         layout="bare"
+        specimenKey="entity-identity:default:1"
       >
         <div className="gallery-entity-scroll">
           <div className="gallery-entity-matrix" data-testid="entity-tiers">
@@ -217,6 +219,7 @@ export default function EntityIdentitySection() {
         description="The state is a badge in the header tiers and the corner dot everywhere. Activity pulses until the motion switch stops it; paused is a ring. A count sits on the top corner."
         wide
         layout="bare"
+        specimenKey="entity-identity:default:2"
       >
         <div className="gallery-entity-scroll">
           <Matrix
@@ -241,6 +244,7 @@ export default function EntityIdentitySection() {
       <Specimen
         title="Image"
         description="An illustration or logo replaces the glyph in the header, compact and icon tiers. Rows and chips keep the glyph so lists stay even."
+        specimenKey="entity-identity:default:3"
       >
         <Example label="Compact">
           <div className="gallery-entity-fixed">
@@ -281,6 +285,7 @@ export default function EntityIdentitySection() {
       <Specimen
         title="Chip preview"
         description="Hovering or focusing a chip opens this card after 400 ms: the compact tier and the top two actions. It adds nothing the page, the menu or the palette cannot reach."
+        specimenKey="entity-identity:default:4"
       >
         <EntityIdentity.PreviewCard {...ORG_PROPS} />
       </Specimen>
@@ -288,6 +293,7 @@ export default function EntityIdentitySection() {
       <Specimen
         title="Loading"
         description="Each tier's skeleton takes the loaded tier's boxes, so content arrives without moving anything."
+        specimenKey="entity-identity:default:5"
       >
         {(["compact", "row", "chip", "icon"] as const).map((tier) => (
           <Example key={tier} label={tier}>
@@ -315,6 +321,7 @@ export default function EntityIdentitySection() {
         title="Over imagery"
         description="Chips, rows and icons hold their contrast over screenshots and media."
         backdrop
+        specimenKey="entity-identity:default:6"
       >
         <Tiers props={ORG_PROPS} />
       </Specimen>
@@ -322,6 +329,7 @@ export default function EntityIdentitySection() {
       <ContainerLab
         title="Entity identity in the container lab"
         description="tier=auto fill: the box picks the tier on both axes. Rows under 2.75rem keep the name only; the icon shrinks to a small box."
+        specimenKey="entity-identity:default:7"
       >
         {() => <EntityIdentity {...ORG_PROPS} tier="auto" fill heading="h4" />}
       </ContainerLab>

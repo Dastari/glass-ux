@@ -23,6 +23,7 @@ export default function ActionProviderExample() {
         title="Host action services"
         description="Mount ActionProvider inside the router. Nested providers inherit the shared toast and confirmation hosts."
         layout="stack"
+        specimenKey="component-examples:ActionProviderExample:0"
       >
         <ActionProvider navigate={(path) => toast.info(`Demo destination: ${path}`)}>
           <ActionMenu label="Exhibition" set={SAMPLE_ACTIONS} targets={[{ id: "meridian" }]} />

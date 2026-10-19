@@ -14,6 +14,7 @@ export default function HitLayerExample() {
         title="Pointer and keyboard plot navigation"
         description="Tab into the plot and use Left/Right to move between the three values."
         layout="stack"
+        specimenKey="component-examples:HitLayerExample:0"
       >
         <div ref={anchor} className="relative h-60 w-full">
           <svg

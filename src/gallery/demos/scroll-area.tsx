@@ -26,6 +26,7 @@ export default function ScrollAreaSection() {
       <Specimen
         title="Edges"
         description="Scrollbars appear while you hover or scroll. The hairline appears only at an edge with content beyond it (R5.8); fade masks it softly instead."
+        specimenKey="scroll-area:default:0"
       >
         <Example label="Hairline">
           <div className="glass-inset h-72 w-80 rounded-tile">
@@ -46,6 +47,7 @@ export default function ScrollAreaSection() {
       <Specimen
         title="Horizontal"
         description="A strip that scrolls sideways fades at the edge it continues past."
+        specimenKey="scroll-area:default:1"
       >
         <div className="h-12 w-110 max-w-full">
           <ScrollArea orientation="horizontal" edges="fade" aria-label="Endpoint states">
@@ -60,7 +62,10 @@ export default function ScrollAreaSection() {
         </div>
       </Specimen>
 
-      <ContainerLab description="It fills the box and scrolls inside it at every size.">
+      <ContainerLab
+        description="It fills the box and scrolls inside it at every size."
+        specimenKey="scroll-area:default:2"
+      >
         {() => (
           <ScrollArea aria-label="Endpoints in a lab frame">
             <EndpointList />

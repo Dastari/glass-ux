@@ -13,6 +13,7 @@ export default function ResultImagesExample() {
           title="ResultImages"
           description="This renderer displays one typed result. The sample is local fictional data; supply your own result and host handlers."
           layout="stack"
+          specimenKey="component-examples:ResultImagesExample:0"
         >
           <ResultImages result={RESULTS.screens} />
         </Specimen>

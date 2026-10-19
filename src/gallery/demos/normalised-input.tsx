@@ -7,7 +7,11 @@ import { Field } from "../../ui/field/index.js";
 export default function NormalisedInputExample() {
   return (
     <SectionPage>
-      <Specimen title="NormalisedInput" layout="stack">
+      <Specimen
+        title="NormalisedInput"
+        layout="stack"
+        specimenKey="component-examples:NormalisedInputExample:0"
+      >
         <Field label="Project slug" hint="Type spaces or capitals, then leave the field.">
           <NormalisedInput
             defaultValue="Meridian Studio"

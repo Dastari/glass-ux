@@ -13,6 +13,7 @@ export default function QuickRepliesAskExample() {
           title="QuickRepliesAsk"
           description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision."
           layout="stack"
+          specimenKey="component-examples:QuickRepliesAskExample:0"
         >
           <QuickRepliesAsk ask={ASKS.quick} />
         </Specimen>

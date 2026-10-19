@@ -181,6 +181,7 @@ export default function SheetSection() {
       <Specimen
         title="Live"
         description="Slides in from its edge; Esc, the scrim or a swipe back toward that edge closes it and focus returns to the trigger. The body scrolls; header and footer stay."
+        specimenKey="sheet:default:0"
       >
         <Example label="Sides">
           <SheetDemo size="md" label="Right · inspector" side="right" />
@@ -197,6 +198,7 @@ export default function SheetSection() {
       <Specimen
         title="Anatomy"
         description="The same header, scrolling body and footer as a dialog, at the full height of the viewport less the page gutter."
+        specimenKey="sheet:default:1"
       >
         <Dialog.Preview size="sm" height="short">
           <InspectorContent

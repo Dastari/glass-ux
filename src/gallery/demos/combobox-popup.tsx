@@ -18,6 +18,7 @@ export default function ComboboxPopupExample() {
         title="ComboboxPopup"
         description="Compose the shared popup inside a Base UI combobox root."
         layout="stack"
+        specimenKey="component-examples:ComboboxPopupExample:0"
       >
         <BaseCombobox.Root items={CHOICES}>
           <BaseCombobox.Input render={<Input aria-label="Search sample projects" />} />

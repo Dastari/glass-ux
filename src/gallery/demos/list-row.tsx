@@ -13,6 +13,7 @@ export default function ListRowSection() {
       <Specimen
         title="Selectable rows"
         description="Tab reaches each row; Enter and Space activate it. A separate action belongs beside the row, keeping interactive controls out of its button."
+        specimenKey="list-row:default:0"
       >
         <div className="w-80 max-w-full" role="group" aria-label="Documents">
           <ListRow
@@ -38,6 +39,7 @@ export default function ListRowSection() {
       <Specimen
         title="Narrow and composed labels"
         description="Both lines reveal their full text when their measured width requires truncation."
+        specimenKey="list-row:default:1"
       >
         <div className="w-48 max-w-full">
           <ListRow

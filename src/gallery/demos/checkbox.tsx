@@ -64,6 +64,7 @@ export default function ChoiceSection() {
         title="Checkbox"
         description="Ticking pops the tone fill in on the spring curve and draws the ✓. Mixed draws a bar. Every box is live."
         wide
+        specimenKey="choice:default:0"
       >
         <Matrix
           columns={["Unticked", "Ticked", "Mixed", "Invalid", "Disabled", "Disabled, ticked"]}
@@ -90,6 +91,7 @@ export default function ChoiceSection() {
       <Specimen
         title="Tones"
         description="Accent by default. Success, warning and danger only when the choice itself is a status (R3.3)."
+        specimenKey="choice:default:2"
       >
         <Matrix
           columns={["Ticked", "Mixed", "Chosen", "Card"]}
@@ -131,6 +133,7 @@ export default function ChoiceSection() {
         title="With labels"
         description="Click the label or the box. A description makes the label a heading."
         layout="stack"
+        specimenKey="choice:default:3"
       >
         <Checkbox label="Wake devices before patching" defaultChecked />
         <Checkbox
@@ -141,7 +144,7 @@ export default function ChoiceSection() {
         <ParentGroup />
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="choice:default:7">
         <div className="flex flex-col gap-3">
           <Checkbox label="Wake devices before patching" defaultChecked />
           <Checkbox label="Skip devices on battery" />
@@ -156,6 +159,7 @@ export default function ChoiceSection() {
       <Specimen
         title="Consent"
         description="Explicit consent is a checkbox in a horizontal Field: the statement, and the message line for the error."
+        specimenKey="choice:default:8"
       >
         <div className="flex max-w-sm flex-col gap-3">
           <Field
@@ -168,7 +172,7 @@ export default function ChoiceSection() {
         </div>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="choice:default:9">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-5 px-3">

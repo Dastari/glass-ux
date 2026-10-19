@@ -10,6 +10,7 @@ export default function SessionNavSkeletonExample() {
         title="SessionNavSkeleton"
         description="The loading state keeps the corresponding content dimensions while data arrives."
         layout="stack"
+        specimenKey="component-examples:SessionNavSkeletonExample:0"
       >
         <div className="h-45 w-full">
           <SessionNavSkeleton />

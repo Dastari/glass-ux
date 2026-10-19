@@ -41,6 +41,7 @@ export default function AppShellSection() {
         title="Phone tab bar"
         description="The rail on phones: a floating glass pill above the safe area. Scrolling down condenses it; scrolling up restores it."
         backdrop
+        specimenKey="app-shell:default:5"
       >
         <Example label="Resting">
           <SpecimenTabBar condensed={false} />

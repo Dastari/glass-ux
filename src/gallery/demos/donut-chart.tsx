@@ -32,6 +32,7 @@ export default function DonutChartSection() {
         title="DonutChart"
         description="A focused example using fictional studio project measurements. Hover or use the keyboard to inspect values; the chart's table preserves the exact data."
         wide
+        specimenKey="chart-donut-chart:default:0"
       >
         <div className="charts-pane" data-testid="chart-donut-chart">
           {render()}
@@ -41,6 +42,7 @@ export default function DonutChartSection() {
         title="Responsive sizes"
         description="The same DonutChart adapts to row, tile and full-panel sizes."
         wide
+        specimenKey="chart-donut-chart:default:1"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -48,6 +50,7 @@ export default function DonutChartSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
+        specimenKey="chart-donut-chart:default:2"
       >
         <SkeletonSwaps id="donut-chart" render={render} />
         <div className="gallery-tiers">
@@ -59,7 +62,7 @@ export default function DonutChartSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab>{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-donut-chart:default:3">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

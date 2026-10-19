@@ -47,6 +47,7 @@ export default function PasswordFieldSection() {
       <Specimen
         title="In a form"
         description="currentPasswordSchema only requires a value; passwordSchema wants 12 characters and at least Fair, and penalises the person's own name and email."
+        specimenKey="password-field:default:2"
       >
         <ChangePasswordDemo />
       </Specimen>

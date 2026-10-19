@@ -10,6 +10,7 @@ export default function ThemeToggleExample() {
         title="ThemeToggle"
         description="Cycle the document\u2019s appearance mode. AppearanceProvider is installed by the gallery host."
         layout="stack"
+        specimenKey="component-examples:ThemeToggleExample:0"
       >
         <ThemeToggle />
       </Specimen>

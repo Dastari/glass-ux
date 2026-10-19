@@ -9,6 +9,7 @@ export default function CountrySelectSection() {
       <Specimen
         title="Flags"
         description="3:2, the height of a small icon, with a hairline so white flags read on white."
+        specimenKey="country-select:default:1"
       >
         <span className="flex flex-wrap items-center gap-2">
           {["AU", "NZ", "GB", "US", "CA", "JP", "SG", "FJ", "PG", "IE", "IN", "PH"].map((code) => (

@@ -32,6 +32,7 @@ export default function ColumnChartSection() {
         title="ColumnChart"
         description="A focused example using fictional studio project measurements. Hover or use the keyboard to inspect values; the chart's table preserves the exact data."
         wide
+        specimenKey="chart-column-chart:default:0"
       >
         <div className="charts-pane" data-testid="chart-column-chart">
           {render()}
@@ -41,6 +42,7 @@ export default function ColumnChartSection() {
         title="Responsive sizes"
         description="The same ColumnChart adapts to row, tile and full-panel sizes."
         wide
+        specimenKey="chart-column-chart:default:1"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -48,6 +50,7 @@ export default function ColumnChartSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
+        specimenKey="chart-column-chart:default:2"
       >
         <SkeletonSwaps id="column-chart" render={render} />
         <div className="gallery-tiers">
@@ -59,7 +62,7 @@ export default function ColumnChartSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab>{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-column-chart:default:3">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

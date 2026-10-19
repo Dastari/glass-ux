@@ -9,7 +9,11 @@ export default function SourcesProviderExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="SourcesProvider" layout="stack">
+        <Specimen
+          title="SourcesProvider"
+          layout="stack"
+          specimenKey="component-examples:SourcesProviderExample:0"
+        >
           <SourcesProvider sources={SOURCES}>
             <Markdown text="A report with a source citation[^1]." />
             <SourceList sources={SOURCES} />

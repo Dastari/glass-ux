@@ -18,6 +18,7 @@ export default function AiMessagesSection() {
           title="Code blocks"
           description="Language label, copy with an in-place ✓, wrap toggle and optional line numbers. Highlighting loads on the first block; until then the same text sits in the same lines. Long blocks show their first lines."
           layout="stack"
+          specimenKey="ai-messages:default:4"
         >
           <CodeBlock
             language="powershell"

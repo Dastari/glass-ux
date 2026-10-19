@@ -10,6 +10,7 @@ export default function TextareaSkeletonExample() {
         title="TextareaSkeleton"
         description="The loading state keeps the corresponding content dimensions while data arrives."
         layout="stack"
+        specimenKey="component-examples:TextareaSkeletonExample:0"
       >
         <div className="h-45 w-full">
           <TextareaSkeleton />

@@ -13,6 +13,7 @@ export default function SingleChoiceAskExample() {
           title="SingleChoiceAsk"
           description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision."
           layout="stack"
+          specimenKey="component-examples:SingleChoiceAskExample:0"
         >
           <SingleChoiceAsk ask={ASKS.single} />
         </Specimen>

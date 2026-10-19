@@ -10,6 +10,7 @@ export default function SparklineSkeletonExample() {
         title="SparklineSkeleton"
         description="The loading state keeps the corresponding content dimensions while data arrives."
         layout="stack"
+        specimenKey="component-examples:SparklineSkeletonExample:0"
       >
         <div className="h-45 w-full">
           <SparklineSkeleton />

@@ -30,6 +30,7 @@ export default function AppShellSection() {
         description="The primary window's title bar, on the canvas, with the entity's ActionBar. The title line never wraps: the actions give way first (buttons move into More), below 48rem the title steps down a size, and under 30rem the icon goes and every action is one ⋯ at the end of the title line."
         wide
         layout="stack"
+        specimenKey="app-shell:default:1"
       >
         <Example label="Full">
           <div className="gallery-shell-window">
@@ -56,6 +57,7 @@ export default function AppShellSection() {
       <ContainerLab
         title="Entity header in the container lab"
         description="The header in a row, a header, a tile, a pane and a tall narrow column. With little height it keeps the title line only."
+        specimenKey="app-shell:default:2"
       >
         {() => (
           <div className="gallery-shell-window" data-fill="">

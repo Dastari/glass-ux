@@ -441,6 +441,7 @@ export default function DialogSection() {
       <Specimen
         title="Live"
         description="Esc, the close button and the backdrop close a dialog; focus returns to the button that opened it. Only the body scrolls; header and footer stay put."
+        specimenKey="dialog:default:0"
       >
         <Example label="Sizes">
           {SIZE_DEMOS.map((demo) => (

@@ -8,7 +8,11 @@ export default function ResultValueExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="ResultValue" layout="stack">
+        <Specimen
+          title="ResultValue"
+          layout="stack"
+          specimenKey="component-examples:ResultValueExample:0"
+        >
           <ResultValue
             result={{
               id: "sample-value",

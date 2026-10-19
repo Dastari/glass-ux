@@ -7,7 +7,11 @@ import { Checkbox } from "../../ui/checkbox/index.js";
 export default function ChoiceRowExample() {
   return (
     <SectionPage>
-      <Specimen title="ChoiceRow" layout="stack">
+      <Specimen
+        title="ChoiceRow"
+        layout="stack"
+        specimenKey="component-examples:ChoiceRowExample:0"
+      >
         <ChoiceRow
           controlId="sample-consent"
           label="Send an exhibition reminder"

@@ -12,6 +12,7 @@ export default function AccordionSection() {
         title="Accordion"
         description="Rows are the shared fa-item; the chevron turns and the panel grows in place. Space and the hover fill separate items — no dividers."
         wide
+        specimenKey="accordion:default:0"
       >
         <div className="w-160 max-w-full">
           <Accordion.Root defaultValue={["network"]} multiple>
@@ -55,7 +56,10 @@ export default function AccordionSection() {
         </div>
       </Specimen>
 
-      <ContainerLab description="Titles and meta truncate; the panel scrolls with its container.">
+      <ContainerLab
+        description="Titles and meta truncate; the panel scrolls with its container."
+        specimenKey="accordion:default:2"
+      >
         {() => (
           <div className="h-full overflow-auto" data-scroll-container>
             <Accordion.Root defaultValue={["cpu"]}>

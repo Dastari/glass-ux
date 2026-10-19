@@ -110,6 +110,7 @@ export default function RichTextSection() {
         title="Edit a document"
         description="Visual editing is the default. Select text to format it, change the paragraph style, or use Ctrl/⌘ B and I. Markdown source is another presentation of the same value."
         layout="stack"
+        specimenKey="rich-text:default:0"
       >
         <DocumentDemo />
       </Specimen>
@@ -118,6 +119,7 @@ export default function RichTextSection() {
         title="Quoted text"
         description="Quote paragraphs with the Block style menu or type > followed by a space. Quotations stay editable and save as Markdown blockquotes."
         layout="stack"
+        specimenKey="rich-text:default:2"
       >
         <QuoteDemo />
       </Specimen>
@@ -125,10 +127,11 @@ export default function RichTextSection() {
         title="Attachments"
         description="A host upload adapter adds image or file URLs to Markdown. Glass UX does not store files or grant upload authority."
         layout="stack"
+        specimenKey="rich-text:default:3"
       >
         <AttachmentDemo />
       </Specimen>
-      <Specimen title="States" layout="stack">
+      <Specimen title="States" layout="stack" specimenKey="rich-text:default:4">
         <Field label="Empty document" nativeLabel={false}>
           <RichTextInput minHeight={100} maxHeight={220} />
         </Field>
@@ -166,6 +169,7 @@ export default function RichTextSection() {
         title="Loading geometry"
         description="The skeleton retains the toolbar and content height."
         layout="stack"
+        specimenKey="rich-text:default:5"
       >
         <SwapSlot
           id="rich-text-loading"
@@ -186,6 +190,7 @@ export default function RichTextSection() {
           { id: "tall", label: "Tall narrow 240×640", width: 240, height: 640 },
         ]}
         description="Formatting buttons wrap within the container; the source switch adapts with Segmented. Content scrolls after its maximum height, and either view can be resized vertically."
+        specimenKey="rich-text:default:6"
       >
         <div className="p-2">
           <RichTextInput

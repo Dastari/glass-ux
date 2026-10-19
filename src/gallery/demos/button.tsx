@@ -49,6 +49,7 @@ export default function ButtonSection() {
         title="Variants"
         description="One primary per view. Secondary for supporting actions, ghost for toolbars, soft for toggled-on. Tones carry meaning: success approves or brings online, warning has consequences short of destruction, danger confirms destruction. Icon-only buttons show their label as a tooltip."
         wide
+        specimenKey="button:default:0"
       >
         <Matrix
           columns={["Default", "With icon", "Icon only", "Disabled"]}
@@ -73,6 +74,7 @@ export default function ButtonSection() {
       <Specimen
         title="Sizes"
         description="sm 32 · md 40 · lg 48. Compact density and touch screens adjust the heights through tokens, never per screen."
+        specimenKey="button:default:1"
       >
         {(["sm", "md", "lg"] as const).map((size) => (
           <Example key={size} label={size}>
@@ -95,6 +97,7 @@ export default function ButtonSection() {
       <Specimen
         title="Feedback in place"
         description="The button confirms its own outcome. Faces share one grid cell, so “Save changes”, “Saving…” and “Saved” never move the layout. Errors also raise a toast with the reason."
+        specimenKey="button:default:2"
       >
         <Example label="Click to run (succeeds after 1.2s)">
           <ActionButton
@@ -152,6 +155,7 @@ export default function ButtonSection() {
       <Specimen
         title="Groups and split buttons"
         description="Adjacent actions sit 8px apart. A split button joins the main action to its menu."
+        specimenKey="button:default:3"
       >
         <Example label="Split primary">
           <ButtonGroup attached>
@@ -186,6 +190,7 @@ export default function ButtonSection() {
         title="Over glass and imagery"
         description="Buttons keep their contrast on top of busy content."
         backdrop
+        specimenKey="button:default:4"
       >
         <Button variant="primary" icon={<IconEndpoint />}>
           Connect

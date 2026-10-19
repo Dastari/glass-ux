@@ -31,6 +31,7 @@ export default function PieChartSection() {
         title="PieChart"
         description="A focused example using fictional studio project measurements. Hover or use the keyboard to inspect values; the chart's table preserves the exact data."
         wide
+        specimenKey="chart-pie-chart:default:0"
       >
         <div className="charts-pane" data-testid="chart-pie-chart">
           {render()}
@@ -40,6 +41,7 @@ export default function PieChartSection() {
         title="Responsive sizes"
         description="The same PieChart adapts to row, tile and full-panel sizes."
         wide
+        specimenKey="chart-pie-chart:default:1"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -47,6 +49,7 @@ export default function PieChartSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
+        specimenKey="chart-pie-chart:default:2"
       >
         <SkeletonSwaps id="pie-chart" render={render} />
         <div className="gallery-tiers">
@@ -58,7 +61,7 @@ export default function PieChartSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab>{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-pie-chart:default:3">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

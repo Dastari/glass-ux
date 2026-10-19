@@ -9,6 +9,7 @@ export default function AccordionSection() {
       <Specimen
         title="Disclosure"
         description="One section that shows and hides, with the same row and motion."
+        specimenKey="accordion:default:1"
       >
         <div className="w-120 max-w-full">
           <Disclosure title="Advanced" meta="3 settings">

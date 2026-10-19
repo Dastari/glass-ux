@@ -7,7 +7,11 @@ import { PORTRAITS } from "../fixtures/organisations.js";
 export default function AvatarSection() {
   return (
     <SectionPage>
-      <Specimen title="Loading" description="The skeleton is the same circle.">
+      <Specimen
+        title="Loading"
+        description="The skeleton is the same circle."
+        specimenKey="avatar:default:4"
+      >
         <Example label="Skeleton · loaded">
           <AvatarSkeleton size="lg" />
           <Avatar name="Avery Quinn" src={PORTRAITS[1]} size="lg" />

@@ -27,6 +27,7 @@ export default function EmailFieldSection() {
       <Specimen
         title="Typo hint"
         description="Once focus leaves, a domain one or two keystrokes from a common provider — or from the organisation's own domain — offers the correction in the message line. Choosing it replaces the value; nothing moves."
+        specimenKey="email-field:default:0"
       >
         <FormStack className="w-full">
           <SuggestionDemo />

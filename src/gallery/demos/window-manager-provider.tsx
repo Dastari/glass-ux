@@ -319,6 +319,7 @@ export default function WindowsSection() {
         description="The layout is state, not position: a window keeps its intent (tiled, floating) when the screen changes size."
         wide
         layout="bare"
+        specimenKey="windows:default:1"
       >
         <div className="gallery-wm-states">
           <Example label="Tiled: a column beside the page (default at 1920px and wider)">
@@ -345,6 +346,7 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
+        specimenKey="windows:default:4"
       >
         <MiniWorkspace />
       </Specimen>

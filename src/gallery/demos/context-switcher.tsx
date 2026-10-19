@@ -56,6 +56,7 @@ export default function ContextSwitcherSection() {
         title="Trigger"
         description="First in the top bar, after the logo, on the canvas. The organisation's avatar and name, All organisations when unscoped, and +N when a parent includes the organisations under it. The breadcrumb continues after it."
         wide
+        specimenKey="context-switcher:default:0"
       >
         <Example label="All organisations">
           <Switcher initial={null} />
@@ -75,6 +76,7 @@ export default function ContextSwitcherSection() {
         title="Server directory"
         description="A bounded flat directory: the host searches, cancels stale requests and loads one more page at a time. Summit Loom remains selected outside the first page. Search for coastal to match an alternate name, or simulate a read failure and retry. No parent or descendant relationship is inferred."
         layout="bare"
+        specimenKey="context-switcher:default:2"
       >
         <RemoteContextSwitcherExample />
       </Specimen>
@@ -83,6 +85,7 @@ export default function ContextSwitcherSection() {
         title="Other contexts"
         description="The same switcher for projects: switcherLabels builds every word from the noun, all={false} drops the All row, and each project shows a folder on its tint. Until a project is chosen the trigger reads Choose a project."
         wide
+        specimenKey="context-switcher:default:3"
       >
         <Example label="Nothing chosen">
           <ProjectSwitcher initial={null} />
@@ -98,6 +101,7 @@ export default function ContextSwitcherSection() {
       <ContainerLab
         title="Trigger in the container lab"
         description="The trigger truncates its name with a tooltip and never wraps."
+        specimenKey="context-switcher:default:6"
       >
         {() => <Switcher initial="cedarvale" />}
       </ContainerLab>

@@ -14,6 +14,7 @@ export default function HighlightExample() {
         title="Search matches"
         description="Edit the query. Matching text is emphasised without changing the original spelling; case and accents are ignored."
         layout="stack"
+        specimenKey="component-examples:HighlightExample:0"
       >
         <Field label="Search text">
           <Input value={query} onValueChange={setQuery} />

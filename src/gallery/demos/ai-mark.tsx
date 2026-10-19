@@ -6,7 +6,12 @@ import { AiMark } from "../../ai/index.js";
 export default function AiMarkExample() {
   return (
     <SectionPage>
-      <Specimen title="AiMark" description="The shared assistant identity mark." layout="stack">
+      <Specimen
+        title="AiMark"
+        description="The shared assistant identity mark."
+        layout="stack"
+        specimenKey="component-examples:AiMarkExample:0"
+      >
         <AiMark />
         <AiMark size="lg" />
       </Specimen>

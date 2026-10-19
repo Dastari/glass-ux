@@ -12,6 +12,7 @@ export default function ActivityFeedSection() {
       <Specimen
         title="Activity and scheduled events"
         description="The application supplies order and content. Times tick on the shared clock and expose their absolute date in a tooltip."
+        specimenKey="activity-feed:default:0"
       >
         <div className="w-full max-w-xl">
           <ActivityFeed
@@ -49,6 +50,7 @@ export default function ActivityFeedSection() {
       <Specimen
         title="Empty feed"
         description="The named list keeps its place when there are no events."
+        specimenKey="activity-feed:default:1"
       >
         <ActivityFeed aria-label="Document activity" items={[]} empty="No document activity" />
       </Specimen>

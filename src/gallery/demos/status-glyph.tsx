@@ -6,7 +6,11 @@ import { StatusGlyph } from "../../ai/index.js";
 export default function StatusGlyphExample() {
   return (
     <SectionPage>
-      <Specimen title="StatusGlyph" layout="stack">
+      <Specimen
+        title="StatusGlyph"
+        layout="stack"
+        specimenKey="component-examples:StatusGlyphExample:0"
+      >
         <StatusGlyph status="queued" />
         <StatusGlyph status="running" />
         <StatusGlyph status="succeeded" />

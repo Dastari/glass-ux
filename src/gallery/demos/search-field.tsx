@@ -47,6 +47,7 @@ export default function TextFieldsSection() {
       <Specimen
         title="Slots"
         description="A leading icon, a unit, a clear button, the password reveal and a keyboard hint. Inner buttons are ghost Buttons, so they carry tooltips."
+        specimenKey="text-fields:default:1"
       >
         <FormStack>
           <Field label="Hostname">
@@ -80,7 +81,7 @@ export default function TextFieldsSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="text-fields:default:3">
         <SearchField
           className="max-w-sm"
           placeholder="Search endpoints"
@@ -89,7 +90,7 @@ export default function TextFieldsSection() {
         <Input className="max-w-xs" defaultValue="NST-C106" aria-label="Hostname over imagery" />
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="text-fields:default:4">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-2 px-1">

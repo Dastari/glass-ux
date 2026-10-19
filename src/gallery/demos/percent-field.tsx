@@ -49,6 +49,7 @@ export default function PercentFieldSection() {
       <Specimen
         title="Whole percents or fractions"
         description="A threshold is 90 (whole); a discount from an API may be 0.125 (fraction). Either way the box shows 90 % or 12.5 %, clamped to its bounds."
+        specimenKey="percent-field:default:0"
       >
         <PercentDemo />
       </Specimen>

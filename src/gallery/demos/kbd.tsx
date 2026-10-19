@@ -50,6 +50,7 @@ export default function ActionsSection() {
             title="Command palette"
             description="While a row is selected its actions are registered in the palette under its name, submenus flattened to “Power › Restart”. Press ⌘K or Ctrl K, or use the panel."
             wide
+            specimenKey="actions:default:2"
           >
             <PaletteDemo />
           </Specimen>

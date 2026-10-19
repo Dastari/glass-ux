@@ -11,6 +11,7 @@ export default function BadgeSection() {
       <Specimen
         title="Counts and notification dot"
         description="Counts beside navigation and groups use tabular figures and cap at a maximum. The dot sits on the corner of an icon button."
+        specimenKey="badge:default:2"
       >
         <Example label="CountBadge">
           <CountBadge value={12} />

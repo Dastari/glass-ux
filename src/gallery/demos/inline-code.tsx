@@ -6,7 +6,11 @@ import { InlineCode } from "../../ai/index.js";
 export default function InlineCodeExample() {
   return (
     <SectionPage>
-      <Specimen title="InlineCode" layout="stack">
+      <Specimen
+        title="InlineCode"
+        layout="stack"
+        specimenKey="component-examples:InlineCodeExample:0"
+      >
         <p>
           Run <InlineCode>pnpm build</InlineCode> to build the sample project.
         </p>

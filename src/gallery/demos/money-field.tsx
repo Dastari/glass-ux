@@ -56,6 +56,7 @@ export default function MoneyFieldSection() {
       <Specimen
         title="Integer cents, the locale's format"
         description="Type 165 or $1,234.5: the field shows $1,234.50 when focus leaves and stores 123450. Other currencies use their own minor digits (JPY has none)."
+        specimenKey="money-field:default:0"
       >
         <MoneyDemo />
       </Specimen>

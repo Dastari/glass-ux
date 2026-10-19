@@ -14,6 +14,7 @@ export default function DatePickerSection() {
         title="Fields"
         description="Type in the locale's order (13/10/2026; any separator, two-digit years) or open the calendar with its button or Alt+↓. Text that is not a day turns the box invalid and keeps what was typed."
         layout="stack"
+        specimenKey="date-picker:default:1"
       >
         <FormStack>
           <Field label="Warranty ends">
@@ -43,13 +44,14 @@ export default function DatePickerSection() {
       <Specimen
         title="Sizes"
         description="The box follows the control sizes; the calendar keeps its own."
+        specimenKey="date-picker:default:2"
       >
         <DateField size="sm" defaultValue={today} aria-label="Small" />
         <DateField size="md" defaultValue={today} aria-label="Medium" />
         <DateField size="lg" defaultValue={today} aria-label="Large" />
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="date-picker:default:3">
         <DateField defaultValue={today} aria-label="Date over imagery" />
         <DateRangeField
           defaultValue={{ start: addDays(today, -7), end: today }}
@@ -57,7 +59,7 @@ export default function DatePickerSection() {
         />
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="date-picker:default:4">
         {(preset) =>
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center gap-2 px-1">

@@ -21,7 +21,10 @@ export default function ActionMenuItemsExample() {
   const groups = resolveActions(actions, targets, "menu");
   return (
     <SectionPage>
-      <Specimen title="Rows from shared action definitions">
+      <Specimen
+        title="Rows from shared action definitions"
+        specimenKey="component-examples:ActionMenuItemsExample:0"
+      >
         <Menu.Root>
           <Menu.Trigger render={<Button>Exhibition actions</Button>} />
           <Menu.Popup>

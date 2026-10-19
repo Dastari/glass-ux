@@ -37,6 +37,7 @@ export default function AiMessagesSection() {
           description="The prompt is a compact bubble on the right with its attachments above. The answer has no bubble; tables, charts, images and code break out wider. Message actions show on hover and focus, and always on the latest answer."
           wide
           layout="bare"
+          specimenKey="ai-messages:default:1"
         >
           <div className="ai-stack">
             {first ? (
@@ -50,7 +51,10 @@ export default function AiMessagesSection() {
           </div>
         </Specimen>
 
-        <ContainerLab description="An answer in a row, a header, a tile, a pane and a tall narrow column: the column scrolls, the mark steps aside below 22rem, prose drops to the body size below 34rem.">
+        <ContainerLab
+          description="An answer in a row, a header, a tile, a pane and a tall narrow column: the column scrolls, the mark steps aside below 22rem, prose drops to the body size below 34rem."
+          specimenKey="ai-messages:default:9"
+        >
           {() => (
             <LabScroll>
               {first ? (

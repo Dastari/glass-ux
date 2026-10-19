@@ -114,6 +114,7 @@ export default function AiMessagesSection() {
           description="The prompt is a compact bubble on the right with its attachments above. The answer has no bubble; tables, charts, images and code break out wider. Message actions show on hover and focus, and always on the latest answer."
           wide
           layout="bare"
+          specimenKey="ai-messages:default:1"
         >
           <div className="ai-stack">
             {first ? (
@@ -132,6 +133,7 @@ export default function AiMessagesSection() {
           description="Headings scale down for chat; lists, task lists, quotes, inline code and links. Glass UX links become context chips, external links say they leave, [^n] becomes a citation. Code and tables break out of the measure."
           layout="bare"
           wide
+          specimenKey="ai-messages:default:3"
         >
           <AssistantMessage
             message={base({
@@ -155,6 +157,7 @@ export default function AiMessagesSection() {
           title="Reasoning and streaming"
           description="The reasoning summary folds to one line with the time it took. Streaming text appends after a static caret; earlier lines never reflow."
           layout="stack"
+          specimenKey="ai-messages:default:5"
         >
           <Reasoning
             reasoning={{
@@ -178,6 +181,7 @@ export default function AiMessagesSection() {
           title="States"
           description="Failure, stop and retention show in place as the message's last block, in the same tones as everywhere else."
           layout="stack"
+          specimenKey="ai-messages:default:6"
         >
           <AssistantMessage
             message={base({
@@ -213,7 +217,10 @@ export default function AiMessagesSection() {
           />
         </Specimen>
 
-        <ContainerLab description="An answer in a row, a header, a tile, a pane and a tall narrow column: the column scrolls, the mark steps aside below 22rem, prose drops to the body size below 34rem.">
+        <ContainerLab
+          description="An answer in a row, a header, a tile, a pane and a tall narrow column: the column scrolls, the mark steps aside below 22rem, prose drops to the body size below 34rem."
+          specimenKey="ai-messages:default:9"
+        >
           {() => (
             <LabScroll>
               {first ? (

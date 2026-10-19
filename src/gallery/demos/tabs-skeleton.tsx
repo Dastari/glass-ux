@@ -28,6 +28,7 @@ export default function TabsSection() {
       <Specimen
         title="Loading"
         description="The skeleton strip occupies the same height and rhythm as the loaded strip. Swap them in place to compare."
+        specimenKey="tabs:default:6"
       >
         <div className="w-105 max-w-full">
           <SwapSlot

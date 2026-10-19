@@ -7,7 +7,11 @@ import { NOW } from "../sections/ai.fixtures.js";
 export default function RelativeTimeExample() {
   return (
     <SectionPage>
-      <Specimen title="Relative time with an exact-time tooltip" layout="stack">
+      <Specimen
+        title="Relative time with an exact-time tooltip"
+        layout="stack"
+        specimenKey="component-examples:RelativeTimeExample:0"
+      >
         <RelativeTime value={NOW - 120000} />
         <RelativeTime value={NOW - 3600000} />
       </Specimen>

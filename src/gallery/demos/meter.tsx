@@ -26,6 +26,7 @@ export default function ProgressSection() {
         title="Meter"
         description="Neutral while healthy, warning past 75% and danger past 90%. The tick marks where warning begins."
         layout="stack"
+        specimenKey="progress:default:3"
       >
         <div className="flex w-110 max-w-full flex-col gap-5">
           <Meter value={98} max={256} label="D: · Data" valueText="98 GB of 256 GB" />
@@ -38,6 +39,7 @@ export default function ProgressSection() {
         title="Inline meter"
         description="For table cells and dense lists: the bar, then the reading."
         layout="stack"
+        specimenKey="progress:default:4"
       >
         <div className="flex w-75 max-w-full flex-col gap-3">
           <Meter layout="inline" value={34} aria-label="CPU" />
@@ -50,6 +52,7 @@ export default function ProgressSection() {
         title="Data colour"
         description='tone="data" draws a healthy level in the first data colour where levels are compared; warning and danger still apply.'
         layout="stack"
+        specimenKey="progress:default:5"
       >
         <div className="flex w-75 max-w-full flex-col gap-3">
           <Meter tone="data" layout="inline" value={34} aria-label="Archive volume" />
@@ -62,6 +65,7 @@ export default function ProgressSection() {
         title="Loading"
         description="Skeletons keep the exact rows: the head line, the track and the data line with its action."
         wide
+        specimenKey="progress:default:6"
       >
         <div className="grid w-full grid-cols-2 gap-6">
           <SwapSlot
@@ -107,6 +111,7 @@ export default function ProgressSection() {
         title="Over imagery"
         description="Tracks are fills, not glass, so they sit on any surface."
         backdrop
+        specimenKey="progress:default:7"
       >
         <div className="flex w-110 max-w-full flex-col gap-5">
           <Progress
@@ -118,7 +123,10 @@ export default function ProgressSection() {
         </div>
       </Specimen>
 
-      <ContainerLab description="Bars take the container's width; labels and data lines truncate.">
+      <ContainerLab
+        description="Bars take the container's width; labels and data lines truncate."
+        specimenKey="progress:default:8"
+      >
         {() => (
           <div className="flex flex-col gap-3 p-2">
             <Progress

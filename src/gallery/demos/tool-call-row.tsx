@@ -39,6 +39,7 @@ export default function AiToolsSection() {
           title="Statuses"
           description="The same row in every state; only the glyph, its tone and the label's strength change. Running rows carry a thin indeterminate line; failures keep their reason visible."
           layout="stack"
+          specimenKey="ai-tools:default:0"
         >
           {STATUSES.map(([status, extra]) => (
             <ToolCallRow
@@ -59,13 +60,17 @@ export default function AiToolsSection() {
           title="Details"
           description="Expanding a row shows the tool, its targets, the arguments and a result preview as JSON, each copyable. Details the browser does not hold are fetched when the row opens."
           layout="stack"
+          specimenKey="ai-tools:default:1"
         >
           <ToolCallRow call={TOOLS.endpoints} defaultOpen />
           <ToolCallRow call={{ ...TOOLS.snapshot, args: undefined, result: undefined }} />
           <ToolCallRow call={TOOLS.eventlog} />
         </Specimen>
 
-        <ContainerLab description="Target names and the glyph stack drop below 30rem; the label truncates; the time stays.">
+        <ContainerLab
+          description="Target names and the glyph stack drop below 30rem; the label truncates; the time stays."
+          specimenKey="ai-tools:default:4"
+        >
           {() => (
             <LabScroll>
               <ToolGroup calls={[TOOLS.org, TOOLS.endpoints, TOOLS.heartbeats]} />

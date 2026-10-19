@@ -9,6 +9,7 @@ export default function ToastSection() {
       <Specimen
         title="Tones"
         description="Neutral glass with the tone in the tile only. The title names the target and the outcome; the description gives the detail or the reason."
+        specimenKey="toast:default:1"
       >
         <div className="flex w-full flex-col items-start gap-3">
           <ToastPreview
@@ -35,7 +36,7 @@ export default function ToastSection() {
         </div>
       </Specimen>
 
-      <Specimen title="Over imagery" backdrop>
+      <Specimen title="Over imagery" backdrop specimenKey="toast:default:2">
         <div className="flex w-full flex-col items-start gap-3">
           <ToastPreview
             tone="success"

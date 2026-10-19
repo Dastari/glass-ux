@@ -8,7 +8,7 @@ import { DomainInput, HostnameInput } from "../../ui/hostname-field/index.js";
 export default function HostnameFieldSection() {
   return (
     <SectionPage>
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="hostname-field:default:1">
         <FormStack>
           <Field label="Empty">
             <HostnameInput width="medium" />
@@ -27,7 +27,7 @@ export default function HostnameFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="hostname-field:default:2">
         <FormStack>
           <Field label="Computer name">
             <HostnameInput defaultValue="NST-C106" width="medium" />
@@ -35,7 +35,7 @@ export default function HostnameFieldSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="hostname-field:default:3">
         <div className="flex h-full items-center p-1">
           <HostnameInput
             size="sm"

@@ -6,7 +6,7 @@ import { Swatch } from "../../ui/charts/index.js";
 export default function SwatchExample() {
   return (
     <SectionPage>
-      <Specimen title="Swatch" layout="stack">
+      <Specimen title="Swatch" layout="stack" specimenKey="component-examples:SwatchExample:0">
         <p>
           <Swatch slot={1} shape="line" /> Booked
         </p>

@@ -8,7 +8,11 @@ export default function JsonTreeExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="JsonTree" layout="stack">
+        <Specimen
+          title="JsonTree"
+          layout="stack"
+          specimenKey="component-examples:JsonTreeExample:0"
+        >
           <JsonTree
             label="Sample exhibition configuration"
             value={{

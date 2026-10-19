@@ -20,6 +20,7 @@ export default function AvatarSection() {
       <Specimen
         title="Groups"
         description="Who is watching or connected. Faces overlap with a surface ring; the rest collapse into +N with their names in the label."
+        specimenKey="avatar:default:3"
       >
         <Example label="sm · max 4">
           <AvatarGroup people={PEOPLE} max={4} />
@@ -36,6 +37,7 @@ export default function AvatarSection() {
         title="Over imagery"
         description="Initials use opaque palette colours; portrait groups keep a surface ring over imagery."
         backdrop
+        specimenKey="avatar:default:5"
       >
         <Example label="Initials without an image">
           <Avatar name="Avery Quinn" size="xl" presence="online" />
@@ -45,7 +47,10 @@ export default function AvatarSection() {
         </Example>
       </Specimen>
 
-      <ContainerLab description="Avatars keep their size; a group never wraps.">
+      <ContainerLab
+        description="Avatars keep their size; a group never wraps."
+        specimenKey="avatar:default:6"
+      >
         {() => (
           <div className="flex items-center gap-3 p-2">
             <Avatar name="Avery Quinn" src={PORTRAITS[1]} presence="online" />

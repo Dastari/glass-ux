@@ -56,6 +56,7 @@ export default function HostnameFieldSection() {
       <Specimen
         title="Host names and domains"
         description="Each label is letters, digits and hyphens, never starting or ending with one. A pasted URL gives its host; domains are lower-cased and Unicode becomes punycode. Computer names past 15 characters warn about NetBIOS."
+        specimenKey="hostname-field:default:0"
       >
         <HostDemo />
       </Specimen>

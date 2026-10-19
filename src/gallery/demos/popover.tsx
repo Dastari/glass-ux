@@ -40,6 +40,7 @@ export default function PopoverSection() {
       <Specimen
         title="Anatomy"
         description="glass-overlay on the popup recipe, a tile's inset around the content, and an optional title row with a close button. No arrow: it grows out of its trigger from 8px away."
+        specimenKey="popover:default:0"
       >
         <Popover.Preview title="Filter by status" size="sm">
           <FilterContent />
@@ -49,7 +50,7 @@ export default function PopoverSection() {
         </Popover.Preview>
       </Specimen>
 
-      <Specimen title="Over imagery" backdrop>
+      <Specimen title="Over imagery" backdrop specimenKey="popover:default:1">
         <Popover.Preview size="sm">
           <PeekContent />
         </Popover.Preview>

@@ -13,6 +13,7 @@ export default function ResultMetricsExample() {
           title="ResultMetrics"
           description="This renderer displays one typed result. The sample is local fictional data; supply your own result and host handlers."
           layout="stack"
+          specimenKey="component-examples:ResultMetricsExample:0"
         >
           <ResultMetrics result={RESULTS.health} />
         </Specimen>

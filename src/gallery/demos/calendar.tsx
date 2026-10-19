@@ -58,6 +58,7 @@ export default function DatePickerSection() {
       <Specimen
         title="Calendar"
         description="Arrow keys move by day and week, Home and End to the week's ends, Page Up and Page Down by month (Shift: year), Enter picks. In a range, the first pick is the start; the band follows the pointer until the second."
+        specimenKey="date-picker:default:0"
       >
         <SingleCalendar />
         <RangeCalendar />

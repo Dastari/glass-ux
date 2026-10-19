@@ -80,6 +80,7 @@ export default function AddressFieldSection() {
       <Specimen
         title="In a form"
         description="Each part is its own form field, so the schema's messages land on the row to fix and Save focuses the first one."
+        specimenKey="address-field:default:2"
       >
         <BoundDemo />
       </Specimen>

@@ -8,7 +8,11 @@ export default function AttachmentChipExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="AttachmentChip" layout="stack">
+        <Specimen
+          title="AttachmentChip"
+          layout="stack"
+          specimenKey="component-examples:AttachmentChipExample:0"
+        >
           <AttachmentChip
             attachment={{
               id: "brief",

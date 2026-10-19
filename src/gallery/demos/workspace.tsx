@@ -216,6 +216,7 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
+        specimenKey="windows:default:4"
       >
         <MiniWorkspace />
       </Specimen>

@@ -8,7 +8,11 @@ import { Button } from "../../ui/button/index.js";
 export default function AskLayoutExample() {
   return (
     <SectionPage>
-      <Specimen title="AskLayout" layout="stack">
+      <Specimen
+        title="AskLayout"
+        layout="stack"
+        specimenKey="component-examples:AskLayoutExample:0"
+      >
         <AskLayout
           id="sample-question"
           icon={<IconSparkle />}

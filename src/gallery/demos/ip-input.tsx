@@ -8,7 +8,7 @@ import { IpInput } from "../../ui/ip-field/index.js";
 export default function IpFieldSection() {
   return (
     <SectionPage>
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="ip-field:default:1">
         <FormStack>
           <Field label="Empty">
             <IpInput width="medium" />
@@ -27,7 +27,7 @@ export default function IpFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="ip-field:default:2">
         <FormStack>
           <Field label="Gateway">
             <IpInput defaultValue="10.13.4.1" width="medium" />
@@ -35,7 +35,7 @@ export default function IpFieldSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="ip-field:default:3">
         <div className="flex h-full items-center p-1">
           <IpInput size="sm" defaultValue="2001:db8:85a3::8a2e:370:7334" aria-label="Address" />
         </div>

@@ -1,8 +1,9 @@
 // oxlint-disable jsx-a11y/no-noninteractive-tabindex -- documentation scrollers must be keyboard reachable
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import catalogue from "./catalogue.generated.json";
+import coverage from "./demo-coverage.generated.json";
 import { findComponentFamily } from "./component-families.js";
-import { DemoScope } from "./demo-scope.js";
+import { DemoScope, HiddenSpecimens, specimenAnchor } from "./demo-scope.js";
 import { findSection } from "./registry.js";
 import { VerticalTabNav } from "../ui/vertical-tabs/index.js";
 import { Skeleton } from "../ui/skeleton/index.js";
@@ -208,6 +209,31 @@ function loadDemo(id: string) {
   }
   return promise;
 }
+/** The specimens each export's focused demo shows (key and title), from the demo generator. */
+const demoSpecimens = new Map(
+  (coverage as Array<{ id: string; specimens?: Array<{ key: string; title: string }> }>).map((entry) => [entry.id, entry.specimens ?? []]),
+);
+
+/**
+ * For each related export after the base component: the specimens an earlier demo in the
+ * document already showed (hidden in its demo), and the titles of its own specimens that are
+ * all shown above when nothing new is left.
+ */
+function sharedSpecimens(ids: string[]) {
+  const shown = new Set<string>();
+  const result = new Map<string, { hidden: ReadonlySet<string>; above: Array<{ key: string; title: string }> | null }>();
+  ids.forEach((id, index) => {
+    const own = demoSpecimens.get(id) ?? [];
+    const hidden = new Set(shown);
+    const fresh = own.filter((specimen) => !hidden.has(specimen.key));
+    result.set(id, { hidden, above: index > 0 && own.length > 0 && fresh.length === 0 ? own : null });
+    for (const specimen of own) shown.add(specimen.key);
+  });
+  return result;
+}
+
+const EMPTY: ReadonlySet<string> = new Set();
+
 const focusedDemos = new Map(
   [...demoModules.keys()].map((id) => [id, lazy(() => loadDemo(id)!)]),
 );
@@ -243,6 +269,7 @@ export function ComponentDocumentation({ id }: { id: string }) {
     () => family?.components ?? (component ? [component] : []),
     [family, component],
   );
+  const sharing = useMemo(() => sharedSpecimens(components.map((item) => item.id)), [components]);
   const documentSections = useMemo(
     () => [
       { value: "examples", label: "Examples" },
@@ -389,6 +416,7 @@ export function ComponentDocumentation({ id }: { id: string }) {
           </section>
           {components.slice(1).map((item) => {
             const RelatedDemo = focusedDemos.get(item.id);
+            const shared = sharing.get(item.id);
             return (
               <section
                 key={item.id}
@@ -404,13 +432,28 @@ export function ComponentDocumentation({ id }: { id: string }) {
                     className="type-body text-fg-muted"
                   />
                 </header>
-                <Suspense fallback={<Skeleton.Text lines={4} />}>
-                  {RelatedDemo ? (
-                    <DemoScope value={item.name}>
-                      <RelatedDemo />
-                    </DemoScope>
-                  ) : null}
-                </Suspense>
+                {shared?.above ? (
+                  <p className="type-body text-fg-muted" data-shown-above="">
+                    Shown in the examples above:{" "}
+                    {shared.above.map((specimen, index) => (
+                      <span key={specimen.key}>
+                        {index ? ", " : null}
+                        <a href={`#${specimenAnchor(specimen.key)}`}>{specimen.title}</a>
+                      </span>
+                    ))}
+                    .
+                  </p>
+                ) : (
+                  <Suspense fallback={<Skeleton.Text lines={4} />}>
+                    {RelatedDemo ? (
+                      <HiddenSpecimens value={shared?.hidden ?? EMPTY}>
+                        <DemoScope value={item.name}>
+                          <RelatedDemo />
+                        </DemoScope>
+                      </HiddenSpecimens>
+                    ) : null}
+                  </Suspense>
+                )}
               </section>
             );
           })}

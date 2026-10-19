@@ -8,7 +8,7 @@ import { FormStack } from "../../ui/form/index.js";
 export default function DurationFieldSection() {
   return (
     <SectionPage>
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="duration-field:default:1">
         <FormStack>
           <Field label="Empty">
             <DurationInput />
@@ -27,13 +27,13 @@ export default function DurationFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="duration-field:default:2">
         <Field label="Response target">
           <DurationInput defaultValue={5400} />
         </Field>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="duration-field:default:3">
         <div className="flex h-full items-center p-1">
           <DurationInput size="sm" defaultValue={187200} width="full" aria-label="Duration" />
         </div>

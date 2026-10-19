@@ -7,7 +7,11 @@ import { Button } from "../../ui/button/index.js";
 export default function PanelExample() {
   return (
     <SectionPage>
-      <Specimen title="Content panel slots" layout="stack">
+      <Specimen
+        title="Content panel slots"
+        layout="stack"
+        specimenKey="component-examples:PanelExample:0"
+      >
         <Panel>
           <PanelHeader title="Exhibition overview" description="Fictional studio project" />
           <PanelBody>Three rooms are reserved for the next exhibition.</PanelBody>
@@ -16,7 +20,11 @@ export default function PanelExample() {
           </PanelFooter>
         </Panel>
       </Specimen>
-      <Specimen title="Scrolling body" layout="stack">
+      <Specimen
+        title="Scrolling body"
+        layout="stack"
+        specimenKey="component-examples:PanelExample:1"
+      >
         <Panel scroll className="h-64">
           <PanelHeader title="Loan requests" />
           <PanelBody>

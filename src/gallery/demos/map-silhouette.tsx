@@ -6,7 +6,11 @@ import { MapSilhouette } from "../../ui/map/index.js";
 export default function MapSilhouetteExample() {
   return (
     <SectionPage>
-      <Specimen title="MapSilhouette" layout="stack">
+      <Specimen
+        title="MapSilhouette"
+        layout="stack"
+        specimenKey="component-examples:MapSilhouetteExample:0"
+      >
         <div className="h-60 w-full">
           <MapSilhouette
             region={{

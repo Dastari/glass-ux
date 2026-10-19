@@ -19,6 +19,7 @@ export default function BadgeSection() {
       <Specimen
         title="Counts and notification dot"
         description="Counts beside navigation and groups use tabular figures and cap at a maximum. The dot sits on the corner of an icon button."
+        specimenKey="badge:default:2"
       >
         <Example label="CountBadge">
           <CountBadge value={12} />
@@ -42,6 +43,7 @@ export default function BadgeSection() {
         title="Over imagery"
         description="On a card over busy content the rim keeps each pill's shape."
         backdrop
+        specimenKey="badge:default:3"
       >
         <div className="glass-control flex flex-wrap items-center gap-2 rounded-tile p-tile">
           {STATUSES.slice(0, 5).map((status) => (

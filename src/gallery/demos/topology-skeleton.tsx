@@ -242,6 +242,7 @@ export default function TopologySection() {
       <Specimen
         title="Loading and empty"
         description="The skeleton fills the map's own box while the layout loads (it is code-split), so nothing moves when the map lands. An empty map says so in the same box."
+        specimenKey="topology:default:2"
       >
         <SwapSlot
           id="topology"

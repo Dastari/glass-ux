@@ -11,6 +11,7 @@ export default function TooltipProviderExample() {
         title="TooltipProvider"
         description="Hover the first control, then its neighbour. The provider shares the delay between nearby tooltips."
         layout="stack"
+        specimenKey="component-examples:TooltipProviderExample:0"
       >
         <TooltipProvider>
           <Tooltip content="Create an exhibition">

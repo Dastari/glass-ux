@@ -244,6 +244,7 @@ export default function TopologySection() {
         title="An office network"
         description="Rows top to bottom: the gateway, its switch, then the access point and the client blocks. Wireless links are dotted, unknown links dashed, and speeds show where reported. Click selects a node and its path up, double-click opens it, right-click shows its actions."
         wide
+        specimenKey="topology:default:0"
       >
         <Panel className="h-140 w-full" data-testid="topology-office">
           <DemoMap nodes={OFFICE} listable />
@@ -254,6 +255,7 @@ export default function TopologySection() {
         title="About 300 nodes"
         description="A school: six switches, twelve access points and their clients. Blocks keep it a few rows deep; the minimap appears once part of the map is out of view."
         wide
+        specimenKey="topology:default:1"
       >
         <Panel className="h-140 w-full" data-testid="topology-school">
           <DemoMap nodes={big} />
@@ -263,6 +265,7 @@ export default function TopologySection() {
       <Specimen
         title="Loading and empty"
         description="The skeleton fills the map's own box while the layout loads (it is code-split), so nothing moves when the map lands. An empty map says so in the same box."
+        specimenKey="topology:default:2"
       >
         <SwapSlot
           id="topology"
@@ -279,7 +282,10 @@ export default function TopologySection() {
         </div>
       </Specimen>
 
-      <ContainerLab description="The map fills its box: the minimap goes first, then the zoom buttons (scroll and pinch still zoom), and a row-sized box keeps only the map.">
+      <ContainerLab
+        description="The map fills its box: the minimap goes first, then the zoom buttons (scroll and pinch still zoom), and a row-sized box keeps only the map."
+        specimenKey="topology:default:3"
+      >
         {() => <DemoMap nodes={OFFICE} />}
       </ContainerLab>
     </SectionPage>

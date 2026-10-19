@@ -57,6 +57,7 @@ export default function DragDropSection() {
         title="Hooks"
         description="useDropZone and useDraggable attach to elements you render; DropZoneScope puts the items inside in the zone. Add the fa-dnd-zone class and data-appearance for the standard states."
         layout="stack"
+        specimenKey="drag-drop:default:6"
       >
         <DragDropProvider>
           <HookTray />

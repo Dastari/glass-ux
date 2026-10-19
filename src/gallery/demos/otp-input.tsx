@@ -16,6 +16,7 @@ export default function OtpFieldSection() {
       <Specimen
         title="Entry and paste"
         description="Type, or paste anything with the code in it (“Your code is 482913”, “482 913”, “G-482913”): every box fills. Backspace steps back, the arrows move, and phones offer the code from a message (autocomplete one-time-code)."
+        specimenKey="otp-field:default:0"
       >
         <FormStack className="w-full" data-testid="otp-demo">
           <Field
@@ -31,6 +32,7 @@ export default function OtpFieldSection() {
         title="States"
         description="Error and success change the boxes, never the layout: the ✓ has its slot already."
         layout="grid"
+        specimenKey="otp-field:default:2"
       >
         <FormStack>
           <Field label="Error" error="That code is not right">
@@ -53,13 +55,13 @@ export default function OtpFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="otp-field:default:3">
         <Field label="Verification code">
           <OtpInput defaultValue="4829" />
         </Field>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="otp-field:default:4">
         <div className="flex h-full items-center p-1">
           <Field label="Code">
             <OtpInput size="md" defaultValue="482913" />

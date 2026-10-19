@@ -6,7 +6,11 @@ import { Window, WindowFrame } from "../../windows/index.js";
 export default function WindowExample() {
   return (
     <SectionPage>
-      <Specimen title="Window body slots" layout="stack">
+      <Specimen
+        title="Window body slots"
+        layout="stack"
+        specimenKey="component-examples:WindowExample:0"
+      >
         <WindowFrame.Root>
           <WindowFrame.AppBar title="Exhibition notes" />
           <Window.Body>

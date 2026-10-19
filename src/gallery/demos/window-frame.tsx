@@ -332,6 +332,7 @@ export default function WindowsSection() {
         description="A view in a frame (R14.1). The body supplies its actions and live state through slots; the frame is the same for every kind."
         wide
         layout="bare"
+        specimenKey="windows:default:0"
       >
         <div className="gallery-wm-anatomy">
           <StaticFrame size="lg" className="gallery-wm-annotated" />
@@ -351,6 +352,7 @@ export default function WindowsSection() {
         description="The layout is state, not position: a window keeps its intent (tiled, floating) when the screen changes size."
         wide
         layout="bare"
+        specimenKey="windows:default:1"
       >
         <div className="gallery-wm-states">
           <Example label="Tiled: a column beside the page (default at 1920px and wider)">
@@ -375,6 +377,7 @@ export default function WindowsSection() {
         title="Status bar"
         description="Background state lives here (R14.6): never a banner in the body. The toned item never truncates; metadata gives way first."
         layout="stack"
+        specimenKey="windows:default:3"
       >
         <Example label="Live">
           <StaticFrame size="sm" status="success" statusLabel="Connected" />
@@ -403,11 +406,15 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
+        specimenKey="windows:default:4"
       >
         <MiniWorkspace />
       </Specimen>
 
-      <ContainerLab description="The frame in a table row, a header, a grid tile, a pane and a tall narrow column. Short frames keep the title bar; narrow ones shed the icon and subtitle.">
+      <ContainerLab
+        description="The frame in a table row, a header, a grid tile, a pane and a tall narrow column. Short frames keep the title bar; narrow ones shed the icon and subtitle."
+        specimenKey="windows:default:6"
+      >
         {() => (
           <div className="gallery-wm-fill">
             <WindowFrame.Root focused aria-label="Task manager">

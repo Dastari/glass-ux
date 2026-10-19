@@ -7,7 +7,11 @@ import { IconOrganisation } from "../../icons/generated/icons.js";
 export default function IdentityCellExample() {
   return (
     <SectionPage>
-      <Specimen title="Primary identity in a table cell" layout="stack">
+      <Specimen
+        title="Primary identity in a table cell"
+        layout="stack"
+        specimenKey="component-examples:IdentityCellExample:0"
+      >
         <IdentityCell
           title="Meridian Studio"
           subtitle="Exhibition project"

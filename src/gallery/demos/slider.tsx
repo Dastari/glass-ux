@@ -97,6 +97,7 @@ export default function SliderSection() {
         title="Sizes"
         description="Drag, click the track, or focus a bead and use the arrow keys — keyboard and track steps glide; dragging follows the pointer."
         wide
+        specimenKey="slider:default:0"
       >
         <Matrix
           columns={["Value", "Range", "Bubble pinned", "Disabled"]}
@@ -134,6 +135,7 @@ export default function SliderSection() {
       <Specimen
         title="Tones"
         description="A status tone when the value is a threshold: warn above 80 % disk, alert above 90 %."
+        specimenKey="slider:default:1"
       >
         <Matrix
           columns={["Value", "Range"]}
@@ -155,6 +157,7 @@ export default function SliderSection() {
         title="In a field"
         description="The label row carries the live value on the right, so the bubble is only needed while dragging."
         layout="stack"
+        specimenKey="slider:default:2"
       >
         <BandwidthField />
         <WindowField />
@@ -173,7 +176,7 @@ export default function SliderSection() {
         </Field>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="slider:default:3">
         <div className="w-72 pt-8">
           <Slider defaultValue={55} bubble="always" unit="%" aria-label="Opacity" />
         </div>
@@ -186,11 +189,12 @@ export default function SliderSection() {
         title="Initially hidden controls"
         description="Retained tabs and dialogs can mount a slider before it has a measurable size. It measures when revealed, follows container resizing and keeps its value when hidden again."
         layout="bare"
+        specimenKey="slider:default:4"
       >
         <RetainedSlider />
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="slider:default:5">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-3 px-3">

@@ -7,7 +7,11 @@ import { ContextMenu } from "../../ui/context-menu/index.js";
 export default function ContextMenuExample() {
   return (
     <SectionPage>
-      <Specimen title="ContextMenu" layout="stack">
+      <Specimen
+        title="ContextMenu"
+        layout="stack"
+        specimenKey="component-examples:ContextMenuExample:0"
+      >
         <ContextMenu.Root>
           <ContextMenu.Trigger>
             <Button>Right-click or press Shift+F10</Button>

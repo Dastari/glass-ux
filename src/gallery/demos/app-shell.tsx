@@ -20,6 +20,7 @@ export default function AppShellExample() {
         title="AppShell"
         description="A bounded working shell with a section drawer. Open the inspector from the top bar to inspect the fictional exhibition."
         layout="stack"
+        specimenKey="component-examples:AppShellExample:0"
       >
         <div className="relative h-120 w-full overflow-hidden">
           <AppShell

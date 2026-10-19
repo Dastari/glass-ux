@@ -29,6 +29,7 @@ export default function BreadcrumbSection() {
         title="Route crumbs"
         description="RouteBreadcrumb renders crumbs and siblings with `link` as router links — this page's own trail; the switcher lists every component section. The core Breadcrumb stays router-agnostic."
         wide
+        specimenKey="breadcrumb:default:1"
       >
         <RouteBreadcrumb items={ROUTE_TRAIL} aria-label="Gallery breadcrumb" />
       </Specimen>

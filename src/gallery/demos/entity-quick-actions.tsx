@@ -9,7 +9,11 @@ export default function EntityQuickActionsExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="EntityQuickActions" layout="stack">
+        <Specimen
+          title="EntityQuickActions"
+          layout="stack"
+          specimenKey="component-examples:EntityQuickActionsExample:0"
+        >
           <EntityQuickActions entity={E.c106Online} />
         </Specimen>
       </SectionPage>

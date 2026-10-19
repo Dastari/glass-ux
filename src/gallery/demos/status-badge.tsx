@@ -18,6 +18,7 @@ export default function BadgeSection() {
         title="Endpoint status"
         description="One definition per state, shared by badges, dots, the tree and the dock. Only live and connecting pulse; installing spins. Reduced motion stops the pulse."
         layout="stack"
+        specimenKey="badge:default:1"
       >
         <Example label="StatusBadge · md">
           {STATUSES.map((status) => (
@@ -46,6 +47,7 @@ export default function BadgeSection() {
         title="Over imagery"
         description="On a card over busy content the rim keeps each pill's shape."
         backdrop
+        specimenKey="badge:default:3"
       >
         <div className="glass-control flex flex-wrap items-center gap-2 rounded-tile p-tile">
           {STATUSES.slice(0, 5).map((status) => (
@@ -55,7 +57,10 @@ export default function BadgeSection() {
         </div>
       </Specimen>
 
-      <ContainerLab description="Badges never wrap; when the row runs out of room a long label truncates inside its pill.">
+      <ContainerLab
+        description="Badges never wrap; when the row runs out of room a long label truncates inside its pill."
+        specimenKey="badge:default:4"
+      >
         {() => (
           <div className="flex min-w-0 items-center gap-2 p-2">
             <StatusBadge status="online" />

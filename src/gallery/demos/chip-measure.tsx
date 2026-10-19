@@ -6,7 +6,11 @@ import { ChipMeasure } from "../../ui/combobox/index.js";
 export default function ChipMeasureExample() {
   return (
     <SectionPage>
-      <Specimen title="ChipMeasure" layout="stack">
+      <Specimen
+        title="ChipMeasure"
+        layout="stack"
+        specimenKey="component-examples:ChipMeasureExample:0"
+      >
         <div className="fa-chip-measure-example" aria-hidden="true">
           <ChipMeasure label="Northstar" />
         </div>

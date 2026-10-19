@@ -20,6 +20,7 @@ export default function BadgeSection() {
         title="Tones"
         description="Soft pills. Status tones only for status; accent for brand or selection; neutral for categories."
         wide
+        specimenKey="badge:default:0"
       >
         <Matrix
           columns={["md", "md · dot", "sm", "sm · dot"]}

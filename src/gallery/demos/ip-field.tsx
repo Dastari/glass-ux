@@ -49,6 +49,7 @@ export default function IpFieldSection() {
       <Specimen
         title="Normalised on blur"
         description="Leave a field: 010.013.004.001 becomes 10.13.4.1 and IPv6 is compressed per RFC 5952. The hint says what the address or range is; Copy appears once it is valid."
+        specimenKey="ip-field:default:0"
       >
         <NetworkDemo />
       </Specimen>

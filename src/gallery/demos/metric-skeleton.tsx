@@ -64,6 +64,7 @@ export default function MetricSection() {
         title="Loading"
         description="The skeleton takes the same rows in every tier. Swap in place to compare."
         wide
+        specimenKey="metric:default:4"
       >
         <div className="gallery-tiers">
           <SwapSlot

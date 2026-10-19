@@ -216,6 +216,7 @@ export default function LoginFlowSection() {
       <Specimen
         title="Email, password and providers"
         description={`Providers above the password form, remember me and the reset link. avery@orbit.example signs in with the password ${DEMO_PASSWORD}; Microsoft returns a refusal.`}
+        specimenKey="login-flow:default:0"
       >
         <DefaultFlow />
       </Specimen>
@@ -223,6 +224,7 @@ export default function LoginFlowSection() {
       <Specimen
         title="Username"
         description="A username field without capitalisation or correction, autocomplete=username, and remember me ticked by default."
+        specimenKey="login-flow:default:1"
       >
         <UsernameFlow />
       </Specimen>
@@ -230,6 +232,7 @@ export default function LoginFlowSection() {
       <Specimen
         title="Providers only"
         description="Providers only, with no password form. Four or more providers use two columns with short names; accessible names keep “Continue with …”."
+        specimenKey="login-flow:default:2"
       >
         <ProvidersOnlyFlow />
       </Specimen>
@@ -237,6 +240,7 @@ export default function LoginFlowSection() {
       <Specimen
         title="Account creation"
         description="Name, email, a new password with strength and confirmation, and a required terms statement. avery@orbit.example is already taken."
+        specimenKey="login-flow:default:3"
       >
         <SignUpFlow />
       </Specimen>
@@ -244,6 +248,7 @@ export default function LoginFlowSection() {
       <Specimen
         title="Forgot password"
         description={`Request a reset, then enter the code (${DEMO_CODE}) and a new password. Resend has a 20-second cooldown; a successful reset returns to sign-in.`}
+        specimenKey="login-flow:default:4"
       >
         <ResetFlow />
       </Specimen>
@@ -251,6 +256,7 @@ export default function LoginFlowSection() {
       <Specimen
         title="Two-factor code"
         description={`mfa@orbit.example with ${DEMO_PASSWORD} resolves to { status: "two-factor" }. The code step submits when complete; the demo code is ${DEMO_CODE}.`}
+        specimenKey="login-flow:default:5"
       >
         <TwoFactorFlow />
       </Specimen>
@@ -258,6 +264,7 @@ export default function LoginFlowSection() {
       <Specimen
         title="Refused sign-in"
         description={`locked@orbit.example with ${DEMO_PASSWORD} is locked; any other password is incorrect. GitHub explains why it is unavailable; Microsoft returns an error. Messages replace the reserved status line.`}
+        specimenKey="login-flow:default:6"
       >
         <RefusedFlow />
       </Specimen>
@@ -265,6 +272,7 @@ export default function LoginFlowSection() {
       <Specimen
         title="Pending"
         description="The sign-in callback takes four seconds. The button shows its pending face in place; providers and view links wait."
+        specimenKey="login-flow:default:7"
       >
         <PendingFlow />
       </Specimen>
@@ -272,6 +280,7 @@ export default function LoginFlowSection() {
       <Specimen
         title="In a dialog"
         description="surface={false} and heading={false}: the Dialog supplies the surface and a header that follows the controlled view. On phones it opens as a bottom sheet."
+        specimenKey="login-flow:default:8"
       >
         <DialogFlow />
       </Specimen>

@@ -23,6 +23,7 @@ export default function ProgressSection() {
       <Specimen
         title="Ring"
         description="Inline at 16, standalone at 32, and 48 with the percentage. Indeterminate spins an arc."
+        specimenKey="progress:default:2"
       >
         <Example label="sm · md · lg">
           <ProgressRing size="sm" value={live} aria-label="Uploading install.log" />

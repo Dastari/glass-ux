@@ -14,6 +14,7 @@ export default function ButtonSection() {
       <Specimen
         title="Feedback in place"
         description="The button confirms its own outcome. Faces share one grid cell, so “Save changes”, “Saving…” and “Saved” never move the layout. Errors also raise a toast with the reason."
+        specimenKey="button:default:2"
       >
         <Example label="Click to run (succeeds after 1.2s)">
           <ActionButton

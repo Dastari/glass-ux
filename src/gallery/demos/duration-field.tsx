@@ -57,6 +57,7 @@ export default function DurationFieldSection() {
       <Specimen
         title="As people say it"
         description="1h 30m, 90 (minutes by default), 1:30, 1.5 hours, 2 days 4 hrs. Leave the field and it is written compactly; the hint spells it out so a bare number is never misread."
+        specimenKey="duration-field:default:0"
       >
         <DurationDemo />
       </Specimen>

@@ -10,6 +10,7 @@ export default function CopyButtonSection() {
       <Specimen
         title="Variants"
         description="Icon only (its label is the tooltip) or with the label. A drawn ✓ confirms in place; a refused clipboard shows ✕ and says so."
+        specimenKey="copy-button:default:0"
       >
         <Matrix
           columns={["Icon", "Labelled", "Disabled"]}
@@ -48,6 +49,7 @@ export default function CopyButtonSection() {
       <Specimen
         title="Inside a field"
         description="In an Input's box it takes fa-input-btn, like the clear and reveal buttons."
+        specimenKey="copy-button:default:1"
       >
         <Input
           defaultValue="10.13.4.1"

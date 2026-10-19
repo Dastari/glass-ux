@@ -10,7 +10,11 @@ export default function AskShellExample() {
   const [resolved, setResolved] = useState(false);
   return (
     <SectionPage>
-      <Specimen title="Fold an answered question into a record" layout="stack">
+      <Specimen
+        title="Fold an answered question into a record"
+        layout="stack"
+        specimenKey="component-examples:AskShellExample:0"
+      >
         <AskShell
           resolved={resolved}
           record={<AskRecord status="succeeded">Confirmed the schedule.</AskRecord>}

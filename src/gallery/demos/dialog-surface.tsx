@@ -8,7 +8,11 @@ import { DialogSurface } from "../../ui/dialog/index.js";
 export default function DialogSurfaceExample() {
   return (
     <SectionPage>
-      <Specimen title="DialogSurface" layout="stack">
+      <Specimen
+        title="DialogSurface"
+        layout="stack"
+        specimenKey="component-examples:DialogSurfaceExample:0"
+      >
         <Dialog.Root>
           <Dialog.Trigger render={<Button>Open dialog surface</Button>} />
           <DialogSurface mode="dialog">

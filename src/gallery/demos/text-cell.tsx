@@ -6,7 +6,11 @@ import { SectionPage, Specimen } from "../kit.js";
 export default function TextCellExample() {
   return (
     <SectionPage>
-      <Specimen title="Text, truncation and alignment" layout="stack">
+      <Specimen
+        title="Text, truncation and alignment"
+        layout="stack"
+        specimenKey="component-examples:TextCellExample:0"
+      >
         <div className="w-70">
           <TextCell>Meridian Studio exhibition and design workshop</TextCell>
         </div>

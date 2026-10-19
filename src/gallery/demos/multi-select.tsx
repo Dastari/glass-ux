@@ -19,6 +19,7 @@ export default function ComboboxSection() {
       <Specimen
         title="Multi-select"
         description="Choose several; choices become chips. In a form they wrap onto more lines; in a toolbar or a table row they stay on one line and fold into +N (its tooltip lists them). Backspace removes the last choice; ← walks the chips."
+        specimenKey="combobox:default:4"
       >
         <FormStack>
           <Field label="Notify on failure" hint="Searched on the server, at least 2 characters.">
@@ -62,6 +63,7 @@ export default function ComboboxSection() {
       <Specimen
         title="Sizes"
         description="Chips are as tall as the inner buttons, so a one-line box keeps its height."
+        specimenKey="combobox:default:6"
       >
         {SIZES.map((size) => (
           <Example key={size} label={size}>
@@ -76,7 +78,7 @@ export default function ComboboxSection() {
         ))}
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="combobox:default:7">
         <Combobox
           options={ORGANISATIONS}
           defaultValue="northstar"
@@ -91,7 +93,7 @@ export default function ComboboxSection() {
         />
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="combobox:default:8">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-2 px-1">

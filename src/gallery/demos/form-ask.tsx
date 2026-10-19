@@ -13,6 +13,7 @@ export default function FormAskExample() {
           title="FormAsk"
           description="A working question with fictional data. Answer it to see the resolved record; application handlers receive the decision."
           layout="stack"
+          specimenKey="component-examples:FormAskExample:0"
         >
           <FormAsk ask={ASKS.form} />
         </Specimen>

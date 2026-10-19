@@ -6,7 +6,11 @@ import { SectionPage, Specimen } from "../kit.js";
 export default function TwoLineCellExample() {
   return (
     <SectionPage>
-      <Specimen title="Value and supporting text" layout="stack">
+      <Specimen
+        title="Value and supporting text"
+        layout="stack"
+        specimenKey="component-examples:TwoLineCellExample:0"
+      >
         <div className="max-w-full w-70">
           <TwoLineCell title="Windows 11 Business" subtitle="Version 24H2 · 64-bit" />
         </div>

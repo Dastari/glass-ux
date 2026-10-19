@@ -104,6 +104,7 @@ export default function BreadcrumbSection() {
       <OnCanvas
         title="In the top bar"
         description="The top bar is transparent: the breadcrumb sits on the ambient canvas. Crumbs navigate; the current place is fg at medium weight; the chevrons beside a crumb switch between its siblings."
+        specimenKey="breadcrumb:default:0"
       >
         <div className="flex h-16 w-full items-center">
           <LiveBreadcrumb />
@@ -114,6 +115,7 @@ export default function BreadcrumbSection() {
         title="On glass"
         description="Muted crumbs, separators and hover fills read the same on panel glass as on the canvas."
         wide
+        specimenKey="breadcrumb:default:2"
       >
         <LiveBreadcrumb />
       </Specimen>
@@ -123,6 +125,7 @@ export default function BreadcrumbSection() {
         description="Measured against its own width: first the middle crumbs fold into an ellipsis menu, then the trail becomes ‹ parent · current, and last only the current place with the trail in its popup."
         layout="stack"
         wide
+        specimenKey="breadcrumb:default:3"
       >
         <Example label="Full · 720px">
           <div className="w-180 max-w-full">
@@ -146,6 +149,7 @@ export default function BreadcrumbSection() {
         description="The narrowest step: the current place as one button. Its popup holds the whole trail; every level navigates and a level with siblings offers Switch. On phones the top bar also folds its module switch and organisation into the popup."
         layout="stack"
         wide
+        specimenKey="breadcrumb:default:4"
       >
         <Example label="Folded by the host · 280px">
           <div className="w-70 max-w-full">
@@ -162,6 +166,7 @@ export default function BreadcrumbSection() {
       <Specimen
         title="Long names"
         description="Each crumb truncates at its own maximum width; the full name is in the title and in the menus."
+        specimenKey="breadcrumb:default:5"
       >
         <div className="w-full">
           <Breadcrumb
@@ -183,11 +188,15 @@ export default function BreadcrumbSection() {
         title="Over imagery"
         description="Muted crumbs, separators and hover fills keep their contrast over busy content."
         backdrop
+        specimenKey="breadcrumb:default:6"
       >
         <LiveBreadcrumb />
       </Specimen>
 
-      <ContainerLab description="Full in the pane, middle-collapsed in the row, parent · current in the header, tile and tall-narrow boxes.">
+      <ContainerLab
+        description="Full in the pane, middle-collapsed in the row, parent · current in the header, tile and tall-narrow boxes."
+        specimenKey="breadcrumb:default:7"
+      >
         {() => <LiveBreadcrumb />}
       </ContainerLab>
     </SectionPage>

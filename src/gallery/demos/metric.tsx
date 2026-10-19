@@ -65,6 +65,7 @@ export default function MetricSection() {
         title="Three tiers, one component"
         description="The box decides: micro in a row or header, compact in a tile, full in a pane. Hover the full chart: the crosshair snaps to the nearest sample and the readout replaces the value."
         wide
+        specimenKey="metric:default:0"
       >
         <TierRow testId="metric">{() => <Metric {...cpu} />}</TierRow>
       </Specimen>
@@ -73,6 +74,7 @@ export default function MetricSection() {
         title="Dashboard tiles"
         description="Compact tiles in an auto-fill grid. Tone follows state: memory has crossed its warning threshold."
         wide
+        specimenKey="metric:default:1"
       >
         <DetailGrid min="md" className="w-full">
           {METRICS.map((metric) => (
@@ -87,6 +89,7 @@ export default function MetricSection() {
         title="In a table row"
         description="Micro tier at row height: value, delta and the inline sparkline in one line."
         layout="stack"
+        specimenKey="metric:default:2"
       >
         <div className="flex w-150 max-w-full flex-col">
           {["NST-C106", "LMN-4E5E", "STUDIO-VM"].map((host, index) => (
@@ -112,6 +115,7 @@ export default function MetricSection() {
         title="Loading"
         description="The skeleton takes the same rows in every tier. Swap in place to compare."
         wide
+        specimenKey="metric:default:4"
       >
         <div className="gallery-tiers">
           <SwapSlot
@@ -135,7 +139,10 @@ export default function MetricSection() {
         </div>
       </Specimen>
 
-      <ContainerLab description="micro in the row and header, compact in the tile and tall-narrow column, full in the pane and the free frame.">
+      <ContainerLab
+        description="micro in the row and header, compact in the tile and tall-narrow column, full in the pane and the free frame."
+        specimenKey="metric:default:5"
+      >
         {() => <Metric {...cpu} />}
       </ContainerLab>
     </SectionPage>

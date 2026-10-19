@@ -53,6 +53,7 @@ export default function CoordinatesFieldSection() {
       <Specimen
         title="Pick on map and use my location"
         description="The map pin opens a picker: click the map or drag the pin. The location button asks the browser for the device's position; a site whose location is blocked says how to allow it."
+        specimenKey="coordinates-field:default:1"
       >
         <BoundDemo />
       </Specimen>

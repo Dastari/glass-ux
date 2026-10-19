@@ -30,6 +30,7 @@ export default function PhoneFieldSection() {
       <Specimen
         title="Country and number"
         description="The picker shows the flag, the ISO code and the calling code; search it by name, code or +61. National numbers are read in that country. The number is tidied when focus leaves, never under the caret."
+        specimenKey="phone-field:default:0"
       >
         <FormStack className="w-full">
           <Field label="Mobile">
@@ -56,11 +57,12 @@ export default function PhoneFieldSection() {
       <Specimen
         title="Paste switches the country"
         description="A pasted international number (+64…, 0011 64…, 00 44…) sets the country and is shown in its national form."
+        specimenKey="phone-field:default:1"
       >
         <PasteDemo />
       </Specimen>
 
-      <Specimen title="States" layout="grid">
+      <Specimen title="States" layout="grid" specimenKey="phone-field:default:3">
         <FormStack>
           <Field label="Empty">
             <PhoneInput />
@@ -79,7 +81,7 @@ export default function PhoneFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="phone-field:default:4">
         <FormStack>
           <Field label="Mobile">
             <PhoneInput kind="mobile" defaultValue="+61412345678" />
@@ -87,7 +89,7 @@ export default function PhoneFieldSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="phone-field:default:5">
         {(preset) =>
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center px-1">

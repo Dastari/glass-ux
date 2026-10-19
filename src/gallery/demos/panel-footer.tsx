@@ -7,7 +7,11 @@ import { Button } from "../../ui/button/index.js";
 export default function PanelFooterExample() {
   return (
     <SectionPage>
-      <Specimen title="Panel footer actions" layout="stack">
+      <Specimen
+        title="Panel footer actions"
+        layout="stack"
+        specimenKey="component-examples:PanelFooterExample:0"
+      >
         <Panel>
           <PanelHeader title="Exhibition notes" />
           <PanelBody>Review the fictional schedule.</PanelBody>

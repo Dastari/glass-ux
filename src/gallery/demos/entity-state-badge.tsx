@@ -9,7 +9,11 @@ export default function EntityStateBadgeExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="EntityStateBadge" layout="stack">
+        <Specimen
+          title="EntityStateBadge"
+          layout="stack"
+          specimenKey="component-examples:EntityStateBadgeExample:0"
+        >
           <EntityStateBadge entity={E.c106Online} />
         </Specimen>
       </SectionPage>

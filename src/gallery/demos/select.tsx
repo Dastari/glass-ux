@@ -21,6 +21,7 @@ export default function SelectSection() {
         title="Sizes and states"
         description="The trigger is the same glass box as Input. Open one: the list is at least as wide as the trigger and marks the current option."
         wide
+        specimenKey="select:default:0"
       >
         <Matrix
           columns={["Placeholder", "Chosen", "Read-only", "Invalid", "Disabled"]}
@@ -78,6 +79,7 @@ export default function SelectSection() {
       <Specimen
         title="Options"
         description="Rows may carry an icon (shown in the trigger once chosen) and quiet trailing data. Groups get an overline label; separators are not needed between them."
+        specimenKey="select:default:1"
       >
         <FormStack>
           <Field label="Agent group" nativeLabel={false}>
@@ -117,7 +119,11 @@ export default function SelectSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="In a toolbar" description="A small select sized from the outside.">
+      <Specimen
+        title="In a toolbar"
+        description="A small select sized from the outside."
+        specimenKey="select:default:2"
+      >
         <Example label="sm, 12rem">
           <Select
             size="sm"
@@ -136,7 +142,7 @@ export default function SelectSection() {
         </Example>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="select:default:3">
         <Select
           options={AGENT_GROUPS}
           defaultValue="servers"
@@ -151,7 +157,7 @@ export default function SelectSection() {
         />
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="select:default:4">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-2 px-1">

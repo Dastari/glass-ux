@@ -38,7 +38,13 @@ export default function AiApprovalsSection() {
     <AiGallery>
       <SectionPage>
         {STATES.map(([title, description, ask]) => (
-          <Specimen key={title} title={title} description={description} layout="stack">
+          <Specimen
+            key={title}
+            title={title}
+            description={description}
+            layout="stack"
+            specimenKey="ai-approvals:default:1"
+          >
             {ask.state === "pending" || ask.state === "approved" ? (
               <ApprovalCard ask={ask} />
             ) : (

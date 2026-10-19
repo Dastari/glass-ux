@@ -12,6 +12,7 @@ export default function ButtonLinkSection() {
       <Specimen
         title="Native links"
         description="The shared button appearance preserves anchor semantics, keyboard activation and browser open-in-new-tab behaviour."
+        specimenKey="button-link:default:0"
       >
         <ButtonLink href="#api" variant="primary" iconEnd={<IconArrowRight />}>
           Read the API
@@ -23,6 +24,7 @@ export default function ButtonLinkSection() {
       <Specimen
         title="Host-rendered anchor"
         description="An application can supply its router link. Existing handlers and styles are merged with the component props."
+        specimenKey="button-link:default:1"
       >
         <ButtonLink
           render={<a href="#examples" onClick={() => setVisits((count) => count + 1)} />}

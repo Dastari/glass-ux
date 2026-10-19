@@ -64,6 +64,7 @@ export default function VerticalTabsSection() {
         title="Settings rail (routes, the default)"
         description="Each section is a URL (R6.2): rows are links, the current one is read from the location and carries aria-current, and ↑ ↓, Home, End and Space move and activate as in a tab list. The current row takes the accent tint and the slim bar — the same mark as the sidebar and tree."
         wide
+        specimenKey="vertical-tabs:default:0"
       >
         <div className="w-full">
           <RouteVerticalTabs items={ROUTED} aria-label="Agent settings sections">
@@ -75,6 +76,7 @@ export default function VerticalTabsSection() {
       <Specimen
         title="Routes, narrow"
         description="The same route rail in a narrow container: a picker whose rows are links."
+        specimenKey="vertical-tabs:default:1"
       >
         <div className="w-90 max-w-full">
           <RouteVerticalTabs items={ROUTED} aria-label="Agent settings sections (narrow)">

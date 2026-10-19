@@ -8,7 +8,10 @@ export default function ChartLegendExample() {
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
   return (
     <SectionPage>
-      <Specimen title="Toggle series with the pointer or keyboard">
+      <Specimen
+        title="Toggle series with the pointer or keyboard"
+        specimenKey="component-examples:ChartLegendExample:0"
+      >
         <ChartLegend
           items={[
             { key: "booked", label: "Booked", slot: 1, shape: "line" },

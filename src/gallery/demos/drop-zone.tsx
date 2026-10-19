@@ -498,6 +498,7 @@ export default function DragDropSection() {
         description="Cards lift out of their column and the others close up; the column under the card opens a gap where it will land. In progress holds three cards, so it shows an error with its reason while full. Keyboard: Space lifts, arrows move within and across columns, Space drops, Escape cancels."
         layout="stack"
         wide
+        specimenKey="drag-drop:default:0"
       >
         <Board />
       </Specimen>
@@ -507,6 +508,7 @@ export default function DragDropSection() {
         description="Each zone accepts a type. Zones that do not take the dragged type read as disabled; the archive takes everything until it is locked, and says why."
         layout="stack"
         wide
+        specimenKey="drag-drop:default:1"
       >
         <Filtering />
       </Specimen>
@@ -516,6 +518,7 @@ export default function DragDropSection() {
         description="outline (default), fill, and none, which shows no drop chrome at all. The render function receives the zone's state for custom content."
         layout="stack"
         wide
+        specimenKey="drag-drop:default:2"
       >
         <Appearances />
       </Specimen>
@@ -525,6 +528,7 @@ export default function DragDropSection() {
         description='sort="horizontal" for a wrapping row of chips, sort="grid" for uniform cells. Both use appearance="none".'
         layout="stack"
         wide
+        specimenKey="drag-drop:default:3"
       >
         <RowAndGrid />
       </Specimen>
@@ -533,6 +537,7 @@ export default function DragDropSection() {
         title="Handles"
         description="A DragHandle makes the grip the only place to start a drag, so the row's buttons keep working. On touch the grip drags at once; whole-item handles lift after a short press so lists still scroll."
         layout="stack"
+        specimenKey="drag-drop:default:4"
       >
         <Handles />
       </Specimen>
@@ -542,6 +547,7 @@ export default function DragDropSection() {
         description='effect="copy" leaves the palette in place. The page saves each drop: it shows pending while saving, and an image fails to show the error state.'
         layout="stack"
         wide
+        specimenKey="drag-drop:default:5"
       >
         <CopyAndAsync />
       </Specimen>

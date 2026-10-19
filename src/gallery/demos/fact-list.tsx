@@ -11,6 +11,7 @@ export default function FactListSection() {
       <Specimen
         title="Compact facts"
         description="Semantic description lists for a row, summary or popover; values can be composed controls and identities."
+        specimenKey="fact-list:default:0"
       >
         <FactList
           facts={[
@@ -33,6 +34,7 @@ export default function FactListSection() {
       <Specimen
         title="Narrow container"
         description="Long prose and identifiers wrap within the supplied width, preserving the full value."
+        specimenKey="fact-list:default:1"
       >
         <div className="w-48 max-w-full">
           <FactList

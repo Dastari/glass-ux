@@ -13,6 +13,7 @@ export default function ResultFilesExample() {
           title="ResultFiles"
           description="This renderer displays one typed result. The sample is local fictional data; supply your own result and host handlers."
           layout="stack"
+          specimenKey="component-examples:ResultFilesExample:0"
         >
           <ResultFiles result={RESULTS.files} />
         </Specimen>

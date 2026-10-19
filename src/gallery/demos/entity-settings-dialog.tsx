@@ -293,6 +293,7 @@ export default function EntitySettingsSection() {
       <Specimen
         title="Settings dialog"
         description="A large dialog with the entity's identity, a tab rail and one form across the tabs. Tabs mark unsaved changes and errors; Save enables after a change, and closing with changes asks first. On phones it is a bottom sheet with the tabs as chips."
+        specimenKey="entity-settings:default:0"
       >
         <Button icon={<IconSettings />} onClick={() => setOpen(true)} data-testid="relay-open">
           Open relay settings
@@ -305,6 +306,7 @@ export default function EntitySettingsSection() {
         description="The same dialog drawn in place, for review."
         layout="bare"
         wide
+        specimenKey="entity-settings:default:1"
       >
         <div className="flex w-full justify-center p-4" data-testid="relay-preview">
           <RelaySettings open onOpenChange={() => undefined} preview />
@@ -316,6 +318,7 @@ export default function EntitySettingsSection() {
         description="The labelled group reserves field geometry while the host loads a document."
         layout="bare"
         wide
+        specimenKey="entity-settings:default:2"
       >
         <RelaySettings open onOpenChange={() => undefined} preview loading />
       </Specimen>
@@ -325,6 +328,7 @@ export default function EntitySettingsSection() {
         description="Populated fields remain editable when the host has no admitted save operation. Save explains why it is unavailable; the dialog does not pretend a read or save is pending."
         layout="bare"
         wide
+        specimenKey="entity-settings:default:3"
       >
         <RelaySettings
           open

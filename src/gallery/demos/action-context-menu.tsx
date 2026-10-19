@@ -106,6 +106,7 @@ export default function ActionsSection() {
             title="Rows: ⋯ menu and right-click"
             description="Each row's ⋯ button and its context menu (right-click, long-press, Shift+F10) render the same definition. Select a row: its actions follow into the header and the palette below."
             wide
+            specimenKey="actions:default:0"
           >
             <div
               role="grid"

@@ -13,6 +13,7 @@ export default function ResultTableExample() {
           title="ResultTable"
           description="This renderer displays one typed result. The sample is local fictional data; supply your own result and host handlers."
           layout="stack"
+          specimenKey="component-examples:ResultTableExample:0"
         >
           <ResultTable result={RESULTS.offline} />
         </Specimen>

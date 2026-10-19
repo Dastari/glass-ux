@@ -9,7 +9,11 @@ export default function EntityGlyphExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="EntityGlyph" layout="stack">
+        <Specimen
+          title="EntityGlyph"
+          layout="stack"
+          specimenKey="component-examples:EntityGlyphExample:0"
+        >
           <EntityGlyph entity={E.c106Online} />
         </Specimen>
       </SectionPage>

@@ -56,6 +56,7 @@ export default function ByteSizeFieldSection() {
       <Specimen
         title="Sizes in words"
         description="500 MB, 1.5GB, 2 GiB, 750k. Decimal units by default (disks and files); binary (KiB, MiB, GiB) for memory. Held in bytes."
+        specimenKey="byte-size-field:default:0"
       >
         <SizeDemo />
       </Specimen>

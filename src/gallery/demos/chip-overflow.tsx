@@ -16,12 +16,14 @@ export default function ChipOverflowSection() {
       <Specimen
         title="Searchable collection"
         description="The first chip stays visible. The +N trigger opens every entry in a named searchable popover; Esc closes it and returns focus."
+        specimenKey="chip-overflow:default:0"
       >
         <ChipOverflow label="Reviewers" limit={1} items={REVIEWERS} />
       </Specimen>
       <Specimen
         title="Short and empty collections"
         description="Collections that fit need no overflow trigger."
+        specimenKey="chip-overflow:default:1"
       >
         <ChipOverflow label="Editors" limit={2} items={REVIEWERS.slice(0, 2)} />
         <ChipOverflow label="Observers" items={[]} />
@@ -29,6 +31,7 @@ export default function ChipOverflowSection() {
       <Specimen
         title="All entries in the popover"
         description="A zero limit keeps the collection compact without discarding any entries."
+        specimenKey="chip-overflow:default:2"
       >
         <ChipOverflow label="Contributors" limit={0} items={REVIEWERS} />
       </Specimen>

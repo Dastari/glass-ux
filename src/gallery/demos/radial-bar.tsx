@@ -32,6 +32,7 @@ export default function RadialBarSection() {
         title="RadialBar"
         description="A focused example using fictional studio project measurements. Hover or use the keyboard to inspect values; the chart's table preserves the exact data."
         wide
+        specimenKey="chart-radial-bar:default:0"
       >
         <div className="charts-pane" data-testid="chart-radial-bar">
           {render()}
@@ -41,6 +42,7 @@ export default function RadialBarSection() {
         title="Responsive sizes"
         description="The same RadialBar adapts to row, tile and full-panel sizes."
         wide
+        specimenKey="chart-radial-bar:default:1"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -48,6 +50,7 @@ export default function RadialBarSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
+        specimenKey="chart-radial-bar:default:2"
       >
         <SkeletonSwaps id="radial-bar" render={render} />
         <div className="gallery-tiers">
@@ -59,7 +62,7 @@ export default function RadialBarSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab>{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-radial-bar:default:3">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

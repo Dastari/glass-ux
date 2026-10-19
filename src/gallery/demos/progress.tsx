@@ -26,6 +26,7 @@ export default function ProgressSection() {
         title="Task progress"
         description="Label and percentage, the bar, then data and the one action. Use it where the work is: a row, a card, a window status bar."
         layout="stack"
+        specimenKey="progress:default:0"
       >
         <div className="flex w-110 max-w-full flex-col gap-6">
           <Progress
@@ -55,6 +56,7 @@ export default function ProgressSection() {
         title="States"
         description="Complete turns success. A failed run stays in place in danger with its reason on the data line."
         layout="stack"
+        specimenKey="progress:default:1"
       >
         <div className="flex w-110 max-w-full flex-col gap-6">
           <Progress
@@ -77,6 +79,7 @@ export default function ProgressSection() {
         title="Loading"
         description="Skeletons keep the exact rows: the head line, the track and the data line with its action."
         wide
+        specimenKey="progress:default:6"
       >
         <div className="grid w-full grid-cols-2 gap-6">
           <SwapSlot
@@ -122,6 +125,7 @@ export default function ProgressSection() {
         title="Over imagery"
         description="Tracks are fills, not glass, so they sit on any surface."
         backdrop
+        specimenKey="progress:default:7"
       >
         <div className="flex w-110 max-w-full flex-col gap-5">
           <Progress
@@ -133,7 +137,10 @@ export default function ProgressSection() {
         </div>
       </Specimen>
 
-      <ContainerLab description="Bars take the container's width; labels and data lines truncate.">
+      <ContainerLab
+        description="Bars take the container's width; labels and data lines truncate."
+        specimenKey="progress:default:8"
+      >
         {() => (
           <div className="flex flex-col gap-3 p-2">
             <Progress

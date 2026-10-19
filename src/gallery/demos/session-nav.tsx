@@ -14,6 +14,7 @@ export default function AiSessionsSection() {
           description="New chat, search, two views with counts, projects and sessions by day. Sessions show when they are working, waiting for you, failed or unread; ⋯ and right-click carry their actions. Shown at the drawer's narrowest, default and widest widths."
           layout="row"
           wide
+          specimenKey="ai-sessions:default:1"
         >
           {(
             [
@@ -49,6 +50,7 @@ export default function AiSessionsSection() {
           title="Drawer states"
           description="Loading rows in their final box; an empty history; no search matches."
           layout="bare"
+          specimenKey="ai-sessions:default:2"
         >
           <div className="ai-row">
             <div className="glass-control ai-drawer-sample">
@@ -77,7 +79,10 @@ export default function AiSessionsSection() {
           </div>
         </Specimen>
 
-        <ContainerLab description="The drawer content in fixed boxes: it fills the box, its list scrolls, titles truncate.">
+        <ContainerLab
+          description="The drawer content in fixed boxes: it fills the box, its list scrolls, titles truncate."
+          specimenKey="ai-sessions:default:6"
+        >
           {() => (
             <SessionNav
               sessions={SESSIONS}

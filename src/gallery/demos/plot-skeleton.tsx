@@ -6,7 +6,11 @@ import { PlotSkeleton } from "../../ui/charts/index.js";
 export default function PlotSkeletonExample() {
   return (
     <SectionPage>
-      <Specimen title="PlotSkeleton" layout="stack">
+      <Specimen
+        title="PlotSkeleton"
+        layout="stack"
+        specimenKey="component-examples:PlotSkeletonExample:0"
+      >
         <div className="relative h-60 w-full">
           <PlotSkeleton kind="line" tier="full" />
         </div>

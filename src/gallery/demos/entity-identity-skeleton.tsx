@@ -6,7 +6,11 @@ import { EntityIdentitySkeleton } from "../../ui/entity/index.js";
 export default function EntityIdentitySkeletonExample() {
   return (
     <SectionPage>
-      <Specimen title="EntityIdentitySkeleton" layout="stack">
+      <Specimen
+        title="EntityIdentitySkeleton"
+        layout="stack"
+        specimenKey="component-examples:EntityIdentitySkeletonExample:0"
+      >
         <EntityIdentitySkeleton />
       </Specimen>
     </SectionPage>

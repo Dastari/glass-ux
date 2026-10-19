@@ -9,6 +9,7 @@ export default function TooltipSection() {
       <Specimen
         title="Anatomy"
         description="One line of medium caption text, an 8px gap and a small arrow. A shortcut follows in keycaps."
+        specimenKey="tooltip:default:1"
       >
         <Example label="Label">
           <TooltipPreview content="View and control the remote device" />
@@ -25,6 +26,7 @@ export default function TooltipSection() {
         title="Over imagery"
         description="The bubble is glass-overlay in the opposite mode, so it holds contrast over busy content."
         backdrop
+        specimenKey="tooltip:default:2"
       >
         <TooltipPreview content="Connected · 1920 × 1080 · 28 ms" />
         <TooltipPreview content="Open in a new window" shortcut="mod+enter" />

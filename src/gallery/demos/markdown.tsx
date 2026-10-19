@@ -15,11 +15,15 @@ export default function AiContextLinksSection() {
           title="In prose"
           description="Internal links in an answer become inline chips that sit inside the line box. Hover or focus one for its preview; click navigates; right-click or Shift+F10 opens its actions."
           layout="stack"
+          specimenKey="ai-context-links:default:1"
         >
           <Markdown text={PROSE} />
         </Specimen>
 
-        <ContainerLab description="Chips truncate at their maximum and wrap with the text; they never push their row wider.">
+        <ContainerLab
+          description="Chips truncate at their maximum and wrap with the text; they never push their row wider."
+          specimenKey="ai-context-links:default:5"
+        >
           {() => (
             <LabScroll>
               <Markdown text={PROSE} />

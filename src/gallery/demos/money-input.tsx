@@ -8,7 +8,7 @@ import { MoneyInput } from "../../ui/money-field/index.js";
 export default function MoneyFieldSection() {
   return (
     <SectionPage>
-      <Specimen title="Currencies and states" layout="grid">
+      <Specimen title="Currencies and states" layout="grid" specimenKey="money-field:default:1">
         <FormStack>
           <Field label="NZD, with its code">
             <MoneyInput currency="NZD" showCode defaultValue={99000} width="medium" />
@@ -27,13 +27,13 @@ export default function MoneyFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="money-field:default:2">
         <Field label="Hourly rate">
           <MoneyInput defaultValue={16500} width="medium" />
         </Field>
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="money-field:default:3">
         <div className="flex h-full items-center p-1">
           <MoneyInput size="sm" defaultValue={123456789} aria-label="Amount" />
         </div>

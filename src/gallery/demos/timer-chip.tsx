@@ -7,7 +7,11 @@ import { TimerChip } from "../../shell/index.js";
 export default function TimerChipExample() {
   return (
     <SectionPage>
-      <Specimen title="TimerChip" layout="stack">
+      <Specimen
+        title="TimerChip"
+        layout="stack"
+        specimenKey="component-examples:TimerChipExample:0"
+      >
         <TimerChip label="Exhibition planning" startedAt={NOW - 185000} />
       </Specimen>
     </SectionPage>

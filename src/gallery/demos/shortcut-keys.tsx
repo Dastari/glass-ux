@@ -6,7 +6,11 @@ import { ShortcutKeys } from "../../shell/index.js";
 export default function ShortcutKeysExample() {
   return (
     <SectionPage>
-      <Specimen title="ShortcutKeys" layout="stack">
+      <Specimen
+        title="ShortcutKeys"
+        layout="stack"
+        specimenKey="component-examples:ShortcutKeysExample:0"
+      >
         <ShortcutKeys shortcut="mod+k" />
         <ShortcutKeys shortcut="mod+shift+p" />
       </Specimen>

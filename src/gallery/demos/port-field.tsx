@@ -53,6 +53,7 @@ export default function PortFieldSection() {
       <Specimen
         title="With its service"
         description="Whole numbers 1–65535, no grouping, and the service usually on the port named beside it (“443 HTTPS”). Arrow keys step; Shift steps by 1,000."
+        specimenKey="port-field:default:0"
       >
         <PortDemo />
       </Specimen>

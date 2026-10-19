@@ -36,6 +36,7 @@ export default function SwitchSection() {
         title="Sizes and states"
         description="Every switch is live. Press and hold: the bead stretches toward where it is going."
         wide
+        specimenKey="switch:default:0"
       >
         <Matrix
           columns={["Off", "On", "Icons, off", "Icons, on", "Invalid", "Disabled", "Disabled, on"]}
@@ -57,6 +58,7 @@ export default function SwitchSection() {
       <Specimen
         title="Tones"
         description="Accent by default. A status tone only when the setting is itself a status — “Maintenance mode” in warning, “Quarantine” in danger."
+        specimenKey="switch:default:1"
       >
         <Matrix
           columns={["sm", "md", "lg + icons"]}
@@ -81,6 +83,7 @@ export default function SwitchSection() {
       <Specimen
         title="In setting rows"
         description="Booleans are switches in setting rows: what it controls and what turning it on does on the left, the switch on the right (R15.4). See Setting row for saving in place."
+        specimenKey="switch:default:2"
       >
         <SettingRows />
       </Specimen>
@@ -89,6 +92,7 @@ export default function SwitchSection() {
         title="With its own label"
         description="For a switch outside a form, such as a toolbar or a list filter."
         layout="stack"
+        specimenKey="switch:default:3"
       >
         <Switch label="Show offline endpoints" defaultChecked />
         <Switch
@@ -106,14 +110,14 @@ export default function SwitchSection() {
         <Switch label="Share screen recordings" disabled />
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop>
+      <Specimen title="Over glass and imagery" backdrop specimenKey="switch:default:4">
         <Switch defaultChecked aria-label="On" />
         <Switch aria-label="Off" />
         <Switch size="lg" icons defaultChecked aria-label="On with icons" />
         <Switch size="lg" icons aria-label="Off with icons" />
       </Specimen>
 
-      <ContainerLab>
+      <ContainerLab specimenKey="switch:default:6">
         {(preset) =>
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center gap-3 px-3">

@@ -77,6 +77,7 @@ export default function MacFieldSection() {
       <Specimen
         title="Any notation in, one out"
         description="Colons, hyphens (Windows), dots (Cisco) or none; leave the field and it is written one way. With a vendor lookup the hint names the maker; a randomised Wi-Fi address says so."
+        specimenKey="mac-field:default:0"
       >
         <MacDemo />
       </Specimen>

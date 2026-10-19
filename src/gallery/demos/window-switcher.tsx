@@ -37,7 +37,11 @@ export default function WindowSwitcherExample() {
   const [open, setOpen] = useState(false);
   return (
     <SectionPage>
-      <Specimen title="Choose an open window" layout="stack">
+      <Specimen
+        title="Choose an open window"
+        layout="stack"
+        specimenKey="component-examples:WindowSwitcherExample:0"
+      >
         <WindowManagerProvider manager={manager}>
           <Button onClick={() => setOpen(true)}>Switch window</Button>
           <WindowSwitcher open={open} onOpenChange={setOpen} />

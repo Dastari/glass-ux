@@ -100,6 +100,58 @@ describe("localPage over a complete collection", () => {
       ),
     ).toEqual(["b", "c", "a", "d"]);
   });
+  it("keeps locale, numeric-text, null and multi-sort semantics", () => {
+    const values = [
+      "a10",
+      "a2",
+      "A2",
+      "á2",
+      "",
+      null,
+      undefined,
+      "Z",
+      "Ä",
+      "01",
+      "1",
+    ];
+    const data = values.map((name, index) => ({
+      id: String(index),
+      name,
+      owner: { name },
+    }));
+    const defs = [{ id: "title", accessorKey: "owner.name" }];
+    const expected = data.toSorted((a, b) =>
+      String(a.name ?? "").localeCompare(String(b.name ?? ""), "en-AU", {
+        numeric: true,
+      }),
+    );
+    for (const desc of [false, true]) {
+      const result = localPage(data, defs, {
+        ...state,
+        sorting: [{ id: "title", desc }],
+      });
+      expect(result.rows.map((row) => row.id)).toEqual(
+        (desc
+          ? data.toSorted(
+              (a, b) =>
+                -String(a.name ?? "").localeCompare(
+                  String(b.name ?? ""),
+                  "en-AU",
+                  { numeric: true },
+                ),
+            )
+          : expected
+        ).map((row) => row.id),
+      );
+    }
+    // A missing definition still reads a nested path supplied by the host.
+    expect(
+      localPage(data, [], {
+        ...state,
+        sorting: [{ id: "owner.name", desc: false }],
+      }).rows,
+    ).toEqual(expected);
+  });
   it("does not mutate input and returns an empty page with the filtered count", () => {
     const original = [...rows];
     const result = localPage(rows, columns, {

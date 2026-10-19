@@ -21,37 +21,47 @@ export function localPage<T extends RowData>(
     search,
     columns,
   );
-  const read = (row: T, id: string) => {
+  // Resolve columns and nested paths once, rather than for both values in every comparison.
+  const sorters = state.sorting.map((sort) => {
+    const { id } = sort;
     const column = columns.find(
       (column) =>
         column.id === id ||
         ("accessorKey" in column && column.accessorKey === id),
     );
-    if (column && "accessorFn" in column && column.accessorFn)
-      return column.accessorFn(row, 0);
+    if (column && "accessorFn" in column && column.accessorFn) {
+      const accessor = column.accessorFn;
+      return { ...sort, read: (row: T) => accessor(row, 0) };
+    }
     const key =
       column && "accessorKey" in column ? String(column.accessorKey) : id;
-    return key
-      .split(".")
-      .reduce<unknown>(
-        (value, part) =>
-          value !== null && typeof value === "object"
-            ? (value as Record<string, unknown>)[part]
-            : undefined,
-        row,
-      );
-  };
+    const path = key.split(".");
+    return {
+      ...sort,
+      read: (row: T) =>
+        path.reduce<unknown>(
+          (value, part) =>
+            value !== null && typeof value === "object"
+              ? (value as Record<string, unknown>)[part]
+              : undefined,
+          row,
+        ),
+    };
+  });
+  // localeCompare with options constructs locale machinery for every string pair.
+  // Reuse the equivalent comparator; numeric-only sorts never need to construct it.
+  let collator: Intl.Collator | undefined;
   const sorted = state.sorting.length
     ? filtered.toSorted((a, b) => {
-        for (const sort of state.sorting) {
-          const av = read(a, sort.id),
-            bv = read(b, sort.id);
+        for (const sort of sorters) {
+          const av = sort.read(a),
+            bv = sort.read(b);
           const order =
             typeof av === "number" && typeof bv === "number"
               ? av - bv
-              : String(av ?? "").localeCompare(String(bv ?? ""), "en-AU", {
+              : (collator ??= new Intl.Collator("en-AU", {
                   numeric: true,
-                });
+                })).compare(String(av ?? ""), String(bv ?? ""));
           if (order) return sort.desc ? -order : order;
         }
         return 0;

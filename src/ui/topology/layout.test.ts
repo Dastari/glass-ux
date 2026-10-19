@@ -25,6 +25,18 @@ const overlaps = (a: { x: number; y: number; width: number; height: number }, b:
   a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height
 
 describe("topology layout", () => {
+  it("keeps source nodes and cluster member order when collecting wide branches", () => {
+    const nodes = Object.freeze([
+      Object.freeze(node("root", null)),
+      ...Array.from({ length: 1000 }, (_, i) => Object.freeze(node(`sample${i}`, "root", { cluster: i % 2 ? "a" : "b" }))),
+    ])
+    const before = JSON.stringify(nodes)
+    const layout = layoutTopology(nodes)
+    expect(layout.nodes).toHaveLength(nodes.length)
+    expect(layout.clusters.find(cluster => cluster.key === "a")!.members).toEqual(nodes.filter(entry => entry.cluster === "a").map(entry => entry.id))
+    expect(layout.clusters.find(cluster => cluster.key === "b")!.members).toEqual(nodes.filter(entry => entry.cluster === "b").map(entry => entry.id))
+    expect(JSON.stringify(nodes)).toBe(before)
+  })
   it("widens a narrow block to its label, up to three cells, with its members centred", () => {
     const nodes = [node("gw", null), node("ups", "gw", { cluster: "power" }), node("pc", "gw", { cluster: "computers" })]
     const clusters = { power: { label: "Storage and power" }, computers: { label: "PCs" } }

@@ -94,12 +94,14 @@ export function VirtualRows<T extends RowData>({
     const item = items[index]
     return item?.kind === "row" ? item.row : undefined
   }
-  const keyAt = (index: number) => {
+  // TanStack keys its measurement cache by this callback's identity. Keep scroll renders
+  // from rebuilding the geometry for every loaded row; new data/order still invalidates it.
+  const keyAt = useCallback((index: number) => {
     if (!items) return rows[index]?.id ?? index
     const item = items[index]
     if (!item) return index
     return item.kind === "row" ? item.row.id : item.key
-  }
+  }, [rows, items])
   // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual is the table's virtualizer (R16); rows are memoised by data identity, not by the compiler
   const virtualizer = useVirtualizer<HTMLDivElement, Element>({
     count,

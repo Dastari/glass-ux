@@ -195,12 +195,14 @@ export function Tree({
 
   const focusedRef = useRef(focusedIndex)
   focusedRef.current = focusedIndex
+  // Changing getItemKey invalidates all measurements, even when only the scroll range moves.
+  const keyAt = useCallback((index: number) => rows[index]?.node.id ?? index, [rows])
   // oxlint-disable-next-line react/incompatible-library -- the app does not use the React Compiler; TanStack Virtual is the sanctioned virtualiser
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => scrollRef.current,
     estimateSize: (index) => sizeOf(rows[index]),
-    getItemKey: (index) => rows[index]?.node.id ?? index,
+    getItemKey: keyAt,
     overscan: 6,
     // The focused row always stays mounted so keyboard focus is never lost.
     rangeExtractor: (range: Range) => {

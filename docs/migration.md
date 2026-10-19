@@ -3,6 +3,15 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.8.2 → 0.8.3
+
+No code changes are required.
+
+- Tests that find the date input of an AI date-time ask by the name "Date" should use the
+  part's new name, "<label> Date" (for example "Date and time Date"), or the group name.
+- Replace a native `<input type="time">` beside a `DateField` with `DateTimeField` or
+  `TimeField` to get typed entry, the list of times and time zone handling.
+
 ## 0.8.1 → 0.8.2
 
 No code changes are required.

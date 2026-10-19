@@ -4,6 +4,34 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.8.3
+
+### Added
+
+- `TimeField` and `DateTimeField` in `glass-ux/date-picker`, with bare `TimeInput` and
+  `DateTimeInput`, registered in `useAppForm` as `field.TimeField` and `field.DateTimeField`.
+  - **TimeField:** holds `"HH:mm"` (or `"HH:mm:ss"` with `seconds`). It accepts typing as
+    people write times (`930`, `9:30pm`, `21:30`, `noon`) and shows the locale's clock, or
+    `hourCycle` 12 or 24. Arrow keys step by `step` (default 15 minutes) and Page Up and
+    Page Down by an hour. `min`, `max` and `suggestions` are optional, and a windowed list
+    of times opens from the button or Alt+↓.
+  - **DateTimeField:** holds a wall-clock string such as `"2026-10-21T09:30"`, with an
+    optional `timeZone` whose abbreviation the field shows. Its popup puts the calendar
+    beside the times, stacked when narrow.
+  - **Daylight saving:** a skipped local time reads forward and a repeated one reads as the
+    earlier instant. The field explains either, and the stored value is never rewritten.
+  - Helpers: `resolveWallClock`, `wallClockToInstant`, `instantToWallClock`,
+    `zoneOffsetMinutes`, `parseTimeText`, `formatTimeText`, `timeSlots` and related.
+  - Schemas: `timeSchema` and `dateTimeSchema` (`daylightSaving: "reject"` refuses skipped
+    and repeated times).
+  - Guide: `docs/components/time-field.md`.
+
+### Changed
+
+- `DateTimeAsk` uses `DateTimeInput` instead of a date field beside a native time input.
+  Suggested times, the earliest bound and the answer (an ISO instant) are unchanged. Its parts
+  are named "<label> Date" and "<label> Time".
+
 ## 0.8.2
 
 ### Fixed

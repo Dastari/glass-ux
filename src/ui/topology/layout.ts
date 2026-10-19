@@ -172,10 +172,14 @@ export function layoutTopology<T>(
 
   const byId = new Map(input.map((node) => [node.id, node] as const))
   const parents = effectiveParents(input)
+  // These buckets belong to this layout. Append in input order without copying a growing
+  // branch for every node (quadratic on a wide branch); the caller's nodes stay untouched.
   const children = new Map<string | null, TopologyNode<T>[]>()
   for (const node of input) {
     const parent = parents.get(node.id) ?? null
-    children.set(parent, [...(children.get(parent) ?? []), node])
+    const siblings = children.get(parent)
+    if (siblings) siblings.push(node)
+    else children.set(parent, [node])
   }
   const hasChildren = (id: string) => (children.get(id)?.length ?? 0) > 0
 
@@ -185,7 +189,11 @@ export function layoutTopology<T>(
     const structural = own.filter((node) => !node.cluster || hasChildren(node.id))
     const grouped = new Map<string, string[]>()
     for (const node of own) {
-      if (node.cluster && !hasChildren(node.id)) grouped.set(node.cluster, [...(grouped.get(node.cluster) ?? []), node.id])
+      if (node.cluster && !hasChildren(node.id)) {
+        const members = grouped.get(node.cluster)
+        if (members) members.push(node.id)
+        else grouped.set(node.cluster, [node.id])
+      }
     }
     const blocks: Block[] = [...grouped.entries()]
       .toSorted(([a], [b]) => clusterOrder(a) - clusterOrder(b) || a.localeCompare(b))

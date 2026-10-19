@@ -64,6 +64,21 @@
     width: var(--icon-xl);
     height: var(--icon-xl);
   }
+  .fa-shell-drawer-heading {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-shell-drawer-subtitle {
+    overflow: hidden;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .fa-shell-drawer-title {
     flex: 1 1 auto;
     min-width: 0;

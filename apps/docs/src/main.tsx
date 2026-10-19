@@ -40,6 +40,7 @@ import { Popover } from "glass-ux/popover";
 import { usePhoneLayout } from "glass-ux/lib/use-media-query";
 import { DrawerPlacement, SectionDrawer } from "glass-ux/shell";
 import { BrandMark } from "glass-ux/brand";
+import { DOCUMENTATION_VERSION } from "glass-ux/gallery/release.generated";
 import {
   IconSun,
   IconMoon,
@@ -592,7 +593,7 @@ function Layout() {
               {phone ? (
                 <header className="docs-mobile-header">
                   <Link to="/" className="gallery-brand" onClick={activate}>
-                    <BrandMark mark="product" className="gallery-brand-mark" />
+                    <BrandMark mark="product" tones="palette" className="gallery-brand-mark" />
                     <span className="gallery-brand-name">Glass UX</span>
                   </Link>
                   <div className="docs-mobile-actions">
@@ -629,12 +630,13 @@ function Layout() {
                   aria-label="Component navigation"
                 >
                   <SectionDrawer.Header
-                    icon={<BrandMark mark="product" />}
+                    icon={<BrandMark mark="product" tones="palette" />}
                     title={
                       <Link to="/" onClick={activate}>
                         Glass UX
                       </Link>
                     }
+                    subtitle={`v${DOCUMENTATION_VERSION}`}
                   />
                   {directory}
                 </SectionDrawer.Root>

@@ -127,8 +127,12 @@ follows a fine pointer and a glint on the rim nearest it.
   opaque fill automatically.
 - **R4.3** Glass needs something to bend: put `canvas-ambient` (or `canvas-background`) on the
   application canvas. Glass over a flat colour reads as a grey box.
-- **R4.4** Support Glass, Frosted and Solid. Solid, reduced transparency and browsers without
-  `backdrop-filter` make every material opaque with the same geometry.
+- **R4.4** Support Glass, Frosted and Solid. Frosted lowers the blur and raises every fill,
+  controls and wells included. Solid, reduced transparency and browsers without
+  `backdrop-filter` make every material opaque with the same geometry: no element filters
+  the backdrop, and controls, wells, soft tints and skeletons take opaque fills, so the
+  canvas never shows through. Only hover and press states, scrims and edge shading stay
+  translucent.
 - **R4.5** Elevation follows the material: chrome and panels are low, overlays and dialogs
   high. Do not add shadows to raise a component.
 - **R4.6** Page framing — headings, breadcrumbs, group labels, toolbars over panels — sits on

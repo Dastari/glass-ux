@@ -28,9 +28,11 @@
  *      accent-tinted in light mode so it reads on white glass); coloured fills use
  *      --specular-solid and --specular-solid-rim
  *
- * Optics degrade with the material: Frosted keeps rims, lens and light over less blur;
- * Solid and the OS "reduce transparency" setting keep the static rims only (lens and
- * specular become transparent, fills opaque, grain off).
+ * Optics degrade with the material: Frosted keeps rims, lens and light over less blur and
+ * raises every fill, controls and wells included. Solid and the OS "reduce transparency"
+ * setting keep the static rims only: lens and specular become transparent, every fill is
+ * opaque (materials, controls, wells, soft tints; --glass-*-solid and --tint-*-solid), no
+ * element filters the backdrop, and grain is off. Mode islands ([data-mode]) follow too.
  *
  * Rules
  *   - Only LAYER materials blur, and a layer never sits inside another layer. A blurred
@@ -61,6 +63,19 @@
     --glass-fill-card: color-mix(in oklab, var(--surface-2) 82%, transparent);
     --glass-fill-control-hover: oklch(1 0 0 / 0.9);
     --glass-fill-inset: oklch(0.35 0.04 var(--neutral-h) / 0.045);
+    /* Opaque equivalents of the fills that are translucent in Glass: Solid uses them and
+       Frosted moves most of the way towards them. Tints mix with the panel surface, as they
+       do over imagery. */
+    --glass-control-solid: var(--surface-3);
+    --glass-control-solid-hover: color-mix(in oklab, oklch(0.35 0.04 var(--neutral-h)) 4%, var(--surface-3));
+    --glass-inset-solid: color-mix(in oklab, oklch(0.35 0.04 var(--neutral-h)) 4.5%, var(--surface-2));
+    --tint-muted-solid: color-mix(in oklab, oklch(0.35 0.04 var(--neutral-h)) 5.5%, var(--surface-2));
+    --tint-accent-solid: color-mix(in oklab, oklch(var(--accent-l) var(--accent-c) var(--accent-h)) 9%, var(--surface-2));
+    --tint-accent-solid-hover: color-mix(in oklab, oklch(var(--accent-l) var(--accent-c) var(--accent-h)) 14%, var(--surface-2));
+    --tint-success-solid: color-mix(in oklab, oklch(0.6 0.15 152) 12%, var(--surface-2));
+    --tint-warning-solid: color-mix(in oklab, oklch(0.77 0.16 72) 16%, var(--surface-2));
+    --tint-danger-solid: color-mix(in oklab, oklch(0.575 0.215 22) 10%, var(--surface-2));
+    --tint-info-solid: color-mix(in oklab, oklch(0.57 0.18 252) 10%, var(--surface-2));
     --glass-edge: oklch(0.35 0.05 var(--neutral-h) / 0.1);
     --glass-rim: oklch(1 0 0 / 0.65);
     --glass-rim-top: oklch(1 0 0 / 0.95);
@@ -108,6 +123,16 @@
     --glass-fill-card: color-mix(in oklab, var(--surface-2) 82%, transparent);
     --glass-fill-control-hover: oklch(1 0 0 / 0.1);
     --glass-fill-inset: oklch(0 0 0 / 0.2);
+    --glass-control-solid: color-mix(in oklab, oklch(1 0 0) 6%, var(--surface-2));
+    --glass-control-solid-hover: color-mix(in oklab, oklch(1 0 0) 10%, var(--surface-2));
+    --glass-inset-solid: color-mix(in oklab, oklch(0 0 0) 20%, var(--surface-2));
+    --tint-muted-solid: color-mix(in oklab, oklch(1 0 0) 7%, var(--surface-2));
+    --tint-accent-solid: color-mix(in oklab, oklch(var(--accent-l) var(--accent-c) var(--accent-h)) 18%, var(--surface-2));
+    --tint-accent-solid-hover: color-mix(in oklab, oklch(var(--accent-l) var(--accent-c) var(--accent-h)) 25%, var(--surface-2));
+    --tint-success-solid: color-mix(in oklab, oklch(0.66 0.15 152) 18%, var(--surface-2));
+    --tint-warning-solid: color-mix(in oklab, oklch(0.8 0.15 75) 16%, var(--surface-2));
+    --tint-danger-solid: color-mix(in oklab, oklch(0.62 0.21 22) 18%, var(--surface-2));
+    --tint-info-solid: color-mix(in oklab, oklch(0.64 0.16 252) 18%, var(--surface-2));
     --glass-edge: oklch(0 0 0 / 0.38);
     --glass-rim: oklch(1 0 0 / 0.07);
     --glass-rim-top: oklch(1 0 0 / 0.17);
@@ -170,7 +195,10 @@
     --glass-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .055 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  :root[data-glass="reduced"] {
+  /* Material overrides apply on the root and again on every mode island ([data-mode]),
+     which re-declares the fills for its mode. */
+  :root[data-glass="reduced"],
+  :root[data-glass="reduced"] [data-mode] {
     --glass-blur-chrome: 14px;
     --glass-blur-panel: 10px;
     --glass-blur-overlay: 16px;
@@ -182,9 +210,13 @@
       var(--surface-3) 94%,
       transparent
     );
+    --glass-fill-control: color-mix(in oklab, var(--glass-control-solid) 86%, transparent);
+    --glass-fill-control-hover: color-mix(in oklab, var(--glass-control-solid-hover) 92%, transparent);
+    --glass-fill-inset: color-mix(in oklab, var(--glass-inset-solid) 86%, transparent);
   }
 
-  :root[data-glass="solid"] {
+  :root[data-glass="solid"],
+  :root[data-glass="solid"] [data-mode] {
     --glass-moving-mix: 100%;
     --glass-blur-chrome: 0px;
     --glass-blur-panel: 0px;
@@ -195,6 +227,16 @@
     --glass-fill-overlay: var(--surface-3);
     --glass-fill-float: oklch(0.2 0.02 var(--neutral-h));
     --glass-fill-card: var(--surface-2);
+    --glass-fill-control: var(--glass-control-solid);
+    --glass-fill-control-hover: var(--glass-control-solid-hover);
+    --glass-fill-inset: var(--glass-inset-solid);
+    --fill-muted: var(--tint-muted-solid);
+    --accent-soft: var(--tint-accent-solid);
+    --accent-soft-hover: var(--tint-accent-solid-hover);
+    --success-soft: var(--tint-success-solid);
+    --warning-soft: var(--tint-warning-solid);
+    --danger-soft: var(--tint-danger-solid);
+    --info-soft: var(--tint-info-solid);
     --glass-grain: none;
   }
   /* Opaque material: the static rims stay; light neither passes through nor reflects.
@@ -211,7 +253,8 @@
   }
 
   @media (prefers-reduced-transparency: reduce) {
-    :root:not([data-glass="full"]) {
+    :root:not([data-glass="full"]),
+    :root:not([data-glass="full"]) [data-mode] {
       --glass-moving-mix: 100%;
       --glass-blur-chrome: 0px;
       --glass-blur-panel: 0px;
@@ -222,6 +265,16 @@
       --glass-fill-overlay: var(--surface-3);
       --glass-fill-float: oklch(0.2 0.02 var(--neutral-h));
       --glass-fill-card: var(--surface-2);
+      --glass-fill-control: var(--glass-control-solid);
+      --glass-fill-control-hover: var(--glass-control-solid-hover);
+      --glass-fill-inset: var(--glass-inset-solid);
+      --fill-muted: var(--tint-muted-solid);
+      --accent-soft: var(--tint-accent-solid);
+      --accent-soft-hover: var(--tint-accent-solid-hover);
+      --success-soft: var(--tint-success-solid);
+      --warning-soft: var(--tint-warning-solid);
+      --danger-soft: var(--tint-danger-solid);
+      --info-soft: var(--tint-info-solid);
       --glass-grain: none;
     }
     :root:not([data-glass="full"]),
@@ -239,12 +292,16 @@
   @supports not (
     (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
   ) {
-    :root {
+    :root,
+    [data-mode] {
       --glass-fill-chrome: var(--surface-1);
       --glass-fill-panel: var(--surface-2);
       --glass-fill-overlay: var(--surface-3);
       --glass-fill-float: oklch(0.2 0.02 var(--neutral-h));
       --glass-fill-card: var(--surface-2);
+      --glass-fill-control: var(--glass-control-solid);
+      --glass-fill-control-hover: var(--glass-control-solid-hover);
+      --glass-fill-inset: var(--glass-inset-solid);
       --glass-grain: none;
     }
   }
@@ -678,5 +735,40 @@
   }
   :root[data-background]:not([data-background="silk"]) .canvas-silk {
     display: none;
+  }
+}
+
+@layer components {
+  /* ── Solid and reduced transparency: nothing filters the backdrop ───────────── */
+  /* A zero blur still runs a filter pass (saturate) and makes a backdrop root, so opaque
+     materials drop backdrop-filter entirely, over imagery too. */
+  :root[data-glass="solid"]
+    :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached, .glass-scrim, .glass-control, .fa-control),
+  :root[data-glass="solid"]
+    :is(.glass-chrome, .glass-panel, .glass-detached)::before {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* Over imagery the frosted fills become the opaque ones. */
+  :root[data-glass="solid"] .over-imagery {
+    --glass-fill-control: var(--glass-control-solid);
+    --glass-fill-control-hover: var(--glass-control-solid-hover);
+    --glass-fill-inset: var(--glass-inset-solid);
+    --fill-muted: var(--tint-muted-solid);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    :root:not([data-glass="full"])
+      :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached, .glass-scrim, .glass-control, .fa-control),
+    :root:not([data-glass="full"])
+      :is(.glass-chrome, .glass-panel, .glass-detached)::before {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+    :root:not([data-glass="full"]) .over-imagery {
+      --glass-fill-control: var(--glass-control-solid);
+      --glass-fill-control-hover: var(--glass-control-solid-hover);
+      --glass-fill-inset: var(--glass-inset-solid);
+      --fill-muted: var(--tint-muted-solid);
+    }
   }
 }

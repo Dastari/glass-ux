@@ -68,6 +68,8 @@ export interface SectionDrawerHeaderProps extends Omit<
   /** The section's mark or icon. */
   icon?: ReactNode;
   title: ReactNode;
+  /** Data only, on a second line under the title: a version, a workspace identifier (R2.2). */
+  subtitle?: ReactNode;
   /** Supporting actions rendered in the action slot. */
   actions?: ReactNode;
 }
@@ -75,6 +77,7 @@ export interface SectionDrawerHeaderProps extends Omit<
 function Header({
   icon,
   title,
+  subtitle,
   actions,
   className,
   ...rest
@@ -91,6 +94,7 @@ function Header({
           ) : undefined
         }
         title={title}
+        subtitle={subtitle}
       >
         {actions}
       </Sheet.Header>
@@ -99,7 +103,14 @@ function Header({
   return (
     <header {...rest} className={cx("fa-shell-drawer-header", className)}>
       {icon ? <span className="fa-shell-drawer-mark">{icon}</span> : null}
-      <h2 className="fa-shell-drawer-title">{title}</h2>
+      {subtitle ? (
+        <div className="fa-shell-drawer-heading">
+          <h2 className="fa-shell-drawer-title">{title}</h2>
+          <p className="fa-shell-drawer-subtitle">{subtitle}</p>
+        </div>
+      ) : (
+        <h2 className="fa-shell-drawer-title">{title}</h2>
+      )}
       {actions}
       {shell ? (
         <Button

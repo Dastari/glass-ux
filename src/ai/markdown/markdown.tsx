@@ -197,9 +197,19 @@ const components: Components = {
   ),
 };
 
-/** Document tables retain complete text within fixed column widths. */
+/**
+ * Document tables retain complete text within fixed column widths and show every row: the
+ * page scrolls, not a box inside it (a conversation keeps the capped preview).
+ */
 const wrappingComponents: Components = {
   ...components,
+  table: ({ children }) => (
+    <div className="fa-ai-md-table" data-breakout="">
+      <TableScroll label="Table">
+        <table className="fa-ai-table">{children}</table>
+      </TableScroll>
+    </div>
+  ),
   td: ({ children, style, node }) => (
     <td
       data-align={alignOf(style)}
@@ -236,7 +246,7 @@ export interface MarkdownProps extends Omit<ComponentProps<"div">, "children"> {
   text: string;
   /** Show the caret after the last character while the answer streams in. */
   streaming?: boolean;
-  /** Wrap table text within the available column widths. Default false uses single-line cells with truncation tooltips; use true for readable documents. */
+  /** Wrap table text within the available column widths and show every row (the page scrolls). Default false uses single-line cells with truncation tooltips and caps long tables in a scroll box; use true for readable documents. */
   wrapTableCells?: boolean;
   /**
    * Give headings GitHub-style ids (`## R1 · Consistency` → `#r1--consistency`, repeats

@@ -3,6 +3,14 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.8.1 → 0.8.2
+
+No code changes are required.
+
+- In Solid, controls, wells, soft tints and skeletons now have opaque fills. In Frosted,
+  controls and wells are close to opaque. Review screenshots taken in those materials.
+- Markdown with `wrapTableCells` shows every table row instead of a 14-row scroll box.
+
 ## 0.8.0 → 0.8.1
 
 No code changes are required.

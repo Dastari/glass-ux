@@ -22,6 +22,7 @@ Compose a section navigation drawer with header, search, groups, items, body and
 | --- | --- | --- | --- | --- | --- |
 | actions | `ReactNode` | See type | no | — | Supporting actions rendered in the action slot. |
 | icon | `ReactNode` | See type | no | — | The section's mark or icon. |
+| subtitle | `ReactNode` | See type | no | — | Data only, on a second line under the title: a version, a workspace identifier (R2.2). |
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
 
 ## SectionDrawer.Search

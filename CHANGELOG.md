@@ -4,6 +4,40 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.8.2
+
+### Fixed
+
+- Frosted and Solid now apply to every surface, not only panels, chrome, overlays and cards:
+  - **Solid:** controls (inputs, select triggers, secondary buttons, checkboxes, radios,
+    segmented and swatch tracks), wells (code cards, table headers, key caps, map wells),
+    soft tints (soft buttons, badges, notices, chips, inline code) and skeletons now have
+    opaque fills, so the canvas no longer shows through.
+  - **Frosted:** control and well fills are raised to about 86% opacity; they matched Glass
+    before.
+  - **No backdrop filter in Solid:** Solid no longer runs a backdrop filter. It previously
+    applied `blur(0px) saturate(…)`, which still saturated the canvas behind every material
+    and over imagery.
+  - **Mode islands:** elements with their own `data-mode` now follow the selected material.
+  - **Reduced transparency:** the operating system's "reduce transparency" setting gets the
+    same treatment as Solid.
+  - **Regression test:** a browser test checks every component page in Solid, light and dark.
+- Markdown tables in documents (`wrapTableCells`) show every row and let the page scroll,
+  instead of capping at 14 rows inside a scroll box with an opaque header. Header labels sit
+  in the middle of the header row.
+
+### Added
+
+- `SectionDrawer.Header` takes `subtitle`, a data line under the title such as a version.
+- New tokens give the opaque equivalents that Solid uses and Frosted moves towards:
+  - `--glass-control-solid`, `--glass-control-solid-hover` and `--glass-inset-solid`;
+  - `--tint-*-solid` for the muted, accent, success, warning, danger and info tints.
+
+### Documentation site
+
+- The navigation drawer shows the release version under the Glass UX name, and its logo
+  follows the selected palette.
+
 ## 0.8.1
 
 ### Fixed

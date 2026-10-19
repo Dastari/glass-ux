@@ -234,4 +234,8 @@
     overflow-wrap: anywhere;
     vertical-align: top;
   }
+  /* Header labels sit in the middle of the header row; body cells align to their first line. */
+  .fa-ai-md[data-wrap-table-cells] .fa-ai-table th {
+    vertical-align: middle;
+  }
 }

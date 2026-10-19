@@ -37,6 +37,19 @@ has upgrade steps in the [migration guide](docs/migration.md).
   instead of capping at 14 rows inside a scroll box with an opaque header. Header labels sit
   in the middle of the header row.
 
+### Performance
+
+- DataTable and Tree keep their virtual row measurements while scrolling; before, every scroll
+  render rebuilt them. Scroll-time JavaScript roughly halves at 100k rows. Scrolling at 4×
+  CPU throttling went from 35 to 42 frames per second for DataTable and from 52–56 to about
+  60 for Tree.
+- Local DataTable sorting resolves each sort column once and reuses one collator: sorting
+  100k rows by text fell from 5.7 s to 0.3 s.
+- Topology layout no longer copies a branch for every node it adds: a 50k-node star lays out
+  in 33 ms instead of 15 s.
+- These changes alter neither visuals nor behaviour; screenshots before and after are
+  pixel-identical.
+
 ### Added
 
 - `SectionDrawer.Header` takes `subtitle`, a data line under the title such as a version.

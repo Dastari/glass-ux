@@ -159086,9 +159086,9 @@
 											"sources": [
 												{
 													"fileName": "ui/data-table/local-page.ts",
-													"line": 63,
+													"line": 73,
 													"character": 4,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/data-table/local-page.ts#L63"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/data-table/local-page.ts#L73"
 												}
 											],
 											"type": {
@@ -159106,9 +159106,9 @@
 											"sources": [
 												{
 													"fileName": "ui/data-table/local-page.ts",
-													"line": 62,
+													"line": 72,
 													"character": 4,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/data-table/local-page.ts#L62"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/data-table/local-page.ts#L72"
 												}
 											],
 											"type": {
@@ -320473,9 +320473,9 @@
 							"sources": [
 								{
 									"fileName": "ui/tree/tree.tsx",
-									"line": 449,
+									"line": 451,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L449"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L451"
 								}
 							],
 							"type": {
@@ -320502,9 +320502,9 @@
 							"sources": [
 								{
 									"fileName": "ui/tree/tree.tsx",
-									"line": 448,
+									"line": 450,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L448"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L450"
 								}
 							],
 							"type": {
@@ -320530,9 +320530,9 @@
 					"sources": [
 						{
 							"fileName": "ui/tree/tree.tsx",
-							"line": 446,
+							"line": 448,
 							"character": 17,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L446"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L448"
 						}
 					]
 				},
@@ -320545,9 +320545,9 @@
 					"sources": [
 						{
 							"fileName": "ui/tree/tree.tsx",
-							"line": 444,
+							"line": 446,
 							"character": 12,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L444"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L446"
 						}
 					],
 					"type": {
@@ -320783,9 +320783,9 @@
 					"sources": [
 						{
 							"fileName": "ui/tree/tree.tsx",
-							"line": 455,
+							"line": 457,
 							"character": 16,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L455"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L457"
 						}
 					],
 					"signatures": [
@@ -320806,9 +320806,9 @@
 							"sources": [
 								{
 									"fileName": "ui/tree/tree.tsx",
-									"line": 455,
+									"line": 457,
 									"character": 16,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L455"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.8.2/src/ui/tree/tree.tsx#L457"
 								}
 							],
 							"parameters": [

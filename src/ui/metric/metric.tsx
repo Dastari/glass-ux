@@ -1,14 +1,20 @@
 import { useState, type ComponentProps, type ReactNode } from "react"
 import { IconMinus, IconTrendDown, IconTrendUp } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { numberFormat } from "../../lib/locale/intl.js"
+import { getLocale } from "../../lib/locale/locale.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Skeleton } from "../skeleton/index.js"
 import { Sparkline, SparklineSkeleton, seriesStats, type Domain, type SparklineTone } from "../sparkline/index.js"
 
-const NUMBER = new Intl.NumberFormat("en-AU", { maximumFractionDigits: 1 })
+const ONE_DECIMAL: Intl.NumberFormatOptions = { maximumFractionDigits: 1 }
 
-/** "34%" sticks to its unit; every other unit takes a thin space ("7.4 GB", "28 ms"). */
-export function formatMetric(value: number, unit = "", format?: (value: number) => string): string {
-  const text = format ? format(value) : NUMBER.format(value)
+/**
+ * "34%" sticks to its unit; every other unit takes a thin space ("7.4 GB", "28 ms"). Without
+ * `format`, the number has up to one decimal in `locale` (default `getLocale()`).
+ */
+export function formatMetric(value: number, unit = "", format?: (value: number) => string, locale = getLocale()): string {
+  const text = format ? format(value) : numberFormat(locale, ONE_DECIMAL).format(value)
   if (!unit) return text
   return unit.startsWith("%") ? `${text}${unit}` : `${text} ${unit.trim()}`
 }
@@ -40,9 +46,14 @@ export interface MetricProps extends Omit<ComponentProps<"div">, "children"> {
   domain?: Domain
   /** The series' state, when it has one (warning when a threshold is crossed). */
   tone?: SparklineTone
+  /**
+   * BCP 47 locale for the value, delta and statistics. Default: the nearest
+   * `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US.
+   */
+  locale?: string
 }
 
-function Delta({ delta, unit = "", better = "up", label }: { delta: number; unit?: string; better?: "up" | "down" | "none"; label?: string }) {
+function Delta({ delta, unit = "", better = "up", label, locale }: { delta: number; unit?: string; better?: "up" | "down" | "none"; label?: string; locale: string }) {
   const trend = delta > 0 ? "up" : delta < 0 ? "down" : "flat"
   const good = better === "none" || trend === "flat" ? undefined : (trend === better) === true
   const Icon = trend === "up" ? IconTrendUp : trend === "down" ? IconTrendDown : IconMinus
@@ -50,7 +61,7 @@ function Delta({ delta, unit = "", better = "up", label }: { delta: number; unit
   return (
     <span className="fa-metric-delta" data-good={good === undefined ? undefined : String(good)}>
       <Icon className="fa-metric-delta-icon" label={words} />
-      <span data-numeric>{formatMetric(Math.abs(delta), unit)}</span>
+      <span data-numeric>{formatMetric(Math.abs(delta), unit, undefined, locale)}</span>
       {label ? <span className="fa-metric-delta-label"> {label}</span> : null}
     </span>
   )
@@ -81,12 +92,14 @@ export function Metric({
   range,
   domain,
   tone = "data",
+  locale: localeProp,
   className,
   ...rest
 }: MetricProps) {
   const [hover, setHover] = useState<number | null>(null)
+  const locale = useLocale(localeProp)
   const stats = seriesStats(data)
-  const fmt = (n: number) => formatMetric(n, unit, format)
+  const fmt = (n: number) => formatMetric(n, unit, format, locale)
   const shown = hover !== null ? data[hover] : value
   const summary = stats
     ? `${label}${range ? `, ${range.toLowerCase()}` : ""}: minimum ${fmt(stats.min)}, average ${fmt(stats.avg)}, maximum ${fmt(stats.max)}, latest ${fmt(stats.last)}`
@@ -106,7 +119,7 @@ export function Metric({
           {hover !== null ? (
             <span className="fa-metric-readout">{times?.[hover] ?? `${data.length - 1 - hover} samples ago`}</span>
           ) : delta !== undefined ? (
-            <Delta delta={delta} unit={deltaUnit} better={better} label={deltaLabel} />
+            <Delta delta={delta} unit={deltaUnit} better={better} label={deltaLabel} locale={locale} />
           ) : null}
         </div>
         {stats ? (

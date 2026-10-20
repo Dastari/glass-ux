@@ -6,6 +6,7 @@ import { TruncatedText } from "../../ui/truncated-text/index.js"
 import { formatNumber } from "../format.js"
 import type { AiResult, ResultFile } from "../types.js"
 import { ResultFrame } from "./frame.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 
 type FilesResult = Extract<AiResult, { type: "files" }>
 
@@ -69,8 +70,9 @@ export function ResultFiles({ result }: {
   /** The files result: each of its `files` becomes a FileRowItem, and the count is the data line. */
   result: FilesResult
 }) {
+  const locale = useLocale()
   return (
-    <ResultFrame result={result} icon={<IconFile />} meta={`${formatNumber(result.files.length)} ${result.files.length === 1 ? "file" : "files"}`}>
+    <ResultFrame result={result} icon={<IconFile />} meta={`${formatNumber(result.files.length, 0, locale)} ${result.files.length === 1 ? "file" : "files"}`}>
       <ul className="fa-ai-files">
         {result.files.map((file) => (
           <FileRowItem key={file.id} file={file} />

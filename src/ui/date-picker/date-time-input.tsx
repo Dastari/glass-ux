@@ -2,6 +2,7 @@ import { Input as BaseInput } from "@base-ui/react/input"
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FocusEvent, type KeyboardEvent, type Ref } from "react"
 import { IconCalendar } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Button } from "../button/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import { Popover } from "../popover/index.js"
@@ -44,7 +45,8 @@ function skippedOn(date: IsoDate, times: readonly TimeValue[], timeZone: string)
 export function zoneLabel(timeZone: string, at: number, locale: string): { short: string; long: string } | null {
   try {
     const info = describeTimeZone(timeZone, { at: new Date(at), locale })
-    // Many locales name only their own zones; US names (EDT, PST) are widely read.
+    // Many locales name only their own zones; US names (EDT, PST) are widely read, so en-US is
+    // a deliberate fallback for the abbreviation, not the formatting locale.
     const short = info.abbreviation ?? describeTimeZone(timeZone, { at: new Date(at), locale: "en-US" }).abbreviation ?? info.offset
     return {
       short,
@@ -77,7 +79,7 @@ export interface DateTimeInputProps {
    * skips. The value never converts: use `resolveWallClock` for the instant.
    */
   timeZone?: string
-  /** BCP 47 locale: the date order, the clock and names (default en-AU). */
+  /** BCP 47 locale: the date order, the clock and names. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. */
   locale?: string
   /** Override the locale's clock: 12 (am/pm) or 24. */
   hourCycle?: HourCycle
@@ -133,7 +135,7 @@ export function DateTimeInput({
   onValueChange,
   onReject,
   timeZone,
-  locale = "en-AU",
+  locale: localeProp,
   hourCycle,
   min,
   max,
@@ -156,6 +158,7 @@ export function DateTimeInput({
   timeLabel = "Time",
   ref,
 }: DateTimeInputProps) {
+  const locale = useLocale(localeProp)
   const [inner, setInner] = useState<WallClock | null>(defaultValue)
   const current = value === undefined ? inner : value
   const textOptions = { locale, hourCycle }

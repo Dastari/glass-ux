@@ -76,12 +76,15 @@ export function useFilterController({
   filters,
   setFilters,
   filtersButton,
+  locale,
 }: {
   definitions: readonly Definition[]
   filters: ColumnFiltersState
   setFilters: (updater: Updater<ColumnFiltersState>) => void
   /** Find the toolbar's Filters button (the fallback anchor). */
   filtersButton: () => HTMLElement | null
+  /** The table's resolved locale, for numbers and dates in summaries. */
+  locale: string
 }): FilterController {
   const columns = useMemo<FilterColumnEntry[]>(
     () => definitions.flatMap((entry) => (entry.meta.filter ? [{ id: entry.id, key: entry.key, label: entry.meta.filter.label ?? entry.meta.label, spec: entry.meta.filter }] : [])),
@@ -146,7 +149,7 @@ export function useFilterController({
     const values = new Map(filters.map((filter) => [filter.id, filter.value]))
     const summaryFor = (column: FilterColumnEntry, value: unknown) => {
       try {
-        return summarize(column.spec, column.label, value, labels.current.get(column.id))
+        return summarize(column.spec, column.label, value, labels.current.get(column.id), locale)
       } catch {
         return column.label
       }
@@ -176,5 +179,5 @@ export function useFilterController({
     }
     // labelsVersion: summaries re-read the labels learnt from server-loaded options.
     // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [columns, filters, target, labelsVersion, setFilter, clearAll, open, close, learnLabels])
+  }, [columns, filters, target, labelsVersion, setFilter, clearAll, open, close, learnLabels, locale])
 }

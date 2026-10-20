@@ -25,6 +25,7 @@ export {
   formatTick,
   formatTimeTicks,
   formatValue,
+  type LocalizedFormat,
   type ValueFormat,
 } from "./core/format.js"
 export { linearTicks, timeTicks, valueDomain, type Domain, type XValue } from "./core/scales.js"

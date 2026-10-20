@@ -5,6 +5,8 @@
  */
 import type { ReactNode } from "react"
 import { IconAlert, IconCheck } from "../../icons/generated/icons.js"
+import { numberFormat } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Button } from "../button/index.js"
 import { Skeleton } from "../skeleton/index.js"
 import { matchRanges, type OptionItem, type SearchStatus } from "./source.js"
@@ -131,8 +133,9 @@ export function OptionMore({ more }: {
   /** How many results were left out of the list; nothing renders when 0 or less. */
   more: number
 }) {
+  const locale = useLocale()
   if (more <= 0) return null
-  return <div className="fa-option-more">{more.toLocaleString("en-AU")} more — refine your search</div>
+  return <div className="fa-option-more">{numberFormat(locale).format(more)} more — refine your search</div>
 }
 
 /** What a screen reader hears about the list (render inside the popup's Status part). */

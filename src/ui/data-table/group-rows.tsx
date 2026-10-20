@@ -3,6 +3,7 @@ import { memo, type ReactElement } from "react"
 import { IconChevronRight } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { Button } from "../button/index.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { formatCount, formatNumber } from "./format.js"
 import type { GroupedItem } from "./grouping.js"
 import type { RowController } from "./row.js"
@@ -33,6 +34,7 @@ interface Placement {
  */
 function GroupHeaderView({ item, index, ariaRowIndex, top, active, colSpan, noun, controller }: Placement & { item: HeaderItem }) {
   const { group, collapsed } = item
+  const locale = useLocale()
   const tabIndex = active ? 0 : -1
   return (
     <div
@@ -51,7 +53,7 @@ function GroupHeaderView({ item, index, ariaRowIndex, top, active, colSpan, noun
           type="button"
           className="fa-dt-group-toggle"
           aria-expanded={!collapsed}
-          aria-label={`${group.label}, ${formatCount(group.count, noun)}`}
+          aria-label={`${group.label}, ${formatCount(group.count, noun, locale)}`}
           tabIndex={tabIndex}
           data-dt-interactive=""
           onClick={(event) => controller.toggleGroup(group.id, event.altKey)}
@@ -62,7 +64,7 @@ function GroupHeaderView({ item, index, ariaRowIndex, top, active, colSpan, noun
           {group.icon ? <span className="fa-dt-group-icon">{group.icon}</span> : null}
           <span className="fa-dt-group-label">{group.label}</span>
           <span className="fa-dt-group-count" data-numeric aria-hidden>
-            {formatNumber(group.count)}
+            {formatNumber(group.count, 0, locale)}
           </span>
           {group.detail ? (
             <span className="fa-dt-group-detail" aria-hidden>
@@ -80,6 +82,7 @@ export const GroupHeaderRow = memo(GroupHeaderView) as (props: Placement & { ite
 /** "Show 25 more" under a group the server has more rows for, with how many are shown. */
 function GroupMoreView({ item, index, ariaRowIndex, top, active, colSpan, controller }: Placement & { item: MoreItem }) {
   const { group, loaded, next, pending } = item
+  const locale = useLocale()
   const tabIndex = active ? 0 : -1
   return (
     <div
@@ -100,13 +103,13 @@ function GroupMoreView({ item, index, ariaRowIndex, top, active, colSpan, contro
           status={pending ? "pending" : "idle"}
           tabIndex={tabIndex}
           data-dt-interactive=""
-          aria-label={`Show ${formatNumber(next)} more in ${group.label}`}
+          aria-label={`Show ${formatNumber(next, 0, locale)} more in ${group.label}`}
           onClick={() => controller.showMore(group.id)}
         >
-          {`Show ${formatNumber(next)} more`}
+          {`Show ${formatNumber(next, 0, locale)} more`}
         </Button>
         <span className="fa-dt-more-meta" data-numeric>
-          {`${formatNumber(loaded)} of ${formatNumber(group.count)}`}
+          {`${formatNumber(loaded, 0, locale)} of ${formatNumber(group.count, 0, locale)}`}
         </span>
       </div>
     </div>

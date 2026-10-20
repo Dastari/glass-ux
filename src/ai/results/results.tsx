@@ -13,6 +13,7 @@ import { ResultImages } from "./images.js"
 import { ResultLog } from "./log.js"
 import { ResultMetrics } from "./metrics.js"
 import { INLINE_ROWS, ResultTable } from "./table.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 
 /** Render any tool result by its type. */
 export function ResultBlock({ result }: {
@@ -57,7 +58,8 @@ export function GenericResult({ preview }: {
   preview: ToolPreview
 }) {
   const resolver = useEntityResolver()
-  return <ResultBlock result={resolvePreview(preview, resolver)} />
+  const locale = useLocale()
+  return <ResultBlock result={resolvePreview(preview, resolver, locale)} />
 }
 
 export interface ResultSkeletonProps {

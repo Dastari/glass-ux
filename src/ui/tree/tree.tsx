@@ -21,6 +21,7 @@ import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 import { CountBadge, STATUS, StatusDot, type StatusKind } from "../badge/index.js"
 import { EmptyState } from "../empty-state/index.js"
 import { Skeleton } from "../skeleton/index.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { flattenTree, typeahead, type FlatRow } from "./flatten.js"
 
 export interface TreeNode {
@@ -166,7 +167,8 @@ export function Tree({
   const [expandedList, setExpandedList] = useControllable<string[]>(expandedProp ?? undefined, defaultExpanded ?? [], onExpandedChange)
   const [selectedId, select] = useSelectedId(selectedIdProp, defaultSelectedId, onSelectedIdChange)
   const expanded = useMemo(() => new Set(expandedList), [expandedList])
-  const rows = useMemo(() => flattenTree(nodes, expanded, query), [nodes, expanded, query])
+  const locale = useLocale()
+  const rows = useMemo(() => flattenTree(nodes, expanded, query, locale), [nodes, expanded, query, locale])
   const searching = query.trim() !== ""
 
   const setExpanded = useCallback((next: Set<string>) => setExpandedList([...next]), [setExpandedList])
@@ -299,7 +301,7 @@ export function Tree({
         clearTimeout(buffer.current.timer)
         buffer.current.text += event.key
         buffer.current.timer = setTimeout(() => (buffer.current.text = ""), TYPEAHEAD_RESET_MS)
-        const next = typeahead(rows, buffer.current.text.length > 1 ? focusedIndex - 1 : focusedIndex, buffer.current.text)
+        const next = typeahead(rows, buffer.current.text.length > 1 ? focusedIndex - 1 : focusedIndex, buffer.current.text, locale)
         if (next >= 0) moveTo(next)
       }
     }

@@ -1,7 +1,7 @@
 import { hierarchy, type HierarchyNode } from "d3-hierarchy"
 import { useMemo, useState } from "react"
 import { IconChevronRight } from "../../../icons/generated/icons.js"
-import { formatShare, formatValue, type ValueFormat } from "./format.js"
+import { formatShare, formatValue, type LocalizedFormat } from "./format.js"
 import { slotFor, SLOT_COUNT } from "./series.js"
 import type { ChartTableModel } from "./table.js"
 
@@ -106,7 +106,7 @@ export function colourKeys(root: Node, colourBy: ColourBy, groups?: readonly str
 }
 
 /** The table for a hierarchy: the focused level's children, largest first. */
-export function hierarchyTable(focus: Node, fmt: ValueFormat, label = "Name"): ChartTableModel {
+export function hierarchyTable(focus: Node, fmt: LocalizedFormat, label = "Name"): ChartTableModel {
   const total = focus.value ?? 0
   return {
     columns: [
@@ -118,7 +118,7 @@ export function hierarchyTable(focus: Node, fmt: ValueFormat, label = "Name"): C
     rows: (focus.children ?? []).map((child) => ({
       name: child.data.label,
       value: formatValue(child.value ?? 0, fmt),
-      share: formatShare(child.value ?? 0, total),
+      share: formatShare(child.value ?? 0, total, fmt.locale),
       items: child.children ? String(child.leaves().length) : "—",
     })),
   }

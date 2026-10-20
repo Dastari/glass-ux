@@ -25,6 +25,7 @@ const fromDist = args.has('--dist')
  */
 const BUDGETS = [
   { entry: 'glass-ux/icons', named: 'IconSearch', gzip: 1_000 },
+  { entry: 'glass-ux/locale', gzip: 1_000 },
   { entry: 'glass-ux/button', named: 'Button', gzip: 34_000 },
   { entry: 'glass-ux/input', named: 'Input', gzip: 43_000 },
   { entry: 'glass-ux/form', named: 'FormStack', gzip: 1_000, forbid: ['@tanstack/form-core', '@tanstack/react-form'] },

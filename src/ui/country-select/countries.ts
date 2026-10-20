@@ -9,6 +9,8 @@
  * in step with it. Codes without a calling code (Antarctica, Bouvet…) are places, not
  * phone plans.
  */
+import { collator } from "../../lib/locale/intl.js"
+import { getLocale } from "../../lib/locale/locale.js"
 
 /** "CODE:calling" pairs; a * after the code marks a phone-only territory (not an ISO country). */
 const TABLE =
@@ -77,8 +79,8 @@ export const callingCodeOf = (code: string) => BY_CODE.get(code.toUpperCase())?.
 
 const namers = new Map<string, Intl.DisplayNames | null>()
 
-/** The country's name in the locale ("Australia"); the code when the platform has none. */
-export function countryName(code: string, locale = "en-AU"): string {
+/** The country's name in `locale` ("Australia"; default `getLocale()`); the code when the platform has none. */
+export function countryName(code: string, locale = getLocale()): string {
   let namer = namers.get(locale)
   if (namer === undefined) {
     try {
@@ -100,17 +102,19 @@ export interface Country extends CountryEntry {
 }
 
 /**
- * Countries by name in the locale. `only` restricts the list; `priority` codes come first, in
- * the order given (the workspace's own country, then its neighbours).
+ * Countries by name in `locale` (default `getLocale()`), sorted by its collation. `only`
+ * restricts the list; `priority` codes come first, in the order given (the workspace's own
+ * country, then its neighbours).
  */
 export function listCountries(options: { locale?: string; only?: readonly string[]; priority?: readonly string[]; phone?: boolean } = {}): Country[] {
   const codes = options.phone ? PHONE_COUNTRY_CODES : COUNTRY_CODES
   const allowed = options.only ? new Set(options.only.map((code) => code.toUpperCase())) : null
-  const collator = new Intl.Collator(options.locale ?? "en-AU")
+  const locale = options.locale ?? getLocale()
+  const compare = collator(locale)
   const rows = codes
     .filter((code) => !allowed || allowed.has(code))
-    .map((code) => ({ ...BY_CODE.get(code)!, name: countryName(code, options.locale) }))
-    .toSorted((a, b) => collator.compare(a.name, b.name))
+    .map((code) => ({ ...BY_CODE.get(code)!, name: countryName(code, locale) }))
+    .toSorted((a, b) => compare.compare(a.name, b.name))
   const priority = (options.priority ?? []).map((code) => code.toUpperCase())
   if (!priority.length) return rows
   const first = priority.map((code) => rows.find((row) => row.code === code)).filter((row): row is Country => row !== undefined)

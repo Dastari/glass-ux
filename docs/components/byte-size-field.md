@@ -16,5 +16,7 @@ const schema = z.object({ quota: byteSizeSchema({ required: true, max: 100e9 }) 
 ```
 
 - **Value:** bytes, `number | null`; `NaN` while unreadable.
-- **Options:** `base`, `defaultUnit` (a bare number's unit; default "MB").
+- **Options:** `base`, `defaultUnit` (a bare number's unit; default "MB"), `locale` (the decimal
+  and grouping marks it writes and reads: "1,5 GB" in de-DE; default: the
+  [application locale](../getting-started.md#set-the-formatting-locale)).
 - **Parts:** `ByteSizeInput`, `parseBytes`, `formatBytes` (thin space before the unit, R2.7).

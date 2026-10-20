@@ -2,8 +2,11 @@
  * Calendar dates as ISO strings (`2026-10-13`): a day with no time and no time zone. The
  * date picker, date fields and date filters all speak this one type, so a value never
  * drifts by a day when it crosses a time zone. Local helpers convert to and from the
- * user's own day boundaries.
+ * user's own day boundaries. Helpers that read or write text take a BCP 47 `locale`; without
+ * one they use `getLocale()` (`configureLocale()`, then `<html lang>`, then en-US).
  */
+import { dateTimeFormat } from "../../lib/locale/intl.js"
+import { getLocale } from "../../lib/locale/locale.js"
 
 /** `YYYY-MM-DD`. */
 export type IsoDate = string
@@ -79,7 +82,7 @@ export function isoWeekday(iso: IsoDate) {
 }
 
 /** The locale's first day of the week (1 = Monday … 7 = Sunday). */
-export function firstDayOfWeek(locale: string): number {
+export function firstDayOfWeek(locale: string = getLocale()): number {
   try {
     const info = new Intl.Locale(locale) as Intl.Locale & { getWeekInfo?: () => { firstDay: number }; weekInfo?: { firstDay: number } }
     const week = info.getWeekInfo?.() ?? info.weekInfo
@@ -102,15 +105,15 @@ export function gridStart(year: number, month: number, firstDay: number): IsoDat
 type Part = "day" | "month" | "year"
 
 /** The locale's numeric date order and separator: en-AU → day/month/year with "/". */
-export function dateOrder(locale: string): { order: Part[]; separator: string } {
-  const parts = new Intl.DateTimeFormat(locale, { day: "2-digit", month: "2-digit", year: "numeric" }).formatToParts(new Date(2026, 9, 13))
+export function dateOrder(locale: string = getLocale()): { order: Part[]; separator: string } {
+  const parts = dateTimeFormat(locale, { day: "2-digit", month: "2-digit", year: "numeric" }).formatToParts(new Date(2026, 9, 13))
   const order = parts.filter((part): part is Intl.DateTimeFormatPart & { type: Part } => part.type === "day" || part.type === "month" || part.type === "year").map((part) => part.type)
   const separator = parts.find((part) => part.type === "literal")?.value.trim() || "/"
   return { order: order.length === 3 ? order : ["day", "month", "year"], separator }
 }
 
 /** "13/10/2026" in en-AU. Empty for an invalid date. */
-export function formatDateText(iso: IsoDate, locale: string): string {
+export function formatDateText(iso: IsoDate, locale: string = getLocale()): string {
   const parts = isoParts(iso)
   if (!parts) return ""
   const { order, separator } = dateOrder(locale)
@@ -119,7 +122,7 @@ export function formatDateText(iso: IsoDate, locale: string): string {
 }
 
 /** A placeholder in the locale's order: "dd/mm/yyyy". */
-export function datePlaceholder(locale: string): string {
+export function datePlaceholder(locale: string = getLocale()): string {
   const { order, separator } = dateOrder(locale)
   const value: Record<Part, string> = { day: "dd", month: "mm", year: "yyyy" }
   return order.map((part) => value[part]).join(separator)
@@ -129,7 +132,7 @@ export function datePlaceholder(locale: string): string {
  * Read a typed date in the locale's numeric order. Accepts any separator ("13.10.2026",
  * "13-10-26"), two-digit years (as 20xx) and ISO input. Null when it is not a real date.
  */
-export function parseDateText(text: string, locale: string): IsoDate | null {
+export function parseDateText(text: string, locale: string = getLocale()): IsoDate | null {
   const trimmed = text.trim()
   if (!trimmed) return null
   if (isIsoDate(trimmed)) return trimmed
@@ -147,16 +150,16 @@ export function parseDateText(text: string, locale: string): IsoDate | null {
 }
 
 /** "13 Oct 2026". */
-export function formatDateLong(iso: IsoDate, locale: string): string {
+export function formatDateLong(iso: IsoDate, locale: string = getLocale()): string {
   const date = fromIsoDate(iso)
   if (Number.isNaN(date.getTime())) return ""
-  return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(date)
+  return dateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(date)
 }
 
 /** "1–13 Oct 2026", "28 Sep – 13 Oct 2026". */
-export function formatDateRange(start: IsoDate, end: IsoDate, locale: string): string {
+export function formatDateRange(start: IsoDate, end: IsoDate, locale: string = getLocale()): string {
   const a = fromIsoDate(start)
   const b = fromIsoDate(end)
   if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return ""
-  return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).formatRange(a, b)
+  return dateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).formatRange(a, b)
 }

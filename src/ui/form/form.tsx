@@ -72,6 +72,8 @@ import {
   type FieldChrome,
 } from "./context.js";
 import { blurThenChange, focusFirstInvalid } from "./validation.js";
+import { numberFormat } from "../../lib/locale/intl.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 
 export { fieldContext, formContext, useFieldContext, useFormContext };
 // Layout pieces live apart so importing them does not pull in the form kit (useAppForm).
@@ -708,7 +710,7 @@ export interface SliderFieldProps
     Chrome,
     Pick<
       SliderProps,
-      "min" | "max" | "step" | "largeStep" | "format" | "unit" | "marks"
+      "min" | "max" | "step" | "largeStep" | "format" | "unit" | "marks" | "locale"
     > {
   /** Show the current value at the end of the label row (default). */
   showValue?: boolean;
@@ -725,12 +727,13 @@ function SliderField({
   ...control
 }: SliderFieldProps) {
   const { field, root } = useFieldState<number>();
+  const number = numberFormat(useLocale(control.locale));
   const show =
     control.format ??
     ((value: number) =>
       control.unit
-        ? `${value.toLocaleString("en-AU")} ${control.unit}`
-        : value.toLocaleString("en-AU"));
+        ? `${number.format(value)} ${control.unit}`
+        : number.format(value));
   return (
     <Field
       {...root}

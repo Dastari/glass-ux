@@ -3,8 +3,11 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { useState } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
+import { configureLocale, configuredLocale } from "../../lib/locale/locale.js"
+import { LocaleProvider } from "../../lib/locale/use-locale.js"
 import { Field } from "../field/index.js"
 import { formBehaviour, useAppForm } from "../form/index.js"
+import { DateField } from "./date-field.js"
 import { DateTimeInput } from "./date-time-input.js"
 import { describeZonedValue } from "./fields.js"
 import { dateTimeSchema, timeSchema } from "./schema.js"
@@ -208,5 +211,45 @@ describe("schemas", () => {
     expect(when.safeParse("T09:30").error?.issues[0]?.message).toBe("Enter a date")
     expect(dateTimeSchema({ timeZone: "Australia/Sydney", daylightSaving: "reject" }).safeParse("2026-10-04T02:30").error?.issues[0]?.message).toMatch(/does not exist/)
     expect(dateTimeSchema({ timeZone: "Australia/Sydney" }).safeParse("2026-10-04T02:30").success).toBe(true)
+  })
+
+  it("write messages in the locale current when a value is checked", () => {
+    const previous = configuredLocale()
+    const when = dateTimeSchema({ min: "2026-10-19T09:00" })
+    try {
+      configureLocale("en-US")
+      expect(when.safeParse("2026-10-19T08:00").error?.issues[0]?.message).toBe("Enter a date and time on or after 10/19/2026 9:00 AM")
+      expect(when.safeParse("31/02/2026T09:30").error?.issues[0]?.message).toBe("Enter a date as mm/dd/yyyy")
+      expect(dateTimeSchema({ min: "2026-10-19T09:00", locale: "en-AU" }).safeParse("2026-10-19T08:00").error?.issues[0]?.message).toBe("Enter a date and time on or after 19/10/2026 9:00 am")
+    } finally {
+      configureLocale(previous)
+    }
+  })
+})
+
+describe("locale", () => {
+  it("follows the nearest LocaleProvider, and a locale prop overrides it", () => {
+    render(
+      <LocaleProvider locale="en-US">
+        <DateTimeInput aria-label="US" defaultValue="2026-10-03T21:05" />
+        <DateTimeInput aria-label="Australian" locale="en-AU" defaultValue="2026-10-03T21:05" />
+      </LocaleProvider>
+    )
+    const values = screen.getAllByRole("textbox").map((input) => (input as HTMLInputElement).value)
+    expect(values).toEqual(["10/03/2026", "9:05 PM", "03/10/2026", "9:05 pm"])
+  })
+
+  it("rewrites a shown day and time when the locale changes", () => {
+    const view = (locale: string) => (
+      <LocaleProvider locale={locale}>
+        <DateField aria-label="Day" defaultValue="2026-10-03" />
+        <TimeInput aria-label="At" defaultValue="21:05" />
+      </LocaleProvider>
+    )
+    const { rerender } = render(view("en-AU"))
+    expect(screen.getByRole("textbox", { name: "Day" })).toHaveValue("03/10/2026")
+    rerender(view("de-DE"))
+    expect(screen.getByRole("textbox", { name: "Day" })).toHaveValue("03.10.2026")
+    expect(screen.getByRole("textbox", { name: "At" })).toHaveValue("21:05")
   })
 })

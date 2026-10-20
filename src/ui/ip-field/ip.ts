@@ -7,6 +7,8 @@
  *   parseIp("[fe80::1]")            → fe80::1 (brackets from a URL are dropped)
  *   parseIp("192.168.1.10/24", { cidr: "required" }) → 192.168.1.10/24, network 192.168.1.0/24
  */
+import { numberFormat } from "../../lib/locale/intl.js"
+import { getLocale } from "../../lib/locale/locale.js"
 
 export type IpVersion = 4 | 6
 
@@ -184,7 +186,7 @@ export const isNetworkAddress = (ip: ParsedIp) => ip.prefix === null || networkO
  * IPv6 prefixes give their size ("/64 · 18,446,744,073,709,551,616 addresses" is not
  * useful), so only the network is named.
  */
-export function describeRange(ip: ParsedIp): string | null {
+export function describeRange(ip: ParsedIp, locale = getLocale()): string | null {
   if (ip.prefix === null) return null
   const network = networkOf(ip)
   if (ip.version === 6) return `Network ${network.address}/${ip.prefix}`
@@ -195,7 +197,7 @@ export function describeRange(ip: ParsedIp): string | null {
   if (prefix === 32) return "1 host"
   if (prefix === 31) return `2 hosts · ${toText(start)}–${toText(start + 1)}`
   const hosts = size - 2
-  return `${hosts.toLocaleString("en-AU")} hosts · ${toText(start + 1)}–${toText(start + size - 2)}`
+  return `${numberFormat(locale).format(hosts)} hosts · ${toText(start + 1)}–${toText(start + size - 2)}`
 }
 
 /** Private, loopback, link-local and other special ranges, for a quiet hint. */

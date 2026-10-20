@@ -1,7 +1,8 @@
 import { arc as d3arc, pie as d3pie, type PieArcDatum } from "d3-shape"
 import { memo, useMemo, useRef, type CSSProperties } from "react"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
-import { centreSize, formatShare, formatValue, type ValueFormat } from "../core/format.js"
+import { centreSize, formatShare, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
+import { useLocale } from "../../../lib/locale/use-locale.js"
 import { cssPath } from "../core/geometry.js"
 import { HitLayer } from "../core/hit.js"
 import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
@@ -61,7 +62,8 @@ function fold(data: readonly PieSlice[], max: number): Slice[] {
 export function PieChart(props: PieChartProps) {
   const { label, title, state = "ready", data, donut = false, centre, totalLabel = "Total", maxSlices = 6, unit, format, categoryLabel = "Category", ...rest } = props
   const store = useHoverStore()
-  const fmt: ValueFormat = useMemo(() => ({ unit, format }), [unit, format])
+  const locale = useLocale(props.locale)
+  const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const slices = useMemo(() => fold(data, Math.min(maxSlices, SLOT_COUNT)), [data, maxSlices])
   const total = useMemo(() => slices.reduce((sum, item) => sum + Math.max(0, item.value), 0), [slices])
 
@@ -72,7 +74,7 @@ export function PieChart(props: PieChartProps) {
         { key: "value", label: "Value", numeric: true },
         { key: "share", label: "Share", numeric: true },
       ],
-      rows: data.map((item) => ({ label: item.label, value: formatValue(item.value, fmt), share: formatShare(item.value, total) })),
+      rows: data.map((item) => ({ label: item.label, value: formatValue(item.value, fmt), share: formatShare(item.value, total, fmt.locale) })),
     }),
     [data, fmt, total, categoryLabel]
   )
@@ -81,7 +83,7 @@ export function PieChart(props: PieChartProps) {
   const trail = lead ? (
     <span className="fa-chart-figure">
       <span className="fa-chart-figure-label">{lead.label}</span>
-      <span className="fa-chart-figure-value">{formatShare(lead.value, total)}</span>
+      <span className="fa-chart-figure-value">{formatShare(lead.value, total, fmt.locale)}</span>
     </span>
   ) : null
 
@@ -108,7 +110,7 @@ interface PiePlotProps {
   donut: boolean
   centre?: { value: string; label: string }
   totalLabel: string
-  fmt: ValueFormat
+  fmt: LocalizedFormat
   label: string
 }
 
@@ -167,7 +169,7 @@ const PiePlot = memo(function PiePlot({ box, slices, total, store, donut, centre
   }
   const valueText = (index: number) => {
     const slice = slices[index]
-    return slice ? `${slice.label} · ${formatValue(slice.value, fmt)} · ${formatShare(slice.value, total)}` : ""
+    return slice ? `${slice.label} · ${formatValue(slice.value, fmt)} · ${formatShare(slice.value, total, fmt.locale)}` : ""
   }
   const legendItems: LegendItem[] = slices.map((slice) => ({
     key: slice.key,
@@ -176,7 +178,7 @@ const PiePlot = memo(function PiePlot({ box, slices, total, store, donut, centre
     tone: slice.slotKey === "other" ? "neutral" : slice.tone,
     shape: "dot",
     value: full ? formatValue(slice.value, fmt) : undefined,
-    detail: full ? formatShare(slice.value, total) : undefined,
+    detail: full ? formatShare(slice.value, total, fmt.locale) : undefined,
   }))
 
   return (
@@ -263,7 +265,7 @@ function Centre({
   rem: number
   slices: Slice[]
   total: number
-  fmt: ValueFormat
+  fmt: LocalizedFormat
   centre?: { value: string; label: string }
   totalLabel: string
   cx: number
@@ -274,7 +276,7 @@ function Centre({
   const hover = useStoreValue(store)
   const slice = interactive && hover ? slices[hover.index] : undefined
   const value = slice ? formatValue(slice.value, fmt) : (centre?.value ?? formatValue(total, fmt))
-  const caption = slice ? `${slice.label} · ${formatShare(slice.value, total)}` : (centre?.label ?? totalLabel)
+  const caption = slice ? `${slice.label} · ${formatShare(slice.value, total, fmt.locale)}` : (centre?.label ?? totalLabel)
   const size = centreSize(inner, rem)
   return (
     <div className="fa-chart-centre" data-size={size} data-hovering={slice ? "" : undefined} style={{ left: cx - inner * 0.82, top: cy - inner * 0.82, width: inner * 1.64, height: inner * 1.64 }}>

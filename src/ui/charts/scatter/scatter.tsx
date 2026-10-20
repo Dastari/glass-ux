@@ -3,7 +3,8 @@ import { memo, useMemo, useRef, useState, type ReactNode } from "react"
 import { BarChart } from "../bar/bar-chart.js"
 import { cartesianInset, ChartText, XLabels, YGrid, YLabels } from "../core/axes.js"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
-import { formatTick, formatValue, type ValueFormat } from "../core/format.js"
+import { formatTick, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
+import { useLocale } from "../../../lib/locale/use-locale.js"
 import { HitLayer } from "../core/hit.js"
 import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
 import { ChartLegend, type LegendItem } from "../core/legend.js"
@@ -41,6 +42,8 @@ export interface ScatterAxis extends ValueFormat {
   domain?: Domain
 }
 
+type LocalizedAxis = ScatterAxis & LocalizedFormat
+
 export interface ScatterChartProps extends ChartCommonProps {
   /** Three series at most: any two dots can sit side by side, so every pair must differ. */
   series: readonly ScatterSeries[]
@@ -70,7 +73,11 @@ interface Dot {
  *            arrow keys stepping through dots left to right
  */
 export function ScatterChart(props: ScatterChartProps) {
-  const { label, title, state = "ready", series, x, y, ...rest } = props
+  const { label, title, state = "ready", series, x: xAxis, y: yAxis, ...rest } = props
+  const locale = useLocale(props.locale)
+  // Each axis formats its numbers in the chart's locale.
+  const x: LocalizedAxis = useMemo(() => ({ ...xAxis, locale }), [xAxis, locale])
+  const y: LocalizedAxis = useMemo(() => ({ ...yAxis, locale }), [yAxis, locale])
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
   const store = useHoverStore()
   const slots = useMemo(() => new Map(series.map((item, index) => [item.key, slotFor(index, item.slot)])), [series])
@@ -99,7 +106,7 @@ export function ScatterChart(props: ScatterChartProps) {
   const count = visible.reduce((sum, item) => sum + item.points.length, 0)
   const trail = (
     <span className="fa-chart-figure">
-      <span className="fa-chart-figure-value">{count}</span>
+      <span className="fa-chart-figure-value">{formatValue(count, { locale })}</span>
       <span className="fa-chart-figure-label">items</span>
     </span>
   )
@@ -110,7 +117,7 @@ export function ScatterChart(props: ScatterChartProps) {
   )
 }
 
-const ScatterPlot = memo(function ScatterPlot({ box, visible, slots, x, y, store, label }: { box: PlotBox; visible: ScatterSeries[]; slots: Map<string, number>; x: ScatterAxis; y: ScatterAxis; store: HoverStore; label: string }) {
+const ScatterPlot = memo(function ScatterPlot({ box, visible, slots, x, y, store, label }: { box: PlotBox; visible: ScatterSeries[]; slots: Map<string, number>; x: LocalizedAxis; y: LocalizedAxis; store: HoverStore; label: string }) {
   const plotRef = useRef<HTMLDivElement>(null)
   const { width, height, tier, rem } = box
   const full = tier === "full"
@@ -237,6 +244,7 @@ export interface HistogramProps extends ChartCommonProps, ValueFormat {
  */
 export function Histogram(props: HistogramProps) {
   const { values, bins = 12, domain, countLabel = "Count", unit, format, ...rest } = props
+  const locale = useLocale(props.locale)
   const binned = useMemo(() => {
     const [lo, hi] = domain ?? (extent(values) as [number | undefined, number | undefined])
     const generator = d3bin<number, number>()
@@ -246,7 +254,7 @@ export function Histogram(props: HistogramProps) {
     const edges = result.length ? [result[0]!.x0 ?? 0, ...result.map((b) => b.x1 ?? 0)] : []
     return { edges, counts: result.map((b) => b.length) }
   }, [values, bins, domain])
-  const formatEdge = (value: number) => formatValue(value, { unit, format })
+  const formatEdge = (value: number) => formatValue(value, { unit, format, locale })
   return (
     <BarChart
       {...rest}

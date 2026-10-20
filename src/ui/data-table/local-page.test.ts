@@ -126,10 +126,13 @@ describe("localPage over a complete collection", () => {
       }),
     );
     for (const desc of [false, true]) {
-      const result = localPage(data, defs, {
-        ...state,
-        sorting: [{ id: "title", desc }],
-      });
+      const result = localPage(
+        data,
+        defs,
+        { ...state, sorting: [{ id: "title", desc }] },
+        undefined,
+        "en-AU",
+      );
       expect(result.rows.map((row) => row.id)).toEqual(
         (desc
           ? data.toSorted(

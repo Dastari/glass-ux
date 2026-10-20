@@ -57,6 +57,11 @@ The table's row, context and bulk actions read one `ActionSet`, declared with
 numbers, times, states and sparklines. Treat loading, empty and error states as part of the
 same bounded body rather than inserting content that moves the layout.
 
+Tables and charts format numbers, dates and counts in the resolved locale (`LocaleProvider`,
+`configureLocale()`, `<html lang>`, then `en-US`). Use their `locale` prop only for a view that
+must differ from the rest of the application. Pass server values as numbers and dates, not
+preformatted strings.
+
 Charts use the data palette and assign stable series identifiers. Semantic red/amber/green
 represent thresholds and states. Provide a definite plot height and an accessible table view.
 Maps and topology accept host-owned points, nodes, tile providers and attribution. Keep fixture

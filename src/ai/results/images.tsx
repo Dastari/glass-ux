@@ -6,6 +6,7 @@ import { Dialog } from "../../ui/dialog/index.js"
 import { formatNumber } from "../format.js"
 import type { AiResult, ResultImage } from "../types.js"
 import { ResultFrame } from "./frame.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 
 type ImagesResult = Extract<AiResult, { type: "images" }>
 
@@ -72,6 +73,7 @@ export function ImageLightbox(props: LightboxProps) {
 }
 
 function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
+  const locale = useLocale()
   const [zoom, setZoom] = useState(0)
   const image = images[index]!
   const go = useCallback((delta: number) => onIndexChange((index + delta + images.length) % images.length), [index, images.length, onIndexChange])
@@ -94,7 +96,7 @@ function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
   const scale = ZOOMS[zoom] ?? 1
   return (
     <>
-      <Dialog.Header icon={<IconImage />} title={image.caption ?? image.alt} subtitle={`${images.length > 1 ? `${index + 1} of ${images.length} · ` : ""}${formatNumber(image.width)} × ${formatNumber(image.height)}`} />
+      <Dialog.Header icon={<IconImage />} title={image.caption ?? image.alt} subtitle={`${images.length > 1 ? `${index + 1} of ${images.length} · ` : ""}${formatNumber(image.width, 0, locale)} × ${formatNumber(image.height, 0, locale)}`} />
       <Dialog.Body flush>
         {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the stage scrolls when zoomed (R20.6) */}
         <div className="fa-ai-lightbox-stage" data-zoomed={zoom > 0 ? "" : undefined} tabIndex={0} role="region" aria-label={image.alt}>
@@ -131,11 +133,12 @@ export function ResultImages({ result }: {
   /** The images result: one of its `images` fills the card; several form a grid of cropped tiles. */
   result: ImagesResult
 }) {
+  const locale = useLocale()
   const [open, setOpen] = useState(false)
   const [index, setIndex] = useState(0)
   const single = result.images.length === 1
   return (
-    <ResultFrame result={result} icon={<IconImage />} meta={single ? undefined : `${formatNumber(result.images.length)} images`}>
+    <ResultFrame result={result} icon={<IconImage />} meta={single ? undefined : `${formatNumber(result.images.length, 0, locale)} images`}>
       <div className="fa-ai-images" data-single={single ? "" : undefined}>
         {result.images.map((image, imageIndex) => (
           <ImageTile

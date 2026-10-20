@@ -21,6 +21,7 @@ import type {
 } from "../types.js";
 import { ResultFrame } from "./frame.js";
 import { Redacted } from "./generic.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 
 type TableResult = Extract<AiResult, { type: "table" }>;
 
@@ -115,13 +116,14 @@ export function ResultTable({ result }: {
   /** The table result: `columns`, `rows` (the first 8 show inline), `total` for the count and Show all, and an optional row `noun`. */
   result: TableResult;
 }) {
+  const locale = useLocale();
   const handlers = useConversationHandlers();
   const rows = result.rows.slice(0, INLINE_ROWS);
   const noun = result.noun ?? { one: "row", other: "rows" };
   const meta =
     result.total > rows.length
-      ? `${formatNumber(rows.length)} of ${formatNumber(result.total)}`
-      : `${formatNumber(result.total)} ${result.total === 1 ? noun.one : noun.other}`;
+      ? `${formatNumber(rows.length, 0, locale)} of ${formatNumber(result.total, 0, locale)}`
+      : `${formatNumber(result.total, 0, locale)} ${result.total === 1 ? noun.one : noun.other}`;
   const [titleColumn, ...restColumns] = result.columns;
   return (
     <ResultFrame
@@ -139,7 +141,7 @@ export function ResultTable({ result }: {
             icon={<IconPopOut />}
             onClick={() => handlers.openResultWindow(result)}
           >
-            Show all {formatNumber(result.total)} {noun.other} in a window
+            Show all {formatNumber(result.total, 0, locale)} {noun.other} in a window
           </Button>
         ) : undefined
       }

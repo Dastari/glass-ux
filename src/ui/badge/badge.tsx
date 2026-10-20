@@ -1,6 +1,8 @@
 import type { ComponentProps, ReactNode } from "react"
 import { IconSpinner } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { numberFormat } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 
 export type BadgeTone = "neutral" | "accent" | "success" | "warning" | "danger" | "info"
 export type BadgeSize = "sm" | "md"
@@ -126,7 +128,8 @@ export interface CountBadgeProps extends Omit<ComponentProps<"span">, "children"
 
 /** A number beside a navigation item or group ("Endpoints 12"), or on a corner (overlay). Tabular figures. */
 export function CountBadge({ value, max = 999, tone = "neutral", overlay = false, className, ...rest }: CountBadgeProps) {
-  const text = value > max ? `${max.toLocaleString("en-AU")}+` : value.toLocaleString("en-AU")
+  const number = numberFormat(useLocale())
+  const text = value > max ? `${number.format(max)}+` : number.format(value)
   return (
     <span {...rest} className={cx("fa-count", className)} data-tone={tone} data-overlay={overlay ? "" : undefined} data-numeric>
       {text}

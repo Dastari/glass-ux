@@ -19,6 +19,7 @@ import { formatNumber } from "../format.js";
 import { useConversationHandlers } from "../handlers.js";
 import type { AiResult } from "../types.js";
 import { ResultFrame } from "./frame.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 
 type EntityResult = Extract<AiResult, { type: "entity" }>;
 type EntitiesResult = Extract<AiResult, { type: "entities" }>;
@@ -96,6 +97,7 @@ export function ResultEntities({ result }: {
   /** The entity-list result: the `entities` shown as rows, each with an optional `detail`, and `total` for the count (defaults to the number of entities). */
   result: EntitiesResult;
 }) {
+  const locale = useLocale();
   const resolver = useEntityResolver();
   const handlers = useConversationHandlers();
   const first = result.entities[0];
@@ -115,8 +117,8 @@ export function ResultEntities({ result }: {
       }
       meta={
         total > result.entities.length
-          ? `${formatNumber(result.entities.length)} of ${formatNumber(total)}`
-          : `${formatNumber(total)} ${plural}`
+          ? `${formatNumber(result.entities.length, 0, locale)} of ${formatNumber(total, 0, locale)}`
+          : `${formatNumber(total, 0, locale)} ${plural}`
       }
       copyText={result.entities
         .map((entity) =>
@@ -131,7 +133,7 @@ export function ResultEntities({ result }: {
             size="sm"
             onClick={() => handlers.openResultWindow(result)}
           >
-            Show all {formatNumber(total)} {plural} in a window
+            Show all {formatNumber(total, 0, locale)} {plural} in a window
           </Button>
         ) : undefined
       }

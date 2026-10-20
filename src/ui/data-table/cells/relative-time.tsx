@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocale } from "../../../lib/locale/use-locale.js";
 import { Tooltip } from "../../tooltip/index.js";
 import { formatAbsolute, formatRelative, toTime } from "../format.js";
 import { useNow } from "../use-now.js";
@@ -14,6 +15,7 @@ export interface RelativeTimeProps {
  */
 export function RelativeTime({ value, fallback = "Never" }: RelativeTimeProps) {
   const now = useNow();
+  const locale = useLocale();
   const element = useRef<HTMLTimeElement>(null);
   const [insideControl, setInsideControl] = useState(false);
   useEffect(() => {
@@ -32,7 +34,7 @@ export function RelativeTime({ value, fallback = "Never" }: RelativeTimeProps) {
     return <span className="fa-dt-text fa-dt-muted">{fallback}</span>;
   return (
     <Tooltip
-      content={formatAbsolute(time)}
+      content={formatAbsolute(time, locale)}
       tabIndex={insideControl ? undefined : 0}
     >
       <time
@@ -41,7 +43,7 @@ export function RelativeTime({ value, fallback = "Never" }: RelativeTimeProps) {
         dateTime={new Date(time).toISOString()}
         suppressHydrationWarning
       >
-        {formatRelative(time, now || time)}
+        {formatRelative(time, now || time, locale)}
       </time>
     </Tooltip>
   );

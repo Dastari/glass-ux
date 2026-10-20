@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, type ClipboardEvent, type FocusEvent, type M
 import { Field as BaseField } from "@base-ui/react/field"
 import { IconCheck, IconChevronDown, IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { CopyButton } from "../copy-button/index.js"
@@ -327,10 +328,11 @@ interface CountryPickerProps {
 function CountryPicker({ value, onValueChange, countries, priority, flags, disabled, readOnly }: CountryPickerProps) {
   const [query, setQuery] = useState("")
   const popup = usePopupMetrics()
+  const locale = useLocale()
   const list = useMemo(
-    () => listCountries({ phone: true, only: countries, priority: priority.filter((code, index) => priority.indexOf(code) === index) }),
+    () => listCountries({ phone: true, only: countries, priority: priority.filter((code, index) => priority.indexOf(code) === index), locale }),
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- identity follows the codes
-    [countries?.join(), priority.join()]
+    [countries?.join(), priority.join(), locale]
   )
   const chosen = list.find((country) => country.code === value)
   const filtered = useMemo(() => searchCountries(list, query), [list, query])

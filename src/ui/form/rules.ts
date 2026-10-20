@@ -30,11 +30,14 @@ export function textRule(check: (value: string) => Check, options: RuleOptions &
 /**
  * A number or null: null only when not required; otherwise within bounds. NaN is what a
  * text-entry number control (DurationInput, ByteSizeInput) holds while its text cannot be
- * read, so it gets `invalidMessage` rather than the required one.
+ * read, so it gets `invalidMessage` rather than the required one. `rangeMessage` may be a
+ * function, so a message with formatted numbers is written in the locale current when a value
+ * is checked rather than when the schema is created.
  */
 export function numberRule(
-  options: RuleOptions & { requiredMessage: string; invalidMessage?: string; min?: number; max?: number; integer?: boolean; rangeMessage: string }
+  options: RuleOptions & { requiredMessage: string; invalidMessage?: string; min?: number; max?: number; integer?: boolean; rangeMessage: string | (() => string) }
 ) {
+  const range = () => (typeof options.rangeMessage === "function" ? options.rangeMessage() : options.rangeMessage)
   return z
     .custom<number | null>((value) => value === null || typeof value === "number", { message: options.requiredMessage })
     .superRefine((value, context) => {
@@ -43,11 +46,11 @@ export function numberRule(
         return
       }
       if (Number.isNaN(value)) {
-        context.addIssue({ code: "custom", message: options.invalidMessage ?? options.rangeMessage })
+        context.addIssue({ code: "custom", message: options.invalidMessage ?? range() })
         return
       }
       const outside = (options.min !== undefined && value < options.min) || (options.max !== undefined && value > options.max)
-      if (outside || (options.integer && !Number.isInteger(value))) context.addIssue({ code: "custom", message: options.rangeMessage })
+      if (outside || (options.integer && !Number.isInteger(value))) context.addIssue({ code: "custom", message: range() })
     })
 }
 

@@ -5,10 +5,12 @@ import { formatBytes, type ByteBase } from "./bytes.js"
  * A size in bytes, or null when not required. Bounds in bytes:
  *
  *   byteSizeSchema({ required: true, max: 50e9 }) → "Enter a size up to 50 GB"
+ *
+ * Sizes in messages use `locale`, or `getLocale()` when a value is checked.
  */
-export function byteSizeSchema(options: { required?: boolean; min?: number; max?: number; base?: ByteBase } = {}) {
-  const show = (bytes: number) => formatBytes(bytes, { base: options.base })
-  const range =
+export function byteSizeSchema(options: { required?: boolean; min?: number; max?: number; base?: ByteBase; locale?: string } = {}) {
+  const show = (bytes: number) => formatBytes(bytes, { base: options.base, locale: options.locale })
+  const range = () =>
     options.min !== undefined && options.max !== undefined
       ? `Enter a size from ${show(options.min)} to ${show(options.max)}`
       : options.max !== undefined

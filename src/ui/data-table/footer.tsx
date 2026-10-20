@@ -6,16 +6,18 @@ import { ActionMenuItems, useActionRunner, type ActionRunHandler } from "../acti
 import { Button, type ButtonVariant } from "../button/index.js"
 import { Menu } from "../menu/index.js"
 import { Pagination, type PaginationCursor } from "../pagination/index.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { formatNumber, formatRelative } from "./format.js"
 import { useNow } from "./use-now.js"
 
 /** "Updated 2 min ago", on the shared clock. */
 function UpdatedAt({ value }: { value: Date | number }) {
   const now = useNow()
+  const locale = useLocale()
   const time = value instanceof Date ? value.getTime() : value
   // The shared clock ticks every 15 s: a refresh newer than its last tick is "just now",
   // never "in less than a minute".
-  const relative = formatRelative(time, Math.max(now || time, time))
+  const relative = formatRelative(time, Math.max(now || time, time), locale)
   return (
     <span className="fa-dt-status-item" suppressHydrationWarning>
       {relative === "just now" ? "Updated just now" : `Updated ${relative}`}
@@ -115,6 +117,7 @@ function BulkButton<T extends RowData>({
  * bulk actions, run like every other surface's and reported by a toast (R12.5).
  */
 function BulkBar<T extends RowData>({ count, targets, groups, onRun, label, custom, clear, narrow }: BulkProps<T>) {
+  const locale = useLocale()
   const open = count > 0
   const actions = groups.flatMap((group) => group.actions)
   const shown = actions.slice(0, MAX_BULK_BUTTONS)
@@ -124,7 +127,7 @@ function BulkBar<T extends RowData>({ count, targets, groups, onRun, label, cust
   return (
     <div className="fa-dt-bulk" data-open={open ? "" : undefined} inert={!open} role="toolbar" aria-label="Selected rows">
       <span className="fa-dt-bulk-count" data-numeric>
-        {formatNumber(count)} selected
+        {formatNumber(count, 0, locale)} selected
       </span>
       <div className="fa-dt-bulk-actions">
         {custom ??

@@ -2,7 +2,8 @@ import { memo, useEffect, useId, useMemo, useRef, useState, type CSSProperties, 
 import { cartesianInset, ChartText, XLabels, YGrid, YLabels } from "../core/axes.js"
 import { DECIMATE_ABOVE, lttbIndices } from "../core/decimate.js"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
-import { formatClock, formatInstant, formatRelative, formatTick, formatTimeTicks, formatValue, type ValueFormat } from "../core/format.js"
+import { formatClock, formatInstant, formatRelative, formatTick, formatTimeTicks, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
+import { useLocale } from "../../../lib/locale/use-locale.js"
 import { areaPath, bandPath, cssPath, linePath, segments, type Point } from "../core/geometry.js"
 import { HitLayer } from "../core/hit.js"
 import { useNow } from "../core/clock.js"
@@ -135,14 +136,15 @@ export function LineChart(props: LineChartProps) {
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
   const store = useHoverStore()
   const prepared = useMemo(() => prepare(x, series, domain, stacked, thresholds, hidden), [x, series, domain, stacked, thresholds, hidden])
-  const fmt: ValueFormat = useMemo(() => ({ unit, format }), [unit, format])
+  const locale = useLocale(props.locale)
+  const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const single = series.length === 1
   const showArea = stacked || (area ?? single)
   const xText = (index: number) => {
     const value = x[index]
     if (value === undefined) return ""
-    if (value instanceof Date) return formatInstant(value, spanOf(prepared.xs))
-    return formatX ? formatX(value) : formatTick(value, 1)
+    if (value instanceof Date) return formatInstant(value, spanOf(prepared.xs), locale)
+    return formatX ? formatX(value) : formatTick(value, 1, { locale })
   }
 
   const legendItems: LegendItem[] = series.map((item) => ({
@@ -232,14 +234,14 @@ function lastValue(data: readonly (number | null)[]) {
 }
 
 /** One row per sample (every k-th past 500, so the table stays usable). */
-function lineTable(x: readonly XValue[], series: readonly LineSeries[], fmt: ValueFormat, xLabel: string, formatX?: (x: number) => string): ChartTableModel {
+function lineTable(x: readonly XValue[], series: readonly LineSeries[], fmt: LocalizedFormat, xLabel: string, formatX?: (x: number) => string): ChartTableModel {
   const step = Math.max(1, Math.ceil(x.length / 500))
   const span = x.length > 1 ? toNumber(x[x.length - 1]!) - toNumber(x[0]!) : 0
   const rows: ChartTableModel["rows"] = []
   for (let index = 0; index < x.length; index += step) {
     const value = x[index]!
     const row: Record<string, string> = {
-      x: value instanceof Date ? formatInstant(value, span) : formatX ? formatX(value) : String(value),
+      x: value instanceof Date ? formatInstant(value, span, fmt.locale) : formatX ? formatX(value) : String(value),
     }
     for (const item of series) row[item.key] = formatValue(item.data[index], fmt)
     rows.push(row)
@@ -266,7 +268,7 @@ function Readout({
   store: HoverStore
   /** Chart series with stable identifiers, labels and typed values. */
   series: LineSeries
-  fmt: ValueFormat
+  fmt: LocalizedFormat
   xText: (index: number) => string
   /** Horizontal coordinate or accessor. */
   x: readonly XValue[]
@@ -302,7 +304,7 @@ interface LinePlotProps {
   area: boolean
   thresholds?: readonly Threshold[]
   markers?: readonly Marker[]
-  fmt: ValueFormat
+  fmt: LocalizedFormat
   label: string
   xText: (index: number) => string
   now?: Date
@@ -383,16 +385,16 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
     if (!(full || compact) || xs.length < 2) return []
     if (compact) {
       const ends = [0, xs.length - 1]
-      return ends.map((index) => ({ x: px(xs[index]!), label: time ? formatClock(new Date(xs[index]!)) : formatX ? formatX(xs[index]!) : String(xs[index]) }))
+      return ends.map((index) => ({ x: px(xs[index]!), label: time ? formatClock(new Date(xs[index]!), fmt.locale) : formatX ? formatX(xs[index]!) : String(xs[index]) }))
     }
     if (time) {
       const ticks = timeTicks([new Date(first), new Date(last)], x1 - x0)
-      const labels = formatTimeTicks(ticks)
+      const labels = formatTimeTicks(ticks, fmt.locale)
       return ticks.map((tick, index) => ({ x: px(tick.getTime()), label: labels[index]! }))
     }
     const { values, step } = linearTicks([first, last], x1 - x0, 88)
-    return values.map((value) => ({ x: px(value), label: formatX ? formatX(value) : formatTick(value, step) }))
-  }, [full, compact, xs, px, time, first, last, x0, x1, formatX])
+    return values.map((value) => ({ x: px(value), label: formatX ? formatX(value) : formatTick(value, step, { locale: fmt.locale }) }))
+  }, [full, compact, xs, px, time, first, last, x0, x1, formatX, fmt.locale])
 
   // Thresholds: bands up to the next threshold (or the top), and a gradient that recolours a
   // single series where it crosses into a band.

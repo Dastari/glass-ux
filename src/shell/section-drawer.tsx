@@ -28,6 +28,8 @@ import {
 } from "react";
 import { IconChevronDown, IconSidebar } from "../icons/generated/icons.js";
 import { cx } from "../lib/cx.js";
+import { numberFormat } from "../lib/locale/intl.js";
+import { useLocale } from "../lib/locale/use-locale.js";
 import { useScrollEdges } from "../lib/use-scroll-edges.js";
 import { CountBadge } from "../ui/badge/index.js";
 import { Button } from "../ui/button/index.js";
@@ -425,6 +427,7 @@ function Item({
 }: SectionDrawerItemProps) {
   const shell = useOptionalShell();
   const placement = useContext(DrawerPlacement);
+  const locale = useLocale();
   const element = useRender({
     defaultTagName: "button",
     render,
@@ -455,7 +458,7 @@ function Item({
             )}
             {count !== undefined ? (
               <span className="fa-item-trail">
-                {count.toLocaleString("en-AU")}
+                {numberFormat(locale).format(count)}
               </span>
             ) : null}
           </>

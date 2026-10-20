@@ -24,6 +24,7 @@ import { lazy, Suspense, useMemo, useRef, useState, type ReactNode, type Ref } f
 import { useField } from "@tanstack/react-form"
 import { IconHome, IconMapPin, IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Autocomplete } from "../autocomplete/index.js"
 import { Button } from "../button/index.js"
 import type { OptionItem, OptionSource } from "../combobox/index.js"
@@ -163,6 +164,7 @@ function AddressEditor({
   disabled,
   className,
 }: EditorProps) {
+  const locale = useLocale()
   const [manual, setManual] = useState(false)
   const [query, setQuery] = useState("")
   const expanded = manual || !isEmptyAddress(value)
@@ -250,7 +252,7 @@ function AddressEditor({
               className="fa-address-manual"
               onClick={() => {
                 setManual(true)
-                if (!value.country.code) onValueChange({ ...value, country: { code: homeCountry, name: countryName(homeCountry) } })
+                if (!value.country.code) onValueChange({ ...value, country: { code: homeCountry, name: countryName(homeCountry, locale) } })
                 requestAnimationFrame(() => firstFieldRef.current?.focus())
               }}
             >
@@ -328,7 +330,7 @@ function AddressEditor({
             <CountrySelect
               value={value.country.code || null}
               onValueChange={(code) => {
-                const nextCountry = code ? { code, name: countryName(code) } : { code: "", name: "" }
+                const nextCountry = code ? { code, name: countryName(code, locale) } : { code: "", name: "" }
                 // A region from another country's list no longer applies.
                 const keepRegion = !code || !ADMIN1_REGIONS[code] || ADMIN1_REGIONS[code]?.some(([regionCode]) => regionCode === value.region.code)
                 onValueChange({ ...value, country: nextCountry, region: keepRegion ? value.region : { code: "", name: "" } })
@@ -438,7 +440,8 @@ export interface AddressInputProps extends AddressOptions {
  * instead: it gives every part its own form field.
  */
 export function AddressInput({ value, defaultValue, onValueChange, errors, homeCountry = "AU", ...rest }: AddressInputProps) {
-  const [inner, setInner] = useState<AddressValue>(() => defaultValue ?? emptyAddress({ code: homeCountry, name: countryName(homeCountry) }))
+  const locale = useLocale()
+  const [inner, setInner] = useState<AddressValue>(() => defaultValue ?? emptyAddress({ code: homeCountry, name: countryName(homeCountry, locale) }))
   const current = value ?? inner
   const change = (next: AddressValue) => {
     if (value === undefined) setInner(next)

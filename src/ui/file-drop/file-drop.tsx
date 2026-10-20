@@ -2,6 +2,7 @@ import { Field as BaseField } from "@base-ui/react/field"
 import { useLayoutEffect, useRef, useState, type ComponentProps, type DragEvent, type ReactNode } from "react"
 import { IconClose, IconFile, IconUpload } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Button } from "../button/index.js"
 import { Progress } from "../progress/index.js"
 import { TruncatedText } from "../truncated-text/index.js"
@@ -58,6 +59,7 @@ export function FileDrop({
   className,
   "aria-label": ariaLabel,
 }: FileDropProps) {
+  const locale = useLocale()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const depth = useRef(0)
   const [dragOver, setDragging] = useState(false)
@@ -66,13 +68,13 @@ export function FileDrop({
   const take = (list: FileList | null) => {
     const files = list ? [...list] : []
     if (files.length === 0) return
-    const { accepted, rejected } = screenFiles(files, { accept, maxSize, maxFiles, existing })
+    const { accepted, rejected } = screenFiles(files, { accept, maxSize, maxFiles, existing, locale })
     onFiles(accepted, rejected)
   }
 
   const limits =
     hint ??
-    [maxSize !== undefined ? `Max ${formatBytes(maxSize)} per file` : null, accept ? describeAccept(accept) : null]
+    [maxSize !== undefined ? `Max ${formatBytes(maxSize, locale)} per file` : null, accept ? describeAccept(accept) : null]
       .filter(Boolean)
       .join(" · ")
 
@@ -193,6 +195,7 @@ export function FileRow({ name, size, status = "done", progress, error, onRemove
     else if (ref) ref.current = node
   }
   const announcement = useUploadAnnouncement(name, status, error)
+  const locale = useLocale()
   // Removing the focused row would drop focus to the document: hand it to a neighbour first.
   useIsomorphicLayoutEffect(() => {
     const row = rowRef.current
@@ -223,7 +226,7 @@ export function FileRow({ name, size, status = "done", progress, error, onRemove
             <TruncatedText className="fa-file-row-error">{error ?? "Upload failed"}</TruncatedText>
           ) : (
             <span className="fa-file-row-meta" data-numeric>
-              {formatBytes(size)}
+              {formatBytes(size, locale)}
               {state ? ` · ${state}` : null}
             </span>
           )}

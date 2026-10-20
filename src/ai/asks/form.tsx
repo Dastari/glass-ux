@@ -21,6 +21,8 @@ import { Textarea } from "../../ui/textarea/index.js";
 import type { AiAsk, FormField } from "../types.js";
 import { useAskAnswer } from "./choice.js";
 import { AskLayout, AskShell } from "./frame.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
+import { dateTimeFormat } from "../../lib/locale/intl.js";
 
 type Ask<T extends AiAsk["type"]> = Extract<AiAsk, { type: T }>;
 
@@ -214,6 +216,7 @@ export function DateTimeAsk({ ask }: {
   ask: Ask<"datetime">;
 }) {
   const id = useId();
+  const locale = useLocale();
   const { answered, submit, record } = useAskAnswer(ask);
   const [choice, setChoice] = useState<string | null>(null);
   // The exact entry: a wall clock in the ask's zone, or what the field could not accept.
@@ -236,7 +239,7 @@ export function DateTimeAsk({ ask }: {
   const label =
     suggestion?.label ??
     (chosen.time !== undefined
-      ? new Intl.DateTimeFormat("en-AU", {
+      ? dateTimeFormat(locale, {
           timeZone: ask.timezone,
           weekday: "short",
           day: "numeric",

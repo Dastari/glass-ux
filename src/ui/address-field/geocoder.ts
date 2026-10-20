@@ -7,6 +7,7 @@
  */
 import { emptyAddress, localityLine, resolveRegion, type AddressValue, type GeoPoint } from "./address.js"
 import { countryName } from "../country-select/countries.js"
+import { getLocale } from "../../lib/locale/locale.js"
 
 /** Where results should lean: a point (the workspace's home region) and how wide an area. */
 export interface GeocoderBias extends GeoPoint {
@@ -110,9 +111,10 @@ export function houseNumberOf(query: string): string | null {
 /**
  * Photon → AddressValue. The suburb is the district in Australia (Sydney's "Surry Hills"),
  * the city elsewhere. A street result keeps the house number the person typed, since the
- * geocoder could not match it but the street is right.
+ * geocoder could not match it but the street is right. The country is named in `lang`
+ * (a BCP 47 locale; default `getLocale()`).
  */
-export function photonToSuggestion(feature: PhotonFeature, query = "", lang = "en-AU"): AddressSuggestion | null {
+export function photonToSuggestion(feature: PhotonFeature, query = "", lang = getLocale()): AddressSuggestion | null {
   const p = feature.properties
   const [lng, lat] = feature.geometry?.coordinates ?? []
   if (typeof lat !== "number" || typeof lng !== "number") return null

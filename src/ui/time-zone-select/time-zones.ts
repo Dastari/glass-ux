@@ -3,6 +3,7 @@
  * abbreviation now — so "Australia/Hobart" shows "UTC+11:00 · AEDT" in summer and
  * "UTC+10:00 · AEST" in winter. No table to keep up to date.
  */
+import { getLocale } from "../../lib/locale/locale.js"
 
 export interface TimeZoneInfo {
   /** IANA name: "Australia/Hobart". */
@@ -41,6 +42,7 @@ export function formatOffset(minutes: number): string {
 /** Minutes east of UTC for a zone at an instant. */
 export function offsetMinutes(id: string, at: Date = new Date()): number {
   try {
+    // A fixed locale, so the offset text has the "GMT+11:00" shape parsed below; never shown.
     const part = new Intl.DateTimeFormat("en-US", { timeZone: id, timeZoneName: "longOffset" })
       .formatToParts(at)
       .find((entry) => entry.type === "timeZoneName")?.value
@@ -67,7 +69,7 @@ function abbreviationOf(id: string, at: Date, locale: string): string | undefine
 
 /**
  * Facts about an IANA zone at a moment (default: now): its city and area from the id, its UTC
- * offset in minutes and as text, and its short name in `locale` (default en-AU) when it has one.
+ * offset in minutes and as text, and its short name in `locale` (default `getLocale()`) when it has one.
  */
 export function describeTimeZone(id: string, options: { at?: Date; locale?: string } = {}): TimeZoneInfo {
   const at = options.at ?? new Date()
@@ -75,7 +77,7 @@ export function describeTimeZone(id: string, options: { at?: Date; locale?: stri
   const area = parts.length > 1 ? (parts[0] ?? id) : id
   const city = (parts.at(-1) ?? id).replace(/_/g, " ")
   const minutes = offsetMinutes(id, at)
-  return { id, city, area, offsetMinutes: minutes, offset: formatOffset(minutes), abbreviation: abbreviationOf(id, at, options.locale ?? "en-AU") }
+  return { id, city, area, offsetMinutes: minutes, offset: formatOffset(minutes), abbreviation: abbreviationOf(id, at, options.locale ?? getLocale()) }
 }
 
 /** The browser's own zone ("Australia/Hobart"), or UTC. */
@@ -90,6 +92,7 @@ export function localTimeZone(): string {
 /** True for a zone the platform knows. */
 export function isTimeZone(id: string): boolean {
   try {
+    // Validation only: any locale accepts the same zones.
     return new Intl.DateTimeFormat("en-US", { timeZone: id }).resolvedOptions().timeZone !== ""
   } catch {
     return false

@@ -6,7 +6,12 @@
  *   parseBytes("1.5 GB") → 1_500_000_000
  *   parseBytes("2 GiB")  → 2_147_483_648
  *   formatBytes(1_500_000_000) → "1.5 GB"
+ *
+ * Numbers are written and read in a BCP 47 `locale` ("1,5 GB" in de-DE); without one, in
+ * `getLocale()` (`configureLocale()`, then `<html lang>`, then en-US).
  */
+import { delocalizeNumber } from "../../lib/locale/intl.js"
+import { getLocale } from "../../lib/locale/locale.js"
 
 export type ByteBase = "decimal" | "binary"
 
@@ -30,13 +35,17 @@ const UNITS: ReadonlyArray<[RegExp, number]> = [
 export interface ParseBytesOptions {
   /** The unit of a bare number ("500" → 500 MB with "MB"). Default "B". */
   defaultUnit?: string
+  /** BCP 47 locale whose decimal and grouping marks the text uses. Default `getLocale()`. */
+  locale?: string
 }
 
 /** Whole bytes, or null when the text is not a size. */
 export function parseBytes(text: string, options: ParseBytesOptions = {}): number | null {
-  const match = /^([0-9][0-9,]*(?:\.\d+)?|\.\d+)\s*([a-z]*)$/i.exec(text.trim())
+  const match = /^([0-9][0-9.,'’\s\u00a0\u202f]*|[.,]\d+)\s*([a-z]*)$/i.exec(text.trim())
   if (!match) return null
-  const amount = Number((match[1] ?? "").replace(/,/g, ""))
+  const number = delocalizeNumber(match[1] ?? "", options.locale ?? getLocale())
+  if (!/^(\d+(\.\d+)?|\.\d+)$/.test(number)) return null
+  const amount = Number(number)
   const unit = match[2] || options.defaultUnit || "B"
   const factor = UNITS.find(([pattern]) => pattern.test(unit))?.[1]
   if (factor === undefined || !Number.isFinite(amount)) return null
@@ -48,6 +57,8 @@ export interface FormatBytesOptions {
   base?: ByteBase
   /** Significant decimals kept (default 1, dropped when zero: "2 GB", "1.5 GB"). */
   decimals?: number
+  /** BCP 47 locale for the number. Default `getLocale()`. */
+  locale?: string
 }
 
 /** "1.5 GB", with a thin space between number and unit (R2.7). */
@@ -62,6 +73,6 @@ export function formatBytes(bytes: number, options: FormatBytesOptions = {}): st
     index++
   }
   const decimals = index === 0 ? 0 : (options.decimals ?? 1)
-  const text = value.toLocaleString("en-AU", { maximumFractionDigits: decimals })
+  const text = value.toLocaleString(options.locale ?? getLocale(), { maximumFractionDigits: decimals })
   return `${bytes < 0 ? "−" : ""}${text} ${names[index]}`
 }

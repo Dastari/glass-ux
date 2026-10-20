@@ -1,6 +1,8 @@
 import { Slider as BaseSlider } from "@base-ui/react/slider"
 import { useState, type CSSProperties, type FocusEvent } from "react"
 import { cx } from "../../lib/cx.js"
+import { numberFormat } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import type { ChoiceSize, ChoiceTone } from "../field/index.js"
 
 export interface SliderMark {
@@ -32,6 +34,8 @@ export interface SliderProps {
   format?: (value: number) => string
   /** Unit after the number, joined with a thin space ("Mbps", "%"). */
   unit?: string
+  /** BCP 47 locale for the default bubble and aria-valuetext number. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. */
+  locale?: string
   /** Tick marks under the track; `true` puts one on every step (use for ≤ 20 steps). */
   marks?: boolean | Array<number | SliderMark>
   /** Names each thumb of a range ("Minimum", "Maximum"). */
@@ -83,14 +87,16 @@ export function Slider({
   id,
   onBlur,
   className,
+  locale,
   ...aria
 }: SliderProps) {
+  const number = numberFormat(useLocale(locale))
   const [inner, setInner] = useState(() => asArray(defaultValue, min))
   // Mount measured thumbs after the public Control ref attaches. Base UI's child
   // layout effect must see that control to observe an initially hidden panel's reveal.
   const [control, setControl] = useState<HTMLDivElement | null>(null)
   const values = value === undefined ? inner : asArray(value, min)
-  const show = format ?? ((current: number) => (unit ? `${current.toLocaleString("en-AU")} ${unit}` : current.toLocaleString("en-AU")))
+  const show = format ?? ((current: number) => (unit ? `${number.format(current)} ${unit}` : number.format(current)))
   const span = max - min || 1
   const markList: SliderMark[] =
     marks === true

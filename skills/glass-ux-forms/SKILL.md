@@ -31,7 +31,10 @@ Use the form's submit action and dirty-state behaviour; show validation in the r
 slot and explain submission failures through the documented error handler.
 
 Read the schema helper's options before composing validation. Do not impose a second parser
-with different empty/required behaviour. Address lookup needs an application-supplied adapter
+with different empty/required behaviour. Fields format and read values in the resolved locale
+(the `locale` prop, `LocaleProvider`, `configureLocale()`, `<html lang>`, then `en-US`). Schema
+messages use `configureLocale()` or `<html lang>`. Pass a field's explicit `locale` to its
+schema helper as well. Address lookup needs an application-supplied adapter
 or matching server route; a demo fixture is not a production provider.
 
 Use `RichTextField` with `richTextSchema` for Markdown documents and notes. Read

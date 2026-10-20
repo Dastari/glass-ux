@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest"
+import { afterAll, beforeAll, describe, expect, it } from "vitest"
+import { configureLocale, configuredLocale } from "../../../lib/locale/locale.js"
 import { spatialNav } from "../treemap/treemap.js"
 import { lttbIndices } from "./decimate.js"
 import { centreSize, formatBytes, formatRelative, formatShare, formatTick, formatTimeTicks, formatValue } from "./format.js"
@@ -31,6 +32,13 @@ describe("chartTier (R7.2, the same thresholds as Metric)", () => {
 })
 
 describe("format", () => {
+  // The expectations below are Australian English; pin it whatever the test setup configures.
+  let previous: string | undefined
+  beforeAll(() => {
+    previous = configuredLocale()
+    configureLocale("en-AU")
+  })
+  afterAll(() => configureLocale(previous))
   it("units: % sticks, others take a space", () => {
     expect(formatValue(34, { unit: "%" })).toBe("34%")
     expect(formatValue(7.84, { unit: "GB" })).toBe("7.8\u2009GB")
@@ -66,6 +74,16 @@ describe("format", () => {
     expect(formatShare(112, 137)).toBe("82%")
     expect(formatShare(8, 137)).toBe("5.8%")
     expect(formatShare(0.01, 137)).toBe("<0.1%")
+  })
+  it("an explicit locale overrides the application locale", () => {
+    expect(formatValue(7.84, { unit: "GB", locale: "de-DE" })).toBe("7,8\u2009GB")
+    expect(formatValue(1284, { locale: "de-DE" })).toBe("1.284")
+    expect(formatTick(2.5, 2.5, { locale: "de-DE" })).toBe("2,5")
+    expect(formatBytes(1843 * 1024 * 1024, "de-DE")).toBe("1,8\u2009GB")
+    expect(formatShare(8, 137, "de-DE")).toBe("5,8%")
+    const at = (h: number, d = 13) => new Date(2026, 9, d, h, 0)
+    expect(formatTimeTicks([at(20), at(22), at(0, 14), at(2, 14)], "en-US")).toEqual(["20:00", "22:00", "Oct 14", "02:00"])
+    expect(formatValue(1.5, { format: (value, locale) => `${value}@${locale}`, locale: "fr-FR" })).toBe("1.5@fr-FR")
   })
   it("centre value roles by ring size", () => {
     expect(centreSize(120, 16)).toBe("lg")

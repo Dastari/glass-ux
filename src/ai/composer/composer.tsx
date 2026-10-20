@@ -45,6 +45,7 @@ import {
 import { FileGlyph } from "../results/index.js";
 import { useCardMaterial } from "../surface/index.js";
 import type { AiAttachment, EntityRef, RunState } from "../types.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 
 export interface SlashCommand {
   /** Typed after the slash: "summarise". */
@@ -173,6 +174,7 @@ function speechRecognition(): (new () => Recognition) | null {
  * so the composer does not re-render 60 times a second while dictating.
  */
 function useDictation(onText: (text: string) => void) {
+  const locale = useLocale();
   const [active, setActive] = useState(false);
   const meterRef = useRef<HTMLSpanElement | null>(null);
   const stopRef = useRef<(() => void) | null>(null);
@@ -208,7 +210,7 @@ function useDictation(onText: (text: string) => void) {
       recognition = new Speech();
       recognition.continuous = true;
       recognition.interimResults = false;
-      recognition.lang = "en-AU";
+      recognition.lang = locale;
       recognition.onresult = (event) => {
         const last = event.results[event.results.length - 1];
         if (last?.isFinal && last[0]) onText(last[0].transcript);
@@ -223,7 +225,7 @@ function useDictation(onText: (text: string) => void) {
       void context.close();
     };
     setActive(true);
-  }, [onText]);
+  }, [onText, locale]);
 
   useEffect(() => () => stopRef.current?.(), []);
   // False on the server and during hydration, the real answer after: no hydration mismatch.

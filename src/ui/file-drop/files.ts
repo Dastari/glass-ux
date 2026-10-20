@@ -1,7 +1,9 @@
 /**
  * Pure helpers for FileDrop: byte formatting, accept matching and screening dropped or
- * picked files against the limits. Kept free of React so they are unit-tested.
+ * picked files against the limits. Kept free of React so they are unit-tested. Sizes are
+ * written in a BCP 47 locale, by default `getLocale()`.
  */
+import { getLocale } from "../../lib/locale/locale.js"
 
 export type FileRejectionReason = "type" | "size" | "count"
 
@@ -22,13 +24,15 @@ export interface FileLimits {
   maxFiles?: number
   /** Files already in the list. */
   existing?: number
+  /** BCP 47 locale for sizes in rejection messages. Default `getLocale()`. */
+  locale?: string
 }
 
 const UNITS = ["B", "KB", "MB", "GB", "TB"] as const
 const THIN_SPACE = " "
 
 /** "812 KB", "24.6 MB", "500 MB" — binary units, as Windows shows them (R2.7 thin space). */
-export function formatBytes(bytes: number): string {
+export function formatBytes(bytes: number, locale = getLocale()): string {
   if (!Number.isFinite(bytes) || bytes < 0) return `0${THIN_SPACE}B`
   let value = bytes
   let unit = 0
@@ -37,7 +41,7 @@ export function formatBytes(bytes: number): string {
     unit += 1
   }
   const digits = unit === 0 || value >= 100 ? 0 : 1
-  const text = value.toLocaleString("en-AU", { maximumFractionDigits: digits, minimumFractionDigits: 0 })
+  const text = value.toLocaleString(locale, { maximumFractionDigits: digits, minimumFractionDigits: 0 })
   return `${text}${THIN_SPACE}${UNITS[unit]}`
 }
 
@@ -76,7 +80,7 @@ export function screenFiles(files: File[], limits: FileLimits = {}) {
     if (!matchesAccept(file, limits.accept)) {
       rejected.push({ file, reason: "type", message: `${file.name} is not a ${describeAccept(limits.accept)} file` })
     } else if (limits.maxSize !== undefined && file.size > limits.maxSize) {
-      rejected.push({ file, reason: "size", message: `${file.name} is larger than ${formatBytes(limits.maxSize)}` })
+      rejected.push({ file, reason: "size", message: `${file.name} is larger than ${formatBytes(limits.maxSize, limits.locale)}` })
     } else if (accepted.length >= room) {
       rejected.push({
         file,

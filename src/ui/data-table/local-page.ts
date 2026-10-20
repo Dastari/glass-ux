@@ -3,17 +3,21 @@ import type { DataTableColumn } from "./columns.js";
 import { filterColumns, filterRows } from "./filters/index.js";
 import { searchRows, type DataTableSearch } from "./search/index.js";
 import type { DataTableState } from "./types.js";
+import { collator } from "../../lib/locale/intl.js";
+import { getLocale } from "../../lib/locale/locale.js";
 
 /**
  * Search, filter, stable-sort and page a fully loaded collection. Returns the filtered
- * count before pagination. Never use this to filter or count an incomplete server page;
- * forward table state to that server's accepted query contract instead.
+ * count before pagination. Text sorts with `locale`'s collation (numeric-aware; default
+ * `getLocale()`). Never use this to filter or count an incomplete server page; forward
+ * table state to that server's accepted query contract instead.
  */
 export function localPage<T extends RowData>(
   rows: readonly T[],
   columns: readonly DataTableColumn<T>[],
   state: Pick<DataTableState, "filters" | "sorting" | "pagination" | "search">,
   search?: DataTableSearch<T>,
+  locale = getLocale(),
 ) {
   const filtered = searchRows(
     filterRows(rows, state.filters, filterColumns(columns)),
@@ -50,7 +54,7 @@ export function localPage<T extends RowData>(
   });
   // localeCompare with options constructs locale machinery for every string pair.
   // Reuse the equivalent comparator; numeric-only sorts never need to construct it.
-  let collator: Intl.Collator | undefined;
+  let compare: Intl.Collator | undefined;
   const sorted = state.sorting.length
     ? filtered.toSorted((a, b) => {
         for (const sort of sorters) {
@@ -59,9 +63,10 @@ export function localPage<T extends RowData>(
           const order =
             typeof av === "number" && typeof bv === "number"
               ? av - bv
-              : (collator ??= new Intl.Collator("en-AU", {
-                  numeric: true,
-                })).compare(String(av ?? ""), String(bv ?? ""));
+              : (compare ??= collator(locale, { numeric: true })).compare(
+                  String(av ?? ""),
+                  String(bv ?? ""),
+                );
           if (order) return sort.desc ? -order : order;
         }
         return 0;

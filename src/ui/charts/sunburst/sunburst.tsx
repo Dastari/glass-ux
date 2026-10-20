@@ -3,7 +3,8 @@ import { arc as d3arc } from "d3-shape"
 import { memo, useEffect, useMemo, useRef, type CSSProperties } from "react"
 import { colourKeys, DrillPathBar, hierarchyTable, useDrill, useHierarchy, type ColourBy, type HierarchyDatum, type Node } from "../core/drill.js"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
-import { centreSize, formatShare, formatValue, type ValueFormat } from "../core/format.js"
+import { centreSize, formatShare, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
+import { useLocale } from "../../../lib/locale/use-locale.js"
 import { cssPath } from "../core/geometry.js"
 import { HitLayer } from "../core/hit.js"
 import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
@@ -48,7 +49,8 @@ interface ArcNode {
  */
 export function Sunburst(props: SunburstProps) {
   const { label, title, state = "ready", data, colourBy = "branch", groups, depth = 3, unit, format, nameLabel = "Name", ...rest } = props
-  const fmt: ValueFormat = useMemo(() => ({ unit, format }), [unit, format])
+  const locale = useLocale(props.locale)
+  const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const root = useHierarchy(data)
   const drill = useDrill(root)
   const store = useHoverStore()
@@ -58,7 +60,7 @@ export function Sunburst(props: SunburstProps) {
   const trail = lead ? (
     <span className="fa-chart-figure">
       <span className="fa-chart-figure-label">{lead.data.label}</span>
-      <span className="fa-chart-figure-value">{formatShare(lead.value ?? 0, drill.focus.value ?? 0)}</span>
+      <span className="fa-chart-figure-value">{formatShare(lead.value ?? 0, drill.focus.value ?? 0, fmt.locale)}</span>
     </span>
   ) : null
   const head = (tier: ChartTier) => (tier === "full" && drill.depth > 0 ? <DrillPathBar trail={drill.trail} onSelect={(level) => drill.to(level)} /> : null)
@@ -75,7 +77,7 @@ interface SunburstPlotProps {
   colour: (node: Node) => number | "other"
   /** External store observed by the component. */
   store: HoverStore
-  fmt: ValueFormat
+  fmt: LocalizedFormat
   label: string
   rings: number
   /** Called with the arc's node when the person activates an arc that has children (click, Enter or Space); not called for leaves. */
@@ -169,11 +171,11 @@ const SunburstPlot = memo(function SunburstPlot({ box, focus, colour, store, fmt
   const valueText = (index: number) => {
     const a = arcs[index]
     if (!a) return `${focus.data.label} · ${formatValue(focus.value ?? 0, fmt)}${onUp ? " · press Escape to go up" : ""}`
-    return `${a.node.data.label} · ${formatValue(a.node.value ?? 0, fmt)} · ${formatShare(a.node.value ?? 0, focus.value ?? 0)}${a.node.children?.length ? " · press Enter to open" : ""}`
+    return `${a.node.data.label} · ${formatValue(a.node.value ?? 0, fmt)} · ${formatShare(a.node.value ?? 0, focus.value ?? 0, fmt.locale)}${a.node.children?.length ? " · press Enter to open" : ""}`
   }
   const list: LegendItem[] = (focus.children ?? []).slice(0, 8).map((child) => {
     const slot = colour(child)
-    return { key: child.data.label, label: child.data.label, ...(slot === "other" ? { tone: "neutral" } : { slot }), shape: "dot", value: formatValue(child.value ?? 0, fmt), detail: formatShare(child.value ?? 0, focus.value ?? 0) }
+    return { key: child.data.label, label: child.data.label, ...(slot === "other" ? { tone: "neutral" } : { slot }), shape: "dot", value: formatValue(child.value ?? 0, fmt), detail: formatShare(child.value ?? 0, focus.value ?? 0, fmt.locale) }
   })
 
   return (
@@ -236,7 +238,7 @@ function SunburstHover({ store, arcs, cx, cy }: { store: HoverStore; arcs: ArcNo
   )
 }
 
-function SunburstCentre({ store, arcs, focus, fmt, cx, cy, hole, rem, interactive, canGoUp }: { store: HoverStore; arcs: ArcNode[]; focus: Node; fmt: ValueFormat; cx: number; cy: number; hole: number; rem: number; interactive: boolean; canGoUp: boolean }) {
+function SunburstCentre({ store, arcs, focus, fmt, cx, cy, hole, rem, interactive, canGoUp }: { store: HoverStore; arcs: ArcNode[]; focus: Node; fmt: LocalizedFormat; cx: number; cy: number; hole: number; rem: number; interactive: boolean; canGoUp: boolean }) {
   const hover = useStoreValue(store)
   const a = interactive && hover ? arcs[hover.index] : undefined
   const onCentre = interactive && hover && hover.index === arcs.length
@@ -248,7 +250,7 @@ function SunburstCentre({ store, arcs, focus, fmt, cx, cy, hole, rem, interactiv
       <data className="fa-chart-centre-value" value={node.value ?? 0}>
         {formatValue(node.value ?? 0, fmt)}
       </data>
-      <span className="fa-chart-centre-label" hidden={hole < 2.25 * rem}>{onCentre && canGoUp ? `Back to ${focus.parent?.data.label ?? ""}` : a ? `${node.data.label} · ${formatShare(node.value ?? 0, focus.value ?? 0)}` : node.data.label}</span>
+      <span className="fa-chart-centre-label" hidden={hole < 2.25 * rem}>{onCentre && canGoUp ? `Back to ${focus.parent?.data.label ?? ""}` : a ? `${node.data.label} · ${formatShare(node.value ?? 0, focus.value ?? 0, fmt.locale)}` : node.data.label}</span>
     </div>
   )
 }

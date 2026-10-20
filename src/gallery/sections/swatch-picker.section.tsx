@@ -1,5 +1,5 @@
 import { ContainerLab, Example, Matrix, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { PALETTES, PALETTE_LABELS, type Palette } from "../../lib/appearance/appearance.js"
+import { PALETTES, PALETTE_LABELS, type Palette } from "../../lib/appearance/index.js"
 import { Segmented, type SegmentedOption } from "../../ui/segmented/index.js"
 import { SettingRow } from "../../ui/setting-row/index.js"
 import { SwatchPicker, type SwatchOption } from "../../ui/swatch-picker/index.js"

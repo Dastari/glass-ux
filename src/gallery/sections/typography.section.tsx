@@ -1,8 +1,6 @@
 import { useState } from "react"
 import { Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { isLocked } from "../../lib/appearance/appearance.js"
-import { FONT_OPTIONS } from "../../lib/appearance/fonts.js"
-import { useAppearance } from "../../lib/appearance/use-appearance.js"
+import { FONT_OPTIONS, isLocked, useAppearance } from "../../lib/appearance/index.js"
 import { Button } from "../../ui/button/index.js"
 import { Skeleton, type SkeletonTextRole } from "../../ui/skeleton/index.js"
 

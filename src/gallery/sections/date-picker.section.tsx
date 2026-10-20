@@ -18,7 +18,7 @@ import {
   type TimeValue,
   type WallClock,
 } from "../../ui/date-picker/index.js"
-import { TimeList } from "../../ui/date-picker/time-list.js"
+import { TimeList } from "./date-picker.kit.js"
 import { Field } from "../../ui/field/index.js"
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js"
 import { Usage } from "./inputs.kit.js"

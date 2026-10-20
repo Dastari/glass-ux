@@ -97,7 +97,7 @@ export function fitSegmented({ room, full, icons }: SegmentedFit): SegmentedForm
  * The next form, from what is shown now. `overflowing`: the shown form spills out of its own
  * box (a flex row whose siblings take part of the parent), so its own width is the room. A
  * form that overflowed is not tried again until the parent grows past the room it failed in,
- * so the control never flips back and forth. The shared `nextFitForm` (`glass-ux/lib/fit-form`)
+ * so the control never flips back and forth. The shared `nextFitForm` (`glass-ux/fit-form`)
  * with the segmented control's forms.
  */
 export function nextSegmentedForm(

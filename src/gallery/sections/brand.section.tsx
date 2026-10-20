@@ -1,6 +1,6 @@
 import { BRAND_SOURCES } from "../fixtures/brand.js"
 import { Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { PALETTES, PALETTE_LABELS } from "../../lib/appearance/appearance.js"
+import { PALETTES, PALETTE_LABELS } from "../../lib/appearance/index.js"
 import { BrandLogo, BrandMark, type BrandTones } from "../../ui/brand/index.js"
 
 const SOURCES = Object.values(BRAND_SOURCES)

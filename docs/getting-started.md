@@ -19,7 +19,8 @@ It does not include the gallery, demos or source maps; the documentation site ha
 If your repository vendors the dependency, commit only the `.tgz` and never an unpacked
 copy. Installation does not compile the library. Use public entries such as `glass-ux/button`
 and `glass-ux/data-table`; the package keeps large component families out of an unrelated
-component's JavaScript bundle.
+component's JavaScript bundle. Only the entries in the package's `exports` resolve: internal
+module paths such as `glass-ux/ui/button/button` do not.
 
 For a new project, install the peer runtimes and the schema library used in the form
 example. An existing project can keep compatible installed versions:

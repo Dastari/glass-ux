@@ -3,7 +3,7 @@ import {
   IconMoreHorizontal,
   IconSettings,
 } from "../../icons/generated/icons.js";
-import { useAppearance } from "../../lib/appearance/use-appearance.js";
+import { useAppearance } from "../../lib/appearance/index.js";
 import { Button } from "../../ui/button/index.js";
 import { Skeleton } from "../../ui/skeleton/index.js";
 import { Slider } from "../../ui/slider/index.js";

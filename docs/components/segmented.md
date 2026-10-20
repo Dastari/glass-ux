@@ -54,7 +54,7 @@ The measurement:
 
 `fitSegmented({ room, full, icons })` and `nextSegmentedForm(shown, …)` are the pure parts,
 unit-tested in `segmented.test.ts`. They are the shared `fitForm` and `nextFitForm`
-(`glass-ux/lib/fit-form`) with the segmented control's forms; `useFitForm` runs the
+(`glass-ux/fit-form`) with the segmented control's forms; `useFitForm` runs the
 measurement for Segmented and SwatchPicker alike.
 
 In a toolbar, put the controls in a `fa-fit-row` and give each a fit class (`fa-fit-1` gives

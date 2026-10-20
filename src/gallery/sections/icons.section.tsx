@@ -33,7 +33,7 @@ import {
   IconViewOnly,
   IconWarning,
 } from "../../icons/generated/icons.js"
-import { iconRegistry } from "../../icons/generated/registry.js"
+import { iconRegistry } from "./icons.kit.js"
 import { DEVICE_BRAND_KEYWORDS, DEVICE_BRAND_NAMES } from "../fixtures/device-brands.js"
 import { Button, ButtonGroup, FEEDBACK_HOLD_MS } from "../../ui/button/index.js"
 import type { IconComponent, IconSize } from "../../ui/icon/index.js"

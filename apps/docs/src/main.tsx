@@ -37,7 +37,7 @@ import { Button } from "glass-ux/button";
 import { ButtonLink } from "glass-ux/button-link";
 import { Dialog } from "glass-ux/dialog";
 import { Popover } from "glass-ux/popover";
-import { usePhoneLayout } from "glass-ux/lib/use-media-query";
+import { usePhoneLayout } from "glass-ux/dialog";
 import { DrawerPlacement, SectionDrawer } from "glass-ux/shell";
 import { BrandMark } from "glass-ux/brand";
 import { DOCUMENTATION_VERSION } from "glass-ux/gallery/release.generated";

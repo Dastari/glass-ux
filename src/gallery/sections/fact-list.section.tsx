@@ -1,5 +1,5 @@
 import { Badge } from "../../ui/badge/index.js";
-import { RelativeTime } from "../../ui/data-table/cells/relative-time.js";
+import { RelativeTime } from "../../ui/data-table/index.js";
 import { FactList } from "../../ui/fact-list/index.js";
 import { SectionPage, Specimen } from "../kit.js";
 

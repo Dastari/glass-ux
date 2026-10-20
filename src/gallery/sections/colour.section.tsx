@@ -2,8 +2,7 @@ import { useEffect, useState } from "react"
 import { contrastRatio } from "../foundations/color-math.js"
 import { Rules, SectionPage, Specimen } from "../kit.js"
 import { IconEndpoint, IconSparkle } from "../../icons/generated/icons.js"
-import { PALETTES, PALETTE_LABELS } from "../../lib/appearance/appearance.js"
-import { useAppearance } from "../../lib/appearance/use-appearance.js"
+import { PALETTES, PALETTE_LABELS, useAppearance } from "../../lib/appearance/index.js"
 import { Button } from "../../ui/button/index.js"
 
 const TEXT_ROLES = [

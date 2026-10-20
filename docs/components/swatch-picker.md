@@ -51,7 +51,7 @@ fits:
   a host. A `collapse` prop on the picker wins.
 - The menu button has the same width whatever the value (it shows no text), so choosing a
   colour never moves the controls beside it. With `value={null}` it shows an empty ring.
-- The measuring is shared with Segmented (`useFitForm` in `glass-ux/lib/fit-form`): the
+- The measuring is shared with Segmented (`useFitForm` in `glass-ux/fit-form`): the
   natural width comes from an off-screen track; the room is the parent's content width, or the
   picker's own width when a flex row squeezes it; a form that overflowed is not tried again
   until the parent grows past the room it failed in, so the picker never flips back and forth.

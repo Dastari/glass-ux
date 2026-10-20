@@ -196,13 +196,15 @@ function SampleWindowBody() {
     </Window.Body>
   );
 }
+// Kinds register once at module scope, never during render: registering notifies every
+// mounted WindowContentHost.
+registerWindowKind({
+  kind: "docs.notes",
+  icon: IconOrganisation,
+  title: () => "Exhibition notes",
+  load: async () => ({ default: SampleWindowBody }),
+});
 function makeWindowDemo() {
-  registerWindowKind({
-    kind: "docs.notes",
-    icon: IconOrganisation,
-    title: () => "Exhibition notes",
-    load: async () => ({ default: SampleWindowBody }),
-  });
   const manager = createWindowManager({ storageKey: null, channelName: null });
   const id = manager.open({ kind: "docs.notes", params: {} });
   return { manager, id };
@@ -1137,14 +1139,14 @@ export function SessionNavSkeletonExample() {
   );
 }
 
+registerWindowKind({
+  kind: "docs.loading",
+  icon: IconOrganisation,
+  title: () => "Exhibition notes",
+  // Never resolves, so the window keeps showing its loading body.
+  load: () => new Promise<never>(() => {}),
+});
 function makeLoadingWindowDemo() {
-  registerWindowKind({
-    kind: "docs.loading",
-    icon: IconOrganisation,
-    title: () => "Exhibition notes",
-    // Never resolves, so the window keeps showing its loading body.
-    load: () => new Promise<never>(() => {}),
-  });
   const manager = createWindowManager({ storageKey: null, channelName: null });
   const id = manager.open({ kind: "docs.loading", params: {} });
   return { manager, id };

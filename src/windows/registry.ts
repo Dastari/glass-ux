@@ -53,7 +53,12 @@ export const DEFAULT_WINDOW_SIZE = { w: 760, h: 520 }
 /** Smallest resizable size, in CSS pixels, for a kind that sets no `minSize`. */
 export const DEFAULT_MIN_WINDOW_SIZE = { w: 320, h: 200 }
 
-/** Register a kind. Re-registering the same kind replaces it (hot reload). */
+/**
+ * Register a kind. Re-registering the same kind replaces it (hot reload).
+ *
+ * Call it at module scope (or in an effect), never during render: registering notifies every
+ * mounted `WindowContentHost`, and React rejects updating another component mid-render.
+ */
 export function registerWindowKind<P extends WindowParams>(definition: WindowKindDefinition<P>) {
   kinds.set(definition.kind, definition as unknown as AnyKind)
   for (const notify of listeners) notify()

@@ -28,6 +28,7 @@ import { IconFullscreen, IconLayers, IconList, IconNetwork, IconZoomIn, IconZoom
 import { resolveActions, type ActionSet } from "../../lib/actions/actions.js"
 import { cx } from "../../lib/cx.js"
 import { observeElementSize } from "../../lib/resize-observer.js"
+import { useSelectedId, type SelectionChangeDetails } from "../../lib/use-selected-id.js"
 import { ActionMenuItems } from "../actions/index.js"
 import { Button } from "../button/index.js"
 import { ContextMenu } from "../context-menu/index.js"
@@ -72,10 +73,16 @@ export interface TopologyCanvasProps<T> {
   renderNode: (node: TopologyNode<T>) => ReactNode
   /** The node's accessible name: "Switch ORB-SW-CORE, Online, wired 1 Gbps to FA-GW01". Default: its label. */
   describeNode?: (node: TopologyNode<T>) => string
-  /** Stable identifier of the selected item. */
+  /** The selected node's id, or null for none. Controlled while defined; leave it undefined to use `defaultSelectedId`. */
   selectedId?: string | null
-  /** Called with the node id the person selects (click, Enter or Space), or `null` to clear: Space on the selected node, Escape, or a click on empty canvas. Pair with `selectedId` to show the selection. */
-  onSelect?: (id: string | null) => void
+  /** The node selected at first when the selection is uncontrolled. */
+  defaultSelectedId?: string | null
+  /**
+   * Called with the node id the person selects (click, Enter or Space), or `null` when they
+   * clear it (Space on the selected node, Escape, or a click on empty canvas), and details
+   * whose `item` is the node. Not called when the id is unchanged.
+   */
+  onSelectedIdChange?: (id: string | null, details: SelectionChangeDetails<TopologyNode<T>>) => void
   /** Double-click (and the caller's Open action): the node's page. */
   onOpen?: (node: TopologyNode<T>) => void
   /** The node's ActionSet for right-click. */
@@ -250,8 +257,9 @@ export function TopologyCanvas<T>({
   clusters,
   renderNode,
   describeNode,
-  selectedId = null,
-  onSelect,
+  selectedId: selectedIdProp,
+  defaultSelectedId,
+  onSelectedIdChange,
   onOpen,
   nodeMenu,
   frameKey,
@@ -278,6 +286,7 @@ export function TopologyCanvas<T>({
   const [metrics, setMetrics] = useState<Partial<TopologyMetrics> | null>(null)
   const [layout, setLayout] = useState<TopologyLayout | null>(null)
   const [activeId, setActiveId] = useState<string | null>(null)
+  const [selectedId, select] = useSelectedId(selectedIdProp, defaultSelectedId, onSelectedIdChange)
   const [showMinimap, setShowMinimap] = useState(minimap)
   const [menuNode, setMenuNode] = useState<TopologyNode<T> | null>(null)
   const fitted = useRef<unknown>(Symbol("unfitted"))
@@ -557,12 +566,13 @@ export function TopologyCanvas<T>({
     }
     if ((event.key === "Enter" || event.key === " ") && nodeId) {
       event.preventDefault()
-      onSelect?.(nodeId === selectedId && event.key === " " ? null : nodeId)
+      const next = nodeId === selectedId && event.key === " " ? null : nodeId
+      select(next, { reason: "item-press", event: event.nativeEvent, item: next ? (byId.get(next) ?? null) : null })
       return
     }
     if (event.key === "Escape" && selectedId) {
       event.preventDefault()
-      onSelect?.(null)
+      select(null, { reason: "escape-key", event: event.nativeEvent, item: null })
       return
     }
     if (event.metaKey || event.ctrlKey || event.altKey) return
@@ -665,8 +675,8 @@ export function TopologyCanvas<T>({
     const id = nodeOf(event)
     if (id) {
       setActiveId(id)
-      onSelect?.(id)
-    } else if (selectedId) onSelect?.(null)
+      select(id, { reason: "item-press", event: event.nativeEvent, item: byId.get(id) ?? null })
+    } else if (selectedId) select(null, { reason: "outside-press", event: event.nativeEvent, item: null })
   }
   const onDoubleClick = (event: MouseEvent<HTMLDivElement>) => {
     const id = nodeOf(event)

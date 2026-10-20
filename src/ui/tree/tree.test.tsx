@@ -22,6 +22,56 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+describe("selection", () => {
+  const nodes = [
+    {
+      id: "g",
+      label: "Group",
+      children: [
+        { id: "a", label: "Alpha" },
+        { id: "b", label: "Beta" },
+      ],
+    },
+  ];
+  const row = (view: ReturnType<typeof render>, id: string) =>
+    view.container.querySelector<HTMLElement>(`[data-row-id="${id}"]`)!;
+
+  it("selects an endpoint on its own when uncontrolled", () => {
+    const onSelectedIdChange = vi.fn();
+    const view = render(
+      <Tree nodes={nodes} aria-label="Nodes" defaultExpanded={["g"]} defaultSelectedId="a" onSelectedIdChange={onSelectedIdChange} />,
+    );
+    expect(row(view, "a")).toHaveAttribute("aria-selected", "true");
+    fireEvent.click(row(view, "b"));
+    expect(row(view, "b")).toHaveAttribute("aria-selected", "true");
+    expect(row(view, "a")).toHaveAttribute("aria-selected", "false");
+    expect(onSelectedIdChange).toHaveBeenCalledTimes(1);
+    const [id, details] = onSelectedIdChange.mock.calls[0]!;
+    expect(id).toBe("b");
+    expect(details.reason).toBe("item-press");
+    expect(details.item).toBe(nodes[0]!.children[1]);
+    expect(details.event).toBeInstanceOf(MouseEvent);
+    // A group toggles and the selected endpoint reports nothing.
+    fireEvent.click(row(view, "b"));
+    fireEvent.click(row(view, "g"));
+    expect(onSelectedIdChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("follows selectedId when controlled, reports Enter with its key event and clears with null", () => {
+    const onSelectedIdChange = vi.fn();
+    const view = render(<Tree nodes={nodes} aria-label="Nodes" defaultExpanded={["g"]} selectedId="a" onSelectedIdChange={onSelectedIdChange} />);
+    fireEvent.focus(row(view, "b"));
+    fireEvent.keyDown(view.getByRole("tree"), { key: "Enter" });
+    expect(onSelectedIdChange).toHaveBeenCalledWith("b", expect.objectContaining({ reason: "item-press", item: nodes[0]!.children[1] }));
+    expect(onSelectedIdChange.mock.calls[0]![1].event).toBeInstanceOf(KeyboardEvent);
+    // The parent has not accepted it yet.
+    expect(row(view, "a")).toHaveAttribute("aria-selected", "true");
+    expect(row(view, "b")).toHaveAttribute("aria-selected", "false");
+    view.rerender(<Tree nodes={nodes} aria-label="Nodes" defaultExpanded={["g"]} selectedId={null} onSelectedIdChange={onSelectedIdChange} />);
+    expect(view.container.querySelector('[aria-selected="true"]')).toBeNull();
+  });
+});
+
 describe("large tree virtualization", () => {
   it("does not revisit every node on scroll and preserves changed node order", () => {
     let reads = 0;

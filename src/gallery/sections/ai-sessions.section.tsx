@@ -152,7 +152,7 @@ export default function AiSessionsSection() {
                 <SessionNav
                   sessions={SESSIONS}
                   projects={PROJECTS}
-                  activeId="s-cedar-annex"
+                  defaultSelectedId="s-cedar-annex"
                   counts={{ conversations: 8, archived: 2 }}
                   onNewChat={() => {}}
                   onRename={() => {}}

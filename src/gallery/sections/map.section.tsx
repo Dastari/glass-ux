@@ -74,7 +74,7 @@ function LiveMap({ id, config = DEMO_MAP_CONFIG, points = POINTS, className = "g
         regions={regions}
         points={points}
         selectedId={selected}
-        onSelect={(point) => setSelected(point?.id ?? null)}
+        onSelectedIdChange={setSelected}
         renderPopup={(point) => <PointPopup point={point} />}
       />
     </div>

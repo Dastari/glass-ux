@@ -44,6 +44,7 @@ export {
   type StatusCounts,
 } from "./cluster.js"
 export { PinMap, type PinMapProps, type PinPoint } from "./pin-map.js"
+export type { SelectionChangeDetails, SelectionChangeReason } from "../../lib/use-selected-id.js"
 export { boxContains, boxOfPoints, projectBox, projectX, projectY, ringsOf, ringsToPath, viewBoxOf } from "./projection.js"
 export { loadRegion, regionUrl, useMapRegion, useMapRegions } from "./regions.js"
 export { createMapStyle, pointsToGeoJSON, type MapStyleInput, type MapTheme } from "./style.js"

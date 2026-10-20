@@ -26,6 +26,7 @@ import { createPortal } from "react-dom"
 import { IconClose, IconGlobe, IconHome, IconInfo, IconList, IconMapPin, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { observeElementSize } from "../../lib/resize-observer.js"
+import { useSelectedId, type SelectionChangeDetails } from "../../lib/use-selected-id.js"
 import { Button } from "../button/index.js"
 import { Menu } from "../menu/index.js"
 import { Popover } from "../popover/index.js"
@@ -102,10 +103,17 @@ export interface GeoMapProps<T> {
   frame?: MapFrame
   /** Re-frame when this changes (a new scope, a new home region). */
   frameKey?: string
-  /** Stable identifier of the selected item. */
+  /** The selected point's id, or null for none. Controlled while defined; leave it undefined to use `defaultSelectedId`. */
   selectedId?: string | null
-  /** Called with the point whose popup the person pins: a click, Enter or Space on its marker, or choosing it from a cluster popup. Hover and focus previews do not call it. Pair with `selectedId` to show the selection. */
-  onSelect?: (point: MapPoint<T> | null) => void
+  /** The point selected at first when the selection is uncontrolled. */
+  defaultSelectedId?: string | null
+  /**
+   * Called with the id of the point whose popup the person pins (a click, Enter or Space on
+   * its marker, or choosing it from a cluster popup or the off-screen list), and details
+   * whose `item` is the point. Hover and focus previews, and pinning the point already
+   * selected, do not call it.
+   */
+  onSelectedIdChange?: (id: string | null, details: SelectionChangeDetails<MapPoint<T>>) => void
   /** Renders details for an individual map point. */
   renderPopup: (point: MapPoint<T>, context: MapPopupContext) => ReactNode
   /** Renders details for an aggregate map cluster. */
@@ -231,8 +239,8 @@ interface MarkerProps {
   pulse: number
   /** Called with the key event and the marker's slot: arrow keys move to the nearest marker in that direction, Enter or Space pins the popup, Escape closes it. */
   onKeyDown: (event: KeyboardEvent<HTMLButtonElement>, slot: MarkerSlot) => void
-  /** Called with the marker's slot on click: a point pins its popup, a cluster zooms in until it splits. */
-  onActivate: (slot: MarkerSlot) => void
+  /** Called with the marker's slot and the click event: a point pins its popup, a cluster zooms in until it splits. */
+  onActivate: (slot: MarkerSlot, event: Event) => void
   /** Called with the marker's slot when the pointer enters it and `null` when it leaves; opens or closes the preview after a short delay. */
   onHover: (slot: MarkerSlot | null) => void
   /** Called with the marker's slot when it takes focus; makes it the tab stop and previews its popup unless one is pinned. */
@@ -259,7 +267,7 @@ function MarkerButton({ slot, label, text, status, counts, selected, active, ope
       aria-pressed={cluster ? undefined : selected}
       aria-haspopup="dialog"
       aria-expanded={open}
-      onClick={() => onActivate(slot)}
+      onClick={(event) => onActivate(slot, event.nativeEvent)}
       onKeyDown={(event) => onKeyDown(event, slot)}
       onPointerEnter={() => onHover(slot)}
       onPointerLeave={() => onHover(null)}
@@ -382,8 +390,9 @@ export function GeoMap<T>({
   loading = false,
   frame: frameProp = "home",
   frameKey,
-  selectedId = null,
-  onSelect,
+  selectedId: selectedIdProp,
+  defaultSelectedId,
+  onSelectedIdChange,
   renderPopup,
   renderClusterPopup,
   pulses,
@@ -438,8 +447,9 @@ export function GeoMap<T>({
   const frameBoxKey = frameBox.join(",")
 
   // Latest values for engine callbacks, which are bound once.
-  const latest = useRef({ points, byId, onSelect, popup, frameBox })
-  latest.current = { points, byId, onSelect, popup, frameBox }
+  const [selectedId, select] = useSelectedId(selectedIdProp, defaultSelectedId, onSelectedIdChange)
+  const latest = useRef({ points, byId, popup, frameBox })
+  latest.current = { points, byId, popup, frameBox }
 
   const styleInput = useRef<Omit<MapStyleInput, "theme"> | null>(null)
   styleInput.current = { basemap: config.basemap, origin: typeof window === "undefined" ? undefined : window.location.href, home: home ?? null, regions, points: geojson }
@@ -729,15 +739,15 @@ export function GeoMap<T>({
 
   /* Pointer and keyboard on markers. */
   const pinPoint = useCallback(
-    (id: string, fromKeyboard: boolean) => {
+    (id: string, fromKeyboard: boolean, event: Event) => {
       const point = latest.current.byId.get(id)
       if (!point) return
       focusPopupRef.current = fromKeyboard
       returnFocusRef.current = pointKey(id)
       setPopup({ key: pointKey(id), pinned: true })
-      latest.current.onSelect?.(point)
+      select(id, { reason: "item-press", event, item: point })
     },
-    []
+    [select]
   )
 
   const zoomIntoCluster = useCallback(async (slot: MarkerSlot) => {
@@ -750,10 +760,10 @@ export function GeoMap<T>({
   }, [config.maxZoom])
 
   const onActivate = useCallback(
-    (slot: MarkerSlot) => {
+    (slot: MarkerSlot, event: Event) => {
       window.clearTimeout(hoverTimer.current)
       setActiveKey(slot.key)
-      if (slot.kind === "point") pinPoint(slot.id, false)
+      if (slot.kind === "point") pinPoint(slot.id, false, event)
       else void zoomIntoCluster(slot)
     },
     [pinPoint, zoomIntoCluster]
@@ -772,7 +782,7 @@ export function GeoMap<T>({
       }
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault()
-        if (slot.kind === "point") pinPoint(slot.id, true)
+        if (slot.kind === "point") pinPoint(slot.id, true, event.nativeEvent)
         else {
           focusPopupRef.current = true
           setPopup({ key: slot.key, pinned: true })
@@ -827,15 +837,15 @@ export function GeoMap<T>({
     onFrame.current = false
     engineRef.current?.zoomBy(delta, cameraMove(rootRef.current))
   }
-  const flyToPoint = useCallback((point: MapPoint<T>) => {
+  const flyToPoint = useCallback((point: MapPoint<T>, event?: Event) => {
     const engine = engineRef.current
     if (!engine) return
     onFrame.current = false
     engine.flyTo(point.lng, point.lat, Math.max(engine.zoom(), 11), cameraMove(rootRef.current))
     focusPopupRef.current = false
     setPopup({ key: pointKey(point.id), pinned: true })
-    latest.current.onSelect?.(point)
-  }, [])
+    select(point.id, { reason: "item-press", event, item: point })
+  }, [select])
 
   const resetLabel = frame === "points" && pointsBox ? `Show all ${points.length.toLocaleString("en-AU")} ${points.length === 1 ? noun.one : noun.other}` : home ? `Reset to ${home.properties.name}` : "Reset view"
 
@@ -1000,7 +1010,7 @@ export function GeoMap<T>({
                   </Menu.Item>
                   <Menu.Separator />
                   {outside.slice(0, 12).map((point) => (
-                    <Menu.Item key={point.id} icon={<span className="fa-map-menu-dot" data-status={point.status} aria-hidden />} trail={point.description} onClick={() => flyToPoint(point)}>
+                    <Menu.Item key={point.id} icon={<span className="fa-map-menu-dot" data-status={point.status} aria-hidden />} trail={point.description} onClick={(event) => flyToPoint(point, event.nativeEvent)}>
                       {point.label}
                     </Menu.Item>
                   ))}

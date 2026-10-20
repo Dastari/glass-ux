@@ -1,4 +1,5 @@
 export { TopologyCanvas, TopologyCanvasSkeleton, TopologySkeleton, TopologyViewToggle, type TopologyCanvasProps, type TopologyInsets, type TopologyNodeMenu, type TopologyView } from "./topology.js"
+export type { SelectionChangeDetails, SelectionChangeReason } from "../../lib/use-selected-id.js"
 export { clusterLabel } from "./label.js"
 export { indexTopology, moveFocus, type TopologyIndex, type TopologyMove, type TopologyRowEntry } from "./nav.js"
 export { formatLinkSpeed, speedRange } from "./speed.js"

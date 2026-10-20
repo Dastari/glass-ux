@@ -88,7 +88,7 @@ function DemoMap({ nodes, minimap = true, listable = false }: { nodes: TopologyN
       renderNode={renderNode}
       describeNode={describe}
       selectedId={selected}
-      onSelect={setSelected}
+      onSelectedIdChange={setSelected}
       nodeMenu={menu}
       minimap={minimap}
       view={view}

@@ -150,12 +150,23 @@ test("the supplied brand mark, favicon and sharing image load under the deployme
   // The drawer's mark follows the selected palette.
   await expect(logo).toHaveAttribute("data-tones", "palette");
   expect(await logo.locator("linearGradient").count()).toBe(2);
+  // The SVG favicon, its PNG fallback and the touch icon all resolve under the base path.
   const icons = await page
-    .locator("link[rel='icon']")
-    .evaluate((element) => (element as HTMLLinkElement).href);
-  const favicon = await page.request.get(icons);
-  expect(favicon.ok()).toBe(true);
-  expect(await favicon.text()).toContain("glass-ux-logo-primary");
+    .locator("link[rel='icon'], link[rel='apple-touch-icon']")
+    .evaluateAll((elements) =>
+      elements.map((element) => ({
+        type: element.getAttribute("type"),
+        href: (element as HTMLLinkElement).href,
+      })),
+    );
+  expect(icons.map((icon) => icon.type)).toEqual(["image/svg+xml", "image/png", null]);
+  for (const icon of icons) {
+    expect(new URL(icon.href).pathname).toMatch(/^\/glass-ux\/brand\//);
+    const response = await page.request.get(icon.href);
+    expect(response.ok(), icon.href).toBe(true);
+    if (icon.type === "image/svg+xml") expect(await response.text()).toContain("glass-ux-logo-primary");
+    else expect(response.headers()["content-type"]).toContain("image/png");
+  }
   const sharing = await page
     .locator("meta[property='og:image']")
     .getAttribute("content");

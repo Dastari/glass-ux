@@ -374,6 +374,10 @@
       "types": "./dist/lib/appearance/index.d.ts",
       "import": "./dist/lib/appearance/index.js"
     },
+    "./locale": {
+      "types": "./dist/lib/locale/index.d.ts",
+      "import": "./dist/lib/locale/index.js"
+    },
     "./icons": {
       "types": "./dist/icons/generated/icons.d.ts",
       "import": "./dist/icons/generated/icons.js"

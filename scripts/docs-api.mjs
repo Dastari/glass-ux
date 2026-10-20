@@ -45,6 +45,11 @@ entries.push({
   family: "appearance",
 });
 entries.push({
+  file: "src/lib/locale/index.ts",
+  entry: "glass-ux/locale",
+  family: "locale",
+});
+entries.push({
   file: "src/icons/generated/icons.tsx",
   entry: "glass-ux/icons",
   family: "icons",
@@ -299,6 +304,7 @@ const sectionByFamily = {
   actions: "actions",
   "data-table": "data-table",
   appearance: "knobs",
+  locale: "locale",
   skeleton: "typography",
   "truncated-text": "tooltip",
 };

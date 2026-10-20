@@ -71,8 +71,8 @@ export async function generateComponentDemos(program, checker, components) {
   const symbols = new Map(
     components.map((c) => {
       const file =
-        c.family === "appearance"
-          ? "src/lib/appearance/index.ts"
+        c.family === "appearance" || c.family === "locale"
+          ? `src/lib/${c.family}/index.ts`
           : ["ai", "shell", "windows"].includes(c.family)
             ? `src/${c.family}/index.ts`
             : `src/ui/${c.family}/index.ts`;

@@ -65,6 +65,8 @@ has upgrade steps in the [migration guide](docs/migration.md).
   while rendering a different component" warning: their window kinds register at module
   scope. `registerWindowKind` documents that it must not be called during render.
 - `DateField` rewrites its text when the locale changes.
+- An AI table result shows an entity reference as its chip in any column. A column without
+  `type: "entity"` showed it as "[object Object]".
 
 ### Changed
 

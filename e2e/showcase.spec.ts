@@ -164,6 +164,8 @@ test("project actions are shared by the row menu, sheet header and command palet
 test("assistant streams, stops, and adds an approved checklist to the phone @responsive", async ({
   page,
 }) => {
+  // The reply streams on a timer: hold the clock so Stop always lands mid-stream.
+  await page.clock.install();
   await page.goto("./#assistant");
   const assistant = page.getByTestId("studio-assistant");
   const phone = page.getByTestId("mobile-preview");
@@ -176,6 +178,7 @@ test("assistant streams, stops, and adds an approved checklist to the phone @res
   const offset = async () =>
     (await firstTask.boundingBox())!.y - (await phone.boundingBox())!.y;
   const before = await offset();
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 1000);
   await assistant
     .getByRole("button", { name: "Prepare a review checklist", exact: true })
     .click();
@@ -188,6 +191,10 @@ test("assistant streams, stops, and adds an approved checklist to the phone @res
   await expect(
     assistant.getByRole("button", { name: "Stop response", exact: true }),
   ).toHaveCount(0);
+  await expect(
+    assistant.locator("[data-role='assistant'][data-state='cancelled']"),
+  ).toHaveCount(1);
+  await page.clock.resume();
   await assistant
     .getByRole("button", { name: "Prepare a review checklist", exact: true })
     .click();
@@ -243,6 +250,7 @@ test("assistant streams, stops, and adds an approved checklist to the phone @res
   await assistant.getByRole("button", { name: "Send", exact: true }).click();
   await expect(input).toHaveValue("");
   await expect(assistant).toContainText("2 projects are complete");
+  await expect(assistant).not.toContainText("[object Object]");
   await expect(
     assistant.getByRole("button", { name: "Stop response", exact: true }),
   ).toHaveCount(0);

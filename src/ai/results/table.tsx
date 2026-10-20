@@ -56,13 +56,9 @@ function Cell({
 }) {
   if (value === null || value === undefined) return EMPTY_CELL;
   if (isRedacted(value)) return <Redacted value={value} />;
+  // An entity reads as its chip in any column, so an untyped column never shows "[object Object]".
+  if (isEntity(value)) return <EntityChip entity={value} variant="plain" />;
   switch (column.type) {
-    case "entity":
-      return isEntity(value) ? (
-        <EntityChip entity={value} variant="plain" />
-      ) : (
-        <TextCell>{String(value)}</TextCell>
-      );
     case "status":
       return <StatusBadge status={String(value) as StatusKind} size="sm" />;
     case "badge":

@@ -159,6 +159,18 @@ test("on touch a long press lifts a card and a quick swipe scrolls instead @resp
   await touch("touchEnd", 0, 0);
   await expect(page.locator(".fa-dnd-ghost")).toHaveCount(0);
   await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).not.toBe(before);
+  // The swipe can fling: measure the card only once the page has stopped moving.
+  await expect
+    .poll(() =>
+      scroller.evaluate(
+        (element) =>
+          new Promise<boolean>((resolve) => {
+            const top = element.scrollTop;
+            setTimeout(() => resolve(element.scrollTop === top), 150);
+          }),
+      ),
+    )
+    .toBe(true);
 
   // Hold still, then carry it to Done.
   await card.scrollIntoViewIfNeeded();

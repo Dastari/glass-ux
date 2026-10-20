@@ -327,7 +327,12 @@ function StudioAssistant({
                       title: "Completed projects",
                       source: "Meridian Studio · sample data",
                       columns: [
-                        { key: "project", header: "Project", priority: 1 },
+                        {
+                          key: "project",
+                          header: "Project",
+                          type: "entity",
+                          priority: 1,
+                        },
                         { key: "owner", header: "Lead", priority: 2 },
                         {
                           key: "hours",

@@ -16,6 +16,8 @@ for (const [root, child] of [
   test(`${root} includes related examples, navigation and APIs after a direct child link @responsive`, async ({
     page,
   }) => {
+    // A whole family page with an axe scan: the data-table family takes over 20 s of axe alone on CI.
+    test.slow();
     const family = componentFamilies.find((item) => item.id === root)!;
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));

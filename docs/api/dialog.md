@@ -60,7 +60,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | finalFocus | `boolean \| RefObject<HTMLElement \| null> \| ((closeType: import("@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | See type | no | — | The element or behaviour to focus when the overlay closes. |
-| initialFocus | `boolean \| RefObject<HTMLElement \| null> \| ((openType: import("@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | See type | no | — | The element or behaviour to focus when the overlay opens. |
+| initialFocus | `boolean \| RefObject<HTMLElement \| null> \| ((openType: import("@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | See type | no | — | The element or behaviour to focus when the overlay opens. By default a keyboard open focuses the first control outside the header close button (or the popup), and a touch open focuses the popup. |
 | kind | `DialogKind \| undefined` | "dialog", "palette", "alert", "side", "settings" | no | — | `settings` fixes the height so switching sections never resizes the dialog. |
 | size | `DialogSize \| undefined` | "full", "sm", "md", "lg", "xl" | no | — | sm 400 · md 560 · lg 760 · xl 1040 · full. Ignored by phone sheets (full width). |
 

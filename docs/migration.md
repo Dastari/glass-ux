@@ -3,6 +3,16 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.0 → 0.9.1
+
+No code changes are required.
+
+- Browser tests that open a dialog from the keyboard and expect focus on the header close
+  button should expect the first control instead (in a `SettingsDialog`, the current
+  section's tab). Pass `initialFocus` to keep another target.
+- A test that pressed Escape twice, once for a tooltip and once for its dialog, needs one
+  press now.
+
 ## 0.8.3 → 0.9.0
 
 0.9.0 removes the gallery and the deep import paths from the package, makes the formatting

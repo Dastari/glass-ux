@@ -146,7 +146,7 @@ export interface DialogPopupProps {
   kind?: DialogKind
   className?: string
   children?: ReactNode
-  /** The element or behaviour to focus when the overlay opens. */
+  /** The element or behaviour to focus when the overlay opens. By default a keyboard open focuses the first control outside the header close button (or the popup), and a touch open focuses the popup. */
   initialFocus?: ComponentProps<typeof BaseDialog.Popup>["initialFocus"]
   /** The element or behaviour to focus when the overlay closes. */
   finalFocus?: ComponentProps<typeof BaseDialog.Popup>["finalFocus"]
@@ -161,6 +161,24 @@ interface SurfaceProps extends DialogPopupProps {
   edge?: "left" | "right" | "bottom"
 }
 
+const TABBABLE = 'a[href], button, input, select, textarea, summary, [tabindex], [contenteditable="true"]'
+
+/**
+ * Where a centred dialog puts focus when it opens by keyboard: its first tabbable control
+ * outside the header close button, else the popup. On the close button its focus-visible
+ * tooltip would show at once, and Escape would read as dismissing that before the dialog.
+ * A touch open focuses the popup, so no on-screen keyboard rises (Base UI's default).
+ */
+function initialDialogFocus(popup: HTMLElement | null, interaction: string) {
+  if (!popup || interaction === "touch") return popup
+  for (const element of popup.querySelectorAll<HTMLElement>(TABBABLE)) {
+    if (element.tabIndex < 0 || element.matches(":disabled") || !element.getClientRects().length) continue
+    if (element.closest(".fa-dialog-close, [inert], [hidden]")) continue
+    return element
+  }
+  return popup
+}
+
 /**
  * Backdrop + viewport + glass popup, for every modal surface (Dialog, AlertDialog,
  * Sheet, the command palette). Internal; consumers use Dialog.Popup.
@@ -172,8 +190,10 @@ export function DialogSurface({
   size = "md",
   className,
   children,
+  initialFocus,
   ...rest
 }: SurfaceProps) {
+  const popupRef = useRef<HTMLDivElement>(null)
   const [edges, setEdgeState] = useState({ top: false, bottom: false })
   const frame = useMemo<FrameValue>(
     () => ({
@@ -201,6 +221,7 @@ export function DialogSurface({
             <Drawer.Popup
               {...rest}
               {...data}
+              initialFocus={initialFocus}
               data-edge={edge}
               className={cx("glass-overlay fa-dialog", className)}
             >
@@ -221,6 +242,7 @@ export function DialogSurface({
             <Drawer.Popup
               {...rest}
               {...data}
+              initialFocus={initialFocus}
               data-sheet=""
               className={cx("glass-overlay fa-dialog", className)}
             >
@@ -240,6 +262,8 @@ export function DialogSurface({
           <BaseDialog.Popup
             {...rest}
             {...data}
+            ref={popupRef}
+            initialFocus={initialFocus ?? ((interaction) => initialDialogFocus(popupRef.current, interaction))}
             className={cx("glass-overlay fa-dialog", className)}
           >
             {content}

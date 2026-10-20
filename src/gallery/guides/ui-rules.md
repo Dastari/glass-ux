@@ -261,7 +261,10 @@ follows a fine pointer and a glint on the rim nearest it.
 ## R13 · Overlays
 
 - **R13.1** Overlays emerge from their anchor and leave quickly (R18); focus returns to the
-  trigger when they close.
+  trigger when they close. One Escape closes the topmost overlay: a tooltip showing on a
+  focused control closes with it and never takes the press for itself. A dialog opened from
+  the keyboard focuses its first control (a settings dialog, its current section), not the
+  header close button.
 - **R13.2** Settings dialogs follow one pattern: a header with icon tile, title and data
   subtitle; a rail of sections beside a scrolling pane; a pinned footer. The dialog's height
   is fixed, so switching sections never resizes it.

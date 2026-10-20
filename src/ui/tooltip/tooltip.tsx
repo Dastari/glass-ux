@@ -109,7 +109,10 @@ export function Tooltip({
       disabled={!enabled}
       disableHoverablePopup
       open={open}
-      onOpenChange={(next) => {
+      onOpenChange={(next, details) => {
+        // Escape closes the tooltip and carries on to the layer around it (a dialog, popover
+        // or menu), so a tooltip shown on focus never costs an extra press.
+        if (!next && details.reason === "escape-key") details.allowPropagation()
         setShown(next)
         onOpenChange?.(next)
       }}

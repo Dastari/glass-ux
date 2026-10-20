@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from "react"
 import { VerticalTabs, type VerticalTabItem } from "../vertical-tabs/index.js"
-import { Dialog, useDialogScrollEdges, type DialogSize } from "./dialog.js"
+import { Dialog, useDialogScrollEdges, type DialogPopupProps, type DialogSize } from "./dialog.js"
 import { useDialogGuard } from "./use-dialog-guard.js"
 
 export interface SettingsSection extends VerticalTabItem {
@@ -36,6 +36,8 @@ export interface SettingsDialogProps {
   /** Called when the person confirms discarding unsaved changes, just before the dialog closes; revert the form here. */
   onDiscard?: () => void
   size?: Extract<DialogSize, "lg" | "xl">
+  /** The element or behaviour to focus when the dialog opens (Base UI `initialFocus`). By default a keyboard open focuses the current section's tab, and a touch open the dialog itself. */
+  initialFocus?: DialogPopupProps["initialFocus"]
 }
 
 /**
@@ -61,6 +63,7 @@ export function SettingsDialog({
   dirty = false,
   onDiscard,
   size = "xl",
+  initialFocus,
 }: SettingsDialogProps) {
   const [uncontrolled, setUncontrolled] = useState(false)
   const open = openProp ?? uncontrolled
@@ -73,7 +76,7 @@ export function SettingsDialog({
   return (
     <Dialog.Root {...guard.rootProps}>
       {trigger ? <Dialog.Trigger render={trigger} /> : null}
-      <Dialog.Popup size={size} kind="settings">
+      <Dialog.Popup size={size} kind="settings" initialFocus={initialFocus}>
         <Dialog.Header icon={icon} title={title} subtitle={subtitle} />
         <SettingsSections sections={sections} section={section} defaultSection={defaultSection} onSectionChange={onSectionChange} label={typeof title === "string" ? `${title} sections` : "Sections"} />
         <Dialog.Footer start={footerStart}>{footer}</Dialog.Footer>

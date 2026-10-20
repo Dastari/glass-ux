@@ -4,6 +4,22 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.1
+
+### Fixed
+
+- A dialog opened from the keyboard closes with one Escape. Its initial focus was the
+  header close button, whose focus-visible "Close" tooltip took the Escape, so the dialog
+  stayed open. A keyboard open now focuses the first control outside the close button (in
+  `SettingsDialog`, the current section's tab), or the dialog itself when it has none. A
+  touch open still focuses the dialog itself.
+- Escape on a control with a tooltip showing closes the tooltip and carries on to the
+  dialog, popover or menu around it, so one press dismisses both.
+
+### Added
+
+- `SettingsDialog` takes `initialFocus`, as `Dialog.Popup` does.
+
 ## 0.9.0
 
 ### Breaking changes

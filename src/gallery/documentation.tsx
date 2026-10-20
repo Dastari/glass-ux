@@ -31,10 +31,17 @@ interface Api {
   entry: string;
   description: string;
   props?: Prop[];
+  /** Whether the component also accepts its element's standard HTML attributes, which are not listed. */
+  htmlAttributes?: boolean;
   /** Icons supplied for the supported choices. */
   icons?: Array<{ name: string; description: string }>;
   /** Overrides for named content slots. */
-  slots: Array<{ name: string; description: string; props: Prop[] }>;
+  slots: Array<{
+    name: string;
+    description: string;
+    props: Prop[];
+    htmlAttributes?: boolean;
+  }>;
 }
 const apiPromises = new Map<string, Promise<Api>>();
 function loadApi(id: string) {
@@ -51,7 +58,15 @@ function loadApi(id: string) {
   return promise;
 }
 
-function Props({ props, label }: { props: Prop[]; label: string }) {
+function Props({
+  props,
+  label,
+  htmlAttributes = false,
+}: {
+  props: Prop[];
+  label: string;
+  htmlAttributes?: boolean;
+}) {
   const own = props.filter((prop) => !prop.inherited);
   const inherited = props.filter((prop) => prop.inherited);
   const table = (rows: Prop[], inherited = false) => (
@@ -103,11 +118,15 @@ function Props({ props, label }: { props: Prop[]; label: string }) {
       {table(own)}
       {inherited.length ? (
         <details>
-          <summary>
-            Inherited React and DOM properties ({inherited.length})
-          </summary>
+          <summary>Inherited properties ({inherited.length})</summary>
           {table(inherited, true)}
         </details>
+      ) : null}
+      {htmlAttributes ? (
+        <p>
+          Also accepts the element’s standard HTML attributes and React DOM
+          events.
+        </p>
       ) : null}
     </>
   );
@@ -171,14 +190,24 @@ export function ApiReference({
             wrap
             maxLines={0}
           />
-          {api.props ? <Props props={api.props} label={api.name} /> : null}
+          {api.props ? (
+            <Props
+              props={api.props}
+              label={api.name}
+              htmlAttributes={api.htmlAttributes}
+            />
+          ) : null}
           {api.slots.map((slot) => (
             <section key={slot.name}>
               <SlotHeading id={`${headingId}-${slot.name.toLowerCase()}`}>
                 {api.name}.{slot.name}
               </SlotHeading>
               {slot.description ? <p>{slot.description}</p> : null}
-              <Props props={slot.props} label={`${api.name}.${slot.name}`} />
+              <Props
+                props={slot.props}
+                label={`${api.name}.${slot.name}`}
+                htmlAttributes={slot.htmlAttributes}
+              />
             </section>
           ))}
         </>

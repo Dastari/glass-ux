@@ -10,7 +10,13 @@ import {
 } from "node:fs";
 import { join } from "node:path";
 import { generateComponentDemos } from "./component-demos.mjs";
-import { literalOptions } from "./docs-api-options.mjs";
+import {
+  HTML_ATTRIBUTES_NOTE,
+  listsProp,
+  literalOptions,
+  packageTypePaths,
+  propOrigin,
+} from "./docs-api-options.mjs";
 
 const config = ts.readConfigFile("tsconfig.json", ts.sys.readFile);
 writeFileSync(
@@ -163,26 +169,35 @@ function signatureApi(type, at) {
     ...defaults(sig.getDeclaration()),
     ...defaults(sourceFunction(at)),
   };
+  // Standard React DOM attributes (declared in @types/react) are summarised by a note rather
+  // than listed: a Base UI trigger otherwise carries some 290 of them.
+  let htmlAttributes = false;
   const props = parameterType
     ? checker
         .getPropertiesOfType(parameterType)
+        .filter((prop) => {
+          const declaration =
+            prop.valueDeclaration ?? prop.declarations?.[0] ?? at;
+          const origin = propOrigin(declaration.getSourceFile().fileName);
+          if (origin === "react-dom") htmlAttributes = true;
+          return listsProp(origin, prop.getName());
+        })
         .map((prop) => {
           const declaration =
             prop.valueDeclaration ?? prop.declarations?.[0] ?? at;
-          const file = declaration
-            .getSourceFile()
-            .fileName.replaceAll("\\", "/");
-          const own =
-            file.includes("/src/") && !file.includes("/node_modules/");
+          const origin = propOrigin(declaration.getSourceFile().fileName);
+          const own = origin === "glass-ux";
           const name = prop.getName();
           const propType = checker.getTypeOfSymbolAtLocation(prop, declaration);
           const options = literalOptions(propType);
           return {
             name,
-            type: checker.typeToString(
-              propType,
-              declaration,
-              ts.TypeFormatFlags.NoTruncation,
+            type: packageTypePaths(
+              checker.typeToString(
+                propType,
+                declaration,
+                ts.TypeFormatFlags.NoTruncation,
+              ),
             ),
             options,
             required: !(prop.flags & ts.SymbolFlags.Optional),
@@ -193,9 +208,11 @@ function signatureApi(type, at) {
               // Own props must be documented at their declaration; check-docs fails otherwise.
               (own
                 ? ""
-                : /^on[A-Z]/.test(name)
-                  ? "Native React DOM event handler."
-                  : "Native React DOM property. Its accepted values are specified by the type."),
+                : origin !== "react-dom"
+                  ? "Inherited from the underlying primitive. Its accepted values are specified by the type."
+                  : /^on[A-Z]/.test(name)
+                    ? "Native React DOM event handler."
+                    : "Native React DOM property. Its accepted values are specified by the type."),
             inherited: !own,
           };
         })
@@ -212,6 +229,8 @@ function signatureApi(type, at) {
       ts.TypeFormatFlags.NoTruncation,
     ),
     props,
+    // Accepts the element's standard HTML attributes, which are not listed in props.
+    htmlAttributes,
   };
 }
 for (const entry of entries) {
@@ -399,23 +418,31 @@ writeFileSync(
 );
 
 for (const c of components) {
-  const table = (props) =>
+  const rows = (props) =>
     [
       "| Prop | Type | Valid options | Required | Default | Description |",
       "| --- | --- | --- | --- | --- | --- |",
-      ...props
-        .filter((p) => !p.inherited)
-        .map(
-          (p) =>
-            `| ${p.name} | \`${p.type.replaceAll("|", "\\|")}\` | ${p.options.map((value) => JSON.stringify(value)).join(", ") || "See type"} | ${p.required ? "yes" : "no"} | ${p.default ?? "—"} | ${p.description.replaceAll("\n", " ")} |`,
-        ),
+      ...props.map(
+        (p) =>
+          `| ${p.name} | \`${p.type.replaceAll("|", "\\|")}\` | ${p.options.map((value) => JSON.stringify(value)).join(", ") || "See type"} | ${p.required ? "yes" : "no"} | ${p.default ?? "—"} | ${p.description.replaceAll("\n", " ")} |`,
+      ),
     ].join("\n");
+  // The same props as the online API page: own props, then inherited Base UI and documented
+  // React props, then a note for the standard HTML attributes neither lists.
+  const table = ({ props, htmlAttributes }) => {
+    const own = props.filter((p) => !p.inherited);
+    const inherited = props.filter((p) => p.inherited);
+    return [
+      rows(own),
+      ...(inherited.length ? ["Inherited properties:", rows(inherited)] : []),
+      ...(htmlAttributes ? [HTML_ATTRIBUTES_NOTE] : []),
+    ].join("\n\n");
+  };
   let content = `# ${c.name}\n\n${c.description}\n\n\`import { ${c.name} } from "${c.entry}"\`\n\n[Live examples](https://dastari.github.io/glass-ux/components/${c.id})\n\n`;
-  if (c.props) content += "## Props\n\n" + table(c.props) + "\n\n";
+  if (c.props) content += "## Props\n\n" + table(c) + "\n\n";
   for (const slot of c.slots)
-    content += `## ${c.name}.${slot.name}\n\n${slot.description}\n\n${table(slot.props)}\n\n`;
-  content +=
-    "Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.\n";
+    content += `## ${c.name}.${slot.name}\n\n${slot.description}\n\n${table(slot)}\n\n`;
+  content = content.trimEnd() + "\n";
   writeFileSync(`docs/api/${c.id}.md`, content);
 }
 writeFileSync("src/gallery/api.generated.json", JSON.stringify(components));

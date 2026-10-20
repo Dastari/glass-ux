@@ -5,15 +5,19 @@ supplies routes, authentication, data adapters, business entities and product br
 
 ## Install a release
 
-React 19, React DOM 19 and Node 22.12 or newer are required. Install the built archive from
-a GitHub release and commit the package-manager lockfile:
+React 19, React DOM 19 and Node 22.12 or newer are required. Supported browsers are current
+Chrome, Edge, Firefox and Safari, and Firefox ESR 140. Firefox before 146 has no CSS
+`@scope`, so there a palette island inside a light island on a dark page takes dark colours.
+Install the built archive from a GitHub release and commit the package-manager lockfile:
 
 ```sh
 pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.8.0/glass-ux-0.8.0.tgz
 ```
 
 The archive includes JavaScript, TypeScript declarations, styles, fonts, guides and skills.
-Installation does not compile the library. Use public entries such as `glass-ux/button`
+It does not include the gallery, demos or source maps; the documentation site has those.
+If your repository vendors the dependency, commit only the `.tgz` and never an unpacked
+copy. Installation does not compile the library. Use public entries such as `glass-ux/button`
 and `glass-ux/data-table`; the package keeps large component families out of an unrelated
 component's JavaScript bundle.
 
@@ -92,7 +96,7 @@ export function App() {
 ```
 
 Use the providers needed by your components. The host router wraps the application when
-using routed tabs, table URL state or the packaged gallery. ActionProvider uses TanStack
+using routed tabs or table URL state. ActionProvider uses TanStack
 navigation when available; supply its navigate callback for another router. Without a
 router adapter it uses browser document navigation. For SSR, apply
 `appearanceBootScript()` before first paint and use your framework's supported script API.

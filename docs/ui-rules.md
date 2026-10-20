@@ -392,7 +392,7 @@ follows a fine pointer and a glint on the rim nearest it.
 ## R22 · Using the library
 
 - **R22.1** Import each component from its own entry (`glass-ux/button`), not from `glass-ux`
-  or deep `glass-ux/ui/*` paths. Keep `glass-ux/gallery` in documentation routes only.
+  or deep `glass-ux/ui/*` paths.
 - **R22.2** Mount `AppearanceProvider`, `TooltipProvider`, `ActionProvider` and
   `PaletteProvider` once at the application root when using their components.
 - **R22.3** Use controlled props (`value`, `onValueChange`) when the application owns the

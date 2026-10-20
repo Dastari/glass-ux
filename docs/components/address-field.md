@@ -89,5 +89,6 @@ address requests.
 
 The field debounces and cancels stale lookups. Choosing a suggestion fills editable parts
 and places the pin; manual entry remains available. Show attribution for real providers.
-See the [AddressInput API](../api/address-input.md), [AddressValue types](../api/typedoc.json)
-and [maps guide](../map.md) for the full component and map contract.
+See the [AddressInput API](../api/address-input.md), the `AddressValue` type declared in
+`glass-ux/address-field` and the [maps guide](../map.md) for the full component and map
+contract.

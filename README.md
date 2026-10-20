@@ -15,7 +15,8 @@ pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.8.0/glass-ux-0
 ```
 
 React 19 and React DOM 19 are peer dependencies. The tested integration uses Vite 8
-and Tailwind 4. Register `glassUx()` from `glass-ux/vite` beside the React and Tailwind plugins. Import components through their public entries:
+and Tailwind 4. Supported browsers are current Chrome, Edge, Firefox and Safari, and
+Firefox ESR 140 (the Firefox in Debian 12 and 13). Register `glassUx()` from `glass-ux/vite` beside the React and Tailwind plugins. Import components through their public entries:
 
 ```tsx
 import { Button } from "glass-ux/button";
@@ -69,8 +70,8 @@ Optional server adapters are separate entries. The graphql-orm filter mapping mo
   radius and line weight. Component family pages combine related examples with section navigation and
   API references for every public export.
 
-The `glass-ux/gallery` entry supplies the same catalogue and demos to consuming applications.
-Applications can combine it with their own component sections.
+Each release also attaches the built documentation site as `glass-ux-docs.tar.gz`, for
+hosting the catalogue offline. The package itself carries no gallery or demo code.
 
 All sample organisations, people, identifiers, conversations and values are fictional.
 The demo portraits are generated faces approved by the repository owner for redistribution.

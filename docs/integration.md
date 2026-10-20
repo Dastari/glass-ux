@@ -25,9 +25,9 @@ When replacing local components, remove their duplicate implementation after the
 version passes the application's checks. Keep application-specific components and compose
 them from Glass UX. A release dependency and lockfile should identify the exact archive used.
 
-To embed the shared documentation, import `componentCatalogue`, `ComponentDocumentation`
-and `sections` from `glass-ux/gallery`, plus `glass-ux/gallery/styles.css`. Combine them with
-your own component registry; the library's fixtures remain fictional and your product's
+The component catalogue is not part of the package. Link to the
+[documentation site](https://dastari.github.io/glass-ux/), or host the `glass-ux-docs.tar.gz`
+asset from the same release, where an application needs it offline. Your product's own
 examples remain application-owned.
 
 ## Document layout defaults

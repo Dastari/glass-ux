@@ -4,6 +4,50 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.0
+
+### Breaking changes
+
+- The release archive no longer contains the gallery. `glass-ux/gallery`,
+  `glass-ux/gallery/*` and `glass-ux/gallery/styles.css` are gone from the package. The
+  catalogue and demos stay on the documentation site and in each release's
+  `glass-ux-docs.tar.gz` asset.
+
+### Fixed
+
+- Colours in browsers without CSS `@scope`, such as Firefox ESR 140 in Debian 12 and 13. The
+  colour roles and brand tones were declared only inside `@scope`, so those browsers showed no
+  canvas, text, accent, status or brand colours. `styles/scope-fallback.css`, generated from
+  the scoped rules by `pnpm styles`, repeats them as unscoped rules that browsers with `@scope`
+  still override. Without `@scope`, a palette island inside a light island on a dark page
+  takes dark colours.
+- `MapSilhouette` used on its own fills its container. It was sized from the map stage's fit
+  padding, so outside a map it overflowed and covered the content after it, as on the GeoMap
+  documentation page. Inside `GeoMap` and `GeoMapSkeleton` it is placed as before.
+
+### Changed
+
+- The release archive is 2.1 MB (5.9 MB unpacked), down from 7.2 MB (40.7 MB). Besides the
+  gallery it leaves out source maps, the TypeDoc JSON model (`docs/api/typedoc.json`) and
+  brand source artwork. The Markdown API pages, guides, skills and the TSDoc in the
+  declarations remain. Releases are packed with `pnpm pack:release`, and `pnpm pack:check`
+  enforces the size budget.
+- **DataTable reorder grip:** easier to see and to discover. It uses `--fg-muted` (about 7:1
+  in light and 9:1 in dark Ruby; before, `--fg-subtle` with dots that antialiased down to
+  4.6:1) at the medium icon size, brightens while its row is hovered and fills on hover.
+  Every grip has a tooltip on hover and keyboard focus, "Drag to reorder, or press Space and
+  use the arrow keys", or the reason when it is disabled (R20.7). Nothing moves when it
+  appears.
+- **DataTable reorder drag:** a pointer or touch drag uses DragDropProvider's visuals. The
+  lifted row is a top-layer preview (`.fa-dnd-ghost` / `.fa-dnd-lift`) with the same shadow
+  and accent edge, so the table's scroll container no longer clips it, and the same shield
+  shows the grabbing cursor, stops hover effects underneath and passes the wheel through.
+  The drop slot's dashed edge matches a drop zone ready for the item. Keyboard reordering,
+  locked rows, the sort rule, saving and reverting, virtualised auto-scroll and
+  announcements are unchanged.
+- **Grip icon:** `IconGrip`'s dots are larger (radius 1.6, the top of the icon
+  specification's range for grips), and `DragHandle` matches the table's grip.
+
 ## 0.8.3
 
 ### Added

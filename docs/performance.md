@@ -1,8 +1,7 @@
 # Performance
 
-Import the component entry you use, such as `glass-ux/button`. Keep `glass-ux/gallery`
-in a documentation route; it includes the demonstration registry and sample fixtures.
-Large families such as MapLibre and syntax highlighting load on demand.
+Import the component entry you use, such as `glass-ux/button`. Large families such as
+MapLibre and syntax highlighting load on demand.
 
 During drag or resize, the window system writes transforms to the moving element and
 commits state at the end of the gesture. Avoid adding React state updates per pointer

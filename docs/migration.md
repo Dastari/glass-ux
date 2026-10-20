@@ -3,6 +3,26 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.8.3 → 0.9.0
+
+### Required changes
+
+**The gallery is no longer in the package.** Remove imports of `glass-ux/gallery`,
+`glass-ux/gallery/*` and `glass-ux/gallery/styles.css`. Link to the
+[documentation site](https://dastari.github.io/glass-ux/) instead, or serve the
+`glass-ux-docs.tar.gz` asset from the same release where the catalogue must be available
+offline. Keep your own component examples in your application.
+
+### Review
+
+- If your repository vendors the archive, commit only the `.tgz` and delete any unpacked copy.
+- Source maps are no longer shipped. Debuggers show the compiled ES modules, which follow the
+  source closely.
+- `docs/api/typedoc.json` is gone. Read `docs/api/*.md` or the type declarations.
+- Firefox ESR 140 now shows the theme colours. No code changes are needed.
+- A `MapSilhouette` outside a map now fills its container, which needs a definite height.
+  Remove any wrapper you added to clip or position it.
+
 ## 0.8.2 → 0.8.3
 
 No code changes are required.

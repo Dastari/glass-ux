@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import ts from "typescript";
 import { undocumentedExports } from "./export-docs.mjs";
+import { resolvesInPackage } from "./package-entries.mjs";
 const components = JSON.parse(
   readFileSync("src/gallery/api.generated.json", "utf8"),
 );
@@ -44,6 +45,11 @@ for (const component of components) {
     );
     if (parsed.parseDiagnostics.length)
       failures.push(`${component.name}: usage example has invalid syntax`);
+    for (const [, specifier] of usage.matchAll(/\bfrom\s+["']([^"']+)["']/g))
+      if (!resolvesInPackage(specifier))
+        failures.push(
+          `${component.name}: usage example imports ${specifier}, which is not a package entry`,
+        );
     if (/from ["'][^"']+["'];?\n\s*\nimport /m.test(usage))
       failures.push(
         `${component.name}: unnecessary blank line between imports`,

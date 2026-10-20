@@ -374,33 +374,13 @@
       "types": "./dist/lib/appearance/index.d.ts",
       "import": "./dist/lib/appearance/index.js"
     },
+    "./fit-form": {
+      "types": "./dist/lib/fit-form.d.ts",
+      "import": "./dist/lib/fit-form.js"
+    },
     "./icons": {
       "types": "./dist/icons/generated/icons.d.ts",
       "import": "./dist/icons/generated/icons.js"
-    },
-    "./ui/*": {
-      "types": "./dist/ui/*.d.ts",
-      "import": "./dist/ui/*.js"
-    },
-    "./ai/*": {
-      "types": "./dist/ai/*.d.ts",
-      "import": "./dist/ai/*.js"
-    },
-    "./shell/*": {
-      "types": "./dist/shell/*.d.ts",
-      "import": "./dist/shell/*.js"
-    },
-    "./windows/*": {
-      "types": "./dist/windows/*.d.ts",
-      "import": "./dist/windows/*.js"
-    },
-    "./lib/*": {
-      "types": "./dist/lib/*.d.ts",
-      "import": "./dist/lib/*.js"
-    },
-    "./icons/*": {
-      "types": "./dist/icons/*.d.ts",
-      "import": "./dist/icons/*.js"
     },
     "./gallery/*": {
       "types": "./dist/gallery/*.d.ts",

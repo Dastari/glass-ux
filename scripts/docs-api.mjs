@@ -11,6 +11,7 @@ import {
 import { join } from "node:path";
 import { generateComponentDemos } from "./component-demos.mjs";
 import { literalOptions } from "./docs-api-options.mjs";
+import { publicSpecifier } from "./package-entries.mjs";
 
 const config = ts.readConfigFile("tsconfig.json", ts.sys.readFile);
 writeFileSync(
@@ -437,12 +438,11 @@ for (const section of new Set(["icons"])) {
         .resolvePath(join("src/gallery/sections", spec))
         .replace(process.cwd() + "/src/", "")
         .replace(/\.js$/, "");
-      let entry = "glass-ux/" + resolved;
-      if (/^ui\/[^/]+\/index$/.test(resolved))
-        entry = "glass-ux/" + resolved.split("/")[1];
-      else if (resolved === "icons/generated/icons") entry = "glass-ux/icons";
-      else if (/^(ai|shell|windows)\/index$/.test(resolved))
-        entry = "glass-ux/" + resolved.split("/")[0];
+      const entry = publicSpecifier(resolved);
+      if (!entry)
+        throw new Error(
+          `${file}: imports src/${resolved}, which no package entry exports. Import it from the entry's index module or through a gallery module.`,
+        );
       return before + entry + after;
     },
   );
@@ -491,6 +491,7 @@ const app = await Application.bootstrapWithPlugins({
   entryPoints: [
     ...entries.map((e) => e.file),
     "src/vite.ts",
+    "src/lib/fit-form.ts",
     "src/gallery/index.ts",
     "src/adapters/graphql-orm/index.ts",
   ],

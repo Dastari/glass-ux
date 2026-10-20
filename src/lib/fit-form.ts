@@ -1,4 +1,4 @@
-/*
+/**
  * Container-aware forms (R7): a control drawn in one of a few forms, widest first ("full",
  * "icons", "menu"), shows the widest that fits the box it is given. Shared by Segmented and
  * SwatchPicker.
@@ -9,6 +9,8 @@
  *               form is shown; the last form is the fallback and always "fits"
  *   hysteresis  a form that overflowed is not tried again until the parent grows past the
  *               room it failed in, so the control never flips back and forth
+ *
+ *   import { useFitForm } from "glass-ux/fit-form"
  */
 import { useLayoutEffect, useRef, useState, type RefObject } from "react"
 import { observeElementSizes } from "./resize-observer.js"
@@ -84,6 +86,7 @@ export function overflowsOwnBox(root: HTMLElement, lastItem: HTMLElement | null)
   return lastItem.offsetLeft + lastItem.offsetWidth + pad > root.clientWidth + 1
 }
 
+/** Options for {@link useFitForm}: the forms, the root to measure and how to read widths. */
 export interface UseFitFormOptions<F extends string> {
   /** The forms, widest first. The last is the fallback, chosen when nothing else fits. */
   forms: readonly F[]

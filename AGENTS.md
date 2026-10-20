@@ -38,6 +38,8 @@ Never commit node_modules, test output, credentials or .handoff notes.
 
 The release package is built once and installed from the versioned GitHub release archive.
 Do not add an installation-time build or make a consumer depend on an unpublished workspace.
+Pack it with `pnpm pack:release`, not `pnpm pack`: the archive leaves out the gallery, source
+maps and other docs-site-only files, and `pnpm pack:check` enforces its size budget.
 
 For adoption into a consuming application, read docs/getting-started.md and docs/integration.md.
 Bundled skills under skills/ cover adoption, component choice, forms, data views, assistant UI

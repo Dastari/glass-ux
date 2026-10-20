@@ -20,6 +20,7 @@ jobs:
       - run: pnpm docs:build
         env:
           GLASS_UX_BASE: /glass-ux/
+      - run: pnpm pack:check
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:production
       - run: pnpm test:e2e

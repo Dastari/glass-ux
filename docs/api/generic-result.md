@@ -13,5 +13,3 @@ cards and lists (resolvePreview).
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | preview | `ToolPreview` | See type | yes | — | The tool's raw preview: its JSON `value` (or `null` when withheld), disclosure hints and preview cap, resolved to a result with the entity resolver. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

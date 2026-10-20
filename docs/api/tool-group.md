@@ -14,5 +14,3 @@ running and failed counts when there are any. A single call renders as its own r
 | calls | `AiToolCall[]` | See type | yes | — | Tool calls in execution order. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | defaultOpen | `boolean \| undefined` | false, true | no | false | Opens the uncontrolled overlay initially. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

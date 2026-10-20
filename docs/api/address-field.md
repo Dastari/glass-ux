@@ -24,5 +24,3 @@ AddressInput bound to an AddressValue form field. Each part is its own form fiel
 | optional | `boolean \| undefined` | false, true | no | — | Shows the optional-field indication without changing validation. |
 | placeholder | `string \| undefined` | See type | no | — | The lookup's placeholder. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

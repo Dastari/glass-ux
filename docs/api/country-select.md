@@ -20,7 +20,7 @@ locale, with its flag and code. The value is the ISO 3166-1 alpha-2 code ("AU").
 | flags | `boolean \| undefined` | false, true | no | true | Flags beside the names (SVG, lazy; never emoji). Default true. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Marks the control invalid. Pair it with an accessible validation message. |
-| locale | `string \| undefined` | See type | no | — | Names in this locale. Default en-AU. |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale for the country names and their order. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
 | onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the text input loses focus, so a form can mark the field touched. |
 | onValueChange | `((value: string \| null) => void) \| undefined` | See type | no | — | Called with the chosen option's value when one is picked, or null when the selection is cleared. Typing alone does not call it. Pair with `value` to control it; use `defaultValue` otherwise. |
@@ -32,5 +32,3 @@ locale, with its flag and code. The value is the ISO 3166-1 alpha-2 code ("AU").
 | size | `SelectSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | value | `string \| null \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

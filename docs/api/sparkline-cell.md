@@ -17,5 +17,3 @@ figures. The line's accessible name summarises it: now, low and high.
 | unit | `string \| undefined` | See type | no | — | Unit after a thin space: "%", "ms". |
 | value | `number \| undefined` | See type | no | — | The value printed beside the line (defaults to the last point). |
 | values | `readonly number[]` | See type | yes | — | Values rendered by the chart or multi-value control. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

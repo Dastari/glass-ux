@@ -39,7 +39,7 @@ uncontrolled. The entered identifier is kept across views.
 | onVerifyTwoFactor | `((submission: TwoFactorSubmission) => Promise<LoginOutcome \| void>) \| undefined` | See type | no | — | Checks a two-factor code. Required when `onSignIn` or `onProviderSignIn` can return `two-factor`. |
 | onViewChange | `((view: LoginView) => void) \| undefined` | See type | no | — | Called with the next view when a link, outcome or back action changes it. |
 | passwordPolicy | `LoginPasswordPolicy \| undefined` | See type | no | — | Rules for a new password (sign-up and reset). The server still enforces its own policy. |
-| providerLayout | `"grid" \| "list" \| "auto" \| undefined` | "grid", "list", "auto" | no | "auto" | list: one full-width button per row. grid: two columns of short buttons. auto (default): grid from four providers. |
+| providerLayout | `"auto" \| "grid" \| "list" \| undefined` | "auto", "grid", "list" | no | "auto" | list: one full-width button per row. grid: two columns of short buttons. auto (default): grid from four providers. |
 | providerPlacement | `"above" \| "below" \| undefined` | "above", "below" | no | "above" | Where the providers sit relative to the password form. Default "above". |
 | providers | `readonly LoginProvider[] \| undefined` | See type | no | — | Third-party sign-in options, in display order. |
 | remember | `boolean \| { defaultChecked: boolean; } \| undefined` | See type | no | false | Show "Keep me signed in". `true` starts unticked. Default false. |
@@ -48,5 +48,3 @@ uncontrolled. The entered identifier is kept across views.
 | signUp | `LoginSignUpOptions \| undefined` | See type | no | — | Sign-up fields. |
 | surface | `boolean \| undefined` | false, true | no | true | Draw the flow on its own panel surface (a page canvas). Set false inside a Dialog, Sheet or Panel. Default true. |
 | view | `LoginView \| undefined` | "sign-in", "two-factor", "forgot-password", "reset-password", "sign-up" | no | — | The controlled view, when the host routes it. Pair with `onViewChange`. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

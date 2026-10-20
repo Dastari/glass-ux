@@ -25,7 +25,15 @@ target positions; apply it to your data with `applyDrop`, `moveItem` or `insertI
 | onDragOver | `((event: DragOverEvent<T>) => void) \| undefined` | See type | no | — | The index or verdict changed while over this zone. |
 | onDrop | `((event: DropEvent<T>) => void \| boolean \| Promise<unknown>) \| undefined` | See type | no | — | The item was dropped here. Apply it to your data synchronously; the zone animates the items to their new places. Return false to refuse (the item goes back), or a promise to show the zone as pending until it settles. A rejected promise shows the zone in error; reject with a `DropError` to say why. Your data is yours to restore. |
 | render | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | The element to render instead of a div (`<ul />`, `<section />`). |
-| sort | `DropZoneSort \| undefined` | "grid", "horizontal", "vertical" | no | — | Orders the Draggables inside it: they part to open a gap and close up when one leaves. |
+| sort | `DropZoneSort \| undefined` | "horizontal", "vertical", "grid" | no | — | Orders the Draggables inside it: they part to open a gap and close up when one leaves. |
 | validate | `((drag: DragInfo<T>, target: { index: number \| null; }) => DropVerdict) \| undefined` | See type | no | — | A verdict on the item now and, for sortable zones, the index it is over. Re-evaluated when the zone re-renders. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLDivElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

@@ -14,5 +14,3 @@ The standard tooltip body: a heading (the x or category), then one row per serie
 | meta | `ReactNode` | See type | no | — | Secondary text beside the title in the heading (a time range, a unit). |
 | rows | `readonly TooltipRow[]` | See type | yes | — | One row per series: swatch, value, label and optional detail, in order. |
 | title | `ReactNode` | See type | no | — | The heading or title content. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

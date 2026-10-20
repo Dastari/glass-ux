@@ -26,5 +26,3 @@ field's message line — the tile never grows to show errors.
 | multiple | `boolean \| undefined` | false, true | no | true | Allows more than one selected value. |
 | onFiles | `(accepted: File[], rejected: FileRejection[]) => void` | See type | yes | — | Called with the files that fit the limits and the ones that do not (with reasons). |
 | variant | `"full" \| "compact" \| undefined` | "full", "compact" | no | "full" | full: the dashed tile. compact: one control-height row for toolbars and table rows. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

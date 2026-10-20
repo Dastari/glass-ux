@@ -26,10 +26,19 @@ It fills its box (container-type: size), so the parent must give it a definite h
 | domain | `Domain \| undefined` | See type | no | — | Fixed value range, e.g. [0, 100] for percentages. |
 | format | `((value: number) => string) \| undefined` | See type | no | — | Value formatter or formatting options. |
 | label | `string` | See type | yes | — | What is measured: "CPU", "Memory", "Latency". |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale for the value, delta and statistics. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | range | `string \| undefined` | See type | no | — | The period the series covers: "Last hour". |
 | times | `readonly string[] \| undefined` | See type | no | — | A label per data point for the hover readout ("10:32"). |
 | tone | `SparklineTone \| undefined` | "data", "danger", "warning", "success", "neutral", "accent", "info" | no | "data" | The series' state, when it has one (warning when a threshold is crossed). |
 | unit | `string \| undefined` | See type | no | "" | Unit displayed with a numeric value. |
 | value | `number \| null` | See type | yes | — | The current value; null while unknown. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLDivElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

@@ -18,5 +18,3 @@ cell is passive. Used as the title column of entity tables and as the card title
 | statusLabel | `string \| undefined` | See type | no | — | Accessible text for the status dot. Defaults to the state's name ("Online"). |
 | subtitle | `ReactNode` | See type | no | — | Data only (R2.2): an owner, path or identifier, never a description. |
 | title | `ReactNode` | See type | yes | — | The entity's name: a record, person or organisation. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

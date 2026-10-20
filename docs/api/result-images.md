@@ -13,5 +13,3 @@ a click opens the lightbox.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | result | `ResultBase & { type: "images"; images: ResultImage[]; }` | See type | yes | — | The images result: one of its `images` fills the card; several form a grid of cropped tiles. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -17,15 +17,14 @@ tabindex). Rows are virtualised, so thousands of rows cost only the rows on scre
 | aria-label | `string` | See type | yes | — | Names the tree: "Endpoints". |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | defaultExpanded | `string[] \| undefined` | See type | no | — | Initially expanded nodes when expansion is uncontrolled. |
+| defaultSelectedId | `string \| null \| undefined` | See type | no | — | The endpoint selected at first when the selection is uncontrolled. |
 | emptyText | `((query: string) => ReactNode) \| undefined` | See type | no | (q) => `No match for “${q}”` | The line shown when nothing matches. Default: No match for “query”. |
 | expanded | `string[] \| undefined` | See type | no | — | Open groups. Uncontrolled with `defaultExpanded`. |
 | nodes | `TreeNode[]` | See type | yes | — | Graph or tree nodes with stable identifiers and relationships. |
 | onExpandedChange | `((expanded: string[]) => void) \| undefined` | See type | no | — | Called with the full list of open group ids whenever a group opens or closes (click, Enter, Space or the arrow keys); groups do not toggle while searching. Pair with `expanded` to control it. |
-| onSelect | `((node: TreeNode) => void) \| undefined` | See type | no | — | Called with the endpoint (leaf) the person activates by click, Enter or Space; not for groups, which toggle, or disabled rows. A linked row also navigates. Pair with `selectedId` to show the selection. |
+| onSelectedIdChange | `((id: string \| null, details: SelectionChangeDetails<TreeNode>) => void) \| undefined` | See type | no | — | Called with the endpoint (leaf) id the person selects by click, Enter or Space, and details whose `item` is the node; not for groups, which toggle, disabled rows or the endpoint already selected. A linked row also navigates. |
 | query | `string \| undefined` | See type | no | "" | Filter text from the search field above the tree. Matching branches open and the match is highlighted. |
 | renderContent | `((node: TreeNode, content: TreeRowContent) => ReactNode \| null) \| undefined` | See type | no | — | Draw a row's content (after the chevron) yourself, e.g. an entity identity's row tier, so a tree row is the same object as the entity's table cell and header. The row keeps its own states (fa-item: hover, focus, selected) and height. Return null for the default icon, label and description. |
-| renderLink | `((node: TreeNode, props: TreeRowRenderProps) => ReactElement \| null) \| undefined` | See type | no | — | Render endpoint rows as links (a TanStack Router `<Link>` in the app). Return null to keep a row a plain item. A linked row navigates natively (click, middle-click, Enter); `onSelect` still fires. |
+| renderLink | `((node: TreeNode, props: TreeRowRenderProps) => ReactElement \| null) \| undefined` | See type | no | — | Render endpoint rows as links (a TanStack Router `<Link>` in the app). Return null to keep a row a plain item. A linked row navigates natively (click, middle-click, Enter); a click or Enter also selects it. |
 | rowWrapper | `((node: TreeNode, row: ReactElement) => ReactElement) \| undefined` | See type | no | — | Wrap each row element, e.g. in ActionContextMenu so right-click, long-press, Shift+F10 and the Menu key open the row's actions (R11.6). Must render the row it is given. |
-| selectedId | `string \| null \| undefined` | See type | no | null | Stable identifier of the selected item. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+| selectedId | `string \| null \| undefined` | See type | no | — | The selected endpoint's id, or null for none. Controlled while defined; leave it undefined to use `defaultSelectedId`. |

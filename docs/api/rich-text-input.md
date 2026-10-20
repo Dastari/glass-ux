@@ -47,5 +47,3 @@ The editing engine loads only when this component renders.
 | uploadAttachment | `((file: File) => Promise<RichTextAttachment>) \| undefined` | See type | no | — | Host-owned upload adapter. When supplied, the toolbar offers Attach file. |
 | value | `string \| undefined` | See type | no | — | Controlled Markdown source. HTML and editor JSON are never emitted. |
 | view | `RichTextView \| undefined` | "visual", "markdown" | no | — | Controlled presentation. Default visual; the visual view is directly editable. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

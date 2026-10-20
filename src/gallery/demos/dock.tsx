@@ -16,7 +16,6 @@ import {
   WindowManagerProvider,
   createWindowManager,
   registerWindowKind,
-  useWindowVisibility,
   type WindowContentProps,
   type WindowStatusTone,
 } from "../../windows/index.js";
@@ -48,33 +47,6 @@ interface SampleParams {
   /** Endpoint presentation data supplied by the host. */
   endpoint: string;
   [key: string]: string;
-}
-
-function ProcessesBody(_props: WindowContentProps<SampleParams>) {
-  const { visible } = useWindowVisibility();
-  return (
-    <>
-      <Window.Actions>
-        <Button variant="ghost" size="sm" icon={<IconRefresh />} aria-label="Refresh processes" />
-      </Window.Actions>
-      <Window.Status
-        indicator={
-          visible ? { tone: "success", label: "Live" } : { tone: "neutral", label: "Paused" }
-        }
-      >
-        <Window.StatusItem tone={visible ? "success" : "neutral"}>
-          {visible ? "Live" : "Paused"}
-        </Window.StatusItem>
-        <Window.StatusItem>142 processes</Window.StatusItem>
-        <Window.StatusMeta>
-          <span>CPU 17%</span>
-        </Window.StatusMeta>
-      </Window.Status>
-      <Window.Body>
-        <ProcessRows />
-      </Window.Body>
-    </>
-  );
 }
 
 function ScreenBody({ params }: WindowContentProps<SampleParams>) {
@@ -118,16 +90,6 @@ function TerminalBody({ params }: WindowContentProps<SampleParams>) {
     </>
   );
 }
-
-registerWindowKind<SampleParams>({
-  kind: "gallery.processes",
-  title: () => "Task manager",
-  subtitle: (params) => params.endpoint,
-  icon: IconTaskManager,
-  size: { w: 440, h: 300 },
-  minSize: { w: 280, h: 180 },
-  load: async () => ({ default: ProcessesBody }),
-});
 
 registerWindowKind<SampleParams>({
   kind: "gallery.screen",

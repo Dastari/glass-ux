@@ -18,4 +18,16 @@ device"). Chosen = accent-soft fill with an accent edge.
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | The semantic tone. Use danger and warning for consequences and states. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| disabled | `boolean \| undefined` | false, true | no | — | Whether the component should ignore user interaction. |
+| inputRef | `React.Ref<HTMLInputElement> \| undefined` | See type | no | — | A ref to access the hidden input element. |
+| readOnly | `boolean \| undefined` | false, true | no | — | Whether the user should be unable to select the radio button. |
+| ref | `Ref<HTMLSpanElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+| required | `boolean \| undefined` | false, true | no | — | Whether the user must choose a value before submitting a form. |
+| style | `React.CSSProperties \| ((state: import("@base-ui/react").RadioRootState) => React.CSSProperties \| undefined) \| undefined` | See type | no | — | Style applied to the element, or a function that returns a style object based on the component's state. |
+| value | `V` | See type | yes | — | The unique identifying value of the radio in a group. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

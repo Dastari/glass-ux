@@ -12,14 +12,15 @@ import {
   registerWindowKind,
 } from "../../windows/index.js";
 
+registerWindowKind({
+  kind: "docs.loading",
+  icon: IconOrganisation,
+  title: () => "Exhibition notes",
+  // Never resolves, so the window keeps showing its loading body.
+  load: () => new Promise<never>(() => {}),
+});
+
 function makeLoadingWindowDemo() {
-  registerWindowKind({
-    kind: "docs.loading",
-    icon: IconOrganisation,
-    title: () => "Exhibition notes",
-    // Never resolves, so the window keeps showing its loading body.
-    load: () => new Promise<never>(() => {}),
-  });
   const manager = createWindowManager({ storageKey: null, channelName: null });
   const id = manager.open({ kind: "docs.loading", params: {} });
   return { manager, id };

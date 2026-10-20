@@ -13,7 +13,7 @@ import {
   IconPlus,
   IconSun,
 } from "../../icons/generated/icons.js";
-import { useAppearance } from "../../lib/appearance/use-appearance.js";
+import { useAppearance } from "../../lib/appearance/index.js";
 import { ActionProvider, usePaletteActions } from "../../ui/actions/index.js";
 import {
   CommandPanel,

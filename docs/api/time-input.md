@@ -22,7 +22,7 @@ min/max) turns the box invalid; the text is tidied on blur.
 | hourCycle | `HourCycle \| undefined` | 12, 24 | no | — | Override the locale's clock: 12 (am/pm) or 24. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. Text that is not a time marks the field invalid by itself. |
-| locale | `string \| undefined` | See type | no | "en-AU" | BCP 47 locale: the clock and its am/pm words (default en-AU, a 12-hour clock). |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale: the clock and its am/pm words. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | max | `string \| undefined` | See type | no | — | Latest allowed time. |
 | min | `string \| undefined` | See type | no | — | Earliest allowed time. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
@@ -40,5 +40,3 @@ min/max) turns the box invalid; the text is tidied on blur.
 | suggestions | `readonly string[] \| undefined` | See type | no | — | Explicit times to offer in the list instead of every `step` minutes. |
 | value | `string \| null \| undefined` | See type | no | — | A time of day (`09:30`, or `09:30:15` with `seconds`), or null when empty. A value that is not a time is shown as it is and marked invalid. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "short" | Content width (R15.6). Default short: a time is about eight characters. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

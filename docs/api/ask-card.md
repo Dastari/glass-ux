@@ -17,5 +17,3 @@ renders here.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | ask | `AiAsk` | See type | yes | — | The ask to render; its `type` picks the card. Inside a ConversationLog a pending ask moves to the ask dock and leaves a marker here. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

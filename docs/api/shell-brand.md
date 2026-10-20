@@ -15,4 +15,12 @@ goes to the All organisations dashboard, so it also resets the scope (R5.2).
 | mark | `ReactNode` | See type | no | — | The mark. Default: the product's configured mark (<BrandMark mark="product" />). |
 | render | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | Render as a router link. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLAnchorElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

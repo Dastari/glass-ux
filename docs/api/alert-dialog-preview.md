@@ -17,5 +17,3 @@ The alert surface in the page flow, for documentation. Real parts, non-modal.
 | status | `ButtonStatus \| undefined` | "idle", "pending", "success", "error" | no | "idle" | Current operation or connection status. |
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
 | tone | `AlertTone \| undefined` | "danger", "warning", "default" | no | "danger" | The semantic tone. Use danger and warning for consequences and states. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

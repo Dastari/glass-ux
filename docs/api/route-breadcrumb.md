@@ -16,5 +16,3 @@ The universal breadcrumb with router links — what the shell renders from route
 | header | `ReactNode` | See type | no | — | First in the trail popup when the context is folded into it: the module switch. |
 | items | `RouteCrumb[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
 | scope | `BreadcrumbScope \| undefined` | See type | no | — | The scope row above the trail when folded into it: the organisation. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

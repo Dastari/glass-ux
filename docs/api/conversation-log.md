@@ -40,4 +40,12 @@ A11y      role="log" without per-token chatter: completed answers are announced 
 | surface | `AiSurface \| undefined` | "canvas", "panel", "float" | no | "panel" | canvas: the full-page conversation · panel: docked panes, windows, the gallery. |
 | turns | `TurnAnchor[] \| undefined` | See type | no | — | Prompts for the turn navigator (shown when the log is wide enough). |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLDivElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

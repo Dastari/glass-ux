@@ -18,6 +18,7 @@ rewritten when focus leaves ("1500 MB" → "1.5 GB"). For quotas, thresholds and
 | defaultValue | `number \| null \| undefined` | See type | no | null | The initial value when using the component without controlling its state. |
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field (inside a Field, set `error` on the Field instead). |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale for the decimal and grouping marks it writes and reads. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called with the new state when the show/hide password button is pressed. Pair with `revealed` to control it. |
 | onValueChange | `((bytes: number \| null) => void) \| undefined` | See type | no | — | Called on each keystroke with the parsed size in whole bytes, null when the text is empty, or NaN while it cannot be read. Pair with `value` to control it; use `defaultValue` otherwise. |
@@ -30,4 +31,16 @@ rewritten when focus leaves ("1500 MB" → "1.5 GB"). For quotas, thresholds and
 | value | `number \| null \| undefined` | See type | no | — | Bytes; null when empty; NaN while the text cannot be read. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "short" | Content width: short (port, PIN), medium (name, hostname), full (default). |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
+| name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
+| placeholder | `string \| undefined` | See type | no | "500 MB" | The prompt shown while the value is empty. It does not replace the field’s label. |
+| readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
+| required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
+| style | `React.CSSProperties \| ((state: import("@base-ui/react").InputState) => React.CSSProperties \| undefined) \| undefined` | See type | no | — | Style applied to the element, or a function that returns a style object based on the component's state. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

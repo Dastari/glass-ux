@@ -18,5 +18,3 @@ what it is given. A layout that owns a window manager wires `openWindow` this wa
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | navigate | `((to: string) => void) \| undefined` | See type | no | — | Override navigation with the host router. Defaults to TanStack Router when present, otherwise browser navigation. |
 | openWindow | `((kind: string, params: Record<string, string>) => void) \| undefined` | See type | no | — | Application callback opening a serialisable view in a managed window. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -38,4 +38,8 @@ Markdown input bound to a string form field, with Field label and reserved valid
 | view | `RichTextView \| undefined` | "visual", "markdown" | no | — | Controlled presentation. Default visual; the visual view is directly editable. |
 | warning | `ReactNode` | See type | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| disabled | `boolean \| undefined` | false, true | no | — | Whether the component should ignore user interaction. Takes precedence over the `disabled` prop on the `<Field.Control>` component. |

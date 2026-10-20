@@ -23,7 +23,7 @@ Each part is one tab stop; the time part steps with the arrow keys like TimeInpu
 | hourCycle | `HourCycle \| undefined` | 12, 24 | no | — | Override the locale's clock: 12 (am/pm) or 24. |
 | id | `string \| undefined` | See type | no | — | The date input's id; a Field label points at it. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. Text that cannot be read marks the field invalid by itself. |
-| locale | `string \| undefined` | See type | no | "en-AU" | BCP 47 locale: the date order, the clock and names (default en-AU). |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale: the date order, the clock and names. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | max | `string \| undefined` | See type | no | — | Latest allowed wall-clock date and time. |
 | min | `string \| undefined` | See type | no | — | Earliest allowed wall-clock date and time. |
 | name | `string \| undefined` | See type | no | — | Form field name of the date input (the time input takes `name` + "-time"). |
@@ -40,5 +40,3 @@ Each part is one tab stop; the time part steps with the arrow keys like TimeInpu
 | timeZone | `string \| undefined` | See type | no | — | IANA zone the wall clock is read in ("Australia/Sydney"). Shown in the box as its abbreviation or offset on that date; the list leaves out times a daylight-saving change skips. The value never converts: use `resolveWallClock` for the instant. |
 | value | `string \| null \| undefined` | See type | no | — | A wall-clock date and time (`2026-10-21T09:30`) with no offset, or null when empty. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "medium" | Content width (R15.6). Default medium. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

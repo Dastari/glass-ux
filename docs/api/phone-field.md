@@ -21,7 +21,7 @@ PhoneInput bound to a string form field (E.164). Pair it with `phoneSchema()`.
 | flags | `boolean \| undefined` | false, true | no | — | Flags in the picker and the box (SVG, lazy). Default true. |
 | hint | `ReactNode` | See type | no | — | The message line's resting text. Only when the format or consequence is not obvious (R2.8). |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
-| kind | `PhoneKind \| undefined` | "mobile", "any" | no | — | Mobile numbers only (placeholder and icon; MobileField and mobileSchema check the type). |
+| kind | `PhoneKind \| undefined` | "any", "mobile" | no | — | Mobile numbers only (placeholder and icon; MobileField and mobileSchema check the type). |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
@@ -33,4 +33,8 @@ PhoneInput bound to a string form field (E.164). Pair it with `phoneSchema()`.
 | warning | `ReactNode` | See type | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width (R15.6). Default medium. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| disabled | `boolean \| undefined` | false, true | no | — | Whether the component should ignore user interaction. Takes precedence over the `disabled` prop on the `<Field.Control>` component. |

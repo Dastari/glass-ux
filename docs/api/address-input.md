@@ -27,5 +27,3 @@ instead: it gives every part its own form field.
 | placeholder | `string \| undefined` | See type | no | — | The lookup's placeholder. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
 | value | `AddressValue \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

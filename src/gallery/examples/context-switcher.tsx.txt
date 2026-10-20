@@ -2,11 +2,7 @@ import { useState } from "react";
 import { MOCK_ORGANISATIONS, toContextItem } from "glass-ux/gallery/fixtures/organisations";
 import { ContainerLab, Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { IconFolder } from "glass-ux/icons";
-import {
-  ContextSwitcher,
-  switcherLabels,
-  type ContextItem,
-} from "glass-ux/shell/context-switcher/index";
+import { ContextSwitcher, switcherLabels, type ContextItem } from "glass-ux/shell/context-switcher";
 import { RemoteContextSwitcherExample } from "glass-ux/gallery/sections/context-switcher-remote";
 
 const ORGS = MOCK_ORGANISATIONS.map(toContextItem);

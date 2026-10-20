@@ -8,7 +8,7 @@ import {
 import { WORKSPACE_SETTINGS } from "glass-ux/gallery/fixtures/brand";
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { AccountButton, SearchTrigger, TopBar, TopBarSettingsButton } from "glass-ux/shell";
-import { ContextSwitcher } from "glass-ux/shell/context-switcher/index";
+import { ContextSwitcher } from "glass-ux/shell/context-switcher";
 import { Breadcrumb } from "glass-ux/breadcrumb";
 import { Menu } from "glass-ux/menu";
 

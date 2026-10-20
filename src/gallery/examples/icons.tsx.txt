@@ -33,7 +33,7 @@ import {
   IconViewOnly,
   IconWarning,
 } from "glass-ux/icons"
-import { iconRegistry } from "glass-ux/icons/generated/registry"
+import { iconRegistry } from "glass-ux/gallery/sections/icons.kit"
 import { DEVICE_BRAND_KEYWORDS, DEVICE_BRAND_NAMES } from "glass-ux/gallery/fixtures/device-brands"
 import { Button, ButtonGroup, FEEDBACK_HOLD_MS } from "glass-ux/button"
 import type { IconComponent, IconSize } from "glass-ux/icon"

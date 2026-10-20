@@ -18,4 +18,12 @@ A responsive page heading for an entity, with identity, status, supporting metad
 | tabs | `ReactNode` | See type | no | — | L2 Tabs. |
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

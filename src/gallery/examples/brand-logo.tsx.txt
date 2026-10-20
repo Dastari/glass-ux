@@ -1,6 +1,6 @@
 import { BRAND_SOURCES } from "glass-ux/gallery/fixtures/brand";
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { PALETTES, PALETTE_LABELS } from "glass-ux/lib/appearance/appearance";
+import { PALETTES, PALETTE_LABELS } from "glass-ux/appearance";
 import { BrandLogo, BrandMark, type BrandTones } from "glass-ux/brand";
 
 const SOURCES = Object.values(BRAND_SOURCES);

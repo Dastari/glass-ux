@@ -19,7 +19,7 @@ TimeZoneSelect bound to a `string | null` form field (IANA name). Pair it with `
 | icon | `ReactNode` | See type | no | — | Leading icon. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
-| locale | `string \| undefined` | See type | no | — | Locale used to format values. |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale for zone abbreviations and the local time. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
@@ -31,4 +31,8 @@ TimeZoneSelect bound to a `string | null` form field (IANA name). Pair it with `
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "medium" | Content width: short (port, PIN), medium (name, hostname), full (default). |
 | zones | `readonly string[] \| undefined` | See type | no | — | Only these zones. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| disabled | `boolean \| undefined` | false, true | no | — | Whether the component should ignore user interaction. Takes precedence over the `disabled` prop on the `<Field.Control>` component. |

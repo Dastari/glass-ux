@@ -17,5 +17,3 @@ chip and picker entry is a link.
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | items | `RouteTabItem[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
 | layout | `VerticalTabsLayout \| undefined` | "select", "rail", "icons", "chips" | no | — | Layout or presentation mode. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

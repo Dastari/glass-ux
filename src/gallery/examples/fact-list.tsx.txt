@@ -1,5 +1,5 @@
 import { Badge } from "glass-ux/badge";
-import { RelativeTime } from "glass-ux/ui/data-table/cells/relative-time";
+import { RelativeTime } from "glass-ux/data-table";
 import { FactList } from "glass-ux/fact-list";
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 

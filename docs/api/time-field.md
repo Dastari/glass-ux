@@ -20,7 +20,7 @@ outside min/max as read, so the schema can say which.
 | hourCycle | `HourCycle \| undefined` | 12, 24 | no | — | Override the locale's clock: 12 (am/pm) or 24. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
-| locale | `string \| undefined` | See type | no | — | BCP 47 locale: the clock and its am/pm words (default en-AU, a 12-hour clock). |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale: the clock and its am/pm words. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | max | `string \| undefined` | See type | no | — | Latest allowed time. |
 | min | `string \| undefined` | See type | no | — | Earliest allowed time. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |
@@ -36,4 +36,8 @@ outside min/max as read, so the schema can say which.
 | warning | `ReactNode` | See type | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width (R15.6). Default short: a time is about eight characters. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| disabled | `boolean \| undefined` | false, true | no | — | Whether the component should ignore user interaction. Takes precedence over the `disabled` prop on the `<Field.Control>` component. |

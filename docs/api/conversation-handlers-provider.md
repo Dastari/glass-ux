@@ -12,5 +12,3 @@ Connect assistant interaction events to host callbacks for answers, approvals, r
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | handlers | `Partial<ConversationHandlers>` | See type | yes | — | The host callbacks to use; any left out keep the defaults (async actions resolve at once, window requests are logged). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

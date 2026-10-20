@@ -18,6 +18,7 @@ the focused node's menu.
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | clusters | `Readonly<Record<string, TopologyClusterSpec>> \| undefined` | See type | no | — | How cluster keys are named and ordered. |
+| defaultSelectedId | `string \| null \| undefined` | See type | no | — | The node selected at first when the selection is uncontrolled. |
 | describeNode | `((node: TopologyNode<T>) => string) \| undefined` | See type | no | — | The node's accessible name: "Switch ORB-SW-CORE, Online, wired 1 Gbps to FA-GW01". Default: its label. |
 | emptyText | `ReactNode` | See type | no | "Nothing to draw" | One line for an empty map (R2.5). |
 | frameKey | `unknown` | See type | no | — | Re-fit when this changes (another network). Live changes to the same map keep the camera. |
@@ -28,10 +29,8 @@ the focused node's menu.
 | nodeMenu | `((node: TopologyNode<T>) => TopologyNodeMenu \| undefined) \| undefined` | See type | no | — | The node's ActionSet for right-click. |
 | nodes | `readonly TopologyNode<T>[] \| undefined` | See type | yes | — | undefined while loading: the skeleton shows in the same box. |
 | onOpen | `((node: TopologyNode<T>) => void) \| undefined` | See type | no | — | Double-click (and the caller's Open action): the node's page. |
-| onSelect | `((id: string \| null) => void) \| undefined` | See type | no | — | Called with the node id the person selects (click, Enter or Space), or `null` to clear: Space on the selected node, Escape, or a click on empty canvas. Pair with `selectedId` to show the selection. |
+| onSelectedIdChange | `((id: string \| null, details: SelectionChangeDetails<TopologyNode<T>>) => void) \| undefined` | See type | no | — | Called with the node id the person selects (click, Enter or Space), or `null` when they clear it (Space on the selected node, Escape, or a click on empty canvas), and details whose `item` is the node. Not called when the id is unchanged. |
 | onViewChange | `((view: TopologyView) => void) \| undefined` | See type | no | — | Called with the view the person switches to from the view toggle in the map's controls; the toggle shows only when this is set. Pair with `view`. |
 | renderNode | `(node: TopologyNode<T>) => ReactNode` | See type | yes | — | The node's tile (an identity's icon tier). Keep it stable (useCallback). |
-| selectedId | `string \| null \| undefined` | See type | no | null | Stable identifier of the selected item. |
+| selectedId | `string \| null \| undefined` | See type | no | — | The selected node's id, or null for none. Controlled while defined; leave it undefined to use `defaultSelectedId`. |
 | view | `TopologyView \| undefined` | "map", "list" | no | "map" | Currently selected presentation view. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

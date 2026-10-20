@@ -18,6 +18,7 @@ default, because nobody clicks from 443 to 8443.
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale the number is shown and typed in (decimal and grouping marks). Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
 | onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the text input loses focus, so a form can mark the field touched. |
 | onValueChange | `((value: number \| null) => void) \| undefined` | See type | no | — | Called with the parsed number, or null when the box is empty, as it is typed, stepped or scrubbed. Pair with `value` to control it; use `defaultValue` otherwise. |
@@ -31,5 +32,3 @@ default, because nobody clicks from 443 to 8443.
 | steppers | `boolean \| undefined` | false, true | no | false | Show the − / + steppers (default). Arrow keys always step. |
 | value | `number \| null \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "short" | Content width: short (port, PIN), medium (name, hostname), full (default). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

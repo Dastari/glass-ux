@@ -21,6 +21,7 @@ Arrow keys step, Shift/Page keys take large steps, Home/End jump to the ends.
 | format | `((value: number) => string) \| undefined` | See type | no | — | Formats the bubble and aria-valuetext. Default: the number plus `unit`. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | largeStep | `number \| undefined` | See type | no | — | The larger keyboard increment. |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale for the default bubble and aria-valuetext number. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | marks | `boolean \| (number \| SliderMark)[] \| undefined` | See type | no | — | Tick marks under the track; `true` puts one on every step (use for ≤ 20 steps). |
 | max | `number \| undefined` | See type | no | 100 | Upper value or visible-item limit, as specified by the type. |
 | min | `number \| undefined` | See type | no | 0 | Lower allowed value. |
@@ -34,5 +35,3 @@ Arrow keys step, Shift/Page keys take large steps, Home/End jump to the ends.
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | The range colour. Status tones only when the value is a status threshold (R3.3). |
 | unit | `string \| undefined` | See type | no | — | Unit after the number, joined with a thin space ("Mbps", "%"). |
 | value | `number \| number[] \| undefined` | See type | no | — | A number for one thumb, a pair for a range. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

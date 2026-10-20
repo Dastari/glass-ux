@@ -32,5 +32,3 @@ onValueChange and the group's accessible name are the same in every form.
 | size | `SegmentedSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | The chosen segment's tint. Status tones only when the modes are statuses (R3.3). |
 | value | `V \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

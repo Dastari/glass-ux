@@ -14,4 +14,12 @@ A brand source drawn in its two tones. Size it from the outside (width/height or
 | source | `BrandSource` | See type | yes | — | The typed source adapter or asset definition consumed by this component. |
 | tones | `BrandTones \| undefined` | "palette", "brand", "mono" | no | — | Default: the configured tones. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
+| ref | `Ref<SVGSVGElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

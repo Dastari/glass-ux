@@ -21,5 +21,3 @@ Choose a context (an organisation, a project, a workspace) from a complete local
 | recent | `readonly string[] \| undefined` | See type | no | [] | Recently chosen context ids, most recent first (useRecentContexts). |
 | remote | `ContextSwitcherRemote \| undefined` | See type | no | — | Controlled server search/paging. Bypasses local filtering and ignores parent links and recents. |
 | value | `string \| null` | See type | yes | — | The current scope: a context id, or null for all (or none, when `all` is false). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -12,5 +12,3 @@ Draggables inside belong to `zoneId` (for zones built with `useDropZone`).
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | no | — | The zone's content. |
 | zoneId | `string` | See type | yes | — | The zone the Draggables inside belong to. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

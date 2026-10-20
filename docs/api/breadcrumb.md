@@ -20,5 +20,3 @@ crumb truncates with an ellipsis at a maximum width.
 | items | `Crumb[]` | See type | yes | — | Root first, current place last. Feed it from the router's matches. |
 | renderLink | `RenderCrumbLink \| undefined` | See type | no | — | Renders crumbs with `link` as router links (RouteBreadcrumb supplies this). |
 | scope | `BreadcrumbScope \| undefined` | See type | no | — | The scope row above the trail when folded into it: the organisation. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

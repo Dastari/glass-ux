@@ -14,5 +14,3 @@ last prose block of a streaming message.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | message | `AiMessage` | See type | yes | — | The assistant message whose `blocks` render in order; a `streaming` state puts the caret after its last prose block. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

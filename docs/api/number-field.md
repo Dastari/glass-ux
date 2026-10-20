@@ -20,6 +20,7 @@ with tabular figures.
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
 | largeStep | `number \| undefined` | See type | no | — | The larger keyboard increment. |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale the number is shown and typed in (decimal and grouping marks). Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | max | `number \| undefined` | See type | no | — | Upper value or visible-item limit, as specified by the type. |
 | min | `number \| undefined` | See type | no | — | Lower allowed value. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
@@ -36,5 +37,3 @@ with tabular figures.
 | unit | `ReactNode` | See type | no | — | Unit after the value ("MB", "ms", "devices"). |
 | value | `number \| null \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

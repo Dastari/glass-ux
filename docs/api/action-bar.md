@@ -22,5 +22,3 @@ primary never moves and nothing around it shifts.
 | onLevelChange | `((level: ActionBarLevel, count: number) => void) \| undefined` | See type | no | — | Report the current level (tests, stories). |
 | set | `ActionSet<T>` | See type | yes | — | Shared action definitions used by menus, headers and the command palette. |
 | targets | `readonly T[]` | See type | yes | — | Selected entities passed to action visibility, enablement, confirmation and execution. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -25,5 +25,3 @@ cancels; outside presses do nothing. While the action runs, it cannot be dismiss
 | title | `ReactNode` | See type | yes | — | Names the target: "Remove NST-C106 from Northstar Studio?" (R12.4). |
 | tone | `AlertTone \| undefined` | "danger", "warning", "default" | no | "danger" | The semantic tone. Use danger and warning for consequences and states. |
 | trigger | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | The element that opens it. Omit when controlling `open`. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

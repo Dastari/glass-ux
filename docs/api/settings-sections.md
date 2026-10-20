@@ -16,5 +16,3 @@ The rail + pane body of a settings dialog. Usable inside any Dialog.Popup.
 | onSectionChange | `((section: string) => void) \| undefined` | See type | no | — | Called with the chosen section's `value` when the person switches section; the pane scrolls back to the top. Pair with `section` to control it. |
 | section | `string \| undefined` | See type | no | — | Active section identifier. |
 | sections | `SettingsSection[]` | See type | yes | — | Section definitions in display order. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

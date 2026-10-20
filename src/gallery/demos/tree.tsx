@@ -71,7 +71,7 @@ function SidebarTree({
           aria-label="Endpoints"
           defaultExpanded={ALL_OPEN.slice(0, 3)}
           selectedId={selected}
-          onSelect={(node) => setSelected(node.id)}
+          onSelectedIdChange={setSelected}
           query={query}
           emptyText={(q) => `No endpoints match “${q}”`}
         />
@@ -98,7 +98,7 @@ function LinkedTree() {
         nodes={NODES}
         aria-label="Endpoints (links)"
         defaultExpanded={ALL_OPEN}
-        selectedId="nst-c106"
+        defaultSelectedId="nst-c106"
         renderLink={(node, props) => (
           <Link
             to="/demo/o/$org/devices/$id"
@@ -150,7 +150,7 @@ export default function TreeSection() {
             nodes={MANY}
             aria-label="All endpoints"
             defaultExpanded={MANY.map((node) => node.id)}
-            selectedId="orb-2"
+            defaultSelectedId="orb-2"
           />
         </div>
       </Specimen>
@@ -207,7 +207,7 @@ export default function TreeSection() {
             nodes={NODES}
             aria-label="Endpoints in a lab frame"
             defaultExpanded={ALL_OPEN}
-            selectedId="nst-c106"
+            defaultSelectedId="nst-c106"
           />
         )}
       </ContainerLab>

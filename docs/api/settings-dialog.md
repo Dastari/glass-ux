@@ -29,5 +29,3 @@ resizes the dialog.
 | subtitle | `ReactNode` | See type | no | — | Data: the target, e.g. "LMN-7C71". |
 | title | `ReactNode` | See type | yes | — | "Agent settings" |
 | trigger | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | Control that opens the overlay or action. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

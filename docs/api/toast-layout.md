@@ -15,5 +15,3 @@ The inside of a toast. Shared by live toasts and the static preview.
 | description | `ReactNode` | See type | no | — | Additional content describing the value, state, or consequence. |
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
 | tone | `ToastTone` | "danger", "warning", "success", "info" | yes | — | The semantic tone. Use danger and warning for consequences and states. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -22,5 +22,3 @@ when the colours arrive.
 | maxLines | `number \| undefined` | See type | no | COLLAPSED_LINES | Lines before the block collapses; 0 never collapses. |
 | title | `string \| undefined` | See type | no | — | A title in place of the language label ("Clear-PrintQueue.ps1"). |
 | wrap | `boolean \| undefined` | false, true | no | false | Start wrapped (logs, long one-liners). The reader can toggle it. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

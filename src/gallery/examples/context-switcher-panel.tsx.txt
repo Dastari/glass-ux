@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MOCK_ORGANISATIONS, toContextItem } from "glass-ux/gallery/fixtures/organisations";
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { ContextSwitcherPanel } from "glass-ux/shell/context-switcher/index";
+import { ContextSwitcherPanel } from "glass-ux/shell/context-switcher";
 
 const ORGS = MOCK_ORGANISATIONS.map(toContextItem);
 const RECENT = ["cedarvale", "mossbridge", "orbit"];

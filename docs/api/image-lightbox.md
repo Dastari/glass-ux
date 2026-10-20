@@ -17,5 +17,3 @@ and zoom (fit, 150 %, 200 %, 300 %); the zoomed image scrolls inside the stage.
 | onIndexChange | `(index: number) => void` | See type | yes | — | Called with the zero-based index to show next, from previous / next or ← → (wrapping at the ends). Pair with `index`. |
 | onOpenChange | `(open: boolean) => void` | See type | yes | — | Called with `false` when the person dismisses the dialog, for example with Esc. Pair with `open`. |
 | open | `boolean` | false, true | yes | — | Controls whether the overlay is open. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -21,5 +21,3 @@ marks it for removal on save (with Undo). With nothing stored, the box takes a n
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | value | `SecretValue` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Available width or named width tier. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

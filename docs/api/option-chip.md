@@ -18,5 +18,3 @@ the input; Backspace or Delete removes the focused one.
 | label | `string` | See type | yes | — | The visible or accessible label for this component. |
 | onEdit | `(() => void) \| undefined` | See type | no | — | Enter or double-click edits the chip in place. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Plain text: nothing to focus or remove. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -57,5 +57,3 @@ Static, non-interactive menu parts that render a menu's appearance in place, for
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

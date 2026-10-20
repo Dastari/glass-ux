@@ -13,5 +13,3 @@ or the Glass UX record each came from. External sources open in a new tab and sa
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | sources | `AiSource[]` | See type | yes | — | Citations or data sources associated with the content. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

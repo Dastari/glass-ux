@@ -14,5 +14,3 @@ The editor's adaptive toolbar and empty content geometry while the engine or doc
 | maxHeight | `number \| undefined` | See type | no | 480 | Same content bound as RichTextInput. Default 480 CSS pixels. |
 | minHeight | `number \| undefined` | See type | no | 160 | Same content height as RichTextInput. Default 160 CSS pixels. |
 | style | `CSSProperties \| undefined` | See type | no | — | Outer layout styles, matching the loaded input's layout. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

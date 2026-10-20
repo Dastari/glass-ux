@@ -33,5 +33,3 @@ the boxes themselves; nothing moves.
 | size | `"md" \| "lg" \| undefined` | "md", "lg" | no | "lg" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | status | `OtpStatus \| undefined` | "success", "error" | no | — | error: the code was refused. success: accepted — boxes go green with a ✓, no shift either way. |
 | value | `string \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

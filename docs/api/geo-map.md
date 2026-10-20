@@ -14,6 +14,7 @@ list view in the same box. It shows the region silhouette while loading.
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | config | `MapConfig` | See type | yes | — | Typed component configuration and external provider definitions. |
+| defaultSelectedId | `string \| null \| undefined` | See type | no | — | The point selected at first when the selection is uncontrolled. |
 | frame | `MapFrame \| undefined` | "points", "home" | no | "home" | Frame the home region (default) or the points. |
 | frameKey | `string \| undefined` | See type | no | — | Re-frame when this changes (a new scope, a new home region). |
 | home | `MapRegion \| null \| undefined` | See type | yes | — | The home region: undefined while it loads, null when there is none. |
@@ -22,15 +23,13 @@ list view in the same box. It shows the region silhouette while loading.
 | list | `ReactNode` | See type | no | — | The list view: the caller's table, with a ViewToggle in its toolbar. |
 | loading | `boolean \| undefined` | false, true | no | false | The points are still loading: the silhouette stays, markers wait. |
 | noun | `MapNoun \| undefined` | See type | no | { one: "site", other: "sites" } | Singular and plural names used in counts and accessible labels. |
-| onSelect | `((point: MapPoint<T> \| null) => void) \| undefined` | See type | no | — | Called with the point whose popup the person pins: a click, Enter or Space on its marker, or choosing it from a cluster popup. Hover and focus previews do not call it. Pair with `selectedId` to show the selection. |
+| onSelectedIdChange | `((id: string \| null, details: SelectionChangeDetails<MapPoint<T>>) => void) \| undefined` | See type | no | — | Called with the id of the point whose popup the person pins (a click, Enter or Space on its marker, or choosing it from a cluster popup or the off-screen list), and details whose `item` is the point. Hover and focus previews, and pinning the point already selected, do not call it. |
 | onViewChange | `((view: "map" \| "list") => void) \| undefined` | See type | no | — | Called with the view the person asks for ("list" or "map") from the view toggle, or "list" from the failure notice when the map cannot start. The toggle shows only when this is set. Pair with `view`. |
 | points | `readonly MapPoint<T>[]` | See type | yes | — | Geographical or chart points. |
 | pulses | `Readonly<Record<string, number>> \| undefined` | See type | no | — | Per point, a counter that changes when its status changes: the marker pulses once. |
 | regions | `readonly MapRegion[] \| undefined` | See type | no | NO_REGIONS | Other regions to outline faintly (the regions that hold points). Defaults to an empty list. |
 | renderClusterPopup | `((cluster: MapCluster<T>, context: MapClusterPopupContext) => ReactNode) \| undefined` | See type | no | — | Renders details for an aggregate map cluster. |
 | renderPopup | `(point: MapPoint<T>, context: MapPopupContext) => ReactNode` | See type | yes | — | Renders details for an individual map point. |
-| selectedId | `string \| null \| undefined` | See type | no | null | Stable identifier of the selected item. |
+| selectedId | `string \| null \| undefined` | See type | no | — | The selected point's id, or null for none. Controlled while defined; leave it undefined to use `defaultSelectedId`. |
 | statusLabels | `Readonly<Record<"danger" \| "warning" \| "healthy" \| "unknown", string>> \| undefined` | See type | no | DEFAULT_STATUS_LABELS | Display and accessible labels for the supported statuses. |
 | view | `"map" \| "list" \| undefined` | "map", "list" | no | "map" | "map" (default) or "list": the list replaces the map in the same box. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

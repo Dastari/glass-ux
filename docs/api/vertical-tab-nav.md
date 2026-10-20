@@ -20,5 +20,3 @@ or a picker whose rows are links. Router-agnostic: `RouteVerticalTabs` adapts it
 | layout | `VerticalTabsLayout \| undefined` | "select", "rail", "icons", "chips" | no | — | Layout or presentation mode. |
 | renderLink | `RenderVerticalTabLink<T>` | See type | yes | — | Renders a link with the host router. |
 | value | `string \| null` | See type | yes | — | The active section's value — derived from the location by the route adapter. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -13,5 +13,3 @@ and the tooltip names it. Part of the app bar's drag surface, like the title.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | scope | `string \| null` | See type | yes | — | The window's scope id (`WindowEntry.scope`), or null for an unscoped window, which shows no chip. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

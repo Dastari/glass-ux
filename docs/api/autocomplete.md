@@ -35,5 +35,3 @@ list or an async source and use the same rows as Select and Combobox.
 | source | `OptionSource<V> \| undefined` | See type | no | — | Or suggestions searched on a server as you type. |
 | value | `string \| undefined` | See type | no | — | The text. Not limited to the suggestions. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short, medium or full (default). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

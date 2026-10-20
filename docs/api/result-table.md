@@ -13,5 +13,3 @@ priority as the card narrows, and rows becoming a compact list in very narrow ca
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | result | `ResultBase & { type: "table"; columns: ResultColumn[]; rows: ResultRow[]; total: number; noun?: { one: string; other: string; }; }` | See type | yes | — | The table result: `columns`, `rows` (the first 8 show inline), `total` for the count and Show all, and an optional row `noun`. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -167,6 +167,7 @@
 - [Kbd](kbd.md) — `glass-ux/kbd`
 - [LineChart](line-chart.md) — `glass-ux/charts`
 - [ListRow](list-row.md) — `glass-ux/list-row`
+- [LocaleProvider](locale-provider.md) — `glass-ux/locale`
 - [LoginFlow](login-flow.md) — `glass-ux/login-flow`
 - [MacAddressField](mac-address-field.md) — `glass-ux/mac-field`
 - [MacAddressInput](mac-address-input.md) — `glass-ux/mac-field`

@@ -15,5 +15,3 @@ order, separated by the 2px surface gap, the whole bar's ends rounded.
 | items | `readonly StripItem[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
 | rem | `number` | See type | yes | — | px per rem, for the bar's thickness. |
 | width | `number` | See type | yes | — | Width of the strip's box in px; segments share it after the 2px gaps. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

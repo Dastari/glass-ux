@@ -15,5 +15,3 @@ inside it.
 | caption | `string` | See type | yes | — | Accessible caption or figure description. |
 | model | `ChartTableModel` | See type | yes | — | Selected assistant model or typed view model. |
 | visible | `boolean \| undefined` | false, true | no | false | Visible "View as table" mode, or the always-present visually hidden fallback. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

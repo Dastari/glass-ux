@@ -17,5 +17,3 @@ the plot's mode and palette islands, and never takes the pointer.
 | anchor | `RefObject<HTMLElement \| null>` | See type | yes | — | The plot, for its mode/palette island. |
 | children | `(hover: Hover) => ReactNode` | See type | yes | — | Build the content for a hover; return null for none. |
 | store | `HoverStore` | See type | yes | — | External store observed by the component. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

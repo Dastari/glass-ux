@@ -18,5 +18,3 @@ The compact record an ask folds into once it is answered, approved, denied or ex
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | glyph | `ReactNode` | See type | no | — | Replace the status glyph (a pending question shows IconHelp, not the approval shield). |
 | status | `ToolStatus` | "queued", "cancelled", "failed", "running", "succeeded", "awaiting-approval" | yes | — | Current operation or connection status. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

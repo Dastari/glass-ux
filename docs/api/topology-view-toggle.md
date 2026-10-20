@@ -13,5 +13,3 @@
 | onViewChange | `(view: TopologyView) => void` | See type | yes | — | Called with the view the person switches to. |
 | size | `"sm" \| "md" \| undefined` | "sm", "md" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | view | `TopologyView` | "map", "list" | yes | — | The view currently shown; the button offers the other one (an icon button on the map, "View as map" in the list). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

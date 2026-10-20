@@ -27,4 +27,17 @@ The trigger keeps its own accessible name; the tooltip repeats it visually.
 | shortcut | `string \| undefined` | See type | no | — | A keyboard shortcut drawn after the text in keycaps ("mod+k"). |
 | side | `"top" \| "bottom" \| "left" \| "right" \| undefined` | "top", "bottom", "left", "right" | no | "top" | Preferred side of the anchor; collision handling may choose another side. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| ((state: import("@base-ui/react").TooltipTriggerState) => string \| undefined) \| undefined` | See type | no | — | CSS class applied to the element, or a function that returns a class based on the component's state. |
+| closeOnClick | `boolean \| undefined` | false, true | no | — | Whether the tooltip should close when this trigger is clicked. |
+| handle | `TooltipHandle<unknown> \| undefined` | See type | no | — | A handle to associate the trigger with a tooltip. |
+| name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
+| payload | `unknown` | See type | no | — | A payload to pass to the tooltip when it is opened. |
+| ref | `((((instance: HTMLButtonElement \| null) => void \| (() => VoidOrUndefinedOnly) \| DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES]) \| RefObject<HTMLButtonElement \| null>) & (((instance: HTMLElement \| null) => void \| (() => VoidOrUndefinedOnly) \| DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES]) \| RefObject<HTMLElement \| null>)) \| null \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+| style | `React.CSSProperties \| ((state: import("@base-ui/react").TooltipTriggerState) => React.CSSProperties \| undefined) \| undefined` | See type | no | — | Style applied to the element, or a function that returns a style object based on the component's state. |
+| value | `string \| number \| readonly string[] \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

@@ -20,5 +20,3 @@ Compose application navigation, a top bar and a workspace, with optional section
 | rail | `ReactNode` | See type | yes | — | L1 navigation (Rail). |
 | tabBar | `ReactNode` | See type | no | — | Phone navigation (TabBar). |
 | topBar | `ReactNode` | See type | yes | — | The top bar (TopBar). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

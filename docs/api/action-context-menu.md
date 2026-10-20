@@ -15,5 +15,3 @@ menu its ⋯ button opens (R11.6) — the same definition, the same item parts.
 | label | `string` | See type | yes | — | The target's name: "Actions for NST-C106". |
 | set | `ActionSet<T>` | See type | yes | — | Shared action definitions used by menus, headers and the command palette. |
 | targets | `readonly T[]` | See type | yes | — | Selected entities passed to action visibility, enablement, confirmation and execution. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -16,5 +16,3 @@ a prompt for more characters. Rows are exactly one option tall.
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called when Retry is pressed in the error row. Without it the error row has no Retry button. |
 | status | `SearchStatus` | "idle", "error", "loading", "refreshing" | yes | — | Current operation or connection status. |
 | twoLine | `boolean \| undefined` | false, true | no | false | Two-line rows: the skeleton matches them. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -26,7 +26,7 @@ caret. libphonenumber-js loads with the first phone control.
 | flags | `boolean \| undefined` | false, true | no | true | Flags in the picker and the box (SVG, lazy). Default true. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Marks the control invalid. Pair it with an accessible validation message. |
-| kind | `PhoneKind \| undefined` | "mobile", "any" | no | "any" | Mobile numbers only (placeholder and icon; MobileField and mobileSchema check the type). |
+| kind | `PhoneKind \| undefined` | "any", "mobile" | no | "any" | Mobile numbers only (placeholder and icon; MobileField and mobileSchema check the type). |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
 | onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the number input loses focus, after its text is reformatted. |
 | onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called on each keystroke, paste, country or extension change with the E.164 value (";ext=" appended when there is one), or the text as typed while it cannot be read. Pair with `value` to control it; use `defaultValue` otherwise. |
@@ -38,5 +38,3 @@ caret. libphonenumber-js loads with the first phone control.
 | size | `"sm" \| "md" \| "lg" \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | value | `string \| undefined` | See type | no | — | E.164 ("+61412345678"), with ";ext=204" for an extension. While the text cannot be read, the text as typed. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "medium" | Content width (R15.6). Default medium. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

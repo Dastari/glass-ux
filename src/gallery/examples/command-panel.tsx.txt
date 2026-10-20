@@ -11,7 +11,7 @@ import {
   IconPlus,
   IconSun,
 } from "glass-ux/icons";
-import { useAppearance } from "glass-ux/lib/appearance/use-appearance";
+import { useAppearance } from "glass-ux/appearance";
 import { ActionProvider, usePaletteActions } from "glass-ux/actions";
 import {
   CommandPanel,

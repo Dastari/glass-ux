@@ -26,5 +26,3 @@ while the AI holds the screen; nothing else in the conversation competes with th
 | user | `string \| undefined` | See type | no | — | Who is signed in on the target ("AzureAD\\MiraRowan"). |
 | userEntity | `EntityRef \| undefined` | See type | no | — | Resolved signed-in person identity, rendered through the host entity adapter. |
 | userIdentity | `ReactNode` | See type | no | — | Host identity adapter, e.g. an account chip, when the signed-in value is a legacy account string. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

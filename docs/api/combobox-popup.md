@@ -18,5 +18,3 @@ the empty row, options (grouped when they name a group) and the "N more" footer.
 | loading | `boolean \| undefined` | false, true | no | false | Show skeleton rows (static lists loading from elsewhere). |
 | query | `string` | See type | yes | — | Current search text or typed query state. |
 | search | `OptionSearch<V> \| undefined` | See type | no | — | The async search, when the list comes from a source. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

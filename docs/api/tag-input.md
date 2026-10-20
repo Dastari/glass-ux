@@ -38,5 +38,3 @@ double-click. With suggestions or a source, the list offers matches and “Creat
 | value | `string[] \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Available width or named width tier. |
 | wrap | `boolean \| undefined` | false, true | no | true | Let chips wrap onto more lines (default). Off: one line that folds into "+N". |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

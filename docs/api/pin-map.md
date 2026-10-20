@@ -17,5 +17,3 @@ A map with one draggable pin for choosing a location: drag, click or nudge it wi
 | onValueChange | `((point: PinPoint) => void) \| undefined` | See type | no | — | Called when the pin is dropped, nudged with the arrow keys or placed by a click. Without it the pin is fixed (a read-only preview). |
 | value | `PinPoint \| null` | See type | yes | — | The pin, or null for none yet. |
 | zoom | `number \| undefined` | See type | no | 16 | Zoom used to show the pin. Default 16 (a street and its buildings). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

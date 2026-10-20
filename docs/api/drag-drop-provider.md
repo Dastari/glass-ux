@@ -23,5 +23,3 @@ Put one around a screen or the whole application; providers do not exchange item
 | onDragOver | `((event: DragOverEvent) => void) \| undefined` | See type | no | — | The target zone, insertion index or the target's verdict changed. |
 | onDragStart | `((event: DragStartEvent) => void) \| undefined` | See type | no | — | An item was lifted: past the pointer threshold, after a touch press, or with Space or Enter. |
 | onDrop | `((event: DropEvent) => void) \| undefined` | See type | no | — | An item was dropped on a zone that accepted it, after the zone's own `onDrop`. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -20,13 +20,16 @@ function SampleWindowBody() {
   );
 }
 
+// Kinds register once at module scope, never during render: registering notifies every
+// mounted WindowContentHost.
+registerWindowKind({
+  kind: "docs.notes",
+  icon: IconOrganisation,
+  title: () => "Exhibition notes",
+  load: async () => ({ default: SampleWindowBody }),
+});
+
 function makeWindowDemo() {
-  registerWindowKind({
-    kind: "docs.notes",
-    icon: IconOrganisation,
-    title: () => "Exhibition notes",
-    load: async () => ({ default: SampleWindowBody }),
-  });
   const manager = createWindowManager({ storageKey: null, channelName: null });
   const id = manager.open({ kind: "docs.notes", params: {} });
   return { manager, id };

@@ -19,7 +19,7 @@ not a day (or is outside min/max) turns the box invalid and keeps what was typed
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. Text that is not a date marks the field invalid by itself. |
-| locale | `string \| undefined` | See type | no | "en-AU" | BCP 47 locale: the typed order ("dd/mm/yyyy" in en-AU), names, first weekday. |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale: the typed order ("dd/mm/yyyy" in en-AU), names, first weekday. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | max | `string \| undefined` | See type | no | — | Upper value or visible-item limit, as specified by the type. |
 | min | `string \| undefined` | See type | no | — | Lower allowed value. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
@@ -31,5 +31,3 @@ not a day (or is outside min/max) turns the box invalid and keeps what was typed
 | size | `DateFieldSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | value | `string \| null \| undefined` | See type | no | — | A calendar day (`2026-10-13`), or null when empty. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "medium" | Content width (R15.6). A date fits `short`… almost: the default is medium. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

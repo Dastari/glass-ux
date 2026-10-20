@@ -12,5 +12,3 @@ Two stacked lines: a value and a data subtitle ("Windows 11 Business" / "10.0.26
 | --- | --- | --- | --- | --- | --- |
 | subtitle | `ReactNode` | See type | no | — | Data shown beneath or beside the title. |
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

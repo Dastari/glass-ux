@@ -15,5 +15,3 @@ Same rows and heights as a loaded Progress.
 | label | `boolean \| undefined` | false, true | no | true | The visible or accessible label for this component. |
 | meta | `boolean \| undefined` | false, true | no | false | Supporting data displayed with the item. |
 | size | `ProgressSize \| undefined` | "sm", "md" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

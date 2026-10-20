@@ -17,4 +17,16 @@ clears the rest and shows the mixed state when only some are ticked (pass `allVa
 | orientation | `"horizontal" \| "vertical" \| undefined` | "horizontal", "vertical" | no | "vertical" | Direction of layout and keyboard navigation. |
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | Tone for every checkbox in the group. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| allValues | `string[] \| undefined` | See type | no | — | Names of all checkboxes in the group. Use this when creating a parent checkbox. |
+| defaultValue | `string[] \| undefined` | See type | no | — | Names of the checkboxes in the group that should be initially ticked.  To render a controlled checkbox group, use the `value` prop instead. |
+| disabled | `boolean \| undefined` | false, true | no | — | Whether the component should ignore user interaction. |
+| onValueChange | `((value: string[], eventDetails: CheckboxGroupChangeEventDetails) => void) \| undefined` | See type | no | — | Event handler called when a checkbox in the group is ticked or unticked. Provides the new value as an argument. |
+| ref | `Ref<HTMLDivElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+| style | `React.CSSProperties \| ((state: import("@base-ui/react").CheckboxGroupState) => React.CSSProperties \| undefined) \| undefined` | See type | no | — | Style applied to the element, or a function that returns a style object based on the component's state. |
+| value | `string[] \| undefined` | See type | no | — | Names of the checkboxes in the group that should be ticked.  To render an uncontrolled checkbox group, use the `defaultValue` prop instead. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

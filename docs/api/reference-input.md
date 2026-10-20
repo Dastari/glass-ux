@@ -44,5 +44,3 @@ Read-only (or `direction="from"` for backlinks) it lists the chips in a recessed
 | source | `ReferenceSource` | See type | yes | — | Where |
 | value | `ReferenceLink<R>[] \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Available width or named width tier. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

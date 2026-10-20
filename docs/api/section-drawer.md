@@ -14,6 +14,17 @@ Compose a section navigation drawer with header, search, groups, items, body and
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string` | See type | yes | — | Accessible name: "Assistant navigation". |
 
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
+
 ## SectionDrawer.Header
 
 
@@ -24,6 +35,17 @@ Compose a section navigation drawer with header, search, groups, items, body and
 | icon | `ReactNode` | See type | no | — | The section's mark or icon. |
 | subtitle | `ReactNode` | See type | no | — | Data only, on a second line under the title: a version, a workspace identifier (R2.2). |
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
+
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
 
 ## SectionDrawer.Search
 
@@ -53,6 +75,17 @@ Compose a section navigation drawer with header, search, groups, items, body and
 | --- | --- | --- | --- | --- | --- |
 | fill | `boolean \| undefined` | false, true | no | false | The body does not scroll; its last child fills the remaining height and scrolls itself (a virtualised Tree), so the drawer never shows two scrollbars. |
 
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLDivElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
+
 ## SectionDrawer.Footer
 
 
@@ -60,12 +93,34 @@ Compose a section navigation drawer with header, search, groups, items, body and
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLDivElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
+
 ## SectionDrawer.List
 
 
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLUListElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
 
 ## SectionDrawer.Item
 
@@ -81,6 +136,16 @@ Compose a section navigation drawer with header, search, groups, items, body and
 | label | `ReactNode` | See type | yes | — | The visible or accessible label for this component. |
 | render | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | Render as a router link: render={<Link to="…" />}. Default: a button. |
 
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLAnchorElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
+
 ## SectionDrawer.Group
 
 
@@ -92,5 +157,3 @@ Compose a section navigation drawer with header, search, groups, items, body and
 | count | `number \| undefined` | See type | no | — | Item count shown by the component. |
 | id | `string` | See type | yes | — | Persisted collapsed state key, e.g. "ai.projects". |
 | title | `string` | See type | yes | — | The heading or title content. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

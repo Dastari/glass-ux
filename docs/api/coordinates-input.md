@@ -34,4 +34,16 @@ the device's location (the browser asks for permission; a blocked site says how 
 | value | `LatLng \| null \| undefined` | See type | no | — | The point; null when empty. While the text cannot be read it is UNREADABLE (NaN), or the out-of-range numbers. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
+| name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
+| placeholder | `string \| undefined` | See type | no | "-42.88334, 147.32688" | The prompt shown while the value is empty. It does not replace the field’s label. |
+| readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
+| required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
+| style | `React.CSSProperties \| ((state: import("@base-ui/react").InputState) => React.CSSProperties \| undefined) \| undefined` | See type | no | — | Style applied to the element, or a function that returns a style object based on the component's state. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

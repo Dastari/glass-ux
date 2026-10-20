@@ -16,5 +16,3 @@ The row ⋯ menu (R12.1): a ghost icon button that opens every action for the ro
 | size | `ButtonSize \| undefined` | "xs", "sm", "md", "lg" | no | "sm" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | targets | `readonly T[]` | See type | yes | — | Selected entities passed to action visibility, enablement, confirmation and execution. |
 | trigger | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | Replace the ⋯ trigger (it must forward its ref and spread props). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

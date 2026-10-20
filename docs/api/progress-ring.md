@@ -16,5 +16,3 @@ A compact circular progress for inline and icon-sized spots. `lg` prints the per
 | size | `ProgressRingSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | tone | `ProgressTone \| undefined` | "danger", "success", "accent" | no | "accent" | The semantic tone. Use danger and warning for consequences and states. |
 | value | `number \| null` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

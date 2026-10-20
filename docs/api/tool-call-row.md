@@ -16,5 +16,3 @@ preview (copyable JSON). Failures keep their reason visible without expanding.
 | call | `AiToolCall` | See type | yes | — | Tool call and its current execution state. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | defaultOpen | `boolean \| undefined` | false, true | no | false | Start expanded (galleries, failures you want seen). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

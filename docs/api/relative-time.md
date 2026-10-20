@@ -12,5 +12,3 @@
 | --- | --- | --- | --- | --- | --- |
 | fallback | `string \| undefined` | See type | no | "Never" | Text for a missing value. |
 | value | `string \| number \| Date \| null \| undefined` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -15,8 +15,6 @@ Loading placeholder with the same boxes as the loaded identity at each tier; wit
 | facts | `boolean \| undefined` | false, true | no | — | Reserve the facts line (header, compact) or the second line (row). Default true. |
 | fill | `boolean \| undefined` | false, true | no | — | Lets the component fill a box with a definite size. |
 | metric | `boolean \| undefined` | false, true | no | — | Reserve the live metric's box (header). |
-| size | `"inline" \| "sm" \| undefined` | "inline", "sm" | no | — | Chip size. |
+| size | `"sm" \| "inline" \| undefined` | "sm", "inline" | no | — | Chip size. |
 | tabs | `boolean \| undefined` | false, true | no | — | Tab definitions in display order. |
-| tier | `EntityTierProp \| undefined` | "header", "row", "auto", "compact", "icon", "chip" | no | "auto" | Named size tier or automatic container-based tier selection. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+| tier | `EntityTierProp \| undefined` | "header", "compact", "icon", "auto", "row", "chip" | no | "auto" | Named size tier or automatic container-based tier selection. |

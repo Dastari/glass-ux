@@ -27,12 +27,19 @@ Present a host-defined entity with its glyph or avatar, readable name and suppor
 | portrait | `EntityPortrait \| undefined` | See type | no | — | A person in the icon slot at every tier, with the glyph as a corner mark. Beats `image`. |
 | preview | `boolean \| undefined` | false, true | no | — | Chip only: open the preview card on hover and focus (default true). |
 | secondary | `ReactNode` | See type | no | — | A row's second line. Defaults to the facts. |
-| size | `"inline" \| "sm" \| undefined` | "inline", "sm" | no | — | Chip only: inline sits in a prose line box (20px), sm suits rows and the composer (24px). |
+| size | `"sm" \| "inline" \| undefined` | "sm", "inline" | no | — | Chip only: inline sits in a prose line box (20px), sm suits rows and the composer (24px). |
 | slots | `EntitySlots \| undefined` | See type | no | — | Overrides for named content slots. |
 | state | `EntityState \| undefined` | See type | no | — | Controlled view state, including loading, empty and error states. |
 | tabs | `ReactNode` | See type | no | — | L2 tabs, header only. |
 | target | `T \| undefined` | See type | no | — | The entity the actions run against. |
-| tier | `EntityTierProp \| undefined` | "header", "row", "auto", "compact", "icon", "chip" | no | "auto" | A tier, or `auto` (default) to let the container decide on both axes (see tier.ts). |
+| tier | `EntityTierProp \| undefined` | "header", "compact", "icon", "auto", "row", "chip" | no | "auto" | A tier, or `auto` (default) to let the container decide on both axes (see tier.ts). |
 | title | `ReactNode` | See type | no | — | Rendered instead of the name (search highlights). The name stays the accessible text. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

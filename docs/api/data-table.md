@@ -31,11 +31,12 @@ error states that keep the table's box, and opt-in row reordering by drag or key
 | getRowId | `(row: T) => string` | See type | yes | — | Returns a stable row identifier for selection, live updates and preferences. |
 | getRowLabel | `((row: T) => string) \| undefined` | See type | no | — | Accessible label for a row ("NST-C106"): selection, actions and the reorder grip and announcements use it. Defaults to the first column's text. |
 | grouping | `DataTableGrouping<T> \| undefined` | See type | no | — | Group the rows (server-side, docs/data-filters.md §7): a header row per group with its count from the server, which collapses (click, Enter or Space; ← and → on the header; Alt-click toggles every group). Each expanded group shows its first `pageSize` rows and a "Show more" line while the server has more; the pager gives way to a count. The collapsed groups and "Show more" counts are the `groups` state slice (in the URL with `useTableUrlState({ grouped: true })`). Pass `rows` in group order: each expanded group's loaded rows, as `groupOf` assigns them. |
-| height | `"auto" \| "fill" \| undefined` | "auto", "fill" | no | "fill" | "fill" (default) fills a parent with a definite height and scrolls inside. |
+| height | `"fill" \| "auto" \| undefined` | "fill", "auto" | no | "fill" | "fill" (default) fills a parent with a definite height and scrolls inside. |
 | id | `string` | See type | yes | — | Stable id: persists column widths, hidden columns, pins and density per user. |
 | label | `string` | See type | yes | — | Accessible name of the grid, e.g. "Endpoints". |
 | live | `boolean \| undefined` | false, true | no | false | Live data: flash changed cells and hold new rows behind an "N new" pill. |
 | loading | `boolean \| undefined` | false, true | no | false | First load: skeleton rows in the final shape. |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale for this table's numbers, dates, counts and local sorting. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | noun | `DataTableNoun \| undefined` | See type | no | — | Noun for counts in the status bar ("1,284 endpoints"). |
 | onAction | `((action: ResolvedAction<T>, targets: readonly T[], surface: ActionSurface) => void) \| undefined` | See type | no | — | Run actions yourself. By default every surface uses the shared runner: confirm in an AlertDialog, run, then report with a toast (R12.4, R12.5). With `onAction`, the confirmation and the feedback are the caller's. |
 | onDensityChange | `((density: DataTableDensity) => void) \| undefined` | See type | no | — | Called with the density the person picks. Pair with `density` to control it; without `density` the table also stores the choice in its preferences. |
@@ -58,5 +59,3 @@ error states that keep the table's box, and opt-in row reordering by drag or key
 | status | `ReactNode` | See type | no | — | Extra status bar content (connection state, last sync). |
 | toolbar | `ReactNode` | See type | no | — | The table's own controls (a view switch, Refresh), at the end of the toolbar. |
 | updatedAt | `number \| Date \| undefined` | See type | no | — | When the data was last refreshed (status bar: "Updated 2 min ago"). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

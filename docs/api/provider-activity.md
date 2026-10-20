@@ -14,5 +14,3 @@ replaced in place by the answer.
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | status | `AiProviderStatus` | See type | yes | — | Current operation or connection status. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

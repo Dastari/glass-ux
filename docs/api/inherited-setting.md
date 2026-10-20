@@ -27,5 +27,3 @@ names the enforcer and cannot be overridden.
 | overridden | `boolean` | false, true | yes | — | The entity sets its own value. |
 | scope | `string \| undefined` | See type | no | "this item" | Whose override it is: "this device" → "Overridden for this device". |
 | source | `ReactNode` | See type | yes | — | Who the value comes from while not overridden, as the UI names them: "Orbit Workspace", "Central studio (site)", "the workspace". |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

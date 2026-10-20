@@ -15,5 +15,3 @@ bottom, the content above moves instead of the messages below (see ConversationL
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | record | `ReactNode` | See type | yes | — | Resolved request or audit record displayed by the component. |
 | resolved | `boolean` | false, true | yes | — | Resolved state of the request. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

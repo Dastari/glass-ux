@@ -1,6 +1,6 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { ThemeToggle } from "glass-ux/shell";
-import { AppearanceProvider } from "glass-ux/lib/appearance/index";
+import { AppearanceProvider } from "glass-ux/appearance";
 import { SwatchPicker } from "glass-ux/swatch-picker";
 
 export default function AppearanceProviderExample() {

@@ -22,5 +22,3 @@ thresholds, and the threshold is marked on the track so the reader sees how clos
 | value | `number` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |
 | valueText | `string \| undefined` | See type | no | — | The reading, with units: "212 GB of 256 GB". Defaults to the percentage. |
 | warningAt | `number \| undefined` | See type | no | 0.75 | Fraction of max where the bar turns warning (default 0.75) and danger (0.9). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

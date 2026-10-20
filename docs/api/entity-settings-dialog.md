@@ -45,5 +45,3 @@ and Cancel / Save. One form spans every tab, so Save sends one document.
 | tab | `string \| undefined` | See type | no | — | The open tab, when it lives in the URL (`?settings=snmp`). |
 | tabs | `readonly EntitySettingsTab[]` | See type | yes | — | Tab definitions in display order. |
 | title | `ReactNode` | See type | no | "Settings" | Default "Settings". |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -13,5 +13,3 @@ cross-tab sync) before the first paint after hydration.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | manager | `WindowManager` | See type | yes | — | The store from `createWindowManager`. Create it once (module scope or a ref); a new instance reconnects. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -2,7 +2,7 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { BRAND_SOURCES } from "../fixtures/brand.js";
 import { Example, SectionPage, Specimen } from "../kit.js";
-import { PALETTES, PALETTE_LABELS } from "../../lib/appearance/appearance.js";
+import { PALETTES, PALETTE_LABELS } from "../../lib/appearance/index.js";
 import { BrandLogo, BrandMark, type BrandTones } from "../../ui/brand/index.js";
 
 const SOURCES = Object.values(BRAND_SOURCES);

@@ -14,4 +14,12 @@ Overlapping faces for "who is here" (watchers, active sessions).
 | people | `{ name: string; src?: string; }[]` | See type | yes | — | The people rendered in the avatar group, in display order. |
 | size | `AvatarSize \| undefined` | "xs", "sm", "md", "lg", "xl" | no | "sm" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLSpanElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

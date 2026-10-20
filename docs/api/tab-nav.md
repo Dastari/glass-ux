@@ -19,5 +19,3 @@ TanStack Router.
 | items | `T[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
 | renderLink | `RenderTabLink<T>` | See type | yes | — | Renders a tab or More-menu row as a link, spreading the props given. |
 | value | `string \| null` | See type | yes | — | The active tab's value — derived from the location by the route adapter. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

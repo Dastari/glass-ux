@@ -21,6 +21,12 @@ palette parameters. Register its identifier and label with `definePalette(id, la
 use it in `configureAppearance`. Use a project storage key to retain existing preferences.
 Configure product marks with `configureBrand`; the library ships no application logos.
 
+Components format with the page's `<html lang>`, or with `configureLocale()` from
+`glass-ux/locale` when the application sets one; see
+[Set the formatting locale](getting-started.md#set-the-formatting-locale). A page without
+`lang` or a configured locale formats as `en-US`. Wrap a region in `LocaleProvider` when it
+must format differently, such as a customer's invoice.
+
 When replacing local components, remove their duplicate implementation after the packaged
 version passes the application's checks. Keep application-specific components and compose
 them from Glass UX. A release dependency and lockfile should identify the exact archive used.

@@ -12,7 +12,7 @@ import {
   type IsoDate,
   type TimeValue,
 } from "../../ui/date-picker/index.js";
-import { TimeList } from "../../ui/date-picker/time-list.js";
+import { TimeList } from "../sections/date-picker.kit.js";
 
 const today = todayIso();
 

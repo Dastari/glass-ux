@@ -16,6 +16,4 @@ the parent a height.
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | edges | `"none" \| "hairline" \| "fade" \| undefined` | "none", "hairline", "fade" | no | "hairline" | What marks an edge with content beyond it (R5.8):   hairline  a 1px line at the scrolled edge (lists under a header, above a footer)   fade      a soft mask (strips of chips, previews)   none |
-| orientation | `"both" \| "horizontal" \| "vertical" \| undefined` | "both", "horizontal", "vertical" | no | "vertical" | Which axes scroll. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+| orientation | `"horizontal" \| "vertical" \| "both" \| undefined` | "horizontal", "vertical", "both" | no | "vertical" | Which axes scroll. |

@@ -15,5 +15,3 @@ Every row of the Metric in the same tier geometry, so loading never shifts a pix
 | delta | `boolean \| undefined` | false, true | no | true | Change from the comparison value. |
 | range | `boolean \| undefined` | false, true | no | false | Visible range or selected value interval. |
 | stats | `boolean \| undefined` | false, true | no | true | Summary statistics displayed with the content. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

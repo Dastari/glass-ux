@@ -20,5 +20,3 @@ readable", "Daily allowance 82%" in the warning tone from 80%.
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called from Retry now, shown whenever `stream` is not `connected` and this is supplied. |
 | retryAt | `number \| undefined` | See type | no | — | Reconnecting: when the next attempt runs (Unix ms) and which attempt it is. |
 | stream | `StreamState` | "offline", "reset", "connected", "reconnecting" | yes | — | Current message stream state. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

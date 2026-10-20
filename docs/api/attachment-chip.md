@@ -12,5 +12,3 @@ An attachment in the composer: type glyph, name, size or upload progress, remove
 | --- | --- | --- | --- | --- | --- |
 | attachment | `AiAttachment` | See type | yes | — | The attachment identifier, label, media type and availability. |
 | onRemove | `(() => void) \| undefined` | See type | no | — | Called when the remove button is pressed; without it the chip has no remove button. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

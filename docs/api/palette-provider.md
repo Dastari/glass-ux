@@ -16,5 +16,3 @@ Mount once near the root; nested providers defer to the outer one.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | groupOrder | `readonly string[] \| undefined` | See type | no | DEFAULT_ORDER | Group order; "*" marks where unlisted groups go. Defaults to `DEFAULT_PALETTE_GROUP_ORDER`. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

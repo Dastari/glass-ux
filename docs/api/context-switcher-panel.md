@@ -18,5 +18,3 @@ The switcher's list, always open, for a sheet, a page or the gallery.
 | recent | `readonly string[] \| undefined` | See type | no | [] | Previously selected ids, ordered most recent first. |
 | remote | `ContextSwitcherRemote \| undefined` | See type | no | — | Controlled server search and paging; parent links and local recents are ignored. |
 | value | `string \| null` | See type | yes | — | Selected context id, or null for the "all" scope (or none, when `all` is false). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

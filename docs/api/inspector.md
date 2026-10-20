@@ -18,5 +18,3 @@ Docked: a glass pane. Narrower than 80rem: the same content in a Sheet.
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | subtitle | `ReactNode` | See type | no | — | Under the title, as data: what the pane is showing ("North studio printing and offline PCs"). |
 | title | `string` | See type | yes | — | The heading or title content. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

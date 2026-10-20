@@ -19,5 +19,3 @@ The option rows for entity search (the composer's
 | options | `EntityRef[]` | See type | yes | — | The available choices, including their values and visible labels. |
 | query | `string \| undefined` | See type | no | "" | The text being searched for; matches are emphasised. |
 | selected | `(entity: EntityRef) => boolean` | See type | yes | — | The selected state or collection. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

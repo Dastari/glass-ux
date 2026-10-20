@@ -1,11 +1,7 @@
 import { MOCK_ORGANISATIONS, toContextItem } from "glass-ux/gallery/fixtures/organisations";
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { IconFolder, IconTerminal } from "glass-ux/icons";
-import {
-  ContextAvatar,
-  type ContextItem,
-  type ContextTint,
-} from "glass-ux/shell/context-switcher/index";
+import { ContextAvatar, type ContextItem, type ContextTint } from "glass-ux/shell/context-switcher";
 import {
   WindowFrame,
   WindowScopeChip,

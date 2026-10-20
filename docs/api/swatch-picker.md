@@ -31,5 +31,3 @@ forms.
 | options | `SwatchOption<V>[]` | See type | yes | — | The available choices, including their values and visible labels. |
 | size | `SwatchPickerSize \| undefined` | "sm", "md" | no | "md" | sm 32 for toolbars, md 40 beside fields and segmented controls (default). |
 | value | `V \| null \| undefined` | See type | no | — | The chosen swatch. `null` when none is (a custom colour is in use). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

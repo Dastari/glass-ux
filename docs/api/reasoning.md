@@ -16,5 +16,3 @@ summary the provider chose to show.
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | defaultOpen | `boolean \| undefined` | false, true | no | false | Opens the uncontrolled overlay initially. |
 | reasoning | `AiReasoning` | See type | yes | — | Assistant reasoning content and its visibility state. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -20,5 +20,3 @@ in the same order: copy, export CSV, open in window.
 | icon | `ReactNode` | See type | yes | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | meta | `string \| undefined` | See type | no | — | Data line after the source: "8 of 1,284", "3 images". |
 | result | `AiResult` | See type | yes | — | Typed result, including disclosure and rendering metadata. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

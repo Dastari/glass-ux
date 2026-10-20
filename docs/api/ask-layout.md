@@ -24,5 +24,3 @@ it is rendered.
 | onKeyDown | `((event: KeyboardEvent<HTMLElement>) => void) \| undefined` | See type | no | — | Key handler on the card root, called for keys pressed anywhere inside it; approvals and confirmations use it for Esc to go back. |
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
 | tone | `AiCardTone` | "danger", "warning", "default", "success", "accent", "info" | yes | — | The semantic tone. Use danger and warning for consequences and states. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

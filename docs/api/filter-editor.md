@@ -17,5 +17,3 @@ Renders the editor for a column's filter kind (text, number, date, boolean, opti
 | onLabels | `((labels: ReadonlyArray<readonly [string, string]>) => void) \| undefined` | See type | no | — | Labels learnt from a server-loaded option list (for chips). |
 | spec | `FilterSpec` | See type | yes | — | Typed rendering or field specification. |
 | value | `unknown` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -16,5 +16,3 @@ is closed from the workspace. Render it inside a `WindowManagerProvider`.
 | id | `string` | See type | yes | — | A stable element or component identifier. |
 | productName | `string \| undefined` | See type | no | — | Appended to the browser window's title. |
 | scopes | `WindowScopes \| undefined` | See type | no | — | How to label the window's organisation. A popped-out window stands on its own, so it shows its scope chip whenever it has a scope (pass `current: null`). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

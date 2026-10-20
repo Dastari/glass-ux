@@ -26,5 +26,3 @@ as the pointer, and Escape clears it.
 | snap | `boolean \| undefined` | false, true | no | false | Pointer readouts follow the snapped x (line charts) instead of the pointer itself. |
 | store | `HoverStore` | See type | yes | — | External store observed by the component. |
 | valueText | `(index: number) => string` | See type | yes | — | What the cursor is on, for assistive tech: "10:32 · CPU 34%". |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

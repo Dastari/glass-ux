@@ -1,5 +1,5 @@
 import { ContainerLab, Example, Matrix, SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { PALETTES, PALETTE_LABELS, type Palette } from "glass-ux/lib/appearance/appearance";
+import { PALETTES, PALETTE_LABELS, type Palette } from "glass-ux/appearance";
 import { Segmented, type SegmentedOption } from "glass-ux/segmented";
 import { SettingRow } from "glass-ux/setting-row";
 import { SwatchPicker, type SwatchOption } from "glass-ux/swatch-picker";

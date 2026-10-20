@@ -20,6 +20,7 @@ table fallback. The parent must give it a definite height.
 | head | `((tier: ChartTier) => ReactNode) \| undefined` | See type | no | — | Legend or readout for the head row (compact and full tiers). |
 | kind | `ChartKind` | "line", "column", "bar", "pie", "gauge", "heatmap", "scatter", "treemap", "sunburst" | yes | — | Semantic entity or content kind, used to choose labels and rendering. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale for this chart's numbers, dates and table. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | rule | `TierRule \| undefined` | See type | no | DEFAULT_TIERS | The typed disclosure or validation rule applied to this value. |
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
@@ -29,4 +30,12 @@ table fallback. The parent must give it a definite height.
 | trailOptional | `boolean \| undefined` | false, true | no | false | The trail is a nicety: it hides in narrow rows so the marks keep their room. |
 | trailSize | `"figure" \| "value" \| undefined` | "figure", "value" | no | "figure" | The trail's reserved width, so loading and loaded share one geometry: a bare `value` ("44.4%") or a `figure` (label and value, about a third of the row). |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

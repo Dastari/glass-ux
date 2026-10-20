@@ -13,5 +13,3 @@ Loads and renders a window's body. Shows a skeleton in the body's box while load
 | id | `string` | See type | yes | — | A stable element or component identifier. |
 | kind | `string` | See type | yes | — | Semantic entity or content kind, used to choose labels and rendering. |
 | params | `Readonly<Record<string, string \| number \| boolean>>` | See type | yes | — | Serialisable parameters used to reconstruct the view. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

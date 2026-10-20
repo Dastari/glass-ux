@@ -35,5 +35,3 @@ the last choice; ← walks the chips.
 | value | `V[] \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: medium or full (default). |
 | wrap | `boolean \| undefined` | false, true | no | false | Let chips wrap onto more lines (forms: growth the user caused). Off: one line that folds the overflow into "+N" (toolbars, table filters, rows). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

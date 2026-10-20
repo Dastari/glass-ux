@@ -13,5 +13,3 @@ The inside of the preview card: identity, state, three or four facts, primary ac
 | actions | `boolean \| undefined` | false, true | no | true | Supporting actions rendered in the action slot. |
 | data | `EntityPreview \| undefined` | See type | no | — | Typed records rendered by the component. |
 | entity | `EntityRef` | See type | yes | — | Entity reference supplied by the host. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

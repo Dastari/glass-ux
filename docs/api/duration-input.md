@@ -30,4 +30,16 @@ as whole seconds and rewritten compactly when focus leaves ("90" → "1h 30m").
 | value | `number \| null \| undefined` | See type | no | — | Seconds; null when empty; NaN while the text cannot be read. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "short" | Content width: short (port, PIN), medium (name, hostname), full (default). |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
+| name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
+| placeholder | `string \| undefined` | See type | no | "1h 30m" | The prompt shown while the value is empty. It does not replace the field’s label. |
+| readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
+| required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
+| style | `React.CSSProperties \| ((state: import("@base-ui/react").InputState) => React.CSSProperties \| undefined) \| undefined` | See type | no | — | Style applied to the element, or a function that returns a style object based on the component's state. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

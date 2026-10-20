@@ -26,4 +26,19 @@ focuses it. Put it inside a Field for a label and message line.
 | unit | `ReactNode` | See type | no | — | Unit after the value ("GB", "ms", "%"). |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The default value of the input. Use when uncontrolled. |
+| disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
+| name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
+| onValueChange | `((value: string, eventDetails: Input.ChangeEventDetails) => void) \| undefined` | See type | no | — | Callback fired when the `value` changes. Use when controlled. |
+| placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
+| readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
+| required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
+| style | `React.CSSProperties \| ((state: import("@base-ui/react").InputState) => React.CSSProperties \| undefined) \| undefined` | See type | no | — | Style applied to the element, or a function that returns a style object based on the component's state. |
+| value | `string \| number \| readonly string[] \| undefined` | See type | no | — | The value of the input. Use when controlled. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

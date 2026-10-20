@@ -18,5 +18,3 @@ toggles it; works inside or outside a Field.
 | description | `ReactNode` | See type | no | — | Additional content describing the value, state, or consequence. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | label | `ReactNode` | See type | yes | — | The visible or accessible label for this component. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

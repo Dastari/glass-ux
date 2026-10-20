@@ -30,4 +30,8 @@ complete code submits the form, so the Submit button's pending → ✓ shows the
 | status | `OtpStatus \| undefined` | "success", "error" | no | — | error: the code was refused. success: accepted — boxes go green with a ✓, no shift either way. |
 | warning | `ReactNode` | See type | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| disabled | `boolean \| undefined` | false, true | no | — | Whether the component should ignore user interaction. Takes precedence over the `disabled` prop on the `<Field.Control>` component. |

@@ -367,7 +367,9 @@ follows a fine pointer and a glint on the rim nearest it.
 ## R20 · Accessibility
 
 - **R20.1** Meet WCAG 2.2 AA in both modes, every palette and every material: 4.5:1 for text,
-  3:1 for graphics and focus indicators.
+  3:1 for graphics and focus indicators. Inactive (disabled) controls are exempt from the 3:1
+  non-text requirement, as in WCAG 2.2 SC 1.4.11, but must still read as visibly quieter than
+  their active form.
 - **R20.2** Preserve accessible names, roles and states when a control changes form.
 - **R20.3** Return focus to the control that opened an overlay, and to a sensible neighbour
   when the focused element is removed.
@@ -391,12 +393,15 @@ follows a fine pointer and a glint on the rim nearest it.
 
 ## R22 · Using the library
 
-- **R22.1** Import each component from its own entry (`glass-ux/button`), not from `glass-ux`
-  or deep `glass-ux/ui/*` paths.
+- **R22.1** Import each component from its own entry (`glass-ux/button`), not from `glass-ux`.
+  Only the entries listed in the package's `exports` resolve; internal module paths such as
+  `glass-ux/ui/button/button` do not.
 - **R22.2** Mount `AppearanceProvider`, `TooltipProvider`, `ActionProvider` and
   `PaletteProvider` once at the application root when using their components.
 - **R22.3** Use controlled props (`value`, `onValueChange`) when the application owns the
   state, and uncontrolled defaults (`defaultValue`) otherwise; do not mix them on one control.
+  Single selection follows the same pattern: `selectedId`, `defaultSelectedId` and
+  `onSelectedIdChange(id, details)` on Tree, TopologyCanvas, GeoMap and SessionNav.
 - **R22.4** Pass stable callbacks and objects to hot components (table rows, cells, charts) so
   memoised rows do not re-render needlessly.
 - **R22.5** Read the documentation installed with the package version you use; agent skills

@@ -33,5 +33,3 @@ then clears.
 | source | `OptionSource<V> \| undefined` | See type | no | — | Or search a server as you type (debounced, cancellable, cached). |
 | value | `V \| null \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Content width: short (port, PIN), medium (name, hostname), full (default). |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -10,7 +10,7 @@ import {
   type IsoDate,
   type TimeValue,
 } from "glass-ux/date-picker";
-import { TimeList } from "glass-ux/ui/date-picker/time-list";
+import { TimeList } from "glass-ux/gallery/sections/date-picker.kit";
 
 const today = todayIso();
 

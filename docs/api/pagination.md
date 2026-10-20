@@ -17,6 +17,7 @@ page size, then the jump field, then the first/last buttons fold away.
 | disabled | `boolean \| undefined` | false, true | no | false | Disables interaction while retaining the component’s disabled appearance. |
 | label | `string \| undefined` | See type | no | "Pages" | Names the navigation landmark, e.g. "Endpoint pages". |
 | loading | `boolean \| undefined` | false, true | no | false | First load: the range is a placeholder and the buttons wait. |
+| locale | `string \| undefined` | See type | no | — | BCP 47 locale for the range and page numbers. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | onPageChange | `((pageIndex: number) => void) \| undefined` | See type | no | — | Called with the zero-based index of the page the person asks for (first, previous, next, last or page jump); not used in cursor mode. Pair with `pageIndex` to control it. |
 | onPageSizeChange | `((pageSize: number) => void) \| undefined` | See type | no | — | Called with the rows-per-page the person picks from `pageSizes`. The page-size menu shows only when this is set, there are two or more choices and the pager is not compact. Pair with `pageSize`. |
 | pageIndex | `number` | See type | yes | — | Zero-based page index. |
@@ -25,4 +26,12 @@ page size, then the jump field, then the first/last buttons fold away.
 | pageSizes | `readonly number[] \| undefined` | See type | no | [25, 50, 100] | Page-size choices offered by pagination. |
 | rowCount | `number \| undefined` | See type | no | — | Total rows on the server; omit when unknown (cursor pages). |
 
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

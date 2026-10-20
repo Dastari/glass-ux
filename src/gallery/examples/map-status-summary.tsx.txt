@@ -95,7 +95,7 @@ function LiveMap({
         regions={regions}
         points={points}
         selectedId={selected}
-        onSelect={(point) => setSelected(point?.id ?? null)}
+        onSelectedIdChange={setSelected}
         renderPopup={(point) => <PointPopup point={point} />}
       />
     </div>

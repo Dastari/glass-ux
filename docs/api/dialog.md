@@ -31,6 +31,25 @@ A modal dialog built from parts: `Root` (state; a bottom sheet on phones by defa
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| ((state: import("@base-ui/react").DialogTriggerState) => string \| undefined) \| undefined` | See type | no | — | CSS class applied to the element, or a function that returns a class based on the component's state. |
+| disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
+| handle | `DialogHandle<Payload> \| undefined` | See type | no | — | A handle to associate the trigger with a dialog. Can be created with the Dialog.createHandle() method. |
+| id | `string \| undefined` | See type | no | — | ID of the trigger. In addition to being forwarded to the rendered element, it is also used to specify the active trigger for the dialog in controlled mode (with the DialogRoot `triggerId` prop). |
+| name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
+| nativeButton | `boolean \| undefined` | false, true | no | — | Whether the component renders a native `<button>` element when replacing it via the `render` prop. Set to `false` if the rendered element is not a button (for example, `<div>`). |
+| payload | `Payload \| undefined` | See type | no | — | A payload to pass to the dialog when it is opened. |
+| ref | `((((instance: HTMLButtonElement \| null) => void \| (() => VoidOrUndefinedOnly) \| DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES]) \| RefObject<HTMLButtonElement \| null>) & (((instance: HTMLElement \| null) => void \| (() => VoidOrUndefinedOnly) \| DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES[keyof DO_NOT_USE_OR_YOU_WILL_BE_FIRED_CALLBACK_REF_RETURN_VALUES]) \| RefObject<HTMLElement \| null>)) \| null \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+| render | `React.ReactElement<unknown, string \| React.JSXElementConstructor<any>> \| ComponentRenderFn<HTMLProps, import("@base-ui/react").DialogTriggerState> \| undefined` | See type | no | — | Allows you to replace the component's HTML element with a different tag, or compose it with another component.  Accepts a `ReactElement` or a function that returns the element to render. |
+| style | `React.CSSProperties \| ((state: import("@base-ui/react").DialogTriggerState) => React.CSSProperties \| undefined) \| undefined` | See type | no | — | Style applied to the element, or a function that returns a style object based on the component's state. |
+| value | `string \| number \| readonly string[] \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
+
 ## Dialog.Popup
 
 
@@ -40,9 +59,9 @@ A modal dialog built from parts: `Root` (state; a bottom sheet on phones by defa
 | aria-label | `string \| undefined` | See type | no | — | Accessible name when a visible label does not name the control. |
 | children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| finalFocus | `boolean \| RefObject<HTMLElement \| null> \| ((closeType: import(".pnpm/@base-ui+utils@0.5.0_@types+react@19.3.0_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | See type | no | — | The element or behaviour to focus when the overlay closes. |
-| initialFocus | `boolean \| RefObject<HTMLElement \| null> \| ((openType: import(".pnpm/@base-ui+utils@0.5.0_@types+react@19.3.0_react-dom@19.3.0_react@19.3.0__react@19.3.0/node_modules/@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | See type | no | — | The element or behaviour to focus when the overlay opens. |
-| kind | `DialogKind \| undefined` | "dialog", "alert", "palette", "side", "settings" | no | — | `settings` fixes the height so switching sections never resizes the dialog. |
+| finalFocus | `boolean \| RefObject<HTMLElement \| null> \| ((closeType: import("@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | See type | no | — | The element or behaviour to focus when the overlay closes. |
+| initialFocus | `boolean \| RefObject<HTMLElement \| null> \| ((openType: import("@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | See type | no | — | The element or behaviour to focus when the overlay opens. |
+| kind | `DialogKind \| undefined` | "dialog", "palette", "alert", "side", "settings" | no | — | `settings` fixes the height so switching sections never resizes the dialog. |
 | size | `DialogSize \| undefined` | "full", "sm", "md", "lg", "xl" | no | — | sm 400 · md 560 · lg 760 · xl 1040 · full. Ignored by phone sheets (full width). |
 
 ## Dialog.Header
@@ -58,6 +77,17 @@ A modal dialog built from parts: `Root` (state; a bottom sheet on phones by defa
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
 | tone | `DialogTone \| undefined` | "danger", "warning", "default", "success", "accent", "info" | no | "default" | The semantic tone. Use danger and warning for consequences and states. |
 
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
+
 ## Dialog.Body
 
 
@@ -66,6 +96,16 @@ A modal dialog built from parts: `Root` (state; a bottom sheet on phones by defa
 | --- | --- | --- | --- | --- | --- |
 | flush | `boolean \| undefined` | false, true | no | — | Remove the body's inset, for content that brings its own (a rail layout, a table). |
 
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
+
 ## Dialog.Footer
 
 
@@ -73,6 +113,17 @@ A modal dialog built from parts: `Root` (state; a bottom sheet on phones by defa
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | start | `ReactNode` | See type | no | — | Tertiary actions on the left (Reset, Help). The primary always goes last, on the right. |
+
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
 
 ## Dialog.Title
 
@@ -99,6 +150,22 @@ A modal dialog built from parts: `Root` (state; a bottom sheet on phones by defa
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| ((state: import("@base-ui/react").AlertDialogCloseState) => string \| undefined) \| undefined` | See type | no | — | CSS class applied to the element, or a function that returns a class based on the component's state. |
+| disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
+| name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
+| nativeButton | `boolean \| undefined` | false, true | no | — | Whether the component renders a native `<button>` element when replacing it via the `render` prop. Set to `false` if the rendered element is not a button (for example, `<div>`). |
+| ref | `Ref<HTMLButtonElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+| render | `React.ReactElement<unknown, string \| React.JSXElementConstructor<any>> \| ComponentRenderFn<HTMLProps, import("@base-ui/react").AlertDialogCloseState> \| undefined` | See type | no | — | Allows you to replace the component's HTML element with a different tag, or compose it with another component.  Accepts a `ReactElement` or a function that returns the element to render. |
+| style | `React.CSSProperties \| ((state: import("@base-ui/react").AlertDialogCloseState) => React.CSSProperties \| undefined) \| undefined` | See type | no | — | Style applied to the element, or a function that returns a style object based on the component's state. |
+| value | `string \| number \| readonly string[] \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
+
 ## Dialog.Preview
 
 
@@ -107,8 +174,6 @@ A modal dialog built from parts: `Root` (state; a bottom sheet on phones by defa
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| height | `"auto" \| "short" \| undefined` | "auto", "short" | no | "auto" | `short` fixes a low frame so the body scrolls (to show the scroll edges). |
-| kind | `DialogKind \| undefined` | "dialog", "alert", "palette", "side", "settings" | no | "dialog" | Semantic entity or content kind, used to choose labels and rendering. |
+| height | `"short" \| "auto" \| undefined` | "short", "auto" | no | "auto" | `short` fixes a low frame so the body scrolls (to show the scroll edges). |
+| kind | `DialogKind \| undefined` | "dialog", "palette", "alert", "side", "settings" | no | "dialog" | Semantic entity or content kind, used to choose labels and rendering. |
 | size | `DialogSize \| undefined` | "full", "sm", "md", "lg", "xl" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

@@ -11,5 +11,3 @@ The last resort: the preview as a JSON tree.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | result | `ResultBase & { type: "json"; value: unknown; truncated?: boolean; }` | See type | yes | — | The JSON result: any JSON `value`, shown as a tree labelled by the title; `truncated` adds a note that the server cut it short. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

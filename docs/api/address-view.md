@@ -17,5 +17,3 @@ its map. Put it in a Field for a label ("Address") and a hint ("Change it in …
 | homeCountry | `string \| undefined` | See type | no | "AU" | The country left off the postal block. Default "AU". |
 | map | `MapConfig \| undefined` | See type | no | — | A small map with the pin, when the address has a position. |
 | value | `AddressValue` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

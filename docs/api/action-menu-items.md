@@ -16,5 +16,3 @@ the ActionBar's overflow so they can never differ.
 | onRun | `ActionRunHandler<T> \| undefined` | See type | no | — | Run chosen actions yourself instead of with the shared runner (confirm → run → toast). The handler then owns confirmation and feedback. A DataTable's `onAction` uses it. |
 | surface | `ActionSurface` | "header", "menu", "context", "palette", "bulk" | yes | — | The surface the actions report as (menu, context, palette, bulk). |
 | targets | `readonly T[]` | See type | yes | — | Selected entities passed to action visibility, enablement, confirmation and execution. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

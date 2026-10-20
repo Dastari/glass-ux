@@ -14,6 +14,17 @@ Compose the primary application navigation rail from accessible items, separator
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string` | See type | yes | — | Accessible name of the navigation landmark. |
 
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| ref | `Ref<HTMLElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
+
 ## Rail.Item
 
 
@@ -27,6 +38,19 @@ Compose the primary application navigation rail from accessible items, separator
 | label | `string` | See type | yes | — | The destination's name: the accessible name and the tooltip. |
 | render | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | Render as a router link: render={<Link to="/endpoints" />}. |
 | shortcut | `string \| undefined` | See type | no | — | "g e" (press G, then E). Shown in the tooltip and handled by the rail. |
+
+Inherited properties:
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
+| disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
+| name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
+| ref | `Ref<HTMLButtonElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
+| value | `string \| number \| readonly string[] \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.
 
 ## Rail.Spacer
 
@@ -43,5 +67,3 @@ Compose the primary application navigation rail from accessible items, separator
 | --- | --- | --- | --- | --- | --- |
 | keys | `string` | See type | yes | — | The two-key sequence, space-separated and case-insensitive ("g m": press G, then M). |
 | onTrigger | `() => void` | See type | yes | — | Called when the person types the sequence outside a text field, without Ctrl, Alt or Meta held. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

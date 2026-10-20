@@ -19,5 +19,3 @@ SecretInput bound to a form field holding a `SecretValue`: use it inside
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
 | secretName | `string \| undefined` | See type | no | — | Names the secret for its buttons ("community"). |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | — | Available width or named width tier. |
-
-Standard React DOM attributes and events are accepted wherever the component extends a native element. The online API page lists those inherited properties as well.

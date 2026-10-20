@@ -40,7 +40,7 @@ function SidebarTree({ initialQuery = "", nodes = NODES, height = "h-140" }: { i
           aria-label="Endpoints"
           defaultExpanded={ALL_OPEN.slice(0, 3)}
           selectedId={selected}
-          onSelect={(node) => setSelected(node.id)}
+          onSelectedIdChange={setSelected}
           query={query}
           emptyText={(q) => `No endpoints match “${q}”`}
         />
@@ -67,7 +67,7 @@ function LinkedTree() {
         nodes={NODES}
         aria-label="Endpoints (links)"
         defaultExpanded={ALL_OPEN}
-        selectedId="nst-c106"
+        defaultSelectedId="nst-c106"
         renderLink={(node, props) => (
           <Link to="/demo/o/$org/devices/$id" params={{ org: "all", id: node.label }} {...props} activeOptions={{ exact: true }} activeProps={{}} inactiveProps={{}} />
         )}
@@ -103,7 +103,7 @@ export default function TreeSection() {
 
       <Specimen title="2,400 endpoints" description="Rows are virtualised with fixed heights from tokens: only the rows in view (plus a few) are in the DOM, and the focused row is always kept.">
         <div className="h-140 w-72 max-w-full" data-testid="tree-many">
-          <Tree nodes={MANY} aria-label="All endpoints" defaultExpanded={MANY.map((node) => node.id)} selectedId="orb-2" />
+          <Tree nodes={MANY} aria-label="All endpoints" defaultExpanded={MANY.map((node) => node.id)} defaultSelectedId="orb-2" />
         </div>
       </Specimen>
 
@@ -124,7 +124,7 @@ export default function TreeSection() {
       </Specimen>
 
       <ContainerLab description="The tree fills its box and scrolls inside it; names and users truncate with an ellipsis.">
-        {() => <Tree nodes={NODES} aria-label="Endpoints in a lab frame" defaultExpanded={ALL_OPEN} selectedId="nst-c106" />}
+        {() => <Tree nodes={NODES} aria-label="Endpoints in a lab frame" defaultExpanded={ALL_OPEN} defaultSelectedId="nst-c106" />}
       </ContainerLab>
 
       <Rules

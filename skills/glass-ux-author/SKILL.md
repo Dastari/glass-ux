@@ -28,7 +28,8 @@ Use the shared Surface/Panel geometry for panes and cards. Test actual theme-dri
 corners and line weight, and keep catalogue headings and panel groups on the canvas.
 
 Document controlled/uncontrolled state, value units, valid options, defaults, callbacks and
-keyboard behaviour. Add a live specimen with fictional fixtures, loaded/skeleton parity and
+keyboard behaviour. Name single selection `selectedId`, `defaultSelectedId` and
+`onSelectedIdChange(id, details)` with `SelectionChangeDetails`, as Tree does. Add a live specimen with fictional fixtures, loaded/skeleton parity and
 relevant disabled, empty, invalid, pending and error states.
 
 Update the public package entry and API catalogue mapping. Run `pnpm docs:api`, `pnpm check`,

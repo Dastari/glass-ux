@@ -765,7 +765,7 @@ function SiteDevices({ site }: { site: NetworkSite }) {
       renderNode={renderNode}
       describeNode={describe}
       selectedId={selected}
-      onSelect={setSelected}
+      onSelectedIdChange={setSelected}
       nodeMenu={menu}
       frameKey={site.id}
       emptyText="No devices reported"
@@ -1700,7 +1700,7 @@ export default function NetworkWorkspace() {
         points={points}
         pulses={pulses}
         selectedId={selectedId}
-        onSelect={(point) => select(point?.id ?? null)}
+        onSelectedIdChange={(id) => select(id)}
         noun={{ one: "site", other: "sites" }}
         statusLabels={STATUS_LABEL}
         renderPopup={(point) => (

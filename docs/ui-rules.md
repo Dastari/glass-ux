@@ -400,6 +400,8 @@ follows a fine pointer and a glint on the rim nearest it.
   `PaletteProvider` once at the application root when using their components.
 - **R22.3** Use controlled props (`value`, `onValueChange`) when the application owns the
   state, and uncontrolled defaults (`defaultValue`) otherwise; do not mix them on one control.
+  Single selection follows the same pattern: `selectedId`, `defaultSelectedId` and
+  `onSelectedIdChange(id, details)` on Tree, TopologyCanvas, GeoMap and SessionNav.
 - **R22.4** Pass stable callbacks and objects to hot components (table rows, cells, charts) so
   memoised rows do not re-render needlessly.
 - **R22.5** Read the documentation installed with the package version you use; agent skills

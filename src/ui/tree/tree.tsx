@@ -15,6 +15,7 @@ import {
 import { IconChevronRight, IconFile, IconFolder, IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useControllable } from "../../lib/use-controllable.js"
+import { useSelectedId, type SelectionChangeDetails } from "../../lib/use-selected-id.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 import { CountBadge, STATUS, StatusDot, type StatusKind } from "../badge/index.js"
@@ -82,14 +83,20 @@ export interface TreeProps {
   nodes: TreeNode[]
   /** Names the tree: "Endpoints". */
   "aria-label": string
-  /** Stable identifier of the selected item. */
+  /** The selected endpoint's id, or null for none. Controlled while defined; leave it undefined to use `defaultSelectedId`. */
   selectedId?: string | null
-  /** Called with the endpoint (leaf) the person activates by click, Enter or Space; not for groups, which toggle, or disabled rows. A linked row also navigates. Pair with `selectedId` to show the selection. */
-  onSelect?: (node: TreeNode) => void
+  /** The endpoint selected at first when the selection is uncontrolled. */
+  defaultSelectedId?: string | null
+  /**
+   * Called with the endpoint (leaf) id the person selects by click, Enter or Space, and
+   * details whose `item` is the node; not for groups, which toggle, disabled rows or the
+   * endpoint already selected. A linked row also navigates.
+   */
+  onSelectedIdChange?: (id: string | null, details: SelectionChangeDetails<TreeNode>) => void
   /**
    * Render endpoint rows as links (a TanStack Router `<Link>` in the app). Return null to
    * keep a row a plain item. A linked row navigates natively (click, middle-click, Enter);
-   * `onSelect` still fires.
+   * a click or Enter also selects it.
    */
   renderLink?: (node: TreeNode, props: TreeRowRenderProps) => ReactElement | null
   /**
@@ -142,8 +149,9 @@ function Highlight({ text, range }: { text: string; range: readonly [number, num
  */
 export function Tree({
   nodes,
-  selectedId = null,
-  onSelect,
+  selectedId: selectedIdProp,
+  defaultSelectedId,
+  onSelectedIdChange,
   renderLink,
   rowWrapper,
   renderContent,
@@ -156,6 +164,7 @@ export function Tree({
   "aria-label": label,
 }: TreeProps) {
   const [expandedList, setExpandedList] = useControllable<string[]>(expandedProp ?? undefined, defaultExpanded ?? [], onExpandedChange)
+  const [selectedId, select] = useSelectedId(selectedIdProp, defaultSelectedId, onSelectedIdChange)
   const expanded = useMemo(() => new Set(expandedList), [expandedList])
   const rows = useMemo(() => flattenTree(nodes, expanded, query), [nodes, expanded, query])
   const searching = query.trim() !== ""
@@ -237,17 +246,17 @@ export function Tree({
     virtualizer.scrollToIndex(index, { align: "auto" })
   }
 
-  const activate = (row: FlatRow<TreeNode>) => {
+  const activate = (row: FlatRow<TreeNode>, event: Event) => {
     if (row.node.disabled) return
     if (row.hasChildren) toggle(row)
-    else onSelect?.(row.node)
+    else select(row.node.id, { reason: "item-press", event, item: row.node })
   }
 
-  /** Enter or Space on a row: a linked row follows its link (the link reports onSelect). */
-  const activateFromKeyboard = (row: FlatRow<TreeNode>) => {
+  /** Enter or Space on a row: a linked row follows its link (its click selects the row). */
+  const activateFromKeyboard = (row: FlatRow<TreeNode>, event: Event) => {
     const element = scrollRef.current?.querySelector<HTMLElement>(`[data-row-id="${CSS.escape(row.node.id)}"]`)
     if (!row.hasChildren && element instanceof HTMLAnchorElement && !row.node.disabled) element.click()
-    else activate(row)
+    else activate(row, event)
   }
 
   // ── Keyboard ─────────────────────────────────────────────────────────────
@@ -279,10 +288,10 @@ export function Tree({
         else return
         break
       case "Enter":
-        activateFromKeyboard(row)
+        activateFromKeyboard(row, event.nativeEvent)
         break
       case " ":
-        if (!row.hasChildren) activateFromKeyboard(row)
+        if (!row.hasChildren) activateFromKeyboard(row, event.nativeEvent)
         else toggle(row)
         break
       default: {
@@ -327,7 +336,7 @@ export function Tree({
                   setFocusedId(row.node.id)
                   // A disabled link must not navigate.
                   if (row.node.disabled) event.preventDefault()
-                  activate(row)
+                  activate(row, event.nativeEvent)
                 }}
                 onFocus={() => setFocusedId(row.node.id)}
               />

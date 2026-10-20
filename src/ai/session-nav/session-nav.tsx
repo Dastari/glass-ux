@@ -15,6 +15,10 @@ import {
 } from "../../icons/generated/icons.js";
 import { defineActions } from "../../lib/actions/actions.js";
 import { cx } from "../../lib/cx.js";
+import {
+  useSelectedId,
+  type SelectionChangeDetails,
+} from "../../lib/use-selected-id.js";
 import { contextCode } from "../../shell/context-switcher/model.js";
 import { ActionContextMenu, ActionMenu } from "../../ui/actions/index.js";
 import { CountBadge } from "../../ui/badge/index.js";
@@ -63,8 +67,10 @@ export interface SessionNavProps {
   sessions: AiSession[];
   /** Projects offered by the host. */
   projects?: AiProject[];
-  /** Stable identifier of the active item. */
-  activeId?: string;
+  /** The current session's id, or null for none; its row is marked current. Controlled while defined; leave it undefined to use `defaultSelectedId`. */
+  selectedId?: string | null;
+  /** The session current at first when the selection is uncontrolled. */
+  defaultSelectedId?: string | null;
   /** Currently selected presentation view. */
   view?: SessionView;
   /** Called with `conversations` or `archived` when the person picks Conversation history or Archived chats. Pair with `view` to switch the list. */
@@ -75,8 +81,14 @@ export interface SessionNavProps {
   loading?: boolean;
   /** Called from New chat; the button is shown only when this is supplied. */
   onNewChat?: () => void;
-  /** Called with the session whose row is clicked or activated with Enter. Pair with `activeId` to mark it current. */
-  onSelect?: (session: AiSession) => void;
+  /**
+   * Called with the id of the session whose row is clicked or activated with Enter, and
+   * details whose `item` is the session; not called for the session already current.
+   */
+  onSelectedIdChange?: (
+    id: string | null,
+    details: SelectionChangeDetails<AiSession>,
+  ) => void;
   /** Called with the session and its new trimmed title when an inline rename (Rename or F2) is committed with Enter or blur; not called when the title is empty, unchanged or the edit is cancelled with Esc. Supplying it enables renaming. */
   onRename?: (session: AiSession, title: string) => void;
   /** Called with the session from its Archive action, offered for sessions that are not archived. */
@@ -219,13 +231,14 @@ function RenameField({
 export function SessionNav({
   sessions,
   projects = [],
-  activeId,
+  selectedId: selectedIdProp,
+  defaultSelectedId,
   view = "conversations",
   onViewChange,
   counts,
   loading = false,
   onNewChat,
-  onSelect,
+  onSelectedIdChange,
   onRename,
   onArchive,
   onRestore,
@@ -239,6 +252,11 @@ export function SessionNav({
   const now = useNow(true, 60_000);
   const [query, setQuery] = useState(initialQuery);
   const [renaming, setRenaming] = useState<string | null>(null);
+  const [selectedId, select] = useSelectedId(
+    selectedIdProp,
+    defaultSelectedId,
+    onSelectedIdChange,
+  );
 
   const actions = useMemo(
     () =>
@@ -317,7 +335,7 @@ export function SessionNav({
   }
 
   const row = (session: AiSession) => {
-    const active = session.id === activeId;
+    const active = session.id === selectedId;
     if (renaming === session.id) {
       return (
         <li key={session.id} className="fa-ai-session" data-renaming="">
@@ -356,7 +374,13 @@ export function SessionNav({
             aria-current={active ? "page" : undefined}
             aria-label={`${session.title}${session.organisation !== undefined ? `, ${session.organisation ? session.organisation.label : "all organisations"}` : ""}${status ? `, ${status.toLowerCase()}` : ""}${session.unread ? ", unread" : ""}`}
             data-unread={session.unread ? "" : undefined}
-            onClick={() => onSelect?.(session)}
+            onClick={(event) =>
+              select(session.id, {
+                reason: "item-press",
+                event: event.nativeEvent,
+                item: session,
+              })
+            }
             onKeyDown={(event) => {
               if (event.key === "F2" && onRename) {
                 event.preventDefault();

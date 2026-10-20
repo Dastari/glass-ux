@@ -1,8 +1,10 @@
 # Maps
 
 `glass-ux/map` plots typed points, clusters them, outlines regions and renders an optional
-OpenMapTiles-compatible basemap. A point's `data` belongs to the caller. Selection and
-navigation callbacks connect markers to the host application.
+OpenMapTiles-compatible basemap. A point's `data` belongs to the caller. `GeoMap` selects
+a point when its popup is pinned: pass `selectedId` with `onSelectedIdChange(id, details)`
+to own the selection, or `defaultSelectedId` to let the map keep it. `details.item` is the
+point.
 
 Supply a `MapConfig` containing the basemap, region URL template, attribution and zoom
 limits. `basemap: null` draws region outlines and points without an external tile service.

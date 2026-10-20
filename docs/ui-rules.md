@@ -367,7 +367,9 @@ follows a fine pointer and a glint on the rim nearest it.
 ## R20 · Accessibility
 
 - **R20.1** Meet WCAG 2.2 AA in both modes, every palette and every material: 4.5:1 for text,
-  3:1 for graphics and focus indicators.
+  3:1 for graphics and focus indicators. Inactive (disabled) controls are exempt from the 3:1
+  non-text requirement, as in WCAG 2.2 SC 1.4.11, but must still read as visibly quieter than
+  their active form.
 - **R20.2** Preserve accessible names, roles and states when a control changes form.
 - **R20.3** Return focus to the control that opened an overlay, and to a sensible neighbour
   when the focused element is removed.

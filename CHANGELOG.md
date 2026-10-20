@@ -12,6 +12,39 @@ has upgrade steps in the [migration guide](docs/migration.md).
   `glass-ux/gallery/*` and `glass-ux/gallery/styles.css` are gone from the package. The
   catalogue and demos stay on the documentation site and in each release's
   `glass-ux-docs.tar.gz` asset.
+- Only the named entries in `exports` resolve. The `glass-ux/ui/*`, `glass-ux/ai/*`,
+  `glass-ux/shell/*`, `glass-ux/windows/*`, `glass-ux/lib/*` and `glass-ux/icons/*` patterns are
+  gone, so internal paths such as `glass-ux/ui/button/button` or `glass-ux/lib/use-media-query`
+  no longer resolve. Named sub-entries such as `glass-ux/ai/message` and
+  `glass-ux/shell/context-switcher` are unchanged, as are the `glass-ux/styles/*`,
+  `glass-ux/icons/svg/*` and `glass-ux/assets/*` file paths.
+- Formatting no longer hard-codes en-AU. Components use the resolved locale: the component's
+  `locale` prop, the nearest `LocaleProvider`, `configureLocale()`, the page's `<html lang>`,
+  then en-US. A page with neither `lang` nor `configureLocale()` now shows en-US formats
+  (`10/03/2026`, `9:05 PM`); pages with `lang="en-AU"` keep Australian formats.
+- Single selection uses one pattern on `Tree`, `TopologyCanvas`, `GeoMap` and `SessionNav`:
+  `selectedId` (controlled), `defaultSelectedId` (uncontrolled) and
+  `onSelectedIdChange(id, details)`, where `details` has the `reason` (`"item-press"`,
+  `"escape-key"`, `"outside-press"`), the native `event` and the `item` (null when cleared).
+  - `onSelect` is removed from all four, and `SessionNav`'s `activeId` is now `selectedId`,
+    with no aliases.
+  - The callback fires only when the id changes, not when the selected item is pressed again.
+  - Without `selectedId`, the components keep their own selection, so a pressed item shows as
+    selected.
+
+### Added
+
+- `glass-ux/locale`: `configureLocale`, `getLocale`, `LocaleProvider`, `useLocale` and
+  `FALLBACK_LOCALE`. A Locale foundation page shows one region formatting in another locale.
+- `locale` props on `NumberField` (and so `MoneyInput` and `MoneyField`), `ByteSizeInput`,
+  `Slider`, `Metric`, `Pagination`, `DataTable` and every chart. Pure formatting helpers take
+  an optional trailing `locale`, and a chart's `format` callback receives the locale as its
+  second argument (`LocalizedFormat`).
+- `glass-ux/fit-form`: `fitForm`, `nextFitForm`, `useFitForm`, `contentWidth` and
+  `overflowsOwnBox`, previously only reachable as `glass-ux/lib/fit-form`.
+- `MAIN_COUNTRY_FOR_CALLING_CODE` from `glass-ux/country-select`, as its guide documented.
+- `SelectionChangeDetails` and `SelectionChangeReason` from `glass-ux/tree`,
+  `glass-ux/topology`, `glass-ux/map` and `glass-ux/ai`.
 
 ### Fixed
 
@@ -24,6 +57,14 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - `MapSilhouette` used on its own fills its container. It was sized from the map stage's fit
   padding, so outside a map it overflowed and covered the content after it, as on the GeoMap
   documentation page. Inside `GeoMap` and `GeoMapSkeleton` it is placed as before.
+- A drag preview lifted into the top layer keeps the mode, palette and fonts of the
+  re-themed island it was picked up from, for both `DragDropProvider` items and DataTable rows.
+  Only `data-mode="light"` or `"dark"` counts as a mode island, since some components use
+  `data-mode` for their own state.
+- The window demos no longer log React's "Cannot update a component (`WindowContentHost`)
+  while rendering a different component" warning: their window kinds register at module
+  scope. `registerWindowKind` documents that it must not be called during render.
+- `DateField` rewrites its text when the locale changes.
 
 ### Changed
 
@@ -47,6 +88,17 @@ has upgrade steps in the [migration guide](docs/migration.md).
   announcements are unchanged.
 - **Grip icon:** `IconGrip`'s dots are larger (radius 1.6, the top of the icon
   specification's range for grips), and `DragHandle` matches the table's grip.
+- Money and byte-size entry reads the locale's decimal and grouping marks (`parseMoney`,
+  `parseBytes`, `ByteSizeInput`). Schema messages (`timeSchema`, `dateTimeSchema`,
+  `moneySchema`, `byteSizeSchema`, `richTextSchema`) are written when a value is checked, so
+  module-level schemas follow a later `configureLocale()`.
+- API reference pages and data no longer list every inherited HTML, ARIA and DOM attribute.
+  Glass UX and Base UI props stay listed, with a note that the element's standard HTML
+  attributes are also accepted. The per-component API data the documentation site loads drops
+  from 12.6 MB to 1.2 MB (`menu.json` from 716 KB to 39 KB), and the Markdown reference now
+  includes Base UI props.
+- Design rule R20.1 states that disabled controls are exempt from the 3:1 non-text contrast
+  requirement (WCAG 2.2 SC 1.4.11) but must still look visibly quieter than their active form.
 
 ## 0.8.3
 

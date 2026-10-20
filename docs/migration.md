@@ -5,6 +5,10 @@ then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everyth
 
 ## 0.8.3 → 0.9.0
 
+0.9.0 removes the gallery and the deep import paths from the package, makes the formatting
+locale configurable and renames the selection props on four components. None of these has an
+alias, so update imports, locale setup and props before upgrading.
+
 ### Required changes
 
 **The gallery is no longer in the package.** Remove imports of `glass-ux/gallery`,
@@ -12,6 +16,52 @@ then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everyth
 [documentation site](https://dastari.github.io/glass-ux/) instead, or serve the
 `glass-ux-docs.tar.gz` asset from the same release where the catalogue must be available
 offline. Keep your own component examples in your application.
+
+**Deep imports no longer resolve.** Import from the package's named entries; the
+[API index](api/README.md) lists each component's entry. Anything only reachable through an
+internal path is no longer public: copy it into your application, or ask for it to become an
+entry.
+
+| 0.8 | 0.9 |
+| --- | --- |
+| `glass-ux/ui/<family>/<file>` (e.g. `glass-ux/ui/button/button`) | `glass-ux/<family>` (e.g. `glass-ux/button`) |
+| `glass-ux/lib/appearance/<file>` | `glass-ux/appearance` |
+| `glass-ux/lib/actions/actions` | `glass-ux/actions` |
+| `glass-ux/lib/fit-form` | `glass-ux/fit-form` |
+| `glass-ux/lib/use-media-query` | `glass-ux/dialog` (`useMediaQuery`, `usePhoneLayout`, `PHONE_QUERY`) |
+| `glass-ux/ui/data-table/cells/relative-time` | `glass-ux/data-table` |
+| `glass-ux/ui/country-select/countries` | `glass-ux/country-select` |
+| `glass-ux/shell/context-switcher/index` | `glass-ux/shell/context-switcher` |
+| `glass-ux/shell/<file>`, `glass-ux/windows/<file>`, `glass-ux/ai/<file>` | `glass-ux/shell`, `glass-ux/windows`, `glass-ux/ai` or the named `glass-ux/ai/<part>` entry |
+| `glass-ux/icons/generated/icons` | `glass-ux/icons` |
+
+**Set the formatting locale.** Glass UX used to format everything as en-AU. It now follows
+`<html lang>`, falling back to en-US. To keep Australian formats, set `<html lang="en-AU">`
+or call `configureLocale("en-AU")` from `glass-ux/locale` beside `configureAppearance`.
+
+- For SSR, call `configureLocale` with the same tag on the server and the client.
+- To format one region differently, wrap it in `<LocaleProvider locale="…">`, or pass a
+  component's `locale` prop.
+- Schema helpers cannot see a provider: pass a field's explicit `locale` to its schema too.
+- A custom chart `format` callback now receives the locale as its second argument.
+- `parseMoney` and `parseBytes` read the locale's decimal mark, so in a locale such as de-DE
+  `1.234,5` means 1234.5.
+
+**Selection props.** Replace `onSelect` with `onSelectedIdChange` on `Tree`,
+`TopologyCanvas`, `GeoMap` and `SessionNav`. The callback receives the id first; the object
+`onSelect` received is `details.item`.
+
+| Component | 0.8 | 0.9 |
+| --- | --- | --- |
+| `Tree` | `onSelect={(node) => setSelected(node.id)}` | `onSelectedIdChange={setSelected}` (node: `details.item`) |
+| `TopologyCanvas` | `onSelect={setSelected}` | `onSelectedIdChange={(id) => setSelected(id)}` |
+| `GeoMap` | `onSelect={(point) => select(point?.id ?? null)}` | `onSelectedIdChange={(id) => select(id)}` (point: `details.item`) |
+| `SessionNav` | `activeId={id}` and `onSelect={(session) => open(session)}` | `selectedId={id}` and `onSelectedIdChange={(id, { item }) => open(item!)}` |
+
+- A fixed `selectedId` with no handler stays fixed. Use `defaultSelectedId` to let the
+  component keep the selection, and `selectedId={null}` to clear it.
+- `onSelectedIdChange` does not fire when the selected item is pressed again. Handle the press
+  separately if you relied on `onSelect` for that, for example to close a drawer.
 
 ### Review
 

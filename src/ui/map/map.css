@@ -79,15 +79,24 @@
   }
 
   /* ── Loading: the silhouette, then the canvas fades in over it ──────────── */
+  /* On its own the silhouette fills its container like any fill component (R7.3). */
   .fa-map-silhouette {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    transition: opacity var(--duration-slow) var(--ease-standard);
+  }
+  /* In a map it sits inside the fit padding, where the camera frames the region. The fit tokens
+     exist only on the stage, so this placement must not leak to a standalone silhouette: without
+     them the size is invalid, falls back to auto and the outline escapes its container. */
+  .fa-map-stage > .fa-map-silhouette {
     position: absolute;
     top: var(--fa-map-fit-top);
     left: var(--fa-map-fit-left);
     width: calc(100% - var(--fa-map-fit-left) - var(--fa-map-fit-right));
     height: calc(100% - var(--fa-map-fit-top) - var(--fa-map-fit-bottom));
-    overflow: visible;
-    pointer-events: none;
-    transition: opacity var(--duration-slow) var(--ease-standard);
   }
   .fa-map-silhouette path {
     fill: var(--skel-base);

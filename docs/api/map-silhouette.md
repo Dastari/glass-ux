@@ -2,6 +2,7 @@
 
 The home region as a static outline, framed exactly like the map's first view: an SVG inset
 by the fit padding whose viewBox is the framed box (`xMidYMid meet` is fitBounds).
+Outside a map it fills its container, which must give it a definite height.
 
 `import { MapSilhouette } from "glass-ux/map"`
 

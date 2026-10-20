@@ -4,6 +4,52 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.2
+
+### Changed
+
+- A disabled menu row no longer has a caption line beneath it. `Menu.Item`, `Menu.Submenu`
+  and the action menus (`ActionMenu`, `ActionContextMenu`, the `ActionBar` overflow) dim
+  the row and show its `disabledReason` as the row's tooltip, beside the menu, on pointer
+  hover and on keyboard highlight. The row stays highlightable (`aria-disabled`, its press
+  suppressed) and is described by a hidden copy of the reason through `aria-describedby`,
+  so screen readers announce it with the row (R11.3, R12.3). `MenuPreview.Item` and
+  `ActionMenuPreview` draw the dimmed row without the line. The `.fa-menu-reason` class is
+  gone.
+
+### Added
+
+- "Copy as CSV" in a chart's head. In the full tier every chart with a data table shows an
+  icon-only `CopyButton` beside "View as table", in the head's corner. It copies the table
+  as CSV with raw values (plain numbers, ISO 8601 times, shares as 0–1 fractions). It is
+  present but disabled, with its reason, while the chart loads, is empty or failed, so the
+  head does not move when the data arrives.
+- `chartTableToCsv(model, options?)` in `glass-ux/charts`: RFC 4180 CSV from a
+  `ChartTableModel` (header of column labels, quoted fields where needed, CRLF or
+  `lineEnding: "\n"`), with the `ChartTableCsvOptions` and `ChartTableValue` types.
+- `ChartTableModel.values`: optional raw cell values parallel to `rows`, used by the CSV;
+  `ChartTableColumn.value`: a raw header value (a heatmap's time column). Every built-in
+  chart fills them.
+- `DataTable` `rowOpen` (`DataTableRowOpen`): `"double-click"` (the default, unchanged) or
+  `"click"`, which opens a row (or card) with `onRowOpen` on a single primary click and
+  gives rows a pointer cursor. Clicks on controls in the row, Shift/Ctrl/⌘/Alt clicks (which
+  keep their selection meanings), other buttons, the second click of a double-click and a
+  click that ends a text selection in the row do not open it. Enter still opens.
+- `Tooltip`'s `side` accepts `"inline-start"` and `"inline-end"`.
+
+### Fixed
+
+- An `EntityIdentity` nested in another (a chip in a header's `slots.state`, for example)
+  keeps its own tier's styles. The header, compact, row and chip tiers' descendant rules
+  matched the nested entity's parts too, so a chip beside a header's name took the page
+  title's size and weight. Each tier's descendant rules now stop at a nested entity.
+
+### Deprecated
+
+- `reasonShown` and `reasonId` on `Menu.Item` and `Menu.Submenu`, `reasonShown` on
+  `MenuPreview.Item`, and `reasonRuns`. Rows no longer share a reason line; the props are
+  ignored and `reasonRuns` is unused by the menus. They are planned for removal in 0.10.
+
 ## 0.9.1
 
 ### Fixed

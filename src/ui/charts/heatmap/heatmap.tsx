@@ -54,8 +54,9 @@ export function Heatmap(props: HeatmapProps) {
   const stepCount = Math.min(7, Math.max(3, steps))
   const table = useMemo<ChartTableModel>(
     () => ({
-      columns: [{ key: "row", label: `${rowLabel} / ${columnLabel}` }, ...columns.map((column, index) => ({ key: `c${index}`, label: columnText(column), numeric: true }))],
+      columns: [{ key: "row", label: `${rowLabel} / ${columnLabel}` }, ...columns.map((column, index) => ({ key: `c${index}`, label: columnText(column), numeric: true, value: column }))],
       rows: rows.map((row, r) => ({ row, ...Object.fromEntries(columns.map((_, c) => [`c${c}`, formatValue(values[r]?.[c] ?? null, fmt)])) })),
+      values: rows.map((_, r) => Object.fromEntries(columns.map((_, c) => [`c${c}`, values[r]?.[c] ?? null]))),
     }),
     [rows, columns, values, fmt, rowLabel, columnLabel, columnText]
   )

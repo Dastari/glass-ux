@@ -15,4 +15,4 @@ Portal + positioner + the inverted glass bubble.
 | arrow | `boolean` | false, true | yes | — | Whether floating content displays a positioning arrow. |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
-| side | `NonNullable<"top" \| "bottom" \| "left" \| "right" \| undefined>` | "top", "bottom", "left", "right" | yes | — | Preferred side of the anchor; collision handling may choose another side. |
+| side | `NonNullable<"top" \| "bottom" \| "left" \| "right" \| "inline-end" \| "inline-start" \| undefined>` | "top", "bottom", "left", "right", "inline-end", "inline-start" | yes | — | Preferred side of the anchor; collision handling may choose another side. |

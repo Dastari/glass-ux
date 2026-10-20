@@ -64,6 +64,9 @@ export interface DataTableNoun {
   other: string;
 }
 
+/** The pointer gesture that opens a DataTable row: see `DataTableProps.rowOpen`. */
+export type DataTableRowOpen = "double-click" | "click";
+
 export interface DataTableProps<T extends RowData> {
   /** Stable id: persists column widths, hidden columns, pins and density per user. */
   id: string;
@@ -155,8 +158,21 @@ export interface DataTableProps<T extends RowData> {
   rowWrapper?: (row: T, children: ReactElement) => ReactElement;
   /** Replace the bulk bar's action buttons. */
   renderBulkActions?: (rows: T[], clear: () => void) => ReactNode;
-  /** Enter or double-click on a row. */
+  /**
+   * Called with the row when the person opens it: Enter on the focused row, or the pointer
+   * gesture `rowOpen` chooses (double-click by default).
+   */
   onRowOpen?: (row: T) => void;
+  /**
+   * The pointer gesture that opens a row with `onRowOpen`. Enter always opens it.
+   * - `"double-click"` (default): a double-click; a single click only focuses the row.
+   * - `"click"`: a single primary click, and the rows (and cards) read as links, with a
+   *   pointer cursor and the hover fill. A click is ignored when it lands on a control in the
+   *   row (a button, link, input, checkbox or `data-dt-interactive` element), carries Shift,
+   *   Ctrl, ⌘ or Alt (which keep their selection meanings), uses another button, is the
+   *   second click of a double-click, or ends a drag that selected text in the row.
+   */
+  rowOpen?: DataTableRowOpen;
   /**
    * Group the rows (server-side, docs/data-filters.md §7): a header row per group with its
    * count from the server, which collapses (click, Enter or Space; ← and → on the header;

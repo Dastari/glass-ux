@@ -90,17 +90,6 @@
     transform: scale(0.4);
   }
 
-  /* The reason a row is disabled, under its label (R12.3). Full contrast: the row itself
-     is dimmed, the explanation is not. */
-  .fa-menu-reason {
-    margin-top: calc(var(--space-1-5) * -1);
-    padding: 0 var(--space-2-5) var(--space-1-5) calc(var(--space-2-5) * 2 + var(--icon-md));
-    color: var(--fg-muted);
-    font-size: var(--type-caption-size);
-    line-height: var(--type-caption-line);
-    max-width: var(--measure);
-  }
-
   .fa-menu-preview {
     max-height: none;
     overflow: visible;

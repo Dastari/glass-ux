@@ -9,7 +9,7 @@ import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
 import { ChartLegend, type LegendItem } from "../core/legend.js"
 import { allIntegers, linear, linearTicks, valueDomain, type Domain } from "../core/scales.js"
 import { seriesAttrs, slotFor, type ChartTone } from "../core/series.js"
-import type { ChartTableModel } from "../core/table.js"
+import type { ChartTableModel, ChartTableValue } from "../core/table.js"
 import type { ChartTier } from "../core/tier.js"
 import { ChartTooltip, TooltipBody, type TooltipRow } from "../core/tooltip.js"
 import { LiveRegion } from "../line/line-chart.js"
@@ -109,6 +109,12 @@ export function BarChart(props: BarChartProps) {
       if (stacked && series.length > 1) row.total = formatValue(series.reduce((sum, item) => sum + (item.data[index] ?? 0), 0), fmt)
       return row
     })
+    const values = categories.map((_, index) => {
+      const raw: Record<string, ChartTableValue> = {}
+      for (const item of series) raw[item.key] = item.data[index] ?? null
+      if (stacked && series.length > 1) raw.total = series.reduce((sum, item) => sum + (item.data[index] ?? 0), 0)
+      return raw
+    })
     return {
       columns: [
         { key: "category", label: categoryLabel },
@@ -116,6 +122,7 @@ export function BarChart(props: BarChartProps) {
         ...(stacked && series.length > 1 ? [{ key: "total", label: "Total", numeric: true }] : []),
       ],
       rows,
+      values,
     }
   }, [categories, series, fmt, stacked, categoryLabel, edges, formatEdge])
 

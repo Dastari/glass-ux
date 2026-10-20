@@ -55,6 +55,7 @@ export type {
   DataTableFilterToggle,
   DataTableNoun,
   DataTableProps,
+  DataTableRowOpen,
   DataTableReorder,
   DataTableRowMove,
   DataTableState,

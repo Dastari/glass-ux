@@ -2,7 +2,8 @@
 
 A dropdown menu of actions built from parts on Base UI's menu: `Root` (state), `Trigger`,
 `Popup`, items (`Item`, `LinkItem`, `CheckboxItem`, `RadioGroup`/`RadioItem`), `Group`,
-`GroupLabel`, `Separator` and `Submenu`. Disabled items can show their reason.
+`GroupLabel`, `Separator` and `Submenu`. A disabled item or submenu with `disabledReason`
+stays highlightable and shows the reason as its tooltip.
 
 `import { Menu } from "glass-ux/menu"`
 
@@ -97,10 +98,10 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why, on a line beneath it. |
+| disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why. The row is dimmed but stays highlightable; the reason is its tooltip on hover and keyboard highlight, and its accessible description. |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
-| reasonId | `string \| undefined` | See type | no | — | ID of the element explaining the current state. |
-| reasonShown | `boolean \| undefined` | false, true | no | true | Consecutive rows disabled for the same reason show it once, under the last of them: the others pass `reasonShown={false}` and point at that line with `reasonId`. |
+| reasonId | `string \| undefined` | See type | no | — | Ignored. Rows used to point at a shared reason line; each row now describes itself. |
+| reasonShown | `boolean \| undefined` | false, true | no | — | Ignored. Rows used to share one reason line; the reason is now each row's tooltip. |
 | shortcut | `string \| undefined` | See type | no | — | e.g. "mod+shift+r". Shown in the platform's form at the trailing edge. |
 | tone | `MenuItemTone \| undefined` | "danger", "default" | no | "default" | The semantic tone. Use danger and warning for consequences and states. |
 | trail | `ReactNode` | See type | no | — | A short trailing note: the current value of what the row changes ("last 7 days"). |
@@ -290,9 +291,9 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
-| disabledReason | `string \| null \| undefined` | See type | no | — | Explains why the action is unavailable; the control remains focusable so the reason is accessible. |
+| disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why. The row is dimmed but stays highlightable; the reason is its tooltip on hover and keyboard highlight, and its accessible description. |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | label | `ReactNode` | See type | yes | — | The visible or accessible label for this component. |
-| reasonId | `string \| undefined` | See type | no | — | ID of the element explaining the current state. |
-| reasonShown | `boolean \| undefined` | false, true | no | true | Whether the state’s explanation is visible. |
+| reasonId | `string \| undefined` | See type | no | — | Ignored. Rows used to point at a shared reason line; each row now describes itself. |
+| reasonShown | `boolean \| undefined` | false, true | no | — | Ignored. Rows used to share one reason line; the reason is now each row's tooltip. |
 | tone | `MenuItemTone \| undefined` | "danger", "default" | no | "default" | The semantic tone. Use danger and warning for consequences and states. |

@@ -9,7 +9,7 @@ import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
 import { ChartLegend, type LegendItem } from "../core/legend.js"
 import { seriesAttrs, slotFor, SLOT_COUNT, type ChartTone } from "../core/series.js"
 import { ProportionStrip } from "../core/strip.js"
-import type { ChartTableModel } from "../core/table.js"
+import { shareFraction, type ChartTableModel } from "../core/table.js"
 import { LiveRegion } from "../line/line-chart.js"
 
 export interface PieSlice {
@@ -75,6 +75,7 @@ export function PieChart(props: PieChartProps) {
         { key: "share", label: "Share", numeric: true },
       ],
       rows: data.map((item) => ({ label: item.label, value: formatValue(item.value, fmt), share: formatShare(item.value, total, fmt.locale) })),
+      values: data.map((item) => ({ value: item.value, share: shareFraction(item.value, total) })),
     }),
     [data, fmt, total, categoryLabel]
   )

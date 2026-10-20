@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { reasonRuns } from "./menu.js"
 
-describe("reasonRuns", () => {
+// reasonRuns is deprecated (0.9.2): menus no longer share a reason line, but it stays exported.
+describe("reasonRuns (deprecated)", () => {
   it("lets the last row of a run of identical reasons show it", () => {
     expect(reasonRuns(["a", "a", null, "b", "b", "b", "a"])).toEqual([1, 1, 2, 5, 5, 5, 6])
   })

@@ -189,6 +189,13 @@ function firstGroupPages(current: DataTableState): Partial<DataTableState> {
     : {};
 }
 
+/** A click that ends a drag selecting text in the row: not a press (rowOpen "click"). */
+function endsTextSelection(row: Element) {
+  const selection = typeof window === "undefined" ? null : window.getSelection();
+  if (!selection || selection.isCollapsed || !selection.rangeCount) return false;
+  return selection.getRangeAt(0).intersectsNode(row);
+}
+
 function isInteractive(target: EventTarget | null, row: Element) {
   if (!(target instanceof Element)) return false;
   const control = target.closest(
@@ -1707,10 +1714,22 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     return hit?.kind === "row" ? hit : null;
   };
 
+  const openOnClick = props.rowOpen === "click" && Boolean(props.onRowOpen);
   const onRowsClick = (event: ReactMouseEvent<HTMLDivElement>) => {
     const hit = rowFromEvent(event.target);
     if (!hit || isInteractive(event.target, hit.element)) return;
     setActiveIndex(hit.index);
+    if (
+      openOnClick &&
+      event.button === 0 &&
+      event.detail <= 1 &&
+      !(event.shiftKey || event.metaKey || event.ctrlKey || event.altKey) &&
+      !endsTextSelection(hit.element)
+    ) {
+      const row = rowsById.get(hit.rowId);
+      if (row !== undefined) props.onRowOpen?.(row);
+      return;
+    }
     if (!selectable) return;
     if (event.shiftKey && anchor.current) {
       setSelection(
@@ -1722,6 +1741,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     }
   };
   const onRowsDoubleClick = (event: ReactMouseEvent<HTMLDivElement>) => {
+    // With rowOpen "click" the first click of the pair has already opened the row.
+    if (openOnClick) return;
     const hit = rowFromEvent(event.target);
     if (!hit || isInteractive(event.target, hit.element)) return;
     const row = rowsById.get(hit.rowId);
@@ -1912,6 +1933,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     onClick: onRowsClick,
     onDoubleClick: onRowsDoubleClick,
     onMouseDown: onRowsMouseDown,
+    "data-row-open": openOnClick ? "click" : undefined,
   };
   const hasContextMenu = Boolean(
     hasActions || renderRowContextMenu || cellFilterable,

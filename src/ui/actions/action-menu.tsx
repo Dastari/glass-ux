@@ -1,8 +1,8 @@
-import { Fragment, useId, useLayoutEffect, useRef, useState, type ReactElement } from "react"
+import { Fragment, useLayoutEffect, useRef, useState, type ReactElement } from "react"
 import { IconMoreHorizontal } from "../../icons/generated/icons.js"
 import { resolveActions, type ActionSet, type ActionSurface, type ResolvedAction, type ResolvedGroup } from "../../lib/actions/actions.js"
 import { Button, type ButtonSize } from "../button/index.js"
-import { Menu, MenuPreview, reasonRuns } from "../menu/index.js"
+import { Menu, MenuPreview } from "../menu/index.js"
 import { useActionRunner } from "./action-provider.js"
 
 /** Menus run actions after they close, so focus is home before a confirm or window opens. */
@@ -41,15 +41,11 @@ interface RowProps<T> {
   targets: readonly T[]
   /** Rendering context, such as a page, card or docked pane. */
   surface: ActionSurface
-  /** Whether the state’s explanation is visible. */
-  reasonShown: boolean
-  /** ID of the element explaining the current state. */
-  reasonId: string
   /** Called with the action, targets and surface after the menu closes when the person chooses the row; undefined runs it with the shared runner instead. */
   onRun: ActionRunHandler<T> | undefined
 }
 
-function ActionItem<T>({ action, targets, surface, reasonShown, reasonId, onRun }: RowProps<T>) {
+function ActionItem<T>({ action, targets, surface, onRun }: RowProps<T>) {
   const { start } = useActionRunner()
   if (action.children.length) {
     return (
@@ -57,8 +53,6 @@ function ActionItem<T>({ action, targets, surface, reasonShown, reasonId, onRun 
         icon={actionIcon(action)}
         label={action.label}
         disabledReason={action.disabledReason}
-        reasonShown={reasonShown}
-        reasonId={reasonId}
         tone={toneOf(action)}
       >
         <ActionRows actions={action.children} targets={targets} surface={surface} onRun={onRun} />
@@ -71,8 +65,6 @@ function ActionItem<T>({ action, targets, surface, reasonShown, reasonId, onRun 
       shortcut={action.definition.shortcut}
       tone={toneOf(action)}
       disabledReason={action.disabledReason}
-      reasonShown={reasonShown}
-      reasonId={reasonId}
       onClick={() => afterClose(() => (onRun ? onRun(action, targets, surface) : void start(action, targets, surface)))}
     >
       {action.label}
@@ -80,7 +72,7 @@ function ActionItem<T>({ action, targets, surface, reasonShown, reasonId, onRun 
   )
 }
 
-/** A list of rows. Rows disabled for the same reason in a run share one reason line. */
+/** A list of rows. A disabled row shows its own reason as its tooltip. */
 function ActionRows<T>({
   actions,
   targets,
@@ -96,19 +88,7 @@ function ActionRows<T>({
   /** Passed to each row (and into submenus): called with the chosen action, targets and surface; undefined uses the shared runner. */
   onRun: ActionRunHandler<T> | undefined
 }) {
-  const base = useId()
-  const owners = reasonRuns(actions.map((action) => action.disabledReason))
-  return actions.map((action, index) => (
-    <ActionItem
-      key={action.id}
-      action={action}
-      targets={targets}
-      surface={surface}
-      reasonShown={owners[index] === index}
-      reasonId={`${base}-${owners[index] ?? index}`}
-      onRun={onRun}
-    />
-  ))
+  return actions.map((action) => <ActionItem key={action.id} action={action} targets={targets} surface={surface} onRun={onRun} />)
 }
 
 /**
@@ -189,18 +169,14 @@ export function ActionMenuPreview<T>({
     const surface = rootRef.current?.firstElementChild as HTMLElement | null
     if (opener && surface) setOffset(opener.getBoundingClientRect().top - surface.getBoundingClientRect().top)
   }, [openSubmenu])
-  const rows = (actions: ResolvedAction<T>[]) => {
-    const owners = reasonRuns(actions.map((action) => action.disabledReason))
-    return actions.map((action, index) => row(action, owners[index] === index))
-  }
-  const row = (action: ResolvedAction<T>, reasonShown: boolean) => (
+  const rows = (actions: ResolvedAction<T>[]) => actions.map(row)
+  const row = (action: ResolvedAction<T>) => (
     <MenuPreview.Item
       key={action.id}
       icon={actionIcon(action)}
       shortcut={action.definition.shortcut}
       tone={toneOf(action)}
       disabledReason={action.disabledReason}
-      reasonShown={reasonShown}
       submenu={action.children.length > 0}
       open={action.id === openSubmenu}
       highlighted={action.id === highlight}

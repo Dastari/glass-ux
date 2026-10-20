@@ -52,6 +52,12 @@ label/value pairs, lowest priority number first, so give the facts a phone user 
 (latency, devices, due date) priority 2. Priority 4–5 columns and `cardRole: "hidden"` sit
 behind the card's "+N" toggle; hide a field the title already shows.
 
+`onRowOpen` opens a row on Enter and, by default, on double-click. Where opening is the
+row's main purpose (a list of records that each lead to a page), pass `rowOpen="click"`: a
+plain primary click opens it and rows and cards show a pointer. Clicks on controls in the
+row, modified clicks (Shift, Ctrl, ⌘, Alt keep their selection meanings) and a drag that
+selects text do not open it.
+
 The table's row, context and bulk actions read one `ActionSet`, declared with
 `defineActions` from `glass-ux/actions`. Use shared cells for identity,
 numbers, times, states and sparklines. Treat loading, empty and error states as part of the

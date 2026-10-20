@@ -91,6 +91,7 @@ export function ScatterChart(props: ScatterChartProps) {
         { key: "y", label: y.label, numeric: true },
       ],
       rows: series.flatMap((item) => item.points.map((point) => ({ label: point.label ?? "", series: item.label, x: formatValue(point.x, x), y: formatValue(point.y, y) }))),
+      values: series.flatMap((item) => item.points.map((point) => ({ x: point.x, y: point.y }))),
     }),
     [series, x, y]
   )

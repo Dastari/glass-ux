@@ -11,7 +11,7 @@ import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
 import { ChartLegend, type LegendItem } from "../core/legend.js"
 import { allIntegers, isTime, linear, linearTicks, nearestIndex, timeTicks, toNumber, valueDomain, type Domain, type XValue } from "../core/scales.js"
 import { seriesAttrs, slotFor, type ChartTone } from "../core/series.js"
-import type { ChartTableModel } from "../core/table.js"
+import type { ChartTableModel, ChartTableValue } from "../core/table.js"
 import type { ChartTier } from "../core/tier.js"
 import { ChartTooltip, TooltipBody, type TooltipRow } from "../core/tooltip.js"
 
@@ -238,17 +238,24 @@ function lineTable(x: readonly XValue[], series: readonly LineSeries[], fmt: Loc
   const step = Math.max(1, Math.ceil(x.length / 500))
   const span = x.length > 1 ? toNumber(x[x.length - 1]!) - toNumber(x[0]!) : 0
   const rows: ChartTableModel["rows"] = []
+  const values: NonNullable<ChartTableModel["values"]> = []
   for (let index = 0; index < x.length; index += step) {
     const value = x[index]!
     const row: Record<string, string> = {
       x: value instanceof Date ? formatInstant(value, span, fmt.locale) : formatX ? formatX(value) : String(value),
     }
-    for (const item of series) row[item.key] = formatValue(item.data[index], fmt)
+    const raw: Record<string, ChartTableValue> = { x: value }
+    for (const item of series) {
+      row[item.key] = formatValue(item.data[index], fmt)
+      raw[item.key] = item.data[index] ?? null
+    }
     rows.push(row)
+    values.push(raw)
   }
   return {
     columns: [{ key: "x", label: step > 1 ? `${xLabel} (1 in ${step} samples)` : xLabel }, ...series.map((item) => ({ key: item.key, label: item.label, numeric: true }))],
     rows,
+    values,
   }
 }
 

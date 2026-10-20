@@ -99,6 +99,7 @@ function EndpointsDemo() {
   // Each refetch bumps the token; live ticks refetch silently (no refetch line).
   const [refetch, setRefetch] = useState({ token: 0, silent: false })
   const [opened, setOpened] = useState<string | null>(null)
+  const [rowOpen, setRowOpen] = useState<"double-click" | "click">("double-click")
 
   const query = useMemo<EndpointQuery>(
     () => ({ sorting: url.state.sorting, pageIndex: url.state.pagination.pageIndex, pageSize: url.state.pagination.pageSize, search: url.state.search || undefined }),
@@ -141,6 +142,13 @@ function EndpointsDemo() {
             </Toggle>
           ))}
         </ButtonGroup>
+        <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="Open a row on">
+          {(["double-click", "click"] as const).map((value) => (
+            <Toggle key={value} pressed={rowOpen === value} onClick={() => setRowOpen(value)}>
+              {value === "click" ? "Open on click" : "Open on double-click"}
+            </Toggle>
+          ))}
+        </ButtonGroup>
         <ButtonGroup className="glass-control dt-demo-group">
           <Toggle pressed={live} onClick={() => setLive((value) => !value)}>
             Live updates
@@ -180,6 +188,7 @@ function EndpointsDemo() {
           emptyMessage="No endpoints enrolled"
           actions={rowActions}
           onRowOpen={(endpoint) => setOpened(endpoint.name)}
+          rowOpen={rowOpen}
           getRowLabel={(endpoint) => endpoint.name}
           density={density}
           onDensityChange={setDensity}

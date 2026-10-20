@@ -2,8 +2,10 @@
 
 The shell every chart renders in. It is a size container (R7.3) that fills its parent; the
 box picks the tier on both axes (see tier.ts). It owns the head row (title, legend or
-readout, the table toggle), the in-place loading, empty and error states (R9.1), and the
-table fallback. The parent must give it a definite height.
+readout, and in the full tier the "View as table" toggle and "Copy as CSV"), the in-place
+loading, empty and error states (R9.1), and the table fallback. The tools are present,
+disabled, while the chart loads, so the head does not move when the data arrives (R9).
+The parent must give it a definite height.
 
 `import { ChartFrame } from "glass-ux/charts"`
 
@@ -24,7 +26,7 @@ table fallback. The parent must give it a definite height.
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | rule | `TierRule \| undefined` | See type | no | DEFAULT_TIERS | The typed disclosure or validation rule applied to this value. |
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
-| table | `ChartTableModel \| undefined` | See type | no | — | The data as a table: visually hidden for screen readers, or shown with "View as table". |
+| table | `ChartTableModel \| undefined` | See type | no | — | The data as a table: visually hidden for screen readers, shown with "View as table", and copied by "Copy as CSV" (raw `values` where the model has them). |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | trail | `ReactNode` | See type | no | — | Content after the plot in the micro tier (the latest value, a share). |
 | trailOptional | `boolean \| undefined` | false, true | no | false | The trail is a nicety: it hides in narrow rows so the marks keep their room. |

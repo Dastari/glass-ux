@@ -250,7 +250,8 @@ follows a fine pointer and a glint on the rim nearest it.
 - **R12.2** Action groups render in a fixed order; destructive actions come last, after a
   separator.
 - **R12.3** Hide an action that never applies to the target; disable with a reason one that
-  applies but is unavailable now.
+  applies but is unavailable now. In a menu the row is only dimmed; the reason is its tooltip,
+  beside the menu, on hover and keyboard highlight, never a caption line under the row.
 - **R12.4** Confirm consequential actions with an AlertDialog that names the target and the
   outcome: “Remove NST-C106 from Northstar Studio?”.
 - **R12.5** Report the result in place on the button that started it, or with a toast for bulk

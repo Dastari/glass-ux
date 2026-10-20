@@ -59,7 +59,13 @@
     min-width: 0;
     height: 100%;
   }
-  .fa-chart-view {
+  /* "View as table" and "Copy as CSV": ghost icons at the head's inline end, the copy in
+     the corner. Present (disabled) while loading, so the head never moves (R9). */
+  .fa-chart-tools {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
     margin-inline-start: auto;
   }
 

@@ -166,7 +166,7 @@ export default function MenuSection() {
         <Rules
           do={[
             "Order groups: open, connect and remote, manage, organise, then destructive.",
-            "Keep a disabled row visible and say why beneath it.",
+            "Keep a disabled row visible, dimmed, with why as its tooltip.",
             "Show the shortcut at the end of the row when the action has one.",
             "Build entity menus from the action definition (ActionMenu), never by hand.",
             "Put toggles and choices in menus only when they act at once.",

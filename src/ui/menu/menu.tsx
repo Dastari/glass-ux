@@ -1,9 +1,10 @@
 import { Menu as BaseMenu } from "@base-ui/react/menu"
-import { useId, type ComponentProps, type ReactNode } from "react"
+import { useId, type ComponentProps, type ReactElement, type ReactNode } from "react"
 import { IconCheck, IconChevronRight } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Kbd, useAriaShortcut } from "../kbd/index.js"
+import { Tooltip } from "../tooltip/index.js"
 
 /*
  * Positioners take px numbers, so offsets are measured from tokens by usePopupMetrics and
@@ -48,13 +49,29 @@ function Chevron() {
   )
 }
 
-/** The one line under a disabled row that says why it is disabled (R12.3). */
-function DisabledReason({ id, children }: { id: string; children: ReactNode }) {
+/**
+ * Why a row is disabled (R11.3, R12.3). The row is only dimmed: Base UI keeps a disabled item
+ * highlightable (aria-disabled, the press suppressed), so the reason shows as the row's
+ * tooltip, beside the menu, on pointer hover and on keyboard highlight. Screen readers hear
+ * it with the row through `aria-describedby`, pointing at a hidden copy that is always
+ * present (the tooltip itself opens only after its delay).
+ */
+function ReasonTooltip({ reason, children }: { reason: string | null | undefined; children: ReactElement }) {
+  if (!reason) return children
   return (
-    <div id={id} className="fa-menu-reason">
+    <Tooltip content={reason} side="inline-end" describe={false}>
       {children}
-    </div>
+    </Tooltip>
   )
+}
+
+/** The hidden description a disabled row's `aria-describedby` points at. */
+function ReasonText({ id, reason }: { id: string; reason: string | null | undefined }) {
+  return reason ? (
+    <span id={id} hidden>
+      {reason}
+    </span>
+  ) : null
 }
 
 export interface MenuPopupProps extends Omit<ComponentProps<typeof BaseMenu.Popup>, "className"> {
@@ -99,37 +116,48 @@ export interface MenuItemProps extends Omit<ComponentProps<typeof BaseMenu.Item>
   /** A short trailing note: the current value of what the row changes ("last 7 days"). */
   trail?: ReactNode
   tone?: MenuItemTone
-  /** Disable the row and say why, on a line beneath it. */
+  /**
+   * Disable the row and say why. The row is dimmed but stays highlightable; the reason is its
+   * tooltip on hover and keyboard highlight, and its accessible description.
+   */
   disabledReason?: string | null | undefined
   /**
-   * Consecutive rows disabled for the same reason show it once, under the last of them:
-   * the others pass `reasonShown={false}` and point at that line with `reasonId`.
+   * Ignored. Rows used to share one reason line; the reason is now each row's tooltip.
+   *
+   * @deprecated Since 0.9.2 there is no shared line to show or hide. Remove it. Planned for
+   * removal in 0.10.
    */
   reasonShown?: boolean
-  /** ID of the element explaining the current state. */
+  /**
+   * Ignored. Rows used to point at a shared reason line; each row now describes itself.
+   *
+   * @deprecated Since 0.9.2 every disabled row describes itself with its own reason. Remove
+   * it. Planned for removal in 0.10.
+   */
   reasonId?: string
 }
 
-function MenuItem({ icon, children, shortcut, trail, tone = "default", disabled, disabledReason, reasonShown = true, reasonId: sharedReasonId, className, ...rest }: MenuItemProps) {
-  const ownReasonId = useId()
-  const reasonId = sharedReasonId ?? ownReasonId
+function MenuItem({ icon, children, shortcut, trail, tone = "default", disabled, disabledReason, reasonShown: _reasonShown, reasonId: _reasonId, className, ...rest }: MenuItemProps) {
+  const reasonId = useId()
   const aria = useAriaShortcut(shortcut)
   const isDisabled = Boolean(disabled || disabledReason)
   return (
     <>
-      <BaseMenu.Item
-        {...rest}
-        disabled={isDisabled}
-        aria-describedby={disabledReason ? reasonId : undefined}
-        aria-keyshortcuts={aria}
-        className={cx("fa-item fa-menu-item", className)}
-        data-tone={tone === "danger" ? "danger" : undefined}
-      >
-        <MenuItemContent icon={icon} shortcut={shortcut} trail={trail ? <span className="fa-item-trail fa-menu-trail">{trail}</span> : undefined}>
-          {children}
-        </MenuItemContent>
-      </BaseMenu.Item>
-      {disabledReason && reasonShown ? <DisabledReason id={reasonId}>{disabledReason}</DisabledReason> : null}
+      <ReasonTooltip reason={disabledReason}>
+        <BaseMenu.Item
+          {...rest}
+          disabled={isDisabled}
+          aria-describedby={disabledReason ? reasonId : undefined}
+          aria-keyshortcuts={aria}
+          className={cx("fa-item fa-menu-item", className)}
+          data-tone={tone === "danger" ? "danger" : undefined}
+        >
+          <MenuItemContent icon={icon} shortcut={shortcut} trail={trail ? <span className="fa-item-trail fa-menu-trail">{trail}</span> : undefined}>
+            {children}
+          </MenuItemContent>
+        </BaseMenu.Item>
+      </ReasonTooltip>
+      <ReasonText id={reasonId} reason={disabledReason} />
     </>
   )
 }
@@ -210,40 +238,54 @@ export interface MenuSubmenuProps {
   icon?: ReactNode
   label: ReactNode
   disabled?: boolean
-  /** Explains why the action is unavailable; the control remains focusable so the reason is accessible. */
+  /**
+   * Disable the row and say why. The row is dimmed but stays highlightable; the reason is its
+   * tooltip on hover and keyboard highlight, and its accessible description.
+   */
   disabledReason?: string | null | undefined
-  /** Whether the state’s explanation is visible. */
+  /**
+   * Ignored. Rows used to share one reason line; the reason is now each row's tooltip.
+   *
+   * @deprecated Since 0.9.2 there is no shared line to show or hide. Remove it. Planned for
+   * removal in 0.10.
+   */
   reasonShown?: boolean
-  /** ID of the element explaining the current state. */
+  /**
+   * Ignored. Rows used to point at a shared reason line; each row now describes itself.
+   *
+   * @deprecated Since 0.9.2 every disabled row describes itself with its own reason. Remove
+   * it. Planned for removal in 0.10.
+   */
   reasonId?: string
   tone?: MenuItemTone
   children: ReactNode
 }
 
 /** A row that opens a nested menu (→ / hover), with a chevron. */
-function MenuSubmenu({ icon, label, disabled, disabledReason, reasonShown = true, reasonId: sharedReasonId, tone = "default", children }: MenuSubmenuProps) {
-  const ownReasonId = useId()
-  const reasonId = sharedReasonId ?? ownReasonId
+function MenuSubmenu({ icon, label, disabled, disabledReason, tone = "default", children }: MenuSubmenuProps) {
+  const reasonId = useId()
   const isDisabled = Boolean(disabled || disabledReason)
   const { submenuInset } = usePopupMetrics()
   return (
     <>
       <BaseMenu.SubmenuRoot disabled={isDisabled}>
-        <BaseMenu.SubmenuTrigger
-          disabled={isDisabled}
-          aria-describedby={disabledReason ? reasonId : undefined}
-          className="fa-item fa-menu-item"
-          data-tone={tone === "danger" ? "danger" : undefined}
-        >
-          <MenuItemContent icon={icon} trail={<Chevron />}>
-            {label}
-          </MenuItemContent>
-        </BaseMenu.SubmenuTrigger>
+        <ReasonTooltip reason={disabledReason}>
+          <BaseMenu.SubmenuTrigger
+            disabled={isDisabled}
+            aria-describedby={disabledReason ? reasonId : undefined}
+            className="fa-item fa-menu-item"
+            data-tone={tone === "danger" ? "danger" : undefined}
+          >
+            <MenuItemContent icon={icon} trail={<Chevron />}>
+              {label}
+            </MenuItemContent>
+          </BaseMenu.SubmenuTrigger>
+        </ReasonTooltip>
         <MenuPopup side="inline-end" align="start" sideOffset={0} alignOffset={-submenuInset}>
           {children}
         </MenuPopup>
       </BaseMenu.SubmenuRoot>
-      {disabledReason && reasonShown ? <DisabledReason id={reasonId}>{disabledReason}</DisabledReason> : null}
+      <ReasonText id={reasonId} reason={disabledReason} />
     </>
   )
 }
@@ -266,9 +308,14 @@ interface PreviewItemProps extends ItemContentProps {
   /** Marks the item reached through keyboard or pointer navigation. */
   highlighted?: boolean
   open?: boolean
-  /** Explains why the action is unavailable; the control remains focusable so the reason is accessible. */
+  /** Draws the row disabled. A live menu shows the reason as the row's tooltip; a static preview has none. */
   disabledReason?: string | null | undefined
-  /** Whether the state’s explanation is visible. */
+  /**
+   * Ignored. A preview used to draw the reason line under the row.
+   *
+   * @deprecated Since 0.9.2 a preview draws no reason line. Remove it. Planned for removal
+   * in 0.10.
+   */
   reasonShown?: boolean
   /** Nested menu content. */
   submenu?: boolean
@@ -278,7 +325,7 @@ interface PreviewItemProps extends ItemContentProps {
   radio?: boolean
 }
 
-function PreviewItem({ icon, children, shortcut, tone, highlighted, open, disabledReason, reasonShown = true, submenu, checked, radio }: PreviewItemProps) {
+function PreviewItem({ icon, children, shortcut, tone, highlighted, open, disabledReason, submenu, checked, radio }: PreviewItemProps) {
   const indicator =
     checked === undefined ? null : (
       <span className="fa-item-icon fa-menu-indicator" aria-hidden>
@@ -292,27 +339,27 @@ function PreviewItem({ icon, children, shortcut, tone, highlighted, open, disabl
       </span>
     )
   return (
-    <>
-      <div
-        className="fa-item fa-menu-item"
-        data-tone={tone === "danger" ? "danger" : undefined}
-        data-highlighted={highlighted ? "" : undefined}
-        data-popup-open={open ? "" : undefined}
-        data-disabled={disabledReason ? "" : undefined}
-      >
-        {indicator}
-        <MenuItemContent icon={icon} shortcut={shortcut} trail={submenu ? <Chevron /> : undefined}>
-          {children}
-        </MenuItemContent>
-      </div>
-      {disabledReason && reasonShown ? <div className="fa-menu-reason">{disabledReason}</div> : null}
-    </>
+    <div
+      className="fa-item fa-menu-item"
+      data-tone={tone === "danger" ? "danger" : undefined}
+      data-highlighted={highlighted ? "" : undefined}
+      data-popup-open={open ? "" : undefined}
+      data-disabled={disabledReason ? "" : undefined}
+    >
+      {indicator}
+      <MenuItemContent icon={icon} shortcut={shortcut} trail={submenu ? <Chevron /> : undefined}>
+        {children}
+      </MenuItemContent>
+    </div>
   )
 }
 
 /**
  * For a list of rows, whether each shows its disabled reason: only the last of a run of
  * consecutive rows with the same reason does. Returns the index of the row that shows it.
+ *
+ * @deprecated Since 0.9.2 menus show a disabled row's reason as its own tooltip, so rows no
+ * longer share a reason line and the menus do not call this. Planned for removal in 0.10.
  */
 export function reasonRuns(reasons: ReadonlyArray<string | null | undefined>): number[] {
   const owner: number[] = []
@@ -327,7 +374,8 @@ export function reasonRuns(reasons: ReadonlyArray<string | null | undefined>): n
 /**
  * A dropdown menu of actions built from parts on Base UI's menu: `Root` (state), `Trigger`,
  * `Popup`, items (`Item`, `LinkItem`, `CheckboxItem`, `RadioGroup`/`RadioItem`), `Group`,
- * `GroupLabel`, `Separator` and `Submenu`. Disabled items can show their reason.
+ * `GroupLabel`, `Separator` and `Submenu`. A disabled item or submenu with `disabledReason`
+ * stays highlightable and shows the reason as its tooltip.
  */
 export const Menu = {
   Root: BaseMenu.Root,

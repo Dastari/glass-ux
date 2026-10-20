@@ -198,3 +198,90 @@ describe("status bar update time", () => {
     expect(screen.queryByText(/Updated in/)).not.toBeInTheDocument();
   });
 });
+
+describe("rowOpen", () => {
+  function OpenTable({
+    onRowOpen,
+    rowOpen,
+  }: {
+    onRowOpen: (row: Device) => void;
+    rowOpen?: "click" | "double-click";
+  }) {
+    return (
+      <TooltipProvider>
+        <DataTable
+          id="row-open"
+          label="Devices"
+          rows={rows}
+          columns={columns}
+          getRowId={(row) => row.id}
+          getRowLabel={(row) => row.name}
+          rowCount={1}
+          height="auto"
+          onRowOpen={onRowOpen}
+          rowOpen={rowOpen}
+        />
+      </TooltipProvider>
+    );
+  }
+  const row = (container: HTMLElement) =>
+    container.querySelector<HTMLElement>("[data-item='row']")!;
+  const cell = (container: HTMLElement) =>
+    row(container).querySelector<HTMLElement>("[role='gridcell'], [role='cell']") ?? row(container);
+
+  it("opens on double-click by default, not on a click", () => {
+    const open = vi.fn();
+    const { container } = render(<OpenTable onRowOpen={open} />);
+    fireEvent.click(cell(container), { detail: 1 });
+    expect(open).not.toHaveBeenCalled();
+    fireEvent.doubleClick(cell(container), { detail: 2 });
+    expect(open).toHaveBeenCalledWith(rows[0]);
+    expect(container.querySelector("[data-row-open]")).toBeNull();
+  });
+
+  it("opens on one primary click in click mode, once for a double-click", () => {
+    const open = vi.fn();
+    const { container } = render(<OpenTable onRowOpen={open} rowOpen="click" />);
+    expect(container.querySelector("[data-row-open='click']")).not.toBeNull();
+    fireEvent.click(cell(container), { detail: 1 });
+    expect(open).toHaveBeenCalledTimes(1);
+    expect(open).toHaveBeenCalledWith(rows[0]);
+    fireEvent.click(cell(container), { detail: 2 });
+    fireEvent.doubleClick(cell(container), { detail: 2 });
+    expect(open).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores modified, non-primary and control clicks in click mode", () => {
+    const open = vi.fn();
+    const { container } = render(<OpenTable onRowOpen={open} rowOpen="click" />);
+    for (const modifier of ["shiftKey", "ctrlKey", "metaKey", "altKey"])
+      fireEvent.click(cell(container), { detail: 1, [modifier]: true });
+    fireEvent.click(cell(container), { detail: 1, button: 1 });
+    const checkbox = row(container).querySelector("[role='checkbox'], input, button");
+    expect(checkbox).not.toBeNull();
+    fireEvent.click(checkbox!, { detail: 1 });
+    expect(open).not.toHaveBeenCalled();
+  });
+
+  it("ignores a click that ends a text selection in the row", () => {
+    const open = vi.fn();
+    const { container } = render(<OpenTable onRowOpen={open} rowOpen="click" />);
+    const text = screen.getAllByText("ACORN-42")[0]!;
+    const range = document.createRange();
+    range.selectNodeContents(text);
+    window.getSelection()!.removeAllRanges();
+    window.getSelection()!.addRange(range);
+    fireEvent.click(cell(container), { detail: 1 });
+    expect(open).not.toHaveBeenCalled();
+    window.getSelection()!.removeAllRanges();
+    fireEvent.click(cell(container), { detail: 1 });
+    expect(open).toHaveBeenCalledTimes(1);
+  });
+
+  it("still opens on Enter in click mode", () => {
+    const open = vi.fn();
+    const { container } = render(<OpenTable onRowOpen={open} rowOpen="click" />);
+    fireEvent.keyDown(row(container), { key: "Enter" });
+    expect(open).toHaveBeenCalledWith(rows[0]);
+  });
+});

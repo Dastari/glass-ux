@@ -58,8 +58,12 @@ export interface TooltipProps extends TriggerProps {
    * (Base UI `focusableWhenDisabled`) rather than the native disabled attribute.
    */
   children: ReactElement
-  /** Preferred side of the anchor; collision handling may choose another side. */
-  side?: "top" | "bottom" | "left" | "right"
+  /**
+   * Preferred side of the anchor; collision handling may choose another side. The logical
+   * `inline-start` and `inline-end` follow the writing direction (a menu row's reason uses
+   * `inline-end`, beside the menu).
+   */
+  side?: "top" | "bottom" | "left" | "right" | "inline-start" | "inline-end"
   /** Alignment of the overlay relative to its anchor. */
   align?: "start" | "center" | "end"
   /** Set false to suppress the tooltip (for example while text is not truncated). */

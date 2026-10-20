@@ -283,9 +283,45 @@ export default function EntityIdentitySection() {
       </Specimen>
 
       <Specimen
+        title="Nested"
+        description="An entity in another's slot keeps its own tier: a person's chip in a header's or compact entity's state slot reads as a chip, not as the title."
+        specimenKey="entity-identity:default:4"
+      >
+        <div className="gallery-entity-headers" data-testid="entity-nested">
+          <div className="gallery-entity-window">
+            <EntityIdentity
+              {...entity(SCRIPT)}
+              tier="header"
+              heading="h4"
+              icon={<IconCode />}
+              facts={["PowerShell", "12 endpoints"]}
+              slots={{
+                state: <EntityIdentity {...entity(PERSON)} tier="chip" icon={<IconUser />} />,
+              }}
+            />
+          </div>
+          <div className="gallery-entity-fixed">
+            <EntityIdentity
+              {...entity(SCRIPT)}
+              tier="compact"
+              heading="h4"
+              icon={<IconCode />}
+              facts={["PowerShell", "12 endpoints"]}
+              slots={{
+                state: <EntityIdentity {...entity(PERSON)} tier="chip" icon={<IconUser />} />,
+              }}
+            />
+          </div>
+          <span data-testid="entity-nested-reference">
+            <EntityIdentity {...entity(PERSON)} tier="chip" icon={<IconUser />} />
+          </span>
+        </div>
+      </Specimen>
+
+      <Specimen
         title="Chip preview"
         description="Hovering or focusing a chip opens this card after 400 ms: the compact tier and the top two actions. It adds nothing the page, the menu or the palette cannot reach."
-        specimenKey="entity-identity:default:4"
+        specimenKey="entity-identity:default:5"
       >
         <EntityIdentity.PreviewCard {...ORG_PROPS} />
       </Specimen>
@@ -293,7 +329,7 @@ export default function EntityIdentitySection() {
       <Specimen
         title="Loading"
         description="Each tier's skeleton takes the loaded tier's boxes, so content arrives without moving anything."
-        specimenKey="entity-identity:default:5"
+        specimenKey="entity-identity:default:6"
       >
         {(["compact", "row", "chip", "icon"] as const).map((tier) => (
           <Example key={tier} label={tier}>
@@ -321,7 +357,7 @@ export default function EntityIdentitySection() {
         title="Over imagery"
         description="Chips, rows and icons hold their contrast over screenshots and media."
         backdrop
-        specimenKey="entity-identity:default:6"
+        specimenKey="entity-identity:default:7"
       >
         <Tiers props={ORG_PROPS} />
       </Specimen>
@@ -329,7 +365,7 @@ export default function EntityIdentitySection() {
       <ContainerLab
         title="Entity identity in the container lab"
         description="tier=auto fill: the box picks the tier on both axes. Rows under 2.75rem keep the name only; the icon shrinks to a small box."
-        specimenKey="entity-identity:default:7"
+        specimenKey="entity-identity:default:8"
       >
         {() => <EntityIdentity {...ORG_PROPS} tier="auto" fill heading="h4" />}
       </ContainerLab>

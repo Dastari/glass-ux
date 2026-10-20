@@ -3,7 +3,7 @@ import { useMemo, useState } from "react"
 import { IconChevronRight } from "../../../icons/generated/icons.js"
 import { formatShare, formatValue, type LocalizedFormat } from "./format.js"
 import { slotFor, SLOT_COUNT } from "./series.js"
-import type { ChartTableModel } from "./table.js"
+import { shareFraction, type ChartTableModel } from "./table.js"
 
 /** A node in a hierarchy chart: a folder and its size, a category and its children. */
 export interface HierarchyDatum {
@@ -120,6 +120,11 @@ export function hierarchyTable(focus: Node, fmt: LocalizedFormat, label = "Name"
       value: formatValue(child.value ?? 0, fmt),
       share: formatShare(child.value ?? 0, total, fmt.locale),
       items: child.children ? String(child.leaves().length) : "—",
+    })),
+    values: (focus.children ?? []).map((child) => ({
+      value: child.value ?? 0,
+      share: shareFraction(child.value ?? 0, total),
+      items: child.children ? child.leaves().length : null,
     })),
   }
 }

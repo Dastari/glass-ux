@@ -8,7 +8,7 @@ import { ChartText } from "../core/axes.js"
 import { barPath, cssPath } from "../core/geometry.js"
 import { ChartLegend, type LegendItem } from "../core/legend.js"
 import { seriesAttrs, slotFor, type ChartTone } from "../core/series.js"
-import type { ChartTableModel } from "../core/table.js"
+import { shareFraction, type ChartTableModel } from "../core/table.js"
 
 /** The gauge's sweep: 270°, open at the bottom. */
 const SWEEP = (Math.PI * 3) / 2
@@ -56,6 +56,7 @@ export function Gauge(props: GaugeProps) {
         { key: "range", label: "Range", numeric: true },
       ],
       rows: [{ label: title ?? label, value: formatValue(value, fmt), range: `${formatValue(min, fmt)}–${formatValue(max, fmt)}` }],
+      values: [{ value, range: `${min}–${max}` }],
     }),
     [title, label, value, fmt, min, max]
   )
@@ -202,6 +203,7 @@ export function RadialBar(props: RadialBarProps) {
         { key: "share", label: "Of max", numeric: true },
       ],
       rows: items.map((item) => ({ label: item.label, value: formatValue(item.value, fmt), share: formatShare(item.value, item.max ?? 100, fmt.locale) })),
+      values: items.map((item) => ({ value: item.value, share: shareFraction(item.value, item.max ?? 100) })),
     }),
     [items, fmt]
   )

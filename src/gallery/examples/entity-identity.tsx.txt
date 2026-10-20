@@ -273,6 +273,41 @@ export default function EntityIdentitySection() {
       </Specimen>
 
       <Specimen
+        title="Nested"
+        description="An entity in another's slot keeps its own tier: a person's chip in a header's or compact entity's state slot reads as a chip, not as the title."
+      >
+        <div className="gallery-entity-headers" data-testid="entity-nested">
+          <div className="gallery-entity-window">
+            <EntityIdentity
+              {...entity(SCRIPT)}
+              tier="header"
+              heading="h4"
+              icon={<IconCode />}
+              facts={["PowerShell", "12 endpoints"]}
+              slots={{
+                state: <EntityIdentity {...entity(PERSON)} tier="chip" icon={<IconUser />} />,
+              }}
+            />
+          </div>
+          <div className="gallery-entity-fixed">
+            <EntityIdentity
+              {...entity(SCRIPT)}
+              tier="compact"
+              heading="h4"
+              icon={<IconCode />}
+              facts={["PowerShell", "12 endpoints"]}
+              slots={{
+                state: <EntityIdentity {...entity(PERSON)} tier="chip" icon={<IconUser />} />,
+              }}
+            />
+          </div>
+          <span data-testid="entity-nested-reference">
+            <EntityIdentity {...entity(PERSON)} tier="chip" icon={<IconUser />} />
+          </span>
+        </div>
+      </Specimen>
+
+      <Specimen
         title="Chip preview"
         description="Hovering or focusing a chip opens this card after 400 ms: the compact tier and the top two actions. It adds nothing the page, the menu or the palette cannot reach."
       >

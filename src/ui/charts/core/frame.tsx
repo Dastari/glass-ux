@@ -4,9 +4,10 @@ import { cx } from "../../../lib/cx.js"
 import { LocaleProvider, useLocale } from "../../../lib/locale/use-locale.js"
 import { useElementSize } from "../../../lib/use-element-size.js"
 import { Button } from "../../button/index.js"
+import { CopyButton } from "../../copy-button/index.js"
 import { EmptyState } from "../../empty-state/index.js"
 import { Skeleton } from "../../skeleton/index.js"
-import { ChartTable, type ChartTableModel } from "./table.js"
+import { ChartTable, chartTableToCsv, type ChartTableModel } from "./table.js"
 import { chartTier, DEFAULT_TIERS, remPx, type ChartTier, type TierRule } from "./tier.js"
 
 export type ChartState = "ready" | "loading" | "empty" | "error"
@@ -50,7 +51,10 @@ export interface ChartCommonProps extends Omit<ComponentProps<"figure">, "childr
 export interface ChartFrameProps extends ChartCommonProps {
   /** Semantic entity or content kind, used to choose labels and rendering. */
   kind: ChartKind
-  /** The data as a table: visually hidden for screen readers, or shown with "View as table". */
+  /**
+   * The data as a table: visually hidden for screen readers, shown with "View as table", and
+   * copied by "Copy as CSV" (raw `values` where the model has them).
+   */
   table?: ChartTableModel
   /** Legend or readout for the head row (compact and full tiers). */
   head?: (tier: ChartTier) => ReactNode
@@ -72,8 +76,10 @@ export interface ChartFrameProps extends ChartCommonProps {
 /**
  * The shell every chart renders in. It is a size container (R7.3) that fills its parent; the
  * box picks the tier on both axes (see tier.ts). It owns the head row (title, legend or
- * readout, the table toggle), the in-place loading, empty and error states (R9.1), and the
- * table fallback. The parent must give it a definite height.
+ * readout, and in the full tier the "View as table" toggle and "Copy as CSV"), the in-place
+ * loading, empty and error states (R9.1), and the table fallback. The tools are present,
+ * disabled, while the chart loads, so the head does not move when the data arrives (R9).
+ * The parent must give it a definite height.
  */
 export function ChartFrame({
   kind,
@@ -161,16 +167,26 @@ export function ChartFrame({
               {state === "loading" ? <HeadSkeleton tier={tier} /> : state === "ready" ? head?.(tier) : null}
             </div>
             {tier === "full" && table ? (
-              <Button
-                className="fa-chart-view"
-                size="xs"
-                variant="ghost"
-                icon={<IconTable />}
-                aria-label={view === "table" ? "View as chart" : "View as table"}
-                aria-pressed={view === "table"}
-                disabled={state !== "ready"}
-                onClick={() => setView((current) => (current === "table" ? "chart" : "table"))}
-              />
+              <div className="fa-chart-tools">
+                <Button
+                  className="fa-chart-view"
+                  size="xs"
+                  variant="ghost"
+                  icon={<IconTable />}
+                  aria-label={view === "table" ? "View as chart" : "View as table"}
+                  aria-pressed={view === "table"}
+                  disabled={state !== "ready"}
+                  onClick={() => setView((current) => (current === "table" ? "chart" : "table"))}
+                />
+                <CopyButton
+                  className="fa-chart-copy"
+                  size="xs"
+                  variant="ghost"
+                  label="Copy as CSV"
+                  value={() => chartTableToCsv(table)}
+                  disabledReason={state === "ready" ? undefined : COPY_UNAVAILABLE[state]}
+                />
+              </div>
             ) : null}
           </div>
         ) : null}
@@ -187,6 +203,13 @@ export function ChartFrame({
     </figure>
     </LocaleProvider>
   )
+}
+
+/** Why "Copy as CSV" is unavailable in each state but ready (R11.3). */
+const COPY_UNAVAILABLE: Record<Exclude<ChartState, "ready">, string> = {
+  loading: "The data is still loading",
+  empty: "There is no data to copy",
+  error: "The data didn’t load",
 }
 
 function HeadSkeleton({ tier }: { tier: ChartTier }) {

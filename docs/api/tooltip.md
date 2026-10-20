@@ -25,7 +25,7 @@ The trigger keeps its own accessible name; the tooltip repeats it visually.
 | onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the next open state when the tooltip shows (hover or focus, after the delay) or hides. Pair with `open` to control it. |
 | open | `boolean \| undefined` | false, true | no | — | Controls whether the overlay is open. |
 | shortcut | `string \| undefined` | See type | no | — | A keyboard shortcut drawn after the text in keycaps ("mod+k"). |
-| side | `"top" \| "bottom" \| "left" \| "right" \| undefined` | "top", "bottom", "left", "right" | no | "top" | Preferred side of the anchor; collision handling may choose another side. |
+| side | `"top" \| "bottom" \| "left" \| "right" \| "inline-end" \| "inline-start" \| undefined` | "top", "bottom", "left", "right", "inline-end", "inline-start" | no | "top" | Preferred side of the anchor; collision handling may choose another side. The logical `inline-start` and `inline-end` follow the writing direction (a menu row's reason uses `inline-end`, beside the menu). |
 
 Inherited properties:
 

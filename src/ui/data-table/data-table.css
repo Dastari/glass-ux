@@ -819,6 +819,11 @@
     transition-duration: var(--duration-fast);
     transition-timing-function: var(--ease-standard);
   }
+  /* rowOpen "click": a row or card opens on a click, so it reads as a link. */
+  .fa-dt-rows[data-row-open="click"] > .fa-dt-row:not(.fa-dt-skel-row),
+  .fa-dt-cards[data-row-open="click"] .fa-dt-card:not(.fa-dt-skel-card) {
+    cursor: pointer;
+  }
   .fa-dt-card:not(.fa-dt-skel-card):hover {
     background-color: var(--glass-fill-control-hover);
     border-color: var(--line-strong);

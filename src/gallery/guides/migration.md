@@ -3,6 +3,18 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.1 → 0.9.2
+
+No code changes are required.
+
+- A disabled menu row's reason is now its tooltip, not a line under the row. Tests that
+  looked for the reason text (or `.fa-menu-reason`) inside the open menu should hover or
+  arrow to the row and expect a `tooltip`, or check the row's accessible description.
+- `reasonShown`, `reasonId` and `reasonRuns` are deprecated and do nothing for menus;
+  remove them. They are planned for removal in 0.10.
+- A chart's full-tier head has a second icon button, "Copy as CSV", after "View as table".
+  Tests that selected the head's only button should select it by name.
+
 ## 0.9.0 → 0.9.1
 
 No code changes are required.

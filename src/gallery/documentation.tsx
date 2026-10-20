@@ -501,7 +501,7 @@ export function ComponentDocumentation({ id }: { id: string }) {
 }
 
 export interface FoundationDocumentationProps {
-  /** Foundation section identifier: colour, typography, space, shape, materials, motion, knobs, icons or brand. */
+  /** Foundation section identifier: colour, typography, space, shape, materials, motion, knobs, locale, icons or brand. */
   id: string;
 }
 

@@ -14,7 +14,8 @@ const schema = z.object({ country: countrySchema({ required: true }) })   // "AU
 <form.AppField name="country">{(field) => <field.CountryField label="Country" priority={["AU", "NZ"]} />}</form.AppField>
 ```
 
-- **Options:** `countries` (restrict), `priority`, `flags` (default true), `locale`.
+- **Options:** `countries` (restrict), `priority`, `flags` (default true), `locale` (names and
+  their order; default: the [application locale](../getting-started.md#set-the-formatting-locale)).
 - **Data:** `COUNTRY_TABLE` (code, calling code), `listCountries`, `countryName`, `callingCodeOf`,
   `MAIN_COUNTRY_FOR_CALLING_CODE`; unit tests keep the calling codes in step with libphonenumber.
 - **Flags:** `CountryFlag` — SVG (country-flag-icons, MIT), loaded once, lazily, never emoji.

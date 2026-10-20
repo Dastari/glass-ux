@@ -97,6 +97,39 @@ navigation when available; supply its navigate callback for another router. With
 router adapter it uses browser document navigation. For SSR, apply
 `appearanceBootScript()` before first paint and use your framework's supported script API.
 
+## Set the formatting locale
+
+Numbers, money, byte sizes, dates, times, country names and sorting follow one BCP 47 locale.
+A component resolves it in this order:
+
+1. its own `locale` prop (date and time inputs, number, money and byte-size fields,
+   `DataTable`, charts, `Metric`, `Pagination`, `Slider`, `CountrySelect`, `TimeZoneSelect`);
+2. the nearest `LocaleProvider`;
+3. `configureLocale()`;
+4. the page's `<html lang>`, when it is a valid tag;
+5. `en-US`.
+
+Setting `<html lang="en-AU">` is usually enough. To choose the locale in code, or to format one
+region differently:
+
+```tsx
+import type { ReactNode } from "react";
+import { configureLocale, LocaleProvider } from "glass-ux/locale";
+
+configureLocale("en-AU");
+
+export function Invoice({ children }: { children: ReactNode }) {
+  return <LocaleProvider locale="de-DE">{children}</LocaleProvider>;
+}
+```
+
+Outside React, `getLocale()` returns the application locale (steps 3–5), and the exported
+formatting helpers take an optional `locale` argument. Schema helpers write their messages
+in that locale when a value is checked. A `LocaleProvider` cannot reach a schema, so pass the
+field's `locale` to it when they differ. A server has no `<html lang>` to read: call
+`configureLocale` with the same tag on the server and the client. Otherwise the first render
+uses `en-US` and the page's locale applies once hydration completes.
+
 ## Build a typed form
 
 ```tsx

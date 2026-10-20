@@ -232,6 +232,7 @@ for (const id of [
   "materials",
   "motion",
   "knobs",
+  "locale",
   "brand",
 ]) {
   test(`${id} keeps its styled Foundation title and summary inside the article`, async ({

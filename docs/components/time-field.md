@@ -20,8 +20,9 @@ const schema = z.object({
 // When sending it: resolveWallClock(values.starts, "Australia/Sydney")?.iso → "2026-10-21T09:30:00+11:00"
 ```
 
-Pass the schema the same locale, `hourCycle`, bounds and zone as the field, so its messages show
-times as the field does.
+Pass the schema the same `hourCycle`, bounds and zone as the field, and the same `locale` when the
+field has one, so its messages show times as the field does. Without `locale`, both use the
+application locale ([resolution order](../getting-started.md#set-the-formatting-locale)).
 
 ## Values
 
@@ -41,8 +42,9 @@ times as the field does.
 - Accepted: `930`, `0930`, `9:30`, `21:30`, `21.30`, `9h30`, `9:30pm`, `9.30 p.m.`, `9 pm`,
   `12am`, the locale's own am/pm words, `noon`, `midday` and `midnight`. Without am/pm the
   hour is read on a 24-hour clock (`9` is 09:00). Text is tidied on blur, never while typing.
-- Shown in the locale's clock: en-AU (the default) uses `9:30 am`; `hourCycle={24}` shows
-  `09:30`.
+- Shown in the locale's clock: en-AU uses `9:30 am`, en-US `9:30 AM` and en-GB `09:30`;
+  `hourCycle={24}` shows `09:30` in any locale. DateTimeField types the date in the locale's
+  order (`dd/mm/yyyy` in en-AU, `mm/dd/yyyy` in en-US).
 - ↑ and ↓ step the part under the caret: hours by one, minutes to the next multiple of `step`
   from `min` (or midnight), seconds by one, am/pm flips. Page Up and Page Down move an hour.
   Home and End go to `min` and `max` when set; otherwise they move the caret. Stepping stays

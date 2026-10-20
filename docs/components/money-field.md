@@ -15,5 +15,8 @@ const schema = z.object({ rate: moneySchema({ required: true, max: 100000 }) }) 
 ```
 
 - **Options:** `currency` (default AUD), `min`/`max`/`step` in minor units, `allowNegative`,
-  `showCode` (adds "AUD" after the amount, for screens with several currencies).
+  `showCode` (adds "AUD" after the amount, for screens with several currencies), `locale`
+  (the decimal and grouping marks it shows and reads; default: the
+  [application locale](../getting-started.md#set-the-formatting-locale)). Pass the same
+  `locale` to `moneySchema` when the field has its own.
 - **Parts:** `MoneyInput`, `toMinor`, `fromMinor`, `formatMoney`, `parseMoney`, `minorDigits`.

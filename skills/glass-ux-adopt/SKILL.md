@@ -38,7 +38,10 @@ and images ship with the package; do not recreate absolute `/fonts` assumptions.
 Use public entries such as `glass-ux/button`, `glass-ux/form`, `glass-ux/data-table`,
 `glass-ux/ai` and `glass-ux/appearance`. Do not copy the implementation into the project.
 Supply the documented providers for the features in use, and register application-owned
-palettes and marks before configuring appearance defaults.
+palettes and marks before configuring appearance defaults. Numbers, money, dates and times
+format in the page's `<html lang>`, then `en-US`. Set `lang` on the host page, or call
+`configureLocale(tag)` from `glass-ux/locale` (on server and client for SSR). Wrap a region
+that must differ in `LocaleProvider`.
 
 For an existing application, migrate one coherent screen first. Check keyboard interaction,
 focus return, light/dark/Solid appearance and a narrow container before broadening the migration.

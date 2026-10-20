@@ -1,0 +1,75 @@
+import { useState, type ReactNode } from "react"
+import { LocaleProvider, useLocale } from "../../lib/locale/index.js"
+import { DateField, TimeInput } from "../../ui/date-picker/index.js"
+import { Field } from "../../ui/field/index.js"
+import { FormStack } from "../../ui/form/index.js"
+import { MoneyInput } from "../../ui/money-field/index.js"
+import { NumberField } from "../../ui/number-field/index.js"
+import { Segmented } from "../../ui/segmented/index.js"
+import { SectionPage, Specimen } from "../kit.js"
+
+const ISLAND_LOCALES = [
+  { value: "en-US", label: "en-US" },
+  { value: "en-GB", label: "en-GB" },
+  { value: "de-DE", label: "de-DE" },
+]
+
+/** The same stored values, formatted by whichever locale encloses them. */
+function Values({ heading }: { heading: ReactNode }) {
+  const locale = useLocale()
+  return (
+    <div className="flex min-w-0 flex-col gap-3" data-locale-sample={locale}>
+      <div className="flex min-h-8 flex-wrap items-center justify-between gap-2">{heading}</div>
+      <FormStack>
+        <Field label="Date">
+          <DateField defaultValue="2026-10-03" />
+        </Field>
+        <Field label="Time">
+          <TimeInput defaultValue="21:05" />
+        </Field>
+        <Field label="Amount">
+          <MoneyInput defaultValue={123450} />
+        </Field>
+        <Field label="Count">
+          <NumberField defaultValue={1284.5} format={{ maximumFractionDigits: 1 }} />
+        </Field>
+      </FormStack>
+    </div>
+  )
+}
+
+export default function LocaleSection() {
+  const [island, setIsland] = useState("en-US")
+  return (
+    <SectionPage>
+      <Specimen
+        title="A LocaleProvider region"
+        description={
+          <>
+            A component&apos;s <code>locale</code> prop wins, then the nearest <code>LocaleProvider</code>, then{" "}
+            <code>configureLocale()</code>, then the page&apos;s <code>&lt;html lang&gt;</code>, then en-US.
+          </>
+        }
+        layout="grid"
+      >
+        <Values
+          heading={
+            <span className="type-label">
+              Page <code>&lt;html lang&gt;</code>
+            </span>
+          }
+        />
+        <LocaleProvider locale={island}>
+          <Values
+            heading={
+              <>
+                <span className="type-label">LocaleProvider</span>
+                <Segmented size="sm" options={ISLAND_LOCALES} value={island} onValueChange={setIsland} aria-label="Provider locale" />
+              </>
+            }
+          />
+        </LocaleProvider>
+      </Specimen>
+    </SectionPage>
+  )
+}

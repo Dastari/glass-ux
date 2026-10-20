@@ -3,6 +3,8 @@ import { Fieldset as BaseFieldset } from "@base-ui/react/fieldset";
 import type { ComponentProps, ReactNode } from "react";
 import { IconAlert } from "../../icons/generated/icons.js";
 import { cx } from "../../lib/cx.js";
+import { numberFormat } from "../../lib/locale/intl.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 import { Skeleton } from "../skeleton/index.js";
 import { TruncatedText } from "../truncated-text/index.js";
 
@@ -70,8 +72,6 @@ export interface FieldProps extends Omit<
   children: ReactNode;
 }
 
-const formatCount = (value: number) => value.toLocaleString("en-AU");
-
 /**
  * A labelled control with a reserved message line. The hint, the error and the counter
  * share one caption-high line under the control, so validation never shifts the layout.
@@ -103,6 +103,7 @@ function FieldBase({
     (message ?? (orientation === "vertical" ? "reserve" : "auto")) ===
     "reserve";
   const over = counter ? counter.value > counter.max : false;
+  const count = numberFormat(useLocale());
 
   const labelNode = label ? (
     <BaseField.Label
@@ -142,7 +143,7 @@ function FieldBase({
             data-over={over ? "" : undefined}
             data-numeric
           >
-            {formatCount(counter.value)} / {formatCount(counter.max)}
+            {count.format(counter.value)} / {count.format(counter.max)}
           </span>
         ) : null}
       </div>

@@ -14,6 +14,7 @@ import { EntityChip } from "../entity-chip/index.js";
 import { formatCountdown, formatElapsed, useNow } from "../format.js";
 import { StatusGlyph } from "../tool-activity/index.js";
 import type { EntityRef, ResultImage, ToolStatus } from "../types.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 
 /**
  * Supervised desktop control (planned: Example application glass-ux-ai-desktop-control). The assistant first
@@ -143,7 +144,8 @@ export function DesktopSession({
   const title = TITLES[state](target.label);
   const active = state !== "ended" && state !== "expired" && state !== "failed";
   const now = useNow(active, 1000);
-  const elapsed = formatElapsed(Math.max(0, now - startedAt));
+  const locale = useLocale();
+  const elapsed = formatElapsed(Math.max(0, now - startedAt), locale);
   const lease =
     leaseEndsAt && state === "controlling"
       ? `lease ${formatCountdown(leaseEndsAt - now)} left`

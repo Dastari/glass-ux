@@ -6,6 +6,7 @@
  *   "Serial contains "8CC""  "Online"  "Site is empty"
  */
 import { formatDateLong, formatDateRange } from "../../date-picker/calendar-date.js"
+import { getLocale } from "../../../lib/locale/locale.js"
 import { formatAbsolute, formatWithUnit } from "../format.js"
 import { isInstantText } from "./semantics.js"
 import type {
@@ -27,7 +28,6 @@ import type {
   UuidOp,
 } from "./types.js"
 
-const LOCALE = "en-AU"
 /** List summaries name this many values, then "+N". */
 const LIST_SHOWN = 2
 
@@ -140,40 +140,41 @@ function digits(value: number, spec: NumberFilterSpec) {
   return Math.min(decimals, 2)
 }
 
-export const formatFilterNumber = (value: number, spec: NumberFilterSpec) => formatWithUnit(value, spec.unit, digits(value, spec))
+/** A filter bound with the column's unit and fraction digits, in `locale` (default `getLocale()`). */
+export const formatFilterNumber = (value: number, spec: NumberFilterSpec, locale = getLocale()) => formatWithUnit(value, spec.unit, digits(value, spec), locale)
 
-function numberSummary(label: string, value: NumberFilterValue, spec: NumberFilterSpec) {
+function numberSummary(label: string, value: NumberFilterValue, spec: NumberFilterSpec, locale: string) {
   switch (value.op) {
     case "isEmpty":
       return `${label} is empty`
     case "isNotEmpty":
       return `${label} is not empty`
     case "between": {
-      const min = formatWithUnit(value.min, undefined, digits(value.min, spec))
-      return `${label} ${min}–${formatFilterNumber(value.max, spec)}`
+      const min = formatWithUnit(value.min, undefined, digits(value.min, spec), locale)
+      return `${label} ${min}–${formatFilterNumber(value.max, spec, locale)}`
     }
     default:
-      return `${label} ${NUMBER_SYMBOLS[value.op]} ${formatFilterNumber(value.value, spec)}`
+      return `${label} ${NUMBER_SYMBOLS[value.op]} ${formatFilterNumber(value.value, spec, locale)}`
   }
 }
 
-/** A day ("1 Oct 2026") or an instant ("1 Oct 2026, 2:00 pm"). */
-export const formatPoint = (text: string) => (isInstantText(text) ? formatAbsolute(text) : formatDateLong(text, LOCALE))
+/** A day ("1 Oct 2026") or an instant ("1 Oct 2026, 2:00 pm"), in `locale` (default `getLocale()`). */
+export const formatPoint = (text: string, locale = getLocale()) => (isInstantText(text) ? formatAbsolute(text, locale) : formatDateLong(text, locale))
 
-function dateSummary(label: string, value: DateFilterValue) {
+function dateSummary(label: string, value: DateFilterValue, locale: string) {
   switch (value.op) {
     case "isEmpty":
       return `${label} is empty`
     case "isNotEmpty":
       return `${label} is not empty`
     case "before":
-      return `${label} before ${formatPoint(value.at)}`
+      return `${label} before ${formatPoint(value.at, locale)}`
     case "after":
-      return `${label} on or after ${formatPoint(value.at)}`
+      return `${label} on or after ${formatPoint(value.at, locale)}`
     case "between":
       return isInstantText(value.start)
-        ? `${label}: ${formatPoint(value.start)} – ${formatPoint(value.end)}`
-        : `${label}: ${formatDateRange(value.start, value.end, LOCALE)}`
+        ? `${label}: ${formatPoint(value.start, locale)} – ${formatPoint(value.end, locale)}`
+        : `${label}: ${formatDateRange(value.start, value.end, locale)}`
     default:
       return `${label}: ${presetLabel(value).toLowerCase()}`
   }
@@ -212,15 +213,15 @@ export function optionLabel(spec: OptionsFilterSpec | UuidFilterSpec, value: str
   return loaded?.get(value) ?? spec.labelOf?.(value) ?? value
 }
 
-/** One line for a chip: what the filter selects, in the column's words. */
-export function summarize(spec: FilterSpec, label: string, value: unknown, loaded?: ReadonlyMap<string, string>): string {
+/** One line for a chip: what the filter selects, in the column's words. Numbers and dates use `locale` (default `getLocale()`). */
+export function summarize(spec: FilterSpec, label: string, value: unknown, loaded?: ReadonlyMap<string, string>, locale = getLocale()): string {
   switch (spec.kind) {
     case "text":
       return textSummary(label, value as TextFilterValue)
     case "number":
-      return numberSummary(label, value as NumberFilterValue, spec)
+      return numberSummary(label, value as NumberFilterValue, spec, locale)
     case "date":
-      return dateSummary(label, value as DateFilterValue)
+      return dateSummary(label, value as DateFilterValue, locale)
     case "boolean":
       return booleanSummary(label, value as BooleanFilterValue, spec.labels)
     case "options":

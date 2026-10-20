@@ -1,4 +1,5 @@
 import { IconDisk } from "../../icons/generated/icons.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { sameNumber, useParsedText } from "../../lib/use-parsed-text.js"
 import { Field } from "../field/index.js"
 import { useBoundField, type FieldChrome } from "../form/context.js"
@@ -18,19 +19,22 @@ export interface ByteSizeInputProps extends Omit<InputProps, "value" | "defaultV
   base?: ByteBase
   /** The unit of a bare number ("500" → 500 MB). Default "MB". */
   defaultUnit?: string
+  /** BCP 47 locale for the decimal and grouping marks it writes and reads. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. */
+  locale?: string
 }
 
 /**
  * A size typed the way people write it — "500 MB", "1.5 GB", "2 GiB" — held as whole bytes and
  * rewritten when focus leaves ("1500 MB" → "1.5 GB"). For quotas, thresholds and limits.
  */
-export function ByteSizeInput({ value, defaultValue = null, onValueChange, base = "decimal", defaultUnit = "MB", placeholder = "500 MB", icon, onBlur, width = "short", ...rest }: ByteSizeInputProps) {
+export function ByteSizeInput({ value, defaultValue = null, onValueChange, base = "decimal", defaultUnit = "MB", locale: localeProp, placeholder = "500 MB", icon, onBlur, width = "short", ...rest }: ByteSizeInputProps) {
+  const locale = useLocale(localeProp)
   const text = useParsedText<number | null>({
     value,
     defaultValue,
     onValueChange,
-    parse: (next) => (next.trim() ? (parseBytes(next, { defaultUnit }) ?? Number.NaN) : null),
-    format: (bytes) => (bytes === null || Number.isNaN(bytes) ? "" : formatBytes(bytes, { base, decimals: 2 }).replace("\u2009", " ")),
+    parse: (next) => (next.trim() ? (parseBytes(next, { defaultUnit, locale }) ?? Number.NaN) : null),
+    format: (bytes) => (bytes === null || Number.isNaN(bytes) ? "" : formatBytes(bytes, { base, decimals: 2, locale }).replace("\u2009", " ")),
     same: sameNumber,
   })
   return (

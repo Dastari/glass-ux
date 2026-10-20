@@ -1,7 +1,9 @@
 /**
  * Tree flattening and filtering, kept pure so it is cheap to test and cheap to run on
- * thousands of nodes. The virtualised Tree renders the flat rows this returns.
+ * thousands of nodes. The virtualised Tree renders the flat rows this returns. Matching
+ * ignores case by the rules of a BCP 47 locale (default `getLocale()`).
  */
+import { getLocale } from "../../lib/locale/locale.js"
 
 export interface TreeNodeLike<T extends TreeNodeLike<T>> {
   id: string
@@ -41,16 +43,16 @@ export interface KeywordMatch {
   range: readonly [number, number]
 }
 
-const find = (text: string | undefined, query: string): readonly [number, number] | null => {
+const find = (text: string | undefined, query: string, locale: string): readonly [number, number] | null => {
   if (!text || !query) return null
-  const index = text.toLocaleLowerCase("en-AU").indexOf(query)
+  const index = text.toLocaleLowerCase(locale).indexOf(query)
   return index < 0 ? null : [index, index + query.length]
 }
 
-const findKeyword = (keywords: readonly string[] | undefined, query: string): KeywordMatch | null => {
+const findKeyword = (keywords: readonly string[] | undefined, query: string, locale: string): KeywordMatch | null => {
   if (!keywords || !query) return null
   for (const text of keywords) {
-    const range = find(text, query)
+    const range = find(text, query, locale)
     if (range) return { text, range }
   }
   return null
@@ -61,18 +63,18 @@ const findKeyword = (keywords: readonly string[] | undefined, query: string): Ke
  * matches, and every group on the way to a match opens (the "reveal" rule). A group that
  * matches by name shows all of its children.
  */
-export function flattenTree<T extends TreeNodeLike<T>>(nodes: readonly T[], expanded: ReadonlySet<string>, query = ""): FlatRow<T>[] {
+export function flattenTree<T extends TreeNodeLike<T>>(nodes: readonly T[], expanded: ReadonlySet<string>, query = "", locale = getLocale()): FlatRow<T>[] {
   const rows: FlatRow<T>[] = []
 
   const visit = (list: readonly T[], level: number, parentId: string | null, q: string): void => {
     type Kept = Pick<FlatRow<T>, "node" | "leaves" | "labelMatch" | "descriptionMatch" | "keywordMatch"> & { self: boolean }
     const kept: Kept[] = []
     for (const node of list) {
-      const labelMatch = find(node.label, q)
-      const descriptionMatch = find(node.description, q)
-      const keywordMatch = labelMatch || descriptionMatch ? null : findKeyword(node.keywords, q)
+      const labelMatch = find(node.label, q, locale)
+      const descriptionMatch = find(node.description, q, locale)
+      const keywordMatch = labelMatch || descriptionMatch ? null : findKeyword(node.keywords, q, locale)
       const self = q !== "" && (labelMatch !== null || descriptionMatch !== null || keywordMatch !== null)
-      const leaves = countLeaves(node, self ? "" : q)
+      const leaves = countLeaves(node, self ? "" : q, locale)
       if (!q || self || leaves > 0) kept.push({ node, leaves, self, labelMatch, descriptionMatch, keywordMatch })
     }
     kept.forEach(({ node, leaves, self, labelMatch, descriptionMatch, keywordMatch }, index) => {
@@ -83,21 +85,21 @@ export function flattenTree<T extends TreeNodeLike<T>>(nodes: readonly T[], expa
     })
   }
 
-  visit(nodes, 1, null, query.trim().toLocaleLowerCase("en-AU"))
+  visit(nodes, 1, null, query.trim().toLocaleLowerCase(locale))
   return rows
 }
 
-function matches<T extends TreeNodeLike<T>>(node: T, q: string): boolean {
-  return find(node.label, q) !== null || find(node.description, q) !== null || findKeyword(node.keywords, q) !== null
+function matches<T extends TreeNodeLike<T>>(node: T, q: string, locale: string): boolean {
+  return find(node.label, q, locale) !== null || find(node.description, q, locale) !== null || findKeyword(node.keywords, q, locale) !== null
 }
 
 /** Leaf descendants of `node` that match `q` (all of them when `q` is empty). */
-function countLeaves<T extends TreeNodeLike<T>>(node: T, q: string): number {
+function countLeaves<T extends TreeNodeLike<T>>(node: T, q: string, locale: string): number {
   if (!node.children?.length) return 0
   let total = 0
   for (const child of node.children) {
-    if (child.children?.length) total += matches(child, q) && q ? countLeaves(child, "") : countLeaves(child, q)
-    else if (!q || matches(child, q)) total += 1
+    if (child.children?.length) total += matches(child, q, locale) && q ? countLeaves(child, "", locale) : countLeaves(child, q, locale)
+    else if (!q || matches(child, q, locale)) total += 1
   }
   return total
 }
@@ -105,11 +107,11 @@ function countLeaves<T extends TreeNodeLike<T>>(node: T, q: string): number {
 /**
  * Typeahead: the next visible row (after `from`, wrapping) whose label starts with `buffer`.
  */
-export function typeahead<T extends TreeNodeLike<T>>(rows: readonly FlatRow<T>[], from: number, buffer: string): number {
-  const needle = buffer.toLocaleLowerCase("en-AU")
+export function typeahead<T extends TreeNodeLike<T>>(rows: readonly FlatRow<T>[], from: number, buffer: string, locale = getLocale()): number {
+  const needle = buffer.toLocaleLowerCase(locale)
   for (let step = 1; step <= rows.length; step++) {
     const index = (from + step) % rows.length
-    if (rows[index]?.node.label.toLocaleLowerCase("en-AU").startsWith(needle)) return index
+    if (rows[index]?.node.label.toLocaleLowerCase(locale).startsWith(needle)) return index
   }
   return -1
 }

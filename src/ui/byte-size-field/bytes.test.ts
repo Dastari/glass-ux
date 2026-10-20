@@ -22,4 +22,10 @@ describe("byte sizes", () => {
     expect(formatBytes(512)).toBe("512 B")
     expect(parseBytes(formatBytes(7_800_000_000))).toBe(7_800_000_000)
   })
+  it("writes and reads the locale's decimal mark", () => {
+    expect(formatBytes(1_500_000_000, { locale: "de-DE" })).toBe("1,5\u2009GB")
+    expect(parseBytes("1,5 GB", { locale: "de-DE" })).toBe(1_500_000_000)
+    expect(parseBytes("1.024 bytes", { locale: "de-DE" })).toBe(1024)
+    expect(parseBytes("1,5,5 GB", { locale: "de-DE" })).toBeNull()
+  })
 })

@@ -2,7 +2,10 @@
  * Times of day as strings (`09:30`, or `09:30:15` with seconds): 24-hour, zero-padded, no date
  * and no time zone, so they sort as text and never shift. Text entry reads what people type
  * ("930", "9:30pm", "21.30", "noon") and writes the locale's own clock ("9:30 am" in en-AU).
+ * Without a `locale` option, helpers use `getLocale()`: `configureLocale()`, then `<html lang>`,
+ * then en-US.
  */
+import { getLocale } from "../../lib/locale/locale.js"
 
 /** `HH:mm`, or `HH:mm:ss` when seconds are on: 24-hour and zero-padded ("09:30", "21:05:30"). */
 export type TimeValue = string
@@ -14,7 +17,7 @@ export type HourCycle = 12 | 24
 export type TimePart = "hour" | "minute" | "second" | "period"
 
 export interface TimeTextOptions {
-  /** BCP 47 locale: the clock and its am/pm words (default en-AU). */
+  /** BCP 47 locale: the clock and its am/pm words. Default `getLocale()`. */
   locale?: string
   /** Override the locale's clock: 12 (am/pm) or 24. */
   hourCycle?: HourCycle
@@ -54,7 +57,7 @@ export function secondsToTime(total: number, seconds = false): TimeValue {
 export const compareTime = (a: TimeValue, b: TimeValue) => Math.sign(timeToSeconds(a) - timeToSeconds(b))
 
 /** The locale's clock: 12 for en-AU and en-US, 24 for en-GB and de. */
-export function hourCycleOf(locale = "en-AU"): HourCycle {
+export function hourCycleOf(locale = getLocale()): HourCycle {
   try {
     const cycle = new Intl.DateTimeFormat(locale, { hour: "numeric" }).resolvedOptions().hourCycle
     return cycle === "h11" || cycle === "h12" ? 12 : 24
@@ -84,7 +87,7 @@ function formatter(locale: string, cycle: HourCycle, seconds: boolean) {
 const plainSpaces = (text: string) => text.replace(/[  ]/g, " ")
 
 function partsOf(value: TimeValue, options: TimeTextOptions) {
-  const locale = options.locale ?? "en-AU"
+  const locale = options.locale ?? getLocale()
   const cycle = options.hourCycle ?? hourCycleOf(locale)
   const total = timeToSeconds(value)
   const seconds = options.seconds ?? value.length > 5
@@ -103,7 +106,7 @@ export function formatTimeText(value: TimeValue, options: TimeTextOptions = {}):
 
 /** A placeholder in the locale's clock: "h:mm am" (en-AU), "hh:mm" (24-hour), with ":ss" when seconds are on. */
 export function timePlaceholder(options: TimeTextOptions = {}): string {
-  const cycle = options.hourCycle ?? hourCycleOf(options.locale ?? "en-AU")
+  const cycle = options.hourCycle ?? hourCycleOf(options.locale ?? getLocale())
   return partsOf(options.seconds ? "09:30:00" : "09:30", { ...options, hourCycle: cycle })
     .map((part) => (part.type === "hour" ? (cycle === 12 ? "h" : "hh") : part.type === "minute" ? "mm" : part.type === "second" ? "ss" : part.value))
     .join("")
@@ -138,7 +141,7 @@ export function parseTimeText(text: string, options: TimeTextOptions = {}): Time
   if (source in WORDS) return secondsToTime(WORDS[source]!, options.seconds)
 
   // The period: English a/am/a.m. and p/pm/p.m., or the locale's words, before or after.
-  const local = dayPeriods(options.locale ?? "en-AU")
+  const local = dayPeriods(options.locale ?? getLocale())
   let period: "am" | "pm" | null = null
   const english = /\s*([ap])\.?\s?(?:m\.?)?$/.exec(source)
   if (english && /\d/.test(source.slice(0, english.index))) {

@@ -4,6 +4,7 @@ import { Button } from "../../ui/button/index.js"
 import { formatNumber } from "../format.js"
 import type { AiResult, LogLine } from "../types.js"
 import { ResultFrame } from "./frame.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 
 type LogResult = Extract<AiResult, { type: "log" }>
 
@@ -27,6 +28,7 @@ export function ResultLog({ result }: {
   /** The log result: `lines` in order, each with a level, the text and an optional time; the line and error counts are the data line. */
   result: LogResult
 }) {
+  const locale = useLocale()
   const [expanded, setExpanded] = useState(false)
   const collapsible = result.lines.length > TAIL + 2
   const lines = collapsible && !expanded ? result.lines.slice(-TAIL) : result.lines
@@ -35,14 +37,14 @@ export function ResultLog({ result }: {
     <ResultFrame
       result={result}
       icon={<IconTerminal />}
-      meta={`${formatNumber(result.lines.length)} lines${errors ? ` · ${errors} ${errors === 1 ? "error" : "errors"}` : ""}`}
+      meta={`${formatNumber(result.lines.length, 0, locale)} lines${errors ? ` · ${errors} ${errors === 1 ? "error" : "errors"}` : ""}`}
       copyText={result.lines.map((line) => [line.time, LEVEL_WORDS[line.level].toUpperCase(), line.text].filter(Boolean).join("  ")).join("\n")}
       flush
     >
       {collapsible ? (
         <div className="fa-ai-log-more">
           <Button variant="ghost" size="sm" icon={expanded ? <IconChevronDown /> : <IconChevronUp />} aria-expanded={expanded} onClick={() => setExpanded((value) => !value)}>
-            {expanded ? `Show the last ${TAIL} lines` : `Show ${formatNumber(result.lines.length - TAIL)} earlier lines`}
+            {expanded ? `Show the last ${TAIL} lines` : `Show ${formatNumber(result.lines.length - TAIL, 0, locale)} earlier lines`}
           </Button>
         </div>
       ) : null}

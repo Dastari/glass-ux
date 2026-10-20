@@ -6,6 +6,7 @@ import { TruncatedText } from "../../ui/truncated-text/index.js";
 import { Tooltip } from "../../ui/tooltip/index.js";
 import { formatNumber, useNow } from "../format.js";
 import type { AiBudget, StreamState } from "../types.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 
 export interface AiStatusStripProps {
   /** Current message stream state. */
@@ -42,6 +43,7 @@ export function AiStatusStrip({
   className,
 }: AiStatusStripProps) {
   const now = useNow(stream === "reconnecting" && Boolean(retryAt), 1000);
+  const locale = useLocale();
   const seconds = retryAt
     ? Math.max(0, Math.ceil((retryAt - now) / 1000))
     : null;
@@ -93,7 +95,7 @@ export function AiStatusStrip({
       <span className="fa-ai-status-meta">
         {budget && used !== null ? (
           <Tooltip
-            content={`${formatNumber(budget.used)} of ${formatNumber(budget.maximum)} ${budget.unit}`}
+            content={`${formatNumber(budget.used, 0, locale)} of ${formatNumber(budget.maximum, 0, locale)} ${budget.unit}`}
           >
             <span
               className="fa-ai-status-item"

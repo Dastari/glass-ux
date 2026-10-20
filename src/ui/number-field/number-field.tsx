@@ -2,6 +2,7 @@ import { NumberField as BaseNumberField } from "@base-ui/react/number-field"
 import type { FocusEvent, ReactNode, Ref } from "react"
 import { IconMinus, IconPlus } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import { Button } from "../button/index.js"
 
@@ -25,6 +26,8 @@ export interface NumberFieldProps {
   largeStep?: number
   /** Intl number formatting (grouping, decimals, percent). */
   format?: Intl.NumberFormatOptions
+  /** BCP 47 locale the number is shown and typed in (decimal and grouping marks). Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. */
+  locale?: string
   /** Unit after the value ("MB", "ms", "devices"). */
   unit?: ReactNode
   /** A short prefix inside the box that scrubs the value when dragged ("W", "Max"). */
@@ -65,6 +68,7 @@ export function NumberField({
   step = 1,
   largeStep,
   format,
+  locale,
   unit,
   scrubLabel,
   size = "md",
@@ -82,6 +86,7 @@ export function NumberField({
   ref,
   ...aria
 }: NumberFieldProps) {
+  const resolvedLocale = useLocale(locale)
   return (
     <BaseNumberField.Root
       value={value}
@@ -92,7 +97,7 @@ export function NumberField({
       step={step}
       largeStep={largeStep}
       format={format}
-      locale="en-AU"
+      locale={resolvedLocale}
       disabled={disabled}
       readOnly={readOnly}
       required={required}

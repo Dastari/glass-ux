@@ -4,6 +4,7 @@ import { cx } from "../../lib/cx.js";
 import { Button } from "../../ui/button/index.js";
 import { Tooltip } from "../../ui/tooltip/index.js";
 import { formatNumber } from "../format.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 
 /** Children shown per object or array before "Show n more". */
 const PAGE = 40;
@@ -38,11 +39,11 @@ function Scalar({ value }: { value: unknown }) {
   );
 }
 
-function summary(value: Json[] | Record<string, Json>) {
+function summary(value: Json[] | Record<string, Json>, locale: string) {
   if (Array.isArray(value))
-    return `${formatNumber(value.length)} ${value.length === 1 ? "item" : "items"}`;
+    return `${formatNumber(value.length, 0, locale)} ${value.length === 1 ? "item" : "items"}`;
   const keys = Object.keys(value).length;
-  return `${formatNumber(keys)} ${keys === 1 ? "key" : "keys"}`;
+  return `${formatNumber(keys, 0, locale)} ${keys === 1 ? "key" : "keys"}`;
 }
 
 function Node({
@@ -58,8 +59,9 @@ function Node({
   const branch = kind === "array" || kind === "object";
   const [open, setOpen] = useState(depth < OPEN_DEPTH);
   const [shown, setShown] = useState(PAGE);
+  const locale = useLocale();
   const rowRef = useRef<HTMLLIElement>(null);
-  const accessibleName = `${name !== undefined ? `${name}: ` : ""}${branch ? `${kind}, ${summary(value as Json[] | Record<string, Json>)}` : String(value)}`;
+  const accessibleName = `${name !== undefined ? `${name}: ` : ""}${branch ? `${kind}, ${summary(value as Json[] | Record<string, Json>, locale)}` : String(value)}`;
 
   const key =
     name !== undefined ? (
@@ -122,7 +124,7 @@ function Node({
       {open ? null : (
         <>
           <span className="fa-ai-json-summary">
-            {summary(value as Json[] | Record<string, Json>)}
+            {summary(value as Json[] | Record<string, Json>, locale)}
           </span>
           <span className="fa-ai-json-punct">{brackets[1]}</span>
         </>
@@ -157,8 +159,8 @@ function Node({
                   }}
                 >
                   Show{" "}
-                  {formatNumber(Math.min(entries.length - shown, PAGE * 5))}{" "}
-                  more of {formatNumber(entries.length)}
+                  {formatNumber(Math.min(entries.length - shown, PAGE * 5), 0, locale)}{" "}
+                  more of {formatNumber(entries.length, 0, locale)}
                 </Button>
               </li>
             ) : null}

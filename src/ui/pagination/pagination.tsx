@@ -2,6 +2,8 @@ import { Select } from "@base-ui/react/select"
 import { useState, type ComponentProps } from "react"
 import { IconCheck, IconChevronLeft, IconChevronRight, IconChevronsUpDown, IconPageFirst, IconPageLast } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { numberFormat } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Button } from "../button/index.js"
 import { Skeleton } from "../skeleton/index.js"
@@ -42,6 +44,8 @@ export interface PaginationProps extends Omit<ComponentProps<"nav">, "children">
   disabled?: boolean
   /** First load: the range is a placeholder and the buttons wait. */
   loading?: boolean
+  /** BCP 47 locale for the range and page numbers. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. */
+  locale?: string
 }
 
 /**
@@ -62,15 +66,17 @@ export function Pagination({
   label = "Pages",
   disabled: disabledProp = false,
   loading = false,
+  locale: localeProp,
   className,
   ...rest
 }: PaginationProps) {
+  const locale = useLocale(localeProp)
   const disabled = disabledProp || loading
   const pageCount = rowCount === undefined ? undefined : pageCountOf(rowCount, pageSize)
   const hasPrevious = cursor ? cursor.hasPrevious : pageIndex > 0
   const hasNext = cursor ? cursor.hasNext : pageCount !== undefined && pageIndex < pageCount - 1
   const go = (index: number) => onPageChange?.(index)
-  const range = formatRange(pageIndex, pageSize, pageRows, rowCount)
+  const range = formatRange(pageIndex, pageSize, pageRows, rowCount, locale)
 
   return (
     <nav {...rest} aria-label={label} className={cx("fa-pager", className)} data-compact={compact ? "" : undefined} data-cursor={cursor ? "" : undefined}>
@@ -101,7 +107,7 @@ export function Pagination({
           onClick={() => (cursor ? cursor.onPrevious() : go(pageIndex - 1))}
         />
         {!compact && !cursor && pageCount !== undefined && pageCount > 1 ? (
-          <PageJump pageIndex={pageIndex} pageCount={pageCount} onChange={go} disabled={disabled} />
+          <PageJump pageIndex={pageIndex} pageCount={pageCount} onChange={go} disabled={disabled} locale={locale} />
         ) : null}
         <Button
           variant="ghost"
@@ -174,9 +180,12 @@ function PageJump({
   pageCount,
   onChange,
   disabled,
+  locale,
 }: {
   pageIndex: number
   pageCount: number
+  /** The pager's resolved locale. */
+  locale: string
   /** Called with the zero-based index of the typed page, clamped to the page count, on Enter or blur; not called when it equals the current page or the text is not a number. */
   onChange: (pageIndex: number) => void
   disabled: boolean
@@ -209,7 +218,7 @@ function PageJump({
         />
       </span>
       <span className="fa-pager-of" data-numeric>
-        of {pageCount.toLocaleString("en-AU")}
+        of {numberFormat(locale).format(pageCount)}
       </span>
     </span>
   )

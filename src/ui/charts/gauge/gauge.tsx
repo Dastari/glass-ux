@@ -2,7 +2,8 @@ import { arc as d3arc } from "d3-shape"
 import { memo, useMemo, type CSSProperties } from "react"
 import { meterLevel } from "../../meter/index.js"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
-import { centreSize, formatShare, formatValue, type ValueFormat } from "../core/format.js"
+import { centreSize, formatShare, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
+import { useLocale } from "../../../lib/locale/use-locale.js"
 import { ChartText } from "../core/axes.js"
 import { barPath, cssPath } from "../core/geometry.js"
 import { ChartLegend, type LegendItem } from "../core/legend.js"
@@ -41,7 +42,8 @@ export interface GaugeProps extends ChartCommonProps, ValueFormat {
  */
 export function Gauge(props: GaugeProps) {
   const { label, title, state = "ready", value, min = 0, max = 100, warningAt = 0.75, dangerAt = 0.9, caption, unit, format, ...rest } = props
-  const fmt: ValueFormat = useMemo(() => ({ unit, format }), [unit, format])
+  const locale = useLocale(props.locale)
+  const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const ratio = value === null ? 0 : Math.min(1, Math.max(0, (value - min) / (max - min || 1)))
   const level = warningAt === null || dangerAt === null ? "normal" : meterLevel(ratio, warningAt ?? 0.75, dangerAt ?? 0.9)
   const status = warningAt !== null && dangerAt !== null
@@ -181,7 +183,8 @@ export interface RadialBarProps extends ChartCommonProps, ValueFormat {
  */
 export function RadialBar(props: RadialBarProps) {
   const { label, title, state = "ready", data, warningAt, dangerAt, unit, format, ...rest } = props
-  const fmt: ValueFormat = useMemo(() => ({ unit, format }), [unit, format])
+  const locale = useLocale(props.locale)
+  const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const items = useMemo(
     () =>
       data.map((item, index) => {
@@ -198,7 +201,7 @@ export function RadialBar(props: RadialBarProps) {
         { key: "value", label: "Value", numeric: true },
         { key: "share", label: "Of max", numeric: true },
       ],
-      rows: items.map((item) => ({ label: item.label, value: formatValue(item.value, fmt), share: formatShare(item.value, item.max ?? 100) })),
+      rows: items.map((item) => ({ label: item.label, value: formatValue(item.value, fmt), share: formatShare(item.value, item.max ?? 100, fmt.locale) })),
     }),
     [items, fmt]
   )
@@ -216,7 +219,7 @@ export function RadialBar(props: RadialBarProps) {
   )
 }
 
-const RadialPlot = memo(function RadialPlot({ box, items, fmt }: { box: PlotBox; items: Array<RadialBarItem & { ratio: number; slot: number }>; fmt: ValueFormat }) {
+const RadialPlot = memo(function RadialPlot({ box, items, fmt }: { box: PlotBox; items: Array<RadialBarItem & { ratio: number; slot: number }>; fmt: LocalizedFormat }) {
   const { width, height, tier, rem } = box
   if (tier === "micro") {
     const thick = Math.max(2, Math.min(0.25 * rem, (height - (items.length - 1) * 3) / items.length))

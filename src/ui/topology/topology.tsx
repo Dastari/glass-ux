@@ -27,6 +27,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { IconFullscreen, IconLayers, IconList, IconNetwork, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { resolveActions, type ActionSet } from "../../lib/actions/actions.js"
 import { cx } from "../../lib/cx.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { observeElementSize } from "../../lib/resize-observer.js"
 import { ActionMenuItems } from "../actions/index.js"
 import { Button } from "../button/index.js"
@@ -275,6 +276,7 @@ export function TopologyCanvas<T>({
   const stageSize = useRef({ width: 0, height: 0 })
   const layoutSize = useRef({ width: 0, height: 0 })
   const tokens = useRef({ fitPadding: 24, controls: 48, duration: 300 })
+  const locale = useLocale()
   const [metrics, setMetrics] = useState<Partial<TopologyMetrics> | null>(null)
   const [layout, setLayout] = useState<TopologyLayout | null>(null)
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -309,12 +311,12 @@ export function TopologyCanvas<T>({
             return measure.getBoundingClientRect().width
           }
         : undefined
-      setLayout(layoutTopology(nodes, { metrics, clusters, labelWidth }))
+      setLayout(layoutTopology(nodes, { metrics, clusters, labelWidth, locale }))
     })
     return () => {
       live = false
     }
-  }, [nodes, metrics, clusters])
+  }, [nodes, metrics, clusters, locale])
 
   useIsomorphicLayoutEffect(() => {
     layoutSize.current = { width: layout?.width ?? 0, height: layout?.height ?? 0 }
@@ -751,7 +753,7 @@ export function TopologyCanvas<T>({
           style={{ transform: `translate(${cluster.x}px, ${cluster.y}px)`, width: cluster.width, height: cluster.height }}
         >
           <span className="fa-topology-cluster-label" aria-hidden>
-            {clusterLabel(cluster.label, cluster.members.length)}
+            {clusterLabel(cluster.label, cluster.members.length, locale)}
           </span>
           {cluster.members.map((id) => {
             const node = byId.get(id)

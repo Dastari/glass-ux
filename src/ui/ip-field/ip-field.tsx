@@ -1,4 +1,5 @@
 import { IconNetwork } from "../../icons/generated/icons.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { CopyButton } from "../copy-button/index.js"
 import { Field } from "../field/index.js"
@@ -50,14 +51,15 @@ export function IpInput({ version = "any", cidr = "none", copyable = true, value
 /**
  * What a valid value means, for the field's hint: "Private · 254 hosts · 192.168.1.1–…", or
  * "Host bits set: the network is 192.168.1.0/24". Undefined for an empty or unreadable value.
+ * The host count is written in `options.locale` (default `getLocale()`).
  */
-export function describeIp(value: string, options: { version?: IpVersion | "any"; cidr?: CidrMode } = {}): string | undefined {
+export function describeIp(value: string, options: { version?: IpVersion | "any"; cidr?: CidrMode; locale?: string } = {}): string | undefined {
   if (!value.trim()) return undefined
   const result = parseIp(value, options)
   if (!result.ok) return undefined
   const ip = result.value
   if (!isNetworkAddress(ip)) return `Host bits set: the network is ${networkOf(ip).address}/${ip.prefix}`
-  return [scopeOf(ip), describeRange(ip)].filter(Boolean).join(" · ") || undefined
+  return [scopeOf(ip), describeRange(ip, options.locale)].filter(Boolean).join(" · ") || undefined
 }
 
 export interface IpFieldProps extends FieldChrome, Omit<IpInputProps, "value" | "defaultValue" | "onValueChange" | "name" | "onBlur" | "invalid" | "required" | "disabled" | "className"> {
@@ -68,7 +70,8 @@ export interface IpFieldProps extends FieldChrome, Omit<IpInputProps, "value" | 
 /** IpInput bound to a string form field. Pair it with `ipSchema()`. */
 export function IpField({ label, hint, optional, required, aside, className, disabled, describe = true, ...control }: IpFieldProps) {
   const { field, error, root } = useBoundField<string>()
-  const derived = describe ? describeIp(field.state.value, control) : undefined
+  const locale = useLocale()
+  const derived = describe ? describeIp(field.state.value, { ...control, locale }) : undefined
   return (
     <Field {...root} label={label} hint={hint ?? derived} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <IpInput

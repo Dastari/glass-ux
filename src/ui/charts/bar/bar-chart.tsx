@@ -1,7 +1,8 @@
 import { memo, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react"
 import { cartesianInset, textWidth, YGrid, YLabels } from "../core/axes.js"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
-import { formatShare, formatTick, formatValue, type ValueFormat } from "../core/format.js"
+import { formatShare, formatTick, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
+import { useLocale } from "../../../lib/locale/use-locale.js"
 import { barPath, cssPath } from "../core/geometry.js"
 import { HitLayer } from "../core/hit.js"
 import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
@@ -88,7 +89,8 @@ export function BarChart(props: BarChartProps) {
   } = props
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
   const store = useHoverStore()
-  const fmt: ValueFormat = useMemo(() => ({ unit, format }), [unit, format])
+  const locale = useLocale(props.locale)
+  const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const stacked = layout === "stacked"
   const horizontal = orientation === "horizontal"
 
@@ -191,7 +193,7 @@ interface BarPlotProps {
   horizontal: boolean
   /** Display and accessibility labels supplied by the application. */
   labels: boolean
-  fmt: ValueFormat
+  fmt: LocalizedFormat
   label: string
   edges?: readonly number[]
   formatEdge?: (value: number) => string
@@ -429,7 +431,7 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
                 slot: slots.get(item.key),
                 tone: item.tone,
                 shape: "box",
-                detail: visible.length === 1 && sum > 0 ? formatShare(item.data[hover.index] ?? 0, sum) : undefined,
+                detail: visible.length === 1 && sum > 0 ? formatShare(item.data[hover.index] ?? 0, sum, fmt.locale) : undefined,
               }))
               return (
                 <TooltipBody

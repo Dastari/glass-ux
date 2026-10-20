@@ -2,6 +2,7 @@ import { Input as BaseInput } from "@base-ui/react/input"
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FocusEvent, type KeyboardEvent, type Ref } from "react"
 import { IconClock } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Button } from "../button/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import { Popover } from "../popover/index.js"
@@ -105,7 +106,7 @@ export interface TimeInputProps {
    * The bound TimeField passes it to the form so `timeSchema` can explain it.
    */
   onReject?: (value: string) => void
-  /** BCP 47 locale: the clock and its am/pm words (default en-AU, a 12-hour clock). */
+  /** BCP 47 locale: the clock and its am/pm words. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. */
   locale?: string
   /** Override the locale's clock: 12 (am/pm) or 24. */
   hourCycle?: HourCycle
@@ -158,7 +159,7 @@ export function TimeInput({
   defaultValue = null,
   onValueChange,
   onReject,
-  locale = "en-AU",
+  locale: localeProp,
   hourCycle,
   seconds = false,
   min,
@@ -180,6 +181,7 @@ export function TimeInput({
   ref,
   ...aria
 }: TimeInputProps) {
+  const locale = useLocale(localeProp)
   const [inner, setInner] = useState<TimeValue | null>(defaultValue)
   const current = value === undefined ? inner : value
   const textOptions = { locale, hourCycle, seconds }

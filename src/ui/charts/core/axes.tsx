@@ -5,7 +5,8 @@
  */
 import type { ReactNode } from "react"
 import { cx } from "../../../lib/cx.js"
-import { formatTick, type ValueFormat } from "./format.js"
+import { useLocale } from "../../../lib/locale/use-locale.js"
+import { formatTick, type LocalizedFormat } from "./format.js"
 import type { ChartTier } from "./tier.js"
 
 /** Caption glyph advance for tabular figures, in em — for estimating label widths. */
@@ -63,8 +64,8 @@ export interface YAxisProps {
   x1: number
   /** Draw labels in the left gutter (full tier). */
   labels?: boolean
-  /** Value formatter or formatting options. */
-  format?: ValueFormat
+  /** Unit, formatter and locale for the labels. Without a locale, the labels use the enclosing chart's (`useLocale()`). */
+  format?: LocalizedFormat
   /** The value of the baseline (drawn stronger), usually 0. */
   baseline?: number
   /** px between a label and the plot. */
@@ -87,11 +88,13 @@ export function YGrid({ ticks, y, x0, x1, baseline }: Pick<YAxisProps, "ticks" |
 
 /** The y labels, right-aligned in the gutter beside each gridline (HTML, inside .fa-chart-labels). */
 export function YLabels({ ticks, step, y, x0, format, gap = 8 }: Pick<YAxisProps, "ticks" | "step" | "y" | "x0" | "format" | "gap">) {
+  const locale = useLocale(format?.locale)
+  const localized = { ...format, locale }
   return (
     <>
       {ticks.map((tick) => (
         <ChartText key={tick} className="fa-chart-tick" data-axis="y" x={x0 - gap} y={crisp(y(tick))} anchor="end">
-          {formatTick(tick, step, format)}
+          {formatTick(tick, step, localized)}
         </ChartText>
       ))}
     </>

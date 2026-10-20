@@ -5,12 +5,15 @@ import { DEFAULT_CURRENCY, formatMoney } from "./money.js"
  * An amount in minor units (integer cents), or null when not required. Bounds in minor units:
  *
  *   moneySchema({ required: true, max: 1_000_000 })   → "Enter an amount up to $10,000.00"
+ *
+ * Amounts in messages use `locale`, or `getLocale()` when a value is checked. A
+ * `LocaleProvider` cannot reach a schema: pass the field's locale explicitly.
  */
-export function moneySchema(options: { required?: boolean; min?: number; max?: number; currency?: string; allowNegative?: boolean } = {}) {
+export function moneySchema(options: { required?: boolean; min?: number; max?: number; currency?: string; allowNegative?: boolean; locale?: string } = {}) {
   const currency = options.currency ?? DEFAULT_CURRENCY
   const min = options.min ?? (options.allowNegative ? undefined : 0)
-  const show = (minor: number) => formatMoney(minor, { currency })
-  const range =
+  const show = (minor: number) => formatMoney(minor, { currency, locale: options.locale })
+  const range = () =>
     min !== undefined && options.max !== undefined
       ? `Enter an amount from ${show(min)} to ${show(options.max)}`
       : options.max !== undefined

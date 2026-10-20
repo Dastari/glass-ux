@@ -1,6 +1,7 @@
 import { useRef, useState, type ComponentProps, type ReactNode } from "react"
 import { IconChartLine, IconError, IconTable } from "../../../icons/generated/icons.js"
 import { cx } from "../../../lib/cx.js"
+import { LocaleProvider, useLocale } from "../../../lib/locale/use-locale.js"
 import { useElementSize } from "../../../lib/use-element-size.js"
 import { Button } from "../../button/index.js"
 import { EmptyState } from "../../empty-state/index.js"
@@ -39,6 +40,11 @@ export interface ChartCommonProps extends Omit<ComponentProps<"figure">, "childr
   errorText?: ReactNode
   /** Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. */
   onRetry?: () => void
+  /**
+   * BCP 47 locale for this chart's numbers, dates and table. Default: the nearest
+   * `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US.
+   */
+  locale?: string
 }
 
 export interface ChartFrameProps extends ChartCommonProps {
@@ -86,8 +92,10 @@ export function ChartFrame({
   rule = DEFAULT_TIERS,
   children,
   className,
+  locale: localeProp,
   ...rest
 }: ChartFrameProps) {
+  const locale = useLocale(localeProp)
   const rootRef = useRef<HTMLElement>(null)
   const plotRef = useRef<HTMLDivElement>(null)
   const size = useElementSize(rootRef)
@@ -132,6 +140,8 @@ export function ChartFrame({
   else if (plot.width > 0 && plot.height > 0) body = children({ width: plot.width, height: plot.height, tier, rem })
 
   return (
+    // The legend, readouts and data table inside read the chart's locale.
+    <LocaleProvider locale={locale}>
     <figure
       {...rest}
       ref={rootRef}
@@ -175,6 +185,7 @@ export function ChartFrame({
       </div>
       {table && state === "ready" && !tableView ? <ChartTable model={table} caption={label} /> : null}
     </figure>
+    </LocaleProvider>
   )
 }
 

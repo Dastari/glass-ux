@@ -6,10 +6,15 @@
  *   fromMinor(1250, "AUD")  → 12.5
  *   formatMoney(123450, { currency: "AUD" }) → "$1,234.50"
  *   parseMoney("$1,234.5", "AUD")            → 123450
+ *
+ * Formatting and parsing follow a BCP 47 locale; without one they use `getLocale()`
+ * (`configureLocale()`, then `<html lang>`, then en-US).
  */
+import { delocalizeNumber, numberFormat } from "../../lib/locale/intl.js"
+import { getLocale } from "../../lib/locale/locale.js"
 
+/** The currency used when none is given: AUD. */
 export const DEFAULT_CURRENCY = "AUD"
-export const DEFAULT_LOCALE = "en-AU"
 
 const digitsCache = new Map<string, number>()
 
@@ -20,7 +25,8 @@ export function minorDigits(currency: string = DEFAULT_CURRENCY): number {
   if (cached !== undefined) return cached
   let digits = 2
   try {
-    digits = new Intl.NumberFormat(DEFAULT_LOCALE, { style: "currency", currency: key }).resolvedOptions().maximumFractionDigits ?? 2
+    // A currency's minor digits are the same in every locale.
+    digits = new Intl.NumberFormat("en", { style: "currency", currency: key }).resolvedOptions().maximumFractionDigits ?? 2
   } catch {
     digits = 2
   }
@@ -44,7 +50,7 @@ export function fromMinor(minor: number, currency: string = DEFAULT_CURRENCY): n
 
 export interface MoneyFormatOptions {
   currency?: string
-  /** Locale used to format values. */
+  /** BCP 47 locale for the digits, grouping and symbol position. Default `getLocale()`. */
   locale?: string
   /** "symbol" (default, "$1,234.50"), "code" ("AUD 1,234.50") or "none" ("1,234.50"). */
   display?: "symbol" | "code" | "none"
@@ -55,10 +61,11 @@ export function formatMoney(minor: number, options: MoneyFormatOptions = {}): st
   const currency = options.currency ?? DEFAULT_CURRENCY
   const digits = minorDigits(currency)
   const major = fromMinor(minor, currency)
+  const locale = options.locale ?? getLocale()
   if (options.display === "none") {
-    return new Intl.NumberFormat(options.locale ?? DEFAULT_LOCALE, { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(major)
+    return numberFormat(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(major)
   }
-  return new Intl.NumberFormat(options.locale ?? DEFAULT_LOCALE, {
+  return numberFormat(locale, {
     style: "currency",
     currency,
     currencyDisplay: options.display === "code" ? "code" : "narrowSymbol",
@@ -67,10 +74,11 @@ export function formatMoney(minor: number, options: MoneyFormatOptions = {}): st
 
 /**
  * Typed or pasted text → minor units, or null. Accepts a currency symbol or code, grouping
- * commas or spaces, a leading minus or accounting brackets ("(12.30)"). More decimals than the
+ * marks or spaces, a leading minus or accounting brackets ("(12.30)"). The decimal and grouping
+ * marks are `locale`'s ("1.234,50" in de-DE; default `getLocale()`). More decimals than the
  * currency has are rounded.
  */
-export function parseMoney(text: string, currency: string = DEFAULT_CURRENCY): number | null {
+export function parseMoney(text: string, currency: string = DEFAULT_CURRENCY, locale = getLocale()): number | null {
   let source = text.trim()
   if (!source) return null
   let negative = false
@@ -79,7 +87,7 @@ export function parseMoney(text: string, currency: string = DEFAULT_CURRENCY): n
     source = source.slice(1, -1)
   }
   source = source.replace(/[A-Za-z]{3}/g, "").replace(/[$€£¥₹]|[A-Z]?\$/g, "")
-  source = source.replace(/[\s  ,']/g, "")
+  source = delocalizeNumber(source, locale)
   if (/^[-−]/.test(source)) {
     negative = !negative
     source = source.slice(1)

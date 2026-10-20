@@ -180,6 +180,11 @@ export interface DataTableProps<T extends RowData> {
 
   /** Row density for this table. Uncontrolled tables persist the user's choice. */
   density?: DataTableDensity;
+  /**
+   * BCP 47 locale for this table's numbers, dates, counts and local sorting. Default: the
+   * nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US.
+   */
+  locale?: string;
   /** Called with the density the person picks. Pair with `density` to control it; without `density` the table also stores the choice in its preferences. */
   onDensityChange?: (density: DataTableDensity) => void;
   /** "fill" (default) fills a parent with a definite height and scrolls inside. */

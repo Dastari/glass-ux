@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Combobox, type ComboboxOption, type ComboboxProps } from "../combobox/index.js"
 import { Field } from "../field/index.js"
 import { useBoundField, type FieldChrome } from "../form/context.js"
@@ -12,7 +13,7 @@ export interface CountrySelectProps extends Omit<ComboboxProps<string>, "options
   priority?: readonly string[]
   /** Flags beside the names (SVG, lazy; never emoji). Default true. */
   flags?: boolean
-  /** Names in this locale. Default en-AU. */
+  /** BCP 47 locale for the country names and their order. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. */
   locale?: string
 }
 
@@ -20,7 +21,8 @@ export interface CountrySelectProps extends Omit<ComboboxProps<string>, "options
  * Choose a country by typing its name: every ISO 3166-1 country, named by the platform in the
  * locale, with its flag and code. The value is the ISO 3166-1 alpha-2 code ("AU").
  */
-export function CountrySelect({ countries, priority = ["AU", "NZ"], flags = true, locale, value, defaultValue, placeholder = "Choose a country", ...rest }: CountrySelectProps) {
+export function CountrySelect({ countries, priority = ["AU", "NZ"], flags = true, locale: localeProp, value, defaultValue, placeholder = "Choose a country", ...rest }: CountrySelectProps) {
+  const locale = useLocale(localeProp)
   const options = useMemo<Array<ComboboxOption<string>>>(
     () =>
       listCountries({ locale, only: countries, priority }).map((country) => ({

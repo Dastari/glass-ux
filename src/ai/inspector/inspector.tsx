@@ -8,6 +8,7 @@ import { EntityChip } from "../entity-chip/index.js";
 import { formatElapsed, formatIn, formatNumber, useNow } from "../format.js";
 import { SourceList } from "../sources/index.js";
 import type { AiBudget, AiSource, AiToolCall, EntityRef } from "../types.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 
 export interface ConversationContextProps extends ComponentProps<"div"> {
   /** The conversation's scope, or null for the whole workspace. */
@@ -74,6 +75,7 @@ export function ConversationContext({
   ...rest
 }: ConversationContextProps) {
   const now = useNow(false);
+  const locale = useLocale();
   const summary = toolSummary(tools);
   const used = budget
     ? Math.round((budget.used / Math.max(1, budget.maximum)) * 100)
@@ -121,7 +123,7 @@ export function ConversationContext({
                     <code>{call.toolId}</code>
                   </TruncatedText>
                   <span className="fa-ai-context-tool-meta" data-numeric>
-                    {count}× · {formatElapsed(ms)}
+                    {count}× · {formatElapsed(ms, locale)}
                     {failed ? (
                       <span className="fa-ai-context-failed">
                         {" "}
@@ -153,7 +155,7 @@ export function ConversationContext({
             value={budget.used}
             max={budget.maximum}
             label={budget.label}
-            valueText={`${used}% · ${formatNumber(budget.used)} of ${formatNumber(budget.maximum)} ${budget.unit}`}
+            valueText={`${used}% · ${formatNumber(budget.used, 0, locale)} of ${formatNumber(budget.maximum, 0, locale)} ${budget.unit}`}
             warningAt={0.8}
             dangerAt={0.95}
           />

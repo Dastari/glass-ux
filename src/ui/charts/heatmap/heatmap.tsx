@@ -1,6 +1,7 @@
 import { memo, useMemo, useRef, type CSSProperties } from "react"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
-import { formatClock, formatValue, type ValueFormat } from "../core/format.js"
+import { formatClock, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
+import { useLocale } from "../../../lib/locale/use-locale.js"
 import { cssPath, roundRectPath } from "../core/geometry.js"
 import { HitLayer } from "../core/hit.js"
 import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
@@ -41,8 +42,9 @@ export interface HeatmapProps extends ChartCommonProps, ValueFormat {
 export function Heatmap(props: HeatmapProps) {
   const { label, title, state = "ready", rows, columns, values, domain, steps = 5, formatColumn, rowLabel = "Category", columnLabel = "Time", unit, format, ...rest } = props
   const store = useHoverStore()
-  const fmt: ValueFormat = useMemo(() => ({ unit, format }), [unit, format])
-  const columnText = useMemo(() => formatColumn ?? ((column: XValue) => (column instanceof Date ? formatClock(column) : String(column))), [formatColumn])
+  const locale = useLocale(props.locale)
+  const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
+  const columnText = useMemo(() => formatColumn ?? ((column: XValue) => (column instanceof Date ? formatClock(column, locale) : String(column))), [formatColumn, locale])
   const range = useMemo<readonly [number, number]>(() => {
     if (domain) return domain
     let max = 0
@@ -111,7 +113,7 @@ interface HeatmapPlotProps {
   steps: number
   /** External store observed by the component. */
   store: HoverStore
-  fmt: ValueFormat
+  fmt: LocalizedFormat
   columnText: (column: XValue) => string
   label: string
 }

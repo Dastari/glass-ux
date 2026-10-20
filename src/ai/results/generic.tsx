@@ -14,6 +14,8 @@ import type {
   ResultRow,
 } from "../types.js";
 import { ResultFrame } from "./frame.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
+import { getLocale } from "../../lib/locale/locale.js";
 
 /**
  * Data classification, lowest to highest. A tool's browser
@@ -107,10 +109,10 @@ export function inferDisclosure(value: unknown, depth = 0): Disclosure {
   return { shape: "scalar" };
 }
 
-function scalarText(value: unknown, unit?: string): string {
+function scalarText(value: unknown, unit: string | undefined, locale: string): string {
   if (value === null || value === undefined) return "—";
   if (typeof value === "number") {
-    const text = formatNumber(value, Number.isInteger(value) ? 0 : 1);
+    const text = formatNumber(value, Number.isInteger(value) ? 0 : 1, locale);
     return unit
       ? unit === "%"
         ? `${text}%`
@@ -119,9 +121,9 @@ function scalarText(value: unknown, unit?: string): string {
   }
   if (typeof value === "boolean") return value ? "Yes" : "No";
   if (Array.isArray(value))
-    return `${formatNumber(value.length)} ${value.length === 1 ? "item" : "items"}`;
+    return `${formatNumber(value.length, 0, locale)} ${value.length === 1 ? "item" : "items"}`;
   if (isRecord(value))
-    return `${formatNumber(Object.keys(value).length)} fields`;
+    return `${formatNumber(Object.keys(value).length, 0, locale)} fields`;
   return String(value);
 }
 
@@ -188,10 +190,13 @@ function locate(
  *   3. object      → key–value detail tiles; nested objects and lists summarise as a count
  *   4. scalar      → a value tile (a count, a state)
  *   5. otherwise   → the JSON tree
+ *
+ * Numbers and counts in the result are written in `locale` (default `getLocale()`).
  */
 export function resolvePreview(
   preview: ToolPreview,
   resolver: EntityResolver,
+  locale = getLocale(),
 ): AiResult {
   const base = { id: preview.id, title: preview.title, source: preview.source };
   const cap = rank(preview.previewCap ?? "Internal");
@@ -234,7 +239,7 @@ export function resolvePreview(
         type: "table",
         total: total ?? value.length,
         columns: [{ key: "value", header: item.label ?? "Value", priority: 1 }],
-        rows: items.map((entry) => ({ value: scalarText(entry) })),
+        rows: items.map((entry) => ({ value: scalarText(entry, undefined, locale) })),
       };
     }
     const fields = Object.entries(item.fields).filter(
@@ -279,7 +284,7 @@ export function resolvePreview(
           const cell = record[column.key];
           return [
             column.key,
-            typeof cell === "number" ? cell : scalarText(cell),
+            typeof cell === "number" ? cell : scalarText(cell, undefined, locale),
           ];
         }),
       );
@@ -324,6 +329,7 @@ export function resolvePreview(
             value: scalarText(
               fieldValue,
               field.shape === "scalar" ? field.unit : undefined,
+              locale,
             ),
           })),
       };
@@ -340,6 +346,7 @@ export function resolvePreview(
             value: scalarText(
               fieldValue,
               field.shape === "scalar" ? field.unit : undefined,
+              locale,
             ),
             numeric: typeof fieldValue === "number",
           },
@@ -358,7 +365,7 @@ export function resolvePreview(
       value:
         typeof value === "number" || typeof value === "string"
           ? value
-          : scalarText(value),
+          : scalarText(value, undefined, locale),
       unit: disclosure.unit,
     };
   }
@@ -403,11 +410,12 @@ export function ResultValue({ result }: {
   /** The value result: a `label` and a number (shown as a metric with `unit`), a string, or `null` (shown as "—"); `redacted` replaces the value with the withheld treatment. */
   result: ValueResult;
 }) {
+  const locale = useLocale();
   const text =
     result.value === null
       ? "—"
       : typeof result.value === "number"
-        ? scalarText(result.value, result.unit)
+        ? scalarText(result.value, result.unit, locale)
         : result.value;
   return (
     <ResultFrame

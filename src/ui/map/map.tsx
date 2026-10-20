@@ -25,6 +25,8 @@ import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useSta
 import { createPortal } from "react-dom"
 import { IconClose, IconGlobe, IconHome, IconInfo, IconList, IconMapPin, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { collator, numberFormat } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { observeElementSize } from "../../lib/resize-observer.js"
 import { Button } from "../button/index.js"
 import { Menu } from "../menu/index.js"
@@ -243,6 +245,7 @@ interface MarkerProps {
 
 function MarkerButton({ slot, label, text, status, counts, selected, active, open, pulse, onKeyDown, onActivate, onHover, onFocus, onBlur }: MarkerProps) {
   const cluster = slot.kind === "cluster"
+  const number = numberFormat(useLocale())
   const segments = useMemo(() => (cluster ? ringSegments(counts, 15) : []), [cluster, counts])
   return (
     <button
@@ -274,7 +277,7 @@ function MarkerButton({ slot, label, text, status, counts, selected, active, ope
               <path key={segment.status} d={segment.d} data-status={segment.status} />
             ))}
           </svg>
-          <span className="fa-map-cluster-count">{slot.size.toLocaleString("en-AU")}</span>
+          <span className="fa-map-cluster-count">{number.format(slot.size)}</span>
         </span>
       ) : (
         <span className="fa-map-dot" aria-hidden />
@@ -395,6 +398,8 @@ export function GeoMap<T>({
   insets,
   className,
 }: GeoMapProps<T>) {
+  const locale = useLocale()
+  const number = numberFormat(locale)
   const rootRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -837,7 +842,7 @@ export function GeoMap<T>({
     latest.current.onSelect?.(point)
   }, [])
 
-  const resetLabel = frame === "points" && pointsBox ? `Show all ${points.length.toLocaleString("en-AU")} ${points.length === 1 ? noun.one : noun.other}` : home ? `Reset to ${home.properties.name}` : "Reset view"
+  const resetLabel = frame === "points" && pointsBox ? `Show all ${number.format(points.length)} ${points.length === 1 ? noun.one : noun.other}` : home ? `Reset to ${home.properties.name}` : "Reset view"
 
   /* Markers as portals into MapLibre's marker elements. */
   const markerNodes = markers.map((slot) => {
@@ -873,7 +878,7 @@ export function GeoMap<T>({
     return createPortal(
       <MarkerButton
         slot={slot}
-        label={`${slot.size.toLocaleString("en-AU")} ${noun.other}: ${describeCounts(slot.counts, statusLabels)}`}
+        label={`${number.format(slot.size)} ${noun.other}: ${describeCounts(slot.counts, statusLabels)}`}
         status={worstOf(slot.counts)}
         counts={slot.counts}
         selected={selected}
@@ -906,9 +911,9 @@ export function GeoMap<T>({
       const slot = markers.find((marker) => marker.key === popup.key)
       const members = (leaves[popup.key] ?? []).map((id) => byId.get(id)).filter((point): point is MapPoint<T> => Boolean(point))
       if (slot) {
-        const sorted = members.toSorted((a, b) => MAP_STATUSES.indexOf(a.status) - MAP_STATUSES.indexOf(b.status) || a.label.localeCompare(b.label))
+        const sorted = members.toSorted((a, b) => MAP_STATUSES.indexOf(a.status) - MAP_STATUSES.indexOf(b.status) || collator(locale).compare(a.label, b.label))
         const cluster: MapCluster<T> = { id: Number(slot.id), lng: slot.lng, lat: slot.lat, points: sorted }
-        popupLabel = `${slot.size} ${noun.other}`
+        popupLabel = `${number.format(slot.size)} ${noun.other}`
         popupContent = renderClusterPopup ? (
           renderClusterPopup(cluster, {
             ...context,
@@ -962,7 +967,7 @@ export function GeoMap<T>({
       aria-busy={phase !== "ready" && !failed ? true : undefined}
     >
       <p id={hintId} className="sr-only">
-        {`${points.length.toLocaleString("en-AU")} ${points.length === 1 ? noun.one : noun.other}${points.length ? `: ${describeCounts(counts, statusLabels)}` : ""}. Arrow keys move between markers; Enter opens one.`}
+        {`${number.format(points.length)} ${points.length === 1 ? noun.one : noun.other}${points.length ? `: ${describeCounts(counts, statusLabels)}` : ""}. Arrow keys move between markers; Enter opens one.`}
       </p>
       <div ref={stageRef} className="fa-map-stage" inert={view === "list" ? true : undefined}>
         <MapSilhouette region={home} box={frameBox} />
@@ -990,13 +995,13 @@ export function GeoMap<T>({
                 <Menu.Trigger
                   render={
                     <Button variant="secondary" size="sm" icon={<IconGlobe />} data-map-control="outside">
-                      {`${outside.length.toLocaleString("en-AU")} ${outside.length === 1 ? noun.one : noun.other} outside this view`}
+                      {`${number.format(outside.length)} ${outside.length === 1 ? noun.one : noun.other} outside this view`}
                     </Button>
                   }
                 />
                 <Menu.Popup side="bottom" align="start">
                   <Menu.Item icon={<IconGlobe />} onClick={() => pointsBox && fitTo(pointsBox)}>
-                    {`Show all ${points.length.toLocaleString("en-AU")} ${noun.other}`}
+                    {`Show all ${number.format(points.length)} ${noun.other}`}
                   </Menu.Item>
                   <Menu.Separator />
                   {outside.slice(0, 12).map((point) => (
@@ -1078,9 +1083,10 @@ interface DefaultClusterPopupProps<T> {
 
 /** A cluster's contents: the status breakdown and its points, worst first. */
 export function DefaultClusterPopup<T>({ cluster, size, counts, labels, noun, onZoom, onOpen }: DefaultClusterPopupProps<T>) {
+  const number = numberFormat(useLocale())
   return (
     <div className="fa-map-cluster-popup">
-      <p className="fa-map-popup-title">{`${size.toLocaleString("en-AU")} ${noun.other}`}</p>
+      <p className="fa-map-popup-title">{`${number.format(size)} ${noun.other}`}</p>
       <MapStatusSummary counts={counts} labels={labels} />
       <ul className="fa-map-cluster-list">
         {cluster.points.slice(0, 8).map((point) => (
@@ -1108,12 +1114,13 @@ export function MapStatusSummary({ counts, labels = DEFAULT_STATUS_LABELS }: {
   /** Label per status; defaults to `DEFAULT_STATUS_LABELS`. */
   labels?: Readonly<Record<MapStatus, string>>
 }) {
+  const number = numberFormat(useLocale())
   return (
     <ul className="fa-map-status-summary">
       {MAP_STATUSES.filter((status) => counts[status] > 0).map((status) => (
         <li key={status} data-status={status}>
           <span className="fa-map-menu-dot" data-status={status} aria-hidden />
-          <span className="fa-map-status-count">{counts[status].toLocaleString("en-AU")}</span>
+          <span className="fa-map-status-count">{number.format(counts[status])}</span>
           <span>{labels[status]}</span>
         </li>
       ))}

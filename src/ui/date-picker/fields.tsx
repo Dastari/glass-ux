@@ -1,3 +1,6 @@
+import { getLocale } from "../../lib/locale/locale.js"
+import { dateTimeFormat } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Field } from "../field/index.js"
 import { useBoundField, type FieldChrome } from "../form/context.js"
 import { fromIsoDate } from "./calendar-date.js"
@@ -42,14 +45,15 @@ export interface DateTimeFieldProps extends FieldChrome, Omit<DateTimeInputProps
   describe?: boolean
 }
 
-const shortDay = (date: string, locale: string) => new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(fromIsoDate(date))
+const shortDay = (date: string, locale: string) => dateTimeFormat(locale, { day: "numeric", month: "short" }).format(fromIsoDate(date))
 
 /**
  * What the message line says about a wall-clock value in a zone: the zone and its offset, or how
  * a daylight-saving change reads it ("Clocks skip 2:30 am on 4 Oct; read as 3:30 am AEDT").
+ * `options.locale` defaults to `getLocale()`.
  */
 export function describeZonedValue(value: WallClock | null, timeZone: string, options: { locale?: string; hourCycle?: 12 | 24 } = {}): { hint?: string; warning?: string } {
-  const locale = options.locale ?? "en-AU"
+  const locale = options.locale ?? getLocale()
   const resolved = value && isWallClock(value) ? resolveWallClock(value, timeZone) : null
   const zone = zoneLabel(timeZone, resolved?.epochMs ?? Date.now(), locale)
   if (!zone) return {}
@@ -57,10 +61,10 @@ export function describeZonedValue(value: WallClock | null, timeZone: string, op
   const offset = zone.long.split(", ").at(-1)
   if (!resolved || resolved.kind === "exact" || !value) return { hint: `${name} · ${offset}` }
   const parts = splitWallClock(value)!
-  const typed = formatTimeText(parts.time, options)
+  const typed = formatTimeText(parts.time, { ...options, locale })
   const day = shortDay(parts.date, locale)
   if (resolved.kind === "gap") {
-    const read = formatTimeText(resolved.wallClock.slice(11, 16), options)
+    const read = formatTimeText(resolved.wallClock.slice(11, 16), { ...options, locale })
     return { warning: `Clocks skip ${typed} on ${day}; read as ${read} ${zone.short}` }
   }
   return { hint: `${typed} occurs twice on ${day}; read as the first (${zone.short})` }
@@ -75,7 +79,8 @@ export function describeZonedValue(value: WallClock | null, timeZone: string, op
 export function DateTimeField({ label, hint, warning, optional, required, aside, className, disabled, describe = true, ...control }: DateTimeFieldProps) {
   const { field, error, root } = useBoundField<WallClock | null>()
   const value = field.state.value
-  const derived = describe && control.timeZone ? describeZonedValue(value, control.timeZone, control) : {}
+  const locale = useLocale(control.locale)
+  const derived = describe && control.timeZone ? describeZonedValue(value, control.timeZone, { ...control, locale }) : {}
   return (
     <Field
       {...root}

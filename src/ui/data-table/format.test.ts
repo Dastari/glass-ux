@@ -19,6 +19,14 @@ describe("format", () => {
   it("pluralises counts", () => {
     expect(formatCount(1, { one: "endpoint", other: "endpoints" })).toBe("1 endpoint")
     expect(formatCount(1284, { one: "endpoint", other: "endpoints" })).toBe("1,284 endpoints")
+    expect(formatCount(1284, { one: "endpoint", other: "endpoints" }, "de-DE")).toBe("1.284 endpoints")
+  })
+
+  it("writes dates in the locale", () => {
+    const now = new Date(2026, 9, 13, 12).getTime()
+    const then = new Date(2026, 8, 1, 12).getTime()
+    expect(formatRelative(then, now, "en-AU")).toBe("1 Sept")
+    expect(formatRelative(then, now, "en-US")).toBe("Sep 1")
   })
 })
 

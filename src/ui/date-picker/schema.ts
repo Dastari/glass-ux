@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { getLocale } from "../../lib/locale/locale.js"
 import { datePlaceholder, formatDateText, isIsoDate } from "./calendar-date.js"
 import { formatTimeText, isTimeValue, timeToSeconds, type TimeTextOptions, type TimeValue } from "./time.js"
 import { isWallClock, resolveWallClock, splitWallClock, type WallClock } from "./zoned-time.js"
@@ -19,31 +20,38 @@ export interface TimeSchemaOptions extends TimeTextOptions {
  *   timeSchema({ required: true, min: "09:00", max: "17:00" }) → "Enter a time from 9:00 am to 5:00 pm"
  *
  * TimeField hands unreadable text to the form as typed, so it gets "Enter a time such as 9:30 am".
+ * Without `locale`, messages use `getLocale()` when a value is checked, so a schema created at
+ * import time still follows `configureLocale()` called later. A `LocaleProvider` cannot reach a
+ * schema: pass its locale explicitly.
  */
 export function timeSchema(options: TimeSchemaOptions = {}) {
-  const show = (time: TimeValue) => formatTimeText(time, options)
-  const example = `Enter a time such as ${show(options.seconds ? "09:30:00" : "09:30")}`
-  const range =
-    options.min && options.max
-      ? `Enter a time from ${show(options.min)} to ${show(options.max)}`
-      : options.max
-        ? `Enter a time of ${show(options.max)} or earlier`
-        : options.min
-          ? `Enter a time of ${show(options.min)} or later`
-          : example
+  const messages = () => {
+    const text = { ...options, locale: options.locale ?? getLocale() }
+    const show = (time: TimeValue) => formatTimeText(time, text)
+    const example = `Enter a time such as ${show(options.seconds ? "09:30:00" : "09:30")}`
+    const range =
+      options.min && options.max
+        ? `Enter a time from ${show(options.min)} to ${show(options.max)}`
+        : options.max
+          ? `Enter a time of ${show(options.max)} or earlier`
+          : options.min
+            ? `Enter a time of ${show(options.min)} or later`
+            : example
+    return { example, range }
+  }
   return z
-    .custom<TimeValue | null>((value) => value === null || typeof value === "string", { message: example })
+    .custom<TimeValue | null>((value) => value === null || typeof value === "string", { error: () => messages().example })
     .superRefine((value, context) => {
       if (value === null || !value.trim()) {
         if (options.required) context.addIssue({ code: "custom", message: "Enter a time" })
         return
       }
       if (!isTimeValue(value, { seconds: Boolean(options.seconds) })) {
-        context.addIssue({ code: "custom", message: example })
+        context.addIssue({ code: "custom", message: messages().example })
         return
       }
       const at = timeToSeconds(value)
-      if ((options.min && at < timeToSeconds(options.min)) || (options.max && at > timeToSeconds(options.max))) context.addIssue({ code: "custom", message: range })
+      if ((options.min && at < timeToSeconds(options.min)) || (options.max && at > timeToSeconds(options.max))) context.addIssue({ code: "custom", message: messages().range })
     })
 }
 
@@ -70,23 +78,28 @@ export interface DateTimeSchemaOptions extends Omit<TimeTextOptions, "seconds"> 
  *   dateTimeSchema({ required: true }) → "Enter a date and time"
  *                                      → "Enter a time" (a day without a time)
  *                                      → "Enter a date as dd/mm/yyyy"
- *   dateTimeSchema({ min: "2026-10-21T09:00" }) → "Enter a date and time on or after 21/10/2026 9:00 am"
+ *   dateTimeSchema({ min: "2026-10-21T09:00" }) → "Enter a date and time on or after 21/10/2026 9:00 am" (en-AU)
+ *
+ * Without `locale`, messages use `getLocale()` when a value is checked (see `timeSchema`).
  */
 export function dateTimeSchema(options: DateTimeSchemaOptions = {}) {
-  const locale = options.locale ?? "en-AU"
-  const show = (wall: WallClock) => {
-    const parts = splitWallClock(wall)
-    return parts ? `${formatDateText(parts.date, locale)} ${formatTimeText(parts.time, options)}` : wall
+  const messages = () => {
+    const locale = options.locale ?? getLocale()
+    const text = { ...options, locale }
+    const show = (wall: WallClock) => {
+      const parts = splitWallClock(wall)
+      return parts ? `${formatDateText(parts.date, locale)} ${formatTimeText(parts.time, text)}` : wall
+    }
+    const range =
+      options.min && options.max
+        ? `Enter a date and time from ${show(options.min)} to ${show(options.max)}`
+        : options.max
+          ? `Enter a date and time on or before ${show(options.max)}`
+          : options.min
+            ? `Enter a date and time on or after ${show(options.min)}`
+            : "Enter a date and time"
+    return { locale, range, timeExample: `Enter a time such as ${formatTimeText("09:30", text)}` }
   }
-  const timeExample = `Enter a time such as ${formatTimeText("09:30", options)}`
-  const range =
-    options.min && options.max
-      ? `Enter a date and time from ${show(options.min)} to ${show(options.max)}`
-      : options.max
-        ? `Enter a date and time on or before ${show(options.max)}`
-        : options.min
-          ? `Enter a date and time on or after ${show(options.min)}`
-          : "Enter a date and time"
   return z
     .custom<WallClock | null>((value) => value === null || typeof value === "string", { message: "Enter a date and time" })
     .superRefine((value, context) => {
@@ -100,14 +113,14 @@ export function dateTimeSchema(options: DateTimeSchemaOptions = {}) {
         const date = (cut < 0 ? value : value.slice(0, cut)).trim()
         const time = (cut < 0 ? "" : value.slice(cut + 1)).trim()
         if (!date) issue("Enter a date")
-        else if (!isIsoDate(date)) issue(`Enter a date as ${datePlaceholder(locale)}`)
+        else if (!isIsoDate(date)) issue(`Enter a date as ${datePlaceholder(messages().locale)}`)
         else if (!time) issue("Enter a time")
-        else if (!isTimeValue(time)) issue(timeExample)
+        else if (!isTimeValue(time)) issue(messages().timeExample)
         else issue("Enter a date and time")
         return
       }
       const at = value.slice(0, 16)
-      if ((options.min && at < options.min.slice(0, 16)) || (options.max && at > options.max.slice(0, 16))) return issue(range)
+      if ((options.min && at < options.min.slice(0, 16)) || (options.max && at > options.max.slice(0, 16))) return issue(messages().range)
       if (options.timeZone && options.daylightSaving === "reject") {
         const kind = resolveWallClock(value, options.timeZone)?.kind
         if (kind === "gap") issue("This time does not exist during the daylight-saving change; choose another time")

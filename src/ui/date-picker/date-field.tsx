@@ -2,6 +2,7 @@ import { Input as BaseInput } from "@base-ui/react/input"
 import { useEffect, useId, useRef, useState, type FocusEvent, type KeyboardEvent, type Ref } from "react"
 import { IconCalendar } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Button } from "../button/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import { Popover } from "../popover/index.js"
@@ -11,7 +12,7 @@ import { datePlaceholder, formatDateText, parseDateText, type IsoDate } from "./
 export type DateFieldSize = "sm" | "md" | "lg"
 
 interface DateFieldCommon {
-  /** BCP 47 locale: the typed order ("dd/mm/yyyy" in en-AU), names, first weekday. */
+  /** BCP 47 locale: the typed order ("dd/mm/yyyy" in en-AU), names, first weekday. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. */
   locale?: string
   /** Lower allowed value. */
   min?: IsoDate
@@ -52,16 +53,17 @@ const outOfRange = (iso: IsoDate, min?: IsoDate, max?: IsoDate) => Boolean((min 
 function useDateText(value: IsoDate | null, locale: string) {
   const [text, setText] = useState(() => (value ? formatDateText(value, locale) : ""))
   const [bad, setBad] = useState(false)
-  const shown = useRef(value)
+  const shown = useRef({ value, locale })
+  // Follow a value, or a locale, changed from outside: the same day is rewritten in the new order.
   useEffect(() => {
-    if (shown.current === value) return
-    shown.current = value
+    if (shown.current.value === value && shown.current.locale === locale) return
+    shown.current = { value, locale }
     setText(value ? formatDateText(value, locale) : "")
     setBad(false)
   }, [value, locale])
   /** Show a committed day (or nothing) and remember it as the shown value. */
   const show = (next: IsoDate | null) => {
-    shown.current = next
+    shown.current = { value: next, locale }
     setText(next ? formatDateText(next, locale) : "")
     setBad(false)
   }
@@ -77,7 +79,7 @@ export function DateField({
   value,
   defaultValue = null,
   onValueChange,
-  locale = "en-AU",
+  locale: localeProp,
   min,
   max,
   size = "md",
@@ -93,6 +95,7 @@ export function DateField({
   ref,
   ...aria
 }: DateFieldProps) {
+  const locale = useLocale(localeProp)
   const [inner, setInner] = useState<IsoDate | null>(defaultValue)
   const current = value === undefined ? inner : value
   const { text, setText, bad, setBad, show } = useDateText(current, locale)
@@ -200,7 +203,7 @@ export function DateRangeField({
   value,
   defaultValue = null,
   onValueChange,
-  locale = "en-AU",
+  locale: localeProp,
   min,
   max,
   size = "md",
@@ -214,6 +217,7 @@ export function DateRangeField({
   endLabel = "End date",
   ...aria
 }: DateRangeFieldProps) {
+  const locale = useLocale(localeProp)
   const [inner, setInner] = useState<DateRange | null>(defaultValue)
   const current = value === undefined ? inner : value
   const start = useDateText(current?.start ?? null, locale)

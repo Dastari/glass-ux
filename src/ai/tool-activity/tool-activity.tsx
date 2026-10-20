@@ -25,6 +25,7 @@ import { formatElapsed, plural, useNow } from "../format.js";
 import { useConversationHandlers } from "../handlers.js";
 import { JsonTree } from "../json-tree/index.js";
 import type { AiProviderStatus, AiToolCall, ToolStatus } from "../types.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 
 const STATUS_WORDS: Record<ToolStatus, string> = {
   queued: "Queued",
@@ -67,11 +68,12 @@ export function StatusGlyph({
 function Elapsed({ ms, running }: { ms?: number; running: boolean }) {
   const [started] = useState(() => Date.now() - (ms ?? 0));
   const now = useNow(running, 100);
+  const locale = useLocale();
   const value = running ? now - started : ms;
   if (value === undefined) return null;
   return (
     <span className="fa-ai-tool-elapsed" data-numeric>
-      {formatElapsed(value)}
+      {formatElapsed(value, locale)}
     </span>
   );
 }
@@ -327,6 +329,7 @@ export function ToolGroup({
   defaultOpen = false,
   className,
 }: ToolGroupProps) {
+  const locale = useLocale();
   if (calls.length === 1)
     return (
       <ToolCallRow
@@ -341,10 +344,10 @@ export function ToolGroup({
   const total = calls.reduce((sum, call) => sum + (call.elapsedMs ?? 0), 0);
   const label =
     status === "running"
-      ? `Running ${running} of ${plural(calls.length, "tool")}`
+      ? `Running ${running} of ${plural(calls.length, "tool", undefined, locale)}`
       : status === "awaiting-approval"
-        ? `${plural(calls.length, "tool")} · waiting for approval`
-        : `Ran ${plural(calls.length, "tool")}`;
+        ? `${plural(calls.length, "tool", undefined, locale)} · waiting for approval`
+        : `Ran ${plural(calls.length, "tool", undefined, locale)}`;
   return (
     <Collapsible.Root
       className={cx("fa-ai-tool fa-ai-tool-group", className)}

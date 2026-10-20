@@ -2,7 +2,8 @@ import { hierarchy, treemap as d3treemap, treemapSquarify, type HierarchyRectang
 import { memo, useEffect, useMemo, useRef, type CSSProperties } from "react"
 import { colourKeys, DrillPathBar, hierarchyTable, useDrill, useHierarchy, type ColourBy, type HierarchyDatum, type Node } from "../core/drill.js"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
-import { formatShare, formatValue, type ValueFormat } from "../core/format.js"
+import { formatShare, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
+import { useLocale } from "../../../lib/locale/use-locale.js"
 import { cssPath, roundRectPath } from "../core/geometry.js"
 import { HitLayer } from "../core/hit.js"
 import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
@@ -39,7 +40,8 @@ type Rect = HierarchyRectangularNode<HierarchyDatum>
  */
 export function Treemap(props: TreemapProps) {
   const { label, title, state = "ready", data, colourBy = "branch", groups, unit, format, nameLabel = "Name", ...rest } = props
-  const fmt: ValueFormat = useMemo(() => ({ unit, format }), [unit, format])
+  const locale = useLocale(props.locale)
+  const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const root = useHierarchy(data)
   const drill = useDrill(root)
   const store = useHoverStore()
@@ -49,7 +51,7 @@ export function Treemap(props: TreemapProps) {
   const trail = lead ? (
     <span className="fa-chart-figure">
       <span className="fa-chart-figure-label">{lead.data.label}</span>
-      <span className="fa-chart-figure-value">{formatShare(lead.value ?? 0, drill.focus.value ?? 0)}</span>
+      <span className="fa-chart-figure-value">{formatShare(lead.value ?? 0, drill.focus.value ?? 0, fmt.locale)}</span>
     </span>
   ) : null
   // The path appears once there is a way back; at the root the title already names it.
@@ -69,7 +71,7 @@ interface TreemapPlotProps {
   colour: (node: Node) => number | "other"
   /** External store observed by the component. */
   store: HoverStore
-  fmt: ValueFormat
+  fmt: LocalizedFormat
   label: string
   /** Called with the node to drill into when the person activates a tile (click, Enter or Space): the tile's node if it has children, otherwise its parent below the focus; not called when neither applies. */
   onDrill: (node: Node) => void
@@ -194,7 +196,7 @@ const TreemapPlot = memo(function TreemapPlot({ box, focus, root, colour, store,
   const valueText = (index: number) => {
     const node = tiles[index]?.node
     if (!node) return ""
-    return `${node.data.label} · ${formatValue(node.value ?? 0, fmt)} · ${formatShare(node.value ?? 0, focus.value ?? 0)}${target(index) ? " · press Enter to open" : ""}`
+    return `${node.data.label} · ${formatValue(node.value ?? 0, fmt)} · ${formatShare(node.value ?? 0, focus.value ?? 0, fmt.locale)}${target(index) ? " · press Enter to open" : ""}`
   }
 
   return (
@@ -243,7 +245,7 @@ const TreemapPlot = memo(function TreemapPlot({ box, focus, root, colour, store,
                 key: child.data.label,
                 label: child.data.label,
                 value: formatValue(child.value ?? 0, fmt),
-                detail: formatShare(child.value ?? 0, node.value ?? 0),
+                detail: formatShare(child.value ?? 0, node.value ?? 0, fmt.locale),
                 shape: "box" as const,
                 ...(colour(child) === "other" ? { tone: "neutral" } : { slot: colour(child) as number }),
               }))
@@ -256,7 +258,7 @@ const TreemapPlot = memo(function TreemapPlot({ box, focus, root, colour, store,
               return (
                 <TooltipBody
                   title={node.data.label}
-                  meta={`${formatValue(node.value ?? 0, fmt)} · ${formatShare(node.value ?? 0, total)}`}
+                  meta={`${formatValue(node.value ?? 0, fmt)} · ${formatShare(node.value ?? 0, total, fmt.locale)}`}
                   rows={rows}
                   footer={[where, target(hover.index) ? "Click to open" : null].filter(Boolean).join(" · ") || undefined}
                 />
@@ -271,7 +273,7 @@ const TreemapPlot = memo(function TreemapPlot({ box, focus, root, colour, store,
 })
 
 /** Name and size inside a tile, only where they fit; group tiles label their header. */
-function TileLabel({ tile, fmt, rem, header }: { tile: Tile; fmt: ValueFormat; rem: number; header: number }) {
+function TileLabel({ tile, fmt, rem, header }: { tile: Tile; fmt: LocalizedFormat; rem: number; header: number }) {
   const { rect, group, depth, node } = tile
   const w = rect.x1 - rect.x0
   const h = rect.y1 - rect.y0

@@ -26,6 +26,7 @@ import type {
   AiProviderStatus,
   EntityRef,
 } from "../types.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 
 /** The text of a message for copy: its prose blocks joined. */
 export function messageText(message: AiMessage) {
@@ -36,15 +37,16 @@ export function messageText(message: AiMessage) {
 }
 
 function Time({ at }: { at: number }) {
+  const locale = useLocale();
   return (
-    <Tooltip content={formatAbsolute(at)}>
+    <Tooltip content={formatAbsolute(at, locale)}>
       <time
         className="fa-ai-msg-time"
         dateTime={new Date(at).toISOString()}
         data-numeric
         suppressHydrationWarning
       >
-        {formatClock(at)}
+        {formatClock(at, locale)}
       </time>
     </Tooltip>
   );

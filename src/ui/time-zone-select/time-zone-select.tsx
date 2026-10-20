@@ -1,5 +1,7 @@
 import { useMemo } from "react"
 import { IconClock } from "../../icons/generated/icons.js"
+import { dateTimeFormat } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Combobox, type ComboboxOption, type ComboboxProps } from "../combobox/index.js"
 import { Field } from "../field/index.js"
 import { useBoundField, type FieldChrome } from "../form/context.js"
@@ -10,11 +12,11 @@ export interface TimeZoneSelectProps extends Omit<ComboboxProps<string>, "option
   suggested?: readonly string[]
   /** Only these zones. */
   zones?: readonly string[]
-  /** Locale used to format values. */
+  /** BCP 47 locale for zone abbreviations and the local time. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. */
   locale?: string
 }
 
-/** The zones as options: readable IANA names, the abbreviation and offset now, sorted by offset. */
+/** The zones as options: readable IANA names, the abbreviation (in `locale`, default `getLocale()`) and offset now, sorted by offset. */
 export function timeZoneOptions(options: { suggested?: readonly string[]; zones?: readonly string[]; locale?: string; at?: Date } = {}): Array<ComboboxOption<string>> {
   const at = options.at ?? new Date()
   const ids = options.zones ? [...options.zones] : timeZoneIds()
@@ -38,7 +40,8 @@ export function timeZoneOptions(options: { suggested?: readonly string[]; zones?
  * Choose an IANA time zone by typing a city or region ("hobart", "new york"). Each row shows the
  * zone's abbreviation and offset now, so daylight saving is visible. The value is the IANA name.
  */
-export function TimeZoneSelect({ suggested, zones, locale, placeholder = "Choose a time zone", icon, ...rest }: TimeZoneSelectProps) {
+export function TimeZoneSelect({ suggested, zones, locale: localeProp, placeholder = "Choose a time zone", icon, ...rest }: TimeZoneSelectProps) {
+  const locale = useLocale(localeProp)
   const options = useMemo(
     () => timeZoneOptions({ suggested, zones, locale }),
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- identity follows the ids, not the array instances
@@ -56,7 +59,8 @@ export interface TimeZoneFieldProps extends FieldChrome, Omit<TimeZoneSelectProp
 export function TimeZoneField({ label, hint, optional, required, aside, className, disabled, describe = true, width = "medium", ...control }: TimeZoneFieldProps) {
   const { field, error, root } = useBoundField<string | null>()
   const value = field.state.value
-  const derived = describe && value ? describeNow(value) : undefined
+  const locale = useLocale(control.locale)
+  const derived = describe && value ? describeNow(value, locale) : undefined
   return (
     <Field {...root} label={label} hint={hint ?? derived} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <TimeZoneSelect
@@ -75,10 +79,10 @@ export function TimeZoneField({ label, hint, optional, required, aside, classNam
 }
 
 /** "UTC+11:00 · 2:41 pm there now". */
-function describeNow(id: string) {
+function describeNow(id: string, locale: string) {
   try {
-    const info = describeTimeZone(id)
-    const time = new Intl.DateTimeFormat("en-AU", { timeZone: id, hour: "numeric", minute: "2-digit" }).format(new Date())
+    const info = describeTimeZone(id, { locale })
+    const time = dateTimeFormat(locale, { timeZone: id, hour: "numeric", minute: "2-digit" }).format(new Date())
     return `${[info.abbreviation, info.offset].filter(Boolean).join(" · ")} · ${time} there now`
   } catch {
     return undefined

@@ -5,6 +5,8 @@
  * on its own.
  */
 import type { ReactNode } from "react"
+import { collator } from "../../lib/locale/intl.js"
+import { getLocale } from "../../lib/locale/locale.js"
 
 /** Identity tints 1–8: the categorical hues at tile strength (context-switcher.css). */
 export type ContextTint = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
@@ -50,14 +52,15 @@ export interface ContextTree<I extends ContextItem = ContextItem> {
   ancestorsOf: (id: string) => readonly I[]
 }
 
-const byName = (a: ContextItem, b: ContextItem) => a.name.localeCompare(b.name, "en-AU", { sensitivity: "base" })
 
 /**
  * Builds the context tree from a flat list. A context whose parent is missing from the list
- * (or is itself) becomes a root; roots and siblings sort by name; cycles are drawn once.
- * Descendant lookups are cached.
+ * (or is itself) becomes a root; roots and siblings sort by name in `locale`'s collation
+ * (default `getLocale()`); cycles are drawn once. Descendant lookups are cached.
  */
-export function buildContextTree<I extends ContextItem>(items: readonly I[]): ContextTree<I> {
+export function buildContextTree<I extends ContextItem>(items: readonly I[], locale = getLocale()): ContextTree<I> {
+  const names = collator(locale, { sensitivity: "base" })
+  const byName = (a: ContextItem, b: ContextItem) => names.compare(a.name, b.name)
   const byId = new Map(items.map((item) => [item.id, item]))
   const children = new Map<string, I[]>()
   const roots: I[] = []

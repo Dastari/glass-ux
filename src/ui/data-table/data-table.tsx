@@ -75,6 +75,7 @@ import { useFilterController } from "./filters/controller.js";
 import { FilterPopover } from "./filters/popover.js";
 import { DataTableFooter } from "./footer.js";
 import { formatCount } from "./format.js";
+import { LocaleProvider, useLocale } from "../../lib/locale/use-locale.js";
 import {
   DEFAULT_GROUP_PAGE_SIZE,
   EMPTY_GROUP_STATE,
@@ -288,6 +289,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     className,
     reorder,
   } = props;
+  const locale = useLocale(props.locale);
   const reorderable = Boolean(reorder);
   const domId = useId();
 
@@ -442,6 +444,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     filtersButton: () =>
       rootRef.current?.querySelector<HTMLElement>(".fa-dt-filters-button") ??
       null,
+    locale,
   });
   const filtered = useMemo(
     () => new Set(filters.map((filter) => filter.id)),
@@ -1670,7 +1673,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       targets,
       custom,
       filter,
-      label: many ? formatCount(targets.length, noun) : getLabel(row),
+      label: many ? formatCount(targets.length, noun, locale) : getLabel(row),
     };
   };
 
@@ -2106,7 +2109,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   );
 
   return (
-    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- delegated: "/" anywhere inside the table focuses its search (R16.8)
+    // Cells, the footer and filter summaries inside read the table's locale.
+    <LocaleProvider locale={locale}>
+    {/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- delegated: "/" anywhere inside the table focuses its search (R16.8) */}
     <div
       ref={rootRef}
       id={domId}
@@ -2238,6 +2243,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         countLabel={formatCount(
           grouping ? groupTotal : (rowCount ?? data.length),
           noun,
+          locale,
         )}
         grouped={Boolean(grouping)}
         bulk={{
@@ -2245,7 +2251,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           targets: selectedTargets,
           groups: bulkGroups,
           onRun,
-          label: formatCount(selectedTargets.length, noun),
+          label: formatCount(selectedTargets.length, noun, locale),
           custom: renderBulkActions?.(selectedTargets, () => setSelection({})),
           clear: () => setSelection({}),
           narrow: measured && widthRem < 40,
@@ -2290,5 +2296,6 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         </>
       ) : null}
     </div>
+    </LocaleProvider>
   );
 }

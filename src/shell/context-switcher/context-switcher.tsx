@@ -36,6 +36,7 @@ import {
 } from "../../icons/generated/icons.js";
 import { Highlight } from "../../ui/combobox/index.js";
 import { cx } from "../../lib/cx.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 import { usePopupMetrics } from "../../lib/popup-metrics.js";
 import { useMediaQuery } from "../../lib/use-media-query.js";
 import { Sheet } from "../../ui/sheet/index.js";
@@ -191,7 +192,8 @@ export function ContextSwitcher<I extends ContextItem>({
     () => ({ ...DEFAULT_SWITCHER_LABELS, ...labelsProp }),
     [labelsProp],
   );
-  const tree = useMemo(() => buildContextTree(items), [items]);
+  const locale = useLocale();
+  const tree = useMemo(() => buildContextTree(items, locale), [items, locale]);
   const phone = useMediaQuery(SHELL_QUERIES.phone);
   const [innerOpen, setInnerOpen] = useState(false);
   const open = openProp ?? innerOpen;
@@ -643,7 +645,8 @@ export function ContextSwitcherPanel<I extends ContextItem>({
     () => ({ ...DEFAULT_SWITCHER_LABELS, ...labelsProp }),
     [labelsProp],
   );
-  const tree = useMemo(() => buildContextTree(items), [items]);
+  const locale = useLocale();
+  const tree = useMemo(() => buildContextTree(items, locale), [items, locale]);
   return (
     <SwitcherList
       tree={tree}

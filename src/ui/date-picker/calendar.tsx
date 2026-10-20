@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState, type KeyboardEvent } from "react"
 import { IconChevronLeft, IconChevronRight } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Button } from "../button/index.js"
 import {
   addDays,
@@ -21,7 +22,7 @@ export interface DateRange {
 }
 
 interface CalendarCommon {
-  /** BCP 47 locale for names and the first day of the week (default en-AU). */
+  /** BCP 47 locale for names and the first day of the week. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. */
   locale?: string
   /** Earliest and latest selectable days. */
   min?: IsoDate
@@ -71,7 +72,8 @@ function monthStart(iso: IsoDate) {
  * week come from the locale.
  */
 export function Calendar(props: CalendarProps) {
-  const { locale = "en-AU", min, max, today = todayIso(), defaultMonth, autoFocus, className } = props
+  const { min, max, today = todayIso(), defaultMonth, autoFocus, className } = props
+  const locale = useLocale(props.locale)
   const range = props.mode === "range" ? (props.value ?? null) : null
   const single = props.mode !== "range" ? (props.value ?? null) : null
   const initial = clampIso(defaultMonth ?? range?.start ?? single ?? today, min, max)

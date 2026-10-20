@@ -139,6 +139,8 @@ export function layoutTopology<T>(
      * it), so a narrow block widens to its label instead of truncating it, up to three cells.
      */
     labelWidth?: (text: string) => number
+    /** BCP 47 locale the label's count is written in, as the canvas draws it. Default `getLocale()`. */
+    locale?: string
   } = {}
 ): TopologyLayout {
   const m: TopologyMetrics = { ...DEFAULT_METRICS, ...options.metrics }
@@ -202,7 +204,7 @@ export function layoutTopology<T>(
         const rows = Math.ceil(members.length / columns)
         const label = specs[key]?.label ?? key
         const cells = columns * m.cellWidth + (columns - 1) * m.clusterGap
-        const text = options.labelWidth ? Math.ceil(Math.min(options.labelWidth(clusterLabel(label, members.length)), m.cellWidth * 3)) : 0
+        const text = options.labelWidth ? Math.ceil(Math.min(options.labelWidth(clusterLabel(label, members.length, options.locale)), m.cellWidth * 3)) : 0
         return {
           row: 0,
           dx: 0,

@@ -3,7 +3,12 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { test } from "node:test";
 import ts from "typescript";
-import { literalOptions } from "./docs-api-options.mjs";
+import {
+  listsProp,
+  literalOptions,
+  packageTypePaths,
+  propOrigin,
+} from "./docs-api-options.mjs";
 
 const filename = resolve("scripts/.docs-api-options-fixture.ts");
 const input = `
@@ -135,4 +140,75 @@ test("generated Button size, variant and boolean choices remain complete", () =>
   );
   assert.deepEqual(members(prop("block").options), members([false, true]));
   assert.deepEqual(prop("children").options, []);
+});
+
+test("prop origin separates Glass UX, Base UI and React DOM declarations", () => {
+  const store = "/repo/node_modules/.pnpm";
+  assert.equal(propOrigin("/repo/src/ui/menu/menu.tsx"), "glass-ux");
+  assert.equal(
+    propOrigin(
+      `${store}/@types+react@19.3.0/node_modules/@types/react/index.d.ts`,
+    ),
+    "react-dom",
+  );
+  assert.equal(
+    propOrigin("C:\\repo\\node_modules\\@types\\react\\global.d.ts"),
+    "react-dom",
+  );
+  assert.equal(
+    propOrigin(
+      `${store}/@base-ui+react@1.9.0/node_modules/@base-ui/react/menu/trigger/MenuTrigger.d.ts`,
+    ),
+    "package",
+  );
+  // A dependency's own src folder is still the dependency, not Glass UX.
+  assert.equal(propOrigin("/repo/node_modules/x/src/index.d.ts"), "package");
+});
+
+test("React DOM attributes are summarised unless Glass UX documents them", () => {
+  assert.equal(listsProp("glass-ux", "onClick"), true);
+  assert.equal(listsProp("package", "openOnHover"), true);
+  assert.equal(listsProp("react-dom", "aria-label"), false);
+  assert.equal(listsProp("react-dom", "onPointerDown"), false);
+  assert.equal(listsProp("react-dom", "className"), true);
+  assert.equal(listsProp("react-dom", "children"), true);
+});
+
+test("printed types name packages, not pnpm store paths", () => {
+  assert.equal(
+    packageTypePaths(
+      'ComponentRenderFn<HTMLProps, import(".pnpm/@base-ui+react@1.9.0_react@19/node_modules/@base-ui/react").ButtonState>',
+    ),
+    'ComponentRenderFn<HTMLProps, import("@base-ui/react").ButtonState>',
+  );
+});
+
+test("generated slots list Base UI props, not standard HTML attributes", () => {
+  const menu = generated.find((component) => component.name === "Menu");
+  const trigger = menu.slots.find((slot) => slot.name === "Trigger");
+  const names = new Set(trigger.props.map((prop) => prop.name));
+  for (const name of [
+    "openOnHover",
+    "delay",
+    "render",
+    "nativeButton",
+    "className",
+  ])
+    assert.ok(names.has(name), `Menu.Trigger keeps ${name}`);
+  for (const name of ["aria-label", "onPointerDown", "tabIndex", "key"])
+    assert.ok(!names.has(name), `Menu.Trigger omits ${name}`);
+  assert.equal(trigger.htmlAttributes, true);
+  assert.ok(
+    trigger.props.length < 40,
+    `Menu.Trigger lists ${trigger.props.length} props`,
+  );
+  const standard =
+    /^(aria-|on(Pointer|Mouse|Touch|Drag|Animation|Transition|Copy|Paste|Wheel)|tabIndex$|dangerouslySetInnerHTML$)/;
+  for (const component of generated)
+    for (const part of [component, ...component.slots])
+      for (const prop of part.props ?? [])
+        assert.ok(
+          !prop.inherited || !standard.test(prop.name),
+          `${component.name}.${part.name ?? "props"} lists ${prop.name}`,
+        );
 });

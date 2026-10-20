@@ -253,11 +253,32 @@ export async function generateComponentDemos(program, checker, components) {
       ts.forEachChild(node, collect);
     }
     collect(transformed);
+    // Module-level window kind registrations: keep those whose kind the demo names (or
+    // whose kind is not a literal), so a demo does not carry another demo's kinds.
+    const strings = new Set();
+    const gatherStrings = (node) => {
+      if (ts.isStringLiteralLike(node)) strings.add(node.text);
+      ts.forEachChild(node, gatherStrings);
+    };
+    gatherStrings(transformed);
+    for (const scoped of declarations.values()) gatherStrings(scoped);
+    const registeredKind = (call) => {
+      const [definition] = call.arguments;
+      if (!definition || !ts.isObjectLiteralExpression(definition)) return undefined;
+      const property = definition.properties.find(
+        (p) => ts.isPropertyAssignment(p) && p.name.getText(story) === "kind",
+      );
+      return property && ts.isStringLiteralLike(property.initializer)
+        ? property.initializer.text
+        : undefined;
+    };
     for (const statement of story.statements)
       if (
         ts.isExpressionStatement(statement) &&
         ts.isCallExpression(statement.expression) &&
-        statement.expression.expression.getText(story) === "registerWindowKind"
+        statement.expression.expression.getText(story) === "registerWindowKind" &&
+        (registeredKind(statement.expression) === undefined ||
+          strings.has(registeredKind(statement.expression)))
       ) {
         declarations.set(statement, statement);
         collect(statement);

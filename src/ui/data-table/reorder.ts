@@ -16,7 +16,7 @@
  * Everything above the DOM section is pure and unit-tested.
  */
 
-import { makeShield, raise } from "../drag-drop/top-layer.js"
+import { adoptTheme, makeShield, raise } from "../drag-drop/top-layer.js"
 
 /** A move as `rows` indexes plus the neighbours, so a server can persist "after X". */
 export interface ReorderIds {
@@ -412,6 +412,7 @@ function makePreview(element: HTMLElement, root: HTMLElement, container: HTMLEle
   frame.append(lines)
   lift.append(frame)
   ghost.append(lift)
+  adoptTheme(ghost, element)
   raise(ghost, root)
   // Scrolled like the table (after mounting: only a laid-out box scrolls).
   frame.scrollLeft = scroller.scrollLeft

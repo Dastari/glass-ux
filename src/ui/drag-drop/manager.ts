@@ -17,7 +17,7 @@
 import type { ReactNode } from "react"
 import { flushSync } from "react-dom"
 import { feedbackHold, motionScale, tokenDuration } from "../../lib/motion.js"
-import { makeShield, raise } from "./top-layer.js"
+import { adoptTheme, makeShield, raise } from "./top-layer.js"
 import { arrange, gridColumns, insertionIndex, keyboardStep, type Box, type DropZoneSort, type Shift } from "./layout.js"
 import type {
   AnnouncedPlace,
@@ -276,6 +276,7 @@ function makeGhost(element: HTMLElement, rect: DOMRect, custom: boolean, input: 
   ghost.setAttribute("aria-hidden", "true")
   ghost.setAttribute("inert", "")
   ghost.dataset.input = input
+  adoptTheme(ghost, element)
   const style = getComputedStyle(element)
   // Two layers: the outer one only moves (a transform the compositor updates without
   // re-layerizing the page); the inner one carries the lift's scale and shadow. Scaling the

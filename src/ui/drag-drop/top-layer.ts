@@ -73,3 +73,29 @@ export function makeShield(from: Element) {
   raise(shield, from)
   return shield
 }
+
+/**
+ * Attributes a re-themed island sets on an ancestor (themes.css, fonts.css), each with the
+ * selector of an ancestor that sets it. Components reuse `data-mode` for their own state
+ * (DataTable, Calendar, Breadcrumb), so only light and dark count as a mode island. Glass,
+ * density and motion are root-only settings, which the top layer inherits anyway.
+ */
+const THEME_ATTRIBUTES: [name: string, island: string][] = [
+  ["data-mode", '[data-mode="light"], [data-mode="dark"]'],
+  ["data-palette", "[data-palette]"],
+  ["data-font-sans", "[data-font-sans]"],
+  ["data-font-display", "[data-font-display]"],
+  ["data-font-mono", "[data-font-mono]"],
+]
+
+/**
+ * The top layer inherits the page's theme, not the source's: give the preview the nearest
+ * island's mode, palette and fonts so it keeps the colours it had where it was picked up.
+ */
+export function adoptTheme(preview: HTMLElement, from: Element) {
+  for (const [name, selector] of THEME_ATTRIBUTES) {
+    const island = from.closest(selector)
+    const value = island?.getAttribute(name)
+    if (island && island !== document.documentElement && value) preview.setAttribute(name, value)
+  }
+}

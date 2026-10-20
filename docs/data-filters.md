@@ -45,7 +45,9 @@ configureDataTables({ storageKeyPrefix: "my-app.table" });
 ## Keep a manual order in host data
 
 `reorder={{ onReorder }}` adds a grip column (and a grip on cards) for pointer, touch and
-keyboard reordering. From the keyboard, focus a grip and press Space to lift the row, the arrow keys
+keyboard reordering. Each grip's tooltip says how to use it. A drag lifts a copy of the row
+into the top layer, styled like DragDropProvider's preview, while the other rows part around
+a dashed slot. From the keyboard, focus a grip and press Space to lift the row, the arrow keys
 to move it, Space to drop it and Escape to cancel; Alt with an arrow key moves a row one place
 without lifting it. The table reports one `DataTableRowMove` per drop: `from`/`to` indexes
 in `rows`, the new `rows`, and `previousId`/`nextId` so a server can store "after X". Update

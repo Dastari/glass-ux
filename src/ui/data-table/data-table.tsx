@@ -1229,6 +1229,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const gripController = useMemo<GripController>(
     () => ({
       tooltip: gripTooltip,
+      hint: reorderMessages.hint,
       helpId: `${domId}-reorder-help`,
       idBase: `${domId}-reorder-why`,
       pointerDown: (rowId, event) => {

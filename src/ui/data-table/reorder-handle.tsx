@@ -4,8 +4,10 @@ import { TOOLTIP_DELAY_MS, TooltipPrimitive } from "../tooltip/index.js"
 
 /** What every grip shares (one object per table, inside the RowController). */
 export interface GripController {
-  /** One tooltip for every grip: a disabled grip's payload is its reason. */
+  /** One tooltip for every grip: how to reorder, or a disabled grip's reason. */
   tooltip: TooltipPrimitive.Handle<string>
+  /** The visible instruction an available grip's tooltip shows. */
+  hint: string
   /** Element id of the keyboard instructions (aria-describedby on an available grip). */
   helpId: string
   /** Prefix for a disabled grip's reason element id. */
@@ -20,7 +22,8 @@ const stop = (event: SyntheticEvent) => event.stopPropagation()
 
 /**
  * A row's reorder grip: "Reorder <row>". `reason` is "" when the row can move, otherwise why it
- * cannot (aria-disabled, so it stays focusable and hoverable for the tooltip, R11.3).
+ * cannot (aria-disabled, so it stays focusable and hoverable for the tooltip, R11.3). Its
+ * tooltip says how to reorder (R20.7), on hover and on keyboard focus, or why it cannot.
  */
 export function GripButton({
   rowId,
@@ -44,8 +47,7 @@ export function GripButton({
     <>
       <TooltipPrimitive.Trigger
         handle={grip.tooltip}
-        payload={reason}
-        disabled={!disabled}
+        payload={disabled ? reason : grip.hint}
         delay={TOOLTIP_DELAY_MS}
         render={
           <button
@@ -58,7 +60,10 @@ export function GripButton({
             data-dt-interactive=""
             onPointerDown={(event) => {
               stop(event)
-              if (!disabled) grip.pointerDown(rowId, event)
+              if (disabled) return
+              // The hint has done its job once the grip is taken.
+              grip.tooltip.close()
+              grip.pointerDown(rowId, event)
             }}
             onTouchStart={stop}
             onContextMenu={(event) => {

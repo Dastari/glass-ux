@@ -1,15 +1,22 @@
 /**
  * Row reordering (opt-in with `reorder`): drag a row's grip, or lift it with the keyboard.
  *
+ * A pointer drag looks and behaves like DragDropProvider's: the preview (a copy of the row) is
+ * lifted into the top layer with the same `.fa-dnd-ghost` / `.fa-dnd-lift` styles, and the same
+ * transparent shield owns the cursor, hover and the wheel. The rows themselves stay in the
+ * table, which virtualizes them, so the parting and the drop slot are the table's own.
+ *
  * The host owns the order. The table reports one move on release (row, from/to index and the
  * neighbours it landed between) and the host passes the new `rows` back. While a gesture runs,
- * nothing renders: the moving row, its neighbours and the lifted "ghost" are moved with the
- * `translate` property (React owns `transform`), written straight onto the elements, and the
- * one React commit happens on release (docs/performance.md, R14). Every transition reads the
+ * nothing renders: the moving row and its neighbours are moved with the `translate` property
+ * (React owns `transform`), written straight onto the elements, and the one React commit
+ * happens on release (docs/performance.md, R14). Every transition reads the
  * motion tokens, so the global motion switch (--motion-scale) stills them.
  *
  * Everything above the DOM section is pure and unit-tested.
  */
+
+import { makeShield, raise } from "../drag-drop/top-layer.js"
 
 /** A move as `rows` indexes plus the neighbours, so a server can persist "after X". */
 export interface ReorderIds {
@@ -110,6 +117,8 @@ export const reorderMessages = {
   failed: (label: string, position: string, reason?: string) =>
     `${label} could not be moved${reason ? `: ${reason.replace(/[.\s]+$/, "")}` : ""}. Returned to position ${position}.`,
   instructions: "Press Space to lift, the arrow keys to move, Space to drop and Escape to cancel. Alt with an arrow key moves one place.",
+  /** The grip's tooltip: short, since the description above is read with the grip. */
+  hint: "Drag to reorder, or press Space and use the arrow keys",
 }
 
 /* ── Geometry: where lines go while a row moves ────────────────────────────────────── */
@@ -324,25 +333,88 @@ function viewOf(scroller: HTMLElement) {
   return { top: rect.top, bottom: rect.top + scroller.clientHeight }
 }
 
-/** A visual copy of the row that follows the pointer: inert, unlabelled, outside every query. */
-function makeGhost(element: HTMLElement) {
-  const ghost = element.cloneNode(true) as HTMLElement
-  for (const node of [ghost, ...ghost.querySelectorAll<HTMLElement>("*")]) {
+/** A visual copy of the row: inert, unlabelled, outside every query. */
+function copyLine(element: HTMLElement) {
+  const copy = element.cloneNode(true) as HTMLElement
+  for (const node of [copy, ...copy.querySelectorAll<HTMLElement>("*")]) {
     node.removeAttribute("id")
     node.removeAttribute("data-index")
     node.removeAttribute("data-item")
     node.removeAttribute("data-row-id")
     node.removeAttribute("aria-describedby")
   }
-  ghost.removeAttribute("aria-rowindex")
-  ghost.removeAttribute("role")
-  ghost.removeAttribute("tabindex")
-  ghost.removeAttribute("data-flash")
+  copy.removeAttribute("aria-rowindex")
+  copy.removeAttribute("role")
+  copy.removeAttribute("tabindex")
+  copy.removeAttribute("data-flash")
+  copy.removeAttribute("data-reorder-placeholder")
+  copy.removeAttribute("data-reorder-failed")
+  copy.setAttribute("aria-hidden", "true")
+  copy.setAttribute("inert", "")
+  copy.classList.add("fa-dt-ghost")
+  copy.style.translate = ""
+  copy.style.transition = ""
+  copy.style.transform = "none"
+  return copy
+}
+
+/** The table's own variables a row reads, carried onto the preview outside the table. */
+const CARRIED = ["--_row-h", "--_cell-px", "--_grip-h", "--_sticky-base", "--fa-dt-select-w", "--fa-dt-grip-w", "--fa-dt-lead-w", "--fa-dt-trail-w", "--fa-dt-detail-h"]
+const INHERITED = ["color", "font-family", "font-size", "font-weight", "line-height", "letter-spacing", "direction"]
+
+/** The part of the scroller the rows show through, in client coordinates. */
+function bandOf(scroller: HTMLElement) {
+  const rect = scroller.getBoundingClientRect()
+  return { left: rect.left + scroller.clientLeft, width: scroller.clientWidth }
+}
+
+/**
+ * The drag preview, shared with DragDropProvider: `.fa-dnd-ghost` in the top layer, which only
+ * moves, and `.fa-dnd-lift` inside it, which scales and casts the shadow. Inside that, a bare
+ * copy of the table's frame (its states and variables, none of its chrome) holds a copy of the
+ * row, clipped to the part of the table that is in view and scrolled sideways like it, so
+ * pinned columns stay where they were.
+ */
+function makePreview(element: HTMLElement, root: HTMLElement, container: HTMLElement, scroller: HTMLElement, grab: { x: number; y: number }) {
+  const rect = element.getBoundingClientRect()
+  const band = bandOf(scroller)
+  const ghost = document.createElement("div")
+  ghost.className = "fa-dnd-ghost fa-dt-preview"
   ghost.setAttribute("aria-hidden", "true")
   ghost.setAttribute("inert", "")
-  ghost.classList.add("fa-dt-ghost")
-  ghost.style.translate = ""
-  ghost.style.transition = ""
+  ghost.dataset.input = "pointer"
+  ghost.dataset.layout = container.classList.contains("fa-dt-cards") ? "cards" : "rows"
+  ghost.style.width = `${band.width}px`
+  ghost.style.height = `${rect.height}px`
+  const lift = document.createElement("div")
+  lift.className = "fa-dnd-lift"
+  lift.style.transformOrigin = `${grab.x}px ${grab.y}px`
+  lift.style.borderRadius = getComputedStyle(element).borderRadius
+  const frame = document.createElement("div")
+  frame.className = "fa-dt fa-dt-preview-frame"
+  for (const { name, value } of root.attributes)
+    // Its states (data-reorderable and the rest), not the gesture's (data-reordering, …).
+    if (name.startsWith("data-") && !/^data-reorder(ing|-)/.test(name)) frame.setAttribute(name, value)
+  frame.style.cssText = root.style.cssText
+  const rootStyle = getComputedStyle(root)
+  for (const name of [...CARRIED, ...INHERITED]) {
+    const value = rootStyle.getPropertyValue(name)
+    if (value) frame.style.setProperty(name, value)
+  }
+  const lines = document.createElement("div")
+  lines.className = container.className
+  lines.style.width = `${container.offsetWidth}px`
+  // Where the lines start in the scroller's content (its padding, the table's insets).
+  lines.style.marginInlineStart = `${container.getBoundingClientRect().left + scroller.scrollLeft - band.left}px`
+  const copy = copyLine(element)
+  copy.style.height = `${rect.height}px`
+  lines.append(copy)
+  frame.append(lines)
+  lift.append(frame)
+  ghost.append(lift)
+  raise(ghost, root)
+  // Scrolled like the table (after mounting: only a laid-out box scrolls).
+  frame.scrollLeft = scroller.scrollLeft
   return ghost
 }
 
@@ -379,6 +451,7 @@ export function startPointerReorder(event: PointerEvent, options: PointerReorder
   let lastY = startY
   let session: ReorderSession | null = null
   let ghost: HTMLElement | null = null
+  let shield: HTMLElement | null = null
   let grab = 0
   let settling = false
   let scroller: HTMLElement | null = null
@@ -407,7 +480,7 @@ export function startPointerReorder(event: PointerEvent, options: PointerReorder
       high = Math.max(low, Math.min(high, view.bottom - top - own.size))
     }
     const y = Math.min(Math.max(lastY - top - grab, low), high)
-    ghost.style.transform = `translateY(${y}px)`
+    moveGhost(ghost, top + y)
     if (session.setTarget(targetFor(y + own.size / 2, from, first, last, measure))) options.onTarget(session.target)
   }
 
@@ -428,11 +501,18 @@ export function startPointerReorder(event: PointerEvent, options: PointerReorder
     if (scrolling) scroller.scrollTop += Math.round(speed)
   }
 
+  /** The preview's place on screen: level with the table's rows, `top` from the viewport. */
+  const moveGhost = (copy: HTMLElement, top: number) => {
+    copy.style.transform = `translate(${bandOf(options.scroller).left}px, ${Math.round(top * 100) / 100}px)`
+  }
+
   const begin = () => {
-    ghost = makeGhost(element)
+    const rect = element.getBoundingClientRect()
+    grab = startY - rect.top
+    // The shield goes up first so the preview stacks above it in the top layer.
+    shield = makeShield(options.root)
+    ghost = makePreview(element, options.root, container, options.scroller, { x: startX - bandOf(options.scroller).left, y: grab })
     session = new ReorderSession({ ...options, mode: "pointer" })
-    grab = startY - element.getBoundingClientRect().top
-    container.appendChild(ghost)
     scroller = scrollParent(options.scroller)
     place()
     // Lift on the next frame so the shadow fades in from the row's resting state.
@@ -451,6 +531,8 @@ export function startPointerReorder(event: PointerEvent, options: PointerReorder
     handle.removeEventListener("pointercancel", cancelled)
     handle.removeEventListener("lostpointercapture", cancelled)
     window.removeEventListener("keydown", escape, true)
+    shield?.remove()
+    shield = null
     try {
       if (handle.hasPointerCapture(pointerId)) handle.releasePointerCapture(pointerId)
     } catch {
@@ -466,7 +548,7 @@ export function startPointerReorder(event: PointerEvent, options: PointerReorder
     settling = true
     copy.setAttribute("data-settling", "")
     copy.removeAttribute("data-lifted")
-    copy.style.transform = `translateY(${current.slot(target)}px)`
+    moveGhost(copy, container.getBoundingClientRect().top + current.slot(target))
     window.setTimeout(then, transitionMs(copy))
   }
 

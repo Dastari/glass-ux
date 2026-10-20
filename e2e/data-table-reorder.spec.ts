@@ -36,7 +36,7 @@ async function useSaving(demo: Locator, name: string) {
   await demo.getByRole("group", { name: "Saving" }).getByRole("button", { name, exact: true }).click();
 }
 
-test("drags a row with the pointer: a ghost follows, the rows part, release commits", async ({ page }) => {
+test("drags a row with the pointer: the preview lifts into the top layer, the rows part, release commits", async ({ page }) => {
   const { demo, table } = await open(page);
   await useSaving(demo, "Local");
   const grip = table.getByRole("button", { name: "Reorder Rotate TLS certificates" });
@@ -50,9 +50,27 @@ test("drags a row with the pointer: a ghost follows, the rows part, release comm
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 + (rowHeight * 2.2 * step) / 12);
   }
   await expect(table).toHaveAttribute("data-reordering", "pointer");
-  const ghost = table.locator(".fa-dt-ghost");
+  // DragDropProvider's preview and shield: a copy of the row in the top layer, lifted with
+  // its shadow, and a shield that owns the cursor.
+  const ghost = page.locator(".fa-dnd-ghost.fa-dt-preview");
   await expect(ghost).toHaveCount(1);
   await expect(ghost).toHaveAttribute("aria-hidden", "true");
+  await expect(ghost).toHaveAttribute("data-lifted", "");
+  const layers = await ghost.evaluate((element) => ({
+    preview: element.matches(":popover-open"),
+    shield: document.querySelector(".fa-dnd-shield")?.matches(":popover-open") ?? false,
+    cursor: getComputedStyle(document.querySelector(".fa-dnd-shield")!).cursor,
+    copies: element.querySelectorAll(".fa-dt-ghost [data-col='title']").length,
+    shadow: getComputedStyle(element.querySelector(".fa-dnd-lift")!, "::after").boxShadow,
+  }));
+  expect(layers).toMatchObject({ preview: true, shield: true, cursor: "grabbing", copies: 1 });
+  expect(layers.shadow).not.toBe("none");
+  // The copy lines up with the table's columns.
+  const copyTitle = (await ghost.locator("[data-col='title']").boundingBox())!;
+  const rowTitle = (await table.locator('[data-row-id="q3"] [data-col="title"]').boundingBox())!;
+  expect(Math.abs(copyTitle.x - rowTitle.x)).toBeLessThan(1.5);
+  expect(Math.abs(copyTitle.width - rowTitle.width)).toBeLessThan(1.5);
+  await expect(page.getByRole("tooltip")).toHaveCount(0);
   await expect(row).toHaveAttribute("data-reorder-placeholder", "");
   // The rows it passed moved up into its place.
   await expect
@@ -70,6 +88,7 @@ test("drags a row with the pointer: a ghost follows, the rows part, release comm
   expect(await rowRenders()).toBe(renders);
   await page.mouse.up();
   await expect(ghost).toHaveCount(0);
+  await expect(page.locator(".fa-dnd-shield")).toHaveCount(0);
   await expect(table).not.toHaveAttribute("data-reordering");
   expect((await titles(table)).slice(0, 4)).toEqual([
     "Rebuild search index",
@@ -93,10 +112,10 @@ test("Escape cancels a pointer drag and the rows return", async ({ page }) => {
   await page.mouse.move(box.x + 4, box.y + 4);
   await page.mouse.down();
   await page.mouse.move(box.x + 4, box.y + 60, { steps: 6 });
-  await expect(table.locator(".fa-dt-ghost")).toHaveCount(1);
+  await expect(page.locator(".fa-dt-preview")).toHaveCount(1);
   await page.keyboard.press("Escape");
   await page.mouse.up();
-  await expect(table.locator(".fa-dt-ghost")).toHaveCount(0);
+  await expect(page.locator(".fa-dt-preview, .fa-dnd-shield")).toHaveCount(0);
   expect(await titles(table)).toEqual(before);
   await expect(table.locator(".fa-dt-announcer")).toHaveText(/Reorder cancelled/);
 });
@@ -166,7 +185,7 @@ test("a long virtualized queue auto-scrolls while dragging past the edge", async
   await page.mouse.down();
   await page.mouse.move(box.x + 4, body.y + body.height - 4, { steps: 10 });
   await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).toBeGreaterThan(400);
-  const ghost = (await table.locator(".fa-dt-ghost").boundingBox())!;
+  const ghost = (await page.locator(".fa-dt-preview").boundingBox())!;
   expect(ghost.y + ghost.height).toBeLessThanOrEqual(body.y + body.height + 1);
   await page.mouse.up();
   await expect(demo.getByTestId("dt-reorder-last")).toHaveText(/Backfill \w+ shard 2: 2 → \d{2,}/);
@@ -193,9 +212,9 @@ test("drags a card by touch on a phone @responsive", async ({ page }, info) => {
     });
   await touch("touchStart", 0);
   for (let step = 1; step <= 10; step++) await touch("touchMove", (height * 1.3 * step) / 10);
-  await expect(table.locator(".fa-dt-ghost")).toHaveCount(1);
+  await expect(page.locator(".fa-dt-preview")).toHaveCount(1);
   await touch("touchEnd", 0);
-  await expect(table.locator(".fa-dt-ghost")).toHaveCount(0);
+  await expect(page.locator(".fa-dt-preview")).toHaveCount(0);
   await expect(demo.getByTestId("dt-reorder-last")).toHaveText(/Rotate TLS certificates: 2 → 3/);
   const cards = await table
     .locator('.fa-dt-card[data-item="row"] .fa-dt-card-title')
@@ -206,3 +225,59 @@ test("drags a card by touch on a phone @responsive", async ({ page }, info) => {
     "Rotate TLS certificates",
   ]);
 });
+
+/** The grip as drawn: its highest-contrast pixel against the pixels behind it (R20.1). */
+async function gripContrast(page: Page, grip: Locator) {
+  const png = await grip.screenshot();
+  return page.evaluate(async (b64) => {
+    const luminance = ([r, g, b]: number[]) => {
+      const f = (c: number) => ((c /= 255) <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+      return 0.2126 * f(r!) + 0.7152 * f(g!) + 0.0722 * f(b!);
+    };
+    const ratio = (a: number[], b: number[]) => {
+      const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p);
+      return (x! + 0.05) / (y! + 0.05);
+    };
+    const bitmap = await createImageBitmap(await (await fetch(`data:image/png;base64,${b64}`)).blob());
+    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+    const context = canvas.getContext("2d")!;
+    context.drawImage(bitmap, 0, 0);
+    const data = context.getImageData(0, 0, bitmap.width, bitmap.height).data;
+    const at = (x: number, y: number) => {
+      const index = (y * bitmap.width + x) * 4;
+      return [data[index]!, data[index + 1]!, data[index + 2]!];
+    };
+    const background = at(1, 1);
+    let best = 1;
+    for (let y = 0; y < bitmap.height; y++)
+      for (let x = 0; x < bitmap.width; x++) best = Math.max(best, ratio(at(x, y), background));
+    return best;
+  }, png.toString("base64"));
+}
+
+const HINT = "Drag to reorder, or press Space and use the arrow keys";
+
+for (const mode of ["light", "dark"] as const)
+  test(`the grip is drawn at 3:1 or more and says how to reorder (${mode}) @responsive`, async ({ page }, info) => {
+    const { table } = await open(page, { mode, palette: "ruby" });
+    await page.mouse.move(1, 1);
+    const grip = table.getByRole("button", { name: "Reorder Rotate TLS certificates" });
+    await grip.scrollIntoViewIfNeeded();
+    expect(await gripContrast(page, grip)).toBeGreaterThanOrEqual(3);
+    expect((await grip.locator("svg").boundingBox())!.width).toBeGreaterThanOrEqual(17.5);
+    if (info.project.name === "desktop")
+      expect(await grip.evaluate((element) => getComputedStyle(element).cursor)).toBe("grab");
+    // The instruction shows on keyboard focus, and on hover where there is one.
+    await page.keyboard.press("Tab");
+    await grip.focus();
+    await expect(page.getByRole("tooltip")).toHaveText(HINT);
+    if (info.project.name !== "desktop") return;
+    const title = table.locator('[data-row-id="q2"] [data-col="title"]');
+    const before = (await title.boundingBox())!;
+    await grip.blur();
+    await grip.hover();
+    await expect(page.getByRole("tooltip")).toHaveText(HINT);
+    // Hovering highlights the grip without moving anything.
+    expect(await grip.evaluate((element) => getComputedStyle(element).backgroundColor)).not.toBe("rgba(0, 0, 0, 0)");
+    expect(await title.boundingBox()).toEqual(before);
+  });

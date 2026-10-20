@@ -1164,12 +1164,12 @@ export const IconGrip = /* @__PURE__ */ createIcon(
   "grip",
   () => (
     <>
-      <circle className="fa-icon-dot" cx="9" cy="6.5" r="1.4" />
-      <circle className="fa-icon-dot" cx="9" cy="12" r="1.4" />
-      <circle className="fa-icon-dot" cx="9" cy="17.5" r="1.4" />
-      <circle className="fa-icon-dot" cx="15" cy="6.5" r="1.4" />
-      <circle className="fa-icon-dot" cx="15" cy="12" r="1.4" />
-      <circle className="fa-icon-dot" cx="15" cy="17.5" r="1.4" />
+      <circle className="fa-icon-dot" cx="9" cy="6.5" r="1.6" />
+      <circle className="fa-icon-dot" cx="9" cy="12" r="1.6" />
+      <circle className="fa-icon-dot" cx="9" cy="17.5" r="1.6" />
+      <circle className="fa-icon-dot" cx="15" cy="6.5" r="1.6" />
+      <circle className="fa-icon-dot" cx="15" cy="12" r="1.6" />
+      <circle className="fa-icon-dot" cx="15" cy="17.5" r="1.6" />
     </>
   )
 )

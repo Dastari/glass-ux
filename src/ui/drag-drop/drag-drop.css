@@ -50,7 +50,8 @@
     border: 0;
     border-radius: var(--radius-item);
     background: none;
-    color: var(--fg-subtle);
+    /* Graphics contrast (R20.1); DataTable's reorder grip matches it. */
+    color: var(--fg-muted);
     outline: none;
     /* A grip drags at once on touch, so it never scrolls. */
     touch-action: none;
@@ -59,8 +60,8 @@
     transition-timing-function: var(--ease-standard);
   }
   .fa-dnd-handle > .fa-icon {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
+    width: var(--icon-md);
+    height: var(--icon-md);
   }
   .fa-dnd-handle:not([aria-disabled="true"]):hover {
     background-color: var(--fill-hover);

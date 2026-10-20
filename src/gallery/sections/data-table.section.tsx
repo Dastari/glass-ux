@@ -593,7 +593,7 @@ function DataTableSection() {
 
       <Specimen
         title="Reorderable rows"
-        description="Drag a row by its grip, or move it from the keyboard. The host owns the order and saves each move. Running jobs are locked, and sorting by Estimate disables reordering. Server saves after 600 ms; Server fails reverts the move."
+        description="Drag a row by the grip at its start, or focus the grip, press Space and use the arrow keys. The host owns the order and saves each move. Running jobs are locked, and sorting by Estimate disables reordering. Server saves after 600 ms; Server fails reverts the move."
         layout="bare"
         wide
       >
@@ -697,6 +697,7 @@ function DataTableSection() {
           ["--radius-control", "Header band"],
           ["--surface-2", "Pinned cells while scrolled sideways"],
           ["--duration-slower", "Live-update flash (×2.5)"],
+          ["--fg-muted", "Reorder grip"],
           ["--shadow-3", "Lifted row while reordering"],
           ["--accent-line", "Reorder drop slot and lifted edge"],
           ["--duration-base", "Rows parting while reordering"],

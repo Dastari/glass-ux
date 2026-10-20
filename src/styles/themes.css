@@ -121,7 +121,8 @@
    * island takes the mode of its closest data-mode ancestor, however the islands nest. Plain
    * descendant selectors tie on specificity and let source order pick dark (e2e/token-islands).
    * The light scope includes :root so a page without data-mode is light; the dark blocks come
-   * later so a dark <html> wins that tie.
+   * later so a dark <html> wins that tie. Browsers without @scope (Firefox ESR 140) read
+   * scope-fallback.css, which `pnpm styles` regenerates from these blocks and brand.css.
    */
   @scope (:root, [data-mode="light"]) {
     :scope,

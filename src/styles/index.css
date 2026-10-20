@@ -2,7 +2,7 @@
  * Design-system stylesheet: fonts, tokens, themes, materials, data colours, identity
  * colours, brand tones, base, motion, recipes and every library component. Imported by an
  * application's CSS entry (see src/app.css), which owns the Tailwind pipeline and the
- * cascade-layer order.
+ * cascade-layer order. The @scope fallback follows the palette parameters it must override.
  */
 @import "./tailwind-theme.css";
 @import "./fonts.css";
@@ -12,6 +12,7 @@
 @import "./data.css";
 @import "./identity.css";
 @import "./brand.css";
+@import "./scope-fallback.css";
 @import "./base.css";
 @import "./motion.css";
 @import "./recipes.css";

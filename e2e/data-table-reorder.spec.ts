@@ -85,6 +85,32 @@ test("drags a row with the pointer: a ghost follows, the rows part, release comm
   expect(translates).toEqual([]);
 });
 
+test("a row ghost in a re-themed island keeps the island's mode and palette", async ({ page }) => {
+  const { demo, table } = await open(page);
+  // The page is light graphite; the demo becomes a dark ruby island.
+  await demo.evaluate((element) => {
+    element.setAttribute("data-mode", "dark");
+    element.setAttribute("data-palette", "ruby");
+  });
+  const roles = (element: Element) => {
+    const style = getComputedStyle(element);
+    return { canvas: style.getPropertyValue("--canvas"), accent: style.getPropertyValue("--accent") };
+  };
+  const row = table.locator('[data-row-id="q2"]');
+  const source = await row.evaluate(roles);
+  expect(source).not.toEqual(await page.locator("html").evaluate(roles));
+  const box = (await table.getByRole("button", { name: "Reorder Rotate TLS certificates" }).boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 + 40, { steps: 6 });
+  const ghost = table.locator(".fa-dt-ghost");
+  await expect(ghost).toHaveCount(1);
+  expect(await ghost.evaluate(roles)).toEqual(source);
+  await page.keyboard.press("Escape");
+  await page.mouse.up();
+  await expect(ghost).toHaveCount(0);
+});
+
 test("Escape cancels a pointer drag and the rows return", async ({ page }) => {
   const { table } = await open(page);
   const before = await titles(table);

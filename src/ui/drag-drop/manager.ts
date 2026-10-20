@@ -339,6 +339,24 @@ function makeShield(from: Element) {
   return shield
 }
 
+/**
+ * Attributes a re-themed island sets on an ancestor (themes.css, fonts.css). Glass, density
+ * and motion are root-only settings, which the top layer inherits anyway.
+ */
+const THEME_ATTRIBUTES = ["data-mode", "data-palette", "data-font-sans", "data-font-display", "data-font-mono"]
+
+/**
+ * The top layer inherits the page's theme, not the source's: give the preview the nearest
+ * island's mode, palette and fonts so it keeps the colours it had where it was picked up.
+ */
+function adoptTheme(preview: HTMLElement, from: Element) {
+  for (const name of THEME_ATTRIBUTES) {
+    const island = from.closest(`[${name}]`)
+    const value = island?.getAttribute(name)
+    if (island && island !== document.documentElement && value) preview.setAttribute(name, value)
+  }
+}
+
 /** A copy of the element that follows the pointer: inert, unlabelled, outside every query. */
 function makeGhost(element: HTMLElement, rect: DOMRect, custom: boolean, input: DragInput, grab: { x: number; y: number }) {
   const ghost = document.createElement("div")
@@ -346,6 +364,7 @@ function makeGhost(element: HTMLElement, rect: DOMRect, custom: boolean, input: 
   ghost.setAttribute("aria-hidden", "true")
   ghost.setAttribute("inert", "")
   ghost.dataset.input = input
+  adoptTheme(ghost, element)
   const style = getComputedStyle(element)
   // Two layers: the outer one only moves (a transform the compositor updates without
   // re-layerizing the page); the inner one carries the lift's scale and shadow. Scaling the

@@ -215,6 +215,31 @@ test("the preview stays under the pointer far from the origin, in the top layer,
   await expect(page.locator(".fa-dnd-ghost, .fa-dnd-shield")).toHaveCount(0);
 });
 
+test("a preview lifted out of a re-themed island keeps the island's mode and palette", async ({ page }) => {
+  const board = await open(page);
+  // The page is light graphite; the board becomes a dark ruby island.
+  await board.evaluate((element) => {
+    element.setAttribute("data-mode", "dark");
+    element.setAttribute("data-palette", "ruby");
+  });
+  const card = column(board, "Backlog").locator("li").first();
+  const roles = (element: Element) => {
+    const style = getComputedStyle(element);
+    return { canvas: style.getPropertyValue("--canvas"), accent: style.getPropertyValue("--accent"), fg: style.getPropertyValue("--fg") };
+  };
+  const source = await card.evaluate(roles);
+  const page_ = await page.locator("html").evaluate(roles);
+  expect(source.canvas).not.toBe(page_.canvas);
+  expect(source.accent).not.toBe(page_.accent);
+  await lift(page, board);
+  const ghost = page.locator(".fa-dnd-ghost");
+  expect(await ghost.evaluate((element) => element.matches(":popover-open"))).toBe(true);
+  expect(await ghost.locator(".fa-dnd-ghost-copy").evaluate(roles)).toEqual(source);
+  await page.keyboard.press("Escape");
+  await page.mouse.up();
+  await expect(page.locator(".fa-dnd-ghost")).toHaveCount(0);
+});
+
 /** Lift the first Backlog card and leave the pointer down. */
 async function lift(page: Page, board: Locator) {
   const card = column(board, "Backlog").locator("li").first();

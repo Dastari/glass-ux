@@ -159,22 +159,28 @@ test("on touch a long press lifts a card and a quick swipe scrolls instead @resp
   await touch("touchEnd", 0, 0);
   await expect(page.locator(".fa-dnd-ghost")).toHaveCount(0);
   await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).not.toBe(before);
-  // The swipe can fling: measure the card only once the page has stopped moving.
-  await expect
-    .poll(() =>
-      scroller.evaluate(
-        (element) =>
-          new Promise<boolean>((resolve) => {
-            const top = element.scrollTop;
-            setTimeout(() => resolve(element.scrollTop === top), 150);
-          }),
-      ),
-    )
-    .toBe(true);
+  // The swipe can fling, and a page still moving under the finger cancels a long press:
+  // touch the card only once the page has stopped.
+  const settled = () =>
+    expect
+      .poll(() =>
+        scroller.evaluate(
+          (element) =>
+            new Promise<boolean>((resolve) => {
+              const top = element.scrollTop;
+              setTimeout(() => resolve(element.scrollTop === top), 150);
+            }),
+        ),
+      )
+      .toBe(true);
+  await settled();
 
-  // Hold still, then carry it to Done.
-  await card.scrollIntoViewIfNeeded();
+  // Hold still, then carry it to Done. Centre the card first: after a fling it can rest under
+  // the page's sticky header, where the touch would land on the header instead.
+  await card.evaluate((element) => element.scrollIntoView({ block: "center" }));
+  await settled();
   const from = (await card.boundingBox())!;
+  expect(await page.evaluate(({ x, y }) => Boolean(document.elementFromPoint(x, y)?.closest("li")?.textContent?.includes("Order linen canvas")), { x: from.x + 20, y: from.y + 10 })).toBe(true);
   const done = column(board, "Done");
   await touch("touchStart", from.x + 20, from.y + 10);
   await page.waitForTimeout(400);

@@ -3,6 +3,16 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.3 → 0.9.4
+
+No code changes are required.
+
+- A paged `DataTable` is unchanged. To load more as the reader scrolls, pass `infinite` and
+  append each batch to `rows` (docs/data-filters.md, "Load more as the reader scrolls").
+- With graphql-orm and Apollo Client, `connectionPagination()` from
+  `glass-ux/adapters/graphql-orm` replaces a hand-written `fetchMore` `updateQuery` or field
+  policy that concatenates `Edges`.
+
 ## 0.9.2 → 0.9.3
 
 No code changes are required.

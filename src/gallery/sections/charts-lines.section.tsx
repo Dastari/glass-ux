@@ -69,7 +69,7 @@ export default function ChartsLinesSection() {
     <SectionPage>
       <Specimen
         title="Three tiers, one chart"
-        description="The box decides, on both axes: the lines alone with the latest value in a row; a passive tile with its top gridline and first and last times; the full chart with axes, threshold bands, markers and the crosshair. With one series the hovered value replaces the latest in the head, as in Metric. The full head ends with View as table and Copy as CSV (raw values, ISO 8601 times)."
+        description="The box decides, on both axes: the lines alone with the latest value in a row; a passive tile with its top gridline and first and last times; the full chart with axes, threshold bands, markers and the crosshair. The tooltip shows the value at the cursor for one series or several; with one series the head also shows it in place of the latest, as in Metric. The full head ends with View as table and Copy as CSV (raw values, ISO 8601 times)."
         wide
       >
         <TierRow testId="line-cpu">{() => <LineChart {...cpu} />}</TierRow>

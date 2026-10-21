@@ -6,8 +6,8 @@ replaces the total with that slice's value and share.
 
   micro    a proportion strip with the leading share as a trail
   compact  the ring with its centre value, a key beside it when there is room
-  full     the ring, centre readout, and a list legend with values and shares that
-           highlights with the ring
+  full     the ring, centre readout, a list legend with values and shares that
+           highlights with the ring, and the glass tooltip with the slice at the cursor
 
 `import { PieChart } from "glass-ux/charts"`
 

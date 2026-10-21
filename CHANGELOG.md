@@ -4,6 +4,26 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.3
+
+### Changed
+
+- Every full-tier chart with a hover or keyboard cursor shows the value at the cursor in the
+  glass `ChartTooltip`. A `LineChart` or `AreaChart` with one series now shows it too: the
+  x as the title, the relative time for a time series, one row with the value and the series
+  label keyed by its colour (a toned series takes the threshold tone its value is in, as its
+  dot does), and a marker's label in the footer when one sits at that x. The head readout
+  still replaces the latest value with the hovered one. A multi-series chart with all but
+  one series hidden from the legend shows the tooltip for the remaining series; a stacked
+  chart omits the total while only one band is visible.
+- `PieChart`, `DonutChart` and `Sunburst` show the tooltip at the cursor in the full tier:
+  the slice (or arc) with its value, share and colour. A sunburst arc's title is its path
+  below the focus, and an arc with children says "Click to open". The donut's and the
+  sunburst's centre readouts, and the linked legend, are unchanged. Over the sunburst's
+  centre the tooltip appears only when the centre is too small for its own readout.
+- `BarChart`, `ColumnChart`, `Histogram`, `ScatterChart`, `Heatmap` and `Treemap` already
+  showed the tooltip; `Gauge` and `RadialBar` have no cursor and label their values in place.
+
 ## 0.9.2
 
 ### Changed

@@ -8,8 +8,9 @@ box grows.
   compact  title, passive legend or latest value; the plot with its top gridline and the
            first and last x labels
   full     y gridlines and labels, x labels, threshold bands and markers, an interactive
-           legend, and the crosshair: one series' readout replaces its value in the head
-           (Metric's model); several series show the glass tooltip
+           legend, the crosshair and the glass tooltip at the cursor (every visible series,
+           one or more); with one series the hovered value also replaces the latest in the
+           head (Metric's model)
 
 `import { LineChart } from "glass-ux/charts"`
 

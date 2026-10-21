@@ -7,7 +7,8 @@ or Enter drills into an arc; the centre, the path, Backspace and Escape go back.
 
   micro    a proportion strip of the focus's children
   compact  two rings and the centre, passive
-  full     three rings, the centre readout, the drill path and the children as a list
+  full     three rings, the centre readout, the drill path, the children as a list and
+           the glass tooltip with the arc at the cursor
 
 `import { Sunburst } from "glass-ux/charts"`
 

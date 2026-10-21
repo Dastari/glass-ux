@@ -3,6 +3,20 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.2 → 0.9.3
+
+No code changes are required.
+
+- A single-series `LineChart` or `AreaChart`, and a multi-series one with only one series
+  visible, now shows the floating chart tooltip (`.fa-chart-tip`, portalled to the body)
+  while hovered or under the keyboard cursor. Tests that expected no tooltip for one series,
+  or that read the hovered value only from the head readout, should expect the tooltip; the
+  head readout still updates. Tests that counted `.fa-chart-tip` elements on a page should
+  allow for it.
+- `PieChart`, `DonutChart` and `Sunburst` show the same tooltip in the full tier. Tests that
+  took a screenshot or checked what covers the legend while a slice is hovered should
+  account for it.
+
 ## 0.9.1 → 0.9.2
 
 No code changes are required.

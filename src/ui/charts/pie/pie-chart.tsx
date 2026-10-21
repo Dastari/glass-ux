@@ -10,6 +10,7 @@ import { ChartLegend, type LegendItem } from "../core/legend.js"
 import { seriesAttrs, slotFor, SLOT_COUNT, type ChartTone } from "../core/series.js"
 import { ProportionStrip } from "../core/strip.js"
 import { shareFraction, type ChartTableModel } from "../core/table.js"
+import { ChartTooltip, TooltipBody } from "../core/tooltip.js"
 import { LiveRegion } from "../line/line-chart.js"
 
 export interface PieSlice {
@@ -56,8 +57,8 @@ function fold(data: readonly PieSlice[], max: number): Slice[] {
  *
  *   micro    a proportion strip with the leading share as a trail
  *   compact  the ring with its centre value, a key beside it when there is room
- *   full     the ring, centre readout, and a list legend with values and shares that
- *            highlights with the ring
+ *   full     the ring, centre readout, a list legend with values and shares that
+ *            highlights with the ring, and the glass tooltip with the slice at the cursor
  */
 export function PieChart(props: PieChartProps) {
   const { label, title, state = "ready", data, donut = false, centre, totalLabel = "Total", maxSlices = 6, unit, format, categoryLabel = "Category", ...rest } = props
@@ -218,6 +219,26 @@ const PiePlot = memo(function PiePlot({ box, slices, total, store, donut, centre
             cursor="pointer"
             bounds={{ left: cx - r, top: cy - r, width: 2 * r, height: 2 * r }}
           />
+          <ChartTooltip store={store} anchor={plotRef}>
+            {(hover) => {
+              const slice = slices[hover.index]
+              if (!slice) return null
+              return (
+                <TooltipBody
+                  rows={[
+                    {
+                      key: slice.key,
+                      label: slice.label,
+                      value: formatValue(slice.value, fmt),
+                      detail: formatShare(slice.value, total, fmt.locale),
+                      shape: "dot",
+                      ...(slice.slotKey === "other" ? { tone: "neutral" } : { slot: slice.slotKey || undefined, tone: slice.tone }),
+                    },
+                  ]}
+                />
+              )
+            }}
+          </ChartTooltip>
           <LiveRegion store={store} text={valueText} />
         </>
       ) : null}

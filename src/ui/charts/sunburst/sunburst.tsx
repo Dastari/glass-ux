@@ -12,6 +12,7 @@ import { ChartLegend, type LegendItem } from "../core/legend.js"
 import { seriesAttrs } from "../core/series.js"
 import { ProportionStrip, type StripItem } from "../core/strip.js"
 import type { ChartTier } from "../core/tier.js"
+import { ChartTooltip, TooltipBody } from "../core/tooltip.js"
 import { LiveRegion } from "../line/line-chart.js"
 
 export interface SunburstProps extends ChartCommonProps, ValueFormat {
@@ -45,7 +46,8 @@ interface ArcNode {
  *
  *   micro    a proportion strip of the focus's children
  *   compact  two rings and the centre, passive
- *   full     three rings, the centre readout, the drill path and the children as a list
+ *   full     three rings, the centre readout, the drill path, the children as a list and
+ *            the glass tooltip with the arc at the cursor
  */
 export function Sunburst(props: SunburstProps) {
   const { label, title, state = "ready", data, colourBy = "branch", groups, depth = 3, unit, format, nameLabel = "Name", ...rest } = props
@@ -220,6 +222,43 @@ const SunburstPlot = memo(function SunburstPlot({ box, focus, colour, store, fmt
             }}
             onEscape={onUp}
           />
+          <ChartTooltip store={store} anchor={plotRef}>
+            {(hover) => {
+              const a = arcs[hover.index]
+              // The centre: its own readout sits under the pointer; name the focus only when it is too small to show.
+              if (!a) {
+                if (hole >= 1.75 * rem) return null
+                return (
+                  <TooltipBody
+                    rows={[{ key: "focus", label: focus.data.label, value: formatValue(focus.value ?? 0, fmt), tone: "neutral", shape: "dot" }]}
+                    footer={onUp ? `Click to go back to ${focus.parent?.data.label ?? ""}` : undefined}
+                  />
+                )
+              }
+              const where = a.node
+                .ancestors()
+                .toReversed()
+                .slice(focus.depth + 1, -1)
+                .map((n) => n.data.label)
+                .join(" › ")
+              return (
+                <TooltipBody
+                  title={where || undefined}
+                  rows={[
+                    {
+                      key: a.node.data.label,
+                      label: a.node.data.label,
+                      value: formatValue(a.node.value ?? 0, fmt),
+                      detail: formatShare(a.node.value ?? 0, focus.value ?? 0, fmt.locale),
+                      shape: "dot",
+                      ...(a.slot === "other" ? { tone: "neutral" } : { slot: a.slot }),
+                    },
+                  ]}
+                  footer={a.node.children?.length ? "Click to open" : undefined}
+                />
+              )
+            }}
+          </ChartTooltip>
           <LiveRegion store={store} text={valueText} />
         </>
       ) : null}

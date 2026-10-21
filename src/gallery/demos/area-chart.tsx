@@ -14,6 +14,24 @@ const sample = {
   stacked: true,
   unit: "h",
 } satisfies Omit<ComponentProps<typeof AreaChart>, "label">;
+const now = new Date(2026, 9, 13, 11, 0, 0);
+const times = Array.from(
+  { length: 12 },
+  (_, index) => new Date(now.getTime() - (11 - index) * 5 * 60000),
+);
+const single = {
+  x: times,
+  series: [
+    {
+      key: "queue",
+      label: "Render queue",
+      data: [4, 6, 5, 9, 12, 10, 14, 11, 8, 9, 7, 6],
+    },
+  ],
+  markers: [{ x: times[6]!, label: "Batch submitted" }],
+  unit: { one: "job", other: "jobs" },
+  now,
+} satisfies Omit<ComponentProps<typeof AreaChart>, "label">;
 const render = (state: ChartState = "ready") => (
   <AreaChart
     {...sample}
@@ -40,10 +58,20 @@ export default function AreaChartSection() {
         </div>
       </Specimen>
       <Specimen
+        title="One series"
+        description="The tooltip shows the value at the cursor; the head shows it in place of the latest value."
+        wide
+        specimenKey="chart-area-chart:default:1"
+      >
+        <div className="charts-pane" data-testid="chart-area-chart-single">
+          <AreaChart {...single} label="Render queue · fictional studio" title="Render queue" />
+        </div>
+      </Specimen>
+      <Specimen
         title="Responsive sizes"
         description="The same AreaChart adapts to row, tile and full-panel sizes."
         wide
-        specimenKey="chart-area-chart:default:1"
+        specimenKey="chart-area-chart:default:2"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -51,7 +79,7 @@ export default function AreaChartSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
-        specimenKey="chart-area-chart:default:2"
+        specimenKey="chart-area-chart:default:3"
       >
         <SkeletonSwaps id="area-chart" render={render} />
         <div className="gallery-tiers">
@@ -63,7 +91,7 @@ export default function AreaChartSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab specimenKey="chart-area-chart:default:3">{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-area-chart:default:4">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

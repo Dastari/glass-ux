@@ -12,6 +12,24 @@ const sample = {
   stacked: true,
   unit: "h",
 } satisfies Omit<ComponentProps<typeof AreaChart>, "label">;
+const now = new Date(2026, 9, 13, 11, 0, 0);
+const times = Array.from(
+  { length: 12 },
+  (_, index) => new Date(now.getTime() - (11 - index) * 5 * 60000),
+);
+const single = {
+  x: times,
+  series: [
+    {
+      key: "queue",
+      label: "Render queue",
+      data: [4, 6, 5, 9, 12, 10, 14, 11, 8, 9, 7, 6],
+    },
+  ],
+  markers: [{ x: times[6]!, label: "Batch submitted" }],
+  unit: { one: "job", other: "jobs" },
+  now,
+} satisfies Omit<ComponentProps<typeof AreaChart>, "label">;
 const render = (state: ChartState = "ready") => (
   <AreaChart
     {...sample}
@@ -34,6 +52,15 @@ export default function AreaChartSection() {
       >
         <div className="charts-pane" data-testid="chart-area-chart">
           {render()}
+        </div>
+      </Specimen>
+      <Specimen
+        title="One series"
+        description="The tooltip shows the value at the cursor; the head shows it in place of the latest value."
+        wide
+      >
+        <div className="charts-pane" data-testid="chart-area-chart-single">
+          <AreaChart {...single} label="Render queue · fictional studio" title="Render queue" />
         </div>
       </Specimen>
       <Specimen

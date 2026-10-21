@@ -128,8 +128,9 @@ function prepare(
  *   compact  title, passive legend or latest value; the plot with its top gridline and the
  *            first and last x labels
  *   full     y gridlines and labels, x labels, threshold bands and markers, an interactive
- *            legend, and the crosshair: one series' readout replaces its value in the head
- *            (Metric's model); several series show the glass tooltip
+ *            legend, the crosshair and the glass tooltip at the cursor (every visible series,
+ *            one or more); with one series the hovered value also replaces the latest in the
+ *            head (Metric's model)
  */
 export function LineChart(props: LineChartProps) {
   const { label, title, state = "ready", series, x, unit, format, xLabel = "Time", formatX, area, stacked, now, thresholds, markers, domain, ...rest } = props
@@ -558,19 +559,26 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
         <>
           <HoverLayer store={store} drawn={drawn} px={px} xs={xs} y0={y0} y1={y1} width={width} height={height} rem={rem} toned={toned} thresholds={sortedThresholds} />
           <HitLayer store={store} count={xs.length} locate={(lx) => locate(lx)} anchor={anchor} snap label={`${label} — inspect values`} valueText={valueText} />
-          {visible.length > 1 ? (
+          {visible.length > 0 ? (
             <ChartTooltip store={store} anchor={plotRef}>
               {(hover) => {
                 const at = prepared.xs[hover.index]
-                const rows: TooltipRow[] = visible.map((item) => ({
-                  key: item.key,
-                  label: item.label,
-                  value: formatValue(item.data[hover.index], fmt),
-                  slot: slots.get(item.key),
-                  tone: item.tone,
-                  shape: stacked ? "box" : "line",
-                }))
-                const total = stacked ? visible.reduce((sum, item) => sum + (item.data[hover.index] ?? 0), 0) : null
+                const rows: TooltipRow[] = visible.map((item) => {
+                  const value = item.data[hover.index]
+                  // A toned single series keys its row with the band the value is in, as its dot does.
+                  let tone = item.tone as string | undefined
+                  if (toned && value !== null && value !== undefined) for (const t of sortedThresholds) if (value >= t.value) tone = t.tone
+                  return {
+                    key: item.key,
+                    label: item.label,
+                    value: formatValue(value, fmt),
+                    slot: slots.get(item.key),
+                    tone,
+                    shape: stacked ? "box" : "line",
+                  }
+                })
+                // One visible band's total is its own value: no footer for it.
+                const total = stacked && visible.length > 1 ? visible.reduce((sum, item) => sum + (item.data[hover.index] ?? 0), 0) : null
                 const marker = (markers ?? []).find((m) => nearestIndex(xs, toNumber(m.x)) === hover.index)
                 return (
                   <TooltipBody

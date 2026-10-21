@@ -47,6 +47,7 @@ import {
   type MenuContent,
 } from "./actions-menu.js";
 import { BodyMessage, RetryButton, SkeletonRows, VirtualRows } from "./body.js";
+import { LoadMoreCard, LoadMoreRow, useLoadMore } from "./infinite.js";
 import { useHeaderWheel } from "./wheel.js";
 import {
   CARD_INLINE_STATUS_REM,
@@ -74,7 +75,7 @@ import { cellFilter, CellFilterItems } from "./filters/cell-menu.js";
 import { useFilterController } from "./filters/controller.js";
 import { FilterPopover } from "./filters/popover.js";
 import { DataTableFooter } from "./footer.js";
-import { formatCount } from "./format.js";
+import { formatCount, formatNumber } from "./format.js";
 import { LocaleProvider, useLocale } from "../../lib/locale/use-locale.js";
 import {
   DEFAULT_GROUP_PAGE_SIZE,
@@ -298,6 +299,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   } = props;
   const locale = useLocale(props.locale);
   const reorderable = Boolean(reorder);
+  // Grouped tables load each group's rows in place ("Show more") instead.
+  const infinite = grouping ? undefined : props.infinite;
   const domId = useId();
 
   /* ── State: each slice controlled by the caller or owned here ─────────────────── */
@@ -667,6 +670,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     queryKey: resultKey,
     live,
     isScrolledAway,
+    appending: Boolean(infinite),
   });
   // A move the host has not reflected in `rows` yet shows on top of them (optimistic display).
   const [shownMove, setShownMove] = useState<ShownMove | null>(null);
@@ -824,6 +828,13 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     null,
   );
   const noun = props.noun ?? DEFAULT_NOUN;
+  const loadMore = useLoadMore({
+    infinite,
+    resultKey,
+    loaded: data.length,
+    refetching,
+    failedMessage: `Couldn't load more ${noun.other}`,
+  });
 
   /* ── Search (R16.8): the toolbar field, `/` to focus it ───────────────────────── */
   const searchHandle = useRef<SearchHandle | null>(null);
@@ -854,6 +865,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           !grouping &&
           !reorder.withinPage &&
           (Boolean(cursor) ||
+            Boolean(infinite?.hasMore) ||
             pagination.pageIndex > 0 ||
             (rowCount !== undefined && rowCount > rows.length)),
         held: liveRows.pending > 0,
@@ -1925,7 +1937,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     (cursor || grouping ? 0 : pagination.pageIndex * pagination.pageSize) + 2;
   const totalRows = grouping
     ? undefined
-    : (rowCount ?? (cursor ? undefined : data.length));
+    : (rowCount ??
+      (cursor || loadMore.active ? undefined : data.length));
+  const showTail = loadMore.active && !showSkeleton && !showError && !showEmpty;
   const colCount =
     visibleColumns.length + (selectable ? 2 : 1) + (reorderable ? 1 : 0);
 
@@ -2067,6 +2081,18 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           getLabel={getLabel}
           gripOf={gripOf}
           revision={rowRevision}
+          tail={
+            showTail ? (
+              <LoadMoreCard
+                load={loadMore}
+                scrollRef={scrollRef}
+                layout={cards}
+                selectable={selectable}
+                actions={hasActions || Boolean(renderRowActions)}
+                grip={reorderable}
+              />
+            ) : null
+          }
         />
       </div>,
     );
@@ -2098,6 +2124,22 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         wrapContainer={wrapRows}
         gripOf={gripOf}
         revision={rowRevision}
+        renderTail={
+          showTail
+            ? ({ index, top }) => (
+                <LoadMoreRow
+                  load={loadMore}
+                  scrollRef={scrollRef}
+                  top={top}
+                  ariaRowIndex={firstRowIndex + index}
+                  colSpan={colCount}
+                  columns={visibleColumns}
+                  selectable={selectable}
+                  grip={reorderable}
+                />
+              )
+            : undefined
+        }
       />
     );
   }
@@ -2189,7 +2231,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           }
           aria-colcount={colCount}
           aria-multiselectable={selectable || undefined}
-          aria-busy={loading || refetching || undefined}
+          aria-busy={
+            loading || refetching || Boolean(infinite?.loadingMore) || undefined
+          }
           tabIndex={-1}
           onKeyDown={onGridKeyDown}
         >
@@ -2206,6 +2250,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                 selectable={selectable}
                 pageSelection={pageSelection(selection, order)}
                 pageRowCount={order.length}
+                loadedRows={Boolean(infinite)}
                 hiddenCount={hiddenColumns.length}
                 expandedAll={expandAll}
                 columnMenu={columnMenu}
@@ -2263,12 +2308,18 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         updatedAt={updatedAt}
         status={status}
         label={label}
-        countLabel={formatCount(
-          grouping ? groupTotal : (rowCount ?? data.length),
-          noun,
-          locale,
-        )}
-        grouped={Boolean(grouping)}
+        countLabel={
+          loadMore.active
+            ? rowCount !== undefined
+              ? `${formatNumber(data.length, 0, locale)} of ${formatCount(rowCount, noun, locale)}`
+              : `${formatCount(data.length, noun, locale)} loaded`
+            : formatCount(
+                grouping ? groupTotal : (rowCount ?? data.length),
+                noun,
+                locale,
+              )
+        }
+        counted={Boolean(grouping) || Boolean(infinite)}
         bulk={{
           count: selected,
           targets: selectedTargets,

@@ -1,10 +1,11 @@
 import type { RowData } from "@tanstack/react-table"
 import type { Row, RowSelectionState } from "@tanstack/react-table"
 import { defaultRangeExtractor, useVirtualizer, type Virtualizer } from "@tanstack/react-virtual"
-import { useCallback, useLayoutEffect, type HTMLAttributes, type ReactElement, type ReactNode, type RefObject } from "react"
+import { Fragment, useCallback, useLayoutEffect, type HTMLAttributes, type ReactElement, type ReactNode, type Ref, type RefObject } from "react"
 import { IconAlert } from "../../icons/generated/icons.js"
 import { Button } from "../button/index.js"
 import { EntityIdentitySkeleton } from "../entity/index.js"
+import { cx } from "../../lib/cx.js"
 import { Skeleton } from "../skeleton/index.js"
 import type { CellSkeleton, DataTableFeatures } from "./features.js"
 import { GroupLine } from "./group-rows.js"
@@ -51,6 +52,11 @@ export interface VirtualRowsProps<T extends RowData> {
   gripOf?: (row: Row<DataTableFeatures, T>) => string
   /** Bumps when row-level renderers change (memoised rows redraw). */
   revision: object
+  /**
+   * Infinite loading: a line after the rows (a placeholder row, or the failure with Retry),
+   * one row tall and always mounted, so it can watch for the end of the list coming into view.
+   */
+  renderTail?: (placement: { index: number; top: number }) => ReactElement
 }
 
 /**
@@ -83,12 +89,14 @@ export function VirtualRows<T extends RowData>({
   wrapContainer,
   gripOf,
   revision,
+  renderTail,
 }: VirtualRowsProps<T>) {
   const isExpanded = useCallback(
     (row: Row<DataTableFeatures, T> | undefined) => Boolean(row && hidden.length && (expandAll || expanded.has(row.id))),
     [expandAll, expanded, hidden.length]
   )
-  const count = items ? items.length : rows.length
+  const lineCount = items ? items.length : rows.length
+  const count = lineCount + (renderTail ? 1 : 0)
   const rowAt = (index: number): Row<DataTableFeatures, T> | undefined => {
     if (!items) return rows[index]
     const item = items[index]
@@ -97,11 +105,12 @@ export function VirtualRows<T extends RowData>({
   // TanStack keys its measurement cache by this callback's identity. Keep scroll renders
   // from rebuilding the geometry for every loaded row; new data/order still invalidates it.
   const keyAt = useCallback((index: number) => {
+    if (index === lineCount) return "\u0000tail"
     if (!items) return rows[index]?.id ?? index
     const item = items[index]
     if (!item) return index
     return item.kind === "row" ? item.row.id : item.key
-  }, [rows, items])
+  }, [rows, items, lineCount])
   // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual is the table's virtualizer (R16); rows are memoised by data identity, not by the compiler
   const virtualizer = useVirtualizer<HTMLDivElement, Element>({
     count,
@@ -112,10 +121,12 @@ export function VirtualRows<T extends RowData>({
     initialRect: { width: 0, height: renderAll ? count * rowHeight : 0 },
     rangeExtractor: (range) => {
       const indexes = defaultRangeExtractor(range)
-      if (activeIndex >= 0 && activeIndex < count && !indexes.includes(activeIndex)) {
+      if (activeIndex >= 0 && activeIndex < lineCount && !indexes.includes(activeIndex)) {
         indexes.push(activeIndex)
         indexes.sort((a, b) => a - b)
       }
+      // The end line stays mounted: it watches for the end of the list coming near.
+      if (renderTail && !indexes.includes(lineCount)) indexes.push(lineCount)
       return indexes
     },
   })
@@ -130,6 +141,7 @@ export function VirtualRows<T extends RowData>({
   return wrapContainer(
     <div {...containerProps} role="rowgroup" className="fa-dt-rows" style={{ height: virtualizer.getTotalSize() }}>
       {virtualItems.map((virtual) => {
+        if (renderTail && virtual.index === lineCount) return <Fragment key="\u0000tail">{renderTail({ index: virtual.index, top: virtual.start })}</Fragment>
         const item = items?.[virtual.index]
         if (item && item.kind !== "row") {
           return (
@@ -218,27 +230,55 @@ export function SkeletonRows({
   return (
     <>
       {Array.from({ length: count }, (_, index) => (
-        <div
+        <SkeletonRow
           key={index}
-          className="fa-dt-row fa-dt-skel-row"
-          aria-hidden
-          style={{ transform: `translateY(calc(var(--_row-h) * ${index}))` }}
-        >
-          {grip ? <div className="fa-dt-cell fa-dt-grip" /> : null}
-          {selectable ? (
-            <div className="fa-dt-cell fa-dt-select">
-              <Skeleton.Block className="fa-dt-skel-check" radius="check" />
-            </div>
-          ) : null}
-          {columns.map((column, columnIndex) => (
-            <div key={column.id} className="fa-dt-cell" data-col={column.key} data-align={column.meta.align} data-pinned={column.pinned ? "" : undefined} data-edge={column.edge ? "" : undefined} style={column.style}>
-              <CellPlaceholder kind={column.meta.skeleton} seed={index + columnIndex * 3} />
-            </div>
-          ))}
-          <div className="fa-dt-cell fa-dt-trail" />
-        </div>
+          seed={index}
+          top={`calc(var(--_row-h) * ${index})`}
+          columns={columns}
+          selectable={selectable}
+          grip={grip}
+        />
       ))}
     </>
+  )
+}
+
+/** One skeleton row at `top` (a CSS length), in the exact row box. */
+export function SkeletonRow({
+  seed,
+  top,
+  columns,
+  selectable,
+  grip = false,
+  className,
+  ref,
+}: {
+  /** Varies the placeholder widths. */
+  seed: number
+  top: string
+  /** Typed column definitions, including rendering, sorting, priorities and filters. */
+  columns: readonly ColumnInfo[]
+  selectable: boolean
+  /** Reserve the reorder grip column. */
+  grip?: boolean
+  className?: string
+  ref?: Ref<HTMLDivElement>
+}) {
+  return (
+    <div ref={ref} className={cx("fa-dt-row fa-dt-skel-row", className)} aria-hidden style={{ transform: `translateY(${top})` }}>
+      {grip ? <div className="fa-dt-cell fa-dt-grip" /> : null}
+      {selectable ? (
+        <div className="fa-dt-cell fa-dt-select">
+          <Skeleton.Block className="fa-dt-skel-check" radius="check" />
+        </div>
+      ) : null}
+      {columns.map((column, columnIndex) => (
+        <div key={column.id} className="fa-dt-cell" data-col={column.key} data-align={column.meta.align} data-pinned={column.pinned ? "" : undefined} data-edge={column.edge ? "" : undefined} style={column.style}>
+          <CellPlaceholder kind={column.meta.skeleton} seed={seed + columnIndex * 3} />
+        </div>
+      ))}
+      <div className="fa-dt-cell fa-dt-trail" />
+    </div>
   )
 }
 

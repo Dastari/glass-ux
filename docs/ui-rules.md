@@ -317,7 +317,8 @@ follows a fine pointer and a glint on the rim nearest it.
 
 ## R16 · Data tables
 
-- **R16.1** Sorting, filters, page and page size live in the URL.
+- **R16.1** Sorting, filters, page and page size live in the URL. An infinite table keeps its
+  sorting, filters and search there; how far it has loaded is not part of the link.
 - **R16.2** Column visibility, sizing and pinning respond to the container and the column
   menu.
 - **R16.3** Column widths, hidden columns, pins and density are per-user preferences. Saved

@@ -1,6 +1,6 @@
 import type { RowData } from "@tanstack/react-table";
 import type { Row, RowSelectionState } from "@tanstack/react-table";
-import { memo, type ReactElement } from "react";
+import { memo, type ReactElement, type ReactNode } from "react";
 import { IconChevronDown, IconChevronUp } from "../../icons/generated/icons.js";
 import { Button } from "../button/index.js";
 import { Skeleton } from "../skeleton/index.js";
@@ -249,9 +249,12 @@ export function CardList<T extends RowData>({
   noun,
   gripOf,
   revision,
+  tail,
 }: {
   /** Records or matrix rows in display order. */
   rows: readonly Row<DataTableFeatures, T>[];
+  /** Infinite loading: the line after the cards (a placeholder card, or the failure with Retry). */
+  tail?: ReactNode;
   /** Grouped tables: group headers and "Show more" lines between the cards. */
   items?: readonly GroupedItem<Row<DataTableFeatures, T>>[] | null;
   /** Layout or presentation mode. */
@@ -313,6 +316,7 @@ export function CardList<T extends RowData>({
           />
         ),
       )}
+      {tail}
     </>
   );
 }

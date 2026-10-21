@@ -22,6 +22,14 @@ server needs a hand-written `FilterCondition`. In a paged view the application s
 counts and server paging/filtering; filtering one downloaded page does not filter the dataset.
 Use URL-state adapters with the host router when the state should be shareable.
 
+For a long feed or log, pass `infinite={{ hasMore, onLoadMore, loadingMore }}` instead of
+paging: the table asks for each batch as the end comes near, and the host appends it to
+`rows` (Apollo `fetchMore`, TanStack Query `fetchNextPage`). Keep sorting, filters and search
+server-side; a change starts a new list. With graphql-orm, use the offset list for sortable
+tables and the keyset list only for a fixed order; `glass-ux/adapters/graphql-orm` has
+`connectionRows`, `nextOffsetPage`, `nextKeysetPage` and the Apollo field policy
+`connectionPagination()` (docs/data-filters.md).
+
 Let navigation name the view: omit repeated headings and introductory paragraphs.
 Use a bounded workspace with one primary table. Put related facts in the same row;
 give independent datasets separate routed tabs. Table compositions use the padded

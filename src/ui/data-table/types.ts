@@ -59,6 +59,33 @@ export interface CursorPagination {
   onFirst?: () => void;
 }
 
+/**
+ * Infinite loading (server-side): one growing list instead of pages. The host's data layer
+ * appends each batch to `rows` (Apollo's `fetchMore` with a merging field policy, TanStack
+ * Query's `fetchNextPage`), requesting the next offset (`rows.length`) or the last cursor.
+ * Sorting, filters and the search are still the server's: a change starts a new list from
+ * the top, as it returns a paged table to page 1.
+ */
+export interface DataTableInfinite {
+  /** The server has rows after the last one in `rows`. */
+  hasMore: boolean;
+  /**
+   * Called with no arguments when the end of the loaded rows comes within a screen of view:
+   * fetch the next batch and append it to `rows`. It is called once per batch, and not while
+   * `refetching` (the rows shown belong to the previous query). A returned
+   * promise holds further calls until it settles; if it rejects, the end of the list shows
+   * "Couldn't load more {noun}" with Retry.
+   */
+  onLoadMore: () => void | Promise<unknown>;
+  /** A batch is loading. While `hasMore`, a placeholder row stands at the end of the list either way. */
+  loadingMore?: boolean;
+  /**
+   * The last batch failed (for a host that tracks it rather than rejecting). The end of the
+   * list shows it with Retry, which calls `onLoadMore`, and the loaded rows stay.
+   */
+  error?: ReactNode;
+}
+
 export interface DataTableNoun {
   one: string;
   other: string;
@@ -94,6 +121,12 @@ export interface DataTableProps<T extends RowData> {
   onStateChange?: (state: DataTableState, change: DataTableStateChange) => void;
   /** Switch the pager to cursor mode. */
   cursor?: CursorPagination;
+  /**
+   * Load more rows as the reader scrolls instead of paging (see `DataTableInfinite`). The pager
+   * gives way to a count, and the page is neither shown nor written to the URL. Ignored with
+   * `grouping`, whose groups each load their own rows ("Show more").
+   */
+  infinite?: DataTableInfinite;
   /** Page-size choices offered by pagination. */
   pageSizes?: readonly number[];
   /**

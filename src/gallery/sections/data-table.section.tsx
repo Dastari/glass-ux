@@ -332,6 +332,110 @@ function GroupedDemo() {
   )
 }
 
+/* ── Infinite loading: offset batches appended as the reader scrolls ───────────────── */
+const BATCH = 50
+const listServer = createEndpointServer()
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/**
+ * A growing list, as Apollo's `fetchMore` with a merging field policy (or TanStack Query's
+ * `useInfiniteQuery`) keeps one: the first batch for each query, then each next offset
+ * appended. The previous query's rows stay until the new first batch arrives.
+ */
+function useEndpointList(sorting: DataTableState["sorting"], search: string | undefined, failNext: { current: boolean }) {
+  const key = JSON.stringify([sorting, search ?? ""])
+  const [list, setList] = useState<{ key: string; rows: Endpoint[]; rowCount: number } | null>(null)
+  const [loadingMore, setLoadingMore] = useState(false)
+  useEffect(() => {
+    let cancelled = false
+    const [order, query] = JSON.parse(key) as [DataTableState["sorting"], string]
+    void listServer.query({ sorting: order, search: query, pageIndex: 0, pageSize: BATCH }).then((page) => {
+      if (!cancelled) setList({ key, rows: page.rows, rowCount: page.rowCount })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [key])
+  const current = list?.key === key ? list : null
+  const loadMore = async () => {
+    if (!current) return
+    setLoadingMore(true)
+    try {
+      if (failNext.current) {
+        failNext.current = false
+        await wait(400)
+        throw new Error("The endpoint service did not answer")
+      }
+      const page = await listServer.query({ sorting, search, pageIndex: current.rows.length / BATCH, pageSize: BATCH })
+      setList((value) => (value?.key === key ? { ...value, rows: [...value.rows, ...page.rows], rowCount: page.rowCount } : value))
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+  return {
+    rows: list?.rows ?? NO_ROWS,
+    rowCount: list?.rowCount,
+    pending: !current,
+    hasMore: current ? current.rows.length < current.rowCount : false,
+    loadingMore,
+    loadMore,
+  }
+}
+
+function InfiniteDemo() {
+  const [state, setState] = useState<DataTableState>({
+    sorting: [{ id: "lastSeen", desc: true }],
+    filters: [],
+    pagination: { pageIndex: 0, pageSize: BATCH },
+    selection: {},
+  })
+  const failNext = useRef(false)
+  const [failArmed, setFailArmed] = useState(false)
+  const list = useEndpointList(state.sorting, state.search, failNext)
+  const rowActions = useEndpointRowActions()
+  return (
+    <div className="gallery-lab-frame dt-demo-infinite" data-testid="dt-infinite">
+      <DataTable<Endpoint>
+        id="gallery-endpoints-infinite"
+        label="Endpoints, loaded as you scroll"
+        rows={list.rows}
+        rowCount={list.rowCount}
+        columns={endpointColumns}
+        getRowId={getRowId}
+        state={state}
+        onStateChange={setState}
+        loading={list.rows.length === 0 && list.pending}
+        refetching={list.rows.length > 0 && list.pending}
+        search={ENDPOINT_SEARCH}
+        infinite={{
+          hasMore: list.hasMore,
+          loadingMore: list.loadingMore,
+          onLoadMore: () => {
+            setFailArmed(false)
+            return list.loadMore()
+          },
+        }}
+        toolbar={
+          <Button
+            size="sm"
+            variant={failArmed ? "primary" : "secondary"}
+            aria-pressed={failArmed}
+            onClick={() => {
+              failNext.current = !failArmed
+              setFailArmed(!failArmed)
+            }}
+          >
+            Fail next batch
+          </Button>
+        }
+        actions={rowActions}
+        getRowLabel={(endpoint) => endpoint.name}
+        noun={NOUN}
+      />
+    </div>
+  )
+}
+
 /* ── Reorderable rows: a job queue the host owns, saved locally or on a mock server ───── */
 interface QueueJob {
   id: string
@@ -601,6 +705,15 @@ function DataTableSection() {
       </Specimen>
 
       <Specimen
+        title="Infinite loading"
+        description="Rows load 50 at a time from the mock server as the end of the list comes near, instead of pages. Sorting and the search start a new list from the top. Fail next batch makes the next request fail, so the end of the list offers Retry."
+        layout="bare"
+        wide
+      >
+        <InfiniteDemo />
+      </Specimen>
+
+      <Specimen
         title="Reorderable rows"
         description="Drag a row by the grip at its start, or focus the grip, press Space and use the arrow keys. The host owns the order and saves each move. Running jobs are locked, and sorting by Estimate disables reordering. Server saves after 600 ms; Server fails reverts the move."
         layout="bare"
@@ -678,6 +791,7 @@ function DataTableSection() {
           "Group on the server: a grouped count for the headers, one query per expanded group.",
           "Write empty states as one fact plus the action that fixes it.",
           "Keep a manual order in the host's data; return a promise from reorder.onReorder to save it.",
+          "Load long feeds and logs with infinite and an offset or cursor; keep the sort, filters and search in the URL.",
           "Let the table fill a pane with a definite height; it scrolls inside itself.",
         ]}
         dont={[
@@ -685,6 +799,7 @@ function DataTableSection() {
           "Put a banner above the table for errors or new rows; both happen in place.",
           "Hand-build a row menu next to the table's own.",
           "Count a group's rows in the browser; the header shows the server's count.",
+          "Load every row up front and page it in the browser; ask the server for the next batch.",
           "Store a manual order in table preferences or the URL; it is the host's data.",
           "Size columns in px; widths are rem so they scale with the interface.",
           "Wrap the table in another glass layer; the header is an inset fill.",

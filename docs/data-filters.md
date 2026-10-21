@@ -29,6 +29,56 @@ the user's local calendar day; timestamp bounds are emitted as UTC instants. Rec
 rolling presets when fetching. A calendar date and a timestamp have different semantics;
 choose the matching date spec instead of stripping time zones in application code.
 
+## Load more as the reader scrolls
+
+`infinite` replaces the pager with one growing list. Pass the loaded rows, `rowCount` when the
+server counts, and `infinite={{ hasMore, onLoadMore, loadingMore }}`. The table calls
+`onLoadMore` once per batch as the end of the list comes within a screen of view; append the
+next batch to `rows`. A placeholder row stands at the end while `hasMore`. A rejected promise
+from `onLoadMore` (or `infinite.error`) shows the failure there with Retry and keeps the loaded
+rows. Sorting, filters and the search remain server state: a change returns the table to the
+top, and the host starts a new list. Grouped tables ignore `infinite`.
+
+With graphql-orm, the offset list (`Page: { Limit, Offset }`) takes the table's `OrderBy`; ask
+for the next offset with `nextOffsetPage`. A keyset list (`<Plural>Keyset(page: { after })`)
+has a fixed order, so use it only for a table without sortable columns, with `nextKeysetPage`.
+`connectionRows` reads a connection into `rows`, `rowCount` and `hasMore`, returning the same
+array for the same result. With Apollo Client, `connectionPagination()` is the list field's
+type policy: it joins each `fetchMore` batch to the cached list, keyed by every argument but
+the page, and a refetch or poll replaces only the head.
+
+```tsx
+import { connectionPagination, connectionRows, nextOffsetPage, toWhere } from "glass-ux/adapters/graphql-orm";
+
+const cache = new InMemoryCache({ typePolicies: { Query: { fields: { Devices: connectionPagination() } } } });
+
+const { data, loading, networkStatus, fetchMore } = useQuery(DEVICES, {
+  variables: { Where: toWhere(state.filters, columns, { search }), OrderBy: orderBy(state.sorting), Page: { Limit: 50, Offset: 0 } },
+  notifyOnNetworkStatusChange: true,
+});
+const devices = connectionRows(data?.Devices);
+
+<DataTable
+  rows={devices.rows}
+  rowCount={devices.rowCount}
+  loading={loading && !data}
+  refetching={networkStatus === NetworkStatus.setVariables}
+  state={state}
+  onStateChange={setState}
+  infinite={{
+    hasMore: devices.hasMore,
+    loadingMore: networkStatus === NetworkStatus.fetchMore,
+    onLoadMore: () => fetchMore({ variables: { Page: nextOffsetPage(data?.Devices, 50) } }),
+  }}
+  …
+/>;
+```
+
+Offset batches can shift when rows are inserted or deleted ahead of the loaded ones; the field
+policy shows a row that moved into the next batch once. For a live feed, pair `live` with the
+subscription: rows appended by a batch are added at once, and rows that arrive above the
+loaded ones wait behind the "N new" pill as usual.
+
 ## Keep URL state explicit
 
 `parseTableSearch` and `serializeTableSearch` encode table state. `useTableUrlState`

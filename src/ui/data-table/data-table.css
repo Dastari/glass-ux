@@ -708,6 +708,34 @@
     padding-inline-start: var(--space-1);
   }
 
+  /* ── Infinite loading: the line after the last loaded row ───────────────────── */
+  /* A placeholder row while the server has more, or the failure with Retry, one row tall
+     either way so nothing moves when it changes. The failure sticks to the start edge. */
+  .fa-dt-load-cell {
+    position: sticky;
+    inset-inline-start: 0;
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2);
+    width: min(100%, 100cqi);
+    min-width: 0;
+    height: var(--_row-h);
+    padding-inline: calc(var(--fa-dt-lead-w) + var(--_cell-px) - var(--space-2-5)) var(--space-2);
+    color: var(--fg-muted);
+  }
+  .fa-dt-load-text {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-dt-cards > .fa-dt-load-row .fa-dt-load-cell {
+    position: static;
+    width: 100%;
+    padding-inline-start: var(--space-1);
+  }
   /* ── States in the body's own box (R9.1, R10) ───────────────────────────────── */
   .fa-dt-message-group {
     display: grid;

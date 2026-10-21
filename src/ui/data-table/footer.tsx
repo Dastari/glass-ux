@@ -182,8 +182,11 @@ export interface FooterProps<T extends RowData> {
   label: string
   /** Count text for a table that fits on one page ("5 applications"). */
   countLabel: string
-  /** Grouped tables page each group on its own ("Show more"): a count instead of a pager. */
-  grouped?: boolean
+  /**
+   * A count instead of a pager: grouped tables page each group on its own ("Show more"), and
+   * infinite tables load more as the reader scrolls.
+   */
+  counted?: boolean
   bulk: BulkProps<T>
 }
 
@@ -204,13 +207,14 @@ export function DataTableFooter<T extends RowData>({
   status,
   label,
   countLabel,
-  grouped = false,
+  counted = false,
   bulk,
 }: FooterProps<T>) {
   const bulkOpen = bulk.count > 0
-  // One page and nowhere to go (or groups paged in place): a count instead of a pager.
+  // One page and nowhere to go (or groups paged in place, or rows loaded as they scroll): a
+  // count instead of a pager.
   const singlePage =
-    (grouped && !loading) || (!loading && !cursor && pageIndex === 0 && (rowCount ?? pageRows) <= pageSize && pageRows <= pageSize)
+    (counted && !loading) || (!loading && !cursor && pageIndex === 0 && (rowCount ?? pageRows) <= pageSize && pageRows <= pageSize)
   return (
     <div className="fa-dt-footer" data-compact={compact ? "" : undefined}>
       <div className="fa-dt-status" inert={bulkOpen} data-hidden={bulkOpen ? "" : undefined}>

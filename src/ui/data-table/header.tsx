@@ -50,6 +50,8 @@ export interface HeaderProps {
   selectable: boolean
   pageSelection: PageSelection
   pageRowCount: number
+  /** Infinite loading: the select-all box covers the loaded rows, not a page. */
+  loadedRows?: boolean
   hiddenCount: number
   expandedAll: boolean
   columnMenu: MenuPrimitive.Handle<string>
@@ -183,6 +185,7 @@ function HeaderView({
   selectable,
   pageSelection,
   pageRowCount,
+  loadedRows = false,
   hiddenCount,
   expandedAll,
   columnMenu,
@@ -205,7 +208,7 @@ function HeaderView({
           <SelectCheckbox
             checked={pageSelection === "all"}
             indeterminate={pageSelection === "some"}
-            label="Select all rows on this page"
+            label={loadedRows ? "Select all loaded rows" : "Select all rows on this page"}
             onToggle={() => controller.togglePage(pageSelection !== "all")}
             tabIndex={pageRowCount ? 0 : -1}
           />

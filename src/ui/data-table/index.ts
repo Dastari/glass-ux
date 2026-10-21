@@ -53,6 +53,7 @@ export type {
   CursorPagination,
   DataTableDensity,
   DataTableFilterToggle,
+  DataTableInfinite,
   DataTableNoun,
   DataTableProps,
   DataTableRowOpen,

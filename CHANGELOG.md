@@ -4,6 +4,28 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Added
+
+- `DataTable` infinite loading: `infinite={{ hasMore, onLoadMore, loadingMore, error }}` loads
+  the next batch from the server as the end of the list comes within a screen of view,
+  instead of paging. `onLoadMore` runs once per batch, not again while its promise is
+  pending, and not while `refetching` shows the previous query's rows. Sorting, filters and the search stay server-side: a change returns to the top and
+  starts a new list. A placeholder row holds the end of the list while the server has more. A
+  failed batch (a rejected promise, or `error`) shows "Couldn't load more {noun}" with Retry
+  there and keeps the loaded rows. The status bar counts the loaded rows ("150 of 1,284
+  endpoints") in place of the pager. The select-all box selects the loaded rows. With
+  `live`, a loaded batch is appended at once; rows arriving above the loaded ones still wait
+  behind "N new". Reordering is off while more rows remain to load (unless
+  `reorder.withinPage`). Grouped tables ignore `infinite`.
+- `glass-ux/adapters/graphql-orm`: `connectionRows` reads a graphql-orm connection into table
+  rows, `rowCount` and `hasMore` (the same rows for the same result). `nextOffsetPage` and
+  `nextKeysetPage` build the next batch's page input. `connectionPagination()` is an Apollo
+  Client field policy: it appends `fetchMore` batches to the cached list, keyed by every
+  argument except the page; a refetch replaces only the head, and a row that shifted between
+  offset batches appears once.
+
 ## 0.9.3
 
 ### Changed

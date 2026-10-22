@@ -93,3 +93,25 @@ describe("collapsing a docked pane from inside it", () => {
     expect(document.activeElement).toBe(outside);
   });
 });
+
+describe("a collapsed docked inspector", () => {
+  it("puts its content away once it has slid out, keeping it, and shows it again on open", () => {
+    vi.useFakeTimers();
+    try {
+      render(<Shell />);
+      const content = screen.getByRole("button", { name: "Inside inspector" });
+      const pane = content.closest("aside")!;
+      act(() => fireEvent.click(pane.querySelector<HTMLElement>('[aria-label="Hide inspector"]')!));
+      // Still shown while the pane slides out.
+      expect(pane.querySelector(".fa-shell-inspector-body")).not.toHaveStyle({ display: "none" });
+      act(() => fireEvent.transitionEnd(pane, { propertyName: "transform" }));
+      expect(pane.querySelector(".fa-shell-inspector-body")).toHaveStyle({ display: "none" });
+      // The same element: kept, not unmounted.
+      expect(pane.contains(content)).toBe(true);
+      act(() => fireEvent.click(screen.getByRole("button", { name: "Show inspector" })));
+      expect(pane.querySelector(".fa-shell-inspector-body")).not.toHaveStyle({ display: "none" });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});

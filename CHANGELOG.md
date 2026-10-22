@@ -9,6 +9,12 @@ has upgrade steps in the [migration guide](docs/migration.md).
 A performance release: nothing changes how the library looks or moves, except where noted
 under Changed. Measurements are in [docs/performance.md](docs/performance.md#measurements-099).
 
+### Added
+
+- A surface can take its own material level: `glass` on `Surface` and `Panel`, or
+  `data-glass="full" | "reduced" | "solid"` on any element. It is never more transparent than
+  the page's level, so a person's Solid choice and reduced transparency still apply.
+
 ### Performance
 
 - Tooltips under a `TooltipProvider` share one host per provider instead of a Base UI

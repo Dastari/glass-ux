@@ -12,6 +12,17 @@ export default function SurfaceExample() {
           Repeated cards use tile geometry and the unblurred card material.
         </Surface>
       </Specimen>
+      <Specimen title="Material level per surface" layout="stack">
+        <Surface material="panel" padding="panel">
+          The page's level (Glass unless Appearance says otherwise).
+        </Surface>
+        <Surface material="panel" padding="panel" glass="reduced">
+          glass="reduced": Frosted, less blur and a denser fill.
+        </Surface>
+        <Surface material="panel" padding="panel" glass="solid">
+          glass="solid": opaque, with the same rims and geometry.
+        </Surface>
+      </Specimen>
     </SectionPage>
   );
 }

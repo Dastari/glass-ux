@@ -12,6 +12,7 @@ against the panel's width — never the viewport's.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+| glass | `"full" \| "reduced" \| "solid" \| undefined` | "full", "reduced", "solid" | no | — | This panel's own material level; see Surface `glass`. Default: the page's. |
 | scroll | `boolean \| undefined` | false, true | no | false | Let the body scroll inside a bounded panel instead of growing the page. |
 
 Inherited properties:

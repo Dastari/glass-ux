@@ -196,9 +196,14 @@
   }
 
   /* Material overrides apply on the root and again on every mode island ([data-mode]),
-     which re-declares the fills for its mode. */
+     which re-declares the fills for its mode. A surface may choose its own level (data-glass
+     on any element, the Surface and Panel `glass` prop) for itself and what it contains, but
+     never one more transparent than the page's: a Glass surface on a Frosted page is
+     Frosted, and anything on a Solid page is Solid. */
   :root[data-glass="reduced"],
-  :root[data-glass="reduced"] [data-mode] {
+  :root[data-glass="reduced"] :is([data-mode], [data-glass="full"]),
+  [data-glass="reduced"]:not(:root),
+  [data-glass="reduced"]:not(:root) :is([data-mode], [data-glass="full"]) {
     --glass-blur-chrome: 14px;
     --glass-blur-panel: 10px;
     --glass-blur-overlay: 16px;
@@ -216,7 +221,9 @@
   }
 
   :root[data-glass="solid"],
-  :root[data-glass="solid"] [data-mode] {
+  :root[data-glass="solid"] :is([data-mode], [data-glass]),
+  [data-glass="solid"]:not(:root),
+  [data-glass="solid"]:not(:root) :is([data-mode], [data-glass]) {
     --glass-moving-mix: 100%;
     --glass-blur-chrome: 0px;
     --glass-blur-panel: 0px;
@@ -242,7 +249,9 @@
   /* Opaque material: the static rims stay; light neither passes through nor reflects.
      Mode islands re-declare the optics, so they are switched off on them too. */
   :root[data-glass="solid"],
-  :root[data-glass="solid"] [data-mode] {
+  :root[data-glass="solid"] :is([data-mode], [data-glass]),
+  [data-glass="solid"]:not(:root),
+  [data-glass="solid"]:not(:root) :is([data-mode], [data-glass]) {
     --glass-fill-card: var(--surface-2);
     --glass-lens: transparent;
     --glass-lens-float: transparent;
@@ -255,7 +264,7 @@
   /* reduced transparency: generated from the Solid rules above by `pnpm styles` */
   @media (prefers-reduced-transparency: reduce) {
     :root:not([data-glass="full"]),
-    :root:not([data-glass="full"]) [data-mode] {
+    :root:not([data-glass="full"]) :is([data-mode], [data-glass]) {
       --glass-moving-mix: 100%;
       --glass-blur-chrome: 0px;
       --glass-blur-panel: 0px;
@@ -279,7 +288,7 @@
       --glass-grain: none;
     }
     :root:not([data-glass="full"]),
-    :root:not([data-glass="full"]) [data-mode] {
+    :root:not([data-glass="full"]) :is([data-mode], [data-glass]) {
       --glass-fill-card: var(--surface-2);
       --glass-lens: transparent;
       --glass-lens-float: transparent;
@@ -759,12 +768,19 @@
   :root[data-glass="solid"]
     :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached, .glass-scrim, .glass-control, .fa-control),
   :root[data-glass="solid"]
-    :is(.glass-chrome, .glass-panel, .glass-detached)::before {
+    :is(.glass-chrome, .glass-panel, .glass-detached)::before,
+  [data-glass="solid"]:not(:root)
+    :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached, .glass-scrim, .glass-control, .fa-control),
+  [data-glass="solid"]:not(:root)
+    :is(.glass-chrome, .glass-panel, .glass-detached)::before,
+  [data-glass="solid"]:not(:root):is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached),
+  [data-glass="solid"]:not(:root):is(.glass-chrome, .glass-panel, .glass-detached)::before {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
   /* Over imagery the frosted fills become the opaque ones. */
-  :root[data-glass="solid"] .over-imagery {
+  :root[data-glass="solid"] .over-imagery,
+  [data-glass="solid"]:not(:root) .over-imagery {
     --glass-fill-control: var(--glass-control-solid);
     --glass-fill-control-hover: var(--glass-control-solid-hover);
     --glass-fill-inset: var(--glass-inset-solid);

@@ -148,6 +148,9 @@ if (unlisted.length) {
 }
 
 const SOLID = ':root[data-glass="solid"]'
+// A surface's own Solid level (data-glass on any other element) needs no copy: the OS setting
+// applies to the page, and the page's copy already reaches nested surfaces.
+const SURFACE_SOLID = '[data-glass="solid"]:not(:root)'
 const AUTO = ':root:not([data-glass="full"])'
 const GENERATED = /^reduced transparency: generated/
 
@@ -165,14 +168,18 @@ function reducedTransparency(file) {
     const rules = []
     for (let node = comment.prev(); node && node.type !== "atrule"; node = node.prev()) {
       if (node.type === "comment") continue
-      if (node.type !== "rule" || !selectorList(node.selector).every((selector) => selector.startsWith(SOLID))) break
+      if (node.type !== "rule" || !selectorList(node.selector).every((selector) => selector.startsWith(SOLID) || selector.startsWith(SURFACE_SOLID))) break
       rules.unshift(node)
     }
     if (!rules.length) throw new Error(`${where}: no Solid rules (${SOLID} …) before the generated reduced-transparency block`)
     const indent = (comment.raws.before ?? "").replace(/^\n+/, "")
     media.removeAll()
     for (const rule of rules) {
-      const copy = rule.clone({ selector: rule.selector.replaceAll(SOLID, AUTO).replace(/\n/g, "\n  ") })
+      const selector = selectorList(rule.selector)
+        .filter((part) => part.startsWith(SOLID))
+        .join(`,\n${(rule.raws.before ?? "").replace(/^\n+/, "")}`)
+        .replaceAll(SOLID, AUTO)
+      const copy = rule.clone({ selector: selector.replace(/\n/g, "\n  ") })
       copy.raws.before = `\n${indent}  `
       copy.raws.after = `\n${indent}  `
       copy.walkDecls((decl) => {

@@ -10,6 +10,7 @@ import {
 } from "react";
 import { cx } from "../../lib/cx.js";
 import { useScrollEdges } from "../../lib/use-scroll-edges.js";
+import type { GlassLevel } from "../../lib/appearance/appearance.js";
 
 export type SurfaceMaterial =
   "chrome" | "panel" | "card" | "overlay" | "float" | "control" | "inset";
@@ -28,6 +29,12 @@ type SurfaceProps<T extends ElementType> = {
   padding?: SurfacePadding;
   /** Make this surface a size container so its contents can respond with @container. */
   container?: boolean;
+  /**
+   * This surface's own material level, for itself and what it contains: `full` (Glass),
+   * `reduced` (Frosted) or `solid`. Never more transparent than the page's level, which a
+   * person may have chosen: on a Frosted page a `full` surface stays Frosted. Default: the page's.
+   */
+  glass?: GlassLevel;
 } & Omit<ComponentProps<T>, "as">;
 
 /**
@@ -40,6 +47,7 @@ export function Surface<T extends ElementType = "div">({
   radius = "surface",
   padding = "none",
   container = false,
+  glass,
   className,
   ...rest
 }: SurfaceProps<T>) {
@@ -51,6 +59,7 @@ export function Surface<T extends ElementType = "div">({
       data-radius={radius}
       data-padding={padding}
       data-container={container ? "" : undefined}
+      data-glass={glass}
     />
   );
 }
@@ -58,6 +67,8 @@ export function Surface<T extends ElementType = "div">({
 export interface PanelProps extends ComponentProps<"section"> {
   /** Let the body scroll inside a bounded panel instead of growing the page. */
   scroll?: boolean;
+  /** This panel's own material level; see Surface `glass`. Default: the page's. */
+  glass?: GlassLevel;
 }
 
 /**
@@ -65,7 +76,7 @@ export interface PanelProps extends ComponentProps<"section"> {
  * Every Panel is an inline-size container named `panel`, so anything inside it lays out
  * against the panel's width — never the viewport's.
  */
-export function Panel({ scroll = false, className, ...rest }: PanelProps) {
+export function Panel({ scroll = false, glass, className, ...rest }: PanelProps) {
   return (
     <PanelScroll value={scroll}>
       <section
@@ -73,6 +84,7 @@ export function Panel({ scroll = false, className, ...rest }: PanelProps) {
         className={cx("glass-panel fa-surface fa-panel", className)}
         data-radius="surface"
         data-scroll={scroll ? "" : undefined}
+        data-glass={glass}
       />
     </PanelScroll>
   );

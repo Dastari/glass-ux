@@ -15,13 +15,15 @@
   }
   /* Solid and reduced transparency: the placeholder is an opaque tint, like other tints. */
   :root[data-glass="solid"],
-  :root[data-glass="solid"] [data-mode] {
+  :root[data-glass="solid"] :is([data-mode], [data-glass]),
+  [data-glass="solid"]:not(:root),
+  [data-glass="solid"]:not(:root) :is([data-mode], [data-glass]) {
     --skel-base: var(--tint-muted-solid);
   }
   /* reduced transparency: generated from the Solid rules above by `pnpm styles` */
   @media (prefers-reduced-transparency: reduce) {
     :root:not([data-glass="full"]),
-    :root:not([data-glass="full"]) [data-mode] {
+    :root:not([data-glass="full"]) :is([data-mode], [data-glass]) {
       --skel-base: var(--tint-muted-solid);
     }
   }

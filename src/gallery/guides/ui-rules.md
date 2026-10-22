@@ -132,7 +132,9 @@ follows a fine pointer and a glint on the rim nearest it.
   `backdrop-filter` make every material opaque with the same geometry: no element filters
   the backdrop, and controls, wells, soft tints and skeletons take opaque fills, so the
   canvas never shows through. Only hover and press states, scrims and edge shading stay
-  translucent.
+  translucent. A surface may take its own level (Surface and Panel `glass`, or `data-glass`
+  on any element) for itself and its contents, never more transparent than the page's: a
+  person's Solid choice or reduced transparency still applies everywhere.
 - **R4.5** Elevation follows the material: chrome and panels are low, overlays and dialogs
   high. Do not add shadows to raise a component.
 - **R4.6** Page framing — headings, breadcrumbs, group labels, toolbars over panels — sits on

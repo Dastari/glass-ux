@@ -285,7 +285,8 @@
 
   /* A cluster: its count on a disc, its statuses as a segmented ring. */
   /* Solid and reduced transparency: clusters are opaque like every other surface. */
-  :root[data-glass="solid"] .fa-map-cluster {
+  :root[data-glass="solid"] .fa-map-cluster,
+  [data-glass="solid"]:not(:root) .fa-map-cluster {
     background-color: var(--surface-3);
   }
   /* reduced transparency: generated from the Solid rules above by `pnpm styles` */

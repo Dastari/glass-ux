@@ -24,6 +24,7 @@ import { Badge } from "glass-ux/badge";
 import { Button } from "glass-ux/button";
 import { EntityIdentity } from "glass-ux/entity";
 import { TooltipProvider } from "glass-ux/tooltip";
+import { ActionBar, ActionProvider, defineActions } from "glass-ux/actions";
 import { IconOrganisation, IconPrinter, IconSettings } from "glass-ux/icons";
 import "glass-ux/styles.css";
 
@@ -34,6 +35,8 @@ for (const key of ["mode", "palette", "background", "glass", "motion"])
 const pulse = params.get("pulse") !== "0";
 const spin = params.get("spin") !== "0";
 const buttons = Number(params.get("buttons") ?? 0);
+// bars=N: N entity action bars (mount timing) instead of buttons.
+const bars = Number(params.get("bars") ?? 0);
 // tooltip=0: the same buttons without their tooltips, to separate the two costs.
 const withTooltips = params.get("tooltip") !== "0";
 // status=idle: buttons that track a status (ActionButton, ActionBar), resting.
@@ -141,6 +144,59 @@ function ShellFixture() {
   );
 }
 
+const SAMPLE_ACTIONS = defineActions<string>("sample", [
+  {
+    id: "open",
+    label: "Open",
+    group: "open",
+    priority: 3,
+    run: () => undefined,
+  },
+  {
+    id: "restart",
+    label: "Restart",
+    group: "manage",
+    priority: 2,
+    icon: IconSettings,
+    run: () => new Promise((r) => setTimeout(r, 400)),
+  },
+  { id: "rename", label: "Rename", group: "organise", run: () => undefined },
+  {
+    id: "archive",
+    label: "Archive",
+    group: "danger",
+    priority: 4,
+    disabledReason: () => "Sample reason",
+  },
+  {
+    id: "print",
+    label: "Print test page",
+    group: "manage",
+    priority: 1,
+    primary: true,
+    run: () => undefined,
+  },
+]);
+
+function BarsFixture({ count }: { count: number }) {
+  return (
+    <TooltipProvider>
+      <ActionProvider>
+        <div style={{ display: "grid", gap: 4, padding: 16, width: 900 }}>
+          {Array.from({ length: count }, (_, i) => (
+            <ActionBar
+              key={i}
+              set={SAMPLE_ACTIONS}
+              targets={[`sample-${i}`]}
+              label={`Sample ${i}`}
+            />
+          ))}
+        </div>
+      </ActionProvider>
+    </TooltipProvider>
+  );
+}
+
 function ButtonsFixture({ count }: { count: number }) {
   return (
     <TooltipProvider>
@@ -163,7 +219,7 @@ function ButtonsFixture({ count }: { count: number }) {
 }
 
 const root = createRoot(document.getElementById("root")!);
-if (buttons) {
+if (buttons || bars) {
   // Mount timing: render into a fresh root on demand so the measurement excludes page load.
   document.body.classList.remove("canvas-ambient");
   (window as unknown as { __mount: () => Promise<number> }).__mount = () =>
@@ -171,7 +227,11 @@ if (buttons) {
       const start = performance.now();
       root.render(
         <>
-          <ButtonsFixture count={buttons} />
+          {bars ? (
+            <BarsFixture count={bars} />
+          ) : (
+            <ButtonsFixture count={buttons} />
+          )}
           <MountDone start={start} resolve={resolve} />
         </>,
       );

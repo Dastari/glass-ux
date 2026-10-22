@@ -101,8 +101,7 @@ export function Button({
   statusAnnouncement,
   ...rest
 }: ButtonProps) {
-  const hasLabel = children !== undefined && children !== null && children !== false
-  const iconOnly = !hasLabel
+  const iconOnly = !hasContent(children)
   const tracksStatus = status !== undefined
   const active = status ?? "idle"
   const busy = active === "pending"
@@ -121,14 +120,6 @@ export function Button({
     console.error("Button: an icon-only button needs an aria-label (it also becomes its tooltip).")
   }
 
-  const face = (name: ButtonStatus, lead: ReactNode, label: ReactNode, trail?: ReactNode) => (
-    <span className="fa-btn-face" data-face={name} data-active={active === name ? "" : undefined}>
-      {lead}
-      {iconOnly ? null : <span className="fa-btn-label">{label}</span>}
-      {trail}
-    </span>
-  )
-
   const button = (
     <BaseButton
       {...rest}
@@ -137,44 +128,15 @@ export function Button({
       aria-busy={busy || undefined}
       aria-description={disabledReason}
       className={cx("fa-btn fa-pressable fa-lit", className)}
-      data-variant={variant}
-      data-size={size}
-      data-shape={shape === "circle" ? "circle" : undefined}
-      data-icon-only={iconOnly ? "" : undefined}
-      data-block={block ? "" : undefined}
-      data-status={tracksStatus ? active : undefined}
+      {...buttonAttributes({ variant, size, shape, block, iconOnly, status: tracksStatus ? active : undefined })}
     >
-      {tracksStatus ? (
-        <span className="fa-btn-stack" data-engaged={engaged === "later" ? "" : undefined}>
-          {face("idle", icon, children, iconEnd)}
-          {engaged ? (
-            <>
-              {face("pending", <IconSpinner className="fa-btn-spinner" />, pendingLabel ?? children)}
-              {face("success", <IconCheck className="fa-btn-check" />, successLabel ?? children)}
-              {face("error", <IconError />, errorLabel ?? children)}
-            </>
-          ) : (
-            // Until its first status the button reserves the other faces' width with one
-            // hidden face: an icon's box and their labels stacked, without their icons.
-            <span className="fa-btn-face" data-face="reserve">
-              <span className="fa-icon" />
-              {iconOnly ? null : (
-                <span className="fa-btn-label fa-btn-reserve">
-                  {[...new Set([pendingLabel ?? children, successLabel ?? children, errorLabel ?? children])].map((label, index) => (
-                    <span key={index}>{label}</span>
-                  ))}
-                </span>
-              )}
-            </span>
-          )}
-        </span>
-      ) : (
-        <>
-          {icon}
-          {hasLabel ? <span className="fa-btn-label">{children}</span> : null}
-          {iconEnd}
-        </>
-      )}
+      <ButtonContent
+        icon={icon}
+        iconEnd={iconEnd}
+        status={tracksStatus ? active : undefined}
+        engaged={engaged}
+        labels={{ idle: children, pending: pendingLabel ?? children, success: successLabel ?? children, error: errorLabel ?? children }}
+      />
     </BaseButton>
   )
 
@@ -197,6 +159,114 @@ export function Button({
         </span>
       ) : null}
     </>
+  )
+}
+
+const hasContent = (node: ReactNode) => node !== undefined && node !== null && node !== false
+
+/** The data attributes Button's styles read; shared with ButtonReplica so they always agree. */
+function buttonAttributes({ variant, size, shape, block, iconOnly, status }: {
+  variant: ButtonVariant
+  size: ButtonSize
+  shape: "default" | "circle"
+  block: boolean
+  iconOnly: boolean
+  status: ButtonStatus | undefined
+}) {
+  return {
+    "data-variant": variant,
+    "data-size": size,
+    "data-shape": shape === "circle" ? "circle" : undefined,
+    "data-icon-only": iconOnly ? "" : undefined,
+    "data-block": block ? "" : undefined,
+    "data-status": status,
+  }
+}
+
+/** A button's insides: icon, label and trailing icon, or the status faces when it tracks a status. */
+function ButtonContent({ icon, iconEnd, status, engaged, labels }: {
+  icon: ReactNode
+  iconEnd: ReactNode
+  status: ButtonStatus | undefined
+  engaged: false | "mount" | "later"
+  labels: Record<ButtonStatus, ReactNode>
+}) {
+  const iconOnly = !hasContent(labels.idle)
+  if (status === undefined)
+    return (
+      <>
+        {icon}
+        {iconOnly ? null : <span className="fa-btn-label">{labels.idle}</span>}
+        {iconEnd}
+      </>
+    )
+  const face = (name: ButtonStatus, lead: ReactNode, trail?: ReactNode) => (
+    <span className="fa-btn-face" data-face={name} data-active={status === name ? "" : undefined}>
+      {lead}
+      {iconOnly ? null : <span className="fa-btn-label">{labels[name]}</span>}
+      {trail}
+    </span>
+  )
+  return (
+    <span className="fa-btn-stack" data-engaged={engaged === "later" ? "" : undefined}>
+      {face("idle", icon, iconEnd)}
+      {engaged ? (
+        <>
+          {face("pending", <IconSpinner className="fa-btn-spinner" />)}
+          {face("success", <IconCheck className="fa-btn-check" />)}
+          {face("error", <IconError />)}
+        </>
+      ) : (
+        // Until its first status the button reserves the other faces' width with one
+        // hidden face: an icon's box and their labels stacked, without their icons.
+        <span className="fa-btn-face" data-face="reserve">
+          <span className="fa-icon" />
+          {iconOnly ? null : (
+            <span className="fa-btn-label fa-btn-reserve">
+              {[...new Set([labels.pending, labels.success, labels.error])].map((label, index) => (
+                <span key={index}>{label}</span>
+              ))}
+            </span>
+          )}
+        </span>
+      )}
+    </span>
+  )
+}
+
+/**
+ * Internal: a Button's markup with no behaviour (no Base UI, tooltip, status machinery or
+ * handlers), for measuring natural widths off-screen (ActionBar). It renders what Button
+ * renders at rest from the same parts, so the two are the same size.
+ */
+export function ButtonReplica({ variant = "secondary", size = "md", icon, iconEnd, shape = "default", block = false, tracksStatus = false, disabled = false, children }: {
+  variant?: ButtonVariant
+  size?: ButtonSize
+  icon?: ReactNode
+  iconEnd?: ReactNode
+  shape?: "default" | "circle"
+  block?: boolean
+  /** Renders the idle status faces, as a Button given `status` does. */
+  tracksStatus?: boolean
+  disabled?: boolean
+  children?: ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      tabIndex={-1}
+      className="fa-btn fa-pressable fa-lit"
+      data-disabled={disabled ? "" : undefined}
+      {...buttonAttributes({ variant, size, shape, block, iconOnly: !hasContent(children), status: tracksStatus ? "idle" : undefined })}
+    >
+      <ButtonContent
+        icon={icon}
+        iconEnd={iconEnd}
+        status={tracksStatus ? "idle" : undefined}
+        engaged={false}
+        labels={{ idle: children, pending: children, success: children, error: children }}
+      />
+    </button>
   )
 }
 

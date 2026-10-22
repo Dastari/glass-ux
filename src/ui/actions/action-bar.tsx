@@ -4,6 +4,7 @@ import { resolveActions, splitForHeader, type ActionSet, type ResolvedAction, ty
 import { cx } from "../../lib/cx.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { Button, ButtonGroup, useActionFeedback, type ButtonVariant } from "../button/index.js"
+import { ButtonReplica } from "../button/button.js"
 import { Menu } from "../menu/index.js"
 import { ActionMenuItems } from "./action-menu.js"
 import { useActionRunner } from "./action-provider.js"
@@ -61,12 +62,40 @@ interface HeaderButtonProps<T> {
   /** Selected entities passed to action visibility, enablement, confirmation and execution. */
   targets: readonly T[]
   label: string
-  /** Rendered off-screen for measuring: inert, no behaviour. */
-  measuring?: boolean
+}
+
+/**
+ * A promoted action's markup without its behaviour, for measuring: the same buttons
+ * HeaderButton renders at rest (ButtonReplica), so the widths agree.
+ */
+function HeaderButtonReplica<T>({ action }: { action: ResolvedAction<T> }) {
+  const variant = variantOf(action)
+  const disabled = Boolean(action.disabledReason)
+  const icon = iconOf(action)
+  if (action.children.length && action.definition.primary && action.definition.run)
+    return (
+      <ButtonGroup attached>
+        <ButtonReplica variant={variant} icon={icon} tracksStatus disabled={disabled}>
+          {action.label}
+        </ButtonReplica>
+        <ButtonReplica variant={variant} icon={<IconChevronDown />} disabled={disabled} />
+      </ButtonGroup>
+    )
+  if (action.children.length)
+    return (
+      <ButtonReplica variant={variant} icon={icon} iconEnd={<IconChevronDown />} disabled={disabled}>
+        {action.label}
+      </ButtonReplica>
+    )
+  return (
+    <ButtonReplica variant={variant} icon={icon} tracksStatus disabled={disabled}>
+      {action.label}
+    </ButtonReplica>
+  )
 }
 
 /** A promoted action. Async work confirms in place: pending → ✓ / ✕ (R9.2, R12.5). */
-function HeaderButton<T>({ action, targets, label, measuring }: HeaderButtonProps<T>) {
+function HeaderButton<T>({ action, targets, label }: HeaderButtonProps<T>) {
   const { start } = useActionRunner()
   const { status, run } = useActionFeedback()
   const variant = variantOf(action)
@@ -76,7 +105,6 @@ function HeaderButton<T>({ action, targets, label, measuring }: HeaderButtonProp
   const icon = iconOf(action)
 
   const onRun = () => {
-    if (measuring) return
     const pending = start(action, targets, "header")
     if (pending) void run(() => pending)
   }
@@ -104,7 +132,7 @@ function HeaderButton<T>({ action, targets, label, measuring }: HeaderButtonProp
               disabled={disabled}
               render={<Button variant={variant} icon={<IconChevronDown />} aria-label={`More ${action.label.toLowerCase()} options`} />}
             />
-            {measuring ? null : menu}
+            {menu}
           </Menu.Root>
         </ButtonGroup>
       )
@@ -119,7 +147,7 @@ function HeaderButton<T>({ action, targets, label, measuring }: HeaderButtonProp
             </Button>
           }
         />
-        {measuring ? null : menu}
+        {menu}
       </Menu.Root>
     )
   }
@@ -189,8 +217,8 @@ export function ActionBar<T>({ set, targets, label, maxButtons = 3, className, o
   const [widths, setWidths] = useState<Widths | null>(null)
   const signature = candidates.map((action) => `${action.id}:${action.label}:${action.disabledReason ?? ""}`).join("|")
 
-  // Measure each candidate's natural width from an inert copy, so the decision never
-  // depends on what is currently shown (no feedback loops, no flicker).
+  // Measure each candidate's natural width from an inert replica (markup only), so the
+  // decision never depends on what is currently shown (no feedback loops, no flicker).
   useIsomorphicLayoutEffect(() => {
     const layer = measureRef.current
     if (!layer) return
@@ -255,16 +283,16 @@ export function ActionBar<T>({ set, targets, label, maxButtons = 3, className, o
       <div ref={measureRef} className="fa-action-bar-measure" aria-hidden inert>
         {candidates.map((action) => (
           <span key={action.id} data-measure={action.id} className="fa-action-bar-cell">
-            <HeaderButton action={action} targets={targets} label={label} measuring />
+            <HeaderButtonReplica action={action} />
           </span>
         ))}
         <span data-measure="more" className="fa-action-bar-cell">
-          <Button variant="ghost" iconEnd={<IconChevronDown />} tabIndex={-1}>
+          <ButtonReplica variant="ghost" iconEnd={<IconChevronDown />}>
             More actions
-          </Button>
+          </ButtonReplica>
         </span>
         <span data-measure="more-icon" className="fa-action-bar-cell">
-          <Button variant="ghost" icon={<IconMoreHorizontal />} aria-label="More actions" tabIndex={-1} />
+          <ButtonReplica variant="ghost" icon={<IconMoreHorizontal />} />
         </span>
       </div>
     </div>

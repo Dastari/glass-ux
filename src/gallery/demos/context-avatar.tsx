@@ -2,12 +2,13 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { MOCK_ORGANISATIONS, toContextItem } from "../fixtures/organisations.js";
 import { Example, SectionPage, Specimen } from "../kit.js";
-import { IconFolder, IconTerminal } from "../../icons/generated/icons.js";
+import { IconFolder, IconOrganisation, IconTerminal } from "../../icons/generated/icons.js";
 import {
   ContextAvatar,
   type ContextItem,
   type ContextTint,
 } from "../../shell/context-switcher/index.js";
+import { EntityIdentity } from "../../ui/entity/index.js";
 import {
   WindowFrame,
   WindowScopeChip,
@@ -24,10 +25,36 @@ const SCOPES: WindowScopes = {
     return org ? { label: org.name, avatar: <ContextAvatar item={org} size="xs" /> } : undefined;
   },
 };
+/** The application's own identity component draws the chip and its avatar-only form. */
+const IDENTITY_SCOPES: WindowScopes = {
+  current: "cedarvale",
+  describe: (id) => {
+    const org = ORGS.find((item) => item.id === id);
+    if (!org) return undefined;
+    const identity = (tier: "chip" | "icon") => (
+      <EntityIdentity
+        tier={tier}
+        name={org.name}
+        kind="Organisation"
+        icon={<IconOrganisation />}
+        image={<ContextAvatar item={org} size="xs" />}
+      />
+    );
+    return { label: org.name, chip: identity("chip"), icon: identity("icon") };
+  },
+};
 
-function ScopedWindow({ scope, label }: { scope: string; label: string }) {
+function ScopedWindow({
+  scope,
+  label,
+  scopes = SCOPES,
+}: {
+  scope: string;
+  label: string;
+  scopes?: WindowScopes;
+}) {
   return (
-    <WindowScopeProvider value={SCOPES}>
+    <WindowScopeProvider value={scopes}>
       <WindowFrame.Root focused state="floating" aria-label={label}>
         <WindowFrame.AppBar
           icon={<IconTerminal />}
@@ -86,24 +113,40 @@ export default function ContextSwitcherSection() {
 
       <Specimen
         title="Window scope chip"
-        description="Windows sit above the scope (R14.4). A window from another organisation than the current one carries its chip; the dock groups windows by organisation behind each group's avatar."
+        description="Windows sit above the scope (R14.4). A window from another organisation than the current one carries its chip; the dock groups windows by organisation behind each group's avatar. An application can draw the chip and the avatar with its own identity component (WindowScopeInfo chip and icon)."
         wide
         layout="stack"
         specimenKey="context-switcher:default:5"
       >
         <Example label="Another organisation (in Cedar Vale)">
-          <div className="gallery-shell-window">
+          <div className="gallery-shell-window" data-bar="">
             <ScopedWindow scope="northstar" label="Northstar Studio terminal" />
           </div>
         </Example>
         <Example label="The current organisation: no chip">
-          <div className="gallery-shell-window">
+          <div className="gallery-shell-window" data-bar="">
             <ScopedWindow scope="cedarvale" label="Cedar Vale terminal" />
           </div>
         </Example>
         <Example label="A narrow window keeps the avatar">
-          <div className="gallery-shell-window" data-width="phone">
+          <div className="gallery-shell-window" data-bar="" data-width="phone">
             <ScopedWindow scope="northstar" label="Compact Northstar Studio terminal" />
+          </div>
+        </Example>
+        <Example label="The application's own chip and icon">
+          <div className="gallery-shell-window" data-bar="">
+            <ScopedWindow
+              scope="northstar"
+              label="Northstar Studio terminal with an identity chip"
+              scopes={IDENTITY_SCOPES}
+            />
+          </div>
+          <div className="gallery-shell-window" data-bar="" data-width="phone">
+            <ScopedWindow
+              scope="northstar"
+              label="Compact Northstar Studio terminal with an identity icon"
+              scopes={IDENTITY_SCOPES}
+            />
           </div>
         </Example>
       </Specimen>

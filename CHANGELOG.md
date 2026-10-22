@@ -4,6 +4,22 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.5
+
+### Added
+
+- `WindowScopeInfo` takes `chip` and `icon`, so the application draws a window's scope with
+  its own identity component. `chip` replaces the avatar-and-name pill in the app bar's scope
+  chip; `icon` replaces the avatar-only form: the chip in a narrow window, the dock group's
+  avatar and the phone window switcher's group heading. Without them, `label` and `avatar`
+  draw the scope as before. `label` still names the chip, the dock group and the tooltips;
+  both nodes are hidden from assistive technology and must not be interactive.
+
+### Fixed
+
+- Documentation: the window scope chip examples drew collapsed, empty windows, and a
+  component's `h2` inside any catalogue example (a window title) took the page heading size.
+
 ## 0.9.4
 
 ### Added

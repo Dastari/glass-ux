@@ -93,7 +93,8 @@
     scroll-margin-block-start: var(--space-4);
     min-width: 0;
   }
-  .gallery-document-sections h2 {
+  /* The page's own headings, not a component's inside an example (a window title is an h2). */
+  .gallery-document-sections h2:not(:is(.gallery-example-stage, .gallery-lab-cell) *) {
     font-size: var(--type-headline-size);
     margin-block-end: var(--space-4);
   }

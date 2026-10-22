@@ -53,6 +53,7 @@
   }
   /* The organisation's avatar before its windows. */
   .fa-wm-dock-scope {
+    --tile-icon-box: var(--control-h-xs); /* a library tile as the scope's icon */
     display: inline-flex;
     flex: none;
     padding-inline: var(--space-1) var(--space-half);
@@ -122,6 +123,7 @@
     margin-block-start: var(--space-3);
   }
   .fa-wm-switcher-group-label {
+    --tile-icon-box: var(--control-h-xs);
     display: flex;
     align-items: center;
     gap: var(--space-2);

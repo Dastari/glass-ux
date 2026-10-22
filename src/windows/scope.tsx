@@ -6,17 +6,32 @@
  * reloads a window: nothing here is wired to anything but presentation.
  *
  * The window layer does not know what an organisation is. The application provides the
- * current scope and how to draw one (a name and an avatar) through WindowScopeProvider, or
- * the `scopes` prop of Workspace and PopoutWindow.
+ * current scope and how to draw one (a name and an avatar, or its own chip and icon) through
+ * WindowScopeProvider, or the `scopes` prop of Workspace and PopoutWindow.
  */
 import { createContext, useContext, type ReactNode } from "react"
 import { Tooltip } from "../ui/tooltip/index.js"
 
 export interface WindowScopeInfo {
-  /** The scope's name: "Northstar Studio". */
+  /** The scope's name: "Northstar Studio". Names the chip, dock group and tooltips even when `chip` and `icon` draw them. */
   label: string
   /** A small avatar (an organisation tile), drawn at the chip and dock group's size. */
   avatar?: ReactNode
+  /**
+   * The application's own chip for the scope, shown in the app bar in place of the library's
+   * avatar-and-name pill, so a scope renders through the same identity component everywhere.
+   * Keep it non-interactive: the chip is part of the app bar's drag surface, and it is hidden
+   * from assistive technology, which reads `label`. Pass `icon` too for narrow windows.
+   */
+  chip?: ReactNode
+  /**
+   * The application's own avatar-only form of the scope: the app bar chip in a narrow window,
+   * the dock group and the phone window switcher's group heading. Drawn as given, without the
+   * library's pill; falls back to `avatar`. Non-interactive, like `chip`. These slots set
+   * `--tile-icon-box` to the chip's height, so a library tile (EntityIdentity's icon tier)
+   * fits; size anything else to `--control-h-xs`.
+   */
+  icon?: ReactNode
 }
 
 export interface WindowScopes {
@@ -48,6 +63,9 @@ export function describeScope(scopes: WindowScopes | null, scope: string | null)
  * The scope chip in a window's app bar: the organisation's avatar and name, shown only when
  * the window belongs to a scope other than the current one. Narrow windows keep the avatar,
  * and the tooltip names it. Part of the app bar's drag surface, like the title.
+ *
+ * When the scope has a `chip` (WindowScopeInfo), that is drawn instead of the pill, and
+ * `icon` replaces it in a narrow window.
  */
 export function WindowScopeChip({ scope }: {
   /** The window's scope id (`WindowEntry.scope`), or null for an unscoped window, which shows no chip. */
@@ -59,15 +77,35 @@ export function WindowScopeChip({ scope }: {
   if (!info) return null
   return (
     <Tooltip content={info.label}>
-      <span className="fa-window-scope" data-scope={scope} role="img" aria-label={`Organisation: ${info.label}`}>
-        {info.avatar ? (
-          <span className="fa-window-scope-avatar" aria-hidden>
-            {info.avatar}
+      <span
+        className="fa-window-scope"
+        data-scope={scope}
+        data-chip={info.chip ? "" : undefined}
+        data-icon={info.icon ? "" : undefined}
+        role="img"
+        aria-label={`Organisation: ${info.label}`}
+      >
+        {info.chip ? (
+          <span className="fa-window-scope-chip" aria-hidden>
+            {info.chip}
+          </span>
+        ) : (
+          <>
+            {info.avatar ? (
+              <span className="fa-window-scope-avatar" aria-hidden>
+                {info.avatar}
+              </span>
+            ) : null}
+            <span className="fa-window-scope-label" aria-hidden>
+              {info.label}
+            </span>
+          </>
+        )}
+        {info.icon ? (
+          <span className="fa-window-scope-icon" aria-hidden>
+            {info.icon}
           </span>
         ) : null}
-        <span className="fa-window-scope-label" aria-hidden>
-          {info.label}
-        </span>
       </span>
     </Tooltip>
   )

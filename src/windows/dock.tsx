@@ -177,9 +177,11 @@ export function Dock({ onOpenSwitcher }: {
               scopes && group.scope === scopes.current ? "" : undefined
             }
           >
-            {group.info?.avatar ? (
+            {group.info?.icon || group.info?.avatar ? (
               <Tooltip content={group.info.label}>
-                <span className="fa-wm-dock-scope">{group.info.avatar}</span>
+                <span className="fa-wm-dock-scope">
+                  {group.info.icon ?? group.info.avatar}
+                </span>
               </Tooltip>
             ) : null}
             <ul
@@ -259,8 +261,10 @@ export function WindowSwitcher({
               <li key={group.scope ?? ""} className="fa-wm-switcher-group">
                 {group.info ? (
                   <span className="fa-popup-group-label fa-wm-switcher-group-label">
-                    {group.info.avatar ? (
-                      <span aria-hidden>{group.info.avatar}</span>
+                    {group.info.icon || group.info.avatar ? (
+                      <span aria-hidden>
+                        {group.info.icon ?? group.info.avatar}
+                      </span>
                     ) : null}
                     {group.info.label}
                   </span>

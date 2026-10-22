@@ -103,12 +103,45 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* The application draws the scope (WindowScopeInfo chip and icon): no pill of our own. */
+  .fa-window-scope[data-chip] {
+    height: auto;
+    padding-inline: 0;
+    background-color: transparent;
+  }
+  .fa-window-scope-chip {
+    display: inline-flex;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  /* A library tile here (EntityIdentity's icon tier) is the pill's size, so the bar keeps its height. */
+  .fa-window-scope-icon {
+    --tile-icon-box: var(--control-h-xs);
+    display: none;
+    flex: none;
+  }
   @container window (width < 36rem) {
     .fa-window-scope {
       padding-inline: var(--space-half);
     }
     .fa-window-scope-label {
       display: none;
+    }
+    .fa-window-scope[data-chip] {
+      padding-inline: 0;
+    }
+    .fa-window-scope[data-icon] {
+      min-width: 0;
+      height: auto;
+      padding-inline: 0;
+      background-color: transparent;
+    }
+    .fa-window-scope[data-icon] > :not(.fa-window-scope-icon) {
+      display: none;
+    }
+    .fa-window-scope-icon {
+      display: inline-flex;
     }
   }
   .fa-window-actions {

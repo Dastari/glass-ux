@@ -3,6 +3,14 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.4 → 0.9.5
+
+No code changes are required.
+
+- To draw a window's scope with the application's own identity component, return `chip` and
+  `icon` from `WindowScopes.describe` alongside `label`. A scope without them keeps the
+  library's pill and `avatar`.
+
 ## 0.9.3 → 0.9.4
 
 No code changes are required.

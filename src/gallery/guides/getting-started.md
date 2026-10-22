@@ -11,7 +11,7 @@ Chrome, Edge, Firefox and Safari, and Firefox ESR 140. Firefox before 146 has no
 Install the built archive from a GitHub release and commit the package-manager lockfile:
 
 ```sh
-pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.8.0/glass-ux-0.8.0.tgz
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.9.5/glass-ux-0.9.5.tgz
 ```
 
 The archive includes JavaScript, TypeScript declarations, styles, fonts, guides and skills.

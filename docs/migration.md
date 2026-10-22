@@ -3,6 +3,52 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.8 → 0.9.9
+
+No code changes are required.
+
+- Panels in `AppShell`'s routed view are now frosted like the drawer and inspector. Review
+  screenshots of routed pages; with live rendering their frost drops out for the length of a
+  route cross-fade.
+- In a `ConversationLog` of 20 or more turns, scroll to a turn with
+  `useConversationLog().scrollToTurn(index)` instead of `scrollIntoView` on its element.
+- Under a `TooltipProvider` a `Tooltip` renders only its trigger, marked `data-fa-tooltip`,
+  and one host per provider shows the bubble. Tests that inspected Base UI's per-trigger
+  tooltip internals should hover or focus the trigger and check the visible bubble.
+- A surface can choose its own level: `glass="reduced"` or `glass="solid"` on `Surface` and
+  `Panel`, or `data-glass` on any element. It never goes more transparent than the page.
+
+### Baked glass rendering (optional)
+
+Baked rendering gives panels and chrome on the page canvas a copy of the canvas blurred once,
+instead of a live blur every frame. It looks the same at rest and removes most compositor work
+while anything animates (docs/performance.md, "Baked frost"). To use it:
+
+1. Select it where you configure appearance, at module scope:
+
+   ```ts
+   configureAppearance({ defaults: { palette: "graphite" }, glassRendering: "baked" });
+   ```
+
+   With server rendering, call it before `appearanceBootScript()`, so the first frame
+   carries `data-glass-rendering="baked"` on `<html>`.
+2. Keep `AppearanceProvider` mounted; it bakes the canvas. Without the provider, call
+   `applyAppearance` (or run the boot script) after `configureAppearance`, and call
+   `installBakedFrost()` once at startup.
+3. Draw the page canvas with `canvas-ambient` or `canvas-background` (and `canvas-silk` for
+   Silk). Images in your own canvas must be same-origin or served with CORS; otherwise the
+   materials keep the live blur.
+4. If your Content Security Policy restricts images, allow `blob:` in `img-src`: the baked
+   canvas is a `blob:` image.
+5. Panels and chrome must sit on the canvas (the layout contract). A layer that rests over
+   other content — a sticky header over a list, a panel overlapping another — would show the
+   canvas through it; give it `glass-overlay` or `glass-float`, which always blur live.
+
+Scrolling, sliding panes, dragged and floating windows, overlays and mode islands keep the
+live blur automatically. Browsers without `background-clip: border-area`, and iOS and iPadOS,
+keep it everywhere. Text on a baked panel may draw with subpixel antialiasing on Windows and
+Linux, so pixel snapshots taken there can change.
+
 ## 0.9.7 → 0.9.8
 
 No code changes are required.

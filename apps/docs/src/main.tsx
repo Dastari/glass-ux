@@ -6,6 +6,7 @@ import {
   use,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import {
@@ -24,8 +25,10 @@ import {
   PALETTE_LABELS,
   BACKGROUNDS,
   BACKGROUND_LABELS,
+  appearanceConfig,
   configureAppearance,
   type Appearance,
+  type GlassRendering,
 } from "glass-ux/appearance";
 import { ActionProvider } from "glass-ux/actions";
 import { PaletteProvider } from "glass-ux/command-palette";
@@ -96,7 +99,45 @@ function RouteLoading() {
 }
 
 configureDemoBrand();
-configureAppearance({ defaults: { palette: "ocean" } });
+// An application picks one glass rendering in configureAppearance. The documentation lets a
+// visitor try both, so it keeps their choice under its own key and configures again on change.
+const RENDERING_KEY = "glass-ux-docs.glass-rendering";
+const storedRendering = (): GlassRendering => {
+  try {
+    return localStorage.getItem(RENDERING_KEY) === "baked" ? "baked" : "live";
+  } catch {
+    return "live";
+  }
+};
+configureAppearance({ defaults: { palette: "ocean" }, glassRendering: storedRendering() });
+
+const renderingListeners = new Set<() => void>();
+function setGlassRendering(glassRendering: GlassRendering) {
+  try {
+    localStorage.setItem(RENDERING_KEY, glassRendering);
+  } catch {
+    // Private mode: the choice lasts for this page only.
+  }
+  configureAppearance({ ...appearanceConfig(), glassRendering });
+  // What applyAppearance and the boot script set from the configuration.
+  if (glassRendering === "baked") document.documentElement.dataset.glassRendering = "baked";
+  else delete document.documentElement.dataset.glassRendering;
+  for (const listener of renderingListeners) listener();
+}
+function useGlassRendering(): GlassRendering {
+  return useSyncExternalStore(
+    (listener) => {
+      renderingListeners.add(listener);
+      return () => renderingListeners.delete(listener);
+    },
+    () => appearanceConfig().glassRendering,
+    () => "live",
+  );
+}
+const RENDERING_OPTIONS: Array<{ value: GlassRendering; label: string }> = [
+  { value: "live", label: "Live" },
+  { value: "baked", label: "Baked" },
+];
 
 function RepositoryLink() {
   return (
@@ -193,6 +234,7 @@ function AppearanceChoices<V extends string>({
 
 function Toolbar({ expanded = false }: { expanded?: boolean }) {
   const { appearance, update } = useAppearance();
+  const rendering = useGlassRendering();
   const choiceSize = use(ChoiceSize);
   if (expanded)
     return (
@@ -236,6 +278,12 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
             { value: "reduced", label: "Frosted" },
             { value: "solid", label: "Solid" },
           ]}
+        />
+        <AppearanceChoices<GlassRendering>
+          label="Blur"
+          value={rendering}
+          onValueChange={setGlassRendering}
+          options={RENDERING_OPTIONS}
         />
         <AppearanceChoices<"full" | "reduced">
           label="Animations"
@@ -310,6 +358,14 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
           { value: "reduced", label: "Frosted" },
           { value: "solid", label: "Solid" },
         ]}
+      />
+      <Segmented
+        size="sm"
+        className="fa-fit-2"
+        aria-label="Blur"
+        value={rendering}
+        onValueChange={setGlassRendering}
+        options={RENDERING_OPTIONS}
       />
       <Segmented
         size="sm"

@@ -5,8 +5,12 @@ test("Surface documents its own theme geometry and card material", async ({
 }) => {
   await page.goto("/components/surface");
   await expect(
-    page.locator("#examples .fa-surface[data-padding='panel']"),
+    page.locator("#examples .fa-surface[data-padding='panel']").first(),
   ).toBeVisible();
+  for (const glass of ["reduced", "solid"])
+    await expect(
+      page.locator(`#examples .fa-surface[data-glass='${glass}']`),
+    ).toBeVisible();
   await expect(
     page.locator("#examples .fa-surface.glass-card[data-radius='tile']"),
   ).toBeVisible();

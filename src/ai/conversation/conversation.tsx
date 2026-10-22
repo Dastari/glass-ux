@@ -1,4 +1,5 @@
 import {
+  Children,
   createContext,
   useCallback,
   useContext,
@@ -23,6 +24,12 @@ const PIN_THRESHOLD = 48
 
 /** Below this width (in rem) the ask dock starts folded to one line. */
 const NARROW_REM = 30
+/**
+ * From this many children the log lays out and paints only the turns near the viewport
+ * (content-visibility, conversation.css). Shorter logs render every turn: a turn that
+ * renders late changes the page's layout, which a short log does not need to risk.
+ */
+const LONG_TRANSCRIPT = 20
 
 const reducedMotion = () => typeof document !== "undefined" && prefersReducedMotion()
 
@@ -130,9 +137,21 @@ export function ConversationLog({
 
   const scrollToTurn = useCallback((index: number) => {
     const element = scrollRef.current?.querySelector<HTMLElement>(`[data-turn="${index}"]`)
-    if (!element) return
-    element.scrollIntoView({ block: "start", behavior: reducedMotion() ? "auto" : "smooth" })
+    const root = rootRef.current
+    if (!element || !root) return
     setActiveTurn(index)
+    const scroll = () => element.scrollIntoView({ block: "start", behavior: reducedMotion() ? "auto" : "smooth" })
+    // A long transcript lays out far turns at an estimate, so a scroll would aim at the wrong
+    // place. Lay every turn out for one frame first (data-measure): each records its real
+    // size, keeps it when it is skipped again, and the scroll lands where it should.
+    if (!root.hasAttribute("data-long")) return scroll()
+    root.dataset.measure = ""
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        delete root.dataset.measure
+        scroll()
+      })
+    )
   }, [])
 
   // The floating part's height pads the end of the log, so the last message scrolls clear of
@@ -261,6 +280,7 @@ export function ConversationLog({
             data-layout={landingMode ? "landing" : "conversation"}
             data-pinned={pinned ? "" : undefined}
             data-arrived={arrived ? "" : undefined}
+            data-long={Children.count(children) >= LONG_TRANSCRIPT ? "" : undefined}
           >
             {turns && turns.length > 1 && !landingMode ? <TurnNavigator turns={turns} active={activeTurn} onNavigate={scrollToTurn} /> : null}
             <div

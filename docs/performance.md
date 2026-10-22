@@ -45,6 +45,14 @@ material itself, and `pnpm css-perf:check` asks every other one for a `perf:infi
 saying when it runs. The routed view's panels in `AppShell` draw without blur: they sit on
 the canvas, and the view is named for view transitions only while one runs.
 
+A `ConversationLog` with 20 or more children lays out and paints only the turns near the
+viewport (`content-visibility: auto`): a 200-turn transcript mounted in half the time in the
+fixture. A turn far from the view keeps the size it last rendered at, or a 24rem estimate
+before it has rendered, so scroll to a turn with `useConversationLog().scrollToTurn(index)`,
+which lays the transcript out for one frame first, rather than calling `scrollIntoView` on
+it. Shorter logs render every turn, because a turn rendering late can defeat the page's
+scroll anchoring for that frame.
+
 Edge refraction through an SVG displacement filter (`backdrop-filter: url(#…)`) was
 prototyped and left out. It renders only in Chromium; at the library's blur radii the
 bent rim is barely visible except over sharp text; sampling outside the box mirrors the

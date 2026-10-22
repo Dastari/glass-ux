@@ -8,7 +8,10 @@ declare global {
       update: () => void;
       add: () => void;
       sort: (numeric?: boolean) => { ms: number; first: string | undefined };
+      scrollUp: () => Promise<number>;
+      jump: (index: number) => Promise<number>;
     };
+    __mountMs: number;
     __hydration: { ms: number; longTasks: number[]; consumerRenders: number };
   }
 }

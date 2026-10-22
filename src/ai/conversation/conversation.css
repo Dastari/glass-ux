@@ -89,6 +89,18 @@
     max-width: var(--_read);
     margin-inline: auto;
   }
+  /* A long transcript (data-long: 20 turns or more) lays out and paints only the turns near
+     the viewport; the others keep the size they last rendered at (an estimate until then),
+     and the log's scroll anchoring holds the reader's place as they render. The clip margin
+     lets breakout blocks, shadows and focus rings paint past the turn, as without
+     containment. data-measure lays every turn out for a frame before scrollToTurn. */
+  .fa-ai-conversation[data-long] .fa-ai-conversation-column > .fa-ai-turn {
+    contain-intrinsic-block-size: auto 24rem;
+    overflow-clip-margin: 50cqi;
+  }
+  .fa-ai-conversation[data-long]:not([data-measure]) .fa-ai-conversation-column > .fa-ai-turn {
+    content-visibility: auto;
+  }
   .fa-ai-conversation[data-arrived] .fa-ai-conversation-column {
     animation: fa-fade-in var(--duration-slow) var(--ease-enter);
   }

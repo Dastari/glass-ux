@@ -1,4 +1,5 @@
 import { PreviewCard as BasePreviewCard } from "@base-ui/react/preview-card"
+import { flushSync } from "react-dom"
 import {
   useCallback,
   useLayoutEffect,
@@ -27,6 +28,7 @@ import { Tooltip } from "../tooltip/index.js"
 import { TruncatedText } from "../truncated-text/index.js"
 import { ENTITY_TIER_LIMITS, selectEntityTier, type EntityTier } from "./tier.js"
 import { popupContainer } from "../../lib/popup-container.js"
+import { useRemPx } from "../../lib/rem.js"
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
 
@@ -350,8 +352,8 @@ interface HeaderFit {
  * buttons fold into More (the ActionBar gets only the room the tile, heading and metric
  * leave), then the metric hides, then the facts line truncates, and the name only once the
  * header is down to name, state and ⋯. It reads natural widths, never laid-out ones, so the
- * decision never feeds back into the layout. It runs after every render, so a live state
- * whose label grows is accounted for at once.
+ * decision never feeds back into the layout. It runs when the row's content or size
+ * changes, so a live state whose label grows is accounted for at once.
  */
 function useHeaderFit(rowRef: RefObject<HTMLDivElement | null>, hasMetric: boolean): HeaderFit {
   const [fit, setFit] = useState<HeaderFit>({ metric: true })
@@ -389,7 +391,21 @@ function useHeaderFit(rowRef: RefObject<HTMLDivElement | null>, hasMetric: boole
     available = Math.max(1, available)
     setFit((current) => (current.metric === metric && current.available === available ? current : { metric, available }))
   }, [rowRef, hasMetric])
-  useIsomorphicLayoutEffect(measure)
+  useIsomorphicLayoutEffect(measure, [measure])
+  // Measure again when the row's content changes (a state label, the name, the facts), not
+  // after every render: a live metric re-renders often, and its box is reserved, so changes
+  // inside it never change the fit. Flushed before paint, as a layout effect would be.
+  useIsomorphicLayoutEffect(() => {
+    const row = rowRef.current
+    if (!row || typeof MutationObserver === "undefined") return
+    const observer = new MutationObserver((records) => {
+      const metric = row.querySelector(":scope > .fa-entity-metric")
+      if (metric && records.every((record) => metric.contains(record.target))) return
+      flushSync(measure)
+    })
+    observer.observe(row, { childList: true, subtree: true, characterData: true })
+    return () => observer.disconnect()
+  }, [rowRef, measure])
   useIsomorphicLayoutEffect(() => {
     const row = rowRef.current
     if (!row || typeof ResizeObserver === "undefined") return
@@ -695,17 +711,11 @@ function TierSwitch<T>({ tier, ...props }: TierProps<T> & { tier: EntityTier }) 
   }
 }
 
-function rootRem() {
-  if (typeof window === "undefined") return 16
-  return Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
-}
-
 /** Measure a box and pick its tier. A flowing box decides by width; `fill` adds the height. */
 function useAutoTier(fill: boolean | undefined) {
   const ref = useRef<HTMLDivElement>(null)
   const { width, height } = useElementSize(ref)
-  const [rem, setRem] = useState(16)
-  useIsomorphicLayoutEffect(() => setRem(rootRem()), [])
+  const rem = useRemPx()
   const measured = width > 0
   const tier: EntityTier = measured ? selectEntityTier(width / rem, fill ? height / rem : null) : "header"
   return { ref, tier, measured }

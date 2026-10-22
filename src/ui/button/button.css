@@ -290,6 +290,22 @@
   .fa-btn-face[data-active] {
     transition-delay: 0s;
   }
+  /* The faces mount at a button's first status: the face it shows enters from the hidden
+     pose, as it would have from a face that was already there. */
+  @starting-style {
+    .fa-btn-stack[data-engaged] > .fa-btn-face:not([data-face="idle"])[data-active] {
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(40%) scale(0.92);
+    }
+  }
+  /* The reserve stands in for the other faces before the first status: their labels stacked. */
+  .fa-btn-reserve {
+    display: inline-grid;
+  }
+  .fa-btn-reserve > * {
+    grid-area: 1 / 1;
+  }
   /* The spinner turns only while the pending face shows: a hidden face that animates forever
      is re-styled on every frame the page renders (docs/performance.md). */
   .fa-btn-face[data-face="pending"][data-active] .fa-btn-spinner {

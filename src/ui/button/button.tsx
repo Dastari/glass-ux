@@ -109,6 +109,7 @@ export function Button({
   const ariaLabel = rest["aria-label"]
   const isDisabled = Boolean(disabled || disabledReason)
   const settled = useSettledStatus(active)
+  const engaged = useEngaged(active)
   const announcement =
     statusAnnouncement === false || !settled
       ? null
@@ -144,11 +145,28 @@ export function Button({
       data-status={tracksStatus ? active : undefined}
     >
       {tracksStatus ? (
-        <span className="fa-btn-stack">
+        <span className="fa-btn-stack" data-engaged={engaged === "later" ? "" : undefined}>
           {face("idle", icon, children, iconEnd)}
-          {face("pending", <IconSpinner className="fa-btn-spinner" />, pendingLabel ?? children)}
-          {face("success", <IconCheck className="fa-btn-check" />, successLabel ?? children)}
-          {face("error", <IconError />, errorLabel ?? children)}
+          {engaged ? (
+            <>
+              {face("pending", <IconSpinner className="fa-btn-spinner" />, pendingLabel ?? children)}
+              {face("success", <IconCheck className="fa-btn-check" />, successLabel ?? children)}
+              {face("error", <IconError />, errorLabel ?? children)}
+            </>
+          ) : (
+            // Until its first status the button reserves the other faces' width with one
+            // hidden face: an icon's box and their labels stacked, without their icons.
+            <span className="fa-btn-face" data-face="reserve">
+              <span className="fa-icon" />
+              {iconOnly ? null : (
+                <span className="fa-btn-label fa-btn-reserve">
+                  {[...new Set([pendingLabel ?? children, successLabel ?? children, errorLabel ?? children])].map((label, index) => (
+                    <span key={index}>{label}</span>
+                  ))}
+                </span>
+              )}
+            </span>
+          )}
         </span>
       ) : (
         <>
@@ -180,6 +198,17 @@ export function Button({
       ) : null}
     </>
   )
+}
+
+/**
+ * Whether the status faces are mounted: from the first status other than idle, for good, so
+ * a face that leaves still fades out. "later" when that happened after mount, which lets the
+ * first face animate in (button.css, @starting-style).
+ */
+function useEngaged(status: ButtonStatus): false | "mount" | "later" {
+  const [engaged, setEngaged] = useState<false | "mount" | "later">(status === "idle" ? false : "mount")
+  if (!engaged && status !== "idle") setEngaged("later")
+  return engaged
 }
 
 /** The outcome a pending action settled on; cleared when the button rests or runs again. */

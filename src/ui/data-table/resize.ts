@@ -18,9 +18,8 @@ export const KEY_STEP_LARGE = 4
 export const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 const round = (value: number) => Math.round(value * 100) / 100
 
-export function remPx() {
-  return Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
-}
+import { remPx } from "../../lib/rem.js"
+export { remPx }
 
 /** The rendered width of a column in rem (what the user sees, including any grow). */
 export function renderedWidth(root: HTMLElement, id: string) {

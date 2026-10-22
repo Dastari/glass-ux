@@ -71,6 +71,7 @@ import {
 } from "../ui/kbd/index.js";
 import { SegmentedCollapseContext } from "../ui/segmented/index.js";
 import { ShellFocusContext, useOptionalShell } from "./app-shell.js";
+import { remPx } from "../lib/rem.js";
 
 export interface TopBarProps extends Omit<
   ComponentProps<"header">,
@@ -173,12 +174,7 @@ function cssPixels(value: string, element: Element): number {
   const number = Number.parseFloat(value);
   if (!Number.isFinite(number)) return 0;
   if (value.trim().endsWith("rem"))
-    return (
-      number *
-      Number.parseFloat(
-        getComputedStyle(element.ownerDocument.documentElement).fontSize,
-      )
-    );
+    return number * remPx(element.ownerDocument);
   return number;
 }
 

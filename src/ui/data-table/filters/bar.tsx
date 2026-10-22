@@ -8,6 +8,7 @@ import { TruncatedText } from "../../truncated-text/index.js"
 import { ToolbarSearch, type ToolbarSearchBinding } from "../search/toolbar-search.js"
 import type { DataTableFilterToggle } from "../types.js"
 import type { ActiveFilter, FilterController } from "./controller.js"
+import { remPx } from "../../../lib/rem.js"
 
 /** The search field's width (rem), mirrored from search.css (`.fa-dt-search` --_w). */
 const SEARCH_FIELD_REM = 16
@@ -143,7 +144,7 @@ export function FilterBar({
     // While the field is open over the line, the line underneath keeps its last layout.
     if (!bar || !layer || !strip || width === 0 || searchOpen) return
     const slot = searchRef.current
-    const rem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+    const rem = remPx()
     const barGap = Number.parseFloat(getComputedStyle(bar).columnGap) || 0
     const widthOf = (element: Element) => element.getBoundingClientRect().width
     const clear = bar.querySelector(":scope > .fa-dt-filters-clear")

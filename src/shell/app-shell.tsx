@@ -45,6 +45,7 @@ import {
 } from "./shell-state.js"
 import { useMediaQuery } from "../lib/use-media-query.js"
 import { SHELL_QUERIES } from "./queries.js"
+import { remPx } from "../lib/rem.js"
 
 export interface ShellContextValue {
   phone: boolean
@@ -326,8 +327,6 @@ function DrawerHandle({
 }) {
   const [dragging, setDragging] = useState(false)
   const prefs = useShellPrefs()
-
-  const remPx = () => Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     const shell = shellRef.current

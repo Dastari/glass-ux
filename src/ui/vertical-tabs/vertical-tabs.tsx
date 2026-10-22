@@ -21,6 +21,7 @@ import { CountBadge } from "../badge/index.js"
 import { NavMenuPopup } from "../tabs/nav-menu.js"
 import { rovingKeyDown } from "../tabs/roving.js"
 import { Tooltip } from "../tooltip/index.js"
+import { remPx } from "../../lib/rem.js"
 
 export interface VerticalTabItem {
   value: string
@@ -70,8 +71,7 @@ function revealWithin(scroller: HTMLElement, child: HTMLElement) {
 }
 
 function remToPx(rem: number) {
-  if (typeof window === "undefined") return rem * 16
-  return rem * Number.parseFloat(getComputedStyle(document.documentElement).fontSize || "16")
+  return rem * remPx()
 }
 
 /** Pick the layout from the root's own width (a decision CSS cannot make: it changes the

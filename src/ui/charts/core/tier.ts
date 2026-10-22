@@ -33,7 +33,4 @@ export function chartTier(width: number, height: number, rem = 16, rule: TierRul
 }
 
 /** The root font size in px (the knobs scale rem; charts lay out in px). */
-export function remPx(): number {
-  if (typeof window === "undefined") return 16
-  return Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
-}
+export { remPx } from "../../../lib/rem.js"

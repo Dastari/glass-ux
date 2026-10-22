@@ -59,6 +59,7 @@ import {
 import type { WindowManager } from "./store.js";
 import { PRIMARY_WINDOW_ID, type WindowEntry } from "./types.js";
 import { WindowFrame } from "./window-frame.js";
+import { remPx } from "../lib/rem.js";
 
 /** Narrowest a tiled column may become, in rem. */
 const MIN_COLUMN_REM = 22;
@@ -97,9 +98,7 @@ const NO_METRICS: StageMetrics = { width: 0, height: 0, gap: 16, rem: 16 };
 const stageMetrics = new WeakMap<Element, StageMetrics>();
 
 function readMetrics(stage: HTMLElement): StageMetrics {
-  const rem =
-    Number.parseFloat(getComputedStyle(document.documentElement).fontSize) ||
-    16;
+  const rem = remPx(stage.ownerDocument);
   const box = stage.getBoundingClientRect();
   return {
     width: box.width,

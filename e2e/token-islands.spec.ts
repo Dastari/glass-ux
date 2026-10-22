@@ -55,11 +55,17 @@ async function islandRoles(page: Page, pageMode: "light" | "dark", withoutScope:
   return page.evaluate(
     ({ islands, pageMode, withoutScope }) => {
       if (withoutScope) {
+        // As a browser without @scope reads the sheets: the @scope blocks drop out and the
+        // fallback behind `@supports not at-rule(@scope)` applies.
         const strip = (list: CSSStyleSheet | CSSGroupingRule) => {
           for (let index = list.cssRules.length - 1; index >= 0; index--) {
             const rule = list.cssRules[index];
             if (rule instanceof CSSScopeRule) list.deleteRule(index);
-            else if (rule instanceof CSSGroupingRule) strip(rule);
+            else if (rule instanceof CSSSupportsRule && rule.conditionText.includes("at-rule(@scope)")) {
+              const active = rule.cssText.replace(rule.conditionText, "(display: block)");
+              list.deleteRule(index);
+              list.insertRule(active, index);
+            } else if (rule instanceof CSSGroupingRule) strip(rule);
           }
         };
         for (const sheet of document.styleSheets) strip(sheet);

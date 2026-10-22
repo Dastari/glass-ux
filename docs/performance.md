@@ -61,6 +61,15 @@ compositor's draw time and multiplied compositor-thread work several times over
 a blur-only layer in a software-rendered trace. Thicker rims, the lens glow and the
 pointer light carry the material instead.
 
+Chromium tries a rule only on elements that carry the key of its rightmost compound (a class,
+id, attribute or type). A rightmost `:is()` or `:where()` list of several selectors has no
+key, so it is tried on every element at every style recalc. The package build splits those
+lists in the shipped CSS (`scripts/css-buckets.mjs`) into separate selectors of the same
+specificity; source files keep the compact lists. In the 10,000-row table fixture, style
+recalc while scrolling fell by about a tenth. The `@scope` fallback (`scope-fallback.css`)
+sits behind `@supports not at-rule(@scope)`, so browsers that report `@scope` skip it, and
+the reduced-transparency copies of the Solid rules are generated from them by `pnpm styles`.
+
 When authoring components, run `pnpm css-perf:check` and `pnpm tokens:check`. Avoid root
 `:has()` selectors and universal sibling selectors. Use stable row IDs and preserve data
 identity across updates. The library's tests cover table layout and filter semantics;

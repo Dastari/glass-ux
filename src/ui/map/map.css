@@ -288,6 +288,7 @@
   :root[data-glass="solid"] .fa-map-cluster {
     background-color: var(--surface-3);
   }
+  /* reduced transparency: generated from the Solid rules above by `pnpm styles` */
   @media (prefers-reduced-transparency: reduce) {
     :root:not([data-glass="full"]) .fa-map-cluster {
       background-color: var(--surface-3);

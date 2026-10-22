@@ -252,6 +252,7 @@
     --specular-solid-rim: transparent;
   }
 
+  /* reduced transparency: generated from the Solid rules above by `pnpm styles` */
   @media (prefers-reduced-transparency: reduce) {
     :root:not([data-glass="full"]),
     :root:not([data-glass="full"]) [data-mode] {
@@ -769,6 +770,7 @@
     --glass-fill-inset: var(--glass-inset-solid);
     --fill-muted: var(--tint-muted-solid);
   }
+  /* reduced transparency: generated from the Solid rules above by `pnpm styles` */
   @media (prefers-reduced-transparency: reduce) {
     :root:not([data-glass="full"])
       :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached, .glass-scrim, .glass-control, .fa-control),

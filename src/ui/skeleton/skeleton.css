@@ -18,6 +18,7 @@
   :root[data-glass="solid"] [data-mode] {
     --skel-base: var(--tint-muted-solid);
   }
+  /* reduced transparency: generated from the Solid rules above by `pnpm styles` */
   @media (prefers-reduced-transparency: reduce) {
     :root:not([data-glass="full"]),
     :root:not([data-glass="full"]) [data-mode] {

@@ -630,7 +630,7 @@
     "check": "pnpm run brand:check && pnpm run styles:check && pnpm run icons:check && pnpm run fonts:check && pnpm run tokens:check && pnpm run layout:check && pnpm run css-perf:check && pnpm run size:check && pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run test:docs && pnpm run boundaries:check && pnpm run docs:check",
     "boundaries:check": "node scripts/check-boundaries.mjs",
     "docs:check": "node scripts/check-docs.mjs",
-    "test:docs": "node --test scripts/docs-api.test.mjs",
+    "test:docs": "node --test scripts/docs-api.test.mjs scripts/css-buckets.test.mjs",
     "test:e2e": "playwright test",
     "pack:release": "pnpm run docs:build && node scripts/pack-release.mjs --out .handoff",
     "pack:check": "node scripts/pack-release.mjs --check",

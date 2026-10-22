@@ -915,6 +915,20 @@ export const IconFacebook = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconFactory = /* @__PURE__ */ createIcon(
+  "factory",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M3.5 20.5V5A1 1 0 0 1 4.5 4H6A1 1 0 0 1 7 5V10.19A0.75 0.75 0 0 0 8.28 10.72L10.22 8.78A0.75 0.75 0 0 1 11.5 9.31V10.19A0.75 0.75 0 0 0 12.78 10.72L14.72 8.78A0.75 0.75 0 0 1 16 9.31V10.19A0.75 0.75 0 0 0 17.28 10.72L19.22 8.78A0.75 0.75 0 0 1 20.5 9.31V20.5H3.5Z" />
+      <path d="M3.5 20.5V5A1 1 0 0 1 4.5 4H6A1 1 0 0 1 7 5V10.19A0.75 0.75 0 0 0 8.28 10.72L10.22 8.78A0.75 0.75 0 0 1 11.5 9.31V10.19A0.75 0.75 0 0 0 12.78 10.72L14.72 8.78A0.75 0.75 0 0 1 16 9.31V10.19A0.75 0.75 0 0 0 17.28 10.72L19.22 8.78A0.75 0.75 0 0 1 20.5 9.31V20.5H3.5Z" />
+      <path d="M3 20.5H21" />
+      <circle className="fa-icon-dot" cx="10.5" cy="16" r="1.1" />
+      <circle className="fa-icon-dot" cx="14" cy="16" r="1.1" />
+      <circle className="fa-icon-dot" cx="17.5" cy="16" r="1.1" />
+    </>
+  )
+)
+
 export const IconFanvil = /* @__PURE__ */ createIcon(
   "fanvil",
   () => <path d="M5 20.5L9 3.5H21M7 12H17" />
@@ -1233,6 +1247,20 @@ export const IconHome = /* @__PURE__ */ createIcon(
 export const IconHoneywell = /* @__PURE__ */ createIcon(
   "honeywell",
   () => <path d="M5.5 3.5V20.5M18.5 3.5V20.5M5.5 12H18.5M3 3.5H8M16 3.5H21M3 20.5H8M16 20.5H21" />
+)
+
+export const IconHospital = /* @__PURE__ */ createIcon(
+  "hospital",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M3.5 20.5V12A1 1 0 0 1 4.5 11H5.5A1 1 0 0 0 6.5 10V5.5A2 2 0 0 1 8.5 3.5H15.5A2 2 0 0 1 17.5 5.5V10A1 1 0 0 0 18.5 11H19.5A1 1 0 0 1 20.5 12V20.5H3.5Z" />
+      <path d="M3.5 20.5V12A1 1 0 0 1 4.5 11H5.5A1 1 0 0 0 6.5 10V5.5A2 2 0 0 1 8.5 3.5H15.5A2 2 0 0 1 17.5 5.5V10A1 1 0 0 0 18.5 11H19.5A1 1 0 0 1 20.5 12V20.5H3.5Z" />
+      <path d="M3 20.5H21" />
+      <path d="M12 7V12" />
+      <path d="M9.5 9.5H14.5" />
+      <path d="M10.5 20.5V17.25A1.5 1.5 0 0 1 12 15.75H12A1.5 1.5 0 0 1 13.5 17.25V20.5" />
+    </>
+  )
 )
 
 export const IconHp = /* @__PURE__ */ createIcon(
@@ -1867,6 +1895,24 @@ export const IconNvidia = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconOffice = /* @__PURE__ */ createIcon(
+  "office",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M6 20.5V6A2.5 2.5 0 0 1 8.5 3.5H15.5A2.5 2.5 0 0 1 18 6V20.5H6Z" />
+      <path d="M6 20.5V6A2.5 2.5 0 0 1 8.5 3.5H15.5A2.5 2.5 0 0 1 18 6V20.5H6Z" />
+      <path d="M3 20.5H21" />
+      <circle className="fa-icon-dot" cx="9.5" cy="7.5" r="1.1" />
+      <circle className="fa-icon-dot" cx="9.5" cy="11" r="1.1" />
+      <circle className="fa-icon-dot" cx="9.5" cy="14.5" r="1.1" />
+      <circle className="fa-icon-dot" cx="14.5" cy="7.5" r="1.1" />
+      <circle className="fa-icon-dot" cx="14.5" cy="11" r="1.1" />
+      <circle className="fa-icon-dot" cx="14.5" cy="14.5" r="1.1" />
+      <path d="M10.5 20.5V18.75A1.5 1.5 0 0 1 12 17.25H12A1.5 1.5 0 0 1 13.5 18.75V20.5" />
+    </>
+  )
+)
+
 export const IconOffline = /* @__PURE__ */ createIcon(
   "offline",
   () => (
@@ -1969,6 +2015,19 @@ export const IconPaloAlto = /* @__PURE__ */ createIcon(
 export const IconPanasonic = /* @__PURE__ */ createIcon(
   "panasonic",
   () => <path d="M6.5 21V3.5H12.5A5 5 0 0 1 12.5 13.5H6.5" />
+)
+
+export const IconPartner = /* @__PURE__ */ createIcon(
+  "partner",
+  () => (
+    <>
+      <path d="M3 5V13" />
+      <path d="M21 5V13" />
+      <path d="M3 6H7.5L9.5 8" />
+      <path d="M21 6H15.91A1 1 0 0 0 15.21 6.29L10.71 10.79A1 1 0 0 0 10.71 12.21L10.79 12.29A1 1 0 0 0 12.21 12.29L14.29 10.21A1 1 0 0 1 15.71 10.21L19.5 14A1.5 1.5 0 0 1 16.5 14A1.5 1.5 0 0 1 13.5 14A1.5 1.5 0 0 1 10.5 14" />
+      <path d="M3 12.5L8.79 18.29A1 1 0 0 0 10.21 18.29L10.5 18" />
+    </>
+  )
 )
 
 export const IconPatch = /* @__PURE__ */ createIcon(
@@ -2332,6 +2391,21 @@ export const IconSchneiderElectric = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconSchool = /* @__PURE__ */ createIcon(
+  "school",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M3.5 20.5V12.5A1.5 1.5 0 0 1 5 11H7.5A1 1 0 0 0 8.5 10V6.91A1 1 0 0 1 8.79 6.21L11.29 3.71A1 1 0 0 1 12.71 3.71L15.21 6.21A1 1 0 0 1 15.5 6.91V10A1 1 0 0 0 16.5 11H19A1.5 1.5 0 0 1 20.5 12.5V20.5H3.5Z" />
+      <path d="M3.5 20.5V12.5A1.5 1.5 0 0 1 5 11H7.5A1 1 0 0 0 8.5 10V6.91A1 1 0 0 1 8.79 6.21L11.29 3.71A1 1 0 0 1 12.71 3.71L15.21 6.21A1 1 0 0 1 15.5 6.91V10A1 1 0 0 0 16.5 11H19A1.5 1.5 0 0 1 20.5 12.5V20.5H3.5Z" />
+      <path d="M3 20.5H21" />
+      <circle cx="12" cy="9.25" r="1.75" />
+      <path d="M10.5 20.5V17A1.5 1.5 0 0 1 12 15.5H12A1.5 1.5 0 0 1 13.5 17V20.5" />
+      <circle className="fa-icon-dot" cx="6" cy="15" r="1.1" />
+      <circle className="fa-icon-dot" cx="18" cy="15" r="1.1" />
+    </>
+  )
+)
+
 export const IconSeagate = /* @__PURE__ */ createIcon(
   "seagate",
   () => <path d="M8.4 11.77L11.87 9.77A2 2 0 0 1 13.87 13.23L9.54 15.73A4.5 4.5 0 0 1 5.04 7.94L10.23 4.94A7 7 0 0 1 17.23 17.06L14.63 18.56" />
@@ -2621,6 +2695,20 @@ export const IconStop = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconStore = /* @__PURE__ */ createIcon(
+  "store",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M3.5 8.5V5.5A1.5 1.5 0 0 1 5 4H19A1.5 1.5 0 0 1 20.5 5.5V8.5A2.13 2.13 0 0 1 16.25 8.5A2.13 2.13 0 0 1 12 8.5A2.13 2.13 0 0 1 7.75 8.5A2.13 2.13 0 0 1 3.5 8.5Z" />
+      <path d="M3.5 8.5V5.5A1.5 1.5 0 0 1 5 4H19A1.5 1.5 0 0 1 20.5 5.5V8.5A2.13 2.13 0 0 1 16.25 8.5A2.13 2.13 0 0 1 12 8.5A2.13 2.13 0 0 1 7.75 8.5A2.13 2.13 0 0 1 3.5 8.5Z" />
+      <path d="M3 20.5H21" />
+      <path d="M5 13V20.5" />
+      <path d="M19 13V20.5" />
+      <path d="M9.5 20.5V16A1.5 1.5 0 0 1 11 14.5H13A1.5 1.5 0 0 1 14.5 16V20.5" />
+    </>
+  )
+)
+
 export const IconStripe = /* @__PURE__ */ createIcon(
   "stripe",
   () => (
@@ -2668,6 +2756,19 @@ export const IconSupermicro = /* @__PURE__ */ createIcon(
       <path d="M17.46 5.49A8.5 8.5 0 1 0 19.99 14.91" />
       <path d="M15.5 8H10.5A2 2 0 0 0 10.5 12H13.5A2 2 0 0 1 13.5 16H8.5" />
       <circle className="fa-icon-dot" cx="20.5" cy="12" r="1.25" />
+    </>
+  )
+)
+
+export const IconSupplier = /* @__PURE__ */ createIcon(
+  "supplier",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M2.5 6.5A2 2 0 0 1 4.5 4.5H11.5A2 2 0 0 1 13.5 6.5V13.5A2 2 0 0 1 11.5 15.5H4.5A2 2 0 0 1 2.5 13.5V6.5Z" />
+      <path d="M2.5 6.5A2 2 0 0 1 4.5 4.5H11.5A2 2 0 0 1 13.5 6.5V13.5A2 2 0 0 1 11.5 15.5H9.37M3.74 15.35A2 2 0 0 1 2.5 13.5V6.5" />
+      <path d="M13.5 8.5H17.09A1 1 0 0 1 17.79 8.79L20.71 11.71A1 1 0 0 1 21 12.41V14A1.5 1.5 0 0 1 20.05 15.4M14.38 15.5H13.5V8.5" />
+      <circle cx="6.5" cy="17.5" r="2" />
+      <circle cx="17.25" cy="17.5" r="2" />
     </>
   )
 )
@@ -3028,6 +3129,19 @@ export const IconWake = /* @__PURE__ */ createIcon(
       <path d="M12 7.5V5.75" />
       <path d="M17.48 9.77L18.72 8.53" />
       <path d="M19.75 15.25H21.5" />
+    </>
+  )
+)
+
+export const IconWarehouse = /* @__PURE__ */ createIcon(
+  "warehouse",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M3.5 20.5V10A10.28 10.28 0 0 1 20.5 10V20.5Z" />
+      <path d="M3.5 20.5V10A10.28 10.28 0 0 1 20.5 10V20.5" />
+      <path d="M3 20.5H21" />
+      <path d="M8 20.5V14H16V20.5" />
+      <path d="M8 17.25H16" />
     </>
   )
 )

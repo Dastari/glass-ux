@@ -3,6 +3,13 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.5 → 0.9.6
+
+No code changes are required. Stand-in glyphs for sites (for example `IconMapPin` for an
+office, `IconPackage` for a warehouse, `IconTag` for a shop) can move to `IconOffice`,
+`IconWarehouse`, `IconStore`, `IconSchool`, `IconHospital` and `IconFactory`, and
+organisation relationships to `IconPartner` and `IconSupplier`.
+
 ## 0.9.4 → 0.9.5
 
 No code changes are required.

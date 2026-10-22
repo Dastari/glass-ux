@@ -54,11 +54,24 @@ const GROUPS: Array<[title: string, names: string[]]> = [
   ["Hardware and network", ["laptop", "server", "cpu", "memory", "disk", "battery", "temperature", "usb", "printer", "signal", "wifi", "network", "ethernet", "globe", "cloud", "cloud-off", "database"]],
   ["Status", ["success", "warning", "alert", "error", "info", "help", "pending", "offline"]],
   ["People", ["user", "users", "user-plus"]],
+  ["Sites and relationships", ["office", "warehouse", "store", "school", "hospital", "factory", "partner", "supplier"]],
   ["Data and files", ["chart-line", "chart-pie", "trend-up", "trend-down", "file", "file-text", "folder", "folder-open", "image", "code", "grid", "list", "map-pin"]],
   ["Appearance", ["sun", "moon", "system"]],
   ["Social and company logos", ["adobe", "amazon", "anthropic", "apple", "bitbucket", "bluesky", "cloudflare", "discord", "docker", "dropbox", "facebook", "figma", "github", "gitlab", "google", "instagram", "linkedin", "mastodon", "meta", "microsoft", "notion", "npm", "openai", "pinterest", "reddit", "slack", "snapchat", "spotify", "stripe", "telegram", "threads", "tiktok", "twitch", "vercel", "whatsapp", "x", "youtube", "zoom"]],
   ["Device manufacturers", DEVICE_BRAND_NAMES],
 ]
+
+/** Other words people search for (shop finds store). */
+const KEYWORDS = new Map<string, string>([
+  ["office", "building site"],
+  ["warehouse", "depot storage distribution site"],
+  ["store", "shop storefront retail site"],
+  ["school", "education campus site"],
+  ["hospital", "clinic medical health site"],
+  ["factory", "plant manufacturing industrial site"],
+  ["partner", "handshake agreement"],
+  ["supplier", "truck delivery vendor"],
+])
 
 function groupedIcons() {
   const filed = new Set<string>()
@@ -107,7 +120,7 @@ export default function IconsSection() {
           entries: group.title.toLowerCase().includes(needle)
             ? group.entries
             : group.entries.filter((entry) =>
-              `${entry.name} ${DEVICE_BRAND_KEYWORDS.get(entry.name) ?? ""}`
+              `${entry.name} ${DEVICE_BRAND_KEYWORDS.get(entry.name) ?? ""} ${KEYWORDS.get(entry.name) ?? ""}`
                 .replaceAll(/[\s-]/g, "").includes(needle.replaceAll(/[\s-]/g, ""))),
         }))
         .filter((group) => group.entries.length),

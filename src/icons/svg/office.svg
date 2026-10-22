@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path class="t" d="M6 20.5V6A2.5 2.5 0 0 1 8.5 3.5H15.5A2.5 2.5 0 0 1 18 6V20.5H6Z"/>
+  <path d="M6 20.5V6A2.5 2.5 0 0 1 8.5 3.5H15.5A2.5 2.5 0 0 1 18 6V20.5H6Z"/>
+  <path d="M3 20.5H21"/>
+  <circle class="d" cx="9.5" cy="7.5" r="1.1"/>
+  <circle class="d" cx="9.5" cy="11" r="1.1"/>
+  <circle class="d" cx="9.5" cy="14.5" r="1.1"/>
+  <circle class="d" cx="14.5" cy="7.5" r="1.1"/>
+  <circle class="d" cx="14.5" cy="11" r="1.1"/>
+  <circle class="d" cx="14.5" cy="14.5" r="1.1"/>
+  <path d="M10.5 20.5V18.75A1.5 1.5 0 0 1 12 17.25H12A1.5 1.5 0 0 1 13.5 18.75V20.5"/>
+</svg>

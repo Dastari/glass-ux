@@ -4,6 +4,16 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.6
+
+### Added
+
+- Icons for sites and the organisations a business works with: `IconOffice`,
+  `IconWarehouse`, `IconStore`, `IconSchool`, `IconHospital` and `IconFactory`, which share
+  the organisation's ground line, and `IconPartner` (a handshake) and `IconSupplier` (a
+  delivery truck). The Icons page files them under "Sites and relationships" and finds
+  them by other names too: shop, clinic, handshake, truck.
+
 ## 0.9.5
 
 ### Added

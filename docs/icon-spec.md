@@ -28,6 +28,8 @@ Six traits make the set read as one hand. A new icon has all six.
    - **window frame:** `sidebar`, `inspector`, `columns`, `terminal`, `task-manager`
    - **status circle:** `success`, `error`, `info`, `help`, `pending`, `offline`
    - **cube:** `software`, `package`
+   - **ground line:** `organisation`, `office`, `warehouse`, `store`, `school`, `hospital`,
+     `factory`
 6. **Even mass.** Every glyph fills the keyline shape nearest to it, so a circle, a square
    and a monitor read as the same weight at 14px.
 
@@ -154,6 +156,10 @@ masking.
   - `external-link` leaves Glass UX. `pop-out` moves a window into its own browser window,
     and `pop-in` brings it back.
   - `copy` uses portrait pages. `restore` and `windows` use window frames.
+  - Sites are buildings told apart by silhouette: `office` a tower of windows, `warehouse`
+    an arched shed, `store` an awning, `school` a gabled hall with a clock, `hospital` a
+    cross, `factory` a sawtooth roof and chimney. `partner` is a handshake and `supplier` a
+    delivery truck; `package` stays the software package.
 - Use the simplest metaphor that survives at 14px, with at most three ideas per icon.
 - Status icons: `success` (check in a circle), `warning` (triangle), `error` (× in a
   circle), `info`, `help`, `pending` (dashed ring) and `offline` (slashed circle). They

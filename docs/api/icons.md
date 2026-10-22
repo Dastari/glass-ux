@@ -99,6 +99,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconEyeOff** — Eye Off icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconEye** — Eye icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFacebook** — Facebook icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFactory** — Factory icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFanvil** — Fanvil icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFigma** — Figma icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFileText** — File Text icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
@@ -128,6 +129,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconHistory** — History icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconHome** — Home icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconHoneywell** — Honeywell icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconHospital** — Hospital icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconHp** — Hp icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconHpe** — Hpe icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconHuawei** — Huawei icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
@@ -186,6 +188,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconNotion** — Notion icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconNpm** — Npm icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconNvidia** — Nvidia icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconOffice** — Office icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconOffline** — Offline icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconOki** — Oki icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconOpenai** — Openai icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
@@ -196,6 +199,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconPageLast** — Page Last icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconPaloAlto** — Palo Alto icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconPanasonic** — Panasonic icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconPartner** — Partner icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconPatch** — Patch icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconPause** — Pause icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconPending** — Pending icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
@@ -228,6 +232,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconRuckus** — Ruckus icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconSamsung** — Samsung icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconSchneiderElectric** — Schneider Electric icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconSchool** — School icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconSeagate** — Seagate icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconSearch** — Search icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconSend** — Send icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
@@ -256,10 +261,12 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconSpotify** — Spotify icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconStar** — Star icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconStop** — Stop icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconStore** — Store icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconStripe** — Stripe icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconSuccess** — Success icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconSun** — Sun icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconSupermicro** — Supermicro icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconSupplier** — Supplier icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconSynology** — Synology icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconSystem** — System icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconTable** — Table icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
@@ -294,6 +301,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconVertiv** — Vertiv icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconViewOnly** — View Only icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconWake** — Wake icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconWarehouse** — Warehouse icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconWarning** — Warning icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconWatchguard** — Watchguard icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconWesternDigital** — Western Digital icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.

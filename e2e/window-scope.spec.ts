@@ -87,6 +87,35 @@ test("the application's scope chip replaces the pill, and its icon replaces it i
   }
 });
 
+test("a squeezed narrow window keeps the scope icon's tile and clear of the next tool @responsive", async ({ page }) => {
+  await page.goto("/components/window-scope-chip");
+  const label = "Compact Northstar Studio terminal with an identity icon";
+  const pill = (await measure(page, label)).scope!.height;
+  // Squeeze the title row until the scope would have to give way: the example has no app bar
+  // tools, so it takes a very narrow window (in an application, tools take the room).
+  await page.locator(`[aria-label="${label}"]`).evaluate((element: HTMLElement) => {
+    element.style.width = "7rem";
+    element.style.minWidth = "0";
+  });
+  const view = await measure(page, label);
+  expect(view.narrow).toBe(true);
+  expect(view.scope!.width).toBeCloseTo(pill, 0);
+  expect(view.icon!.box!.left).toBeGreaterThanOrEqual(view.scope!.left - 0.5);
+  expect(view.icon!.box!.right).toBeLessThanOrEqual(view.scope!.right + 0.5);
+  const next = await page
+    .locator(`[aria-label="${label}"] .fa-window-scope`)
+    .evaluate((element) => {
+      // The next tool drawn in the app bar after the scope.
+      const bar = element.closest(".fa-window-appbar")!;
+      const after = Array.from(bar.querySelectorAll<HTMLElement>("button, .fa-window-actions > *")).filter(
+        (node) => !element.contains(node) && element.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+      const drawn = after.map((node) => node.getBoundingClientRect()).find((rect) => rect.width > 0);
+      return drawn ? drawn.left : null;
+    });
+  if (next !== null) expect(view.scope!.right).toBeLessThanOrEqual(next + 0.5);
+});
+
 test("a scope drawn by the application keeps its name and passes axe @responsive", async ({ page }) => {
   await page.goto("/components/window-scope-chip");
   for (const frame of ["Northstar Studio terminal with an identity chip", "Compact Northstar Studio terminal with an identity icon"]) {

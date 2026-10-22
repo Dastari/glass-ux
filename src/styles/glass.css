@@ -370,7 +370,20 @@
       oklch(1 0 0 / 0.08),
       oklch(1 0 0 / 0) 50%
     );
-    color: oklch(0.97 0.005 var(--neutral-h));
+    /* The smoke is dark in both modes, so what sits on it reads light: text, ghost and
+       secondary controls, lines and the neutral state layers. */
+    --fg: oklch(0.97 0.005 var(--neutral-h));
+    --fg-muted: oklch(0.97 0.005 var(--neutral-h) / 0.74);
+    --fg-subtle: oklch(0.97 0.005 var(--neutral-h) / 0.6);
+    --line: oklch(1 0 0 / 0.14);
+    --line-strong: oklch(1 0 0 / 0.24);
+    --fill-hover: oklch(1 0 0 / 0.12);
+    --fill-press: oklch(1 0 0 / 0.18);
+    --fill-muted: oklch(1 0 0 / 0.07);
+    --glass-fill-control: oklch(1 0 0 / 0.1);
+    --glass-fill-control-hover: oklch(1 0 0 / 0.16);
+    color-scheme: dark;
+    color: var(--fg);
   }
 
   /* A layer in motion (a window being dragged or resized, R14). Its backdrop changes every

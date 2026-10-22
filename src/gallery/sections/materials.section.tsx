@@ -81,7 +81,7 @@ export default function MaterialsSection() {
 
       <Specimen title="Over imagery" description="The float material keeps controls legible over a remote desktop or a chart." backdrop>
         <div className="glass-float materials-toolbar">
-          <Button variant="ghost" size="sm" icon={<IconEndpoint />} aria-label="Remote control" data-mode="dark" />
+          <Button variant="ghost" size="sm" icon={<IconEndpoint />} aria-label="Remote control" />
           <span className="type-label">NST-C106 · 1920 × 1080 · 28 ms</span>
         </div>
       </Specimen>

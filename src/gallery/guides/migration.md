@@ -3,6 +3,20 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.7 → 0.9.8
+
+No code changes are required.
+
+- A local aspect-ratio box (padding-top hacks or your own `aspect-ratio` wrapper) can move
+  to `AspectRatio` from `glass-ux/aspect-ratio`.
+- Overrides for a full-screen window's background (`background-clip`, hiding `::before`),
+  for the narrow scope icon's width, and `data-mode="dark"` on controls inside `glass-float`
+  can go.
+- Content on `glass-float` that set its own light text colour can rely on the float's
+  `--fg` and `--fg-muted`.
+- A click handler on `.fa-chart-hit` that read `aria-valuenow` can move to `LineChart`
+  `onActivate`, and a drawn selection to `selected`.
+
 ## 0.9.6 → 0.9.7
 
 No code changes are required.

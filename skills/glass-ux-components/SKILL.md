@@ -30,7 +30,8 @@ the application's callbacks (`docs/components/login-flow.md`) rather than assemb
 Compose documented slots rather than reproducing their markup or styling internals.
 Provide accessible names for icon-only controls. A disabled action carries its reason.
 Use `TruncatedText` where a full identifier must remain reachable, and the component's
-skeleton where data is loading.
+skeleton where data is loading. Give screens, video and images of a known shape an
+`AspectRatio` so they keep their space before they load.
 
 Use token roles and outer layout classes. Named variants and semantic tones are props, not
 local colour overrides. Give bounded charts, maps and workspaces a definite height, and

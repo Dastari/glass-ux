@@ -1,6 +1,6 @@
 {
   "name": "glass-ux",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "A typed React design system for glass interfaces, data applications and assistant experiences.",
   "type": "module",
   "license": "MIT",
@@ -273,6 +273,10 @@
     "./separator": {
       "types": "./dist/ui/separator/index.d.ts",
       "import": "./dist/ui/separator/index.js"
+    },
+    "./aspect-ratio": {
+      "types": "./dist/ui/aspect-ratio/index.d.ts",
+      "import": "./dist/ui/aspect-ratio/index.js"
     },
     "./reference-input": {
       "types": "./dist/ui/reference-input/index.d.ts",

@@ -73,3 +73,22 @@ test("Solid: optics are off and fills are opaque", async ({ page }) => {
   expect(optics.light).toBe("");
   expect(optics.fill).not.toMatch(/\/ 0\.|rgba\([^)]*, 0\./);
 });
+
+test("controls on glass-float take its light foreground in the light theme", async ({ page }) => {
+  await open(page, "foundations/materials", { motion: "reduced", glass: "full" });
+  const button = page.locator(".materials-toolbar .fa-btn").first();
+  await button.scrollIntoViewIfNeeded();
+  const lightness = async () =>
+    button.evaluate((element) => {
+      // Resolve any colour syntax (oklch, color-mix) to sRGB through a canvas.
+      const context = document.createElement("canvas").getContext("2d")!;
+      context.fillStyle = getComputedStyle(element).color;
+      context.fillRect(0, 0, 1, 1);
+      const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
+      return (0.2126 * r! + 0.7152 * g! + 0.0722 * b!) / 255;
+    });
+  expect(await button.evaluate((element) => element.closest("[data-mode]")?.getAttribute("data-mode") ?? null)).not.toBe("dark");
+  expect(await lightness()).toBeGreaterThan(0.6);
+  await button.hover();
+  expect(await lightness()).toBeGreaterThan(0.8);
+});

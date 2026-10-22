@@ -33,6 +33,17 @@ test("Full screen fills the screen with the body, popups open inside, and Exit r
   expect(layout.appbar).toBe("none");
   expect(layout.status).toBe("none");
   expect(layout.radius).toBe("0px");
+  // Opaque: the frame paints its own solid fill and drops the translucent glass layer.
+  const paint = await frame.evaluate((element) => ({
+    clip: getComputedStyle(element).backgroundClip,
+    image: getComputedStyle(element).backgroundImage,
+    layer: getComputedStyle(element, "::before").display,
+    fill: getComputedStyle(element).backgroundColor,
+  }));
+  expect(paint.clip).toBe("border-box");
+  expect(paint.image).toBe("none");
+  expect(paint.layer).toBe("none");
+  expect(paint.fill).not.toMatch(/\/\s*0?\.\d|rgba\(.*,\s*0?\.\d+\)|transparent/);
   for (const rect of [layout.frame, layout.body]) {
     expect(rect.x).toBeCloseTo(0, 0);
     expect(rect.y).toBeCloseTo(0, 0);

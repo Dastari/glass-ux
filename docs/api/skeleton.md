@@ -33,7 +33,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | height | `Length \| undefined` | See type | no | — | Available height used for the component’s size tier. |
-| radius | `"full" \| "item" \| "check" \| "control" \| "tile" \| "surface" \| undefined` | "full", "item", "check", "control", "tile", "surface" | no | "control" | A radius role so the placeholder matches the thing it replaces. |
+| radius | `"full" \| "control" \| "tile" \| "surface" \| "item" \| "check" \| undefined` | "full", "control", "tile", "surface", "item", "check" | no | "control" | A radius role so the placeholder matches the thing it replaces. |
 | width | `Length \| undefined` | See type | no | — | Available width or named width tier. |
 
 Inherited properties:

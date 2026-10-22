@@ -33,6 +33,7 @@
 - [AskMarker](ask-marker.md) — `glass-ux/ai`
 - [AskRecord](ask-record.md) — `glass-ux/ai`
 - [AskShell](ask-shell.md) — `glass-ux/ai`
+- [AspectRatio](aspect-ratio.md) — `glass-ux/aspect-ratio`
 - [AssistantMessage](assistant-message.md) — `glass-ux/ai`
 - [AssistantPane](assistant-pane.md) — `glass-ux/ai`
 - [AttachmentChip](attachment-chip.md) — `glass-ux/ai`

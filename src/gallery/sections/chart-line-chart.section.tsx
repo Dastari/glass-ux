@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react";
+import { useState, type ComponentProps } from "react";
 import { LineChart, type ChartState } from "../../ui/charts/index.js";
 import {
   ContainerLab,
@@ -26,6 +26,33 @@ const render = (state: ChartState = "ready") => (
   />
 );
 
+const times = Array.from({ length: 24 }, (_, index) => new Date(2026, 0, 12, 9, index * 5));
+const load = [22, 25, 31, 28, 34, 47, 62, 58, 41, 36, 33, 38, 44, 71, 83, 76, 52, 40, 35, 31, 29, 33, 30, 27];
+
+/** Click or Enter on a point selects its time; a second view would jump there. */
+function SelectPoint() {
+  const [selected, setSelected] = useState<Date | undefined>(times[14]);
+  return (
+    <div className="flex w-full flex-col gap-2">
+      <div className="charts-pane">
+        <LineChart
+          x={times}
+          series={[{ key: "cpu", label: "CPU", data: load }]}
+          unit="%"
+          domain={[0, 100]}
+          label="CPU on NST-C106 · fictional"
+          title="CPU"
+          selected={selected}
+          onActivate={(_, at) => setSelected(at as Date)}
+        />
+      </div>
+      <p className="type-caption text-fg-muted" aria-live="polite">
+        {selected ? `Processes and events at ${selected.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "No time selected"}
+      </p>
+    </div>
+  );
+}
+
 export default function LineChartSection() {
   return (
     <SectionPage>
@@ -37,6 +64,13 @@ export default function LineChartSection() {
         <div className="charts-pane" data-testid="chart-line-chart">
           {render()}
         </div>
+      </Specimen>
+      <Specimen
+        title="Select a point"
+        description="onActivate reports a click, Enter or Space on a point with its index and x; selected draws the chosen time as a rule, or a [from, to] range as a band."
+        wide
+      >
+        <SelectPoint />
       </Specimen>
       <Specimen
         title="Responsive sizes"

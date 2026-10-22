@@ -63,6 +63,13 @@ export interface LineChartProps extends ChartCommonProps, ValueFormat {
   formatX?: (x: number) => string
   /** "Now" for relative times in the readout. Defaults to the clock. */
   now?: Date
+  /**
+   * Click, Enter or Space on a point: its index and x (jump another view to that time). While
+   * set, the plot shows a pointer cursor and its accessible name says Enter selects.
+   */
+  onActivate?: (index: number, x: XValue) => void
+  /** The chosen x, drawn as a rule, or an [from, to] range, drawn as a band. */
+  selected?: XValue | readonly [XValue, XValue]
 }
 
 interface Prepared {
@@ -133,7 +140,7 @@ function prepare(
  *            head (Metric's model)
  */
 export function LineChart(props: LineChartProps) {
-  const { label, title, state = "ready", series, x, unit, format, xLabel = "Time", formatX, area, stacked, now, thresholds, markers, domain, ...rest } = props
+  const { label, title, state = "ready", series, x, unit, format, xLabel = "Time", formatX, area, stacked, now, thresholds, markers, domain, onActivate, selected, ...rest } = props
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
   const store = useHoverStore()
   const prepared = useMemo(() => prepare(x, series, domain, stacked, thresholds, hidden), [x, series, domain, stacked, thresholds, hidden])
@@ -155,6 +162,9 @@ export function LineChart(props: LineChartProps) {
     tone: item.tone,
     shape: showArea && stacked ? "box" : "line",
   }))
+
+  // Stable while its inputs are, so the memoised plot does not redraw for a new arrow.
+  const activate = useMemo(() => (onActivate ? (index: number) => onActivate(index, x[index]!) : undefined), [onActivate, x])
 
   const table = useMemo(() => lineTable(x, series, fmt, xLabel, formatX), [x, series, fmt, xLabel, formatX])
 
@@ -213,6 +223,8 @@ export function LineChart(props: LineChartProps) {
           xText={xText}
           now={now}
           formatX={formatX}
+          onActivate={activate}
+          selected={selected}
         />
       )}
     </ChartFrame>
@@ -317,6 +329,8 @@ interface LinePlotProps {
   xText: (index: number) => string
   now?: Date
   formatX?: (x: number) => string
+  onActivate?: (index: number) => void
+  selected?: XValue | readonly [XValue, XValue]
 }
 
 interface DrawnSeries {
@@ -332,7 +346,7 @@ interface DrawnSeries {
   ys: (number | null)[]
 }
 
-const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, thresholds, markers, fmt, label, xText, now, formatX }: LinePlotProps) {
+const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, thresholds, markers, fmt, label, xText, now, formatX, onActivate, selected }: LinePlotProps) {
   const clock = useNow(now)
   const id = useId()
   const svgRef = useRef<SVGSVGElement>(null)
@@ -441,8 +455,25 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
     const ys = drawn.map((d) => d.ys[index]).filter((v): v is number => v !== null && v !== undefined)
     return { x: px(xs[index] ?? first), y: ys.length ? Math.min(...ys) : (y0 + y1) / 2 }
   }
+  // The selection in plot px: one rule, or a band from the earlier x to the later.
+  const selection = useMemo(() => {
+    if (selected === undefined || !xs.length) return null
+    const clamp = (value: number) => Math.min(x1, Math.max(x0, px(value)))
+    if (Array.isArray(selected)) {
+      const [a, b] = (selected as readonly [XValue, XValue]).map(toNumber) as [number, number]
+      return { from: clamp(Math.min(a, b)), to: clamp(Math.max(a, b)), low: Math.min(a, b), high: Math.max(a, b) }
+    }
+    const at = toNumber(selected as XValue)
+    return { from: clamp(at), to: clamp(at), low: at, high: at }
+  }, [selected, xs.length, px, x0, x1])
+  const isSelected = (index: number) => {
+    if (!selection) return false
+    const at = xs[index]!
+    // A single selected x matches its nearest sample; a range holds the samples inside it.
+    return selection.low === selection.high ? nearestIndex(xs, selection.low) === index : at >= selection.low && at <= selection.high
+  }
   const valueText = (index: number) =>
-    `${xText(index)} · ${visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`).join(", ")}`
+    `${xText(index)} · ${visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`).join(", ")}${isSelected(index) ? " · selected" : ""}`
 
   const zeroY = domain[0] <= 0 && domain[1] >= 0 ? 0 : undefined
 
@@ -501,6 +532,16 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
             })
           : null}
 
+        {(full || compact) && selection ? (
+          <g className="fa-chart-selection" aria-hidden>
+            {selection.to - selection.from >= 1 ? (
+              <rect className="fa-chart-selection-band" x={selection.from} width={selection.to - selection.from} y={y0} height={Math.max(0, y1 - y0)} />
+            ) : (
+              <line className="fa-chart-selection-rule" x1={Math.round(selection.from) + 0.5} x2={Math.round(selection.from) + 0.5} y1={y0} y2={y1} />
+            )}
+          </g>
+        ) : null}
+
         {drawn.map(({ item, slot, lines, areas, end }, order) => (
           <g key={item.key} className="fa-chart-series" {...seriesAttrs(slot, item.tone)}>
             {areas.map((d, index) => (
@@ -558,7 +599,17 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
       {full ? (
         <>
           <HoverLayer store={store} drawn={drawn} px={px} xs={xs} y0={y0} y1={y1} width={width} height={height} rem={rem} toned={toned} thresholds={sortedThresholds} />
-          <HitLayer store={store} count={xs.length} locate={(lx) => locate(lx)} anchor={anchor} snap label={`${label} — inspect values`} valueText={valueText} />
+          <HitLayer
+            store={store}
+            count={xs.length}
+            locate={(lx) => locate(lx)}
+            anchor={anchor}
+            snap
+            label={onActivate ? `${label} — inspect values, Enter selects` : `${label} — inspect values`}
+            valueText={valueText}
+            cursor={onActivate ? "pointer" : "crosshair"}
+            onActivate={onActivate}
+          />
           {visible.length > 0 ? (
             <ChartTooltip store={store} anchor={plotRef}>
               {(hover) => {

@@ -4,6 +4,33 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.8
+
+### Added
+
+- `AspectRatio` (`glass-ux/aspect-ratio`): a box that keeps a width:height ratio at any
+  width, with each direct child filling it. `ratio` takes a number or a `"w / h"` string
+  such as a display's `"2560 / 1440"`; `fit="contain" | "cover"` sets `object-fit` on an
+  img, video or canvas child; `maxHeight` narrows and centres the box to keep its ratio
+  instead of letterboxing; `radius` takes a Surface radius role or `media` (the default).
+  It has no material of its own, for use inside a Panel or tile. `parseAspectRatio` reads
+  a ratio the same way.
+- `LineChart` and `AreaChart` report a chosen point: `onActivate(index, x)` fires on a
+  click, Enter or Space on the plot. While it is set the plot shows a pointer cursor and its
+  name says Enter selects. `selected` draws the chosen x as an accent rule, or a `[from, to]`
+  range as a band, and the keyboard readout says when a point is selected.
+
+### Fixed
+
+- A window in full screen is opaque. It was grey: the panel material clips its own fill to
+  the border, which full screen removes, so only the translucent glass layer painted over
+  the black backdrop. The frame now paints `--canvas-solid` and drops that layer.
+- Controls on `glass-float` read light in the light theme. The float sets its own `--fg`,
+  `--fg-muted`, lines, neutral state layers and control fills, so ghost and secondary
+  buttons, text and icons on the dark smoke no longer take the page's dark foreground.
+- The scope icon in a narrow window keeps its tile. It could shrink to nothing under a
+  long title and app bar tools, leaving the icon drawn over the next tool.
+
 ## 0.9.7
 
 ### Added

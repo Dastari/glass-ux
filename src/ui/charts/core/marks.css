@@ -257,6 +257,15 @@
     --_rule: var(--success-line);
     --_text: var(--success-text);
   }
+  /* LineChart `selected`: the chosen x as an accent rule, or a range as an accent band. */
+  .fa-chart-selection-band {
+    fill: var(--accent-soft);
+  }
+  .fa-chart-selection-rule {
+    stroke: var(--accent);
+    stroke-width: calc(var(--border-width) * 2);
+    shape-rendering: crispEdges;
+  }
   .fa-chart-marker-rule {
     stroke: var(--line-strong);
     stroke-width: var(--border-width);

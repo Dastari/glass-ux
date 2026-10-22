@@ -1,0 +1,48 @@
+/*
+ * AspectRatio — a box at a fixed width:height whose direct children fill it. With a max height,
+ * the width shrinks to keep the ratio (min of the row and max-height × ratio) instead of
+ * letterboxing. Geometry only: no material.
+ */
+@layer components {
+  .fa-aspect-ratio {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: var(--fa-aspect-ratio, 1);
+    overflow: hidden;
+  }
+  .fa-aspect-ratio[data-max-height] {
+    width: min(100%, calc(var(--fa-aspect-max-height) * var(--fa-aspect-ratio, 1)));
+    margin-inline: auto;
+  }
+  .fa-aspect-ratio > * {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .fa-aspect-ratio[data-fit="contain"] > :is(img, video, canvas) {
+    object-fit: contain;
+  }
+  .fa-aspect-ratio[data-fit="cover"] > :is(img, video, canvas) {
+    object-fit: cover;
+  }
+  .fa-aspect-ratio[data-radius="media"] {
+    border-radius: var(--radius-media);
+  }
+  .fa-aspect-ratio[data-radius="control"] {
+    border-radius: var(--radius-control);
+  }
+  .fa-aspect-ratio[data-radius="tile"] {
+    border-radius: var(--radius-tile);
+  }
+  .fa-aspect-ratio[data-radius="surface"] {
+    border-radius: var(--radius-surface);
+  }
+  .fa-aspect-ratio[data-radius="overlay"] {
+    border-radius: var(--radius-overlay);
+  }
+  .fa-aspect-ratio[data-radius="dialog"] {
+    border-radius: var(--radius-dialog);
+  }
+}

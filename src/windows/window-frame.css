@@ -131,8 +131,10 @@
     .fa-window-scope[data-chip] {
       padding-inline: 0;
     }
+    /* The icon form keeps its tile: it does not shrink under the title. */
     .fa-window-scope[data-icon] {
-      min-width: 0;
+      flex: none;
+      min-width: var(--control-h-xs);
       height: auto;
       padding-inline: 0;
       background-color: transparent;
@@ -361,11 +363,19 @@
 
   /* ── Popped out: the frame is the whole browser window ─────────────────── */
   /* Full screen (R14): the body alone fills the screen; the content draws its own tools. */
+  /* Opaque in full screen: the shorthand also undoes the panel's border-area clip, which
+     would leave no area for the fill once the border is gone, and the translucent ::before
+     layer (fill, rims and lens) goes, so nothing shows the black ::backdrop through. */
   .fa-window:fullscreen {
     border: 0;
     border-radius: 0;
-    background-color: var(--canvas-solid);
+    background: var(--canvas-solid);
     box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .fa-window:fullscreen::before {
+    display: none;
   }
   .fa-window:fullscreen > :is(.fa-window-appbar, .fa-window-status, .fa-window-resize) {
     display: none;

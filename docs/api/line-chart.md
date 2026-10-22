@@ -30,7 +30,9 @@ box grows.
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for this chart's numbers, dates and table. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | markers | `readonly Marker[] \| undefined` | See type | no | — | Events on the x axis. |
 | now | `Date \| undefined` | See type | no | — | "Now" for relative times in the readout. Defaults to the clock. |
+| onActivate | `((index: number, x: XValue) => void) \| undefined` | See type | no | — | Click, Enter or Space on a point: its index and x (jump another view to that time). While set, the plot shows a pointer cursor and its accessible name says Enter selects. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
+| selected | `XValue \| readonly [XValue, XValue] \| undefined` | See type | no | — | The chosen x, drawn as a rule, or an [from, to] range, drawn as a band. |
 | series | `readonly LineSeries[]` | See type | yes | — | Chart series with stable identifiers, labels and typed values. |
 | stacked | `boolean \| undefined` | false, true | no | — | Stack the series as bands (parts of a total). Implies area. |
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |

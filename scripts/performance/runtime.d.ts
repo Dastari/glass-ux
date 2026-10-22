@@ -13,6 +13,7 @@ declare global {
       slide: () => void;
       change: () => void;
       timeSlide: () => number;
+      remove: () => void;
     };
     __mountMs: number;
     __commits: { phase: string; ms: number; at: number }[];

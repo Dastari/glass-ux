@@ -1,8 +1,23 @@
+import { mergeProps } from "@base-ui/react/merge-props"
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip"
-import { useId, useState, useSyncExternalStore, type ComponentProps, type ReactElement, type ReactNode } from "react"
+import {
+  cloneElement,
+  useCallback,
+  useContext,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ComponentProps,
+  type ReactElement,
+  type ReactNode,
+  type Ref,
+} from "react"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Kbd } from "../kbd/index.js"
 import { popupContainer } from "../../lib/popup-container.js"
+import { TOOLTIP_KEY, TooltipHost, TooltipHostContext, type Instant, type TooltipEntry, type TooltipHostApi } from "./tooltip-host.js"
 
 /** Hover delay before the first tooltip opens. Later ones in the same group open at once. */
 export const TOOLTIP_DELAY_MS = 500
@@ -54,7 +69,10 @@ export function useInvertedMode(): Mode {
 export function TooltipProvider({ children }: { children: ReactNode }) {
   return (
     <BaseTooltip.Provider delay={TOOLTIP_DELAY_MS} closeDelay={0} timeout={GROUP_TIMEOUT_MS}>
-      {children}
+      {/* One host shows every tooltip under the provider (tooltip-host.tsx). */}
+      <TooltipHost delay={TOOLTIP_DELAY_MS} timeout={GROUP_TIMEOUT_MS}>
+        {children}
+      </TooltipHost>
     </BaseTooltip.Provider>
   )
 }
@@ -105,7 +123,15 @@ export interface TooltipProps extends TriggerProps {
  *
  * The trigger keeps its own accessible name; the tooltip repeats it visually.
  */
-export function Tooltip({
+export function Tooltip(props: TooltipProps) {
+  const host = useContext(TooltipHostContext)
+  // Under a TooltipProvider the provider's host shows the bubble; a controlled tooltip, or
+  // one outside any provider, runs its own Base UI tooltip.
+  if (host && props.open === undefined) return <HostedTooltip host={host} {...props} />
+  return <OwnTooltip {...props} />
+}
+
+function OwnTooltip({
   content,
   shortcut,
   children,
@@ -149,6 +175,89 @@ export function Tooltip({
   )
 }
 
+/**
+ * A tooltip shown by the provider's host. It renders only its trigger, with the attributes a
+ * Base UI trigger would give it (its id, data-base-ui-tooltip-trigger, data-popup-open while
+ * shown, aria-describedby when the text describes rather than names it), merged the way Base
+ * UI merges them: the child's own props win.
+ */
+function HostedTooltip({
+  host,
+  content,
+  shortcut,
+  children,
+  side = "top",
+  align = "center",
+  enabled = true,
+  onOpenChange,
+  arrow = true,
+  describe,
+  ref: triggerRef,
+  id: triggerIdProp,
+  ...triggerProps
+}: TooltipProps & { host: TooltipHostApi }) {
+  // One id: the registry key, and from it the bubble's id and the trigger's (Base UI's form).
+  const key = useId()
+  const id = `${key}tooltip`
+  const triggerId = `base-ui-${key}`
+  const [shown, setShownState] = useState(false)
+  const onOpenChangeRef = useRef(onOpenChange)
+  onOpenChangeRef.current = onOpenChange
+  const element = useRef<HTMLElement | null>(null)
+  const entry = useRef<TooltipEntry>(null!)
+  entry.current = {
+    element: element.current,
+    enabled,
+    render: (instant: Instant) => (
+      <BaseTooltip.Portal container={popupContainer()}>
+        <TooltipBubble id={id} side={side} align={align} arrow={arrow} anchor={element.current} instant={instant}>
+          <TooltipContent content={content} shortcut={shortcut} />
+        </TooltipBubble>
+      </BaseTooltip.Portal>
+    ),
+    setShown: (next) => {
+      setShownState(next)
+      onOpenChangeRef.current?.(next)
+    },
+  }
+  useLayoutEffect(() => host.register(key, entry), [host, key])
+  // An open bubble follows the tooltip's props; a disabled tooltip closes.
+  useLayoutEffect(() => {
+    if (shown && !enabled) host.close(key)
+    else if (shown) host.refresh(key)
+  }, [host, key, shown, enabled, content, shortcut, side, align, arrow])
+
+  const childRef = (children.props as { ref?: Ref<HTMLElement> }).ref
+  const setElement = useCallback(
+    (node: HTMLElement | null) => {
+      element.current = node
+      entry.current.element = node
+      for (const target of [childRef, triggerRef] as (Ref<HTMLElement> | undefined)[]) {
+        if (typeof target === "function") target(node)
+        else if (target) target.current = node
+      }
+    },
+    [childRef, triggerRef]
+  )
+  const name = (children.props as { "aria-label"?: unknown })["aria-label"]
+  const describes = describe ?? (typeof content === "string" && content !== name)
+  const props = mergeProps(
+    mergeProps(
+      {
+        id: triggerId,
+        "aria-describedby": describes && shown && enabled ? id : undefined,
+        "data-popup-open": shown ? "" : undefined,
+        "data-trigger-disabled": enabled ? undefined : "",
+        "data-base-ui-tooltip-trigger": enabled ? "" : undefined,
+        [TOOLTIP_KEY]: key,
+      },
+      triggerIdProp === undefined ? triggerProps : { ...triggerProps, id: triggerIdProp }
+    ),
+    children.props as object
+  )
+  return cloneElement(children as ReactElement<Record<string, unknown>>, { ...props, ref: setElement })
+}
+
 function TooltipContent({ content, shortcut }: { content: ReactNode; shortcut?: string | undefined }) {
   if (!shortcut) return content
   return (
@@ -183,7 +292,7 @@ export function TooltipPopup(props: TooltipPopupProps) {
   )
 }
 
-function TooltipBubble({ id, side, align, arrow, children, anchor }: TooltipPopupProps) {
+function TooltipBubble({ id, side, align, arrow, children, anchor, instant }: TooltipPopupProps & { instant?: Instant }) {
   const mode = useInvertedMode()
   const popup = usePopupMetrics()
   return (
@@ -195,7 +304,7 @@ function TooltipBubble({ id, side, align, arrow, children, anchor }: TooltipPopu
       collisionPadding={popup.collisionPadding}
       anchor={anchor}
     >
-      <BaseTooltip.Popup id={id} role="tooltip" className="glass-overlay fa-tooltip" data-mode={mode}>
+      <BaseTooltip.Popup id={id} role="tooltip" className="glass-overlay fa-tooltip" data-mode={mode} {...(instant ? { "data-instant": instant } : {})}>
         {arrow ? <BaseTooltip.Arrow className="fa-tooltip-arrow" /> : null}
         {children}
       </BaseTooltip.Popup>

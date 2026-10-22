@@ -70,6 +70,14 @@ recalc while scrolling fell by about a tenth. The `@scope` fallback (`scope-fall
 sits behind `@supports not at-rule(@scope)`, so browsers that report `@scope` skip it, and
 the reduced-transparency copies of the Solid rules are generated from them by `pnpm styles`.
 
+Under a `TooltipProvider`, a `Tooltip` renders only its trigger: one host per provider
+listens for pointer and focus events and shows the bubble, following the same rest delay,
+group timing, focus, press and Escape rules as Base UI's own trigger. A page of 300 icon
+buttons mounted in half the time (220 to 111 ms at 4x throttle). A controlled tooltip
+(`open`) or one outside any provider keeps its own Base UI tooltip.
+`scripts/profile-tooltips.mjs` records frame-by-frame timelines of both designs for
+comparison.
+
 When authoring components, run `pnpm css-perf:check` and `pnpm tokens:check`. Avoid root
 `:has()` selectors and universal sibling selectors. Use stable row IDs and preserve data
 identity across updates. The library's tests cover table layout and filter semantics;

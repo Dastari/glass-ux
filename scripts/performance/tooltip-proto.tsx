@@ -25,7 +25,10 @@ function Triggers() {
         {Array.from({ length: 300 }, (_, i) =>
           kind === "root" ? (
             <BaseTooltip.Root key={i} disableHoverablePopup>
-              <BaseTooltip.Trigger render={<button type="button" aria-label={`Sample ${i}`} />} delay={500} />
+              <BaseTooltip.Trigger
+                render={<button type="button" aria-label={`Sample ${i}`} />}
+                delay={500}
+              />
               <BaseTooltip.Portal>
                 <BaseTooltip.Positioner>
                   <BaseTooltip.Popup>Sample {i}</BaseTooltip.Popup>
@@ -33,9 +36,20 @@ function Triggers() {
               </BaseTooltip.Portal>
             </BaseTooltip.Root>
           ) : kind === "handle" ? (
-            <BaseTooltip.Trigger key={i} handle={handle} payload={`Sample ${i}`} render={<button type="button" aria-label={`Sample ${i}`} />} delay={500} />
+            <BaseTooltip.Trigger
+              key={i}
+              handle={handle}
+              payload={`Sample ${i}`}
+              render={<button type="button" aria-label={`Sample ${i}`} />}
+              delay={500}
+            />
           ) : (
-            <button key={i} type="button" aria-label={`Sample ${i}`} data-tooltip={`Sample ${i}`} />
+            <button
+              key={i}
+              type="button"
+              aria-label={`Sample ${i}`}
+              data-tooltip={`Sample ${i}`}
+            />
           ),
         )}
       </div>

@@ -6,7 +6,8 @@
  *   persistence  localStorage under a per-user key, debounced, flushed on pagehide
  *   sync         BroadcastChannel (storage events when unavailable); newest revision wins
  *   pop-out      window.open to the pop-out route; the popup is a full participant in sync
- *                and hands the window back when it closes
+ *                and hands the window back when it closes. A popup without storage asks
+ *                the workspace for its state when it connects
  *   events       open, focus, beforeclose (cancellable), close, minimise, restore,
  *                maximise, layout, popout, return, sync
  *
@@ -42,7 +43,11 @@ export interface WindowManagerOptions {
   channelName?: string | null
   /** Follow storage and other tabs but never write or broadcast (live previews). */
   readOnly?: boolean
-  /** "popout" when this document hosts a single popped-out window. */
+  /**
+   * "popout" when this document hosts a single popped-out window. A popout manager without
+   * storage (`storageKey: null`) asks the workspace on the channel for its state when it
+   * connects, so pop-out works with a channel alone.
+   */
   role?: "workspace" | "popout"
   /** Layout for a newly opened window, evaluated at open time. */
   defaultLayout?: () => Exclude<WindowLayout, "maximised">
@@ -118,6 +123,7 @@ type SyncMessage =
   | { type: "pong"; origin: string; ids: string[] }
   | { type: "indicator"; origin: string; id: string; indicator: WindowIndicator | null }
   | { type: "focus-popout"; origin: string; id: string }
+  | { type: "request-state"; origin: string }
 
 interface PersistedState {
   v: 1
@@ -366,6 +372,9 @@ export function createWindowManager(options: WindowManagerOptions = {}): WindowM
       rev: snapshot.rev,
     }
     for (const id of before) if (!after.has(id)) indicators.delete(id)
+    // A popup focuses the window it hosts, whatever the workspace has focused.
+    const hostedId = [...hosted].find((id) => after.has(id))
+    if (role === "popout" && hostedId) state = { ...state, focusedId: hostedId }
     notify()
     for (const id of after) if (!before.has(id)) emit("open", id, "remote")
     for (const id of before) if (!after.has(id)) emit("close", id, "remote")
@@ -391,6 +400,10 @@ export function createWindowManager(options: WindowManagerOptions = {}): WindowM
         break
       case "focus-popout":
         if (hosted.has(message.id)) window.focus()
+        break
+      case "request-state":
+        // A popup without storage has just connected: tell it what is open.
+        if (role === "workspace") post({ type: "state", origin, rev: state.rev, windows: state.windows, splits: state.splits })
         break
     }
   }
@@ -520,6 +533,8 @@ export function createWindowManager(options: WindowManagerOptions = {}): WindowM
         else if (entry) commit({ ...state, focusedId: id }, false)
       }
       reclaimOrphanedPopouts()
+      // Without storage a popup starts empty: ask the workspace for its state.
+      if (role === "popout" && !storageKey) post({ type: "request-state", origin })
 
       return () => {
         flushPersist()

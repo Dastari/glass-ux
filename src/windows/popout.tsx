@@ -4,7 +4,7 @@
  * popup is a full participant in sync. Closing the popup hands the window back to the
  * workspace; closing the window from the workspace closes the popup.
  */
-import { useEffect, useId, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { EmptyState } from "../ui/empty-state/index.js";
 import {
   WindowContext,
@@ -17,7 +17,8 @@ import {
   WindowScopeProvider,
   type WindowScopes,
 } from "./scope.js";
-import { describeWindow } from "./registry.js";
+import { fullscreenSupported, useWindowFullscreen } from "./fullscreen.js";
+import { describeWindow, getWindowKind } from "./registry.js";
 import { WindowContentHost } from "./window-content.js";
 import { WindowFrame } from "./window-frame.js";
 
@@ -55,8 +56,14 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
     return release;
   }, [manager, id]);
 
+  // Without storage the popup boots empty and learns the window from the workspace over the
+  // channel (WindowManager.requestState), so it waits for that answer before deciding.
+  const synced = useFirstSync();
+  const frameRef = useRef<HTMLElement>(null);
+  const { fullscreen, toggle: toggleFullscreen, exit: exitFullscreen } = useWindowFullscreen(frameRef);
+
   // The window was closed from the workspace (or never existed): close this popup.
-  const gone = hosting && !entry;
+  const gone = hosting && synced && !entry;
   useEffect(() => {
     if (!gone) return;
     const timer = setTimeout(() => window.close(), 250);
@@ -89,15 +96,17 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
             actionsSlot,
             statusSlot,
             host: "popout",
+            fullscreen,
+            exitFullscreen,
           }
         : null,
-    [entry, actionsSlot, statusSlot],
+    [entry, actionsSlot, statusSlot, fullscreen, exitFullscreen],
   );
 
   if (!entry || !description || !context) {
     return (
       <main className="fa-wm-popout-empty">
-        {hosting ? (
+        {gone ? (
           <EmptyState icon={null}>
             This window was closed in the workspace.
           </EmptyState>
@@ -110,11 +119,13 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
   return (
     <WindowScopeProvider value={scopes}>
       <WindowFrame.Root
+        ref={frameRef}
         className="fa-wm-popout"
         focused
         state="popout"
         aria-labelledby={titleId}
         data-window-id={entry.id}
+        data-fullscreen={fullscreen ? "" : undefined}
       >
         <WindowFrame.AppBar
           icon={Icon ? <Icon /> : null}
@@ -126,6 +137,13 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
           controls={
             <WindowFrame.Controls
               title={description.title}
+              fullscreen={fullscreen}
+              onToggleFullscreen={
+                getWindowKind(entry.kind)?.fullscreen !== false &&
+                fullscreenSupported()
+                  ? toggleFullscreen
+                  : undefined
+              }
               onReturn={() => {
                 manager.returnToWorkspace(entry.id);
                 window.close();
@@ -149,4 +167,28 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
       </WindowFrame.Root>
     </WindowScopeProvider>
   );
+}
+
+/** How long a popup without storage waits for the workspace to answer before giving up. */
+const SYNC_TIMEOUT = 2000;
+
+/**
+ * True once the manager knows the windows: at once with storage (read on connect), else on
+ * the first state from the workspace, or after SYNC_TIMEOUT when none answers.
+ */
+function useFirstSync() {
+  const manager = useWindowManager();
+  const immediate = Boolean(manager.options.storageKey);
+  const [synced, setSynced] = useState(immediate);
+  useEffect(() => {
+    if (immediate) return;
+    const done = () => setSynced(true);
+    const stop = manager.on("sync", done);
+    const timer = setTimeout(done, SYNC_TIMEOUT);
+    return () => {
+      stop();
+      clearTimeout(timer);
+    };
+  }, [manager, immediate]);
+  return synced;
 }

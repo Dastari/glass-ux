@@ -2,6 +2,8 @@ import { useState, type CSSProperties, type ReactNode } from "react"
 import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import {
   IconEndpoint,
+  IconFullscreenExit,
+  IconKeyboard,
   IconRefresh,
   IconRemoteControl,
   IconTaskManager,
@@ -10,6 +12,8 @@ import {
 import { EntityHeader } from "../../shell/index.js"
 import { Button } from "../../ui/button/index.js"
 import { Kbd } from "../../ui/kbd/index.js"
+import { Menu } from "../../ui/menu/index.js"
+import { Toaster, toast } from "../../ui/toast/index.js"
 import { Panel, PanelBody } from "../../ui/surface/index.js"
 import {
   Dock,
@@ -23,6 +27,7 @@ import {
   createWindowManager,
   fracVars,
   registerWindowKind,
+  useWindow,
   useWindowVisibility,
   type WindowContentProps,
   type WindowStatusTone,
@@ -79,9 +84,31 @@ function ProcessesBody(_props: WindowContentProps<SampleParams>) {
   )
 }
 
+function SendKeys({ endpoint }: { endpoint: string }) {
+  return (
+    <Menu.Root>
+      <Menu.Trigger render={<Button variant="ghost" size="sm" icon={<IconKeyboard />} aria-label="Send keys" />} />
+      <Menu.Popup>
+        {["Ctrl+Alt+Del", "Windows key", "Print Screen"].map((keys) => (
+          <Menu.Item key={keys} onClick={() => toast.success(`Sent ${keys} to ${endpoint}`)}>
+            {keys}
+          </Menu.Item>
+        ))}
+      </Menu.Popup>
+    </Menu.Root>
+  )
+}
+
+/** A remote screen: its tools sit in the app bar, and float over the screen in full screen. */
 function ScreenBody({ params }: WindowContentProps<SampleParams>) {
+  const { fullscreen, exitFullscreen } = useWindow()
   return (
     <>
+      {fullscreen ? null : (
+        <Window.Actions>
+          <SendKeys endpoint={params.endpoint} />
+        </Window.Actions>
+      )}
       <Window.Status indicator={{ tone: "success", label: "Connected" }}>
         <Window.StatusItem tone="success">Connected</Window.StatusItem>
         <Window.StatusItem>1920 × 1080</Window.StatusItem>
@@ -89,6 +116,12 @@ function ScreenBody({ params }: WindowContentProps<SampleParams>) {
       </Window.Status>
       <Window.Body variant="fill">
         <div className="gallery-wm-screen" data-mode="dark" role="img" aria-label={`Screen of ${params.endpoint}`} />
+        {fullscreen ? (
+          <div className="glass-chrome gallery-wm-screen-tools" role="toolbar" aria-label={`Remote control of ${params.endpoint}`}>
+            <SendKeys endpoint={params.endpoint} />
+            <Button variant="ghost" size="sm" icon={<IconFullscreenExit />} aria-label="Exit full screen" onClick={exitFullscreen} />
+          </div>
+        ) : null}
       </Window.Body>
     </>
   )
@@ -181,6 +214,7 @@ function StaticFrame({
                 title="Task manager"
                 maximised={state === "maximised"}
                 onPopOut={noop}
+                onToggleFullscreen={noop}
                 onMinimise={noop}
                 onToggleMaximise={noop}
                 onClose={noop}
@@ -212,7 +246,7 @@ const ANATOMY: Array<[string, string]> = [
   ["Icon", "The kind's icon in a tile. Dims when another window has focus."],
   ["Title and data subtitle", "What the window is, and the item it is about. Never a description."],
   ["Actions", "Window-specific ghost buttons, put there by the body through Window.Actions."],
-  ["Window controls", "Pop out, minimise, maximise or restore, close. Drag the bar to move; double-click to maximise."],
+  ["Window controls", "Pop out, full screen, minimise, maximise or restore, close. Drag the bar to move; double-click to maximise."],
   ["Body", "A size container. Scroll bodies are padded; fill bodies run edge to edge for viewers."],
   ["Status", "Live state with a dot. The same state lights the window's dock entry."],
   ["Metadata", "Right-aligned facts joined with ·. The first thing to give way when narrow."],
@@ -226,6 +260,7 @@ function MiniWorkspace() {
   const open = (kind: string) => manager.open({ kind, params: { endpoint: "NST-C106" } })
   return (
     <WindowManagerProvider manager={manager}>
+      <Toaster />
       <div className="gallery-wm-mini">
         <Workspace
           primaryLabel="NST-C106"

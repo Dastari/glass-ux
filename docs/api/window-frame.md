@@ -156,11 +156,13 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | compact | `boolean \| undefined` | false, true | no | false | Phones: minimise reads as "back to workspace" and maximise is implicit. |
+| fullscreen | `boolean \| undefined` | false, true | no | false | Whether the window is in full screen: the control reads "Exit full screen". |
 | leading | `ReactNode` | See type | no | — | Extra controls before the standard ones (the phone window switcher). |
 | maximised | `boolean \| undefined` | false, true | no | false | Whether the window fills its available workspace. |
 | onClose | `(() => void) \| undefined` | See type | no | — | Called when the person presses Close; run close guards before removing the window. The button is shown only when this is supplied. |
 | onMinimise | `(() => void) \| undefined` | See type | no | — | Called when the person presses Minimise. The button is shown only when this is supplied. |
 | onPopOut | `(() => void) \| undefined` | See type | no | — | Called when the person presses Pop out. The button is shown only when this is supplied and not `compact`. |
 | onReturn | `(() => void) \| undefined` | See type | no | — | Popped-out windows offer "Return to workspace" in place of pop-out. |
+| onToggleFullscreen | `(() => void) \| undefined` | See type | no | — | Called when the person presses Full screen or Exit full screen. The button is shown only when this is supplied and not `compact`. |
 | onToggleMaximise | `(() => void) \| undefined` | See type | no | — | Called when the person presses Maximise or Restore (per `maximised`). The button is shown only when this is supplied and not `compact`. |
 | title | `string` | See type | yes | — | The heading or title content. |

@@ -8,6 +8,7 @@ import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Button } from "../button/index.js"
 import { Skeleton } from "../skeleton/index.js"
 import { formatRange, pageCountOf } from "./range.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 export interface PaginationCursor {
   hasNext: boolean
@@ -155,7 +156,7 @@ function PageSizeSelect({
           <IconChevronsUpDown />
         </Select.Icon>
       </Select.Trigger>
-      <Select.Portal>
+      <Select.Portal container={popupContainer()}>
         <Select.Positioner className="fa-pager-positioner" sideOffset={popup.offset} collisionPadding={popup.collisionPadding} alignItemWithTrigger={false} side="top" align="end">
           <Select.Popup className="glass-overlay fa-popup fa-pager-popup">
             <Select.List>

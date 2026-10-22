@@ -171,6 +171,33 @@ describe("window manager", () => {
     disconnectB()
   })
 
+  it("a popup without storage asks the workspace for its state when it connects", async () => {
+    const channelName = `test.windows.handshake.${Math.random()}`
+    const workspace = createWindowManager({ storageKey: null, channelName, popoutUrl: (id) => `/popout/${id}` })
+    const disconnectWorkspace = workspace.connect()
+    const id = workspace.open({ kind: "singleton", params: { endpoint: "NST-C106" } })
+    workspace.open({ kind: "test" })
+    // The popup connects after the window opened: nothing is stored, so only the answer tells it.
+    const popup = createWindowManager({ storageKey: null, channelName, role: "popout" })
+    const release = popup.hostPopout(id)
+    const synced = vi.fn()
+    popup.on("sync", synced)
+    const disconnectPopup = popup.connect()
+    await vi.waitFor(() => expect(popup.get(id)).toBeDefined())
+    expect(popup.getState().windows.map((entry) => entry.id)).toEqual(workspace.getState().windows.map((entry) => entry.id))
+    expect(popup.getState().focusedId).toBe(id)
+    expect(synced).toHaveBeenCalled()
+    // A popup on a channel no workspace is on hears nothing.
+    const other = createWindowManager({ storageKey: null, channelName: `${channelName}.other`, role: "popout" })
+    const disconnectOther = other.connect()
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(other.getState().windows).toEqual([])
+    release()
+    disconnectOther()
+    disconnectPopup()
+    disconnectWorkspace()
+  })
+
   it("never writes in read-only mode", () => {
     vi.useFakeTimers()
     const store = createWindowManager({ storageKey: "ro", channelName: null, readOnly: true })

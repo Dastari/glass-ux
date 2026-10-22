@@ -2,6 +2,7 @@ import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip"
 import { useId, useState, useSyncExternalStore, type ComponentProps, type ReactElement, type ReactNode } from "react"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Kbd } from "../kbd/index.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 /** Hover delay before the first tooltip opens. Later ones in the same group open at once. */
 export const TOOLTIP_DELAY_MS = 500
@@ -162,7 +163,7 @@ export function TooltipPopup({ id, side, align, arrow, children, anchor }: Toolt
   const mode = useInvertedMode()
   const popup = usePopupMetrics()
   return (
-    <BaseTooltip.Portal>
+    <BaseTooltip.Portal container={popupContainer()}>
       <BaseTooltip.Positioner
         className="fa-tooltip-positioner"
         side={side}

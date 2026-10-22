@@ -26,6 +26,7 @@ import { Skeleton } from "../skeleton/index.js"
 import { Tooltip } from "../tooltip/index.js"
 import { TruncatedText } from "../truncated-text/index.js"
 import { ENTITY_TIER_LIMITS, selectEntityTier, type EntityTier } from "./tier.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
 
@@ -612,7 +613,7 @@ function ChipTier<T>({ parts, dom }: TierProps<T>) {
   return (
     <BasePreviewCard.Root>
       {withMenu}
-      <BasePreviewCard.Portal>
+      <BasePreviewCard.Portal container={popupContainer()}>
         <BasePreviewCard.Positioner className="fa-entity-preview-positioner" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BasePreviewCard.Popup className="glass-overlay fa-popup fa-entity-preview">
             <PreviewContent parts={parts} />

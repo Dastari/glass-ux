@@ -19,6 +19,7 @@ import { cx } from "../../lib/cx.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 import { Button } from "../button/index.js"
 import { usePhoneLayout } from "../../lib/use-media-query.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 export type DialogSize = "sm" | "md" | "lg" | "xl" | "full"
 /** dialog: centred · sheet: phone bottom sheet · side: a panel from a screen edge (Sheet) */
@@ -215,7 +216,7 @@ export function DialogSurface({
   if (mode === "side") {
     return (
       <ModeContext value="side">
-        <Drawer.Portal>
+        <Drawer.Portal container={popupContainer()}>
           <Drawer.Backdrop className="glass-scrim fa-scrim" />
           <Drawer.Viewport className="fa-dialog-side-viewport" data-edge={edge}>
             <Drawer.Popup
@@ -236,7 +237,7 @@ export function DialogSurface({
   if (mode === "sheet") {
     return (
       <ModeContext value="sheet">
-        <Drawer.Portal>
+        <Drawer.Portal container={popupContainer()}>
           <Drawer.Backdrop className="glass-scrim fa-scrim" />
           <Drawer.Viewport className="fa-dialog-sheet-viewport">
             <Drawer.Popup
@@ -256,7 +257,7 @@ export function DialogSurface({
   }
   return (
     <ModeContext value="dialog">
-      <BaseDialog.Portal>
+      <BaseDialog.Portal container={popupContainer()}>
         <BaseDialog.Backdrop className="glass-scrim fa-scrim" />
         <BaseDialog.Viewport className="fa-dialog-viewport" data-kind={kind}>
           <BaseDialog.Popup

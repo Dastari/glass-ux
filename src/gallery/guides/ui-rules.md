@@ -295,6 +295,8 @@ follows a fine pointer and a glint on the rim nearest it.
 - **R14.6** Background state — connection, sync, queued work — lives in the status bar of the
   view it concerns, never in a banner in the body.
 - **R14.7** Panning and zooming write one transform per frame.
+- **R14.8** A window's tools live in its app bar. In full screen, where the app bar is gone,
+  the body draws them as a floating toolbar that includes a way out of full screen.
 
 ## R15 · Forms
 

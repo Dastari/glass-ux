@@ -19,6 +19,7 @@ import {
 } from "../combobox/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import type { SelectSize } from "../select/index.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 export interface AutocompleteProps<V extends string = string> {
   /** Static suggestions, filtered as you type. */
@@ -161,7 +162,7 @@ export function Autocomplete<V extends string = string>({
           />
         )}
       </BaseAutocomplete.InputGroup>
-      <BaseAutocomplete.Portal>
+      <BaseAutocomplete.Portal container={popupContainer()}>
         <BaseAutocomplete.Positioner
           className="fa-select-positioner"
           align="start"

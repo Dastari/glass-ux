@@ -89,6 +89,10 @@
     transition-duration: var(--duration-base);
     transition-timing-function: var(--ease-standard);
   }
+  /* Entering and leaving full screen is the browser's to draw. */
+  .fa-wm-workspace-stage[data-ready] .fa-wm-window:fullscreen {
+    transition: none;
+  }
   @starting-style {
     .fa-wm-workspace-stage[data-ready] .fa-wm-window {
       opacity: 0;

@@ -4,6 +4,7 @@ import { IconClose, IconError, IconInfo, IconSuccess, IconWarning } from "../../
 import { Button } from "../button/index.js"
 import { usePhoneLayout } from "../../lib/use-media-query.js"
 import { useSingleton } from "../../lib/use-singleton.js"
+import { usePopupContainer } from "../../lib/popup-container.js"
 
 export type ToastTone = "success" | "info" | "warning" | "danger"
 
@@ -131,10 +132,12 @@ function ToastList() {
 export function Toaster() {
   const owns = useSingleton("toaster")
   const phone = usePhoneLayout()
+  // In full screen the viewport moves into the full-screen element, so toasts stay visible.
+  const container = usePopupContainer()
   if (!owns) return null
   return (
     <BaseToast.Provider toastManager={toastManager} limit={3}>
-      <BaseToast.Portal>
+      <BaseToast.Portal container={container}>
         <BaseToast.Viewport className="fa-toast-viewport" data-position={phone ? "top" : "bottom"}>
           <ToastList />
         </BaseToast.Viewport>

@@ -360,6 +360,16 @@
   }
 
   /* ── Popped out: the frame is the whole browser window ─────────────────── */
+  /* Full screen (R14): the body alone fills the screen; the content draws its own tools. */
+  .fa-window:fullscreen {
+    border: 0;
+    border-radius: 0;
+    background-color: var(--canvas-solid);
+    box-shadow: none;
+  }
+  .fa-window:fullscreen > :is(.fa-window-appbar, .fa-window-status, .fa-window-resize) {
+    display: none;
+  }
   .fa-wm-popout {
     position: fixed;
     inset: 0;

@@ -25,6 +25,7 @@ import {
   type PhoneKind,
   type PhoneLib,
 } from "./phone.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 export interface PhoneInputProps {
   /** E.164 ("+61412345678"), with ";ext=204" for an extension. While the text cannot be read, the text as typed. */
@@ -366,7 +367,7 @@ function CountryPicker({ value, onValueChange, countries, priority, flags, disab
         {calling ? <span className="fa-phone-calling">+{calling}</span> : null}
         {readOnly ? null : <IconChevronDown className="fa-phone-chevron" />}
       </BaseCombobox.Trigger>
-      <BaseCombobox.Portal>
+      <BaseCombobox.Portal container={popupContainer()}>
         <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BaseCombobox.Popup className="glass-overlay fa-popup fa-phone-country-popup" aria-label="Choose a country">
             <div className="fa-control fa-input fa-phone-country-search" data-size="sm">

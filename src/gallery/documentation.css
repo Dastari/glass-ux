@@ -94,7 +94,7 @@
     min-width: 0;
   }
   /* The page's own headings, not a component's inside an example (a window title is an h2). */
-  .gallery-document-sections h2:not(:is(.gallery-example-stage, .gallery-lab-cell) *) {
+  .gallery-document-sections h2:not(:is(.gallery-example-stage, .gallery-lab-cell, .fa-window) *) {
     font-size: var(--type-headline-size);
     margin-block-end: var(--space-4);
   }

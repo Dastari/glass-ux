@@ -12,6 +12,7 @@ import { TruncatedText } from "../../ui/truncated-text/index.js";
 import { entityHref, entityName, kindSpec } from "../entities.js";
 import type { EntityRef } from "../types.js";
 import { useEntityResolver, type EntityPreview } from "./entity-resolver.js";
+import { popupContainer } from "../../lib/popup-container.js";
 
 /** Hover delay before the preview opens; quicker than a tooltip, it is the point of the chip. */
 const PREVIEW_DELAY_MS = 400;
@@ -194,7 +195,7 @@ export function EntityChip({
   return (
     <PreviewCard.Root>
       {withMenu}
-      <PreviewCard.Portal>
+      <PreviewCard.Portal container={popupContainer()}>
         <PreviewCard.Positioner
           className="fa-ai-preview-positioner"
           sideOffset={popup.offset}

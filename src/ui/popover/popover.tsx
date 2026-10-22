@@ -4,6 +4,7 @@ import { IconClose } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Button } from "../button/index.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 export type PopoverSize = "sm" | "md" | "lg"
 
@@ -28,7 +29,7 @@ export interface PopoverPopupProps extends Omit<ComponentProps<typeof BasePopove
 function PopoverPopup({ title, size = "md", side = "bottom", align = "center", anchor, className, children, ...rest }: PopoverPopupProps) {
   const popup = usePopupMetrics()
   return (
-    <BasePopover.Portal>
+    <BasePopover.Portal container={popupContainer()}>
       <BasePopover.Positioner
         className="fa-popover-positioner"
         side={side}

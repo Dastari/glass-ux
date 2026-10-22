@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react"
 import { createPortal } from "react-dom"
+import { popupContainer } from "../../../lib/popup-container.js"
 import { seriesAttrs } from "./series.js"
 import { useStoreValue, type Hover, type HoverStore } from "./hover.js"
 import type { SwatchShape } from "./legend.js"
@@ -76,7 +77,7 @@ export function ChartTooltip({ store, anchor, children }: ChartTooltipProps) {
     >
       {content}
     </div>,
-    document.body
+    popupContainer() ?? document.body
   )
 }
 

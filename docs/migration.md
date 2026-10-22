@@ -3,6 +3,21 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.6 → 0.9.7
+
+No code changes are required.
+
+- Managed windows show a Full screen control beside Pop out. Turn it off for a kind with
+  `fullscreen: false` on its `WindowKindDefinition`. Content that drew its own Full screen
+  button in `Window.Actions` can drop it and read `useWindow().fullscreen` instead.
+- Tests that list a window's controls should expect `data-control="fullscreen"` after
+  `popout` where the browser supports full screen (jsdom does not, so unit tests see no
+  change).
+- A pop-out route whose manager has no storage no longer needs its own handshake: the
+  library asks the workspace for its state. Remove any shim that rebroadcast state for it.
+- Your own Base UI portals inside a window should pass `container={popupContainer()}` so
+  they open inside a window in full screen.
+
 ## 0.9.5 → 0.9.6
 
 No code changes are required. Stand-in glyphs for sites (for example `IconMapPin` for an

@@ -92,6 +92,14 @@ export interface WindowContextValue {
   statusSlot: HTMLElement | null
   /** Where the window is being rendered. */
   host: "workspace" | "popout" | "specimen"
+  /**
+   * The window is in full screen: its app bar and status bar are hidden and the body fills
+   * the screen, so content draws its own floating tools (and, for a remote session, may
+   * lock the keyboard). Set by the workspace and pop-out; undefined in a specimen.
+   */
+  fullscreen?: boolean
+  /** Leave full screen (the person can also press Esc). Set by the workspace and pop-out. */
+  exitFullscreen?: () => void
 }
 
 /** The window a body renders in: its id, kind, params, app-bar and status-bar portal slots and host. Provided by the workspace, pop-out and specimen frames; read it with `useWindow`. */

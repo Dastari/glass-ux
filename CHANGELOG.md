@@ -4,6 +4,33 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.7
+
+### Added
+
+- Full screen for windows. Every managed window, in the workspace and popped out, has a
+  Full screen control beside Pop out (`WindowFrame.Controls` `fullscreen` and
+  `onToggleFullscreen`), where the browser allows it. It puts the window's frame in full
+  screen with the Fullscreen API: the app bar and status bar go and the body fills the
+  screen. `useWindow()` gains `fullscreen` and `exitFullscreen()`, so content can draw its
+  own floating tools (R14.8) and, for a remote session, lock the keyboard; Esc also leaves.
+  A window leaves full screen when it is minimised or popped out. A kind turns the control
+  off with `fullscreen: false`, like `popout: false`. `useWindowFullscreen(ref)` and
+  `fullscreenSupported()` give the same behaviour to a frame of your own.
+- Pop-out without storage. A `role: "popout"` manager with `storageKey: null` asks the
+  workspace on its channel for the open windows when it connects, and the workspace
+  answers; `PopoutWindow` waits for that answer (up to two seconds) before deciding the
+  window was closed. A per-tab `channelName` and `popoutUrl` are enough for pop-out.
+
+### Fixed
+
+- Menus, selects, comboboxes, tooltips, popovers, dialogs, preview cards, the chart
+  tooltip and toasts open inside whatever element is in full screen, instead of unseen
+  behind it. No provider is needed: they follow `document.fullscreenElement`. Your own
+  Base UI portals can do the same with `container={popupContainer()}` from
+  `glass-ux/windows`, or `usePopupContainer()` for a portal that stays mounted.
+- Documentation: a window title in the live workspace example took the page heading size.
+
 ## 0.9.6
 
 ### Added

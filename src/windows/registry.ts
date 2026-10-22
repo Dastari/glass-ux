@@ -41,6 +41,8 @@ export interface WindowKindDefinition<P extends WindowParams = WindowParams> {
   minSize?: { w: number; h: number }
   /** Allow popping out into a browser window. Default true. */
   popout?: boolean
+  /** Offer Full screen in the app bar, where the browser allows it. Default true. */
+  fullscreen?: boolean
 }
 
 type AnyKind = WindowKindDefinition<WindowParams>

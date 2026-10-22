@@ -28,6 +28,7 @@ import { NavMenuPopup } from "../tabs/nav-menu.js"
 import { Tooltip } from "../tooltip/index.js"
 import { TruncatedText } from "../truncated-text/index.js"
 import { useChildWidths } from "../tabs/overflow.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 /** Where a crumb (or one of its siblings) goes: `link` (route options for the link
  *  renderer — see RouteBreadcrumb), `href`, or `onSelect`. */
@@ -484,7 +485,7 @@ function TrailMenu({ items, label, header, scope, anchor }: TrailMenuProps) {
         </TruncatedText>
         <IconChevronDown className="fa-crumb-trail-chevron" />
       </Popover.Trigger>
-      <Popover.Portal>
+      <Popover.Portal container={popupContainer()}>
         <Popover.Positioner
           className="fa-crumb-trail-positioner"
           side="bottom"

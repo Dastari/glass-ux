@@ -4,6 +4,7 @@ import { IconCheck, IconChevronsUpDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 export type SelectSize = "sm" | "md" | "lg"
 
@@ -165,7 +166,7 @@ export function Select<V extends string = string>({
         </BaseSelect.Value>
         <IconChevronsUpDown className="fa-select-chevron" />
       </BaseSelect.Trigger>
-      <BaseSelect.Portal>
+      <BaseSelect.Portal container={popupContainer()}>
         <BaseSelect.Positioner
           className="fa-select-positioner"
           alignItemWithTrigger={false}

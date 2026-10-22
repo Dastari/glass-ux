@@ -15,8 +15,19 @@ same entries. Window frames expose status, activity, progress and standard contr
 applications render their task, editor or conversation inside those frames. A close guard
 can ask the user to resolve unsaved work before the entry closes.
 
+Every managed window offers Pop out and Full screen in its app bar; a window kind turns
+either off with `popout: false` or `fullscreen: false`. Full screen puts the window's frame
+in full screen with the browser's Fullscreen API: the app bar and status bar go, the body
+fills the screen and popups open inside it. Content reads `useWindow().fullscreen` to draw
+its own floating tools (and, for a remote session, to lock the keyboard), and
+`useWindow().exitFullscreen()` offers a way out besides Esc. Your own portals can follow it
+with `container={popupContainer()}`.
+
 Persist only when the product calls for it. `windowStorageKey(userId, namespace)` gives
-the host control over both application and user scope. Restore through the registry so
+the host control over both application and user scope. Pop-out works without storage too:
+give the manager a `channelName` (per tab, if each tab has its own windows) and a
+`popoutUrl`, and the pop-out route's manager (`role: "popout"`, same channel) asks the
+workspace for its windows when it connects. Restore through the registry so
 unknown window types can be handled deliberately after upgrades.
 
 The [workspace demo](https://dastari.github.io/glass-ux/components/workspace/) and individual

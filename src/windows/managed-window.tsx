@@ -36,6 +36,7 @@ import type { WindowManager } from "./store.js"
 import type { Rect, WindowEntry } from "./types.js"
 import { WindowScopeChip } from "./scope.js"
 import { WindowContentHost } from "./window-content.js"
+import { fullscreenSupported, useWindowFullscreen } from "./fullscreen.js"
 import { WindowFrame } from "./window-frame.js"
 import { ContextMenu } from "../ui/context-menu/index.js"
 
@@ -483,10 +484,26 @@ export const ManagedWindow = memo(function ManagedWindow({ entry, focused, geome
   })
   const appBarRef = useRef<HTMLElement>(null)
 
+  const { fullscreen, toggle: toggleFullscreen, exit: exitFullscreen } = useWindowFullscreen(frameRef)
   const context = useMemo<WindowContextValue>(
-    () => ({ id: entry.id, kind: entry.kind, params: entry.params, actionsSlot, statusSlot, host: "workspace" }),
-    [entry.id, entry.kind, entry.params, actionsSlot, statusSlot]
+    () => ({
+      id: entry.id,
+      kind: entry.kind,
+      params: entry.params,
+      actionsSlot,
+      statusSlot,
+      host: "workspace",
+      fullscreen,
+      exitFullscreen,
+    }),
+    [entry.id, entry.kind, entry.params, actionsSlot, statusSlot, fullscreen, exitFullscreen]
   )
+  // A window that leaves the screen (minimised, popped out, hidden by a sheet) leaves full screen.
+  const away = entry.minimised || entry.poppedOut || hidden
+  useEffect(() => {
+    if (away) exitFullscreen()
+  }, [away, exitFullscreen])
+  const canFullscreen = !link.sheet && getWindowKind(entry.kind)?.fullscreen !== false && fullscreenSupported()
 
   // Keyboard focus follows window focus when it changes (dock, shortcuts, close).
   const wasFocused = useRef(focused)
@@ -516,6 +533,7 @@ export const ManagedWindow = memo(function ManagedWindow({ entry, focused, geome
       data-snap={entry.snap ?? undefined}
       data-minimised={entry.minimised ? "" : undefined}
       data-hidden={hidden ? "" : undefined}
+      data-fullscreen={fullscreen ? "" : undefined}
       inert={entry.minimised || hidden}
       style={toStyle(vars)}
       onPointerDownCapture={() => manager.focus(entry.id)}
@@ -553,6 +571,8 @@ export const ManagedWindow = memo(function ManagedWindow({ entry, focused, geome
                   compact={link.sheet}
                   leading={link.sheet ? link.sheetLeading : undefined}
                   onPopOut={manager.canPopOut(entry.id) ? () => popOut(manager, entry, frameRef.current) : undefined}
+                  fullscreen={fullscreen}
+                  onToggleFullscreen={canFullscreen ? toggleFullscreen : undefined}
                   onMinimise={() => manager.minimise(entry.id)}
                   onToggleMaximise={() => manager.toggleMaximise(entry.id)}
                   onClose={() => void manager.close(entry.id)}

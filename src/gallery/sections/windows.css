@@ -195,6 +195,17 @@
       radial-gradient(60% 50% at 50% 65%, var(--ambient-1), transparent 70%),
       linear-gradient(180deg, var(--ambient-3), var(--ambient-2));
   }
+  /* The remote screen's tools, floating over it in full screen. */
+  .gallery-wm-screen-tools {
+    position: absolute;
+    top: var(--space-3);
+    left: 50%;
+    translate: -50% 0;
+    display: flex;
+    gap: var(--space-1);
+    padding: var(--space-1);
+    border-radius: var(--radius-full);
+  }
   .gallery-wm-terminal {
     height: 100%;
     margin: 0;

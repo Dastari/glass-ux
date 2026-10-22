@@ -13,6 +13,8 @@
 import { useRef, type ComponentProps, type ReactNode, type Ref } from "react";
 import {
   IconClose,
+  IconFullscreen,
+  IconFullscreenExit,
   IconMaximise,
   IconMinimise,
   IconPopIn,
@@ -245,6 +247,10 @@ export interface WindowControlsProps {
   maximised?: boolean;
   /** Called when the person presses Pop out. The button is shown only when this is supplied and not `compact`. */
   onPopOut?: () => void;
+  /** Whether the window is in full screen: the control reads "Exit full screen". */
+  fullscreen?: boolean;
+  /** Called when the person presses Full screen or Exit full screen. The button is shown only when this is supplied and not `compact`. */
+  onToggleFullscreen?: () => void;
   /** Called when the person presses Minimise. The button is shown only when this is supplied. */
   onMinimise?: () => void;
   /** Called when the person presses Maximise or Restore (per `maximised`). The button is shown only when this is supplied and not `compact`. */
@@ -259,11 +265,13 @@ export interface WindowControlsProps {
   leading?: ReactNode;
 }
 
-/** Pop out, minimise, maximise/restore and close, as ghost icon buttons. */
+/** Pop out, full screen, minimise, maximise/restore and close, as ghost icon buttons. */
 function Controls({
   title,
   maximised = false,
   onPopOut,
+  fullscreen = false,
+  onToggleFullscreen,
   onMinimise,
   onToggleMaximise,
   onClose,
@@ -300,6 +308,14 @@ function Controls({
         : null}
       {onPopOut && !compact
         ? control("Pop out", <IconPopOut />, onPopOut, "popout")
+        : null}
+      {onToggleFullscreen && !compact
+        ? control(
+            fullscreen ? "Exit full screen" : "Full screen",
+            fullscreen ? <IconFullscreenExit /> : <IconFullscreen />,
+            onToggleFullscreen,
+            "fullscreen",
+          )
         : null}
       {onMinimise
         ? control("Minimise", <IconMinimise />, onMinimise, "minimise")

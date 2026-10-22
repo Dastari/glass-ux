@@ -12,6 +12,8 @@ export {
   type FracRect,
   type SnapZone,
 } from "./geometry.js"
+export { fullscreenSupported, useWindowFullscreen, type WindowFullscreen } from "./fullscreen.js"
+export { popupContainer, usePopupContainer } from "../lib/popup-container.js"
 export { PopoutWindow, type PopoutWindowProps } from "./popout.js"
 export {
   WindowContext,

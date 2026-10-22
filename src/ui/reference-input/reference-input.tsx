@@ -25,6 +25,7 @@ import {
   type ReferenceSource,
   type ReferenceTarget,
 } from "./references.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 /** How long a duplicate's existing chip flashes (mirrors --duration-slower). */
 /** The flash runs --duration-slower (reference-input.css); clear it just after. */
@@ -476,7 +477,7 @@ export function ReferenceInput<R extends string = string>({
         </BaseCombobox.Chips>
       </BaseCombobox.InputGroup>
 
-      <BaseCombobox.Portal>
+      <BaseCombobox.Portal container={popupContainer()}>
         <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BaseCombobox.Popup className="glass-overlay fa-popup fa-combobox-popup fa-ref-popup" aria-busy={status === "loading" || status === "refreshing" || undefined} data-status={status}>
             {filterable ? (

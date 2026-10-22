@@ -60,6 +60,7 @@ import {
   remoteGroups,
   type ContextSwitcherRemote,
 } from "./remote.js";
+import { popupContainer } from "../../lib/popup-container.js";
 
 /* ── Avatar ─────────────────────────────────────────────────────────────── */
 
@@ -548,7 +549,7 @@ function SwitcherList({
       ) : (
         <>
           {trigger}
-          <Combobox.Portal>
+          <Combobox.Portal container={popupContainer()}>
             <Combobox.Positioner
               className="fa-select-positioner"
               align="start"

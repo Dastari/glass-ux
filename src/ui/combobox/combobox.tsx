@@ -8,6 +8,7 @@ import { widthAttr, type FieldWidth } from "../field/index.js"
 import type { SelectSize } from "../select/index.js"
 import { OptionMore, OptionRow, OptionStatus, groupOptions, hasSecondLine, statusAnnouncement } from "./option-row.js"
 import { matches, useOptionSearch, type OptionItem, type OptionSearch, type OptionSource } from "./source.js"
+import { popupContainer } from "../../lib/popup-container.js"
 
 export type ComboboxOption<V extends string = string> = OptionItem<V>
 
@@ -111,7 +112,7 @@ export function ComboboxPopup<V extends string = string>({
   const quiet = status === "loading" || status === "error" || (search?.needsMore ?? 0) > 0
   const popup = usePopupMetrics()
   return (
-    <BaseCombobox.Portal>
+    <BaseCombobox.Portal container={popupContainer()}>
       <BaseCombobox.Positioner
         className="fa-select-positioner"
         align="start"

@@ -41,8 +41,8 @@
   --font-weight-bold: 700;
 
   --animate-spin: fa-spin 0.9s linear infinite;
-  --animate-fade-in: fa-fade-in var(--duration-base) var(--ease-enter) both;
-  --animate-rise-in: fa-rise-in var(--duration-slow) var(--ease-enter) both;
+  --animate-fade-in: fa-fade-in var(--duration-base) var(--ease-enter) backwards;
+  --animate-rise-in: fa-rise-in var(--duration-slow) var(--ease-enter) backwards;
 }
 
 @theme reference inline {

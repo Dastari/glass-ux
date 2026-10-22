@@ -29,7 +29,7 @@
   }
   .fa-ai-ask-shell[data-phase="closing"] > div,
   .fa-ai-ask-shell[data-phase="closed"] > div {
-    animation: fa-fade-in var(--duration-base) var(--ease-enter) both;
+    animation: fa-fade-in var(--duration-base) var(--ease-enter) backwards;
   }
 
   .fa-ai-ask-body {

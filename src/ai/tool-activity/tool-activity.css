@@ -68,7 +68,7 @@
     animation:
       fa-spin var(--duration-spin) linear infinite,
       fa-fade-in var(--duration-base) var(--ease-standard) var(--spinner-delay)
-        both;
+        backwards;
   }
   .fa-ai-status-glyph[data-status="succeeded"] {
     color: var(--success-text);

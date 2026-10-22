@@ -296,11 +296,11 @@
     /* perf:infinite only while pending */
     animation:
       fa-spin var(--duration-spin) linear infinite,
-      fa-fade-in var(--duration-base) var(--ease-standard) var(--spinner-delay) both;
+      fa-fade-in var(--duration-base) var(--ease-standard) var(--spinner-delay) backwards;
   }
   .fa-btn-face[data-face="success"][data-active] .fa-btn-check path {
     stroke-dasharray: 24;
-    animation: fa-draw var(--duration-slow) var(--ease-spring) var(--duration-instant) both;
+    animation: fa-draw var(--duration-slow) var(--ease-spring) var(--duration-instant) backwards;
   }
 
   .fa-btn[data-status="success"] {

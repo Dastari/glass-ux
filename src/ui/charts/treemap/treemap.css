@@ -11,7 +11,7 @@
     --_tile: var(--chart-tile-mix);
     fill: color-mix(in oklab, var(--_c) var(--_tile), transparent);
     transition: d var(--duration-slow) var(--ease-standard);
-    animation: fa-fade-in var(--duration-slower) var(--ease-enter) both;
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
   }
   .fa-chart-tile[data-group] {
     --_tile: var(--chart-group-mix);

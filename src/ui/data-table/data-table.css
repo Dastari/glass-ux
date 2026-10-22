@@ -543,7 +543,7 @@
     z-index: -1;
     border-radius: var(--radius-line);
     pointer-events: none;
-    animation: fa-flash calc(var(--duration-slower) * 2.5) var(--ease-standard) both;
+    animation: fa-flash calc(var(--duration-slower) * 2.5) var(--ease-standard) backwards;
   }
 
   /* The "+N" detail line under an expanded row. */
@@ -825,7 +825,7 @@
     left: 50%;
     z-index: var(--z-sticky);
     translate: -50% 0;
-    animation: fa-rise-in var(--duration-base) var(--ease-enter) both;
+    animation: fa-rise-in var(--duration-base) var(--ease-enter) backwards;
   }
   .fa-dt[data-mode="cards"] .fa-dt-new {
     top: var(--space-2);
@@ -1277,7 +1277,7 @@
       var(--shadow-3),
       inset 0 0 0 var(--border-width) var(--accent-line);
     pointer-events: none;
-    animation: fa-fade-in var(--duration-fast) var(--ease-standard) both;
+    animation: fa-fade-in var(--duration-fast) var(--ease-standard) backwards;
   }
   /* Where the dragged row will land: its own element, emptied, as a slot. */
   .fa-dt-rows > .fa-dt-row[data-reorder-placeholder],

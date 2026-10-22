@@ -101,7 +101,7 @@
     width: var(--_bar-w);
     border-radius: var(--radius-full);
     background-color: var(--accent);
-    animation: fa-grow var(--duration-glide) var(--ease-spring) both;
+    animation: fa-grow var(--duration-glide) var(--ease-spring) backwards;
   }
   .fa-vtabs-content {
     min-width: 0;

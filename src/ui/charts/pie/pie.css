@@ -15,8 +15,8 @@
     transform-origin: 0 0;
     transition: d var(--duration-slow) var(--ease-standard);
     animation:
-      fa-grow var(--duration-slower) var(--ease-enter) var(--_enter-delay) both,
-      fa-fade-in var(--duration-slower) var(--ease-enter) var(--_enter-delay) both;
+      fa-grow var(--duration-slower) var(--ease-enter) var(--_enter-delay) backwards,
+      fa-fade-in var(--duration-slower) var(--ease-enter) var(--_enter-delay) backwards;
   }
   .fa-chart-arc[data-lift] {
     pointer-events: none;

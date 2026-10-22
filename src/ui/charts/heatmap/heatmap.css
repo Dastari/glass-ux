@@ -18,7 +18,7 @@
       fill var(--duration-base) var(--ease-standard);
   }
   .fa-chart-cell {
-    animation: fa-fade-in var(--duration-slower) var(--ease-enter) both;
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
   }
   .fa-chart-cell[data-step="none"] {
     fill: transparent;

@@ -113,14 +113,14 @@
     /* perf:infinite only while a change is saving */
     animation:
       fa-spin var(--duration-spin) linear infinite,
-      fa-fade-in var(--duration-base) var(--ease-standard) var(--spinner-delay) both;
+      fa-fade-in var(--duration-base) var(--ease-standard) var(--spinner-delay) backwards;
   }
   .fa-setting-row-status[data-status="success"] {
     color: var(--success-text);
   }
   .fa-setting-row-check path {
     stroke-dasharray: 24;
-    animation: fa-draw var(--duration-slow) var(--ease-spring) both;
+    animation: fa-draw var(--duration-slow) var(--ease-spring) backwards;
   }
   .fa-setting-row-status[data-status="error"] {
     color: var(--danger-text);

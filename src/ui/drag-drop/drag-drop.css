@@ -197,7 +197,7 @@
     font-weight: var(--weight-medium);
     white-space: nowrap;
     text-overflow: ellipsis;
-    animation: fa-fade-in var(--duration-fast) var(--ease-standard) both;
+    animation: fa-fade-in var(--duration-fast) var(--ease-standard) backwards;
   }
   .fa-dnd-ghost[data-status="error"]::before {
     color: var(--danger-text);

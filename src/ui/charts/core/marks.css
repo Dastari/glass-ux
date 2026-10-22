@@ -72,7 +72,7 @@
   .fa-chart-line[data-enter] {
     --_len: 1;
     stroke-dasharray: 1 1;
-    animation: fa-draw var(--duration-slower) var(--ease-enter) both;
+    animation: fa-draw var(--duration-slower) var(--ease-enter) backwards;
   }
   .fa-chart-tone-stop {
     stop-color: var(--_c);
@@ -85,7 +85,7 @@
     transition:
       d var(--duration-slow) var(--ease-standard),
       opacity var(--duration-fast) var(--ease-standard);
-    animation: fa-fade-in var(--duration-slower) var(--ease-enter) both;
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
   }
   .fa-chart-wash-top {
     stop-color: color-mix(in oklab, var(--_c) var(--chart-wash), transparent);
@@ -119,7 +119,7 @@
     transition:
       d var(--duration-slow) var(--ease-standard),
       opacity var(--duration-fast) var(--ease-standard);
-    animation: fa-grow var(--duration-slower) var(--ease-enter) var(--_enter-delay) both;
+    animation: fa-grow var(--duration-slower) var(--ease-enter) var(--_enter-delay) backwards;
   }
   .fa-chart-bar[data-end="right"] {
     --_grow-from: scaleX(0);
@@ -142,7 +142,7 @@
     stroke-width: var(--focus-ring-width);
   }
   .fa-chart-dot[data-enter] {
-    animation: fa-fade-in var(--duration-slower) var(--ease-enter) both;
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
     animation-delay: var(--duration-base);
   }
   .fa-chart-crosshair {

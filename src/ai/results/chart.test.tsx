@@ -23,7 +23,8 @@ describe("ResultChart", () => {
     const box = container.querySelector(".fa-ai-result-chart");
     expect(box).not.toBeNull();
     expect(box!.querySelector(".fa-skel")).not.toBeNull();
-    await waitFor(() => expect(box!.querySelector(".fa-chart")).not.toBeNull());
+    // The chart is a lazy import: allow for a busy test run.
+    await waitFor(() => expect(box!.querySelector(".fa-chart")).not.toBeNull(), { timeout: 5000 });
     expect(box!.querySelector(":scope > .fa-skel")).toBeNull();
   });
 });

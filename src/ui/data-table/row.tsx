@@ -85,10 +85,21 @@ function sameValue(a: unknown, b: unknown) {
   return false
 }
 
-/** Restart the flash keyframe on a cell (motion.css `fa-flash`). */
+/**
+ * Start the flash keyframe on a cell (motion.css `fa-flash`), or restart it if the cell is
+ * still flashing. Restarting goes through the running animation rather than removing the
+ * attribute and forcing a reflow, so a live update that flashes many cells lays out once.
+ */
 function flash(cell: HTMLElement) {
-  cell.removeAttribute("data-flash")
-  void cell.offsetWidth
+  if (cell.hasAttribute("data-flash")) {
+    const running = cell.getAnimations?.({ subtree: true }).find((animation) => (animation as CSSAnimation).animationName === "fa-flash")
+    if (running) {
+      running.currentTime = 0
+      return
+    }
+    cell.removeAttribute("data-flash")
+    void cell.offsetWidth
+  }
   cell.setAttribute("data-flash", "")
   cell.addEventListener("animationend", () => cell.removeAttribute("data-flash"), { once: true })
 }

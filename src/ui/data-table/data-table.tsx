@@ -13,6 +13,7 @@ import {
 import type { Virtualizer } from "@tanstack/react-virtual";
 import {
   useCallback,
+  useEffect,
   useId,
   useLayoutEffect,
   useMemo,
@@ -36,6 +37,7 @@ import {
 } from "../../lib/actions/actions.js";
 import { cx } from "../../lib/cx.js";
 import { useElementSize } from "../../lib/use-element-size.js";
+import { observeElementSize } from "../../lib/resize-observer.js";
 import { useScrollEdges } from "../../lib/use-scroll-edges.js";
 import { Button } from "../button/index.js";
 import { Menu, MenuPrimitive } from "../menu/index.js";
@@ -126,6 +128,7 @@ import {
 import type { GripController } from "./reorder-handle.js";
 import { columnInfos, type RowController } from "./row.js";
 import { resolveRowActions } from "./row-actions.js";
+import { remPx } from "../../lib/rem.js";
 import {
   pageSelection,
   selectedCount,
@@ -514,12 +517,10 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     bodyHeight: 0,
   });
 
-  useLayoutEffect(() => {
+  const measureMetrics = useCallback(() => {
     const scroller = scrollRef.current;
     const probe = probeRef.current;
-    const rem =
-      Number.parseFloat(getComputedStyle(document.documentElement).fontSize) ||
-      16;
+    const rem = remPx();
     const next: Metrics = {
       rem,
       gutter: scroller ? scroller.offsetWidth - scroller.clientWidth : 0,
@@ -536,7 +537,17 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         ? current
         : next,
     );
-  }, [size.width, size.height, density, toolbar]);
+  }, []);
+  // Re-measured when the table resizes, its density changes or a toolbar comes or goes —
+  // not on every render (a toolbar is usually new JSX each time) — and whenever the body's
+  // scroller changes size for another reason (filter chips wrapping, the footer).
+  const hasToolbar = Boolean(toolbar);
+  useLayoutEffect(measureMetrics, [measureMetrics, size.width, size.height, density, hasToolbar]);
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    if (!scroller) return;
+    return observeElementSize(scroller, () => flushSync(measureMetrics));
+  }, [measureMetrics]);
 
   const measured = size.width > 0;
   const widthRem = size.width / metrics.rem;
@@ -2163,14 +2174,18 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     [mode, cards.details, layout.autoHidden],
   );
   const effectiveDensity = density ?? globalDensity();
-  const settingsMenu = (
-    <SettingsMenu
-      columns={settingsColumns}
-      userHidden={userHidden}
-      autoHidden={autoHiddenSet}
-      density={effectiveDensity}
-      controller={headerController}
-    />
+  // Memoised so the header (memo) skips renders that change nothing it shows.
+  const settingsMenu = useMemo(
+    () => (
+      <SettingsMenu
+        columns={settingsColumns}
+        userHidden={userHidden}
+        autoHidden={autoHiddenSet}
+        density={effectiveDensity}
+        controller={headerController}
+      />
+    ),
+    [settingsColumns, userHidden, autoHiddenSet, effectiveDensity, headerController],
   );
 
   return (

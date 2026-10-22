@@ -72,7 +72,7 @@
   .docs-header-appearance > .docs-appearance-button {
     display: none;
   }
-  @container (width < 37rem) {
+  @container (width < 38.5rem) {
     .docs-header .docs-toolbar {
       display: none;
     }

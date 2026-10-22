@@ -123,12 +123,13 @@ export interface TooltipProps extends TriggerProps {
  *
  * The trigger keeps its own accessible name; the tooltip repeats it visually.
  */
-export function Tooltip(props: TooltipProps) {
+export function Tooltip({ side = "top", align = "center", enabled = true, arrow = true, ...props }: TooltipProps) {
   const host = useContext(TooltipHostContext)
+  const resolved = { ...props, side, align, enabled, arrow }
   // Under a TooltipProvider the provider's host shows the bubble; a controlled tooltip, or
   // one outside any provider, runs its own Base UI tooltip.
-  if (host && props.open === undefined) return <HostedTooltip host={host} {...props} />
-  return <OwnTooltip {...props} />
+  if (host && props.open === undefined) return <HostedTooltip host={host} {...resolved} />
+  return <OwnTooltip {...resolved} />
 }
 
 function OwnTooltip({

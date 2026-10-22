@@ -32,6 +32,14 @@ const params = new URLSearchParams(location.search);
 const html = document.documentElement;
 for (const key of ["mode", "palette", "background", "glass", "motion"])
   if (params.has(key)) html.dataset[key] = params.get(key)!;
+// inspector=closed: the docked inspector starts closed (its content keeps running before 0.9.9).
+if (params.get("inspector") === "closed") {
+  localStorage.setItem(
+    "workspace.shell.v1",
+    JSON.stringify({ drawer: "open", inspector: "closed" }),
+  );
+  html.dataset.shellInspector = "closed";
+} else localStorage.removeItem("workspace.shell.v1");
 const pulse = params.get("pulse") !== "0";
 const spin = params.get("spin") !== "0";
 const buttons = Number(params.get("buttons") ?? 0);

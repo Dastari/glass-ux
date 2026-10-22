@@ -4,6 +4,54 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.9
+
+A performance release: nothing changes how the library looks or moves, except where noted
+under Changed. Measurements are in [docs/performance.md](docs/performance.md#measurements-099).
+
+### Performance
+
+- Tooltips under a `TooltipProvider` share one host per provider instead of a Base UI
+  tooltip per trigger. 300 icon buttons mount in 80 ms instead of 182 ms (4x throttle).
+  Hover delay, grouping, focus, press, Escape, positioning and `aria-describedby` behave as
+  before; a controlled tooltip or one outside any provider keeps its own.
+- A button that tracks a status mounts one hidden width reserve until its first status,
+  instead of three hidden faces. ActionBar measures markup-only replicas of its buttons.
+- The routed view in `AppShell` is named for view transitions only while one runs, and its
+  panels draw without the blur they could not show; nearby live pulses and spinners no
+  longer make them blur again every frame.
+- Layout is read when the ResizeObserver reports, not mid-commit: tab and breadcrumb
+  overflow, ConversationLog's dock and DataTable's body. Entity headers measure when their
+  content or size changes, not after every render. A live table cell flashes without a
+  forced reflow.
+- `AppearanceProvider` hydrates without re-rendering every consumer when nothing different
+  is stored.
+- A `ConversationLog` with 20 or more children lays out and paints only the turns near the
+  viewport. A 200-turn transcript mounts in 1.3 s instead of 2.8 s (4x throttle).
+- A closed docked inspector keeps its content under `<Activity mode="hidden">`: state and
+  scroll positions stay, effects and animations stop.
+- One-shot entrances fill `backwards`, so a finished animation no longer stays attached.
+- The shipped stylesheets split rightmost `:is()`/`:where()` lists into selectors Chromium
+  can bucket, with the same specificity. The `@scope` fallback applies only where `@scope`
+  is unavailable, and the reduced-transparency copies of the Solid rules are generated from
+  the Solid rules.
+- One shared root-rem store, one relative-time clock and one `MediaQueryList` per query;
+  narrower observers in popup metrics and `useBleed`; `RelativeTime` renders once on mount;
+  `LineChart`'s memoised plot is no longer re-rendered by clock ticks or a new `xText`.
+
+### Changed
+
+- A live line or area chart whose window only moved on (samples dropped at the start, the
+  rest unchanged) redraws its paths at once instead of morphing every point one sample to
+  the left. Other data changes still morph.
+- Relative times in chart readouts and tooltips refresh on the shared 15 s tick (was 30 s).
+- In a `ConversationLog` of 20 or more turns, a turn far from the view keeps its last
+  rendered size (an estimate before it has rendered). Scroll to a turn with
+  `useConversationLog().scrollToTurn(index)`, which the turn navigator uses, rather than
+  `scrollIntoView` on the turn.
+- `pnpm css-perf:check` rejects an infinite animation on a blurred material and asks every
+  other infinite animation for a `perf:infinite` note saying when it runs.
+
 ## 0.9.8
 
 ### Added

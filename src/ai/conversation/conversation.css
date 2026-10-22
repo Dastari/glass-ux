@@ -22,6 +22,7 @@
  *   --_gap      the composer's distance from the bottom edge
  *   --_dock-h   the floating part's height (measured)
  *   --_sb       half the log's scrollbar gutter (measured), so the float aligns with the text
+ *   --_turn-estimate  a long transcript's turn height before it has rendered
  */
 @layer components {
   .fa-ai-conversation {
@@ -95,7 +96,8 @@
      lets breakout blocks, shadows and focus rings paint past the turn, as without
      containment. data-measure lays every turn out for a frame before scrollToTurn. */
   .fa-ai-conversation[data-long] .fa-ai-conversation-column > .fa-ai-turn {
-    contain-intrinsic-block-size: auto 24rem;
+    --_turn-estimate: 24rem;
+    contain-intrinsic-block-size: auto var(--_turn-estimate);
     overflow-clip-margin: 50cqi;
   }
   .fa-ai-conversation[data-long]:not([data-measure]) .fa-ai-conversation-column > .fa-ai-turn {

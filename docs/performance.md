@@ -72,11 +72,28 @@ the reduced-transparency copies of the Solid rules are generated from them by `p
 
 Under a `TooltipProvider`, a `Tooltip` renders only its trigger: one host per provider
 listens for pointer and focus events and shows the bubble, following the same rest delay,
-group timing, focus, press and Escape rules as Base UI's own trigger. A page of 300 icon
-buttons mounted in half the time (220 to 111 ms at 4x throttle). A controlled tooltip
+group timing, focus, press and Escape rules as Base UI's own trigger. A controlled tooltip
 (`open`) or one outside any provider keeps its own Base UI tooltip.
 `scripts/profile-tooltips.mjs` records frame-by-frame timelines of both designs for
-comparison.
+comparison. A button that tracks a status mounts one hidden reserve for its other faces
+until its first status, and ActionBar measures markup-only replicas of its buttons.
+
+Measure without forcing layout mid-commit. A layout read in a layout effect makes the
+browser lay out the whole pending page inside the commit; read it in a ResizeObserver
+callback instead, where layout is already done, and flush the state update there so the
+first frame is still right (`useChildWidths`, ConversationLog's dock, DataTable's body).
+Read everything before writing, write only values that changed, and measure when content
+or size changes rather than after every render (a live entity header). Keep the size you
+observe independent of the state the measurement sets, or the observer cannot deliver the
+change in the same frame. Shared stores serve the page: one root rem (`lib/rem.ts`), one
+relative-time clock (`lib/clock.ts`) and one `MediaQueryList` per query.
+
+A docked inspector that is closed keeps its content under `<Activity mode="hidden">`: its
+state and DOM stay, its effects and animations stop. A line chart whose live window only
+moved on redraws its paths at once instead of morphing every point; any other data change
+still morphs. Every chart keeps an accessible data table mounted: at 4x throttle it costs
+about 50–65 ms of mount and 6 ms (60 samples) to 30 ms (500 or more; it shows at most 500
+rows) of each live update, with 186 to 1,506 DOM nodes.
 
 When authoring components, run `pnpm css-perf:check` and `pnpm tokens:check`. Avoid root
 `:has()` selectors and universal sibling selectors. Use stable row IDs and preserve data
@@ -87,3 +104,30 @@ The repository checks build the documentation separately from the package and in
 representative component pages in desktop and phone viewports. For performance budgets,
 profile the production host with its real routes and dataset rather than using the entire
 component catalogue as a runtime benchmark.
+
+## Measurements (0.9.9)
+
+Production builds of the fixtures in `scripts/performance` (`node scripts/performance/build.mjs`
+with `PERF_ENTRY`), Chromium 156 headless with software compositing, 4x CPU throttle unless
+noted; medians of 5–9 runs. `scripts/profile-compositor.mjs` and
+`scripts/profile-interactions.mjs` record them. Software compositing makes blur far dearer
+than a GPU does; compare the columns, not the absolute compositor figures.
+
+| Measure | 0.9.8 | 0.9.9 |
+| --- | --- | --- |
+| Resting shell, pulse in drawer and inspector: compositor cost per frame | 38 ms (25 fps) | 17 ms (56 fps) |
+| Resting shell, pending spinner only: compositor ms/s | 656 | 619 |
+| Resting shell, nothing animating: compositor ms/s | 0 | 0 |
+| Closed inspector with live content: main thread ms/s | 20 | 7 |
+| Mount 300 icon buttons with tooltips | 182 ms | 80 ms |
+| Mount 50 entity action bars | 452 ms | 294 ms |
+| Mount and lay out a 200-turn transcript | 2.8 s | 1.3 s |
+| DataTable sort, interaction to next paint | 64 ms | 48 ms |
+| DataTable filter typing, interaction to next paint | 104 ms | 88 ms |
+| Hydrate under AppearanceProvider, nothing stored: longest task | 191 ms | 67 ms |
+| Hydrate, nothing stored: appearance consumer renders | 2 per consumer | 1 |
+| Hydrate with stored preferences: longest task | 159 ms | 74 ms |
+| Live line chart slide, 500 samples: commit and layout | 51 ms | 44 ms |
+| Style recalc over 10 scroll steps, 10,000-row table (no throttle) | 20 ms | 18 ms |
+| `glass-ux/button` `Button`, gzip | 31.6 KB | 32.3 KB |
+| Library stylesheet, gzip | 70.5 KB | 71.9 KB |

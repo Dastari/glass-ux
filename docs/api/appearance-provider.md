@@ -1,6 +1,6 @@
 # AppearanceProvider
 
-Provide persisted appearance preferences and synchronize theme, palette, density, motion and typography with the document. Also installs the pointer light for lit glass (`installPointerLight`) and the shared shimmer beat (`installShimmerSync`).
+Provide persisted appearance preferences and synchronize theme, palette, density, motion and typography with the document. Also installs the pointer light for lit glass (`installPointerLight`), the shared shimmer beat (`installShimmerSync`) and, when the application selects baked glass rendering, the baked frost (`installBakedFrost`).
 
 `import { AppearanceProvider } from "glass-ux/appearance"`
 

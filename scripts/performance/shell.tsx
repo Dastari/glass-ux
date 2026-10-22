@@ -2,6 +2,7 @@ import type {} from "./runtime.js";
 // A FAME-like resting screen: docked drawer and inspector over the silk canvas, a primary
 // view of panels, a live pulse and a pending spinner. Query parameters:
 //   mode, palette, background, glass, motion   <html> appearance attributes
+//   rendering=baked                            baked glass rendering (installBakedFrost)
 //   pulse=0  spin=0                            remove the live pulse / spinner
 //   buttons=300                                mount N tooltip buttons instead (mount timing)
 import { createRoot } from "react-dom/client";
@@ -26,12 +27,16 @@ import { EntityIdentity } from "glass-ux/entity";
 import { TooltipProvider } from "glass-ux/tooltip";
 import { ActionBar, ActionProvider, defineActions } from "glass-ux/actions";
 import { IconOrganisation, IconPrinter, IconSettings } from "glass-ux/icons";
+import { installBakedFrost } from "glass-ux/appearance";
 import "glass-ux/styles.css";
 
 const params = new URLSearchParams(location.search);
 const html = document.documentElement;
 for (const key of ["mode", "palette", "background", "glass", "motion"])
   if (params.has(key)) html.dataset[key] = params.get(key)!;
+if (params.get("rendering") === "baked") html.dataset.glassRendering = "baked";
+// As AppearanceProvider does: it bakes only while the rendering is baked.
+installBakedFrost();
 // inspector=closed: the docked inspector starts closed (its content keeps running before 0.9.9).
 if (params.get("inspector") === "closed") {
   localStorage.setItem(

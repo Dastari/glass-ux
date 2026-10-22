@@ -11,6 +11,13 @@ under Changed. Measurements are in [docs/performance.md](docs/performance.md#mea
 
 ### Added
 
+- `configureAppearance({ glassRendering: "baked" })` (`GLASS_RENDERINGS`, `GlassRendering`):
+  panels and chrome on the page canvas show a copy of the canvas blurred once, instead of
+  blurring live every frame. It matches the live blur within 2–5/255 on every background in
+  light and dark. With a live pulse in the docked drawer and inspector the compositor drew a
+  frame in 0.7 ms instead of 40 ms (60 fps instead of 24). Scrollers, sliding panes,
+  overlays, floating windows and mode islands keep the live blur. `live` stays the default.
+  `AppearanceProvider` installs it; without the provider call `installBakedFrost()`.
 - A surface can take its own material level: `glass` on `Surface` and `Panel`, or
   `data-glass="full" | "reduced" | "solid"` on any element. It is never more transparent than
   the page's level, so a person's Solid choice and reduced transparency still apply.
@@ -23,7 +30,6 @@ under Changed. Measurements are in [docs/performance.md](docs/performance.md#mea
   before; a controlled tooltip or one outside any provider keeps its own.
 - A button that tracks a status mounts one hidden width reserve until its first status,
   instead of three hidden faces. ActionBar measures markup-only replicas of its buttons.
-- The routed view in `AppShell` is named for view transitions only while one runs.
 - Layout is read when the ResizeObserver reports, not mid-commit: tab and breadcrumb
   overflow, ConversationLog's dock and DataTable's body. Entity headers measure when their
   content or size changes, not after every render. A live table cell flashes without a
@@ -47,8 +53,9 @@ under Changed. Measurements are in [docs/performance.md](docs/performance.md#mea
 
 - Panels in `AppShell`'s routed view are frosted like the drawer and inspector. The view
   used to carry a permanent view-transition name, which cut its panels off from the canvas:
-  they paid for a blur and showed none. It is now named only while a transition runs, so
-  for the length of a route cross-fade its panels lose their frost.
+  they paid for a blur and showed none. It is now named only while a transition runs. With
+  live rendering its panels lose their frost for the length of a route cross-fade; with
+  baked rendering they keep it.
 - A live line or area chart whose window only moved on (samples dropped at the start, the
   rest unchanged) redraws its paths at once instead of morphing every point one sample to
   the left. Other data changes still morph.

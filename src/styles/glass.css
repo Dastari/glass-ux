@@ -188,6 +188,10 @@
     --glass-blur-panel: 22px;
     --glass-blur-overlay: 30px;
     --glass-blur-float: 18px;
+    /* Baked rendering (installBakedFrost): the page canvas blurred once for panels and chrome
+       at each level. none until it is baked; the live blur is used until then. */
+    --glass-frost-panel: var(--glass-baked-panel-full, none);
+    --glass-frost-chrome: var(--glass-baked-chrome-full, none);
     /* A layer in motion: how much surface its opaque fill takes; the rest is the canvas
        colour, so it stays close to the frosted tone without showing what is behind. */
     --glass-moving-mix: 82%;
@@ -204,6 +208,8 @@
   :root[data-glass="reduced"] :is([data-mode], [data-glass="full"]),
   [data-glass="reduced"]:not(:root),
   [data-glass="reduced"]:not(:root) :is([data-mode], [data-glass="full"]) {
+    --glass-frost-panel: var(--glass-baked-panel-reduced, none);
+    --glass-frost-chrome: var(--glass-baked-chrome-reduced, none);
     --glass-blur-chrome: 14px;
     --glass-blur-panel: 10px;
     --glass-blur-overlay: 16px;
@@ -224,6 +230,8 @@
   :root[data-glass="solid"] :is([data-mode], [data-glass]),
   [data-glass="solid"]:not(:root),
   [data-glass="solid"]:not(:root) :is([data-mode], [data-glass]) {
+    --glass-frost-panel: none;
+    --glass-frost-chrome: none;
     --glass-moving-mix: 100%;
     --glass-blur-chrome: 0px;
     --glass-blur-panel: 0px;
@@ -265,6 +273,8 @@
   @media (prefers-reduced-transparency: reduce) {
     :root:not([data-glass="full"]),
     :root:not([data-glass="full"]) :is([data-mode], [data-glass]) {
+      --glass-frost-panel: none;
+      --glass-frost-chrome: none;
       --glass-moving-mix: 100%;
       --glass-blur-chrome: 0px;
       --glass-blur-panel: 0px;
@@ -354,11 +364,13 @@
   .glass-chrome {
     --_fill: var(--glass-fill-chrome);
     --_blur: var(--glass-blur-chrome);
+    --_baked: var(--glass-frost-chrome);
     --_shadow: var(--shadow-2);
   }
   .glass-panel {
     --_fill: var(--glass-fill-panel);
     --_blur: var(--glass-blur-panel);
+    --_baked: var(--glass-frost-panel);
     --_shadow: var(--shadow-2);
   }
   .glass-overlay {
@@ -458,6 +470,56 @@
     :is(.glass-panel, .glass-chrome, .glass-detached)[data-moving]::before {
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
+    }
+    /* Baked rendering (configureAppearance glassRendering "baked", installBakedFrost): a
+       panel or chrome layer on the page canvas shows the canvas blurred once into a bitmap,
+       fixed to the viewport like the canvas, under its own fill, instead of blurring what is
+       behind it every frame. The live blur stays wherever the bitmap would be wrong: a layer
+       being dragged, a layer in another layer, a floating window, the window dock and phone
+       tab bar (they sit over content), a mode island, and a layer on any canvas other than
+       the page's; and, by the rule after this one, a layer that slides or whose scroller
+       scrolls (data-frost-live). */
+    :root[data-glass-rendering="baked"][data-frost]
+      :is(.glass-panel, .glass-chrome):not(
+        [data-moving],
+        [data-mode]:not(:root),
+        [data-mode]:not(:root) *,
+        :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached) *,
+        .fa-window:not([data-primary]),
+        .fa-wm-dock,
+        .fa-tabbar,
+        :is(.canvas-ambient, .canvas-background):not([data-frost-canvas]) *
+      )::before {
+      background-color: transparent;
+      background-image:
+        var(--glass-grain), var(--glass-sheen),
+        linear-gradient(var(--_fill), var(--_fill)), var(--_baked);
+      background-size:
+        160px 160px,
+        100% 100%,
+        100% 100%,
+        100% 100%;
+      background-repeat: repeat, repeat, repeat, no-repeat;
+      background-attachment: scroll, scroll, scroll, fixed;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+    /* While it slides or its scroller scrolls, the material's own recipe (the live blur). A
+       separate rule, so marking a scroller restyles only the layers in it. */
+    :root[data-glass-rendering="baked"][data-frost]
+      [data-frost-live]
+      :is(.glass-panel, .glass-chrome):not([data-moving], [data-glass="solid"], [data-glass="solid"] *)::before,
+    :root[data-glass-rendering="baked"][data-frost]
+      :is(.glass-panel, .glass-chrome)[data-frost-live]:not([data-moving], [data-glass="solid"], [data-glass="solid"] *)::before {
+      background-color: var(--_fill);
+      background-image: var(--glass-grain), var(--glass-sheen);
+      background-size:
+        160px 160px,
+        100% 100%;
+      background-repeat: repeat;
+      background-attachment: scroll;
+      -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
+      backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
     }
     /* A leaving toast fades with opacity, which makes it ::before's backdrop root, so the
        blur would sample only the toast itself: it blurs on the element while it leaves. */

@@ -27,6 +27,13 @@ export const PALETTES: string[] = [
 export const DENSITIES = ["comfortable", "compact"] as const;
 /** Material transparency levels, from translucent glass (`full`) to opaque (`solid`); labels are in GLASS_LABELS. */
 export const GLASS_LEVELS = ["full", "reduced", "solid"] as const;
+/**
+ * How glass materials blur what is behind them, chosen by the application for every surface:
+ * `live` blurs with backdrop-filter every frame; `baked` shows panels and chrome on the page
+ * canvas a copy of the canvas blurred once (`installBakedFrost`), and blurs live only where
+ * that copy would be wrong. Both look the same at rest.
+ */
+export const GLASS_RENDERINGS = ["live", "baked"] as const;
 /** Motion preferences; `system` follows the operating system's reduced-motion setting. */
 export const MOTION_LEVELS = ["system", "full", "reduced"] as const;
 /** Palette-aware canvas styles, from textured to plain. */
@@ -54,6 +61,7 @@ export type Mode = (typeof MODES)[number];
 export type Palette = (typeof PALETTES)[number];
 export type Density = (typeof DENSITIES)[number];
 export type GlassLevel = (typeof GLASS_LEVELS)[number];
+export type GlassRendering = (typeof GLASS_RENDERINGS)[number];
 export type MotionLevel = (typeof MOTION_LEVELS)[number];
 
 /** Accepted font ids per role, from FONT_OPTIONS; `display` also accepts "match" (use the interface face). */
@@ -115,20 +123,31 @@ export interface AppearanceConfig {
   defaults?: Partial<Appearance>;
   /** Knobs fixed by the project; user preferences never override them. */
   locked?: Partial<Appearance>;
+  /** How every glass surface blurs (GLASS_RENDERINGS). An application setting, not a preference. Default: live. */
+  glassRendering?: GlassRendering;
 }
 
-let config: { defaults: Partial<Appearance>; locked: Partial<Appearance> } = {
+let config: {
+  defaults: Partial<Appearance>;
+  locked: Partial<Appearance>;
+  glassRendering: GlassRendering;
+} = {
   defaults: {},
   locked: {},
+  glassRendering: "live",
 };
 
 /** Set the project's appearance defaults and locks. Call once at module scope (server and client). */
 export function configureAppearance(next: AppearanceConfig) {
-  config = { defaults: next.defaults ?? {}, locked: next.locked ?? {} };
+  config = {
+    defaults: next.defaults ?? {},
+    locked: next.locked ?? {},
+    glassRendering: pick(next.glassRendering, GLASS_RENDERINGS, "live"),
+  };
   APPEARANCE_STORAGE_KEY = next.storageKey ?? "glass-ux.appearance.v1";
 }
 
-/** The project's current defaults and locks, as last set by `configureAppearance` (both empty until then). */
+/** The project's current defaults, locks and glass rendering, as last set by `configureAppearance` (empty and live until then). */
 export function appearanceConfig() {
   return config;
 }
@@ -246,6 +265,8 @@ export function applyAppearance(
   root.dataset.palette = appearance.palette;
   root.dataset.density = appearance.density;
   root.dataset.glass = appearance.glass;
+  if (config.glassRendering === "baked") root.dataset.glassRendering = "baked";
+  else delete root.dataset.glassRendering;
   root.dataset.background = appearance.background ?? "silk";
   if (appearance.motion === "system") delete root.dataset.motion;
   else root.dataset.motion = appearance.motion;
@@ -292,7 +313,7 @@ accentHue:s.accentHue==null?D.accentHue:n(s.accentHue,0,360,25),
 fontSans:o(s.fontSans,${j(FONT_IDS.sans)},D.fontSans),fontDisplay:o(s.fontDisplay,${j(FONT_IDS.display)},D.fontDisplay),fontMono:o(s.fontMono,${j(FONT_IDS.mono)},D.fontMono)};
 for(var k in L)a[k]=L[k];
 var m=a.mode;if(m==="system")m=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
-d.dataset.mode=m;d.dataset.palette=a.palette;d.dataset.density=a.density;d.dataset.glass=a.glass;
+d.dataset.mode=m;d.dataset.palette=a.palette;d.dataset.density=a.density;d.dataset.glass=a.glass;${config.glassRendering === "baked" ? `d.dataset.glassRendering="baked";` : ""}
 d.dataset.background=a.background;
 if(a.motion!=="system")d.dataset.motion=a.motion;
 d.dataset.fontSans=a.fontSans;d.dataset.fontDisplay=a.fontDisplay;d.dataset.fontMono=a.fontMono;

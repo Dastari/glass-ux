@@ -77,6 +77,8 @@ import { Button } from "glass-ux/button";
 configureAppearance({
   storageKey: "my-application.appearance.v1",
   defaults: { palette: "graphite", mode: "system" },
+  // Optional: panels and chrome show a pre-blurred canvas instead of a live blur.
+  glassRendering: "baked",
 });
 
 export function App() {

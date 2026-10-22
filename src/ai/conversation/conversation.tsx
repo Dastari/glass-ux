@@ -11,10 +11,12 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react"
+import { flushSync } from "react-dom"
 import { IconArrowDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { prefersReducedMotion, scaledDuration } from "../../lib/motion.js"
 import { observeElementSizes } from "../../lib/resize-observer.js"
+import { remPx } from "../../lib/rem.js"
 import { Tooltip } from "../../ui/tooltip/index.js"
 import { AskDock, AskDockProvider } from "../asks/index.js"
 import { AiSurfaceProvider, type AiSurface } from "../surface/index.js"
@@ -156,22 +158,33 @@ export function ConversationLog({
 
   // The floating part's height pads the end of the log, so the last message scrolls clear of
   // the composer; the scrollbar's width keeps the composer on the same column as the text.
-  // Measured before paint: a growing composer never shows a frame where it covers the end.
+  // Measured when the ResizeObserver reports, after the browser's layout and before paint, so
+  // mounting forces no layout mid-commit and a growing composer never shows a frame where it
+  // covers the end. Every read comes before the writes, and unchanged values are not written.
   useLayoutEffect(() => {
     const root = rootRef.current
     const scroller = scrollRef.current
     const float = floatRef.current
     if (!root || !scroller || !float) return
     const apply = () => {
-      if (!float.dataset.flip) lastBox.current = float.getBoundingClientRect()
-      root.style.setProperty("--_dock-h", `${float.offsetHeight}px`)
-      root.style.setProperty("--_sb", `${(scroller.offsetWidth - scroller.clientWidth) / 2}px`)
+      const box = float.dataset.flip ? null : float.getBoundingClientRect()
+      const dock = `${float.offsetHeight}px`
+      const gutter = `${(scroller.offsetWidth - scroller.clientWidth) / 2}px`
+      const narrowNow = root.clientWidth < NARROW_REM * remPx()
+      if (box) lastBox.current = box
+      if (root.style.getPropertyValue("--_dock-h") !== dock) root.style.setProperty("--_dock-h", dock)
+      if (root.style.getPropertyValue("--_sb") !== gutter) root.style.setProperty("--_sb", gutter)
       if (pinnedRef.current) scroller.scrollTop = scroller.scrollHeight
-      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
-      setNarrow(root.clientWidth < NARROW_REM * rem)
+      return narrowNow
     }
-    apply()
-    const observer = observeElementSizes(apply)
+    if (typeof ResizeObserver === "undefined") {
+      setNarrow(apply())
+      return
+    }
+    const observer = observeElementSizes(() => {
+      const narrowNow = apply()
+      flushSync(() => setNarrow(narrowNow))
+    })
     observer.observe(float)
     observer.observe(root)
     return () => observer.disconnect()

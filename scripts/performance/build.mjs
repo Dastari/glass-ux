@@ -49,10 +49,10 @@ await build({
     outDir: resolve(process.env.PERF_DIST ?? ".handoff/performance-dist"),
     emptyOutDir: true,
     rollupOptions: {
-      input: resolve(
-        import.meta.dirname,
-        process.env.PERF_ENTRY ?? "index.html",
-      ),
+      // PERF_ENTRY takes one page or a comma-separated list.
+      input: (process.env.PERF_ENTRY ?? "index.html")
+        .split(",")
+        .map((entry) => resolve(import.meta.dirname, entry)),
     },
   },
 });

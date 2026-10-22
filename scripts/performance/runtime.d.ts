@@ -9,5 +9,6 @@ declare global {
       add: () => void;
       sort: (numeric?: boolean) => { ms: number; first: string | undefined };
     };
+    __hydration: { ms: number; longTasks: number[]; consumerRenders: number };
   }
 }

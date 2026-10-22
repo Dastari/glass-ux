@@ -34,6 +34,7 @@ const columns = col.columns([
   col.accessor("name", {
     header: "Name",
     pin: true,
+    sortable: params.has("sortable"),
     cardRole: "title",
     width: 16,
     filter: filters.text({ field: "name" }),

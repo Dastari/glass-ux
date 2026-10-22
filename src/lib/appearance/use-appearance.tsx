@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react"
 import {
   APPEARANCE_STORAGE_KEY,
+  appearanceConfig,
   defaultAppearance,
   applyAppearance,
   normalizeAppearance,
@@ -22,24 +23,44 @@ const AppearanceContext = createContext<AppearanceContextValue | null>(null)
 /* ── Stored preferences: a tiny external store over localStorage ─────────────── */
 const listeners = new Set<() => void>()
 let cachedRaw: string | null | undefined
+let cachedConfig: ReturnType<typeof appearanceConfig> | undefined
 let cached: Appearance | undefined
+
+/**
+ * The defaults as one object per configuration. The server (and hydration) snapshot is this
+ * object, and so is the client's while nothing different is stored, so hydrating sees an
+ * unchanged store and does not re-render every consumer synchronously afterwards.
+ */
+let defaultsCache: { config: ReturnType<typeof appearanceConfig>; value: Appearance } | undefined
+function defaults(): Appearance {
+  const config = appearanceConfig()
+  if (defaultsCache?.config !== config) defaultsCache = { config, value: defaultAppearance() }
+  return defaultsCache.value
+}
+
+const sameAppearance = (a: Appearance, b: Appearance) => {
+  const keys = Object.keys(a) as (keyof Appearance)[]
+  return keys.length === Object.keys(b).length && keys.every((key) => Object.is(a[key], b[key]))
+}
 
 function readAppearance(): Appearance {
   const raw = localStorage.getItem(APPEARANCE_STORAGE_KEY)
-  if (raw !== cachedRaw || !cached) {
+  const config = appearanceConfig()
+  if (raw !== cachedRaw || config !== cachedConfig || !cached) {
     cachedRaw = raw
+    cachedConfig = config
+    let next: Appearance
     try {
-      cached = normalizeAppearance(JSON.parse(raw ?? "null"))
+      next = normalizeAppearance(JSON.parse(raw ?? "null"))
     } catch {
-      cached = defaultAppearance()
+      next = defaults()
     }
+    cached = sameAppearance(next, defaults()) ? defaults() : next
   }
   return cached
 }
 
-// The server (and hydration) snapshot must be a stable object.
-let serverCached: Appearance | undefined
-const serverAppearance = () => (serverCached ??= defaultAppearance())
+const serverAppearance = defaults
 
 function subscribeAppearance(notify: () => void) {
   listeners.add(notify)

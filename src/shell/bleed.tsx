@@ -123,8 +123,10 @@ export function useBleedInsets(layer: HTMLElement | null, enabled: boolean): Ble
     observe(layer)
     for (const child of view.children) observe(child)
     // Chrome swapped for other chrome (a panel showing another thing) need not resize anything.
+    // Changes inside the layer or inside a chrome (a status bar's live text) are left out:
+    // the size observer already sees a chrome that changes size.
     const mutations = new MutationObserver((records) => {
-      if (records.some((record) => !layer.contains(record.target))) measure()
+      if (records.some((record) => !layer.contains(record.target) && !(record.target as Element).closest?.(`.${CHROME_CLASS}`))) measure()
     })
     mutations.observe(view, { childList: true, subtree: true })
     return () => {

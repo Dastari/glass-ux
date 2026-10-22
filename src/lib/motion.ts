@@ -7,6 +7,8 @@
  * thing to script as to CSS.
  */
 
+import { mediaList } from "./use-media-query.js"
+
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)"
 
 const documentRoot = () => (typeof document === "undefined" ? null : document.documentElement)
@@ -20,7 +22,7 @@ export function prefersReducedMotion(root: HTMLElement | null = documentRoot()):
   const motion = root?.dataset.motion
   if (motion === "reduced") return true
   if (motion === "full") return false
-  return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(REDUCED_MOTION).matches
+  return typeof window !== "undefined" && typeof window.matchMedia === "function" && mediaList(REDUCED_MOTION).matches
 }
 
 /**

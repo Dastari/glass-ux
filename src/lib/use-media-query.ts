@@ -11,13 +11,30 @@ import { useCallback, useSyncExternalStore } from "react"
 export function useMediaQuery(query: string, serverValue = false): boolean {
   const subscribe = useCallback(
     (notify: () => void) => {
-      const list = matchMedia(query)
+      const list = mediaList(query)
       list.addEventListener("change", notify)
       return () => list.removeEventListener("change", notify)
     },
     [query]
   )
-  return useSyncExternalStore(subscribe, () => matchMedia(query).matches, () => serverValue)
+  return useSyncExternalStore(subscribe, () => mediaList(query).matches, () => serverValue)
+}
+
+/**
+ * Internal: one MediaQueryList per query for the page, so reading a query on every render
+ * (or every pointer frame) does not parse and evaluate it again. Rebuilt if matchMedia is
+ * replaced (tests).
+ */
+const lists = new Map<string, MediaQueryList>()
+let source: typeof matchMedia | undefined
+export function mediaList(query: string): MediaQueryList {
+  if (source !== matchMedia) {
+    lists.clear()
+    source = matchMedia
+  }
+  let list = lists.get(query)
+  if (!list) lists.set(query, (list = matchMedia(query)))
+  return list
 }
 
 /** The phone breakpoint from tailwind-theme.css (--breakpoint-md, 48rem). */

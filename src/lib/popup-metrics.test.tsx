@@ -93,10 +93,20 @@ describe("popup metrics", () => {
     stubTokens()
     render(<Probe />)
     const before = readPopupMetrics()
-    document.documentElement.setAttribute("data-mode", "dark")
+    document.documentElement.setAttribute("data-density", "comfortable")
     await flush()
     expect(probeReads).toBe(2)
     expect(readPopupMetrics()).toBe(before)
+  })
+
+  it("does not measure again for attributes that cannot move a popup", async () => {
+    stubTokens()
+    render(<Probe />)
+    const reads = probeReads
+    document.documentElement.setAttribute("data-mode", "dark")
+    document.documentElement.setAttribute("data-shell-drawer", "closed")
+    await flush()
+    expect(probeReads).toBe(reads)
   })
 
   it("coalesces a burst of attribute changes into one measurement", async () => {

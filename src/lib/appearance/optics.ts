@@ -1,4 +1,5 @@
 import { prefersReducedMotion } from "../motion.js"
+import { mediaList } from "../use-media-query.js"
 
 /**
  * Runtime side of the material switch, for optics that script drives.
@@ -13,7 +14,7 @@ const FINE_POINTER = "(hover: hover) and (pointer: fine)"
 /** Longer than the highlight's fade-out (--duration-base). */
 const FADE_MS = 600
 
-const matches = (query: string) => typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(query).matches
+const matches = (query: string) => typeof window !== "undefined" && typeof window.matchMedia === "function" && mediaList(query).matches
 
 /**
  * Whether glass optics (lensing, specular highlights) are off: the Solid material, or the

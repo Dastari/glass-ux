@@ -109,7 +109,7 @@ function subscribe(listener: () => void) {
     // Scale, density and line weight are written as attributes or inline custom properties
     // on <html>; one observer serves every mounted popup.
     observer = new MutationObserver(schedule)
-    observer.observe(document.documentElement, { attributes: true })
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "class", "data-density"] })
   }
   return () => {
     listeners.delete(listener)

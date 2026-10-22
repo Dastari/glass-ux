@@ -87,6 +87,11 @@
       opacity var(--duration-fast) var(--ease-standard);
     animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
   }
+  /* A live window that only moved on redraws at once: morphing every point one sample to
+     the left would animate a change that is not there (line-chart.tsx, data-slide). */
+  .fa-chart-svg[data-slide] :is(.fa-chart-line, .fa-chart-area) {
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
   .fa-chart-wash-top {
     stop-color: color-mix(in oklab, var(--_c) var(--chart-wash), transparent);
   }

@@ -10,8 +10,12 @@ declare global {
       sort: (numeric?: boolean) => { ms: number; first: string | undefined };
       scrollUp: () => Promise<number>;
       jump: (index: number) => Promise<number>;
+      slide: () => void;
+      change: () => void;
+      timeSlide: () => number;
     };
     __mountMs: number;
+    __commits: { phase: string; ms: number; at: number }[];
     __hydration: { ms: number; longTasks: number[]; consumerRenders: number };
   }
 }

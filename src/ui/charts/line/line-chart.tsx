@@ -1,4 +1,4 @@
-import { memo, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react"
+import { memo, useCallback, useEffect, useId, useMemo, useRef, useState, type ComponentProps, type CSSProperties, type ReactNode } from "react"
 import { cartesianInset, ChartText, XLabels, YGrid, YLabels } from "../core/axes.js"
 import { DECIMATE_ABOVE, lttbIndices } from "../core/decimate.js"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
@@ -148,12 +148,16 @@ export function LineChart(props: LineChartProps) {
   const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const single = series.length === 1
   const showArea = stacked || (area ?? single)
-  const xText = (index: number) => {
-    const value = x[index]
-    if (value === undefined) return ""
-    if (value instanceof Date) return formatInstant(value, spanOf(prepared.xs), locale)
-    return formatX ? formatX(value) : formatTick(value, 1, { locale })
-  }
+  // Stable while its inputs are, so the memoised plot does not redraw for a new function.
+  const xText = useCallback(
+    (index: number) => {
+      const value = x[index]
+      if (value === undefined) return ""
+      if (value instanceof Date) return formatInstant(value, spanOf(prepared.xs), locale)
+      return formatX ? formatX(value) : formatTick(value, 1, { locale })
+    },
+    [x, prepared.xs, locale, formatX]
+  )
 
   const legendItems: LegendItem[] = series.map((item) => ({
     key: item.key,
@@ -313,6 +317,29 @@ function Readout({
   )
 }
 
+/** The tooltip's body; it reads the clock itself, so a tick re-renders the tooltip, not the plot. */
+function LineTooltipBody({ at, now, ...props }: Omit<ComponentProps<typeof TooltipBody>, "meta"> & { at: number | undefined; now?: Date }) {
+  const clock = useNow(now)
+  return <TooltipBody {...props} meta={at !== undefined ? formatRelative(new Date(at), clock) : undefined} />
+}
+
+/** Whether `next` is `previous` moved on in time: samples dropped from the start, the rest unchanged. */
+function slides(previous: Prepared, next: Prepared) {
+  const a = previous.xs
+  const b = next.xs
+  const shift = b.length ? a.indexOf(b[0]!) : -1
+  const overlap = a.length - shift
+  if (shift <= 0 || overlap < 2 || b.length < overlap || previous.visible.length !== next.visible.length) return false
+  for (let index = 0; index < overlap; index++) if (a[shift + index] !== b[index]) return false
+  return next.visible.every((item) => {
+    const before = previous.tops.get(item.key)
+    const after = next.tops.get(item.key)
+    if (!before || !after) return false
+    for (let index = 0; index < overlap; index++) if (before[shift + index] !== after[index]) return false
+    return true
+  })
+}
+
 // ── The plot ────────────────────────────────────────────────────────────────────────────
 
 interface LinePlotProps {
@@ -347,7 +374,10 @@ interface DrawnSeries {
 }
 
 const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, thresholds, markers, fmt, label, xText, now, formatX, onActivate, selected }: LinePlotProps) {
-  const clock = useNow(now)
+  // A live window that moved on (samples dropped at the start, new ones at the end) redraws
+  // its paths at once; any other change to the data morphs them (marks.css).
+  const [shown, setShown] = useState({ prepared, sliding: false })
+  if (shown.prepared !== prepared) setShown({ prepared, sliding: slides(shown.prepared, prepared) })
   const id = useId()
   const svgRef = useRef<SVGSVGElement>(null)
   const plotRef = useRef<HTMLDivElement>(null)
@@ -479,7 +509,7 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
 
   return (
     <div ref={plotRef} className="fa-chart-layer">
-      <svg ref={svgRef} className="fa-chart-svg" width={width} height={height} aria-hidden>
+      <svg ref={svgRef} className="fa-chart-svg" width={width} height={height} data-slide={shown.sliding ? "" : undefined} aria-hidden>
         <defs>
           {drawn.map(({ item, slot }) => (
             <linearGradient key={item.key} id={`${id}-wash-${item.key}`} x1="0" y1="0" x2="0" y2="1" {...seriesAttrs(slot, item.tone)}>
@@ -632,9 +662,10 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
                 const total = stacked && visible.length > 1 ? visible.reduce((sum, item) => sum + (item.data[hover.index] ?? 0), 0) : null
                 const marker = (markers ?? []).find((m) => nearestIndex(xs, toNumber(m.x)) === hover.index)
                 return (
-                  <TooltipBody
+                  <LineTooltipBody
                     title={xText(hover.index)}
-                    meta={time && at !== undefined ? formatRelative(new Date(at), clock) : undefined}
+                    at={time ? at : undefined}
+                    now={now}
                     rows={stacked ? rows.toReversed() : rows}
                     footer={
                       total !== null || marker ? (

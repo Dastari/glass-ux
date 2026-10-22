@@ -1,5 +1,6 @@
 import { useLayoutEffect, useState, type RefObject } from "react"
-import { useElementSize } from "../../lib/use-element-size.js"
+import { flushSync } from "react-dom"
+import { observeElementSizes } from "../../lib/resize-observer.js"
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
 
@@ -52,27 +53,38 @@ const EMPTY: ChildWidths = { widths: [], gap: 0 }
 
 /**
  * Measure the natural width of every child of a hidden measuring row, and the row's gap.
- * The row is `width: max-content`, so any change to a child (fonts loading, density, a
- * label) changes the row's own size and triggers a re-measure before paint.
+ * The widths are read when the shared ResizeObserver reports the row or a child, after the
+ * browser has laid the page out, so mounting never forces a layout mid-commit; the update
+ * is flushed there, before paint, so the first frame is still right. The row is
+ * `width: max-content`, so any change to a child (fonts loading, density, a label) is seen.
  */
 export function useChildWidths(ref: RefObject<HTMLElement | null>, signature: string): ChildWidths {
-  const size = useElementSize(ref)
   const [measured, setMeasured] = useState<ChildWidths>(EMPTY)
 
   useIsomorphicLayoutEffect(() => {
     const row = ref.current
     if (!row) return
-    const widths = Array.from(row.children, (child) => child.getBoundingClientRect().width)
-    const gapValue = Number.parseFloat(getComputedStyle(row).columnGap)
-    const gap = Number.isFinite(gapValue) ? gapValue : 0
-    setMeasured((current) =>
-      current.gap === gap &&
-      current.widths.length === widths.length &&
-      current.widths.every((width, index) => Math.abs(width - (widths[index] ?? 0)) < 0.5)
-        ? current
-        : { widths, gap }
-    )
-  }, [ref, size.width, size.height, signature])
+    const measure = () => {
+      const widths = Array.from(row.children, (child) => child.getBoundingClientRect().width)
+      const gapValue = Number.parseFloat(getComputedStyle(row).columnGap)
+      const gap = Number.isFinite(gapValue) ? gapValue : 0
+      return (current: ChildWidths) =>
+        current.gap === gap &&
+        current.widths.length === widths.length &&
+        current.widths.every((width, index) => Math.abs(width - (widths[index] ?? 0)) < 0.5)
+          ? current
+          : { widths, gap }
+    }
+    // Without ResizeObserver (server, some tests) measure now, as layout effects may.
+    if (typeof ResizeObserver === "undefined") return setMeasured(measure())
+    const group = observeElementSizes(() => {
+      const next = measure()
+      flushSync(() => setMeasured(next))
+    })
+    group.observe(row)
+    for (const child of row.children) group.observe(child)
+    return () => group.disconnect()
+  }, [ref, signature])
 
   return measured
 }

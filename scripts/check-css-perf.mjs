@@ -16,6 +16,14 @@
  *     root from script instead.
  *
  * Escape hatch: `perf:allow <reason>` in a comment on the selector's line.
+ *
+ * Infinite animations. A compositor-only animation (transform, opacity) still damages every
+ * frame, and Chromium redraws the whole of any backdrop-filtered layer that damage touches,
+ * blur included, even when the animated element is painted above it. So:
+ *   - a rule whose selector names a blurred material (.glass-chrome, .glass-panel,
+ *     .glass-overlay, .glass-float, .glass-detached) must not run an infinite animation;
+ *   - every other infinite animation carries `perf:infinite <when it runs>` in a comment in
+ *     its rule, since the component may be placed inside one of those materials.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs"
 import { dirname, join, relative } from "node:path"
@@ -114,8 +122,46 @@ for (const file of walk(src)) {
   }
 }
 
+const BLURRED = /\.glass-(?:chrome|panel|overlay|float|detached)\b/
+
+/** Infinite animations: banned on blurred materials, otherwise they must say when they run. */
+function checkInfinite(file, source, text) {
+  const declaration = /(?:^|[;{\s])(animation(?:-iteration-count)?|--[\w-]+)\s*:([^;{}]*)/g
+  for (let match = declaration.exec(text); match; match = declaration.exec(text)) {
+    if (!/\binfinite\b/.test(match[2])) continue
+    // The declaration's rule: back to the brace that opens it, and its selector before that.
+    let depth = 0
+    let open = match.index
+    for (; open >= 0; open -= 1) {
+      if (text[open] === "}") depth += 1
+      else if (text[open] === "{") {
+        if (depth === 0) break
+        depth -= 1
+      }
+    }
+    const selectorStart = Math.max(text.lastIndexOf("}", open), text.lastIndexOf("{", open - 1), text.lastIndexOf(";", open)) + 1
+    const selector = text.slice(selectorStart, open).trim()
+    if (/^@|^(from|to|\d+%)/.test(selector) || selector.startsWith("@theme")) continue
+    const close = text.indexOf("}", match.index)
+    const line = text.slice(0, match.index + match[0].indexOf(match[1])).split("\n").length
+    const where = `${relative(root, file)}:${line}`
+    if (BLURRED.test(selector)) {
+      violations.push(`${where}  infinite animation on a blurred material re-blurs it every frame: ${selector}`)
+      continue
+    }
+    if (!/perf:infinite\s+\S/.test(source.slice(selectorStart, close)))
+      violations.push(`${where}  infinite animation without a perf:infinite note (inside a blurred layer it re-blurs that layer every frame): ${selector}`)
+  }
+}
+
+for (const file of walk(src)) {
+  if (!file.endsWith(".css") || file.includes("/gallery/")) continue
+  const source = readFileSync(file, "utf8")
+  checkInfinite(file, source, source.replace(/\/\*[\s\S]*?\*\//g, (comment) => comment.replace(/[^\n]/g, " ")))
+}
+
 if (violations.length) {
   console.error(`CSS performance violations (${violations.length}) — see docs/performance.md:\n  ${violations.join("\n  ")}`)
   process.exit(1)
 }
-console.log("css-perf: no selectors that re-style the document on every DOM change")
+console.log("css-perf: no selectors that re-style the document on every DOM change; infinite animations accounted for")

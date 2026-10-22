@@ -293,6 +293,7 @@
   /* The spinner turns only while the pending face shows: a hidden face that animates forever
      is re-styled on every frame the page renders (docs/performance.md). */
   .fa-btn-face[data-face="pending"][data-active] .fa-btn-spinner {
+    /* perf:infinite only while pending */
     animation:
       fa-spin var(--duration-spin) linear infinite,
       fa-fade-in var(--duration-base) var(--ease-standard) var(--spinner-delay) both;

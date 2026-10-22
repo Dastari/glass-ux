@@ -71,6 +71,7 @@
     color: var(--fg-muted);
   }
   .fa-ai-ask-spinner {
+    /* perf:infinite only while an ask is pending */
     width: var(--icon-xs);
     height: var(--icon-xs);
     color: var(--accent-text);

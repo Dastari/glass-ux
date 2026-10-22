@@ -34,6 +34,7 @@
   }
   /* The working ring: an accent arc that turns like the spinner. */
   .fa-ai-mark[data-working]::after {
+    /* perf:infinite only while the assistant is working */
     content: "";
     position: absolute;
     inset: calc(var(--_ring) * -1 - var(--border-width-strong));

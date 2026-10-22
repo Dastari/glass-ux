@@ -32,6 +32,19 @@ rather than every frame. Window geometry changes between states (tile, snap, max
 still transition `left`/`top`/`width`/`height`, because their content must reflow to the
 new size; they run once per state change and never during a drag.
 
+A compositor-only animation still forces any blurred layer it sits in to re-blur. Chromium
+redraws a backdrop-filtered element in full, blur included, whenever damage touches it,
+even when the damage comes from an element painted above it; the blur's reach then carries
+the damage into neighbouring blurred layers. In a resting shell trace (software compositing,
+1920×1080) a live pulse in the docked drawer and inspector held the display compositor at
+about 980 ms/s, against none without it and about 20 ms/s for the same pulse on the bare
+canvas. Giving the halo its own layer (`will-change`, `contain: paint`), isolating it, or
+drawing it as a separate element above the material made no difference. So an infinite
+animation runs only while its state lasts (pending, live, loading), never on a blurred
+material itself, and `pnpm css-perf:check` asks every other one for a `perf:infinite` note
+saying when it runs. The routed view's panels in `AppShell` draw without blur: they sit on
+the canvas, and the view is named for view transitions only while one runs.
+
 Edge refraction through an SVG displacement filter (`backdrop-filter: url(#…)`) was
 prototyped and left out. It renders only in Chromium; at the library's blur radii the
 bent rim is barely visible except over sharp text; sampling outside the box mirrors the

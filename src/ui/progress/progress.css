@@ -161,6 +161,7 @@
     transition: stroke-dasharray var(--duration-slow) var(--ease-standard);
   }
   .fa-ring[data-indeterminate] .fa-ring-svg {
+    /* perf:infinite only while indeterminate */
     animation: fa-spin var(--duration-spin) linear infinite;
   }
   .fa-ring-value {

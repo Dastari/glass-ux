@@ -249,6 +249,7 @@
     );
     transform: translateX(-100%);
     pointer-events: none;
+    /* perf:infinite only while a placeholder shows */
     animation: fa-sweep var(--duration-shimmer) ease-in-out infinite;
   }
   :root[data-motion="reduced"] .fa-shimmer::after {

@@ -64,6 +64,7 @@
     height: var(--icon-xs);
     color: var(--_mark);
     --_stroke: calc(var(--icon-stroke) * 1.2);
+    /* perf:infinite only with marker="spinner" */
     animation: fa-spin var(--duration-spin) linear infinite;
   }
   .fa-badge[data-size="sm"] .fa-badge-spinner {
@@ -134,6 +135,7 @@
     opacity: 0;
     pointer-events: none;
     content: "";
+    /* perf:infinite only with marker="pulse" (live) */
     animation: fa-pulse-halo var(--duration-shimmer) var(--ease-standard) infinite;
   }
 

@@ -110,6 +110,7 @@
     color: var(--fg-subtle);
   }
   .fa-setting-row-spinner {
+    /* perf:infinite only while a change is saving */
     animation:
       fa-spin var(--duration-spin) linear infinite,
       fa-fade-in var(--duration-base) var(--ease-standard) var(--spinner-delay) both;

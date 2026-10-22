@@ -803,6 +803,7 @@
   }
   .fa-dt[data-refetching] .fa-dt-progress {
     opacity: 1;
+    /* perf:infinite only while refetching */
     animation: fa-shimmer var(--duration-shimmer) ease-in-out infinite;
   }
   /* Reduced motion: a steady line instead of a sweep. */

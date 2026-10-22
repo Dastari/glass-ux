@@ -64,6 +64,7 @@
   }
   /* R10.2: the spinner fades in only if the work outlasts --spinner-delay. */
   .fa-ai-status-glyph[data-status="running"] > .fa-icon[data-icon="spinner"] {
+    /* perf:infinite only while a tool runs */
     animation:
       fa-spin var(--duration-spin) linear infinite,
       fa-fade-in var(--duration-base) var(--ease-standard) var(--spinner-delay)

@@ -79,6 +79,7 @@
     opacity: 0;
     pointer-events: none;
     /* Transform and opacity only: the compositor runs it (an infinite box-shadow repaints). */
+    /* perf:infinite only while the state reports activity */
     animation: fa-pulse-halo var(--duration-shimmer) var(--ease-standard) infinite;
   }
   :root[data-motion="reduced"] .fa-entity-dot::after {

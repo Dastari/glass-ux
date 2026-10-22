@@ -34,6 +34,8 @@ for (const key of ["mode", "palette", "background", "glass", "motion"])
 const pulse = params.get("pulse") !== "0";
 const spin = params.get("spin") !== "0";
 const buttons = Number(params.get("buttons") ?? 0);
+// tooltip=0: the same buttons without their tooltips, to separate the two costs.
+const withTooltips = params.get("tooltip") !== "0";
 // pulseAt=canvas: one live pulse on the bare canvas, outside every blurred layer.
 // pulseAt=over: one pulse fixed over the inspector, painted above it but not inside it.
 const pulseOnCanvas = params.get("pulseAt") === "canvas";
@@ -149,6 +151,7 @@ function ButtonsFixture({ count }: { count: number }) {
             size="sm"
             icon={<IconSettings />}
             aria-label={`Sample action ${i}`}
+            tooltip={withTooltips ? undefined : false}
           />
         ))}
       </div>

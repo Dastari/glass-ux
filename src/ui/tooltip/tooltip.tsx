@@ -17,10 +17,24 @@ const ARROW_HEIGHT_REM = 0.375
 
 type Mode = "light" | "dark"
 
+/* The document's mode as one module-level store: a single observer serves every subscriber. */
+const modeListeners = new Set<() => void>()
+let modeObserver: MutationObserver | null = null
 function subscribeMode(notify: () => void) {
-  const observer = new MutationObserver(notify)
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-mode"] })
-  return () => observer.disconnect()
+  modeListeners.add(notify)
+  if (!modeObserver) {
+    modeObserver = new MutationObserver(() => {
+      for (const listener of modeListeners) listener()
+    })
+    modeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-mode"] })
+  }
+  return () => {
+    modeListeners.delete(notify)
+    if (modeListeners.size === 0) {
+      modeObserver?.disconnect()
+      modeObserver = null
+    }
+  }
 }
 const readMode = (): Mode => (document.documentElement.dataset.mode === "dark" ? "dark" : "light")
 
@@ -159,25 +173,33 @@ interface TooltipPopupProps {
 }
 
 /** Portal + positioner + the inverted glass bubble. */
-export function TooltipPopup({ id, side, align, arrow, children, anchor }: TooltipPopupProps) {
+export function TooltipPopup(props: TooltipPopupProps) {
+  // The portal mounts its children only while the tooltip shows, so a closed tooltip runs
+  // none of the bubble's hooks (mode, metrics).
+  return (
+    <BaseTooltip.Portal container={popupContainer()}>
+      <TooltipBubble {...props} />
+    </BaseTooltip.Portal>
+  )
+}
+
+function TooltipBubble({ id, side, align, arrow, children, anchor }: TooltipPopupProps) {
   const mode = useInvertedMode()
   const popup = usePopupMetrics()
   return (
-    <BaseTooltip.Portal container={popupContainer()}>
-      <BaseTooltip.Positioner
-        className="fa-tooltip-positioner"
-        side={side}
-        align={align}
-        sideOffset={arrow ? popup.offset + ARROW_HEIGHT_REM * popup.rem : popup.offset}
-        collisionPadding={popup.collisionPadding}
-        anchor={anchor}
-      >
-        <BaseTooltip.Popup id={id} role="tooltip" className="glass-overlay fa-tooltip" data-mode={mode}>
-          {arrow ? <BaseTooltip.Arrow className="fa-tooltip-arrow" /> : null}
-          {children}
-        </BaseTooltip.Popup>
-      </BaseTooltip.Positioner>
-    </BaseTooltip.Portal>
+    <BaseTooltip.Positioner
+      className="fa-tooltip-positioner"
+      side={side}
+      align={align}
+      sideOffset={arrow ? popup.offset + ARROW_HEIGHT_REM * popup.rem : popup.offset}
+      collisionPadding={popup.collisionPadding}
+      anchor={anchor}
+    >
+      <BaseTooltip.Popup id={id} role="tooltip" className="glass-overlay fa-tooltip" data-mode={mode}>
+        {arrow ? <BaseTooltip.Arrow className="fa-tooltip-arrow" /> : null}
+        {children}
+      </BaseTooltip.Popup>
+    </BaseTooltip.Positioner>
   )
 }
 

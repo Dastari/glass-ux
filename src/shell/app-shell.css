@@ -43,10 +43,12 @@
   :root[data-shell] {
     view-transition-name: none;
   }
-  /* The view is named only while a transition runs. A named element is a backdrop root and
-     its own compositing pass, so a permanent name made every panel in the view blur only the
-     view's transparent background (as if unblurred) while still paying for the blur. Browsers
-     without :active-view-transition keep the permanent name. */
+  /* The view is named only while a transition runs. A named element is a backdrop root, so a
+     permanent name made every panel in the view blur only the view's transparent background:
+     they looked unblurred and still paid for the blur. During a transition the live blur
+     still sees only the view, so its panels lose their frost for the cross-fade; baked
+     rendering keeps it (glass.css). Browsers without :active-view-transition keep the
+     permanent name. */
   :root:active-view-transition .fa-shell .fa-window[data-primary] .fa-window-view {
     view-transition-name: fa-shell-primary-view;
   }
@@ -54,14 +56,6 @@
     .fa-shell .fa-window[data-primary] .fa-window-view {
       view-transition-name: fa-shell-primary-view;
     }
-  }
-  /* Panels in the routed view sit on the canvas with no blur: the look they have always had
-     (see above), without a blur pass that a live pulse or spinner anywhere near them forces
-     to run again every frame (docs/performance.md). */
-  .fa-shell .fa-window[data-primary] .fa-window-view :is(.glass-panel, .glass-chrome),
-  .fa-shell .fa-window[data-primary] .fa-window-view :is(.glass-panel, .glass-chrome)::before {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
   ::view-transition-group(fa-shell-primary-view) {
     animation-duration: var(--duration-base);

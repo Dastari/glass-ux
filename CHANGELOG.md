@@ -17,9 +17,7 @@ under Changed. Measurements are in [docs/performance.md](docs/performance.md#mea
   before; a controlled tooltip or one outside any provider keeps its own.
 - A button that tracks a status mounts one hidden width reserve until its first status,
   instead of three hidden faces. ActionBar measures markup-only replicas of its buttons.
-- The routed view in `AppShell` is named for view transitions only while one runs, and its
-  panels draw without the blur they could not show; nearby live pulses and spinners no
-  longer make them blur again every frame.
+- The routed view in `AppShell` is named for view transitions only while one runs.
 - Layout is read when the ResizeObserver reports, not mid-commit: tab and breadcrumb
   overflow, ConversationLog's dock and DataTable's body. Entity headers measure when their
   content or size changes, not after every render. A live table cell flashes without a
@@ -41,6 +39,10 @@ under Changed. Measurements are in [docs/performance.md](docs/performance.md#mea
 
 ### Changed
 
+- Panels in `AppShell`'s routed view are frosted like the drawer and inspector. The view
+  used to carry a permanent view-transition name, which cut its panels off from the canvas:
+  they paid for a blur and showed none. It is now named only while a transition runs, so
+  for the length of a route cross-fade its panels lose their frost.
 - A live line or area chart whose window only moved on (samples dropped at the start, the
   rest unchanged) redraws its paths at once instead of morphing every point one sample to
   the left. Other data changes still morph.

@@ -42,8 +42,8 @@ canvas. Giving the halo its own layer (`will-change`, `contain: paint`), isolati
 drawing it as a separate element above the material made no difference. So an infinite
 animation runs only while its state lasts (pending, live, loading), never on a blurred
 material itself, and `pnpm css-perf:check` asks every other one for a `perf:infinite` note
-saying when it runs. The routed view's panels in `AppShell` draw without blur: they sit on
-the canvas, and the view is named for view transitions only while one runs.
+saying when it runs. `AppShell` names its routed view for view transitions only while one
+runs: a named element is a backdrop root, so its panels would blur nothing but the view.
 
 A `ConversationLog` with 20 or more children lays out and paints only the turns near the
 viewport (`content-visibility: auto`): a 200-turn transcript mounted in half the time in the

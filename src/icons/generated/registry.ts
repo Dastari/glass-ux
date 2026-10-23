@@ -68,6 +68,7 @@ export const iconRegistry = [
   { name: "cpu", Icon: icons.IconCpu },
   { name: "crestron", Icon: icons.IconCrestron },
   { name: "cursor", Icon: icons.IconCursor },
+  { name: "cut", Icon: icons.IconCut },
   { name: "d-link", Icon: icons.IconDLink },
   { name: "dahua", Icon: icons.IconDahua },
   { name: "dashboard", Icon: icons.IconDashboard },

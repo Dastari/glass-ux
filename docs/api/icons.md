@@ -76,6 +76,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconCpu** — Cpu icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconCrestron** — Crestron icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconCursor** — Cursor icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconCut** — Cut icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconDLink** — DLink icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconDahua** — Dahua icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconDashboard** — Dashboard icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.

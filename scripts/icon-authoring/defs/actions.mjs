@@ -32,6 +32,19 @@ def("edit", () => {
     path(d([line(V.add(f, V.mul(n, w)), V.add(f, V.mul(n, -w)))])),
   ]
 })
+// Scissors: two finger rings, tinted together, and two 45° blades crossing at the pivot. The
+// back blade breaks 3 units either side of the front one; the rings sit far enough apart
+// that the stub left by the top ring is a blade, not a handle on a magnifier.
+def("cut", () => {
+  const r = 2.75
+  const t = r * Math.SQRT1_2
+  const top = [6, 5.75]
+  const bottom = [6, 18.25]
+  const front = [line([bottom[0] + t, bottom[1] - t], [20.75, 3.5])]
+  const back = cut([line([top[0] + t, top[1] + t], [20.75, 20.5])], band(front[0].p, front[0].q, 3))
+  const ring = ([x, y]) => `M${x + r} ${y}A${r} ${r} 0 0 1 ${x - r} ${y}A${r} ${r} 0 0 1 ${x + r} ${y}Z`
+  return [path(ring(top) + ring(bottom), "t"), circle(...top, r), circle(...bottom, r), path(d(front)), path(d(back))]
+})
 def("trash", () => {
   const body = "M5.5 7V18A2.5 2.5 0 0 0 8 20.5H16A2.5 2.5 0 0 0 18.5 18V7"
   return [

@@ -1,99 +1,180 @@
 import { useState } from "react";
-import { AssistantMessage, Composer, ConversationLog, Turn, UserMessage } from "glass-ux/ai";
+import {
+  AssistantMessage,
+  Composer,
+  ConversationLog,
+  Turn,
+  UserMessage,
+  type AiMessage,
+  type RunState,
+} from "glass-ux/ai";
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { Button } from "glass-ux/button";
-import { APPROVAL, MODEL, NOW, TOOLS } from "glass-ux/gallery/sections/ai.fixtures";
+import { MODEL, NOW } from "glass-ux/gallery/sections/ai.fixtures";
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
-/**
- * An approval inside a conversation: the card waits in the ask dock above the composer, the
- * transcript keeps a marker at its place, and the agent carries on with other work. Nothing
- * blurs; the composer stays usable.
- */
-function DockedApproval() {
-  const [key, setKey] = useState(0);
+const base = (extra: Partial<AiMessage>): AiMessage => ({
+  id: "x",
+  role: "assistant",
+  createdAt: NOW - 60000,
+  state: "complete",
+  model: MODEL.name,
+  blocks: [],
+  ...extra,
+});
+const FOLLOW_ANSWER =
+  "The sample printer has been online since **10:12 am** and its queue is empty. Two documents printed on the Level 2 printer in the last ten minutes; both completed.\n\n- The print spooler has not stopped since the restart\n- The driver is still `4.2.1`; the fix is in `4.3.0`\n\nI can update the driver tonight after 6 pm, once the studio has signed out.";
+const FOLLOW_EARLIER = [1, 2, 3].map((index) => ({
+  index,
+  user: {
+    id: `fu${index}`,
+    role: "user",
+    createdAt: NOW - 600000,
+    state: "complete",
+    blocks: [{ kind: "markdown", text: `Sample question ${index} about the studio printers?` }],
+  } as AiMessage,
+  reply: base({
+    id: `fa${index}`,
+    blocks: [
+      {
+        kind: "markdown",
+        text: Array.from(
+          { length: 3 },
+          (_, p) =>
+            `Sample paragraph ${p + 1}: the studio queue has ${index + p} waiting jobs and two printers online.`,
+        ).join("\n\n"),
+      },
+    ],
+  }),
+}));
+const pause = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+/** A log the reader follows while an answer streams in: a tool call, then words, then the footer. */
+function FollowingLog() {
+  const [items, setItems] = useState(FOLLOW_EARLIER);
+  const [run, setRun] = useState<RunState>("idle");
+  const update = (id: string, change: (message: AiMessage) => AiMessage) =>
+    setItems((current) =>
+      current.map((item) => (item.reply.id === id ? { ...item, reply: change(item.reply) } : item)),
+    );
+  const send = async (text: string) => {
+    const id = `live-${items.length + 1}`;
+    setRun("sending");
+    await pause(250);
+    setItems((current) => [
+      ...current,
+      {
+        index: current.length + 1,
+        user: {
+          id: `${id}-q`,
+          role: "user",
+          createdAt: Date.now(),
+          state: "complete",
+          blocks: [{ kind: "markdown", text }],
+        },
+        reply: base({ id, createdAt: Date.now(), state: "streaming" }),
+      },
+    ]);
+    setRun("running");
+    // An earlier answer grows on its own meanwhile, as work beside a pending approval does.
+    const grow = (ms: number, text: string) =>
+      setTimeout(
+        () =>
+          update("fa3", (reply) => ({
+            ...reply,
+            blocks: [...reply.blocks, { kind: "markdown", text }],
+          })),
+        ms,
+      );
+    grow(700, "Checking the Level 2 printer's queue and toner.");
+    grow(2600, "While you decide: the Level 2 printer is online and toner is at 64 %.");
+    await pause(500);
+    update(id, (reply) => ({
+      ...reply,
+      blocks: [
+        {
+          kind: "tools",
+          calls: [
+            {
+              id: `${id}-t`,
+              toolId: "sample.query",
+              label: "Read the printer's status",
+              activeLabel: "Reading the printer's status",
+              status: "running",
+            },
+          ],
+        },
+      ],
+    }));
+    await pause(1400);
+    update(id, (reply) => ({
+      ...reply,
+      blocks: [
+        {
+          kind: "tools",
+          calls: [
+            {
+              id: `${id}-t`,
+              toolId: "sample.query",
+              label: "Read the printer's status",
+              status: "succeeded",
+              elapsedMs: 1380,
+            },
+          ],
+        },
+        { kind: "markdown", text: "" },
+      ],
+    }));
+    let shown = "";
+    for (const word of FOLLOW_ANSWER.split(/(?<=\s)/)) {
+      shown += word;
+      const partial = shown;
+      update(id, (reply) => ({
+        ...reply,
+        blocks: reply.blocks.map((block) =>
+          block.kind === "markdown" ? { kind: "markdown", text: partial } : block,
+        ),
+      }));
+      await pause(28);
+    }
+    update(id, (reply) => ({ ...reply, state: "complete" }));
+    setRun("idle");
+  };
   return (
-    <div className="ai-stack">
-      <div className="ai-conversation-sample" key={key}>
-        <ConversationLog
-          surface="panel"
-          label="Conversation with a pending approval"
-          footer={<Composer model={MODEL} placeholder="Ask a follow-up…" />}
-        >
-          <Turn index={1}>
-            <UserMessage
-              message={{
-                id: "d1",
-                role: "user",
-                createdAt: NOW - 90000,
-                state: "complete",
-                blocks: [
-                  {
-                    kind: "markdown",
-                    text: "Restart the spooler on NST-C106 and clear the queue.",
-                  },
-                ],
-              }}
-            />
-            <AssistantMessage
-              latest
-              message={{
-                id: "d2",
-                role: "assistant",
-                createdAt: NOW - 60000,
-                state: "complete",
-                model: MODEL.name,
-                blocks: [
-                  {
-                    kind: "markdown",
-                    text: "Clearing the queue needs your approval because the stuck jobs cannot be recovered.",
-                  },
-                  {
-                    kind: "ask",
-                    ask: {
-                      ...APPROVAL("pending"),
-                      id: `docked-approval-${key}`,
-                      expiresAt: NOW + 10 * 60000,
-                    },
-                  },
-                  {
-                    kind: "tools",
-                    calls: [
-                      {
-                        ...TOOLS.printers,
-                        id: "d-side",
-                        status: "running",
-                        label: "Checking the other print queues",
-                        activeLabel: "Checking the other print queues",
-                      },
-                    ],
-                  },
-                ],
-              }}
-            />
+    <div className="h-120 w-full" data-testid="conversation-follow">
+      <ConversationLog
+        surface="panel"
+        label="Sample conversation"
+        footer={
+          <Composer
+            aria-label="Message the assistant"
+            run={run}
+            onSend={(text) => void send(text)}
+            onStop={() => undefined}
+          />
+        }
+      >
+        {items.map((item, position) => (
+          <Turn key={item.index} index={item.index}>
+            <UserMessage message={item.user} />
+            <AssistantMessage message={item.reply} latest={position === items.length - 1} />
           </Turn>
-        </ConversationLog>
-      </div>
-      <div className="ai-row">
-        <Button size="sm" variant="ghost" onClick={() => setKey((value) => value + 1)}>
-          Reset
-        </Button>
-      </div>
+        ))}
+      </ConversationLog>
     </div>
   );
 }
 
-export default function AiApprovalsSection() {
+export default function AiMessagesSection() {
   return (
     <AiGallery>
       <SectionPage>
         <Specimen
-          title="In a conversation"
-          description="Never modal: the card waits in the ask dock above the composer, the transcript keeps a marker with Review at its place, and the agent carries on with work that does not depend on it."
+          title="Follow a streaming answer"
+          description="A reader at the end of the log stays there while an answer streams in and completes: send a message and the tool call, each word and the answer's actions keep the end in view. Scrolled up, nothing moves and New messages appears instead."
           wide
-          layout="stack"
+          layout="bare"
         >
-          <DockedApproval />
+          <FollowingLog />
         </Specimen>
       </SectionPage>
     </AiGallery>

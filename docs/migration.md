@@ -10,6 +10,11 @@ No code changes are required.
 - Charts keep breaking a line at missing samples. To join gaps with a dashed bridge instead,
   pass `gaps="bridge"` to `LineChart` or `AreaChart`; data that dropped nulls to avoid holes
   can keep them now.
+- A `ConversationLog` keeps a reader at the end while an answer streams again; nothing to
+  change. A test that waits for a completed answer and checks the log is at its end should
+  pass consistently.
+- A rule that hid a `Tree`'s group counts (`.fa-tree-count { display: none }`) can become
+  `groupCounts={false}`.
 - A `Tree` is unchanged unless you opt in. For an explorer, pass `selectableGroups` (branches
   select on click and open from the chevron), mark unloaded branches `hasChildren: true` and
   fetch them in `onLoadChildren`, and page long branches with `hasMore` and `onLoadMore`. A

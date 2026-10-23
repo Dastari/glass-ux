@@ -24,6 +24,7 @@ first open, and `hasMore` with `onLoadMore` pages them in.
 | defaultSelectedId | `string \| null \| undefined` | See type | no | — | The row selected at first when the selection is uncontrolled. |
 | emptyText | `((query: string) => ReactNode) \| undefined` | See type | no | (q) => `No match for “${q}”` | The line shown when nothing matches. Default: No match for “query”. |
 | expanded | `string[] \| undefined` | See type | no | — | Open groups. Uncontrolled with `defaultExpanded`. |
+| groupCounts | `boolean \| undefined` | false, true | no | true | Show each group's count of endpoints (leaves). Default true. Turn it off where a count would mislead, such as an explorer whose branches are still loading. Lazily loaded and paged branches never show one. |
 | nodes | `TreeNode[]` | See type | yes | — | Graph or tree nodes with stable identifiers and relationships. |
 | onExpandedChange | `((expanded: string[]) => void) \| undefined` | See type | no | — | Called with the full list of open group ids whenever a group opens or closes (click, Enter, Space or the arrow keys); groups do not toggle while searching. Pair with `expanded` to control it. |
 | onLoadChildren | `((node: TreeNode) => Promise<void> \| void) \| undefined` | See type | no | — | Load a branch's children the first time it opens (a node with `hasChildren` and no `children`): update `nodes` with them, then resolve. A loading row shows meanwhile; a rejection shows an error row whose Retry calls this again. Without it, the loading row shows until `nodes` gives the branch its children. |

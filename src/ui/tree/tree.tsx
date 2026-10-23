@@ -132,6 +132,12 @@ export interface TreeProps {
   /** Load the next page of a branch's children (a node with `hasMore`): append them to `nodes`, then resolve. A rejection offers Retry. */
   onLoadMore?: (node: TreeNode) => Promise<void> | void
   /**
+   * Show each group's count of endpoints (leaves). Default true. Turn it off where a count
+   * would mislead, such as an explorer whose branches are still loading. Lazily loaded and
+   * paged branches never show one.
+   */
+  groupCounts?: boolean
+  /**
    * Render selectable rows as links (a TanStack Router `<Link>` in the app). Return null to
    * keep a row a plain item. A linked row navigates natively (click, middle-click, Enter);
    * a click or Enter also selects it.
@@ -213,6 +219,7 @@ export function Tree({
   selectableGroups = false,
   onLoadChildren,
   onLoadMore,
+  groupCounts = true,
   className,
   "aria-label": label,
 }: TreeProps) {
@@ -477,6 +484,7 @@ export function Tree({
                 selected={canSelect && row.node.id === selectedId}
                 focused={item.index === focusedIndex}
                 busy={load.loading.has(row.node.id)}
+                counted={groupCounts}
                 renderLink={renderLink}
                 rowWrapper={rowWrapper}
                 renderContent={renderContent}
@@ -525,6 +533,8 @@ interface TreeRowProps {
   focused: boolean
   /** The row's children are loading. */
   busy: boolean
+  /** Groups show their count. */
+  counted: boolean
   /** Renders a link with the host router. */
   renderLink?: TreeProps["renderLink"]
   rowWrapper?: TreeProps["rowWrapper"]
@@ -542,7 +552,7 @@ interface TreeRowProps {
  * endpoint, or a branch when branches are selectable) it selects, and a selectable branch's
  * chevron toggles.
  */
-function TreeRow({ row, start, selectable, selected, focused, busy, renderLink, rowWrapper, renderContent, onClick, onDoubleClick, onFocus }: TreeRowProps) {
+function TreeRow({ row, start, selectable, selected, focused, busy, counted, renderLink, rowWrapper, renderContent, onClick, onDoubleClick, onFocus }: TreeRowProps) {
   const { node } = row
   const style = { "--_level": row.level, transform: `translateY(${start}px)` } as CSSProperties
   const twoLine = !row.branch && Boolean(node.description || row.keywordMatch)
@@ -560,7 +570,7 @@ function TreeRow({ row, start, selectable, selected, focused, busy, renderLink, 
     group: row.branch,
   })
   // A lazily loaded or paged branch shows no count: it would count only what has loaded.
-  const count = row.hasChildren && node.hasChildren === undefined && !node.hasMore ? <CountBadge value={row.leaves} className="fa-tree-count" /> : null
+  const count = counted && row.hasChildren && node.hasChildren === undefined && !node.hasMore ? <CountBadge value={row.leaves} className="fa-tree-count" /> : null
   const chevron = row.hasChildren ? (
     <span className="fa-tree-chevron" aria-hidden>
       <IconChevronRight />

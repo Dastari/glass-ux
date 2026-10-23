@@ -41,6 +41,8 @@ required; the [migration guide](docs/migration.md) lists what to adopt and revie
   chevron. Branches whose children are not loaded stay closed while searching, and lazily
   loaded or paged branches show no count. `flattenTree` takes the load state and marks
   `branch` and `status` on its rows.
+- `Tree` `groupCounts={false}` hides the groups' counts (on by default), for trees where a
+  count would mislead, such as an explorer whose branches are still loading.
 
 - `Window.Action` (`WindowAction`) gives a window's app bar action a priority. When the bar runs
   out of room, the title and scope chip give way first (the title down to `--_title-min`),
@@ -51,6 +53,14 @@ required; the [migration guide](docs/migration.md) lists what to adopt and revie
 
 ### Fixed
 
+- A reader at the end of a `ConversationLog` stays there while an answer streams and
+  completes. Since 0.9.9 the log could stop short of the end once the answer completed (by
+  180px in one application), with New messages showing. Two things raced: the dock and log
+  observers committed any pending update (the next streamed words) after the log had followed
+  the end, and the scroll event from that follow then saw the growth and let go of the end. The
+  observers now commit only a change of layout, and a reader leaves the end only by moving up.
+  In a streaming fixture at 4x CPU throttle the reader stays within 0px of the end in every
+  painted frame, where it ended up to 330px short in one run in five to eight before.
 - A range `Slider` no longer widens what scrolls around it. Its range is drawn as a
   track-length strip moved to the range's start, and nothing clipped the part past the
   track's end, so moving the start thumb along widened the scroll area by as much (519 px in

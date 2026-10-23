@@ -212,3 +212,13 @@ describe("lazy children", () => {
     expect(row(view, "k3")).not.toBeNull();
   });
 });
+
+describe("group counts", () => {
+  it("shows each group's count unless groupCounts is off", () => {
+    const nodes = [{ id: "g", label: "Group", children: [{ id: "a", label: "Alpha" }, { id: "b", label: "Beta" }] }]
+    const view = render(<Tree nodes={nodes} aria-label="Nodes" />)
+    expect(view.container.querySelector(".fa-tree-count")).toHaveTextContent("2")
+    view.rerender(<Tree nodes={nodes} aria-label="Nodes" groupCounts={false} />)
+    expect(view.container.querySelector(".fa-tree-count")).toBeNull()
+  })
+})

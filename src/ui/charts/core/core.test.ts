@@ -152,6 +152,8 @@ describe("geometry", () => {
     expect(gapBridges([null, null, null])).toEqual([])
     expect(gapBridges([])).toEqual([])
     expect(gapBridges([1, 2, 3])).toEqual([])
+    expect(gapBridges([7])).toEqual([])
+    expect(gapBridges([null, 7, null])).toEqual([])
     expect(gapBridges([1, Number.NaN, 3])).toEqual([[0, 2]])
   })
   it("an optional cap bridges only gaps whose ends are close enough", () => {

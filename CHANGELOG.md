@@ -6,6 +6,10 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ## 0.9.10
 
+Explorer-style building blocks for large hierarchies, window actions that give way in narrow
+windows, opt-in gap bridges for line charts, and range slider fixes. No code changes are
+required; the [migration guide](docs/migration.md) lists what to adopt and review.
+
 ### Added
 
 - `SplitPane` (`glass-ux/split-pane`): two panes and a divider, side by side or one above the

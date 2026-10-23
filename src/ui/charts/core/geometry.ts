@@ -22,6 +22,31 @@ export function segments<T extends { y: number | null }>(points: readonly T[]): 
   return out
 }
 
+/**
+ * Where a bridged line joins across missing samples: for each interior run of nulls (or NaN),
+ * the index of the last value before it and the first after it. A leading or trailing run is
+ * never bridged. With `xs` and `maxSpan`, only gaps whose ends are at most `maxSpan` apart (in
+ * x units: milliseconds for time) are bridged.
+ */
+export function gapBridges(values: readonly (number | null | undefined)[], xs?: readonly number[], maxSpan?: number): Array<[number, number]> {
+  const out: Array<[number, number]> = []
+  let previous = -1
+  let missing = false
+  values.forEach((value, index) => {
+    if (value === null || value === undefined || Number.isNaN(value)) {
+      missing = true
+      return
+    }
+    if (missing && previous >= 0) {
+      const span = xs ? xs[index]! - xs[previous]! : 0
+      if (maxSpan === undefined || !xs || span <= maxSpan) out.push([previous, index])
+    }
+    previous = index
+    missing = false
+  })
+  return out
+}
+
 /** A smooth line through pixel points. */
 export function linePath(points: readonly Point[]): string {
   return monotonePath(points)

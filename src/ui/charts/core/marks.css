@@ -89,7 +89,20 @@
   }
   /* A live window that only moved on redraws at once: morphing every point one sample to
      the left would animate a change that is not there (line-chart.tsx, data-slide). */
-  .fa-chart-svg[data-slide] :is(.fa-chart-line, .fa-chart-area) {
+  /* A bridge across missing samples (gaps="bridge"): a straight muted dash between the
+     readings at a gap's ends. It carries no value; it fades in while the lines draw. */
+  .fa-chart-bridge {
+    fill: none;
+    stroke: var(--chart-bridge);
+    stroke-width: var(--chart-bridge-stroke);
+    stroke-dasharray: var(--chart-bridge-dash) var(--chart-bridge-dash);
+    opacity: var(--chart-bridge-opacity);
+    transition: d var(--duration-slow) var(--ease-standard);
+  }
+  .fa-chart-bridge[data-enter] {
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
+  }
+  .fa-chart-svg[data-slide] :is(.fa-chart-line, .fa-chart-area, .fa-chart-bridge) {
     transition: opacity var(--duration-fast) var(--ease-standard);
   }
   .fa-chart-wash-top {

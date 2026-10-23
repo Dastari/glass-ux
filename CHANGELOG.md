@@ -6,6 +6,19 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ## 0.9.10
 
+### Added
+
+- `LineChart` and `AreaChart` take `gaps="bridge"`: where samples are missing, a muted dashed
+  line joins the last reading before the gap to the first after it, so a hole reads as "no
+  samples here" rather than a lone dot. The bridge is straight, decorative and never a value:
+  the crosshair, tooltip, readout, legend and data table still show none at a gap. Each one
+  has the title "No samples available · visual bridge only", and the chart's accessible
+  description says what the dashed lines mean. Gaps before the first reading or after the
+  last stay open, and stacked charts never bridge. `maxBridge` bridges only gaps up to a
+  span (off by default). The default, `gaps="break"`, is unchanged. Tokens:
+  `--chart-bridge`, `--chart-bridge-stroke`, `--chart-bridge-dash`,
+  `--chart-bridge-opacity` (opaque under higher contrast, `GrayText` in forced colours).
+
 ### Fixed
 
 - A range `Slider` no longer widens what scrolls around it. Its range is drawn as a

@@ -77,11 +77,29 @@
     --chart-grid: var(--line); /* gridlines: hairlines, low emphasis */
     --chart-baseline: var(--line-strong); /* the zero line and crosshair */
     --chart-track: var(--fill-muted); /* gauge and radial-bar tracks, the empty heat cell */
+    /* A bridge across missing samples (LineChart gaps="bridge"): muted, thinner than a line,
+       dashed in proportion to it. */
+    --chart-bridge: var(--fg-subtle);
+    --chart-bridge-stroke: calc(var(--chart-stroke) * 0.625);
+    --chart-bridge-dash: calc(var(--chart-stroke) * 2);
+    --chart-bridge-opacity: 0.65;
     --chart-sheen-mix: 12%; /* light from above on bars (--sheen-solid's top stop, softened) */
     --chart-sheen-light: oklch(1 0 0);
     --chart-hit: 1.5rem; /* minimum hover/focus target for small marks */
     --chart-label-halo: 0.1875rem; /* knock-out behind labels drawn over marks */
     --chart-tooltip-min: 9rem;
     --chart-tooltip-w: 16rem;
+  }
+  /* Higher contrast: a bridge stays secondary (thin, dashed, muted) but fully opaque. */
+  @media (prefers-contrast: more) {
+    :root {
+      --chart-bridge-opacity: 1;
+    }
+  }
+  @media (forced-colors: active) {
+    :root {
+      --chart-bridge: GrayText;
+      --chart-bridge-opacity: 1;
+    }
   }
 }

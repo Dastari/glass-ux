@@ -4,7 +4,7 @@ import { DECIMATE_ABOVE, lttbIndices } from "../core/decimate.js"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
 import { formatClock, formatInstant, formatRelative, formatTick, formatTimeTicks, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
 import { useLocale } from "../../../lib/locale/use-locale.js"
-import { areaPath, bandPath, cssPath, linePath, segments, type Point } from "../core/geometry.js"
+import { areaPath, bandPath, cssPath, gapBridges, linePath, segments, type Point } from "../core/geometry.js"
 import { HitLayer } from "../core/hit.js"
 import { useNow } from "../core/clock.js"
 import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
@@ -18,7 +18,7 @@ import { ChartTooltip, TooltipBody, type TooltipRow } from "../core/tooltip.js"
 export interface LineSeries {
   key: string
   label: string
-  /** One value per x; null is a gap (the line breaks, it never bridges). */
+  /** One value per x; null is a gap: the line breaks there, or with `gaps="bridge"` a dashed line joins across it. */
   data: readonly (number | null)[]
   /** Categorical slot 1–8; defaults to the series' position. */
   slot?: number
@@ -70,7 +70,22 @@ export interface LineChartProps extends ChartCommonProps, ValueFormat {
   onActivate?: (index: number, x: XValue) => void
   /** The chosen x, drawn as a rule, or an [from, to] range, drawn as a band. */
   selected?: XValue | readonly [XValue, XValue]
+  /**
+   * How a line meets missing samples (null). `break` (the default) leaves a hole. `bridge`
+   * joins the last reading before each gap to the first after it with a straight, muted dashed
+   * line that says "no samples here": it is never a value, so the crosshair, tooltip, readout
+   * and table still show none at a gap. Never before the first reading or after the last, and
+   * not for stacked charts.
+   */
+  gaps?: "break" | "bridge"
+  /** With `gaps="bridge"`, bridge only gaps whose ends are at most this far apart, in x units (milliseconds for time). Default: every gap. */
+  maxBridge?: number
 }
+
+/** A bridge's tooltip (its native SVG title). */
+export const GAP_BRIDGE_TITLE = "No samples available · visual bridge only"
+/** The sentence a chart with bridges adds to its accessible description. */
+export const GAP_BRIDGE_NOTE = "Dashed lines join readings across times with no samples."
 
 interface Prepared {
   xs: number[]
@@ -140,7 +155,7 @@ function prepare(
  *            head (Metric's model)
  */
 export function LineChart(props: LineChartProps) {
-  const { label, title, state = "ready", series, x, unit, format, xLabel = "Time", formatX, area, stacked, now, thresholds, markers, domain, onActivate, selected, ...rest } = props
+  const { label, title, state = "ready", series, x, unit, format, xLabel = "Time", formatX, area, stacked, now, thresholds, markers, domain, onActivate, selected, gaps = "break", maxBridge, ...rest } = props
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
   const store = useHoverStore()
   const prepared = useMemo(() => prepare(x, series, domain, stacked, thresholds, hidden), [x, series, domain, stacked, thresholds, hidden])
@@ -171,6 +186,11 @@ export function LineChart(props: LineChartProps) {
   const activate = useMemo(() => (onActivate ? (index: number) => onActivate(index, x[index]!) : undefined), [onActivate, x])
 
   const table = useMemo(() => lineTable(x, series, fmt, xLabel, formatX), [x, series, fmt, xLabel, formatX])
+  const bridge = gaps === "bridge" && !stacked
+  const bridged = useMemo(
+    () => bridge && series.some((item) => gapBridges(item.data, prepared.xs, maxBridge).length > 0),
+    [bridge, series, prepared.xs, maxBridge]
+  )
 
   const toggle = (key: string) =>
     setHidden((current) => {
@@ -212,6 +232,7 @@ export function LineChart(props: LineChartProps) {
       trail={trail}
       trailOptional={!single}
       trailSize={single ? "value" : "figure"}
+      note={bridged ? GAP_BRIDGE_NOTE : undefined}
     >
       {(box) => (
         <LinePlot
@@ -229,6 +250,8 @@ export function LineChart(props: LineChartProps) {
           formatX={formatX}
           onActivate={activate}
           selected={selected}
+          bridge={bridge}
+          maxBridge={maxBridge}
         />
       )}
     </ChartFrame>
@@ -358,6 +381,9 @@ interface LinePlotProps {
   formatX?: (x: number) => string
   onActivate?: (index: number) => void
   selected?: XValue | readonly [XValue, XValue]
+  /** Join each interior gap with a dashed bridge. */
+  bridge: boolean
+  maxBridge?: number
 }
 
 interface DrawnSeries {
@@ -368,12 +394,14 @@ interface DrawnSeries {
   /** Number of text or skeleton lines. */
   lines: string[]
   areas: string[]
+  /** Dashed straight segments across interior gaps, keyed by the index before the gap. */
+  bridges: Array<{ key: number; d: string }>
   end: Point | null
   /** Pixel y per index (full data), for the hover dots. */
   ys: (number | null)[]
 }
 
-const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, thresholds, markers, fmt, label, xText, now, formatX, onActivate, selected }: LinePlotProps) {
+const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, thresholds, markers, fmt, label, xText, now, formatX, onActivate, selected, bridge, maxBridge }: LinePlotProps) {
   // A live window that moved on (samples dropped at the start, new ones at the end) redraws
   // its paths at once; any other change to the data morphs them (marks.css).
   const [shown, setShown] = useState({ prepared, sliding: false })
@@ -426,11 +454,20 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
           } else areas.push(areaPath(pts, py(Math.max(domain[0], Math.min(domain[1], 0)))))
         }
       }
+      // Straight, between the real readings at each gap's ends: never smoothed into the runs.
+      const round = (value: number) => Math.round(value * 100) / 100
+      const bridges = bridge
+        ? gapBridges(values, xs, maxBridge).map(([from, to]) => {
+            const a = points[from]!
+            const b = points[to]!
+            return { key: from, d: `M${round(a.x)},${round(a.y as number)}L${round(b.x)},${round(b.y as number)}` }
+          })
+        : []
       const lastRun = runs[runs.length - 1]
       const end = lastRun?.length ? { x: lastRun[lastRun.length - 1]!.x, y: lastRun[lastRun.length - 1]!.y as number } : null
-      return { item, slot: slots.get(item.key) ?? 1, lines, areas, end, ys: points.map((p) => p.y) }
+      return { item, slot: slots.get(item.key) ?? 1, lines, areas, bridges, end, ys: points.map((p) => p.y) }
     })
-  }, [visible, tops, bottoms, xs, px, py, area, slots, x0, x1, domain])
+  }, [visible, tops, bottoms, xs, px, py, area, slots, x0, x1, domain, bridge, maxBridge])
 
   // x ticks: time scales get calendar-aware ticks; numbers get nice linear ticks.
   const xTicks = useMemo(() => {
@@ -572,7 +609,7 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
           </g>
         ) : null}
 
-        {drawn.map(({ item, slot, lines, areas, end }, order) => (
+        {drawn.map(({ item, slot, lines, areas, bridges, end }, order) => (
           <g key={item.key} className="fa-chart-series" {...seriesAttrs(slot, item.tone)}>
             {areas.map((d, index) => (
               <path
@@ -582,6 +619,11 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
                 fill={`url(#${id}-wash-${item.key})`}
                 style={{ d: cssPath(d) } as CSSProperties}
               />
+            ))}
+            {bridges.map(({ key, d }) => (
+              <path key={`b${key}`} className="fa-chart-bridge" data-enter="" style={{ d: cssPath(d) } as CSSProperties}>
+                <title>{GAP_BRIDGE_TITLE}</title>
+              </path>
             ))}
             {lines.map((d, index) => (
               <path

@@ -25,6 +25,8 @@ const times = Array.from({ length: 24 }, (_, index) => new Date(2026, 0, 12, 9, 
 const load = [
   22, 25, 31, 28, 34, 47, 62, 58, 41, 36, 33, 38, 44, 71, 83, 76, 52, 40, 35, 31, 29, 33, 30, 27,
 ];
+// Samples missing where the agent was unreachable: one short gap and one long one.
+const sparse = load.map((value, index) => ([6, 7, 15, 16, 17, 18].includes(index) ? null : value));
 
 /** Click or Enter on a point selects its time; a second view would jump there. */
 function SelectPoint() {
@@ -74,10 +76,40 @@ export default function LineChartSection() {
         <SelectPoint />
       </Specimen>
       <Specimen
+        title="Missing samples"
+        description='A null is a gap. By default the line breaks there; gaps="bridge" joins the readings on either side with a muted dashed line that carries no value: the tooltip and table still show none at a gap.'
+        wide
+        specimenKey="chart-line-chart:default:2"
+      >
+        <div className="grid w-full gap-3 md:grid-cols-2">
+          <div className="charts-pane" data-testid="chart-gaps-break">
+            <LineChart
+              x={times}
+              series={[{ key: "cpu", label: "CPU", data: sparse }]}
+              unit="%"
+              domain={[0, 100]}
+              label="CPU on NST-C106 with missing samples · fictional"
+              title="Breaks (default)"
+            />
+          </div>
+          <div className="charts-pane" data-testid="chart-gaps-bridge">
+            <LineChart
+              x={times}
+              series={[{ key: "cpu", label: "CPU", data: sparse }]}
+              unit="%"
+              domain={[0, 100]}
+              gaps="bridge"
+              label="CPU on NST-C106 with missing samples, bridged · fictional"
+              title="Bridged"
+            />
+          </div>
+        </div>
+      </Specimen>
+      <Specimen
         title="Responsive sizes"
         description="The same LineChart adapts to row, tile and full-panel sizes."
         wide
-        specimenKey="chart-line-chart:default:2"
+        specimenKey="chart-line-chart:default:3"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -85,7 +117,7 @@ export default function LineChartSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
-        specimenKey="chart-line-chart:default:3"
+        specimenKey="chart-line-chart:default:4"
       >
         <SkeletonSwaps id="line-chart" render={render} />
         <div className="gallery-tiers">
@@ -97,7 +129,7 @@ export default function LineChartSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab specimenKey="chart-line-chart:default:4">{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-line-chart:default:5">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

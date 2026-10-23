@@ -16,9 +16,11 @@ An area chart: the line chart with its wash (and `stacked` for parts of a total)
 | errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
 | format | `((value: number, locale: string) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). Receives the chart's resolved locale as its second argument. |
 | formatX | `((x: number) => string) \| undefined` | See type | no | — | Format a numeric x. |
+| gaps | `"break" \| "bridge" \| undefined` | "break", "bridge" | no | — | How a line meets missing samples (null). `break` (the default) leaves a hole. `bridge` joins the last reading before each gap to the first after it with a straight, muted dashed line that says "no samples here": it is never a value, so the crosshair, tooltip, readout and table still show none at a gap. Never before the first reading or after the last, and not for stacked charts. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for this chart's numbers, dates and table. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | markers | `readonly Marker[] \| undefined` | See type | no | — | Events on the x axis. |
+| maxBridge | `number \| undefined` | See type | no | — | With `gaps="bridge"`, bridge only gaps whose ends are at most this far apart, in x units (milliseconds for time). Default: every gap. |
 | now | `Date \| undefined` | See type | no | — | "Now" for relative times in the readout. Defaults to the clock. |
 | onActivate | `((index: number, x: XValue) => void) \| undefined` | See type | no | — | Click, Enter or Space on a point: its index and x (jump another view to that time). While set, the plot shows a pointer cursor and its accessible name says Enter selects. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |

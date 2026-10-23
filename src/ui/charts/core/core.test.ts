@@ -3,7 +3,7 @@ import { configureLocale, configuredLocale } from "../../../lib/locale/locale.js
 import { spatialNav } from "../treemap/treemap.js"
 import { lttbIndices } from "./decimate.js"
 import { centreSize, formatBytes, formatRelative, formatShare, formatTick, formatTimeTicks, formatValue } from "./format.js"
-import { barPath, segments } from "./geometry.js"
+import { barPath, gapBridges, segments } from "./geometry.js"
 import { linearTicks, nearestIndex, valueDomain } from "./scales.js"
 import { slotFor } from "./series.js"
 import { chartTier } from "./tier.js"
@@ -137,6 +137,27 @@ describe("geometry", () => {
   it("a missing sample breaks the line", () => {
     const runs = segments([{ y: 1 }, { y: 2 }, { y: null }, { y: 3 }])
     expect(runs.map((run) => run.length)).toEqual([2, 1])
+  })
+  it("bridges join the readings on either side of each interior gap", () => {
+    expect(gapBridges([1, null, null, 4, 5, null, 7])).toEqual([[0, 3], [4, 6]])
+  })
+  it("never bridges a leading or trailing gap", () => {
+    expect(gapBridges([null, null, 3, 4, null])).toEqual([])
+    expect(gapBridges([null, 2, null, 4, null, null])).toEqual([[1, 3]])
+  })
+  it("a single reading between two gaps is bridged on both sides", () => {
+    expect(gapBridges([1, null, 3, null, 5])).toEqual([[0, 2], [2, 4]])
+  })
+  it("all-missing, empty and unbroken data have no bridges", () => {
+    expect(gapBridges([null, null, null])).toEqual([])
+    expect(gapBridges([])).toEqual([])
+    expect(gapBridges([1, 2, 3])).toEqual([])
+    expect(gapBridges([1, Number.NaN, 3])).toEqual([[0, 2]])
+  })
+  it("an optional cap bridges only gaps whose ends are close enough", () => {
+    const xs = [0, 60_000, 120_000, 180_000, 600_000, 660_000]
+    expect(gapBridges([1, null, 3, null, null, 6], xs, 120_000)).toEqual([[0, 2]])
+    expect(gapBridges([1, null, 3, null, null, 6], xs)).toEqual([[0, 2], [2, 5]])
   })
   it("a bar keeps one command structure from zero to full, so it can morph", () => {
     const shape = (d: string) => d.replace(/[-\d.]+/g, "#")

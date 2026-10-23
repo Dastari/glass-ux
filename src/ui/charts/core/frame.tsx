@@ -1,4 +1,4 @@
-import { useRef, useState, type ComponentProps, type ReactNode } from "react"
+import { useId, useRef, useState, type ComponentProps, type ReactNode } from "react"
 import { IconChartLine, IconError, IconTable } from "../../../icons/generated/icons.js"
 import { cx } from "../../../lib/cx.js"
 import { LocaleProvider, useLocale } from "../../../lib/locale/use-locale.js"
@@ -70,6 +70,8 @@ export interface ChartFrameProps extends ChartCommonProps {
   trailSize?: "value" | "figure"
   /** The typed disclosure or validation rule applied to this value. */
   rule?: TierRule
+  /** A sentence that explains how the marks are drawn, added to the figure's accessible description. */
+  note?: string
   children: (box: PlotBox) => ReactNode
 }
 
@@ -96,6 +98,7 @@ export function ChartFrame({
   trailOptional = false,
   trailSize = "figure",
   rule = DEFAULT_TIERS,
+  note,
   children,
   className,
   locale: localeProp,
@@ -107,6 +110,7 @@ export function ChartFrame({
   const size = useElementSize(rootRef)
   const plot = useElementSize(plotRef)
   const [view, setView] = useState<"chart" | "table">("chart")
+  const noteId = useId()
   // Read per render: the ui-scale knob can change the root size at runtime.
   const rem = remPx()
   const tier = chartTier(size.width, size.height, rem, rule)
@@ -156,6 +160,7 @@ export function ChartFrame({
       data-tier={measured ? tier : undefined}
       data-state={state}
       aria-label={label}
+      aria-describedby={[rest["aria-describedby"], note ? noteId : undefined].filter(Boolean).join(" ") || undefined}
       aria-busy={state === "loading" || undefined}
     >
       <div className="fa-chart-body">
@@ -200,6 +205,11 @@ export function ChartFrame({
         ) : null}
       </div>
       {table && state === "ready" && !tableView ? <ChartTable model={table} caption={label} /> : null}
+      {note ? (
+        <p id={noteId} className="sr-only">
+          {note}
+        </p>
+      ) : null}
     </figure>
     </LocaleProvider>
   )

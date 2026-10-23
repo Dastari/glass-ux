@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState, type ReactNode } from "react"
 import { DemoScope } from "../demo-scope.js"
 import { IconLayers } from "../../icons/generated/icons.js"
-import { AssistantMessage, CodeBlock, MessageSkeleton, Reasoning, SystemNotice, Turn, UserMessage, type AiMessage } from "../../ai/index.js"
+import { AssistantMessage, CodeBlock, Composer, ConversationLog, MessageSkeleton, Reasoning, SystemNotice, Turn, UserMessage, type AiMessage, type RunState } from "../../ai/index.js"
 import { ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { Button } from "../../ui/button/index.js"
 import { CONVERSATION, MODEL, NOW, SOURCES, TOOLS } from "./ai.fixtures.js"
@@ -45,6 +45,58 @@ const turn = CONVERSATION.find((item) => item.kind === "turn" && item.index === 
 const first = turn?.kind === "turn" ? turn : null
 
 const base = (extra: Partial<AiMessage>): AiMessage => ({ id: "x", role: "assistant", createdAt: NOW - 60_000, state: "complete", model: MODEL.name, blocks: [], ...extra })
+
+const FOLLOW_ANSWER =
+  "The sample printer has been online since **10:12 am** and its queue is empty. Two documents printed on the Level 2 printer in the last ten minutes; both completed.\n\n- The print spooler has not stopped since the restart\n- The driver is still `4.2.1`; the fix is in `4.3.0`\n\nI can update the driver tonight after 6 pm, once the studio has signed out."
+const FOLLOW_EARLIER = [1, 2, 3].map((index) => ({
+  index,
+  user: { id: `fu${index}`, role: "user", createdAt: NOW - 600_000, state: "complete", blocks: [{ kind: "markdown", text: `Sample question ${index} about the studio printers?` }] } as AiMessage,
+  reply: base({ id: `fa${index}`, blocks: [{ kind: "markdown", text: Array.from({ length: 3 }, (_, p) => `Sample paragraph ${p + 1}: the studio queue has ${index + p} waiting jobs and two printers online.`).join("\n\n") }] }),
+}))
+const pause = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
+
+/** A log the reader follows while an answer streams in: a tool call, then words, then the footer. */
+function FollowingLog() {
+  const [items, setItems] = useState(FOLLOW_EARLIER)
+  const [run, setRun] = useState<RunState>("idle")
+  const update = (id: string, change: (message: AiMessage) => AiMessage) => setItems((current) => current.map((item) => (item.reply.id === id ? { ...item, reply: change(item.reply) } : item)))
+  const send = async (text: string) => {
+    const id = `live-${items.length + 1}`
+    setRun("sending")
+    await pause(250)
+    setItems((current) => [...current, { index: current.length + 1, user: { id: `${id}-q`, role: "user", createdAt: Date.now(), state: "complete", blocks: [{ kind: "markdown", text }] }, reply: base({ id, createdAt: Date.now(), state: "streaming" }) }])
+    setRun("running")
+    // An earlier answer grows on its own meanwhile, as work beside a pending approval does.
+    const grow = (ms: number, text: string) => setTimeout(() => update("fa3", (reply) => ({ ...reply, blocks: [...reply.blocks, { kind: "markdown", text }] })), ms)
+    grow(700, "Checking the Level 2 printer's queue and toner.")
+    grow(2600, "While you decide: the Level 2 printer is online and toner is at 64 %.")
+    await pause(500)
+    update(id, (reply) => ({ ...reply, blocks: [{ kind: "tools", calls: [{ id: `${id}-t`, toolId: "sample.query", label: "Read the printer's status", activeLabel: "Reading the printer's status", status: "running" }] }] }))
+    await pause(1400)
+    update(id, (reply) => ({ ...reply, blocks: [{ kind: "tools", calls: [{ id: `${id}-t`, toolId: "sample.query", label: "Read the printer's status", status: "succeeded", elapsedMs: 1380 }] }, { kind: "markdown", text: "" }] }))
+    let shown = ""
+    for (const word of FOLLOW_ANSWER.split(/(?<=\s)/)) {
+      shown += word
+      const partial = shown
+      update(id, (reply) => ({ ...reply, blocks: reply.blocks.map((block) => (block.kind === "markdown" ? { kind: "markdown", text: partial } : block)) }))
+      await pause(28)
+    }
+    update(id, (reply) => ({ ...reply, state: "complete" }))
+    setRun("idle")
+  }
+  return (
+    <div className="h-120 w-full" data-testid="conversation-follow">
+      <ConversationLog surface="panel" label="Sample conversation" footer={<Composer aria-label="Message the assistant" run={run} onSend={(text) => void send(text)} onStop={() => undefined} />}>
+        {items.map((item, position) => (
+          <Turn key={item.index} index={item.index}>
+            <UserMessage message={item.user} />
+            <AssistantMessage message={item.reply} latest={position === items.length - 1} />
+          </Turn>
+        ))}
+      </ConversationLog>
+    </div>
+  )
+}
 
 function StreamingDemo() {
   const [text, setText] = useState("")
@@ -126,6 +178,10 @@ export default function AiMessagesSection() {
           <Reasoning reasoning={{ seconds: 4, summary: "Find the organisation, list its offline endpoints, keep those silent for more than a day, then look for a shared site or time." }} />
           <Reasoning reasoning={{ seconds: 2, running: true, summary: "Reading the spooler events on NST-C106…" }} defaultOpen />
           <StreamingDemo />
+        </Specimen>
+
+        <Specimen title="Follow a streaming answer" description="A reader at the end of the log stays there while an answer streams in and completes: send a message and the tool call, each word and the answer's actions keep the end in view. Scrolled up, nothing moves and New messages appears instead." wide layout="bare">
+          <FollowingLog />
         </Specimen>
 
         <Specimen title="States" description="Failure, stop and retention show in place as the message's last block, in the same tones as everywhere else." layout="stack">

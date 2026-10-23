@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { act, cleanup, render } from "@testing-library/react"
+import { act, cleanup, fireEvent, render } from "@testing-library/react"
 import { ConversationLog, useConversationLog } from "./conversation.js"
 import { Turn } from "../message/index.js"
 
@@ -64,5 +64,53 @@ describe("ConversationLog long transcripts", () => {
     act(() => frames.shift()!(0))
     expect(root).not.toHaveAttribute("data-measure")
     expect(target.scrollIntoView).toHaveBeenCalledWith({ block: "start", behavior: "auto" })
+  })
+})
+
+describe("ConversationLog following the end", () => {
+  /** A scroller whose geometry the test sets: jsdom lays nothing out. */
+  const geometry = (element: HTMLElement) => {
+    const box = { scrollTop: 0, scrollHeight: 1000, clientHeight: 400 }
+    Object.defineProperty(element, "scrollTop", { configurable: true, get: () => box.scrollTop, set: (value: number) => (box.scrollTop = Math.min(value, box.scrollHeight - box.clientHeight)) })
+    Object.defineProperty(element, "scrollHeight", { configurable: true, get: () => box.scrollHeight })
+    Object.defineProperty(element, "clientHeight", { configurable: true, get: () => box.clientHeight })
+    return box
+  }
+
+  it("stays pinned when content grows below between a follow and its scroll event", () => {
+    const { container } = render(<ConversationLog>{turns(3)}</ConversationLog>)
+    const root = container.querySelector(".fa-ai-conversation")!
+    const scroller = container.querySelector<HTMLElement>(".fa-ai-conversation-scroll")!
+    const box = geometry(scroller)
+    // At the end.
+    box.scrollTop = 600
+    fireEvent.scroll(scroller)
+    expect(root).toHaveAttribute("data-pinned")
+    // A streamed word and the completed answer's actions grow the log by 180px before the
+    // scroll event from the last follow arrives; the reader has not moved.
+    box.scrollHeight = 1180
+    fireEvent.scroll(scroller)
+    expect(root).toHaveAttribute("data-pinned")
+    expect(container.querySelector(".fa-ai-new-pill[data-visible]")).toBeNull()
+  })
+
+  it("lets go when the reader moves up, and pins again at the end", () => {
+    const { container } = render(<ConversationLog>{turns(3)}</ConversationLog>)
+    const root = container.querySelector(".fa-ai-conversation")!
+    const scroller = container.querySelector<HTMLElement>(".fa-ai-conversation-scroll")!
+    const box = geometry(scroller)
+    box.scrollTop = 600
+    fireEvent.scroll(scroller)
+    box.scrollTop = 300
+    fireEvent.scroll(scroller)
+    expect(root).not.toHaveAttribute("data-pinned")
+    expect(container.querySelector(".fa-ai-new-pill[data-visible]")).not.toBeNull()
+    // Moving down short of the end keeps it let go; reaching the end pins it.
+    box.scrollTop = 400
+    fireEvent.scroll(scroller)
+    expect(root).not.toHaveAttribute("data-pinned")
+    box.scrollTop = 600
+    fireEvent.scroll(scroller)
+    expect(root).toHaveAttribute("data-pinned")
   })
 })

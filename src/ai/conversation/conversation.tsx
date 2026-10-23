@@ -120,6 +120,9 @@ export function ConversationLog({
   /** The floating part's last settled box: where a landing → conversation move starts. */
   const lastBox = useRef<DOMRect | null>(null)
   const pinnedRef = useRef(true)
+  /** The scroll position at the last scroll event: a reader leaves the end by moving up. */
+  const lastTop = useRef(0)
+  const narrowRef = useRef(false)
   const lastHeight = useRef(0)
   const [pinned, setPinned] = useState(true)
   const [unseen, setUnseen] = useState(false)
@@ -183,6 +186,11 @@ export function ConversationLog({
     }
     const observer = observeElementSizes(() => {
       const narrowNow = apply()
+      // Only a change of layout is committed here, at once so the first frame is right. Flushing
+      // on every resize would also commit whatever else is pending (the next streamed words)
+      // after the log has followed the end, and leave the reader short of it.
+      if (narrowNow === narrowRef.current) return
+      narrowRef.current = narrowNow
       flushSync(() => setNarrow(narrowNow))
     })
     observer.observe(float)
@@ -262,10 +270,17 @@ export function ConversationLog({
   const onScroll = () => {
     const element = scrollRef.current
     if (!element) return
-    const atBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - PIN_THRESHOLD
-    if (atBottom !== pinnedRef.current) {
-      pinnedRef.current = atBottom
-      setPinned(atBottom)
+    const top = element.scrollTop
+    const atBottom = top + element.clientHeight >= element.scrollHeight - PIN_THRESHOLD
+    // A reader leaves the end only by moving up. Content that grew below between a follow and
+    // this event (a streamed word, the completed answer's actions) leaves the position where it
+    // was: the observers bring the end back into view, and the reader stays pinned.
+    const leaving = !atBottom && top < lastTop.current - 1
+    lastTop.current = top
+    const next = atBottom || (pinnedRef.current && !leaving)
+    if (next !== pinnedRef.current) {
+      pinnedRef.current = next
+      setPinned(next)
     }
     if (atBottom) setUnseen(false)
     if (turns?.length) {

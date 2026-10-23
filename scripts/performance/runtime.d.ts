@@ -14,6 +14,7 @@ declare global {
       change: () => void;
       timeSlide: () => number;
       remove: () => void;
+      send: () => Promise<{ worst: number; final: number; pill: boolean }>;
     };
     __mountMs: number;
     __commits: { phase: string; ms: number; at: number }[];

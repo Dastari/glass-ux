@@ -278,6 +278,10 @@
       "types": "./dist/ui/aspect-ratio/index.d.ts",
       "import": "./dist/ui/aspect-ratio/index.js"
     },
+    "./split-pane": {
+      "types": "./dist/ui/split-pane/index.d.ts",
+      "import": "./dist/ui/split-pane/index.js"
+    },
     "./reference-input": {
       "types": "./dist/ui/reference-input/index.d.ts",
       "import": "./dist/ui/reference-input/index.js"

@@ -33,6 +33,14 @@ Use `TruncatedText` where a full identifier must remain reachable, and the compo
 skeleton where data is loading. Give screens, video and images of a known shape an
 `AspectRatio` so they keep their space before they load.
 
+For a tree beside a table or a list above its details, use `SplitPane` (glass-ux/split-pane)
+rather than a hand-built divider: it is keyboard operable, clamps each pane, remembers its
+size per window kind and hides a pane behind a button when narrow. An explorer tree uses
+`Tree` with `selectableGroups`, and `hasChildren`/`onLoadChildren` (and `hasMore`/`onLoadMore`)
+for hierarchies too large to load at once. Wrap window app bar actions in `Window.Action`
+with a label and priority so a narrow window folds them into More instead of pushing its
+controls out of the frame.
+
 Use token roles and outer layout classes. Named variants and semantic tones are props, not
 local colour overrides. Give bounded charts, maps and workspaces a definite height, and
 check both a narrow and a wide container. Keep application-specific entities and policies

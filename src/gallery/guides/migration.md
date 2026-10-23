@@ -19,6 +19,9 @@ No code changes are required.
   its controls out of the frame, wrap each action in `Window.Action` with a `label` (and an
   `icon` and `onSelect`, or `menu` content for a menu or a Segmented choice). Actions are
   `secondary` by default and fold into More; mark the one that must stay `priority="primary"`.
+- A split view built in the application (a tree beside a table, a list above details) can
+  move to `SplitPane` from `glass-ux/split-pane`. Its size is remembered per window kind
+  inside a window body; pass `storageKey` elsewhere, or `storageKey={null}` to forget it.
 - A stylesheet that clipped a range `Slider`'s track to stop it widening a scroll area
   (`overflow-x: clip` on `.fa-slider-track`) can go: the slider clips its own range, and
   that override also cut off the value bubble over a thumb at either end.

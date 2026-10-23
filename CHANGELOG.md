@@ -8,6 +8,13 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `SplitPane` (`glass-ux/split-pane`): two panes and a divider, side by side or one above the
+  other. Drag the divider, or focus it (a separator) and use the arrow keys, Shift for bigger
+  steps, Home and End for the limits, Enter to hide or show the pane that gives way;
+  double-click restores the default size. `startMin`, `startMax`, `endMin` and `endMax` keep
+  each pane in bounds (px, rem or %). Inside a window body the size is remembered per window
+  kind (`storageKey` elsewhere). Below `collapseBelow` the pane that gives way hides behind a
+  button in a slim rail, which shows it over the other pane.
 - `LineChart` and `AreaChart` take `gaps="bridge"`: where samples are missing, a muted dashed
   line joins the last reading before the gap to the first after it, so a hole reads as "no
   samples here" rather than a lone dot. The bridge is straight, decorative and never a value:

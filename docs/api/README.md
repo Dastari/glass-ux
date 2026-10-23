@@ -286,6 +286,7 @@
 - [Sparkline](sparkline.md) — `glass-ux/sparkline`
 - [SparklineCell](sparkline-cell.md) — `glass-ux/data-table`
 - [SparklineSkeleton](sparkline-skeleton.md) — `glass-ux/sparkline`
+- [SplitPane](split-pane.md) — `glass-ux/split-pane`
 - [StatusBadge](status-badge.md) — `glass-ux/badge`
 - [StatusDot](status-dot.md) — `glass-ux/badge`
 - [StatusGlyph](status-glyph.md) — `glass-ux/ai`

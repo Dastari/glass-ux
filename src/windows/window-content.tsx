@@ -19,6 +19,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { Skeleton } from "../ui/skeleton/index.js";
+import { StorageScopeContext } from "../lib/storage-scope.js";
 import { useOptionalWindowManager, WindowContext } from "./react.js";
 import {
   getWindowKind,
@@ -93,10 +94,13 @@ export const WindowContentHost = memo(
       );
     }
     return (
-      <Suspense fallback={<WindowBodySkeleton />}>
-        {/* oxlint-disable-next-line react/static-components -- one lazy component per kind, cached at module level */}
-        <Body id={id} params={params} />
-      </Suspense>
+      // Components inside remember state per window kind (a split pane's size).
+      <StorageScopeContext.Provider value={`window:${kind}`}>
+        <Suspense fallback={<WindowBodySkeleton />}>
+          {/* oxlint-disable-next-line react/static-components -- one lazy component per kind, cached at module level */}
+          <Body id={id} params={params} />
+        </Suspense>
+      </StorageScopeContext.Provider>
     );
   },
   (a, b) =>

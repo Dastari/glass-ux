@@ -1,0 +1,146 @@
+import { useMemo, useState } from "react";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { SplitPane } from "glass-ux/split-pane";
+import { Tree, type TreeNode } from "glass-ux/tree";
+import { FactList } from "glass-ux/fact-list";
+
+// A fictional settings store: folders with a few values each.
+const FOLDERS: TreeNode[] = [
+  {
+    id: "studio",
+    label: "Studio",
+    children: [
+      { id: "studio/fonts", label: "Fonts", hasChildren: true, children: [] },
+      { id: "studio/colours", label: "Colours", hasChildren: true, children: [] },
+    ],
+  },
+  {
+    id: "workspace",
+    label: "Workspace",
+    children: [{ id: "workspace/layout", label: "Layout", hasChildren: true, children: [] }],
+  },
+];
+const VALUES: Record<string, Array<[string, string]>> = {
+  studio: [
+    ["Display name", "Northstar Studio"],
+    ["Time zone", "Australia/Sydney"],
+  ],
+  "studio/fonts": [
+    ["Interface", "Inter"],
+    ["Code", "JetBrains Mono"],
+  ],
+  "studio/colours": [
+    ["Accent", "Ocean"],
+    ["Canvas", "Silk"],
+  ],
+  workspace: [
+    ["Theme", "System"],
+    ["Density", "Comfortable"],
+  ],
+  "workspace/layout": [
+    ["Drawer", "Open"],
+    ["Inspector", "Docked"],
+  ],
+};
+// Pane limits are SplitPane props, in rem so they follow UI scale.
+const EXPLORER_LIMITS = { defaultSize: "16rem", startMin: "10rem", endMin: "14rem" } as const; // tokens:allow SplitPane prop values
+
+const STACKED_LIMITS = { startMin: "6rem", endMin: "6rem", collapseBelow: "12rem" } as const; // tokens:allow SplitPane prop values
+
+function Values({ folder }: { folder: string }) {
+  return (
+    <div className="p-4">
+      <FactList facts={(VALUES[folder] ?? []).map(([label, value]) => ({ label, value }))} />
+    </div>
+  );
+}
+
+function Explorer({
+  storageKey = null,
+  height = "h-80",
+}: {
+  storageKey?: string | null;
+  height?: string;
+}) {
+  const [folder, setFolder] = useState("studio");
+  const expanded = useMemo(() => FOLDERS.map((node) => node.id), []);
+  return (
+    <div className={`${height} w-full rounded-tile bg-fill-muted`}>
+      <SplitPane
+        startLabel="Folders"
+        endLabel="Values"
+        {...EXPLORER_LIMITS}
+        storageKey={storageKey}
+        start={
+          <Tree
+            nodes={FOLDERS}
+            aria-label="Folders"
+            selectableGroups
+            defaultExpanded={expanded}
+            selectedId={folder}
+            onSelectedIdChange={(id) => id && setFolder(id)}
+          />
+        }
+        end={<Values folder={folder} />}
+      />
+    </div>
+  );
+}
+
+export default function SplitPaneSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Explorer"
+        description="A tree beside its contents. Drag the divider, or focus it and use ← →, Shift for bigger steps, Home and End for the limits and Enter to hide the folders; double-click restores the default. The size is remembered (storageKey here; per window kind inside a window)."
+        wide
+      >
+        <div className="w-full" data-testid="split-explorer">
+          <Explorer storageKey="glass-ux.gallery.split-pane" />
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="Details below a list"
+        description='orientation="vertical": the list above, the selected item&apos;s details below; ↑ ↓ move the divider.'
+        wide
+      >
+        <div className="h-90 w-full rounded-tile bg-fill-muted" data-testid="split-vertical">
+          <SplitPane
+            orientation="vertical"
+            startLabel="Events"
+            endLabel="Event details"
+            defaultSize="55%"
+            {...STACKED_LIMITS}
+            storageKey={null}
+            start={
+              <div className="p-4">
+                <FactList
+                  facts={[
+                    { label: "09:12", value: "Service started" },
+                    { label: "09:40", value: "Update installed" },
+                    { label: "10:05", value: "Disk check finished" },
+                  ]}
+                />
+              </div>
+            }
+            end={
+              <p className="p-4 type-body text-fg-muted">
+                Service started · GlassUxAgent · 09:12 · Information
+              </p>
+            }
+          />
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="In a narrow box"
+        description="Below collapseBelow (40rem by default) the folders hide behind a button in a slim rail; it shows them over the values. Esc or the button hides them again."
+      >
+        <div className="w-96 max-w-full" data-testid="split-narrow">
+          <Explorer />
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

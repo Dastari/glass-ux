@@ -393,7 +393,7 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
-        specimenKey="windows:default:4"
+        specimenKey="windows:default:5"
       >
         <MiniWorkspace />
       </Specimen>

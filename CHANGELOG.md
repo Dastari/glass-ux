@@ -31,6 +31,13 @@ has upgrade steps in the [migration guide](docs/migration.md).
   loaded or paged branches show no count. `flattenTree` takes the load state and marks
   `branch` and `status` on its rows.
 
+- `Window.Action` (`WindowAction`) gives a window's app bar action a priority. When the bar runs
+  out of room, the title and scope chip give way first (the title down to `--_title-min`),
+  then secondary actions fold, last first, into a trailing More menu: each as an item from its
+  `label`, `icon` and `onSelect`, or as its own `menu` content (a submenu, radio items).
+  Primary actions, plain children of `Window.Actions` and the window controls never fold or
+  leave the bar. It works in `Window.Actions` and in `WindowFrame.AppBar`'s `actions`.
+
 ### Fixed
 
 - A range `Slider` no longer widens what scrolls around it. Its range is drawn as a

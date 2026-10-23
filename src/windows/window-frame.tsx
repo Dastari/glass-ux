@@ -26,6 +26,7 @@ import { useScrollEdges } from "../lib/use-scroll-edges.js";
 import { StatusDot } from "../ui/badge/index.js";
 import { TruncatedText } from "../ui/truncated-text/index.js";
 import { Button } from "../ui/button/index.js";
+import { ActionsOverflow } from "./window-actions.js";
 import {
   WINDOW_TONE_STATUS,
   type WindowLayout,
@@ -83,7 +84,7 @@ export interface WindowAppBarProps extends Omit<
   subtitle?: ReactNode;
   /** The window's organisation when it is not the current one (WindowScopeChip, R14.4). */
   scope?: ReactNode;
-  /** Window-specific actions, before the controls. Ghost sm buttons. */
+  /** Window-specific actions, before the controls. Ghost sm buttons; `Window.Action` gives one a priority so it can fold into More. */
   actions?: ReactNode;
   /** Window controls (WindowControls). */
   controls?: ReactNode;
@@ -128,7 +129,7 @@ function AppBar({
         className="fa-window-actions"
         data-window-no-drag=""
       >
-        {actions}
+        {actions ? <ActionsOverflow>{actions}</ActionsOverflow> : null}
       </div>
       {controls}
     </header>

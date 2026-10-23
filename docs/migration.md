@@ -15,6 +15,10 @@ No code changes are required.
   fetch them in `onLoadChildren`, and page long branches with `hasMore` and `onLoadMore`. A
   wrapper that turned group clicks into selections, or kept placeholder children to force a
   chevron, can go.
+- Window actions are unchanged unless you wrap them. To stop a narrow window's actions pushing
+  its controls out of the frame, wrap each action in `Window.Action` with a `label` (and an
+  `icon` and `onSelect`, or `menu` content for a menu or a Segmented choice). Actions are
+  `secondary` by default and fold into More; mark the one that must stay `priority="primary"`.
 - A stylesheet that clipped a range `Slider`'s track to stop it widening a scroll area
   (`overflow-x: clip` on `.fa-slider-track`) can go: the slider clips its own range, and
   that override also cut off the value bubble over a thumb at either end.

@@ -36,7 +36,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| actions | `ReactNode` | See type | no | — | Window-specific actions, before the controls. Ghost sm buttons. |
+| actions | `ReactNode` | See type | no | — | Window-specific actions, before the controls. Ghost sm buttons; `Window.Action` gives one a priority so it can fold into More. |
 | actionsRef | `Ref<HTMLDivElement> \| undefined` | See type | no | — | Receives the actions container, for content that portals its own actions in. |
 | controls | `ReactNode` | See type | no | — | Window controls (WindowControls). |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |

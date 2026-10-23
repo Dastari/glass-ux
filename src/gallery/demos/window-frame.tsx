@@ -6,8 +6,10 @@ import {
   IconEndpoint,
   IconFullscreenExit,
   IconKeyboard,
+  IconCopy,
   IconRefresh,
   IconRemoteControl,
+  IconTrash,
   IconTaskManager,
   IconTerminal,
 } from "../../icons/generated/icons.js";
@@ -16,9 +18,11 @@ import { Button } from "../../ui/button/index.js";
 import { Menu } from "../../ui/menu/index.js";
 import { Toaster, toast } from "../../ui/toast/index.js";
 import { Panel, PanelBody } from "../../ui/surface/index.js";
+import { Segmented } from "../../ui/segmented/index.js";
 import {
   Dock,
   Window,
+  WindowAction,
   WindowFrame,
   WindowManagerProvider,
   Workspace,
@@ -280,6 +284,145 @@ function StaticFrame({
   );
 }
 
+/* ── Actions that give way ───────────────────────────────────────────────── */
+const SEND_KEYS = ["Ctrl+C", "Ctrl+Break", "Tab"];
+
+/** A terminal's app bar actions: four that may fold into More, and one that always stays. */
+function TerminalActions() {
+  const [identity, setIdentity] = useState<"user" | "system">("user");
+  const send = (keys: string) => toast.success(`Sent ${keys} to NST-C106`);
+  return (
+    <>
+      <WindowAction
+        label="Run as"
+        menu={
+          <Menu.Group>
+            <Menu.GroupLabel>Run as</Menu.GroupLabel>
+            <Menu.RadioGroup
+              value={identity}
+              onValueChange={(value) => setIdentity(value as "user" | "system")}
+            >
+              <Menu.RadioItem value="user">Signed-in user</Menu.RadioItem>
+              <Menu.RadioItem value="system">System</Menu.RadioItem>
+            </Menu.RadioGroup>
+          </Menu.Group>
+        }
+      >
+        <Segmented
+          size="sm"
+          aria-label="Run as"
+          value={identity}
+          onValueChange={setIdentity}
+          options={[
+            { value: "user", label: "Signed-in user" },
+            { value: "system", label: "System" },
+          ]}
+        />
+      </WindowAction>
+      <WindowAction
+        label="Send keys"
+        menu={
+          <Menu.Submenu icon={<IconKeyboard />} label="Send keys">
+            {SEND_KEYS.map((keys) => (
+              <Menu.Item key={keys} onClick={() => send(keys)}>
+                {keys}
+              </Menu.Item>
+            ))}
+          </Menu.Submenu>
+        }
+      >
+        <Menu.Root>
+          <Menu.Trigger
+            render={
+              <Button variant="ghost" size="sm" icon={<IconKeyboard />} aria-label="Send keys" />
+            }
+          />
+          <Menu.Popup align="end">
+            {SEND_KEYS.map((keys) => (
+              <Menu.Item key={keys} onClick={() => send(keys)}>
+                {keys}
+              </Menu.Item>
+            ))}
+          </Menu.Popup>
+        </Menu.Root>
+      </WindowAction>
+      <WindowAction
+        label="Copy output"
+        icon={<IconCopy />}
+        onSelect={() => toast.success("Output copied")}
+      >
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<IconCopy />}
+          aria-label="Copy output"
+          onClick={() => toast.success("Output copied")}
+        />
+      </WindowAction>
+      <WindowAction label="Clear" icon={<IconTrash />} onSelect={() => toast.success("Cleared")}>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<IconTrash />}
+          aria-label="Clear"
+          onClick={() => toast.success("Cleared")}
+        />
+      </WindowAction>
+      <WindowAction
+        label="Restart"
+        icon={<IconRefresh />}
+        priority="primary"
+        onSelect={() => toast.success("Restarted")}
+      >
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<IconRefresh />}
+          aria-label="Restart session"
+          onClick={() => toast.success("Restarted")}
+        />
+      </WindowAction>
+    </>
+  );
+}
+
+/** One terminal frame at a fixed width. */
+function TerminalFrame({ width }: { width: "wide" | "medium" | "narrow" }) {
+  const noop = () => {};
+  return (
+    <div
+      className="gallery-wm-box"
+      data-size="sm"
+      data-width={width}
+      data-testid={`window-actions-${width}`}
+    >
+      <WindowFrame.Root focused aria-label="PowerShell">
+        <WindowFrame.AppBar
+          icon={<IconTerminal />}
+          title="PowerShell"
+          subtitle="NST-C106"
+          actions={<TerminalActions />}
+          controls={
+            <WindowFrame.Controls
+              title="PowerShell"
+              onPopOut={noop}
+              onToggleFullscreen={noop}
+              onMinimise={noop}
+              onToggleMaximise={noop}
+              onClose={noop}
+            />
+          }
+        />
+        <WindowFrame.Body variant="fill">
+          <pre className="gallery-wm-terminal" data-mode="dark" aria-label="Terminal on NST-C106">
+            {"PS C:\\> Get-Service GlassUxAgent"}
+          </pre>
+        </WindowFrame.Body>
+      </WindowFrame.Root>
+    </div>
+  );
+}
+
 const ANATOMY: Array<[string, string]> = [
   ["Icon", "The kind's icon in a tile. Dims when another window has focus."],
   ["Title and data subtitle", "What the window is, and the item it is about. Never a description."],
@@ -421,10 +564,22 @@ export default function WindowsSection() {
       </Specimen>
 
       <Specimen
+        title="Actions that give way"
+        description="Wrap an action in Window.Action to give it a priority. When the app bar runs out of room the title and scope chip give way first, then secondary actions fold into a trailing More menu, last first; a primary action and the window controls always stay."
+        wide
+        layout="stack"
+        specimenKey="windows:default:3"
+      >
+        <TerminalFrame width="wide" />
+        <TerminalFrame width="medium" />
+        <TerminalFrame width="narrow" />
+      </Specimen>
+
+      <Specimen
         title="Status bar"
         description="Background state lives here (R14.6): never a banner in the body. The toned item never truncates; metadata gives way first."
         layout="stack"
-        specimenKey="windows:default:3"
+        specimenKey="windows:default:4"
       >
         <Example label="Live">
           <StaticFrame size="sm" status="success" statusLabel="Connected" />
@@ -453,14 +608,14 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
-        specimenKey="windows:default:4"
+        specimenKey="windows:default:5"
       >
         <MiniWorkspace />
       </Specimen>
 
       <ContainerLab
         description="The frame in a table row, a header, a grid tile, a pane and a tall narrow column. Short frames keep the title bar; narrow ones shed the icon and subtitle."
-        specimenKey="windows:default:6"
+        specimenKey="windows:default:7"
       >
         {() => (
           <div className="gallery-wm-fill">

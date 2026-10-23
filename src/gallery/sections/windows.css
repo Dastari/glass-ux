@@ -13,6 +13,19 @@
   .gallery-wm-box[data-size="lg"] {
     --_h: 22rem;
   }
+  /* "Actions that give way": the same app bar wide, at 520px and narrow. */
+  .gallery-wm-box[data-width] {
+    max-width: 100%;
+  }
+  .gallery-wm-box[data-width="wide"] {
+    width: 46rem;
+  }
+  .gallery-wm-box[data-width="medium"] {
+    width: 32.5rem;
+  }
+  .gallery-wm-box[data-width="narrow"] {
+    width: 24rem;
+  }
   .gallery-wm-box > .fa-window,
   .gallery-wm-fill > .fa-window {
     width: 100%;

@@ -27,6 +27,7 @@ import {
 } from "./registry.js";
 import type { WindowIndicator, WindowParams } from "./types.js";
 import { WindowFrame } from "./window-frame.js";
+import { ActionsOverflow, WindowAction } from "./window-actions.js";
 
 type LazyBody = LazyExoticComponent<ComponentType<WindowContentProps>>;
 const bodies = new Map<string, LazyBody>();
@@ -119,11 +120,15 @@ export function WindowBodySkeleton() {
   );
 }
 
-/** Put window-specific actions into the frame's app bar (ghost sm buttons). */
+/**
+ * Put window-specific actions into the frame's app bar (ghost sm buttons). Wrap an action in
+ * `Window.Action` to give it a priority: when the bar runs out of room, secondary actions fold
+ * into a trailing More menu; primary actions, plain children and the window controls stay.
+ */
 function Actions({ children }: { children: ReactNode }) {
   const context = useContext(WindowContext);
   if (!context?.actionsSlot) return null;
-  return createPortal(children, context.actionsSlot);
+  return createPortal(<ActionsOverflow>{children}</ActionsOverflow>, context.actionsSlot);
 }
 
 export interface WindowStatusProps {
@@ -161,6 +166,7 @@ function Status({ indicator, children }: WindowStatusProps) {
 /** Slots for window bodies. */
 export const Window = {
   Actions,
+  Action: WindowAction,
   Status,
   Body: WindowFrame.Body,
   StatusItem: WindowFrame.StatusItem,

@@ -27,6 +27,8 @@
 
   /* ── App bar ───────────────────────────────────────────────────────────── */
   .fa-window-appbar {
+    /* The title's floor before secondary actions fold into More (window-actions.tsx). */
+    --_title-min: 6rem;
     display: flex;
     flex: none;
     align-items: center;
@@ -153,6 +155,16 @@
     gap: var(--space-1);
   }
   .fa-window-actions:empty {
+    display: none;
+  }
+  /* A Window.Action's place in the bar: its button, as if it stood alone. */
+  .fa-window-action,
+  .fa-window-more {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+  }
+  .fa-window-action[hidden] {
     display: none;
   }
   .fa-window-controls {

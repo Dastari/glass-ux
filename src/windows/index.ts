@@ -66,6 +66,7 @@ export {
   type WindowStatusTone,
 } from "./types.js"
 export { Window, WindowBodySkeleton, WindowContentHost, type WindowStatusProps } from "./window-content.js"
+export { WindowAction, type WindowActionPriority, type WindowActionProps } from "./window-actions.js"
 export {
   WindowFrame,
   type WindowAppBarProps,

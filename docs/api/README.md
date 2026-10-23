@@ -343,6 +343,7 @@
 - [VerticalTabNav](vertical-tab-nav.md) — `glass-ux/vertical-tabs`
 - [VerticalTabs](vertical-tabs.md) — `glass-ux/vertical-tabs`
 - [Window](window.md) — `glass-ux/windows`
+- [WindowAction](window-action.md) — `glass-ux/windows`
 - [WindowBodySkeleton](window-body-skeleton.md) — `glass-ux/windows`
 - [WindowContentHost](window-content-host.md) — `glass-ux/windows`
 - [WindowFrame](window-frame.md) — `glass-ux/windows`

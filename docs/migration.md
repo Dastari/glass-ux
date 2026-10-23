@@ -14,6 +14,8 @@ No code changes are required.
 - An application mapping file names or MIME types to icons can use `FileIcon` from
   `glass-ux/file-icon` (or `fileKind` for the kind alone), and colour kinds from its own CSS
   with `[data-file-kind]`.
+- An `<img>` in an `AspectRatio` with its own loading and error handling can move to `Image`
+  from `glass-ux/image`; give it the same `ratio`, and its `alt`.
 
 ## 0.9.9 → 0.9.10
 

@@ -150,6 +150,7 @@ export const iconRegistry = [
   { name: "hp", Icon: icons.IconHp },
   { name: "hpe", Icon: icons.IconHpe },
   { name: "huawei", Icon: icons.IconHuawei },
+  { name: "image-off", Icon: icons.IconImageOff },
   { name: "image", Icon: icons.IconImage },
   { name: "inbox", Icon: icons.IconInbox },
   { name: "info", Icon: icons.IconInfo },

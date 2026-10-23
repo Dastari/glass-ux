@@ -14,8 +14,10 @@ are included. Fictional identities are assigned by the gallery and do not identi
 Fonts are redistributed from the Fontsource packages listed in package.json. Their original
 licence texts are retained under `src/assets/fonts/licences/` and in the release package.
 
-The ambient canvas is repository-authored SVG. The geographic outlines copied into the docs
-site come from Natural Earth and retain the attribution provided by each map configuration.
+The ambient canvas is repository-authored SVG, and so are the sample landscapes that the
+Image specimens show (`src/gallery/fixtures/scenes.ts`). The geographic outlines copied into
+the docs site come from Natural Earth and retain the attribution provided by each map
+configuration.
 
 Social and company icons are original geometric adaptations authored in
 `scripts/icon-authoring/defs/brands.mjs`, using the same monochrome icon frame as the UI

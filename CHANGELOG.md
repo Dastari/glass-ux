@@ -6,7 +6,8 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ## Unreleased
 
-File type icons and a `FileIcon` that picks one. No code changes are required; the [migration guide](docs/migration.md) lists
+File type icons and a `FileIcon` that picks one, and an `Image` frame with loading, empty and
+failed states. No code changes are required; the [migration guide](docs/migration.md) lists
 what to review.
 
 ### Added
@@ -23,6 +24,17 @@ what to review.
   the extension, then the MIME family; generic types such as `application/octet-stream` and
   `text/plain` defer to the extension. The kind is on `data-file-kind` for application CSS.
   `FILE_KIND_ICONS` maps each kind to its icon component.
+- `Image` (`glass-ux/image`): a picture in a frame of fixed ratio (`square`, `landscape`,
+  `wide`, `portrait` or any ratio), so nothing moves when it loads. It has the media corner
+  radius and a hairline rim (`frame={false}` drops it). A shimmer, or the picture's
+  dominant `color`, fills the frame while it loads, and the picture fades in. A missing
+  `src` or a failed load shows a fallback in the icon language with the alt text when the
+  frame is at least 12rem wide; `fallback` replaces it and `onStateChange` reports it.
+  `fit`, `position` and `maxHeight` place the picture. Inside a link or button,
+  `hover="zoom"` scales the picture within its frame and `hover="sheen"` sweeps a glass
+  highlight across it; Still and reduced motion turn both off. No shadow or reflection:
+  an image sits on its surface (R4.5). `alt` is required (`""` for decoration).
+- `IconImageOff`: the image glyph with the off slash, for a picture that could not load.
 
 ### Changed
 

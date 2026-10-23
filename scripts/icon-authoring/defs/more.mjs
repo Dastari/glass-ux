@@ -1,4 +1,5 @@
-import { any, arc, circle, circlePrim, cut, d, disk, dome, dotEl, intersect, line, nearPrims, path, polar, poly, rect, tinted,  } from "../lib.mjs"
+import { any, arc, circle, circlePrim, cut, d, disk, dome, dotEl, intersect, line, nearPrims, path, polar, poly, rect, rrect, tinted,  } from "../lib.mjs"
+import { slashed, slashPath } from "./actions.mjs"
 
 export const icons = {}
 const def = (name, fn) => (icons[name] = fn)
@@ -118,4 +119,11 @@ def("image", () => [
   path("M3.5 17.5L9.5 11.5L15.5 17.5"),
   path("M13.5 15.5L16 13L20.5 17.5"),
 ])
+// The image that could not be shown: `image` with the off slash, no tint. The slash runs
+// through the sun and both peaks of `image`, so the mountain moves below it and the sun
+// above it; both stay whole.
+def("image-off", () => {
+  const prims = slashed([...rrect(3, 4, 18, 16, 2.5), line([3.5, 17.5], [7.5, 13.5]), line([7.5, 13.5], [11.5, 17.5])])
+  return [path(d(prims)), circle(15.5, 8.5, 1.75), slashPath()]
+})
 def("code", () => [path("M8 7.5L3.5 12L8 16.5"), path("M16 7.5L20.5 12L16 16.5"), path("M13.5 5L10.5 19")])

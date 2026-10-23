@@ -106,7 +106,9 @@ Some cases override the table:
 - **Off:** a 45° slash from 3.5,3.5 to 20.5,20.5. Every stroke it crosses is cut back
   3 units on each side. A narrow glyph is cut back 2.5 instead, so enough of it survives to
   be recognised (`unpin`). The off icon drops the tint. Examples are `eye-off`, `mic-off`
-  and `cloud-off`.
+  and `cloud-off`. When the slash would cut away the parts that carry the
+  meaning, move them clear of it instead: `image-off` keeps the frame but puts its mountain
+  below the slash and its sun above it.
 - **Add:** a plus with 2.75-unit arms beside the base glyph (`user-plus`) or inside a
   container (`new-chat`).
 - **Overlay:** a second glyph overlapping the base, with the base knocked out 3 units

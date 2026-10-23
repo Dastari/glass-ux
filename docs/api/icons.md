@@ -157,6 +157,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconHp** — Hp icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconHpe** — Hpe icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconHuawei** — Huawei icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconImageOff** — Image Off icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconImage** — Image icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconInbox** — Inbox icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconInfo** — Info icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.

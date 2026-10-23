@@ -1,0 +1,94 @@
+/*
+ * Image — a picture in an AspectRatio frame. The rim is a ::before above the picture (an
+ * inset shadow would sit beneath it); the sheen is a band on ::after moved with transform.
+ * No drop shadow: an image sits on its surface (R4.5). Every transition is a duration token,
+ * so Still and reduced motion make the fade, zoom and sheen instant.
+ */
+@layer components {
+  .fa-image {
+    container-type: inline-size;
+    isolation: isolate;
+    background-color: var(--_image-color, var(--fill-muted));
+  }
+  .fa-image-picture {
+    opacity: 0;
+    transition:
+      opacity var(--duration-slow) var(--ease-standard),
+      transform var(--duration-slow) var(--ease-standard);
+  }
+  .fa-image[data-state="loaded"] > .fa-image-picture {
+    opacity: 1;
+  }
+
+  /* The rim: a hairline in the theme's line colour, above the picture. */
+  .fa-image[data-frame]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border: var(--border-width) solid var(--line);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  /* Missing or failed: the image glyph on a muted fill, with the alt text when there is room. */
+  .fa-image-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    color: var(--fg-subtle);
+    background-image: linear-gradient(160deg, var(--fill-hover), transparent 60%);
+    text-align: center;
+  }
+  .fa-image-fallback-icon {
+    width: clamp(var(--icon-sm), 18cqi, var(--icon-2xl));
+    height: clamp(var(--icon-sm), 18cqi, var(--icon-2xl));
+    --_stroke: calc(var(--icon-stroke) * 0.92);
+  }
+  .fa-image-fallback-text {
+    display: none;
+    max-width: 100%;
+    overflow: hidden;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  @container (min-width: 12rem) {
+    .fa-image-fallback-text {
+      display: block;
+    }
+  }
+
+  /* Hover feedback only inside something interactive. */
+  :is(a, button, [role="button"], [role="link"]):is(:hover, :focus-visible) .fa-image[data-hover="zoom"] > .fa-image-picture {
+    transform: scale(1.05);
+  }
+  /* Still and reduced motion: no zoom (a snap in scale is motion too). The sheen needs no
+     rule: with no duration its band jumps straight past the frame and never shows. */
+  :root[data-motion="reduced"] .fa-image[data-hover="zoom"] > .fa-image-picture {
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) .fa-image[data-hover="zoom"] > .fa-image-picture {
+      transform: none;
+    }
+  }
+  .fa-image[data-hover="sheen"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-image: linear-gradient(105deg, transparent 30%, var(--specular) 50%, transparent 70%);
+    opacity: 0.35;
+    transform: translateX(-110%);
+    pointer-events: none;
+  }
+  :is(a, button, [role="button"], [role="link"]):is(:hover, :focus-visible) .fa-image[data-hover="sheen"]::after {
+    transform: translateX(110%);
+    transition: transform var(--duration-slower) var(--ease-standard);
+  }
+}

@@ -55,7 +55,7 @@ const GROUPS: Array<[title: string, names: string[]]> = [
   ["Status", ["success", "warning", "alert", "error", "info", "help", "pending", "offline"]],
   ["People", ["user", "users", "user-plus"]],
   ["Sites and relationships", ["office", "warehouse", "store", "school", "hospital", "factory", "partner", "supplier"]],
-  ["Data and files", ["chart-line", "chart-pie", "trend-up", "trend-down", "folder", "folder-open", "image", "code", "grid", "list", "map-pin"]],
+  ["Data and files", ["chart-line", "chart-pie", "trend-up", "trend-down", "folder", "folder-open", "image", "image-off", "code", "grid", "list", "map-pin"]],
   ["File types", ["file", "file-text", "file-document", "file-pdf", "file-spreadsheet", "file-presentation", "file-ebook", "file-image", "file-vector", "file-audio", "file-video", "file-font", "file-model", "file-code", "file-script", "file-data", "file-database", "file-archive", "file-executable", "file-disk-image", "file-email", "file-calendar", "file-contact", "file-key", "file-lock", "file-link"]],
   ["Appearance", ["sun", "moon", "system"]],
   ["Social and company logos", ["adobe", "amazon", "anthropic", "apple", "bitbucket", "bluesky", "cloudflare", "discord", "docker", "dropbox", "facebook", "figma", "github", "gitlab", "google", "instagram", "linkedin", "mastodon", "meta", "microsoft", "notion", "npm", "openai", "pinterest", "reddit", "slack", "snapchat", "spotify", "stripe", "telegram", "threads", "tiktok", "twitch", "vercel", "whatsapp", "x", "youtube", "zoom"]],

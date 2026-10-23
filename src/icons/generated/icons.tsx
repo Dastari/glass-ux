@@ -1617,6 +1617,17 @@ export const IconHuawei = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconImageOff = /* @__PURE__ */ createIcon(
+  "image-off",
+  () => (
+    <>
+      <path d="M8.24 4H18.5A2.5 2.5 0 0 1 21 6.5V16.76M15.76 20H5.5A2.5 2.5 0 0 1 3 17.5V7.24M3.5 17.5L7.5 13.5L11.5 17.5" />
+      <circle cx="15.5" cy="8.5" r="1.75" />
+      <path d="M3.5 3.5L20.5 20.5" />
+    </>
+  )
+)
+
 export const IconImage = /* @__PURE__ */ createIcon(
   "image",
   () => (

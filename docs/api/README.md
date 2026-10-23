@@ -155,6 +155,7 @@
 - [HostnameField](hostname-field.md) — `glass-ux/hostname-field`
 - [HostnameInput](hostname-input.md) — `glass-ux/hostname-field`
 - [IdentityCell](identity-cell.md) — `glass-ux/data-table`
+- [Image](image.md) — `glass-ux/image`
 - [ImageLightbox](image-lightbox.md) — `glass-ux/ai`
 - [ImageTile](image-tile.md) — `glass-ux/ai`
 - [InheritedSetting](inherited-setting.md) — `glass-ux/entity-settings`

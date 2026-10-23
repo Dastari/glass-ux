@@ -74,6 +74,7 @@ export const iconRegistry = [
   { name: "database", Icon: icons.IconDatabase },
   { name: "dell", Icon: icons.IconDell },
   { name: "desk-phone", Icon: icons.IconDeskPhone },
+  { name: "desktop", Icon: icons.IconDesktop },
   { name: "dice", Icon: icons.IconDice },
   { name: "discord", Icon: icons.IconDiscord },
   { name: "disk", Icon: icons.IconDisk },

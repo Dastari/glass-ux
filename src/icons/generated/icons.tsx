@@ -713,6 +713,20 @@ export const IconDeskPhone = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconDesktop = /* @__PURE__ */ createIcon(
+  "desktop",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="2.75" y="6.5" width="9.5" height="9" rx="2" />
+      <rect x="2.75" y="6.5" width="9.5" height="9" rx="2" />
+      <path d="M7.5 15.5V19.5" />
+      <path d="M5 19.5H10" />
+      <rect x="15.25" y="4.5" width="6" height="15" rx="1.5" />
+      <circle className="fa-icon-dot" cx="18.25" cy="16.5" r="1" />
+    </>
+  )
+)
+
 export const IconDice = /* @__PURE__ */ createIcon(
   "dice",
   () => (

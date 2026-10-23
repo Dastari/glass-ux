@@ -35,6 +35,8 @@ what to review.
   highlight across it; Still and reduced motion turn both off. No shadow or reflection:
   an image sits on its surface (R4.5). `alt` is required (`""` for decoration).
 - `IconImageOff`: the image glyph with the off slash, for a picture that could not load.
+- `IconDesktop`: a desktop computer (a monitor beside a tower case), for the hardware class
+  beside `IconLaptop` and `IconServer`. `IconEndpoint` stays the managed device.
 
 ### Changed
 

@@ -82,6 +82,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconDatabase** — Database icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconDell** — Dell icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconDeskPhone** — Desk Phone icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconDesktop** — Desktop icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconDice** — Dice icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconDiscord** — Discord icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconDisk** — Disk icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.

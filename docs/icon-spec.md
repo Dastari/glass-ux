@@ -21,7 +21,7 @@ Six traits make the set read as one hand. A new icon has all six.
 4. **Dots for points.** Status lights, keyholes, list bullets, ellipses and the points of
    `!`, `i` and `?` are solid dots, not tiny circles or short strokes.
 5. **Shared parts.** A concept is drawn once and reused, so related icons look related:
-   - **monitor:** `endpoint`, `remote-control`, `view-only`, `system`
+   - **monitor:** `endpoint`, `remote-control`, `view-only`, `system`, `desktop`
    - **shield:** `shield`, `ai`, `antivirus`
    - **page:** `file`, `file-text`, `file-transfer` and every file type (`file-pdf`, …)
    - **cloud:** `cloud`, `cloud-off`, `backup`
@@ -157,6 +157,8 @@ masking.
   - `moon` is the dark theme and `sleep` is the power state.
   - `external-link` leaves Glass UX. `pop-out` moves a window into its own browser window,
     and `pop-in` brings it back.
+  - `desktop` is a monitor beside a tower case: the computer as hardware. The monitor alone
+    stays `endpoint`, the managed device.
   - `copy` uses portrait pages. `restore` and `windows` use window frames.
   - Sites are buildings told apart by silhouette: `office` a tower of windows, `warehouse`
     an arched shed, `store` an awning, `school` a gabled hall with a clock, `hospital` a

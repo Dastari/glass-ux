@@ -45,6 +45,16 @@ def("displays", () => [
   path("M11.5 20H17.5"),
 ])
 def("laptop", () => [rect(4.5, 5, 15, 10.5, 2, "t"), rect(4.5, 5, 15, 10.5, 2), path("M2.5 19H21.5")])
+// A desktop computer: a monitor with the endpoint's stand beside a tower case with its power
+// light. The pair is the silhouette; the monitor alone stays `endpoint`.
+def("desktop", () => [
+  rect(2.75, 6.5, 9.5, 9, 2, "t"),
+  rect(2.75, 6.5, 9.5, 9, 2),
+  path("M7.5 15.5V19.5"),
+  path("M5 19.5H10"),
+  rect(15.25, 4.5, 6, 15, 1.5),
+  dotEl(18.25, 16.5, 1),
+])
 def("server", () => [
   path("M5.5 3.5H18.5A2 2 0 0 1 20.5 5.5V9A2 2 0 0 1 18.5 11H5.5A2 2 0 0 1 3.5 9V5.5A2 2 0 0 1 5.5 3.5ZM5.5 13H18.5A2 2 0 0 1 20.5 15V18.5A2 2 0 0 1 18.5 20.5H5.5A2 2 0 0 1 3.5 18.5V15A2 2 0 0 1 5.5 13Z", "t"),
   rect(3.5, 3.5, 17, 7.5, 2),

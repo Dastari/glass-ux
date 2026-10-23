@@ -148,6 +148,30 @@
     margin-inline-start: auto;
   }
 
+  /* Rows that stand in for a branch's children: loading, an error with Retry, "Load more". */
+  .fa-tree-row[data-status] .fa-tree-label {
+    color: var(--fg-muted);
+  }
+  .fa-tree-row[data-status="more"] :is(.fa-tree-label, .fa-tree-icon) {
+    color: var(--accent-text);
+  }
+  .fa-tree-row:is([data-status="error"], [data-status="more-error"]) .fa-tree-icon {
+    color: var(--danger-text);
+  }
+  .fa-tree-row[data-status] .fa-tree-icon {
+    --_icon: var(--icon-sm);
+  }
+  .fa-tree-retry {
+    margin-inline-start: auto;
+    color: var(--accent-text);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-weight: var(--weight-medium);
+  }
+  .fa-tree-row:is([data-status="loading"], [data-status="more-loading"]) {
+    cursor: default;
+  }
+
   .fa-tree-probes {
     position: absolute;
     inset-block-start: 0;

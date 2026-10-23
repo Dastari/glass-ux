@@ -102,3 +102,113 @@ describe("large tree virtualization", () => {
     ).toContain("360px");
   });
 });
+
+describe("selectable branches", () => {
+  const nodes = [
+    { id: "hkcu", label: "HKEY_CURRENT_USER", children: [{ id: "env", label: "Environment" }, { id: "soft", label: "Software", children: [{ id: "app", label: "App" }] }] },
+  ];
+  const row = (view: ReturnType<typeof render>, id: string) =>
+    view.container.querySelector<HTMLElement>(`[data-row-id="${id}"]`)!;
+
+  it("a click or Enter selects a branch; the chevron, arrows and a double-click open and close it", () => {
+    const onSelectedIdChange = vi.fn();
+    const onExpandedChange = vi.fn();
+    const view = render(<Tree nodes={nodes} aria-label="Keys" selectableGroups onSelectedIdChange={onSelectedIdChange} onExpandedChange={onExpandedChange} />);
+    const tree = view.getByRole("tree");
+    fireEvent.click(row(view, "hkcu"));
+    expect(onSelectedIdChange).toHaveBeenLastCalledWith("hkcu", expect.objectContaining({ item: nodes[0] }));
+    expect(row(view, "hkcu")).toHaveAttribute("aria-selected", "true");
+    expect(row(view, "hkcu")).toHaveAttribute("aria-expanded", "false");
+    expect(onExpandedChange).not.toHaveBeenCalled();
+    // The chevron only toggles.
+    fireEvent.click(row(view, "hkcu").querySelector(".fa-tree-chevron")!);
+    expect(row(view, "hkcu")).toHaveAttribute("aria-expanded", "true");
+    expect(onSelectedIdChange).toHaveBeenCalledTimes(1);
+    // → and ← only open and close; Enter selects.
+    fireEvent.focus(row(view, "soft"));
+    fireEvent.keyDown(tree, { key: "ArrowRight" });
+    expect(row(view, "app")).not.toBeNull();
+    fireEvent.keyDown(tree, { key: "ArrowLeft" });
+    expect(row(view, "app")).toBeNull();
+    fireEvent.keyDown(tree, { key: "Enter" });
+    expect(onSelectedIdChange).toHaveBeenLastCalledWith("soft", expect.anything());
+    expect(row(view, "soft")).toHaveAttribute("aria-expanded", "false");
+    // A double-click opens it.
+    fireEvent.doubleClick(row(view, "soft"));
+    expect(row(view, "soft")).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("without selectableGroups a branch toggles as before; per node with selectable", () => {
+    const onSelectedIdChange = vi.fn();
+    const view = render(<Tree nodes={nodes} aria-label="Keys" onSelectedIdChange={onSelectedIdChange} />);
+    fireEvent.click(row(view, "hkcu"));
+    expect(row(view, "hkcu")).toHaveAttribute("aria-expanded", "true");
+    expect(row(view, "hkcu")).not.toHaveAttribute("aria-selected");
+    expect(onSelectedIdChange).not.toHaveBeenCalled();
+    const marked = [{ ...nodes[0]!, selectable: true }];
+    view.rerender(<Tree nodes={marked} aria-label="Keys" onSelectedIdChange={onSelectedIdChange} />);
+    fireEvent.click(row(view, "hkcu"));
+    expect(onSelectedIdChange).toHaveBeenCalledWith("hkcu", expect.anything());
+  });
+});
+
+describe("lazy children", () => {
+  const row = (view: ReturnType<typeof render>, id: string) =>
+    view.container.querySelector<HTMLElement>(`[data-row-id="${id}"]`);
+  const status = (view: ReturnType<typeof render>) =>
+    [...view.container.querySelectorAll<HTMLElement>("[data-status]")].map((element) => element.dataset.status);
+
+  it("loads a branch's children on first expand, with a loading row, then shows them", async () => {
+    let resolve!: () => void;
+    const onLoadChildren = vi.fn(() => new Promise<void>((done) => (resolve = done)));
+    const nodes = [{ id: "hklm", label: "HKEY_LOCAL_MACHINE", hasChildren: true }];
+    const view = render(<Tree nodes={nodes} aria-label="Keys" onLoadChildren={onLoadChildren} />);
+    expect(row(view, "hklm")!.querySelector(".fa-tree-chevron svg")).not.toBeNull();
+    fireEvent.click(row(view, "hklm")!);
+    expect(onLoadChildren).toHaveBeenCalledWith(nodes[0]);
+    expect(status(view)).toEqual(["loading"]);
+    expect(row(view, "hklm")).toHaveAttribute("aria-busy", "true");
+    view.rerender(<Tree nodes={[{ ...nodes[0]!, children: [{ id: "sys", label: "SYSTEM" }] }]} aria-label="Keys" onLoadChildren={onLoadChildren} />);
+    await act(async () => resolve());
+    expect(status(view)).toEqual([]);
+    expect(row(view, "sys")).not.toBeNull();
+    // Closing and opening again does not load again.
+    fireEvent.click(row(view, "hklm")!);
+    fireEvent.click(row(view, "hklm")!);
+    expect(onLoadChildren).toHaveBeenCalledTimes(1);
+  });
+
+  it("a failed load shows an error row whose Retry loads again", async () => {
+    const onLoadChildren = vi.fn().mockRejectedValueOnce(new Error("offline")).mockResolvedValueOnce(undefined);
+    const nodes = [{ id: "hklm", label: "HKEY_LOCAL_MACHINE", hasChildren: true }];
+    const view = render(<Tree nodes={nodes} aria-label="Keys" defaultExpanded={["hklm"]} onLoadChildren={onLoadChildren} />);
+    await act(async () => {});
+    expect(status(view)).toEqual(["error"]);
+    expect(view.getByRole("treeitem", { name: "Couldn't load · Retry" })).toBeInTheDocument();
+    await act(async () => fireEvent.click(view.container.querySelector('[data-status="error"]')!));
+    expect(onLoadChildren).toHaveBeenCalledTimes(2);
+    // It resolved without giving the branch children: it has none, and loses its chevron.
+    expect(status(view)).toEqual([]);
+    expect(row(view, "hklm")!.querySelector(".fa-tree-chevron svg")).toBeNull();
+    expect(row(view, "hklm")).not.toHaveAttribute("aria-expanded");
+    expect(row(view, "hklm")).toHaveAttribute("data-kind", "group");
+  });
+
+  it("pages children with a Load more row", async () => {
+    let finish!: () => void;
+    const onLoadMore = vi.fn(() => new Promise<void>((done) => (finish = done)));
+    const page = (count: number, more: boolean) => [{ id: "k", label: "Key", children: Array.from({ length: count }, (_, index) => ({ id: `k${index}`, label: `Sub ${index}` })), hasMore: more }];
+    const view = render(<Tree nodes={page(2, true)} aria-label="Keys" defaultExpanded={["k"]} onLoadMore={onLoadMore} />);
+    expect(status(view)).toEqual(["more"]);
+    const more = view.container.querySelector<HTMLElement>('[data-status="more"]')!;
+    expect(more).toHaveAttribute("aria-posinset", "3");
+    fireEvent.focus(more);
+    fireEvent.keyDown(view.getByRole("tree"), { key: "Enter" });
+    expect(onLoadMore).toHaveBeenCalledTimes(1);
+    expect(status(view)).toEqual(["more-loading"]);
+    view.rerender(<Tree nodes={page(4, false)} aria-label="Keys" defaultExpanded={["k"]} onLoadMore={onLoadMore} />);
+    await act(async () => finish());
+    expect(status(view)).toEqual([]);
+    expect(row(view, "k3")).not.toBeNull();
+  });
+});

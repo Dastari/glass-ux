@@ -19,6 +19,18 @@ has upgrade steps in the [migration guide](docs/migration.md).
   `--chart-bridge`, `--chart-bridge-stroke`, `--chart-bridge-dash`,
   `--chart-bridge-opacity` (opaque under higher contrast, `GrayText` in forced colours).
 
+- `Tree` branches can be selected as well as opened (`selectableGroups`, or `selectable` per
+  node): a click, Enter or Space selects the row and fires `onSelectedIdChange`; the chevron,
+  → and ←, or a double-click, open and close it. Selectable branches can be links
+  (`renderLink`).
+- `Tree` loads large hierarchies on demand. A node with `hasChildren` and no `children` shows
+  a chevron; `onLoadChildren(node)` runs on its first open, with a loading row meanwhile and
+  an error row whose Retry loads again. `hasMore` with `onLoadMore(node)` pages children in
+  behind a "Load more" row. A branch that loads no children keeps its folder and loses its
+  chevron. Branches whose children are not loaded stay closed while searching, and lazily
+  loaded or paged branches show no count. `flattenTree` takes the load state and marks
+  `branch` and `status` on its rows.
+
 ### Fixed
 
 - A range `Slider` no longer widens what scrolls around it. Its range is drawn as a

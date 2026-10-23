@@ -10,6 +10,11 @@ No code changes are required.
 - Charts keep breaking a line at missing samples. To join gaps with a dashed bridge instead,
   pass `gaps="bridge"` to `LineChart` or `AreaChart`; data that dropped nulls to avoid holes
   can keep them now.
+- A `Tree` is unchanged unless you opt in. For an explorer, pass `selectableGroups` (branches
+  select on click and open from the chevron), mark unloaded branches `hasChildren: true` and
+  fetch them in `onLoadChildren`, and page long branches with `hasMore` and `onLoadMore`. A
+  wrapper that turned group clicks into selections, or kept placeholder children to force a
+  chevron, can go.
 - A stylesheet that clipped a range `Slider`'s track to stop it widening a scroll area
   (`overflow-x: clip` on `.fa-slider-track`) can go: the slider clips its own range, and
   that override also cut off the value bubble over a thumb at either end.

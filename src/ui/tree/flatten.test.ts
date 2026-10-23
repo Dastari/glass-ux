@@ -70,3 +70,48 @@ describe("typeahead", () => {
     expect(typeahead(rows, 0, "zz")).toBe(-1)
   })
 })
+
+describe("lazy branches", () => {
+  const empty = { loading: new Set<string>(), failed: new Set<string>(), loaded: new Set<string>(), moreLoading: new Set<string>(), moreFailed: new Set<string>() }
+  const lazy: Node[] = [
+    { id: "hklm", label: "HKEY_LOCAL_MACHINE", hasChildren: true },
+    { id: "hkcu", label: "HKEY_CURRENT_USER", hasChildren: true, children: [{ id: "env", label: "Environment" }], hasMore: true },
+  ]
+  const shape = (rows: ReturnType<typeof flattenTree<Node>>) => rows.map((row) => `${row.node.id}${row.status ? `:${row.status}` : ""}`)
+
+  it("an unloaded branch has a chevron, and opened shows a loading row in place of its children", () => {
+    const closed = flattenTree(lazy, new Set(), "", "en", empty)
+    expect(closed[0]).toMatchObject({ hasChildren: true, branch: true, expanded: false })
+    expect(shape(flattenTree(lazy, new Set(["hklm"]), "", "en", empty))).toEqual(["hklm", "hklm:loading", "hkcu"])
+    const failed = { ...empty, failed: new Set(["hklm"]) }
+    expect(shape(flattenTree(lazy, new Set(["hklm"]), "", "en", failed))).toEqual(["hklm", "hklm:error", "hkcu"])
+  })
+
+  it("a branch whose load ended with no children keeps its folder and loses its chevron", () => {
+    const rows = flattenTree(lazy, new Set(["hklm"]), "", "en", { ...empty, loaded: new Set(["hklm"]) })
+    expect(shape(rows)).toEqual(["hklm", "hkcu"])
+    expect(rows[0]).toMatchObject({ hasChildren: false, branch: true, expanded: false })
+    expect(flattenTree([{ id: "k", label: "Key", hasChildren: true, children: [] }], new Set(), "", "en", empty)[0]).toMatchObject({ hasChildren: false, branch: true })
+  })
+
+  it("a branch with more children ends with a Load more row counted in its set", () => {
+    const rows = flattenTree(lazy, new Set(["hkcu"]), "", "en", empty)
+    expect(shape(rows)).toEqual(["hklm", "hkcu", "env", "hkcu:more"])
+    expect([rows[2]!.setsize, rows[3]!.posinset, rows[3]!.setsize]).toEqual([2, 2, 2])
+    expect(shape(flattenTree(lazy, new Set(["hkcu"]), "", "en", { ...empty, moreLoading: new Set(["hkcu"]) })).at(-1)).toBe("hkcu:more-loading")
+    expect(shape(flattenTree(lazy, new Set(["hkcu"]), "", "en", { ...empty, moreFailed: new Set(["hkcu"]) })).at(-1)).toBe("hkcu:more-error")
+  })
+
+  it("search does not open branches whose children are not loaded, nor show Load more", () => {
+    expect(shape(flattenTree(lazy, new Set(["hklm", "hkcu"]), "env", "en", empty))).toEqual(["hkcu", "env"])
+  })
+
+  it("typeahead skips status rows", () => {
+    const rows = flattenTree(lazy, new Set(["hklm"]), "", "en", empty)
+    expect(typeahead(rows, 0, "h")).toBe(2)
+  })
+
+  it("keeps the classic shape: an empty children list is a leaf", () => {
+    expect(flattenTree([{ id: "x", label: "X", children: [] }], new Set())[0]).toMatchObject({ hasChildren: false, branch: false })
+  })
+})

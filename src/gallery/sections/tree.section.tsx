@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { useMemo, useState, type ReactElement } from "react"
+import { useMemo, useRef, useState, type ReactElement } from "react"
 import { ContainerLab, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
 import { IconEndpoint, IconOrganisation } from "../../icons/generated/icons.js"
 import { CountBadge } from "../../ui/badge/index.js"
@@ -84,6 +84,82 @@ const LOADED: TreeNode[] = [
   { ...NODES[1]!, children: NODES[1]!.children?.slice(0, 2) ?? [] },
 ]
 
+// ── Explorer: selectable branches, loaded on demand ─────────────────────────────────────
+// A fictional settings store. Keys load when opened (600 ms), Fonts pages ten at a time,
+// Archive fails on its first load, and Empty shelf turns out to have no subkeys.
+const STORE_ROOTS: TreeNode[] = [
+  { id: "studio", label: "Studio", hasChildren: true },
+  { id: "workspace", label: "Workspace", hasChildren: true },
+  { id: "archive", label: "Archive", hasChildren: true },
+  { id: "shelf", label: "Empty shelf", hasChildren: true },
+]
+const FONT_NAMES = ["Atlas", "Birch", "Cobalt", "Dune", "Ember", "Fjord", "Garnet", "Harbor", "Iris", "Juniper", "Kestrel", "Linen", "Meadow", "Nimbus", "Orchid", "Pebble", "Quill", "Rowan", "Sable", "Tundra", "Umber", "Vellum", "Willow", "Yarrow", "Zephyr"]
+function subkeys(id: string): TreeNode[] {
+  const leaf = (key: string, label: string): TreeNode => ({ id: `${id}/${key}`, label, hasChildren: false })
+  const branch = (key: string, label: string): TreeNode => ({ id: `${id}/${key}`, label, hasChildren: true })
+  if (id === "studio") return [branch("fonts", "Fonts"), branch("colours", "Colours"), leaf("name", "Display name"), leaf("zone", "Time zone")]
+  if (id === "workspace") return [branch("layout", "Layout"), leaf("theme", "Theme"), leaf("density", "Density")]
+  if (id === "archive") return [leaf("retention", "Retention"), leaf("location", "Location")]
+  if (id === "studio/fonts") return FONT_NAMES.map((name) => leaf(name.toLowerCase(), name))
+  if (id === "studio/colours") return ["Accent", "Canvas", "Surface"].map((name) => leaf(name.toLowerCase(), name))
+  if (id === "workspace/layout") return [leaf("drawer", "Drawer width"), leaf("inspector", "Inspector width")]
+  return []
+}
+const PAGE = 10
+const later = (run: () => void, fail = false) =>
+  new Promise<void>((resolve, reject) =>
+    setTimeout(() => {
+      if (fail) return reject(new Error("The store did not answer"))
+      run()
+      resolve()
+    }, 600)
+  )
+function patchNode(list: TreeNode[], id: string, update: (node: TreeNode) => TreeNode): TreeNode[] {
+  return list.map((node) => (node.id === id ? update(node) : node.children ? { ...node, children: patchNode(node.children, id, update) } : node))
+}
+
+function ExplorerTree() {
+  const [nodes, setNodes] = useState(STORE_ROOTS)
+  const [selected, setSelected] = useState<string | null>(null)
+  const failed = useRef(new Set<string>())
+  const loadChildren = (node: TreeNode) => {
+    const fail = node.id === "archive" && !failed.current.has(node.id)
+    if (fail) failed.current.add(node.id)
+    return later(() => {
+      const all = subkeys(node.id)
+      setNodes((list) => patchNode(list, node.id, (current) => ({ ...current, children: all.slice(0, PAGE), hasMore: all.length > PAGE })))
+    }, fail)
+  }
+  const loadMore = (node: TreeNode) =>
+    later(() => {
+      const all = subkeys(node.id)
+      setNodes((list) =>
+        patchNode(list, node.id, (current) => {
+          const count = (current.children?.length ?? 0) + PAGE
+          return { ...current, children: all.slice(0, count), hasMore: all.length > count }
+        })
+      )
+    })
+  return (
+    <div className="flex w-72 max-w-full flex-col gap-2">
+      <div className="h-90" data-testid="tree-explorer">
+        <Tree
+          nodes={nodes}
+          aria-label="Settings keys"
+          selectableGroups
+          selectedId={selected}
+          onSelectedIdChange={setSelected}
+          onLoadChildren={loadChildren}
+          onLoadMore={loadMore}
+        />
+      </div>
+      <p className="type-caption text-fg-muted" aria-live="polite">
+        {selected ? `Selected: ${selected.split("/").join(" › ")}` : "No key selected"}
+      </p>
+    </div>
+  )
+}
+
 export default function TreeSection() {
   return (
     <SectionPage>
@@ -99,6 +175,13 @@ export default function TreeSection() {
         description="In the sidebar, endpoint rows are links (renderLink: middle-click and Enter work as links do) and right-click, long-press, Shift+F10 or the Menu key opens the endpoint's actions (rowWrapper with ActionContextMenu) — the same definition as its header."
       >
         <LinkedTree />
+      </Specimen>
+
+      <Specimen
+        title="Explorer: select branches, load on demand"
+        description="selectableGroups lets a branch be selected as well as opened: a click, Enter or Space selects it, and the chevron, → and ← (or a double-click) open and close it. Keys load when first opened (hasChildren with onLoadChildren): a loading row shows meanwhile, a failure offers Retry, a key with no subkeys loses its chevron, and Fonts pages in ten at a time (hasMore with onLoadMore)."
+      >
+        <ExplorerTree />
       </Specimen>
 
       <Specimen title="2,400 endpoints" description="Rows are virtualised with fixed heights from tokens: only the rows in view (plus a few) are in the DOM, and the focused row is always kept.">
@@ -130,6 +213,8 @@ export default function TreeSection() {
       <Rules
         do={[
           "Use the tree for places in a hierarchy: organisations and their endpoints.",
+          "Make branches selectable when a branch is itself something to open (a folder, a key), and show its contents beside the tree.",
+          "Load large hierarchies on demand: mark unloaded branches with hasChildren and page long lists with hasMore.",
           "Give rows a data subtitle (the signed-in user), never a description of the row.",
           "Feed the sidebar search field into `query` so matches reveal themselves.",
           "Give the tree a bounded height; it scrolls and virtualises inside it.",

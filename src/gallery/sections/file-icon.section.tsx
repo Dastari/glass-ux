@@ -1,0 +1,139 @@
+import { FileIcon, fileKind, type FileKind } from "../../ui/file-icon/index.js"
+import { Matrix, Rules, SectionPage, Specimen } from "../kit.js"
+
+const KINDS: Array<[FileKind, string]> = [
+  ["file", "unknown"],
+  ["folder", "directory"],
+  ["text", "txt log md"],
+  ["document", "docx odt rtf"],
+  ["pdf", "pdf"],
+  ["spreadsheet", "xlsx ods csv"],
+  ["presentation", "pptx odp"],
+  ["ebook", "epub mobi"],
+  ["image", "png jpg heic"],
+  ["vector", "svg ai eps"],
+  ["audio", "mp3 m4a flac"],
+  ["video", "mp4 mov mkv"],
+  ["font", "ttf otf woff2"],
+  ["model", "stl obj glb"],
+  ["code", "ts py html"],
+  ["script", "sh ps1 bat"],
+  ["data", "json yaml xml"],
+  ["database", "sqlite sql"],
+  ["archive", "zip tar.gz 7z"],
+  ["executable", "exe msi deb"],
+  ["disk-image", "iso dmg vhdx"],
+  ["email", "eml msg"],
+  ["calendar", "ics"],
+  ["contact", "vcf"],
+  ["key", "pem crt pfx"],
+  ["encrypted", "gpg kdbx"],
+  ["link", "url lnk"],
+]
+
+const DETECTION: Array<{ name?: string; mime?: string }> = [
+  { name: "Harbour survey.pdf" },
+  { name: "download", mime: "application/pdf" },
+  { name: "setup-tools.ps1", mime: "text/plain" },
+  { name: "tide-tables.csv", mime: "text/csv; charset=utf-8" },
+  { name: "lighthouse.svg", mime: "application/octet-stream" },
+  { name: "scan-0042", mime: "image/heic" },
+  { name: "archive/2025/" },
+  { name: "notes" },
+]
+
+const FILES = [
+  { name: "Harbour survey.pdf", meta: "PDF · 1.2 MB" },
+  { name: "Mooring fees 2026.xlsx", meta: "XLSX · 84 KB" },
+  { name: "North pier 014.jpg", meta: "JPG · 3.4 MB" },
+  { name: "Sensor logs.zip", meta: "ZIP · 12 MB" },
+  { name: "setup-tools.ps1", meta: "PS1 · 6 KB" },
+  { name: "Foghorn recording.m4a", meta: "M4A · 410 KB" },
+]
+
+export default function FileIconSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Kinds"
+        description="One icon per kind of file. The page is shared; the emblem inside it names the kind."
+        layout="stack"
+        wide
+      >
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {KINDS.map(([kind, examples]) => (
+            <li key={kind} className="flex items-center gap-inline">
+              <FileIcon kind={kind} size="xl" />
+              <span className="flex min-w-0 flex-col">
+                <span>{kind}</span>
+                <span className="type-caption text-fg-muted">{examples}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Specimen>
+      <Specimen
+        title="Detection"
+        description="A specific MIME type wins, then the extension, then the MIME family. Generic types such as text/plain defer to the extension."
+      >
+        <Matrix
+          columns={["MIME type", "Icon", "Kind"]}
+          rows={DETECTION.map(({ name, mime }) => ({
+            label: name ?? "",
+            cells: [
+              <code key="mime">{mime ?? "—"}</code>,
+              <FileIcon key="icon" name={name} mime={mime} size="md" />,
+              <span key="kind">{fileKind({ name, mime })}</span>,
+            ],
+          }))}
+        />
+      </Specimen>
+      <Specimen
+        title="Sizes"
+        description="The emblem is drawn for 14 px and up; file lists use md (18 px)."
+      >
+        <Matrix
+          columns={["xs", "sm", "md", "lg", "xl", "2xl"]}
+          rows={(["spreadsheet", "archive", "audio"] as const).map((kind) => ({
+            label: kind,
+            cells: (["xs", "sm", "md", "lg", "xl", "2xl"] as const).map((size) => (
+              <FileIcon key={size} kind={kind} size={size} />
+            )),
+          }))}
+        />
+      </Specimen>
+      <Specimen
+        title="In a file list"
+        description="The icon gives the kind; the text beside it gives the exact format."
+        layout="stack"
+      >
+        <ul className="flex flex-col gap-3">
+          {FILES.map((file) => (
+            <li key={file.name} className="flex items-center gap-inline">
+              <span className="fa-tile-icon" aria-hidden>
+                <FileIcon name={file.name} />
+              </span>
+              <span className="flex min-w-0 flex-col">
+                <span>{file.name}</span>
+                <span className="type-caption text-fg-muted" data-numeric>
+                  {file.meta}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Specimen>
+      <Rules
+        do={[
+          "Pass both name and mime when you have them; detection prefers the more specific.",
+          "Show the extension or format as text beside the icon.",
+          "Colour kinds from application CSS with the data-file-kind attribute if needed.",
+        ]}
+        dont={[
+          "Use a file icon to stand for an action such as upload or export.",
+          "Label the icon when the file name is already visible beside it.",
+        ]}
+      />
+    </SectionPage>
+  )
+}

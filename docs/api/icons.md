@@ -102,8 +102,32 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconFactory** — Factory icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFanvil** — Fanvil icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFigma** — Figma icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileArchive** — File Archive icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileAudio** — File Audio icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileCalendar** — File Calendar icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileCode** — File Code icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileContact** — File Contact icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileData** — File Data icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileDatabase** — File Database icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileDiskImage** — File Disk Image icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileDocument** — File Document icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileEbook** — File Ebook icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileEmail** — File Email icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileExecutable** — File Executable icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileFont** — File Font icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileImage** — File Image icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileKey** — File Key icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileLink** — File Link icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileLock** — File Lock icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileModel** — File Model icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFilePdf** — File Pdf icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFilePresentation** — File Presentation icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileScript** — File Script icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileSpreadsheet** — File Spreadsheet icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFileText** — File Text icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFileTransfer** — File Transfer icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileVector** — File Vector icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconFileVideo** — File Video icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFile** — File icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFilter** — Filter icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFitWidth** — Fit Width icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.

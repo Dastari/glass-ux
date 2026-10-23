@@ -134,6 +134,7 @@
 - [FieldSkeleton](field-skeleton.md) — `glass-ux/field`
 - [FileDrop](file-drop.md) — `glass-ux/file-drop`
 - [FileGlyph](file-glyph.md) — `glass-ux/ai`
+- [FileIcon](file-icon.md) — `glass-ux/file-icon`
 - [FileList](file-list.md) — `glass-ux/file-drop`
 - [FileRow](file-row.md) — `glass-ux/file-drop`
 - [FileRowItem](file-row-item.md) — `glass-ux/ai`

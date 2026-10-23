@@ -4,6 +4,32 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+File type icons and a `FileIcon` that picks one. No code changes are required; the [migration guide](docs/migration.md) lists
+what to review.
+
+### Added
+
+- File type icons: 24 new icons built on the `file` page, one emblem each (`IconFileDocument`,
+  `IconFilePdf`, `IconFileSpreadsheet`, `IconFilePresentation`, `IconFileEbook`,
+  `IconFileImage`, `IconFileVector`, `IconFileAudio`, `IconFileVideo`, `IconFileFont`,
+  `IconFileModel`, `IconFileCode`, `IconFileScript`, `IconFileData`, `IconFileDatabase`,
+  `IconFileArchive`, `IconFileExecutable`, `IconFileDiskImage`, `IconFileEmail`,
+  `IconFileCalendar`, `IconFileContact`, `IconFileKey`, `IconFileLock`, `IconFileLink`).
+  They are filed under **File types** in the icon gallery.
+- `FileIcon` (`glass-ux/file-icon`) draws the icon for a file from its `name`, `mime` or a
+  known `kind`. `fileKind({ name, mime })` returns the kind: a specific MIME type wins, then
+  the extension, then the MIME family; generic types such as `application/octet-stream` and
+  `text/plain` defer to the extension. The kind is on `data-file-kind` for application CSS.
+  `FILE_KIND_ICONS` maps each kind to its icon component.
+
+### Changed
+
+- `FileGlyph` and `fileIcon` (AI results and composer attachments) use `FileIcon`, so files
+  show their full kind: a PDF, spreadsheet or archive no longer falls back to the plain page,
+  and JSON, YAML and XML show the data icon instead of the code icon.
+
 ## 0.9.10
 
 Explorer-style building blocks for large hierarchies, window actions that give way in narrow

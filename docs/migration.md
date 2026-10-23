@@ -3,6 +3,18 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.10 → Unreleased
+
+No code changes are required.
+
+- AI result files and composer attachments now show their kind (PDF, spreadsheet, archive,
+  audio and so on) instead of the plain page, and JSON, YAML and XML show the data icon
+  rather than the code icon. A test or snapshot that looked for `data-icon="code"` or
+  `data-icon="file"` on those rows needs the new icon name.
+- An application mapping file names or MIME types to icons can use `FileIcon` from
+  `glass-ux/file-icon` (or `fileKind` for the kind alone), and colour kinds from its own CSS
+  with `[data-file-kind]`.
+
 ## 0.9.9 → 0.9.10
 
 No code changes are required.

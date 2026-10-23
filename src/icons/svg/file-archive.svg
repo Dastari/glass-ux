@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path class="t" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z"/>
+  <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z"/>
+  <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5"/>
+  <path d="M9 5.5H10.5"/>
+  <path d="M10.5 7.25H12"/>
+  <path d="M9 9H10.5"/>
+  <rect x="8.5" y="12" width="4" height="5.5" rx="1"/>
+</svg>

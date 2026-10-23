@@ -1,6 +1,6 @@
 # FileGlyph
 
-The file's type glyph as an element (a static component per type).
+The file's type icon as an element: `FileIcon` with the result file's name and MIME type.
 
 `import { FileGlyph } from "glass-ux/ai"`
 

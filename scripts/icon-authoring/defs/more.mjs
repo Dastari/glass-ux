@@ -95,10 +95,7 @@ def("map-pin", () => {
 })
 
 // ── files ─────────────────────────────────────────────────────────────────────
-const PAGE = "M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z"
-const FOLD = "M14 2.5V6A2 2 0 0 0 16 8H19.5"
-def("file", () => [path(PAGE, "t"), path(PAGE), path(FOLD)])
-def("file-text", () => [path(PAGE, "t"), path(PAGE), path(FOLD), path("M8.5 12.5H15.5"), path("M8.5 16H15.5"), path("M8.5 9H10.5")])
+// `file`, `file-text` and the file types are in file-types.mjs.
 const FOLDER = "M3 17.5V6.5A2.5 2.5 0 0 1 5.5 4H8.96A1.5 1.5 0 0 1 10.02 4.44L12 6.5H18.5A2.5 2.5 0 0 1 21 9V17.5A2.5 2.5 0 0 1 18.5 20H5.5A2.5 2.5 0 0 1 3 17.5Z"
 def("folder", () => [path(FOLDER, "t"), path(FOLDER)])
 def("folder-open", () => {

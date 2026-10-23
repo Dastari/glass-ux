@@ -90,6 +90,10 @@
       "types": "./dist/ui/file-drop/index.d.ts",
       "import": "./dist/ui/file-drop/index.js"
     },
+    "./file-icon": {
+      "types": "./dist/ui/file-icon/index.d.ts",
+      "import": "./dist/ui/file-icon/index.js"
+    },
     "./drag-drop": {
       "types": "./dist/ui/drag-drop/index.d.ts",
       "import": "./dist/ui/drag-drop/index.js"

@@ -23,7 +23,7 @@ Six traits make the set read as one hand. A new icon has all six.
 5. **Shared parts.** A concept is drawn once and reused, so related icons look related:
    - **monitor:** `endpoint`, `remote-control`, `view-only`, `system`
    - **shield:** `shield`, `ai`, `antivirus`
-   - **page:** `file`, `file-text`, `file-transfer`
+   - **page:** `file`, `file-text`, `file-transfer` and every file type (`file-pdf`, …)
    - **cloud:** `cloud`, `cloud-off`, `backup`
    - **window frame:** `sidebar`, `inspector`, `columns`, `terminal`, `task-manager`
    - **status circle:** `success`, `error`, `info`, `help`, `pending`, `offline`
@@ -168,6 +168,26 @@ masking.
   They identify the named service, account or destination; do not use them as generic
   action, device or status metaphors. `operating-system` remains the generic OS fallback.
   Full-colour application branding and supplied official artwork belong in `public/brand`.
+
+## File types
+
+File type icons (`file-*`, authored in `scripts/icon-authoring/defs/file-types.mjs`) are the
+`file` page and fold, unchanged, with the page as the tint and one emblem inside it. The
+emblem names a kind of file, never a format: there are no letters, so PDF is a page layout
+rather than "PDF". The exact format is text beside the icon.
+
+- The emblem sits in the body box 7.5–16.5 × 10.5–18.5, which keeps 3 units clear of the
+  outline and the fold. Only `file-archive` uses the column left of the fold, for its
+  zipper teeth.
+- Reuse the set's glyph for the idea: `image` mountains, `play`, the `code` chevrons, the
+  `table` grid, the `terminal` prompt, `mail`, `calendar`, `user`, `lock`, `key` and the
+  software cube (`file-executable`). A 3D model is a tetrahedron so it never reads as the
+  cube.
+- The emblem is drawn smaller than its standalone glyph, with heads of 2.5-unit arms. It
+  must still read as a distinct silhouette at `xs`.
+- `FileIcon` (`glass-ux/file-icon`) picks the icon from a name and MIME type. A new kind
+  needs its icon here, an entry in `FileKind` and its MIME types and extensions in
+  `src/ui/file-icon/file-kind.ts`.
 
 ## Company and manufacturer icons
 

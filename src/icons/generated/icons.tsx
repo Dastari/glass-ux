@@ -945,6 +945,303 @@ export const IconFigma = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconFileArchive = /* @__PURE__ */ createIcon(
+  "file-archive",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M9 5.5H10.5" />
+      <path d="M10.5 7.25H12" />
+      <path d="M9 9H10.5" />
+      <rect x="8.5" y="12" width="4" height="5.5" rx="1" />
+    </>
+  )
+)
+
+export const IconFileAudio = /* @__PURE__ */ createIcon(
+  "file-audio",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <circle cx="10.25" cy="16.25" r="2.25" />
+      <path d="M12.5 16.25V10.5L15.5 12" />
+    </>
+  )
+)
+
+export const IconFileCalendar = /* @__PURE__ */ createIcon(
+  "file-calendar",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <rect x="7.5" y="12" width="9" height="6.5" rx="1.5" />
+      <path d="M7.5 15H16.5" />
+      <path d="M10 11V13" />
+      <path d="M14 11V13" />
+    </>
+  )
+)
+
+export const IconFileCode = /* @__PURE__ */ createIcon(
+  "file-code",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M10.25 12L7.75 14.5L10.25 17" />
+      <path d="M13.75 12L16.25 14.5L13.75 17" />
+    </>
+  )
+)
+
+export const IconFileContact = /* @__PURE__ */ createIcon(
+  "file-contact",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <circle cx="12" cy="12.25" r="1.75" />
+      <path d="M8.5 18.5A3.7 3.7 0 0 1 15.5 18.5" />
+    </>
+  )
+)
+
+export const IconFileData = /* @__PURE__ */ createIcon(
+  "file-data",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M10.75 10.75H10.5A1 1 0 0 0 9.5 11.75V13.44A0.75 0.75 0 0 1 9.28 13.97L8.5 14.75L9.28 15.53A0.75 0.75 0 0 1 9.5 16.06V17.25A1 1 0 0 0 10.5 18.25H10.75" />
+      <path d="M13.25 10.75H13.5A1 1 0 0 1 14.5 11.75V13.44A0.75 0.75 0 0 0 14.72 13.97L15.5 14.75L14.72 15.53A0.75 0.75 0 0 0 14.5 16.06V17.25A1 1 0 0 1 13.5 18.25H13.25" />
+    </>
+  )
+)
+
+export const IconFileDatabase = /* @__PURE__ */ createIcon(
+  "file-database",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M7.75 11.75A4.25 1.5 0 0 1 16.25 11.75A4.25 1.5 0 0 1 7.75 11.75Z" />
+      <path d="M7.75 11.75V17A4.25 1.5 0 0 0 16.25 17V11.75" />
+    </>
+  )
+)
+
+export const IconFileDiskImage = /* @__PURE__ */ createIcon(
+  "file-disk-image",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <circle cx="12" cy="14.75" r="3.75" />
+      <circle className="fa-icon-dot" cx="12" cy="14.75" r="1" />
+    </>
+  )
+)
+
+export const IconFileDocument = /* @__PURE__ */ createIcon(
+  "file-document",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <rect x="7.5" y="10.5" width="3.5" height="3.5" rx="1" />
+      <path d="M14 12.25H16.5" />
+      <path d="M7.5 17.25H16.5" />
+    </>
+  )
+)
+
+export const IconFileEbook = /* @__PURE__ */ createIcon(
+  "file-ebook",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M12 13.5A2 2 0 0 0 10 11.5H8.5A1 1 0 0 0 7.5 12.5V15.5A1 1 0 0 0 8.5 16.5H10A2 2 0 0 1 12 18.5V13.5" />
+      <path d="M12 13.5A2 2 0 0 1 14 11.5H15.5A1 1 0 0 1 16.5 12.5V15.5A1 1 0 0 1 15.5 16.5H14A2 2 0 0 0 12 18.5" />
+    </>
+  )
+)
+
+export const IconFileEmail = /* @__PURE__ */ createIcon(
+  "file-email",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <rect x="7.5" y="11" width="9" height="6.5" rx="1.5" />
+      <path d="M9.75 13.25L12 14.75L14.25 13.25" />
+    </>
+  )
+)
+
+export const IconFileExecutable = /* @__PURE__ */ createIcon(
+  "file-executable",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M11.63 11.22A0.75 0.75 0 0 1 12.38 11.22L14.87 12.66A0.75 0.75 0 0 1 15.25 13.31V16.19A0.75 0.75 0 0 1 14.87 16.84L12.38 18.28A0.75 0.75 0 0 1 11.63 18.28L9.13 16.84A0.75 0.75 0 0 1 8.75 16.19V13.31A0.75 0.75 0 0 1 9.13 12.66L11.63 11.22Z" />
+      <path d="M8.75 12.88L12 14.75L15.25 12.88" />
+      <path d="M12 14.75V18.5" />
+    </>
+  )
+)
+
+export const IconFileFont = /* @__PURE__ */ createIcon(
+  "file-font",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M8.5 12.25V11H15.5V12.25" />
+      <path d="M12 11V18" />
+      <path d="M10.5 18H13.5" />
+    </>
+  )
+)
+
+export const IconFileImage = /* @__PURE__ */ createIcon(
+  "file-image",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M7.5 18L11 14.5L14.5 18" />
+      <path d="M13.25 16.75L14.75 15.25L16.5 17" />
+      <circle className="fa-icon-dot" cx="14.25" cy="11.75" r="1.25" />
+    </>
+  )
+)
+
+export const IconFileKey = /* @__PURE__ */ createIcon(
+  "file-key",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <circle cx="10" cy="16" r="2.25" />
+      <path d="M11.59 14.41L15 11" />
+      <path d="M14 12L15.25 13.25" />
+    </>
+  )
+)
+
+export const IconFileLink = /* @__PURE__ */ createIcon(
+  "file-link",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M10.75 12H10.5A3 3 0 0 0 10.5 18H10.75" />
+      <path d="M13.25 12H13.5A3 3 0 0 1 13.5 18H13.25" />
+      <path d="M10 15H14" />
+    </>
+  )
+)
+
+export const IconFileLock = /* @__PURE__ */ createIcon(
+  "file-lock",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <rect x="8" y="14" width="8" height="4.5" rx="1.5" />
+      <path d="M9.75 14V12.5A2.25 2.25 0 0 1 14.25 12.5V14" />
+    </>
+  )
+)
+
+export const IconFileModel = /* @__PURE__ */ createIcon(
+  "file-model",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M11.21 11.47A1 1 0 0 1 12.77 11.48L15.69 15.21A1 1 0 0 1 15.28 16.75L11.51 18.29A1 1 0 0 1 10.55 18.18L8.37 16.62A1 1 0 0 1 8.18 15.17L11.21 11.47Z" />
+      <path d="M12 11.75L11.1 17.6" />
+    </>
+  )
+)
+
+export const IconFilePdf = /* @__PURE__ */ createIcon(
+  "file-pdf",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <rect x="7.5" y="10.5" width="9" height="4.5" rx="1" />
+      <path d="M7.5 18H16.5" />
+    </>
+  )
+)
+
+export const IconFilePresentation = /* @__PURE__ */ createIcon(
+  "file-presentation",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <rect x="7.5" y="10.5" width="9" height="5.75" rx="1.5" />
+      <path d="M12 16.25V18.75" />
+    </>
+  )
+)
+
+export const IconFileScript = /* @__PURE__ */ createIcon(
+  "file-script",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M8.5 12L11 14.5L8.5 17" />
+      <path d="M13 17H16" />
+    </>
+  )
+)
+
+export const IconFileSpreadsheet = /* @__PURE__ */ createIcon(
+  "file-spreadsheet",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <rect x="7.5" y="11" width="9" height="7.5" rx="2" />
+      <path d="M7.5 14.75H16.5" />
+      <path d="M12 11V18.5" />
+    </>
+  )
+)
+
 export const IconFileText = /* @__PURE__ */ createIcon(
   "file-text",
   () => (
@@ -970,6 +1267,32 @@ export const IconFileTransfer = /* @__PURE__ */ createIcon(
       <path d="M13.25 9.25L15.5 11.5L13.25 13.75" />
       <path d="M15.5 17H8.5" />
       <path d="M10.75 14.75L8.5 17L10.75 19.25" />
+    </>
+  )
+)
+
+export const IconFileVector = /* @__PURE__ */ createIcon(
+  "file-vector",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M10.25 11.13A6 6 0 0 1 14.87 15.75" />
+      <rect x="7.75" y="9.75" width="2.5" height="2.5" rx="1" />
+      <rect x="13.75" y="15.75" width="2.5" height="2.5" rx="1" />
+    </>
+  )
+)
+
+export const IconFileVideo = /* @__PURE__ */ createIcon(
+  "file-video",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z" />
+      <path d="M14 2.5V6A2 2 0 0 0 16 8H19.5" />
+      <path d="M9.5 13.21A1.25 1.25 0 0 1 11.39 12.14L13.96 13.68A1.25 1.25 0 0 1 13.96 15.82L11.39 17.36A1.25 1.25 0 0 1 9.5 16.29V13.21Z" />
     </>
   )
 )

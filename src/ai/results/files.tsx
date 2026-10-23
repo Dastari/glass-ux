@@ -1,6 +1,7 @@
-import { IconCode, IconDownload, IconFile, IconFileText, IconImage } from "../../icons/generated/icons.js"
+import { IconDownload, IconFile } from "../../icons/generated/icons.js"
 import { Button } from "../../ui/button/index.js"
 import { formatBytes } from "../../ui/file-drop/index.js"
+import { FileIcon, FILE_KIND_ICONS, fileKind } from "../../ui/file-icon/index.js"
 import type { IconComponent } from "../../ui/icon/index.js"
 import { TruncatedText } from "../../ui/truncated-text/index.js"
 import { formatNumber } from "../format.js"
@@ -10,23 +11,14 @@ import { useLocale } from "../../lib/locale/use-locale.js"
 
 type FilesResult = Extract<AiResult, { type: "files" }>
 
-/** The glyph for a file by its type. */
+/** The file-type icon component for a file; `FileIcon` (`glass-ux/file-icon`) renders it directly. */
 export function fileIcon(file: Pick<ResultFile, "name" | "mime">): IconComponent {
-  const mime = file.mime ?? ""
-  const name = file.name.toLowerCase()
-  if (mime.startsWith("image/") || /\.(png|jpe?g|gif|webp|bmp)$/.test(name)) return IconImage
-  if (/\.(ps1|psm1|sh|json|ya?ml|xml|reg|ts|js|sql|ini)$/.test(name)) return IconCode
-  if (mime.startsWith("text/") || /\.(txt|log|csv|md|evtx)$/.test(name)) return IconFileText
-  return IconFile
+  return FILE_KIND_ICONS[fileKind(file)]
 }
 
-/** The file's type glyph as an element (a static component per type). */
+/** The file's type icon as an element: `FileIcon` with the result file's name and MIME type. */
 export function FileGlyph({ name, mime }: Pick<ResultFile, "name" | "mime">) {
-  const Icon = fileIcon({ name, mime })
-  if (Icon === IconImage) return <IconImage />
-  if (Icon === IconCode) return <IconCode />
-  if (Icon === IconFileText) return <IconFileText />
-  return <IconFile />
+  return <FileIcon name={name} mime={mime} />
 }
 
 /** "CSV", "ZIP": the extension in capitals, for the data line. */

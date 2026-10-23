@@ -4,11 +4,11 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## Unreleased
+## 0.9.11
 
-File type icons and a `FileIcon` that picks one, and an `Image` frame with loading, empty and
-failed states. No code changes are required; the [migration guide](docs/migration.md) lists
-what to review.
+File type icons and a `FileIcon` that picks one, an `Image` frame with loading, empty and
+failed states, and icons for cut (scissors) and a desktop computer. No code changes are
+required; the [migration guide](docs/migration.md) lists what to review.
 
 ### Added
 

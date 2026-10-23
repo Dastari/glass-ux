@@ -3,7 +3,7 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
-## 0.9.10 → Unreleased
+## 0.9.10 → 0.9.11
 
 No code changes are required.
 

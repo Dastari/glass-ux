@@ -137,13 +137,15 @@ export function Slider({
     >
       <BaseSlider.Control ref={setControl} className="fa-slider-control">
         <BaseSlider.Track className="fa-slider-track">
-          <BaseSlider.Indicator
-            className="fa-slider-indicator"
-            data-range={range ? "" : undefined}
-            style={{ insetInlineStart: 0, width: "100%", "--_from": from, "--_to": to } as CSSProperties}
-          >
-            <span className="fa-slider-fill" />
-          </BaseSlider.Indicator>
+          <span className="fa-slider-range">
+            <BaseSlider.Indicator
+              className="fa-slider-indicator"
+              data-range={range ? "" : undefined}
+              style={{ insetInlineStart: 0, width: "100%", "--_from": from, "--_to": to } as CSSProperties}
+            >
+              <span className="fa-slider-fill" />
+            </BaseSlider.Indicator>
+          </span>
           {markList.map((mark) => (
             <span
               key={mark.value}

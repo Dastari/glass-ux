@@ -61,15 +61,29 @@
      --_thumb / 2 + f * (100cqi - --_thumb), the edge-aligned thumb centre (ticks use the
      same formula). slider.tsx pins Base UI's inline left/width and writes the fractions:
      the indicator is a track-length clip moved to the range start, and the fill inside it
-     a track-length pill moved so its end meets the range end. */
+     a track-length pill moved so its end meets the range end. The indicator then reaches
+     past the track's end by the range start, so .fa-slider-range clips it across to the
+     track: unclipped, it widened whatever scrolls around the slider. */
   .fa-slider-track {
     container-type: inline-size;
   }
   .fa-slider {
     --_dir: 1;
+    --_rtl: 0;
   }
   .fa-slider:dir(rtl) {
     --_dir: -1;
+    --_rtl: 1;
+  }
+  /* The range's clip: the track's box, clipped across. It also draws the range's glow, which
+     a filter paints outside its own element's clip. Thumbs, bubbles and ticks sit outside. */
+  .fa-slider-range {
+    position: absolute;
+    inset: 0;
+    height: 100%; /* Base UI's indicator takes height: inherit */
+    border-radius: inherit;
+    overflow-x: clip;
+    filter: drop-shadow(0 0 var(--space-1) var(--_on-glow));
   }
   .fa-slider-indicator {
     --_at-from: calc(var(--_thumb) / 2 + var(--_from, 0) * (100cqi - var(--_thumb)));
@@ -77,7 +91,6 @@
     height: 100%;
     overflow: hidden;
     border-radius: inherit;
-    filter: drop-shadow(0 0 var(--space-1) var(--_on-glow));
     transform: translateX(calc(var(--_dir) * var(--_at-from) * var(--_ranged, 0)));
   }
   .fa-slider-indicator[data-range] {
@@ -94,8 +107,15 @@
       calc(var(--_dir) * (var(--_at-to) - var(--_at-from) * var(--_ranged, 0) - 100cqi))
     );
   }
+  /* Base UI centres a thumb with an inline translate of -50% in either direction; from the
+     right-hand start in RTL that leaves it a thumb short, so RTL adds one thumb back. */
   .fa-slider-thumb {
-    transform: translateX(calc(var(--_dir) * (var(--_thumb) / 2 + var(--_f, 0) * (100cqi - var(--_thumb)))));
+    transform: translateX(
+      calc(
+        var(--_dir) * (var(--_thumb) / 2 + var(--_f, 0) * (100cqi - var(--_thumb))) +
+          var(--_rtl) * var(--_thumb)
+      )
+    );
   }
 
   /* Glide between values unless the pointer is driving. */
@@ -109,12 +129,12 @@
   .fa-slider-tick {
     position: absolute;
     top: 50%;
-    left: calc(var(--_thumb) / 2 + var(--_at) * (100% - var(--_thumb)));
+    inset-inline-start: calc(var(--_thumb) / 2 + var(--_at) * (100% - var(--_thumb)));
     width: var(--space-1);
     height: var(--space-1);
     border-radius: var(--radius-full);
     background-color: color-mix(in oklab, var(--fg-subtle) 60%, transparent);
-    transform: translate(-50%, -50%);
+    transform: translate(calc(var(--_dir) * -50%), -50%);
     pointer-events: none;
     transition: background-color var(--duration-fast) var(--ease-standard);
   }
@@ -132,21 +152,21 @@
   .fa-slider-mark-label {
     position: absolute;
     top: 0;
-    left: calc(var(--_thumb) / 2 + var(--_at) * (100% - var(--_thumb)));
+    inset-inline-start: calc(var(--_thumb) / 2 + var(--_at) * (100% - var(--_thumb)));
     color: var(--fg-subtle);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-    transform: translateX(-50%);
+    transform: translateX(calc(var(--_dir) * -50%));
   }
   .fa-slider-mark-label:first-child {
-    left: 0;
+    inset-inline-start: 0;
     transform: none;
   }
   .fa-slider-mark-label:last-child {
-    left: auto;
-    right: 0;
+    inset-inline-start: auto;
+    inset-inline-end: 0;
     transform: none;
   }
 
@@ -178,7 +198,11 @@
   }
 
   /* ── Value bubble: unblurred glass (it sits inside a panel, R4.2) ─────── */
+  /* Hidden, it leaves layout (display: none after its fade): over a thumb at either end it
+     reaches past the slider, and a laid-out bubble, even transparent, widened the scroll
+     area around it. */
   .fa-slider-bubble {
+    display: none;
     position: absolute;
     bottom: calc(100% + var(--space-2));
     left: 50%;
@@ -205,7 +229,8 @@
     transform-origin: bottom center;
     transition:
       opacity var(--duration-fast) var(--ease-exit),
-      transform var(--duration-fast) var(--ease-exit);
+      transform var(--duration-fast) var(--ease-exit),
+      display var(--duration-fast) allow-discrete;
   }
   .fa-slider[data-bubble="never"] .fa-slider-bubble {
     display: none;
@@ -213,10 +238,20 @@
   .fa-slider[data-bubble="always"] .fa-slider-bubble,
   .fa-slider-thumb:has(:focus-visible) > .fa-slider-bubble,
   .fa-slider-thumb[data-dragging]:has(:focus) > .fa-slider-bubble {
+    display: block;
     opacity: 1;
     transform: translate(-50%, 0) scale(1);
     transition:
       opacity var(--duration-fast) var(--ease-standard),
-      transform var(--duration-base) var(--ease-spring);
+      transform var(--duration-base) var(--ease-spring),
+      display var(--duration-base) allow-discrete;
+  }
+  /* Shown on focus or drag, it fades in from its hidden pose; an always-on bubble appears at once. */
+  @starting-style {
+    .fa-slider-thumb:has(:focus-visible) > .fa-slider-bubble,
+    .fa-slider-thumb[data-dragging]:has(:focus) > .fa-slider-bubble {
+      opacity: 0;
+      transform: translate(-50%, var(--space-1)) scale(var(--overlay-enter-scale));
+    }
   }
 }

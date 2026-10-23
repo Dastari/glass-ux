@@ -4,6 +4,19 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.10
+
+### Fixed
+
+- A range `Slider` no longer widens what scrolls around it. Its range is drawn as a
+  track-length strip moved to the range's start, and nothing clipped the part past the
+  track's end, so moving the start thumb along widened the scroll area by as much (519 px in
+  one window). The range is now clipped to its track, and a hidden value bubble no longer
+  takes room over a thumb at either end. The slider looks the same at rest.
+- In right-to-left layouts a `Slider`'s thumbs sit on the ends of the range. They were a
+  thumb's width toward the left, past the track at the maximum; ticks and mark labels now
+  mirror too.
+
 ## 0.9.9
 
 A performance release: nothing changes how the library looks or moves, except where noted

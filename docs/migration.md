@@ -3,6 +3,14 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.9 → 0.9.10
+
+No code changes are required.
+
+- A stylesheet that clipped a range `Slider`'s track to stop it widening a scroll area
+  (`overflow-x: clip` on `.fa-slider-track`) can go: the slider clips its own range, and
+  that override also cut off the value bubble over a thumb at either end.
+
 ## 0.9.8 → 0.9.9
 
 No code changes are required.

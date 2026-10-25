@@ -323,6 +323,7 @@
 - [ToastLayout](toast-layout.md) — `glass-ux/toast`
 - [ToastPreview](toast-preview.md) — `glass-ux/toast`
 - [ToneDot](tone-dot.md) — `glass-ux/tone-dot`
+- [Toolbar](toolbar.md) — `glass-ux/toolbar`
 - [ToolCallRow](tool-call-row.md) — `glass-ux/ai`
 - [ToolCallSkeleton](tool-call-skeleton.md) — `glass-ux/ai`
 - [ToolGroup](tool-group.md) — `glass-ux/ai`

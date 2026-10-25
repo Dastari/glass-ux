@@ -1,0 +1,57 @@
+/*
+ * Toolbar: one row of controls with a single tab stop. Units (buttons, groups, items) sit in
+ * a flex row; folded units are hidden and listed in the trailing More menu. Toggles that are
+ * on take the accent's soft fill, like a selected segment.
+ */
+@layer components {
+  .fa-toolbar {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .fa-toolbar-unit {
+    display: flex;
+    flex: none;
+    align-items: center;
+  }
+  .fa-toolbar-unit[hidden] {
+    display: none;
+  }
+  .fa-toolbar-unit[data-kind="spacer"] {
+    flex: 1 1 0;
+  }
+  .fa-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-half);
+  }
+  .fa-toolbar-separator {
+    width: var(--border-width);
+    height: calc(var(--control-h-sm) - var(--space-3));
+    margin-inline: var(--space-1);
+    background: var(--line-strong);
+  }
+  .fa-toolbar-spacer {
+    display: block;
+  }
+  .fa-toolbar-more {
+    flex: none;
+    margin-inline-start: auto;
+  }
+  .fa-toolbar-more[data-idle] {
+    position: absolute;
+    inset-inline-end: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-toolbar .fa-btn[data-pressed-state="on"] {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  .fa-toolbar .fa-btn[data-pressed-state="on"]:hover {
+    background: var(--accent-soft-hover);
+  }
+}

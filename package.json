@@ -98,6 +98,10 @@
       "types": "./dist/ui/appearance-settings/index.d.ts",
       "import": "./dist/ui/appearance-settings/index.js"
     },
+    "./toolbar": {
+      "types": "./dist/ui/toolbar/index.d.ts",
+      "import": "./dist/ui/toolbar/index.js"
+    },
     "./stepper": {
       "types": "./dist/ui/stepper/index.d.ts",
       "import": "./dist/ui/stepper/index.js"

@@ -7,6 +7,8 @@ import { useCallback, useSyncExternalStore } from "react"
  * Only viewport-level overlays use this — dialogs become sheets and toasts move to the
  * top on phones because they are positioned against the viewport, not a container
  * (R7.1, R21.1). Everything inside a surface uses `@container` instead.
+ * @example
+ * const reduced = useMediaQuery("(prefers-reduced-motion: reduce)")
  */
 export function useMediaQuery(query: string, serverValue = false): boolean {
   const subscribe = useCallback(

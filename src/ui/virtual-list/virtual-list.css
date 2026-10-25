@@ -1,0 +1,29 @@
+@layer components {
+  .fa-virtual-list {
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    position: relative;
+  }
+  .fa-virtual-list[data-external-scroll] {
+    height: auto;
+    overflow: visible;
+  }
+  .fa-virtual-list-content {
+    position: relative;
+    width: 100%;
+  }
+  .fa-virtual-list-row {
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+  }
+  .fa-virtual-list-row[role="option"] {
+    cursor: pointer;
+    outline-offset: calc(-1 * var(--focus-ring-width));
+  }
+  .fa-virtual-list-row[aria-selected="true"] {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
+}

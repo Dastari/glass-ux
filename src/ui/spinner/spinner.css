@@ -1,0 +1,25 @@
+@layer components {
+  .fa-spinner {
+    display: inline-flex;
+    flex: none;
+    vertical-align: middle;
+  }
+  .fa-spinner[data-tone="accent"] {
+    color: var(--accent-text);
+  }
+  .fa-spinner[data-tone="muted"] {
+    color: var(--fg-muted);
+  }
+  .fa-spinner > .fa-icon {
+    /* perf:infinite only while the mounted spinner indicates work */
+    animation: fa-spin var(--duration-spin) linear infinite;
+  }
+  :root[data-motion="reduced"] .fa-spinner > .fa-icon {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) .fa-spinner > .fa-icon {
+      animation: none;
+    }
+  }
+}

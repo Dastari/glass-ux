@@ -9,5 +9,6 @@ export const libraryGuides = [
   { id: "agent-adoption", title: "AI agent adoption" },
   { id: "layout-contract", title: "Theme and layout" },
   { id: "ui-rules", title: "Design rules" },
+  { id: "testing", title: "Testing" },
   { id: "migration", title: "Migration" },
 ] as const;

@@ -81,6 +81,7 @@
 @import "../ui/setting-row/setting-row.css";
 @import "../ui/slider/slider.css";
 @import "../ui/sparkline/sparkline.css";
+@import "../ui/spinner/spinner.css";
 @import "../ui/split-pane/split-pane.css";
 @import "../ui/stepper/stepper.css";
 @import "../ui/swatch-picker/swatch-picker.css";
@@ -96,6 +97,8 @@
 @import "../ui/tree/tree.css";
 @import "../ui/truncated-text/truncated-text.css";
 @import "../ui/vertical-tabs/vertical-tabs.css";
+@import "../ui/virtual-list/virtual-list.css";
+@import "../ui/visually-hidden/visually-hidden.css";
 @import "../shell/app-shell.css";
 @import "../shell/bleed.css";
 @import "../shell/context-switcher/context-switcher.css";

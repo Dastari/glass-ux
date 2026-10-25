@@ -1,0 +1,5 @@
+{
+  "extends": "../tsconfig.json",
+  "include": ["form-rhf-types.tsx"],
+  "exclude": []
+}

@@ -1,0 +1,16 @@
+{
+  "name": "glass-ux-next-app-router-fixture",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/node": "^26.6.5"
+  }
+}

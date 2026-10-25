@@ -15,7 +15,7 @@ pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.9.11/glass-ux-
 ```
 
 React 19 and React DOM 19 are peer dependencies. The tested integration uses Vite 8
-and Tailwind 4. Supported browsers are current Chrome, Edge, Firefox and Safari, and
+and Tailwind 4; the App Router fixture also builds with Next.js 16 and webpack. Supported browsers are current Chrome, Edge, Firefox and Safari, and
 Firefox ESR 140 (the Firefox in Debian 12 and 13). Register `glassUx()` from `glass-ux/vite` beside the React and Tailwind plugins. Import components through their public entries:
 
 ```tsx
@@ -56,6 +56,7 @@ Optional server adapters are separate entries. The graphql-orm filter mapping mo
 - [Installation, providers and your first form](docs/getting-started.md).
 - [Migrating an existing application](docs/integration.md).
 - [Theme geometry and layout verification](docs/layout-contract.md).
+- [Component and browser testing helpers](docs/testing.md).
 - [AI agent skills and adoption](docs/agent-adoption.md).
 - [Changelog](CHANGELOG.md) and [migration guide](docs/migration.md) for upgrades.
 

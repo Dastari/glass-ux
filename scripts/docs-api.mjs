@@ -196,15 +196,25 @@ function signatureApi(type, at) {
           const name = prop.getName();
           const propType = checker.getTypeOfSymbolAtLocation(prop, declaration);
           const options = literalOptions(propType);
+          const expanded = checker.typeToString(
+            propType,
+            declaration,
+            ts.TypeFormatFlags.NoTruncation,
+          );
+          // Keep ordinary prop displays stable, but preserve recursive dependency aliases
+          // (for example RHF field paths) instead of printing megabytes of conditionals.
+          const readableType =
+            expanded.length > 1024
+              ? checker.typeToString(
+                  propType,
+                  declaration,
+                  ts.TypeFormatFlags.NoTruncation |
+                    ts.TypeFormatFlags.UseAliasDefinedOutsideCurrentScope,
+                )
+              : expanded;
           return {
             name,
-            type: packageTypePaths(
-              checker.typeToString(
-                propType,
-                declaration,
-                ts.TypeFormatFlags.NoTruncation,
-              ),
-            ),
+            type: packageTypePaths(readableType),
             options,
             required: !(prop.flags & ts.SymbolFlags.Optional),
             default: defaultProps[name] ?? null,
@@ -330,7 +340,10 @@ const sectionByFamily = {
 };
 function sectionFor(component) {
   const name = component.name.toLowerCase();
-  if (component.family === "shell" && /contextswitcher|contextavatar/.test(name))
+  if (
+    component.family === "shell" &&
+    /contextswitcher|contextavatar/.test(name)
+  )
     return "context-switcher";
   if (component.family === "icons") return "icons";
   if (
@@ -410,7 +423,7 @@ writeFileSync(
   "# Icons\n\n" +
     iconApi.description +
     '\n\n`import { IconSearch } from "glass-ux/icons"`\n\n' +
-    'Company and manufacturer icons use the same props, for example `IconGithub`, `IconGoogle`, `IconDell`, `IconCisco` and `IconYealink`. They identify the named company and inherit the current colour. The gallery also supports device-class searches such as `printer`, `VoIP`, `network` and `UPS`. See [the icon authoring guide](../icon-spec.md) for geometry and review rules.\n\n' +
+    "Company and manufacturer icons use the same props, for example `IconGithub`, `IconGoogle`, `IconDell`, `IconCisco` and `IconYealink`. They identify the named company and inherit the current colour. The gallery also supports device-class searches such as `printer`, `VoIP`, `network` and `UPS`. See [the icon authoring guide](../icon-spec.md) for geometry and review rules.\n\n" +
     iconApi.props
       .filter((prop) => !prop.inherited)
       .map(
@@ -513,6 +526,7 @@ for (const guide of [
   "agent-adoption",
   "layout-contract",
   "ui-rules",
+  "testing",
   "migration",
 ])
   cpSync(`docs/${guide}.md`, `src/gallery/guides/${guide}.md`);
@@ -525,6 +539,9 @@ const app = await Application.bootstrapWithPlugins({
     ...entries.map((e) => e.file),
     "src/vite.ts",
     "src/lib/fit-form.ts",
+    "src/hooks/index.ts",
+    "src/testing/index.ts",
+    "src/testing/playwright.ts",
     "src/gallery/index.ts",
     "src/adapters/graphql-orm/index.ts",
   ],

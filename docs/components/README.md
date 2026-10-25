@@ -61,6 +61,9 @@ const form = useAppForm({ ...formBehaviour, defaultValues, validators: { onDynam
 Building your own schema helper: `textRule(check, options)` and `numberRule(options)` in
 `glass-ux/form` treat "empty" and "required" the same way every helper above does.
 
+For React Hook Form, see the optional [RHF adapter](form-rhf.md). For large measured
+collections, see [Virtual list](virtual-list.md).
+
 For populated entity forms, see [Entity settings dialogs](entity-settings.md), including
 editable drafts whose save action is unavailable.
 

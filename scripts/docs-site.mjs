@@ -28,6 +28,7 @@ for (const route of [
   "guides/agent-adoption",
   "guides/layout-contract",
   "guides/ui-rules",
+  "guides/testing",
   "guides/migration",
   ...foundationIds.map((id) => `foundations/${id}`),
 ]) {

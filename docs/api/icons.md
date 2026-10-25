@@ -61,6 +61,8 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconChevronLeft** — Chevron Left icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconChevronRight** — Chevron Right icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconChevronUp** — Chevron Up icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconChevronsLeft** — Chevrons Left icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconChevronsRight** — Chevrons Right icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconChevronsUpDown** — Chevrons Up Down icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconCisco** — Cisco icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconClipboard** — Clipboard icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.

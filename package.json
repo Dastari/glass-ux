@@ -150,6 +150,22 @@
       "types": "./dist/ui/tree/index.d.ts",
       "import": "./dist/ui/tree/index.js"
     },
+    "./tree-select": {
+      "types": "./dist/ui/tree-select/index.d.ts",
+      "import": "./dist/ui/tree-select/index.js"
+    },
+    "./cascader": {
+      "types": "./dist/ui/cascader/index.d.ts",
+      "import": "./dist/ui/cascader/index.js"
+    },
+    "./transfer-list": {
+      "types": "./dist/ui/transfer-list/index.d.ts",
+      "import": "./dist/ui/transfer-list/index.js"
+    },
+    "./tour": {
+      "types": "./dist/ui/tour/index.d.ts",
+      "import": "./dist/ui/tour/index.js"
+    },
     "./otp-field": {
       "types": "./dist/ui/otp-field/index.d.ts",
       "import": "./dist/ui/otp-field/index.js"

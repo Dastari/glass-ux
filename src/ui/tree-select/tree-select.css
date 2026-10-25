@@ -1,0 +1,132 @@
+/*
+ * TreeSelect — a select trigger (fa-control fa-select-trigger) that opens a tree on glass.
+ *
+ *   trigger  [icon] label……………………… ⇅        single
+ *            (Sales) (Field team) (+3) ……… ⇅       multiple: chips fold into "+N"
+ *   popup    [search…………………]
+ *            › ☐ ▢ Org unit          12             fa-tree rows (Tree's geometry and marks)
+ *              ☑ Person
+ *            3 selected                 Clear       multiple only
+ *
+ * Rows are Tree's rows (fa-item fa-tree-row) with the Checkbox's box drawn inside
+ * (fa-check-mark): the row is the control, so the box has no focus or press of its own.
+ * The list keeps the height it opened with, so searching never moves the search field or
+ * the footer.
+ */
+@layer components {
+  /* The Checkbox box inside a row that carries the state (treeitem, option, menu item). */
+  .fa-check-mark {
+    --_size: calc(var(--check-size) - var(--space-half));
+    pointer-events: none;
+  }
+  .fa-check-mark .fa-check-indicator > .fa-icon {
+    width: calc(var(--_size) * 0.82);
+    height: calc(var(--_size) * 0.82);
+  }
+
+  .fa-tree-select-trigger {
+    /* component tokens: chip geometry, as in MultiSelect */
+    --_action: calc(var(--_h) - var(--space-2) * 2);
+    --_chip-max: 9rem;
+    --_chip-font: var(--type-label-size);
+    --_chip-line: var(--type-label-line);
+  }
+  .fa-tree-select-trigger[data-size="sm"] {
+    --_action: calc(var(--_h) - var(--space-1-5) * 2);
+    --_chip-font: var(--type-caption-size);
+    --_chip-line: var(--type-caption-line);
+    --_chip-max: 8rem;
+  }
+  .fa-tree-select-trigger[data-multiple] .fa-select-value {
+    height: 100%;
+    overflow: hidden;
+  }
+  .fa-tree-select-chips {
+    height: auto;
+  }
+  .fa-tree-select-trigger .fa-chip {
+    padding-inline: var(--space-2);
+  }
+  .fa-tree-select-trigger[data-wrap] {
+    align-items: flex-start;
+    height: auto;
+    padding-block: calc((var(--_h) - var(--_action)) / 2 - var(--border-width));
+  }
+  .fa-tree-select-trigger[data-wrap] .fa-select-value {
+    height: auto;
+    min-height: var(--_action);
+  }
+  .fa-tree-select-trigger[data-wrap] .fa-tree-select-chips {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .fa-tree-select-trigger[data-wrap] > .fa-select-chevron {
+    margin-block: calc((var(--_action) - var(--icon-sm)) / 2);
+  }
+
+  /* ── Popup ─────────────────────────────────────────────────────────────── */
+  .fa-tree-select-popup {
+    /* component tokens: the popup's width and the list's tallest height */
+    --_w: 20rem;
+    --_list-max: 18rem;
+    --_avail: var(--available-height, 28rem);
+    display: flex;
+    flex-direction: column;
+    width: max(var(--anchor-width, 0px), var(--_w));
+    overflow: hidden;
+  }
+  .fa-tree-select-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-height: 0;
+  }
+  .fa-tree-select-search {
+    flex: none;
+  }
+  /* The list gives way when the popup has less room than it wants (above its trigger). */
+  .fa-tree-select-tree {
+    flex: 0 1 auto;
+    height: auto;
+    min-height: 0;
+  }
+  .fa-tree-select-scroll {
+    flex: 0 1 auto;
+    /* The tallest the list may be; the height it opened with (--_locked) never exceeds it. */
+    --_max: min(var(--_list-max), calc(var(--_avail) - var(--control-h-sm) * 3));
+    max-height: var(--_max);
+    min-height: min(var(--_locked, 0px), var(--_max));
+    overscroll-behavior: contain;
+  }
+  .fa-tree-select-row .fa-check-mark {
+    margin-inline-end: calc(var(--space-half) * -1);
+  }
+  .fa-tree-select-empty {
+    position: absolute;
+    inset-inline: 0;
+    padding: var(--space-3) var(--space-2-5);
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    text-align: center;
+  }
+  .fa-tree-select-scroll:has(> .fa-tree-select-empty) {
+    position: relative;
+    min-height: max(calc(var(--item-h) * 2), min(var(--_locked, 0px), var(--_max)));
+  }
+  .fa-tree-select-footer {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-inline-start: var(--space-2-5);
+    padding-block-start: var(--space-1);
+  }
+  .fa-tree-select-count {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+}

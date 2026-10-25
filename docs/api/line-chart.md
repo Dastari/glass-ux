@@ -41,7 +41,7 @@ box grows.
 | selected | `XValue \| readonly [XValue, XValue] \| undefined` | See type | no | — | The chosen x, drawn as a rule, or an [from, to] range, drawn as a band. |
 | series | `readonly LineSeries[]` | See type | yes | — | Chart series with stable identifiers, labels and typed values. |
 | stacked | `boolean \| undefined` | false, true | no | — | Stack the series as bands (parts of a total). Implies area. |
-| state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
+| state | `ChartState \| undefined` | "error", "loading", "ready", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | thresholds | `readonly Threshold[] \| undefined` | See type | no | — | Lines across the plot at values: limits, targets, averages. Each label sits at the line's end. A status tone means a value past the line is in that state: with one series the line takes the tone above it, and without `bands` the range up to the next status threshold is shaded. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | unit | `ChartUnit \| undefined` | See type | no | — | "%", "GB", "ms", or a counted noun ({ one, other })… "%" sticks to the number; other units take a space. |

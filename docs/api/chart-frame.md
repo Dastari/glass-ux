@@ -27,7 +27,7 @@ The parent must give it a definite height.
 | note | `string \| undefined` | See type | no | — | A sentence that explains how the marks are drawn, added to the figure's accessible description. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | rule | `TierRule \| undefined` | See type | no | DEFAULT_TIERS | The typed disclosure or validation rule applied to this value. |
-| state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
+| state | `ChartState \| undefined` | "error", "loading", "ready", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | table | `ChartTableModel \| undefined` | See type | no | — | The data as a table: visually hidden for screen readers, shown with "View as table", and copied by "Copy as CSV" (raw `values` where the model has them). |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | tools | `ReactNode` | See type | no | — | Controls placed before "View as table" in the full tier's head (a chart's "Reset zoom"). They should hold their space whether or not they show, so the head never moves. |

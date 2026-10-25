@@ -28,7 +28,7 @@ quiet hours read as quiet. A step legend sits in the head.
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | rowLabel | `string \| undefined` | See type | no | "Category" | Accessible name or label definition for a row. |
 | rows | `readonly string[]` | See type | yes | — | One label per row: alert categories, services, endpoints. |
-| state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
+| state | `ChartState \| undefined` | "error", "loading", "ready", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | steps | `number \| undefined` | See type | no | 5 | Colour steps, 3–7 (past seven, neighbouring steps blur). |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | unit | `ChartUnit \| undefined` | See type | no | — | "%", "GB", "ms", or a counted noun ({ one, other })… "%" sticks to the number; other units take a space. |

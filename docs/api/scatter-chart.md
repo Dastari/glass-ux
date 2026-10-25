@@ -23,7 +23,7 @@ surface colour so overlaps stay legible; the pointer only has to be nearest, not
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for this chart's numbers, dates and table. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | series | `readonly ScatterSeries[]` | See type | yes | — | Three series at most: any two dots can sit side by side, so every pair must differ. |
-| state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
+| state | `ChartState \| undefined` | "error", "loading", "ready", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | thresholds | `readonly Threshold[] \| undefined` | See type | no | — | Lines across the plot at y values (a limit, a target), labelled at the line's end, in the y axis's format. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | x | `ScatterAxis` | See type | yes | — | Horizontal coordinate or accessor. |

@@ -53,6 +53,8 @@ export const iconRegistry = [
   { name: "chevron-left", Icon: icons.IconChevronLeft },
   { name: "chevron-right", Icon: icons.IconChevronRight },
   { name: "chevron-up", Icon: icons.IconChevronUp },
+  { name: "chevrons-left", Icon: icons.IconChevronsLeft },
+  { name: "chevrons-right", Icon: icons.IconChevronsRight },
   { name: "chevrons-up-down", Icon: icons.IconChevronsUpDown },
   { name: "cisco", Icon: icons.IconCisco },
   { name: "clipboard", Icon: icons.IconClipboard },

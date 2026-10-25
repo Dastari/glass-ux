@@ -36,7 +36,7 @@ Rows that do not fit in a ranked list fold into a "+N more" line — nothing is 
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | orientation | `"horizontal" \| "vertical" \| undefined` | "horizontal", "vertical" | no | "vertical" | `vertical` columns (time and ordered categories) or `horizontal` bars (ranked lists). |
 | series | `readonly BarSeries[]` | See type | yes | — | Chart series with stable identifiers, labels and typed values. |
-| state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
+| state | `ChartState \| undefined` | "error", "loading", "ready", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | thresholds | `readonly Threshold[] \| undefined` | See type | no | — | Lines across the columns at values (a quota, a target), labelled at the line's end. Vertical columns only. A status tone without `bands` shades the range up to the next status threshold. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | unit | `ChartUnit \| undefined` | See type | no | — | "%", "GB", "ms", or a counted noun ({ one, other })… "%" sticks to the number; other units take a space. |

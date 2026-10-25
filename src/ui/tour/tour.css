@@ -1,0 +1,140 @@
+/*
+ * Tour — a spotlight and a step card.
+ *
+ *   spotlight  the scrim colour over the whole viewport with a rounded hole around the
+ *              target (clip-path, even-odd), so the target stays clickable and lit. It is
+ *              decorative (aria-hidden). Between steps the hole moves on the glide tokens;
+ *              Still and reduced motion move it at once (durations scale to zero).
+ *   card       glass-overlay at the overlay radius, with the tooltip's arrow in the overlay
+ *              fill. Title, body, optional action, then one footer line:
+ *                 Step 2 of 5          Skip tour   Back   [ Next ]
+ *              Hidden buttons keep their space, and Next/Done share one width, so nothing
+ *              under the pointer moves between steps.
+ */
+@layer components {
+  .fa-tour-spotlight {
+    /* component tokens: the gap around the target and the hole's corner */
+    --_pad: var(--space-1-5);
+    --_r: var(--radius-tile);
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-overlay);
+    background-color: var(--scrim);
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-tour-spotlight[data-active] {
+    opacity: 1;
+  }
+  .fa-tour-spotlight[data-animate] {
+    transition:
+      opacity var(--duration-base) var(--ease-standard),
+      clip-path var(--duration-slow) var(--ease-glide);
+  }
+  .fa-tour-probe {
+    position: absolute;
+    width: var(--_pad);
+    height: var(--_r);
+    visibility: hidden;
+  }
+
+  .fa-tour-positioner {
+    z-index: var(--z-popover);
+  }
+  .fa-tour-card {
+    /* component tokens: the card's width, and the arrow's base and height (Tooltip's) */
+    --_w: 20rem;
+    --_aw: 0.875rem;
+    --_ah: 0.4375rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: min(var(--_w), calc(100vw - var(--space-4) * 2));
+    min-width: 0;
+    padding: calc(var(--inset-tile) - var(--space-1));
+    overflow: visible;
+  }
+  .fa-tour-title {
+    margin: 0;
+    color: var(--fg);
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--type-subtitle-weight);
+    letter-spacing: var(--type-subtitle-tracking);
+  }
+  .fa-tour-body {
+    margin: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-tour-action {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .fa-tour-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-block-start: var(--space-1);
+  }
+  .fa-tour-progress {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+  }
+  .fa-tour-footer > [data-hidden] {
+    visibility: hidden;
+  }
+  /* Next and Done stack in one cell, so the button is as wide as the longer one. */
+  .fa-tour-swap {
+    display: inline-grid;
+  }
+  .fa-tour-swap > span {
+    grid-area: 1 / 1;
+    text-align: center;
+  }
+  .fa-tour-swap > [data-hidden] {
+    visibility: hidden;
+  }
+
+  .fa-tour-arrow {
+    width: var(--_aw);
+    height: var(--_ah);
+    background-color: var(--glass-fill-overlay);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+  .fa-tour-arrow[data-side="top"] {
+    bottom: calc(var(--_ah) * -1);
+  }
+  .fa-tour-arrow[data-side="bottom"] {
+    top: calc(var(--_ah) * -1);
+    rotate: 180deg;
+  }
+  .fa-tour-arrow[data-side="left"] {
+    right: calc((var(--_aw) + var(--_ah)) / -2); /* logical:allow arrow geometry follows the resolved physical popup side */
+    rotate: -90deg;
+  }
+  .fa-tour-arrow[data-side="right"] {
+    left: calc((var(--_aw) + var(--_ah)) / -2); /* logical:allow arrow geometry follows the resolved physical popup side */
+    rotate: 90deg;
+  }
+  .fa-tour-arrow[data-side="inline-start"] {
+    inset-inline-end: calc((var(--_aw) + var(--_ah)) / -2);
+    rotate: -90deg;
+  }
+  .fa-tour-arrow[data-side="inline-end"] {
+    inset-inline-start: calc((var(--_aw) + var(--_ah)) / -2);
+    rotate: 90deg;
+  }
+  .fa-tour-arrow[data-side="inline-start"]:dir(rtl) {
+    rotate: 90deg;
+  }
+  .fa-tour-arrow[data-side="inline-end"]:dir(rtl) {
+    rotate: -90deg;
+  }
+}

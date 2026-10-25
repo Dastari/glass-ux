@@ -1,0 +1,215 @@
+/*
+ * Cascader — a select trigger that opens levels side by side on glass.
+ *
+ *   trigger  Australia / … / Parramatta depot          ⇅   (middle levels drop to fit)
+ *   popup    [search…………………………………………]
+ *            Australia    ›   New South Wales ›   Parramatta depot  ✓
+ *            New Zealand  ›   Victoria        ›   Newcastle yard
+ *            Singapore    ›   Queensland      ›
+ *
+ * Columns are menus of fa-item rows. The option on the open path keeps the row highlight
+ * ([data-popup-open], as a submenu's parent row); the chosen path takes accent-soft. Columns
+ * are separated by space, not rules. In list layout (phones) one level shows at a time
+ * under a Back row that is always present, so drilling never moves the list.
+ */
+@layer components {
+  .fa-cascader-popup {
+    /* component tokens: a column's width and the tallest a column grows */
+    --_col-w: 12rem;
+    --_list-max: 18rem;
+    --_avail: var(--available-height, 28rem);
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    min-width: max(var(--anchor-width, 0px), var(--_col-w));
+    max-width: calc(100vw - var(--space-4) * 2);
+    overflow: hidden;
+  }
+  .fa-cascader-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-height: 0;
+    min-width: 0;
+  }
+  .fa-cascader-search {
+    flex: none;
+  }
+  .fa-cascader-panes {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+  }
+  .fa-cascader-columns {
+    display: flex;
+    gap: var(--space-1);
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior: contain;
+  }
+  .fa-cascader-column {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: var(--_col-w);
+    max-height: min(var(--_list-max), calc(var(--_avail) - var(--control-h-sm) * 3));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    outline: none;
+  }
+  .fa-cascader-item {
+    flex: none;
+  }
+  .fa-cascader-item > .fa-icon,
+  .fa-cascader-result > .fa-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-cascader-item > .fa-cascader-chevron {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    margin-inline-end: calc(var(--space-1) * -1);
+    color: var(--fg-subtle);
+  }
+  .fa-cascader-item:is([data-popup-open], [data-selected]) > .fa-cascader-chevron {
+    color: inherit;
+  }
+  .fa-cascader-chevron:dir(rtl),
+  .fa-cascader-back-icon:dir(rtl) {
+    transform: scaleX(-1);
+  }
+  .fa-cascader-item > .fa-select-check {
+    margin-inline-end: calc(var(--space-1) * -1);
+  }
+  .fa-cascader-item > .fa-select-check > .fa-icon {
+    width: 100%;
+    height: 100%;
+    --_stroke: calc(var(--icon-stroke) * 1.2);
+  }
+  .fa-cascader-item[data-status] {
+    cursor: default;
+    color: var(--fg-muted);
+  }
+  .fa-cascader-item[data-status="error"] {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+  .fa-cascader-item[data-status="error"] > .fa-icon {
+    color: var(--danger-text);
+  }
+  /* The box is the checking target; the rest of a level's row opens it. */
+  .fa-cascader-check {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    margin: calc(var(--space-1) * -1);
+    padding: var(--space-1);
+    cursor: pointer;
+  }
+
+  /* ── List layout (phones) ──────────────────────────────────────────────── */
+  .fa-cascader-popup[data-layout="list"] {
+    --_list-max: min(24rem, 60dvh);
+    width: calc(100vw - var(--space-2) * 2);
+    max-width: calc(100vw - var(--space-2) * 2);
+  }
+  /* One height for every level and the results, so drilling never moves the list (the
+     popup may sit above its trigger, where a shorter level would move its top). */
+  .fa-cascader-popup[data-layout="list"] :is(.fa-cascader-column, .fa-cascader-results-list, .fa-cascader-results[data-empty]) {
+    width: 100%;
+    height: min(var(--_list-max), calc(var(--_avail) - var(--control-h-sm) * 4));
+    max-height: none;
+  }
+  .fa-cascader-list-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--control-h-sm);
+  }
+  .fa-cascader-list-title {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-cascader-list-head:not(:has(.fa-button)) > .fa-cascader-list-title {
+    padding-inline-start: var(--space-2-5);
+  }
+
+  /* ── Search results ────────────────────────────────────────────────────── */
+  .fa-cascader-results {
+    position: relative;
+    min-width: min(calc(var(--_col-w) * 2), 100%);
+    min-height: calc(var(--item-h) * 2);
+  }
+  .fa-cascader-results-list {
+    display: flex;
+    flex-direction: column;
+    max-height: min(var(--_list-max), calc(var(--_avail) - var(--control-h-sm) * 3));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    outline: none;
+  }
+  .fa-cascader-result {
+    flex: none;
+  }
+  .fa-cascader-separator {
+    color: var(--fg-subtle);
+    white-space: pre;
+  }
+  .fa-cascader-more {
+    padding: var(--space-2) var(--space-2-5);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+
+  /* ── Path in the trigger ───────────────────────────────────────────────── */
+  .fa-cascader-path {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .fa-cascader-segments {
+    display: flex;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .fa-cascader-segment {
+    flex: none;
+  }
+  .fa-cascader-segment[data-last] {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-cascader-segment[data-ellipsis] {
+    color: var(--fg-subtle);
+  }
+  .fa-cascader-measure {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    display: flex;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    white-space: pre;
+    pointer-events: none;
+  }
+  .fa-cascader-measure > span {
+    flex: none;
+  }
+}

@@ -1,0 +1,44 @@
+import { useState } from "react";
+import { ColorField, contrast, parseHex } from "glass-ux/color-picker";
+import { Field } from "glass-ux/field";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+/** Fictional brand presets for the demos (tokens:allow sample data). */
+const PRESETS = [
+  { value: "#1f6feb", label: "Harbour blue" }, // tokens:allow sample preset
+  { value: "#0f9d58", label: "Fern" }, // tokens:allow sample preset
+  { value: "#e8710a", label: "Kiln orange" }, // tokens:allow sample preset
+  { value: "#d93025", label: "Signal red" }, // tokens:allow sample preset
+  { value: "#9334e6", label: "Dusk violet" }, // tokens:allow sample preset
+  { value: "#5f6368", label: "Slate grey" }, // tokens:allow sample preset
+];
+const WHITE = parseHex("#ffffff")!; // tokens:allow contrast reference
+
+export default function ColorPickerSection() {
+  const [colour, setColour] = useState("#e8710a"); // tokens:allow sample value
+  const [tag, setTag] = useState<string | null>("#1f6feb"); // tokens:allow sample value
+  const [overlay, setOverlay] = useState("#1f6febb3"); // tokens:allow sample value
+  const parsed = parseHex(colour);
+  const ratio = parsed ? contrast(parsed, WHITE) : 0;
+  return (
+    <SectionPage>
+      <Specimen
+        title="Field"
+        description="The hex value is typed in place; the swatch opens the picker. Clearable fields can hold no colour."
+        layout="stack"
+      >
+        <div className="grid max-w-md gap-4">
+          <Field label="Tag colour" description="Shown on the tag's chip.">
+            <ColorField value={tag} onValueChange={setTag} clearable swatches={PRESETS} />
+          </Field>
+          <Field label="Overlay colour" description="With opacity, stored as #rrggbbaa.">
+            <ColorField value={overlay} onValueChange={(next) => next && setOverlay(next)} alpha />
+          </Field>
+          <Field label="Locked colour">
+            <ColorField defaultValue="#5f6368" disabled /> {/* tokens:allow sample value */}
+          </Field>
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

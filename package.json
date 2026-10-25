@@ -94,6 +94,10 @@
       "types": "./dist/ui/image/index.d.ts",
       "import": "./dist/ui/image/index.js"
     },
+    "./color-picker": {
+      "types": "./dist/ui/color-picker/index.d.ts",
+      "import": "./dist/ui/color-picker/index.js"
+    },
     "./file-icon": {
       "types": "./dist/ui/file-icon/index.d.ts",
       "import": "./dist/ui/file-icon/index.js"

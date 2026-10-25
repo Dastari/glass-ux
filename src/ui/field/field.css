@@ -337,7 +337,8 @@
       var(--sheen-solid), linear-gradient(105deg, var(--_on), var(--_on-2));
   }
   .fa-switch,
-  .fa-slider {
+  .fa-slider,
+  .fa-color-picker {
     --_bead: radial-gradient(
       130% 130% at 30% 22%,
       oklch(1 0 0) 0%,

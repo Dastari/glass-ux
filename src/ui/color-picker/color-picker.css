@@ -1,0 +1,182 @@
+/*
+ * ColorPicker and ColorField.
+ *
+ *   area     lightness (up) × chroma (across) at the chosen hue, painted into a canvas; the
+ *            sRGB gamut's edge shows because colours outside it are drawn faintly
+ *   thumbs   the slider bead as a ring around the current colour
+ *   sliders  hue and opacity on recessed tracks that show their own gradient
+ *   inputs   a preview chip, the hex field and the eyedropper
+ *   swatches presets as round chips; the chosen one carries an accent ring
+ */
+@layer components {
+  .fa-color-picker {
+    --_thumb: calc(var(--check-size) + var(--space-1));
+    --_ring: oklch(1 0 0);
+    --_ring-width: calc(var(--border-width) * 2.5);
+    --_check: color-mix(in oklab, var(--fg-subtle) 22%, transparent);
+    --_checks: conic-gradient(var(--_check) 25%, transparent 0 50%, var(--_check) 0 75%, transparent 0) 0 0 / var(--space-2) var(--space-2);
+    display: grid;
+    gap: var(--space-3);
+    width: 100%;
+    min-width: 0;
+  }
+  .fa-color-picker[data-disabled] {
+    opacity: var(--disabled-opacity);
+  }
+
+  /* ── Area ──────────────────────────────────────────────────────────────────── */
+  .fa-color-area {
+    position: relative;
+    aspect-ratio: 8 / 5;
+    border-radius: var(--radius-tile);
+    background: var(--glass-fill-inset);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    touch-action: none;
+    cursor: crosshair;
+  }
+  .fa-color-area[data-disabled] {
+    cursor: not-allowed;
+  }
+  /* Absolute, so the canvas's pixel size never sets the picker's minimum width. */
+  .fa-color-area-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+  }
+  .fa-color-area-thumb {
+    position: absolute;
+    inset-inline-start: calc(var(--_x) * 100%);
+    top: calc(var(--_y) * 100%);
+    width: var(--_thumb);
+    height: var(--_thumb);
+    border-radius: var(--radius-full);
+    background: var(--_colour);
+    box-shadow:
+      0 0 0 var(--_ring-width) var(--_ring),
+      var(--_bead-shadow);
+    translate: -50% -50%;
+    outline-offset: calc(var(--_ring-width) + var(--focus-ring-offset));
+  }
+  :dir(rtl) .fa-color-area-thumb {
+    translate: 50% -50%;
+  }
+
+  /* ── Sliders ───────────────────────────────────────────────────────────────── */
+  .fa-color-sliders {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .fa-color-slider-control {
+    display: flex;
+    align-items: center;
+    height: var(--_thumb);
+    touch-action: none;
+    cursor: pointer;
+  }
+  .fa-color-slider[data-disabled] .fa-color-slider-control {
+    cursor: not-allowed;
+  }
+  .fa-color-slider-track {
+    position: relative;
+    width: 100%;
+    height: var(--space-3);
+    border-radius: var(--radius-full);
+    background: var(--_track);
+    box-shadow: var(--_well-shadow);
+  }
+  .fa-color-slider[data-alpha] .fa-color-slider-track {
+    background: var(--_track), var(--_checks), var(--surface-3);
+  }
+  /* The thumb's centre runs from half a thumb in at each end, so nothing overhangs. */
+  .fa-color-slider-thumb {
+    width: var(--_thumb);
+    height: var(--_thumb);
+    border-radius: var(--radius-full);
+    background: var(--_colour-alpha);
+    box-shadow:
+      0 0 0 var(--_ring-width) var(--_ring),
+      var(--_bead-shadow);
+    outline-offset: calc(var(--_ring-width) + var(--focus-ring-offset));
+  }
+  .fa-color-slider:not([data-alpha]) .fa-color-slider-thumb {
+    background: oklch(72% 0.14 calc(var(--_f) * 360)); /* tokens:allow the hue thumb shows its own hue */
+  }
+
+  /* ── Hex, preview and eyedropper ───────────────────────────────────────────── */
+  .fa-color-inputs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .fa-color-preview {
+    flex: none;
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+    border-radius: var(--radius-control);
+    background: linear-gradient(var(--_colour-alpha), var(--_colour-alpha)), var(--_checks), var(--surface-3);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+  }
+  .fa-color-hex {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-mono);
+  }
+
+  /* ── Swatches ──────────────────────────────────────────────────────────────── */
+  /* Room for the chosen swatch's ring, without moving the row off the picker's edge. */
+  .fa-color-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1-5);
+    padding: calc(var(--_ring-width) * 2);
+    margin: calc(var(--_ring-width) * -2);
+  }
+  .fa-color-swatch {
+    width: var(--space-6);
+    height: var(--space-6);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-full);
+    background: linear-gradient(var(--_swatch), var(--_swatch)), var(--_checks), var(--surface-3);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+    cursor: pointer;
+  }
+  .fa-color-swatch[aria-pressed="true"] {
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--line-strong),
+      0 0 0 var(--_ring-width) var(--surface-3),
+      0 0 0 calc(var(--_ring-width) * 2) var(--accent);
+  }
+  .fa-color-swatch:disabled {
+    cursor: not-allowed;
+  }
+
+  /* ── ColorField ────────────────────────────────────────────────────────────── */
+  .fa-color-field input {
+    font-family: var(--font-mono);
+  }
+  .fa-color-field-swatch {
+    --_check: color-mix(in oklab, var(--fg-subtle) 22%, transparent);
+    flex: none;
+    width: calc(var(--check-size) + var(--space-1));
+    height: calc(var(--check-size) + var(--space-1));
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-compact);
+    background:
+      linear-gradient(var(--_swatch, transparent), var(--_swatch, transparent)),
+      conic-gradient(var(--_check) 25%, transparent 0 50%, var(--_check) 0 75%, transparent 0) 0 0 / var(--space-1-5) var(--space-1-5);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+    cursor: pointer;
+  }
+  .fa-color-field-swatch[data-empty] {
+    background: linear-gradient(
+      to top right,
+      transparent calc(50% - var(--border-width)),
+      var(--danger) calc(50% - var(--border-width)) calc(50% + var(--border-width)),
+      transparent calc(50% + var(--border-width))
+    );
+  }
+}

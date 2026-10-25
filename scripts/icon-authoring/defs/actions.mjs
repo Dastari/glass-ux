@@ -1,4 +1,4 @@
-import { arc, centred, band, circle, circlePrim, cut, d, dotEl, line, path, polar, poly, rect, rot, rrect, tinted, V,  } from "../lib.mjs"
+import { angleOf, arc, centred, band, circle, circlePrim, cut, d, dotEl, intersect, line, path, polar, poly, rect, rot, rrect, tinted, V,  } from "../lib.mjs"
 
 export const icons = {}
 const def = (name, fn) => (icons[name] = fn)
@@ -35,6 +35,25 @@ def("edit", () => {
 // Scissors: two finger rings, tinted together, and two 45° blades crossing at the pivot. The
 // back blade breaks 3 units either side of the front one; the rings sit far enough apart
 // that the stub left by the top ring is a blade, not a handle on a magnifier.
+def("eyedropper", () => {
+  // a pipette on the 45° axis: squeeze bulb top-right, collar, slim tube to a tip bottom-left
+  const r = (pts) => pts.map((p) => rot(p, C, 45))
+  const bulb = rrect(9.25, 1.5, 5.5, 6.75, 2.75)
+  const turn = (prims) =>
+    prims.map((s) => (s.k === "l" ? line(rot(s.p, C, 45), rot(s.q, C, 45)) : { ...s, c: rot(s.c, C, 45), a0: s.a0 + 45, a1: s.a1 + 45 }))
+  const tube = poly(r([[10.25, 11], [13.75, 11], [13.75, 19], [12, 22.25], [10.25, 19]]), 0.5)
+  const collar = line(...r([[7.5, 9.5], [16.5, 9.5]]))
+  return [path(d(turn(bulb), true), "t"), path(d(turn(bulb), true)), path(d([collar])), path(d(tube, true))]
+})
+def("palette", () => {
+  // a painter's palette: a round board with a thumb notch bottom-right and four dabs of paint
+  const R = 9.25
+  const bite = [17, 17]
+  const br = 3.5
+  const [p1, p2] = intersect(C, R, bite, br)
+  const outline = [arc(C, R, angleOf(C, p2) - 360, angleOf(C, p1)), arc(bite, br, angleOf(bite, p1), angleOf(bite, p2) - 360)]
+  return [path(d(outline, true), "t"), path(d(outline, true)), dotEl(8, 10, 1.4), dotEl(11.5, 6.75, 1.4), dotEl(15.5, 8.25, 1.4), dotEl(7.75, 14.25, 1.4)]
+})
 def("cut", () => {
   const r = 2.75
   const t = r * Math.SQRT1_2

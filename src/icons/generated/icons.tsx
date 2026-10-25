@@ -931,6 +931,18 @@ export const IconEye = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconEyedropper = /* @__PURE__ */ createIcon(
+  "eyedropper",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M15.54 4.58A2.75 2.75 0 0 1 19.42 4.58A2.75 2.75 0 0 1 19.42 8.46L18.54 9.35A2.75 2.75 0 0 1 14.65 9.35A2.75 2.75 0 0 1 14.65 5.46L15.54 4.58Z" />
+      <path d="M15.54 4.58A2.75 2.75 0 0 1 19.42 4.58A2.75 2.75 0 0 1 19.42 8.46L18.54 9.35A2.75 2.75 0 0 1 14.65 9.35A2.75 2.75 0 0 1 14.65 5.46L15.54 4.58Z" />
+      <path d="M10.59 7.05L16.95 13.41" />
+      <path d="M11.12 10.41A0.5 0.5 0 0 1 11.82 10.41L13.59 12.18A0.5 0.5 0 0 1 13.59 12.88L8.38 18.1A0.5 0.5 0 0 1 8.17 18.22L5.64 18.98A0.5 0.5 0 0 1 5.02 18.36L5.78 15.83A0.5 0.5 0 0 1 5.9 15.62L11.12 10.41Z" />
+    </>
+  )
+)
+
 export const IconFacebook = /* @__PURE__ */ createIcon(
   "facebook",
   () => (
@@ -2358,6 +2370,20 @@ export const IconPageLast = /* @__PURE__ */ createIcon(
     <>
       <path d="M17 6.5V17.5" />
       <path d="M7 6.5L12.5 12L7 17.5" />
+    </>
+  )
+)
+
+export const IconPalette = /* @__PURE__ */ createIcon(
+  "palette",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M15.98 20.35A9.25 9.25 0 1 1 20.35 15.98A3.5 3.5 0 1 0 15.98 20.35Z" />
+      <path d="M15.98 20.35A9.25 9.25 0 1 1 20.35 15.98A3.5 3.5 0 1 0 15.98 20.35Z" />
+      <circle className="fa-icon-dot" cx="8" cy="10" r="1.4" />
+      <circle className="fa-icon-dot" cx="11.5" cy="6.75" r="1.4" />
+      <circle className="fa-icon-dot" cx="15.5" cy="8.25" r="1.4" />
+      <circle className="fa-icon-dot" cx="7.75" cy="14.25" r="1.4" />
     </>
   )
 )

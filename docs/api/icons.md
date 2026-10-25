@@ -100,6 +100,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconExternalLink** — External Link icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconEyeOff** — Eye Off icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconEye** — Eye icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconEyedropper** — Eyedropper icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFacebook** — Facebook icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFactory** — Factory icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconFanvil** — Fanvil icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
@@ -224,6 +225,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconPackage** — Package icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconPageFirst** — Page First icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconPageLast** — Page Last icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconPalette** — Palette icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconPaloAlto** — Palo Alto icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconPanasonic** — Panasonic icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconPartner** — Partner icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.

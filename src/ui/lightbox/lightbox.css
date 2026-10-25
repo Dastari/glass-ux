@@ -1,0 +1,103 @@
+/*
+ * Lightbox: the picture on the canvas inside an xl dialog, a thumbnail strip under it, and
+ * zoom controls in the footer. The stage's height is fixed per viewport so moving between
+ * pictures of different shapes never resizes the dialog.
+ */
+@layer components {
+  .fa-lightbox {
+    --_stage-h: min(68vh, 44rem);
+    --_zoom-base: 60rem;
+    --_zoom-label: 3.5rem;
+    --_thumb: 3.5rem;
+  }
+  .fa-lightbox .fa-dialog-body {
+    display: flex;
+  }
+  .fa-lightbox-main {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-lightbox-stage {
+    display: grid;
+    flex: none;
+    place-items: center;
+    height: var(--_stage-h);
+    overflow: auto;
+    overscroll-behavior: contain;
+    background-color: var(--canvas);
+    touch-action: pan-y pinch-zoom;
+    user-select: none;
+  }
+  .fa-lightbox-stage:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-lightbox-stage img {
+    display: block;
+    max-width: 100%;
+    max-height: var(--_stage-h);
+    width: auto;
+    height: auto;
+    border-radius: var(--radius-media);
+  }
+  .fa-lightbox-stage[data-zoomed] {
+    place-items: start;
+    cursor: grab;
+    touch-action: none;
+  }
+  .fa-lightbox-stage[data-zoomed]:active {
+    cursor: grabbing;
+  }
+  .fa-lightbox-stage[data-zoomed] img {
+    max-width: none;
+    max-height: none;
+    width: calc(var(--_scale) * min(100%, var(--_zoom-base)));
+  }
+  .fa-lightbox-thumbnails {
+    display: flex;
+    gap: var(--space-1-5);
+    padding: var(--space-2) var(--space-3);
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .fa-lightbox-thumbnail {
+    flex: none;
+    width: var(--_thumb);
+    height: var(--_thumb);
+    padding: 0;
+    overflow: hidden;
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-tile);
+    background: var(--fill-muted);
+    opacity: 0.72;
+    cursor: pointer;
+  }
+  .fa-lightbox-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .fa-lightbox-thumbnail:hover {
+    opacity: 1;
+  }
+  .fa-lightbox-thumbnail[aria-current="true"] {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--accent-soft);
+    opacity: 1;
+  }
+  .fa-lightbox-zoom {
+    min-width: var(--_zoom-label);
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    text-align: center;
+  }
+  .fa-lightbox-actions {
+    display: inline-flex;
+    gap: var(--space-1);
+    margin-inline-start: var(--space-2);
+    padding-inline-start: var(--space-2);
+    border-inline-start: var(--border-width) solid var(--line);
+  }
+}

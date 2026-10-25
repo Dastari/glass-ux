@@ -1,0 +1,63 @@
+/* Link: accent text with an underline that sits clear of descenders; hover thickens it. */
+@layer components {
+  .fa-link {
+    --_underline: var(--border-width);
+    --_offset: 0.18em;
+    --_icon: 1em;
+    --_icon-drop: -0.125em;
+    --_external: 0.85em;
+    --_external-drop: -0.05em;
+    color: var(--accent-text);
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--_underline);
+    text-decoration-color: color-mix(in oklab, currentColor 55%, transparent);
+    text-underline-offset: var(--_offset);
+    border-radius: var(--radius-chip);
+    cursor: pointer;
+    transition: text-decoration-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-link:hover {
+    text-decoration-color: currentColor;
+    text-decoration-thickness: calc(var(--_underline) * 1.5);
+  }
+  .fa-link[data-variant="standalone"],
+  .fa-link[data-variant="subtle"] {
+    text-decoration-color: transparent;
+  }
+  .fa-link[data-variant="standalone"]:hover,
+  .fa-link[data-variant="subtle"]:hover {
+    text-decoration-color: currentColor;
+  }
+  .fa-link[data-variant="subtle"] {
+    color: inherit;
+  }
+  .fa-link[data-variant="standalone"] {
+    font-weight: var(--weight-medium);
+  }
+  .fa-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--space-half);
+  }
+  .fa-link[aria-disabled="true"] {
+    color: var(--fg-disabled);
+    text-decoration-color: transparent;
+    cursor: not-allowed;
+  }
+  .fa-link-icon {
+    display: inline-flex;
+    margin-inline-end: var(--space-1);
+    vertical-align: var(--_icon-drop);
+  }
+  .fa-link-icon :where(svg) {
+    width: var(--_icon);
+    height: var(--_icon);
+  }
+  .fa-link-external {
+    display: inline-block;
+    width: var(--_external);
+    height: var(--_external);
+    margin-inline-start: var(--space-half);
+    vertical-align: var(--_external-drop);
+    opacity: 0.8;
+  }
+}

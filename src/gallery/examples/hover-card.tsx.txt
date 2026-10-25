@@ -1,0 +1,76 @@
+import { Avatar } from "glass-ux/avatar";
+import { Badge } from "glass-ux/badge";
+import { HoverCard } from "glass-ux/hover-card";
+import { Link } from "glass-ux/link";
+import { PORTRAITS } from "glass-ux/gallery/fixtures/organisations";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+const PEOPLE = [
+  {
+    name: "Rivka Holm",
+    role: "Site lead · Parramatta depot",
+    local: "09:42 local",
+    status: "On site",
+    portrait: PORTRAITS[0],
+  },
+  {
+    name: "Tomás Ferreira",
+    role: "Network engineer · Hobart",
+    local: "09:42 local",
+    status: "On call",
+    portrait: PORTRAITS[1],
+  },
+  {
+    name: "Amara Okafor",
+    role: "Service desk · Perth",
+    local: "07:42 local",
+    status: "Away",
+    portrait: PORTRAITS[2],
+  },
+];
+
+function PersonCard({ person }: { person: (typeof PEOPLE)[number] }) {
+  return (
+    <>
+      <div className="flex items-center gap-3">
+        <Avatar name={person.name} src={person.portrait} size="lg" />
+        <div className="min-w-0">
+          <p className="type-label">{person.name}</p>
+          <p className="type-caption text-fg-muted">{person.role}</p>
+        </div>
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        <span className="type-caption text-fg-muted" data-numeric>
+          {person.local}
+        </span>
+        <Badge size="sm" tone={person.status === "Away" ? "neutral" : "success"}>
+          {person.status}
+        </Badge>
+      </div>
+    </>
+  );
+}
+
+export default function HoverCardSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="On a name"
+        description="Rest the pointer on a name, or tab to it. The link still goes to the person's page."
+        layout="stack"
+      >
+        <p className="max-w-prose leading-relaxed">
+          The kiln sensor at the depot was recalibrated by{" "}
+          {PEOPLE.map((person, index) => (
+            <span key={person.name}>
+              <HoverCard content={<PersonCard person={person} />} size="sm">
+                <Link href={`#${person.name.split(" ")[0]!.toLowerCase()}`}>{person.name}</Link>
+              </HoverCard>
+              {index < PEOPLE.length - 2 ? ", " : index === PEOPLE.length - 2 ? " and " : "."}
+            </span>
+          ))}
+        </p>
+      </Specimen>
+    </SectionPage>
+  );
+}

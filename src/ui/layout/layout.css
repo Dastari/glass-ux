@@ -1,0 +1,61 @@
+/* Stack and Grid: spacing roles as gaps, alignment as data attributes. */
+@layer components {
+  .fa-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--_gap);
+    min-width: 0;
+  }
+  .fa-stack[data-direction="row"] {
+    flex-direction: row;
+    align-items: center;
+  }
+  .fa-stack[data-wrap] {
+    flex-wrap: wrap;
+  }
+  .fa-stack[data-align="start"] {
+    align-items: flex-start;
+  }
+  .fa-stack[data-align="center"] {
+    align-items: center;
+  }
+  .fa-stack[data-align="end"] {
+    align-items: flex-end;
+  }
+  .fa-stack[data-align="stretch"] {
+    align-items: stretch;
+  }
+  .fa-stack[data-align="baseline"] {
+    align-items: baseline;
+  }
+  .fa-stack[data-justify="start"] {
+    justify-content: flex-start;
+  }
+  .fa-stack[data-justify="center"] {
+    justify-content: center;
+  }
+  .fa-stack[data-justify="end"] {
+    justify-content: flex-end;
+  }
+  .fa-stack[data-justify="between"] {
+    justify-content: space-between;
+  }
+  .fa-grid {
+    display: grid;
+    grid-template-columns: var(--_columns);
+    gap: var(--_row-gap) var(--_gap);
+    min-width: 0;
+  }
+  .fa-grid[data-align="start"] {
+    align-items: start;
+  }
+  .fa-grid[data-align="center"] {
+    align-items: center;
+  }
+  .fa-grid[data-align="end"] {
+    align-items: end;
+  }
+  .fa-grid[data-align="stretch"] {
+    align-items: stretch;
+  }
+}

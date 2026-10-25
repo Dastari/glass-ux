@@ -1,0 +1,68 @@
+import { Badge } from "glass-ux/badge";
+import { Button } from "glass-ux/button";
+import { Field } from "glass-ux/field";
+import { Input } from "glass-ux/input";
+import { Grid, Stack } from "glass-ux/layout";
+import { Surface } from "glass-ux/surface";
+import { Text } from "glass-ux/text";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+const SITES = [
+  "Parramatta depot",
+  "Hobart office",
+  "Perth warehouse",
+  "Geelong lab",
+  "Cairns kiosk",
+  "Darwin yard",
+];
+
+export default function LayoutSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Stack"
+        description="A column of fields uses the fields gap; a row of buttons the controls gap. Both follow density."
+        layout="stack"
+      >
+        <Stack className="max-w-md">
+          <Field label="Site name">
+            <Input defaultValue="Parramatta depot" />
+          </Field>
+          <Field label="Contact">
+            <Input defaultValue="Rivka Holm" />
+          </Field>
+          <Stack direction="row" justify="end">
+            <Button>Cancel</Button>
+            <Button variant="primary">Save</Button>
+          </Stack>
+        </Stack>
+      </Specimen>
+      <Specimen
+        title="Grid"
+        description="As many columns as fit at a minimum width, so tiles reflow with their container, not the window."
+        layout="stack"
+        wide
+      >
+        <Grid columns={{ min: "12rem" }}>
+          {" "}
+          {/* tokens:allow a tile width */}
+          {SITES.map((site, index) => (
+            <Surface key={site} material="panel" padding="tile" radius="tile">
+              <Stack gap="inline">
+                <Text variant="label">{site}</Text>
+                <Stack direction="row" gap="inline">
+                  <Badge size="sm" tone={index % 3 ? "success" : "warning"}>
+                    {index % 3 ? "Online" : "Degraded"}
+                  </Badge>
+                  <Text as="span" variant="caption" tone="subtle" numeric>
+                    {12 + index * 7} devices
+                  </Text>
+                </Stack>
+              </Stack>
+            </Surface>
+          ))}
+        </Grid>
+      </Specimen>
+    </SectionPage>
+  );
+}

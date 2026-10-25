@@ -1,0 +1,22 @@
+import { Heading } from "glass-ux/text";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+export default function TextSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Headings"
+        description="The level keeps the outline correct; the look can differ, so a panel's heading can be small and still an h2."
+        layout="stack"
+      >
+        <div className="grid gap-2">
+          <Heading level={2}>Devices</Heading>
+          <Heading level={2} variant="title">
+            Devices, as a panel heading
+          </Heading>
+          <Heading level={3}>Alerts this week</Heading>
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

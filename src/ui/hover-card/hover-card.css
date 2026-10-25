@@ -1,0 +1,23 @@
+/* HoverCard: the overlay material at three widths, with the tile inset inside. */
+@layer components {
+  .fa-hover-card-positioner {
+    z-index: var(--z-popover);
+  }
+  .fa-hover-card {
+    --_w: 20rem;
+    width: min(var(--_w), calc(100vw - var(--space-4) * 2));
+    max-height: none;
+  }
+  .fa-hover-card[data-size="sm"] {
+    --_w: 16rem;
+  }
+  .fa-hover-card[data-size="lg"] {
+    --_w: 26rem;
+  }
+  .fa-hover-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: calc(var(--inset-tile) - var(--inset-overlay));
+  }
+}

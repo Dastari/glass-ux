@@ -1,0 +1,113 @@
+/* Text and Heading: the type roles from tokens.css as data attributes, and colour roles. */
+@layer components {
+  .fa-text {
+    margin: 0;
+    font-size: var(--_size);
+    line-height: var(--_line);
+    font-weight: var(--_weight);
+    letter-spacing: var(--_tracking);
+    --_size: var(--type-body-size);
+    --_line: var(--type-body-line);
+    --_weight: var(--type-body-weight);
+    --_tracking: var(--type-body-tracking);
+  }
+  .fa-text[data-variant="display"] {
+    --_size: var(--type-display-size);
+    --_line: var(--type-display-line);
+    --_weight: var(--type-display-weight);
+    --_tracking: var(--type-display-tracking);
+    font-family: var(--font-display);
+  }
+  .fa-text[data-variant="headline"] {
+    --_size: var(--type-headline-size);
+    --_line: var(--type-headline-line);
+    --_weight: var(--type-headline-weight);
+    --_tracking: var(--type-headline-tracking);
+    font-family: var(--font-display);
+  }
+  .fa-text[data-variant="title"] {
+    --_size: var(--type-title-size);
+    --_line: var(--type-title-line);
+    --_weight: var(--type-title-weight);
+    --_tracking: var(--type-title-tracking);
+  }
+  .fa-text[data-variant="subtitle"] {
+    --_size: var(--type-subtitle-size);
+    --_line: var(--type-subtitle-line);
+    --_weight: var(--type-subtitle-weight);
+    --_tracking: var(--type-subtitle-tracking);
+  }
+  .fa-text[data-variant="label"] {
+    --_size: var(--type-label-size);
+    --_line: var(--type-label-line);
+    --_weight: var(--type-label-weight);
+    --_tracking: var(--type-label-tracking);
+  }
+  .fa-text[data-variant="caption"] {
+    --_size: var(--type-caption-size);
+    --_line: var(--type-caption-line);
+    --_weight: var(--type-caption-weight);
+    --_tracking: var(--type-caption-tracking);
+  }
+  .fa-text[data-variant="overline"] {
+    --_size: var(--type-overline-size);
+    --_line: var(--type-overline-line);
+    --_weight: var(--type-overline-weight);
+    --_tracking: var(--type-overline-tracking);
+    text-transform: uppercase;
+  }
+  .fa-text[data-tone="muted"] {
+    color: var(--fg-muted);
+  }
+  .fa-text[data-tone="subtle"] {
+    color: var(--fg-subtle);
+  }
+  .fa-text[data-tone="accent"] {
+    color: var(--accent-text);
+  }
+  .fa-text[data-tone="success"] {
+    color: var(--success-text);
+  }
+  .fa-text[data-tone="warning"] {
+    color: var(--warning-text);
+  }
+  .fa-text[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .fa-text[data-tone="info"] {
+    color: var(--info-text);
+  }
+  .fa-text[data-weight="medium"] {
+    --_weight: var(--weight-medium);
+  }
+  .fa-text[data-weight="semibold"] {
+    --_weight: var(--weight-semibold);
+  }
+  .fa-text[data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-text[data-mono] {
+    font-family: var(--font-mono);
+  }
+  .fa-text[data-truncate="line"] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-text[data-truncate="lines"] {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--_lines);
+    line-clamp: var(--_lines);
+  }
+  .fa-text[data-align="start"] {
+    text-align: start;
+  }
+  .fa-text[data-align="center"] {
+    text-align: center;
+  }
+  .fa-text[data-align="end"] {
+    text-align: end;
+  }
+}

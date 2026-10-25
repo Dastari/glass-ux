@@ -98,6 +98,26 @@
       "types": "./dist/ui/appearance-settings/index.d.ts",
       "import": "./dist/ui/appearance-settings/index.js"
     },
+    "./text": {
+      "types": "./dist/ui/text/index.d.ts",
+      "import": "./dist/ui/text/index.js"
+    },
+    "./link": {
+      "types": "./dist/ui/link/index.d.ts",
+      "import": "./dist/ui/link/index.js"
+    },
+    "./layout": {
+      "types": "./dist/ui/layout/index.d.ts",
+      "import": "./dist/ui/layout/index.js"
+    },
+    "./lightbox": {
+      "types": "./dist/ui/lightbox/index.d.ts",
+      "import": "./dist/ui/lightbox/index.js"
+    },
+    "./hover-card": {
+      "types": "./dist/ui/hover-card/index.d.ts",
+      "import": "./dist/ui/hover-card/index.js"
+    },
     "./toolbar": {
       "types": "./dist/ui/toolbar/index.d.ts",
       "import": "./dist/ui/toolbar/index.js"

@@ -1,0 +1,69 @@
+import { useState } from "react";
+import { IconDownload } from "glass-ux/icons";
+import { ButtonLink } from "glass-ux/button-link";
+import { Image } from "glass-ux/image";
+import { Grid } from "glass-ux/layout";
+import { Lightbox, type LightboxImage } from "glass-ux/lightbox";
+import { SCENE_IMAGES } from "glass-ux/gallery/fixtures/scenes";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+const PHOTOS: LightboxImage[] = Object.entries(SCENE_IMAGES).map(([name, src]) => ({
+  id: name,
+  src,
+  alt: `Sample landscape: ${name}`,
+  caption: `${name[0]!.toUpperCase()}${name.slice(1)} at dusk`,
+  width: 1600,
+  height: 1000,
+}));
+
+export default function LightboxSection() {
+  const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+  return (
+    <SectionPage>
+      <Specimen
+        title="Gallery"
+        description="Choose a picture to open it. ← → or a swipe move between pictures; + − zoom, and a zoomed picture pans by dragging."
+        layout="stack"
+        wide
+      >
+        <Grid columns={{ min: "10rem" }}>
+          {" "}
+          {/* tokens:allow a thumbnail width */}
+          {PHOTOS.map((photo, photoIndex) => (
+            <button
+              key={photo.id}
+              type="button"
+              className="fa-pressable rounded-[var(--radius-media)]"
+              aria-label={`Open ${photo.alt}`}
+              onClick={() => {
+                setIndex(photoIndex);
+                setOpen(true);
+              }}
+            >
+              <Image src={photo.src} alt="" ratio="landscape" hover="zoom" />
+            </button>
+          ))}
+        </Grid>
+        <Lightbox
+          images={PHOTOS}
+          index={index}
+          onIndexChange={setIndex}
+          open={open}
+          onOpenChange={setOpen}
+          actions={(image) => (
+            <ButtonLink
+              variant="ghost"
+              size="sm"
+              icon={<IconDownload />}
+              href={image.src}
+              download={`${image.id}.svg`}
+            >
+              Download
+            </ButtonLink>
+          )}
+        />
+      </Specimen>
+    </SectionPage>
+  );
+}

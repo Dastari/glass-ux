@@ -6,52 +6,105 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ## Unreleased
 
-Ten new canvas backgrounds, six palettes, custom colours and picture backgrounds, and a
-light mode with more depth. No code changes are required; the
-[migration guide](docs/migration.md) lists what to review.
+The interface in eleven more languages and right to left; Next.js App Router support; new
+components for colour, appearance, multi-step tasks, scheduling, boards, hierarchies and
+guided tours; DataTable editing, export and column order; chart zoom, brush and reference
+lines; print and Windows High Contrast; ten canvas backgrounds, six palettes and custom
+colours. No code changes are required; the [migration guide](docs/migration.md) lists what
+to review.
 
 ### Added
 
-- Backgrounds: Currents and Waves (colour fields), Pixels, Circuit and Network (digital),
-  and Skyline, Harbour, Forest, Hills and Garden (scenes). Their artwork is an alpha mask
-  painted in each palette's roles, so it follows palette and mode, including baked frost.
+**Languages and direction**
+
+- `glass-ux/i18n`: every built-in word is a translatable message. Components declare
+  English messages per namespace; `registerMessagePack` serves a language by locale,
+  `configureMessages` and `MessagesProvider` change wording, and a component's `labels`
+  prop still wins. Packs for German, French, Spanish, Italian, Portuguese (Brazil), Dutch,
+  Japanese, Chinese (Simplified), Korean, Arabic and Hebrew at `glass-ux/i18n/<tag>`.
+- Right to left: library CSS uses logical properties (enforced by `logical:check`),
+  directional icons mirror, and keyboard and pointer handling follow the reading
+  direction. `DirectionProvider`, `useDirection` and `localeDirection` in `glass-ux/locale`;
+  Sheet sides `start` and `end`.
+- The docs site has an interface language menu.
+
+**Platform**
+
+- Next.js App Router: modules that need the client carry `"use client"`; server components
+  can import components, icons, `appearanceBootScript` and formatting helpers. A packed
+  App Router build is tested (`pnpm test:next`).
+- `glass-ux/hooks`: `useControllable`, `useElementSize`, `useMediaQuery` and `useHotkeys`.
+- `VisuallyHidden`, `Portal`, `Spinner` and `VirtualList`.
+- `glass-ux/form-rhf`: react-hook-form for every field (`RhfField`, `RhfForm`,
+  `useRhfField`) with the library's schemas and error display.
+- `glass-ux/testing` and `glass-ux/testing/playwright`: `renderWithGlass`,
+  `installGlassTestEnvironment`, and helpers for selects, comboboxes, menus, dates,
+  switches, tables and toasts.
+
+**Components**
+
+- `ColorPicker` and `ColorField`: any colour in OKLCH, with the sRGB gamut's edge drawn,
+  hue and opacity sliders, a hex field, named presets and the browser's eyedropper.
+- `AppearanceSettings`: every appearance preference as setting rows, with background tiles
+  that preview each background and a picture upload; locked settings show as set by the
+  organisation, or are hidden.
+- `Stepper` and `Wizard`: progress through a multi-step task, and a wizard that checks each
+  step (sync or async) before moving on, with optional steps.
+- `Scheduler`: month, week, day and agenda views, events side by side, slot selection,
+  rescheduling by drag or keyboard with rollback, time zones and a narrow form.
+- `Kanban`: a board with work-in-progress limits that refuse with a reason, moves that fly
+  back when a save fails, collapsible columns and a one-column narrow form.
+- `TreeSelect`, `Cascader` and `TransferList`: choose from hierarchies (check strategies,
+  search, lazy branches, path search) and assign items between two searchable lists.
+- `Tour`: a guided tour with a spotlight, an anchored step card and remembered completion.
+- `Toolbar`: one tab stop with arrow keys; items fold into More by priority.
+- `HoverCard`, `Lightbox` (swipe, zoom and pan, thumbnails), `Link`, `Text`, `Heading`,
+  `Stack` and `Grid`.
+- Icons: `eyedropper`, `palette`, `chevrons-left` and `chevrons-right`.
+
+**DataTable**
+
+- Inline cell editing: typed editors, validation, optimistic saves that restore on
+  failure, Enter/F2/Tab/Escape, and no change to row height.
+- Export: CSV and TSV of the visible columns (selected rows when any), clipboard copy,
+  and `onExport` for server-side exports.
+- Column order by drag or keyboard, kept per person with widths and pins.
+- Printing renders every loaded row.
+
+**Charts**
+
+- Threshold lines, bands and event markers on line, area, column, scatter and sparkline
+  charts, in the accessible description and the data table.
+- X zoom on line and area charts (drag, Ctrl or ⌘ with the wheel, pinch, keys) with Reset
+  zoom, an overview brush, and `ChartBrush` to drive several charts from one range.
+
+**Print and high contrast**
+
+- Pages print cleanly: materials become white with a hairline, chrome and toasts are left
+  out, panels and scrollers grow to their content.
+- Windows High Contrast: every control keeps a boundary and a visible focus ring, and
+  selected states use system highlight colours.
+
+**Appearance**
+
+- Backgrounds: Currents and Waves, Pixels, Circuit and Network, and Skyline, Harbour,
+  Forest, Hills and Garden. Their artwork is painted in each palette's roles, so it follows
+  palette and mode, including baked frost.
 - Palettes: Lagoon, Indigo, Rose, Moss, Sand and Slate.
-- Custom colours: `accentColor`, `accentColor2` and `canvasTint` appearance preferences
-  (hex), layered over the palette. The accent's lightness is adjusted until text on it and
-  accent text reach AA (`customColourVars`).
-- Picture backgrounds: `background: "image"` with `backgroundImage` (a URL or data URL),
-  under a veil of the canvas colour; `prepareBackgroundImage(file)` downsizes uploads.
-- `defineBackground(id, label)` registers an application-owned background.
-- Canvas artwork roles: `--canvas-ink`, `--canvas-ink-2`, `--canvas-line`,
-  `--canvas-line-2`, `--canvas-glow` and `--canvas-veil`.
-- Colour foundations page: custom colour and picture background controls.
-- `glass-ux/i18n`: translatable messages. Components declare English messages per
-  namespace; `registerMessagePack` serves a language by locale, `configureMessages` and
-  `MessagesProvider` change wording, and a component's `labels` prop still wins.
-- `ColorPicker` and `ColorField` (`glass-ux/color-picker`): any colour in OKLCH, with the
-  sRGB gamut's edge drawn, hue and opacity sliders, a hex field, named presets and the
-  browser's eyedropper.
-- `AppearanceSettings` (`glass-ux/appearance-settings`): every appearance preference as
-  setting rows — theme, your colours, background tiles with previews and a picture,
-  material, density, animation, size, and opt-in shape and fonts. Locked settings show as
-  set by the organisation, or are hidden.
-- `Stepper` and `Wizard` (`glass-ux/stepper`): progress through a multi-step task, and a
-  wizard that checks each step (sync or async) before moving on, with optional steps.
-- `Toolbar` (`glass-ux/toolbar`): one tab stop with arrow keys; items fold into More by
-  priority when the row runs out of room, and read as menu items there.
-- `HoverCard` (`glass-ux/hover-card`), `Lightbox` (`glass-ux/lightbox`), `Link`
-  (`glass-ux/link`), `Text` and `Heading` (`glass-ux/text`), and `Stack` and `Grid`
-  (`glass-ux/layout`).
-- Icons: `eyedropper` and `palette`.
+- Custom colours: `accentColor`, `accentColor2` and `canvasTint`, adjusted for AA.
+- Picture backgrounds: `background: "image"` with `backgroundImage`;
+  `prepareBackgroundImage(file)` downsizes uploads. `defineBackground` registers an
+  application-owned background.
 
 ### Changed
 
 - Light mode: a deeper canvas, stronger colour fields, clearer panel glass with a firmer
   edge and shadow, and darker secondary text and hairlines.
+- Relative times and long durations are formatted by `Intl` in the component's locale.
+- Chart `Threshold.tone` is optional (neutral by default) and gains `info` and `dashed`.
 - `.canvas-silk` is the artwork layer for every background with artwork.
-- Baked frost draws artwork filled with gradients as well as flat colours.
-- An appearance change that does not fit in storage is kept out and logged, instead of
-  throwing.
+- Development warnings check `process.env.NODE_ENV` instead of `import.meta.env.DEV`, so
+  they work under every bundler.
 
 ## 0.9.11
 

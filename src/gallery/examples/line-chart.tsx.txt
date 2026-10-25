@@ -1,5 +1,6 @@
 import { useState, type ComponentProps } from "react";
-import { LineChart, type ChartState } from "glass-ux/charts";
+import { AreaChart, ChartBrush, LineChart, type ChartState, type XDomain } from "glass-ux/charts";
+import { timeline, walk } from "glass-ux/gallery/sections/charts.fixtures";
 import { ContainerLab, SectionPage, Specimen, TierBox, TierRow } from "glass-ux/gallery/kit";
 import { SkeletonSwaps } from "glass-ux/gallery/sections/charts.kit";
 
@@ -25,6 +26,140 @@ const load = [
 ];
 // Samples missing where the agent was unreachable: one short gap and one long one.
 const sparse = load.map((value, index) => ([6, 7, 15, 16, 17, 18].includes(index) ? null : value));
+// A day of five-minute samples from a fictional build server, for zoom and the brush.
+const day = timeline(288, 5);
+const queue = walk(288, 512, { base: 38, swing: 10, spikes: 0.03, spike: 45 });
+const latency = walk(288, 513, {
+  base: 120,
+  swing: 30,
+  min: 40,
+  max: 400,
+  spikes: 0.04,
+  spike: 140,
+  digits: 0,
+});
+const deploys = [
+  { x: day[96]!, label: "Deploy 4.2.0", detail: "Build runner image" },
+  { x: day[180]!, label: "Incident", tone: "danger" as const, detail: "Queue backlog" },
+  { x: day[236]!, label: "Deploy 4.2.1" },
+];
+
+/** Thresholds, a band and events: limits on the value axis, events on the time axis. */
+function References() {
+  return (
+    <div className="grid w-full gap-3 md:grid-cols-2">
+      <div className="charts-pane" data-testid="chart-references">
+        <LineChart
+          x={day}
+          series={[{ key: "queue", label: "Queue depth", data: queue }]}
+          unit="%"
+          domain={[0, 100]}
+          label="Build queue on SRV-BUILD-02 · last 24 hours · fictional"
+          title="Build queue"
+          thresholds={[
+            { value: 70, label: "Warning", tone: "warning" },
+            { value: 90, label: "Critical", tone: "danger" },
+          ]}
+          markers={deploys}
+        />
+      </div>
+      <div className="charts-pane" data-testid="chart-references-neutral">
+        <LineChart
+          x={day}
+          series={[{ key: "latency", label: "Latency", data: latency }]}
+          unit="ms"
+          label="Request latency on SRV-BUILD-02 · last 24 hours · fictional"
+          title="Latency"
+          thresholds={[
+            { value: 250, label: "SLA" },
+            { value: 120, label: "Average", dashed: true },
+          ]}
+          bands={[{ from: 60, to: 180, label: "Normal range", tone: "success" }]}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Drag across the plot, Ctrl + wheel, or + and − with the plot focused; the brush drives the same window. */
+function Zoom() {
+  const [range, setRange] = useState<XDomain | null>(null);
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <div className="charts-pane" data-size="tall" data-testid="chart-zoom">
+        <AreaChart
+          x={day}
+          series={[{ key: "queue", label: "Queue depth", data: queue }]}
+          unit="%"
+          domain={[0, 100]}
+          label="Build queue on SRV-BUILD-02 · last 24 hours · fictional"
+          title="Build queue"
+          thresholds={[{ value: 70, label: "Warning", tone: "warning" }]}
+          markers={deploys}
+          zoom
+          brush
+          xDomain={range}
+          onXDomainChange={setRange}
+        />
+      </div>
+      <div className="charts-pane" data-size="short" data-testid="chart-zoom-linked">
+        <LineChart
+          x={day}
+          series={[{ key: "latency", label: "Latency", data: latency }]}
+          unit="ms"
+          label="Request latency on SRV-BUILD-02, same window · fictional"
+          title="Latency"
+          zoom
+          xDomain={range}
+          onXDomainChange={setRange}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** A standalone brush driving two charts. */
+function Overview() {
+  const [range, setRange] = useState<XDomain | null>([day[200]!, day[260]!]);
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <div className="grid w-full gap-3 md:grid-cols-2">
+        <div className="charts-pane" data-size="short">
+          <LineChart
+            x={day}
+            series={[{ key: "queue", label: "Queue depth", data: queue }]}
+            unit="%"
+            domain={[0, 100]}
+            label="Build queue · fictional"
+            title="Build queue"
+            xDomain={range}
+            onXDomainChange={setRange}
+          />
+        </div>
+        <div className="charts-pane" data-size="short">
+          <LineChart
+            x={day}
+            series={[{ key: "latency", label: "Latency", data: latency }]}
+            unit="ms"
+            label="Request latency · fictional"
+            title="Latency"
+            xDomain={range}
+            onXDomainChange={setRange}
+          />
+        </div>
+      </div>
+      <ChartBrush
+        data-testid="chart-brush"
+        x={day}
+        series={[{ key: "queue", data: queue }]}
+        domain={[0, 100]}
+        label="Build queue · last 24 hours"
+        value={range}
+        onValueChange={setRange}
+      />
+    </div>
+  );
+}
 
 /** Click or Enter on a point selects its time; a second view would jump there. */
 function SelectPoint() {
@@ -70,6 +205,27 @@ export default function LineChartSection() {
         wide
       >
         <SelectPoint />
+      </Specimen>
+      <Specimen
+        title="Thresholds, bands and events"
+        description="thresholds draw a line at a value with its label at the line's end; a status tone recolours a single series above it and, without bands, shades the range up to the next status threshold. A neutral threshold (a target or an average) can be dashed. bands shade a range; markers put events on the time axis with a label and a tooltip. All of them are in the chart's description and under its table."
+        wide
+      >
+        <References />
+      </Specimen>
+      <Specimen
+        title="Zoom and overview"
+        description="zoom: drag across the plot to zoom to a range, Ctrl or ⌘ with the wheel (or pinch) to zoom at the pointer, + and − with the plot focused, Shift with the arrows to pan. Reset zoom appears in a place kept for it. brush adds the overview strip. Both charts share one controlled xDomain."
+        wide
+      >
+        <Zoom />
+      </Specimen>
+      <Specimen
+        title="ChartBrush"
+        description="The overview on its own: its window is a controlled x domain for any number of charts. The handles and the window are sliders: arrows step one sample, Page keys a tenth."
+        wide
+      >
+        <Overview />
       </Specimen>
       <Specimen
         title="Missing samples"

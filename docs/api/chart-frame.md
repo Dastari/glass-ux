@@ -19,6 +19,7 @@ The parent must give it a definite height.
 | compactHead | `boolean \| undefined` | false, true | no | false | Whether the head row exists in the compact tier (it always does in full). Fixed per chart type so the skeleton and the loaded chart share one geometry. |
 | emptyText | `ReactNode` | See type | no | "No data" | One factual line for the empty state (R2.5): "No samples in the last hour". |
 | errorText | `ReactNode` | See type | no | "Couldn’t load this chart" | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
+| foot | `ReactNode` | See type | no | — | A strip under the plot in the full tier (LineChart's overview brush). Its box is kept while the chart loads, as a skeleton, so loading moves nothing (R9.3). |
 | head | `((tier: ChartTier) => ReactNode) \| undefined` | See type | no | — | Legend or readout for the head row (compact and full tiers). |
 | kind | `ChartKind` | "line", "column", "bar", "pie", "gauge", "heatmap", "scatter", "treemap", "sunburst" | yes | — | Semantic entity or content kind, used to choose labels and rendering. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
@@ -29,6 +30,7 @@ The parent must give it a definite height.
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | table | `ChartTableModel \| undefined` | See type | no | — | The data as a table: visually hidden for screen readers, shown with "View as table", and copied by "Copy as CSV" (raw `values` where the model has them). |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
+| tools | `ReactNode` | See type | no | — | Controls placed before "View as table" in the full tier's head (a chart's "Reset zoom"). They should hold their space whether or not they show, so the head never moves. |
 | trail | `ReactNode` | See type | no | — | Content after the plot in the micro tier (the latest value, a share). |
 | trailOptional | `boolean \| undefined` | false, true | no | false | The trail is a nicety: it hides in narrow rows so the marks keep their room. |
 | trailSize | `"figure" \| "value" \| undefined` | "figure", "value" | no | "figure" | The trail's reserved width, so loading and loaded share one geometry: a bare `value` ("44.4%") or a `figure` (label and value, about a third of the row). |

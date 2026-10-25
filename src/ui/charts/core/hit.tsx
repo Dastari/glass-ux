@@ -28,11 +28,19 @@ export interface HitLayerProps {
   cursor?: "crosshair" | "pointer"
   /** Cover only part of the plot (plot-local px), leaving the rest (a legend) to the pointer. */
   bounds?: { left: number; top: number; width: number; height: number }
+  /**
+   * Keys the chart handles itself (a zoomable chart's + and −), before the cursor keys. It
+   * receives the event and the cursor's index; return true when it handled the key.
+   */
+  onKey?: (event: KeyboardEvent<HTMLDivElement>, index: number) => boolean
+  /** The extra keys, for assistive tech (`aria-keyshortcuts`): "+ - Shift+ArrowLeft". */
+  keyShortcuts?: string
 }
 
 const STEP_KEYS = new Set(["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "Home", "End", "PageUp", "PageDown"])
 
-function linearNav(index: number, key: string, count: number): number {
+/** The default cursor movement: arrows step, Page keys jump a tenth, Home and End go to the ends. */
+export function linearNav(index: number, key: string, count: number): number {
   const page = Math.max(1, Math.round(count / 10))
   switch (key) {
     case "ArrowRight":
@@ -60,7 +68,7 @@ function linearNav(index: number, key: string, count: number): number {
  * (R11.5: arrows move within it), so a keyboard or screen-reader user gets the same readout
  * as the pointer, and Escape clears it.
  */
-export function HitLayer({ store, count, locate, anchor, snap = false, nav, onActivate, onEscape, label, valueText, initial, cursor = "crosshair", bounds }: HitLayerProps) {
+export function HitLayer({ store, count, locate, anchor, snap = false, nav, onActivate, onEscape, label, valueText, initial, cursor = "crosshair", bounds, onKey, keyShortcuts }: HitLayerProps) {
   const ref = useRef<HTMLDivElement>(null)
   const hover = useStoreValue(store)
   const index = hover?.index ?? null
@@ -114,6 +122,10 @@ export function HitLayer({ store, count, locate, anchor, snap = false, nav, onAc
       return
     }
     const current = store.get()?.index ?? initial ?? count - 1
+    if (onKey?.(event, current)) {
+      event.preventDefault()
+      return
+    }
     if ((event.key === "Enter" || event.key === " ") && onActivate) {
       event.preventDefault()
       onActivate(current)
@@ -133,6 +145,7 @@ export function HitLayer({ store, count, locate, anchor, snap = false, nav, onAc
       role="slider"
       tabIndex={0}
       aria-label={label}
+      aria-keyshortcuts={keyShortcuts}
       aria-valuemin={0}
       aria-valuemax={Math.max(0, count - 1)}
       aria-valuenow={index ?? resting}

@@ -1,0 +1,159 @@
+/*
+ * X zoom and the overview brush (zoom-gestures.ts, brush.tsx, LineChart `zoom` / `brush`).
+ *
+ *   zoom rect    the range being drag-selected: the accent's soft fill between accent edges
+ *   reset        "Reset zoom" in the head's tools; its place is kept while it is hidden
+ *   brush        an inset well under the plot: the whole series, veiled outside the window
+ *   window       the visible range: accent edges, transparent inside; quieter at full range
+ *   handles      beads on the window's edges (the Slider's bead), with a wider hit area
+ *
+ * Component tokens
+ *   --_brush-h   the strip's block size (the foot row the frame reserves)
+ *   --_from/--_to  the window's edges, px, written by brush.tsx
+ */
+@layer components {
+  .fa-chart {
+    --_brush-h: var(--space-10);
+  }
+
+  /* ── Zoom in the plot ──────────────────────────────────────────────────── */
+  .fa-chart-layer[data-zoom] {
+    user-select: none;
+  }
+  .fa-chart-layer[data-brushing] {
+    cursor: col-resize;
+  }
+  .fa-chart-zoom-rect {
+    position: absolute;
+    display: none;
+    border-inline: var(--border-width) solid var(--accent);
+    background-color: var(--accent-soft);
+    pointer-events: none;
+  }
+  .fa-chart-zoom-rect[data-active] {
+    display: block;
+  }
+  /* While a gesture previews a window, the marks are transformed: strokes keep their width,
+     and the x labels (which would be wrong) step out until the window is committed. */
+  .fa-chart-svg[data-previewing] :is(.fa-chart-line, .fa-chart-bridge, .fa-chart-marker-rule) {
+    vector-effect: non-scaling-stroke;
+  }
+  .fa-chart-layer[data-previewing] .fa-chart-labels :is([data-axis="x"], .fa-chart-marker-label) {
+    opacity: 0;
+  }
+  .fa-chart-labels :is([data-axis="x"], .fa-chart-marker-label) {
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+
+  /* "Reset zoom": always in the head, invisible until the chart is zoomed (R9). */
+  .fa-chart-reset-slot {
+    display: inline-flex;
+  }
+  .fa-chart-reset-slot[data-hidden] {
+    visibility: hidden;
+  }
+
+  /* ── The foot row and the brush ────────────────────────────────────────── */
+  .fa-chart-foot {
+    flex: none;
+    block-size: var(--_brush-h);
+    min-width: 0;
+  }
+  .fa-chart-foot-skel {
+    display: block;
+    block-size: 100%;
+    border-radius: var(--radius-mark);
+  }
+  .fa-chart-brush {
+    position: relative;
+    block-size: var(--_brush-h);
+    inline-size: 100%;
+    min-width: 0;
+    border-radius: var(--radius-mark);
+    cursor: crosshair;
+    touch-action: none;
+    user-select: none;
+  }
+  .fa-chart-brush-svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .fa-chart-brush-line {
+    fill: none;
+    stroke: var(--_c);
+    stroke-width: calc(var(--chart-stroke) * 0.625);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .fa-chart-brush-area {
+    fill: color-mix(in oklab, var(--_c) var(--chart-wash), transparent);
+  }
+  /* Outside the window the strip is veiled in the surface colour. */
+  .fa-chart-brush-shade {
+    position: absolute;
+    inset-block: 0;
+    background-color: color-mix(in oklab, var(--surface-2) 62%, transparent);
+    pointer-events: none;
+  }
+  .fa-chart-brush-shade[data-side="start"] {
+    left: 0;
+    width: var(--_from, 0);
+    border-start-start-radius: inherit;
+    border-end-start-radius: inherit;
+  }
+  .fa-chart-brush-shade[data-side="end"] {
+    left: var(--_to, 100%);
+    right: 0;
+    border-start-end-radius: inherit;
+    border-end-end-radius: inherit;
+  }
+  .fa-chart-brush-window {
+    position: absolute;
+    inset-block: 0;
+    left: var(--_from, 0);
+    width: calc(var(--_to, 100%) - var(--_from, 0));
+    border: var(--border-width-strong) solid var(--accent);
+    border-radius: var(--radius-mark);
+    cursor: grab;
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-chart-brush[data-full] .fa-chart-brush-window {
+    border-color: var(--accent-line);
+  }
+  .fa-chart-brush[data-dragging] .fa-chart-brush-window {
+    cursor: grabbing;
+  }
+  .fa-chart-brush-handle {
+    position: absolute;
+    top: 50%;
+    width: var(--space-2);
+    height: 56%;
+    border-radius: var(--radius-full);
+    background-color: var(--surface-3);
+    box-shadow:
+      inset 0 0 0 var(--border-width-strong) var(--accent),
+      var(--shadow-1);
+    translate: -50% -50%;
+    cursor: ew-resize;
+    outline-offset: var(--focus-ring-offset);
+  }
+  /* A wider target than the bead (R20.4). */
+  .fa-chart-brush-handle::before {
+    content: "";
+    position: absolute;
+    inset-block: calc(var(--space-2) * -1);
+    inset-inline: calc(var(--space-2) * -1);
+  }
+  .fa-chart-brush-handle[data-edge="start"] {
+    left: var(--_from, 0);
+  }
+  .fa-chart-brush-handle[data-edge="end"] {
+    left: var(--_to, 100%);
+  }
+  :is(.fa-chart-brush-window, .fa-chart-brush-handle):focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+  }
+}

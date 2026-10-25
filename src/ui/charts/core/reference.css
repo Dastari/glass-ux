@@ -1,0 +1,53 @@
+/*
+ * References on a chart (reference-layer.tsx): threshold lines, shaded bands and event
+ * markers. The base rules (.fa-chart-band, .fa-chart-threshold, .fa-chart-marker-*) live in
+ * marks.css; this file adds what the reference API brought: dashed lines, the info tone,
+ * band labels and the table's note.
+ *
+ *   threshold   a hairline across the plot: --line-strong, or the tone's -line colour
+ *   dashed      the same hairline in dashes: an average or a forecast, not a limit
+ *   band        the tone's -soft fill (neutral: --fill-muted), under the marks
+ *   label       caption role over a halo; a tone's -text colour, neutral --fg-muted
+ */
+@layer components {
+  .fa-chart-threshold[data-dashed] {
+    stroke-dasharray: calc(var(--border-width) * 4) calc(var(--border-width) * 3);
+    shape-rendering: auto;
+  }
+  :is(.fa-chart-threshold, .fa-chart-threshold-label, .fa-chart-band-label)[data-tone="info"] {
+    --_rule: var(--info-line);
+    --_text: var(--info-text);
+  }
+  .fa-chart-band-label[data-tone="warning"] {
+    --_text: var(--warning-text);
+  }
+  .fa-chart-band-label[data-tone="danger"] {
+    --_text: var(--danger-text);
+  }
+  .fa-chart-band-label[data-tone="success"] {
+    --_text: var(--success-text);
+  }
+  .fa-chart-band-label {
+    --_text: var(--fg-muted);
+    color: var(--_text);
+    text-shadow:
+      0 0 var(--chart-label-halo) var(--halo-colour),
+      0 0 var(--chart-label-halo) var(--halo-colour),
+      0 0 calc(var(--chart-label-halo) * 2) var(--halo-colour);
+  }
+
+  /* Reference lines, bands and events under the visible table: not rows, so not in the CSV. */
+  .fa-chart-table-notes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-2);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-chart-table-notes > p {
+    margin: 0;
+    max-width: var(--measure);
+  }
+}

@@ -52,6 +52,7 @@
 - [ByteSizeField](byte-size-field.md) — `glass-ux/byte-size-field`
 - [ByteSizeInput](byte-size-input.md) — `glass-ux/byte-size-field`
 - [Calendar](calendar.md) — `glass-ux/date-picker`
+- [ChartBrush](chart-brush.md) — `glass-ux/charts`
 - [ChartFrame](chart-frame.md) — `glass-ux/charts`
 - [ChartLegend](chart-legend.md) — `glass-ux/charts`
 - [ChartTable](chart-table.md) — `glass-ux/charts`

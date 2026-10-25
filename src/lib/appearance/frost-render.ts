@@ -2,12 +2,13 @@
  * tokens:allow-file colour maths: draws the resolved canvas colours, as the browser computed them, into a bitmap.
  *
  * The baked-frost renderer: draws the page canvas (its background colour, gradient and image
- * layers, and the Silk line overlay) with the 2D canvas API, then blurs and saturates it once
+ * layers, and the artwork layer) with the 2D canvas API, then blurs and saturates it once
  * per material, as a material's backdrop-filter would. `installBakedFrost` loads this module
  * only when the application selects baked rendering (docs/performance.md, "Baked frost").
  *
  * It renders what the library's canvases use: linear, radial and repeating gradients, image
- * layers, background size, position and repeat, all fixed to the viewport. Anything else
+ * layers, background size, position and repeat, all fixed to the viewport, and the artwork
+ * layer's mask filled with a colour or gradients. Anything else
  * (a colour hint, a four-value position, a scrolling canvas) is reported as unsupported, and
  * the materials keep the live blur. Gradients interpolate as CSS does: in premultiplied Oklab
  * when any stop is a CSS Color 4 colour, otherwise in premultiplied sRGB.
@@ -486,7 +487,10 @@ async function drawCanvas(ctx: CanvasRenderingContext2D, canvas: Element, width:
   }
 }
 
-/** Silk's line overlay, drawn at the frost's own scale: the blur leaves no finer detail. */
+/**
+ * The canvas artwork (.canvas-silk): its mask drawn at the frost's own scale (the blur leaves
+ * no finer detail), filled with the layer's colour and gradients, as the mask shows them.
+ */
 async function drawSilk(ctx: CanvasRenderingContext2D, silk: Element | null, width: number, height: number, scale: number) {
   if (!silk || getComputedStyle(silk).display === "none") return;
   const silkStyle = getComputedStyle(silk);
@@ -501,10 +505,19 @@ async function drawSilk(ctx: CanvasRenderingContext2D, silk: Element | null, wid
   layer.width = ctx.canvas.width;
   layer.height = ctx.canvas.height;
   const lctx = layer.getContext("2d")!;
-  lctx.drawImage(lines, px * scale, py * scale, tw * scale, th * scale);
-  lctx.globalCompositeOperation = "source-in";
+  // Paint the fill as the layer's background (colour, then gradients bottom first), then keep
+  // it only where the mask is.
   lctx.fillStyle = canvasColor(parseColor(silkStyle.backgroundColor).lab);
   lctx.fillRect(0, 0, layer.width, layer.height);
+  const fills = silkStyle.backgroundImage === "none" ? [] : splitTop(silkStyle.backgroundImage).reverse();
+  if (fills.length) {
+    lctx.save();
+    lctx.scale(scale, scale);
+    for (const fill of fills) drawGradient(lctx, fill, width, height);
+    lctx.restore();
+  }
+  lctx.globalCompositeOperation = "destination-in";
+  lctx.drawImage(lines, px * scale, py * scale, tw * scale, th * scale);
   ctx.globalAlpha = parseFloat(silkStyle.opacity) || 0;
   ctx.drawImage(layer, 0, 0);
   ctx.globalAlpha = 1;

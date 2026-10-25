@@ -15,13 +15,13 @@
     display: flex;
     flex: none;
     align-items: center;
-    min-width: 0;
+    min-inline-size: 0;
   }
   .fa-dt-search[data-mode="field"] {
-    width: var(--_w);
+    inline-size: var(--_w);
   }
   .fa-dt-search .fa-dt-search-field {
-    width: 100%;
+    inline-size: 100%;
   }
 
   /* ── The active query on a narrow toolbar ──────────────────────────────────── */
@@ -29,21 +29,21 @@
      truncates rather than push the line wider. */
   .fa-dt-search[data-mode="collapsed"] {
     flex: 0 1 auto;
-    min-width: auto;
+    min-inline-size: auto;
   }
   .fa-dt-filter-chip.fa-dt-search-chip {
     /* component tokens: the chip's widest and narrowest (icon, a few letters, ✕) */
     --_max: 12rem;
     --_min: 6rem;
-    min-width: var(--_min);
+    min-inline-size: var(--_min);
   }
   .fa-dt-search-chip .fa-dt-filter-chip-body {
     padding-inline-start: var(--space-2);
   }
   .fa-dt-search-chip .fa-dt-filter-chip-body > .fa-icon {
     flex: none;
-    width: var(--icon-xs);
-    height: var(--icon-xs);
+    inline-size: var(--icon-xs);
+    block-size: var(--icon-xs);
   }
 
   /* ── Open over the line (narrow) ───────────────────────────────────────────── */
@@ -60,6 +60,6 @@
     z-index: 1;
     display: flex;
     align-items: center;
-    min-width: 0;
+    min-inline-size: 0;
   }
 }

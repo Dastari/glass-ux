@@ -1,3 +1,4 @@
+import { useDataTableMessages } from "./use-messages.js";
 import type { RowData } from "@tanstack/react-table";
 import type { Row, RowSelectionState } from "@tanstack/react-table";
 import { memo, type ReactElement, type ReactNode } from "react";
@@ -105,6 +106,7 @@ function CardView<T extends RowData>({
   controller,
   grip,
 }: CardProps<T>) {
+  const m = useDataTableMessages();
   countRender("cards");
   const cells = row.getAllCellsByColumnId();
   const tabIndex = active ? 0 : -1;
@@ -136,7 +138,7 @@ function CardView<T extends RowData>({
       size="sm"
       className="fa-dt-card-more"
       icon={expanded ? <IconChevronUp /> : <IconChevronDown />}
-      aria-label={`${expanded ? "Hide" : "Show"} ${layout.details.length} more fields for ${label}`}
+      aria-label={m.moreFields(expanded, layout.details.length, label)}
       aria-expanded={expanded}
       tabIndex={tabIndex}
       data-dt-interactive=""
@@ -177,7 +179,7 @@ function CardView<T extends RowData>({
           {selectable ? (
             <SelectCheckbox
               checked={selected}
-              label={`Select ${label}`}
+              label={m.selectRow(label)}
               tabIndex={tabIndex}
               onToggle={(value, { shift }) =>
                 controller.toggleRow(rowId, value, shift)

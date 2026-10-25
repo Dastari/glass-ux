@@ -1,21 +1,26 @@
-import { useRef, useState } from "react"
-import { Popover } from "../../popover/index.js"
-import type { FilterController, FilterTarget } from "./controller.js"
-import { FilterEditor } from "./editors.js"
+import { useDataTableMessages } from "../use-messages.js";
+import { useRef, useState } from "react";
+import { Popover } from "../../popover/index.js";
+import type { FilterController, FilterTarget } from "./controller.js";
+import { FilterEditor } from "./editors.js";
 
-const focusable = (element: HTMLElement) => element.tabIndex >= 0 && !element.closest("[aria-hidden='true']") && element.getClientRects().length > 0
+const focusable = (element: HTMLElement) =>
+  element.tabIndex >= 0 &&
+  !element.closest("[aria-hidden='true']") &&
+  element.getClientRects().length > 0;
 
 /** The first control to type or choose in: a text box, else the chosen option, else the first control. */
 function firstControl(popup: HTMLElement | null): HTMLElement | true {
-  const body = popup?.querySelector(".fa-popover-body")
-  if (!body) return true
-  const find = (selector: string) => [...body.querySelectorAll<HTMLElement>(selector)].find(focusable)
+  const body = popup?.querySelector(".fa-popover-body");
+  if (!body) return true;
+  const find = (selector: string) =>
+    [...body.querySelectorAll<HTMLElement>(selector)].find(focusable);
   return (
     find("input:not([type='hidden']):not([disabled])") ??
     find("[role='radio'][aria-checked='true'], [aria-pressed='true']") ??
     find("button:not([disabled]), [tabindex='0']") ??
     true
-  )
+  );
 }
 
 /**
@@ -24,24 +29,29 @@ function firstControl(popup: HTMLElement | null): HTMLElement | true {
  * closes it and discards a half-typed value; a click outside applies it. Focus returns to
  * the header's menu button (or the chip, or the Filters button).
  */
-export function FilterPopover({ controller }: { controller: FilterController }) {
-  const { target, setFilter, learnLabels, close } = controller
+export function FilterPopover({
+  controller,
+}: {
+  controller: FilterController;
+}) {
+  const m = useDataTableMessages();
+  const { target, setFilter, learnLabels, close } = controller;
   // Keep the last target through the exit animation.
-  const [shown, setShown] = useState<FilterTarget | null>(target)
-  if (target && target !== shown) setShown(target)
-  const current = target ?? shown
-  const column = current ? controller.column(current.columnId) : undefined
-  const flush = useRef<(() => void) | null>(null)
-  const popupRef = useRef<HTMLDivElement>(null)
+  const [shown, setShown] = useState<FilterTarget | null>(target);
+  if (target && target !== shown) setShown(target);
+  const current = target ?? shown;
+  const column = current ? controller.column(current.columnId) : undefined;
+  const flush = useRef<(() => void) | null>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   return (
     <Popover.Root
       open={target !== null}
       onOpenChange={(open, details) => {
-        if (open) return
-        if (details.reason !== "escape-key") flush.current?.()
-        flush.current = null
-        close()
+        if (open) return;
+        if (details.reason !== "escape-key") flush.current?.();
+        flush.current = null;
+        close();
       }}
     >
       {current && column ? (
@@ -54,12 +64,12 @@ export function FilterPopover({ controller }: { controller: FilterController }) 
           title={column.label}
           className="fa-dt-filter-popover"
           data-kind={column.spec.kind}
-          aria-label={`Filter ${column.label}`}
+          aria-label={m.filterColumn(column.label)}
           initialFocus={() => firstControl(popupRef.current)}
           finalFocus={() => {
-            const back = current.returnFocus
-            if (back?.isConnected) return back
-            return controller.filtersButton() ?? true
+            const back = current.returnFocus;
+            if (back?.isConnected) return back;
+            return controller.filtersButton() ?? true;
           }}
         >
           <FilterEditor
@@ -69,17 +79,17 @@ export function FilterPopover({ controller }: { controller: FilterController }) 
             value={controller.valueOf(column.id)}
             onChange={(value) => setFilter(column.id, value)}
             onCommit={(value) => {
-              flush.current = null
-              setFilter(column.id, value)
-              close()
+              flush.current = null;
+              setFilter(column.id, value);
+              close();
             }}
             onFlush={(apply) => {
-              flush.current = apply
+              flush.current = apply;
             }}
             onLabels={(pairs) => learnLabels(column.id, pairs)}
           />
         </Popover.Popup>
       ) : null}
     </Popover.Root>
-  )
+  );
 }

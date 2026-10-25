@@ -49,9 +49,9 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    min-width: 0;
-    min-height: 0;
-    height: 100%;
+    min-inline-size: 0;
+    min-block-size: 0;
+    block-size: 100%;
     /* Inline size only: a block-size query here would make the frame, and so every row,
        depend on it (the status-only tier is measured in JS instead). */
     container: fa-dt / inline-size;
@@ -60,10 +60,12 @@
     line-height: var(--type-body-line);
   }
   .fa-dt[data-height="auto"] {
-    height: auto;
+    block-size: auto;
   }
   .fa-dt[data-trail="2"] {
-    --fa-dt-trail-w: calc(var(--control-h-sm) * 2 + var(--space-1) + var(--space-2) * 2);
+    --fa-dt-trail-w: calc(
+      var(--control-h-sm) * 2 + var(--space-1) + var(--space-2) * 2
+    );
   }
   .fa-dt:not([data-selectable]) {
     --fa-dt-select-w: 0rem;
@@ -96,10 +98,10 @@
      no scrollable overflow to the table or its host. */
   .fa-dt-probe {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: var(--control-h-sm);
-    height: var(--_row-h);
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    inline-size: var(--control-h-sm);
+    block-size: var(--_row-h);
     visibility: hidden;
     pointer-events: none;
   }
@@ -117,8 +119,8 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--gap-controls);
-    min-width: 0;
-    padding-bottom: var(--space-3);
+    min-inline-size: 0;
+    padding-block-end: var(--space-3);
   }
   /* A narrow toolbar stays one line: the strip yields to the table's own tools (the column
      chooser, host buttons) and its search folds to an icon that opens over the strip. */
@@ -133,15 +135,15 @@
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
-    min-width: 0;
-    min-height: 0;
+    min-inline-size: 0;
+    min-block-size: 0;
   }
   .fa-dt-grid {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
-    min-width: 0;
-    min-height: 0;
+    min-inline-size: 0;
+    min-block-size: 0;
     outline: none;
   }
 
@@ -156,17 +158,17 @@
   .fa-dt-frame::before {
     content: "";
     position: absolute;
-    top: calc(var(--_head-h) + var(--space-1));
+    inset-block-start: calc(var(--_head-h) + var(--space-1));
     inset-inline: 0;
     z-index: var(--z-sticky);
-    height: var(--border-width);
+    block-size: var(--border-width);
     background-color: var(--line);
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--duration-fast) var(--ease-standard);
   }
   .fa-dt[data-mode="cards"] .fa-dt-frame::before {
-    top: var(--space-1);
+    inset-block-start: var(--space-1);
   }
   .fa-dt[data-scrolled-top] .fa-dt-frame::before {
     opacity: 1;
@@ -175,16 +177,16 @@
     position: relative;
     display: flex;
     align-items: stretch;
-    width: 100%;
-    min-width: var(--fa-dt-min-w);
-    height: var(--_head-h);
+    inline-size: 100%;
+    min-inline-size: var(--fa-dt-min-w);
+    block-size: var(--_head-h);
   }
   .fa-dt-th {
     position: relative;
     display: flex;
     align-self: stretch;
     align-items: center;
-    min-width: 0;
+    min-inline-size: 0;
     color: var(--fg-muted);
     font-size: var(--type-label-size);
     line-height: var(--type-label-line);
@@ -196,8 +198,8 @@
     flex: 1 1 auto;
     align-items: center;
     gap: var(--space-1-5);
-    min-width: 0;
-    height: 100%;
+    min-inline-size: 0;
+    block-size: 100%;
     padding: 0 var(--_cell-px);
     border: 0;
     border-radius: var(--radius-item);
@@ -224,7 +226,7 @@
     outline-offset: calc(var(--focus-ring-width) * -1);
   }
   .fa-dt-th-label {
-    min-width: 0;
+    min-inline-size: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -233,8 +235,8 @@
   .fa-dt-sort-glyph {
     display: none;
     flex: none;
-    width: var(--icon-xs);
-    height: var(--icon-xs);
+    inline-size: var(--icon-xs);
+    block-size: var(--icon-xs);
     --_stroke: calc(var(--icon-stroke) * 1.2);
     color: var(--accent-text);
   }
@@ -253,7 +255,7 @@
   /* The column menu trigger appears over the cell's far end on hover or focus. */
   .fa-dt-th-menu {
     position: absolute;
-    top: 50%;
+    inset-block-start: 50%;
     inset-inline-end: var(--space-1);
     translate: 0 -50%;
     opacity: 0;
@@ -266,23 +268,41 @@
   .fa-dt-th-menu[data-popup-open] {
     opacity: 1;
   }
-  .fa-dt-th:is(:hover, :focus-within, :has([data-popup-open])) .fa-dt-th-button {
-    -webkit-mask-image: linear-gradient(to left, transparent var(--control-h-sm), black calc(var(--control-h-sm) + var(--space-4)));
-    mask-image: linear-gradient(to left, transparent var(--control-h-sm), black calc(var(--control-h-sm) + var(--space-4)));
+  .fa-dt-th:is(:hover, :focus-within, :has([data-popup-open]))
+    .fa-dt-th-button {
+    -webkit-mask-image: linear-gradient(
+      to left,
+      transparent var(--control-h-sm),
+      black calc(var(--control-h-sm) + var(--space-4))
+    );
+    mask-image: linear-gradient(
+      to left,
+      transparent var(--control-h-sm),
+      black calc(var(--control-h-sm) + var(--space-4))
+    );
   }
-  .fa-dt-th[data-align="end"]:is(:hover, :focus-within, :has([data-popup-open])) .fa-dt-th-button {
-    -webkit-mask-image: linear-gradient(to right, transparent var(--control-h-sm), black calc(var(--control-h-sm) + var(--space-4)));
-    mask-image: linear-gradient(to right, transparent var(--control-h-sm), black calc(var(--control-h-sm) + var(--space-4)));
+  .fa-dt-th[data-align="end"]:is(:hover, :focus-within, :has([data-popup-open]))
+    .fa-dt-th-button {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent var(--control-h-sm),
+      black calc(var(--control-h-sm) + var(--space-4))
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent var(--control-h-sm),
+      black calc(var(--control-h-sm) + var(--space-4))
+    );
   }
 
   /* Resize handle: a wide hit area on the column edge with a hairline that wakes on hover. */
   .fa-dt-resize {
     position: absolute;
-    top: 0;
-    bottom: 0;
+    inset-block-start: 0;
+    inset-block-end: 0;
     inset-inline-end: calc(var(--space-1-5) * -1);
     z-index: var(--z-raised);
-    width: var(--space-3);
+    inline-size: var(--space-3);
     cursor: col-resize;
     touch-action: none;
     outline: none;
@@ -290,10 +310,10 @@
   .fa-dt-resize::after {
     content: "";
     position: absolute;
-    top: var(--space-1-5);
-    bottom: var(--space-1-5);
-    left: 50%;
-    width: var(--border-width-strong);
+    inset-block-start: var(--space-1-5);
+    inset-block-end: var(--space-1-5);
+    inset-inline-start: 50%;
+    inline-size: var(--border-width-strong);
     translate: -50% 0;
     /* Half height at rest; the active line grows to full height (transform, not top/bottom). */
     scale: 1 0.6;
@@ -308,9 +328,11 @@
     opacity: 1;
   }
   .fa-dt-resize:is(:hover, :focus-visible)::after,
-  .fa-dt[data-resizing] .fa-dt-th:has(.fa-dt-resize:active) .fa-dt-resize::after {
+  .fa-dt[data-resizing]
+    .fa-dt-th:has(.fa-dt-resize:active)
+    .fa-dt-resize::after {
     scale: 1 1;
-    width: var(--focus-ring-width);
+    inline-size: var(--focus-ring-width);
     background-color: var(--accent);
     opacity: 1;
   }
@@ -321,11 +343,19 @@
   /* Autosize measures a column at its natural width for one layout pass. */
   .fa-dt :is(.fa-dt-cell, .fa-dt-th)[data-measure] {
     flex: none !important; /* tokens:allow beats the inline flex for one measurement */
-    width: max-content !important;
-    min-width: 0 !important;
-    max-width: none !important;
+    inline-size: max-content !important;
+    min-inline-size: 0 !important;
+    max-inline-size: none !important;
   }
-  .fa-dt [data-measure] :is(.fa-dt-text, .fa-dt-th-label, .fa-entity-title, .fa-entity-secondary, .fa-entity .fa-truncate) {
+  .fa-dt
+    [data-measure]
+    :is(
+      .fa-dt-text,
+      .fa-dt-th-label,
+      .fa-entity-title,
+      .fa-entity-secondary,
+      .fa-entity .fa-truncate
+    ) {
     overflow: visible;
   }
 
@@ -337,8 +367,8 @@
   .fa-dt-body {
     position: relative;
     flex: 1 1 auto;
-    min-height: 0;
-    margin-top: var(--space-1);
+    min-block-size: 0;
+    margin-block-start: var(--space-1);
   }
   .fa-dt-scroll {
     position: absolute;
@@ -354,7 +384,7 @@
      would swallow the wheel instead of passing it to the page or panel around it. */
   .fa-dt[data-height="auto"] .fa-dt-scroll,
   .fa-dt:not([data-scrolled-top], [data-scrolled-bottom]) .fa-dt-scroll {
-    overscroll-behavior-y: auto;
+    overscroll-behavior-block: auto;
   }
   .fa-dt[data-height="auto"] .fa-dt-body {
     flex: none;
@@ -362,34 +392,34 @@
   .fa-dt[data-height="auto"] .fa-dt-scroll {
     position: relative;
     inset: auto;
-    overflow-x: auto;
-    overflow-y: visible;
+    overflow-inline: auto;
+    overflow-block: visible;
     contain: none;
   }
   .fa-dt-rows {
     position: relative;
-    min-width: var(--fa-dt-min-w);
+    min-inline-size: var(--fa-dt-min-w);
   }
 
   .fa-dt-row {
     --_bg: transparent;
     display: flex;
     align-items: flex-start;
-    min-width: var(--fa-dt-min-w);
+    min-inline-size: var(--fa-dt-min-w);
   }
   .fa-dt-rows > .fa-dt-row {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: var(--_row-h);
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 100%;
+    block-size: var(--_row-h);
     border-radius: var(--radius-item);
     background-color: var(--_bg);
     outline: none;
     transition: background-color var(--duration-fast) var(--ease-standard);
   }
   .fa-dt-rows > .fa-dt-row[data-expanded] {
-    height: calc(var(--_row-h) + var(--fa-dt-detail-h));
+    block-size: calc(var(--_row-h) + var(--fa-dt-detail-h));
   }
   /* Hairline row separators (R5.8), dropped beside hovered and selected rows. --_sep is
      the line above this row; sticky cells paint it too, so it runs under pinned columns. */
@@ -413,9 +443,9 @@
   .fa-dt-rows > .fa-dt-row::before {
     content: "";
     position: absolute;
-    top: 0;
+    inset-block-start: 0;
     inset-inline: var(--space-3);
-    height: var(--border-width);
+    block-size: var(--border-width);
     background-color: var(--_sep);
     pointer-events: none;
   }
@@ -450,8 +480,8 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    min-width: 0;
-    height: var(--_row-h);
+    min-inline-size: 0;
+    block-size: var(--_row-h);
     padding-inline: var(--_cell-px);
     overflow: hidden;
   }
@@ -466,32 +496,32 @@
   .fa-dt-select {
     flex: none;
     justify-content: center;
-    width: var(--fa-dt-select-w);
+    inline-size: var(--fa-dt-select-w);
     padding-inline: 0;
   }
   .fa-dt-th.fa-dt-select {
-    height: 100%;
+    block-size: 100%;
   }
   .fa-dt-grip {
     flex: none;
     justify-content: center;
-    width: var(--fa-dt-grip-w);
+    inline-size: var(--fa-dt-grip-w);
     padding-inline: 0;
   }
   .fa-dt-th.fa-dt-grip {
-    height: 100%;
+    block-size: 100%;
   }
   .fa-dt-trail {
     flex: none;
     justify-content: flex-end;
     gap: var(--space-1);
-    width: var(--fa-dt-trail-w);
+    inline-size: var(--fa-dt-trail-w);
     margin-inline-start: auto;
     padding-inline: var(--space-2);
     overflow: visible;
   }
   .fa-dt-th.fa-dt-trail {
-    height: 100%;
+    block-size: 100%;
   }
 
   /* Pinned columns stick to the start edge; they turn opaque and draw an edge only
@@ -509,12 +539,19 @@
     inset-inline-start: 0;
     z-index: var(--z-raised);
   }
-  .fa-dt[data-scrolled-left] .fa-dt-rows > .fa-dt-row :is(.fa-dt-cell[data-pinned], .fa-dt-select, .fa-dt-grip) {
+  .fa-dt[data-scrolled-left]
+    .fa-dt-rows
+    > .fa-dt-row
+    :is(.fa-dt-cell[data-pinned], .fa-dt-select, .fa-dt-grip) {
     background: linear-gradient(var(--_bg), var(--_bg)), var(--_sticky-base);
     box-shadow: inset 0 var(--border-width) 0 var(--_sep);
   }
-  .fa-dt[data-scrolled-left] .fa-dt-head :is(.fa-dt-th[data-pinned], .fa-dt-select, .fa-dt-grip) {
-    background: linear-gradient(var(--glass-fill-inset), var(--glass-fill-inset)), var(--_sticky-base);
+  .fa-dt[data-scrolled-left]
+    .fa-dt-head
+    :is(.fa-dt-th[data-pinned], .fa-dt-select, .fa-dt-grip) {
+    background:
+      linear-gradient(var(--glass-fill-inset), var(--glass-fill-inset)),
+      var(--_sticky-base);
   }
   .fa-dt[data-scrolled-left] .fa-dt-th[data-edge] {
     box-shadow: var(--border-width) 0 0 var(--line-strong);
@@ -530,7 +567,8 @@
     transition: opacity var(--duration-fast) var(--ease-standard);
   }
   @media (hover: hover) and (pointer: fine) {
-    .fa-dt-row:not(:hover, :focus-within, [data-selected]) .fa-dt-row-button:not([data-popup-open], [aria-expanded="true"]) {
+    .fa-dt-row:not(:hover, :focus-within, [data-selected])
+      .fa-dt-row-button:not([data-popup-open], [aria-expanded="true"]) {
       opacity: 0;
     }
   }
@@ -543,17 +581,21 @@
     z-index: -1;
     border-radius: var(--radius-line);
     pointer-events: none;
-    animation: fa-flash calc(var(--duration-slower) * 2.5) var(--ease-standard) backwards;
+    animation: fa-flash calc(var(--duration-slower) * 2.5) var(--ease-standard)
+      backwards;
   }
 
   /* The "+N" detail line under an expanded row. */
   .fa-dt-detail {
     position: absolute;
-    top: var(--_row-h);
-    bottom: 0;
+    inset-block-start: var(--_row-h);
+    inset-block-end: 0;
     inset-inline: var(--fa-dt-lead-w) var(--fa-dt-trail-w);
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--fa-dt-detail-field), 1fr));
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(var(--fa-dt-detail-field), 1fr)
+    );
     align-content: start;
     gap: var(--space-2) var(--space-6);
     padding: 0 var(--_cell-px) var(--space-3);
@@ -562,7 +604,7 @@
   .fa-dt-detail-field {
     display: grid;
     grid-template-rows: var(--type-caption-line) var(--fa-dt-detail-value);
-    min-width: 0;
+    min-inline-size: 0;
   }
   .fa-dt-detail-label {
     overflow: hidden;
@@ -576,7 +618,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    min-width: 0;
+    min-inline-size: 0;
     overflow: hidden;
     font-size: var(--type-label-size);
   }
@@ -597,18 +639,18 @@
     flex: none;
     align-items: center;
     gap: var(--space-2);
-    width: min(100%, 100cqi);
-    min-width: 0;
-    height: var(--_row-h);
+    inline-size: min(100%, 100cqi);
+    min-inline-size: 0;
+    block-size: var(--_row-h);
     padding-inline: var(--space-2);
   }
   .fa-dt-group-toggle {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    min-width: 0;
-    max-width: 100%;
-    height: calc(100% - var(--space-2));
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    block-size: calc(100% - var(--space-2));
     padding-inline: var(--space-1) var(--space-2);
     border: 0;
     border-radius: var(--radius-item);
@@ -630,14 +672,14 @@
     display: inline-grid;
     flex: none;
     place-items: center;
-    width: var(--icon-sm);
-    height: var(--icon-sm);
+    inline-size: var(--icon-sm);
+    block-size: var(--icon-sm);
     color: var(--fg-subtle);
   }
   .fa-dt-group-chevron > .fa-icon {
     --_stroke: calc(var(--icon-stroke) * 1.2);
-    width: var(--icon-xs);
-    height: var(--icon-xs);
+    inline-size: var(--icon-xs);
+    block-size: var(--icon-xs);
     transition: rotate var(--duration-base) var(--ease-standard);
   }
   .fa-dt-group-toggle[aria-expanded="true"] .fa-dt-group-chevron > .fa-icon {
@@ -647,16 +689,16 @@
     display: inline-grid;
     flex: none;
     place-items: center;
-    width: var(--icon-sm);
-    height: var(--icon-sm);
+    inline-size: var(--icon-sm);
+    block-size: var(--icon-sm);
   }
   .fa-dt-group-icon > .fa-icon {
-    width: 100%;
-    height: 100%;
+    inline-size: 100%;
+    block-size: 100%;
   }
   .fa-dt-group-label,
   .fa-dt-group-detail {
-    min-width: 0;
+    min-inline-size: 0;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -679,7 +721,9 @@
   }
   /* "Show more" lines up with the first column's content. */
   .fa-dt-more-cell {
-    padding-inline-start: calc(var(--fa-dt-lead-w) + var(--_cell-px) - var(--space-2-5));
+    padding-inline-start: calc(
+      var(--fa-dt-lead-w) + var(--_cell-px) - var(--space-2-5)
+    );
   }
   .fa-dt-more-meta {
     flex: none;
@@ -690,8 +734,8 @@
   }
   /* In the card list the lines flow between the cards. */
   .fa-dt-cards > :is(.fa-dt-group-row, .fa-dt-more-row) {
-    min-width: 0;
-    height: var(--_row-h);
+    min-inline-size: 0;
+    block-size: var(--_row-h);
     border-radius: var(--radius-item);
     outline: none;
   }
@@ -702,9 +746,11 @@
     outline: var(--focus-ring-width) solid var(--accent-ring);
     outline-offset: calc(var(--focus-ring-width) * -1);
   }
-  .fa-dt-cards > :is(.fa-dt-group-row, .fa-dt-more-row) :is(.fa-dt-group-cell, .fa-dt-more-cell) {
+  .fa-dt-cards
+    > :is(.fa-dt-group-row, .fa-dt-more-row)
+    :is(.fa-dt-group-cell, .fa-dt-more-cell) {
     position: static;
-    width: 100%;
+    inline-size: 100%;
     padding-inline-start: var(--space-1);
   }
 
@@ -718,14 +764,17 @@
     flex: none;
     align-items: center;
     gap: var(--space-2);
-    width: min(100%, 100cqi);
-    min-width: 0;
-    height: var(--_row-h);
-    padding-inline: calc(var(--fa-dt-lead-w) + var(--_cell-px) - var(--space-2-5)) var(--space-2);
+    inline-size: min(100%, 100cqi);
+    min-inline-size: 0;
+    block-size: var(--_row-h);
+    padding-inline: calc(
+        var(--fa-dt-lead-w) + var(--_cell-px) - var(--space-2-5)
+      )
+      var(--space-2);
     color: var(--fg-muted);
   }
   .fa-dt-load-text {
-    min-width: 0;
+    min-inline-size: 0;
     overflow: hidden;
     color: var(--fg);
     text-overflow: ellipsis;
@@ -733,18 +782,18 @@
   }
   .fa-dt-cards > .fa-dt-load-row .fa-dt-load-cell {
     position: static;
-    width: 100%;
+    inline-size: 100%;
     padding-inline-start: var(--space-1);
   }
   /* ── States in the body's own box (R9.1, R10) ───────────────────────────────── */
   .fa-dt-message-group {
     display: grid;
-    min-height: 100%;
+    min-block-size: 100%;
   }
   .fa-dt-message-row {
     display: grid;
     place-items: center;
-    min-width: 0;
+    min-inline-size: 0;
     padding: var(--space-6) var(--space-4);
   }
   .fa-dt-message {
@@ -753,13 +802,13 @@
     align-items: center;
     justify-content: center;
     gap: var(--space-2) var(--space-3);
-    max-width: var(--measure);
+    max-inline-size: var(--measure);
     color: var(--fg-muted);
     text-align: center;
   }
   .fa-dt-message-icon {
-    width: var(--icon-md);
-    height: var(--icon-md);
+    inline-size: var(--icon-md);
+    block-size: var(--icon-md);
     color: var(--danger-text);
   }
   .fa-dt-message[data-tone="error"] .fa-dt-message-text {
@@ -769,12 +818,12 @@
   /* The checkbox's own box. */
   .fa-dt-skel-check {
     flex: none;
-    width: var(--check-size);
-    height: var(--check-size);
+    inline-size: var(--check-size);
+    block-size: var(--check-size);
   }
   .fa-dt-skel-badge {
-    width: calc(var(--control-h-xs) * 3);
-    height: calc(var(--control-h-xs) - var(--space-1));
+    inline-size: calc(var(--control-h-xs) * 3);
+    block-size: calc(var(--control-h-xs) - var(--space-1));
   }
   .fa-dt-cell > .fa-skel-text,
   .fa-dt-card-value > .fa-skel-text {
@@ -787,11 +836,16 @@
   /* Refetch: a thin indeterminate line on the header's lower edge; nothing moves. */
   .fa-dt-progress {
     position: absolute;
-    top: calc(var(--_head-h) - var(--border-width-strong));
+    inset-block-start: calc(var(--_head-h) - var(--border-width-strong));
     inset-inline: var(--space-3);
-    height: var(--border-width-strong);
+    block-size: var(--border-width-strong);
     border-radius: var(--radius-full);
-    background-image: linear-gradient(90deg, transparent, var(--accent), transparent);
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--accent),
+      transparent
+    );
     background-size: 40% 100%;
     background-repeat: no-repeat;
     opacity: 0;
@@ -799,7 +853,7 @@
     transition: opacity var(--duration-base) var(--ease-standard);
   }
   .fa-dt[data-mode="cards"] .fa-dt-progress {
-    top: 0;
+    inset-block-start: 0;
   }
   .fa-dt[data-refetching] .fa-dt-progress {
     opacity: 1;
@@ -821,14 +875,14 @@
   /* New rows wait behind a pill instead of shifting what the reader is reading (R9.4). */
   .fa-dt-new {
     position: absolute;
-    top: calc(var(--_head-h) + var(--space-3));
-    left: 50%;
+    inset-block-start: calc(var(--_head-h) + var(--space-3));
+    inset-inline-start: 50%;
     z-index: var(--z-sticky);
     translate: -50% 0;
     animation: fa-rise-in var(--duration-base) var(--ease-enter) backwards;
   }
   .fa-dt[data-mode="cards"] .fa-dt-new {
-    top: var(--space-2);
+    inset-block-start: var(--space-2);
   }
 
   /* ── Cards (below the card breakpoint) ──────────────────────────────────────── */
@@ -876,7 +930,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
-    min-width: 0;
+    min-inline-size: 0;
     padding: var(--_card-py) var(--space-3);
   }
   .fa-dt:not([data-selectable]) .fa-dt-card-cell {
@@ -887,8 +941,8 @@
     grid-template-columns: auto minmax(0, 1fr) auto auto;
     grid-template-areas: "check title status actions";
     align-items: center;
-    min-width: 0;
-    min-height: var(--control-h-sm);
+    min-inline-size: 0;
+    min-block-size: var(--control-h-sm);
   }
   .fa-dt-card-head[data-subtitle] {
     grid-template-areas:
@@ -903,12 +957,12 @@
     grid-area: title;
     display: flex;
     align-items: center;
-    min-width: 0;
+    min-inline-size: 0;
   }
   .fa-dt-card-subtitle {
     grid-area: subtitle;
     display: flex;
-    min-width: 0;
+    min-inline-size: 0;
     color: var(--fg-muted);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
@@ -917,7 +971,7 @@
   .fa-dt-card-actions {
     display: flex;
     align-items: center;
-    min-width: 0;
+    min-inline-size: 0;
   }
   .fa-dt-card-status {
     grid-area: status;
@@ -932,8 +986,8 @@
     display: none;
   }
   .fa-dt-skel-action {
-    width: var(--control-h-sm);
-    height: var(--control-h-sm);
+    inline-size: var(--control-h-sm);
+    block-size: var(--control-h-sm);
   }
   /* Narrow cards (below CARD_INLINE_STATUS_REM, in JS) move the status badge to the head
      of the field line, so the title keeps the row beside its actions. The narrowest give
@@ -960,7 +1014,7 @@
     /* The "+N" toggle's box, reserved at the end of the last field line. */
     --_more-w: calc(var(--control-h-sm) * 2.25);
     position: relative;
-    min-width: 0;
+    min-inline-size: 0;
     padding-inline-start: var(--_card-indent);
   }
   .fa-dt-card-meta {
@@ -968,7 +1022,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-1) var(--space-3);
-    min-width: 0;
+    min-inline-size: 0;
     margin: 0;
   }
   /* A trend reads at a glance in less width than a table column gives it. */
@@ -981,28 +1035,30 @@
   .fa-dt-card-body[data-more] > .fa-dt-card-meta::after {
     content: "";
     flex: none;
-    width: var(--_more-w);
-    height: var(--fa-dt-detail-value);
+    inline-size: var(--_more-w);
+    block-size: var(--fa-dt-detail-value);
     margin-inline-start: auto;
   }
   .fa-dt-card-body > .fa-dt-card-more {
     position: absolute;
     inset-inline-end: 0;
-    bottom: calc((var(--fa-dt-detail-value) - var(--control-h-sm)) / 2);
+    inset-block-end: calc(
+      (var(--fa-dt-detail-value) - var(--control-h-sm)) / 2
+    );
     justify-content: center;
-    width: var(--_more-w);
+    inline-size: var(--_more-w);
   }
   .fa-dt-card-details {
     padding-block-start: var(--space-2);
     padding-inline-start: var(--_card-indent);
-    border-top: var(--border-width) solid var(--_hairline);
+    border-block-start: var(--border-width) solid var(--_hairline);
   }
   .fa-dt-card-field {
     display: flex;
     align-items: center;
     gap: var(--space-1-5);
-    min-width: 0;
-    max-width: 100%;
+    min-inline-size: 0;
+    max-inline-size: 100%;
   }
   .fa-dt-card-label {
     flex: 0 1 auto;
@@ -1016,8 +1072,8 @@
   /* The status badge names itself; its label stays for assistive technology. */
   .fa-dt-card-field[data-status] > .fa-dt-card-label {
     position: absolute;
-    width: var(--border-width);
-    height: var(--border-width);
+    inline-size: var(--border-width);
+    block-size: var(--border-width);
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
@@ -1025,14 +1081,14 @@
   .fa-dt-card-value {
     display: flex;
     align-items: center;
-    min-width: 0;
-    min-height: var(--fa-dt-detail-value);
+    min-inline-size: 0;
+    min-block-size: var(--fa-dt-detail-value);
     margin: 0;
     font-size: var(--type-label-size);
   }
   /* Placeholder values have no content width of their own. */
   .fa-dt-skel-card .fa-dt-card-value {
-    width: calc(var(--space-4) * 4);
+    inline-size: calc(var(--space-4) * 4);
   }
 
   /* ── Footer: the table's status bar ─────────────────────────────────────────── */
@@ -1040,23 +1096,23 @@
     position: relative;
     display: grid;
     flex: none;
-    min-width: 0;
-    padding-top: var(--space-3);
+    min-inline-size: 0;
+    padding-block-start: var(--space-3);
     transition: box-shadow var(--duration-fast) var(--ease-standard);
   }
   .fa-dt[data-scrolled-bottom] .fa-dt-footer {
     box-shadow: inset 0 var(--border-width) 0 var(--line);
   }
   .fa-dt-footer[data-compact] {
-    padding-top: var(--space-2);
+    padding-block-start: var(--space-2);
   }
   .fa-dt-status,
   .fa-dt-bulk {
     grid-area: 1 / 1;
     display: flex;
     align-items: center;
-    min-width: 0;
-    min-height: var(--control-h-sm);
+    min-inline-size: 0;
+    min-block-size: var(--control-h-sm);
   }
   .fa-dt-status {
     gap: var(--space-4);
@@ -1071,7 +1127,7 @@
     flex: 0 1 auto;
     align-items: center;
     gap: var(--space-3);
-    min-width: 0;
+    min-inline-size: 0;
     overflow: hidden;
     color: var(--fg-subtle);
     font-size: var(--type-caption-size);
@@ -1091,14 +1147,15 @@
   }
   .fa-dt-pager {
     flex: 1 1 auto;
-    min-width: 0;
+    min-inline-size: 0;
   }
   .fa-dt-bulk {
     gap: var(--space-2);
     padding-inline: var(--space-3) var(--space-1);
     border-radius: var(--radius-control);
     background-color: var(--accent-soft);
-    box-shadow: inset 0 0 0 var(--border-width) color-mix(in oklab, var(--accent-line) 55%, transparent);
+    box-shadow: inset 0 0 0 var(--border-width)
+      color-mix(in oklab, var(--accent-line) 55%, transparent);
     opacity: 0;
     /* Closed, it waits a step above its place and settles down as it fades in. Above, not
        below: an offset below the footer would count as scrollable overflow and give every
@@ -1130,7 +1187,7 @@
     flex: 1 1 auto;
     align-items: center;
     gap: var(--gap-controls);
-    min-width: 0;
+    min-inline-size: 0;
     overflow: hidden;
   }
 
@@ -1142,7 +1199,7 @@
   .fa-dt[data-tier="status"] .fa-dt-footer {
     flex: 1 1 auto;
     align-content: center;
-    padding-top: 0;
+    padding-block-start: 0;
     box-shadow: none;
   }
 
@@ -1152,8 +1209,8 @@
     display: inline-grid;
     flex: none;
     place-items: center;
-    width: var(--control-h-sm);
-    height: var(--_grip-h);
+    inline-size: var(--control-h-sm);
+    block-size: var(--_grip-h);
     padding: 0;
     border: 0;
     border-radius: var(--radius-item);
@@ -1171,8 +1228,8 @@
     transition-timing-function: var(--ease-standard);
   }
   .fa-dt-grip-button > .fa-icon {
-    width: var(--icon-md);
-    height: var(--icon-md);
+    inline-size: var(--icon-md);
+    block-size: var(--icon-md);
   }
   .fa-dt-row:hover .fa-dt-grip-button:not([aria-disabled="true"]),
   .fa-dt-card:hover .fa-dt-grip-button:not([aria-disabled="true"]) {
@@ -1195,7 +1252,7 @@
       --_grip-h: max(var(--control-h-sm), var(--target-min));
     }
     .fa-dt-grip-button {
-      width: 100%;
+      inline-size: 100%;
     }
   }
   .fa-dt[data-reordering] {
@@ -1235,13 +1292,13 @@
   }
   .fa-dt.fa-dt-preview-frame {
     display: block;
-    width: 100%;
-    height: 100%;
+    inline-size: 100%;
+    block-size: 100%;
     overflow: hidden;
     border-radius: inherit;
   }
   .fa-dt-preview-frame > :is(.fa-dt-rows, .fa-dt-cards) {
-    height: 100%;
+    block-size: 100%;
     padding: 0;
   }
   .fa-dt-rows > .fa-dt-row.fa-dt-ghost,
@@ -1254,7 +1311,7 @@
   }
   .fa-dt-cards > .fa-dt-card.fa-dt-ghost {
     position: absolute;
-    top: 0;
+    inset-block-start: 0;
     inset-inline: 0;
     background-color: var(--surface-2);
   }
@@ -1312,7 +1369,8 @@
     background-color: var(--danger-soft);
     pointer-events: none;
     /* fa-fade-in played backwards: the tint fades out. */
-    animation: fa-fade-in calc(var(--duration-slower) * 2.5) var(--ease-standard) reverse both;
+    animation: fa-fade-in calc(var(--duration-slower) * 2.5)
+      var(--ease-standard) reverse both;
   }
 
   /* Cards: the grip leads the card, level with its title row. */
@@ -1329,16 +1387,18 @@
     flex: none;
     align-items: flex-start;
     /* Centred on the title row (one sm control tall), whatever the grip's touch height. */
-    padding-block-start: calc(var(--space-2-5) + (var(--control-h-sm) - var(--_grip-h)) / 2);
+    padding-block-start: calc(
+      var(--space-2-5) + (var(--control-h-sm) - var(--_grip-h)) / 2
+    );
     padding-inline-start: var(--space-1-5);
   }
   .fa-dt-grip-space {
-    width: var(--control-h-sm);
-    height: var(--_grip-h);
+    inline-size: var(--control-h-sm);
+    block-size: var(--_grip-h);
   }
   @media (pointer: coarse) {
     .fa-dt-card-grip .fa-dt-grip-button {
-      width: var(--control-h-sm);
+      inline-size: var(--control-h-sm);
     }
   }
 
@@ -1346,10 +1406,136 @@
   .fa-dt-announcer,
   .fa-dt-sr {
     position: absolute;
-    width: var(--border-width);
-    height: var(--border-width);
+    inline-size: var(--border-width);
+    block-size: var(--border-width);
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+}
+
+@layer components {
+  .fa-dt-editable {
+    position: relative;
+    display: flex;
+    align-items: center;
+    inline-size: 100%;
+    min-inline-size: 0;
+    block-size: var(--type-body-line);
+    padding-inline-end: calc(var(--icon-sm) + var(--space-1));
+    outline-offset: calc(-1 * var(--border-width));
+  }
+  .fa-dt-cell:has(> .fa-dt-editable) {
+    overflow: visible;
+  }
+  .fa-dt-edit-display { display: contents; }
+  .fa-dt-editable[data-editing] > .fa-dt-edit-display { visibility: hidden; }
+  .fa-dt-edit-status {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    color: var(--fg-muted);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .fa-dt-edit-status > svg {
+    inline-size: var(--icon-sm);
+    block-size: var(--icon-sm);
+  }
+  .fa-dt-editable:is(:hover, :focus-visible, [data-pending], [data-error])
+    > .fa-dt-edit-status {
+    opacity: 1;
+  }
+  .fa-dt-editable[data-editing] > .fa-dt-edit-status {
+    opacity: 0;
+  }
+  .fa-dt-editable[data-pending] {
+    color: var(--fg-muted);
+  }
+  .fa-dt-editable[data-error] {
+    outline: var(--border-width) solid var(--danger-line);
+  }
+  .fa-dt-editable[data-error] > .fa-dt-edit-status {
+    color: var(--danger-line);
+  }
+  .fa-dt-editor-box {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    block-size: min(var(--control-h-sm), calc(var(--_row-h) - var(--space-1)));
+  }
+  .fa-dt-editor {
+    inline-size: 100%;
+    min-inline-size: 0;
+    block-size: 100%;
+  }
+  .fa-dt-editor:focus-within {
+    outline-offset: calc(-1 * var(--focus-ring-width));
+  }
+  .fa-dt-column-grip {
+    display: flex;
+    align-items: center;
+    flex: none;
+    cursor: grab;
+    touch-action: none;
+    color: var(--fg-muted);
+    inline-size: var(--icon-sm);
+  }
+  .fa-dt-column-grip > svg {
+    inline-size: var(--icon-sm);
+    block-size: var(--icon-sm);
+  }
+  .fa-dt-th[data-dnd-source] {
+    opacity: 0;
+  }
+  .fa-dt-head-row[data-drop-over] {
+    outline: var(--border-width) solid var(--accent);
+    outline-offset: calc(-1 * var(--border-width));
+  }
+}
+
+@layer components {
+  /* Editable card fields reserve their share while controls and optimistic values replace text. */
+  .fa-dt-card-field:has(.fa-dt-editable) {
+    flex: 1 1 calc(var(--fa-dt-detail-field) / 2);
+    flex-direction: column;
+    align-items: stretch;
+    min-inline-size: 0;
+  }
+  .fa-dt-card-value:has(.fa-dt-editable) { inline-size: 100%; }
+  .fa-dt:dir(rtl)[data-scrolled-left] .fa-dt-th[data-edge] {
+    box-shadow: calc(-1 * var(--border-width)) 0 0 var(--line-strong);
+  }
+  .fa-dt:dir(rtl)[data-scrolled-left] .fa-dt-rows > .fa-dt-row .fa-dt-cell[data-edge] {
+    box-shadow: calc(-1 * var(--border-width)) 0 0 var(--line-strong), inset 0 var(--border-width) 0 var(--_sep);
+  }
+  .fa-dt:dir(rtl) .fa-dt-new { transform: translateX(50%); }
+}
+
+@layer components {
+  .fa-dt-head-row[data-drop-over] .fa-dt-th[data-column-insertion]::after {
+    content: "";
+    position: absolute;
+    inset-block: var(--space-1);
+    inset-inline-start: 0;
+    inline-size: var(--border-width-strong);
+    background: var(--accent);
+    pointer-events: none;
+  }
+  .fa-dt-head-row[data-drop-over] .fa-dt-th[data-column-insertion="after"]::after {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+  }
+}
+
+@layer components {
+  .fa-dt-editable[data-pending] .fa-dt-edit-status > .fa-spin {
+    /* perf:infinite only while a cell save is pending */
+    animation: fa-spin var(--duration-spin) linear infinite;
   }
 }

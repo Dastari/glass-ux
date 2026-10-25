@@ -1,3 +1,4 @@
+import { useDataTableCellMessages } from "../use-messages.js";
 import { useLocale } from "../../../lib/locale/use-locale.js";
 import { Tooltip } from "../../tooltip/index.js";
 import { formatAbsolute, formatRelative, toTime } from "../format.js";
@@ -12,14 +13,19 @@ export interface RelativeTimeProps {
 /**
  * "2 min ago", ticking on a shared clock; the absolute time is in a keyboard-accessible tooltip (R2.7).
  */
-export function RelativeTime({ value, fallback = "Never" }: RelativeTimeProps) {
+export function RelativeTime({ value, fallback }: RelativeTimeProps) {
+  const m = useDataTableCellMessages();
   const now = useNow();
   const locale = useLocale();
   if (value === null || value === undefined)
-    return <span className="fa-dt-text fa-dt-muted">{fallback}</span>;
+    return (
+      <span className="fa-dt-text fa-dt-muted">{fallback ?? m.never}</span>
+    );
   const time = toTime(value);
   if (!Number.isFinite(time))
-    return <span className="fa-dt-text fa-dt-muted">{fallback}</span>;
+    return (
+      <span className="fa-dt-text fa-dt-muted">{fallback ?? m.never}</span>
+    );
   return (
     <Tooltip content={formatAbsolute(time, locale)}>
       <time
@@ -28,7 +34,7 @@ export function RelativeTime({ value, fallback = "Never" }: RelativeTimeProps) {
         dateTime={new Date(time).toISOString()}
         suppressHydrationWarning
       >
-        {formatRelative(time, now || time, locale)}
+        {formatRelative(time, now || time, locale, m)}
       </time>
     </Tooltip>
   );

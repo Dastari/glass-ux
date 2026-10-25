@@ -10,5 +10,5 @@
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| fallback | `string \| undefined` | See type | no | "Never" | Text for a missing value. |
+| fallback | `string \| undefined` | See type | no | — | Text for a missing value. |
 | value | `string \| number \| Date \| null \| undefined` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |

@@ -1,3 +1,6 @@
+import type { DataTableCellEdit } from "./edit-types.js";
+import type { DataTableExportColumn } from "./export.js";
+import type { DataTableMessages } from "./messages.js";
 import type { RowData } from "@tanstack/react-table";
 import type {
   ColumnFiltersState,
@@ -97,6 +100,20 @@ export type DataTableRowOpen = "double-click" | "click";
 export interface DataTableProps<T extends RowData> {
   /** Stable id: persists column widths, hidden columns, pins and density per user. */
   id: string;
+  /** Override built-in wording for this table and its editors. */
+  labels?: Partial<DataTableMessages>;
+  /** Persist validated edits. A rejection restores the previous value and announces its message. */
+  onCellEdit?: (change: DataTableCellEdit<T>) => void | Promise<void>;
+  /** Opt in to the export toolbar. Exports loaded rows or the current selection. */
+  export?: boolean | DataTableExportSettings;
+  /** Delegate CSV or clipboard export to the server, including the current view state. */
+  onExport?: (request: DataTableExportRequest<T>) => void | Promise<void>;
+  /** Controlled display order. Pinned columns remain in their own group. */
+  columnOrder?: readonly string[];
+  /** Initial order when no saved preference exists. */
+  defaultColumnOrder?: readonly string[];
+  /** Called after a drag or menu move; pair with columnOrder to control it. */
+  onColumnOrderChange?: (order: string[]) => void;
   /** Accessible name of the grid, e.g. "Endpoints". */
   label: string;
   /** The current page of rows, already sorted and paged by the server. */
@@ -343,4 +360,28 @@ export interface DataTableFilterToggle {
   onCheckedChange: (checked: boolean) => void;
   /** The chip while on: "Including hidden". Without it, the toggle shows no chip. */
   summary?: string;
+}
+
+/** Options for the opt-in export toolbar and keyboard copy. */
+export interface DataTableExportSettings {
+  /** Download filename (default table id plus .csv). */
+  filename?: string;
+  /** Include column headers in clipboard tables (default true). */
+  headers?: boolean;
+  /** Include a UTF-8 BOM in CSV downloads (default false). */
+  bom?: boolean;
+}
+
+/** Server export request; the server owns fetching and delivering the complete result. */
+export interface DataTableExportRequest<T> {
+  /** Requested output. */
+  format: "csv" | "tsv";
+  /** Visible columns in display order. */
+  columns: readonly DataTableExportColumn<T>[];
+  /** Current column filters. */
+  filters: DataTableState["filters"];
+  /** Current sort. */
+  sort: DataTableState["sorting"];
+  /** Selected record ids, including selections from other pages. */
+  selection: DataTableState["selection"];
 }

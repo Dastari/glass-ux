@@ -120,6 +120,131 @@ function Toggle({
   );
 }
 
+/* Fictional inventory: editing, export and persistent column ordering share one specimen. */
+interface InventoryItem {
+  id: string;
+  name: string;
+  quantity: number;
+  status: string;
+  due: string;
+  active: boolean;
+}
+
+const inventoryColumn = createDataTableColumns<InventoryItem>();
+const inventoryColumns = inventoryColumn.columns([
+  inventoryColumn.accessor("name", {
+    header: "Item",
+    pin: true,
+    width: 15,
+    cardRole: "title",
+    edit: { kind: "text" },
+  }),
+  inventoryColumn.accessor("quantity", {
+    header: "Quantity",
+    width: 8,
+    priority: 1,
+    edit: {
+      kind: "number",
+      validate: (value) => (value >= 0 ? null : "Quantity must be zero or more"),
+    },
+  }),
+  inventoryColumn.accessor("status", {
+    header: "Status",
+    width: 9,
+    priority: 1,
+    edit: {
+      kind: "select",
+      options: [
+        { value: "ready", label: "Ready" },
+        { value: "ordered", label: "Ordered" },
+        { value: "held", label: "Held" },
+      ],
+    },
+  }),
+  inventoryColumn.accessor("due", {
+    header: "Due date",
+    width: 10,
+    priority: 1,
+    edit: { kind: "date" },
+  }),
+  inventoryColumn.accessor("active", {
+    header: "Active",
+    width: 7,
+    priority: 1,
+    edit: { kind: "switch", format: (value) => (value ? "Yes" : "No") },
+    cell: (context) => (context.getValue() ? "Yes" : "No"),
+  }),
+]);
+const inventoryRows: InventoryItem[] = [
+  {
+    id: "i1",
+    name: "Cedar sensor",
+    quantity: 12,
+    status: "ready",
+    due: "2026-11-01",
+    active: true,
+  },
+  {
+    id: "i2",
+    name: "Birch relay",
+    quantity: 4,
+    status: "ordered",
+    due: "2026-11-12",
+    active: false,
+  },
+  {
+    id: "i3",
+    name: "Locked sample",
+    quantity: 1,
+    status: "held",
+    due: "2026-12-01",
+    active: true,
+  },
+];
+
+function InventoryDemo() {
+  const [rows, setRows] = useState(inventoryRows);
+  const [rtl, setRtl] = useState(false);
+  const [density, setDensity] = useState<DataTableDensity>("comfortable");
+  return (
+    <div className="dt-demo">
+      <div className="dt-demo-controls">
+        <Toggle pressed={rtl} onClick={() => setRtl((value) => !value)}>
+          Right to left
+        </Toggle>
+        <Toggle
+          pressed={density === "compact"}
+          onClick={() => setDensity((value) => (value === "compact" ? "comfortable" : "compact"))}
+        >
+          Compact inventory
+        </Toggle>
+      </div>
+      <div className="dt-demo-frame" data-testid="dt-inventory" dir={rtl ? "rtl" : "ltr"}>
+        <DataTable
+          id="gallery-inventory"
+          label="Inventory"
+          rows={rows}
+          columns={inventoryColumns}
+          getRowId={(row) => row.id}
+          getRowLabel={(row) => row.name}
+          density={density}
+          export={{ filename: "inventory.csv", bom: true }}
+          onCellEdit={async (change) => {
+            await new Promise((resolve) => setTimeout(resolve, 650));
+            if (change.rowId === "i3")
+              throw new Error("This sample is locked; the value was restored");
+            setRows((current) =>
+              current.map((row) =>
+                row.id === change.rowId ? { ...row, [change.columnId]: change.value } : row,
+              ),
+            );
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 /* ── The Endpoints table: URL state, mock server, live ticker, every state ─────────── */
 function EndpointsDemo() {
   const rowActions = useEndpointRowActions();
@@ -146,7 +271,9 @@ function EndpointsDemo() {
     }),
     [url.state],
   );
-  const { page, pending, updatedAt } = useEndpointPage(server, query, { token: refetch.token });
+  const { page, pending, updatedAt } = useEndpointPage(server, query, {
+    token: refetch.token,
+  });
   const rows = useMemo(() => (simulate === "data" && page ? page.rows : NO_ROWS), [simulate, page]);
   const silent = refetch.silent;
   // Live updates: a tick on the server (on the rows in view), then a silent refetch.
@@ -214,7 +341,10 @@ function EndpointsDemo() {
             size="sm"
             variant="ghost"
             onClick={() => {
-              server.tick({ enrol: "always", prefer: rows.map((row) => row.id) });
+              server.tick({
+                enrol: "always",
+                prefer: rows.map((row) => row.id),
+              });
               setRefetch((value) => ({ token: value.token + 1, silent: true }));
             }}
           >
@@ -260,7 +390,12 @@ function EndpointsDemo() {
             <Button
               size="sm"
               icon={<IconRefresh />}
-              onClick={() => setRefetch((value) => ({ token: value.token + 1, silent: false }))}
+              onClick={() =>
+                setRefetch((value) => ({
+                  token: value.token + 1,
+                  silent: false,
+                }))
+              }
             >
               Refresh
             </Button>
@@ -297,7 +432,9 @@ function FrameTable({
     }),
     [state.sorting, state.pagination, state.search],
   );
-  const { page, pending, updatedAt } = useEndpointPage(server, query, { latency: false });
+  const { page, pending, updatedAt } = useEndpointPage(server, query, {
+    latency: false,
+  });
   const rowActions = useEndpointRowActions();
   return (
     <DataTable<Endpoint>
@@ -421,7 +558,11 @@ function GroupedDemo() {
         onStateChange={setState}
         loading={!page}
         search={ENDPOINT_SEARCH}
-        grouping={{ groupOf: (endpoint) => endpoint.os, groups, pageSize: GROUP_PAGE }}
+        grouping={{
+          groupOf: (endpoint) => endpoint.os,
+          groups,
+          pageSize: GROUP_PAGE,
+        }}
         actions={rowActions}
         getRowLabel={(endpoint) => endpoint.name}
         noun={NOUN}
@@ -484,7 +625,11 @@ function useEndpointList(
       });
       setList((value) =>
         value?.key === key
-          ? { ...value, rows: [...value.rows, ...page.rows], rowCount: page.rowCount }
+          ? {
+              ...value,
+              rows: [...value.rows, ...page.rows],
+              rowCount: page.rowCount,
+            }
           : value,
       );
     } finally {
@@ -566,14 +711,62 @@ interface QueueJob {
 }
 
 const QUEUE: QueueJob[] = [
-  { id: "q1", title: "Rebuild search index", team: "Platform", state: "running", minutes: 18 },
-  { id: "q2", title: "Rotate TLS certificates", team: "Security", state: "queued", minutes: 6 },
-  { id: "q3", title: "Archive March audit logs", team: "Compliance", state: "queued", minutes: 25 },
-  { id: "q4", title: "Resize thumbnail cache", team: "Media", state: "queued", minutes: 12 },
-  { id: "q5", title: "Sync partner catalogue", team: "Commerce", state: "held", minutes: 9 },
-  { id: "q6", title: "Recalculate usage invoices", team: "Billing", state: "queued", minutes: 31 },
-  { id: "q7", title: "Vacuum analytics tables", team: "Data", state: "queued", minutes: 14 },
-  { id: "q8", title: "Refresh map tiles", team: "Maps", state: "queued", minutes: 22 },
+  {
+    id: "q1",
+    title: "Rebuild search index",
+    team: "Platform",
+    state: "running",
+    minutes: 18,
+  },
+  {
+    id: "q2",
+    title: "Rotate TLS certificates",
+    team: "Security",
+    state: "queued",
+    minutes: 6,
+  },
+  {
+    id: "q3",
+    title: "Archive March audit logs",
+    team: "Compliance",
+    state: "queued",
+    minutes: 25,
+  },
+  {
+    id: "q4",
+    title: "Resize thumbnail cache",
+    team: "Media",
+    state: "queued",
+    minutes: 12,
+  },
+  {
+    id: "q5",
+    title: "Sync partner catalogue",
+    team: "Commerce",
+    state: "held",
+    minutes: 9,
+  },
+  {
+    id: "q6",
+    title: "Recalculate usage invoices",
+    team: "Billing",
+    state: "queued",
+    minutes: 31,
+  },
+  {
+    id: "q7",
+    title: "Vacuum analytics tables",
+    team: "Data",
+    state: "queued",
+    minutes: 14,
+  },
+  {
+    id: "q8",
+    title: "Refresh map tiles",
+    team: "Maps",
+    state: "queued",
+    minutes: 22,
+  },
 ];
 const TASKS = ["Reindex", "Backfill", "Compact", "Export", "Verify", "Snapshot", "Prune", "Replay"];
 const AREAS = [
@@ -594,8 +787,16 @@ const LONG_QUEUE: QueueJob[] = Array.from({ length: 400 }, (_, index) => ({
   state: index === 0 ? "running" : index % 11 === 4 ? "held" : "queued",
   minutes: 4 + ((index * 7) % 37),
 }));
-const STATE_LABEL = { running: "Running", queued: "Queued", held: "Held" } as const;
-const STATE_TONE = { running: "info", queued: "neutral", held: "warning" } as const;
+const STATE_LABEL = {
+  running: "Running",
+  queued: "Queued",
+  held: "Held",
+} as const;
+const STATE_TONE = {
+  running: "info",
+  queued: "neutral",
+  held: "warning",
+} as const;
 const queueCol = createDataTableColumns<
   QueueJob & {
     position: number;
@@ -612,8 +813,18 @@ const queueColumns = queueCol.columns([
     flash: false,
     cell: ({ getValue }) => <NumericCell value={getValue()} />,
   }),
-  queueCol.accessor("title", { header: "Job", pin: true, width: 16, cardRole: "title" }),
-  queueCol.accessor("team", { header: "Team", priority: 2, width: 9, cardRole: "subtitle" }),
+  queueCol.accessor("title", {
+    header: "Job",
+    pin: true,
+    width: 16,
+    cardRole: "title",
+  }),
+  queueCol.accessor("team", {
+    header: "Team",
+    priority: 2,
+    width: 9,
+    cardRole: "subtitle",
+  }),
   queueCol.accessor("state", {
     header: "State",
     priority: 2,
@@ -649,7 +860,10 @@ function ReorderDemo() {
   const [sorting, setSorting] = useState<DataTableState["sorting"]>([]);
   const [last, setLast] = useState("No moves yet");
   const rows = useMemo(() => {
-    const positioned = queue.map((job, index) => ({ ...job, position: index + 1 }));
+    const positioned = queue.map((job, index) => ({
+      ...job,
+      position: index + 1,
+    }));
     const sort = sorting[0];
     return sort
       ? positioned.toSorted((a, b) => (a.minutes - b.minutes) * (sort.desc ? -1 : 1))
@@ -935,6 +1149,15 @@ function DataTableSection() {
         wide
       >
         <InfiniteDemo />
+      </Specimen>
+
+      <Specimen
+        title="Editable inventory"
+        description="Enter, F2 or double-click edits a cell. Tab saves and moves to the next field. Locked sample rejects saves. Export uses the selected rows when present; header menus and grips change column order."
+        layout="bare"
+        wide
+      >
+        <InventoryDemo />
       </Specimen>
 
       <Specimen

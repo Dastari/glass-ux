@@ -1,62 +1,76 @@
-import type { RowData } from "@tanstack/react-table"
-import type { Row, RowSelectionState } from "@tanstack/react-table"
-import { defaultRangeExtractor, useVirtualizer, type Virtualizer } from "@tanstack/react-virtual"
-import { Fragment, useCallback, useLayoutEffect, type HTMLAttributes, type ReactElement, type ReactNode, type Ref, type RefObject } from "react"
-import { IconAlert } from "../../icons/generated/icons.js"
-import { Button } from "../button/index.js"
-import { EntityIdentitySkeleton } from "../entity/index.js"
-import { cx } from "../../lib/cx.js"
-import { Skeleton } from "../skeleton/index.js"
-import type { CellSkeleton, DataTableFeatures } from "./features.js"
-import { GroupLine } from "./group-rows.js"
-import type { GroupedItem } from "./grouping.js"
-import { DataRow, type ColumnInfo, type RowController } from "./row.js"
-import type { DataTableNoun } from "./types.js"
+import { useDataTableMessages } from "./use-messages.js";
+import type { RowData } from "@tanstack/react-table";
+import type { Row, RowSelectionState } from "@tanstack/react-table";
+import {
+  defaultRangeExtractor,
+  useVirtualizer,
+  type Virtualizer,
+} from "@tanstack/react-virtual";
+import {
+  Fragment,
+  useCallback,
+  useLayoutEffect,
+  type HTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+  type Ref,
+  type RefObject,
+} from "react";
+import { IconAlert } from "../../icons/generated/icons.js";
+import { Button } from "../button/index.js";
+import { EntityIdentitySkeleton } from "../entity/index.js";
+import { cx } from "../../lib/cx.js";
+import { Skeleton } from "../skeleton/index.js";
+import type { CellSkeleton, DataTableFeatures } from "./features.js";
+import { GroupLine } from "./group-rows.js";
+import type { GroupedItem } from "./grouping.js";
+import { DataRow, type ColumnInfo, type RowController } from "./row.js";
+import type { DataTableNoun } from "./types.js";
 
 export interface VirtualRowsProps<T extends RowData> {
   /** Records or matrix rows in display order. */
-  rows: readonly Row<DataTableFeatures, T>[]
+  rows: readonly Row<DataTableFeatures, T>[];
   /**
    * Grouped tables: the body in display order (group headers, rows, "Show more" lines). Each
    * line is one row tall; indexes, keyboard focus and aria-rowindex count every line.
    */
-  items?: readonly GroupedItem<Row<DataTableFeatures, T>>[] | null
-  scrollRef: RefObject<HTMLDivElement | null>
-  virtualizerRef: RefObject<Virtualizer<HTMLDivElement, Element> | null>
+  items?: readonly GroupedItem<Row<DataTableFeatures, T>>[] | null;
+  scrollRef: RefObject<HTMLDivElement | null>;
+  virtualizerRef: RefObject<Virtualizer<HTMLDivElement, Element> | null>;
   /** Typed column definitions, including rendering, sorting, priorities and filters. */
-  columns: readonly ColumnInfo[]
+  columns: readonly ColumnInfo[];
   /** Keeps the item out of the visible layout. */
-  hidden: readonly ColumnInfo[]
-  selection: RowSelectionState
-  selectable: boolean
-  activeIndex: number
-  expanded: ReadonlySet<string>
-  expandAll: boolean
-  rowHeight: number
-  detailHeight: number
+  hidden: readonly ColumnInfo[];
+  selection: RowSelectionState;
+  selectable: boolean;
+  activeIndex: number;
+  expanded: ReadonlySet<string>;
+  expandAll: boolean;
+  rowHeight: number;
+  detailHeight: number;
   /** aria-rowindex of the first body row (header is 1). */
-  firstRowIndex: number
+  firstRowIndex: number;
   /** Render every row (auto-height tables). */
-  renderAll: boolean
-  controller: RowController
-  getLabel: (row: T) => string
+  renderAll: boolean;
+  controller: RowController;
+  getLabel: (row: T) => string;
   /** Grouped tables: what a group header's count counts ("8 devices"). */
-  noun: DataTableNoun
+  noun: DataTableNoun;
   /** Cells a group line spans. */
-  colSpan: number
+  colSpan: number;
   /** Props for the rowgroup element (delegated pointer handlers live here). */
-  containerProps: HTMLAttributes<HTMLDivElement>
+  containerProps: HTMLAttributes<HTMLDivElement>;
   /** Wrap the rowgroup (the context-menu trigger renders it). */
-  wrapContainer: (element: ReactElement) => ReactElement
+  wrapContainer: (element: ReactElement) => ReactElement;
   /** Reorderable tables: a row's grip state ("" available, else the reason). */
-  gripOf?: (row: Row<DataTableFeatures, T>) => string
+  gripOf?: (row: Row<DataTableFeatures, T>) => string;
   /** Bumps when row-level renderers change (memoised rows redraw). */
-  revision: object
+  revision: object;
   /**
    * Infinite loading: a line after the rows (a placeholder row, or the failure with Retry),
    * one row tall and always mounted, so it can watch for the end of the list coming into view.
    */
-  renderTail?: (placement: { index: number; top: number }) => ReactElement
+  renderTail?: (placement: { index: number; top: number }) => ReactElement;
 }
 
 /**
@@ -92,57 +106,84 @@ export function VirtualRows<T extends RowData>({
   renderTail,
 }: VirtualRowsProps<T>) {
   const isExpanded = useCallback(
-    (row: Row<DataTableFeatures, T> | undefined) => Boolean(row && hidden.length && (expandAll || expanded.has(row.id))),
-    [expandAll, expanded, hidden.length]
-  )
-  const lineCount = items ? items.length : rows.length
-  const count = lineCount + (renderTail ? 1 : 0)
+    (row: Row<DataTableFeatures, T> | undefined) =>
+      Boolean(row && hidden.length && (expandAll || expanded.has(row.id))),
+    [expandAll, expanded, hidden.length],
+  );
+  const lineCount = items ? items.length : rows.length;
+  const count = lineCount + (renderTail ? 1 : 0);
   const rowAt = (index: number): Row<DataTableFeatures, T> | undefined => {
-    if (!items) return rows[index]
-    const item = items[index]
-    return item?.kind === "row" ? item.row : undefined
-  }
+    if (!items) return rows[index];
+    const item = items[index];
+    return item?.kind === "row" ? item.row : undefined;
+  };
   // TanStack keys its measurement cache by this callback's identity. Keep scroll renders
   // from rebuilding the geometry for every loaded row; new data/order still invalidates it.
-  const keyAt = useCallback((index: number) => {
-    if (index === lineCount) return "\u0000tail"
-    if (!items) return rows[index]?.id ?? index
-    const item = items[index]
-    if (!item) return index
-    return item.kind === "row" ? item.row.id : item.key
-  }, [rows, items, lineCount])
+  const keyAt = useCallback(
+    (index: number) => {
+      if (index === lineCount) return "\u0000tail";
+      if (!items) return rows[index]?.id ?? index;
+      const item = items[index];
+      if (!item) return index;
+      return item.kind === "row" ? item.row.id : item.key;
+    },
+    [rows, items, lineCount],
+  );
   // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual is the table's virtualizer (R16); rows are memoised by data identity, not by the compiler
   const virtualizer = useVirtualizer<HTMLDivElement, Element>({
     count,
     getScrollElement: () => scrollRef.current,
-    estimateSize: (index) => rowHeight + (isExpanded(rowAt(index)) ? detailHeight : 0),
+    estimateSize: (index) =>
+      rowHeight + (isExpanded(rowAt(index)) ? detailHeight : 0),
     getItemKey: keyAt,
     overscan: renderAll ? count : 6,
     initialRect: { width: 0, height: renderAll ? count * rowHeight : 0 },
     rangeExtractor: (range) => {
-      const indexes = defaultRangeExtractor(range)
-      if (activeIndex >= 0 && activeIndex < lineCount && !indexes.includes(activeIndex)) {
-        indexes.push(activeIndex)
-        indexes.sort((a, b) => a - b)
+      const indexes = defaultRangeExtractor(range);
+      if (
+        activeIndex >= 0 &&
+        activeIndex < lineCount &&
+        !indexes.includes(activeIndex)
+      ) {
+        indexes.push(activeIndex);
+        indexes.sort((a, b) => a - b);
       }
       // The end line stays mounted: it watches for the end of the list coming near.
-      if (renderTail && !indexes.includes(lineCount)) indexes.push(lineCount)
-      return indexes
+      if (renderTail && !indexes.includes(lineCount)) indexes.push(lineCount);
+      return indexes;
     },
-  })
-  virtualizerRef.current = virtualizer
+  });
+  virtualizerRef.current = virtualizer;
 
   // Heights change with density, expansion and the grouped lines; re-measure in the same frame.
   useLayoutEffect(() => {
-    virtualizer.measure()
-  }, [virtualizer, rowHeight, detailHeight, expandAll, expanded, hidden.length, items])
+    virtualizer.measure();
+  }, [
+    virtualizer,
+    rowHeight,
+    detailHeight,
+    expandAll,
+    expanded,
+    hidden.length,
+    items,
+  ]);
 
-  const virtualItems = virtualizer.getVirtualItems()
+  const virtualItems = virtualizer.getVirtualItems();
   return wrapContainer(
-    <div {...containerProps} role="rowgroup" className="fa-dt-rows" style={{ height: virtualizer.getTotalSize() }}>
+    <div
+      {...containerProps}
+      role="rowgroup"
+      className="fa-dt-rows"
+      style={{ height: virtualizer.getTotalSize() }}
+    >
       {virtualItems.map((virtual) => {
-        if (renderTail && virtual.index === lineCount) return <Fragment key="\u0000tail">{renderTail({ index: virtual.index, top: virtual.start })}</Fragment>
-        const item = items?.[virtual.index]
+        if (renderTail && virtual.index === lineCount)
+          return (
+            <Fragment key="\u0000tail">
+              {renderTail({ index: virtual.index, top: virtual.start })}
+            </Fragment>
+          );
+        const item = items?.[virtual.index];
         if (item && item.kind !== "row") {
           return (
             <GroupLine
@@ -156,11 +197,11 @@ export function VirtualRows<T extends RowData>({
               noun={noun}
               controller={controller}
             />
-          )
+          );
         }
-        const row = item ? item.row : rows[virtual.index]
-        if (!row) return null
-        const next = rowAt(virtual.index + 1)
+        const row = item ? item.row : rows[virtual.index];
+        if (!row) return null;
+        const next = rowAt(virtual.index + 1);
         return (
           <DataRow<T>
             key={row.id}
@@ -182,33 +223,41 @@ export function VirtualRows<T extends RowData>({
             selectedNext={next ? selection[next.id] === true : false}
             revision={revision}
           />
-        )
+        );
       })}
-    </div>
-  )
+    </div>,
+  );
 }
 
 /* ── Placeholders ──────────────────────────────────────────────────────────────── */
 
-const SKELETON_WIDTHS = ["72%", "54%", "86%", "63%", "78%", "47%"]
+const SKELETON_WIDTHS = ["72%", "54%", "86%", "63%", "78%", "47%"];
 
-export function CellPlaceholder({ kind, seed }: { kind: CellSkeleton; seed: number }) {
-  const width = SKELETON_WIDTHS[seed % SKELETON_WIDTHS.length]
+export function CellPlaceholder({
+  kind,
+  seed,
+}: {
+  kind: CellSkeleton;
+  seed: number;
+}) {
+  const width = SKELETON_WIDTHS[seed % SKELETON_WIDTHS.length];
   switch (kind) {
     case "none":
-      return null
+      return null;
     case "identity":
-      return <EntityIdentitySkeleton tier="row" />
+      return <EntityIdentitySkeleton tier="row" />;
     case "badge":
-      return <Skeleton.Block className="fa-dt-skel-badge" radius="full" />
+      return <Skeleton.Block className="fa-dt-skel-badge" radius="full" />;
     case "sparkline":
-      return <Skeleton.Block className="fa-dt-skel-spark" radius="item" />
+      return <Skeleton.Block className="fa-dt-skel-spark" radius="item" />;
     case "number":
-      return <Skeleton.Text type="body" width="48%" className="fa-dt-skel-end" />
+      return (
+        <Skeleton.Text type="body" width="48%" className="fa-dt-skel-end" />
+      );
     case "time":
-      return <Skeleton.Text type="body" width="58%" />
+      return <Skeleton.Text type="body" width="58%" />;
     default:
-      return <Skeleton.Text type="body" width={width} />
+      return <Skeleton.Text type="body" width={width} />;
   }
 }
 
@@ -220,12 +269,12 @@ export function SkeletonRows({
   grip = false,
 }: {
   /** Item count shown by the component. */
-  count: number
+  count: number;
   /** Typed column definitions, including rendering, sorting, priorities and filters. */
-  columns: readonly ColumnInfo[]
-  selectable: boolean
+  columns: readonly ColumnInfo[];
+  selectable: boolean;
   /** Reserve the reorder grip column. */
-  grip?: boolean
+  grip?: boolean;
 }) {
   return (
     <>
@@ -240,7 +289,7 @@ export function SkeletonRows({
         />
       ))}
     </>
-  )
+  );
 }
 
 /** One skeleton row at `top` (a CSS length), in the exact row box. */
@@ -254,18 +303,23 @@ export function SkeletonRow({
   ref,
 }: {
   /** Varies the placeholder widths. */
-  seed: number
-  top: string
+  seed: number;
+  top: string;
   /** Typed column definitions, including rendering, sorting, priorities and filters. */
-  columns: readonly ColumnInfo[]
-  selectable: boolean
+  columns: readonly ColumnInfo[];
+  selectable: boolean;
   /** Reserve the reorder grip column. */
-  grip?: boolean
-  className?: string
-  ref?: Ref<HTMLDivElement>
+  grip?: boolean;
+  className?: string;
+  ref?: Ref<HTMLDivElement>;
 }) {
   return (
-    <div ref={ref} className={cx("fa-dt-row fa-dt-skel-row", className)} aria-hidden style={{ transform: `translateY(${top})` }}>
+    <div
+      ref={ref}
+      className={cx("fa-dt-row fa-dt-skel-row", className)}
+      aria-hidden
+      style={{ transform: `translateY(${top})` }}
+    >
       {grip ? <div className="fa-dt-cell fa-dt-grip" /> : null}
       {selectable ? (
         <div className="fa-dt-cell fa-dt-select">
@@ -273,13 +327,24 @@ export function SkeletonRow({
         </div>
       ) : null}
       {columns.map((column, columnIndex) => (
-        <div key={column.id} className="fa-dt-cell" data-col={column.key} data-align={column.meta.align} data-pinned={column.pinned ? "" : undefined} data-edge={column.edge ? "" : undefined} style={column.style}>
-          <CellPlaceholder kind={column.meta.skeleton} seed={seed + columnIndex * 3} />
+        <div
+          key={column.id}
+          className="fa-dt-cell"
+          data-col={column.key}
+          data-align={column.meta.align}
+          data-pinned={column.pinned ? "" : undefined}
+          data-edge={column.edge ? "" : undefined}
+          style={column.style}
+        >
+          <CellPlaceholder
+            kind={column.meta.skeleton}
+            seed={seed + columnIndex * 3}
+          />
         </div>
       ))}
       <div className="fa-dt-cell fa-dt-trail" />
     </div>
-  )
+  );
 }
 
 /** Empty and error states: one line in the body's own box, never pushing anything (R9.1). */
@@ -288,10 +353,10 @@ export function BodyMessage({
   children,
   action,
 }: {
-  tone: "empty" | "error"
-  children: ReactNode
+  tone: "empty" | "error";
+  children: ReactNode;
   /** Trailing action for a notice or result. */
-  action?: ReactNode
+  action?: ReactNode;
 }) {
   return (
     <div role="row" className="fa-dt-message-row">
@@ -301,13 +366,14 @@ export function BodyMessage({
         {action ? <span className="fa-dt-message-action">{action}</span> : null}
       </div>
     </div>
-  )
+  );
 }
 
 export function RetryButton({ onRetry }: { onRetry: () => void }) {
+  const m = useDataTableMessages();
   return (
     <Button size="sm" onClick={onRetry}>
-      Retry
+      {m.retry}
     </Button>
-  )
+  );
 }

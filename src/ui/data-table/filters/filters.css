@@ -18,7 +18,7 @@
     flex: 1 1 var(--_basis);
     align-items: center;
     gap: var(--gap-controls);
-    min-width: 0;
+    min-inline-size: 0;
   }
   /* With the search field the strip needs room for it beside Filters before it shares a line. */
   .fa-dt-filterbar[data-search] {
@@ -35,7 +35,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--gap-controls);
-    min-width: 0;
+    min-inline-size: 0;
     margin-inline-start: auto;
   }
   .fa-dt-filter-chips {
@@ -44,21 +44,21 @@
     flex: 0 1 auto;
     align-items: center;
     gap: var(--space-1-5);
-    min-width: 0;
+    min-inline-size: 0;
   }
   .fa-dt-filter-item {
     display: flex;
     flex: 0 1 auto;
-    min-width: 0;
+    min-inline-size: 0;
   }
   /* The hidden twin the strip measures. */
   .fa-dt-filter-measure {
     position: absolute;
-    top: 0;
+    inset-block-start: 0;
     inset-inline-start: 0;
     display: flex;
     gap: var(--space-1-5);
-    width: max-content;
+    inline-size: max-content;
     visibility: hidden;
     pointer-events: none;
   }
@@ -71,12 +71,13 @@
     display: inline-flex;
     flex: 0 1 auto;
     align-items: center;
-    min-width: 0;
-    max-width: var(--_max);
-    height: var(--_h);
+    min-inline-size: 0;
+    max-inline-size: var(--_max);
+    block-size: var(--_h);
     border-radius: var(--radius-full);
     background-color: var(--accent-soft);
-    box-shadow: inset 0 0 0 var(--border-width) color-mix(in oklab, var(--accent-line) 60%, transparent);
+    box-shadow: inset 0 0 0 var(--border-width)
+      color-mix(in oklab, var(--accent-line) 60%, transparent);
     color: var(--accent-text);
     font-size: var(--type-label-size);
     line-height: var(--type-label-line);
@@ -88,8 +89,8 @@
     flex: 1 1 auto;
     align-items: center;
     gap: var(--space-1);
-    min-width: 0;
-    height: 100%;
+    min-inline-size: 0;
+    block-size: 100%;
     padding: 0 var(--space-1) 0 var(--space-2-5);
     border: 0;
     border-radius: var(--radius-full);
@@ -107,7 +108,7 @@
   }
   .fa-dt-filter-chip-label {
     flex: 1 1 auto;
-    min-width: 0;
+    min-inline-size: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -119,7 +120,7 @@
   }
   .fa-dt-filter-chip-remove-space {
     flex: none;
-    width: calc(var(--control-h-xs) + var(--space-half));
+    inline-size: calc(var(--control-h-xs) + var(--space-half));
   }
   /* The folded chip: "3 filters". */
   .fa-dt-filter-count {
@@ -128,33 +129,33 @@
   }
   .fa-dt-filter-count > .fa-icon {
     flex: none;
-    width: var(--icon-xs);
-    height: var(--icon-xs);
+    inline-size: var(--icon-xs);
+    block-size: var(--icon-xs);
   }
   .fa-dt-filter-list {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-2);
-    min-width: 0;
+    min-inline-size: 0;
   }
   .fa-dt-filter-list .fa-dt-filter-item {
-    max-width: 100%;
+    max-inline-size: 100%;
   }
   .fa-dt-filter-list .fa-dt-filter-chip {
     --_max: 100%;
   }
   /* Clear filters, under the folded list (the line has no room for it). */
   .fa-dt-filter-list-clear {
-    margin-top: var(--space-2);
+    margin-block-start: var(--space-2);
     margin-inline-start: calc(var(--space-2) * -1);
   }
 
   /* ── Header glyph ──────────────────────────────────────────────────────────── */
   .fa-dt-filter-glyph {
     flex: none;
-    width: var(--icon-xs);
-    height: var(--icon-xs);
+    inline-size: var(--icon-xs);
+    block-size: var(--icon-xs);
     color: var(--accent-text);
   }
 
@@ -163,7 +164,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-2-5);
-    min-width: 0;
+    min-inline-size: 0;
   }
   .fa-dt-filter-footer {
     display: flex;
@@ -187,11 +188,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
-    max-height: var(--_max-h);
-    min-width: 0;
+    max-block-size: var(--_max-h);
+    min-inline-size: 0;
     margin-inline: calc(var(--space-1) * -1);
     padding: var(--space-1);
-    overflow-y: auto;
+    overflow-block: auto;
     overscroll-behavior: contain;
   }
   .fa-dt-filter-option-skeleton {
@@ -199,11 +200,11 @@
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: 0 var(--space-2-5);
-    height: var(--type-body-line);
+    block-size: var(--type-body-line);
   }
   .fa-dt-filter-check-skeleton {
-    width: calc(var(--check-size) - var(--space-half));
-    height: calc(var(--check-size) - var(--space-half));
+    inline-size: calc(var(--check-size) - var(--space-half));
+    block-size: calc(var(--check-size) - var(--space-half));
   }
   .fa-dt-filter-note {
     display: flex;
@@ -218,18 +219,21 @@
     /* component token: the narrowest preset column */
     --_col: 10.5rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--_col)), 1fr));
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(100%, var(--_col)), 1fr)
+    );
     gap: var(--space-2) var(--space-4);
   }
   /* Ranges start a new row, set apart from the presets by space. */
   .fa-dt-filter-date-options > .fa-dt-filter-date-ranges {
     grid-column-start: 1;
-    margin-top: var(--space-2);
+    margin-block-start: var(--space-2);
   }
   .fa-dt-filter-date-options > .fa-dt-filter-date-ranges + * {
-    margin-top: var(--space-2);
+    margin-block-start: var(--space-2);
   }
   .fa-dt-filter-list-input {
-    min-width: 0;
+    min-inline-size: 0;
   }
 }

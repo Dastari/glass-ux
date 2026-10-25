@@ -1,9 +1,29 @@
-import { useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
-import { DemoScope } from "../demo-scope.js"
-import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { IconOperatingSystem, IconRefresh, IconSoftware, IconWindows } from "../../icons/generated/icons.js"
-import { Badge } from "../../ui/badge/index.js"
-import { Button, ButtonGroup } from "../../ui/button/index.js"
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { DemoScope } from "../demo-scope.js";
+import {
+  ContainerLab,
+  Example,
+  Rules,
+  SectionPage,
+  Specimen,
+  TokenTable,
+} from "../kit.js";
+import {
+  IconOperatingSystem,
+  IconRefresh,
+  IconSoftware,
+  IconWindows,
+} from "../../icons/generated/icons.js";
+import { Badge } from "../../ui/badge/index.js";
+import { Button, ButtonGroup } from "../../ui/button/index.js";
 import {
   createDataTableColumns,
   DataTable,
@@ -22,21 +42,31 @@ import {
   type DataTableRowMove,
   type DataTableSearch,
   type DataTableState,
-} from "../../ui/data-table/index.js"
-import type { Domain } from "../../ui/sparkline/index.js"
-import { endpointColumns, useEndpointRowActions } from "./data-table.columns.js"
-import { DeviceGallery } from "./devices.fixtures.js"
-import { createEndpointServer, SORTABLE_COLUMNS, type Endpoint, type EndpointPage, type EndpointQuery, type EndpointServer } from "./data-table.fixtures.js"
+} from "../../ui/data-table/index.js";
+import type { Domain } from "../../ui/sparkline/index.js";
+import {
+  endpointColumns,
+  useEndpointRowActions,
+} from "./data-table.columns.js";
+import { DeviceGallery } from "./devices.fixtures.js";
+import {
+  createEndpointServer,
+  SORTABLE_COLUMNS,
+  type Endpoint,
+  type EndpointPage,
+  type EndpointQuery,
+  type EndpointServer,
+} from "./data-table.fixtures.js";
 
 /* One "server" for the whole section, so live ticks show up in every table. */
-const server = createEndpointServer()
-const getRowId = (endpoint: Endpoint) => endpoint.id
-const PAGE_SIZES = [25, 50, 100] as const
-const NOUN = { one: "endpoint", other: "endpoints" }
-const NO_ROWS: Endpoint[] = []
-const PERCENT: Domain = [0, 100]
+const server = createEndpointServer();
+const getRowId = (endpoint: Endpoint) => endpoint.id;
+const PAGE_SIZES = [25, 50, 100] as const;
+const NOUN = { one: "endpoint", other: "endpoints" };
+const NO_ROWS: Endpoint[] = [];
+const PERCENT: Domain = [0, 100];
 
-type Simulate = "data" | "loading" | "empty" | "error"
+type Simulate = "data" | "loading" | "empty" | "error";
 
 /**
  * The toolbar search (R16.8): the fields the mock server's `search` matches. With the optional
@@ -51,100 +81,304 @@ const ENDPOINT_SEARCH: DataTableSearch<Endpoint> = {
     { field: "Model", value: (endpoint) => endpoint.model },
   ],
   placeholder: "Search name, user, IP, model",
-}
+};
 
 /** Query the mock server like a Query-backed view: first load, refetches, stale-while-revalidate. */
-function useEndpointPage(source: EndpointServer, query: EndpointQuery, { latency = true, token = 0 } = {}) {
-  const key = JSON.stringify(query)
-  const [result, setResult] = useState<{ key: string; token: number; page: EndpointPage; at: number } | null>(null)
+function useEndpointPage(
+  source: EndpointServer,
+  query: EndpointQuery,
+  { latency = true, token = 0 } = {},
+) {
+  const key = JSON.stringify(query);
+  const [result, setResult] = useState<{
+    key: string;
+    token: number;
+    page: EndpointPage;
+    at: number;
+  } | null>(null);
   useEffect(() => {
-    let cancelled = false
-    void source.query(JSON.parse(key) as EndpointQuery, { latency }).then((page) => {
-      if (!cancelled) setResult({ key, token, page, at: Date.now() })
-    })
+    let cancelled = false;
+    void source
+      .query(JSON.parse(key) as EndpointQuery, { latency })
+      .then((page) => {
+        if (!cancelled) setResult({ key, token, page, at: Date.now() });
+      });
     return () => {
-      cancelled = true
-    }
-  }, [source, key, latency, token])
-  const pending = !result || result.key !== key || result.token !== token
-  return { page: result?.page ?? null, pending, updatedAt: result?.at }
+      cancelled = true;
+    };
+  }, [source, key, latency, token]);
+  const pending = !result || result.key !== key || result.token !== token;
+  return { page: result?.page ?? null, pending, updatedAt: result?.at };
 }
 
 function describeRequest(query: EndpointQuery) {
-  const sort = query.sorting.length ? query.sorting.map((s) => `${s.id} ${s.desc ? "desc" : "asc"}`).join(", ") : "none"
-  return `sort ${sort} · page ${query.pageIndex + 1} · ${query.pageSize} per page${query.search ? ` · search "${query.search}"` : ""}`
+  const sort = query.sorting.length
+    ? query.sorting.map((s) => `${s.id} ${s.desc ? "desc" : "asc"}`).join(", ")
+    : "none";
+  return `sort ${sort} · page ${query.pageIndex + 1} · ${query.pageSize} per page${query.search ? ` · search "${query.search}"` : ""}`;
 }
 
-function Toggle({ pressed, onClick, children }: { pressed: boolean; onClick: () => void; children: ReactNode }) {
+function Toggle({
+  pressed,
+  onClick,
+  children,
+}: {
+  pressed: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
   return (
-    <Button size="sm" variant={pressed ? "soft" : "ghost"} aria-pressed={pressed} onClick={onClick}>
+    <Button
+      size="sm"
+      variant={pressed ? "soft" : "ghost"}
+      aria-pressed={pressed}
+      onClick={onClick}
+    >
       {children}
     </Button>
-  )
+  );
+}
+
+/* Fictional inventory: editing, export and persistent column ordering share one specimen. */
+interface InventoryItem {
+  id: string;
+  name: string;
+  quantity: number;
+  status: string;
+  due: string;
+  active: boolean;
+}
+const inventoryColumn = createDataTableColumns<InventoryItem>();
+const inventoryColumns = inventoryColumn.columns([
+  inventoryColumn.accessor("name", {
+    header: "Item",
+    pin: true,
+    width: 15,
+    cardRole: "title",
+    edit: { kind: "text" },
+  }),
+  inventoryColumn.accessor("quantity", {
+    header: "Quantity",
+    width: 8,
+    priority: 1,
+    edit: {
+      kind: "number",
+      validate: (value) =>
+        value >= 0 ? null : "Quantity must be zero or more",
+    },
+  }),
+  inventoryColumn.accessor("status", {
+    header: "Status",
+    width: 9,
+    priority: 1,
+    edit: {
+      kind: "select",
+      options: [
+        { value: "ready", label: "Ready" },
+        { value: "ordered", label: "Ordered" },
+        { value: "held", label: "Held" },
+      ],
+    },
+  }),
+  inventoryColumn.accessor("due", {
+    header: "Due date",
+    width: 10,
+    priority: 1,
+    edit: { kind: "date" },
+  }),
+  inventoryColumn.accessor("active", {
+    header: "Active",
+    width: 7,
+    priority: 1,
+    edit: { kind: "switch", format: (value) => (value ? "Yes" : "No") },
+    cell: (context) => (context.getValue() ? "Yes" : "No"),
+  }),
+]);
+const inventoryRows: InventoryItem[] = [
+  {
+    id: "i1",
+    name: "Cedar sensor",
+    quantity: 12,
+    status: "ready",
+    due: "2026-11-01",
+    active: true,
+  },
+  {
+    id: "i2",
+    name: "Birch relay",
+    quantity: 4,
+    status: "ordered",
+    due: "2026-11-12",
+    active: false,
+  },
+  {
+    id: "i3",
+    name: "Locked sample",
+    quantity: 1,
+    status: "held",
+    due: "2026-12-01",
+    active: true,
+  },
+];
+function InventoryDemo() {
+  const [rows, setRows] = useState(inventoryRows);
+  const [rtl, setRtl] = useState(false);
+  const [density, setDensity] = useState<DataTableDensity>("comfortable");
+  return (
+    <div className="dt-demo">
+      <div className="dt-demo-controls">
+        <Toggle pressed={rtl} onClick={() => setRtl((value) => !value)}>
+          Right to left
+        </Toggle>
+        <Toggle
+          pressed={density === "compact"}
+          onClick={() =>
+            setDensity((value) =>
+              value === "compact" ? "comfortable" : "compact",
+            )
+          }
+        >
+          Compact inventory
+        </Toggle>
+      </div>
+      <div
+        className="dt-demo-frame"
+        data-testid="dt-inventory"
+        dir={rtl ? "rtl" : "ltr"}
+      >
+        <DataTable
+          id="gallery-inventory"
+          label="Inventory"
+          rows={rows}
+          columns={inventoryColumns}
+          getRowId={(row) => row.id}
+          getRowLabel={(row) => row.name}
+          density={density}
+          export={{ filename: "inventory.csv", bom: true }}
+          onCellEdit={async (change) => {
+            await new Promise((resolve) => setTimeout(resolve, 650));
+            if (change.rowId === "i3")
+              throw new Error("This sample is locked; the value was restored");
+            setRows((current) =>
+              current.map((row) =>
+                row.id === change.rowId
+                  ? { ...row, [change.columnId]: change.value }
+                  : row,
+              ),
+            );
+          }}
+        />
+      </div>
+    </div>
+  );
 }
 
 /* ── The Endpoints table: URL state, mock server, live ticker, every state ─────────── */
 function EndpointsDemo() {
-  const rowActions = useEndpointRowActions()
+  const rowActions = useEndpointRowActions();
   const url = useTableUrlState({
     prefix: "ep",
     sortable: SORTABLE_COLUMNS,
     pageSizes: PAGE_SIZES,
     defaultPageSize: 25,
     defaultSorting: [{ id: "name", desc: false }],
-  })
-  const [simulate, setSimulate] = useState<Simulate>("data")
-  const [live, setLive] = useState(false)
-  const [density, setDensity] = useState<DataTableDensity | undefined>(undefined)
+  });
+  const [simulate, setSimulate] = useState<Simulate>("data");
+  const [live, setLive] = useState(false);
+  const [density, setDensity] = useState<DataTableDensity | undefined>(
+    undefined,
+  );
   // Each refetch bumps the token; live ticks refetch silently (no refetch line).
-  const [refetch, setRefetch] = useState({ token: 0, silent: false })
-  const [opened, setOpened] = useState<string | null>(null)
-  const [rowOpen, setRowOpen] = useState<"double-click" | "click">("double-click")
+  const [refetch, setRefetch] = useState({ token: 0, silent: false });
+  const [opened, setOpened] = useState<string | null>(null);
+  const [rowOpen, setRowOpen] = useState<"double-click" | "click">(
+    "double-click",
+  );
 
   const query = useMemo<EndpointQuery>(
-    () => ({ sorting: url.state.sorting, pageIndex: url.state.pagination.pageIndex, pageSize: url.state.pagination.pageSize, search: url.state.search || undefined }),
-    [url.state]
-  )
-  const { page, pending, updatedAt } = useEndpointPage(server, query, { token: refetch.token })
-  const rows = useMemo(() => (simulate === "data" && page ? page.rows : NO_ROWS), [simulate, page])
-  const silent = refetch.silent
+    () => ({
+      sorting: url.state.sorting,
+      pageIndex: url.state.pagination.pageIndex,
+      pageSize: url.state.pagination.pageSize,
+      search: url.state.search || undefined,
+    }),
+    [url.state],
+  );
+  const { page, pending, updatedAt } = useEndpointPage(server, query, {
+    token: refetch.token,
+  });
+  const rows = useMemo(
+    () => (simulate === "data" && page ? page.rows : NO_ROWS),
+    [simulate, page],
+  );
+  const silent = refetch.silent;
 
   // Live updates: a tick on the server (on the rows in view), then a silent refetch.
-  const visible = useRef<string[]>([])
+  const visible = useRef<string[]>([]);
   useEffect(() => {
-    visible.current = rows.map((row) => row.id)
-  }, [rows])
+    visible.current = rows.map((row) => row.id);
+  }, [rows]);
   useEffect(() => {
-    if (!live) return
+    if (!live) return;
     const timer = setInterval(() => {
-      server.tick({ prefer: visible.current })
-      setRefetch((value) => ({ token: value.token + 1, silent: true }))
-    }, 2500)
-    return () => clearInterval(timer)
-  }, [live])
-  const state: Partial<DataTableState> = url.state
-  const loading = simulate === "loading" || (simulate === "data" && !page)
+      server.tick({ prefer: visible.current });
+      setRefetch((value) => ({ token: value.token + 1, silent: true }));
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [live]);
+  const state: Partial<DataTableState> = url.state;
+  const loading = simulate === "loading" || (simulate === "data" && !page);
 
   return (
     <div className="dt-demo">
       <div className="dt-demo-controls" role="group" aria-label="Simulate">
-        <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="State">
+        <ButtonGroup
+          className="glass-control dt-demo-group"
+          role="group"
+          aria-label="State"
+        >
           {(["data", "loading", "empty", "error"] as const).map((value) => (
-            <Toggle key={value} pressed={simulate === value} onClick={() => setSimulate(value)}>
-              {value === "data" ? "Loaded" : value === "loading" ? "Loading" : value === "empty" ? "Empty" : "Error"}
+            <Toggle
+              key={value}
+              pressed={simulate === value}
+              onClick={() => setSimulate(value)}
+            >
+              {value === "data"
+                ? "Loaded"
+                : value === "loading"
+                  ? "Loading"
+                  : value === "empty"
+                    ? "Empty"
+                    : "Error"}
             </Toggle>
           ))}
         </ButtonGroup>
-        <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="Table density">
+        <ButtonGroup
+          className="glass-control dt-demo-group"
+          role="group"
+          aria-label="Table density"
+        >
           {(["comfortable", "compact"] as const).map((value) => (
-            <Toggle key={value} pressed={(density ?? "comfortable") === value} onClick={() => setDensity(value)}>
+            <Toggle
+              key={value}
+              pressed={(density ?? "comfortable") === value}
+              onClick={() => setDensity(value)}
+            >
               {value === "comfortable" ? "Comfortable" : "Compact"}
             </Toggle>
           ))}
         </ButtonGroup>
-        <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="Open a row on">
+        <ButtonGroup
+          className="glass-control dt-demo-group"
+          role="group"
+          aria-label="Open a row on"
+        >
           {(["double-click", "click"] as const).map((value) => (
-            <Toggle key={value} pressed={rowOpen === value} onClick={() => setRowOpen(value)}>
+            <Toggle
+              key={value}
+              pressed={rowOpen === value}
+              onClick={() => setRowOpen(value)}
+            >
               {value === "click" ? "Open on click" : "Open on double-click"}
             </Toggle>
           ))}
@@ -157,8 +391,11 @@ function EndpointsDemo() {
             size="sm"
             variant="ghost"
             onClick={() => {
-              server.tick({ enrol: "always", prefer: rows.map((row) => row.id) })
-              setRefetch((value) => ({ token: value.token + 1, silent: true }))
+              server.tick({
+                enrol: "always",
+                prefer: rows.map((row) => row.id),
+              });
+              setRefetch((value) => ({ token: value.token + 1, silent: true }));
             }}
           >
             Tick once
@@ -174,7 +411,13 @@ function EndpointsDemo() {
           id="gallery-endpoints"
           label="Endpoints"
           rows={rows}
-          rowCount={simulate === "data" ? page?.rowCount : simulate === "empty" ? 0 : undefined}
+          rowCount={
+            simulate === "data"
+              ? page?.rowCount
+              : simulate === "empty"
+                ? 0
+                : undefined
+          }
           columns={endpointColumns}
           getRowId={getRowId}
           state={state}
@@ -182,8 +425,14 @@ function EndpointsDemo() {
           pageSizes={PAGE_SIZES}
           search={ENDPOINT_SEARCH}
           loading={loading}
-          refetching={simulate === "data" && Boolean(page) && pending && !silent}
-          error={simulate === "error" ? "Endpoints did not load: the Glass UX API did not respond." : undefined}
+          refetching={
+            simulate === "data" && Boolean(page) && pending && !silent
+          }
+          error={
+            simulate === "error"
+              ? "Endpoints did not load: the Glass UX API did not respond."
+              : undefined
+          }
           onRetry={() => setSimulate("data")}
           emptyMessage="No endpoints enrolled"
           actions={rowActions}
@@ -196,31 +445,55 @@ function EndpointsDemo() {
           updatedAt={simulate === "data" ? updatedAt : undefined}
           noun={NOUN}
           toolbar={
-            <Button size="sm" icon={<IconRefresh />} onClick={() => setRefetch((value) => ({ token: value.token + 1, silent: false }))}>
+            <Button
+              size="sm"
+              icon={<IconRefresh />}
+              onClick={() =>
+                setRefetch((value) => ({
+                  token: value.token + 1,
+                  silent: false,
+                }))
+              }
+            >
               Refresh
             </Button>
           }
         />
       </div>
     </div>
-  )
+  );
 }
 
 /* ── A plain table on local state, used in the frames ─────────────────────────────── */
-function FrameTable({ id, pageSize = 25, label }: { id: string; pageSize?: number; label?: string }) {
-  const scope = useContext(DemoScope)
+function FrameTable({
+  id,
+  pageSize = 25,
+  label,
+}: {
+  id: string;
+  pageSize?: number;
+  label?: string;
+}) {
+  const scope = useContext(DemoScope);
   const [state, setState] = useState<DataTableState>({
     sorting: [{ id: "lastSeen", desc: true }],
     filters: [],
     pagination: { pageIndex: 0, pageSize },
     selection: {},
-  })
+  });
   const query = useMemo<EndpointQuery>(
-    () => ({ sorting: state.sorting, pageIndex: state.pagination.pageIndex, pageSize: state.pagination.pageSize, search: state.search || undefined }),
-    [state.sorting, state.pagination, state.search]
-  )
-  const { page, pending, updatedAt } = useEndpointPage(server, query, { latency: false })
-  const rowActions = useEndpointRowActions()
+    () => ({
+      sorting: state.sorting,
+      pageIndex: state.pagination.pageIndex,
+      pageSize: state.pagination.pageSize,
+      search: state.search || undefined,
+    }),
+    [state.sorting, state.pagination, state.search],
+  );
+  const { page, pending, updatedAt } = useEndpointPage(server, query, {
+    latency: false,
+  });
+  const rowActions = useEndpointRowActions();
   return (
     <DataTable<Endpoint>
       id={id}
@@ -239,7 +512,7 @@ function FrameTable({ id, pageSize = 25, label }: { id: string; pageSize?: numbe
       updatedAt={updatedAt}
       noun={NOUN}
     />
-  )
+  );
 }
 
 /** Frame widths in rem: wide (priority folding) down to cards. */
@@ -249,21 +522,29 @@ const WIDTHS = [
   { label: "Medium", rem: 48 },
   { label: "Narrow", rem: 38 },
   { label: "Cards", rem: 30 },
-] as const
+] as const;
 
 function ResponsiveDemo() {
-  const [width, setWidth] = useState<number | null>(64)
-  const frame = useRef<HTMLDivElement>(null)
+  const [width, setWidth] = useState<number | null>(64);
+  const frame = useRef<HTMLDivElement>(null);
   const choose = useCallback((rem: number | null) => {
-    setWidth(rem)
+    setWidth(rem);
     // The frame is user-resizable too; a preset replaces any manual size.
-    frame.current?.style.removeProperty("width")
-  }, [])
+    frame.current?.style.removeProperty("width");
+  }, []);
   return (
     <div className="dt-demo">
-      <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="Frame width">
+      <ButtonGroup
+        className="glass-control dt-demo-group"
+        role="group"
+        aria-label="Frame width"
+      >
         {WIDTHS.map((option) => (
-          <Toggle key={option.label} pressed={width === option.rem} onClick={() => choose(option.rem)}>
+          <Toggle
+            key={option.label}
+            pressed={width === option.rem}
+            onClick={() => choose(option.rem)}
+          >
             {option.label}
           </Toggle>
         ))}
@@ -279,11 +560,11 @@ function ResponsiveDemo() {
         <FrameTable id="gallery-endpoints-responsive" />
       </div>
     </div>
-  )
+  );
 }
 
 /* ── Grouped rows: endpoints by operating system, each group paged on its own ──────── */
-const GROUP_PAGE = 10
+const GROUP_PAGE = 10;
 function GroupedDemo() {
   const [state, setState] = useState<DataTableState>({
     sorting: [{ id: "name", desc: false }],
@@ -291,26 +572,42 @@ function GroupedDemo() {
     pagination: { pageIndex: 0, pageSize: 25 },
     selection: {},
     groups: { collapsed: ["macOS"], shown: {} },
-  })
+  });
   // The "server": every endpoint once, sorted; it answers a count per group and each group's first rows.
-  const query = useMemo<EndpointQuery>(() => ({ sorting: state.sorting, pageIndex: 0, pageSize: 5000 }), [state.sorting])
-  const { page } = useEndpointPage(server, query, { latency: false })
+  const query = useMemo<EndpointQuery>(
+    () => ({ sorting: state.sorting, pageIndex: 0, pageSize: 5000 }),
+    [state.sorting],
+  );
+  const { page } = useEndpointPage(server, query, { latency: false });
   // The search narrows every group, and each count is the server's under the same query.
-  const all = useMemo(() => searchRows(page?.rows ?? NO_ROWS, state.search, ENDPOINT_SEARCH), [page, state.search])
+  const all = useMemo(
+    () => searchRows(page?.rows ?? NO_ROWS, state.search, ENDPOINT_SEARCH),
+    [page, state.search],
+  );
   const groups = useMemo<DataTableGroup[]>(() => {
-    const counts = new Map<string, number>()
-    for (const endpoint of all) counts.set(endpoint.os, (counts.get(endpoint.os) ?? 0) + 1)
+    const counts = new Map<string, number>();
+    for (const endpoint of all)
+      counts.set(endpoint.os, (counts.get(endpoint.os) ?? 0) + 1);
     return [...counts.entries()]
       .toSorted((a, b) => b[1] - a[1])
-      .map(([os, count]) => ({ id: os, label: os, count, icon: /windows/i.test(os) ? <IconWindows /> : <IconOperatingSystem /> }))
-  }, [all])
+      .map(([os, count]) => ({
+        id: os,
+        label: os,
+        count,
+        icon: /windows/i.test(os) ? <IconWindows /> : <IconOperatingSystem />,
+      }));
+  }, [all]);
   const rows = useMemo(() => {
-    const groupState = state.groups ?? { collapsed: [], shown: {} }
+    const groupState = state.groups ?? { collapsed: [], shown: {} };
     return groups.flatMap((group) =>
-      groupState.collapsed.includes(group.id) ? [] : all.filter((endpoint) => endpoint.os === group.id).slice(0, shownFor(groupState, group.id, GROUP_PAGE))
-    )
-  }, [all, groups, state.groups])
-  const rowActions = useEndpointRowActions()
+      groupState.collapsed.includes(group.id)
+        ? []
+        : all
+            .filter((endpoint) => endpoint.os === group.id)
+            .slice(0, shownFor(groupState, group.id, GROUP_PAGE)),
+    );
+  }, [all, groups, state.groups]);
+  const rowActions = useEndpointRowActions();
   return (
     <div className="gallery-lab-frame dt-demo-grouped" data-testid="dt-grouped">
       <DataTable<Endpoint>
@@ -323,55 +620,86 @@ function GroupedDemo() {
         onStateChange={setState}
         loading={!page}
         search={ENDPOINT_SEARCH}
-        grouping={{ groupOf: (endpoint) => endpoint.os, groups, pageSize: GROUP_PAGE }}
+        grouping={{
+          groupOf: (endpoint) => endpoint.os,
+          groups,
+          pageSize: GROUP_PAGE,
+        }}
         actions={rowActions}
         getRowLabel={(endpoint) => endpoint.name}
         noun={NOUN}
       />
     </div>
-  )
+  );
 }
 
 /* ── Infinite loading: offset batches appended as the reader scrolls ───────────────── */
-const BATCH = 50
-const listServer = createEndpointServer()
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+const BATCH = 50;
+const listServer = createEndpointServer();
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * A growing list, as Apollo's `fetchMore` with a merging field policy (or TanStack Query's
  * `useInfiniteQuery`) keeps one: the first batch for each query, then each next offset
  * appended. The previous query's rows stay until the new first batch arrives.
  */
-function useEndpointList(sorting: DataTableState["sorting"], search: string | undefined, failNext: { current: boolean }) {
-  const key = JSON.stringify([sorting, search ?? ""])
-  const [list, setList] = useState<{ key: string; rows: Endpoint[]; rowCount: number } | null>(null)
-  const [loadingMore, setLoadingMore] = useState(false)
+function useEndpointList(
+  sorting: DataTableState["sorting"],
+  search: string | undefined,
+  failNext: { current: boolean },
+) {
+  const key = JSON.stringify([sorting, search ?? ""]);
+  const [list, setList] = useState<{
+    key: string;
+    rows: Endpoint[];
+    rowCount: number;
+  } | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
   useEffect(() => {
-    let cancelled = false
-    const [order, query] = JSON.parse(key) as [DataTableState["sorting"], string]
-    void listServer.query({ sorting: order, search: query, pageIndex: 0, pageSize: BATCH }).then((page) => {
-      if (!cancelled) setList({ key, rows: page.rows, rowCount: page.rowCount })
-    })
+    let cancelled = false;
+    const [order, query] = JSON.parse(key) as [
+      DataTableState["sorting"],
+      string,
+    ];
+    void listServer
+      .query({ sorting: order, search: query, pageIndex: 0, pageSize: BATCH })
+      .then((page) => {
+        if (!cancelled)
+          setList({ key, rows: page.rows, rowCount: page.rowCount });
+      });
     return () => {
-      cancelled = true
-    }
-  }, [key])
-  const current = list?.key === key ? list : null
+      cancelled = true;
+    };
+  }, [key]);
+  const current = list?.key === key ? list : null;
   const loadMore = async () => {
-    if (!current) return
-    setLoadingMore(true)
+    if (!current) return;
+    setLoadingMore(true);
     try {
       if (failNext.current) {
-        failNext.current = false
-        await wait(400)
-        throw new Error("The endpoint service did not answer")
+        failNext.current = false;
+        await wait(400);
+        throw new Error("The endpoint service did not answer");
       }
-      const page = await listServer.query({ sorting, search, pageIndex: current.rows.length / BATCH, pageSize: BATCH })
-      setList((value) => (value?.key === key ? { ...value, rows: [...value.rows, ...page.rows], rowCount: page.rowCount } : value))
+      const page = await listServer.query({
+        sorting,
+        search,
+        pageIndex: current.rows.length / BATCH,
+        pageSize: BATCH,
+      });
+      setList((value) =>
+        value?.key === key
+          ? {
+              ...value,
+              rows: [...value.rows, ...page.rows],
+              rowCount: page.rowCount,
+            }
+          : value,
+      );
     } finally {
-      setLoadingMore(false)
+      setLoadingMore(false);
     }
-  }
+  };
   return {
     rows: list?.rows ?? NO_ROWS,
     rowCount: list?.rowCount,
@@ -379,7 +707,7 @@ function useEndpointList(sorting: DataTableState["sorting"], search: string | un
     hasMore: current ? current.rows.length < current.rowCount : false,
     loadingMore,
     loadMore,
-  }
+  };
 }
 
 function InfiniteDemo() {
@@ -388,13 +716,16 @@ function InfiniteDemo() {
     filters: [],
     pagination: { pageIndex: 0, pageSize: BATCH },
     selection: {},
-  })
-  const failNext = useRef(false)
-  const [failArmed, setFailArmed] = useState(false)
-  const list = useEndpointList(state.sorting, state.search, failNext)
-  const rowActions = useEndpointRowActions()
+  });
+  const failNext = useRef(false);
+  const [failArmed, setFailArmed] = useState(false);
+  const list = useEndpointList(state.sorting, state.search, failNext);
+  const rowActions = useEndpointRowActions();
   return (
-    <div className="gallery-lab-frame dt-demo-infinite" data-testid="dt-infinite">
+    <div
+      className="gallery-lab-frame dt-demo-infinite"
+      data-testid="dt-infinite"
+    >
       <DataTable<Endpoint>
         id="gallery-endpoints-infinite"
         label="Endpoints, loaded as you scroll"
@@ -411,8 +742,8 @@ function InfiniteDemo() {
           hasMore: list.hasMore,
           loadingMore: list.loadingMore,
           onLoadMore: () => {
-            setFailArmed(false)
-            return list.loadMore()
+            setFailArmed(false);
+            return list.loadMore();
           },
         }}
         toolbar={
@@ -421,8 +752,8 @@ function InfiniteDemo() {
             variant={failArmed ? "primary" : "secondary"}
             aria-pressed={failArmed}
             onClick={() => {
-              failNext.current = !failArmed
-              setFailArmed(!failArmed)
+              failNext.current = !failArmed;
+              setFailArmed(!failArmed);
             }}
           >
             Fail next batch
@@ -433,45 +764,138 @@ function InfiniteDemo() {
         noun={NOUN}
       />
     </div>
-  )
+  );
 }
 
 /* ── Reorderable rows: a job queue the host owns, saved locally or on a mock server ───── */
 interface QueueJob {
-  id: string
-  title: string
-  team: string
+  id: string;
+  title: string;
+  team: string;
   /** Controlled view state, including loading, empty and error states. */
-  state: "running" | "queued" | "held"
-  minutes: number
+  state: "running" | "queued" | "held";
+  minutes: number;
 }
 const QUEUE: QueueJob[] = [
-  { id: "q1", title: "Rebuild search index", team: "Platform", state: "running", minutes: 18 },
-  { id: "q2", title: "Rotate TLS certificates", team: "Security", state: "queued", minutes: 6 },
-  { id: "q3", title: "Archive March audit logs", team: "Compliance", state: "queued", minutes: 25 },
-  { id: "q4", title: "Resize thumbnail cache", team: "Media", state: "queued", minutes: 12 },
-  { id: "q5", title: "Sync partner catalogue", team: "Commerce", state: "held", minutes: 9 },
-  { id: "q6", title: "Recalculate usage invoices", team: "Billing", state: "queued", minutes: 31 },
-  { id: "q7", title: "Vacuum analytics tables", team: "Data", state: "queued", minutes: 14 },
-  { id: "q8", title: "Refresh map tiles", team: "Maps", state: "queued", minutes: 22 },
-]
-const TASKS = ["Reindex", "Backfill", "Compact", "Export", "Verify", "Snapshot", "Prune", "Replay"]
-const AREAS = ["orders", "sessions", "invoices", "events", "assets", "contacts", "tickets", "metrics"]
-const TEAMS = ["Platform", "Data", "Billing", "Media", "Security", "Commerce"]
+  {
+    id: "q1",
+    title: "Rebuild search index",
+    team: "Platform",
+    state: "running",
+    minutes: 18,
+  },
+  {
+    id: "q2",
+    title: "Rotate TLS certificates",
+    team: "Security",
+    state: "queued",
+    minutes: 6,
+  },
+  {
+    id: "q3",
+    title: "Archive March audit logs",
+    team: "Compliance",
+    state: "queued",
+    minutes: 25,
+  },
+  {
+    id: "q4",
+    title: "Resize thumbnail cache",
+    team: "Media",
+    state: "queued",
+    minutes: 12,
+  },
+  {
+    id: "q5",
+    title: "Sync partner catalogue",
+    team: "Commerce",
+    state: "held",
+    minutes: 9,
+  },
+  {
+    id: "q6",
+    title: "Recalculate usage invoices",
+    team: "Billing",
+    state: "queued",
+    minutes: 31,
+  },
+  {
+    id: "q7",
+    title: "Vacuum analytics tables",
+    team: "Data",
+    state: "queued",
+    minutes: 14,
+  },
+  {
+    id: "q8",
+    title: "Refresh map tiles",
+    team: "Maps",
+    state: "queued",
+    minutes: 22,
+  },
+];
+const TASKS = [
+  "Reindex",
+  "Backfill",
+  "Compact",
+  "Export",
+  "Verify",
+  "Snapshot",
+  "Prune",
+  "Replay",
+];
+const AREAS = [
+  "orders",
+  "sessions",
+  "invoices",
+  "events",
+  "assets",
+  "contacts",
+  "tickets",
+  "metrics",
+];
+const TEAMS = ["Platform", "Data", "Billing", "Media", "Security", "Commerce"];
 const LONG_QUEUE: QueueJob[] = Array.from({ length: 400 }, (_, index) => ({
   id: `l${index + 1}`,
   title: `${TASKS[index % TASKS.length]} ${AREAS[(index * 3) % AREAS.length]} shard ${index + 1}`,
   team: TEAMS[(index * 5) % TEAMS.length]!,
   state: index === 0 ? "running" : index % 11 === 4 ? "held" : "queued",
   minutes: 4 + ((index * 7) % 37),
-}))
-const STATE_LABEL = { running: "Running", queued: "Queued", held: "Held" } as const
-const STATE_TONE = { running: "info", queued: "neutral", held: "warning" } as const
-const queueCol = createDataTableColumns<QueueJob & { position: number }>()
+}));
+const STATE_LABEL = {
+  running: "Running",
+  queued: "Queued",
+  held: "Held",
+} as const;
+const STATE_TONE = {
+  running: "info",
+  queued: "neutral",
+  held: "warning",
+} as const;
+const queueCol = createDataTableColumns<QueueJob & { position: number }>();
 const queueColumns = queueCol.columns([
-  queueCol.accessor("position", { header: "#", width: 3.5, minWidth: 3, align: "end", priority: 1, cardRole: "meta", flash: false, cell: ({ getValue }) => <NumericCell value={getValue()} /> }),
-  queueCol.accessor("title", { header: "Job", pin: true, width: 16, cardRole: "title" }),
-  queueCol.accessor("team", { header: "Team", priority: 2, width: 9, cardRole: "subtitle" }),
+  queueCol.accessor("position", {
+    header: "#",
+    width: 3.5,
+    minWidth: 3,
+    align: "end",
+    priority: 1,
+    cardRole: "meta",
+    flash: false,
+    cell: ({ getValue }) => <NumericCell value={getValue()} />,
+  }),
+  queueCol.accessor("title", {
+    header: "Job",
+    pin: true,
+    width: 16,
+    cardRole: "title",
+  }),
+  queueCol.accessor("team", {
+    header: "Team",
+    priority: 2,
+    width: 9,
+    cardRole: "subtitle",
+  }),
   queueCol.accessor("state", {
     header: "State",
     priority: 2,
@@ -484,38 +908,75 @@ const queueColumns = queueCol.columns([
       </Badge>
     ),
   }),
-  queueCol.accessor("minutes", { header: "Estimate", priority: 3, width: 7, align: "end", sortable: true, cardRole: "meta", cell: ({ getValue }) => <NumericCell value={getValue()} unit="min" /> }),
-])
-type Saving = "local" | "server" | "fail"
-const SAVE_LATENCY = 600
+  queueCol.accessor("minutes", {
+    header: "Estimate",
+    priority: 3,
+    width: 7,
+    align: "end",
+    sortable: true,
+    cardRole: "meta",
+    cell: ({ getValue }) => <NumericCell value={getValue()} unit="min" />,
+  }),
+]);
+type Saving = "local" | "server" | "fail";
+const SAVE_LATENCY = 600;
 
 function ReorderDemo() {
-  const [long, setLong] = useState(false)
-  const [queue, setQueue] = useState<QueueJob[]>(QUEUE)
-  const [saving, setSaving] = useState<Saving>("server")
-  const [cards, setCards] = useState(false)
-  const [sorting, setSorting] = useState<DataTableState["sorting"]>([])
-  const [last, setLast] = useState("No moves yet")
+  const [long, setLong] = useState(false);
+  const [queue, setQueue] = useState<QueueJob[]>(QUEUE);
+  const [saving, setSaving] = useState<Saving>("server");
+  const [cards, setCards] = useState(false);
+  const [sorting, setSorting] = useState<DataTableState["sorting"]>([]);
+  const [last, setLast] = useState("No moves yet");
   const rows = useMemo(() => {
-    const positioned = queue.map((job, index) => ({ ...job, position: index + 1 }))
-    const sort = sorting[0]
-    return sort ? positioned.toSorted((a, b) => (a.minutes - b.minutes) * (sort.desc ? -1 : 1)) : positioned
-  }, [queue, sorting])
+    const positioned = queue.map((job, index) => ({
+      ...job,
+      position: index + 1,
+    }));
+    const sort = sorting[0];
+    return sort
+      ? positioned.toSorted(
+          (a, b) => (a.minutes - b.minutes) * (sort.desc ? -1 : 1),
+        )
+      : positioned;
+  }, [queue, sorting]);
   const describe = (move: DataTableRowMove<QueueJob>) => {
-    const after = move.previousId ? queue.find((job) => job.id === move.previousId)?.title : null
-    return `${move.row.title}: ${move.from + 1} → ${move.to + 1}${after ? `, after ${after}` : ", first"}`
-  }
+    const after = move.previousId
+      ? queue.find((job) => job.id === move.previousId)?.title
+      : null;
+    return `${move.row.title}: ${move.from + 1} → ${move.to + 1}${after ? `, after ${after}` : ", first"}`;
+  };
   return (
     <div className="dt-demo">
-      <div className="dt-demo-controls" role="group" aria-label="Reorder options">
-        <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="Saving">
+      <div
+        className="dt-demo-controls"
+        role="group"
+        aria-label="Reorder options"
+      >
+        <ButtonGroup
+          className="glass-control dt-demo-group"
+          role="group"
+          aria-label="Saving"
+        >
           {(["local", "server", "fail"] as const).map((value) => (
-            <Toggle key={value} pressed={saving === value} onClick={() => setSaving(value)}>
-              {value === "local" ? "Local" : value === "server" ? "Server" : "Server fails"}
+            <Toggle
+              key={value}
+              pressed={saving === value}
+              onClick={() => setSaving(value)}
+            >
+              {value === "local"
+                ? "Local"
+                : value === "server"
+                  ? "Server"
+                  : "Server fails"}
             </Toggle>
           ))}
         </ButtonGroup>
-        <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="Layout">
+        <ButtonGroup
+          className="glass-control dt-demo-group"
+          role="group"
+          aria-label="Layout"
+        >
           <Toggle pressed={!cards} onClick={() => setCards(false)}>
             Table
           </Toggle>
@@ -523,14 +984,18 @@ function ReorderDemo() {
             Cards
           </Toggle>
         </ButtonGroup>
-        <ButtonGroup className="glass-control dt-demo-group" role="group" aria-label="Queue length">
+        <ButtonGroup
+          className="glass-control dt-demo-group"
+          role="group"
+          aria-label="Queue length"
+        >
           {([false, true] as const).map((value) => (
             <Toggle
               key={String(value)}
               pressed={long === value}
               onClick={() => {
-                setLong(value)
-                setQueue(value ? LONG_QUEUE : QUEUE)
+                setLong(value);
+                setQueue(value ? LONG_QUEUE : QUEUE);
               }}
             >
               {value ? "400 jobs" : "8 jobs"}
@@ -541,7 +1006,11 @@ function ReorderDemo() {
           {last}
         </output>
       </div>
-      <div className="gallery-lab-frame dt-demo-reorder" data-testid="dt-reorder" data-cards={cards ? "" : undefined}>
+      <div
+        className="gallery-lab-frame dt-demo-reorder"
+        data-testid="dt-reorder"
+        data-cards={cards ? "" : undefined}
+      >
         <DataTable<QueueJob & { position: number }>
           id="gallery-queue-reorder"
           label="Job queue"
@@ -552,7 +1021,7 @@ function ReorderDemo() {
           getRowLabel={(job) => job.title}
           state={{ sorting }}
           onStateChange={(next, change) => {
-            if (change === "sorting") setSorting(next.sorting)
+            if (change === "sorting") setSorting(next.sorting);
           }}
           pageSizes={[500]}
           noun={{ one: "job", other: "jobs" }}
@@ -560,63 +1029,99 @@ function ReorderDemo() {
             canReorder: (job) => job.state !== "running",
             lockedReason: () => "Running jobs keep their place",
             onReorder: (move) => {
-              const apply = () => setQueue((current) => moveRow(current, move.from, move.to))
+              const apply = () =>
+                setQueue((current) => moveRow(current, move.from, move.to));
               if (saving === "local") {
-                apply()
-                setLast(describe(move))
-                return
+                apply();
+                setLast(describe(move));
+                return;
               }
-              setLast(`Saving ${move.row.title}…`)
+              setLast(`Saving ${move.row.title}…`);
               return new Promise<void>((resolve, reject) =>
                 window.setTimeout(() => {
                   if (saving === "fail") {
-                    setLast(`${move.row.title}: not saved`)
-                    reject(new Error("The queue service did not respond."))
-                    return
+                    setLast(`${move.row.title}: not saved`);
+                    reject(new Error("The queue service did not respond."));
+                    return;
                   }
-                  apply()
-                  setLast(describe(move))
-                  resolve()
-                }, SAVE_LATENCY)
-              )
+                  apply();
+                  setLast(describe(move));
+                  resolve();
+                }, SAVE_LATENCY),
+              );
             },
           }}
         />
       </div>
     </div>
-  )
+  );
 }
 
 const HEIGHTS = [
   { id: "short", label: "Short pane · 13rem: one-line pager", rem: 13 },
   { id: "strip", label: "Strip · 3.5rem: status bar only", rem: 3.5 },
-] as const
+] as const;
 
 /* ── Auto height, not selectable: a second entity proves the table is generic ──────── */
 interface Software {
-  id: string
-  name: string
-  publisher: string
-  version: string
-  installed: number
-  sizeMb: number
+  id: string;
+  name: string;
+  publisher: string;
+  version: string;
+  installed: number;
+  sizeMb: number;
 }
-const now = Date.now()
-const TWO_MINUTES_AGO = now - 2 * 60_000
+const now = Date.now();
+const TWO_MINUTES_AGO = now - 2 * 60_000;
 const SOFTWARE: Software[] = [
-  { id: "s1", name: "Google Chrome", publisher: "Google LLC", version: "129.0.6668.90", installed: now - 3 * 86_400_000, sizeMb: 512 },
-  { id: "s2", name: "Microsoft 365 Apps for business", publisher: "Microsoft Corporation", version: "16.0.18129", installed: now - 40 * 86_400_000, sizeMb: 3_820 },
-  { id: "s3", name: "Glass UX Agent", publisher: "Orbit Workspace", version: "6.8.0", installed: now - 2 * 3_600_000, sizeMb: 48 },
-  { id: "s4", name: "Adobe Acrobat Reader", publisher: "Adobe Inc.", version: "24.003.20112", installed: now - 12 * 86_400_000, sizeMb: 640 },
-  { id: "s5", name: "Zoom Workplace", publisher: "Zoom Video Communications", version: "6.2.5", installed: now - 7 * 86_400_000, sizeMb: 290 },
-]
+  {
+    id: "s1",
+    name: "Google Chrome",
+    publisher: "Google LLC",
+    version: "129.0.6668.90",
+    installed: now - 3 * 86_400_000,
+    sizeMb: 512,
+  },
+  {
+    id: "s2",
+    name: "Microsoft 365 Apps for business",
+    publisher: "Microsoft Corporation",
+    version: "16.0.18129",
+    installed: now - 40 * 86_400_000,
+    sizeMb: 3_820,
+  },
+  {
+    id: "s3",
+    name: "Glass UX Agent",
+    publisher: "Orbit Workspace",
+    version: "6.8.0",
+    installed: now - 2 * 3_600_000,
+    sizeMb: 48,
+  },
+  {
+    id: "s4",
+    name: "Adobe Acrobat Reader",
+    publisher: "Adobe Inc.",
+    version: "24.003.20112",
+    installed: now - 12 * 86_400_000,
+    sizeMb: 640,
+  },
+  {
+    id: "s5",
+    name: "Zoom Workplace",
+    publisher: "Zoom Video Communications",
+    version: "6.2.5",
+    installed: now - 7 * 86_400_000,
+    sizeMb: 290,
+  },
+];
 const SOFTWARE_SEARCH: DataTableSearch<Software> = {
   fields: [
     { field: "Name", value: (row) => row.name },
     { field: "Publisher", value: (row) => row.publisher },
   ],
-}
-const softwareCol = createDataTableColumns<Software>()
+};
+const softwareCol = createDataTableColumns<Software>();
 const softwareColumns = softwareCol.columns([
   softwareCol.accessor("name", {
     header: "Name",
@@ -624,18 +1129,47 @@ const softwareColumns = softwareCol.columns([
     width: 16,
     cardRole: "title",
     skeleton: "identity",
-    cell: ({ row }) => <IdentityCell title={row.original.name} subtitle={row.original.publisher} icon={<IconSoftware />} />,
+    cell: ({ row }) => (
+      <IdentityCell
+        title={row.original.name}
+        subtitle={row.original.publisher}
+        icon={<IconSoftware />}
+      />
+    ),
   }),
-  softwareCol.accessor("version", { header: "Version", priority: 2, width: 9, cell: ({ getValue }) => <TextCell identifier>{getValue()}</TextCell> }),
-  softwareCol.accessor("installed", { header: "Installed", priority: 2, width: 8, skeleton: "time", cell: ({ getValue }) => <RelativeTime value={getValue()} /> }),
-  softwareCol.accessor("sizeMb", { header: "Size", priority: 3, width: 6.5, align: "end", cell: ({ getValue }) => <NumericCell value={getValue()} unit="MB" /> }),
-])
+  softwareCol.accessor("version", {
+    header: "Version",
+    priority: 2,
+    width: 9,
+    cell: ({ getValue }) => <TextCell identifier>{getValue()}</TextCell>,
+  }),
+  softwareCol.accessor("installed", {
+    header: "Installed",
+    priority: 2,
+    width: 8,
+    skeleton: "time",
+    cell: ({ getValue }) => <RelativeTime value={getValue()} />,
+  }),
+  softwareCol.accessor("sizeMb", {
+    header: "Size",
+    priority: 3,
+    width: 6.5,
+    align: "end",
+    cell: ({ getValue }) => <NumericCell value={getValue()} unit="MB" />,
+  }),
+]);
 
 /** A fully loaded list: searched in the browser with the server's semantics (§8). */
-function SoftwareTable({ id = "gallery-software", defaultHiddenColumns }: { id?: string; defaultHiddenColumns?: readonly string[] } = {}) {
-  const scope = useContext(DemoScope)
-  const [search, setSearch] = useState("")
-  const rows = useMemo(() => searchRows(SOFTWARE, search, SOFTWARE_SEARCH, softwareColumns), [search])
+function SoftwareTable({
+  id = "gallery-software",
+  defaultHiddenColumns,
+}: { id?: string; defaultHiddenColumns?: readonly string[] } = {}) {
+  const scope = useContext(DemoScope);
+  const [search, setSearch] = useState("");
+  const rows = useMemo(
+    () => searchRows(SOFTWARE, search, SOFTWARE_SEARCH, softwareColumns),
+    [search],
+  );
   return (
     <DataTable<Software>
       id={id}
@@ -647,14 +1181,14 @@ function SoftwareTable({ id = "gallery-software", defaultHiddenColumns }: { id?:
       getRowId={(row) => row.id}
       state={{ search }}
       onStateChange={(next, change) => {
-        if (change === "search") setSearch(next.search ?? "")
+        if (change === "search") setSearch(next.search ?? "");
       }}
       search={SOFTWARE_SEARCH}
       height="auto"
       selectable={false}
       noun={{ one: "application", other: "applications" }}
     />
-  )
+  );
 }
 
 export default function DataTableGallery() {
@@ -662,7 +1196,7 @@ export default function DataTableGallery() {
     <DeviceGallery>
       <DataTableSection />
     </DeviceGallery>
-  )
+  );
 }
 
 function DataTableSection() {
@@ -692,7 +1226,10 @@ function DataTableSection() {
         layout="bare"
         wide
       >
-        <SoftwareTable id="gallery-default-columns" defaultHiddenColumns={["installed", "sizeMb"]} />
+        <SoftwareTable
+          id="gallery-default-columns"
+          defaultHiddenColumns={["installed", "sizeMb"]}
+        />
       </Specimen>
 
       <Specimen
@@ -714,6 +1251,15 @@ function DataTableSection() {
       </Specimen>
 
       <Specimen
+        title="Editable inventory"
+        description="Enter, F2 or double-click edits a cell. Tab saves and moves to the next field. Locked sample rejects saves. Export uses the selected rows when present; header menus and grips change column order."
+        layout="bare"
+        wide
+      >
+        <InventoryDemo />
+      </Specimen>
+
+      <Specimen
         title="Reorderable rows"
         description="Drag a row by the grip at its start, or focus the grip, press Space and use the arrow keys. The host owns the order and saves each move. Running jobs are locked, and sorting by Estimate disables reordering. Server saves after 600 ms; Server fails reverts the move."
         layout="bare"
@@ -722,32 +1268,63 @@ function DataTableSection() {
         <ReorderDemo />
       </Specimen>
 
-      <Specimen title="Short containers" description="The table keeps its rows and steps down its status bar as the height shrinks." layout="bare" wide>
+      <Specimen
+        title="Short containers"
+        description="The table keeps its rows and steps down its status bar as the height shrinks."
+        layout="bare"
+        wide
+      >
         <div className="dt-demo-heights">
           {HEIGHTS.map((frame) => (
             <figure key={frame.id} className="gallery-lab-cell dt-demo-height">
-              <div className="gallery-lab-frame" data-lab-frame={frame.id} data-testid={`dt-${frame.id}`} style={{ height: `${frame.rem}rem` }}>
-                <FrameTable id={`gallery-endpoints-${frame.id}`} label={frame.label} />
+              <div
+                className="gallery-lab-frame"
+                data-lab-frame={frame.id}
+                data-testid={`dt-${frame.id}`}
+                style={{ height: `${frame.rem}rem` }}
+              >
+                <FrameTable
+                  id={`gallery-endpoints-${frame.id}`}
+                  label={frame.label}
+                />
               </div>
-              <figcaption className="gallery-example-label">{frame.label}</figcaption>
+              <figcaption className="gallery-example-label">
+                {frame.label}
+              </figcaption>
             </figure>
           ))}
         </div>
       </Specimen>
 
-      <Specimen title="Auto height" description="Grows with its rows instead of scrolling inside. Read-only lists switch selection off." layout="bare">
+      <Specimen
+        title="Auto height"
+        description="Grows with its rows instead of scrolling inside. Read-only lists switch selection off."
+        layout="bare"
+      >
         <div data-testid="dt-auto">
           <SoftwareTable />
         </div>
       </Specimen>
 
-      <Specimen title="Cells" description="Helpers for the cells Glass UX tables repeat. Numbers are tabular with a thin space before units; times are relative with the absolute time on hover.">
+      <Specimen
+        title="Cells"
+        description="Helpers for the cells Glass UX tables repeat. Numbers are tabular with a thin space before units; times are relative with the absolute time on hover."
+      >
         <Example label="Identity">
           <span className="dt-demo-cell">
-            <IdentityCell title="NST-C106" subtitle="AzureAD\MiraRowan" status="online" />
+            <IdentityCell
+              title="NST-C106"
+              subtitle="AzureAD\MiraRowan"
+              status="online"
+            />
           </span>
           <span className="dt-demo-cell">
-            <IdentityCell title="LMN-4E5E" subtitle="LMN-4E5E\Front Counter" status="warning" statusLabel="Needs restart" />
+            <IdentityCell
+              title="LMN-4E5E"
+              subtitle="LMN-4E5E\Front Counter"
+              status="warning"
+              statusLabel="Needs restart"
+            />
           </span>
         </Example>
         <Example label="Status">
@@ -772,15 +1349,36 @@ function DataTableSection() {
             <NumericCell value={7.8} unit="GB" fractionDigits={1} />
           </span>
           <span className="dt-demo-cell dt-demo-spark">
-            <SparklineCell values={[12, 14, 11, 18, 23, 19, 16, 22, 31, 27, 24, 21, 18, 20, 26, 29, 25, 22, 19, 23]} domain={PERCENT} unit="%" label="CPU" />
+            <SparklineCell
+              values={[
+                12, 14, 11, 18, 23, 19, 16, 22, 31, 27, 24, 21, 18, 20, 26, 29,
+                25, 22, 19, 23,
+              ]}
+              domain={PERCENT}
+              unit="%"
+              label="CPU"
+            />
           </span>
           <span className="dt-demo-cell dt-demo-spark">
-            <SparklineCell values={[61, 64, 70, 72, 69, 75, 81, 84, 88, 91]} domain={PERCENT} unit="%" label="CPU" tone="danger" />
+            <SparklineCell
+              values={[61, 64, 70, 72, 69, 75, 81, 84, 88, 91]}
+              domain={PERCENT}
+              unit="%"
+              label="CPU"
+              tone="danger"
+            />
           </span>
         </Example>
       </Specimen>
 
-      <ContainerLab>{(preset) => <FrameTable id={`gallery-endpoints-lab-${preset?.id ?? "free"}`} pageSize={25} />}</ContainerLab>
+      <ContainerLab>
+        {(preset) => (
+          <FrameTable
+            id={`gallery-endpoints-lab-${preset?.id ?? "free"}`}
+            pageSize={25}
+          />
+        )}
+      </ContainerLab>
 
       <Rules
         do={[
@@ -828,5 +1426,5 @@ function DataTableSection() {
         ]}
       />
     </SectionPage>
-  )
+  );
 }

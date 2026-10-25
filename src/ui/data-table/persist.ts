@@ -8,6 +8,8 @@ import type { DataTableDensity } from "./types.js";
  */
 export interface TablePreferences {
   widths: Record<string, number>;
+  /** Column display order, or null for application defaults. */
+  order?: string[] | null;
   /** Keeps the item out of the visible layout. */
   hidden: string[];
   /** Pinned column ids, or null for the column definitions' defaults. */
@@ -17,6 +19,7 @@ export interface TablePreferences {
 
 export const EMPTY_PREFERENCES: TablePreferences = {
   widths: {},
+  order: null,
   hidden: [],
   pinned: null,
   density: null,
@@ -65,6 +68,7 @@ function sanitise(
       : [];
   return {
     widths,
+    order: Array.isArray(raw.order) ? [...new Set(strings(raw.order))] : null,
     hidden: Array.isArray(raw.hidden) ? strings(raw.hidden) : defaults.hidden,
     pinned: Array.isArray(raw.pinned) ? strings(raw.pinned) : null,
     density:

@@ -39,10 +39,27 @@ export default function ColumnChartSection() {
         </div>
       </Specimen>
       <Specimen
+        title="Thresholds and bands"
+        description="Columns take thresholds and bands on their value axis: a target line labelled at its end, a shaded range behind the columns. Both are in the chart's description and under its table."
+        wide
+        specimenKey="chart-column-chart:default:1"
+      >
+        <div className="charts-pane" data-testid="chart-column-references">
+          <ColumnChart
+            categories={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+            series={[{ key: "builds", label: "Builds", data: [42, 38, 51, 47, 55, 18, 12] }]}
+            label="Builds per day on SRV-BUILD-02 · fictional"
+            title="Builds per day"
+            thresholds={[{ value: 45, label: "Target", dashed: true }]}
+            bands={[{ from: 30, to: 50, label: "Typical week" }]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
         title="Responsive sizes"
         description="The same ColumnChart adapts to row, tile and full-panel sizes."
         wide
-        specimenKey="chart-column-chart:default:1"
+        specimenKey="chart-column-chart:default:2"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -50,7 +67,7 @@ export default function ColumnChartSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
-        specimenKey="chart-column-chart:default:2"
+        specimenKey="chart-column-chart:default:3"
       >
         <SkeletonSwaps id="column-chart" render={render} />
         <div className="gallery-tiers">
@@ -62,7 +79,7 @@ export default function ColumnChartSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab specimenKey="chart-column-chart:default:3">{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-column-chart:default:4">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

@@ -42,6 +42,22 @@ export default function ColumnChartSection() {
         </div>
       </Specimen>
       <Specimen
+        title="Thresholds and bands"
+        description="Columns take thresholds and bands on their value axis: a target line labelled at its end, a shaded range behind the columns. Both are in the chart's description and under its table."
+        wide
+      >
+        <div className="charts-pane" data-testid="chart-column-references">
+          <ColumnChart
+            categories={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+            series={[{ key: "builds", label: "Builds", data: [42, 38, 51, 47, 55, 18, 12] }]}
+            label="Builds per day on SRV-BUILD-02 · fictional"
+            title="Builds per day"
+            thresholds={[{ value: 45, label: "Target", dashed: true }]}
+            bands={[{ from: 30, to: 50, label: "Typical week" }]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
         title="Responsive sizes"
         description="The same ColumnChart adapts to row, tile and full-panel sizes."
         wide

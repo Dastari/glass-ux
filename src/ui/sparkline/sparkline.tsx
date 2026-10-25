@@ -9,6 +9,16 @@ import { areaPath, indexAt, monotonePath, resolveDomain, toPoints, type Domain }
  */
 export type SparklineTone = "data" | "accent" | "success" | "warning" | "danger" | "info" | "neutral"
 
+/** A line across a sparkline at a value: a limit or a target. */
+export interface SparklineThreshold {
+  /** Where the line sits, in the data's units. */
+  value: number
+  /** A status tone when values past the line are in that state; `neutral` (the default) otherwise. */
+  tone?: "neutral" | "success" | "warning" | "danger" | "info"
+  /** Dashed: a soft reference (an average, a target) rather than a limit. */
+  dashed?: boolean
+}
+
 export interface SparklineProps extends Omit<ComponentProps<"div">, "children" | "onPointerMove" | "onPointerLeave"> {
   /** Typed records rendered by the component. */
   data: readonly number[]
@@ -26,6 +36,12 @@ export interface SparklineProps extends Omit<ComponentProps<"div">, "children" |
   onHover?: (index: number | null) => void
   /** A horizontal hairline at this value (e.g. the average). */
   reference?: number
+  /**
+   * Hairlines at values in their tone (a warning limit, a target). Without a fixed `domain`
+   * the range grows to include them, so a line is never pinned to an edge. They carry no
+   * label: name what they mean in `label` or beside the sparkline.
+   */
+  thresholds?: readonly SparklineThreshold[]
   /** Accessible summary. Omit when a parent already describes the chart. */
   label?: string
 }
@@ -46,12 +62,13 @@ export function Sparkline({
   hover = null,
   onHover,
   reference,
+  thresholds,
   label,
   className,
   ...rest
 }: SparklineProps) {
   const gradientId = useId()
-  const resolved = useMemo(() => resolveDomain(data, domain), [data, domain])
+  const resolved = useMemo(() => resolveDomain(thresholds?.length && !domain ? [...data, ...thresholds.map((item) => item.value)] : data, domain), [data, domain, thresholds])
   const points = useMemo(() => toPoints(data, resolved), [data, resolved])
   const line = useMemo(() => monotonePath(points), [points])
   const fill = useMemo(() => (area ? areaPath(line, points) : ""), [area, line, points])
@@ -95,6 +112,10 @@ export function Sparkline({
             {referenceY !== undefined ? (
               <line className="fa-spark-reference" x1="0" x2={width} y1={referenceY} y2={referenceY} />
             ) : null}
+            {thresholds?.map((item, index) => {
+              const y = toPoints([item.value], resolved)[0]!.y
+              return <line key={`${index}-${item.value}`} className="fa-spark-threshold" data-tone={item.tone ?? "neutral"} data-dashed={item.dashed ? "" : undefined} x1="0" x2={width} y1={y} y2={y} />
+            })}
             <path className="fa-spark-line" d={line} />
           </svg>
         ) : null}

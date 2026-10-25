@@ -109,8 +109,8 @@ export interface LineLabelOptions {
 
 /**
  * Where each threshold label goes, top to bottom: below its line by default, above it when
- * below would leave the plot or overlap a label already placed, and on whichever side keeps
- * clear of the avoided points when both fit. A label that fits on neither side is left out.
+ * below would leave the plot, overlap a label already placed, cross another reference line
+ * or crowd the avoided points. A label that fits on neither side is left out.
  */
 export function placeLineLabels(lines: readonly LineLabelInput[], options: LineLabelOptions): LineLabelPlacement[] {
   const { top, bottom, lineHeight, gap, avoid = [], avoidRadius = 0 } = options
@@ -118,15 +118,15 @@ export function placeLineLabels(lines: readonly LineLabelInput[], options: LineL
   const overlaps = (start: number) => placed.some((other) => start < other.top + lineHeight && start + lineHeight > other.top)
   const crowds = (start: number) => avoid.some((y) => y + avoidRadius > start && y - avoidRadius < start + lineHeight)
   for (const line of lines.toSorted((a, b) => a.y - b.y)) {
-    const below = line.y + gap
-    const above = line.y - gap - lineHeight
-    const fits = (start: number) => start >= top - 0.5 && start + lineHeight <= bottom + 0.5 && !overlaps(start)
-    const options = [
-      { side: "below" as const, start: below },
-      { side: "above" as const, start: above },
-    ].filter((option) => fits(option.start))
-    if (!options.length) continue
-    const choice = options.find((option) => !crowds(option.start)) ?? options[0]!
+    const crosses = (start: number) => lines.some((other) => other !== line && other.y > start && other.y < start + lineHeight)
+    const candidates = [
+      { side: "below" as const, start: line.y + gap },
+      { side: "above" as const, start: line.y - gap - lineHeight },
+    ]
+      .filter((option) => option.start >= top - 0.5 && option.start + lineHeight <= bottom + 0.5 && !overlaps(option.start))
+      .map((option) => ({ ...option, cost: (crosses(option.start) ? 2 : 0) + (crowds(option.start) ? 1 : 0) }))
+    if (!candidates.length) continue
+    const choice = candidates.reduce((best, option) => (option.cost < best.cost ? option : best))
     placed.push({ key: line.key, top: choice.start, side: choice.side })
   }
   return placed

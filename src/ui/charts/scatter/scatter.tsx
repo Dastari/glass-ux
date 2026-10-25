@@ -14,6 +14,8 @@ import type { ChartTableModel } from "../core/table.js"
 import type { ChartTier } from "../core/tier.js"
 import { ChartTooltip, TooltipBody } from "../core/tooltip.js"
 import { LiveRegion } from "../line/line-chart.js"
+import { resolveBands, type ReferenceBand, type Threshold } from "../core/reference.js"
+import { ReferenceLabels, ReferenceMarks, useReferenceNotes } from "../core/reference-layer.js"
 
 // ── Scatter ───────────────────────────────────────────────────────────────────────────────
 
@@ -51,6 +53,10 @@ export interface ScatterChartProps extends ChartCommonProps {
   x: ScatterAxis
   /** Vertical coordinate or accessor. */
   y: ScatterAxis
+  /** Lines across the plot at y values (a limit, a target), labelled at the line's end, in the y axis's format. */
+  thresholds?: readonly Threshold[]
+  /** Shaded y ranges (a healthy range). Without them, status thresholds shade up to the next one. */
+  bands?: readonly ReferenceBand[]
 }
 
 interface Dot {
@@ -73,7 +79,7 @@ interface Dot {
  *            arrow keys stepping through dots left to right
  */
 export function ScatterChart(props: ScatterChartProps) {
-  const { label, title, state = "ready", series, x: xAxis, y: yAxis, ...rest } = props
+  const { label, title, state = "ready", series, x: xAxis, y: yAxis, thresholds, bands, ...rest } = props
   const locale = useLocale(props.locale)
   // Each axis formats its numbers in the chart's locale.
   const x: LocalizedAxis = useMemo(() => ({ ...xAxis, locale }), [xAxis, locale])
@@ -82,6 +88,7 @@ export function ScatterChart(props: ScatterChartProps) {
   const store = useHoverStore()
   const slots = useMemo(() => new Map(series.map((item, index) => [item.key, slotFor(index, item.slot)])), [series])
   const visible = useMemo(() => series.filter((item) => !hidden.has(item.key)), [series, hidden])
+  const notes = useReferenceNotes({ thresholds, bands, fmt: y })
   const table = useMemo<ChartTableModel>(
     () => ({
       columns: [
@@ -92,8 +99,9 @@ export function ScatterChart(props: ScatterChartProps) {
       ],
       rows: series.flatMap((item) => item.points.map((point) => ({ label: point.label ?? "", series: item.label, x: formatValue(point.x, x), y: formatValue(point.y, y) }))),
       values: series.flatMap((item) => item.points.map((point) => ({ x: point.x, y: point.y }))),
+      notes: notes.length ? notes : undefined,
     }),
-    [series, x, y]
+    [series, x, y, notes]
   )
   const legend: LegendItem[] = series.map((item) => ({ key: item.key, label: item.label, slot: slots.get(item.key), tone: item.tone, shape: "dot" }))
   const toggle = (key: string) =>
@@ -112,18 +120,41 @@ export function ScatterChart(props: ScatterChartProps) {
     </span>
   )
   return (
-    <ChartFrame {...rest} kind="scatter" label={label} title={title} state={state} table={table} head={head} compactHead={series.length > 1} trail={trail} trailOptional>
-      {(box) => <ScatterPlot box={box} visible={visible} slots={slots} x={x} y={y} store={store} label={label} />}
+    <ChartFrame {...rest} kind="scatter" label={label} title={title} state={state} table={table} head={head} compactHead={series.length > 1} trail={trail} trailOptional note={notes.length ? notes.join(" ") : undefined}>
+      {(box) => <ScatterPlot box={box} visible={visible} slots={slots} x={x} y={y} store={store} label={label} thresholds={thresholds} bands={bands} />}
     </ChartFrame>
   )
 }
 
-const ScatterPlot = memo(function ScatterPlot({ box, visible, slots, x, y, store, label }: { box: PlotBox; visible: ScatterSeries[]; slots: Map<string, number>; x: LocalizedAxis; y: LocalizedAxis; store: HoverStore; label: string }) {
+const ScatterPlot = memo(function ScatterPlot({
+  box,
+  visible,
+  slots,
+  x,
+  y,
+  store,
+  label,
+  thresholds,
+  bands,
+}: {
+  box: PlotBox
+  visible: ScatterSeries[]
+  slots: Map<string, number>
+  x: LocalizedAxis
+  y: LocalizedAxis
+  store: HoverStore
+  label: string
+  thresholds?: readonly Threshold[]
+  bands?: readonly ReferenceBand[]
+}) {
   const plotRef = useRef<HTMLDivElement>(null)
   const { width, height, tier, rem } = box
   const full = tier === "full"
   const xDomain = useMemo(() => valueDomain(visible.flatMap((s) => s.points.map((p) => p.x)), x.domain, { zero: false }), [visible, x.domain])
-  const yDomain = useMemo(() => valueDomain(visible.flatMap((s) => s.points.map((p) => p.y)), y.domain, { zero: false }), [visible, y.domain])
+  const yDomain = useMemo(
+    () => valueDomain([...visible.flatMap((s) => s.points.map((p) => p.y)), ...(thresholds ?? []).map((t) => t.value), ...(bands ?? []).flatMap((b) => [b.from, b.to])], y.domain, { zero: false }),
+    [visible, y.domain, thresholds, bands]
+  )
   const yTicks = useMemo(() => linearTicks(yDomain, height - 3 * rem), [yDomain, height, rem])
   const yLabels = yTicks.values.map((tick) => formatTick(tick, yTicks.step, y))
   const inset = cartesianInset({ tier, rem, yLabels, xAxis: full })
@@ -146,6 +177,8 @@ const ScatterPlot = memo(function ScatterPlot({ box, visible, slots, x, y, store
     const { values, step } = linearTicks(xDomain, x1 - x0, 88)
     return values.map((value) => ({ x: px(value), label: formatTick(value, step, x) }))
   }, [full, xDomain, x1, x0, px, x])
+  const geometry = useMemo(() => ({ py, x0, x1, y0, y1, rem }), [py, x0, x1, y0, y1, rem])
+  const shaded = useMemo(() => resolveBands(thresholds, bands, yDomain[1]), [thresholds, bands, yDomain])
   const r = tier === "micro" ? Math.max(2, Math.min(0.25 * rem, height / 10)) : 0.25 * rem
   const reach = 1.5 * rem
 
@@ -171,6 +204,7 @@ const ScatterPlot = memo(function ScatterPlot({ box, visible, slots, x, y, store
     <div ref={plotRef} className="fa-chart-layer">
       <svg className="fa-chart-svg" width={width} height={height} aria-hidden>
         {full ? <YGrid ticks={yTicks.values} y={py} x0={x0} x1={x1} /> : tier === "compact" ? <line className="fa-chart-grid" data-baseline="" x1={x0} x2={x1} y1={Math.round(y1) - 0.5} y2={Math.round(y1) - 0.5} /> : null}
+        {tier !== "micro" ? <ReferenceMarks geometry={geometry} thresholds={thresholds ?? []} bands={shaded} shade={full} /> : null}
         {dots.map((dot, index) => (
           <circle key={`${dot.series.key}-${index}`} className="fa-chart-dot fa-chart-scatter-dot" cx={dot.px} cy={dot.py} r={r} {...seriesAttrs(dot.slot, dot.series.tone)} />
         ))}
@@ -185,6 +219,8 @@ const ScatterPlot = memo(function ScatterPlot({ box, visible, slots, x, y, store
             {x.label}
           </ChartText>
           <XLabels ticks={xTicks} y={y1 + 0.375 * rem} x0={x0} x1={x1} rem={rem} />
+          {/* Threshold labels stay above the x axis's name in the plot's corner. */}
+          <ReferenceLabels geometry={{ ...geometry, y1: y1 - 1.375 * rem }} thresholds={thresholds ?? []} bands={bands ?? []} fmt={y} />
         </div>
       ) : null}
       {full ? (

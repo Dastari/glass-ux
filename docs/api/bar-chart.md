@@ -20,6 +20,7 @@ Rows that do not fit in a ranked list fold into a "+N more" line — nothing is 
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+| bands | `readonly ReferenceBand[] \| undefined` | See type | no | — | Shaded ranges on the value axis behind the columns. Vertical columns only. |
 | categories | `readonly string[]` | See type | yes | — | One label per band: days, processes, organisations. |
 | categoryLabel | `string \| undefined` | See type | no | "Category" | Header for the category column of the table ("Process", "Day"). |
 | domain | `Domain \| undefined` | See type | no | — | Fixed value range; defaults to zero → the data, rounded to nice ticks. |
@@ -36,6 +37,7 @@ Rows that do not fit in a ranked list fold into a "+N more" line — nothing is 
 | orientation | `"horizontal" \| "vertical" \| undefined` | "horizontal", "vertical" | no | "vertical" | `vertical` columns (time and ordered categories) or `horizontal` bars (ranked lists). |
 | series | `readonly BarSeries[]` | See type | yes | — | Chart series with stable identifiers, labels and typed values. |
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
+| thresholds | `readonly Threshold[] \| undefined` | See type | no | — | Lines across the columns at values (a quota, a target), labelled at the line's end. Vertical columns only. A status tone without `bands` shades the range up to the next status threshold. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | unit | `ChartUnit \| undefined` | See type | no | — | "%", "GB", "ms", or a counted noun ({ one, other })… "%" sticks to the number; other units take a space. |
 

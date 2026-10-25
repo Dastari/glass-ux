@@ -47,10 +47,26 @@ export default function ScatterChartSection() {
         </div>
       </Specimen>
       <Specimen
+        title="Thresholds and bands"
+        description="A limit on the y axis with its status tone, and the healthy range shaded. The x axis carries measurements, not times, so a scatter has no event markers."
+        wide
+        specimenKey="chart-scatter-chart:default:1"
+      >
+        <div className="charts-pane" data-testid="chart-scatter-references">
+          <ScatterChart
+            {...sample}
+            label="Effort against delivered items, with limits · fictional"
+            title="Studio projects"
+            thresholds={[{ value: 13, label: "Capacity", tone: "warning" }]}
+            bands={[{ from: 8, to: 12, label: "Planned" }]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
         title="Responsive sizes"
         description="The same ScatterChart adapts to row, tile and full-panel sizes."
         wide
-        specimenKey="chart-scatter-chart:default:1"
+        specimenKey="chart-scatter-chart:default:2"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -58,7 +74,7 @@ export default function ScatterChartSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
-        specimenKey="chart-scatter-chart:default:2"
+        specimenKey="chart-scatter-chart:default:3"
       >
         <SkeletonSwaps id="scatter-chart" render={render} />
         <div className="gallery-tiers">
@@ -70,7 +86,7 @@ export default function ScatterChartSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab specimenKey="chart-scatter-chart:default:3">{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-scatter-chart:default:4">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

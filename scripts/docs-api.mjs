@@ -352,6 +352,8 @@ function sectionFor(component) {
     ].includes(component.name)
   )
     return "chart-" + component.id;
+  // The overview brush drives a line chart's window: it is shown with LineChart.
+  if (component.name === "ChartBrush") return "chart-line-chart";
   if (component.family === "charts") {
     if (/line|area/.test(name)) return "charts-lines";
     if (/bar|column/.test(name)) return "charts-bars";

@@ -93,7 +93,7 @@ export default function MetricSection() {
         </div>
       </Specimen>
 
-      <Specimen title="Sparkline" description="Usable alone: 2px line in the data colour, a wash under it and a ringed dot on the latest sample. Status tones only when the series is in that state.">
+      <Specimen title="Sparkline" description="Usable alone: 2px line in the data colour, a wash under it and a ringed dot on the latest sample. Status tones only when the series is in that state. thresholds draw hairlines at values: a status tone for a limit, dashed for a soft reference.">
         {(["data", "success", "warning", "danger", "neutral"] as const).map((tone, index) => (
           <Example key={tone} label={tone}>
             <div className="h-10 w-40">
@@ -101,6 +101,11 @@ export default function MetricSection() {
             </div>
           </Example>
         ))}
+        <Example label="thresholds">
+          <div className="h-10 w-40" data-testid="sparkline-thresholds">
+            <Sparkline data={series(24, 2.4, 50, 30)} thresholds={[{ value: 70, tone: "warning" }, { value: 50, dashed: true }]} label="Series with a warning limit at 70 and a dashed target at 50" />
+          </div>
+        </Example>
       </Specimen>
 
       <Specimen title="Loading" description="The skeleton takes the same rows in every tier. Swap in place to compare." wide>

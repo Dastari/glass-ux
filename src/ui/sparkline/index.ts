@@ -1,4 +1,4 @@
-export { Sparkline, SparklineSkeleton, type SparklineProps, type SparklineTone } from "./sparkline.js"
+export { Sparkline, SparklineSkeleton, type SparklineProps, type SparklineThreshold, type SparklineTone } from "./sparkline.js"
 export {
   areaPath,
   indexAt,

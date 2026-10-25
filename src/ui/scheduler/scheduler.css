@@ -1,0 +1,931 @@
+/*
+ * Scheduler — an events calendar. One header (Today ‹ › · range title · view switch) over
+ * one of four views, each in a hairline frame on its container's surface:
+ *
+ *   week/day   column heads · all-day band of bars · a scrolling grid of hours, one column
+ *              per day; timed events sit side by side by their cluster's columns
+ *   month      weekday row · four to six weeks; bars span days, timed events list under
+ *              them, "+N more" opens the day; compact: dots, with the selected day below
+ *   agenda     the month's days with events, each a list in time order
+ *
+ * Events are opaque cards: the tone (--chart-1 … 8, or a status) tints the surface and marks
+ * the leading edge, so grid lines never show through text. Positions are unitless minutes or
+ * day indexes in custom properties (--_top, --_len, --_first, --_length, --_row); drags write
+ * --_drag-* and `translate` on the moving element and commit once (R18.5).
+ */
+@layer components {
+  [data-mode="light"] {
+    --sch-tint: 15%;
+  }
+  [data-mode="dark"] {
+    --sch-tint: 26%;
+  }
+
+  .fa-scheduler {
+    /* component tokens */
+    --_hour-h: var(--row-h);
+    --_min: calc(var(--_hour-h) / 60);
+    --_gutter: calc(var(--unit) * 14);
+    --_gap: var(--space-half);
+    --_bar-h: calc(var(--type-caption-line) + var(--space-1));
+    --_pitch: calc(var(--_bar-h) + var(--space-half));
+    --_cell-pad: var(--space-1);
+    --_head: calc(var(--_cell-pad) + var(--control-h-xs) + var(--space-half));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    container: scheduler / inline-size;
+  }
+
+  /* ── Header ─────────────────────────────────────────────────────────────────── */
+  .fa-sch-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--gap-controls);
+    min-width: 0;
+  }
+  .fa-sch-nav {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .fa-sch-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--type-subtitle-tracking);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* The switch shrinks before it wraps, so it folds to icons or a menu beside the buttons. */
+  .fa-sch-views {
+    display: flex;
+    flex: 1 1 0;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+  /* Narrow: the title takes its own line above the controls. */
+  @container scheduler (max-width: 34rem) {
+    .fa-sch-title {
+      flex-basis: 100%;
+      order: -1;
+    }
+  }
+  .fa-sch-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .fa-sch-announcer {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ── Events ─────────────────────────────────────────────────────────────────── */
+  .fa-sch-ev {
+    --_tone: var(--chart-1);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="2"] {
+    --_tone: var(--chart-2);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="3"] {
+    --_tone: var(--chart-3);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="4"] {
+    --_tone: var(--chart-4);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="5"] {
+    --_tone: var(--chart-5);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="6"] {
+    --_tone: var(--chart-6);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="7"] {
+    --_tone: var(--chart-7);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="8"] {
+    --_tone: var(--chart-8);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="neutral"] {
+    --_tone: var(--fg-subtle);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="info"] {
+    --_tone: var(--info);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="success"] {
+    --_tone: var(--success);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="warning"] {
+    --_tone: var(--warning);
+  }
+  :is(.fa-sch-ev, .fa-sch-dot)[data-tone="danger"] {
+    --_tone: var(--danger);
+  }
+
+  .fa-sch-ev {
+    --_fill: color-mix(in oklab, var(--_tone) var(--sch-tint, 15%), var(--surface-2));
+    position: relative;
+    display: flex;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-align: start;
+    outline: none;
+    cursor: pointer;
+    transition-property: background-color, opacity;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-sch-ev:focus-visible {
+    z-index: 3;
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-sch-ev[data-editable] {
+    cursor: grab;
+  }
+  .fa-sch-ev[data-dragging] {
+    z-index: 4;
+    opacity: 0.88;
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: 0;
+    cursor: grabbing;
+    transition: none;
+  }
+  .fa-sch-ev-title {
+    min-width: 0;
+    overflow: hidden;
+    font-weight: var(--weight-semibold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sch-ev-time {
+    flex: none;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sch-dot {
+    flex: none;
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--_tone, var(--chart-1));
+  }
+
+  /* Blocks (time grid) and bars (all-day band, month): the tinted card with a leading edge. */
+  .fa-sch-ev:is([data-variant="block"], [data-variant="bar"]) {
+    border-inline-start: var(--border-width-strong) solid var(--_tone);
+    background-color: var(--_fill);
+  }
+  .fa-sch-ev:is([data-variant="block"], [data-variant="bar"]):hover {
+    background-color: color-mix(in oklab, var(--_tone) calc(var(--sch-tint, 15%) + 8%), var(--surface-2));
+  }
+
+  .fa-sch-ev[data-variant="block"] {
+    position: absolute;
+    top: calc(var(--_drag-top, var(--_top)) * var(--_min) + var(--_gap));
+    inset-inline-start: calc(var(--_col) / var(--_cols) * 100% + var(--_gap));
+    flex-direction: column;
+    gap: 0;
+    width: calc(var(--_span) / var(--_cols) * 100% - var(--_gap) * 2);
+    height: calc(var(--_drag-len, var(--_len)) * var(--_min) - var(--_gap) * 2);
+    padding: var(--space-half) var(--space-1-5);
+  }
+  /* Lines never squeeze into each other: what does not fit is clipped at the bottom. */
+  .fa-sch-ev[data-variant="block"] > :is(.fa-sch-ev-title, .fa-sch-ev-time) {
+    flex-shrink: 0;
+  }
+  .fa-sch-ev[data-variant="block"][data-short] {
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-1-5);
+    padding-block: 0;
+  }
+  .fa-sch-ev[data-variant="block"][data-short] .fa-sch-ev-title {
+    flex: 0 1 auto;
+  }
+  .fa-sch-ev[data-variant="block"][data-short] .fa-sch-ev-time {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-sch-ev[data-variant="block"][data-continues-before] {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+  }
+  .fa-sch-ev[data-variant="block"][data-continues-after] {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  .fa-sch-ev[data-variant="bar"],
+  .fa-sch-ev[data-variant="item"] {
+    align-items: center;
+    gap: var(--space-1-5);
+    height: var(--_bar-h);
+    padding-inline: var(--space-1-5);
+  }
+  .fa-sch-ev[data-variant="bar"][data-continues-before] {
+    border-inline-start-color: transparent;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+  .fa-sch-ev[data-variant="bar"][data-continues-after] {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+  /* A timed event in the month: a dot, its start and its title, no fill. */
+  .fa-sch-ev[data-variant="item"]:hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-sch-ev[data-variant="item"] .fa-sch-ev-title {
+    font-weight: var(--weight-medium);
+  }
+
+  .fa-sch-resize {
+    position: absolute;
+    z-index: 1;
+  }
+  .fa-sch-resize[data-axis="y"] {
+    inset-inline: 0;
+    bottom: 0;
+    height: var(--space-2);
+    cursor: ns-resize;
+  }
+  .fa-sch-resize[data-axis="x"] {
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: var(--space-2);
+    cursor: ew-resize;
+  }
+
+  .fa-sch-ev[data-skeleton] {
+    border: 0;
+    background-color: var(--skel-base);
+    pointer-events: none;
+  }
+
+  /* ── Week and day: the time grid ─────────────────────────────────────────────── */
+  .fa-sch-time {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-tile);
+  }
+  .fa-sch-gutter {
+    border-inline-end: var(--border-width) solid var(--line);
+  }
+  /* Heads and the band reserve the scroller's gutter, so their columns line up with the hours. */
+  .fa-sch-colheads,
+  .fa-sch-band {
+    flex: none;
+    overflow-y: hidden;
+    scrollbar-gutter: stable;
+    border-block-end: var(--border-width) solid var(--line);
+  }
+  .fa-sch-colheads {
+    display: grid;
+    grid-template-columns: var(--_gutter) repeat(var(--_days), minmax(0, 1fr));
+  }
+  .fa-sch-colhead {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1-5);
+    min-width: 0;
+    height: var(--control-h-md);
+    margin: 0;
+    padding: 0 var(--space-1);
+    border: 0;
+    background: none;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    white-space: nowrap;
+    outline: none;
+  }
+  .fa-sch-colhead + .fa-sch-colhead {
+    border-inline-start: var(--border-width) solid var(--line);
+  }
+  button.fa-sch-colhead {
+    cursor: pointer;
+  }
+  button.fa-sch-colhead:hover {
+    background-color: var(--fill-hover);
+  }
+  button.fa-sch-colhead:focus-visible {
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+  .fa-sch-colhead-day {
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--control-h-xs);
+    height: var(--control-h-xs);
+    padding-inline: var(--space-1);
+    border-radius: var(--radius-full);
+    color: var(--fg);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-sch-colhead[data-today] {
+    color: var(--accent-text);
+  }
+  .fa-sch-colhead[data-today] .fa-sch-colhead-day {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+
+  .fa-sch-band {
+    display: grid;
+    grid-template-columns: var(--_gutter) minmax(0, 1fr);
+    max-height: calc(var(--_pitch) * 4 + var(--space-2));
+    overflow-y: auto;
+  }
+  .fa-sch-band-label {
+    padding-block: var(--space-1) 0;
+    padding-inline: 0 var(--space-2);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--_bar-h);
+    text-align: end;
+  }
+  .fa-sch-band-days {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--_days), minmax(0, 1fr));
+    grid-auto-rows: var(--_bar-h);
+    row-gap: var(--space-half);
+    min-height: calc(var(--_rows) * var(--_pitch) + var(--space-1) * 2 - var(--space-half));
+    padding-block: var(--space-1);
+  }
+  .fa-sch-band-cell {
+    grid-row: 1 / span var(--_rows);
+    grid-column: var(--_first);
+    margin-block: calc(var(--space-1) * -1);
+  }
+  .fa-sch-band-cell + .fa-sch-band-cell {
+    border-inline-start: var(--border-width) solid var(--line);
+  }
+  .fa-sch-band-days > .fa-sch-ev {
+    z-index: 1;
+    grid-row: var(--_row);
+    grid-column: var(--_first) / span var(--_drag-length, var(--_length));
+    margin-inline: var(--_gap);
+  }
+  .fa-sch-band-selection {
+    display: none;
+    grid-row: 1 / span var(--_rows);
+    grid-column: var(--_first) / span var(--_length);
+    margin: calc(var(--space-1) * -1 + var(--_gap)) var(--_gap);
+    border: var(--border-width) solid var(--accent-line);
+    border-radius: var(--radius-item);
+    background-color: var(--accent-soft);
+    pointer-events: none;
+  }
+  .fa-sch-band-selection[data-show] {
+    display: block;
+  }
+
+  .fa-sch-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    outline: none;
+  }
+  .fa-sch-scroll:focus-visible {
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+  .fa-sch-hours {
+    display: grid;
+    grid-template-columns: var(--_gutter) minmax(0, 1fr);
+  }
+  .fa-sch-hour-labels {
+    position: relative;
+    height: calc(var(--_hour-h) * 24);
+  }
+  .fa-sch-hour {
+    position: absolute;
+    top: calc(var(--_top) * var(--_min));
+    inset-inline-end: var(--space-2);
+    translate: 0 -50%;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .fa-sch-cols {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--_days), minmax(0, 1fr));
+    height: calc(var(--_hour-h) * 24);
+  }
+  .fa-sch-col {
+    /* component token: the half-hour line, quieter than the hour */
+    --_half: color-mix(in oklab, var(--line) 45%, transparent);
+    position: relative;
+    min-width: 0;
+    background-image:
+      linear-gradient(to bottom, var(--line) var(--border-width), transparent var(--border-width)),
+      linear-gradient(to bottom, var(--_half) var(--border-width), transparent var(--border-width));
+    background-position:
+      0 0,
+      0 calc(var(--_hour-h) / 2);
+    background-size:
+      100% var(--_hour-h),
+      100% var(--_hour-h);
+  }
+  .fa-sch-col + .fa-sch-col {
+    border-inline-start: var(--border-width) solid var(--line);
+  }
+  .fa-scheduler[data-selectable] .fa-sch-col,
+  .fa-scheduler[data-selectable] .fa-sch-band-cell,
+  .fa-scheduler[data-selectable] .fa-sch-cell {
+    cursor: cell;
+  }
+
+  .fa-sch-now {
+    position: absolute;
+    z-index: 2;
+    top: calc(var(--_top) * var(--_min));
+    inset-inline: 0;
+    height: var(--border-width-strong);
+    translate: 0 -50%;
+    background-color: var(--accent);
+    pointer-events: none;
+  }
+  .fa-sch-now::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    inset-inline-start: 0;
+    width: var(--space-2-5);
+    height: var(--space-2-5);
+    translate: -50% -50%;
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+  }
+  .fa-sch-now:dir(rtl)::before {
+    translate: 50% -50%;
+  }
+
+  .fa-sch-selection,
+  .fa-sch-cursor {
+    position: absolute;
+    z-index: 2;
+    top: calc(var(--_top) * var(--_min) + var(--_gap));
+    inset-inline-start: calc(var(--_day) * 100% / var(--_days) + var(--_gap));
+    width: calc(100% / var(--_days) - var(--_gap) * 2);
+    height: calc(var(--_len) * var(--_min) - var(--_gap) * 2);
+    border-radius: var(--radius-item);
+    pointer-events: none;
+  }
+  .fa-sch-selection {
+    display: none;
+    overflow: hidden;
+    padding: var(--space-half) var(--space-1-5);
+    border: var(--border-width) solid var(--accent-line);
+    background-color: var(--accent-soft);
+    color: var(--accent-text);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .fa-sch-selection[data-show] {
+    display: block;
+  }
+  .fa-sch-cursor {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+
+  /* A compact week: the days of the week to choose from. */
+  .fa-sch-strip {
+    display: grid;
+    flex: none;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--space-1);
+    padding: var(--space-1);
+    border-block-end: var(--border-width) solid var(--line);
+  }
+  .fa-sch-strip-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    min-width: 0;
+    min-height: var(--target-min);
+    margin: 0;
+    padding: var(--space-1) 0;
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    outline: none;
+  }
+  .fa-sch-strip-day:hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-sch-strip-day:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+  .fa-sch-strip-weekday {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-sch-strip-number {
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-sch-strip-day[data-today] {
+    color: var(--accent-text);
+  }
+  .fa-sch-strip-day[aria-pressed="true"] {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+  .fa-sch-strip-day[aria-pressed="true"] .fa-sch-strip-weekday {
+    color: inherit;
+  }
+
+  /* ── Month ──────────────────────────────────────────────────────────────────── */
+  .fa-sch-month {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 0;
+  }
+  .fa-sch-month-grid {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-rows: auto repeat(var(--_weeks), minmax(0, 1fr));
+    min-height: 0;
+    overflow: hidden;
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-tile);
+  }
+  .fa-sch-weekdays,
+  .fa-sch-week {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .fa-sch-weekday {
+    padding: var(--space-1-5) var(--space-2);
+    overflow: hidden;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sch-week {
+    position: relative;
+    min-height: 0;
+    border-block-start: var(--border-width) solid var(--line);
+  }
+  .fa-sch-cell {
+    min-width: 0;
+    min-height: 0;
+    padding: var(--_cell-pad);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-sch-cell + .fa-sch-cell {
+    border-inline-start: var(--border-width) solid var(--line);
+  }
+  .fa-sch-cell[data-outside] {
+    background-color: var(--fill-muted);
+  }
+  .fa-sch-cell[data-selecting] {
+    background-color: var(--accent-soft);
+  }
+  .fa-sch-cell-day {
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--control-h-xs);
+    height: var(--control-h-xs);
+    margin: 0;
+    padding: 0 var(--space-1);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-variant-numeric: tabular-nums;
+    outline: none;
+    cursor: pointer;
+  }
+  .fa-sch-cell[data-outside] .fa-sch-cell-day {
+    color: var(--fg-subtle);
+  }
+  .fa-sch-cell-day:hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-sch-cell-day:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+  .fa-sch-cell[data-today] .fa-sch-cell-day {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+    font-weight: var(--weight-semibold);
+  }
+  .fa-sch-week > .fa-sch-probe {
+    position: absolute;
+    width: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-sch-probe[data-probe="head"] {
+    height: calc(var(--_head) + var(--_cell-pad));
+  }
+  .fa-sch-probe[data-probe="pitch"] {
+    height: var(--_pitch);
+  }
+  /* Bars and items are placed on the week, so a bar crosses the cells after its first. */
+  .fa-sch-week .fa-sch-ev,
+  .fa-sch-more {
+    position: absolute;
+    z-index: 1;
+    top: calc(var(--_head) + (var(--_row) - 1) * var(--_pitch));
+    inset-inline-start: calc((var(--_first) - 1) * 100% / 7 + var(--_cell-pad));
+    width: calc(var(--_length, 1) * 100% / 7 - var(--_cell-pad) * 2);
+  }
+  .fa-sch-more {
+    display: flex;
+    align-items: center;
+    height: var(--_bar-h);
+    margin: 0;
+    padding: 0 var(--space-1-5);
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-caption-size);
+    font-weight: var(--weight-medium);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+    outline: none;
+    cursor: pointer;
+  }
+  .fa-sch-more:hover,
+  .fa-sch-more[data-popup-open] {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-sch-more:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+
+  /* Compact month: fixed rows of day buttons with dots; the selected day's events below. */
+  .fa-scheduler[data-compact] .fa-sch-month-grid {
+    flex: none;
+    grid-template-rows: auto;
+    grid-auto-rows: calc(var(--control-h-md) + var(--space-3));
+  }
+  .fa-scheduler[data-compact] .fa-sch-weekday {
+    padding-inline: 0;
+    text-align: center;
+  }
+  .fa-scheduler[data-compact] .fa-sch-cell {
+    padding: var(--space-half);
+  }
+  .fa-scheduler[data-compact] .fa-sch-cell-day {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    width: 100%;
+    height: 100%;
+    min-height: var(--target-min);
+    padding: var(--space-1) 0;
+    border-radius: var(--radius-item);
+  }
+  .fa-scheduler[data-compact] .fa-sch-cell[data-today] .fa-sch-cell-day {
+    background: none;
+    color: var(--accent-text);
+  }
+  .fa-scheduler[data-compact] .fa-sch-cell-day[aria-pressed="true"],
+  .fa-scheduler[data-compact] .fa-sch-cell[data-today] .fa-sch-cell-day[aria-pressed="true"] {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+  .fa-sch-dots {
+    display: flex;
+    gap: var(--space-half);
+    height: var(--space-1-5);
+  }
+  .fa-sch-dots .fa-sch-dot {
+    width: var(--space-1-5);
+    height: var(--space-1-5);
+  }
+  .fa-sch-cell-day[aria-pressed="true"] .fa-sch-dot {
+    background-color: currentColor;
+  }
+  .fa-sch-day-list {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .fa-sch-day-list > .fa-sch-day-list-title {
+    margin: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+  }
+
+  /* ── Agenda and day lists ───────────────────────────────────────────────────── */
+  .fa-sch-agenda {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    outline: none;
+  }
+  .fa-sch-agenda:focus-visible {
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--accent-ring);
+    border-radius: var(--radius-tile);
+  }
+  .fa-sch-agenda-days {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-sch-agenda-day {
+    display: grid;
+    grid-template-columns: var(--_gutter) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-2);
+  }
+  .fa-sch-agenda-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-block-start: var(--space-1);
+  }
+  .fa-sch-agenda-number {
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--control-h-sm);
+    height: var(--control-h-sm);
+    border-radius: var(--radius-full);
+    color: var(--fg);
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-line);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-sch-agenda-weekday {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-sch-agenda-day[data-today] .fa-sch-agenda-number {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+  .fa-sch-agenda-day[data-today] .fa-sch-agenda-weekday {
+    color: var(--accent-text);
+  }
+  .fa-sch-agenda-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-sch-ev[data-variant="row"] {
+    /* component token: room for "10:30 am – 12:00 pm" */
+    --_time-w: 8rem;
+    display: grid;
+    grid-template-columns: minmax(0, var(--_time-w)) auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-1-5) var(--space-2);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-sch-ev[data-variant="row"]:hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-sch-ev[data-variant="row"] .fa-sch-ev-time {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-sch-ev[data-variant="row"] .fa-sch-dot {
+    align-self: start;
+    margin-block-start: calc((var(--type-label-line) - var(--space-2)) / 2);
+  }
+  .fa-sch-ev[data-variant="row"] .fa-sch-ev-title {
+    font-weight: var(--weight-medium);
+  }
+  .fa-sch-ev-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-sch-ev-meta {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sch-ev[data-variant="row"][data-skeleton] {
+    height: calc(var(--type-label-line) + var(--space-1-5) * 2);
+  }
+  .fa-sch-skel-line {
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+    border-radius: var(--radius-full);
+  }
+  .fa-sch-empty {
+    margin: 0;
+    padding: var(--space-4) 0;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  /* A narrow agenda puts the time over the title. */
+  @container scheduler (max-width: 30rem) {
+    .fa-sch-ev[data-variant="row"] {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas: "dot time" ". text";
+      row-gap: 0;
+    }
+    .fa-sch-ev[data-variant="row"] .fa-sch-dot {
+      grid-area: dot;
+    }
+    .fa-sch-ev[data-variant="row"] .fa-sch-ev-time {
+      grid-area: time;
+      font-size: var(--type-caption-size);
+    }
+    .fa-sch-ev[data-variant="row"] .fa-sch-ev-text {
+      grid-area: text;
+    }
+  }
+  /* In a popover the list is narrow too. */
+  .fa-popover .fa-sch-ev[data-variant="row"] {
+    --_time-w: 7rem;
+  }
+
+  html[data-scheduler-gesture] {
+    cursor: grabbing;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}

@@ -1,0 +1,225 @@
+import { useRef, useState } from "react";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { AvatarGroup } from "glass-ux/avatar";
+import { Badge } from "glass-ux/badge";
+import { Kanban, KanbanCard, type KanbanColumn, type KanbanItem } from "glass-ux/kanban";
+
+// A fictional IT service desk.
+interface Ticket extends KanbanItem {
+  priority: "P1" | "P2" | "P3";
+  kind: string;
+  assignees: string[];
+}
+
+const COLUMNS: KanbanColumn[] = [
+  { id: "new", title: "New" },
+  { id: "triage", title: "Triage" },
+  { id: "progress", title: "In progress", limit: 3 },
+  { id: "waiting", title: "Waiting on requester" },
+  { id: "resolved", title: "Resolved" },
+];
+const TICKETS: Ticket[] = [
+  {
+    id: "INC-2041",
+    columnId: "new",
+    title: "Printer offline on level 3",
+    meta: "INC-2041 · Mara Quill",
+    priority: "P2",
+    kind: "Hardware",
+    assignees: [],
+  },
+  {
+    id: "REQ-1187",
+    columnId: "new",
+    title: "New starter laptop for Finance",
+    meta: "REQ-1187 · Owen Hartley",
+    priority: "P3",
+    kind: "Request",
+    assignees: [],
+  },
+  {
+    id: "INC-2043",
+    columnId: "new",
+    title: "VPN drops every few minutes",
+    meta: "INC-2043 · Priya Lindqvist",
+    priority: "P2",
+    kind: "Network",
+    assignees: [],
+  },
+  {
+    id: "INC-2038",
+    columnId: "triage",
+    title: "Shared mailbox not syncing",
+    meta: "INC-2038 · Theo Brandt",
+    priority: "P3",
+    kind: "Email",
+    assignees: ["Ada Ferreira"],
+  },
+  {
+    id: "INC-2036",
+    columnId: "triage",
+    title: "Badge reader rejects visitors",
+    meta: "INC-2036 · Front desk",
+    priority: "P2",
+    kind: "Access",
+    assignees: ["Jonah Pike"],
+  },
+  {
+    id: "INC-2029",
+    columnId: "progress",
+    title: "File server near capacity",
+    meta: "INC-2029 · Monitoring",
+    priority: "P1",
+    kind: "Storage",
+    assignees: ["Ada Ferreira", "Sami Okoro"],
+  },
+  {
+    id: "REQ-1179",
+    columnId: "progress",
+    title: "Licence for drawing software",
+    meta: "REQ-1179 · Lena Park",
+    priority: "P3",
+    kind: "Software",
+    assignees: ["Jonah Pike"],
+  },
+  {
+    id: "INC-2031",
+    columnId: "progress",
+    title: "Wi-Fi dead spot in meeting room 2",
+    meta: "INC-2031 · Facilities",
+    priority: "P2",
+    kind: "Network",
+    assignees: ["Sami Okoro"],
+  },
+  {
+    id: "INC-2017",
+    columnId: "waiting",
+    title: "Phone handset buzzes on calls",
+    meta: "INC-2017 · Ruth Adeyemi",
+    priority: "P3",
+    kind: "Telephony",
+    assignees: ["Ada Ferreira"],
+  },
+  {
+    id: "INC-2010",
+    columnId: "resolved",
+    title: "Password reset for contractor",
+    meta: "INC-2010 · Felix Moreau",
+    priority: "P3",
+    kind: "Access",
+    assignees: ["Jonah Pike"],
+  },
+  {
+    id: "INC-2012",
+    columnId: "resolved",
+    title: "Monitor flicker at hot desk 14",
+    meta: "INC-2012 · Ivy Chen",
+    priority: "P3",
+    kind: "Hardware",
+    assignees: ["Sami Okoro"],
+  },
+];
+
+function TicketCard({ ticket }: { ticket: Ticket }) {
+  return (
+    <KanbanCard
+      title={ticket.title}
+      meta={ticket.meta}
+      badges={
+        <>
+          <Badge size="sm" tone={ticket.priority === "P1" ? "danger" : "neutral"}>
+            {ticket.priority}
+          </Badge>
+          <Badge size="sm">{ticket.kind}</Badge>
+        </>
+      }
+      avatars={
+        ticket.assignees.length ? (
+          <AvatarGroup size="xs" people={ticket.assignees.map((name) => ({ name }))} />
+        ) : null
+      }
+    />
+  );
+}
+
+function ServiceBoard() {
+  const [tickets, setTickets] = useState(TICKETS);
+  const next = useRef(2050);
+  return (
+    <div className="h-150 w-full">
+      <Kanban
+        aria-label="Service desk"
+        columns={COLUMNS}
+        cards={tickets}
+        onCardsChange={setTickets}
+        renderCard={(ticket) => <TicketCard ticket={ticket} />}
+        onAddCard={(columnId) => {
+          const id = `INC-${next.current++}`;
+          setTickets((current) => [
+            ...current,
+            {
+              id,
+              columnId,
+              title: "New request",
+              meta: `${id} · Service desk`,
+              priority: "P3",
+              kind: "Request",
+              assignees: [],
+            },
+          ]);
+        }}
+      />
+    </div>
+  );
+}
+
+function SavingBoard() {
+  const [tickets, setTickets] = useState(TICKETS);
+  return (
+    <div className="h-150 w-full">
+      <Kanban
+        aria-label="Saving board"
+        columns={COLUMNS}
+        cards={tickets}
+        onCardsChange={setTickets}
+        renderCard={(ticket) => <TicketCard ticket={ticket} />}
+        onCardMove={(move) =>
+          // The service desk resolves only work that was in progress.
+          new Promise<void>((resolve, reject) =>
+            window.setTimeout(
+              () =>
+                move.to === "resolved" && move.from !== "progress"
+                  ? reject(new Error("Only tickets in progress can be resolved"))
+                  : resolve(),
+              700,
+            ),
+          )
+        }
+      />
+    </div>
+  );
+}
+
+export default function KanbanSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Service board"
+        description="Drag a card to another column, or within one to reorder it. In progress has a limit of three, so it refuses cards while full and says why. Keyboard: Space lifts a card, arrows move it within and across columns, Space drops, Escape cancels."
+        layout="stack"
+        wide
+      >
+        <ServiceBoard />
+      </Specimen>
+
+      <Specimen
+        title="Saving moves"
+        description="onCardMove returns a promise: the column shows as saving. Resolving a ticket that was not in progress fails, so the card flies back and the reason is announced."
+        layout="stack"
+        wide
+      >
+        <SavingBoard />
+      </Specimen>
+    </SectionPage>
+  );
+}

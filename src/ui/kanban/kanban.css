@@ -1,0 +1,205 @@
+/*
+ * Kanban — columns of cards on the canvas.
+ *
+ *   column   heading row on the canvas (tone dot · title · count · collapse), then its lane:
+ *            a quiet well that is the drop zone, holding card tiles (glass-card), then the
+ *            add-card slot. The lane scrolls on its own; the board scrolls sideways.
+ *   count    "3 / 4" against a limit; at the limit it takes the warning tint, and the lane
+ *            refuses cards from other columns with the reason under the preview.
+ *   collapsed  a narrow strip (expand · dot · vertical title · count) that still takes drops.
+ *   narrow   each column fills the board and snaps; a switcher above moves between them.
+ */
+@layer components {
+  .fa-kanban {
+    /* component token: a column's width on a wide board */
+    --_column-w: 18rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-kanban-switch {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .fa-kanban-scroller {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: stretch;
+    gap: var(--gap-panels);
+    min-height: 0;
+    padding-block-end: var(--space-2);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .fa-kanban-column {
+    display: flex;
+    flex: 0 0 var(--_column-w);
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-kanban-head {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--gap-inline);
+    min-width: 0;
+    min-height: var(--control-h-sm);
+    padding-inline-start: var(--space-1);
+  }
+  /* Two classes, so a host's heading styles (h3 in a document) do not resize it. */
+  .fa-kanban-column .fa-kanban-title {
+    flex: 0 1 auto;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-kanban-count {
+    flex: none;
+    min-width: var(--control-h-xs);
+    padding-inline: var(--space-1-5);
+    border-radius: var(--radius-full);
+    background-color: var(--fill-muted);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+  .fa-kanban-count[data-full] {
+    background-color: var(--warning-soft);
+    color: var(--warning-text);
+  }
+  .fa-kanban-count[data-loading] {
+    visibility: hidden;
+  }
+  .fa-kanban-collapse {
+    margin-inline-start: auto;
+  }
+
+  .fa-kanban-lane-frame {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .fa-kanban-lane {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-height: calc(var(--control-h-lg) * 3);
+    margin: 0;
+    padding: var(--space-2);
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    border-radius: var(--radius-tile);
+    background-color: var(--fill-muted);
+    list-style: none;
+  }
+  .fa-kanban-empty {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    pointer-events: none;
+  }
+  .fa-kanban-lane:not([data-drop-state="idle"]) + .fa-kanban-empty {
+    visibility: hidden;
+  }
+
+  .fa-kanban-card {
+    flex: none;
+    min-width: 0;
+  }
+  .fa-kanban-skeleton {
+    height: calc(var(--type-label-line) + var(--type-caption-line) + var(--space-1) + var(--inset-tile) * 2);
+    border-radius: var(--radius-tile);
+  }
+  .fa-kanban-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .fa-kanban-card-title {
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+    overflow-wrap: anywhere;
+  }
+  .fa-kanban-card-meta {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-kanban-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-width: 0;
+    margin-block-start: var(--space-1);
+  }
+  .fa-kanban-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .fa-kanban-add {
+    display: flex;
+    flex: none;
+  }
+
+  /* A collapsed column: a strip that keeps its name, its count and its drop target. */
+  .fa-kanban-column[data-collapsed] {
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--space-2);
+    width: calc(var(--control-h-sm) + var(--space-2) * 2);
+    padding-block: var(--space-1);
+    border-radius: var(--radius-tile);
+    background-color: var(--fill-muted);
+  }
+  .fa-kanban-column[data-collapsed] .fa-kanban-title {
+    writing-mode: vertical-rl;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-kanban-column[data-collapsed] .fa-kanban-count {
+    padding-inline: var(--space-1);
+  }
+
+  /* Narrow: one column at a time, snapping, with the switcher above. */
+  .fa-kanban[data-narrow] .fa-kanban-scroller {
+    scroll-snap-type: x mandatory;
+  }
+  .fa-kanban[data-narrow] .fa-kanban-column {
+    flex-basis: 100%;
+    scroll-snap-align: start;
+  }
+}

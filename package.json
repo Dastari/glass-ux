@@ -138,6 +138,14 @@
       "types": "./dist/ui/drag-drop/index.d.ts",
       "import": "./dist/ui/drag-drop/index.js"
     },
+    "./scheduler": {
+      "types": "./dist/ui/scheduler/index.d.ts",
+      "import": "./dist/ui/scheduler/index.js"
+    },
+    "./kanban": {
+      "types": "./dist/ui/kanban/index.d.ts",
+      "import": "./dist/ui/kanban/index.js"
+    },
     "./tree": {
       "types": "./dist/ui/tree/index.d.ts",
       "import": "./dist/ui/tree/index.js"

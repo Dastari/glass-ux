@@ -46,6 +46,7 @@
 @import "../ui/form/form.css";
 @import "../ui/image/image.css";
 @import "../ui/input/input.css";
+@import "../ui/kanban/kanban.css";
 @import "../ui/kbd/kbd.css";
 @import "../ui/list-row/list-row.css";
 @import "../ui/login-flow/login-flow.css";
@@ -68,6 +69,7 @@
 @import "../ui/radio/radio.css";
 @import "../ui/reference-input/reference-input.css";
 @import "../ui/rich-text/rich-text.css";
+@import "../ui/scheduler/scheduler.css";
 @import "../ui/scroll-area/scroll-area.css";
 @import "../ui/segmented/segmented.css";
 @import "../ui/select/select.css";

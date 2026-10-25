@@ -27,7 +27,7 @@ const SCHEME = /^([a-z][a-z0-9+.-]*):/i
 /** Validate and normalise. A bare origin loses its trailing slash ("https://northstar.example"). */
 export function parseUrl(text: string, options: UrlOptions = {}): UrlResult {
   const schemes = (options.schemes ?? ["https", "http"]).map((scheme) => scheme.toLowerCase())
-  const example = getUrlFieldMessages(options.locale).suchAsNorthstarExample(schemes[0] ?? "https")
+  const example = `${schemes[0] ?? "https"}://northstar.example`
   let source = text.trim()
   if (!source) return { ok: false, error: getUrlFieldMessages(options.locale).enterAWebAddress }
   let addedScheme = false

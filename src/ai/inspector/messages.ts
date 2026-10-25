@@ -7,7 +7,7 @@ export const inspectorMessages = defineMessages("inspector", {
   workspaceScope: "Workspace · everything you can access",
   referenced: "Referenced",
   toolsUsed: "Tools used",
-  failed: "failed",
+  failed: (count: number) => `${count} failed`,
   sources: "Sources",
   budget: "Budget",
   resets: (time: string) => `Resets ${time}`,

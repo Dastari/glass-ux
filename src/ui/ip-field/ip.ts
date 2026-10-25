@@ -37,9 +37,7 @@ export interface ParsedIp {
 
 export type IpResult = { ok: true; value: ParsedIp } | { ok: false; error: string }
 
-function examples(messages: ReturnType<typeof getIpFieldMessages>) { return { 4: messages.versionFourExample, 6: messages.versionSixExample, any: messages.exampleAny } }
 
-const kind = (version: IpVersion | "any", messages: ReturnType<typeof getIpFieldMessages> = getIpFieldMessages()) => (version === 4 ? messages.versionFourName : version === 6 ? messages.versionSixName : messages.anIpAddress)
 
 /** IPv4 dotted decimal → 4 bytes, or null. Leading zeros are read as decimal. */
 export function parseIpv4(text: string): number[] | null {
@@ -124,11 +122,11 @@ export function parseIp(text: string, options: IpOptions = {}): IpResult {
   const version = options.version ?? "any"
   const cidr = options.cidr ?? "none"
   let source = text.trim()
-  if (!source) return { ok: false, error: messages.enter(kind(version, messages)) }
+  if (!source) return { ok: false, error: messages.enter(version) }
   // "[2001:db8::1]" from a URL, or with a port ("[::1]:8080" is not an address; reject the port).
   if (source.startsWith("[")) {
     const close = source.indexOf("]")
-    if (close === -1) return { ok: false, error: messages.invalidAddressExample(kind(version, messages), examples(messages)[version]) }
+    if (close === -1) return { ok: false, error: messages.invalidAddressExample(version) }
     source = source.slice(1, close) + source.slice(close + 1)
   }
   let prefix: number | null = null
@@ -146,9 +144,9 @@ export function parseIp(text: string, options: IpOptions = {}): IpResult {
   const v6 = !v4 && version !== 4 ? parseIpv6(source) : null
   const bytes = v4 ?? v6
   if (!bytes) {
-    if (version === 4 && parseIpv6(source)) return { ok: false, error: messages.invalidVersionFour(messages.versionFourExample) }
-    if (version === 6 && parseIpv4(source)) return { ok: false, error: messages.invalidVersionSix(messages.versionSixExample) }
-    return { ok: false, error: messages.invalidAddressExample(kind(version, messages), examples(messages)[version]) }
+    if (version === 4 && parseIpv6(source)) return { ok: false, error: messages.invalidAddressExample(4) }
+    if (version === 6 && parseIpv4(source)) return { ok: false, error: messages.invalidAddressExample(6) }
+    return { ok: false, error: messages.invalidAddressExample(version) }
   }
   const resolved: IpVersion = v4 ? 4 : 6
   const maxPrefix = resolved === 4 ? 32 : 128

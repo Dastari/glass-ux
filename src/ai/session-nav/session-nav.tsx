@@ -124,7 +124,6 @@ function SessionOrganisation({
   organisation: AiSession["organisation"];
 }) {
   const messages = useMessages(sessionNavMessages)
-  const locale = useLocale()
 
   if (organisation === undefined) return null;
   const name = organisation ? organisation.label : messages.allOrganisations;
@@ -145,7 +144,6 @@ function SessionOrganisation({
 /** The session row's state at the trailing edge: spinner, a toned dot, or the time. */
 function SessionState({ session }: { session: AiSession }) {
   const messages = useMessages(sessionNavMessages)
-  const locale = useLocale()
 
   if (session.activity === "working") {
     return (
@@ -195,7 +193,6 @@ function RenameField({
   onDone: (title: string | null) => void;
 }) {
   const messages = useMessages(sessionNavMessages)
-  const locale = useLocale()
 
   const [value, setValue] = useState(session.title);
   const done = useRef(false);

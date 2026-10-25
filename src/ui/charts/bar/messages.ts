@@ -5,7 +5,7 @@ import { getLocale } from "../../../lib/locale/locale.js"
 export const barMessages = defineMessages("bar", {
   category: "Category",
   total: "Total",
-  more: "more",
+  more: (count: number) => `+${count} more`,
   inspectValues: (label: string) => `${label} — inspect values`,
   totalValue: (value: string) => `Total ${value}`,
 })

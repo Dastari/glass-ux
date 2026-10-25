@@ -4,9 +4,7 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for otpField. */
 export const otpFieldMessages = defineMessages("otpField", {
   characterOf: (position: number, length: number) => `Character ${position} of ${length}`,
-  enterTheCode: (length: number, kind: string) => `Enter the ${length}-${kind} code`,
-  digit: "digit",
-  character: "character",
+  enterTheCode: (length: number, numeric: boolean) => `Enter the ${length}-${numeric ? "digit" : "character"} code`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

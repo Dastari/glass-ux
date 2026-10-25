@@ -195,7 +195,7 @@ export function AddressEditor({
           (result): OptionItem<string> => ({
             value: result.id,
             label: result.label,
-            description: [result.description, result.value.country.code && result.value.country.code !== homeCountry ? result.value.country.name : ""].filter(Boolean).join(", "),
+            description: new Intl.ListFormat(locale, { type: "unit" }).format([result.description, result.value.country.code && result.value.country.code !== homeCountry ? result.value.country.name : ""].filter(Boolean)),
             icon: result.kind === "place" ? <IconHome /> : <IconMapPin />,
             meta: result.kind === "street" ? messages.street : undefined,
           })

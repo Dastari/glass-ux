@@ -34,7 +34,7 @@ describe("shipped language packs", () => {
         expect(typeof translated[key], `${pack.locale}/${namespace}.${key}`).toBe(typeof value)
         if (typeof translated[key] === "string") {
           expect(translated[key].trim(), `${namespace}.${key}`).not.toBe("")
-          expect(translated[key], `${namespace}.${key}`).not.toMatch(/【[0-9０-９]+】|\[[0-9０-９]+\]/)
+          expect(translated[key], `${namespace}.${key}`).not.toMatch(/【[0-9０-９]+】|\[[0-9０-９]+\]|^0{2,3}\d{1,2} /)
         }
       }
     }
@@ -75,4 +75,27 @@ describe("shipped language packs", () => {
       }
     }
   })
+})
+
+it.each(packs)("$locale keeps optional values inside complete announcements", (pack) => {
+  const drag = pack.messages.dragDrop!
+  const place = { label: "cedar-label", zone: "cedar-zone", position: 2, count: 5 }
+  const full = drag.lifted!({ ...place, keyboard: true })
+  expect(full).toContain(place.label)
+  expect(full).toContain(place.zone)
+  expect(full).not.toMatch(/\b(?:undefined|null)\b|\[object Object\]/)
+  const outside = drag.dropped!({ ...place, zone: null, position: null, count: null })
+  expect(outside).toContain(place.label)
+  expect(outside).not.toMatch(/\b(?:undefined|null)\b|\[object Object\]/)
+  const caption = pack.messages.results!.imageCaption!({ index: 2, total: 3, width: "640", height: "480" })
+  for (const value of ["2", "3", "640", "480"]) expect(caption).toContain(value)
+  const conflict = pack.messages.entitySettings!.conflictNotice!("cedar-section", "cedar-author")
+  expect(conflict).toContain("cedar-section")
+  expect(conflict).toContain("cedar-author")
+})
+
+it("uses Japanese rows and a complete page-input label", () => {
+  expect(ja.messages.pagination!.noRows).toBe("行がありません")
+  expect(ja.messages.pagination!.previousPage).toBe("前のページ")
+  expect(ja.messages.pagination!.pageInput!("12")).toBe("ページ（全12ページ）")
 })

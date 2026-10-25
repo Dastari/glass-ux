@@ -12,7 +12,7 @@ function sample(name: string, alternate: boolean): string | number | boolean {
   if (name === "locale") return "en-AU"
   if (name === "state") return alternate ? "failed" : "executed"
   if (name === "view") return alternate ? "week" : "month"
-  if (/^(expanded|keyboard|pointer|more|multiple)$/.test(name)) return alternate
+  if (/^(expanded|keyboard|pointer|more|multiple|numeric)$/.test(name)) return alternate
   if (/^(count|total|position|index|step|length|minimum|maximum|limit|visible|interval|percent|running|n|lightness|chroma)$/.test(name)) return alternate ? 2 : 1
   return "Sample"
 }

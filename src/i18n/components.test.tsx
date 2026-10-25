@@ -1,3 +1,4 @@
+import { Reasoning } from "../ai/reasoning/index.js"
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -14,9 +15,13 @@ import { TooltipProvider } from "../ui/tooltip/index.js"
 import { emailSchema } from "../ui/email-field/index.js"
 import { configureLocale } from "../lib/locale/index.js"
 import de from "./de.js"
+import ja from "./ja.js"
+import { FileDrop } from "../ui/file-drop/index.js"
+import { parseHostname } from "../ui/hostname-field/hostname.js"
 
 beforeEach(() => {
   registerMessagePack(de)
+  registerMessagePack(ja)
   vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} })
   vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }))
 })
@@ -78,4 +83,29 @@ describe("language packs in rendered components", () => {
     if (!result.success) expect(result.error.issues[0]?.message).toBe("Geben Sie eine E-Mail-Adresse ein")
     expect(emailSchema({ required: true, locale: "en-AU" }).safeParse("").success).toBe(false)
   })
+})
+
+
+it("lets a whole-message override move the browse label while retaining its input", () => {
+  const view = render(<Region><MessagesProvider messages={{}}><FileDrop aria-label="Files" onFiles={() => {}} /></MessagesProvider></Region>)
+  const input = screen.getByLabelText("Files")
+  input.focus()
+  view.rerender(<Region><MessagesProvider messages={{ fileDrop: { browseFiles: (browse: string) => `${browse} — Dateien hier ablegen` } }}><FileDrop aria-label="Files" onFiles={() => {}} /></MessagesProvider></Region>)
+  expect(screen.getByLabelText("Files")).toBe(input)
+  expect(document.activeElement).toBe(input)
+  expect(input.parentElement).toHaveTextContent("durchsuchen — Dateien hier ablegen")
+})
+
+it("uses Japanese whole validation messages with unchanged technical examples", () => {
+  const result = parseHostname("-printer", { locale: "ja" })
+  expect(result.ok).toBe(false)
+  if (!result.ok) expect(result.error).toBe("各部分の先頭と末尾にハイフンは使用できません")
+  const invalid = parseHostname("printer..local", { locale: "ja" })
+  if (!invalid.ok) expect(invalid.error).toContain("printer.northstar.local")
+})
+
+
+it("preserves whole-second English reasoning while localising its unit", () => {
+  render(<Region locale="en-AU"><Reasoning reasoning={{ seconds: 4, summary: "Sample summary" }} /></Region>)
+  expect(screen.getByRole("button", { name: "Thought for 4\u2009s" })).toBeInTheDocument()
 })

@@ -97,7 +97,7 @@ export function InheritedSetting({
         description={
           overridden ? (
             <>
-              <span className="fa-inherited-scope">{messageContent(messages.overriddenFor(scope, "{source}"), { source: <span className="fa-inherited-was">{valueText(source)}</span> })}</span>
+              <span className="fa-inherited-scope">{messageContent(messages.overriddenFor("{scope}", "{source}"), { scope, source: <span className="fa-inherited-was">{valueText(source)}</span> })}</span>
             </>
           ) : (
             <span className="fa-inherited-scope">{messageContent(messages.inheritedFrom("{source}"), { source: valueText(source) })}</span>

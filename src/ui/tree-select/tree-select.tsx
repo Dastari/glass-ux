@@ -274,11 +274,11 @@ export function TreeSelect(props: TreeSelectProps) {
           </span>
         ))}
         {hidden.length > 0 ? (
-          <span className="fa-chip" data-overflow="" title={hidden.map(labelOf).join(", ")}>
+          <span className="fa-chip" data-overflow="" title={new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(labelOf))}>
             <span className="fa-chip-label" aria-hidden>
               +{hidden.length}
             </span>
-            <span className="sr-only">{t.more(hidden.length, hidden.map(labelOf).join(", "))}</span>
+            <span className="sr-only">{t.more(hidden.length, new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(labelOf)))}</span>
           </span>
         ) : null}
       </span>

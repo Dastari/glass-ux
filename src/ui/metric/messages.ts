@@ -6,11 +6,11 @@ export const metricMessages = defineMessages("metric", {
   up: "Up",
   down: "Down",
   noChange: "No change",
-  minimumAverageMaximum: ({ label, range, minimum, average, maximum, current }: { label: string; range: string; minimum: string; average: string; maximum: string; current: string }) => `${label}${range}: minimum ${minimum}, average ${average}, maximum ${maximum}, latest ${current}`,
+  minimumAverageMaximum: ({ label, range, minimum, average, maximum, current }: { label: string; range: string; minimum: string; average: string; maximum: string; current: string }) => `${label}${range ? `, ${range}` : ""}: minimum ${minimum}, average ${average}, maximum ${maximum}, latest ${current}`,
   samplesAgo: (count: number) => `${count} samples ago`,
-  min: "Min",
-  avg: "Avg",
-  max: "Max",
+  min: (value: string) => `Min ${value}`,
+  avg: (value: string) => `Avg ${value}`,
+  max: (value: string) => `Max ${value}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

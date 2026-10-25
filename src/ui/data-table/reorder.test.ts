@@ -105,7 +105,7 @@ describe("announcements", () => {
   it("names the row and its position", () => {
     expect(positionText(3, 12)).toBe("3 of 12")
     expect(positionText(1, 4, "Phones")).toBe("1 of 4 in Phones")
-    expect(reorderMessages.lifted("NST-C106", "3 of 12")).toMatch(/^Lifted NST-C106, position 3 of 12\. Use the arrow keys/)
-    expect(reorderMessages.failed("NST-C106", "3 of 12", "Offline.")).toBe("NST-C106 could not be moved: Offline. Returned to position 3 of 12.")
+    expect(reorderMessages.lifted({ label: "NST-C106", position: "3 of 12" })).toMatch(/^Lifted NST-C106, position 3 of 12\. Use the arrow keys/)
+    expect(reorderMessages.failed({ label: "NST-C106", position: "3 of 12", reason: "Offline." })).toBe("NST-C106 could not be moved: Offline. Returned to position 3 of 12.")
   })
 })

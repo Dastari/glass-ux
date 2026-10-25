@@ -77,7 +77,9 @@ export function ApprovalRecord({ ask, onRevoke }: ApprovalRecordProps) {
         ) : undefined
       }
     >
-      {messageContent(messages.approvalRecord({ state: ask.state, action: ask.action, targets: "{targets}", outcome: ask.outcome }), {
+      {messageContent(messages.approvalRecord({ state: ask.state, action: "{action}", targets: "{targets}", outcome: ask.outcome ? "{outcome}" : undefined }), {
+        action: ask.action,
+        outcome: <span className="fa-ai-ask-record-outcome">{ask.outcome}</span>,
         targets: new Intl.ListFormat(locale, { type: "unit" }).formatToParts(ask.targets.map((_, index) => String(index))).map((part, index) => part.type === "element" ? <EntityChip key={index} entity={ask.targets[Number(part.value)]!} size="sm" /> : part.value),
       })}
     </AskRecord>

@@ -1,3 +1,4 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { aiMessages } from "../messages.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { asksMessages } from "./messages.js"
@@ -114,6 +115,7 @@ export function EntityPickerAsk({ ask }: {
   ask: Ask;
 }) {
   const messages = useMessages(asksMessages)
+  const locale = useLocale()
 
   const id = useId();
   const resolver = useEntityResolver();
@@ -185,9 +187,9 @@ export function EntityPickerAsk({ ask }: {
                 {
                   type: "entities",
                   ids: picked.map((entity) => entity.id),
-                  label: labels.join(", "),
+                  label: new Intl.ListFormat(locale, { type: "unit" }).format(labels),
                 },
-                messages.chosenEntities(labels.join(", ")),
+                messages.chosenEntities(new Intl.ListFormat(locale, { type: "unit" }).format(labels)),
               )
             }
           >

@@ -7,7 +7,7 @@
  *   // src/ui/pagination/messages.ts
  *   export const paginationMessages = defineMessages("pagination", {
  *     previous: "Previous page",
- *     pageOf: (page: number, pages: number) => `Page ${page} of ${pages}`,
+ *     pageStatus: (page: number, pages: number) => `Page ${page} of ${pages}`,
  *   })
  *   declare module "../../lib/i18n/catalog.js" {
  *     interface MessageCatalog { pagination: typeof paginationMessages.defaults }

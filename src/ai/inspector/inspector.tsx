@@ -130,7 +130,7 @@ export function ConversationContext({
                     {failed ? (
                       <span className="fa-ai-context-failed">
                         {" "}
-                        · {failed} {messages.failed} </span>
+                        · {messages.failed(failed)} </span>
                     ) : null}
                   </span>
                 </li>

@@ -21,7 +21,7 @@ reduced motion move the spotlight without animating.
 | --- | --- | --- | --- | --- | --- |
 | defaultOpen | `boolean \| undefined` | false, true | no | false | Show the tour at first (uncontrolled). Ignored once `storageKey` records it as completed. |
 | defaultStep | `number \| undefined` | See type | no | 0 | The step shown first when the step is uncontrolled. Default 0. |
-| labels | `Partial<{ progress: (step: number, total: number) => string; next: string; back: string; done: string; skip: string; announce: (step: number, total: number, title: string) => string; }> \| undefined` | See type | no | — | Wording for this instance, over the language pack and `MessagesProvider`. |
+| labels | `Partial<{ progress: (step: number, total: number) => string; next: string; back: string; done: string; skip: string; announce: ({ step, total, title }: { step: number; total: number; title: string; }) => string; }> \| undefined` | See type | no | — | Wording for this instance, over the language pack and `MessagesProvider`. |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for the wording. Default: the nearest `LocaleProvider`. |
 | onComplete | `(() => void) \| undefined` | See type | no | — | Called when the person presses Done on the last step. |
 | onOpenChange | `((open: boolean, details: { reason: TourCloseReason \| "open"; }) => void) \| undefined` | See type | no | — | Called with false and the reason when the tour finishes, is skipped or Esc closes it. |

@@ -1,3 +1,4 @@
+import { numberFormat } from "../../lib/locale/intl.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { statusStripMessages } from "./messages.js"
 import { IconCloudOff, IconRefresh } from "../../icons/generated/icons.js";
@@ -6,7 +7,7 @@ import { Button } from "../../ui/button/index.js";
 import { ToneDot } from "../../ui/tone-dot/index.js";
 import { TruncatedText } from "../../ui/truncated-text/index.js";
 import { Tooltip } from "../../ui/tooltip/index.js";
-import { formatNumber, formatElapsed, useNow } from "../format.js";
+import { formatNumber, useNow } from "../format.js";
 import type { AiBudget, StreamState } from "../types.js";
 import { useLocale } from "../../lib/locale/use-locale.js";
 
@@ -51,6 +52,7 @@ export function AiStatusStrip({
   const seconds = retryAt
     ? Math.max(0, Math.ceil((retryAt - now) / 1000))
     : null;
+  const secondUnit = numberFormat(locale, { style: "unit", unit: "second", unitDisplay: "narrow" }).formatToParts(1).find((part) => part.type === "unit")?.value ?? ""
   const used = budget ? percent(budget) : null;
   return (
     <div
@@ -80,7 +82,7 @@ export function AiStatusStrip({
         {stream === "connected"
           ? messages.live
           : stream === "reconnecting"
-            ? messages.reconnectStatus({ attempt, time: seconds !== null ? formatElapsed(seconds * 1000, locale) : undefined })
+            ? messages.reconnectStatus({ attempt, time: seconds !== null ? `${formatNumber(seconds, 0, locale)} ${secondUnit}` : undefined })
             : stream === "reset"
               ? messages.reloaded
               : messages.offlineHistoryStaysReadable}

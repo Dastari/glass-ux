@@ -873,7 +873,7 @@ export function GeoMap<T>({
       const point = byId.get(slot.id)
       if (!point) return null
       const status = point.status
-      const text = [point.label, point.description, statusLabels[status]].filter(Boolean).join(", ")
+      const text = new Intl.ListFormat(locale, { type: "unit" }).format([point.label, point.description, statusLabels[status]].filter((part): part is string => Boolean(part)))
       return createPortal(
         <MarkerButton
           slot={slot}

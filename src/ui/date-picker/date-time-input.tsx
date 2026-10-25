@@ -52,7 +52,7 @@ export function zoneLabel(timeZone: string, at: number, locale: string): { short
     const short = info.abbreviation ?? describeTimeZone(timeZone, { at: new Date(at), locale: "en-US" }).abbreviation ?? info.offset
     return {
       short,
-      long: [timeZone.replace(/_/g, " "), short === info.offset ? undefined : short, info.offset].filter(Boolean).join(", "),
+      long: new Intl.ListFormat(locale, { type: "unit" }).format([timeZone.replace(/_/g, " "), short === info.offset ? undefined : short, info.offset].filter((part): part is string => Boolean(part))),
     }
   } catch {
     return null

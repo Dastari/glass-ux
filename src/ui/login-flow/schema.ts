@@ -37,7 +37,7 @@ export function newPasswordSchema(policy: LoginPasswordPolicy | undefined, local
 
 /** A complete one-time code. */
 export function codeSchema(length: number, characters: OtpCharacters, locale?: string) {
-  const message = () => { const messages: ReturnType<typeof getLoginFlowMessages> = getLoginFlowMessages(locale); return messages.enterTheCode(length, characters === "numeric" ? messages.digit : messages.character) }
+  const message = () => { const messages: ReturnType<typeof getLoginFlowMessages> = getLoginFlowMessages(locale); return messages.enterTheCode(length, characters === "numeric") }
   return z.string().refine((value) => isCompleteOtp(value, length, characters), { error: message })
 }
 

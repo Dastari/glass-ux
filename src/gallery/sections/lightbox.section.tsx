@@ -22,7 +22,7 @@ export default function LightboxSection() {
   return (
     <SectionPage>
       <Specimen title="Gallery" description="Choose a picture to open it. ← → or a swipe move between pictures; + − zoom, and a zoomed picture pans by dragging." layout="stack" wide>
-        <Grid columns={{ min: "10rem" }}> {/* tokens:allow a thumbnail width */}
+        <Grid columns={{ min: "sm" }}>
           {PHOTOS.map((photo, photoIndex) => (
             <button
               key={photo.id}

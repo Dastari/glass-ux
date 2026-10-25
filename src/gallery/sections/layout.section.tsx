@@ -27,7 +27,7 @@ export default function LayoutSection() {
         </Stack>
       </Specimen>
       <Specimen title="Grid" description="As many columns as fit at a minimum width, so tiles reflow with their container, not the window." layout="stack" wide>
-        <Grid columns={{ min: "12rem" }}> {/* tokens:allow a tile width */}
+        <Grid columns={{ min: "sm" }}>
           {SITES.map((site, index) => (
             <Surface key={site} material="panel" padding="tile" radius="tile">
               <Stack gap="inline">

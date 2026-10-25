@@ -30,9 +30,7 @@ export default function LightboxSection() {
         wide
         specimenKey="lightbox:default:0"
       >
-        <Grid columns={{ min: "10rem" }}>
-          {" "}
-          {/* tokens:allow a thumbnail width */}
+        <Grid columns={{ min: "sm" }}>
           {PHOTOS.map((photo, photoIndex) => (
             <button
               key={photo.id}

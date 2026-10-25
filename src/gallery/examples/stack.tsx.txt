@@ -43,9 +43,7 @@ export default function LayoutSection() {
         layout="stack"
         wide
       >
-        <Grid columns={{ min: "12rem" }}>
-          {" "}
-          {/* tokens:allow a tile width */}
+        <Grid columns={{ min: "sm" }}>
           {SITES.map((site, index) => (
             <Surface key={site} material="panel" padding="tile" radius="tile">
               <Stack gap="inline">

@@ -69,12 +69,15 @@ export function Stack({ as: Element = "div", direction = "column", gap, align, j
   )
 }
 
+/** Named minimum column widths: xs 8rem, sm 10rem, md 14rem, lg 18rem, xl 24rem (scaled with the interface). */
+export type GridMin = "xs" | "sm" | "md" | "lg" | "xl"
+
 export interface GridProps extends LayoutBaseProps {
   /**
-   * Columns: a fixed count, or `{ min }` for as many columns as fit at least `min` wide
-   * (a CSS length or variable), filling the container. Default: at least 14rem.
+   * Columns: a fixed count, or `{ min }` for as many columns as fit at least `min` wide,
+   * filling the container. `min` is a named width (GridMin) or any CSS length. Default `md`.
    */
-  columns?: number | { min: string }
+  columns?: number | { min: GridMin | (string & {}) }
   /** Space between cells. Default `tiles`. */
   gap?: LayoutGap
   /** Row gap when it differs from the column gap. */
@@ -82,12 +85,13 @@ export interface GridProps extends LayoutBaseProps {
   align?: "start" | "center" | "end" | "stretch"
 }
 
-/** The default columns: as many as fit at a tile's width. */
-const DEFAULT_COLUMNS = { min: "var(--tile-min, 14rem)" } // tokens:allow a fallback for hosts without the role
+const NAMED_MIN = new Set<string>(["xs", "sm", "md", "lg", "xl"])
+const DEFAULT_COLUMNS = { min: "md" } as const
 
 /** Cells in columns: a fixed count, or as many as fit the container at a minimum width. */
 export function Grid({ as: Element = "div", columns = DEFAULT_COLUMNS, gap = "tiles", rowGap, align, className, style, children, ...rest }: GridProps) {
-  const template = typeof columns === "number" ? `repeat(${columns}, minmax(0, 1fr))` : `repeat(auto-fill, minmax(min(100%, ${columns.min}), 1fr))`
+  const min = typeof columns === "number" ? "" : NAMED_MIN.has(columns.min) ? `var(--fa-grid-${columns.min})` : columns.min
+  const template = typeof columns === "number" ? `repeat(${columns}, minmax(0, 1fr))` : `repeat(auto-fill, minmax(min(100%, ${min}), 1fr))`
   return (
     <Element
       {...rest}

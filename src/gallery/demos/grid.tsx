@@ -25,9 +25,7 @@ export default function LayoutSection() {
         wide
         specimenKey="layout:default:1"
       >
-        <Grid columns={{ min: "12rem" }}>
-          {" "}
-          {/* tokens:allow a tile width */}
+        <Grid columns={{ min: "sm" }}>
           {SITES.map((site, index) => (
             <Surface key={site} material="panel" padding="tile" radius="tile">
               <Stack gap="inline">

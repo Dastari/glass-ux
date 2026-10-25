@@ -41,6 +41,11 @@
     justify-content: space-between;
   }
   .fa-grid {
+    --fa-grid-xs: 8rem;
+    --fa-grid-sm: 10rem;
+    --fa-grid-md: 14rem;
+    --fa-grid-lg: 18rem;
+    --fa-grid-xl: 24rem;
     display: grid;
     grid-template-columns: var(--_columns);
     gap: var(--_row-gap) var(--_gap);

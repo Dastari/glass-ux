@@ -25,9 +25,11 @@ export interface LightboxImage {
 }
 
 export interface LightboxProps {
+  /** The pictures, in order. */
   images: LightboxImage[]
   /** The picture shown. Pair with `onIndexChange` to control it. */
   index?: number
+  /** The first picture shown when uncontrolled. Default 0. */
   defaultIndex?: number
   /** Called with the zero-based index to show, from previous/next, ← →, a swipe or a thumbnail (wrapping at the ends). */
   onIndexChange?: (index: number) => void
@@ -40,7 +42,9 @@ export interface LightboxProps {
   actions?: (image: LightboxImage, index: number) => ReactNode
   /** Zoom steps after "fit", as multiples of the fitted width. Default 1.5, 2 and 3. */
   zoomSteps?: number[]
+  /** Formatting and wording locale; defaults to the nearest LocaleProvider. */
   locale?: string
+  /** Wording overrides. */
   labels?: Partial<typeof lightboxMessages.defaults>
 }
 

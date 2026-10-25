@@ -18,8 +18,11 @@ export interface ColorFieldProps extends Omit<ColorPickerBaseProps, "value" | "d
   onValueChange?: (value: string | null) => void
   /** Allow clearing to no colour. Default false. */
   clearable?: boolean
+  /** Control height: sm, md (default) or lg. */
   size?: InputSize
+  /** short or medium; full width by default. */
   width?: FieldWidth
+  /** Show the invalid state (set by Field when its error shows). */
   invalid?: boolean
   /** Name for a native form submission (a hidden input carries the hex value). */
   name?: string
@@ -29,8 +32,11 @@ export interface ColorFieldProps extends Omit<ColorPickerBaseProps, "value" | "d
   /** Called when focus leaves the field, for form libraries' touched state. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   className?: string
+  /** Accessible name when no visible label names the field. */
   "aria-label"?: string
+  /** IDs of elements that name the field (Field sets it). */
   "aria-labelledby"?: string
+  /** IDs of elements that describe the field (Field sets it). */
   "aria-describedby"?: string
 }
 

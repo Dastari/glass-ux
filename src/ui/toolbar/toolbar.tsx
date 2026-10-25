@@ -47,7 +47,9 @@ export interface ToolbarProps {
   disabled?: boolean
   /** Toolbar.Button, Toolbar.Group, Toolbar.Item, Toolbar.Separator and Toolbar.Spacer. */
   children: ReactNode
+  /** Wording overrides (the More button). */
   labels?: Partial<typeof toolbarMessages.defaults>
+  /** Layout only. */
   className?: string
 }
 

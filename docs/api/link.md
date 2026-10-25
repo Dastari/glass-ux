@@ -16,7 +16,7 @@ navigate).
 | disabled | `boolean \| undefined` | false, true | no | false | A link that cannot be followed now: no href, `aria-disabled`, muted. |
 | external | `boolean \| undefined` | false, true | no | newTab | Show the external mark without opening a new tab. Default: on with `newTab`. |
 | icon | `ReactNode` | See type | no | — | A leading icon, sized to the text. |
-| labels | `Partial<{ readonly newTab: "(opens in a new tab)"; }> \| undefined` | See type | no | — |  |
+| labels | `Partial<{ readonly newTab: "(opens in a new tab)"; }> \| undefined` | See type | no | — | Wording overrides (the new-tab note). |
 | newTab | `boolean \| undefined` | false, true | no | false | Open in a new tab: adds `target="_blank"`, `rel="noopener noreferrer"`, an external mark and "(opens in a new tab)" for screen readers. |
 | render | `ReactElement<Record<string, unknown>, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | A router's link element (`<RouterLink to="…" />`); its routing props, ref and handlers are kept. |
 | variant | `LinkVariant \| undefined` | "inline", "standalone", "subtle" | no | "inline" | The named visual variant. It is rendered as a data attribute and styled through shared tokens. |

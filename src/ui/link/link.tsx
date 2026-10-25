@@ -25,6 +25,7 @@ export interface LinkProps extends Omit<ComponentProps<"a">, "children"> {
   disabled?: boolean
   /** A router's link element (`<RouterLink to="…" />`); its routing props, ref and handlers are kept. */
   render?: ReactElement<Record<string, unknown>>
+  /** Wording overrides (the new-tab note). */
   labels?: Partial<typeof linkMessages.defaults>
 }
 

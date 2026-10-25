@@ -13,12 +13,12 @@ of thumbnails and actions for the current picture. Each picture starts fitted.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | actions | `((image: LightboxImage, index: number) => ReactNode) \| undefined` | See type | no | — | Actions for the current picture at the end of the footer: download, open the original. |
-| defaultIndex | `number \| undefined` | See type | no | 0 |  |
+| defaultIndex | `number \| undefined` | See type | no | 0 | The first picture shown when uncontrolled. Default 0. |
 | defaultOpen | `boolean \| undefined` | false, true | no | false | Opens the uncontrolled overlay initially. |
-| images | `LightboxImage[]` | See type | yes | — |  |
+| images | `LightboxImage[]` | See type | yes | — | The pictures, in order. |
 | index | `number \| undefined` | See type | no | — | The picture shown. Pair with `onIndexChange` to control it. |
-| labels | `Partial<{ readonly previous: "Previous image"; readonly next: "Next image"; readonly zoomIn: "Zoom in"; readonly zoomOut: "Zoom out"; readonly fit: "Fit to window"; readonly fitted: "Fit"; readonly alreadyFitted: "Already fitted"; readonly largest: "Largest zoom"; readonly position: (index: number, total: number) => string; readonly thumbnails: "Images"; readonly show: (alt: string) => string; }> \| undefined` | See type | no | — |  |
-| locale | `string \| undefined` | See type | no | — |  |
+| labels | `Partial<{ readonly previous: "Previous image"; readonly next: "Next image"; readonly zoomIn: "Zoom in"; readonly zoomOut: "Zoom out"; readonly fit: "Fit to window"; readonly fitted: "Fit"; readonly alreadyFitted: "Already fitted"; readonly largest: "Largest zoom"; readonly position: (index: number, total: number) => string; readonly thumbnails: "Images"; readonly show: (alt: string) => string; }> \| undefined` | See type | no | — | Wording overrides. |
+| locale | `string \| undefined` | See type | no | — | Formatting and wording locale; defaults to the nearest LocaleProvider. |
 | onIndexChange | `((index: number) => void) \| undefined` | See type | no | — | Called with the zero-based index to show, from previous/next, ← →, a swipe or a thumbnail (wrapping at the ends). |
 | onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called when the open state changes, including keyboard dismissal and outside interaction. |
 | open | `boolean \| undefined` | false, true | no | — | Controls whether the overlay is open. |

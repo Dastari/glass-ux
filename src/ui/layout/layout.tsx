@@ -30,11 +30,14 @@ const gapValue = (gap: LayoutGap) =>
 interface LayoutBaseProps {
   /** The element. Default `div`. */
   as?: ElementType
+  /** Layout only. */
   className?: string
   id?: string
+  /** Inline style, merged after the layout's own variables. */
   style?: CSSProperties
   children?: ReactNode
   [attribute: `data-${string}` | `aria-${string}`]: unknown
+  /** An ARIA role when the container is a list, a group or a region. */
   role?: string
 }
 
@@ -43,7 +46,9 @@ export interface StackProps extends LayoutBaseProps {
   direction?: "column" | "row"
   /** Space between children. Default `controls` in a row and `fields` in a column. */
   gap?: LayoutGap
+  /** Cross-axis alignment of the children. Default: stretch in a column, centre in a row. */
   align?: "start" | "center" | "end" | "stretch" | "baseline"
+  /** Main-axis distribution of the children. Default: start. */
   justify?: "start" | "center" | "end" | "between"
   /** Let a row wrap onto more lines. */
   wrap?: boolean
@@ -82,6 +87,7 @@ export interface GridProps extends LayoutBaseProps {
   gap?: LayoutGap
   /** Row gap when it differs from the column gap. */
   rowGap?: LayoutGap
+  /** Vertical alignment of cells in their rows. Default: stretch. */
   align?: "start" | "center" | "end" | "stretch"
 }
 

@@ -6,6 +6,13 @@ import { Button, useActionFeedback } from "../button/index.js"
 import { stepperMessages } from "./messages.js"
 import { Stepper, type StepItem, type StepStatus, type StepperNavigation } from "./stepper.js"
 
+/** A copy of a record without one key. */
+function without<T>(record: Record<string, T>, key: string): Record<string, T> {
+  const next = { ...record }
+  delete next[key]
+  return next
+}
+
 /**
  * A step's check before the Wizard moves on: return (or resolve) `true` or nothing to continue,
  * `false` to stay, or a message to stay and show it. A thrown error stays and shows its message.
@@ -20,6 +27,7 @@ export interface WizardStep extends Omit<StepItem, "status"> {
 }
 
 export interface WizardProps {
+  /** The steps, in order, with their content and checks. */
   steps: WizardStep[]
   /** The current step's id. Pair with `onValueChange` to control it. */
   value?: string
@@ -36,9 +44,13 @@ export interface WizardProps {
   finishLabel?: string
   /** Content at the start of the footer (a Cancel button, or a draft note). */
   footerStart?: ReactNode
+  /** Formatting and wording locale; defaults to the nearest LocaleProvider. */
   locale?: string
+  /** Wording overrides (Back, Next, Finish…). */
   labels?: Partial<typeof stepperMessages.defaults>
+  /** Layout only. */
   className?: string
+  /** Names the task ("Add a site"). */
   "aria-label"?: string
 }
 
@@ -103,7 +115,7 @@ export function Wizard({
       setChecking(false)
     }
     const passed = outcome === undefined || outcome === true
-    setErrors(({ [step.id]: _, ...rest }) => (passed ? rest : { ...rest, [step.id]: typeof outcome === "string" ? outcome : true }))
+    setErrors((prev) => (passed ? without(prev, step.id) : { ...prev, [step.id]: typeof outcome === "string" ? outcome : true }))
     if (passed) setDone((prev) => ({ ...prev, [step.id]: "complete" }))
     return passed
   }
@@ -154,7 +166,7 @@ export function Wizard({
               disabled={checking}
               onClick={() => {
                 setDone((prev) => ({ ...prev, [step.id]: "skipped" }))
-                setErrors(({ [step.id]: _, ...rest }) => rest)
+                setErrors((prev) => without(prev, step.id))
                 go(at + 1)
               }}
             >

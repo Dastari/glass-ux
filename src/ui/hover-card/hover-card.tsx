@@ -6,8 +6,9 @@ import { usePopupMetrics } from "../../lib/popup-metrics.js"
 
 export type HoverCardSize = "sm" | "md" | "lg"
 
-/** How long the pointer rests before the card opens, and lingers before it closes (as EntityChip's preview). */
+/** How long the pointer rests before the card opens, in milliseconds (as EntityChip's preview). */
 export const HOVER_CARD_DELAY_MS = 400
+/** How long the card lingers after the pointer leaves, in milliseconds. */
 export const HOVER_CARD_CLOSE_DELAY_MS = 150
 
 export interface HoverCardPopupProps extends Omit<ComponentProps<typeof BasePreviewCard.Popup>, "className"> {
@@ -37,7 +38,9 @@ export interface HoverCardProps {
   /** The element that opens the card on hover and keyboard focus, normally a link. It must forward its ref and props. */
   children: ReactElement
   size?: HoverCardSize
+  /** Preferred side of the trigger; collision handling may choose another. Default bottom. */
   side?: HoverCardPopupProps["side"]
+  /** Alignment along that side. Default centre. */
   align?: HoverCardPopupProps["align"]
   /** Milliseconds before opening. Default 400. */
   delay?: number

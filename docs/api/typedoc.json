@@ -132259,12 +132259,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "IDs of elements that describe the field (Field sets it)."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 34,
+									"line": 40,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L34"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L40"
 								}
 							],
 							"type": {
@@ -132280,12 +132288,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Accessible name when no visible label names the field."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 32,
+									"line": 36,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L32"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L36"
 								}
 							],
 							"type": {
@@ -132301,12 +132317,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "IDs of elements that name the field (Field sets it)."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 33,
+									"line": 38,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L33"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L38"
 								}
 							],
 							"type": {
@@ -132325,9 +132349,9 @@
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 31,
+									"line": 34,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L31"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L34"
 								}
 							],
 							"type": {
@@ -132487,9 +132511,9 @@
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 27,
+									"line": 30,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L27"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L30"
 								}
 							],
 							"type": {
@@ -132505,12 +132529,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Show the invalid state (set by Field when its error shows)."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 23,
+									"line": 26,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L23"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L26"
 								}
 							],
 							"type": {
@@ -132934,9 +132966,9 @@
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 25,
+									"line": 28,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L25"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L28"
 								}
 							],
 							"type": {
@@ -132963,9 +132995,9 @@
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 30,
+									"line": 33,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L30"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L33"
 								}
 							],
 							"type": {
@@ -133174,9 +133206,9 @@
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 26,
+									"line": 29,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L26"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L29"
 								}
 							],
 							"type": {
@@ -133195,9 +133227,9 @@
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 28,
+									"line": 31,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L28"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L31"
 								}
 							],
 							"type": {
@@ -133232,12 +133264,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Control height: sm, md (default) or lg."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 21,
+									"line": 22,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L21"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L22"
 								}
 							],
 							"type": {
@@ -133343,12 +133383,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "short or medium; full width by default."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 22,
+									"line": 24,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L22"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L24"
 								}
 							],
 							"type": {
@@ -135719,9 +135767,9 @@
 					"sources": [
 						{
 							"fileName": "ui/color-picker/color-field.tsx",
-							"line": 41,
+							"line": 47,
 							"character": 16,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L41"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L47"
 						}
 					],
 					"signatures": [
@@ -135750,9 +135798,9 @@
 							"sources": [
 								{
 									"fileName": "ui/color-picker/color-field.tsx",
-									"line": 41,
+									"line": 47,
 									"character": 16,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L41"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/color-picker/color-field.tsx#L47"
 								}
 							],
 							"parameters": [
@@ -256125,9 +256173,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 18,
+									"line": 19,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L18"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L19"
 								}
 							],
 							"type": {
@@ -256152,9 +256200,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 14,
+									"line": 15,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L14"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L15"
 								}
 							],
 							"type": {
@@ -256173,9 +256221,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 17,
+									"line": 18,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L17"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L18"
 								}
 							],
 							"type": {
@@ -256208,9 +256256,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 16,
+									"line": 17,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L16"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L17"
 								}
 							],
 							"type": {
@@ -256235,9 +256283,9 @@
 					"sources": [
 						{
 							"fileName": "ui/hover-card/hover-card.tsx",
-							"line": 13,
+							"line": 14,
 							"character": 17,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L13"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L14"
 						}
 					],
 					"extendedTypes": [
@@ -256302,12 +256350,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Alignment along that side. Default centre."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 41,
+									"line": 44,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L41"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L44"
 								}
 							],
 							"type": {
@@ -256338,9 +256394,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 38,
+									"line": 39,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L38"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L39"
 								}
 							],
 							"type": {
@@ -256374,9 +256430,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 45,
+									"line": 48,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L45"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L48"
 								}
 							],
 							"type": {
@@ -256401,9 +256457,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 36,
+									"line": 37,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L36"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L37"
 								}
 							],
 							"type": {
@@ -256437,9 +256493,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 43,
+									"line": 46,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L43"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L46"
 								}
 							],
 							"type": {
@@ -256458,9 +256514,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 47,
+									"line": 50,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L47"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L50"
 								}
 							],
 							"type": {
@@ -256511,9 +256567,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 46,
+									"line": 49,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L46"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L49"
 								}
 							],
 							"type": {
@@ -256529,12 +256585,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Preferred side of the trigger; collision handling may choose another. Default bottom."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 40,
+									"line": 42,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L40"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L42"
 								}
 							],
 							"type": {
@@ -256559,9 +256623,9 @@
 							"sources": [
 								{
 									"fileName": "ui/hover-card/hover-card.tsx",
-									"line": 39,
+									"line": 40,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L39"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L40"
 								}
 							],
 							"type": {
@@ -256591,9 +256655,9 @@
 					"sources": [
 						{
 							"fileName": "ui/hover-card/hover-card.tsx",
-							"line": 34,
+							"line": 35,
 							"character": 17,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L34"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L35"
 						}
 					]
 				},
@@ -256637,12 +256701,20 @@
 					"flags": {
 						"isConst": true
 					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "How long the card lingers after the pointer leaves, in milliseconds."
+							}
+						]
+					},
 					"sources": [
 						{
 							"fileName": "ui/hover-card/hover-card.tsx",
-							"line": 11,
+							"line": 12,
 							"character": 13,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L11"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L12"
 						}
 					],
 					"type": {
@@ -256663,7 +256735,7 @@
 						"summary": [
 							{
 								"kind": "text",
-								"text": "How long the pointer rests before the card opens, and lingers before it closes (as EntityChip's preview)."
+								"text": "How long the pointer rests before the card opens, in milliseconds (as EntityChip's preview)."
 							}
 						]
 					},
@@ -256732,9 +256804,9 @@
 					"sources": [
 						{
 							"fileName": "ui/hover-card/hover-card.tsx",
-							"line": 69,
+							"line": 72,
 							"character": 13,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L69"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L72"
 						}
 					],
 					"type": {
@@ -256811,9 +256883,9 @@
 											"sources": [
 												{
 													"fileName": "ui/hover-card/hover-card.tsx",
-													"line": 72,
+													"line": 75,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L72"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L75"
 												}
 											],
 											"type": {
@@ -256872,9 +256944,9 @@
 											"sources": [
 												{
 													"fileName": "ui/hover-card/hover-card.tsx",
-													"line": 70,
+													"line": 73,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L70"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L73"
 												}
 											],
 											"type": {
@@ -256964,9 +257036,9 @@
 											"sources": [
 												{
 													"fileName": "ui/hover-card/hover-card.tsx",
-													"line": 71,
+													"line": 74,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L71"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/hover-card/hover-card.tsx#L74"
 												}
 											],
 											"type": {
@@ -265441,12 +265513,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Vertical alignment of cells in their rows. Default: stretch."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 85,
+									"line": 91,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L85"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L91"
 								}
 							],
 							"type": {
@@ -265533,9 +265613,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 36,
+									"line": 38,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L36"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L38"
 								}
 							],
 							"type": {
@@ -265564,12 +265644,20 @@
 								"isOptional": true,
 								"isInherited": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Layout only."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 33,
+									"line": 34,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L33"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L34"
 								}
 							],
 							"type": {
@@ -265633,9 +265721,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 80,
+									"line": 85,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L80"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L85"
 								}
 							],
 							"type": {
@@ -265663,9 +265751,9 @@
 													"sources": [
 														{
 															"fileName": "ui/layout/layout.tsx",
-															"line": 80,
+															"line": 85,
 															"character": 23,
-															"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L80"
+															"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L85"
 														}
 													],
 													"type": {
@@ -265740,9 +265828,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 82,
+									"line": 87,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L82"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L87"
 								}
 							],
 							"type": {
@@ -265764,9 +265852,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 34,
+									"line": 35,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L34"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L35"
 								}
 							],
 							"type": {
@@ -265788,12 +265876,20 @@
 								"isOptional": true,
 								"isInherited": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "An ARIA role when the container is a list, a group or a region."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 38,
+									"line": 41,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L38"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L41"
 								}
 							],
 							"type": {
@@ -265825,9 +265921,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 84,
+									"line": 89,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L84"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L89"
 								}
 							],
 							"type": {
@@ -265846,12 +265942,20 @@
 								"isOptional": true,
 								"isInherited": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Inline style, merged after the layout's own variables."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 35,
+									"line": 37,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L35"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L37"
 								}
 							],
 							"type": {
@@ -265892,9 +265996,9 @@
 					"sources": [
 						{
 							"fileName": "ui/layout/layout.tsx",
-							"line": 75,
+							"line": 80,
 							"character": 17,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L75"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L80"
 						}
 					],
 					"indexSignatures": [
@@ -265907,9 +266011,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 75,
+									"line": 80,
 									"character": 17,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L75"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L80"
 								}
 							],
 							"parameters": [
@@ -265986,12 +266090,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Cross-axis alignment of the children. Default: stretch in a column, centre in a row."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 46,
+									"line": 50,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L46"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L50"
 								}
 							],
 							"type": {
@@ -266082,9 +266194,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 36,
+									"line": 38,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L36"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L38"
 								}
 							],
 							"type": {
@@ -266113,12 +266225,20 @@
 								"isOptional": true,
 								"isInherited": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Layout only."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 33,
+									"line": 34,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L33"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L34"
 								}
 							],
 							"type": {
@@ -266162,9 +266282,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 43,
+									"line": 46,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L43"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L46"
 								}
 							],
 							"type": {
@@ -266216,9 +266336,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 45,
+									"line": 48,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L45"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L48"
 								}
 							],
 							"type": {
@@ -266240,9 +266360,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 34,
+									"line": 35,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L34"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L35"
 								}
 							],
 							"type": {
@@ -266263,12 +266383,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Main-axis distribution of the children. Default: start."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 47,
+									"line": 52,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L47"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L52"
 								}
 							],
 							"type": {
@@ -266302,12 +266430,20 @@
 								"isOptional": true,
 								"isInherited": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "An ARIA role when the container is a list, a group or a region."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 38,
+									"line": 41,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L38"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L41"
 								}
 							],
 							"type": {
@@ -266329,12 +266465,20 @@
 								"isOptional": true,
 								"isInherited": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Inline style, merged after the layout's own variables."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 35,
+									"line": 37,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L35"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L37"
 								}
 							],
 							"type": {
@@ -266373,9 +266517,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 49,
+									"line": 54,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L49"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L54"
 								}
 							],
 							"type": {
@@ -266405,9 +266549,9 @@
 					"sources": [
 						{
 							"fileName": "ui/layout/layout.tsx",
-							"line": 41,
+							"line": 44,
 							"character": 17,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L41"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L44"
 						}
 					],
 					"indexSignatures": [
@@ -266420,9 +266564,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 41,
+									"line": 44,
 									"character": 17,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L41"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L44"
 								}
 							],
 							"parameters": [
@@ -266501,9 +266645,9 @@
 					"sources": [
 						{
 							"fileName": "ui/layout/layout.tsx",
-							"line": 73,
+							"line": 78,
 							"character": 12,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L73"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L78"
 						}
 					],
 					"type": {
@@ -266649,9 +266793,9 @@
 					"sources": [
 						{
 							"fileName": "ui/layout/layout.tsx",
-							"line": 92,
+							"line": 98,
 							"character": 16,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L92"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L98"
 						}
 					],
 					"signatures": [
@@ -266672,9 +266816,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 92,
+									"line": 98,
 									"character": 16,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L92"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L98"
 								}
 							],
 							"parameters": [
@@ -266715,9 +266859,9 @@
 					"sources": [
 						{
 							"fileName": "ui/layout/layout.tsx",
-							"line": 56,
+							"line": 61,
 							"character": 16,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L56"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L61"
 						}
 					],
 					"signatures": [
@@ -266738,9 +266882,9 @@
 							"sources": [
 								{
 									"fileName": "ui/layout/layout.tsx",
-									"line": 56,
+									"line": 61,
 									"character": 16,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L56"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/layout/layout.tsx#L61"
 								}
 							],
 							"parameters": [
@@ -267083,9 +267227,9 @@
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 40,
+									"line": 42,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L40"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L42"
 								}
 							],
 							"type": {
@@ -267153,12 +267297,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The first picture shown when uncontrolled. Default 0."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 31,
+									"line": 33,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L31"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L33"
 								}
 							],
 							"type": {
@@ -267177,9 +267329,9 @@
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 35,
+									"line": 37,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L35"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L37"
 								}
 							],
 							"type": {
@@ -267193,12 +267345,20 @@
 							"variant": "declaration",
 							"kind": 1024,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The pictures, in order."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 28,
+									"line": 29,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L28"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L29"
 								}
 							],
 							"type": {
@@ -267238,9 +267398,9 @@
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 30,
+									"line": 31,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L30"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L31"
 								}
 							],
 							"type": {
@@ -267256,12 +267416,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Wording overrides."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 44,
+									"line": 48,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L44"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L48"
 								}
 							],
 							"type": {
@@ -267632,12 +267800,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Formatting and wording locale; defaults to the nearest LocaleProvider."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 43,
+									"line": 46,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L43"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L46"
 								}
 							],
 							"type": {
@@ -267664,9 +267840,9 @@
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 33,
+									"line": 35,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L33"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L35"
 								}
 							],
 							"type": {
@@ -267717,9 +267893,9 @@
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 36,
+									"line": 38,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L36"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L38"
 								}
 							],
 							"type": {
@@ -267770,9 +267946,9 @@
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 34,
+									"line": 36,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L34"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L36"
 								}
 							],
 							"type": {
@@ -267799,9 +267975,9 @@
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 38,
+									"line": 40,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L38"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L40"
 								}
 							],
 							"type": {
@@ -267828,9 +268004,9 @@
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 42,
+									"line": 44,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L42"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L44"
 								}
 							],
 							"type": {
@@ -268268,9 +268444,9 @@
 					"sources": [
 						{
 							"fileName": "ui/lightbox/lightbox.tsx",
-							"line": 52,
+							"line": 56,
 							"character": 16,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L52"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L56"
 						}
 					],
 					"signatures": [
@@ -268291,9 +268467,9 @@
 							"sources": [
 								{
 									"fileName": "ui/lightbox/lightbox.tsx",
-									"line": 52,
+									"line": 56,
 									"character": 16,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L52"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/lightbox/lightbox.tsx#L56"
 								}
 							],
 							"parameters": [
@@ -268514,12 +268690,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Wording overrides (the new-tab note)."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/link/link.tsx",
-									"line": 28,
+									"line": 29,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/link/link.tsx#L28"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/link/link.tsx#L29"
 								}
 							],
 							"type": {
@@ -268930,9 +269114,9 @@
 					"sources": [
 						{
 							"fileName": "ui/link/link.tsx",
-							"line": 36,
+							"line": 37,
 							"character": 16,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/link/link.tsx#L36"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/link/link.tsx#L37"
 						}
 					],
 					"signatures": [
@@ -268953,9 +269137,9 @@
 							"sources": [
 								{
 									"fileName": "ui/link/link.tsx",
-									"line": 36,
+									"line": 37,
 									"character": 16,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/link/link.tsx#L36"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/link/link.tsx#L37"
 								}
 							],
 							"parameters": [
@@ -335261,12 +335445,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Names the steps navigation. Default \"Steps\"."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 50,
+									"line": 56,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L50"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L56"
 								}
 							],
 							"type": {
@@ -335293,9 +335485,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 46,
+									"line": 48,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L46"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L48"
 								}
 							],
 							"type": {
@@ -335318,12 +335510,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Layout only."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 49,
+									"line": 54,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L49"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L54"
 								}
 							],
 							"type": {
@@ -335339,12 +335539,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Wording overrides."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 48,
+									"line": 52,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L48"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L52"
 								}
 							],
 							"type": {
@@ -335729,12 +335937,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Formatting and wording locale; defaults to the nearest LocaleProvider."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 47,
+									"line": 50,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L47"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L50"
 								}
 							],
 							"type": {
@@ -335750,12 +335966,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Which steps can be chosen (StepperNavigation). Default none."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 38,
+									"line": 40,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L38"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L40"
 								}
 							],
 							"type": {
@@ -335792,9 +336016,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 37,
+									"line": 38,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L37"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L38"
 								}
 							],
 							"type": {
@@ -335865,9 +336089,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 44,
+									"line": 46,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L44"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L46"
 								}
 							],
 							"type": {
@@ -335890,12 +336114,20 @@
 							"variant": "declaration",
 							"kind": 1024,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The steps, in order."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 33,
+									"line": 34,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L33"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L34"
 								}
 							],
 							"type": {
@@ -335925,9 +336157,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 35,
+									"line": 36,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L35"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L36"
 								}
 							],
 							"type": {
@@ -335977,12 +336209,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Names the task (\"Add a site\")."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 42,
+									"line": 54,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L42"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L54"
 								}
 							],
 							"type": {
@@ -335998,12 +336238,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Layout only."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 41,
+									"line": 52,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L41"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L52"
 								}
 							],
 							"type": {
@@ -336030,9 +336278,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 27,
+									"line": 35,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L27"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L35"
 								}
 							],
 							"type": {
@@ -336059,9 +336307,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 36,
+									"line": 44,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L36"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L44"
 								}
 							],
 							"type": {
@@ -336088,9 +336336,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 38,
+									"line": 46,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L38"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L46"
 								}
 							],
 							"type": {
@@ -336113,12 +336361,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Wording overrides (Back, Next, Finish…)."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 40,
+									"line": 50,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L40"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L50"
 								}
 							],
 							"type": {
@@ -336503,12 +336759,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Formatting and wording locale; defaults to the nearest LocaleProvider."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 39,
+									"line": 48,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L39"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L48"
 								}
 							],
 							"type": {
@@ -336543,9 +336807,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 32,
+									"line": 40,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L32"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L40"
 								}
 							],
 							"type": {
@@ -336572,9 +336836,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 30,
+									"line": 38,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L30"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L38"
 								}
 							],
 							"type": {
@@ -336633,9 +336897,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 28,
+									"line": 36,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L28"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L36"
 								}
 							],
 							"type": {
@@ -336706,9 +336970,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 34,
+									"line": 42,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L34"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L42"
 								}
 							],
 							"type": {
@@ -336731,12 +336995,20 @@
 							"variant": "declaration",
 							"kind": 1024,
 							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The steps, in order, with their content and checks."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 23,
+									"line": 31,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L23"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L31"
 								}
 							],
 							"type": {
@@ -336776,9 +337048,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 25,
+									"line": 33,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L25"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L33"
 								}
 							],
 							"type": {
@@ -336810,9 +337082,9 @@
 					"sources": [
 						{
 							"fileName": "ui/stepper/wizard.tsx",
-							"line": 22,
+							"line": 29,
 							"character": 17,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L22"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L29"
 						}
 					]
 				},
@@ -336840,9 +337112,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 17,
+									"line": 24,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L17"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L24"
 								}
 							],
 							"type": {
@@ -337065,9 +337337,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 19,
+									"line": 26,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L19"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L26"
 								}
 							],
 							"type": {
@@ -337095,9 +337367,9 @@
 					"sources": [
 						{
 							"fileName": "ui/stepper/wizard.tsx",
-							"line": 15,
+							"line": 22,
 							"character": 17,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L15"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L22"
 						}
 					],
 					"extendedTypes": [
@@ -337262,9 +337534,9 @@
 					"sources": [
 						{
 							"fileName": "ui/stepper/wizard.tsx",
-							"line": 13,
+							"line": 20,
 							"character": 12,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L13"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L20"
 						}
 					],
 					"type": {
@@ -337745,9 +338017,9 @@
 					"sources": [
 						{
 							"fileName": "ui/stepper/stepper.tsx",
-							"line": 64,
+							"line": 70,
 							"character": 16,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L64"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L70"
 						}
 					],
 					"signatures": [
@@ -337768,9 +338040,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 64,
+									"line": 70,
 									"character": 16,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L64"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L70"
 								}
 							],
 							"parameters": [
@@ -337811,9 +338083,9 @@
 					"sources": [
 						{
 							"fileName": "ui/stepper/stepper.tsx",
-							"line": 54,
+							"line": 60,
 							"character": 16,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L54"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L60"
 						}
 					],
 					"signatures": [
@@ -337842,9 +338114,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/stepper.tsx",
-									"line": 54,
+									"line": 60,
 									"character": 16,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L54"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/stepper.tsx#L60"
 								}
 							],
 							"parameters": [
@@ -337897,9 +338169,9 @@
 					"sources": [
 						{
 							"fileName": "ui/stepper/wizard.tsx",
-							"line": 51,
+							"line": 63,
 							"character": 16,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L51"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L63"
 						}
 					],
 					"signatures": [
@@ -337928,9 +338200,9 @@
 							"sources": [
 								{
 									"fileName": "ui/stepper/wizard.tsx",
-									"line": 51,
+									"line": 63,
 									"character": 16,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L51"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/stepper/wizard.tsx#L63"
 								}
 							],
 							"parameters": [
@@ -351555,9 +351827,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 183,
+									"line": 185,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L183"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L185"
 								}
 							],
 							"type": {
@@ -351584,9 +351856,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 189,
+									"line": 191,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L189"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L191"
 								}
 							],
 							"type": {
@@ -351653,9 +351925,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 192,
+									"line": 194,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L192"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L194"
 								}
 							],
 							"type": {
@@ -351759,9 +352031,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 187,
+									"line": 189,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L187"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L189"
 								}
 							],
 							"type": {
@@ -351780,9 +352052,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 190,
+									"line": 192,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L190"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L192"
 								}
 							],
 							"type": {
@@ -351893,9 +352165,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 185,
+									"line": 187,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L185"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L187"
 								}
 							],
 							"type": {
@@ -352249,9 +352521,9 @@
 					"sources": [
 						{
 							"fileName": "ui/toolbar/toolbar.tsx",
-							"line": 181,
+							"line": 183,
 							"character": 17,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L181"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L183"
 						}
 					],
 					"extendedTypes": [
@@ -352322,9 +352594,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 240,
+									"line": 242,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L240"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L242"
 								}
 							],
 							"type": {
@@ -352341,9 +352613,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 242,
+									"line": 244,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L242"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L244"
 								}
 							],
 							"type": {
@@ -352369,9 +352641,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 243,
+									"line": 245,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L243"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L245"
 								}
 							],
 							"type": {
@@ -352390,9 +352662,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 241,
+									"line": 243,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L241"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L243"
 								}
 							],
 							"type": {
@@ -352417,9 +352689,9 @@
 					"sources": [
 						{
 							"fileName": "ui/toolbar/toolbar.tsx",
-							"line": 238,
+							"line": 240,
 							"character": 17,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L238"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L240"
 						}
 					]
 				},
@@ -352463,9 +352735,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 265,
+									"line": 267,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L265"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L267"
 								}
 							],
 							"type": {
@@ -352499,9 +352771,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 267,
+									"line": 269,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L267"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L269"
 								}
 							],
 							"type": {
@@ -352527,9 +352799,9 @@
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 268,
+									"line": 270,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L268"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L270"
 								}
 							],
 							"type": {
@@ -352553,9 +352825,9 @@
 					"sources": [
 						{
 							"fileName": "ui/toolbar/toolbar.tsx",
-							"line": 263,
+							"line": 265,
 							"character": 17,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L263"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L265"
 						}
 					]
 				},
@@ -352635,12 +352907,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Layout only."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 51,
+									"line": 53,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L51"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L53"
 								}
 							],
 							"type": {
@@ -352677,12 +352957,20 @@
 							"flags": {
 								"isOptional": true
 							},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "Wording overrides (the More button)."
+									}
+								]
+							},
 							"sources": [
 								{
 									"fileName": "ui/toolbar/toolbar.tsx",
-									"line": 50,
+									"line": 51,
 									"character": 2,
-									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L50"
+									"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L51"
 								}
 							],
 							"type": {
@@ -352983,9 +353271,9 @@
 					"sources": [
 						{
 							"fileName": "ui/toolbar/toolbar.tsx",
-							"line": 291,
+							"line": 293,
 							"character": 13,
-							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L291"
+							"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L293"
 						}
 					],
 					"type": {
@@ -353062,9 +353350,9 @@
 											"sources": [
 												{
 													"fileName": "ui/toolbar/toolbar.tsx",
-													"line": 293,
+													"line": 295,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L293"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L295"
 												}
 											],
 											"type": {
@@ -353131,9 +353419,9 @@
 											"sources": [
 												{
 													"fileName": "ui/toolbar/toolbar.tsx",
-													"line": 294,
+													"line": 296,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L294"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L296"
 												}
 											],
 											"type": {
@@ -353200,9 +353488,9 @@
 											"sources": [
 												{
 													"fileName": "ui/toolbar/toolbar.tsx",
-													"line": 298,
+													"line": 300,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L298"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L300"
 												}
 											],
 											"type": {
@@ -353283,9 +353571,9 @@
 											"sources": [
 												{
 													"fileName": "ui/toolbar/toolbar.tsx",
-													"line": 295,
+													"line": 297,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L295"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L297"
 												}
 											],
 											"type": {
@@ -353352,9 +353640,9 @@
 											"sources": [
 												{
 													"fileName": "ui/toolbar/toolbar.tsx",
-													"line": 299,
+													"line": 301,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L299"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L301"
 												}
 											],
 											"type": {
@@ -353435,9 +353723,9 @@
 											"sources": [
 												{
 													"fileName": "ui/toolbar/toolbar.tsx",
-													"line": 292,
+													"line": 294,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L292"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L294"
 												}
 											],
 											"type": {
@@ -353504,9 +353792,9 @@
 											"sources": [
 												{
 													"fileName": "ui/toolbar/toolbar.tsx",
-													"line": 296,
+													"line": 298,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L296"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L298"
 												}
 											],
 											"type": {
@@ -353558,9 +353846,9 @@
 											"sources": [
 												{
 													"fileName": "ui/toolbar/toolbar.tsx",
-													"line": 297,
+													"line": 299,
 													"character": 2,
-													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L297"
+													"url": "https://github.com/Dastari/glass-ux/blob/v0.9.11/src/ui/toolbar/toolbar.tsx#L299"
 												}
 											],
 											"type": {

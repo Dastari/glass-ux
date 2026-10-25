@@ -30,11 +30,13 @@ export interface StepItem {
 export type StepperNavigation = "none" | "visited" | "any"
 
 export interface StepperProps {
+  /** The steps, in order. */
   steps: StepItem[]
   /** The current step's id. */
   value: string
   /** Called with a step's id when the person chooses it (see `navigation`). */
   onValueChange?: (id: string) => void
+  /** Which steps can be chosen (StepperNavigation). Default none. */
   navigation?: StepperNavigation
   /**
    * `horizontal` (default) lays the steps along a line, and below a container width shows
@@ -44,9 +46,13 @@ export interface StepperProps {
   orientation?: "horizontal" | "vertical"
   /** Content under the current step in the vertical layout (a step-by-step form on one page). */
   children?: ReactNode
+  /** Formatting and wording locale; defaults to the nearest LocaleProvider. */
   locale?: string
+  /** Wording overrides. */
   labels?: Partial<typeof stepperMessages.defaults>
+  /** Layout only. */
   className?: string
+  /** Names the steps navigation. Default "Steps". */
   "aria-label"?: string
 }
 

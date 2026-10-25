@@ -1,2 +1,2 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { JsonTree, type JsonTreeProps } from "./json-tree.js"

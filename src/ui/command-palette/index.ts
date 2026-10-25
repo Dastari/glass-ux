@@ -1,4 +1,4 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export {
   CommandPanel,
   DEFAULT_PALETTE_GROUP_ORDER,

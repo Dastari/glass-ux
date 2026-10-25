@@ -1,4 +1,4 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { MobileField, PhoneField, PhoneInput, type MobileFieldProps, type PhoneFieldProps, type PhoneInputProps } from "./phone-field.js"
 export {
   checkPhone,

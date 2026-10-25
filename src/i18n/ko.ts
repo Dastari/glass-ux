@@ -1,4 +1,4 @@
-import type {} from "./catalogue.js"
+import type { CatalogueMessagePack } from "./catalogue.js"
 import { defineMessagePack, plural } from "../lib/i18n/index.js"
 import { numberFormat } from "../lib/locale/intl.js"
 
@@ -1523,4 +1523,4 @@ export default defineMessagePack("ko", {
     withheldArguments: "서버는 인수를 보류했습니다.",
     toolCount: counted({"other": "도구 {n}개"}),
   },
-})
+}) as CatalogueMessagePack

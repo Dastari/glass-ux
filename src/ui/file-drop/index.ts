@@ -1,4 +1,4 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { FileDrop, FileList, FileRow, type FileDropProps, type FileRowProps, type FileStatus } from "./file-drop.js"
 export {
   describeAccept,

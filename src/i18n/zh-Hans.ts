@@ -1,4 +1,4 @@
-import type {} from "./catalogue.js"
+import type { CatalogueMessagePack } from "./catalogue.js"
 import { defineMessagePack, plural } from "../lib/i18n/index.js"
 import { numberFormat } from "../lib/locale/intl.js"
 
@@ -1523,4 +1523,4 @@ export default defineMessagePack("zh-Hans", {
     withheldArguments: "服务器保留了参数。",
     toolCount: counted({"other": "{n} 个工具"}),
   },
-})
+}) as CatalogueMessagePack

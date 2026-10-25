@@ -1,4 +1,4 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { TopologyCanvas, TopologyCanvasSkeleton, TopologySkeleton, TopologyViewToggle, type TopologyCanvasProps, type TopologyInsets, type TopologyNodeMenu, type TopologyView } from "./topology.js"
 export type { SelectionChangeDetails, SelectionChangeReason } from "../../lib/use-selected-id.js"
 export { clusterLabel } from "./label.js"

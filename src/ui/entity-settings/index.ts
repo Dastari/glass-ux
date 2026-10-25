@@ -1,4 +1,4 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { EntitySettingsDialog, settingsFormBehaviour, type EntitySettingsDialogProps, type EntitySettingsForm, type EntitySettingsTab, type SettingsFormState } from "./entity-settings-dialog.js"
 export { InheritedSetting, type InheritedSettingProps } from "./inherited-setting.js"
 export { PrivilegedMark } from "./privileged-mark.js"

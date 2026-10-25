@@ -1,4 +1,4 @@
-import type {} from "./catalogue.js"
+import type { CatalogueMessagePack } from "./catalogue.js"
 import { defineMessagePack, plural } from "../lib/i18n/index.js"
 import { numberFormat } from "../lib/locale/intl.js"
 
@@ -1524,4 +1524,4 @@ export default defineMessagePack("ar", {
     withheldArguments: "قام الخادم بحجب الوسائط.",
     toolCount: counted({"zero": "{n} أدوات", "one": "{n} أداة", "two": "أداتان ({n})", "few": "{n} أدوات", "many": "{n} أداةً", "other": "{n} أداة"}),
   },
-})
+}) as CatalogueMessagePack

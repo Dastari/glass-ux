@@ -1,2 +1,2 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export * from "./chip-overflow.js";

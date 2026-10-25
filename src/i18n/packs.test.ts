@@ -34,7 +34,7 @@ describe("shipped language packs", () => {
         expect(typeof translated[key], `${pack.locale}/${namespace}.${key}`).toBe(typeof value)
         if (typeof translated[key] === "string") {
           expect(translated[key].trim(), `${namespace}.${key}`).not.toBe("")
-          expect(translated[key], `${namespace}.${key}`).not.toMatch(/[【\[][0-9０-９]+[】\]]/)
+          expect(translated[key], `${namespace}.${key}`).not.toMatch(/【[0-9０-９]+】|\[[0-9０-９]+\]/)
         }
       }
     }

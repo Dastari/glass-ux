@@ -1,2 +1,2 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { Markdown, type MarkdownProps } from "./markdown.js"

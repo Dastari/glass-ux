@@ -1,2 +1,2 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { AttachmentChip, Composer, type ComposerModel, type ComposerProps, type SlashCommand } from "./composer.js"

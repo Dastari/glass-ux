@@ -1,2 +1,2 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { Slider, type SliderMark, type SliderProps } from "./slider.js"

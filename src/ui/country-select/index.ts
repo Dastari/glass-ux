@@ -1,4 +1,4 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { CountryField, CountrySelect, type CountryFieldProps, type CountrySelectProps } from "./country-select.js"
 export {
   callingCodeOf,

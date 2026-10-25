@@ -1,4 +1,4 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export {
   ENTITY_TIER_LIMITS,
   EntityIdentity,

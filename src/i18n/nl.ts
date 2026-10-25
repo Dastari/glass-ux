@@ -1,4 +1,4 @@
-import type {} from "./catalogue.js"
+import type { CatalogueMessagePack } from "./catalogue.js"
 import { defineMessagePack, plural } from "../lib/i18n/index.js"
 import { numberFormat } from "../lib/locale/intl.js"
 
@@ -1523,4 +1523,4 @@ export default defineMessagePack("nl", {
     withheldArguments: "De server heeft de argumenten achtergehouden.",
     toolCount: counted({"one": "{n} tool", "other": "{n} tools"}),
   },
-})
+}) as CatalogueMessagePack

@@ -1,4 +1,4 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { ReferenceInput, type ReferenceChipOptions, type ReferenceInputProps } from "./reference-input.js"
 export {
   addLinks,

@@ -1,4 +1,4 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { ApprovalCard, ApprovalRecord, type ApprovalRecordProps } from "./approval.js"
 export { AskCard, AskDock, AskMarker } from "./asks.js"
 export { MultiChoiceAsk, QuickRepliesAsk, RankAsk, SingleChoiceAsk, useAskAnswer } from "./choice.js"

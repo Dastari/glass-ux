@@ -1,2 +1,2 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { AiStatusStrip, type AiStatusStripProps } from "./status-strip.js"

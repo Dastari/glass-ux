@@ -1,4 +1,4 @@
-import type {} from "./messages.js"
+import "./messages.js"
 /**
  * Assistant — the conversation, generative and tool-rendered UI layer.
  *

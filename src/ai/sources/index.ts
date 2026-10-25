@@ -1,2 +1,2 @@
-import type {} from "./messages.js"
+import "./messages.js"
 export { CitationMarker, SourceList, SourcesProvider } from "./sources.js"

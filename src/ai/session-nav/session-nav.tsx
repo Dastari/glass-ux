@@ -320,7 +320,7 @@ export function SessionNav({
               : null,
           confirm: ([session]) => ({
             title: messages.delete(session!.title),
-            body: messages.theConversationItsFilesAndItsHistoryAre,
+            body: messages.deleteDescription,
             confirmLabel: messages.deleteConversation,
             tone: "danger",
           }),
@@ -383,7 +383,7 @@ export function SessionNav({
             selected={active}
             className="fa-ai-session-row"
             aria-current={active ? "page" : undefined}
-            aria-label={`${session.title}${session.organisation !== undefined ? `, ${session.organisation ? session.organisation.label : messages.allOrganisations2}` : ""}${status ? `, ${status.toLowerCase()}` : ""}${session.unread ? messages.unreadSuffix : ""}`}
+            aria-label={`${session.title}${session.organisation !== undefined ? `, ${session.organisation ? session.organisation.label : messages.allScopes}` : ""}${status ? `, ${status.toLowerCase()}` : ""}${session.unread ? messages.unreadLabel : ""}`}
             data-unread={session.unread ? "" : undefined}
             onClick={(event) =>
               select(session.id, {

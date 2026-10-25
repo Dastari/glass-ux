@@ -5,8 +5,8 @@ import { getLocale } from "../../lib/locale/locale.js"
 export const splitPaneMessages = defineMessages("splitPane", {
   hide: "Hide",
   show: "Show",
-  show2: (value0: unknown) => `Show ${value0}`,
-  resize: (value0: unknown) => `Resize ${value0}`,
+  showPane: (label: string) => `Show ${label}`,
+  resize: (label: string) => `Resize ${label}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

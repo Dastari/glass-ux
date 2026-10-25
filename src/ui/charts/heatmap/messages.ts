@@ -6,8 +6,8 @@ export const heatmapMessages = defineMessages("heatmap", {
   category: "Category",
   time: "Time",
   peak: "Peak",
-  inspectCells: (value0: unknown) => `${value0} — inspect cells`,
-  acrossAllRows: (value0: unknown) => `${value0} across all rows`,
+  inspectCells: (label: string) => `${label} — inspect cells`,
+  acrossAllRows: (total: string) => `${total} across all rows`,
 })
 
 declare module "../../../lib/i18n/catalog.js" {

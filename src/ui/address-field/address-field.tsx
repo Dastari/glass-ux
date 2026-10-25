@@ -392,7 +392,7 @@ function AddressMap({
 
   const where = value.location ? `${value.location.lat.toFixed(5)}, ${value.location.lng.toFixed(5)}` : ""
   const caption = !value.location
-    ? messages.noPositionYetChooseASuggestionOrClick
+    ? messages.unplacedPin
     : value.pinned
       ? messages.placedByHand(where)
       : messages.fromTheAddressDragThePin(where)
@@ -413,7 +413,7 @@ function AddressMap({
       <div className="fa-address-map-caption">
         <span className="fa-address-map-text">{caption}</span>
         {value.pinned && !disabled ? (
-          <Button variant="ghost" size="xs" onClick={onReset} disabledReason={lookupPoint ? undefined : messages.chooseTheAddressFromTheLookupFirst}>
+          <Button variant="ghost" size="xs" onClick={onReset} disabledReason={lookupPoint ? undefined : messages.resetPinUnavailable}>
             {messages.resetPin} </Button>
         ) : null}
       </div>

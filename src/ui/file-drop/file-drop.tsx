@@ -137,7 +137,7 @@ export function FileDrop({
       </span>
       <span className="fa-file-drop-text">
         <span className="fa-file-drop-title">
-          {dragging ? messages.dropToAdd : multiple ? messages.dropFilesHereOr : messages.dropAFileHereOr}
+          {dragging ? messages.dropToAdd : multiple ? messages.browseFiles : messages.browseFile}
           {dragging ? null : <span className="fa-file-drop-link">{messages.browse}</span>}
         </span>
         {limits ? <span className="fa-file-drop-hint">{limits}</span> : null}
@@ -220,7 +220,7 @@ export function FileRow({ name, size, status = "done", progress, error, onRemove
       : status === "queued"
         ? messages.waiting
         : status === "done"
-          ? messages.uploaded2
+          ? messages.uploadedStatus
           : null
   return (
     <li {...rest} ref={setRow} className={cx("fa-file-row", className)} data-status={status}>

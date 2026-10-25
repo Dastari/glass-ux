@@ -134,7 +134,7 @@ export function AppearanceSettings({
       const rows = (
         [
           ["accentColor", t.accent, t.accentDescription],
-          ["accentColor2", t.accent2, t.accent2Description],
+          ["accentColor2", t.secondAccent, t.secondAccentDescription],
           ["canvasTint", t.tint, t.tintDescription],
         ] as const
       ).map(([key, label, description]) =>

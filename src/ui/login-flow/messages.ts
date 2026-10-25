@@ -84,7 +84,7 @@ const defaults = {
 /** English defaults for LoginFlow. */
 export const loginFlowMessages = defineMessages("loginFlow", {
   ...defaults,
-  enterTheCode: (value0: unknown, value1: unknown) => `Enter the ${value0}-${value1} code`,
+  enterTheCode: (length: number, kind: string) => `Enter the ${length}-${kind} code`,
   providerGoogle: "Google",
   providerGitHub: "GitHub",
   providerMicrosoft: "Microsoft",

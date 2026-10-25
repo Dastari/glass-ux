@@ -3,8 +3,8 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for entity. */
 export const entityMessages = defineMessages("entity", {
-  actionsFor: (value0: unknown) => `Actions for ${value0}`,
-  remove: (value0: unknown) => `Remove ${value0}`,
+  actionsFor: (name: string) => `Actions for ${name}`,
+  remove: (name: string) => `Remove ${name}`,
   loading: "Loading",
 })
 

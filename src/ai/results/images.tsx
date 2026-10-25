@@ -104,7 +104,7 @@ function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
   const scale = ZOOMS[zoom] ?? 1
   return (
     <>
-      <Dialog.Header icon={<IconImage />} title={image.caption ?? image.alt} subtitle={`${images.length > 1 ? messages.of2(index + 1, images.length) : ""}${formatNumber(image.width, 0, locale)} × ${formatNumber(image.height, 0, locale)}`} />
+      <Dialog.Header icon={<IconImage />} title={image.caption ?? image.alt} subtitle={`${images.length > 1 ? messages.imageCaption(index + 1, images.length) : ""}${formatNumber(image.width, 0, locale)} × ${formatNumber(image.height, 0, locale)}`} />
       <Dialog.Body flush>
         {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the stage scrolls when zoomed (R20.6) */}
         <div className="fa-ai-lightbox-stage" data-zoomed={zoom > 0 ? "" : undefined} tabIndex={0} role="region" aria-label={image.alt}>

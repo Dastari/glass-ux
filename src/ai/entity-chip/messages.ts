@@ -3,10 +3,10 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for entityChip. */
 export const entityChipMessages = defineMessages("entityChip", {
-  remove: (value0: unknown) => `Remove ${value0}`,
-  openInAWindow: (value0: unknown) => `Open ${value0} in a window`,
-  namedByAssistantNotConfirmedByTheApplication: "Named by Assistant; not confirmed by the application yet.",
-  notVerified: ", not verified",
+  remove: (name: string) => `Remove ${name}`,
+  openInAWindow: (name: string) => `Open ${name} in a window`,
+  unverifiedDescription: "Named by Assistant; not confirmed by the application yet.",
+  unverifiedLabel: ", not verified",
 })
 
 declare module "../../lib/i18n/catalog.js" {

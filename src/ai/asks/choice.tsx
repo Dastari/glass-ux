@@ -66,7 +66,7 @@ export function useAskAnswer(ask: AiAsk) {
       at={ask.answeredAt ?? resolved?.at}
     >
       {ask.status === "expired"
-        ? messages.expired3(ask.question)
+        ? messages.expiredQuestion(ask.question)
         : ask.status === "cancelled"
           ? messages.cancelled(ask.question)
           : text}
@@ -167,7 +167,7 @@ export function MultiChoiceAsk({ ask }: {
         meta={ask.detail}
         footerStart={
           <span className="fa-ai-ask-count" data-numeric aria-live="polite">
-            {values.length} {messages.of} {all.length} {messages.selected} </span>
+            {values.length} {messages.requestPosition} {all.length} {messages.selected} </span>
         }
         footer={
           <ActionButton
@@ -181,7 +181,7 @@ export function MultiChoiceAsk({ ask }: {
             onAction={() =>
               submit(
                 { type: "choices", values, label: labels.join(", ") },
-                messages.selected2(labels.length === all.length ? messages.all(all.length) : labels.join(", ")),
+                messages.selectedSummary(labels.length === all.length ? messages.all(all.length) : labels.join(", ")),
               )
             }
           >

@@ -7,7 +7,7 @@ export const conversationMessages = defineMessages("conversation", {
   newMessages: "New messages",
   scrollToEnd: "Scroll to end",
   conversationTurns: "Conversation turns",
-  prompt: (value0: unknown, value1: unknown) => `Prompt ${value0}: ${value1}`,
+  prompt: (position: number, preview: string) => `Prompt ${position}: ${preview}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

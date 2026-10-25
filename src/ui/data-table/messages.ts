@@ -128,7 +128,7 @@ const defaults = {
     `${label} ${condition.toLowerCase()}`,
   updated: (relative: string) => `Updated ${relative}`,
   today: "Today",
-  last24h: "Last 24 hours",
+  lastDay: "Last 24 hours",
   future: "In the future",
   beforeYesterday: "Before yesterday",
   recentDays: (days: number) => `Last ${days} days`,

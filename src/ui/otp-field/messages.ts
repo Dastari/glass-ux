@@ -3,8 +3,8 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for otpField. */
 export const otpFieldMessages = defineMessages("otpField", {
-  characterOf: (value0: unknown, value1: unknown) => `Character ${value0} of ${value1}`,
-  enterTheCode: (value0: unknown, value1: unknown) => `Enter the ${value0}-${value1} code`,
+  characterOf: (position: number, length: number) => `Character ${position} of ${length}`,
+  enterTheCode: (length: number, kind: string) => `Enter the ${length}-${kind} code`,
   digit: "digit",
   character: "character",
 })

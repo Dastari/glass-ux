@@ -45,9 +45,9 @@ export function parseUrl(text: string, options: UrlOptions = {}): UrlResult {
   try {
     url = new URL(source)
   } catch {
-    return { ok: false, error: getUrlFieldMessages(options.locale).enterAWebAddress2(example) }
+    return { ok: false, error: getUrlFieldMessages(options.locale).invalidUrlExample(example) }
   }
-  if (!url.hostname) return { ok: false, error: getUrlFieldMessages(options.locale).enterAWebAddress2(example) }
+  if (!url.hostname) return { ok: false, error: getUrlFieldMessages(options.locale).invalidUrlExample(example) }
   const host = url.hostname.replace(/^\[|\]$/g, "")
   const isIp = /^\d{1,3}(\.\d{1,3}){3}$/.test(host) || host.includes(":")
   if ((options.requireTld ?? true) && !isIp && host !== "localhost" && !host.includes(".")) {

@@ -29,7 +29,7 @@ export async function copyText(text: string, messages = getCopyButtonMessages())
   area.select()
   const done = document.execCommand("copy")
   area.remove()
-  if (!done) throw new Error(messages.copyIsNotAvailableInThisBrowser)
+  if (!done) throw new Error(messages.copyUnavailable)
 }
 
 function getCOPY_ANNOUNCEMENT(messages: typeof copyButtonMessages.defaults) { return { success: messages.copied, error: messages.copyFailed } }
@@ -49,7 +49,7 @@ export function CopyButton({ value, label: labelProp, showLabel = false, variant
     const text = typeof value === "function" ? value() : value
     await run(
       () => copyText(text, messages),
-      () => toast.danger(messages.notCopied, { description: messages.theBrowserBlockedTheClipboardSelectTheText })
+      () => toast.danger(messages.notCopied, { description: messages.clipboardBlocked })
     )
   }
   return (

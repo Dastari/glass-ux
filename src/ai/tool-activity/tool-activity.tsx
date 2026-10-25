@@ -165,7 +165,7 @@ function ToolDetails({ call }: { call: AiToolCall }) {
           </div>
         ) : state === "error" ? (
           <p className="fa-hint">
-            {messages.theToolDetailsCouldNotBeLoadedThey} </p>
+            {messages.detailsError} </p>
         ) : (
           <>
             <ToolJson
@@ -178,8 +178,8 @@ function ToolDetails({ call }: { call: AiToolCall }) {
               value={result}
               withheld={
                 call.status === "running"
-                  ? messages.theResultAppearsWhenTheToolFinishes
-                  : messages.noResultIsAvailableToThisBrowser
+                  ? messages.resultPending
+                  : messages.resultUnavailable
               }
             />
           </>
@@ -222,7 +222,7 @@ function ToolJson({
         label={label}
         truncated={
           text.length > 64 * 1024
-            ? messages.truncatedTo64KbInThisView
+            ? messages.truncatedNotice
             : undefined
         }
       />
@@ -356,7 +356,7 @@ export function ToolGroup({
     status === "running"
       ? messages.runningOf(running, messages.toolCount(calls.length, locale))
       : status === "awaiting-approval"
-        ? messages.waitingForApproval2(messages.toolCount(calls.length, locale))
+        ? messages.approvalSummary(messages.toolCount(calls.length, locale))
         : messages.ran(messages.toolCount(calls.length, locale));
   return (
     <Collapsible.Root
@@ -366,14 +366,14 @@ export function ToolGroup({
     >
       <Collapsible.Trigger
         className="fa-ai-tool-row"
-        aria-label={`${label}${failed ? messages.failed2(failed) : ""}`}
+        aria-label={`${label}${failed ? messages.failedSummary(failed) : ""}`}
       >
         <StatusGlyph status={status} />
         <span className="fa-ai-tool-text">
           <span className="fa-ai-tool-label">
             {label}
             {failed ? (
-              <span className="fa-ai-tool-failed"> · {failed} {messages.failed3}</span>
+              <span className="fa-ai-tool-failed"> · {failed} {messages.failedStatus}</span>
             ) : null}
           </span>
         </span>

@@ -51,7 +51,7 @@ function check(text: string, options: HostnameOptions, what: "host" | "domain"):
   const host = hostOf(text)
   if (!host) return { ok: false, error: getHostnameFieldMessages(options.locale).enter(noun) }
   let ascii = toAscii(host)
-  if (ascii === null) return { ok: false, error: getHostnameFieldMessages(options.locale).enter2(noun, example) }
+  if (ascii === null) return { ok: false, error: getHostnameFieldMessages(options.locale).invalidNameExample(noun, example) }
   let prefix = ""
   if (ascii.startsWith("*.")) {
     if (!options.wildcard) return { ok: false, error: getHostnameFieldMessages(options.locale).enterWithoutAWildcard(noun) }
@@ -62,15 +62,15 @@ function check(text: string, options: HostnameOptions, what: "host" | "domain"):
   const labels = ascii.split(".")
   const bad = labels.find((label) => !LABEL.test(label))
   if (bad !== undefined) {
-    if (bad === "") return { ok: false, error: getHostnameFieldMessages(options.locale).enter2(noun, example) }
-    if (bad.length > 63) return { ok: false, error: getHostnameFieldMessages(options.locale).keepEachPartBetweenDotsTo63Characters }
+    if (bad === "") return { ok: false, error: getHostnameFieldMessages(options.locale).invalidNameExample(noun, example) }
+    if (bad.length > 63) return { ok: false, error: getHostnameFieldMessages(options.locale).labelTooLong }
     if (bad.startsWith("-") || bad.endsWith("-")) return { ok: false, error: "A part can't start or end with a hyphen" }
     return { ok: false, error: getHostnameFieldMessages(options.locale).useLettersDigitsAndHyphensOnly(example) }
   }
   const needsDot = what === "domain" || options.fqdn
   if (needsDot && labels.length < 2) return { ok: false, error: getHostnameFieldMessages(options.locale).enterAFull(what === "domain" ? getHostnameFieldMessages(options.locale).domainName : getHostnameFieldMessages(options.locale).hostName, example) }
   // A top-level domain is letters (or an IDN "xn--" label), never all digits.
-  if (needsDot && !/^(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})$/i.test(labels.at(-1) ?? "")) return { ok: false, error: getHostnameFieldMessages(options.locale).enter2(noun, example) } // tokens:allow a regular expression, not a class
+  if (needsDot && !/^(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})$/i.test(labels.at(-1) ?? "")) return { ok: false, error: getHostnameFieldMessages(options.locale).invalidNameExample(noun, example) } // tokens:allow a regular expression, not a class
   const lower = (options.case ?? (what === "domain" ? "lower" : "preserve")) === "lower"
   const value = prefix + (lower ? ascii.toLowerCase() : ascii)
   return { ok: true, value }

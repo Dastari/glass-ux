@@ -11,13 +11,13 @@ import { isLatitude, isLongitude, type LatLng } from "./coordinates.js"
  */
 export function coordinatesSchema(options: { required?: boolean; /** Locale for validation wording. Defaults to getLocale(). */ locale?: string } = {}) {
   return z
-    .custom<LatLng | null>((value) => value === null || (typeof value === "object" && value !== null && "lat" in value && "lng" in value), { error: () => getCoordinatesFieldMessages(options.locale).enterALatitudeAndLongitudeSuchAs4288334 })
+    .custom<LatLng | null>((value) => value === null || (typeof value === "object" && value !== null && "lat" in value && "lng" in value), { error: () => getCoordinatesFieldMessages(options.locale).invalidCoordinates })
     .superRefine((value, context) => {
       if (value === null) {
-        if (options.required) context.addIssue({ code: "custom", message: getCoordinatesFieldMessages(options.locale).enterALatitudeAndLongitudeSuchAs4288334 })
+        if (options.required) context.addIssue({ code: "custom", message: getCoordinatesFieldMessages(options.locale).invalidCoordinates })
         return
       }
-      if (!Number.isFinite(value.lat) || !Number.isFinite(value.lng)) context.addIssue({ code: "custom", message: getCoordinatesFieldMessages(options.locale).enterALatitudeAndLongitudeSuchAs4288334 })
+      if (!Number.isFinite(value.lat) || !Number.isFinite(value.lng)) context.addIssue({ code: "custom", message: getCoordinatesFieldMessages(options.locale).invalidCoordinates })
       else if (!isLatitude(value.lat)) context.addIssue({ code: "custom", message: getCoordinatesFieldMessages(options.locale).latitudeRange })
       else if (!isLongitude(value.lng)) context.addIssue({ code: "custom", message: getCoordinatesFieldMessages(options.locale).longitudeRange })
     })

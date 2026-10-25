@@ -179,7 +179,7 @@ function RelationMenu<R extends string>({ link, label, options, onChange }: Rela
         <span className="fa-ref-relation-label">{current?.label ?? link.relation}</span>
         <IconChevronDown />
       </Menu.Trigger>
-      <Menu.Popup align="start" aria-label={messages.relationTo2(label)}>
+      <Menu.Popup align="start" aria-label={messages.relationLabel(label)}>
         <Menu.RadioGroup value={link.relation} onValueChange={(next) => onChange(next as R)}>
           {options.map((relation) => (
             <Menu.RadioItem key={relation.value} value={relation.value}>

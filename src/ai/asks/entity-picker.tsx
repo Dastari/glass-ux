@@ -165,8 +165,8 @@ export function EntityPickerAsk({ ask }: {
         footerStart={
           <span className="fa-ai-ask-count" data-numeric aria-live="polite">
             {picked.length
-              ? messages.selected3(picked.length)
-              : ask.multiple ? messages.choose2(spec.plural.toLowerCase()) : messages.chooseOneEntity(spec.noun.toLowerCase())}
+              ? messages.selectedCount(picked.length)
+              : ask.multiple ? messages.chooseEntities(spec.plural.toLowerCase()) : messages.chooseOneEntity(spec.noun.toLowerCase())}
           </span>
         }
         footer={
@@ -187,7 +187,7 @@ export function EntityPickerAsk({ ask }: {
                   ids: picked.map((entity) => entity.id),
                   label: labels.join(", "),
                 },
-                messages.chose2(labels.join(", ")),
+                messages.chosenEntities(labels.join(", ")),
               )
             }
           >

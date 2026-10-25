@@ -3,8 +3,8 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for chipOverflow. */
 export const chipOverflowMessages = defineMessages("chipOverflow", {
-  more: (value0: unknown, value1: unknown) => `${value0} more ${value1}`,
-  search: (value0: unknown) => `Search ${value0}`,
+  more: (count: number, noun: string) => `${count} more ${noun}`,
+  search: (noun: string) => `Search ${noun}`,
   noMatches: "No matches",
 })
 

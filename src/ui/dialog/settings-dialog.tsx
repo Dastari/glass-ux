@@ -82,7 +82,7 @@ export function SettingsDialog({
       {trigger ? <Dialog.Trigger render={trigger} /> : null}
       <Dialog.Popup size={size} kind="settings" initialFocus={initialFocus}>
         <Dialog.Header icon={icon} title={title} subtitle={subtitle} />
-        <SettingsSections sections={sections} section={section} defaultSection={defaultSection} onSectionChange={onSectionChange} label={typeof title === "string" ? messages.sections(title) : messages.sections2} />
+        <SettingsSections sections={sections} section={section} defaultSection={defaultSection} onSectionChange={onSectionChange} label={typeof title === "string" ? messages.sectionLabel(title) : messages.sections} />
         <Dialog.Footer start={footerStart}>{footer}</Dialog.Footer>
         {guard.confirm}
       </Dialog.Popup>

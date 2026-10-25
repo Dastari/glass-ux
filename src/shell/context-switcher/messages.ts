@@ -38,7 +38,7 @@ export function englishSwitcherLabels({ one, other, article = /^[aeiou]/i.test(o
 export const contextSwitcherMessages = defineMessages("contextSwitcher", {
   ...englishSwitcherLabels({ one: "organisation", other: "organisations" }),
   loadedResults: (count: number, more: boolean, locale = "en-US") => plural(locale, count, { one: `${count} loaded result`, other: `${count} loaded results` }) + (more ? "; more available" : ""),
-  loaded: (value0: unknown, value1: unknown, value2: unknown) => `${value0} loaded ${value1}${value2}`,
+  loaded: (count: number, noun: string, suffix: string) => `${count} loaded ${noun}${suffix}`,
   retry: "Retry",
   resultCount: (count: number, locale = "en-US") => plural(locale, count, { one: `${numberFormat(locale).format(count)} result`, other: `${numberFormat(locale).format(count)} results` }),
 })

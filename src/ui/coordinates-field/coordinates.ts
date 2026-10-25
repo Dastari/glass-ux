@@ -61,7 +61,7 @@ export function formatDms(value: LatLng): string {
 
 export const LATITUDE_RANGE = coordinatesFieldMessages.defaults.latitudeRange
 export const LONGITUDE_RANGE = coordinatesFieldMessages.defaults.longitudeRange
-export const COORDINATES_EXAMPLE = coordinatesFieldMessages.defaults.enterALatitudeAndLongitudeSuchAs4288334
+export const COORDINATES_EXAMPLE = coordinatesFieldMessages.defaults.invalidCoordinates
 
 /** Whether a number is a finite latitude between -90 and 90 degrees inclusive. */
 export const isLatitude = (value: number) => Number.isFinite(value) && value >= -90 && value <= 90
@@ -150,7 +150,7 @@ function splitPair(text: string): [string, string] | null {
 export function parseCoordinates(text: string, locale?: string): CoordinatesResult {
   const messages: ReturnType<typeof getCoordinatesFieldMessages> = getCoordinatesFieldMessages(locale)
   const source = text.trim()
-  if (!source) return { ok: false, error: messages.enterALatitudeAndLongitudeSuchAs4288334 }
+  if (!source) return { ok: false, error: messages.invalidCoordinates }
   const linked = /^(https?:|geo:)/i.test(source) ? fromLink(source) : null
   if (/^(https?:|geo:)/i.test(source) && !linked) return { ok: false, error: messages.thatLinkHasNoCoordinatesInIt }
   let pair: LatLng
@@ -159,10 +159,10 @@ export function parseCoordinates(text: string, locale?: string): CoordinatesResu
     pair = linked
   } else {
     const parts = splitPair(source)
-    if (!parts) return { ok: false, error: messages.enterALatitudeAndLongitudeSuchAs4288334 }
+    if (!parts) return { ok: false, error: messages.invalidCoordinates }
     const first = parseAxis(parts[0])
     const second = parseAxis(parts[1])
-    if (!first || !second) return { ok: false, error: messages.enterALatitudeAndLongitudeSuchAs4288334 }
+    if (!first || !second) return { ok: false, error: messages.invalidCoordinates }
     const firstIsLng = first.hemisphere === "E" || first.hemisphere === "W"
     const secondIsLat = second.hemisphere === "N" || second.hemisphere === "S"
     if (firstIsLng || secondIsLat) {

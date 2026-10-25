@@ -274,7 +274,7 @@ export function createPhotonGeocoder(options: PhotonOptions = {}): GeocoderAdapt
         params.set("location_bias_scale", "0.3")
       }
       const response = await fetch(`${base}/api?${params}`, { signal, headers: { Accept: "application/json" } })
-      if (!response.ok) throw new Error(getAddressFieldMessages().addressLookupFailed2(response.status))
+      if (!response.ok) throw new Error(getAddressFieldMessages().lookupStatusError(response.status))
       const body = (await response.json()) as { features?: PhotonFeature[] }
       return photonToSuggestions(body.features ?? [], query)
     },

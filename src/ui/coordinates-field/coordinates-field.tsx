@@ -75,9 +75,9 @@ const useLocateState = () =>
   )
 
 function getGEOLOCATION_ERRORS(messages: typeof coordinatesFieldMessages.defaults): Record<number, string> { return {
-  1: messages.locationIsBlockedForThisSiteAllowIt,
-  2: messages.thisDeviceCouldNotWorkOutWhereIt,
-  3: messages.findingTheLocationTookTooLongTryAgain,
+  1: messages.geolocationBlocked,
+  2: messages.geolocationUnavailable,
+  3: messages.geolocationTimeout,
 } }
 
 
@@ -204,7 +204,7 @@ export function CoordinatesInput({
               icon={<IconLocate />}
               aria-label={messages.useMyLocation}
               status={locating.status}
-              disabledReason={locateStatus === "denied" ? messages.locationIsBlockedForThisSiteAllowIt2 : undefined}
+              disabledReason={locateStatus === "denied" ? messages.geolocationPermission : undefined}
               onClick={useMyLocation}
             />
           ) : null}

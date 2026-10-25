@@ -80,9 +80,9 @@ export function AiStatusStrip({
         {stream === "connected"
           ? messages.live
           : stream === "reconnecting"
-            ? `${messages.reconnecting}${attempt ? messages.attempt(attempt) : ""}${seconds !== null ? ` · ${seconds} s` : ""}`
+            ? `${messages.reconnecting}${attempt ? messages.reconnectStatus(attempt) : ""}${seconds !== null ? ` · ${seconds} s` : ""}`
             : stream === "reset"
-              ? messages.conversationReloadedFromTheServer
+              ? messages.reloaded
               : messages.offlineHistoryStaysReadable}
       </span>
       {stream !== "connected" && onRetry ? (
@@ -98,7 +98,7 @@ export function AiStatusStrip({
       <span className="fa-ai-status-meta">
         {budget && used !== null ? (
           <Tooltip
-            content={messages.of(formatNumber(budget.used, 0, locale), formatNumber(budget.maximum, 0, locale), budget.unit)}
+            content={messages.budgetUsage(formatNumber(budget.used, 0, locale), formatNumber(budget.maximum, 0, locale), budget.unit)}
           >
             <span
               className="fa-ai-status-item"

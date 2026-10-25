@@ -8,9 +8,9 @@ export const chartCoreMessages = defineMessages("chartCore", {
   share: "Share",
   items: "Items",
   drillPath: "Drill path",
-  min: (value0: unknown) => `${value0} min`,
-  in: (value0: unknown) => `in ${value0}`,
-  ago: (value0: unknown) => `${value0} ago`,
+  min: (minutes: number) => `${minutes} min`,
+  in: (time: string) => `in ${time}`,
+  ago: (time: string) => `${time} ago`,
   noData: "No data",
   couldnTLoadThisChart: "Couldn’t load this chart",
   retry: "Retry",
@@ -23,7 +23,7 @@ export const chartCoreMessages = defineMessages("chartCore", {
   atLeastOneSeriesStaysVisible: "At least one series stays visible",
   legend: "Legend",
   series: "Series",
-  table: (value0: unknown) => `${value0} · table`,
+  table: (caption: string) => `${caption} · table`,
 })
 
 declare module "../../../lib/i18n/catalog.js" {

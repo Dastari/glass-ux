@@ -3,12 +3,12 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for byteSizeField. */
 export const byteSizeFieldMessages = defineMessages("byteSizeField", {
-  enterASizeFromTo: (value0: unknown, value1: unknown) => `Enter a size from ${value0} to ${value1}`,
-  enterASizeUpTo: (value0: unknown) => `Enter a size up to ${value0}`,
-  enterASizeOfOrMore: (value0: unknown) => `Enter a size of ${value0} or more`,
+  enterASizeFromTo: (minimum: string, maximum: string) => `Enter a size from ${minimum} to ${maximum}`,
+  enterASizeUpTo: (maximum: string) => `Enter a size up to ${maximum}`,
+  enterASizeOfOrMore: (minimum: string) => `Enter a size of ${minimum} or more`,
   enterASize: "Enter a size",
-  enterASizeSuchAs500Mb: "Enter a size, such as 500 MB",
-  enterASizeSuchAs500MbOr: "Enter a size such as 500 MB or 1.5 GB",
+  invalidSize: "Enter a size, such as 500 MB",
+  sizeExamples: "Enter a size such as 500 MB or 1.5 GB",
 })
 
 declare module "../../lib/i18n/catalog.js" {

@@ -3,13 +3,13 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for codeBlock. */
 export const codeBlockMessages = defineMessages("codeBlock", {
-  code: (value0: unknown) => `${value0} code`,
-  lines: (value0: unknown) => `${value0} lines`,
+  code: (language: string) => `${language} code`,
+  lines: (count: number) => `${count} lines`,
   wrapLines: "Wrap lines",
   copyCode: "Copy code",
-  source: (value0: unknown) => `${value0} source`,
+  source: (label: string) => `${label} source`,
   showFewerLines: "Show fewer lines",
-  showAllLines: (value0: unknown) => `Show all ${value0} lines`,
+  showAllLines: (count: number) => `Show all ${count} lines`,
   log: 'Log',
   text: 'Text',
   languagePowershell: "PowerShell",

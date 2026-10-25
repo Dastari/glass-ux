@@ -8,14 +8,14 @@ export const topologyMessages = defineMessages("topology", {
   loadingTheMap: "Loading the map",
   nothingToDraw: "Nothing to draw",
   theMapIsLoading: "The map is loading",
-  actionsFor: (value0: unknown) => `Actions for ${value0}`,
+  actionsFor: (label: string) => `Actions for ${label}`,
   actions: "Actions",
   mapControls: "Map controls",
   zoomIn: "Zoom in",
   zoomOut: "Zoom out",
   fitToView: "Fit to view",
   minimap: "Minimap",
-  minimapShownWhilePartOfTheMapIs: "Minimap: shown while part of the map is out of view",
+  minimapVisible: "Minimap: shown while part of the map is out of view",
   minimapOff: "Minimap: off",
 })
 

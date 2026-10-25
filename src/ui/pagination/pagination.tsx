@@ -218,7 +218,7 @@ function PageJump({
         <input
           className="fa-control-input"
           inputMode="numeric"
-          aria-label={messages.pageOf(numberFormat(locale).format(pageCount))}
+          aria-label={messages.pageInput(numberFormat(locale).format(pageCount))}
           value={draft ?? String(pageIndex + 1)}
           disabled={disabled}
           onChange={(event) => setDraft(event.target.value.replace(/[^0-9]/g, ""))}
@@ -231,7 +231,7 @@ function PageJump({
         />
       </span>
       <span className="fa-pager-of" data-numeric>
-        {messages.of} {numberFormat(locale).format(pageCount)}
+        {messages.pageTotal} {numberFormat(locale).format(pageCount)}
       </span>
     </span>
   )

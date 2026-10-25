@@ -8,13 +8,13 @@ export const paginationMessages = defineMessages("pagination", {
   previousPage: "Previous page",
   nextPage: "Next page",
   lastPage: "Last page",
-  perPage: (value0: unknown) => `${value0} per page`,
+  perPage: (count: string) => `${count} per page`,
   rowsPerPage: "Rows per page",
-  pageOf: (value0: unknown) => `Page, of ${value0}`,
-  of: "of",
+  pageInput: (total: string) => `Page, of ${total}`,
+  pageTotal: "of",
   noRows: "No rows",
-  count0Of: (value0: unknown) => `0 of ${value0}`,
-  of2: (value0: unknown, value1: unknown) => `${value0} of ${value1}`,
+  emptyRange: (total: string) => `0 of ${total}`,
+  rowRange: (range: string, total: string) => `${range} of ${total}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

@@ -672,12 +672,12 @@ function TreeStatusRow({ row, start, focused, onClick, onFocus }: { row: FlatRow
     >
       <span className="fa-tree-chevron" aria-hidden />
       <span className="fa-tree-icon" aria-hidden>
-        {loading ? <ProgressRing value={null} size="sm" aria-label={messages.loading2} /> : failed ? <IconError /> : <IconChevronDown />}
+        {loading ? <ProgressRing value={null} size="sm" aria-label={messages.loadingStatus} /> : failed ? <IconError /> : <IconChevronDown />}
       </span>
       <span className="fa-tree-text">
         <span className="fa-tree-label">{text}</span>
       </span>
-      {failed ? <span className="fa-tree-retry">{messages.retry2}</span> : null}
+      {failed ? <span className="fa-tree-retry">{messages.retryAction}</span> : null}
     </div>
   )
 }

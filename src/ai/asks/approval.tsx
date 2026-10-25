@@ -81,7 +81,7 @@ export function ApprovalRecord({ ask, onRevoke }: ApprovalRecordProps) {
             variant="ghost"
             size="sm"
             pendingLabel={messages.revoking}
-            successLabel={messages.revoked2}
+            successLabel={messages.revokedStatus}
             onAction={onRevoke}
           >
             {messages.revoke} </ActionButton>
@@ -111,7 +111,7 @@ function Expiry({ at, onExpire }: { at: number; onExpire: () => void }) {
   useEffect(() => {
     if (left <= 0) onExpire();
   }, [left, onExpire]);
-  if (left <= 0) return <span>{messages.expired2}</span>;
+  if (left <= 0) return <span>{messages.expiredStatus}</span>;
   return (
     <span
       data-numeric
@@ -252,7 +252,7 @@ export function ApprovalCard({ ask }: {
               variant="ghost"
               size="sm"
               pendingLabel={messages.denying}
-              successLabel={messages.denied2}
+              successLabel={messages.deniedStatus}
               onAction={() => decide("deny")}
             >
               {messages.deny} </ActionButton>
@@ -318,15 +318,15 @@ export function ApprovalCard({ ask }: {
             />
           ) : null}
           <p className="fa-hint">
-            {messages.approvalAppliesOnceToThisActionAndIts} </p>
+            {messages.approvalScope} </p>
           {ask.stepUp ? (
             <Notice tone="info" compact>
-              {messages.approvingAsksYouToConfirmWithMfaBefore} </Notice>
+              {messages.mfaDescription} </Notice>
           ) : null}
           {ask.allowForSession ? (
             <SettingRow
-              label={messages.approveSimilarCommandsForMinutes(ALLOW_MINUTES)}
-              description={messages.onInThisConversationOnly(ask.actionKind ?? messages.thisAction, target)}
+              label={messages.rememberApproval(ALLOW_MINUTES)}
+              description={messages.approvalContext(ask.actionKind ?? messages.thisAction, target)}
               control={
                 <Switch
                   checked={allow}

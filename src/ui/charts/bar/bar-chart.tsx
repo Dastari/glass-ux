@@ -483,7 +483,7 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
                 <TooltipBody
                   title={categoryText(hover.index)}
                   rows={stacked ? rows.toReversed() : rows}
-                  footer={stacked && visible.length > 1 ? messages.total2(formatValue(totals[hover.index], fmt)) : undefined}
+                  footer={stacked && visible.length > 1 ? messages.totalValue(formatValue(totals[hover.index], fmt)) : undefined}
                 />
               )
             }}

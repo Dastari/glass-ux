@@ -4,22 +4,22 @@ import { getLocale } from "../lib/locale/locale.js"
 /** English defaults for shell. */
 export const shellMessages = defineMessages("shell", {
   resizeSectionNavigation: "Resize section navigation",
-  overImagery: (value0: unknown) => `${value0} over-imagery`,
+  overImagery: (className: string) => `${className} over-imagery`,
   hideInspector: "Hide inspector",
   collapseSectionNavigation: "Collapse section navigation",
-  search: (value0: unknown) => `Search ${value0}`,
+  search: (noun: string) => `Search ${noun}`,
   more: "More",
   sectionNavigation: "Section navigation",
   thisSectionHasNoNavigation: "This section has no navigation",
-  search2: "Search…",
-  search3: "Search",
+  searchPlaceholder: "Search…",
+  searchLabel: "Search",
   switchToLightMode: "Switch to light mode",
   switchToDarkMode: "Switch to dark mode",
   showInspector: "Show inspector",
-  unread: (value0: unknown, value1: unknown) => `, ${value0} unread ${value1}`,
-  account: (value0: unknown, value1: unknown) => `Account: ${value0}${value1}`,
-  timerOn: (value0: unknown) => `Timer on ${value0}`,
-  runningFor: (value0: unknown, value1: unknown) => `${value0}, running for ${value1}`,
+  unread: (count: number, noun: string) => `, ${count} unread ${noun}`,
+  account: (name: string, unread: string) => `Account: ${name}${unread}`,
+  timerOn: (label: string) => `Timer on ${label}`,
+  runningFor: (name: string, time: string) => `${name}, running for ${time}`,
 })
 
 declare module "../lib/i18n/catalog.js" {

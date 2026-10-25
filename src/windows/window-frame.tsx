@@ -333,7 +333,7 @@ function Controls({
             "maximise",
           )
         : null}
-      {onClose ? control(messages.close2, <IconClose />, onClose, "close") : null}
+      {onClose ? control(messages.closeAction, <IconClose />, onClose, "close") : null}
     </div>
   );
 }

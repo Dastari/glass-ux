@@ -4,7 +4,7 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for alertDialog. */
 export const alertDialogMessages = defineMessages("alertDialog", {
   cancel: "Cancel",
-  failed: (value0: unknown) => `${value0} failed`,
+  failed: (action: string) => `${action} failed`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

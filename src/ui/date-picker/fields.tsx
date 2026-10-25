@@ -66,9 +66,9 @@ export function describeZonedValue(value: WallClock | null, timeZone: string, op
   const day = shortDay(parts.date, locale)
   if (resolved.kind === "gap") {
     const read = formatTimeText(resolved.wallClock.slice(11, 16), { ...options, locale })
-    return { warning: getDatePickerMessages(locale).clocksSkipOnReadAs(typed, day, read, zone.short) }
+    return { warning: getDatePickerMessages(locale).gapHint(typed, day, read, zone.short) }
   }
-  return { hint: getDatePickerMessages(locale).occursTwiceOnReadAsThe(typed, day, zone.short) }
+  return { hint: getDatePickerMessages(locale).overlapHint(typed, day, zone.short) }
 }
 
 /**

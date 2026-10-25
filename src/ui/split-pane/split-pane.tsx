@@ -269,7 +269,7 @@ export function SplitPane({
         variant="ghost"
         size="sm"
         icon={<IconSidebar />}
-        aria-label={narrow ? `${overlaid ? messages.hide : messages.show} ${giving}` : messages.show2(giving)}
+        aria-label={narrow ? `${overlaid ? messages.hide : messages.show} ${giving}` : messages.showPane(giving)}
         aria-expanded={narrow ? overlaid : false}
         aria-controls={collapse === "start" ? startId : endId}
         onClick={() => (narrow ? setOverlay(!overlay) : setCollapsed(false))}

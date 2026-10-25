@@ -4,9 +4,9 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for tagInput. */
 export const tagInputMessages = defineMessages("tagInput", {
-  create: (value0: unknown) => `Create “${value0}”`,
-  upTo: (value0: unknown, value1: unknown) => `Up to ${value0} ${value1}`,
-  edit: (value0: unknown) => `Edit ${value0}`,
+  create: (label: string) => `Create “${label}”`,
+  upTo: (maximum: number, undefined: string) => `Up to ${maximum} ${undefined}`,
+  edit: (label: string) => `Edit ${label}`,
   more: "more:",
   limit: (count: number, locale = "en-US") => plural(locale, count, { one: `Up to ${numberFormat(locale).format(count)} value`, other: `Up to ${numberFormat(locale).format(count)} values` }),
 })

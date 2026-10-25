@@ -53,7 +53,7 @@ export function SecretInput({ value, onValueChange, onBlur, width, disabled, inv
         trailing={
           <>
             <Button size="sm" variant="ghost" className="fa-input-btn fa-secret-btn" disabled={disabled} onClick={replace} aria-label={messages.replace(name)} tooltip={false}>
-              {messages.replace2} </Button>
+              {messages.replaceAction} </Button>
             <Button
               size="sm"
               variant="ghost"
@@ -63,7 +63,7 @@ export function SecretInput({ value, onValueChange, onBlur, width, disabled, inv
               aria-label={messages.clear(name)}
               tooltip={false}
             >
-              {messages.clear2} </Button>
+              {messages.clearAction} </Button>
           </>
         }
       />

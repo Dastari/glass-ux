@@ -3,12 +3,12 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for copyButton. */
 export const copyButtonMessages = defineMessages("copyButton", {
-  copyIsNotAvailableInThisBrowser: "Copy is not available in this browser",
+  copyUnavailable: "Copy is not available in this browser",
   copied: "Copied",
   copyFailed: "Copy failed",
   copy: "Copy",
   notCopied: "Not copied",
-  theBrowserBlockedTheClipboardSelectTheText: "The browser blocked the clipboard. Select the text and copy it instead.",
+  clipboardBlocked: "The browser blocked the clipboard. Select the text and copy it instead.",
 })
 
 declare module "../../lib/i18n/catalog.js" {

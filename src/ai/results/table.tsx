@@ -40,7 +40,7 @@ const isRedacted = (value: unknown): value is RedactedValue =>
 
 function cellText(column: ResultColumn, value: ResultRow[string]): string {
   if (value === null || value === undefined) return "";
-  if (isRedacted(value)) return getResultsMessages().hidden2;
+  if (isRedacted(value)) return getResultsMessages().hiddenStatus;
   if (isEntity(value)) return value.label;
   if (column.type === "time" && typeof value === "number")
     return new Date(value).toISOString();
@@ -122,7 +122,7 @@ export function ResultTable({ result }: {
   const noun = result.noun ?? { one: messages.row, other: messages.rows };
   const meta =
     result.total > rows.length
-      ? messages.of(formatNumber(rows.length, 0, locale), formatNumber(result.total, 0, locale))
+      ? messages.resultPosition(formatNumber(rows.length, 0, locale), formatNumber(result.total, 0, locale))
       : `${formatNumber(result.total, 0, locale)} ${result.total === 1 ? noun.one : noun.other}`;
   const [titleColumn, ...restColumns] = result.columns;
   return (

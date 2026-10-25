@@ -3,12 +3,12 @@ import { getLocale } from "../../../lib/locale/locale.js"
 
 /** English defaults for pie. */
 export const pieMessages = defineMessages("pie", {
-  other: (value0: unknown) => `Other (${value0})`,
+  other: (count: number) => `Other (${count})`,
   total: "Total",
   category: "Category",
   value: "Value",
   share: "Share",
-  inspectSlices: (value0: unknown) => `${value0} — inspect slices`,
+  inspectSlices: (label: string) => `${label} — inspect slices`,
 })
 
 declare module "../../../lib/i18n/catalog.js" {

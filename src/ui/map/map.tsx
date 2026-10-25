@@ -990,7 +990,7 @@ export function GeoMap<T>({
       aria-busy={phase !== "ready" && !failed ? true : undefined}
     >
       <p id={hintId} className="sr-only">
-        {messages.arrowKeysMoveBetweenMarkersEnter(number.format(points.length), points.length === 1 ? noun.one : noun.other, points.length ? `: ${describeCounts(counts, statusLabels)}` : "")}
+        {messages.markerInstructions(number.format(points.length), points.length === 1 ? noun.one : noun.other, points.length ? `: ${describeCounts(counts, statusLabels)}` : "")}
       </p>
       <div ref={stageRef} className="fa-map-stage" inert={view === "list" ? true : undefined}>
         <MapSilhouette region={home} box={frameBox} />

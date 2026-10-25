@@ -4,20 +4,20 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for dragDrop. */
 export const dragDropMessages = defineMessages("dragDrop", {
   draggable: "draggable",
-  move: (value0: unknown) => `Move ${value0}`,
-  positionOf: (value0: unknown, value1: unknown) => `, position ${value0} of ${value1}`,
-  in: (value0: unknown, value1: unknown) => ` in ${value0}${value1}`,
+  move: (label: string) => `Move ${label}`,
+  positionOf: (position: number, count: number) => `, position ${position} of ${count}`,
+  in: (zone: string, position: string) => ` in ${zone}${position}`,
   arrowKeysMoveItSpaceOrEnter: " Arrow keys move it, Space or Enter drops it, Escape cancels.",
-  lifted: (value0: unknown, value1: unknown, value2: unknown) => `Lifted ${value0}${value1}.${value2}`,
+  lifted: (label: string, place: string, instructions: string) => `Lifted ${label}${place}.${instructions}`,
   here: "Here",
-  cannotBeDroppedHere: (value0: unknown) => `${value0} cannot be dropped here`,
+  cannotBeDroppedHere: (label: string) => `${label} cannot be dropped here`,
   notOverADropArea: "Not over a drop area.",
-  dropped: (value0: unknown, value1: unknown) => `Dropped ${value0}${value1}.`,
-  to: (value0: unknown, value1: unknown) => ` to ${value0}${value1}`,
-  moveCancelledReturned: (value0: unknown, value1: unknown) => `Move cancelled. ${value0} returned${value1}.`,
-  cannotBeDroppedIn: (value0: unknown, value1: unknown, value2: unknown) => `${value0} cannot be dropped in ${value1}${value2}.`,
-  couldNotBeDroppedIn: (value0: unknown, value1: unknown, value2: unknown) => `${value0} could not be dropped in ${value1}${value2}.`,
-  pressSpaceOrEnterToLiftArrowKeys: "Press Space or Enter to lift. Arrow keys move, Space or Enter drops, Escape cancels.",
+  dropped: (label: string, place: string) => `Dropped ${label}${place}.`,
+  to: (zone: string, position: string) => ` to ${zone}${position}`,
+  moveCancelledReturned: (label: string, place: string) => `Move cancelled. ${label} returned${place}.`,
+  cannotBeDroppedIn: (label: string, zone: string, reason: string) => `${label} cannot be dropped in ${zone}${reason}.`,
+  couldNotBeDroppedIn: (label: string, zone: string, reason: string) => `${label} could not be dropped in ${zone}${reason}.`,
+  dragInstructions: "Press Space or Enter to lift. Arrow keys move, Space or Enter drops, Escape cancels.",
 })
 
 declare module "../../lib/i18n/catalog.js" {

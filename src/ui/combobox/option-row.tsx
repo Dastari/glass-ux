@@ -113,7 +113,7 @@ export function OptionStatus({ status, twoLine = false, needsMore = 0, onRetry }
       {status === "error" ? (
         <div className="fa-option-note" data-tone="danger" role="alert">
           <IconAlert />
-          <span className="fa-option-note-text">{messages.searchFailedCheckTheConnectionAndRetry}</span>
+          <span className="fa-option-note-text">{messages.searchError}</span>
           {onRetry ? (
             <Button size="sm" variant="ghost" onClick={onRetry} className="fa-option-retry">
               {messages.retry} </Button>
@@ -139,7 +139,7 @@ export function OptionMore({ more }: {
 
   const locale = useLocale()
   if (more <= 0) return null
-  return <div className="fa-option-more">{numberFormat(locale).format(more)} {messages.moreRefineYourSearch}</div>
+  return <div className="fa-option-more">{numberFormat(locale).format(more)} {messages.moreResults}</div>
 }
 
 /** What a screen reader hears about the list (render inside the popup's Status part). */

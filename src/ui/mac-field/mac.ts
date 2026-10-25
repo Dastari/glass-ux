@@ -77,6 +77,6 @@ export function describeMac(digits: string, messages: ReturnType<typeof getMacFi
   const facts = macFacts(digits)
   if (facts.broadcast) return messages.broadcastAddress
   if (facts.multicast) return messages.multicastAddress
-  if (facts.locallyAdministered) return messages.locallyAdministeredOftenARandomisedWiFiAddress
+  if (facts.locallyAdministered) return messages.localAddressHint
   return null
 }

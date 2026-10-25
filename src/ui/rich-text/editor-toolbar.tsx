@@ -258,7 +258,7 @@ export function EditorToolbar({
     if (disabled || !editor.isEditable()) return;
     const next = url.trim();
     if (!remove && !isSafeRichTextUrl(next)) {
-      setLinkError(messages.useAnHttpsHttpMailtoTelOrRelative);
+      setLinkError(messages.invalidLink);
       return;
     }
     editor.update(() => {
@@ -289,7 +289,7 @@ export function EditorToolbar({
       const attachment = await uploadAttachment(file);
       if (!isSafeRichTextUrl(attachment.url, attachment.kind === "image"))
         throw new Error(
-          messages.theUploadedFileNeedsASafeHttpSOr,
+          messages.unsafeAttachment,
         );
       if (!mounted.current || !editor.isEditable()) return;
       editor.update(() => {
@@ -315,7 +315,7 @@ export function EditorToolbar({
       const message =
         error instanceof Error
           ? error.message
-          : messages.theFileCouldNotBeAttachedTryAgain;
+          : messages.attachmentError;
       // Reported in place (the Attach button's error face and tooltip) and in a toast,
       // never as an injected row that would push the editor down.
       setUploadError(message);

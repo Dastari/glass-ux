@@ -158,7 +158,7 @@ export function AskDock({ className }: { className?: string }) {
         {count > 1 ? (
           <div className="fa-ai-ask-dock-pager" role="group" aria-label={messages.requests}>
             <span className="fa-ai-ask-dock-count" data-numeric aria-live="polite">
-              {index + 1} {messages.of} {count}
+              {index + 1} {messages.requestPosition} {count}
             </span>
             <Button
               variant="ghost"

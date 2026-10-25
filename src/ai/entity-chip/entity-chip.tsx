@@ -172,7 +172,7 @@ export function EntityChip({
     "data-kind": entity.kind,
     "data-variant": variant === "plain" ? "plain" : undefined,
     "data-unverified": entity.verified === false ? "" : undefined,
-    "aria-label": `${entityName(resolver.kinds, entity, entityMessages)}${entity.verified === false ? messages.notVerified : ""}`,
+    "aria-label": `${entityName(resolver.kinds, entity, entityMessages)}${entity.verified === false ? messages.unverifiedLabel : ""}`,
     href,
     onClick: navigate,
   };
@@ -331,7 +331,7 @@ export function EntityPreviewContent({
       <EntityStateBadge entity={entity} />
       {entity.verified === false ? (
         <p className="fa-hint">
-          {messages.namedByAssistantNotConfirmedByTheApplication} </p>
+          {messages.unverifiedDescription} </p>
       ) : null}
       {data?.facts?.length ? (
         <FactList

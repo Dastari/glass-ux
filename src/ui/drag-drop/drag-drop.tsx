@@ -62,7 +62,7 @@ export interface DragDropProviderProps extends DragDropCallbacks {
  */
 export function DragDropProvider({ children, announcements, instructions: instructionsProp, autoScroll = true, ...callbacks }: DragDropProviderProps) {
  const messages = useMessages(dragDropMessages)
- const instructions = instructionsProp ?? messages.pressSpaceOrEnterToLiftArrowKeys
+ const instructions = instructionsProp ?? messages.dragInstructions
   const [manager] = useState(() => new DragDropManager())
   const instructionsId = useId()
   const announcer = useRef<HTMLSpanElement | null>(null)

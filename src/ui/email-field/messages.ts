@@ -5,8 +5,8 @@ import { getLocale } from "../../lib/locale/locale.js"
 export const emailFieldMessages = defineMessages("emailField", {
   didYouMean: (address: string) => `Did you mean ${address}?`,
   enterAnEmailAddress: "Enter an email address",
-  enterAnEmailSuchAs: (value0: unknown) => `Enter an email such as ${value0}`,
-  use254CharactersOrFewer: "Use 254 characters or fewer",
+  enterAnEmailSuchAs: (example: string) => `Enter an email such as ${example}`,
+  emailTooLong: "Use 254 characters or fewer",
 })
 
 declare module "../../lib/i18n/catalog.js" {

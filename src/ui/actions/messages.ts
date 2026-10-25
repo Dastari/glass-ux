@@ -3,12 +3,12 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for actions. */
 export const actionsMessages = defineMessages("actions", {
-  for: (value0: unknown, value1: unknown) => `${value0} for ${value1}`,
-  moreOptions: (value0: unknown) => `More ${value0} options`,
-  moreActionsFor: (value0: unknown) => `More actions for ${value0}`,
+  actionLabel: (action: string, target: string) => `${action} for ${target}`,
+  moreOptions: (action: string) => `More ${action} options`,
+  moreActionsFor: (target: string) => `More actions for ${target}`,
   moreActions: "More actions",
-  actionsFor: (value0: unknown) => `Actions for ${value0}`,
-  failed: (value0: unknown) => `${value0} failed`,
+  actionsFor: (target: string) => `Actions for ${target}`,
+  failed: (action: string) => `${action} failed`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

@@ -4,11 +4,11 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for statusStrip. */
 export const statusStripMessages = defineMessages("statusStrip", {
   live: "Live",
-  attempt: (value0: unknown) => ` · attempt ${value0}`,
-  conversationReloadedFromTheServer: "Conversation reloaded from the server",
+  reconnectStatus: (attempt: number) => ` · attempt ${attempt}`,
+  reloaded: "Conversation reloaded from the server",
   offlineHistoryStaysReadable: "Offline · history stays readable",
   retryNow: "Retry now",
-  of: (value0: unknown, value1: unknown, value2: unknown) => `${value0} of ${value1} ${value2}`,
+  budgetUsage: (used: string, maximum: string, unit: string) => `${used} of ${maximum} ${unit}`,
   reconnecting: 'Reconnecting',
 })
 

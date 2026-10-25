@@ -242,7 +242,7 @@ export function createAnnouncements(messages: typeof dragDropMessages.defaults):
 export const DEFAULT_ANNOUNCEMENTS = createAnnouncements(dragDropMessages.defaults)
 
 /** Instructions read with every handle (aria-describedby). */
-export const DRAG_INSTRUCTIONS = dragDropMessages.defaults.pressSpaceOrEnterToLiftArrowKeys
+export const DRAG_INSTRUCTIONS = dragDropMessages.defaults.dragInstructions
 
 function accepts(accept: DropAccept | undefined, item: DragItem) {
   if (accept === undefined) return true

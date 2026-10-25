@@ -1,3 +1,4 @@
+import { readingKey } from "../../lib/direction.js"
 import { defaultRangeExtractor, useVirtualizer, type Range } from "@tanstack/react-virtual"
 import {
   useCallback,
@@ -402,7 +403,7 @@ export function Tree({
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const row = rows[focusedIndex]
     if (!row) return
-    switch (event.key) {
+    switch (readingKey(event.key, event.currentTarget)) {
       case "ArrowDown":
         moveTo(Math.min(rows.length - 1, focusedIndex + 1))
         break

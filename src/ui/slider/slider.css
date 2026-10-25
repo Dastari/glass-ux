@@ -205,7 +205,7 @@
     display: none;
     position: absolute;
     bottom: calc(100% + var(--space-2));
-    left: 50%;
+    left: 50%; /* logical:allow bubble is physically centred on its thumb */
     z-index: var(--z-raised);
     min-width: var(--control-h-sm);
     padding: var(--space-half) var(--space-2);

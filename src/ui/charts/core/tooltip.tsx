@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react"
 import { createPortal } from "react-dom"
+import { useDirection } from "../../../lib/locale/direction.js"
 import { popupContainer } from "../../../lib/popup-container.js"
 import { seriesAttrs } from "./series.js"
 import { useStoreValue, type Hover, type HoverStore } from "./hover.js"
@@ -41,6 +42,7 @@ const EDGE = 8
  * never takes the pointer.
  */
 export function ChartTooltip({ store, anchor, children }: ChartTooltipProps) {
+  const direction = useDirection()
   const hover = useStoreValue(store)
   const tipRef = useRef<HTMLDivElement>(null)
   const [place, setPlace] = useState<{ left: number; top: number } | null>(null)
@@ -68,6 +70,7 @@ export function ChartTooltip({ store, anchor, children }: ChartTooltipProps) {
   return createPortal(
     <div
       ref={tipRef}
+      dir={direction}
       className="fa-chart-tip glass-overlay"
       data-mode={island?.dataset.mode}
       data-palette={paletteIsland?.dataset.palette}

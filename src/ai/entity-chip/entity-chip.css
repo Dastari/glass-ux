@@ -195,7 +195,7 @@
     .fa-ai-chip-remove::after {
       content: "";
       position: absolute;
-      inset: 50% auto auto 50%;
+      inset: 50% auto auto 50%; /* logical:allow decoration is physically centred */
       width: var(--target-min);
       height: var(--target-min);
       transform: translate(-50%, -50%);

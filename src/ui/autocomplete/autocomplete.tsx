@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { Autocomplete as BaseAutocomplete } from "@base-ui/react/autocomplete"
 import { useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconClose } from "../../icons/generated/icons.js"
@@ -162,7 +163,7 @@ export function Autocomplete<V extends string = string>({
           />
         )}
       </BaseAutocomplete.InputGroup>
-      <BaseAutocomplete.Portal container={popupContainer()}>
+      <BaseAutocomplete.Portal render={<DirectionPortal />} container={popupContainer()}>
         <BaseAutocomplete.Positioner
           className="fa-select-positioner"
           align="start"

@@ -194,7 +194,8 @@
     min-width: 0;
     max-width: 100%;
     margin: 0;
-    padding: 0 var(--space-2) 0 var(--space-3);
+    padding-block: 0;
+    padding-inline: var(--space-3) var(--space-2);
     border: 0;
     border-radius: var(--_r);
     color: var(--_on-text);

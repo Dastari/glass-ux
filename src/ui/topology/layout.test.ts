@@ -25,6 +25,25 @@ const overlaps = (a: { x: number; y: number; width: number; height: number }, b:
   a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height
 
 describe("topology layout", () => {
+  it("mirrors nodes, cluster members and links without changing reading order", () => {
+    const ltr = layoutTopology(office())
+    const rtl = layoutTopology(office(), { rtl: true })
+    expect(rtl.width).toBe(ltr.width)
+    for (const node of ltr.nodes) {
+      const mirrored = rtl.nodes.find(other => other.id === node.id)!
+      expect(mirrored.x).toBeCloseTo(ltr.width - node.x - node.width)
+      expect(mirrored.y).toBe(node.y)
+    }
+    for (const edge of ltr.edges) {
+      const mirrored = rtl.edges.find(other => other.id === edge.id)!
+      expect(mirrored.labelX).toBeCloseTo(ltr.width - edge.labelX)
+      expect(mirrored.path).not.toContain("NaN")
+    }
+    const index = indexTopology(rtl, true)
+    expect(index.order).toEqual(indexTopology(ltr).order)
+    expect(moveFocus(index, "sw1", "right")).toBe("sw2")
+    expect(moveFocus(index, "pc0", "right")).toBe("pc1")
+  })
   it("keeps source nodes and cluster member order when collecting wide branches", () => {
     const nodes = Object.freeze([
       Object.freeze(node("root", null)),

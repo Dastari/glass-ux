@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { Popover as BasePopover } from "@base-ui/react/popover"
 import type { ComponentProps, ReactNode } from "react"
 import { IconClose } from "../../icons/generated/icons.js"
@@ -29,7 +30,7 @@ export interface PopoverPopupProps extends Omit<ComponentProps<typeof BasePopove
 function PopoverPopup({ title, size = "md", side = "bottom", align = "center", anchor, className, children, ...rest }: PopoverPopupProps) {
   const popup = usePopupMetrics()
   return (
-    <BasePopover.Portal container={popupContainer()}>
+    <BasePopover.Portal render={<DirectionPortal />} container={popupContainer()}>
       <BasePopover.Positioner
         className="fa-popover-positioner"
         side={side}

@@ -1,3 +1,4 @@
+import { isRtl, readingKey } from "../lib/direction.js"
 /**
  * AppShell — the application frame (R5). It owns the viewport: the document never
  * scrolls; every pane scrolls inside itself.
@@ -296,7 +297,7 @@ export function AppShell({
           {tabBar ? <div className="fa-shell-slot-tabbar">{tabBar}</div> : null}
         </div>
         {hasDrawer ? (
-          <Sheet.Root side="left" open={sheetOpen && !desktop} onOpenChange={(open) => setSheetOpen(open)}>
+          <Sheet.Root side="start" open={sheetOpen && !desktop} onOpenChange={(open) => setSheetOpen(open)}>
             <Sheet.Popup size="sm">
               <DrawerPlacement.Provider value="sheet">{drawer}</DrawerPlacement.Provider>
             </Sheet.Popup>
@@ -338,6 +339,7 @@ function DrawerHandle({
     const min = DRAWER_MIN_REM * rem
     const max = DRAWER_MAX_REM * rem
     const startX = event.clientX
+    const sign = isRtl(shell) ? -1 : 1
     const startWidth = open && pane ? pane.getBoundingClientRect().width : 0
     let width = open ? startWidth : min
     let collapsed = !open
@@ -359,7 +361,7 @@ function DrawerHandle({
     }
 
     const move = (moveEvent: PointerEvent) => {
-      const raw = startWidth + moveEvent.clientX - startX
+      const raw = startWidth + (moveEvent.clientX - startX) * sign
       if (Math.abs(moveEvent.clientX - startX) > 2) moved = true
       if (raw < min * 0.6) {
         setCollapsed(true)
@@ -392,7 +394,8 @@ function DrawerHandle({
       onToggle()
       return
     }
-    const delta = event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0
+    const key = readingKey(event.key, event.currentTarget)
+    const delta = key === "ArrowLeft" ? -1 : key === "ArrowRight" ? 1 : 0
     if (!delta) return
     event.preventDefault()
     const current = readShellPrefs().drawerWidth ?? defaultDrawerRem()

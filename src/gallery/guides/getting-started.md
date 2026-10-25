@@ -208,3 +208,34 @@ Run your application's typecheck and affected tests. Try the screen with keyboar
 light and dark modes, Solid material and a narrow container. If controls render unstyled,
 check the stylesheet import and Tailwind source paths first. If context-dependent components
 fail, check their provider contract and whether the host router is present.
+
+## Right-to-left
+
+Set the document's language and direction before rendering, and share the direction with
+Base UI through `glass-ux/locale`:
+
+```tsx
+import { DirectionProvider, localeDirection } from "glass-ux/locale";
+
+const language = "ar";
+const direction = localeDirection(language);
+document.documentElement.lang = language;
+document.documentElement.dir = direction;
+
+root.render(<DirectionProvider direction={direction}><App /></DirectionProvider>);
+```
+
+For a nested region, set its `dir` attribute and nest another `DirectionProvider` with the
+same direction. The provider also reaches portalled menus and sheets; it does not create a
+DOM wrapper. `useDirection()` reads that context. Formatting and translated messages remain
+controlled by the locale and message providers.
+
+Inline spacing, navigation arrows, selection controls and horizontal keyboard navigation
+follow direction. `Sheet.Root side="start"` opens at the reading start and `side="end"` at
+its end; existing `left` and `right` sides keep their physical edge. Charts, maps, media and
+free window coordinates retain their physical axes; horizontal window keyboard commands
+follow reading direction. Checkmarks, clocks and media icons keep their shape. Custom icons
+can opt in with `data-icon-dir="mirror"`.
+
+The documentation app accepts `?dir=rtl&lang=ar` on any page for RTL preview; reload with
+`?dir=ltr&lang=en-AU` to restore its default preview direction and language.

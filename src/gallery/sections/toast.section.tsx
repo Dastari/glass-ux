@@ -10,7 +10,7 @@ export default function ToastSection() {
       <Toaster />
       <Specimen
         title="Live"
-        description="Bottom-right on desktop, top on phones. Hover or focus the stack to fan it out and pause the timers; F6 jumps into it from anywhere. Swipe right or down to dismiss."
+        description="At the trailing bottom edge on desktop, top on phones. Hover or focus the stack to fan it out and pause the timers; F6 jumps into it from anywhere. Swipe towards the edge or down to dismiss."
       >
         <Example label="Tones">
           <Button onClick={() => toast.success("NST-C106 restarted", { description: "Back online after 48 s." })}>Success</Button>

@@ -27,7 +27,8 @@
     flex: none;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-2) var(--space-4) var(--space-2) var(--space-5);
+    padding-block: var(--space-2);
+    padding-inline: var(--space-5) var(--space-4);
     transition: box-shadow var(--duration-fast) var(--ease-standard);
   }
   .fa-palette-search > .fa-icon {

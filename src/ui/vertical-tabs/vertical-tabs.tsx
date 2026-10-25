@@ -230,7 +230,7 @@ function VerticalTabsRoot({ items, value, defaultValue, onValueChange, layout: f
           <BaseTabs.List className="fa-vtabs-list" aria-label={label}>
             <BaseTabs.Indicator className="fa-vtabs-indicator fa-glide" data-axis="y" />
             {items.map((item) => (
-              <Tooltip key={item.value} content={item.label} side="right" enabled={layout === "icons"}>
+              <Tooltip key={item.value} content={item.label} side="inline-end" enabled={layout === "icons"}>
                 <BaseTabs.Tab value={item.value} disabled={item.disabled} className="fa-item fa-vtab">
                   <ItemContent item={item} />
                 </BaseTabs.Tab>
@@ -337,7 +337,7 @@ export function VerticalTabNav<T extends VerticalTabItem>({ items, value, render
               const active = index === activeIndex
               return (
                 <Fragment key={item.value}>
-                  <Tooltip content={item.label} side="right" enabled={layout === "icons"}>
+                  <Tooltip content={item.label} side="inline-end" enabled={layout === "icons"}>
                     {renderLink(item, {
                       className: "fa-item fa-vtab",
                       "data-value": item.value,

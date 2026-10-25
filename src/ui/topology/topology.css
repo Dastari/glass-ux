@@ -67,9 +67,9 @@
     box-sizing: content-box;
     width: var(--fa-topology-cell-w);
     height: var(--fa-topology-cell-h);
-    margin: var(--fa-topology-gap-y) var(--_controls) 0 var(--fa-topology-gap-x);
-    padding: var(--fa-topology-cluster-header) var(--fa-topology-cluster-gap) var(--fa-topology-fit-padding) var(--fa-topology-cluster-pad);
-    border-top-left-radius: var(--fa-topology-link-radius);
+    margin: var(--fa-topology-gap-y) var(--_controls) 0 var(--fa-topology-gap-x); /* logical:allow probe and viewport insets use physical coordinates */
+    padding: var(--fa-topology-cluster-header) var(--fa-topology-cluster-gap) var(--fa-topology-fit-padding) var(--fa-topology-cluster-pad); /* logical:allow probe and viewport insets use physical coordinates */
+    border-top-left-radius: var(--fa-topology-link-radius); /* logical:allow topology drawing and measured viewport insets use physical coordinates */
     transition-duration: var(--duration-slow);
   }
   @container (width < 30rem) or (height < 22rem) {
@@ -100,7 +100,7 @@
   .fa-topology-world {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 0; /* logical:allow topology drawing and measured viewport insets use physical coordinates */
     transform-origin: 0 0;
     outline: none;
   }
@@ -139,7 +139,7 @@
   .fa-topology-link-label {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 0; /* logical:allow topology drawing and measured viewport insets use physical coordinates */
     padding: 0 var(--space-1);
     border-radius: var(--radius-full);
     background-color: var(--glass-fill-control);
@@ -156,7 +156,7 @@
   .fa-topology-cluster {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 0; /* logical:allow topology drawing and measured viewport insets use physical coordinates */
     border-radius: var(--radius-tile);
     background-color: var(--fill-muted);
     border: var(--border-width) solid var(--line);
@@ -167,8 +167,8 @@
   .fa-topology-cluster-label {
     position: absolute;
     top: var(--fa-topology-cluster-pad);
-    left: var(--fa-topology-cluster-pad);
-    right: var(--fa-topology-cluster-pad);
+    left: var(--fa-topology-cluster-pad); /* logical:allow topology drawing and measured viewport insets use physical coordinates */
+    right: var(--fa-topology-cluster-pad); /* logical:allow topology drawing and measured viewport insets use physical coordinates */
     overflow: hidden;
     color: var(--fg-muted);
     text-overflow: ellipsis;
@@ -178,7 +178,7 @@
   .fa-topology-measure {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 0; /* logical:allow topology drawing and measured viewport insets use physical coordinates */
     padding-inline: var(--border-width);
     visibility: hidden;
     pointer-events: none;
@@ -197,7 +197,7 @@
   .fa-topology-node {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 0; /* logical:allow topology drawing and measured viewport insets use physical coordinates */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -270,14 +270,14 @@
   .fa-topology-controls {
     position: absolute;
     top: calc(var(--_in-top) + var(--space-3));
-    right: calc(var(--_in-right) + var(--space-3));
+    right: calc(var(--_in-right) + var(--space-3)); /* logical:allow topology drawing and measured viewport insets use physical coordinates */
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
   }
   .fa-topology-minimap {
     position: absolute;
-    left: calc(var(--_in-left) + var(--space-3));
+    left: calc(var(--_in-left) + var(--space-3)); /* logical:allow topology drawing and measured viewport insets use physical coordinates */
     bottom: calc(var(--_in-bottom) + var(--space-3));
     width: var(--_minimap-w);
     height: var(--_minimap-h);
@@ -316,7 +316,7 @@
   }
   .fa-topology-list {
     position: absolute;
-    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left);
+    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left); /* logical:allow probe and viewport insets use physical coordinates */
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -329,13 +329,13 @@
   }
   .fa-topology-empty {
     position: absolute;
-    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left);
+    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left); /* logical:allow probe and viewport insets use physical coordinates */
   }
 
   /* The loading shape: the same box, three rows centred (R9.3). */
   .fa-topology-skeleton {
     position: absolute;
-    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left);
+    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left); /* logical:allow probe and viewport insets use physical coordinates */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -377,7 +377,7 @@
     }
     .fa-topology-controls {
       top: calc(var(--_in-top) + var(--space-2));
-      right: calc(var(--_in-right) + var(--space-2));
+      right: calc(var(--_in-right) + var(--space-2)); /* logical:allow topology drawing and measured viewport insets use physical coordinates */
     }
   }
   @container (height < 8rem) {

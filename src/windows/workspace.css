@@ -59,7 +59,7 @@
   }
   .fa-wm-window[data-geometry="frac"],
   .fa-wm-snap-preview {
-    left: calc(var(--_fx) * 100cqw + var(--_gl) * var(--_half-gap));
+    left: calc(var(--_fx) * 100cqw + var(--_gl) * var(--_half-gap)); /* logical:allow window geometry uses physical stage coordinates */
     top: calc(var(--_fy) * 100cqh + var(--_gt) * var(--_half-gap));
     width: calc(
       var(--_fw) * 100cqw - (var(--_gl) + var(--_gr)) * var(--_half-gap)
@@ -71,7 +71,7 @@
   .fa-wm-window[data-geometry="free"] {
     --_fw-px: min(calc(var(--_w) * var(--_px)), 100cqw);
     --_fh-px: min(calc(var(--_h) * var(--_px)), 100cqh);
-    left: clamp(
+    left: clamp( /* logical:allow window geometry uses physical stage coordinates */
       0px,
       calc(var(--_x) * var(--_px)),
       calc(100cqw - var(--_fw-px))
@@ -145,7 +145,7 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    left: calc(var(--_d) * 100cqw - var(--_half-gap));
+    left: calc(var(--_d) * 100cqw - var(--_half-gap)); /* logical:allow window geometry uses physical stage coordinates */
     z-index: var(--_z-handle);
     display: grid;
     place-items: center;
@@ -202,7 +202,7 @@
     --_pad: var(--space-2);
     position: absolute;
     top: var(--space-3);
-    left: 50%;
+    left: 50%; /* logical:allow window geometry uses physical stage coordinates */
     z-index: var(--_z-bar);
     display: flex;
     gap: var(--space-2);
@@ -248,7 +248,7 @@
   }
   .fa-wm-snap-zone {
     position: absolute;
-    left: calc(
+    left: calc( /* logical:allow window geometry uses physical stage coordinates */
       var(--_inset) + var(--_fx) * 100cqw + var(--_gl) * var(--_half-gap)
     );
     top: calc(
@@ -312,7 +312,7 @@
     isolation: auto;
   }
   .fa-wm-workspace[data-sheet] .fa-wm-window[data-primary] {
-    left: 0;
+    left: 0; /* logical:allow window geometry uses physical stage coordinates */
     top: 0;
     width: 100%;
     height: 100%;

@@ -1,14 +1,16 @@
 import { Drawer } from "@base-ui/react/drawer"
 import { createContext, useContext, type ReactNode, type RefObject } from "react"
 import { Dialog, DialogSurface, type DialogChangeDetails } from "../dialog/index.js"
+import { useDirection } from "../../lib/locale/direction.js"
 
 export type SheetSize = "sm" | "md" | "lg"
 /** The edge a sheet slides in from, and the direction a swipe dismisses it. */
-export type SheetSide = "left" | "right" | "bottom"
+export type SheetSide = "left" | "right" | "bottom" | "start" | "end"
 
-const SWIPE: Record<SheetSide, "left" | "right" | "down"> = { left: "left", right: "right", bottom: "down" }
+type PhysicalSide = Exclude<SheetSide, "start" | "end">
+const SWIPE: Record<PhysicalSide, "left" | "right" | "down"> = { left: "left", right: "right", bottom: "down" }
 
-const SideContext = createContext<SheetSide>("right")
+const SideContext = createContext<PhysicalSide>("right")
 
 export interface SheetRootProps {
   open?: boolean
@@ -22,6 +24,7 @@ export interface SheetRootProps {
   /**
    * `right` (default): inspector and secondary detail. `left`: the section drawer on
    * tablets and phones. `bottom`: a short list of choices or actions (phone "More").
+   * `start` and `end` follow DirectionProvider; `left` and `right` stay physical.
    */
   side?: SheetSide
   /** Ref exposing the component’s imperative action contract. */
@@ -31,9 +34,11 @@ export interface SheetRootProps {
 
 /** A pane from a screen edge: swipe toward that edge (or Esc, or the scrim) to dismiss. */
 function SheetRoot({ side = "right", ...props }: SheetRootProps) {
+  const rtl = useDirection() === "rtl"
+  const edge = side === "start" ? (rtl ? "right" : "left") : side === "end" ? (rtl ? "left" : "right") : side
   return (
-    <SideContext value={side}>
-      <Drawer.Root swipeDirection={SWIPE[side]} {...props} />
+    <SideContext value={edge}>
+      <Drawer.Root swipeDirection={SWIPE[edge]} {...props} />
     </SideContext>
   )
 }

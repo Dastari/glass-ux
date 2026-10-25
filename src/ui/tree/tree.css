@@ -183,3 +183,7 @@
     pointer-events: none;
   }
 }
+
+@layer components {
+  .fa-tree-row[aria-expanded="true"] .fa-tree-chevron > .fa-icon:dir(rtl) { rotate: -90deg; }
+}

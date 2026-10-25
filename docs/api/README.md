@@ -97,6 +97,7 @@
 - [DetailTileSkeleton](detail-tile-skeleton.md) — `glass-ux/detail-tile`
 - [Dialog](dialog.md) — `glass-ux/dialog`
 - [DialogSurface](dialog-surface.md) — `glass-ux/dialog`
+- [DirectionProvider](direction-provider.md) — `glass-ux/locale`
 - [Disclosure](disclosure.md) — `glass-ux/accordion`
 - [Dock](dock.md) — `glass-ux/windows`
 - [DomainField](domain-field.md) — `glass-ux/hostname-field`

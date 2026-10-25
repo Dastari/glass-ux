@@ -61,12 +61,12 @@
   }
   .fa-ai-desktop-badge {
     top: var(--space-2);
-    left: var(--space-2);
+    inset-inline-start: var(--space-2);
   }
   /* The live pulse is a halo of its own that only scales and fades (compositor-only). */
   .fa-ai-desktop-cursor {
     top: 46%;
-    left: 52%;
+    left: 52%; /* logical:allow cursor position describes the displayed media */
   }
   .fa-ai-desktop-cursor .fa-icon {
     width: var(--icon-xs);

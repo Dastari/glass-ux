@@ -1,3 +1,4 @@
+import { readingKey } from "../../lib/direction.js"
 import { useMemo, useRef, useState, type KeyboardEvent } from "react"
 import { IconChevronLeft, IconChevronRight } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -142,7 +143,7 @@ export function Calendar(props: CalendarProps) {
       PageUp: () => addMonths(focused, event.shiftKey ? -12 : -1),
       PageDown: () => addMonths(focused, event.shiftKey ? 12 : 1),
     }
-    const move = moves[event.key]
+    const move = moves[readingKey(event.key, event.currentTarget)]
     if (!move) {
       if (event.key === "Escape" && anchor) {
         event.preventDefault()

@@ -149,7 +149,8 @@
     align-items: center;
     gap: var(--space-3);
     min-width: 0;
-    padding: var(--space-2) var(--space-1-5) var(--space-2) var(--space-2);
+    padding-block: var(--space-2);
+    padding-inline: var(--space-2) var(--space-1-5);
     border: var(--border-width) solid var(--glass-edge);
     border-radius: var(--radius-control);
     background-color: var(--glass-fill-control);

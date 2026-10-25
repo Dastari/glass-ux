@@ -1,3 +1,4 @@
+import { readingKey } from "../../lib/direction.js"
 import type { KeyboardEvent } from "react"
 
 export type RovingOrientation = "horizontal" | "vertical"
@@ -10,6 +11,7 @@ export type RovingOrientation = "horizontal" | "vertical"
  * descendants that are not inside a hidden subtree.
  */
 export function rovingKeyDown(event: KeyboardEvent<HTMLElement>, orientation: RovingOrientation) {
+  const key = readingKey(event.key, event.currentTarget)
   const [back, forward] = orientation === "horizontal" ? ["ArrowLeft", "ArrowRight"] : ["ArrowUp", "ArrowDown"]
   const group = event.currentTarget.closest("[data-roving-group]") ?? event.currentTarget
   const items = Array.from(group.querySelectorAll<HTMLElement>("[data-roving]")).filter(
@@ -18,11 +20,11 @@ export function rovingKeyDown(event: KeyboardEvent<HTMLElement>, orientation: Ro
   const index = items.indexOf(document.activeElement as HTMLElement)
   if (index < 0 || items.length === 0) return
   let next = -1
-  if (event.key === back) next = (index - 1 + items.length) % items.length
-  else if (event.key === forward) next = (index + 1) % items.length
-  else if (event.key === "Home") next = 0
-  else if (event.key === "End") next = items.length - 1
-  else if (event.key === " ") {
+  if (key === back) next = (index - 1 + items.length) % items.length
+  else if (key === forward) next = (index + 1) % items.length
+  else if (key === "Home") next = 0
+  else if (key === "End") next = items.length - 1
+  else if (key === " ") {
     event.preventDefault()
     items[index]?.click()
     return

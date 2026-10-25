@@ -12,6 +12,7 @@
  * (a size container), so windows render correctly on the first frame and follow resizes
  * without measuring. Only the column count is measured.
  */
+import { readingKey } from "../lib/direction.js";
 import {
   useCallback,
   useEffect,
@@ -526,8 +527,9 @@ function SplitHandle({
   const onKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
     const step = event.shiftKey ? 0.1 : 0.02;
     const { min, max } = bounds();
+    const key = readingKey(event.key, event.currentTarget);
     const delta =
-      event.key === "ArrowLeft" ? -step : event.key === "ArrowRight" ? step : 0;
+      key === "ArrowLeft" ? -step : key === "ArrowRight" ? step : 0;
     if (event.key === "Home") commit(min);
     else if (event.key === "End") commit(max);
     else if (delta) commit(clamp(value + delta, min, max));
@@ -682,7 +684,8 @@ function useWindowShortcuts(manager: WindowManager) {
       const entry = id ? manager.get(id) : undefined;
       if (!entry || entry.poppedOut) return;
       event.preventDefault();
-      switch (event.key) {
+      const target = event.target instanceof Element ? event.target : document.documentElement;
+      switch (readingKey(event.key, target)) {
         case "ArrowUp":
           manager.maximise(entry.id);
           break;

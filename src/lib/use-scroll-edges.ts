@@ -1,3 +1,4 @@
+import { useDirection } from "./locale/direction.js"
 import { useEffect, useState, type RefObject } from "react"
 import { observeElementSizes } from "./resize-observer.js"
 
@@ -42,6 +43,7 @@ export function useScrollEdges(
   options: number | ScrollEdgesOptions = 1
 ): ScrollEdges {
   const { threshold = 1, root: rootSelector } = typeof options === "number" ? { threshold: options } : options
+  const direction = useDirection()
   const [edges, setEdges] = useState<ScrollEdges>(NONE)
 
   useEffect(() => {
@@ -53,11 +55,14 @@ export function useScrollEdges(
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => {
         const { scrollTop, scrollHeight, clientHeight, scrollLeft, scrollWidth, clientWidth } = element
+        const rtl = getComputedStyle(element).direction === "rtl"
+        const away = Math.abs(scrollLeft) > threshold
+        const remaining = Math.abs(scrollLeft) + clientWidth < scrollWidth - threshold
         const next = {
           top: scrollTop > threshold,
           bottom: scrollTop + clientHeight < scrollHeight - threshold,
-          left: Math.abs(scrollLeft) > threshold,
-          right: Math.abs(scrollLeft) + clientWidth < scrollWidth - threshold,
+          left: rtl ? remaining : away,
+          right: rtl ? away : remaining,
         }
         if (root) for (const [edge, name] of ROOT_ATTRIBUTES) root.toggleAttribute(name, next[edge])
         setEdges((current) =>
@@ -78,7 +83,7 @@ export function useScrollEdges(
       resize.disconnect()
       if (root) for (const [, name] of ROOT_ATTRIBUTES) root.removeAttribute(name)
     }
-  }, [ref, threshold, rootSelector])
+  }, [ref, threshold, rootSelector, direction])
 
   return edges
 }

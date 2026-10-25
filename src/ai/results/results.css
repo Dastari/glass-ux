@@ -166,7 +166,8 @@
     gap: var(--space-3);
     min-width: 0;
     min-height: var(--item-h);
-    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+    padding-block: var(--space-1);
+    padding-inline: var(--space-2) var(--space-1);
     border-radius: var(--radius-item);
     outline: none;
   }

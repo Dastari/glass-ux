@@ -132,6 +132,8 @@ function rounded(points: ReadonlyArray<readonly [number, number]>, radius: numbe
 export function layoutTopology<T>(
   input: readonly TopologyNode<T>[],
   options: {
+    /** Mirror node positions and links for right-to-left reading order. */
+    rtl?: boolean
     metrics?: Partial<TopologyMetrics>
     clusters?: Readonly<Record<string, TopologyClusterSpec>>
     /**
@@ -293,6 +295,13 @@ export function layoutTopology<T>(
     }
   }
 
+  const width = maxX - minX
+  if (options.rtl) {
+    for (const node of nodes) node.x = width - node.x - node.width
+    for (const cluster of clusters) cluster.x = width - cluster.x - cluster.width
+    for (const box of boxes.values()) box.x = width - box.x - box.width
+  }
+
   const linkOf = (id: string) => byId.get(id)?.link
   // Links: one per structural child, from the parent's bottom to the child's top.
   for (const node of nodes) {
@@ -324,7 +333,9 @@ export function layoutTopology<T>(
     const y1 = from.y + from.height
     const top = Math.min(...blocks.map((block) => block.y))
     const midY = y1 + (top - y1) / 2
-    const spineX = Math.min(...blocks.map((block) => block.x)) - m.gapX / 2
+    const spineX = options.rtl
+      ? Math.max(...blocks.map((block) => block.x + block.width)) + m.gapX / 2
+      : Math.min(...blocks.map((block) => block.x)) - m.gapX / 2
     for (const block of blocks) {
       const links = block.members.map(linkOf)
       const speeds = links.flatMap((link) => (link?.speedMbps ? [link.speedMbps] : []))

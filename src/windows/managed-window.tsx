@@ -26,6 +26,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react"
+import { readingKey } from "../lib/direction.js"
 import { flushSync } from "react-dom"
 import { scaledDuration } from "../lib/motion.js"
 import { DRAG_THRESHOLD, EDGE_SNAP, snapBarHit, type DragStore } from "./drag.js"
@@ -413,7 +414,7 @@ function useKeyboardGesture(
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
-      const delta = KEY_DELTAS[event.key]
+      const delta = KEY_DELTAS[readingKey(event.key, frame)]
       // Tab finishes the gesture and lets focus move on.
       if (event.key === "Tab") return stop(true)
       if (!delta && event.key !== "Enter" && event.key !== "Escape") return

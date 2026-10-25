@@ -129,7 +129,8 @@
     height: calc(var(--_h) - var(--_pad) * 2);
     margin: 0;
     /* The dot sits where a swatch would: centred in a square the height of the button. */
-    padding: 0 var(--space-1-5) 0 calc((var(--_h) - var(--_pad) * 2 - var(--_dot)) / 2);
+    padding-block: 0;
+    padding-inline: calc((var(--_h) - var(--_pad) * 2 - var(--_dot)) / 2) var(--space-1-5);
     border: 0;
     border-radius: var(--_r);
     background-color: var(--glass-fill-control-hover);

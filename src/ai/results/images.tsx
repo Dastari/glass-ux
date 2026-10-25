@@ -1,3 +1,4 @@
+import { useDirection } from "../../lib/locale/direction.js"
 import { useCallback, useEffect, useState, type CSSProperties } from "react"
 import { IconChevronLeft, IconChevronRight, IconFullscreen, IconImage, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -74,6 +75,7 @@ export function ImageLightbox(props: LightboxProps) {
 
 function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
   const locale = useLocale()
+  const direction = useDirection()
   const [zoom, setZoom] = useState(0)
   const image = images[index]!
   const go = useCallback((delta: number) => onIndexChange((index + delta + images.length) % images.length), [index, images.length, onIndexChange])
@@ -81,8 +83,8 @@ function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
   useEffect(() => {
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return
-      if (event.key === "ArrowRight" && images.length > 1) go(1)
-      else if (event.key === "ArrowLeft" && images.length > 1) go(-1)
+      if (event.key === (direction === "rtl" ? "ArrowLeft" : "ArrowRight") && images.length > 1) go(1)
+      else if (event.key === (direction === "rtl" ? "ArrowRight" : "ArrowLeft") && images.length > 1) go(-1)
       else if (event.key === "+" || event.key === "=") setZoom((value) => Math.min(ZOOMS.length - 1, value + 1))
       else if (event.key === "-") setZoom((value) => Math.max(0, value - 1))
       else if (event.key === "0") setZoom(0)
@@ -91,7 +93,7 @@ function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
     }
     window.addEventListener("keydown", onKeyDown, true)
     return () => window.removeEventListener("keydown", onKeyDown, true)
-  }, [go, images.length])
+  }, [go, images.length, direction])
 
   const scale = ZOOMS[zoom] ?? 1
   return (

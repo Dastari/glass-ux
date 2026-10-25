@@ -152,3 +152,8 @@
     }
   }
 }
+
+@layer components {
+  .fa-switch:dir(rtl) { --_travel: calc((var(--_w) - var(--_thumb-w) - var(--_inset) * 2) * -1); }
+  .fa-switch:dir(rtl):not([data-checked])::before { clip-path: inset(0 0 0 calc(100% - var(--_h)) round var(--radius-full)); }
+}

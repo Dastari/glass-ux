@@ -108,7 +108,7 @@
     content: "";
     position: absolute;
     bottom: var(--space-1);
-    left: 50%;
+    left: 50%; /* logical:allow today marker is physically centred in its cell */
     width: var(--space-1);
     height: var(--space-1);
     translate: -50% 0;

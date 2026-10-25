@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { Dialog as BaseDialog } from "@base-ui/react/dialog"
 import { Drawer } from "@base-ui/react/drawer"
 import {
@@ -216,7 +217,7 @@ export function DialogSurface({
   if (mode === "side") {
     return (
       <ModeContext value="side">
-        <Drawer.Portal container={popupContainer()}>
+        <Drawer.Portal render={<DirectionPortal />} container={popupContainer()}>
           <Drawer.Backdrop className="glass-scrim fa-scrim" />
           <Drawer.Viewport className="fa-dialog-side-viewport" data-edge={edge}>
             <Drawer.Popup
@@ -237,7 +238,7 @@ export function DialogSurface({
   if (mode === "sheet") {
     return (
       <ModeContext value="sheet">
-        <Drawer.Portal container={popupContainer()}>
+        <Drawer.Portal render={<DirectionPortal />} container={popupContainer()}>
           <Drawer.Backdrop className="glass-scrim fa-scrim" />
           <Drawer.Viewport className="fa-dialog-sheet-viewport">
             <Drawer.Popup
@@ -257,7 +258,7 @@ export function DialogSurface({
   }
   return (
     <ModeContext value="dialog">
-      <BaseDialog.Portal container={popupContainer()}>
+      <BaseDialog.Portal render={<DirectionPortal />} container={popupContainer()}>
         <BaseDialog.Backdrop className="glass-scrim fa-scrim" />
         <BaseDialog.Viewport className="fa-dialog-viewport" data-kind={kind}>
           <BaseDialog.Popup

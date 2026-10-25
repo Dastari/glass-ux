@@ -157,3 +157,8 @@
     inset-block: auto var(--_rail);
   }
 }
+
+@layer components {
+  .fa-split:dir(rtl) > .fa-split-rail { box-shadow: inset var(--border-width) 0 0 var(--line); }
+  .fa-split[data-collapse="end"]:dir(rtl) > .fa-split-rail { box-shadow: inset calc(var(--border-width) * -1) 0 0 var(--line); }
+}

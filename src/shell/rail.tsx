@@ -187,7 +187,7 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
   return (
     <li className="fa-shell-rail-entry">
       <Tooltip
-        side="right"
+        side="inline-end"
         content={
           <span className="fa-shell-tip">
             <span>{disabledReason ?? label}</span>
@@ -258,7 +258,7 @@ export function ShellBrand({ label, mark, render, className, ...rest }: ShellBra
     ),
   })
   return (
-    <Tooltip side="right" content={label}>
+    <Tooltip side="inline-end" content={label}>
       {element}
     </Tooltip>
   )

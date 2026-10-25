@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { Input as BaseInput } from "@base-ui/react/input"
 import { useMemo, useRef, useState, type ClipboardEvent, type FocusEvent, type MouseEvent, type Ref } from "react"
@@ -367,7 +368,7 @@ function CountryPicker({ value, onValueChange, countries, priority, flags, disab
         {calling ? <span className="fa-phone-calling">+{calling}</span> : null}
         {readOnly ? null : <IconChevronDown className="fa-phone-chevron" />}
       </BaseCombobox.Trigger>
-      <BaseCombobox.Portal container={popupContainer()}>
+      <BaseCombobox.Portal render={<DirectionPortal />} container={popupContainer()}>
         <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BaseCombobox.Popup className="glass-overlay fa-popup fa-phone-country-popup" aria-label="Choose a country">
             <div className="fa-control fa-input fa-phone-country-search" data-size="sm">

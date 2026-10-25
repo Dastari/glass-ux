@@ -68,6 +68,26 @@ const frame = () => document.querySelector<HTMLElement>("[data-window-id]")!
 const press = (key: string, init: KeyboardEventInit = {}) => act(() => void fireEvent.keyDown(document.activeElement ?? document.body, { key, ...init }))
 
 describe("ManagedWindow keyboard gestures", () => {
+  it("mirrors horizontal keyboard moves in RTL while keeping physical coordinates", async () => {
+    render(<Harness />)
+    frame().style.direction = "rtl"
+    await chooseFromWindowMenu("Move")
+    await press("ArrowLeft")
+    await press("ArrowDown", { shiftKey: true })
+    expect(frame().style.translate).toBe("16px 2px")
+    await press("Enter")
+    expect(manager.get(id)!.rect).toEqual({ x: 116, y: 52, w: 400, h: 300 })
+  })
+
+  it("mirrors horizontal keyboard resizing in RTL", async () => {
+    render(<Harness />)
+    frame().style.direction = "rtl"
+    await chooseFromWindowMenu("Resize")
+    await press("ArrowLeft")
+    expect(frame().style.width).toBe("416px")
+    await press("Escape")
+    expect(manager.get(id)!.rect).toEqual({ x: 100, y: 50, w: 400, h: 300 })
+  })
   it("moves with the arrow keys and commits on Enter", async () => {
     render(<Harness />)
     await chooseFromWindowMenu("Move")

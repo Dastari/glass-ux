@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { Menu as BaseMenu } from "@base-ui/react/menu"
 import { useId, type ComponentProps, type ReactElement, type ReactNode } from "react"
 import { IconCheck, IconChevronRight } from "../../icons/generated/icons.js"
@@ -91,7 +92,7 @@ export interface MenuPopupProps extends Omit<ComponentProps<typeof BaseMenu.Popu
 function MenuPopup({ side, align = "start", sideOffset, alignOffset = 0, className, children, ...rest }: MenuPopupProps) {
   const popup = usePopupMetrics()
   return (
-    <BaseMenu.Portal container={popupContainer()}>
+    <BaseMenu.Portal render={<DirectionPortal />} container={popupContainer()}>
       <BaseMenu.Positioner
         className="fa-menu-positioner"
         side={side}

@@ -91,7 +91,7 @@
   .fa-pin-map-controls {
     position: absolute;
     top: var(--space-2);
-    right: var(--space-2);
+    right: var(--space-2); /* logical:allow map controls use physical media coordinates */
     z-index: var(--z-raised);
     display: flex;
     flex-direction: column;
@@ -99,7 +99,7 @@
   }
   .fa-pin-map-credit {
     position: absolute;
-    right: var(--space-2);
+    right: var(--space-2); /* logical:allow map controls use physical media coordinates */
     bottom: var(--space-1);
     z-index: var(--z-raised);
     display: flex;

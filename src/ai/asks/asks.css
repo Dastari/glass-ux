@@ -143,7 +143,8 @@
     align-items: center;
     gap: var(--space-2);
     min-height: var(--control-h-lg);
-    padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+    padding-block: var(--space-1);
+    padding-inline: var(--space-2) var(--space-1);
     border-radius: var(--radius-control);
     outline: none;
   }
@@ -315,7 +316,8 @@
     gap: var(--space-2);
     min-width: 0;
     min-height: calc(var(--control-h-sm) + var(--space-2));
-    padding: var(--space-1) var(--space-1-5) var(--space-1) var(--inset-tile);
+    padding-block: var(--space-1);
+    padding-inline: var(--inset-tile) var(--space-1-5);
     color: var(--fg-muted);
     font-size: var(--type-label-size);
     line-height: var(--type-label-line);

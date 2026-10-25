@@ -21,7 +21,7 @@ edge, Esc or the scrim dismisses it.
 | onOpenChange | `((open: boolean, details: DialogChangeDetails) => void) \| undefined` | See type | no | — | Called with the next open state and Base UI change details (the reason; `details.cancel()` keeps it open) when the trigger opens it or a swipe, Esc, the scrim or a close control dismisses it. Pair with `open` to control it. |
 | onOpenChangeComplete | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the final open state once the slide-in or slide-out animation has finished. |
 | open | `boolean \| undefined` | false, true | no | — | Controls whether the overlay is open. |
-| side | `SheetSide \| undefined` | "bottom", "left", "right" | no | "right" | `right` (default): inspector and secondary detail. `left`: the section drawer on tablets and phones. `bottom`: a short list of choices or actions (phone "More"). |
+| side | `SheetSide \| undefined` | "start", "end", "bottom", "left", "right" | no | "right" | `right` (default): inspector and secondary detail. `left`: the section drawer on tablets and phones. `bottom`: a short list of choices or actions (phone "More"). `start` and `end` follow DirectionProvider; `left` and `right` stay physical. |
 
 ## Sheet.Trigger
 

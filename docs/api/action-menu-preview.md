@@ -1,7 +1,8 @@
 # ActionMenuPreview
 
 The same menu drawn statically, for documentation. `openSubmenu` shows one submenu open
-beside it, and `highlight` marks a row as if hovered.
+beside it, and `highlight` marks a row as if hovered. Paired menus scroll within their
+container when they do not fit.
 
 `import { ActionMenuPreview } from "glass-ux/actions"`
 

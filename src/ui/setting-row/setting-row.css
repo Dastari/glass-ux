@@ -93,7 +93,7 @@
   .fa-setting-row-status {
     position: absolute;
     top: 50%;
-    right: calc(100% + var(--space-2));
+    inset-inline-end: calc(100% + var(--space-2));
     display: grid;
     place-items: center;
     width: var(--icon-sm);

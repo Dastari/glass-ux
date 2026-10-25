@@ -48,13 +48,15 @@ export default function TooltipSection() {
           </div>
         </Example>
         <Example label="Sides">
-          {(["top", "right", "bottom", "left"] as const).map((side) => (
-            <Tooltip key={side} content="Last check-in 2 min ago" side={side}>
-              <Button size="sm" variant="ghost">
-                {side}
-              </Button>
-            </Tooltip>
-          ))}
+          {(["top", "right", "bottom", "left", "inline-start", "inline-end"] as const).map(
+            (side) => (
+              <Tooltip key={side} content="Last check-in 2 min ago" side={side}>
+                <Button size="sm" variant="ghost">
+                  {side}
+                </Button>
+              </Tooltip>
+            ),
+          )}
         </Example>
         <Example label="Disabled — the tooltip gives the reason">
           <Button size="sm" icon={<IconWake />} disabledReason="Endpoint is online">

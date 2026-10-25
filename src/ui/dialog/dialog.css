@@ -44,7 +44,7 @@
     align-items: center;
     justify-content: center;
     padding: max(var(--page-gutter), var(--safe-top)) max(var(--page-gutter), var(--safe-right))
-      max(var(--page-gutter), var(--safe-bottom)) max(var(--page-gutter), var(--safe-left));
+      max(var(--page-gutter), var(--safe-bottom)) max(var(--page-gutter), var(--safe-left)); /* logical:allow safe areas are measured physical viewport edges */
     overflow: hidden;
   }
 
@@ -113,7 +113,8 @@
     flex: none;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-5) var(--space-4) var(--space-4) var(--inset-dialog);
+    padding-block: var(--space-5) var(--space-4);
+    padding-inline: var(--inset-dialog) var(--space-4);
     transition: box-shadow var(--duration-fast) var(--ease-standard);
   }
   .fa-dialog-media {
@@ -314,7 +315,8 @@
     flex: 1 1 auto;
     flex-direction: column;
     min-height: 0;
-    padding: var(--space-2) var(--space-2) 0 var(--inset-dialog);
+    padding-block: var(--space-2) 0;
+    padding-inline: var(--inset-dialog) var(--space-2);
   }
   .fa-settings > .fa-vtabs {
     flex: 1 1 auto;
@@ -357,18 +359,19 @@
     display: flex;
     justify-content: flex-end;
     padding: max(var(--page-gutter), var(--safe-top)) max(var(--page-gutter), var(--safe-right))
-      max(var(--page-gutter), var(--safe-bottom)) var(--page-gutter);
+      max(var(--page-gutter), var(--safe-bottom)) var(--page-gutter); /* logical:allow safe areas are measured physical viewport edges */
   }
   .fa-dialog-side-viewport[data-edge="left"] {
     justify-content: flex-start;
-    padding-inline: max(var(--page-gutter), var(--safe-left)) var(--page-gutter);
+    padding-left: max(var(--page-gutter), var(--safe-left)); /* logical:allow left and right Sheet edges remain physical for compatibility */
+    padding-right: var(--page-gutter); /* logical:allow left and right Sheet edges remain physical for compatibility */
   }
   .fa-dialog-side-viewport[data-edge="bottom"] {
     container: sheet-viewport / inline-size;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    padding: calc(var(--safe-top) + var(--space-8)) var(--safe-right) 0 var(--safe-left);
+    padding: calc(var(--safe-top) + var(--space-8)) var(--safe-right) 0 var(--safe-left); /* logical:allow safe areas are measured physical viewport edges */
   }
 
   .fa-dialog:is([data-edge="left"], [data-edge="right"]) {
@@ -440,4 +443,9 @@
   .fa-dialog[data-edge="bottom"] .fa-dialog-footer {
     padding-bottom: max(var(--inset-dialog), calc(var(--safe-bottom) + var(--space-3)));
   }
+}
+
+@layer components {
+  .fa-dialog-side-viewport[data-edge="left"]:dir(rtl) { justify-content: flex-end; }
+  .fa-dialog-side-viewport[data-edge="right"]:dir(rtl) { justify-content: flex-start; }
 }

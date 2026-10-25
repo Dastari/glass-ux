@@ -38,7 +38,7 @@
   .fa-action-bar-measure {
     position: absolute;
     top: 0;
-    left: 0;
+    inset-inline-start: 0;
     display: flex;
     gap: var(--gap-controls);
     width: max-content;
@@ -56,6 +56,11 @@
   .fa-action-menu-preview {
     display: flex;
     align-items: flex-start;
+    max-inline-size: calc(100% + var(--space-2) * 2);
+    overflow-x: auto;
+    /* Keep the static submenu's offset and surface edges inside its own scroll area. */
+    margin: calc(var(--space-2) * -1);
+    padding: var(--space-2);
   }
   .fa-action-submenu-preview {
     position: relative;

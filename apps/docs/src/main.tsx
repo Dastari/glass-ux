@@ -1,3 +1,4 @@
+import { DirectionProvider } from "glass-ux/locale";
 import { createRoot } from "react-dom/client";
 import {
   createContext,
@@ -806,6 +807,14 @@ const router = createRouter({
   ]),
   basepath: import.meta.env.BASE_URL.replace(/\/$/, "") || "/",
 });
+// Docs preview switch: ?dir=rtl&lang=ar. Persists for internal route navigation only.
+const previewParams = new URLSearchParams(location.search);
+const previewDirection = previewParams.get("dir");
+if (previewDirection === "rtl" || previewDirection === "ltr") document.documentElement.dir = previewDirection;
+const previewLanguage = previewParams.get("lang");
+if (previewLanguage) document.documentElement.lang = previewLanguage;
 createRoot(document.getElementById("root")!).render(
-  <RouterProvider router={router} />,
+  <DirectionProvider direction={document.documentElement.dir === "rtl" ? "rtl" : "ltr"}>
+    <RouterProvider router={router} />
+  </DirectionProvider>,
 );

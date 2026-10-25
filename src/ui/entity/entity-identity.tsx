@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { PreviewCard as BasePreviewCard } from "@base-ui/react/preview-card"
 import { flushSync } from "react-dom"
 import {
@@ -629,7 +630,7 @@ function ChipTier<T>({ parts, dom }: TierProps<T>) {
   return (
     <BasePreviewCard.Root>
       {withMenu}
-      <BasePreviewCard.Portal container={popupContainer()}>
+      <BasePreviewCard.Portal render={<DirectionPortal />} container={popupContainer()}>
         <BasePreviewCard.Positioner className="fa-entity-preview-positioner" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BasePreviewCard.Popup className="glass-overlay fa-popup fa-entity-preview">
             <PreviewContent parts={parts} />

@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { PreviewCard } from "@base-ui/react/preview-card";
 import type { ComponentProps, MouseEvent, ReactNode } from "react";
 import { IconClose, IconPopOut } from "../../icons/generated/icons.js";
@@ -195,7 +196,7 @@ export function EntityChip({
   return (
     <PreviewCard.Root>
       {withMenu}
-      <PreviewCard.Portal container={popupContainer()}>
+      <PreviewCard.Portal render={<DirectionPortal />} container={popupContainer()}>
         <PreviewCard.Positioner
           className="fa-ai-preview-positioner"
           sideOffset={popup.offset}

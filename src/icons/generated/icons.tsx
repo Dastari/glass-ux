@@ -488,6 +488,26 @@ export const IconChevronUp = /* @__PURE__ */ createIcon(
   () => <path d="M6.5 14.75L12 9.25L17.5 14.75" />
 )
 
+export const IconChevronsLeft = /* @__PURE__ */ createIcon(
+  "chevrons-left",
+  () => (
+    <>
+      <path d="M17.75 6.5L12.25 12L17.75 17.5" />
+      <path d="M11.75 6.5L6.25 12L11.75 17.5" />
+    </>
+  )
+)
+
+export const IconChevronsRight = /* @__PURE__ */ createIcon(
+  "chevrons-right",
+  () => (
+    <>
+      <path d="M6.25 6.5L11.75 12L6.25 17.5" />
+      <path d="M12.25 6.5L17.75 12L12.25 17.5" />
+    </>
+  )
+)
+
 export const IconChevronsUpDown = /* @__PURE__ */ createIcon(
   "chevrons-up-down",
   () => (

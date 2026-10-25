@@ -1,0 +1,282 @@
+/*
+ * Stepper and Wizard.
+ *
+ *   marker     a numbered bead: outlined while upcoming, accent while current (with a soft
+ *              ring), accent-soft with a check when complete, danger-soft with "!" on error,
+ *              dashed when skipped
+ *   connector  a hairline between steps, accent once the step before it is complete
+ *   compact    horizontal steppers too narrow for every label show "Step 2 of 5", the current
+ *              step's name and a bar; the list stays for screen readers, visually hidden
+ */
+@layer components {
+  .fa-stepper {
+    --_marker: var(--control-h-xs);
+    container-type: inline-size;
+    min-width: 0;
+  }
+  .fa-stepper-list {
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-stepper-step {
+    display: flex;
+    flex: 1 1 0;
+    align-items: flex-start;
+    min-width: 0;
+  }
+  /* The last step keeps its whole label; earlier labels give way first. */
+  .fa-stepper-step:last-child {
+    flex: none;
+  }
+  /* The connector runs from this step's text to the next marker, at the marker's centre. */
+  .fa-stepper[data-orientation="horizontal"] .fa-stepper-step:not(:last-child)::after {
+    content: "";
+    flex: 1 1 var(--space-6);
+    min-width: var(--space-4);
+    height: var(--border-width);
+    margin-block-start: calc(var(--_marker) / 2 + var(--space-1));
+    margin-inline: var(--space-2);
+    background: var(--line-strong);
+  }
+  .fa-stepper[data-orientation="horizontal"] .fa-stepper-step:is([data-status="complete"], [data-status="skipped"]):not(:last-child)::after {
+    background: var(--accent-line);
+  }
+
+  .fa-stepper-target {
+    display: inline-flex;
+    flex: none;
+    align-items: flex-start;
+    gap: var(--space-2);
+    position: relative;
+    max-width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+  }
+  .fa-stepper[data-orientation="horizontal"] .fa-stepper-target {
+    flex: 0 1 auto;
+  }
+  button.fa-stepper-target {
+    cursor: pointer;
+  }
+  /* The hover fill reaches a little past the marker and text without changing their size. */
+  button.fa-stepper-target::before {
+    content: "";
+    position: absolute;
+    inset: calc(var(--space-1) * -1);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  button.fa-stepper-target:hover::before {
+    background: var(--fill-hover);
+  }
+  button.fa-stepper-target:focus-visible {
+    outline-offset: var(--space-1);
+  }
+
+  .fa-stepper-marker {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--_marker);
+    height: var(--_marker);
+    border: var(--border-width) solid var(--line-strong);
+    border-radius: var(--radius-full);
+    background: var(--glass-fill-control);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+    transition:
+      background-color var(--duration-base) var(--ease-standard),
+      box-shadow var(--duration-base) var(--ease-standard);
+  }
+  .fa-stepper-step[data-status="current"] .fa-stepper-marker {
+    border-color: transparent;
+    background: var(--accent);
+    color: var(--accent-fg);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--accent-soft);
+  }
+  .fa-stepper-step[data-status="complete"] .fa-stepper-marker {
+    border-color: var(--accent-line);
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  .fa-stepper-step[data-status="error"] .fa-stepper-marker {
+    border-color: var(--danger-line);
+    background: var(--danger-soft);
+    color: var(--danger-text);
+  }
+  .fa-stepper-step[data-status="skipped"] .fa-stepper-marker {
+    border-style: dashed;
+  }
+
+  .fa-stepper-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+    padding-block-start: calc((var(--_marker) - var(--type-body-line)) / 2);
+  }
+  .fa-stepper-label {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-stepper-step:is([data-status="current"], [data-status="complete"]) .fa-stepper-label {
+    color: var(--fg);
+  }
+  .fa-stepper-step[data-status="error"] .fa-stepper-label {
+    color: var(--danger-text);
+  }
+  .fa-stepper-description {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-stepper-optional {
+    font-style: italic;
+  }
+  .fa-stepper-step[data-disabled] {
+    opacity: var(--disabled-opacity);
+  }
+
+  /* ── Vertical ──────────────────────────────────────────────────────────────── */
+  .fa-stepper[data-orientation="vertical"] .fa-stepper-list {
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  .fa-stepper[data-orientation="vertical"] .fa-stepper-step {
+    position: relative;
+    flex-direction: column;
+    flex: none;
+  }
+  .fa-stepper[data-orientation="vertical"] .fa-stepper-label {
+    white-space: normal;
+  }
+  .fa-stepper[data-orientation="vertical"] .fa-stepper-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: calc(var(--_marker) + var(--space-1-5));
+    bottom: calc(var(--space-5) * -1 + var(--space-1-5));
+    inset-inline-start: calc(var(--_marker) / 2 - var(--border-width) / 2);
+    width: var(--border-width);
+    background: var(--line-strong);
+  }
+  .fa-stepper[data-orientation="vertical"] .fa-stepper-step:is([data-status="complete"], [data-status="skipped"]):not(:last-child)::after {
+    background: var(--accent-line);
+  }
+  .fa-stepper-content {
+    padding-block-start: var(--space-3);
+    padding-inline-start: calc(var(--_marker) + var(--space-2));
+  }
+
+  /* ── Compact (narrow horizontal) ───────────────────────────────────────────── */
+  .fa-stepper-compact {
+    display: none;
+  }
+  @container (width < 34rem) {
+    .fa-stepper[data-orientation="horizontal"] .fa-stepper-compact {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--space-1-5) var(--space-2);
+      align-items: baseline;
+    }
+    .fa-stepper[data-orientation="horizontal"] .fa-stepper-list {
+      --_hidden: 1px;
+      position: absolute;
+      width: var(--_hidden);
+      height: var(--_hidden);
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+  .fa-stepper-compact-count {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-stepper-compact-label {
+    overflow: hidden;
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-stepper-compact-bar {
+    grid-column: 1 / -1;
+    position: relative;
+    height: var(--space-1);
+    overflow: hidden;
+    border-radius: var(--radius-full);
+    background: var(--fill-muted);
+  }
+  .fa-stepper-compact-bar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--accent);
+    transform: scaleX(var(--_progress));
+    transform-origin: left;
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+  :dir(rtl) .fa-stepper-compact-bar::before {
+    transform-origin: right;
+  }
+
+  /* ── Wizard ────────────────────────────────────────────────────────────────── */
+  .fa-wizard {
+    container-type: inline-size;
+    display: grid;
+    gap: var(--gap-section);
+    min-width: 0;
+  }
+  @container (width >= 40rem) {
+    .fa-wizard[data-orientation="vertical"] {
+      --_rail: 15rem;
+      grid-template-columns: minmax(0, var(--_rail)) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+  .fa-wizard-main {
+    display: grid;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-wizard-body {
+    min-width: 0;
+    outline: none;
+  }
+  /* One line is always reserved, so a message never moves the buttons. */
+  .fa-wizard-message {
+    min-height: var(--type-caption-line);
+    margin: 0;
+    color: var(--danger-text);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-wizard-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+  }
+  .fa-wizard-footer-start {
+    margin-inline-end: auto;
+  }
+}

@@ -98,6 +98,10 @@
       "types": "./dist/ui/appearance-settings/index.d.ts",
       "import": "./dist/ui/appearance-settings/index.js"
     },
+    "./stepper": {
+      "types": "./dist/ui/stepper/index.d.ts",
+      "import": "./dist/ui/stepper/index.js"
+    },
     "./color-picker": {
       "types": "./dist/ui/color-picker/index.d.ts",
       "import": "./dist/ui/color-picker/index.js"

@@ -1,0 +1,47 @@
+import { useState } from "react";
+import { Stepper, type StepItem } from "glass-ux/stepper";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+const ONBOARDING: StepItem[] = [
+  { id: "site", label: "Name the site", description: "Where the devices are" },
+  { id: "agent", label: "Install the agent" },
+  { id: "alerts", label: "Alerts", optional: true },
+  { id: "review", label: "Review" },
+];
+
+export default function StepperSection() {
+  const [step, setStep] = useState("agent");
+  return (
+    <SectionPage>
+      <Specimen
+        title="Stepper"
+        description="Progress alone, for flows whose content and buttons the page already owns. Narrow containers show the step count, its name and a bar."
+        layout="stack"
+        wide
+      >
+        <div className="grid gap-6">
+          <Stepper
+            steps={ONBOARDING}
+            value={step}
+            navigation="any"
+            onValueChange={setStep}
+            aria-label="Onboarding"
+          />
+          <div className="max-w-sm">
+            <Stepper steps={ONBOARDING} value={step} aria-label="Onboarding, narrow" />
+          </div>
+          <Stepper
+            aria-label="Deployment"
+            steps={[
+              { id: "build", label: "Build", status: "complete" },
+              { id: "test", label: "Tests", status: "error", description: "3 failed" },
+              { id: "stage", label: "Staging", status: "upcoming" },
+              { id: "ship", label: "Production", status: "upcoming" },
+            ]}
+            value="test"
+          />
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

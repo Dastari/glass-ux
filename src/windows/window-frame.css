@@ -34,7 +34,8 @@
     align-items: center;
     gap: var(--space-2-5);
     min-height: var(--_bar-h);
-    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+    padding-block: var(--space-2);
+    padding-inline: var(--space-3) var(--space-2);
     user-select: none;
     touch-action: none;
     transition: box-shadow var(--duration-fast) var(--ease-standard);
@@ -309,10 +310,10 @@
     bottom: 0;
   }
   .fa-window-resize[data-edge="e"] {
-    right: 0;
+    right: 0; /* logical:allow resize handles address physical window edges */
   }
   .fa-window-resize[data-edge="w"] {
-    left: 0;
+    left: 0; /* logical:allow resize handles address physical window edges */
   }
   .fa-window-resize:is(
     [data-edge="ne"],
@@ -325,22 +326,22 @@
   }
   .fa-window-resize[data-edge="ne"] {
     top: 0;
-    right: 0;
+    right: 0; /* logical:allow resize handles address physical window edges */
     cursor: nesw-resize;
   }
   .fa-window-resize[data-edge="nw"] {
     top: 0;
-    left: 0;
+    left: 0; /* logical:allow resize handles address physical window edges */
     cursor: nwse-resize;
   }
   .fa-window-resize[data-edge="se"] {
-    right: 0;
+    right: 0; /* logical:allow resize handles address physical window edges */
     bottom: 0;
     cursor: nwse-resize;
   }
   .fa-window-resize[data-edge="sw"] {
     bottom: 0;
-    left: 0;
+    left: 0; /* logical:allow resize handles address physical window edges */
     cursor: nesw-resize;
   }
 

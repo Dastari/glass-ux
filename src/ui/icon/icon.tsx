@@ -43,6 +43,7 @@ export function createIcon(name: string, children: ReactNode | (() => ReactNode)
         focusable="false"
         className={cx("fa-icon", className)}
         data-icon={name}
+        data-icon-dir={/^(?:chevron-(?:left|right)|arrow-(?:left|right|up-right)|external-link|undo|redo|indent|outdent|send|log-in|log-out|sidebar|inspector)$/.test(name) ? "mirror" : undefined}
         data-size={size}
         data-tint={tint ? undefined : "off"}
         role={label ? "img" : undefined}

@@ -1,6 +1,7 @@
 import { ContextMenu as BaseContextMenu } from "@base-ui/react/context-menu"
 import { useRef, type ComponentProps, type KeyboardEvent, type MouseEvent } from "react"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
+import { isRtl } from "../../lib/direction.js"
 import { Menu, type MenuPopupProps } from "../menu/index.js"
 
 /** How long a native contextmenu that follows our keyboard-opened one is ignored. */
@@ -25,7 +26,7 @@ function highlightFirstItem(attempt = 0) {
 /**
  * The area that opens the menu on right-click or long-press — and, so the keyboard
  * reaches it too (R11.5), on Shift+F10 or the Menu key while focus is inside it. The menu
- * then opens at the bottom-left of the focused element instead of at the pointer.
+ * then opens at the bottom inline start of the focused element instead of at the pointer.
  */
 function ContextMenuTrigger({ onKeyDown, onContextMenuCapture, ...rest }: ContextMenuTriggerProps) {
   const openedByKeyboard = useRef(0)
@@ -38,12 +39,13 @@ function ContextMenuTrigger({ onKeyDown, onContextMenuCapture, ...rest }: Contex
     event.preventDefault()
     const target = event.target as HTMLElement
     const rect = target.getBoundingClientRect()
+    const inset = Math.min(rect.width / 2, 24)
     openedByKeyboard.current = performance.now()
     target.dispatchEvent(
       new window.MouseEvent("contextmenu", {
         bubbles: true,
         cancelable: true,
-        clientX: rect.left + Math.min(rect.width / 2, 24),
+        clientX: isRtl(target) ? rect.right - inset : rect.left + inset,
         clientY: rect.bottom,
       })
     )

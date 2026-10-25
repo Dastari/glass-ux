@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react"
 import { IconChevronLeft, IconChevronRight, IconFullscreen, IconImage, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { useMessages } from "../../lib/i18n/use-messages.js"
+import { isRtl, readingKey } from "../../lib/direction.js"
 import { numberFormat } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { useControllable } from "../../lib/use-controllable.js"
@@ -119,8 +120,10 @@ function LightboxContent({
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return
       const target = event.target
       if (target instanceof Element && target.closest("input, textarea, [contenteditable='true']")) return
-      if (event.key === "ArrowRight" && many) go(1)
-      else if (event.key === "ArrowLeft" && many) go(-1)
+      // In a right-to-left page → goes back, as the chevrons point.
+      const key = stage.current ? readingKey(event.key, stage.current) : event.key
+      if (key === "ArrowRight" && many) go(1)
+      else if (key === "ArrowLeft" && many) go(-1)
       else if (event.key === "+" || event.key === "=") zoomBy(1)
       else if (event.key === "-") zoomBy(-1)
       else if (event.key === "0") setZoom(0)
@@ -152,7 +155,10 @@ function LightboxContent({
     if (!start || zoom > 0 || !many) return
     const dx = event.clientX - start.x
     const dy = event.clientY - start.y
-    if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1)
+    if (Math.abs(dx) <= 48 || Math.abs(dx) <= Math.abs(dy) * 1.5) return
+    // A swipe towards the reading start brings the next picture in.
+    const forward = isRtl(stage.current!) ? dx > 0 : dx < 0
+    go(forward ? 1 : -1)
   }
 
   const scale = zooms[zoom] ?? 1

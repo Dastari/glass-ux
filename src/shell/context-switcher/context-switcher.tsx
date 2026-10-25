@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 /**
  * ContextSwitcher — the context you work in, in the top bar (R5.2, R6.9): an organisation,
  * a project, a workspace. First after the logo, so the context you are in is always
@@ -549,7 +550,7 @@ function SwitcherList({
       ) : (
         <>
           {trigger}
-          <Combobox.Portal container={popupContainer()}>
+          <Combobox.Portal render={<DirectionPortal />} container={popupContainer()}>
             <Combobox.Positioner
               className="fa-select-positioner"
               align="start"

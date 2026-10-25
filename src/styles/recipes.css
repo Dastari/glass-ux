@@ -147,7 +147,7 @@
     transition-timing-function: var(--ease-glide);
   }
   .fa-glide:not([data-axis="y"]) {
-    left: 0;
+    left: 0; /* logical:allow glide clipping uses measured physical offsets */
     width: var(--glide-extent, 100%);
     clip-path: inset(
       0 calc(var(--glide-end) + var(--_inset)) 0 calc(var(--glide-start) + var(--_inset))

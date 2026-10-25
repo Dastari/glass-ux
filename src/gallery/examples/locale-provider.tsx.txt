@@ -5,8 +5,8 @@ import { Field } from "glass-ux/field";
 import { FormStack } from "glass-ux/form";
 import { MoneyInput } from "glass-ux/money-field";
 import { NumberField } from "glass-ux/number-field";
-import { Segmented } from "glass-ux/segmented";
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { Segmented } from "glass-ux/segmented";
 
 const ISLAND_LOCALES = [
   { value: "en-US", label: "en-US" },

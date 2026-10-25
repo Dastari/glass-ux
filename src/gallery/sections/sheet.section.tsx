@@ -165,6 +165,8 @@ export default function SheetSection() {
       >
         <Example label="Sides">
           <SheetDemo size="md" label="Right · inspector" side="right" />
+          <SheetDemo size="sm" label="Start · navigation" side="start" />
+          <SheetDemo size="sm" label="End · inspector" side="end" />
           <LeftSheetDemo />
           <BottomSheetDemo />
         </Example>

@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { useMemo, useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconCheck, IconChevronsUpDown, IconClose } from "../../icons/generated/icons.js"
@@ -112,7 +113,7 @@ export function ComboboxPopup<V extends string = string>({
   const quiet = status === "loading" || status === "error" || (search?.needsMore ?? 0) > 0
   const popup = usePopupMetrics()
   return (
-    <BaseCombobox.Portal container={popupContainer()}>
+    <BaseCombobox.Portal render={<DirectionPortal />} container={popupContainer()}>
       <BaseCombobox.Positioner
         className="fa-select-positioner"
         align="start"

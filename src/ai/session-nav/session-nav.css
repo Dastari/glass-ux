@@ -121,7 +121,7 @@
   .fa-ai-session-menu {
     position: absolute;
     top: 50%;
-    right: var(--space-half);
+    inset-inline-end: var(--space-half);
     display: inline-flex;
     opacity: 0;
     transform: translateY(-50%);

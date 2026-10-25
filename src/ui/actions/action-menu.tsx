@@ -139,7 +139,8 @@ export function ActionMenu<T>({ set, targets, label, size = "sm", trigger, align
 
 /**
  * The same menu drawn statically, for documentation. `openSubmenu` shows one submenu open
- * beside it, and `highlight` marks a row as if hovered.
+ * beside it, and `highlight` marks a row as if hovered. Paired menus scroll within their
+ * container when they do not fit.
  */
 export function ActionMenuPreview<T>({
   set,
@@ -185,7 +186,7 @@ export function ActionMenuPreview<T>({
     </MenuPreview.Item>
   )
   return (
-    <div ref={rootRef} className="fa-action-menu-preview">
+    <div ref={rootRef} className="fa-action-menu-preview" role="region" aria-label={label} tabIndex={0}>
       <MenuPreview.Surface label={`Actions for ${label}`}>
         {groups.map((group, index) => (
           <Fragment key={group.group}>

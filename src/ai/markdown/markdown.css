@@ -239,3 +239,7 @@
     vertical-align: middle;
   }
 }
+
+@layer components {
+  .fa-ai-md:dir(rtl) blockquote { box-shadow: inset calc(var(--border-width-strong) * -1) 0 0 var(--line-strong); }
+}

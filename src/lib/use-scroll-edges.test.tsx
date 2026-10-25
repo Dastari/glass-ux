@@ -32,6 +32,25 @@ function Frame() {
 const nextFrame = () => act(() => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())));
 
 describe("useScrollEdges root mirroring", () => {
+  it("reports physical overflow edges with negative RTL scroll offsets", async () => {
+    const { container } = render(<Frame />);
+    const root = container.querySelector<HTMLElement>(".frame")!;
+    const body = container.querySelector<HTMLElement>(".body")!;
+    body.style.direction = "rtl";
+    Object.defineProperties(body, {
+      scrollWidth: { configurable: true, value: 400 },
+      clientWidth: { configurable: true, value: 100 },
+    });
+    body.dispatchEvent(new Event("scroll"));
+    await nextFrame();
+    expect(root).toHaveAttribute("data-scrolled-left");
+    expect(root).not.toHaveAttribute("data-scrolled-right");
+    body.scrollLeft = -300;
+    body.dispatchEvent(new Event("scroll"));
+    await nextFrame();
+    expect(root).not.toHaveAttribute("data-scrolled-left");
+    expect(root).toHaveAttribute("data-scrolled-right");
+  });
   it("writes the scrolled edges onto the nearest matching ancestor", async () => {
     const { container, unmount } = render(<Frame />);
     const root = container.querySelector<HTMLElement>(".frame")!;

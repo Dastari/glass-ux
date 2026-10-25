@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { Menu } from "@base-ui/react/menu"
 import { Popover } from "@base-ui/react/popover"
 import {
@@ -485,7 +486,7 @@ function TrailMenu({ items, label, header, scope, anchor }: TrailMenuProps) {
         </TruncatedText>
         <IconChevronDown className="fa-crumb-trail-chevron" />
       </Popover.Trigger>
-      <Popover.Portal container={popupContainer()}>
+      <Popover.Portal render={<DirectionPortal />} container={popupContainer()}>
         <Popover.Positioner
           className="fa-crumb-trail-positioner"
           side="bottom"

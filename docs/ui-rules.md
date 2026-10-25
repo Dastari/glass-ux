@@ -172,6 +172,11 @@ follows a fine pointer and a glint on the rim nearest it.
   corners; see the [layout contract](layout-contract.md).
 - **R5.10** Do not wrap a group of panels in another panel to draw a frame.
 
+- **R5.11** Component CSS uses logical inline properties (`padding-inline-start`,
+  `inset-inline-end`, `text-align: start`) for reading-order layout. Directional icons and
+  horizontal keyboard navigation follow the region’s direction. Physical coordinates are
+  reserved for spatial content such as charts, maps and free windows.
+
 ## R6 · Navigation
 
 - **R6.1** Level-one navigation is the Rail: icon-only, on the canvas, every item with a
@@ -283,7 +288,7 @@ follows a fine pointer and a glint on the rim nearest it.
   area.
 - **R13.5** Tooltips hold one line and nothing interactive. Popovers hold small, non-blocking
   content; a menu never holds form fields.
-- **R13.6** Toasts appear bottom-right on desktop and at the top on phones, at most three at
+- **R13.6** Toasts appear in the bottom corner at the reading end on desktop and at the top on phones, at most three at
   once.
 - **R13.7** A dialog with unsaved changes asks before it closes.
 - **R13.8** Assistant questions and approvals are never modal; they wait above the composer.

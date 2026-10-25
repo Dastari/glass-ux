@@ -47,7 +47,7 @@ export default function TooltipSection() {
           </div>
         </Example>
         <Example label="Sides">
-          {(["top", "right", "bottom", "left"] as const).map((side) => (
+          {(["top", "right", "bottom", "left", "inline-start", "inline-end"] as const).map((side) => (
             <Tooltip key={side} content="Last check-in 2 min ago" side={side}>
               <Button size="sm" variant="ghost">
                 {side}

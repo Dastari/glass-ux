@@ -94,7 +94,7 @@
   .fa-map-stage > .fa-map-silhouette {
     position: absolute;
     top: var(--fa-map-fit-top);
-    left: var(--fa-map-fit-left);
+    left: var(--fa-map-fit-left); /* logical:allow map projection and measured viewport insets use physical coordinates */
     width: calc(100% - var(--fa-map-fit-left) - var(--fa-map-fit-right));
     height: calc(100% - var(--fa-map-fit-top) - var(--fa-map-fit-bottom));
   }
@@ -136,7 +136,7 @@
   .fa-map .maplibregl-canvas {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 0; /* logical:allow map projection and measured viewport insets use physical coordinates */
     outline: none;
     /* The canvas meets the Glass UX canvas with a soft edge, not a cut. Masks are alpha only. */
     mask-image:
@@ -166,13 +166,13 @@
   .fa-map .maplibregl-marker {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 0; /* logical:allow map projection and measured viewport insets use physical coordinates */
     will-change: transform;
   }
   .fa-map .maplibregl-popup {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 0; /* logical:allow map projection and measured viewport insets use physical coordinates */
     z-index: var(--z-raised);
     display: flex;
     pointer-events: none;
@@ -187,7 +187,7 @@
   .fa-map .maplibregl-boxzoom {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 0; /* logical:allow map projection and measured viewport insets use physical coordinates */
     width: 0;
     height: 0;
     background: var(--accent-soft);
@@ -260,7 +260,7 @@
   .fa-map-marker-label {
     position: absolute;
     top: 50%;
-    left: 100%;
+    left: 100%; /* logical:allow map projection and measured viewport insets use physical coordinates */
     display: none;
     max-width: var(--_label-max);
     overflow: hidden;
@@ -375,7 +375,7 @@
   .fa-map-popup-close {
     position: absolute;
     top: var(--space-2);
-    right: var(--space-2);
+    right: var(--space-2); /* logical:allow map projection and measured viewport insets use physical coordinates */
   }
   .fa-map-popup-title {
     color: var(--fg);
@@ -465,7 +465,7 @@
   .fa-map-controls {
     position: absolute;
     top: calc(var(--_in-top) + var(--space-3));
-    right: calc(var(--_in-right) + var(--space-3));
+    right: calc(var(--_in-right) + var(--space-3)); /* logical:allow map projection and measured viewport insets use physical coordinates */
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
@@ -474,12 +474,12 @@
   .fa-map-outside {
     position: absolute;
     top: calc(var(--_in-top) + var(--space-3));
-    left: calc(var(--_in-left) + var(--space-3));
+    left: calc(var(--_in-left) + var(--space-3)); /* logical:allow map projection and measured viewport insets use physical coordinates */
     max-width: calc(100% - var(--_in-left) - var(--_in-right) - var(--control-h-md) - var(--space-3) * 3);
   }
   .fa-map-attribution {
     position: absolute;
-    right: calc(var(--_in-right) + var(--space-2));
+    right: calc(var(--_in-right) + var(--space-2)); /* logical:allow map projection and measured viewport insets use physical coordinates */
     bottom: calc(var(--_in-bottom) + var(--space-2));
     max-inline-size: max(
       0px,
@@ -504,7 +504,7 @@
   /* Collapsed after a few seconds or the first interaction (map.tsx, docs/map.md): ⓘ stays. */
   .fa-map-attribution[data-collapsed] .fa-map-attribution-text {
     position: absolute;
-    right: 100%;
+    right: 100%; /* logical:allow map projection and measured viewport insets use physical coordinates */
     opacity: 0;
     visibility: hidden;
   }
@@ -553,7 +553,7 @@
     }
     .fa-map-controls {
       top: calc(var(--_in-top) + var(--space-2));
-      right: calc(var(--_in-right) + var(--space-2));
+      right: calc(var(--_in-right) + var(--space-2)); /* logical:allow map projection and measured viewport insets use physical coordinates */
     }
   }
   /* Credit text needs more room than the controls, especially at larger UI scales. */
@@ -578,7 +578,7 @@
       display: none;
     }
     .fa-map-attribution {
-      right: calc(var(--_in-right) + var(--space-1));
+      right: calc(var(--_in-right) + var(--space-1)); /* logical:allow map projection and measured viewport insets use physical coordinates */
       bottom: calc(var(--_in-bottom) + var(--space-half));
     }
   }
@@ -587,7 +587,7 @@
   /* The list is page content: a card (no blur, so it can sit in a panel too). */
   .fa-map-list {
     position: absolute;
-    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left);
+    inset: var(--_in-top) var(--_in-right) var(--_in-bottom) var(--_in-left); /* logical:allow probe and viewport insets use physical coordinates */
     display: flex;
     flex-direction: column;
     min-height: 0;

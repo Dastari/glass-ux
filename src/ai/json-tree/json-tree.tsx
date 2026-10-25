@@ -1,3 +1,4 @@
+import { readingKey } from "../../lib/direction.js"
 import { useRef, useState } from "react";
 import { IconChevronRight } from "../../icons/generated/icons.js";
 import { cx } from "../../lib/cx.js";
@@ -221,6 +222,7 @@ export function JsonTree({
             "[role=treeitem]",
           );
           if (!current) return;
+          const key = readingKey(event.key, event.currentTarget);
           const index = rows.indexOf(current);
           const focus = (row: HTMLElement | undefined | null) => {
             if (row) {
@@ -228,12 +230,12 @@ export function JsonTree({
               row.focus();
             }
           };
-          if (event.key === "ArrowDown")
+          if (key === "ArrowDown")
             focus(rows[Math.min(rows.length - 1, index + 1)]);
-          else if (event.key === "ArrowUp") focus(rows[Math.max(0, index - 1)]);
-          else if (event.key === "Home") focus(rows[0]);
-          else if (event.key === "End") focus(rows.at(-1));
-          else if (event.key === "ArrowRight") {
+          else if (key === "ArrowUp") focus(rows[Math.max(0, index - 1)]);
+          else if (key === "Home") focus(rows[0]);
+          else if (key === "End") focus(rows.at(-1));
+          else if (key === "ArrowRight") {
             if (current.getAttribute("aria-expanded") === "false") {
               event.preventDefault();
               current
@@ -245,7 +247,7 @@ export function JsonTree({
                   ":scope > [role=group] > [role=treeitem]",
                 ),
               );
-          } else if (event.key === "ArrowLeft") {
+          } else if (key === "ArrowLeft") {
             if (current.getAttribute("aria-expanded") === "true") {
               event.preventDefault();
               current
@@ -255,7 +257,7 @@ export function JsonTree({
               focus(
                 current.parentElement?.closest<HTMLElement>("[role=treeitem]"),
               );
-          } else if (event.key === "Enter" || event.key === " ") {
+          } else if (key === "Enter" || event.key === " ") {
             const button =
               current.querySelector<HTMLButtonElement>(":scope > button");
             if (button) {

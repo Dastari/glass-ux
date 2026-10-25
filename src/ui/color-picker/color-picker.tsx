@@ -14,6 +14,7 @@ import {
 import { IconEyedropper } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useMessages } from "../../lib/i18n/use-messages.js"
+import { DirectionProvider } from "../../lib/locale/direction.js"
 import { Button } from "../button/index.js"
 import { Input } from "../input/index.js"
 import { Tooltip } from "../tooltip/index.js"
@@ -143,8 +144,10 @@ export function ColorPicker({
       data-disabled={disabled ? "" : undefined}
       style={{ "--_colour": cssColor({ ...color, a: 1 }), "--_colour-alpha": cssColor(color) } as CSSProperties}
     >
+      {/* Lightness, chroma and hue are physical axes, as in a chart: left to right in any language. */}
+      <DirectionProvider direction="ltr">
       <ColorArea color={color} peak={peak} disabled={disabled} label={t.area} valueText={t.areaValue} onChange={update} onCommit={commit} />
-      <div className="fa-color-sliders">
+      <div className="fa-color-sliders" dir="ltr">
         <ColorSlider
           label={t.hue}
           value={Math.round(color.h)}
@@ -168,6 +171,7 @@ export function ColorPicker({
           />
         ) : null}
       </div>
+      </DirectionProvider>
       <div className="fa-color-inputs">
         <span className="fa-color-preview" data-alpha={alpha ? "" : undefined} aria-hidden />
         <HexInput hex={hex} label={t.hex} disabled={disabled} onCommit={(next) => {
@@ -285,6 +289,7 @@ function ColorArea({
   return (
     <div
       ref={box}
+      dir="ltr"
       className="fa-color-area"
       data-disabled={disabled ? "" : undefined}
       onPointerDown={(event) => {

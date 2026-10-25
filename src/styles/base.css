@@ -90,3 +90,8 @@
     overscroll-behavior-x: contain;
   }
 }
+
+@layer base {
+  :root { --safe-inline-start: var(--safe-left); --safe-inline-end: var(--safe-right); }
+  :root:dir(rtl) { --safe-inline-start: var(--safe-right); --safe-inline-end: var(--safe-left); }
+}

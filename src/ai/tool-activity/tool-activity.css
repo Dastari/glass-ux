@@ -206,8 +206,8 @@
   }
 
   .fa-ai-tool-panel > * {
-    margin: var(--space-1) 0 var(--space-2)
-      calc(var(--space-2) + var(--_glyph) + var(--space-2-5));
+    margin-block: var(--space-1) var(--space-2);
+    margin-inline: calc(var(--space-2) + var(--_glyph) + var(--space-2-5)) 0;
   }
   .fa-ai-tool-list {
     display: flex;
@@ -253,4 +253,8 @@
       margin-inline-start: auto;
     }
   }
+}
+
+@layer components {
+  .fa-ai-tool-row[data-panel-open] > .fa-ai-tool-chevron:dir(rtl) { rotate: -90deg; }
 }

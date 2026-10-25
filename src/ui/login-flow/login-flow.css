@@ -56,6 +56,7 @@
 
   /* ── Stage and view transition ─────────────────────────────────────────── */
   .fa-login-stage {
+    --_inline-sign: 1;
     min-inline-size: 0;
     transition: height var(--duration-glide) var(--ease-glide);
   }
@@ -72,7 +73,7 @@
   @keyframes fa-login-enter {
     from {
       opacity: 0;
-      transform: translateX(calc(var(--_shift) * var(--_direction, 1)));
+      transform: translateX(calc(var(--_shift) * var(--_direction, 1) * var(--_inline-sign)));
     }
   }
 
@@ -253,4 +254,8 @@
   .fa-login-back {
     margin-inline-start: auto;
   }
+}
+
+@layer components {
+  .fa-login-stage:dir(rtl) { --_inline-sign: -1; }
 }

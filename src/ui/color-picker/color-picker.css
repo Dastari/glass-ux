@@ -47,7 +47,7 @@
   }
   .fa-color-area-thumb {
     position: absolute;
-    inset-inline-start: calc(var(--_x) * 100%);
+    left: calc(var(--_x) * 100%); /* logical:allow chroma runs left to right in every language */
     top: calc(var(--_y) * 100%);
     width: var(--_thumb);
     height: var(--_thumb);
@@ -58,9 +58,6 @@
       var(--_bead-shadow);
     translate: -50% -50%;
     outline-offset: calc(var(--_ring-width) + var(--focus-ring-offset));
-  }
-  :dir(rtl) .fa-color-area-thumb {
-    translate: 50% -50%;
   }
 
   /* ── Sliders ───────────────────────────────────────────────────────────────── */

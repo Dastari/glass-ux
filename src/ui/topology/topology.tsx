@@ -1,3 +1,5 @@
+import { useDirection } from "../../lib/locale/direction.js"
+import { readingKey } from "../../lib/direction.js"
 /**
  * TopologyCanvas — a pannable, zoomable map of a tree of nodes (a network: gateway, then
  * switches and access points, then clients clustered by kind). UniFi-style rows, elbow
@@ -285,6 +287,7 @@ export function TopologyCanvas<T>({
   const layoutSize = useRef({ width: 0, height: 0 })
   const tokens = useRef({ fitPadding: 24, controls: 48, duration: 300 })
   const locale = useLocale()
+  const rtl = useDirection() === "rtl"
   const [metrics, setMetrics] = useState<Partial<TopologyMetrics> | null>(null)
   const [layout, setLayout] = useState<TopologyLayout | null>(null)
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -320,18 +323,18 @@ export function TopologyCanvas<T>({
             return measure.getBoundingClientRect().width
           }
         : undefined
-      setLayout(layoutTopology(nodes, { metrics, clusters, labelWidth, locale }))
+      setLayout(layoutTopology(nodes, { metrics, clusters, labelWidth, locale, rtl }))
     })
     return () => {
       live = false
     }
-  }, [nodes, metrics, clusters, locale])
+  }, [nodes, metrics, clusters, locale, rtl])
 
   useIsomorphicLayoutEffect(() => {
     layoutSize.current = { width: layout?.width ?? 0, height: layout?.height ?? 0 }
   }, [layout])
   const byId = useMemo(() => new Map((nodes ?? []).map((node) => [node.id, node] as const)), [nodes])
-  const index = useMemo(() => (layout ? indexTopology(layout) : null), [layout])
+  const index = useMemo(() => (layout ? indexTopology(layout, rtl) : null), [layout, rtl])
   // Laid out, and the chrome over it known: until then the loading shape holds the box.
   const ready = Boolean(layout && nodes) && !pending
   /** Why the zoom, fit and minimap controls are unavailable (R12). */
@@ -560,7 +563,7 @@ export function TopologyCanvas<T>({
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!index) return
     const nodeId = (event.target as HTMLElement).closest<HTMLElement>("[data-node-id]")?.dataset.nodeId ?? null
-    const move = KEYS[event.key]
+    const move = KEYS[readingKey(event.key, event.currentTarget)]
     if (move) {
       event.preventDefault()
       focusNode(moveFocus(index, nodeId, move))

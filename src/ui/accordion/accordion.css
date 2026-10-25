@@ -64,7 +64,12 @@
     --_collapse-h: var(--accordion-panel-height);
   }
   .fa-accordion-content {
-    padding: var(--space-1) var(--space-2-5) var(--space-3) var(--_indent);
+    padding-block: var(--space-1) var(--space-3);
+    padding-inline: var(--_indent) var(--space-2-5);
     color: var(--fg-muted);
   }
+}
+
+@layer components {
+  .fa-accordion-trigger[data-panel-open] > .fa-accordion-chevron:dir(rtl) { rotate: -90deg; }
 }

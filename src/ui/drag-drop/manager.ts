@@ -278,6 +278,7 @@ function makeGhost(element: HTMLElement, rect: DOMRect, custom: boolean, input: 
   ghost.dataset.input = input
   adoptTheme(ghost, element)
   const style = getComputedStyle(element)
+  ghost.dir = style.direction
   // Two layers: the outer one only moves (a transform the compositor updates without
   // re-layerizing the page); the inner one carries the lift's scale and shadow. Scaling the
   // outer one would scale its translation too, and the preview would drift from the pointer.
@@ -1342,7 +1343,8 @@ export class DragDropManager {
     const layout = zone ? session.layouts.get(zone.id) : undefined
     const count = layout ? layout.items.length - (layout.removed === null ? 0 : 1) : 0
     const columns = layout?.sort === "grid" ? gridColumns(layout.boxes) : 1
-    const step = zone ? keyboardStep(layout ? layout.sort : null, key, session.index ?? 0, count, columns, layout?.rtl ?? false) : "next"
+    const rtl = layout?.rtl ?? (zone?.element ? getComputedStyle(zone.element).direction === "rtl" : false)
+    const step = zone ? keyboardStep(layout ? layout.sort : null, key, session.index ?? 0, count, columns, rtl) : "next"
     if (step === null) return
     let nextZone = zone
     let nextIndex = session.index

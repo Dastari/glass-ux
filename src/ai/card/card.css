@@ -57,7 +57,8 @@
     gap: var(--space-2-5);
     min-width: 0;
     min-height: calc(var(--control-h-sm) + var(--space-2) * 2);
-    padding: var(--space-2) var(--space-2) var(--space-2) var(--_pad);
+    padding-block: var(--space-2);
+    padding-inline: var(--_pad) var(--space-2);
   }
   .fa-ai-card-header[data-tile] {
     gap: var(--space-3);

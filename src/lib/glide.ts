@@ -1,3 +1,4 @@
+import { useDirection } from "./locale/direction.js"
 import { useLayoutEffect, useEffect, useState, type DependencyList, type RefObject } from "react"
 import { observeElementSizes } from "./resize-observer.js"
 
@@ -26,7 +27,7 @@ export function placeGlide(indicator: HTMLElement, target: HTMLElement | null, a
     previous.delete(indicator)
     return false
   }
-  const start = axis === "x" ? target.offsetLeft : target.offsetTop
+  let start = axis === "x" ? target.offsetLeft : target.offsetTop
   const size = axis === "x" ? target.offsetWidth : target.offsetHeight
   // The container's own length, or further when its items scroll beyond it. (scrollWidth
   // would also count the indicator, which never lets the extent shrink.)
@@ -34,6 +35,17 @@ export function placeGlide(indicator: HTMLElement, target: HTMLElement | null, a
   for (const child of container.children) {
     if (child === indicator || !(child instanceof HTMLElement)) continue
     extent = Math.max(extent, axis === "x" ? child.offsetLeft + child.offsetWidth : child.offsetTop + child.offsetHeight)
+  }
+  // RTL overflow extends into negative offsetLeft coordinates. Anchor the physical
+  // clipping strip to that edge while keeping clip-path offsets non-negative.
+  if (axis === "x") {
+    let left = 0
+    for (const child of container.children) {
+      if (child !== indicator && child instanceof HTMLElement) left = Math.min(left, child.offsetLeft)
+    }
+    extent -= left
+    start -= left
+    indicator.style.left = `${left}px`
   }
   const last = previous.get(indicator)
   if (last !== undefined && last !== start) indicator.setAttribute("data-direction", start > last ? "forward" : "backward")
@@ -55,6 +67,7 @@ export function placeGlide(indicator: HTMLElement, target: HTMLElement | null, a
  * own selected style meanwhile (server rendering, first paint).
  */
 export function useGlide(indicator: RefObject<HTMLElement | null>, selector: string, axis: GlideAxis = "x", deps: DependencyList = []): boolean {
+  const direction = useDirection()
   const [placed, setPlaced] = useState(false)
   useIsoLayoutEffect(() => {
     const element = indicator.current
@@ -71,6 +84,6 @@ export function useGlide(indicator: RefObject<HTMLElement | null>, selector: str
     for (const child of parent.children) if (child !== element) observer.observe(child)
     return () => observer.disconnect()
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the caller lists what moves the target
-  }, [indicator, selector, axis, ...deps])
+  }, [indicator, selector, axis, direction, ...deps])
   return placed
 }

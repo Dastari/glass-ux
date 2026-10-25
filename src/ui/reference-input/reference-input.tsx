@@ -1,3 +1,5 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
+import { readingKey } from "../../lib/direction.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { useEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type ReactNode, type Ref } from "react"
 import { IconCheck, IconChevronDown, IconPlus } from "../../icons/generated/icons.js"
@@ -330,7 +332,7 @@ export function ReferenceInput<R extends string = string>({
     if (filterable && open && event.altKey && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
       event.preventDefault()
       event.preventBaseUIHandler()
-      setKind((current) => stepKind(current, kinds, event.key === "ArrowRight" ? 1 : -1))
+      setKind((current) => stepKind(current, kinds, readingKey(event.key, event.currentTarget) === "ArrowRight" ? 1 : -1))
     }
   }
 
@@ -477,7 +479,7 @@ export function ReferenceInput<R extends string = string>({
         </BaseCombobox.Chips>
       </BaseCombobox.InputGroup>
 
-      <BaseCombobox.Portal container={popupContainer()}>
+      <BaseCombobox.Portal render={<DirectionPortal />} container={popupContainer()}>
         <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BaseCombobox.Popup className="glass-overlay fa-popup fa-combobox-popup fa-ref-popup" aria-busy={status === "loading" || status === "refreshing" || undefined} data-status={status}>
             {filterable ? (

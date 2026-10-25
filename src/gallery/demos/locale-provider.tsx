@@ -7,8 +7,8 @@ import { Field } from "../../ui/field/index.js";
 import { FormStack } from "../../ui/form/index.js";
 import { MoneyInput } from "../../ui/money-field/index.js";
 import { NumberField } from "../../ui/number-field/index.js";
-import { Segmented } from "../../ui/segmented/index.js";
 import { SectionPage, Specimen } from "../kit.js";
+import { Segmented } from "../../ui/segmented/index.js";
 
 const ISLAND_LOCALES = [
   { value: "en-US", label: "en-US" },
@@ -54,7 +54,7 @@ export default function LocaleSection() {
           </>
         }
         layout="grid"
-        specimenKey="locale:default:0"
+        specimenKey="locale:default:1"
       >
         <Values
           heading={

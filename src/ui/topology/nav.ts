@@ -29,10 +29,12 @@ export interface TopologyRowEntry {
 }
 
 export interface TopologyIndex {
+  /** Whether rows and cluster members follow right-to-left reading order. */
+  rtl?: boolean
   /** Graph or tree nodes with stable identifiers and relationships. */
   nodes: ReadonlyMap<string, LaidOutNode>
   clusters: ReadonlyMap<string, LaidOutCluster>
-  /** Each row of the map, left to right. */
+  /** Each row of the map, in reading order. */
   rows: ReadonlyArray<readonly TopologyRowEntry[]>
   /** What hangs below each node: its structural children and its column of blocks. */
   below: ReadonlyMap<string, readonly TopologyRowEntry[]>
@@ -44,8 +46,8 @@ export interface TopologyIndex {
 
 const parentKey = (parentId: string | null) => parentId ?? ""
 
-/** Indexes a laid-out topology for keyboard navigation and drawing: nodes and clusters by id, rows left to right, what hangs below each node, each parent's blocks and the drawing order. */
-export function indexTopology(layout: TopologyLayout): TopologyIndex {
+/** Indexes a laid-out topology for keyboard navigation and drawing: nodes and clusters by id, rows in reading order (`rtl` mirrors the order), what hangs below each node, each parent's blocks and the drawing order. */
+export function indexTopology(layout: TopologyLayout, rtl = false): TopologyIndex {
   const nodes = new Map(layout.nodes.map((node) => [node.id, node] as const))
   const clusters = new Map(layout.clusters.map((cluster) => [cluster.id, cluster] as const))
   const stacks = new Map<string, LaidOutCluster[]>()
@@ -60,9 +62,9 @@ export function indexTopology(layout: TopologyLayout): TopologyIndex {
   }
   for (const node of layout.nodes) if (!node.clusterId) add(node.depth, node.parentId, { id: node.id, x: node.x, node })
   for (const [key, blocks] of stacks) add(blocks[0]!.depth, blocks[0]!.parentId, { id: `${key}::stack`, x: blocks[0]!.x, blocks })
-  for (const row of rows) row?.sort((a, b) => a.x - b.x)
+  for (const row of rows) row?.sort((a, b) => (a.x - b.x) * (rtl ? -1 : 1))
   const order = rows.flatMap((row) => (row ?? []).flatMap((entry) => (entry.blocks ? entry.blocks.flatMap((block) => [...block.members]) : [entry.id])))
-  return { nodes, clusters, rows: rows.map((row) => row ?? []), below, stacks, order }
+  return { rtl, nodes, clusters, rows: rows.map((row) => row ?? []), below, stacks, order }
 }
 
 /** The member of a column of blocks nearest a point. */
@@ -82,7 +84,7 @@ function nearestMember(index: TopologyIndex, blocks: readonly LaidOutCluster[], 
   return best
 }
 
-/** Where a key moves focus from `currentId`; undefined when there is nowhere to go. */
+/** Where a key moves focus from `currentId`; undefined when there is nowhere to go. Normalise horizontal keys to reading order before calling with an RTL index. */
 export function moveFocus(index: TopologyIndex, currentId: string | null, move: TopologyMove): string | undefined {
   if (move === "home" || !currentId) return index.order[0]
   if (move === "end") return index.order.at(-1)
@@ -101,7 +103,7 @@ export function moveFocus(index: TopologyIndex, currentId: string | null, move: 
     // The nearest block on a neighbouring shelf, or beside this one on the same shelf.
     const onShelf = (shelf: number) => group.filter((block) => block.shelf === shelf)
     const beside = (step: -1 | 1) => {
-      const shelf = onShelf(cluster.shelf).toSorted((a, b) => a.x - b.x)
+      const shelf = onShelf(cluster.shelf).toSorted((a, b) => (a.x - b.x) * (index.rtl ? -1 : 1))
       return shelf[shelf.indexOf(cluster) + step]
     }
     if (move === "up") {

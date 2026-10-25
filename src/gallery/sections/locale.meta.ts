@@ -5,5 +5,5 @@ export const meta: SectionMeta = {
   title: "Locale",
   group: "Foundations",
   order: 75,
-  summary: "Which locale formats numbers, money, dates and times, and how to set it per application or region.",
+  summary: "Formatting locales and reading direction for an application or region.",
 }

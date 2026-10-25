@@ -47,6 +47,12 @@
     --_from-x: calc(var(--_shift) * -1);
     --_from-y: 0px;
   }
+  .fa-tooltip[data-side="inline-start"]:dir(rtl) {
+    --_from-x: calc(var(--_shift) * -1);
+  }
+  .fa-tooltip[data-side="inline-end"]:dir(rtl) {
+    --_from-x: var(--_shift);
+  }
   .fa-tooltip[data-starting-style] {
     opacity: 0;
     transform: translate(var(--_from-x), var(--_from-y)) scale(var(--overlay-enter-scale));
@@ -78,15 +84,27 @@
     top: calc(var(--_ah) * -1);
     rotate: 180deg;
   }
-  .fa-tooltip-arrow[data-side="left"],
-  .fa-tooltip-arrow[data-side="inline-start"] {
-    right: calc((var(--_aw) + var(--_ah)) / -2);
+  .fa-tooltip-arrow[data-side="left"] {
+    right: calc((var(--_aw) + var(--_ah)) / -2); /* logical:allow arrow geometry follows the resolved physical popup side */
     rotate: -90deg;
   }
-  .fa-tooltip-arrow[data-side="right"],
-  .fa-tooltip-arrow[data-side="inline-end"] {
-    left: calc((var(--_aw) + var(--_ah)) / -2);
+  .fa-tooltip-arrow[data-side="right"] {
+    left: calc((var(--_aw) + var(--_ah)) / -2); /* logical:allow arrow geometry follows the resolved physical popup side */
     rotate: 90deg;
+  }
+  .fa-tooltip-arrow[data-side="inline-start"] {
+    inset-inline-end: calc((var(--_aw) + var(--_ah)) / -2);
+    rotate: -90deg;
+  }
+  .fa-tooltip-arrow[data-side="inline-end"] {
+    inset-inline-start: calc((var(--_aw) + var(--_ah)) / -2);
+    rotate: 90deg;
+  }
+  .fa-tooltip-arrow[data-side="inline-start"]:dir(rtl) {
+    rotate: 90deg;
+  }
+  .fa-tooltip-arrow[data-side="inline-end"]:dir(rtl) {
+    rotate: -90deg;
   }
 
   /* Static bubble for the gallery. */
@@ -95,7 +113,7 @@
   }
   .fa-tooltip-preview .fa-tooltip-arrow {
     position: absolute;
-    left: 50%;
+    left: 50%; /* logical:allow arrow geometry follows the resolved physical popup side */
     translate: -50% 0;
   }
 }

@@ -1,3 +1,5 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
+import { useDirection } from "../../lib/locale/direction.js"
 import { Toast as BaseToast } from "@base-ui/react/toast"
 import type { ReactNode } from "react"
 import { IconClose, IconError, IconInfo, IconSuccess, IconWarning } from "../../icons/generated/icons.js"
@@ -95,6 +97,7 @@ export function ToastLayout({ tone, title, description, action, close }: ToastLa
 function ToastList() {
   const { toasts } = BaseToast.useToastManager()
   const phone = usePhoneLayout()
+  const direction = useDirection()
   return toasts.map((item) => {
     const tone = toneOf(item.type)
     return (
@@ -103,7 +106,7 @@ function ToastList() {
         toast={item}
         className="glass-overlay glass-detached fa-toast"
         data-tone={tone}
-        swipeDirection={phone ? "up" : ["right", "down"]}
+        swipeDirection={phone ? "up" : [direction === "rtl" ? "left" : "right", "down"]}
       >
         <BaseToast.Content className="fa-toast-content">
           <ToastLayout
@@ -137,7 +140,7 @@ export function Toaster() {
   if (!owns) return null
   return (
     <BaseToast.Provider toastManager={toastManager} limit={3}>
-      <BaseToast.Portal container={container}>
+      <BaseToast.Portal render={<DirectionPortal />} container={container}>
         <BaseToast.Viewport className="fa-toast-viewport" data-position={phone ? "top" : "bottom"}>
           <ToastList />
         </BaseToast.Viewport>

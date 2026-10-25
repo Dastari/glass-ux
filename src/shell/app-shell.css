@@ -67,6 +67,7 @@
   }
 
   .fa-shell {
+    --_inline-sign: 1;
     --_drawer-min: 14rem;
     --_drawer-max: 28rem;
     --_drawer: clamp(var(--_drawer-min), var(--shell-drawer, var(--sidebar-w)), var(--_drawer-max));
@@ -84,8 +85,8 @@
       "brand top top top"
       "rail drawer work insp";
     height: 100dvh;
-    padding: var(--safe-top) max(var(--page-gutter), var(--safe-right)) max(var(--page-gutter), var(--safe-bottom))
-      max(var(--space-1), var(--safe-left));
+    padding-block: var(--safe-top) max(var(--page-gutter), var(--safe-bottom));
+    padding-inline: max(var(--space-1), var(--safe-inline-start)) max(var(--page-gutter), var(--safe-inline-end));
     overflow: hidden;
     transition-property: --fa-shell-drawer-track, --fa-shell-inspector-track;
     transition-duration: 0s;
@@ -161,7 +162,7 @@
   }
   :root[data-shell-drawer="closed"] .fa-shell:not([data-drawer-preview="open"]) .fa-shell-slot-drawer > *,
   .fa-shell[data-drawer-preview="closed"] .fa-shell-slot-drawer > * {
-    transform: translateX(calc(-100% - var(--gap-panels)));
+    transform: translateX(calc((-100% - var(--gap-panels)) * var(--_inline-sign)));
     transition-timing-function: var(--ease-exit);
   }
   .fa-shell-drawer-handle {
@@ -231,7 +232,7 @@
     flex: none;
     width: var(--inspector-w);
     pointer-events: auto;
-    transform: translateX(calc(100% + var(--page-gutter)));
+    transform: translateX(calc((100% + var(--page-gutter)) * var(--_inline-sign)));
     transition: transform var(--duration-base) var(--ease-exit);
   }
   @media (width >= 120rem) {
@@ -290,7 +291,8 @@
       grid-template-areas:
         "top"
         "work";
-      padding: var(--safe-top) max(var(--page-gutter), var(--safe-right)) 0 max(var(--page-gutter), var(--safe-left));
+      padding-block: var(--safe-top) 0;
+      padding-inline: max(var(--page-gutter), var(--safe-inline-start)) max(var(--page-gutter), var(--safe-inline-end));
     }
     .fa-shell[data-has-tabbar] {
       --_tabbar-space: calc(var(--bottombar-h) + max(var(--space-3), var(--safe-bottom)) + var(--space-2));
@@ -346,4 +348,8 @@
       app-region: no-drag;
     }
   }
+}
+
+@layer components {
+  .fa-shell:dir(rtl) { --_inline-sign: -1; }
 }

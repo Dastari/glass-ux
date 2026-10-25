@@ -1,3 +1,4 @@
+import { readingKey } from "../../../lib/direction.js"
 import { useId, useRef, useState, type KeyboardEvent } from "react"
 import { cx } from "../../../lib/cx.js"
 import { Tooltip } from "../../tooltip/index.js"
@@ -66,19 +67,20 @@ export function ChartLegend({ items, hidden, onToggle, layout = "row", active, o
   const visibleCount = items.filter((item) => !hidden?.has(item.key)).length
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const key = readingKey(event.key, event.currentTarget)
     const keys = ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"]
-    if (!keys.includes(event.key)) return
+    if (!keys.includes(key)) return
     const buttons = [...(ref.current?.querySelectorAll<HTMLButtonElement>("button[data-legend-item]") ?? [])]
     const current = buttons.indexOf(document.activeElement as HTMLButtonElement)
     if (current < 0) return
     event.preventDefault()
     const last = buttons.length - 1
     const next =
-      event.key === "Home"
+      key === "Home"
         ? 0
-        : event.key === "End"
+        : key === "End"
           ? last
-          : event.key === "ArrowRight" || event.key === "ArrowDown"
+          : key === "ArrowRight" || key === "ArrowDown"
             ? Math.min(last, current + 1)
             : Math.max(0, current - 1)
     setFocusIndex(next)

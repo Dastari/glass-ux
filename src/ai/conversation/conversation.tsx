@@ -1,3 +1,4 @@
+import { readingKey } from "../../lib/direction.js"
 import {
   Children,
   createContext,
@@ -380,10 +381,11 @@ export function TurnNavigator({ turns, active, onNavigate }: {
   const refs = useRef<Array<HTMLButtonElement | null>>([])
   const [pointer, setPointer] = useState<number | null>(null)
   const move = (event: KeyboardEvent, position: number) => {
+    const key = readingKey(event.key, event.currentTarget)
     const next =
-      event.key === "ArrowUp" || event.key === "ArrowLeft"
+      key === "ArrowUp" || key === "ArrowLeft"
         ? Math.max(0, position - 1)
-        : event.key === "ArrowDown" || event.key === "ArrowRight"
+        : key === "ArrowDown" || key === "ArrowRight"
           ? Math.min(turns.length - 1, position + 1)
           : event.key === "Home"
             ? 0
@@ -400,7 +402,7 @@ export function TurnNavigator({ turns, active, onNavigate }: {
       {turns.map((turn, position) => {
         const distance = pointer === null ? 9 : Math.abs(pointer - position)
         return (
-          <Tooltip key={turn.index} content={turn.preview} side="right" describe={false}>
+          <Tooltip key={turn.index} content={turn.preview} side="inline-end" describe={false}>
             <button
               ref={(node) => {
                 refs.current[position] = node

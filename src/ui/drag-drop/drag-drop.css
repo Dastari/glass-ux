@@ -117,7 +117,7 @@
      shadow, so the scale never multiplies the position. */
   .fa-dnd-ghost {
     position: fixed;
-    inset: 0 auto auto 0;
+    inset: 0 auto auto 0; /* logical:allow drag preview uses physical pointer coordinates */
     z-index: var(--_dnd-z-ghost);
     max-width: none;
     max-height: none;
@@ -182,7 +182,7 @@
     content: attr(data-reason);
     position: absolute;
     top: calc(100% + var(--space-2));
-    left: 0;
+    inset-inline-start: 0;
     max-width: max(100%, calc(var(--space-16) * 3));
     padding: var(--space-half) var(--space-2);
     overflow: hidden;

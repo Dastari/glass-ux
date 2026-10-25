@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { Select } from "@base-ui/react/select"
 import { useState, type ComponentProps } from "react"
 import { IconCheck, IconChevronLeft, IconChevronRight, IconChevronsUpDown, IconPageFirst, IconPageLast } from "../../icons/generated/icons.js"
@@ -156,7 +157,7 @@ function PageSizeSelect({
           <IconChevronsUpDown />
         </Select.Icon>
       </Select.Trigger>
-      <Select.Portal container={popupContainer()}>
+      <Select.Portal render={<DirectionPortal />} container={popupContainer()}>
         <Select.Positioner className="fa-pager-positioner" sideOffset={popup.offset} collisionPadding={popup.collisionPadding} alignItemWithTrigger={false} side="top" align="end">
           <Select.Popup className="glass-overlay fa-popup fa-pager-popup">
             <Select.List>

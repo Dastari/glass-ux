@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { Select as BaseSelect } from "@base-ui/react/select"
 import { useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconCheck, IconChevronsUpDown } from "../../icons/generated/icons.js"
@@ -166,7 +167,7 @@ export function Select<V extends string = string>({
         </BaseSelect.Value>
         <IconChevronsUpDown className="fa-select-chevron" />
       </BaseSelect.Trigger>
-      <BaseSelect.Portal container={popupContainer()}>
+      <BaseSelect.Portal render={<DirectionPortal />} container={popupContainer()}>
         <BaseSelect.Positioner
           className="fa-select-positioner"
           alignItemWithTrigger={false}

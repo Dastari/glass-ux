@@ -1,3 +1,4 @@
+import { DirectionPortal } from "../../lib/direction-portal.js"
 import { mergeProps } from "@base-ui/react/merge-props"
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip"
 import {
@@ -210,7 +211,7 @@ function HostedTooltip({
     element: element.current,
     enabled,
     render: (instant: Instant) => (
-      <BaseTooltip.Portal container={popupContainer()}>
+      <BaseTooltip.Portal render={<DirectionPortal />} container={popupContainer()}>
         <TooltipBubble id={id} side={side} align={align} arrow={arrow} anchor={element.current} instant={instant}>
           <TooltipContent content={content} shortcut={shortcut} />
         </TooltipBubble>
@@ -287,7 +288,7 @@ export function TooltipPopup(props: TooltipPopupProps) {
   // The portal mounts its children only while the tooltip shows, so a closed tooltip runs
   // none of the bubble's hooks (mode, metrics).
   return (
-    <BaseTooltip.Portal container={popupContainer()}>
+    <BaseTooltip.Portal render={<DirectionPortal />} container={popupContainer()}>
       <TooltipBubble {...props} />
     </BaseTooltip.Portal>
   )

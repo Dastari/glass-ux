@@ -1454,11 +1454,35 @@
   .fa-dt-editable[data-pending] {
     color: var(--fg-muted);
   }
+  /* A save that failed reads like an invalid field: a soft danger well with the control's
+     radius, reaching a little past the text so the value keeps its place in the cell. */
   .fa-dt-editable[data-error] {
-    outline: var(--border-width) solid var(--danger-line);
+    isolation: isolate;
+  }
+  .fa-dt-editable[data-error]::before {
+    content: "";
+    position: absolute;
+    inset: calc(var(--space-1) * -1) calc(var(--space-1-5) * -1);
+    z-index: -1;
+    border: var(--border-width) solid var(--danger-line);
+    border-radius: var(--radius-control);
+    background: var(--danger-soft);
+    pointer-events: none;
   }
   .fa-dt-editable[data-error] > .fa-dt-edit-status {
-    color: var(--danger-line);
+    color: var(--danger-text);
+  }
+  /* Keyboard focus rings the same rounded box the error well uses. */
+  .fa-dt-editable:focus-visible {
+    outline: none;
+  }
+  .fa-dt-editable:focus-visible::after {
+    content: "";
+    position: absolute;
+    inset: calc(var(--space-1) * -1) calc(var(--space-1-5) * -1);
+    border-radius: var(--radius-control);
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    pointer-events: none;
   }
   .fa-dt-editor-box {
     position: absolute;
@@ -1485,6 +1509,14 @@
     touch-action: none;
     color: var(--fg-muted);
     inline-size: var(--icon-sm);
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  /* With a fine pointer the grips wait for the header: they show on hover and keyboard
+     focus, and keep their space so nothing moves. Touch screens always show them. */
+  @media (pointer: fine) {
+    .fa-dt-head-row:not(:hover, :focus-within) .fa-dt-column-grip {
+      opacity: 0;
+    }
   }
   .fa-dt-column-grip > svg {
     inline-size: var(--icon-sm);

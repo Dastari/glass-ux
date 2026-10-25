@@ -25,6 +25,24 @@ light mode with more depth. No code changes are required; the
 - Canvas artwork roles: `--canvas-ink`, `--canvas-ink-2`, `--canvas-line`,
   `--canvas-line-2`, `--canvas-glow` and `--canvas-veil`.
 - Colour foundations page: custom colour and picture background controls.
+- `glass-ux/i18n`: translatable messages. Components declare English messages per
+  namespace; `registerMessagePack` serves a language by locale, `configureMessages` and
+  `MessagesProvider` change wording, and a component's `labels` prop still wins.
+- `ColorPicker` and `ColorField` (`glass-ux/color-picker`): any colour in OKLCH, with the
+  sRGB gamut's edge drawn, hue and opacity sliders, a hex field, named presets and the
+  browser's eyedropper.
+- `AppearanceSettings` (`glass-ux/appearance-settings`): every appearance preference as
+  setting rows — theme, your colours, background tiles with previews and a picture,
+  material, density, animation, size, and opt-in shape and fonts. Locked settings show as
+  set by the organisation, or are hidden.
+- `Stepper` and `Wizard` (`glass-ux/stepper`): progress through a multi-step task, and a
+  wizard that checks each step (sync or async) before moving on, with optional steps.
+- `Toolbar` (`glass-ux/toolbar`): one tab stop with arrow keys; items fold into More by
+  priority when the row runs out of room, and read as menu items there.
+- `HoverCard` (`glass-ux/hover-card`), `Lightbox` (`glass-ux/lightbox`), `Link`
+  (`glass-ux/link`), `Text` and `Heading` (`glass-ux/text`), and `Stack` and `Grid`
+  (`glass-ux/layout`).
+- Icons: `eyedropper` and `palette`.
 
 ### Changed
 

@@ -145,7 +145,8 @@
     gap: var(--gap-controls);
   }
   /* The background select gives way last, truncating its value. */
-  .docs-background-select {
+  .docs-background-select,
+  .docs-language-select {
     width: 7rem;
     min-width: 5.5rem;
   }

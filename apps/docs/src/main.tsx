@@ -1,4 +1,4 @@
-import { DirectionProvider } from "glass-ux/locale";
+import { DocsDirection, LANGUAGES, restoreDocsLanguage, setDocsLanguage, useDocsLanguage, type DocsLanguage } from "./language.js";
 import { createRoot } from "react-dom/client";
 import {
   createContext,
@@ -233,6 +233,23 @@ function AppearanceChoices<V extends string>({
   );
 }
 
+/** The components' interface language; the docs' own prose stays English. */
+function LanguageSelect({ expanded = false }: { expanded?: boolean }) {
+  const { language } = useDocsLanguage();
+  return (
+    <Select<DocsLanguage>
+      size="sm"
+      className={expanded ? undefined : "docs-language-select fa-fit-5"}
+      aria-label="Interface language"
+      value={language}
+      onValueChange={(next) => {
+        if (next) void setDocsLanguage(next);
+      }}
+      options={LANGUAGES.map((option) => ({ value: option.value, label: option.label }))}
+    />
+  );
+}
+
 function Toolbar({ expanded = false }: { expanded?: boolean }) {
   const { appearance, update } = useAppearance();
   const rendering = useGlassRendering();
@@ -313,6 +330,10 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
             label: BACKGROUND_LABELS[value],
           }))}
         />
+        <div className="docs-appearance-control">
+          <span className="type-label">Language</span>
+          <LanguageSelect expanded />
+        </div>
       </div>
     );
   // One line that gives way in order (fa-fit-row): the palette folds to a menu first, then blur
@@ -390,6 +411,7 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
           { value: "compact", label: "Compact" },
         ]}
       />
+      <LanguageSelect />
       <Select
         size="sm"
         className="docs-background-select fa-fit-5"
@@ -807,14 +829,10 @@ const router = createRouter({
   ]),
   basepath: import.meta.env.BASE_URL.replace(/\/$/, "") || "/",
 });
-// Docs preview switch: ?dir=rtl&lang=ar. Persists for internal route navigation only.
-const previewParams = new URLSearchParams(location.search);
-const previewDirection = previewParams.get("dir");
-if (previewDirection === "rtl" || previewDirection === "ltr") document.documentElement.dir = previewDirection;
-const previewLanguage = previewParams.get("lang");
-if (previewLanguage) document.documentElement.lang = previewLanguage;
+// The interface language: remembered, or previewed with ?lang=ar&dir=rtl for one visit.
+restoreDocsLanguage();
 createRoot(document.getElementById("root")!).render(
-  <DirectionProvider direction={document.documentElement.dir === "rtl" ? "rtl" : "ltr"}>
+  <DocsDirection>
     <RouterProvider router={router} />
-  </DirectionProvider>,
+  </DocsDirection>,
 );

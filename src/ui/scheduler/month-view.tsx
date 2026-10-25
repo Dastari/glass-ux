@@ -234,7 +234,7 @@ export function MonthView({ events, days }: MonthViewProps) {
                       ? null
                       : visible
                           .filter((bar) => bar.first === index)
-                          .map((bar) => <MonthEvent key={bar.placed.id} bar={bar} focusable={day === focusDay || bar.continuesBefore} onPointerDown={drag(bar)} />)}
+                          .map((bar) => <MonthEvent key={bar.placed.id} bar={bar} focusable={day === focusDay} onPointerDown={drag(bar)} />)}
                     {!compact && loading && (weekIndex + index) % 3 === 0 ? <span className="fa-sch-ev fa-skel fa-shimmer" data-variant="bar" data-skeleton style={{ "--_first": index + 1, "--_length": 1, "--_row": 1 } as CSSProperties} /> : null}
                     {!compact && !loading && hidden[index] ? <MoreEvents day={day} count={hidden[index]!} events={list} column={index + 1} row={shown + 1} focusable={day === focusDay} /> : null}
                   </div>

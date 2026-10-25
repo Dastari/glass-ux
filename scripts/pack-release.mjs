@@ -23,8 +23,12 @@ const check = args.includes("--check")
 const outIndex = args.indexOf("--out")
 const out = outIndex === -1 ? join(root, ".handoff") : resolve(args[outIndex + 1])
 
-/** Budgets with about 15% headroom; raise one deliberately with the change that needs it. */
-const BUDGET = { unpacked: 7_000_000, archive: 2_400_000 }
+/**
+ * 0.9.12 includes the expanded component catalogue and eleven complete language packs.
+ * The release measures 9.0 MB unpacked / 2.9 MB compressed; retain about 15% headroom.
+ * The merged release already exceeded the previous 7.0 MB unpacked limit before round 2.
+ */
+const BUDGET = { unpacked: 10_400_000, archive: 3_400_000 }
 
 /** Paths relative to the package root that the release leaves out. */
 const excluded = (path) =>

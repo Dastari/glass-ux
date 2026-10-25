@@ -398,6 +398,10 @@
       "types": "./dist/lib/locale/index.d.ts",
       "import": "./dist/lib/locale/index.js"
     },
+    "./i18n": {
+      "types": "./dist/lib/i18n/index.d.ts",
+      "import": "./dist/lib/i18n/index.js"
+    },
     "./icons": {
       "types": "./dist/icons/generated/icons.d.ts",
       "import": "./dist/icons/generated/icons.js"

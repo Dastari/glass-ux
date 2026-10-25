@@ -38,14 +38,15 @@ for (const mode of ["light", "dark"] as const) {
         .getByRole("button", { name: palette.label, exact: true })
         .click();
       await expect(root).toHaveAttribute("data-palette", palette.id);
-      const rendered = await root.evaluate((element) => {
+      const readRendered = () => root.evaluate((element) => {
         const style = getComputedStyle(element);
         const keyword = document.querySelector<HTMLElement>(
           '.gallery-document-intro span[style*="--fa-code-token-keyword"]',
-        )!;
+        );
         const string = document.querySelector<HTMLElement>(
           '.gallery-document-intro span[style*="--fa-code-token-string"]',
-        )!;
+        );
+        if (!keyword || !string) throw new Error("Highlighted syntax tokens are not ready");
         return {
           hue: Number(style.getPropertyValue("--accent-h")),
           chroma: Number(style.getPropertyValue("--accent-c")),
@@ -55,6 +56,11 @@ for (const mode of ["light", "dark"] as const) {
           string: getComputedStyle(string).color,
         };
       });
+      let rendered!: Awaited<ReturnType<typeof readRendered>>;
+      // Highlighting can refresh after an appearance change; read real token nodes atomically.
+      await expect(async () => {
+        rendered = await readRendered();
+      }).toPass({ timeout: 15000 });
       expect(rendered.hue, `${palette.label} root hue`).toBe(palette.hue);
       expect(rendered.chroma, `${palette.label} root chroma`).toBe(
         palette.chroma,

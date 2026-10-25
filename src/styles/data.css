@@ -50,7 +50,7 @@
   [data-mode="light"] {
     --chart-1-l: 0.58;
     --chart-1-c: 0.15;
-    --chart-l-a: 0.63; /* the lighter tier */
+    --chart-l-a: 0.62; /* the lighter tier */
     --chart-l-b: 0.44; /* the deeper tier */
     --chart-wash: 14%; /* the area wash at the line */
     --chart-tile-mix: 34%; /* treemap tiles: a soft tint that ink labels read on */

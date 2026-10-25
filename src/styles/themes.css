@@ -5,7 +5,7 @@
  * derived from those parameters by the same formulas in both modes, so palettes cannot
  * drift and a custom accent is just `--accent-h` / `--accent-c` set inline.
  *
- *   <html data-mode="light|dark" data-palette="ocean|aurora|emerald|sunset|graphite|ruby">
+ *   <html data-mode="light|dark" data-palette="ocean|aurora|emerald|sunset|graphite|ruby|lagoon|indigo|rose|moss|sand|slate">
  *
  * Any element may carry data-mode or data-palette to create an island (an always-dark
  * remote viewer, an inverted tooltip, a palette swatch). Components only ever reference
@@ -25,6 +25,13 @@
  *                      reads as an alarm. Red and amber stay reserved for states.
  *   scrim            modal backdrop tint
  *   ambient-1..3     colour fields painted on the canvas for glass to bend
+ *   canvas-ink / canvas-ink-2   silhouettes and tiles in the canvas artwork, darker than the
+ *                    canvas in both modes so lit windows and the sky read through
+ *   canvas-line / canvas-line-2 the artwork's tinted hairlines and circuit traces
+ *   canvas-glow / canvas-veil   a horizon glow's strength; the canvas veil over a picture
+ *
+ * Optional parameter: --accent-text-max-l caps light-mode accent text, for a light custom
+ * accent (customPaletteVars) whose own lightness would be too pale to read on the canvas.
  */
 
 @layer base {
@@ -113,6 +120,86 @@
     --chart-h: 250;
   }
 
+  [data-palette="lagoon"] {
+    --accent-h: 212;
+    --accent-c: 0.12;
+    --accent-l: 0.53;
+    --accent-2-h: 188;
+    --accent-fg-l: 0.99;
+    --neutral-h: 215;
+    --neutral-c: 0.014;
+    --ambient-1-h: 200;
+    --ambient-2-h: 170;
+    --ambient-3-h: 235;
+    --chart-h: 250;
+  }
+  [data-palette="indigo"] {
+    --accent-h: 272;
+    --accent-c: 0.2;
+    --accent-l: 0.52;
+    --accent-2-h: 300;
+    --accent-fg-l: 0.99;
+    --neutral-h: 272;
+    --neutral-c: 0.016;
+    --ambient-1-h: 272;
+    --ambient-2-h: 220;
+    --ambient-3-h: 312;
+    --chart-h: 250;
+  }
+  [data-palette="rose"] {
+    --accent-h: 354;
+    --accent-c: 0.17;
+    --accent-l: 0.57;
+    --accent-2-h: 16;
+    --accent-fg-l: 0.99;
+    --neutral-h: 350;
+    --neutral-c: 0.014;
+    --ambient-1-h: 355;
+    --ambient-2-h: 28;
+    --ambient-3-h: 308;
+    --chart-h: 250; /* not the accent: pink sits beside danger */
+  }
+  [data-palette="moss"] {
+    --accent-h: 128;
+    --accent-c: 0.11;
+    --accent-l: 0.5;
+    --accent-2-h: 105;
+    --accent-fg-l: 0.99;
+    --neutral-h: 110;
+    --neutral-c: 0.012;
+    --ambient-1-h: 125;
+    --ambient-2-h: 85;
+    --ambient-3-h: 172;
+    --chart-h: 250; /* not the accent: green means success */
+  }
+  /* Sand and Slate are quiet palettes, like Graphite: a low-chroma accent over warm or cool greys. */
+  [data-palette="sand"] {
+    --accent-h: 55;
+    --accent-c: 0.055;
+    --accent-l: 0.47;
+    --accent-2-h: 35;
+    --accent-fg-l: 0.99;
+    --neutral-h: 65;
+    --neutral-c: 0.018;
+    --ambient-1-h: 70;
+    --ambient-2-h: 40;
+    --ambient-3-h: 100;
+    --chart-h: 250;
+  }
+  [data-palette="slate"] {
+    --accent-h: 246;
+    --accent-c: 0.06;
+    --accent-l: 0.45;
+    --accent-2-h: 220;
+    --accent-fg-l: 0.99;
+    --neutral-h: 245;
+    --neutral-c: 0.02;
+    --ambient-1-h: 240;
+    --ambient-2-h: 210;
+    --ambient-3-h: 265;
+    --chart-h: 250;
+  }
+
   /* ── Light roles ─────────────────────────────────────────────────────────── */
   /*
    * Mode islands. The roles are re-declared on every palette island ([data-palette]) so they
@@ -129,16 +216,16 @@
     [data-palette] {
       color-scheme: light;
 
-      --canvas: oklch(0.972 0.008 var(--neutral-h));
-      --canvas-solid: oklch(0.99 0.004 var(--neutral-h));
+      --canvas: oklch(0.94 0.016 var(--neutral-h));
+      --canvas-solid: oklch(0.985 0.005 var(--neutral-h));
       --fg: oklch(0.235 0.03 var(--neutral-h));
-      --fg-muted: oklch(0.45 0.025 var(--neutral-h));
-      --fg-subtle: oklch(0.53 0.02 var(--neutral-h));
+      --fg-muted: oklch(0.42 0.026 var(--neutral-h));
+      --fg-subtle: oklch(0.49 0.022 var(--neutral-h));
       --fg-disabled: oklch(0.68 0.012 var(--neutral-h));
       --fg-inverse: oklch(0.985 0.004 var(--neutral-h));
 
-      --line: oklch(0.35 0.04 var(--neutral-h) / 0.11);
-      --line-strong: oklch(0.35 0.04 var(--neutral-h) / 0.2);
+      --line: oklch(0.35 0.04 var(--neutral-h) / 0.13);
+      --line-strong: oklch(0.35 0.04 var(--neutral-h) / 0.23);
       --fill-hover: oklch(0.35 0.04 var(--neutral-h) / 0.045);
       --fill-press: oklch(0.35 0.04 var(--neutral-h) / 0.085);
       --fill-muted: oklch(0.35 0.04 var(--neutral-h) / 0.055);
@@ -148,7 +235,7 @@
       --accent-hover: oklch(calc(var(--accent-l) - 0.035) var(--accent-c) var(--accent-h));
       --accent-active: oklch(calc(var(--accent-l) - 0.07) var(--accent-c) var(--accent-h));
       --accent-fg: oklch(var(--accent-fg-l) 0.005 var(--accent-h));
-      --accent-text: oklch(calc(var(--accent-l) - 0.05) var(--accent-c) var(--accent-h));
+      --accent-text: oklch(min(calc(var(--accent-l) - 0.05), var(--accent-text-max-l, 1)) var(--accent-c) var(--accent-h));
       --accent-soft: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.09);
       --accent-soft-hover: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.14);
       --accent-line: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.38);
@@ -179,11 +266,17 @@
       --scrim: oklch(0.3 0.04 var(--neutral-h) / 0.22);
       --shadow-tint: oklch(0.32 0.06 var(--neutral-h));
 
-      --ambient-1: oklch(0.86 0.095 var(--ambient-1-h));
-      --ambient-2: oklch(0.88 0.075 var(--ambient-2-h));
-      --ambient-3: oklch(0.89 0.07 var(--ambient-3-h));
+      --ambient-1: oklch(0.77 0.145 var(--ambient-1-h));
+      --ambient-2: oklch(0.8 0.125 var(--ambient-2-h));
+      --ambient-3: oklch(0.81 0.115 var(--ambient-3-h));
       --ambient-strength: 1;
-      --silk: oklch(1 0 0 / 0.9);
+      --silk: oklch(1 0 0 / 0.95);
+      --canvas-ink: oklch(0.8 0.08 var(--ambient-1-h));
+      --canvas-ink-2: oklch(0.84 0.07 var(--ambient-3-h));
+      --canvas-line: oklch(0.6 0.1 var(--ambient-1-h) / 0.55);
+      --canvas-line-2: oklch(0.58 0.11 var(--ambient-3-h) / 0.55);
+      --canvas-glow: 100%;
+      --canvas-veil: 22%;
     }
   }
 
@@ -248,6 +341,12 @@
       --ambient-3: oklch(0.38 0.1 var(--ambient-3-h));
       --ambient-strength: 0.55;
       --silk: oklch(1 0 0 / 0.07);
+      --canvas-ink: oklch(0.1 0.03 var(--ambient-1-h));
+      --canvas-ink-2: oklch(0.13 0.035 var(--ambient-3-h));
+      --canvas-line: oklch(0.85 0.08 var(--ambient-1-h) / 0.32);
+      --canvas-line-2: oklch(0.8 0.1 var(--ambient-3-h) / 0.32);
+      --canvas-glow: 95%;
+      --canvas-veil: 38%;
     }
   }
 

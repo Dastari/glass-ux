@@ -55,8 +55,8 @@
 @layer base {
   :root,
   [data-mode="light"] {
-    --glass-fill-chrome: oklch(1 0 0 / 0.5);
-    --glass-fill-panel: oklch(1 0 0 / 0.54);
+    --glass-fill-chrome: oklch(1 0 0 / 0.46);
+    --glass-fill-panel: oklch(1 0 0 / 0.5);
     --glass-fill-overlay: oklch(0.995 0.003 var(--neutral-h) / 0.82);
     --glass-fill-float: oklch(0.2 0.02 var(--neutral-h) / 0.55);
     --glass-fill-control: oklch(1 0 0 / 0.7);
@@ -76,7 +76,7 @@
     --tint-warning-solid: color-mix(in oklab, oklch(0.77 0.16 72) 16%, var(--surface-2));
     --tint-danger-solid: color-mix(in oklab, oklch(0.575 0.215 22) 10%, var(--surface-2));
     --tint-info-solid: color-mix(in oklab, oklch(0.57 0.18 252) 10%, var(--surface-2));
-    --glass-edge: oklch(0.35 0.05 var(--neutral-h) / 0.1);
+    --glass-edge: oklch(0.35 0.05 var(--neutral-h) / 0.14);
     --glass-rim: oklch(1 0 0 / 0.65);
     --glass-rim-top: oklch(1 0 0 / 0.95);
     --glass-rim-bottom: oklch(0.35 0.05 var(--neutral-h) / 0.09);
@@ -88,7 +88,7 @@
     );
     --specular: oklch(1 0 0 / 0.95);
     --specular-rim: oklch(from var(--accent) 0.66 calc(c * 0.85) h / 0.95);
-    --glass-saturate: 1.7;
+    --glass-saturate: 1.8;
     --surface-1: oklch(0.985 0.004 var(--neutral-h));
     --surface-2: oklch(0.998 0.002 var(--neutral-h));
     --surface-3: oklch(1 0 0);
@@ -99,8 +99,8 @@
       0 1px 1px oklch(from var(--shadow-tint) l c h / 0.04),
       0 1px 3px oklch(from var(--shadow-tint) l c h / 0.06);
     --shadow-2:
-      0 1px 2px oklch(from var(--shadow-tint) l c h / 0.04),
-      0 12px 32px -14px oklch(from var(--shadow-tint) l c h / 0.16);
+      0 1px 2px oklch(from var(--shadow-tint) l c h / 0.06),
+      0 14px 34px -14px oklch(from var(--shadow-tint) l c h / 0.22);
     --shadow-3:
       0 2px 6px -2px oklch(from var(--shadow-tint) l c h / 0.08),
       0 22px 48px -18px oklch(from var(--shadow-tint) l c h / 0.26);
@@ -668,52 +668,40 @@
   }
 
   /* ── The canvas ──────────────────────────────────────────────────────────── */
+  /*
+   * A background is a set of variables on the canvas (.canvas-ambient / .canvas-background)
+   * and on the artwork layer (.canvas-silk): colour fields in --canvas-image, and optionally
+   * artwork, an alpha-only SVG from scripts/build-canvas.mjs painted through a mask in the
+   * palette's colours (--canvas-overlay-colour or --canvas-overlay-fill). The same file then
+   * works in every palette and both modes. Backgrounds without artwork hide the layer.
+   */
   .canvas-ambient,
   .canvas-background,
-  :is(.canvas-ambient, .canvas-background)[data-background="silk"] {
+  .canvas-silk,
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="silk"] {
     --canvas-image:
-      radial-gradient(
-        46% 58% at 92% 4%,
-        color-mix(
-          in oklab,
-          var(--ambient-1) calc(var(--ambient-strength) * 100%),
-          transparent
-        ),
-        transparent 72%
-      ),
-      radial-gradient(
-        42% 52% at 6% 96%,
-        color-mix(
-          in oklab,
-          var(--ambient-2) calc(var(--ambient-strength) * 100%),
-          transparent
-        ),
-        transparent 72%
-      ),
-      radial-gradient(
-        36% 46% at 0% 22%,
-        color-mix(
-          in oklab,
-          var(--ambient-3) calc(var(--ambient-strength) * 100%),
-          transparent
-        ),
-        transparent 70%
-      ),
-      radial-gradient(
-        34% 40% at 62% 104%,
-        color-mix(
-          in oklab,
-          var(--ambient-1) calc(var(--ambient-strength) * 60%),
-          transparent
-        ),
-        transparent 70%
-      );
+      radial-gradient(46% 58% at 92% 4%, color-mix(in oklab, var(--ambient-1) calc(var(--ambient-strength) * 100%), transparent), transparent 72%),
+      radial-gradient(42% 52% at 6% 96%, color-mix(in oklab, var(--ambient-2) calc(var(--ambient-strength) * 100%), transparent), transparent 72%),
+      radial-gradient(36% 46% at 0% 22%, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 100%), transparent), transparent 70%),
+      radial-gradient(34% 40% at 62% 104%, color-mix(in oklab, var(--ambient-1) calc(var(--ambient-strength) * 60%), transparent), transparent 70%);
     --canvas-image-size: auto;
     --canvas-image-position: center;
+    --canvas-overlay-display: none;
+    --canvas-overlay-mask: none;
+    --canvas-overlay-position: center;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: none;
+  }
+  /* Silk's hairlines: on a page with no background chosen, or Silk. */
+  :where(:root:not([data-background]), :root[data-background="silk"]) .canvas-silk,
+  .canvas-silk[data-background="silk"] {
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/silk.svg");
+    --canvas-overlay-colour: var(--silk);
   }
   :where(:root[data-background="mesh"])
-    :is(.canvas-ambient, .canvas-background),
-  :is(.canvas-ambient, .canvas-background)[data-background="mesh"] {
+    :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="mesh"] {
     --canvas-image:
       radial-gradient(
         ellipse at 15% 15%,
@@ -734,8 +722,8 @@
     --canvas-image-position: center;
   }
   :where(:root[data-background="grid"])
-    :is(.canvas-ambient, .canvas-background),
-  :is(.canvas-ambient, .canvas-background)[data-background="grid"] {
+    :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="grid"] {
     --canvas-image:
       linear-gradient(
         color-mix(in oklab, var(--line) 45%, transparent) 1px,
@@ -751,8 +739,8 @@
     --canvas-image-position: center;
   }
   :where(:root[data-background="contours"])
-    :is(.canvas-ambient, .canvas-background),
-  :is(.canvas-ambient, .canvas-background)[data-background="contours"] {
+    :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="contours"] {
     --canvas-image:
       repeating-radial-gradient(
         ellipse at 12% 20%,
@@ -767,8 +755,8 @@
     --canvas-image-position: center;
   }
   :where(:root[data-background="facets"])
-    :is(.canvas-ambient, .canvas-background),
-  :is(.canvas-ambient, .canvas-background)[data-background="facets"] {
+    :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="facets"] {
     --canvas-image:
       linear-gradient(
         155deg,
@@ -791,10 +779,159 @@
     --canvas-image-position: center;
   }
   :where(:root[data-background="plain"])
-    :is(.canvas-ambient, .canvas-background),
-  :is(.canvas-ambient, .canvas-background)[data-background="plain"] {
+    :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="plain"] {
     --canvas-image: none;
     --canvas-image-size: auto;
+    --canvas-image-position: center;
+  }
+  :where(:root[data-background="currents"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="currents"] {
+    --canvas-image:
+      radial-gradient(ellipse at 20% 30%, color-mix(in oklab, var(--ambient-1) calc(var(--ambient-strength) * 85%), transparent), transparent 60%),
+      radial-gradient(ellipse at 85% 75%, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 85%), transparent), transparent 62%);
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/currents.svg");
+    --canvas-overlay-position: center;
+    --canvas-overlay-colour: var(--canvas-line);
+    --canvas-overlay-fill: none;
+  }
+  :where(:root[data-background="waves"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="waves"] {
+    --canvas-image:
+      linear-gradient(to bottom, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 55%), transparent), transparent 55%),
+      radial-gradient(70% 50% at 50% 100%, color-mix(in oklab, var(--ambient-2) calc(var(--ambient-strength) * 80%), transparent), transparent 80%);
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/waves.svg");
+    --canvas-overlay-position: bottom;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: linear-gradient(to bottom, var(--ambient-1) 40%, var(--ambient-2));
+  }
+  :where(:root[data-background="pixels"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="pixels"] {
+    --canvas-image:
+      radial-gradient(50% 60% at 96% 0%, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 90%), transparent), transparent 75%),
+      radial-gradient(50% 60% at 0% 100%, color-mix(in oklab, var(--ambient-2) calc(var(--ambient-strength) * 90%), transparent), transparent 75%);
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/pixels.svg");
+    --canvas-overlay-position: center;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: linear-gradient(135deg, var(--ambient-2), var(--ambient-1) 50%, var(--ambient-3));
+  }
+  :where(:root[data-background="circuit"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="circuit"] {
+    --canvas-image:
+      radial-gradient(45% 55% at 88% 12%, color-mix(in oklab, var(--ambient-1) calc(var(--ambient-strength) * 90%), transparent), transparent 75%),
+      radial-gradient(45% 55% at 12% 90%, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 90%), transparent), transparent 75%);
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/circuit.svg");
+    --canvas-overlay-position: center;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: linear-gradient(135deg, var(--canvas-line-2), var(--canvas-line));
+  }
+  :where(:root[data-background="network"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="network"] {
+    --canvas-image:
+      radial-gradient(60% 50% at 70% 35%, color-mix(in oklab, var(--ambient-1) calc(var(--ambient-strength) * 85%), transparent), transparent 75%),
+      radial-gradient(50% 50% at 20% 70%, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 85%), transparent), transparent 75%);
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/network.svg");
+    --canvas-overlay-position: center;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: linear-gradient(100deg, var(--canvas-line-2), var(--canvas-line));
+  }
+  :where(:root[data-background="skyline"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="skyline"] {
+    --canvas-image:
+      linear-gradient(to bottom, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 70%), transparent), transparent 50%),
+      radial-gradient(85% 55% at 55% 100%, color-mix(in oklab, var(--ambient-1) var(--canvas-glow), transparent), transparent 80%);
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/skyline.svg");
+    --canvas-overlay-position: bottom;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: linear-gradient(to top, var(--canvas-ink), var(--canvas-ink-2));
+  }
+  :where(:root[data-background="harbour"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="harbour"] {
+    --canvas-image:
+      linear-gradient(to bottom, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 70%), transparent), transparent 45%),
+      radial-gradient(75% 38% at 50% 72%, color-mix(in oklab, var(--ambient-1) var(--canvas-glow), transparent), transparent 80%),
+      linear-gradient(to top, color-mix(in oklab, var(--ambient-2) calc(var(--ambient-strength) * 60%), transparent), transparent 28%);
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/harbour.svg");
+    --canvas-overlay-position: bottom;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: linear-gradient(to top, var(--canvas-ink), var(--canvas-ink-2));
+  }
+  :where(:root[data-background="forest"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="forest"] {
+    --canvas-image:
+      radial-gradient(circle at 77% 30%, color-mix(in oklab, var(--ambient-1) var(--canvas-glow), transparent) 0 5.5rem, transparent calc(5.5rem + 1px)),
+      radial-gradient(34% 44% at 77% 30%, color-mix(in oklab, var(--ambient-1) var(--canvas-glow), transparent), transparent 80%),
+      radial-gradient(90% 50% at 50% 100%, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 80%), transparent), transparent 80%),
+      linear-gradient(to bottom, color-mix(in oklab, var(--ambient-2) calc(var(--ambient-strength) * 55%), transparent), transparent 60%);
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/forest.svg");
+    --canvas-overlay-position: bottom;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: linear-gradient(to top, var(--canvas-ink), var(--canvas-ink-2));
+  }
+  :where(:root[data-background="hills"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="hills"] {
+    --canvas-image:
+      radial-gradient(circle at 77% 30%, color-mix(in oklab, var(--ambient-1) var(--canvas-glow), transparent) 0 5.5rem, transparent calc(5.5rem + 1px)),
+      radial-gradient(34% 44% at 77% 30%, color-mix(in oklab, var(--ambient-1) var(--canvas-glow), transparent), transparent 80%),
+      radial-gradient(90% 50% at 50% 100%, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 80%), transparent), transparent 80%),
+      linear-gradient(to bottom, color-mix(in oklab, var(--ambient-2) calc(var(--ambient-strength) * 55%), transparent), transparent 60%);
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/hills.svg");
+    --canvas-overlay-position: bottom;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: linear-gradient(to top, var(--canvas-ink), var(--canvas-ink-2));
+  }
+  :where(:root[data-background="garden"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="garden"] {
+    --canvas-image:
+      radial-gradient(circle at 77% 30%, color-mix(in oklab, var(--ambient-1) var(--canvas-glow), transparent) 0 5.5rem, transparent calc(5.5rem + 1px)),
+      radial-gradient(34% 44% at 77% 30%, color-mix(in oklab, var(--ambient-1) var(--canvas-glow), transparent), transparent 80%),
+      radial-gradient(90% 50% at 50% 100%, color-mix(in oklab, var(--ambient-3) calc(var(--ambient-strength) * 80%), transparent), transparent 80%),
+      linear-gradient(to bottom, color-mix(in oklab, var(--ambient-2) calc(var(--ambient-strength) * 55%), transparent), transparent 60%);
+    --canvas-image-size: auto;
+    --canvas-image-position: center;
+    --canvas-overlay-display: block;
+    --canvas-overlay-mask: url("../assets/canvas/garden.svg");
+    --canvas-overlay-position: bottom;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: linear-gradient(to top, var(--canvas-ink), var(--canvas-ink-2));
+  }
+  /* A picture chosen by the person (Appearance.backgroundImage), under a veil of the canvas
+     colour so glass and text stay readable over it. No picture: the plain canvas. */
+  :where(:root[data-background="image"]) :is(.canvas-ambient, .canvas-background, .canvas-silk),
+  :is(.canvas-ambient, .canvas-background, .canvas-silk)[data-background="image"] {
+    --canvas-image:
+      linear-gradient(
+        color-mix(in oklab, var(--canvas) var(--canvas-veil), transparent) 0 100%
+      ),
+      var(--canvas-picture, none);
+    --canvas-image-size: auto, cover;
     --canvas-image-position: center;
   }
   .canvas-ambient,
@@ -805,20 +942,29 @@
     background-position: var(--canvas-image-position);
     background-attachment: fixed;
   }
-  /* Silk: flowing hairlines painted in the canvas colour role --silk (a mask keeps them
-     theme-aware). Mount once as an aria-hidden layer behind the shell. */
+  /* The artwork layer. Mount once as an aria-hidden layer behind the shell; it shows only for
+     backgrounds with artwork. (The class keeps Silk's name from before other artwork existed.) */
   .canvas-silk {
+    display: var(--canvas-overlay-display);
     position: fixed;
     inset: 0;
     pointer-events: none;
-    background-color: var(--silk);
-    -webkit-mask: url("../assets/canvas/silk.svg") center / cover no-repeat;
-    mask: url("../assets/canvas/silk.svg") center / cover no-repeat;
+    background-color: var(--canvas-overlay-colour);
+    background-image: var(--canvas-overlay-fill);
+    -webkit-mask-image: var(--canvas-overlay-mask);
+    mask-image: var(--canvas-overlay-mask);
+    -webkit-mask-position: var(--canvas-overlay-position);
+    mask-position: var(--canvas-overlay-position);
+    -webkit-mask-size: cover;
+    mask-size: cover;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  /* A bounded preview (a background swatch) holds its own artwork layer: data-contained. */
+  .canvas-silk[data-contained] {
+    position: absolute;
   }
   :root[data-glass="solid"] .canvas-silk {
-    display: none;
-  }
-  :root[data-background]:not([data-background="silk"]) .canvas-silk {
     display: none;
   }
 }

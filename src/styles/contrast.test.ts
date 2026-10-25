@@ -58,7 +58,7 @@ const PALETTES = palettes()
 
 describe("palette contrast (R20.1)", () => {
   it("parses every palette", () => {
-    expect(Object.keys(PALETTES)).toEqual(["ocean", "aurora", "emerald", "sunset", "graphite", "ruby"])
+    expect(Object.keys(PALETTES)).toEqual(["ocean", "aurora", "emerald", "sunset", "graphite", "ruby", "lagoon", "indigo", "rose", "moss", "sand", "slate"])
   })
 
   for (const [name, p] of Object.entries(PALETTES)) {
@@ -74,6 +74,22 @@ describe("palette contrast (R20.1)", () => {
         expect(contrast(fg, accent2)).toBeGreaterThanOrEqual(4.5)
       })
     }
+  }
+
+  // Accent text on the bare canvas: the canvas is the darkest thing light-mode text sits on.
+  const canvas = (mode: "light" | "dark", neutral: number) => {
+    const match = (mode === "light" ? css.split('@scope ([data-mode="dark"])')[0] : css.split('@scope ([data-mode="dark"])')[1])?.match(/--canvas:\s*oklch\(([\d.]+) ([\d.]+) var/)
+    if (!match) throw new Error(`no --canvas in ${mode}`)
+    return oklchToRgb(Number(match[1]), Number(match[2]), neutral)
+  }
+  for (const [name, p] of Object.entries(PALETTES)) {
+    if (name === "graphite") continue // ink and paper: its own blocks set accent text
+    it(`${name}: accent text on the canvas in both modes`, () => {
+      const light = oklchToRgb((p["accent-l"] ?? 0) - 0.05, p["accent-c"] ?? 0, p["accent-h"] ?? 0)
+      const dark = oklchToRgb(0.76, (p["accent-c"] ?? 0) * 0.75, p["accent-h"] ?? 0)
+      expect(contrast(light, canvas("light", p["neutral-h"] ?? 0))).toBeGreaterThanOrEqual(4.5)
+      expect(contrast(dark, canvas("dark", p["neutral-h"] ?? 0))).toBeGreaterThanOrEqual(4.5)
+    })
   }
 
   for (const mode of ["light", "dark"] as const) {

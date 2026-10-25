@@ -172,7 +172,7 @@ const colours = (mode: Mode, chartH: number) => slots(mode, chartH).map((s) => o
 
 describe("data colours", () => {
   it("parses every palette's chart hue, all eight slots and the status hues", () => {
-    expect(Object.keys(PALETTES)).toEqual(["ocean", "aurora", "emerald", "sunset", "graphite", "ruby"])
+    expect(Object.keys(PALETTES)).toEqual(["ocean", "aurora", "emerald", "sunset", "graphite", "ruby", "lagoon", "indigo", "rose", "moss", "sand", "slate"])
     expect(SLOTS).toHaveLength(7)
     expect(new Set(SLOTS.map((s) => s.offset)).size).toBe(7)
     expect(STATUS.light.map((s) => s.name)).toEqual(["danger", "warning", "success"])

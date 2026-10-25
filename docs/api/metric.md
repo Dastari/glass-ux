@@ -29,7 +29,7 @@ It fills its box (container-type: size), so the parent must give it a definite h
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for the value, delta and statistics. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | range | `string \| undefined` | See type | no | — | The period the series covers: "Last hour". |
 | times | `readonly string[] \| undefined` | See type | no | — | A label per data point for the hover readout ("10:32"). |
-| tone | `SparklineTone \| undefined` | "data", "danger", "warning", "success", "neutral", "accent", "info" | no | "data" | The series' state, when it has one (warning when a threshold is crossed). |
+| tone | `SparklineTone \| undefined` | "data", "danger", "warning", "success", "accent", "neutral", "info" | no | "data" | The series' state, when it has one (warning when a threshold is crossed). |
 | unit | `string \| undefined` | See type | no | "" | Unit displayed with a numeric value. |
 | value | `number \| null` | See type | yes | — | The current value; null while unknown. |
 

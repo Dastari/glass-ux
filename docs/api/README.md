@@ -22,6 +22,7 @@
 - [AlertDialog](alert-dialog.md) — `glass-ux/alert-dialog`
 - [AlertDialogPreview](alert-dialog-preview.md) — `glass-ux/alert-dialog`
 - [AppearanceProvider](appearance-provider.md) — `glass-ux/appearance`
+- [AppearanceSettings](appearance-settings.md) — `glass-ux/appearance-settings`
 - [ApprovalCard](approval-card.md) — `glass-ux/ai`
 - [ApprovalRecord](approval-record.md) — `glass-ux/ai`
 - [AppShell](app-shell.md) — `glass-ux/shell`

@@ -1,0 +1,51 @@
+import { IconPalette, IconSettings } from "glass-ux/icons";
+import { AppearanceSettings } from "glass-ux/appearance-settings";
+import { Button } from "glass-ux/button";
+import { Dialog, SettingsDialog } from "glass-ux/dialog";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+export default function AppearanceSettingsSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="In a settings dialog"
+        description="The usual home: one section of the application's settings. Changes apply at once and are remembered for this person."
+        layout="stack"
+      >
+        <div>
+          <SettingsDialog
+            trigger={<Button icon={<IconSettings />}>Settings</Button>}
+            icon={<IconSettings />}
+            title="Settings"
+            subtitle="Northstar Studio"
+            sections={[
+              {
+                value: "appearance",
+                label: "Appearance",
+                icon: <IconPalette />,
+                content: <AppearanceSettings />,
+              },
+              {
+                value: "shape",
+                label: "Shape and fonts",
+                icon: <IconSettings />,
+                content: <AppearanceSettings sections={["shape", "fonts"]} reset={false} />,
+              },
+            ]}
+            footer={<Dialog.Close render={<Button>Done</Button>} />}
+          />
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="On a page"
+        description="The same rows anywhere there is room. Pick the groups an application offers; shape and fonts are opt-in."
+        layout="stack"
+      >
+        <div className="max-w-3xl">
+          <AppearanceSettings sections={["theme", "colours", "background"]} reset={false} />
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

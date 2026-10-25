@@ -13,7 +13,7 @@ A tone-keyed state marker without an application-specific status vocabulary.
 | label | `string \| undefined` | See type | no | — | Accessible state name; omit only beside a visible equivalent label. |
 | marker | `"dot" \| "ring" \| "pulse" \| undefined` | "dot", "ring", "pulse" | no | "dot" | A solid dot, hollow ring, or compositor-only live pulse. |
 | overlay | `boolean \| undefined` | false, true | no | false | Solid corner mark with a separating surface ring. |
-| tone | `"data" \| BadgeTone \| undefined` | "data", "danger", "warning", "success", "neutral", "accent", "info" | no | "neutral" | Semantic state, or data for informational activity such as a running timer. |
+| tone | `"data" \| BadgeTone \| undefined` | "data", "danger", "warning", "success", "accent", "neutral", "info" | no | "neutral" | Semantic state, or data for informational activity such as a running timer. |
 
 Inherited properties:
 

@@ -20,7 +20,7 @@ plot is inset by the dot's radius so nothing is ever cut off at the edges.
 | label | `string \| undefined` | See type | no | — | Accessible summary. Omit when a parent already describes the chart. |
 | onHover | `((index: number \| null) => void) \| undefined` | See type | no | — | Turn on pointer hit-testing; called with the nearest index, or null on leave. |
 | reference | `number \| undefined` | See type | no | — | A horizontal hairline at this value (e.g. the average). |
-| tone | `SparklineTone \| undefined` | "data", "danger", "warning", "success", "neutral", "accent", "info" | no | "data" | Line colour: the data colour, or a status tone only when the series is in that state. |
+| tone | `SparklineTone \| undefined` | "data", "danger", "warning", "success", "accent", "neutral", "info" | no | "data" | Line colour: the data colour, or a status tone only when the series is in that state. |
 
 Inherited properties:
 

@@ -12,7 +12,7 @@ A number beside a navigation item or group ("Endpoints 12"), or on a corner (ove
 | --- | --- | --- | --- | --- | --- |
 | max | `number \| undefined` | See type | no | 999 | Above this, show "max+". |
 | overlay | `boolean \| undefined` | false, true | no | false | It sits on another element's corner (an avatar, a rail or dock icon, an entity tile): a solid fill and a ring in the colour beneath, never the soft tint. Position it from the outside. |
-| tone | `"danger" \| "neutral" \| "accent" \| undefined` | "danger", "neutral", "accent" | no | "neutral" | The semantic tone. Use danger and warning for consequences and states. |
+| tone | `"danger" \| "accent" \| "neutral" \| undefined` | "danger", "accent", "neutral" | no | "neutral" | The semantic tone. Use danger and warning for consequences and states. |
 | value | `number` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |
 
 Inherited properties:

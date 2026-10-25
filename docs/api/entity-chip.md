@@ -18,7 +18,7 @@ opens the entity's actions — the same definition as its own page (R12).
 | onRemove | `(() => void) \| undefined` | See type | no | — | Render a removable, non-navigating chip (composer context, picked entities). |
 | preview | `boolean \| undefined` | false, true | no | true | Show the preview card on hover and focus (default for links). |
 | size | `EntityChipSize \| undefined` | "sm", "inline" | no | "inline" | inline: inside prose (20px, sits in the line box) · sm: rows, composer, cards (24px). |
-| variant | `"chip" \| "plain" \| undefined` | "chip", "plain" | no | "chip" | chip: a soft pill (prose, composer) · plain: glyph and name only (table cells, lists). |
+| variant | `"plain" \| "chip" \| undefined` | "plain", "chip" | no | "chip" | chip: a soft pill (prose, composer) · plain: glyph and name only (table cells, lists). |
 
 Inherited properties:
 

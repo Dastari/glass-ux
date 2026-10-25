@@ -1,0 +1,61 @@
+import { defineMessages } from "../../lib/i18n/catalog.js"
+
+/** AppearanceSettings' words. Background and palette names come from BACKGROUND_LABELS and PALETTE_LABELS. */
+export const appearanceSettingsMessages = defineMessages("appearanceSettings", {
+  theme: "Theme",
+  mode: "Mode",
+  modeDescription: "Light, dark, or the same as this device.",
+  light: "Light",
+  dark: "Dark",
+  system: "Match system",
+  palette: "Palette",
+  paletteDescription: "The accent and the colours behind the glass.",
+  custom: "Your colours",
+  accent: "Accent colour",
+  accentDescription: "Buttons, links and selection. Adjusted so text on it stays readable.",
+  accent2: "Second accent",
+  accent2Description: "Gradients and highlights beside the accent.",
+  tint: "Canvas tint",
+  tintDescription: "Tints the greys and the colours behind the glass.",
+  colourDefault: "Default",
+  background: "Background",
+  backgroundDescription: "What the glass sits on.",
+  picture: "Picture",
+  pictureDescription: "Your own image behind the glass, under a light veil.",
+  choosePicture: "Choose a picture…",
+  removePicture: "Remove picture",
+  pictureError: "That file is not a picture this browser can open.",
+  display: "Display",
+  material: "Material",
+  materialDescription: "How much of the background shows through panels.",
+  glass: "Glass",
+  frosted: "Frosted",
+  solid: "Solid",
+  density: "Density",
+  densityDescription: "Spacing in lists, tables and forms.",
+  comfortable: "Comfortable",
+  compact: "Compact",
+  motion: "Animation",
+  motionDescription: "Still turns off movement everywhere.",
+  motionSystem: "Match system",
+  animated: "Animated",
+  still: "Still",
+  size: "Interface size",
+  sizeDescription: "Text, controls and spacing together.",
+  shape: "Shape",
+  radius: "Corner rounding",
+  lineWeight: "Line weight",
+  fonts: "Fonts",
+  fontSans: "Interface font",
+  fontDisplay: "Heading font",
+  fontMono: "Code font",
+  fontMatch: "Same as interface",
+  locked: "Set by your organisation",
+  reset: "Reset to defaults",
+})
+
+declare module "../../lib/i18n/catalog.js" {
+  interface MessageCatalog {
+    appearanceSettings: typeof appearanceSettingsMessages.defaults
+  }
+}

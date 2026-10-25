@@ -19,4 +19,4 @@ readable", "Daily allowance 82%" in the warning tone from 80%.
 | model | `string \| undefined` | See type | no | — | Selected assistant model or typed view model. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called from Retry now, shown whenever `stream` is not `connected` and this is supplied. |
 | retryAt | `number \| undefined` | See type | no | — | Reconnecting: when the next attempt runs (Unix ms) and which attempt it is. |
-| stream | `StreamState` | "offline", "reset", "connected", "reconnecting" | yes | — | Current message stream state. |
+| stream | `StreamState` | "reset", "offline", "connected", "reconnecting" | yes | — | Current message stream state. |

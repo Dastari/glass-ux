@@ -39,7 +39,7 @@ uncontrolled. The entered identifier is kept across views.
 | onVerifyTwoFactor | `((submission: TwoFactorSubmission) => Promise<LoginOutcome \| void>) \| undefined` | See type | no | — | Checks a two-factor code. Required when `onSignIn` or `onProviderSignIn` can return `two-factor`. |
 | onViewChange | `((view: LoginView) => void) \| undefined` | See type | no | — | Called with the next view when a link, outcome or back action changes it. |
 | passwordPolicy | `LoginPasswordPolicy \| undefined` | See type | no | — | Rules for a new password (sign-up and reset). The server still enforces its own policy. |
-| providerLayout | `"auto" \| "grid" \| "list" \| undefined` | "auto", "grid", "list" | no | "auto" | list: one full-width button per row. grid: two columns of short buttons. auto (default): grid from four providers. |
+| providerLayout | `"grid" \| "auto" \| "list" \| undefined` | "grid", "auto", "list" | no | "auto" | list: one full-width button per row. grid: two columns of short buttons. auto (default): grid from four providers. |
 | providerPlacement | `"above" \| "below" \| undefined` | "above", "below" | no | "above" | Where the providers sit relative to the password form. Default "above". |
 | providers | `readonly LoginProvider[] \| undefined` | See type | no | — | Third-party sign-in options, in display order. |
 | remember | `boolean \| { defaultChecked: boolean; } \| undefined` | See type | no | false | Show "Keep me signed in". `true` starts unticked. Default false. |

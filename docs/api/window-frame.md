@@ -81,7 +81,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| narrow | `"show" \| "hide" \| undefined` | "show", "hide" | no | "show" | `hide` drops the bar in a phone-width window (under 30rem), for a primary view whose bar only adds detail there is no room for. Live state that matters on a phone (connection lost, reconnecting) keeps the default, `show`. |
+| narrow | `"hide" \| "show" \| undefined` | "hide", "show" | no | "show" | `hide` drops the bar in a phone-width window (under 30rem), for a primary view whose bar only adds detail there is no room for. Live state that matters on a phone (connection lost, reconnecting) keeps the default, `show`. |
 
 Inherited properties:
 

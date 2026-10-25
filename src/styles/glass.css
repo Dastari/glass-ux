@@ -692,6 +692,15 @@
     --canvas-overlay-colour: transparent;
     --canvas-overlay-fill: none;
   }
+  /* A layer that names its own background (a preview tile) starts with no artwork, so the
+     page's background never shows through it; its background's rule below adds any. */
+  .canvas-silk[data-background] {
+    --canvas-overlay-display: none;
+    --canvas-overlay-mask: none;
+    --canvas-overlay-position: center;
+    --canvas-overlay-colour: transparent;
+    --canvas-overlay-fill: none;
+  }
   /* Silk's hairlines: on a page with no background chosen, or Silk. */
   :where(:root:not([data-background]), :root[data-background="silk"]) .canvas-silk,
   .canvas-silk[data-background="silk"] {

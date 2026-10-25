@@ -13,6 +13,8 @@ export type ControllableUpdate<T> = T | ((previous: T) => T)
  * `(previous) => next`; successive updates in one event see each other's result. Every
  * call reports the next value to `onChange`. Function values are not supported, because
  * a function passed to the setter is treated as an updater.
+ * @example
+ * const [open, setOpen] = useControllable(props.open, false, props.onOpenChange)
  */
 export function useControllable<T>(
   value: T | undefined,

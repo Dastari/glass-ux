@@ -23,7 +23,10 @@ export interface ElementSizeOptions {
 /**
  * The size of an element, updated on resize. Use it only where CSS container queries
  * cannot decide (counting how many tabs or columns fit, collapsing an ActionBar); prefer
- * @container for styling. Measures before paint so the first frame is correct.
+ * `@container` for styling. Measures before paint so the first frame is correct.
+ * @example
+ * const ref = useRef<HTMLDivElement>(null)
+ * const { width, height } = useElementSize(ref)
  */
 export function useElementSize(ref: RefObject<HTMLElement | null>, { box = "content" }: ElementSizeOptions = {}): ElementSize {
   const [size, setSize] = useState<ElementSize>({ width: 0, height: 0 })

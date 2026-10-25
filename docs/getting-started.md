@@ -46,6 +46,57 @@ transforms. It uses [Vite’s documented dependency exclusions](https://vite.dev
 The tested build integration is Vite 8 with Tailwind 4. Frameworks using a different asset
 pipeline must support the library’s ESM and asset imports; check that before migrating.
 
+## Next.js App Router
+
+The built package marks modules that use hooks, contexts, event handlers or browser rendering
+with `"use client"`. Re-export barrels stay neutral: `configureAppearance`,
+`appearanceBootScript`, `configureLocale`, `getLocale`, schema and formatting helpers remain
+callable in server components. Import components from their public entries.
+
+App Router layouts can render the providers directly. Configure appearance and locale in
+both the server layout and a client setup module when overriding defaults: server and client
+bundles have separate module state. Put `appearanceBootScript()` in a blocking head script
+and use `suppressHydrationWarning` on `html`, as the script applies appearance before hydration.
+Use a client component for callbacks and definitions such as DataTable columns; pass
+serialisable values across the server/client boundary.
+
+```tsx
+// app/layout.tsx — a server component
+import { AppearanceProvider, appearanceBootScript } from "glass-ux/appearance";
+import { TooltipProvider } from "glass-ux/tooltip";
+import "glass-ux/styles.css";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <html lang="en-AU" suppressHydrationWarning>
+    <head><script dangerouslySetInnerHTML={{ __html: appearanceBootScript() }} /></head>
+    <body><AppearanceProvider><TooltipProvider>{children}</TooltipProvider></AppearanceProvider></body>
+  </html>;
+}
+```
+
+The font preload table uses bundled `.woff2?url` imports. With Next's webpack build, add
+this asset rule to `next.config.mjs` and run `next build --webpack`. Configure the normal
+Tailwind 4 PostCSS integration for utility classes used by the application.
+
+```js
+export default {
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.woff2$/, resourceQuery: /url/, type: "asset/resource",
+      generator: { filename: "static/media/[name].[contenthash][ext]" },
+    });
+    return config;
+  },
+};
+```
+
+Run `pnpm test:next` in this repository to build the release archive with `pnpm pack:release`,
+install it into an isolated copy of `tests/next-app-router`, and run a real Next.js App Router
+production build. The fixture renders Button, Panel, Tooltip, icons, appearance providers
+and a client DataTable, and calls configuration, locale, schema and formatting functions
+from server components. It is outside the shipped package and outside `pnpm check`.
+The webpack integration is tested; Turbopack's asset pipeline is not covered by this fixture.
+
 ## Add styles
 
 Glass UX requires a Tailwind 4 CSS pipeline. For a Vite project, install and register

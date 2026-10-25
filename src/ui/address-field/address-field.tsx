@@ -143,10 +143,13 @@ interface EditorProps extends AddressOptions {
   required?: boolean
   /** An error for the address as a whole (no single part). */
   error?: string
+  /** First nested error while the empty editor is collapsed; part rows show their own errors when expanded. */
+  emptyError?: string
   className?: string
 }
 
-function AddressEditor({
+/** Shared address editor for native and optional form bindings, with one error slot per part. */
+export function AddressEditor({
   value,
   onValueChange,
   parts,
@@ -155,6 +158,7 @@ function AddressEditor({
   optional,
   required,
   error,
+  emptyError,
   geocoder = serverGeocoder(),
   bias,
   countries,
@@ -168,6 +172,7 @@ function AddressEditor({
   const [manual, setManual] = useState(false)
   const [query, setQuery] = useState("")
   const expanded = manual || !isEmptyAddress(value)
+  const shownError = error ?? (!expanded ? emptyError : undefined)
   // Every suggestion seen, so a cached result list still resolves to its address.
   const seen = useRef(new Map<string, AddressSuggestion>())
   // The lookup's own point for this address, so a hand-placed pin can be reset.
@@ -242,7 +247,7 @@ function AddressEditor({
         hint={hint}
         optional={optional}
         required={required}
-        error={error}
+        error={shownError}
         disabled={disabled}
         aside={
           expanded || disabled ? undefined : (
@@ -289,7 +294,7 @@ function AddressEditor({
             </>
           }
           disabled={disabled}
-          invalid={Boolean(error)}
+          invalid={Boolean(shownError)}
         />
       </Field>
 

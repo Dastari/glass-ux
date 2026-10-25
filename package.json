@@ -555,11 +555,48 @@
     "./rich-text": {
       "types": "./dist/ui/rich-text/index.d.ts",
       "import": "./dist/ui/rich-text/index.js"
+    },
+    "./visually-hidden": {
+      "types": "./dist/ui/visually-hidden/index.d.ts",
+      "import": "./dist/ui/visually-hidden/index.js"
+    },
+    "./portal": {
+      "types": "./dist/ui/portal/index.d.ts",
+      "import": "./dist/ui/portal/index.js"
+    },
+    "./spinner": {
+      "types": "./dist/ui/spinner/index.d.ts",
+      "import": "./dist/ui/spinner/index.js"
+    },
+    "./virtual-list": {
+      "types": "./dist/ui/virtual-list/index.d.ts",
+      "import": "./dist/ui/virtual-list/index.js"
+    },
+    "./form-rhf": {
+      "types": "./dist/ui/form-rhf/index.d.ts",
+      "import": "./dist/ui/form-rhf/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js"
+    },
+    "./testing/playwright": {
+      "types": "./dist/testing/playwright.d.ts",
+      "import": "./dist/testing/playwright.js"
     }
   },
   "peerDependencies": {
     "react": ">=19 <20",
-    "react-dom": ">=19 <20"
+    "react-dom": ">=19 <20",
+    "react-hook-form": ">=7.60 <8",
+    "@hookform/resolvers": ">=5 <7",
+    "@testing-library/react": ">=16 <17",
+    "@testing-library/user-event": ">=14 <15",
+    "@playwright/test": ">=1.50 <2"
   },
   "dependencies": {
     "@base-ui/react": "1.9.0",
@@ -605,6 +642,7 @@
     "@fontsource-variable/onest": "^5.3.1",
     "@fontsource-variable/outfit": "^5.3.0",
     "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@hookform/resolvers": "^6.0.0",
     "@maplibre/geojson-vt": "6.1.2",
     "@maplibre/maplibre-gl-style-spec": "26.4.4",
     "@playwright/test": "1.64.0",
@@ -628,6 +666,7 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-hook-form": "^7.91.0",
     "sharp": "^0.35.5",
     "tailwindcss": "4.3.3",
     "typedoc": "0.28.20",
@@ -637,7 +676,7 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tests/tsconfig.json",
     "test": "vitest run --maxWorkers=4",
     "lint": "oxlint --deny-warnings src scripts apps/docs/src e2e",
     "docs:api": "node scripts/docs-api.mjs",
@@ -646,7 +685,7 @@
     "check": "pnpm run brand:check && pnpm run styles:check && pnpm run icons:check && pnpm run fonts:check && pnpm run tokens:check && pnpm run layout:check && pnpm run css-perf:check && pnpm run size:check && pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run test:docs && pnpm run boundaries:check && pnpm run docs:check",
     "boundaries:check": "node scripts/check-boundaries.mjs",
     "docs:check": "node scripts/check-docs.mjs",
-    "test:docs": "node --test scripts/docs-api.test.mjs scripts/css-buckets.test.mjs",
+    "test:docs": "node --test scripts/docs-api.test.mjs scripts/css-buckets.test.mjs scripts/client-boundaries.test.mjs",
     "test:e2e": "playwright test",
     "pack:release": "pnpm run docs:build && node scripts/pack-release.mjs --out .handoff",
     "pack:check": "node scripts/pack-release.mjs --check",
@@ -663,9 +702,27 @@
     "layout:check": "node bin/glass-ux.mjs check-layout src/gallery apps/docs/src",
     "test:production": "playwright test --config playwright.production.config.ts",
     "brand": "node scripts/build-brand.mjs",
-    "brand:check": "node scripts/build-brand.mjs --check"
+    "brand:check": "node scripts/build-brand.mjs --check",
+    "test:next": "node scripts/test-next.mjs"
   },
   "bin": {
     "glass-ux": "./bin/glass-ux.mjs"
+  },
+  "peerDependenciesMeta": {
+    "react-hook-form": {
+      "optional": true
+    },
+    "@hookform/resolvers": {
+      "optional": true
+    },
+    "@testing-library/react": {
+      "optional": true
+    },
+    "@testing-library/user-event": {
+      "optional": true
+    },
+    "@playwright/test": {
+      "optional": true
+    }
   }
 }

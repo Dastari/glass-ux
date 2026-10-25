@@ -4,6 +4,8 @@
  * while form.tsx registers that field in `useAppForm` — without an import cycle.
  */
 import { createFormHookContexts } from "@tanstack/react-form";
+import { useContext } from "react";
+import { FieldBindingContext } from "./binding.js";
 import type { FieldProps } from "../field/index.js";
 import { firstError } from "./validation.js";
 
@@ -34,7 +36,12 @@ export type FieldChrome = Pick<
  *   return <Field {...root} label={label}><Input value={field.state.value} … /></Field>
  */
 export function useBoundField<T>() {
-  const field = useFieldContext<T>();
+  const adapted = useContext(FieldBindingContext);
+  const native = useContext(fieldContext);
+  if (!adapted && !native) throw new Error("A bound field needs an AppField or RhfField provider");
+  // AddressField's nested TanStack fields use the native form; optional adapters render
+  // that compound editor with their own per-part controllers.
+  const field = (adapted ?? native) as ReturnType<typeof useFieldContext<T>>;
   const meta = field.state.meta;
   const error = firstError(meta.errors);
   return {

@@ -1,0 +1,19 @@
+import { IconSearch } from "glass-ux/icons";
+import { Button } from "glass-ux/button";
+import { VisuallyHidden } from "glass-ux/visually-hidden";
+import { Tooltip } from "glass-ux/tooltip";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+export default function VisuallyHiddenSection() {
+  return (
+    <SectionPage>
+      <Specimen title="Accessible label">
+        <Tooltip content="Find a record">
+          <Button icon={<IconSearch />}>
+            <VisuallyHidden>Find a record</VisuallyHidden>
+          </Button>
+        </Tooltip>
+      </Specimen>
+    </SectionPage>
+  );
+}

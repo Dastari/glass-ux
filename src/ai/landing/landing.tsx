@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { landingMessages } from "./messages.js"
 import type { ComponentProps, ReactNode } from "react";
 import { TruncatedText } from "../../ui/truncated-text/index.js";
 import { cx } from "../../lib/cx.js";
@@ -28,12 +30,16 @@ export interface AiHeroProps extends Omit<ComponentProps<"div">, "title"> {
  * hold the composer and suggestions as children. No subtitle — the composer says the rest.
  */
 export function AiHero({
-  title = "What can I help you with?",
-  emphasis = "help you",
+  title: titleProp,
+  emphasis: emphasisProp,
   className,
   children,
   ...rest
 }: AiHeroProps) {
+  const messages = useMessages(landingMessages)
+  const title = titleProp ?? messages.whatCanIHelpYouWith
+  const emphasis = emphasisProp ?? messages.helpYou
+
   const at = title.indexOf(emphasis);
   const heading =
     at >= 0 && emphasis ? (
@@ -74,13 +80,15 @@ export function SuggestionChips({
   className,
   ...rest
 }: SuggestionChipsProps) {
+  const messages = useMessages(landingMessages)
+
   return (
     <div
       {...rest}
       className={cx("fa-ai-suggestions", className)}
       data-align={align}
       role="group"
-      aria-label="Suggestions"
+      aria-label={messages.suggestions}
     >
       {suggestions.map((suggestion) => (
         <button

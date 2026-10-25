@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { shellMessages } from "./messages.js"
 import { Highlight } from "../ui/combobox/index.js";
 /**
  * SectionDrawer — the current section's navigation and lists (Assistant conversations,
@@ -84,6 +86,8 @@ function Header({
   className,
   ...rest
 }: SectionDrawerHeaderProps) {
+  const messages = useMessages(shellMessages)
+
   const shell = useOptionalShell();
   const placement = useContext(DrawerPlacement);
   const drawerKeys = useAriaShortcut(shell?.drawerShortcut);
@@ -119,7 +123,7 @@ function Header({
           variant="ghost"
           size="sm"
           icon={<IconSidebar />}
-          aria-label="Collapse section navigation"
+          aria-label={messages.collapseSectionNavigation}
           shortcut={shell.drawerShortcut}
           aria-keyshortcuts={drawerKeys}
           onClick={() => shell.setDrawerOpen(false)}
@@ -168,6 +172,8 @@ function Search({
   noun,
   placeholder,
 }: SectionDrawerSearchProps) {
+  const messages = useMessages(shellMessages)
+
   const placement = useContext(DrawerPlacement);
   const platform = usePlatform();
   const slash = useAriaShortcut("/");
@@ -284,8 +290,8 @@ function Search({
         size="sm"
         value={value}
         onValueChange={change}
-        placeholder={placeholder ?? `Search ${noun}`}
-        aria-label={`Search ${noun}`}
+        placeholder={placeholder ?? messages.search(noun)}
+        aria-label={messages.search(noun)}
         shortcut="/"
         aria-keyshortcuts={[slash, find].filter(Boolean).join(" ")}
         onKeyDown={onKeyDown}

@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { comboboxMessages } from "./messages.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import type { ReactNode } from "react"
 import { IconClose } from "../../icons/generated/icons.js"
@@ -25,6 +27,8 @@ export interface OptionChipProps {
  * the input; Backspace or Delete removes the focused one.
  */
 export function OptionChip({ label, icon, invalid, flash, readOnly, onEdit }: OptionChipProps) {
+  const messages = useMessages(comboboxMessages)
+
   if (readOnly) {
     return (
       <span className="fa-chip" data-invalid={invalid ? "" : undefined}>
@@ -50,7 +54,7 @@ export function OptionChip({ label, icon, invalid, flash, readOnly, onEdit }: Op
       {icon}
       {invalid ? <span className="fa-chip-label">{label}</span> : <TruncatedText className="fa-chip-label">{label}</TruncatedText>}
       <BaseCombobox.ChipRemove
-        render={<Button variant="ghost" size="sm" shape="circle" className="fa-chip-remove" icon={<IconClose />} aria-label={`Remove ${label}`} />}
+        render={<Button variant="ghost" size="sm" shape="circle" className="fa-chip-remove" icon={<IconClose />} aria-label={messages.remove(label)} />}
       />
     </BaseCombobox.Chip>
   )

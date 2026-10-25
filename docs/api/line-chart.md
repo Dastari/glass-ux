@@ -47,7 +47,7 @@ box grows.
 | unit | `ChartUnit \| undefined` | See type | no | — | "%", "GB", "ms", or a counted noun ({ one, other })… "%" sticks to the number; other units take a space. |
 | x | `readonly XValue[]` | See type | yes | — | Shared x values, ascending: Dates for time series, numbers otherwise. |
 | xDomain | `XDomain \| null \| undefined` | See type | no | — | Controlled visible x range: null shows everything. Use with `onXDomainChange`; omit for uncontrolled. |
-| xLabel | `string \| undefined` | See type | no | "Time" | Label for x in the table and readout ("Time", "Sample"). |
+| xLabel | `string \| undefined` | See type | no | — | Label for x in the table and readout ("Time", "Sample"). |
 | zoom | `boolean \| undefined` | false, true | no | false | Zoom the x axis in the full tier: drag across the plot to zoom to a range, Ctrl or ⌘ with the wheel (or a trackpad pinch) to zoom at the pointer, two fingers on touch, and + and − (Shift with the arrows to pan) while the plot has focus. "Reset zoom" appears in the head in a place kept for it. A plain wheel still scrolls the page. |
 
 Inherited properties:

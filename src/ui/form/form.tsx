@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { formMessages } from "./messages.js"
 import { RichTextField } from "../rich-text/index.js";
 import {
   createFormHook,
@@ -779,14 +781,20 @@ export interface SubmitButtonProps extends Omit<
  * (R15.3). It reports the form's own submission, so Enter in a field shows it too.
  */
 function SubmitButton({
-  children = "Save changes",
-  pendingLabel = "Saving…",
-  successLabel = "Saved",
-  errorLabel = "Not saved",
+  children: childrenProp,
+  pendingLabel: pendingLabelProp,
+  successLabel: successLabelProp,
+  errorLabel: errorLabelProp,
   variant = "primary",
   disabled,
   ...rest
 }: SubmitButtonProps) {
+  const messages = useMessages(formMessages)
+  const children = childrenProp ?? messages.saveChanges
+  const pendingLabel = pendingLabelProp ?? messages.saving
+  const successLabel = successLabelProp ?? messages.saved
+  const errorLabel = errorLabelProp ?? messages.notSaved
+
   const form = useFormContext();
   const { status } = useContext(FormStatusContext);
   const unchanged = useStore(form.store, (state) => state.isDefaultValue);
@@ -816,12 +824,15 @@ export interface CancelButtonProps extends Omit<
 
 /** Reverts every field to its saved value (R15.4). */
 function CancelButton({
-  children = "Cancel",
+  children: childrenProp,
   onCancel,
   variant = "secondary",
   disabled,
   ...rest
 }: CancelButtonProps) {
+  const messages = useMessages(formMessages)
+  const children = childrenProp ?? messages.cancel
+
   const form = useFormContext();
   const unchanged = useStore(form.store, (state) => state.isDefaultValue);
   return (

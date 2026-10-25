@@ -17,6 +17,7 @@ UrlInput bound to a string form field. Pair it with `urlSchema()`.
 | hint | `ReactNode` | See type | no | — | The message line's resting text. Only when the format or consequence is not obvious (R2.8). |
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
+| locale | `string \| undefined` | See type | no | — | Locale for validation wording. Defaults to getLocale(). |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called with the new state when the show/hide password button is pressed. Pair with `revealed` to control it. |
 | openable | `boolean \| undefined` | false, true | no | — | An "Open in a new tab" button while the value is a valid URL (default true). |

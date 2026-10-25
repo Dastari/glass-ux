@@ -1,3 +1,4 @@
+import { dragDropMessages, getDragDropMessages } from "./messages.js"
 /**
  * The drag and drop engine behind DragDropProvider: registries of draggables and zones, one
  * session at a time, pointer and keyboard input, hit-testing, the preview ("ghost"), sortable
@@ -222,22 +223,26 @@ const GEOMETRY_TTL = 250
 const INTERACTIVE = "button, a[href], input, select, textarea, label, [contenteditable]:not([contenteditable='false']), [data-dnd-ignore]"
 
 const cleanReason = (reason: string | null | undefined) => (reason ? reason.replace(/[.\s]+$/, "") : "")
-const pos = (place: AnnouncedPlace) => (place.position !== null && place.count !== null ? `, position ${place.position} of ${place.count}` : "")
+const pos = (place: AnnouncedPlace, messages: ReturnType<typeof getDragDropMessages> = getDragDropMessages()) => (place.position !== null && place.count !== null ? messages.positionOf(place.position, place.count) : "")
 
 /** The default English messages. */
-export const DEFAULT_ANNOUNCEMENTS: DragDropAnnouncements = {
+export function createAnnouncements(messages: typeof dragDropMessages.defaults): DragDropAnnouncements { return {
   lifted: (item, place, input) =>
-    `Lifted ${item.label}${place.zone ? ` in ${place.zone}${pos(place)}` : ""}.${input === "keyboard" ? " Arrow keys move it, Space or Enter drops it, Escape cancels." : ""}`,
+    messages.lifted(item.label, place.zone ? messages.in(place.zone, pos(place, messages)) : "", input === "keyboard" ? messages.arrowKeysMoveItSpaceOrEnter : ""),
   moved: (item, place, blocked) =>
-    blocked !== null ? `${place.zone ?? "Here"}: ${cleanReason(blocked) || `${item.label} cannot be dropped here`}.` : place.zone ? `${place.zone}${pos(place)}.` : "Not over a drop area.",
-  dropped: (item, place) => `Dropped ${item.label}${place.zone ? ` in ${place.zone}${pos(place)}` : ""}.`,
-  cancelled: (item, place) => `Move cancelled. ${item.label} returned${place.zone ? ` to ${place.zone}${pos(place)}` : ""}.`,
-  blocked: (item, zone, reason) => `${item.label} cannot be dropped in ${zone}${reason ? `: ${cleanReason(reason)}` : ""}.`,
-  failed: (item, zone, reason) => `${item.label} could not be dropped in ${zone}${reason ? `: ${cleanReason(reason)}` : ""}.`,
+    blocked !== null ? `${place.zone ?? messages.here}: ${cleanReason(blocked) || messages.cannotBeDroppedHere(item.label)}.` : place.zone ? `${place.zone}${pos(place, messages)}.` : messages.notOverADropArea,
+  dropped: (item, place) => messages.dropped(item.label, place.zone ? messages.in(place.zone, pos(place, messages)) : ""),
+  cancelled: (item, place) => messages.moveCancelledReturned(item.label, place.zone ? messages.to(place.zone, pos(place, messages)) : ""),
+  blocked: (item, zone, reason) => messages.cannotBeDroppedIn(item.label, zone, reason ? `: ${cleanReason(reason)}` : ""),
+  failed: (item, zone, reason) => messages.couldNotBeDroppedIn(item.label, zone, reason ? `: ${cleanReason(reason)}` : ""),
+}
 }
 
+/** The default English announcements. */
+export const DEFAULT_ANNOUNCEMENTS = createAnnouncements(dragDropMessages.defaults)
+
 /** Instructions read with every handle (aria-describedby). */
-export const DRAG_INSTRUCTIONS = "Press Space or Enter to lift. Arrow keys move, Space or Enter drops, Escape cancels."
+export const DRAG_INSTRUCTIONS = dragDropMessages.defaults.pressSpaceOrEnterToLiftArrowKeys
 
 function accepts(accept: DropAccept | undefined, item: DragItem) {
   if (accept === undefined) return true

@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { entitySettingsMessages } from "./messages.js"
 import type { ReactNode } from "react"
 import { IconLock, IconRestart } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -47,7 +49,7 @@ export function InheritedSetting({
   overridden,
   onOverride,
   onReset,
-  scope = "this item",
+  scope: scopeProp,
   control,
   children,
   enforcedBy,
@@ -55,6 +57,9 @@ export function InheritedSetting({
   disabledReason,
   className,
 }: InheritedSettingProps) {
+  const messages = useMessages(entitySettingsMessages)
+  const scope = scopeProp ?? messages.thisItem
+
   const valueText = (from: ReactNode) =>
     inheritedValue !== undefined ? (
       <>
@@ -65,7 +70,7 @@ export function InheritedSetting({
     )
 
   if (enforcedBy) {
-    const reason = `Enforced by ${enforcedBy}: it can't be changed here`
+    const reason = messages.enforcedByItCanTBeChangedHere(enforcedBy)
     return (
       <div className={cx("fa-inherited", className)} data-enforced="">
         <SettingRow
@@ -75,7 +80,7 @@ export function InheritedSetting({
           description={
             <span className="fa-inherited-scope">
               <IconLock className="fa-inherited-lock" />
-              {valueText(`Enforced by ${enforcedBy}`)}
+              {valueText(messages.enforcedBy(enforcedBy))}
             </span>
           }
         />
@@ -91,25 +96,23 @@ export function InheritedSetting({
         description={
           overridden ? (
             <>
-              <span className="fa-inherited-scope">Overridden for {scope}</span>
-              <span className="fa-inherited-was"> · inherits {valueText(source)}</span>
+              <span className="fa-inherited-scope">{messages.overriddenFor} {scope}</span>
+              <span className="fa-inherited-was"> {messages.inherits} {valueText(source)}</span>
             </>
           ) : (
-            <span className="fa-inherited-scope">Inherited from {valueText(source)}</span>
+            <span className="fa-inherited-scope">{messages.inheritedFrom} {valueText(source)}</span>
           )
         }
         control={
           overridden ? (
             <>
               <Button size="sm" variant="ghost" icon={<IconRestart />} onClick={onReset} disabled={disabled} disabledReason={disabledReason} className="fa-inherited-reset">
-                Reset
-              </Button>
+                {messages.reset} </Button>
               {control}
             </>
           ) : (
             <Button size="sm" onClick={onOverride} disabled={disabled} disabledReason={disabledReason} className="fa-inherited-override">
-              Override
-            </Button>
+              {messages.override} </Button>
           )
         }
       />

@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { datePickerMessages } from "./messages.js"
 import { Input as BaseInput } from "@base-ui/react/input"
 import { useEffect, useId, useRef, useState, type FocusEvent, type KeyboardEvent, type Ref } from "react"
 import { IconCalendar } from "../../icons/generated/icons.js"
@@ -95,6 +97,8 @@ export function DateField({
   ref,
   ...aria
 }: DateFieldProps) {
+  const messages = useMessages(datePickerMessages, { locale: localeProp })
+
   const locale = useLocale(localeProp)
   const [inner, setInner] = useState<IsoDate | null>(defaultValue)
   const current = value === undefined ? inner : value
@@ -163,8 +167,8 @@ export function DateField({
       />
       {readOnly || disabled ? null : (
         <Popover.Root open={open} onOpenChange={setOpen}>
-          <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconCalendar />} aria-label="Choose a date" />} />
-          <Popover.Popup size="sm" align="end" className="fa-date-popover" finalFocus={inputRef} aria-label="Choose a date">
+          <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconCalendar />} aria-label={messages.chooseADate} />} />
+          <Popover.Popup size="sm" align="end" className="fa-date-popover" finalFocus={inputRef} aria-label={messages.chooseADate}>
             <Calendar
               locale={locale}
               min={min}
@@ -213,10 +217,14 @@ export function DateRangeField({
   invalid,
   id,
   className,
-  startLabel = "Start date",
-  endLabel = "End date",
+  startLabel: startLabelProp,
+  endLabel: endLabelProp,
   ...aria
 }: DateRangeFieldProps) {
+  const messages = useMessages(datePickerMessages, { locale: localeProp })
+  const startLabel = startLabelProp ?? messages.startDate
+  const endLabel = endLabelProp ?? messages.endDate
+
   const locale = useLocale(localeProp)
   const [inner, setInner] = useState<DateRange | null>(defaultValue)
   const current = value === undefined ? inner : value
@@ -298,8 +306,8 @@ export function DateRangeField({
       {input(end, endLabel)}
       {readOnly || disabled ? null : (
         <Popover.Root open={open} onOpenChange={setOpen}>
-          <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconCalendar />} aria-label="Choose dates" />} />
-          <Popover.Popup size="sm" align="end" className="fa-date-popover" finalFocus={startRef} aria-label="Choose dates">
+          <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconCalendar />} aria-label={messages.chooseDates} />} />
+          <Popover.Popup size="sm" align="end" className="fa-date-popover" finalFocus={startRef} aria-label={messages.chooseDates}>
             <Calendar
               mode="range"
               locale={locale}

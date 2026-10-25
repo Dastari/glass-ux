@@ -188,6 +188,44 @@ field's `locale` to it when they differ. A server has no `<html lang>` to read: 
 `configureLocale` with the same tag on the server and the client. Otherwise the first render
 uses `en-US` and the page's locale applies once hydration completes.
 
+## Translate the interface
+
+Register only the packs you need. Built-in wording follows the same locale as formatting:
+
+```tsx
+import de from "glass-ux/i18n/de";
+import { registerMessagePack, configureMessages, MessagesProvider, defineMessagePack } from "glass-ux/i18n";
+import { LocaleProvider } from "glass-ux/locale";
+
+registerMessagePack(de);
+configureMessages({ pagination: { pages: "Ergebnisse" } });
+
+function GermanRegion({ children }) {
+  return (
+    <LocaleProvider locale="de">
+      <MessagesProvider messages={{ pagination: { noRows: "Keine Ergebnisse" } }}>
+        {children}
+      </MessagesProvider>
+    </LocaleProvider>
+  );
+}
+
+// Add your own language; missing messages fall back to English.
+registerMessagePack(defineMessagePack("fi", {
+  pagination: { previousPage: "Edellinen sivu", nextPage: "Seuraava sivu" },
+}));
+```
+
+Packs ship for `de`, `fr`, `es`, `it`, `pt-BR`, `nl`, `ja`, `zh-Hans`, `ko`, `ar` and `he`.
+An exact tag wins; a language pack also serves regional tags (`de` serves `de-AT`).
+`zh-Hans` and `pt-BR` need their matching tag. English is the fallback.
+Wording resolves from English, the registered pack, `configureMessages`, nested
+`MessagesProvider` overrides, then a component's existing `labels` prop. Use configuration
+for product wording and providers for one region. Explicit text props such as `placeholder`
+keep their precedence. Application content is not translated. Pass `locale` to schema
+helpers when a form's provider differs from the application locale. Set `lang` and `dir`
+on the host region as appropriate; `LocaleProvider` does not change DOM direction.
+
 ## Build a typed form
 
 ```tsx

@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { shellMessages } from "./messages.js"
 /**
  * Full bleed — imagery (a map, a network map) that fills the whole primary window, with
  * the page chrome floating over it on the canvas: the header above, the status strip below,
@@ -64,11 +66,13 @@ const OFF: BleedChromeProps = {}
 
 /** The full-bleed layout's state: the layer, its insets and the props its chrome carries. */
 export function useBleed(enabled: boolean): Bleed {
+  const messages = useMessages(shellMessages)
+
   const [element, setElement] = useState<HTMLDivElement | null>(null)
   const insets = useBleedInsets(element, enabled)
   const chrome = useCallback(
     (edge: BleedEdge = "auto", { imagery = true }: BleedChromeOptions = {}): BleedChromeProps =>
-      enabled ? { className: imagery ? `${CHROME_CLASS} over-imagery` : CHROME_CLASS, "data-bleed-chrome": edge === "auto" ? undefined : edge } : OFF,
+      enabled ? { className: imagery ? messages.overImagery(CHROME_CLASS) : CHROME_CLASS, "data-bleed-chrome": edge === "auto" ? undefined : edge } : OFF,
     [enabled]
   )
   const layer = useCallback((className?: string) => ({ ref: setElement, className: cx(enabled && "fa-bleed", className) || undefined }), [enabled])

@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { windowsMessages } from "./messages.js"
 /**
  * A popped-out window: the same frame, filling its own browser window. The pop-out route
  * renders this inside its own WindowManagerProvider (same storage key and channel), so the
@@ -43,6 +45,8 @@ export interface PopoutWindowProps {
  * is closed from the workspace. Render it inside a `WindowManagerProvider`.
  */
 export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
+  const messages = useMessages(windowsMessages)
+
   const manager = useWindowManager();
   const entry = useWindowEntry(id);
   const titleId = useId();
@@ -70,7 +74,7 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
     return () => clearTimeout(timer);
   }, [gone]);
 
-  const description = entry ? describeWindow(entry.kind, entry.params) : null;
+  const description = entry ? describeWindow(entry.kind, entry.params, messages) : null;
   const scopeLabel = entry?.scope
     ? (scopes?.describe(entry.scope)?.label ?? entry.scope)
     : undefined;
@@ -108,8 +112,7 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
       <main className="fa-wm-popout-empty">
         {gone ? (
           <EmptyState icon={null}>
-            This window was closed in the workspace.
-          </EmptyState>
+            {messages.thisWindowWasClosedInTheWorkspace} </EmptyState>
         ) : null}
       </main>
     );

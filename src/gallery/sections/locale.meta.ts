@@ -5,5 +5,5 @@ export const meta: SectionMeta = {
   title: "Locale",
   group: "Foundations",
   order: 75,
-  summary: "Formatting locales and reading direction for an application or region.",
+  summary: "Interface language packs, locale formatting and reading direction for an application or one region.",
 }

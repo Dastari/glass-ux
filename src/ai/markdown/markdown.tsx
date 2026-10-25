@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { markdownMessages } from "./messages.js"
 import {
   Fragment,
   memo,
@@ -89,6 +91,7 @@ function MarkdownLink({
   href?: string;
   children?: ReactNode;
 }) {
+ const messages = useMessages(markdownMessages)
   const resolver = useEntityResolver();
   const cite = href?.match(/^#cite-(\d{1,3})$/);
   if (cite) return <CitationMarker index={Number(cite[1])} />;
@@ -115,7 +118,7 @@ function MarkdownLink({
         {children}
         <IconExternalLink
           className="fa-ai-link-external"
-          label="(opens in a new tab)"
+          label={messages.opensInNewTab}
         />
       </a>
     );
@@ -128,7 +131,7 @@ function alignOf(style: unknown) {
   return align === "right" ? "end" : align === "center" ? "center" : undefined;
 }
 
-const components: Components = {
+function markdownComponents(messages: typeof markdownMessages.defaults): Components { return {
   // Headings carry a class so the spacing around them is class-keyed (markdown.css).
   h1: ({ children }) => <h1 className="fa-ai-md-heading">{children}</h1>,
   h2: ({ children }) => <h2 className="fa-ai-md-heading">{children}</h2>,
@@ -154,7 +157,7 @@ const components: Components = {
   code: ({ children }) => <InlineCode>{String(children ?? "")}</InlineCode>,
   table: ({ children }) => (
     <div className="fa-ai-md-table" data-breakout="">
-      <TableScroll label="Table" maxRows={14}>
+      <TableScroll label={messages.table} maxRows={14}>
         <table className="fa-ai-table">{children}</table>
       </TableScroll>
     </div>
@@ -181,7 +184,7 @@ const components: Components = {
     <Checkbox
       checked={Boolean(checked)}
       readOnly
-      aria-label={checked ? "Done" : "Not done"}
+      aria-label={checked ? messages.done : messages.notDone}
     />
   ),
   hr: () => (
@@ -192,20 +195,20 @@ const components: Components = {
   img: ({ alt }) => (
     <span className="fa-ai-md-image">
       <IconImage />
-      {alt || "Image"}
+      {alt || messages.image}
     </span>
   ),
-};
+} }
 
 /**
  * Document tables retain complete text within fixed column widths and show every row: the
  * page scrolls, not a box inside it (a conversation keeps the capped preview).
  */
-const wrappingComponents: Components = {
-  ...components,
+function wrappingComponents(messages: typeof markdownMessages.defaults): Components { return {
+  ...markdownComponents(messages),
   table: ({ children }) => (
     <div className="fa-ai-md-table" data-breakout="">
-      <TableScroll label="Table">
+      <TableScroll label={messages.table}>
         <table className="fa-ai-table">{children}</table>
       </TableScroll>
     </div>
@@ -218,7 +221,7 @@ const wrappingComponents: Components = {
       {children}
     </td>
   ),
-};
+} }
 
 /** In documents (`anchors`), a `#fragment` link jumps within the page. */
 function withAnchors(map: Components): Components {
@@ -238,8 +241,8 @@ function withAnchors(map: Components): Components {
       ),
   };
 }
-const anchorComponents = withAnchors(components);
-const anchorWrappingComponents = withAnchors(wrappingComponents);
+
+
 
 export interface MarkdownProps extends Omit<ComponentProps<"div">, "children"> {
   /** Assistant markdown (GFM). Raw HTML is ignored and the tree is sanitised. */
@@ -283,6 +286,7 @@ const MarkdownSegment = memo(function MarkdownSegment({
   wrapTableCells: boolean;
   anchors: boolean;
 }) {
+ const messages = useMessages(markdownMessages)
   return (
     <ReactMarkdown
       remarkPlugins={remarkPlugins}
@@ -290,11 +294,11 @@ const MarkdownSegment = memo(function MarkdownSegment({
       components={
         anchors
           ? wrapTableCells
-            ? anchorWrappingComponents
-            : anchorComponents
+            ? withAnchors(wrappingComponents(messages))
+            : withAnchors(markdownComponents(messages))
           : wrapTableCells
-            ? wrappingComponents
-            : components
+            ? wrappingComponents(messages)
+            : markdownComponents(messages)
       }
       skipHtml
     >

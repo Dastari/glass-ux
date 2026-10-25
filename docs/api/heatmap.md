@@ -16,7 +16,7 @@ quiet hours read as quiet. A step legend sits in the head.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| columnLabel | `string \| undefined` | See type | no | "Time" | Accessible name or label definition for a column. |
+| columnLabel | `string \| undefined` | See type | no | — | Accessible name or label definition for a column. |
 | columns | `readonly XValue[]` | See type | yes | — | One per column: hours (Dates) or labels. |
 | domain | `readonly [number, number] \| undefined` | See type | no | — | Value range for the colour scale; defaults to [0, max]. |
 | emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
@@ -26,7 +26,7 @@ quiet hours read as quiet. A step legend sits in the head.
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for this chart's numbers, dates and table. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
-| rowLabel | `string \| undefined` | See type | no | "Category" | Accessible name or label definition for a row. |
+| rowLabel | `string \| undefined` | See type | no | — | Accessible name or label definition for a row. |
 | rows | `readonly string[]` | See type | yes | — | One label per row: alert categories, services, endpoints. |
 | state | `ChartState \| undefined` | "error", "loading", "ready", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | steps | `number \| undefined` | See type | no | 5 | Colour steps, 3–7 (past seven, neighbouring steps blur). |

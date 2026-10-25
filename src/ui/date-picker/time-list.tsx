@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { datePickerMessages } from "./messages.js"
 import { useCallback, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type Ref } from "react"
 import { cx } from "../../lib/cx.js"
 import { useElementSize } from "../../lib/use-element-size.js"
@@ -35,7 +37,10 @@ const normalise = (text: string) => text.toLowerCase().replace(/[\s:.]/g, "")
  * Down move an hour, Home and End go to the ends, typing jumps ("9", "93" → 9:30 am), and
  * Enter or Space picks. It opens scrolled to the chosen time, or the nearest one.
  */
-export function TimeList({ times, value, near, format, onPick, autoFocus, "aria-label": label = "Times", listRef, className }: TimeListProps) {
+export function TimeList({ times, value, near, format, onPick, autoFocus, "aria-label": labelProp, listRef, className }: TimeListProps) {
+  const messages = useMessages(datePickerMessages)
+  const label = labelProp ?? messages.times
+
   const id = useId()
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const probeRef = useRef<HTMLDivElement>(null)
@@ -150,8 +155,7 @@ export function TimeList({ times, value, near, format, onPick, autoFocus, "aria-
   if (!times.length) {
     return (
       <div className={cx("fa-time-list fa-time-list-empty", className)} ref={setRefs}>
-        No times available
-      </div>
+        {messages.noTimesAvailable} </div>
     )
   }
 

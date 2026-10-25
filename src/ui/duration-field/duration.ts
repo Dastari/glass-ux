@@ -1,3 +1,5 @@
+import { numberFormat } from "../../lib/locale/intl.js"
+import { getLocale } from "../../lib/locale/locale.js"
 /**
  * Durations as people write them, to and from whole seconds.
  *
@@ -60,22 +62,19 @@ export function parseDuration(text: string, options: DurationParseOptions = {}):
 }
 
 export interface DurationFormatOptions {
+  /** Locale for long unit names. Defaults to getLocale(); short input notation stays canonical. */
+  locale?: string
   /** Units to write, largest first. Default: weeks are not used; d, h, m and s are. */
   units?: readonly DurationUnit[]
   /** "short" (default) "1h 30m"; "long" "1 hour 30 minutes". */
   style?: "short" | "long"
 }
 
-const LONG: Readonly<Record<DurationUnit, [string, string]>> = {
-  w: ["week", "weeks"],
-  d: ["day", "days"],
-  h: ["hour", "hours"],
-  m: ["minute", "minutes"],
-  s: ["second", "seconds"],
-}
+const UNIT_NAMES = { w: "week", d: "day", h: "hour", m: "minute", s: "second" } as const
 
 /** "1h 30m"; 0 → "0m" (the smallest unit allowed). Seconds below the smallest unit round. */
 export function formatDuration(seconds: number, options: DurationFormatOptions = {}): string {
+  const long = (count: number, unit: DurationUnit) => numberFormat(options.locale ?? getLocale(), { style: "unit", unit: UNIT_NAMES[unit], unitDisplay: "long" }).format(count)
   const units = ORDER.filter((unit) => (options.units ?? ["d", "h", "m", "s"]).includes(unit))
   const smallest = units.at(-1) ?? "s"
   let rest = Math.round(Math.abs(seconds) / UNIT_SECONDS[smallest]) * UNIT_SECONDS[smallest]
@@ -83,8 +82,8 @@ export function formatDuration(seconds: number, options: DurationFormatOptions =
   for (const unit of units) {
     const amount = Math.floor(rest / UNIT_SECONDS[unit])
     rest -= amount * UNIT_SECONDS[unit]
-    if (amount) parts.push(options.style === "long" ? `${amount} ${LONG[unit][amount === 1 ? 0 : 1]}` : `${amount}${unit}`)
+    if (amount) parts.push(options.style === "long" ? long(amount, unit) : `${amount}${unit}`)
   }
-  if (!parts.length) parts.push(options.style === "long" ? `0 ${LONG[smallest][1]}` : `0${smallest}`)
+  if (!parts.length) parts.push(options.style === "long" ? long(0, smallest) : `0${smallest}`)
   return (seconds < 0 ? "−" : "") + parts.join(" ")
 }

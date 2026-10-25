@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { sliderMessages } from "./messages.js"
 import { Slider as BaseSlider } from "@base-ui/react/slider"
 import { useState, type CSSProperties, type FocusEvent } from "react"
 import { cx } from "../../lib/cx.js"
@@ -90,6 +92,8 @@ export function Slider({
   locale,
   ...aria
 }: SliderProps) {
+  const messages = useMessages(sliderMessages, { locale: locale })
+
   const number = numberFormat(useLocale(locale))
   const [inner, setInner] = useState(() => asArray(defaultValue, min))
   // Mount measured thumbs after the public Control ref attaches. Base UI's child
@@ -171,7 +175,7 @@ export function Slider({
               style={{ insetInlineStart: 0, "--_f": fraction(current, min) } as CSSProperties}
               onBlur={onBlur}
               getAriaValueText={(formatted, raw) => show(raw)}
-              {...(range ? { "aria-label": thumbLabels?.[index] ?? (index === 0 ? "Minimum" : "Maximum") } : aria)}
+              {...(range ? { "aria-label": thumbLabels?.[index] ?? (index === 0 ? messages.minimum : messages.maximum) } : aria)}
             >
               <span className="fa-slider-bubble" aria-hidden>
                 {show(current)}

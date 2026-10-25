@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { resultsMessages } from "./messages.js"
 import { useState } from "react"
 import { IconChevronDown, IconChevronUp, IconTerminal } from "../../icons/generated/icons.js"
 import { Button } from "../../ui/button/index.js"
@@ -11,13 +13,14 @@ type LogResult = Extract<AiResult, { type: "log" }>
 /** Lines shown before "Show all n lines" (the tail: the newest lines matter most). */
 const TAIL = 10
 
-const LEVEL_WORDS: Record<LogLine["level"], string> = {
-  debug: "Debug",
-  info: "Info",
-  warning: "Warning",
-  error: "Error",
+function getLEVEL_WORDS(messages: typeof resultsMessages.defaults): Record<LogLine["level"], string> { return {
+  debug: messages.debug,
+  info: messages.info,
+  warning: messages.warning,
+  error: messages.error,
   success: "OK",
-}
+} }
+
 
 /**
  * Log or terminal output: time, a level word in its tone (the same roles as badges),
@@ -28,6 +31,8 @@ export function ResultLog({ result }: {
   /** The log result: `lines` in order, each with a level, the text and an optional time; the line and error counts are the data line. */
   result: LogResult
 }) {
+  const messages = useMessages(resultsMessages)
+
   const locale = useLocale()
   const [expanded, setExpanded] = useState(false)
   const collapsible = result.lines.length > TAIL + 2
@@ -37,14 +42,14 @@ export function ResultLog({ result }: {
     <ResultFrame
       result={result}
       icon={<IconTerminal />}
-      meta={`${formatNumber(result.lines.length, 0, locale)} lines${errors ? ` · ${errors} ${errors === 1 ? "error" : "errors"}` : ""}`}
-      copyText={result.lines.map((line) => [line.time, LEVEL_WORDS[line.level].toUpperCase(), line.text].filter(Boolean).join("  ")).join("\n")}
+      meta={[messages.lineCount(result.lines.length, locale), errors ? messages.errorCount(errors, locale) : ""].filter(Boolean).join(" · ")}
+      copyText={result.lines.map((line) => [line.time, getLEVEL_WORDS(messages)[line.level].toUpperCase(), line.text].filter(Boolean).join("  ")).join("\n")}
       flush
     >
       {collapsible ? (
         <div className="fa-ai-log-more">
           <Button variant="ghost" size="sm" icon={expanded ? <IconChevronDown /> : <IconChevronUp />} aria-expanded={expanded} onClick={() => setExpanded((value) => !value)}>
-            {expanded ? `Show the last ${TAIL} lines` : `Show ${formatNumber(result.lines.length - TAIL, 0, locale)} earlier lines`}
+            {expanded ? messages.showTheLastLines(TAIL) : messages.showEarlierLines(formatNumber(result.lines.length - TAIL, 0, locale))}
           </Button>
         </div>
       ) : null}
@@ -57,7 +62,7 @@ export function ResultLog({ result }: {
                 {line.time}
               </time>
             ) : null}
-            <span className="fa-ai-log-level">{LEVEL_WORDS[line.level]}</span>
+            <span className="fa-ai-log-level">{getLEVEL_WORDS(messages)[line.level]}</span>
             <span className="fa-ai-log-text">{line.text}</span>
           </li>
         ))}

@@ -1,3 +1,4 @@
+import { getEmailFieldMessages } from "./messages.js"
 /**
  * Email addresses: a practical check (what mail systems accept, not the full RFC 5322 grammar),
  * normalisation, and a typo hint for the domain ("avery@gmial.com" → "Did you mean gmail.com?").
@@ -12,21 +13,21 @@ const LABEL = /^(?!-)[a-z0-9-]{1,63}(?<!-)$/i
 export const EMAIL_EXAMPLE = "name@example.com.au"
 
 /** Validate and normalise: trimmed, the domain in lower case (the local part keeps its case). */
-export function parseEmail(text: string): EmailResult {
+export function parseEmail(text: string, locale?: string): EmailResult {
   const source = text.trim().replace(/^mailto:/i, "")
-  if (!source) return { ok: false, error: "Enter an email address" }
+  if (!source) return { ok: false, error: getEmailFieldMessages(locale).enterAnEmailAddress }
   const at = source.lastIndexOf("@")
-  if (at < 1 || at === source.length - 1) return { ok: false, error: `Enter an email such as ${EMAIL_EXAMPLE}` }
+  if (at < 1 || at === source.length - 1) return { ok: false, error: getEmailFieldMessages(locale).enterAnEmailSuchAs(EMAIL_EXAMPLE) }
   const local = source.slice(0, at)
   const domain = source.slice(at + 1).toLowerCase().replace(/\.$/, "")
   if (!LOCAL.test(local) || local.startsWith(".") || local.endsWith(".") || local.includes("..")) {
-    return { ok: false, error: `Enter an email such as ${EMAIL_EXAMPLE}` }
+    return { ok: false, error: getEmailFieldMessages(locale).enterAnEmailSuchAs(EMAIL_EXAMPLE) }
   }
   const labels = domain.split(".")
   if (labels.length < 2 || labels.some((label) => !LABEL.test(label)) || !/^(?:[a-z]{2,63}|xn--[a-z0-9-]+)$/.test(labels.at(-1) ?? "")) { // tokens:allow a regular expression, not a class
-    return { ok: false, error: `Enter an email such as ${EMAIL_EXAMPLE}` }
+    return { ok: false, error: getEmailFieldMessages(locale).enterAnEmailSuchAs(EMAIL_EXAMPLE) }
   }
-  if (source.length > 254) return { ok: false, error: "Use 254 characters or fewer" }
+  if (source.length > 254) return { ok: false, error: getEmailFieldMessages(locale).use254CharactersOrFewer }
   return { ok: true, value: `${local}@${domain}` }
 }
 

@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { actionsMessages } from "./messages.js"
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react"
 import { IconChevronDown, IconMoreHorizontal } from "../../icons/generated/icons.js"
 import { resolveActions, splitForHeader, type ActionSet, type ResolvedAction, type ResolvedGroup } from "../../lib/actions/actions.js"
@@ -96,6 +98,8 @@ function HeaderButtonReplica<T>({ action }: { action: ResolvedAction<T> }) {
 
 /** A promoted action. Async work confirms in place: pending → ✓ / ✕ (R9.2, R12.5). */
 function HeaderButton<T>({ action, targets, label }: HeaderButtonProps<T>) {
+  const messages = useMessages(actionsMessages)
+
   const { start } = useActionRunner()
   const { status, run } = useActionFeedback()
   const variant = variantOf(action)
@@ -112,7 +116,7 @@ function HeaderButton<T>({ action, targets, label }: HeaderButtonProps<T>) {
   // A primary with children is a split button; any other parent is a menu button.
   if (action.children.length) {
     const menu = (
-      <Menu.Popup align="end" aria-label={`${action.label} for ${label}`}>
+      <Menu.Popup align="end" aria-label={messages.for(action.label, label)}>
         <ActionMenuItems
           // The split button's main half already runs the parent; don't list it again.
           groups={[{ group: action.definition.group, actions: action.children.filter((child) => !child.id.endsWith(":self")) }]}
@@ -130,7 +134,7 @@ function HeaderButton<T>({ action, targets, label }: HeaderButtonProps<T>) {
           <Menu.Root>
             <Menu.Trigger
               disabled={disabled}
-              render={<Button variant={variant} icon={<IconChevronDown />} aria-label={`More ${action.label.toLowerCase()} options`} />}
+              render={<Button variant={variant} icon={<IconChevronDown />} aria-label={messages.moreOptions(action.label.toLowerCase())} />}
             />
             {menu}
           </Menu.Root>
@@ -161,17 +165,18 @@ function HeaderButton<T>({ action, targets, label }: HeaderButtonProps<T>) {
 
 /** The overflow menu is always a ghost button: it is a menu, not an action. */
 function MoreMenu<T>({ groups, targets, label, compact }: { groups: ResolvedGroup<T>[]; targets: readonly T[]; label: string; compact: boolean }) {
+  const messages = useMessages(actionsMessages)
+
   const trigger = compact ? (
-    <Button variant="ghost" icon={<IconMoreHorizontal />} aria-label={`More actions for ${label}`} />
+    <Button variant="ghost" icon={<IconMoreHorizontal />} aria-label={messages.moreActionsFor(label)} />
   ) : (
     <Button variant="ghost" iconEnd={<IconChevronDown />}>
-      More actions
-    </Button>
+      {messages.moreActions} </Button>
   )
   return (
     <Menu.Root>
       <Menu.Trigger render={trigger} />
-      <Menu.Popup align="end" aria-label={`More actions for ${label}`}>
+      <Menu.Popup align="end" aria-label={messages.moreActionsFor(label)}>
         <ActionMenuItems groups={groups} targets={targets} surface="menu" />
       </Menu.Popup>
     </Menu.Root>
@@ -208,6 +213,8 @@ export interface ActionBarProps<T> {
  * primary never moves and nothing around it shifts.
  */
 export function ActionBar<T>({ set, targets, label, maxButtons = 3, className, onLevelChange, available }: ActionBarProps<T>) {
+  const messages = useMessages(actionsMessages)
+
   const groups = resolveActions(set, targets, "header")
   const candidates = splitForHeader(groups, maxButtons).promoted
   const barRef = useRef<HTMLDivElement>(null)
@@ -277,7 +284,7 @@ export function ActionBar<T>({ set, targets, label, maxButtons = 3, className, o
       data-level={level}
       data-count={count}
       role="toolbar"
-      aria-label={`Actions for ${label}`}
+      aria-label={messages.actionsFor(label)}
     >
       <div className="fa-action-bar-row">{content}</div>
       <div ref={measureRef} className="fa-action-bar-measure" aria-hidden inert>
@@ -288,8 +295,7 @@ export function ActionBar<T>({ set, targets, label, maxButtons = 3, className, o
         ))}
         <span data-measure="more" className="fa-action-bar-cell">
           <ButtonReplica variant="ghost" iconEnd={<IconChevronDown />}>
-            More actions
-          </ButtonReplica>
+            {messages.moreActions} </ButtonReplica>
         </span>
         <span data-measure="more-icon" className="fa-action-bar-cell">
           <ButtonReplica variant="ghost" icon={<IconMoreHorizontal />} />

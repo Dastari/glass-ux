@@ -25,5 +25,5 @@ names the enforcer and cannot be overridden.
 | onOverride | `() => void` | See type | yes | — | Start an override (copy the inherited value into the entity's own). |
 | onReset | `() => void` | See type | yes | — | Drop the override and inherit again. |
 | overridden | `boolean` | false, true | yes | — | The entity sets its own value. |
-| scope | `string \| undefined` | See type | no | "this item" | Whose override it is: "this device" → "Overridden for this device". |
+| scope | `string \| undefined` | See type | no | — | Whose override it is: "this device" → "Overridden for this device". |
 | source | `ReactNode` | See type | yes | — | Who the value comes from while not overridden, as the UI names them: "Orbit Workspace", "Central studio (site)", "the workspace". |

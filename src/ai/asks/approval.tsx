@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { asksMessages } from "./messages.js"
 import {
   useCallback,
   useEffect,
@@ -51,20 +53,22 @@ export interface ApprovalRecordProps {
  * running it carries Revoke; it updates in place to executed, failed or revoked.
  */
 export function ApprovalRecord({ ask, onRevoke }: ApprovalRecordProps) {
+  const messages = useMessages(asksMessages)
+
   const prefix =
     ask.state === "executed"
       ? ""
       : ask.state === "denied"
-        ? "Denied · "
+        ? messages.denied
         : ask.state === "expired"
-          ? "Expired · "
+          ? messages.expired
           : ask.state === "revoked"
-            ? "Revoked · "
+            ? messages.revoked
             : ask.state === "cancelled"
-              ? "Cancelled with the run · "
+              ? messages.cancelledWithTheRun
               : ask.state === "failed"
-                ? "Failed · "
-                : "Approved · running · ";
+                ? messages.failed
+                : messages.approvedRunning;
   return (
     <AskRecord
       status={RECORD_STATUS[ask.state]}
@@ -76,17 +80,16 @@ export function ApprovalRecord({ ask, onRevoke }: ApprovalRecordProps) {
           <ActionButton
             variant="ghost"
             size="sm"
-            pendingLabel="Revoking…"
-            successLabel="Revoked"
+            pendingLabel={messages.revoking}
+            successLabel={messages.revoked2}
             onAction={onRevoke}
           >
-            Revoke
-          </ActionButton>
+            {messages.revoke} </ActionButton>
         ) : undefined
       }
     >
       {prefix}
-      {ask.action} on{" "}
+      {ask.action} {messages.on}{" "}
       {ask.targets.map((entity, index) => (
         <span key={`${entity.kind}:${entity.id}`}>
           {index ? ", " : ""}
@@ -101,19 +104,21 @@ export function ApprovalRecord({ ask, onRevoke }: ApprovalRecordProps) {
 }
 
 function Expiry({ at, onExpire }: { at: number; onExpire: () => void }) {
+  const messages = useMessages(asksMessages)
+
   const now = useNow(true, 1000);
   const left = at - now;
   useEffect(() => {
     if (left <= 0) onExpire();
   }, [left, onExpire]);
-  if (left <= 0) return <span>Expired</span>;
+  if (left <= 0) return <span>{messages.expired2}</span>;
   return (
     <span
       data-numeric
       data-soon={left < 60_000 ? "" : undefined}
       className="fa-ai-ask-expiry"
     >
-      Expires in {formatCountdown(left)}
+      {messages.expiresIn} {formatCountdown(left)}
     </span>
   );
 }
@@ -134,6 +139,8 @@ export function ApprovalCard({ ask }: {
   /** The approval request and its current state; once decided the card folds into its record. */
   ask: Approval;
 }) {
+  const messages = useMessages(asksMessages)
+
   const id = useId();
   const handlers = useConversationHandlers();
   const dock = useAskDockApi();
@@ -202,8 +209,8 @@ export function ApprovalCard({ ask }: {
     step(false);
   };
 
-  const tier = ask.stepUp ? "Assured · MFA" : "Confirm";
-  const approveLabel = ask.stepUp ? "Approve with MFA" : "Approve once";
+  const tier = ask.stepUp ? messages.assuredMfa : messages.confirm;
+  const approveLabel = ask.stepUp ? messages.approveWithMfa : messages.approveOnce;
 
   return (
     <AskShell
@@ -239,18 +246,16 @@ export function ApprovalCard({ ask }: {
               size="sm"
               onClick={() => step(false)}
             >
-              Back
-            </Button>
+              {messages.back} </Button>
           ) : (
             <ActionButton
               variant="ghost"
               size="sm"
-              pendingLabel="Denying…"
-              successLabel="Denied"
+              pendingLabel={messages.denying}
+              successLabel={messages.denied2}
               onAction={() => decide("deny")}
             >
-              Deny
-            </ActionButton>
+              {messages.deny} </ActionButton>
           )
         }
         footer={
@@ -258,8 +263,8 @@ export function ApprovalCard({ ask }: {
             <ActionButton
               variant="warning"
               size="sm"
-              pendingLabel="Approving…"
-              successLabel="Approved"
+              pendingLabel={messages.approving}
+              successLabel={messages.approved}
               onAction={() => decide("approve")}
             >
               {approveLabel}
@@ -269,8 +274,8 @@ export function ApprovalCard({ ask }: {
               variant={danger ? "danger" : "warning"}
               size="sm"
               icon={ask.stepUp ? <IconLock /> : undefined}
-              pendingLabel="Approving…"
-              successLabel="Approved"
+              pendingLabel={messages.approving}
+              successLabel={messages.approved}
               onAction={() => decide("approve")}
             >
               {approveLabel}
@@ -283,8 +288,7 @@ export function ApprovalCard({ ask }: {
               icon={ask.stepUp ? <IconLock /> : undefined}
               onClick={() => step(true)}
             >
-              Review and approve
-            </Button>
+              {messages.reviewAndApprove} </Button>
           )
         }
       >
@@ -292,7 +296,7 @@ export function ApprovalCard({ ask }: {
           <div
             className="fa-ai-approval-targets"
             role="group"
-            aria-label="Targets"
+            aria-label={messages.targets}
           >
             {ask.targets.map((entity) => (
               <EntityChip
@@ -314,17 +318,15 @@ export function ApprovalCard({ ask }: {
             />
           ) : null}
           <p className="fa-hint">
-            Approval applies once, to this action and its selected targets.
-          </p>
+            {messages.approvalAppliesOnceToThisActionAndIts} </p>
           {ask.stepUp ? (
             <Notice tone="info" compact>
-              Approving asks you to confirm with MFA before it runs.
-            </Notice>
+              {messages.approvingAsksYouToConfirmWithMfaBefore} </Notice>
           ) : null}
           {ask.allowForSession ? (
             <SettingRow
-              label={`Approve similar commands for ${ALLOW_MINUTES} minutes`}
-              description={`${ask.actionKind ?? "This action"} on ${target}, in this conversation only.`}
+              label={messages.approveSimilarCommandsForMinutes(ALLOW_MINUTES)}
+              description={messages.onInThisConversationOnly(ask.actionKind ?? messages.thisAction, target)}
               control={
                 <Switch
                   checked={allow}

@@ -1,4 +1,7 @@
 import { readingKey } from "../../lib/direction.js"
+import { badgeMessages } from "../badge/messages.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { treeMessages } from "./messages.js"
 import { defaultRangeExtractor, useVirtualizer, type Range } from "@tanstack/react-virtual"
 import {
   useCallback,
@@ -19,7 +22,7 @@ import { useControllable } from "../../lib/use-controllable.js"
 import { useSelectedId, type SelectionChangeDetails } from "../../lib/use-selected-id.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
-import { CountBadge, STATUS, StatusDot, type StatusKind } from "../badge/index.js"
+import { CountBadge, StatusDot, type StatusKind } from "../badge/index.js"
 import { EmptyState } from "../empty-state/index.js"
 import { ProgressRing } from "../progress/index.js"
 import { Skeleton } from "../skeleton/index.js"
@@ -216,7 +219,7 @@ export function Tree({
   defaultExpanded,
   onExpandedChange,
   query = "",
-  emptyText = (q) => `No match for “${q}”`,
+  emptyText: emptyTextProp,
   selectableGroups = false,
   onLoadChildren,
   onLoadMore,
@@ -224,6 +227,9 @@ export function Tree({
   className,
   "aria-label": label,
 }: TreeProps) {
+  const messages = useMessages(treeMessages)
+  const emptyText = emptyTextProp ?? ((q: string) => messages.noMatchFor(q))
+
   const [expandedList, setExpandedList] = useControllable<string[]>(expandedProp ?? undefined, defaultExpanded ?? [], onExpandedChange)
   const [selectedId, select] = useSelectedId(selectedIdProp, defaultSelectedId, onSelectedIdChange)
   const expanded = useMemo(() => new Set(expandedList), [expandedList])
@@ -554,6 +560,7 @@ interface TreeRowProps {
  * chevron toggles.
  */
 function TreeRow({ row, start, selectable, selected, focused, busy, counted, renderLink, rowWrapper, renderContent, onClick, onDoubleClick, onFocus }: TreeRowProps) {
+  const statusMessages = useMessages(badgeMessages)
   const { node } = row
   const style = { "--_level": row.level, transform: `translateY(${start}px)` } as CSSProperties
   const twoLine = !row.branch && Boolean(node.description || row.keywordMatch)
@@ -590,7 +597,7 @@ function TreeRow({ row, start, selectable, selected, focused, busy, counted, ren
       {chevron}
       <span className="fa-tree-icon">
         {node.icon ?? (row.branch ? <IconFolder /> : <IconFile />)}
-        {node.status ? <StatusDot status={node.status} label={STATUS[node.status].label} overlay /> : null}
+        {node.status ? <StatusDot status={node.status} label={statusMessages[node.status]} overlay /> : null}
       </span>
       <span className="fa-tree-text">
         <span className="fa-tree-label" title={node.label}>
@@ -639,10 +646,12 @@ function TreeRow({ row, start, selectable, selected, focused, busy, counted, ren
  * Enter or Space retries or loads the next page.
  */
 function TreeStatusRow({ row, start, focused, onClick, onFocus }: { row: FlatRow<TreeNode>; start: number; focused: boolean; onClick: () => void; onFocus: () => void }) {
+  const messages = useMessages(treeMessages)
+
   const status = row.status!
   const loading = status === "loading" || status === "more-loading"
   const failed = status === "error" || status === "more-error"
-  const text = loading ? "Loading…" : failed ? (status === "error" ? "Couldn't load" : "Couldn't load more") : "Load more"
+  const text = loading ? messages.loading : failed ? (status === "error" ? messages.couldnTLoad : messages.couldnTLoadMore) : messages.loadMore
   return (
     // oxlint-disable-next-line jsx-a11y/click-events-have-key-events -- keys are handled once on the tree (roving focus)
     <div
@@ -657,18 +666,18 @@ function TreeStatusRow({ row, start, focused, onClick, onFocus }: { row: FlatRow
       aria-setsize={row.setsize}
       aria-posinset={row.posinset}
       aria-disabled={loading || undefined}
-      aria-label={failed ? `${text} · Retry` : undefined}
+      aria-label={failed ? messages.retry(text) : undefined}
       onClick={loading ? undefined : onClick}
       onFocus={onFocus}
     >
       <span className="fa-tree-chevron" aria-hidden />
       <span className="fa-tree-icon" aria-hidden>
-        {loading ? <ProgressRing value={null} size="sm" aria-label="Loading" /> : failed ? <IconError /> : <IconChevronDown />}
+        {loading ? <ProgressRing value={null} size="sm" aria-label={messages.loading2} /> : failed ? <IconError /> : <IconChevronDown />}
       </span>
       <span className="fa-tree-text">
         <span className="fa-tree-label">{text}</span>
       </span>
-      {failed ? <span className="fa-tree-retry">Retry</span> : null}
+      {failed ? <span className="fa-tree-retry">{messages.retry2}</span> : null}
     </div>
   )
 }

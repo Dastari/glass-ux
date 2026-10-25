@@ -10,7 +10,7 @@ An activity or notification feed using shared relative times and accessible abso
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| empty | `string \| undefined` | See type | no | "No activity" | One factual line when there are no events. |
+| empty | `string \| undefined` | See type | no | — | One factual line when there are no events. |
 | items | `readonly ActivityItem[]` | See type | yes | — | Events in the application's chosen order. |
 
 Inherited properties:

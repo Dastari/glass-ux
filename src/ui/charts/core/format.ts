@@ -1,3 +1,4 @@
+
 /**
  * Number and time formatting for charts (R2.7): tabular figures, units with a space
  * ("7.8 GB", "28 ms", "34%"), dates in the resolved locale, relative time for recent
@@ -128,18 +129,11 @@ export function formatInstant(date: Date, spanMs = DAY, locale = getLocale()): s
 export const formatDate = (date: Date, locale = getLocale()) => dateTimeFormat(locale, DATE).format(date)
 
 /** Relative time for recent moments (R2.7): "now", "2 min ago", "3 h ago", "2 days ago". */
-export function formatRelative(date: Date, now: Date): string {
-  const ms = now.getTime() - date.getTime()
-  if (ms < 45_000 && ms > -45_000) return "now"
-  const future = ms < 0
-  const abs = Math.abs(ms)
-  const text =
-    abs < HOUR
-      ? `${Math.round(abs / 60_000)} min`
-      : abs < DAY
-        ? `${Math.round(abs / HOUR)} h`
-        : `${Math.round(abs / DAY)} ${Math.round(abs / DAY) === 1 ? "day" : "days"}`
-  return future ? `in ${text}` : `${text} ago`
+export function formatRelative(date: Date, now: Date, locale = getLocale()): string {
+  const delta = date.getTime() - now.getTime()
+  const format = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" })
+  const absolute = Math.abs(delta)
+  return absolute < 45_000 ? format.format(0, "second") : absolute < HOUR ? format.format(Math.round(delta / 60_000), "minute") : absolute < DAY ? format.format(Math.round(delta / HOUR), "hour") : format.format(Math.round(delta / DAY), "day")
 }
 
 /** Share of a whole: 82%, 4.6%, <0.1%, with the number in `locale`. */

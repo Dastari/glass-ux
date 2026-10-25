@@ -1,4 +1,6 @@
 import { useDirection } from "../../lib/locale/direction.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { resultsMessages } from "./messages.js"
 import { useCallback, useEffect, useState, type CSSProperties } from "react"
 import { IconChevronLeft, IconChevronRight, IconFullscreen, IconImage, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -23,6 +25,8 @@ export function ImageTile({ image, onOpen, cover = false, className }: {
   cover?: boolean
   className?: string
 }) {
+  const messages = useMessages(resultsMessages)
+
   const [loaded, setLoaded] = useState(false)
   const box = { "--_ratio": `${image.width} / ${image.height}` } as CSSProperties
   const body = (
@@ -33,7 +37,7 @@ export function ImageTile({ image, onOpen, cover = false, className }: {
   return (
     <figure className={cx("fa-ai-image", className)}>
       {onOpen ? (
-        <button type="button" className="fa-ai-image-button fa-pressable" onClick={onOpen} aria-label={`Open ${image.alt}`}>
+        <button type="button" className="fa-ai-image-button fa-pressable" onClick={onOpen} aria-label={messages.open(image.alt)}>
           {body}
         </button>
       ) : (
@@ -74,6 +78,8 @@ export function ImageLightbox(props: LightboxProps) {
 }
 
 function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
+  const messages = useMessages(resultsMessages)
+
   const locale = useLocale()
   const direction = useDirection()
   const [zoom, setZoom] = useState(0)
@@ -98,7 +104,7 @@ function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
   const scale = ZOOMS[zoom] ?? 1
   return (
     <>
-      <Dialog.Header icon={<IconImage />} title={image.caption ?? image.alt} subtitle={`${images.length > 1 ? `${index + 1} of ${images.length} · ` : ""}${formatNumber(image.width, 0, locale)} × ${formatNumber(image.height, 0, locale)}`} />
+      <Dialog.Header icon={<IconImage />} title={image.caption ?? image.alt} subtitle={`${images.length > 1 ? messages.of2(index + 1, images.length) : ""}${formatNumber(image.width, 0, locale)} × ${formatNumber(image.height, 0, locale)}`} />
       <Dialog.Body flush>
         {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the stage scrolls when zoomed (R20.6) */}
         <div className="fa-ai-lightbox-stage" data-zoomed={zoom > 0 ? "" : undefined} tabIndex={0} role="region" aria-label={image.alt}>
@@ -109,18 +115,18 @@ function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
         start={
           images.length > 1 ? (
             <>
-              <Button variant="ghost" size="sm" icon={<IconChevronLeft />} aria-label="Previous image" shortcut="left" onClick={() => go(-1)} />
-              <Button variant="ghost" size="sm" icon={<IconChevronRight />} aria-label="Next image" shortcut="right" onClick={() => go(1)} />
+              <Button variant="ghost" size="sm" icon={<IconChevronLeft />} aria-label={messages.previousImage} shortcut="left" onClick={() => go(-1)} />
+              <Button variant="ghost" size="sm" icon={<IconChevronRight />} aria-label={messages.nextImage} shortcut="right" onClick={() => go(1)} />
             </>
           ) : undefined
         }
       >
-        <Button variant="ghost" size="sm" icon={<IconZoomOut />} aria-label="Zoom out" shortcut="-" disabledReason={zoom === 0 ? "Already fitted" : undefined} onClick={() => setZoom((value) => Math.max(0, value - 1))} />
+        <Button variant="ghost" size="sm" icon={<IconZoomOut />} aria-label={messages.zoomOut} shortcut="-" disabledReason={zoom === 0 ? messages.alreadyFitted : undefined} onClick={() => setZoom((value) => Math.max(0, value - 1))} />
         <span className="fa-ai-lightbox-zoom" data-numeric aria-live="polite">
-          {zoom === 0 ? "Fit" : `${Math.round(scale * 100)}%`}
+          {zoom === 0 ? messages.fit : `${Math.round(scale * 100)}%`}
         </span>
-        <Button variant="ghost" size="sm" icon={<IconZoomIn />} aria-label="Zoom in" shortcut="+" disabledReason={zoom === ZOOMS.length - 1 ? "Largest zoom" : undefined} onClick={() => setZoom((value) => Math.min(ZOOMS.length - 1, value + 1))} />
-        <Button variant="ghost" size="sm" icon={<IconFullscreen />} aria-label="Fit to window" shortcut="0" onClick={() => setZoom(0)} />
+        <Button variant="ghost" size="sm" icon={<IconZoomIn />} aria-label={messages.zoomIn} shortcut="+" disabledReason={zoom === ZOOMS.length - 1 ? messages.largestZoom : undefined} onClick={() => setZoom((value) => Math.min(ZOOMS.length - 1, value + 1))} />
+        <Button variant="ghost" size="sm" icon={<IconFullscreen />} aria-label={messages.fitToWindow} shortcut="0" onClick={() => setZoom(0)} />
       </Dialog.Footer>
     </>
   )
@@ -135,12 +141,14 @@ export function ResultImages({ result }: {
   /** The images result: one of its `images` fills the card; several form a grid of cropped tiles. */
   result: ImagesResult
 }) {
+  const messages = useMessages(resultsMessages)
+
   const locale = useLocale()
   const [open, setOpen] = useState(false)
   const [index, setIndex] = useState(0)
   const single = result.images.length === 1
   return (
-    <ResultFrame result={result} icon={<IconImage />} meta={single ? undefined : `${formatNumber(result.images.length, 0, locale)} images`}>
+    <ResultFrame result={result} icon={<IconImage />} meta={single ? undefined : messages.images(formatNumber(result.images.length, 0, locale))}>
       <div className="fa-ai-images" data-single={single ? "" : undefined}>
         {result.images.map((image, imageIndex) => (
           <ImageTile

@@ -1,3 +1,4 @@
+import "./messages.js"
 export {
   VERTICAL_TABS_COLLAPSE_REM,
   VERTICAL_TABS_MAX_CHIPS,

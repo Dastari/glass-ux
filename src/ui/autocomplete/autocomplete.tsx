@@ -1,23 +1,15 @@
 import { DirectionPortal } from "../../lib/direction-portal.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { comboboxMessages } from "../combobox/messages.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { autocompleteMessages } from "./messages.js"
 import { Autocomplete as BaseAutocomplete } from "@base-ui/react/autocomplete"
 import { useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconClose } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Button } from "../button/index.js"
-import {
-  OptionMore,
-  OptionRow,
-  OptionStatus,
-  groupOptions,
-  hasSecondLine,
-  noMatches,
-  optionFilter,
-  statusAnnouncement,
-  useOptionSearch,
-  type OptionItem,
-  type OptionSource,
-} from "../combobox/index.js"
+import { OptionMore, OptionRow, OptionStatus, groupOptions, hasSecondLine, optionFilter, statusAnnouncement, useOptionSearch, type OptionItem, type OptionSource } from "../combobox/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import type { SelectSize } from "../select/index.js"
 import { popupContainer } from "../../lib/popup-container.js"
@@ -95,6 +87,10 @@ export function Autocomplete<V extends string = string>({
   ref,
   ...aria
 }: AutocompleteProps<V>) {
+  const messages = useMessages(autocompleteMessages)
+ const optionMessages = useMessages(comboboxMessages)
+ const optionLocale = useLocale()
+
   const popup = usePopupMetrics()
   const [inner, setInner] = useState(defaultValue ?? "")
   const text = value ?? inner
@@ -157,7 +153,7 @@ export function Autocomplete<V extends string = string>({
           <BaseAutocomplete.Clear
             // Base UI's default "x" text is dropped: the Button shows the icon.
             render={({ children: _text, ...props }) => (
-              <Button {...props} variant="ghost" size="sm" className="fa-input-btn" icon={<IconClose />} aria-label="Clear" />
+              <Button {...props} variant="ghost" size="sm" className="fa-input-btn" icon={<IconClose />} aria-label={messages.clear} />
             )}
             tabIndex={-1}
           />
@@ -175,10 +171,10 @@ export function Autocomplete<V extends string = string>({
             aria-busy={status === "loading" || status === "refreshing" || undefined}
             data-status={status}
           >
-            <BaseAutocomplete.Status className="sr-only">{statusAnnouncement(status, items.length, text)}</BaseAutocomplete.Status>
+            <BaseAutocomplete.Status className="sr-only">{statusAnnouncement(status, items.length, text, optionMessages, optionLocale)}</BaseAutocomplete.Status>
             <OptionStatus status={status} twoLine={twoLine} needsMore={search.needsMore} onRetry={search.retry} />
             <BaseAutocomplete.Empty className="fa-combobox-empty-slot">
-              {showEmpty ? <div className="fa-combobox-empty">{(empty ?? noMatches)(text)}</div> : null}
+              {showEmpty ? <div className="fa-combobox-empty">{empty ? empty(text) : (text.trim() ? optionMessages.noMatchesFor(text.trim()) : optionMessages.noOptions)}</div> : null}
             </BaseAutocomplete.Empty>
             <BaseAutocomplete.List className="fa-select-list">
               {groups

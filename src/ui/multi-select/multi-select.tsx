@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { multiSelectMessages } from "./messages.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { useLayoutEffect, useRef, useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconChevronsUpDown } from "../../icons/generated/icons.js"
@@ -137,6 +139,8 @@ export function MultiSelect<V extends string = string>({
   ref,
   ...aria
 }: MultiSelectProps<V>) {
+  const messages = useMessages(multiSelectMessages)
+
   const [current, commit] = useControllable<V[]>(value ?? undefined, defaultValue ?? [], onValueChange)
   const [query, setQuery] = useState("")
   const [focused, setFocused] = useState(false)
@@ -193,7 +197,7 @@ export function MultiSelect<V extends string = string>({
         <BaseCombobox.Chips
           ref={chipsRef}
           className="fa-multi-chips"
-          aria-label={current.length > 0 ? `${current.length} selected` : undefined}
+          aria-label={current.length > 0 ? messages.selected(current.length) : undefined}
         >
           {shown.map((key) => (
             <OptionChip key={key} label={data.labelOf(key)} icon={data.itemOf(key)?.icon} readOnly={readOnly} />
@@ -204,7 +208,7 @@ export function MultiSelect<V extends string = string>({
                 +{hidden.length}
               </span>
               <span className="sr-only">
-                {hidden.length} more: {hidden.map(data.labelOf).join(", ")}
+                {hidden.length} {messages.more} {hidden.map(data.labelOf).join(", ")}
               </span>
             </span>
           ) : null}
@@ -225,7 +229,7 @@ export function MultiSelect<V extends string = string>({
         </BaseCombobox.Chips>
         {readOnly ? null : (
           <BaseCombobox.Trigger
-            render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconChevronsUpDown />} aria-label="Show options" />}
+            render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconChevronsUpDown />} aria-label={messages.showOptions} />}
             tabIndex={-1}
           />
         )}

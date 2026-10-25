@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { sessionNavMessages } from "./messages.js"
 import { useMemo, useRef, useState } from "react";
 import {
   IconArchive,
@@ -36,14 +38,14 @@ import type { AiProject, AiSession } from "../types.js";
 const DAY = 86_400_000;
 
 /** Today · Yesterday · This week · Earlier, by last activity. */
-function bucket(time: number, now: number) {
+function bucket(time: number, now: number, messages: typeof sessionNavMessages.defaults) {
   const start = new Date(now);
   start.setHours(0, 0, 0, 0);
   const today = start.getTime();
-  if (time >= today) return "Today";
-  if (time >= today - DAY) return "Yesterday";
-  if (time >= today - 6 * DAY) return "This week";
-  return "Earlier";
+  if (time >= today) return messages.today;
+  if (time >= today - DAY) return messages.yesterday;
+  if (time >= today - 6 * DAY) return messages.thisWeek;
+  return messages.earlier;
 }
 
 /** Words that do not make a client code ("Council of the Arts" → "CA"). */
@@ -52,13 +54,14 @@ export function organisationCode(name: string) {
   return contextCode({ name });
 }
 
-const ACTIVITY_WORDS = {
-  working: "Working",
-  prompt: "Waiting for you",
-  error: "Run failed",
-  done: "Answered",
+function getACTIVITY_WORDS(messages: typeof sessionNavMessages.defaults) { return {
+  working: messages.working,
+  prompt: messages.waitingForYou,
+  error: messages.runFailed,
+  done: messages.answered,
   idle: "",
-} as const;
+} as const }
+
 
 export type SessionView = "conversations" | "archived";
 
@@ -119,8 +122,10 @@ function SessionOrganisation({
 }: {
   organisation: AiSession["organisation"];
 }) {
+  const messages = useMessages(sessionNavMessages)
+
   if (organisation === undefined) return null;
-  const name = organisation ? organisation.label : "All organisations";
+  const name = organisation ? organisation.label : messages.allOrganisations;
   return (
     <Tooltip content={name}>
       <span
@@ -129,7 +134,7 @@ function SessionOrganisation({
       >
         {organisation
           ? (organisation.code ?? organisationCode(organisation.label))
-          : "All"}
+          : messages.all}
       </span>
     </Tooltip>
   );
@@ -137,13 +142,15 @@ function SessionOrganisation({
 
 /** The session row's state at the trailing edge: spinner, a toned dot, or the time. */
 function SessionState({ session }: { session: AiSession }) {
+  const messages = useMessages(sessionNavMessages)
+
   if (session.activity === "working") {
     return (
       <span
         className="fa-ai-session-state"
         data-activity="working"
         role="img"
-        aria-label="Working"
+        aria-label={messages.working}
       >
         <IconSpinner />
       </span>
@@ -164,10 +171,10 @@ function SessionState({ session }: { session: AiSession }) {
           }
           label={
             session.activity === "prompt"
-              ? "Waiting for you"
+              ? messages.waitingForYou
               : session.activity === "error"
-                ? "Run failed"
-                : "Unread"
+                ? messages.runFailed
+                : messages.unread
           }
         />
       ) : null}
@@ -184,6 +191,8 @@ function RenameField({
   /** Called once with the new trimmed title, or `null` when the edit is cancelled with Esc or the title is empty or unchanged. */
   onDone: (title: string | null) => void;
 }) {
+  const messages = useMessages(sessionNavMessages)
+
   const [value, setValue] = useState(session.title);
   const done = useRef(false);
   const finish = (title: string | null) => {
@@ -196,7 +205,7 @@ function RenameField({
       size="sm"
       autoFocus
       value={value}
-      aria-label="Conversation title"
+      aria-label={messages.conversationTitle}
       onValueChange={setValue}
       onFocus={(event) => event.currentTarget.select()}
       onBlur={() =>
@@ -249,6 +258,8 @@ export function SessionNav({
   initialQuery = "",
   className,
 }: SessionNavProps) {
+  const messages = useMessages(sessionNavMessages)
+
   const now = useNow(true, 60_000);
   const [query, setQuery] = useState(initialQuery);
   const [renaming, setRenaming] = useState<string | null>(null);
@@ -263,7 +274,7 @@ export function SessionNav({
       defineActions<AiSession>("ai-session", [
         {
           id: "open-window",
-          label: "Open in window",
+          label: messages.openInWindow,
           icon: IconPopOut,
           group: "open",
           visible: () => Boolean(onOpenWindow),
@@ -271,7 +282,7 @@ export function SessionNav({
         },
         {
           id: "rename",
-          label: "Rename",
+          label: messages.rename,
           icon: IconEdit,
           group: "organise",
           shortcut: "f2",
@@ -280,41 +291,41 @@ export function SessionNav({
         },
         {
           id: "archive",
-          label: "Archive",
+          label: messages.archive,
           icon: IconArchive,
           group: "organise",
           visible: ([session]) => Boolean(onArchive) && !session!.archived,
           run: ([session]) => onArchive?.(session!),
-          successMessage: ([session]) => `Archived "${session!.title}"`,
+          successMessage: ([session]) => messages.archived(session!.title),
         },
         {
           id: "restore",
-          label: "Restore",
+          label: messages.restore,
           icon: IconRestore,
           group: "organise",
           visible: ([session]) =>
             Boolean(onRestore) && Boolean(session!.archived),
           run: ([session]) => onRestore?.(session!),
-          successMessage: ([session]) => `Restored "${session!.title}"`,
+          successMessage: ([session]) => messages.restored(session!.title),
         },
         {
           id: "delete",
-          label: "Delete",
+          label: messages.deleteAction,
           icon: IconTrash,
           group: "danger",
           visible: () => Boolean(onDelete),
           disabledReason: ([session]) =>
             session!.activity === "working"
-              ? "Stop the running response first"
+              ? messages.stopTheRunningResponseFirst
               : null,
           confirm: ([session]) => ({
-            title: `Delete "${session!.title}"?`,
-            body: "The conversation, its files and its history are removed. This cannot be undone.",
-            confirmLabel: "Delete conversation",
+            title: messages.delete(session!.title),
+            body: messages.theConversationItsFilesAndItsHistoryAre,
+            confirmLabel: messages.deleteConversation,
             tone: "danger",
           }),
           run: ([session]) => onDelete?.(session!),
-          successMessage: ([session]) => `Deleted "${session!.title}"`,
+          successMessage: ([session]) => messages.deleted(session!.title),
         },
       ]),
     [onOpenWindow, onRename, onArchive, onRestore, onDelete],
@@ -330,7 +341,7 @@ export function SessionNav({
   for (const session of shown.toSorted(
     (a, b) => b.lastActivityAt - a.lastActivityAt,
   )) {
-    const label = bucket(session.lastActivityAt, now);
+    const label = bucket(session.lastActivityAt, now, messages);
     groups.set(label, [...(groups.get(label) ?? []), session]);
   }
 
@@ -349,7 +360,7 @@ export function SessionNav({
         </li>
       );
     }
-    const status = ACTIVITY_WORDS[session.activity];
+    const status = getACTIVITY_WORDS(messages)[session.activity];
     return (
       <li
         key={session.id}
@@ -372,7 +383,7 @@ export function SessionNav({
             selected={active}
             className="fa-ai-session-row"
             aria-current={active ? "page" : undefined}
-            aria-label={`${session.title}${session.organisation !== undefined ? `, ${session.organisation ? session.organisation.label : "all organisations"}` : ""}${status ? `, ${status.toLowerCase()}` : ""}${session.unread ? ", unread" : ""}`}
+            aria-label={`${session.title}${session.organisation !== undefined ? `, ${session.organisation ? session.organisation.label : messages.allOrganisations2}` : ""}${status ? `, ${status.toLowerCase()}` : ""}${session.unread ? messages.unreadSuffix : ""}`}
             data-unread={session.unread ? "" : undefined}
             onClick={(event) =>
               select(session.id, {
@@ -408,22 +419,21 @@ export function SessionNav({
             tooltip={false}
             onClick={onNewChat}
           >
-            New chat
-          </Button>
+            {messages.newChat} </Button>
         ) : null}
         <SearchField
           size="sm"
-          placeholder="Search conversations"
+          placeholder={messages.searchConversations}
           value={query}
           onValueChange={setQuery}
-          aria-label="Search conversations"
+          aria-label={messages.searchConversations}
         />
       </div>
       <div className="fa-ai-sessions-scroll" data-scroll-container>
-        <ul className="fa-ai-sessions-views" aria-label="Views">
+        <ul className="fa-ai-sessions-views" aria-label={messages.views}>
           <li>
             <ListRow
-              title="Conversation history"
+              title={messages.conversationHistory}
               icon={<IconHistory />}
               aria-current={view === "conversations" ? "page" : undefined}
               onClick={() => onViewChange?.("conversations")}
@@ -434,7 +444,7 @@ export function SessionNav({
           </li>
           <li>
             <ListRow
-              title="Archived chats"
+              title={messages.archivedChats}
               icon={<IconArchive />}
               aria-current={view === "archived" ? "page" : undefined}
               onClick={() => onViewChange?.("archived")}
@@ -446,8 +456,8 @@ export function SessionNav({
         </ul>
 
         {projects.length ? (
-          <section className="fa-ai-sessions-group" aria-label="Projects">
-            <h3 className="fa-overline fa-ai-sessions-label">Projects</h3>
+          <section className="fa-ai-sessions-group" aria-label={messages.projects}>
+            <h3 className="fa-overline fa-ai-sessions-label">{messages.projects}</h3>
             <ul>
               {projects.map((project) => (
                 <li key={project.id}>
@@ -479,10 +489,10 @@ export function SessionNav({
               }
             >
               {query
-                ? `No conversations match "${query}"`
+                ? messages.noConversationsMatch(query)
                 : view === "archived"
-                  ? "No archived conversations"
-                  : "No conversations yet"}
+                  ? messages.noArchivedConversations
+                  : messages.noConversationsYet}
             </EmptyState>
           </div>
         ) : (
@@ -501,7 +511,7 @@ export function SessionNav({
       {onOpenSettings ? (
         <div className="fa-ai-sessions-foot">
           <ListRow
-            title="AI settings"
+            title={messages.aiSettings}
             icon={<IconSettings />}
             onClick={onOpenSettings}
           />

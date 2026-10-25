@@ -18,7 +18,7 @@ announces it. Steps keep their state: the Wizard only shows one at a time.
 | defaultValue | `string \| undefined` | See type | no | — | The first step shown when uncontrolled. Default: the first step. |
 | finishLabel | `string \| undefined` | See type | no | — | The Finish button's text. Default "Finish". |
 | footerStart | `ReactNode` | See type | no | — | Content at the start of the footer (a Cancel button, or a draft note). |
-| labels | `Partial<{ readonly steps: "Steps"; readonly stepOf: (step: number, total: number) => string; readonly complete: "complete"; readonly current: "current"; readonly error: "needs attention"; readonly optional: "Optional"; readonly skipped: "skipped"; readonly back: "Back"; readonly next: "Next"; readonly finish: "Finish"; readonly finishing: "Finishing…"; readonly finished: "Done"; readonly skip: "Skip"; }> \| undefined` | See type | no | — | Wording overrides (Back, Next, Finish…). |
+| labels | `Partial<{ steps: string; stepOf: (step: number, total: number) => string; complete: string; current: string; error: string; optional: string; skipped: string; back: string; next: string; finish: string; finishing: string; finished: string; skip: string; }> \| undefined` | See type | no | — | Wording overrides (Back, Next, Finish…). |
 | locale | `string \| undefined` | See type | no | — | Formatting and wording locale; defaults to the nearest LocaleProvider. |
 | navigation | `StepperNavigation \| undefined` | "none", "any", "visited" | no | "visited" | Which steps the person may jump back to from the stepper. Default `visited`. |
 | onFinish | `() => Promise<unknown> \| void` | See type | yes | — | Runs after the last step validates; the Finish button shows its progress and outcome. |

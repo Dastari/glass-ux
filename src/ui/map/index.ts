@@ -1,3 +1,4 @@
+import "./messages.js"
 /**
  * GeoMap — a themed map over MapLibre GL (loaded on demand). Points with a status, clustered
  * with a segmented status ring; a home region outlined as a glow in the data hue; a vector

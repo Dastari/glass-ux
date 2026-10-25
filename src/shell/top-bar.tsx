@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { shellMessages } from "./messages.js"
 import { ToneDot } from "../ui/tone-dot/index.js";
 import { TruncatedText } from "../ui/truncated-text/index.js";
 /**
@@ -299,6 +301,8 @@ function useBarFit(ref: RefObject<HTMLElement | null>): BarFit {
  * reason, so moving between sections never shifts the bar.
  */
 function DrawerToggle() {
+  const messages = useMessages(shellMessages)
+
   const shell = useOptionalShell();
   if (!shell) return null;
   return (
@@ -306,12 +310,12 @@ function DrawerToggle() {
       className="fa-shell-topbar-drawer-toggle"
       variant="ghost"
       icon={<IconSidebar />}
-      aria-label="Section navigation"
+      aria-label={messages.sectionNavigation}
       aria-expanded={
         shell.desktop || !shell.hasDrawer ? undefined : shell.drawerOpen
       }
       disabledReason={
-        shell.hasDrawer ? undefined : "This section has no navigation"
+        shell.hasDrawer ? undefined : messages.thisSectionHasNoNavigation
       }
       onClick={() => shell.setDrawerOpen(true)}
     />
@@ -331,12 +335,15 @@ export interface SearchTriggerProps extends Omit<
 
 /** The command search field. A button that looks like a field: it opens the palette. */
 export function SearchTrigger({
-  placeholder = "Search…",
+  placeholder: placeholderProp,
   shortcut = "mod+k",
   onOpen,
   className,
   ...rest
 }: SearchTriggerProps) {
+  const messages = useMessages(shellMessages)
+  const placeholder = placeholderProp ?? messages.search2
+
   const platform = usePlatform();
   const aria = useAriaShortcut(shortcut);
   useEffect(() => {
@@ -355,7 +362,7 @@ export function SearchTrigger({
       type="button"
       {...rest}
       className={cx("fa-control fa-shell-search", className)}
-      aria-label="Search"
+      aria-label={messages.search3}
       aria-keyshortcuts={aria}
       onClick={onOpen}
     >
@@ -388,13 +395,15 @@ export function TopBarSettingsButton({
 
 /** Quick light/dark switch, for products that want it in the bar. Glass UX keeps it in the account menu. */
 export function ThemeToggle() {
+  const messages = useMessages(shellMessages)
+
   const { resolvedMode, update } = useAppearance();
   const dark = resolvedMode === "dark";
   return (
     <Button
       variant="ghost"
       icon={dark ? <IconSun /> : <IconMoon />}
-      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={dark ? messages.switchToLightMode : messages.switchToDarkMode}
       onClick={() => update({ mode: dark ? "light" : "dark" })}
     />
   );
@@ -418,6 +427,8 @@ export function InspectorToggle({
   label,
   shortcut,
 }: InspectorToggleProps) {
+  const messages = useMessages(shellMessages)
+
   const shell = useOptionalShell();
   const platform = usePlatform();
   const open = shell?.inspectorOpen ?? false;
@@ -450,7 +461,7 @@ export function InspectorToggle({
       className="fa-shell-topbar-inspector-toggle"
       variant={open ? "soft" : "ghost"}
       icon={icon ?? <IconInspector />}
-      aria-label={label ?? (open ? "Hide inspector" : "Show inspector")}
+      aria-label={label ?? (open ? messages.hideInspector : messages.showInspector)}
       aria-pressed={open}
       shortcut={shortcut}
       onClick={() => shell.setInspectorOpen(!open)}
@@ -485,14 +496,16 @@ export function AccountButton({
   className,
   ...rest
 }: AccountButtonProps) {
+  const messages = useMessages(shellMessages)
+
   const unreadText =
     unread > 0
-      ? `, ${unread} unread ${unread === 1 ? "notification" : "notifications"}`
+      ? messages.unread(unread, unread === 1 ? "notification" : "notifications")
       : "";
   return (
     <button
       type="button"
-      aria-label={`Account: ${name}${unreadText}`}
+      aria-label={messages.account(name, unreadText)}
       {...rest}
       className={cx("fa-shell-account fa-pressable", className)}
     >
@@ -554,6 +567,8 @@ export function TimerChip({
   className,
   ...rest
 }: TimerChipProps) {
+  const messages = useMessages(shellMessages)
+
   // Only rendered on the client while a timer runs, so the clock is never server-rendered.
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -567,7 +582,7 @@ export function TimerChip({
       type="button"
       {...rest}
       className={cx("fa-shell-timer fa-pressable", className)}
-      aria-label={`${name ?? `Timer on ${label}`}, running for ${text}`}
+      aria-label={messages.runningFor(name ?? messages.timerOn(label), text)}
       data-hours={elapsed >= 3_600_000 ? "" : undefined}
     >
       <ToneDot tone="data" marker="pulse" />

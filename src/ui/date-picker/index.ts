@@ -1,3 +1,4 @@
+import "./messages.js"
 export { Calendar, type CalendarProps, type CalendarRangeProps, type CalendarSingleProps, type DateRange } from "./calendar.js"
 export { DateField, DateRangeField, type DateFieldProps, type DateFieldSize, type DateRangeFieldProps } from "./date-field.js"
 export { TimeInput, type TimeInputProps } from "./time-input.js"

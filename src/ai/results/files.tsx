@@ -1,10 +1,12 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { resultsMessages, getResultsMessages } from "./messages.js"
 import { IconDownload, IconFile } from "../../icons/generated/icons.js"
 import { Button } from "../../ui/button/index.js"
 import { formatBytes } from "../../ui/file-drop/index.js"
 import { FileIcon, FILE_KIND_ICONS, fileKind } from "../../ui/file-icon/index.js"
 import type { IconComponent } from "../../ui/icon/index.js"
 import { TruncatedText } from "../../ui/truncated-text/index.js"
-import { formatNumber } from "../format.js"
+
 import type { AiResult, ResultFile } from "../types.js"
 import { ResultFrame } from "./frame.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
@@ -22,9 +24,9 @@ export function FileGlyph({ name, mime }: Pick<ResultFile, "name" | "mime">) {
 }
 
 /** "CSV", "ZIP": the extension in capitals, for the data line. */
-export function fileType(name: string) {
+export function fileType(name: string, messages = getResultsMessages()) {
   const match = name.match(/\.([a-z0-9]{1,5})$/i)
-  return match ? match[1]!.toUpperCase() : "File"
+  return match ? match[1]!.toUpperCase() : messages.file
 }
 
 /** One downloadable file: type glyph, name, size and type, and a download button. */
@@ -32,6 +34,8 @@ export function FileRowItem({ file }: {
   /** The file to list: `name` and `mime` pick the glyph and type, `size` is in bytes, and `href` makes the button a download link. */
   file: ResultFile
 }) {
+  const messages = useMessages(resultsMessages)
+
   return (
     <li className="fa-ai-file">
       <span className="fa-tile-icon fa-ai-file-icon" aria-hidden>
@@ -42,15 +46,15 @@ export function FileRowItem({ file }: {
           {file.name}
         </TruncatedText>
         <span className="fa-ai-file-meta" data-numeric>
-          {fileType(file.name)} · {formatBytes(file.size)}
+          {fileType(file.name, messages)} · {formatBytes(file.size)}
         </span>
       </span>
       <Button
         variant="ghost"
         size="sm"
         icon={<IconDownload />}
-        aria-label={`Download ${file.name}`}
-        render={file.href ? <a href={file.href} download={file.name} aria-label={`Download ${file.name}`} /> : undefined}
+        aria-label={messages.download(file.name)}
+        render={file.href ? <a href={file.href} download={file.name} aria-label={messages.download(file.name)} /> : undefined}
         nativeButton={!file.href}
       />
     </li>
@@ -62,9 +66,10 @@ export function ResultFiles({ result }: {
   /** The files result: each of its `files` becomes a FileRowItem, and the count is the data line. */
   result: FilesResult
 }) {
+  const messages = useMessages(resultsMessages)
   const locale = useLocale()
   return (
-    <ResultFrame result={result} icon={<IconFile />} meta={`${formatNumber(result.files.length, 0, locale)} ${result.files.length === 1 ? "file" : "files"}`}>
+    <ResultFrame result={result} icon={<IconFile />} meta={messages.fileCount(result.files.length, locale)}>
       <ul className="fa-ai-files">
         {result.files.map((file) => (
           <FileRowItem key={file.id} file={file} />

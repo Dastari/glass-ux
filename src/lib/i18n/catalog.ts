@@ -52,12 +52,21 @@ export interface MessageDescriptor<Namespace extends string, Defaults extends Me
   defaults: Defaults
 }
 
+const registry = new Map<string, MessageDescriptor<string, MessageSet>>()
+
+/** All message descriptors loaded by the application, keyed by namespace. Returns a snapshot. */
+export function registeredMessages(): ReadonlyMap<string, MessageDescriptor<string, MessageSet>> {
+  return new Map(registry)
+}
+
 /** Declare a component's English messages under a namespace (see the file comment). */
-export function defineMessages<const Namespace extends string, const Defaults extends MessageSet>(
+export function defineMessages<const Namespace extends string, Defaults extends MessageSet>(
   namespace: Namespace,
   defaults: Defaults,
 ): MessageDescriptor<Namespace, Defaults> {
-  return { namespace, defaults }
+  const descriptor = { namespace, defaults }
+  registry.set(namespace, descriptor)
+  return descriptor
 }
 
 /** Write a language pack with its messages typed against the catalogue. */

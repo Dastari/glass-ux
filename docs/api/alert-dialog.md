@@ -11,7 +11,7 @@ cancels; outside presses do nothing. While the action runs, it cannot be dismiss
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| cancelLabel | `string \| undefined` | See type | no | "Cancel" | Visible label for cancelling or dismissing the request. |
+| cancelLabel | `string \| undefined` | See type | no | — | Visible label for cancelling or dismissing the request. |
 | confirmLabel | `string` | See type | yes | — | A verb naming the outcome: "Remove device". |
 | defaultOpen | `boolean \| undefined` | false, true | no | false | Opens the uncontrolled overlay initially. |
 | description | `ReactNode` | See type | no | — | One factual sentence: what happens, and whether it can be undone. |

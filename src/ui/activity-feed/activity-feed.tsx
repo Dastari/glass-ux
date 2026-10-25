@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { activityFeedMessages } from "./messages.js"
 import type { ComponentProps, ReactNode } from "react";
 import { cx } from "../../lib/cx.js";
 import { RelativeTime } from "../data-table/cells/relative-time.js";
@@ -19,10 +21,13 @@ export interface ActivityFeedProps extends Omit<
 /** An activity or notification feed using shared relative times and accessible absolute tooltips. */
 export function ActivityFeed({
   items,
-  empty = "No activity",
+  empty: emptyProp,
   className,
   ...rest
 }: ActivityFeedProps) {
+  const messages = useMessages(activityFeedMessages)
+  const empty = emptyProp ?? messages.noActivity
+
   return (
     <ol {...rest} className={cx("fa-activity-feed", className)}>
       {items.length ? (

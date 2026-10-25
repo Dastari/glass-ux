@@ -1,4 +1,6 @@
 import { readingKey } from "../../../lib/direction.js"
+import { useMessages } from "../../../lib/i18n/index.js"
+import { chartCoreMessages } from "./messages.js"
 import { useId, useRef, useState, type KeyboardEvent } from "react"
 import { cx } from "../../../lib/cx.js"
 import { Tooltip } from "../../tooltip/index.js"
@@ -36,7 +38,8 @@ export interface ChartLegendProps {
   className?: string
 }
 
-const LOCK_REASON = "At least one series stays visible"
+function getLOCK_REASON(messages: typeof chartCoreMessages.defaults) { return messages.atLeastOneSeriesStaysVisible }
+
 
 /** The swatch alone: identity is a coloured mark beside text, never coloured text. */
 export function Swatch({ slot, tone, shape = "box", hidden = false }: {
@@ -59,6 +62,8 @@ export function Swatch({ slot, tone, shape = "box", hidden = false }: {
  * is never empty by accident; its tooltip and description say why.
  */
 export function ChartLegend({ items, hidden, onToggle, layout = "row", active, onActive, className }: ChartLegendProps) {
+  const messages = useMessages(chartCoreMessages)
+
   const ref = useRef<HTMLDivElement>(null)
   const lockId = useId()
   // The roving tab stop: the item that last held focus, clamped when items shrink.
@@ -89,7 +94,7 @@ export function ChartLegend({ items, hidden, onToggle, layout = "row", active, o
 
   if (!onToggle) {
     return (
-      <ul className={cx("fa-chart-legend", className)} data-layout={layout} aria-label="Legend">
+      <ul className={cx("fa-chart-legend", className)} data-layout={layout} aria-label={messages.legend}>
         {items.map((item) => (
           <li
             key={item.key}
@@ -112,12 +117,12 @@ export function ChartLegend({ items, hidden, onToggle, layout = "row", active, o
   }
 
   return (
-    <div ref={ref} className={cx("fa-chart-legend", className)} data-layout={layout} role="toolbar" aria-label="Series" tabIndex={-1} onKeyDown={onKeyDown}>
+    <div ref={ref} className={cx("fa-chart-legend", className)} data-layout={layout} role="toolbar" aria-label={messages.series} tabIndex={-1} onKeyDown={onKeyDown}>
       {items.map((item, index) => {
         const off = hidden?.has(item.key) ?? false
         const locked = !off && visibleCount <= 1
         return (
-          <Tooltip key={item.key} content={LOCK_REASON} enabled={locked} describe={false}>
+          <Tooltip key={item.key} content={getLOCK_REASON(messages)} enabled={locked} describe={false}>
             <button
               type="button"
               className="fa-chart-legend-item fa-pressable"
@@ -148,7 +153,7 @@ export function ChartLegend({ items, hidden, onToggle, layout = "row", active, o
         )
       })}
       <span id={lockId} hidden>
-        {LOCK_REASON}
+        {getLOCK_REASON(messages)}
       </span>
     </div>
   )

@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { buttonMessages } from "./messages.js"
 import { Button as BaseButton } from "@base-ui/react/button"
 import {
   useCallback,
@@ -101,6 +103,8 @@ export function Button({
   statusAnnouncement,
   ...rest
 }: ButtonProps) {
+  const messages = useMessages(buttonMessages)
+
   const iconOnly = !hasContent(children)
   const tracksStatus = status !== undefined
   const active = status ?? "idle"
@@ -113,8 +117,8 @@ export function Button({
     statusAnnouncement === false || !settled
       ? null
       : settled === "success"
-        ? (statusAnnouncement?.success ?? successLabel ?? "Done")
-        : (statusAnnouncement?.error ?? errorLabel ?? "Failed")
+        ? (statusAnnouncement?.success ?? successLabel ?? messages.done)
+        : (statusAnnouncement?.error ?? errorLabel ?? messages.failed)
 
   if (import.meta.env.DEV && iconOnly && !ariaLabel) {
     console.error("Button: an icon-only button needs an aria-label (it also becomes its tooltip).")

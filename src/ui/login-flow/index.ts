@@ -1,3 +1,4 @@
+import "./messages.js"
 export { LoginFlow } from "./login-flow.js"
 export { LoginError } from "./flow-context.js"
 export { DEFAULT_LOGIN_LABELS } from "./labels.js"

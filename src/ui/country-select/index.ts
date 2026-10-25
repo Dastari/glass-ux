@@ -1,3 +1,4 @@
+import "./messages.js"
 export { CountryField, CountrySelect, type CountryFieldProps, type CountrySelectProps } from "./country-select.js"
 export {
   callingCodeOf,

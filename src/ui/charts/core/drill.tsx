@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { chartCoreMessages, getChartCoreMessages } from "./messages.js"
 import { hierarchy, type HierarchyNode } from "d3-hierarchy"
 import { useMemo, useState } from "react"
 import { IconChevronRight } from "../../../icons/generated/icons.js"
@@ -106,14 +108,14 @@ export function colourKeys(root: Node, colourBy: ColourBy, groups?: readonly str
 }
 
 /** The table for a hierarchy: the focused level's children, largest first. */
-export function hierarchyTable(focus: Node, fmt: LocalizedFormat, label = "Name"): ChartTableModel {
+export function hierarchyTable(focus: Node, fmt: LocalizedFormat, label = getChartCoreMessages(fmt.locale).name): ChartTableModel {
   const total = focus.value ?? 0
   return {
     columns: [
       { key: "name", label },
-      { key: "value", label: "Size", numeric: true },
-      { key: "share", label: "Share", numeric: true },
-      { key: "items", label: "Items", numeric: true },
+      { key: "value", label: getChartCoreMessages(fmt.locale).size, numeric: true },
+      { key: "share", label: getChartCoreMessages(fmt.locale).share, numeric: true },
+      { key: "items", label: getChartCoreMessages(fmt.locale).items, numeric: true },
     ],
     rows: (focus.children ?? []).map((child) => ({
       name: child.data.label,
@@ -134,13 +136,16 @@ export function hierarchyTable(focus: Node, fmt: LocalizedFormat, label = "Name"
  * node. One line at the head's height; the middle collapses to "…" when the path is long and
  * every crumb truncates with an ellipsis.
  */
-export function DrillPathBar({ trail, onSelect, label = "Drill path" }: {
+export function DrillPathBar({ trail, onSelect, label: labelProp }: {
   /** Root first, focused node last, as `useDrill().trail` returns it; the last node renders as the current place. */
   trail: readonly Node[]
   /** Called with the zero-based depth of the ancestor the person clicks (0 is the root); not called for the current node. Pass `useDrill().to`. */
   onSelect: (depth: number) => void
   label?: string
 }) {
+  const messages = useMessages(chartCoreMessages)
+  const label = labelProp ?? messages.drillPath
+
   const last = trail.length - 1
   const shown = trail.length > 4 ? [0, -1, last - 1, last] : trail.map((_, index) => index)
   return (

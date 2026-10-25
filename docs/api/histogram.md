@@ -13,7 +13,7 @@ count. Tiers are the column chart's.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | bins | `number \| undefined` | See type | no | 12 | About how many bins (d3 picks nice edges near this). |
-| countLabel | `string \| undefined` | See type | no | "Count" | What is counted: "Endpoints", "Check-ins". |
+| countLabel | `string \| undefined` | See type | no | — | What is counted: "Endpoints", "Check-ins". |
 | domain | `Domain \| undefined` | See type | no | — | The x range to bin over; defaults to the data's extent. |
 | emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
 | errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |

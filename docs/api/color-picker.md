@@ -25,7 +25,7 @@ slider pattern.
 | disabled | `boolean \| undefined` | false, true | no | false | Disables interaction while retaining the component’s disabled appearance. |
 | eyeDropper | `boolean \| undefined` | false, true | no | true | Offer the browser's eyedropper where it has one (`window.EyeDropper`). Default true. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
-| labels | `Partial<{ readonly picker: "Colour picker"; readonly area: "Lightness and chroma"; readonly areaValue: (lightness: number, chroma: number) => string; readonly hue: "Hue"; readonly alpha: "Opacity"; readonly hex: "Hex colour"; readonly eyeDropper: "Pick a colour from the screen"; readonly swatches: "Preset colours"; readonly open: "Choose a colour"; readonly none: "No colour"; readonly clear: "Clear colour"; }> \| undefined` | See type | no | — | Wording overrides for this picker. |
+| labels | `Partial<{ picker: string; area: string; areaValue: (lightness: number, chroma: number) => string; hue: string; alpha: string; hex: string; eyeDropper: string; swatches: string; open: string; none: string; clear: string; }> \| undefined` | See type | no | — | Wording overrides for this picker. |
 | locale | `string \| undefined` | See type | no | — | Formatting and wording locale; defaults to the nearest LocaleProvider. |
 | onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the new hex colour on every change, while dragging too. |
 | onValueCommit | `((value: string) => void) \| undefined` | See type | no | — | Called with the hex colour when a change is finished: the pointer is released, a key is pressed, a swatch is chosen or the hex field commits. |

@@ -1,3 +1,4 @@
+import { getByteSizeFieldMessages } from "./messages.js"
 import { numberRule } from "../form/rules.js"
 import { formatBytes, type ByteBase } from "./bytes.js"
 
@@ -12,16 +13,16 @@ export function byteSizeSchema(options: { required?: boolean; min?: number; max?
   const show = (bytes: number) => formatBytes(bytes, { base: options.base, locale: options.locale })
   const range = () =>
     options.min !== undefined && options.max !== undefined
-      ? `Enter a size from ${show(options.min)} to ${show(options.max)}`
+      ? getByteSizeFieldMessages(options.locale).enterASizeFromTo(show(options.min), show(options.max))
       : options.max !== undefined
-        ? `Enter a size up to ${show(options.max)}`
+        ? getByteSizeFieldMessages(options.locale).enterASizeUpTo(show(options.max))
         : options.min !== undefined
-          ? `Enter a size of ${show(options.min)} or more`
-          : "Enter a size"
+          ? getByteSizeFieldMessages(options.locale).enterASizeOfOrMore(show(options.min))
+          : getByteSizeFieldMessages(options.locale).enterASize
   return numberRule({
     required: options.required,
-    requiredMessage: "Enter a size, such as 500 MB",
-    invalidMessage: "Enter a size such as 500 MB or 1.5 GB",
+    requiredMessage: () => getByteSizeFieldMessages(options.locale).enterASizeSuchAs500Mb,
+    invalidMessage: () => getByteSizeFieldMessages(options.locale).enterASizeSuchAs500MbOr,
     rangeMessage: range,
     min: options.min ?? 0,
     max: options.max,

@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { windowsMessages } from "./messages.js"
 /**
  * WindowFrame — a view in a frame (R14.1).
  *
@@ -280,6 +282,8 @@ function Controls({
   compact = false,
   leading,
 }: WindowControlsProps) {
+  const messages = useMessages(windowsMessages)
+
   // Icon-only Buttons: Button shows the aria-label as a tooltip.
   const control = (
     label: string,
@@ -291,7 +295,7 @@ function Controls({
       variant="ghost"
       size="sm"
       icon={icon}
-      aria-label={`${label} ${title}`}
+      aria-label={messages.controlLabel(label, title)}
       data-control={name}
       onClick={onClick}
     />
@@ -300,36 +304,36 @@ function Controls({
     <div
       className="fa-window-controls"
       role="group"
-      aria-label="Window controls"
+      aria-label={messages.windowControls}
       data-window-no-drag=""
     >
       {leading}
       {onReturn
-        ? control("Return to workspace", <IconPopIn />, onReturn, "return")
+        ? control(messages.returnToWorkspace, <IconPopIn />, onReturn, "return")
         : null}
       {onPopOut && !compact
-        ? control("Pop out", <IconPopOut />, onPopOut, "popout")
+        ? control(messages.popOut, <IconPopOut />, onPopOut, "popout")
         : null}
       {onToggleFullscreen && !compact
         ? control(
-            fullscreen ? "Exit full screen" : "Full screen",
+            fullscreen ? messages.exitFullScreen : messages.fullScreen,
             fullscreen ? <IconFullscreenExit /> : <IconFullscreen />,
             onToggleFullscreen,
             "fullscreen",
           )
         : null}
       {onMinimise
-        ? control("Minimise", <IconMinimise />, onMinimise, "minimise")
+        ? control(messages.minimise, <IconMinimise />, onMinimise, "minimise")
         : null}
       {onToggleMaximise && !compact
         ? control(
-            maximised ? "Restore" : "Maximise",
+            maximised ? messages.restore : messages.maximise,
             maximised ? <IconRestore /> : <IconMaximise />,
             onToggleMaximise,
             "maximise",
           )
         : null}
-      {onClose ? control("Close", <IconClose />, onClose, "close") : null}
+      {onClose ? control(messages.close2, <IconClose />, onClose, "close") : null}
     </div>
   );
 }

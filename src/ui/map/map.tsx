@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { mapMessages } from "./messages.js"
 /**
  * GeoMap — points with a status anywhere in the world, clustered, over a token-themed vector
  * basemap with the home region drawn as a glowing outline.
@@ -60,12 +62,15 @@ const HOVER_OPEN_MS = 60
 const HOVER_CLOSE_MS = 220
 
 /** Default status labels: Critical, Warning, Healthy and Offline (for unknown). */
-export const DEFAULT_STATUS_LABELS: Readonly<Record<MapStatus, string>> = {
-  danger: "Critical",
-  warning: "Warning",
-  healthy: "Healthy",
-  unknown: "Offline",
-}
+function getDEFAULT_STATUS_LABELS(messages: typeof mapMessages.defaults): Readonly<Record<MapStatus, string>> { return {
+  danger: messages.critical,
+  warning: messages.warning,
+  healthy: messages.healthy,
+  unknown: messages.offline,
+} }
+/** English defaults; rendered controls resolve their locale's messages. */
+export const DEFAULT_STATUS_LABELS: Readonly<Record<MapStatus, string>> = getDEFAULT_STATUS_LABELS(mapMessages.defaults)
+
 
 export interface MapNoun {
   one: string
@@ -310,16 +315,19 @@ export function MapViewToggle({ view, onViewChange, size = "md" }: {
   onViewChange: (view: "map" | "list") => void
   size?: "sm" | "md"
 }) {
+  const messages = useMessages(mapMessages)
+
   return view === "map" ? (
-    <Button variant="secondary" size={size} icon={<IconList />} aria-label="View as list" data-map-control="view" onClick={() => onViewChange("list")} />
+    <Button variant="secondary" size={size} icon={<IconList />} aria-label={messages.viewAsList} data-map-control="view" onClick={() => onViewChange("list")} />
   ) : (
     <Button variant="secondary" size={size} icon={<IconMapPin />} onClick={() => onViewChange("map")} data-map-control="view">
-      View as map
-    </Button>
+      {messages.viewAsMap} </Button>
   )
 }
 
 function Attribution({ config, folded }: { config: MapConfig; folded: boolean }) {
+  const messages = useMessages(mapMessages)
+
   const credits = [...(config.basemap?.attribution ?? []), config.regionAttribution]
   const compact = credits.filter((credit) => credit.short || credit.minimal)
   const link = (credit: MapAttribution, text: string) =>
@@ -356,8 +364,8 @@ function Attribution({ config, folded }: { config: MapConfig; folded: boolean })
         </span>
       ) : null}
       <Popover.Root>
-        <Popover.Trigger render={<Button variant="ghost" size="xs" icon={<IconInfo />} aria-label="Map data and licences" data-map-control="attribution" />} />
-        <Popover.Popup size="sm" side="top" align="end" title="Map data">
+        <Popover.Trigger render={<Button variant="ghost" size="xs" icon={<IconInfo />} aria-label={messages.mapDataAndLicences} data-map-control="attribution" />} />
+        <Popover.Popup size="sm" side="top" align="end" title={messages.mapData}>
           <ul className="fa-map-credits">
             {credits.map((credit) => (
               <li key={credit.label}>
@@ -400,14 +408,18 @@ export function GeoMap<T>({
   renderPopup,
   renderClusterPopup,
   pulses,
-  statusLabels = DEFAULT_STATUS_LABELS,
-  noun = { one: "site", other: "sites" },
+  statusLabels: statusLabelsProp,
+  noun: nounProp,
   view = "map",
   onViewChange,
   list,
   insets,
   className,
 }: GeoMapProps<T>) {
+  const messages = useMessages(mapMessages)
+  const statusLabels = statusLabelsProp ?? getDEFAULT_STATUS_LABELS(messages)
+  const noun = nounProp ?? { one: messages.site, other: messages.sites }
+
   const locale = useLocale()
   const number = numberFormat(locale)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -853,7 +865,7 @@ export function GeoMap<T>({
     select(point.id, { reason: "item-press", event, item: point })
   }, [select])
 
-  const resetLabel = frame === "points" && pointsBox ? `Show all ${number.format(points.length)} ${points.length === 1 ? noun.one : noun.other}` : home ? `Reset to ${home.properties.name}` : "Reset view"
+  const resetLabel = frame === "points" && pointsBox ? messages.showAll(number.format(points.length), points.length === 1 ? noun.one : noun.other) : home ? messages.resetTo(home.properties.name) : messages.resetView
 
   /* Markers as portals into MapLibre's marker elements. */
   const markerNodes = markers.map((slot) => {
@@ -962,7 +974,7 @@ export function GeoMap<T>({
   const counts = useMemo(() => countStatuses(points), [points])
   const failed = phase === "failed"
   /** Why the zoom and reset controls are unavailable (R12): they need a started map. */
-  const controlsReason = phase === "ready" ? undefined : failed ? "The map could not start" : "The map is loading"
+  const controlsReason = phase === "ready" ? undefined : failed ? messages.theMapCouldNotStart : messages.theMapIsLoading
 
   return (
     <div
@@ -978,25 +990,24 @@ export function GeoMap<T>({
       aria-busy={phase !== "ready" && !failed ? true : undefined}
     >
       <p id={hintId} className="sr-only">
-        {`${number.format(points.length)} ${points.length === 1 ? noun.one : noun.other}${points.length ? `: ${describeCounts(counts, statusLabels)}` : ""}. Arrow keys move between markers; Enter opens one.`}
+        {messages.arrowKeysMoveBetweenMarkersEnter(number.format(points.length), points.length === 1 ? noun.one : noun.other, points.length ? `: ${describeCounts(counts, statusLabels)}` : "")}
       </p>
       <div ref={stageRef} className="fa-map-stage" inert={view === "list" ? true : undefined}>
         <MapSilhouette region={home} box={frameBox} />
         <div ref={canvasRef} className="fa-map-canvas" />
         {failed ? (
           <div className="fa-map-failed">
-            <p>The map could not start{error && /webgl/i.test(error) ? ": this browser has WebGL turned off" : ""}.</p>
+            <p>{messages.theMapCouldNotStart}{error && /webgl/i.test(error) ? messages.thisBrowserHasWebglTurnedOff : ""}.</p>
             {onViewChange ? (
               <Button size="sm" icon={<IconList />} onClick={() => onViewChange("list")}>
-                View as list
-              </Button>
+                {messages.viewAsList} </Button>
             ) : null}
           </div>
         ) : null}
         <div className="fa-map-overlay over-imagery">
-          <div className="fa-map-controls" role="toolbar" aria-label="Map controls" aria-orientation="vertical">
-            <Button variant="secondary" icon={<IconZoomIn />} aria-label="Zoom in" onClick={() => zoomBy(1)} disabledReason={controlsReason} data-map-control="zoom-in" />
-            <Button variant="secondary" icon={<IconZoomOut />} aria-label="Zoom out" onClick={() => zoomBy(-1)} disabledReason={controlsReason} data-map-control="zoom-out" />
+          <div className="fa-map-controls" role="toolbar" aria-label={messages.mapControls} aria-orientation="vertical">
+            <Button variant="secondary" icon={<IconZoomIn />} aria-label={messages.zoomIn} onClick={() => zoomBy(1)} disabledReason={controlsReason} data-map-control="zoom-in" />
+            <Button variant="secondary" icon={<IconZoomOut />} aria-label={messages.zoomOut} onClick={() => zoomBy(-1)} disabledReason={controlsReason} data-map-control="zoom-out" />
             <Button variant="secondary" icon={frame === "points" ? <IconGlobe /> : <IconHome />} aria-label={resetLabel} onClick={() => fitTo(frameBox)} disabledReason={controlsReason} data-map-control="reset" />
             {onViewChange ? <MapViewToggle view="map" onViewChange={onViewChange} /> : null}
           </div>
@@ -1006,13 +1017,13 @@ export function GeoMap<T>({
                 <Menu.Trigger
                   render={
                     <Button variant="secondary" size="sm" icon={<IconGlobe />} data-map-control="outside">
-                      {`${number.format(outside.length)} ${outside.length === 1 ? noun.one : noun.other} outside this view`}
+                      {messages.outsideThisView(number.format(outside.length), outside.length === 1 ? noun.one : noun.other)}
                     </Button>
                   }
                 />
                 <Menu.Popup side="bottom" align="start">
                   <Menu.Item icon={<IconGlobe />} onClick={() => pointsBox && fitTo(pointsBox)}>
-                    {`Show all ${number.format(points.length)} ${noun.other}`}
+                    {messages.showAll(number.format(points.length), noun.other)}
                   </Menu.Item>
                   <Menu.Separator />
                   {outside.slice(0, 12).map((point) => (
@@ -1050,6 +1061,8 @@ interface MapPopupProps {
 
 /** The shared popup surface, entering like every fa-popup (R11.3). */
 function MapPopup({ label, pinned, onClose, onPointerEnter, onPointerLeave, children }: MapPopupProps) {
+  const messages = useMessages(mapMessages)
+
   const ref = useRef<HTMLDivElement>(null)
   const [starting, setStarting] = useState(true)
   useIsomorphicLayoutEffect(() => {
@@ -1071,7 +1084,7 @@ function MapPopup({ label, pinned, onClose, onPointerEnter, onPointerLeave, chil
     >
       {children}
       {/* Last in the DOM (drawn top right) so focus lands on the content first. */}
-      {pinned ? <Button className="fa-map-popup-close" variant="ghost" size="xs" icon={<IconClose />} aria-label="Close" onClick={onClose} /> : null}
+      {pinned ? <Button className="fa-map-popup-close" variant="ghost" size="xs" icon={<IconClose />} aria-label={messages.close} onClick={onClose} /> : null}
     </div>
   )
 }
@@ -1094,6 +1107,8 @@ interface DefaultClusterPopupProps<T> {
 
 /** A cluster's contents: the status breakdown and its points, worst first. */
 export function DefaultClusterPopup<T>({ cluster, size, counts, labels, noun, onZoom, onOpen }: DefaultClusterPopupProps<T>) {
+  const messages = useMessages(mapMessages)
+
   const number = numberFormat(useLocale())
   return (
     <div className="fa-map-cluster-popup">
@@ -1110,21 +1125,24 @@ export function DefaultClusterPopup<T>({ cluster, size, counts, labels, noun, on
           </li>
         ))}
       </ul>
-      {cluster.points.length > 8 ? <p className="fa-map-popup-more">{`${cluster.points.length - 8} more`}</p> : null}
+      {cluster.points.length > 8 ? <p className="fa-map-popup-more">{messages.more(cluster.points.length - 8)}</p> : null}
       <Button size="sm" variant="secondary" icon={<IconZoomIn />} onClick={onZoom}>
-        Zoom in
-      </Button>
+        {messages.zoomIn} </Button>
     </div>
   )
 }
 
 /** Status counts as dot · number · label chips (clusters, popups, legends). */
-export function MapStatusSummary({ counts, labels = DEFAULT_STATUS_LABELS }: {
+export function MapStatusSummary({ counts, labels: labelsProp }: {
   /** Points per status; statuses with zero are left out. */
   counts: StatusCounts
   /** Label per status; defaults to `DEFAULT_STATUS_LABELS`. */
   labels?: Readonly<Record<MapStatus, string>>
 }) {
+ const messages = useMessages(mapMessages)
+
+ const labels = labelsProp ?? getDEFAULT_STATUS_LABELS(messages)
+
   const number = numberFormat(useLocale())
   return (
     <ul className="fa-map-status-summary">

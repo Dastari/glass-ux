@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { emailFieldMessages } from "./messages.js"
 import { IconMail } from "../../icons/generated/icons.js"
 import { Field } from "../field/index.js"
 import { useBoundField, type FieldChrome } from "../form/context.js"
@@ -31,11 +33,14 @@ export interface EmailSuggestionProps {
 
 /** "Did you mean avery@gmail.com?" for the field's message line; choosing it replaces the value. */
 export function EmailSuggestion({ suggestion, onAccept }: EmailSuggestionProps) {
+  const messages = useMessages(emailFieldMessages)
+
   const at = suggestion.lastIndexOf("@")
+  const sentence = messages.didYouMean(suggestion)
+  const position = sentence.indexOf(suggestion)
   return (
     <button type="button" className="fa-email-suggestion fa-pressable" onClick={() => onAccept(suggestion)}>
-      Did you mean {suggestion.slice(0, at + 1)}
-      <strong>{suggestion.slice(at + 1)}</strong>?
+      {position < 0 ? sentence : <>{sentence.slice(0, position)}{suggestion.slice(0, at + 1)}<strong>{suggestion.slice(at + 1)}</strong>{sentence.slice(position + suggestion.length)}</>}
     </button>
   )
 }

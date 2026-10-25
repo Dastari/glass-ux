@@ -1,3 +1,4 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
 /**
  * LoginFlow's views. Each one owns a TanStack form (R15: blur, then change after an error;
  * one field per row), its submit button's in-place feedback and a reserved status line.
@@ -67,13 +68,14 @@ function WithProviders({ form, setMessage, show = true }: { form: ReactNode; set
 /* ── Sign in ─────────────────────────────────────────────────────────────── */
 
 export function SignInView() {
+ const locale = useLocale()
   const flow = useFlow()
   const { labels, kind, props } = flow
   const [message, setMessage] = useViewMessage()
   const submit = useLoginAction(setMessage)
   const schema = useMemo(
-    () => z.object({ identifier: loginIdentifierSchema(kind, labels), password: z.string().min(1, labels.passwordRequired), remember: z.boolean() }),
-    [kind, labels]
+    () => z.object({ identifier: loginIdentifierSchema(kind, labels, locale), password: z.string().min(1, labels.passwordRequired), remember: z.boolean() }),
+    [kind, labels, locale]
   )
   const form = useAppForm({
     ...formBehaviour,
@@ -117,13 +119,14 @@ export function SignInView() {
 /* ── Two-factor ──────────────────────────────────────────────────────────── */
 
 export function TwoFactorView() {
+ const locale = useLocale()
   const flow = useFlow()
   const { labels, props, challenge } = flow
   const [message, setMessage] = useViewMessage()
   const submit = useLoginAction(setMessage)
   const length = challenge.length ?? 6
   const characters = challenge.characters ?? "numeric"
-  const schema = useMemo(() => z.object({ code: codeSchema(length, characters) }), [length, characters])
+  const schema = useMemo(() => z.object({ code: codeSchema(length, characters, locale) }), [length, characters, locale])
   const form = useAppForm({
     ...formBehaviour,
     defaultValues: { code: "" },
@@ -165,11 +168,12 @@ export function TwoFactorView() {
 /* ── Forgot password ─────────────────────────────────────────────────────── */
 
 export function ForgotPasswordView() {
+ const locale = useLocale()
   const flow = useFlow()
   const { labels, kind, props } = flow
   const [message, setMessage] = useViewMessage()
   const submit = useLoginAction(setMessage)
-  const schema = useMemo(() => z.object({ identifier: loginIdentifierSchema(kind, labels) }), [kind, labels])
+  const schema = useMemo(() => z.object({ identifier: loginIdentifierSchema(kind, labels, locale) }), [kind, labels, locale])
   const form = useAppForm({
     ...formBehaviour,
     defaultValues: { identifier: flow.identifier },
@@ -210,6 +214,7 @@ export function ForgotPasswordView() {
 /* ── Reset password (requested) ──────────────────────────────────────────── */
 
 export function ResetPasswordView() {
+ const locale = useLocale()
   const flow = useFlow()
   const { labels, props } = flow
   const [message, setMessage] = useViewMessage()
@@ -220,9 +225,9 @@ export function ResetPasswordView() {
   const schema = useMemo(
     () =>
       z
-        .object({ code: codeSchema(length, characters), password: newPasswordSchema(props.passwordPolicy), confirm: z.string() })
+        .object({ code: codeSchema(length, characters, locale), password: newPasswordSchema(props.passwordPolicy, locale), confirm: z.string() })
         .superRefine(confirmsPassword(labels)),
-    [length, characters, props.passwordPolicy, labels]
+    [length, characters, props.passwordPolicy, labels, locale]
   )
   const form = useAppForm({
     ...formBehaviour,
@@ -270,6 +275,7 @@ export function ResetPasswordView() {
 /* ── Sign up ─────────────────────────────────────────────────────────────── */
 
 export function SignUpView() {
+ const locale = useLocale()
   const flow = useFlow()
   const { labels, kind, props } = flow
   const options = props.signUp ?? {}
@@ -287,9 +293,9 @@ export function SignUpView() {
   const schema = useMemo(() => {
     const shape = {
       name: askName ? z.string().trim().min(1, labels.nameRequired) : z.string(),
-      email: askEmail ? loginIdentifierSchema("email", labels) : z.string(),
+      email: askEmail ? loginIdentifierSchema("email", labels, locale) : z.string(),
       username: askUsername ? z.string().trim().min(1, labels.usernameRequired) : z.string(),
-      password: newPasswordSchema(props.passwordPolicy),
+      password: newPasswordSchema(props.passwordPolicy, locale),
       confirm: z.string(),
       terms: askTerms ? z.boolean().refine((value) => value, labels.termsRequired) : z.boolean(),
     }

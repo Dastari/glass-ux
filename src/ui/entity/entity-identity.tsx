@@ -1,4 +1,6 @@
 import { DirectionPortal } from "../../lib/direction-portal.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { entityMessages } from "./messages.js"
 import { PreviewCard as BasePreviewCard } from "@base-ui/react/preview-card"
 import { flushSync } from "react-dom"
 import {
@@ -539,6 +541,8 @@ function RowTier<T>({ parts, dom }: TierProps<T>) {
 
 /** The preview card's content: the compact identity and the top actions (R12). */
 function PreviewContent<T>({ parts }: { parts: Parts<T> }) {
+  const messages = useMessages(entityMessages)
+
   const { actions, targets, name } = parts
   const { start } = useActionRunner()
   const promoted = actions && targets.length ? splitForHeader(resolveActions(actions, targets, "header"), 2).promoted : []
@@ -547,7 +551,7 @@ function PreviewContent<T>({ parts }: { parts: Parts<T> }) {
     <div className="fa-entity-preview-body">
       <CompactTier parts={identity} dom={{}} />
       {promoted.length ? (
-        <div className="fa-entity-preview-actions" role="group" aria-label={`Actions for ${name}`}>
+        <div className="fa-entity-preview-actions" role="group" aria-label={messages.actionsFor(name)}>
           {promoted.map((action) => {
             const Icon = action.definition.icon
             return (
@@ -580,6 +584,8 @@ function keyOpen(onOpen?: () => void) {
 }
 
 function ChipTier<T>({ parts, dom }: TierProps<T>) {
+  const messages = useMessages(entityMessages)
+
   const { name, title, kind, icon, portrait, state, actions, targets, href, onOpen, size = "inline", onRemove, preview = true, slots } = parts
   const popup = usePopupMetrics()
   const label = accessibleName(name, kind, state)
@@ -590,8 +596,8 @@ function ChipTier<T>({ parts, dom }: TierProps<T>) {
       <span {...common} data-removable="" role="group" aria-label={label}>
         {glyph}
         <Name name={name} title={title} className="fa-entity-title" />
-        <Tooltip content={`Remove ${name}`}>
-          <button type="button" className="fa-entity-remove fa-pressable" aria-label={`Remove ${name}`} onClick={onRemove}>
+        <Tooltip content={messages.remove(name)}>
+          <button type="button" className="fa-entity-remove fa-pressable" aria-label={messages.remove(name)} onClick={onRemove}>
             <IconClose />
           </button>
         </Tooltip>
@@ -831,10 +837,12 @@ function SkeletonTier({ tier, facts = true, metric, actions, tabs, size = "inlin
 
 /** Loading placeholder with the same boxes as the loaded identity at each tier; with `tier="auto"` (default) it measures its container like EntityIdentity. Also available as `EntityIdentity.Skeleton`. */
 function EntityIdentitySkeleton({ tier = "auto", fill, ...props }: EntityIdentitySkeletonProps) {
+  const messages = useMessages(entityMessages)
+
   const { ref, tier: resolved, measured } = useAutoTier(fill)
   if (tier !== "auto") return <SkeletonTier {...props} tier={tier} />
   return (
-    <div ref={ref} className="fa-entity-fit" data-fill={fill ? "" : undefined} data-tier={resolved} data-measured={measured ? "" : undefined} aria-busy="true" aria-label="Loading">
+    <div ref={ref} className="fa-entity-fit" data-fill={fill ? "" : undefined} data-tier={resolved} data-measured={measured ? "" : undefined} aria-busy="true" aria-label={messages.loading}>
       <SkeletonTier {...props} tier={resolved} />
     </div>
   )

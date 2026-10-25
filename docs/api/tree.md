@@ -22,7 +22,7 @@ first open, and `hasMore` with `onLoadMore` pages them in.
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | defaultExpanded | `string[] \| undefined` | See type | no | — | Initially expanded nodes when expansion is uncontrolled. |
 | defaultSelectedId | `string \| null \| undefined` | See type | no | — | The row selected at first when the selection is uncontrolled. |
-| emptyText | `((query: string) => ReactNode) \| undefined` | See type | no | (q) => `No match for “${q}”` | The line shown when nothing matches. Default: No match for “query”. |
+| emptyText | `((query: string) => ReactNode) \| undefined` | See type | no | — | The line shown when nothing matches. Default: No match for “query”. |
 | expanded | `string[] \| undefined` | See type | no | — | Open groups. Uncontrolled with `defaultExpanded`. |
 | groupCounts | `boolean \| undefined` | false, true | no | true | Show each group's count of endpoints (leaves). Default true. Turn it off where a count would mislead, such as an explorer whose branches are still loading. Lazily loaded and paged branches never show one. |
 | nodes | `TreeNode[]` | See type | yes | — | Graph or tree nodes with stable identifiers and relationships. |

@@ -22,7 +22,7 @@ list view in the same box. It shows the region silhouette while loading.
 | label | `string` | See type | yes | — | Accessible name of the map: "Sites, All organisations". |
 | list | `ReactNode` | See type | no | — | The list view: the caller's table, with a ViewToggle in its toolbar. |
 | loading | `boolean \| undefined` | false, true | no | false | The points are still loading: the silhouette stays, markers wait. |
-| noun | `MapNoun \| undefined` | See type | no | { one: "site", other: "sites" } | Singular and plural names used in counts and accessible labels. |
+| noun | `MapNoun \| undefined` | See type | no | — | Singular and plural names used in counts and accessible labels. |
 | onSelectedIdChange | `((id: string \| null, details: SelectionChangeDetails<MapPoint<T>>) => void) \| undefined` | See type | no | — | Called with the id of the point whose popup the person pins (a click, Enter or Space on its marker, or choosing it from a cluster popup or the off-screen list), and details whose `item` is the point. Hover and focus previews, and pinning the point already selected, do not call it. |
 | onViewChange | `((view: "map" \| "list") => void) \| undefined` | See type | no | — | Called with the view the person asks for ("list" or "map") from the view toggle, or "list" from the failure notice when the map cannot start. The toggle shows only when this is set. Pair with `view`. |
 | points | `readonly MapPoint<T>[]` | See type | yes | — | Geographical or chart points. |
@@ -31,5 +31,5 @@ list view in the same box. It shows the region silhouette while loading.
 | renderClusterPopup | `((cluster: MapCluster<T>, context: MapClusterPopupContext) => ReactNode) \| undefined` | See type | no | — | Renders details for an aggregate map cluster. |
 | renderPopup | `(point: MapPoint<T>, context: MapPopupContext) => ReactNode` | See type | yes | — | Renders details for an individual map point. |
 | selectedId | `string \| null \| undefined` | See type | no | — | The selected point's id, or null for none. Controlled while defined; leave it undefined to use `defaultSelectedId`. |
-| statusLabels | `Readonly<Record<"danger" \| "warning" \| "healthy" \| "unknown", string>> \| undefined` | See type | no | DEFAULT_STATUS_LABELS | Display and accessible labels for the supported statuses. |
+| statusLabels | `Readonly<Record<"danger" \| "warning" \| "healthy" \| "unknown", string>> \| undefined` | See type | no | — | Display and accessible labels for the supported statuses. |
 | view | `"map" \| "list" \| undefined` | "map", "list" | no | "map" | "map" (default) or "list": the list replaces the map in the same box. |

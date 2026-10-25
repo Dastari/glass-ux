@@ -1,3 +1,4 @@
+import { getFileDropMessages } from "./messages.js"
 /**
  * Pure helpers for FileDrop: byte formatting, accept matching and screening dropped or
  * picked files against the limits. Kept free of React so they are unit-tested. Sizes are
@@ -65,27 +66,27 @@ export function matchesAccept(file: Pick<File, "name" | "type">, accept: string 
 }
 
 /** ".msi, .exe or .zip" */
-export function describeAccept(accept: string | undefined): string {
-  const tokens = acceptTokens(accept).map((token) => (token.endsWith("/*") ? `${token.slice(0, -2)} files` : token))
+export function describeAccept(accept: string | undefined, locale = getLocale(), messages: ReturnType<typeof getFileDropMessages> = getFileDropMessages(locale)): string {
+  const tokens = acceptTokens(accept).map((token) => (token.endsWith("/*") ? messages.files(token.slice(0, -2)) : token))
   if (tokens.length <= 1) return tokens[0] ?? ""
-  return `${tokens.slice(0, -1).join(", ")} or ${tokens.at(-1)}`
+  return new Intl.ListFormat(locale, { type: "disjunction" }).format(tokens)
 }
 
 /** Split files into the ones that fit the limits and the ones that do not, with reasons. */
-export function screenFiles(files: File[], limits: FileLimits = {}) {
+export function screenFiles(files: File[], limits: FileLimits = {}, messages: ReturnType<typeof getFileDropMessages> = getFileDropMessages(limits.locale)) {
   const accepted: File[] = []
   const rejected: FileRejection[] = []
   const room = limits.maxFiles === undefined ? Number.POSITIVE_INFINITY : limits.maxFiles - (limits.existing ?? 0)
   for (const file of files) {
     if (!matchesAccept(file, limits.accept)) {
-      rejected.push({ file, reason: "type", message: `${file.name} is not a ${describeAccept(limits.accept)} file` })
+      rejected.push({ file, reason: "type", message: messages.isNotAFile(file.name, describeAccept(limits.accept, limits.locale, messages)) })
     } else if (limits.maxSize !== undefined && file.size > limits.maxSize) {
-      rejected.push({ file, reason: "size", message: `${file.name} is larger than ${formatBytes(limits.maxSize, limits.locale)}` })
+      rejected.push({ file, reason: "size", message: messages.isLargerThan(file.name, formatBytes(limits.maxSize, limits.locale)) })
     } else if (accepted.length >= room) {
       rejected.push({
         file,
         reason: "count",
-        message: `${file.name} was not added — the limit is ${limits.maxFiles} ${limits.maxFiles === 1 ? "file" : "files"}`,
+        message: messages.wasNotAddedTheLimitIs(file.name, limits.maxFiles!, limits.locale),
       })
     } else {
       accepted.push(file)
@@ -98,5 +99,5 @@ export function screenFiles(files: File[], limits: FileLimits = {}) {
 export function describeRejections(rejected: FileRejection[]): string | undefined {
   const [first, ...rest] = rejected
   if (!first) return undefined
-  return rest.length ? `${first.message} · ${rest.length} more not added` : first.message
+  return rest.length ? getFileDropMessages().moreNotAdded(first.message, rest.length) : first.message
 }

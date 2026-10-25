@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { richTextMessages } from "./messages.js"
 import { Toolbar } from "@base-ui/react/toolbar";
 import { $createCodeNode, $isCodeNode } from "@lexical/code";
 import {
@@ -58,7 +60,7 @@ import { Menu, MenuPrimitive } from "../menu/index.js";
 import { Popover } from "../popover/index.js";
 import { toast } from "../toast/index.js";
 import { MarkdownImageNode } from "./image-node.js";
-import { BlockStyleLabel, RICH_TEXT_BLOCKS as BLOCKS } from "./block-style.js";
+import { BlockStyleLabel, richTextBlocks, RICH_TEXT_BLOCKS as BLOCKS } from "./block-style.js";
 import type { RichTextInputProps } from "./rich-text.js";
 import { isSafeRichTextUrl, openRichTextLink } from "./urls.js";
 
@@ -118,6 +120,8 @@ export function EditorToolbar({
   RichTextInputProps,
   "disabled" | "uploadAttachment" | "attachmentAccept" | "onAttachmentError"
 >) {
+  const messages = useMessages(richTextMessages)
+
   const [editor] = useLexicalComposerContext();
   const [marks, setMarks] = useState({
     bold: false,
@@ -254,7 +258,7 @@ export function EditorToolbar({
     if (disabled || !editor.isEditable()) return;
     const next = url.trim();
     if (!remove && !isSafeRichTextUrl(next)) {
-      setLinkError("Use an https://, http://, mailto:, tel: or relative link");
+      setLinkError(messages.useAnHttpsHttpMailtoTelOrRelative);
       return;
     }
     editor.update(() => {
@@ -285,7 +289,7 @@ export function EditorToolbar({
       const attachment = await uploadAttachment(file);
       if (!isSafeRichTextUrl(attachment.url, attachment.kind === "image"))
         throw new Error(
-          "The uploaded file needs a safe HTTP(S) or relative URL",
+          messages.theUploadedFileNeedsASafeHttpSOr,
         );
       if (!mounted.current || !editor.isEditable()) return;
       editor.update(() => {
@@ -311,12 +315,12 @@ export function EditorToolbar({
       const message =
         error instanceof Error
           ? error.message
-          : "The file could not be attached. Try again.";
+          : messages.theFileCouldNotBeAttachedTryAgain;
       // Reported in place (the Attach button's error face and tooltip) and in a toast,
       // never as an injected row that would push the editor down.
       setUploadError(message);
       if (onAttachmentError) onAttachmentError(error);
-      else toast.danger("File not attached", { description: message });
+      else toast.danger(messages.fileNotAttached, { description: message });
     });
   };
 
@@ -324,7 +328,7 @@ export function EditorToolbar({
     <>
       <Toolbar.Root
         className="fa-rich-text-formatting"
-        aria-label="Text formatting"
+        aria-label={messages.textFormatting}
         disabled={disabled}
       >
         <Menu.Root open={blockOpen && !disabled} onOpenChange={setBlockOpen}>
@@ -338,7 +342,7 @@ export function EditorToolbar({
                     variant="ghost"
                     size="sm"
                     iconEnd={<IconChevronDown />}
-                    aria-label={`Block style: ${BLOCKS.find((item) => item.value === block)?.label ?? "Paragraph"}`}
+                    aria-label={messages.blockStyle(richTextBlocks(messages).find((item) => item.value === block)?.label ?? messages.paragraph)}
                     disabled={disabled}
                   >
                     <BlockStyleLabel value={block} />
@@ -349,7 +353,7 @@ export function EditorToolbar({
           />
           <Menu.Popup>
             <MenuPrimitive.RadioGroup value={block} onValueChange={changeBlock}>
-              {BLOCKS.map((item) => (
+              {richTextBlocks(messages).map((item) => (
                 <Menu.RadioItem
                   key={item.value}
                   value={item.value}
@@ -362,16 +366,16 @@ export function EditorToolbar({
           </Menu.Popup>
         </Menu.Root>
         <Tool
-          label="Bold"
+          label={messages.bold}
           active={marks.bold}
           disabled={disabled}
           shortcut="mod+b"
           onClick={() => format("bold")}
         >
-          <strong>B</strong>
+          <strong>{messages.b}</strong>
         </Tool>
         <Tool
-          label="Italic"
+          label={messages.italic}
           icon={<IconItalic />}
           active={marks.italic}
           disabled={disabled}
@@ -379,22 +383,22 @@ export function EditorToolbar({
           onClick={() => format("italic")}
         />
         <Tool
-          label="Inline code"
+          label={messages.inlineCode}
           icon={<IconCode />}
           active={marks.code}
           disabled={disabled}
           onClick={() => format("code")}
         />
         <Tool
-          label="Strikethrough"
+          label={messages.strikethrough}
           active={marks.strikethrough}
           disabled={disabled}
           onClick={() => format("strikethrough")}
         >
-          <s>S</s>
+          <s>{messages.s}</s>
         </Tool>
         <Tool
-          label="Bullet list"
+          label={messages.bulletList}
           icon={<IconList />}
           active={list === "bullet"}
           disabled={disabled}
@@ -412,7 +416,7 @@ export function EditorToolbar({
           }}
         />
         <Tool
-          label="Numbered list"
+          label={messages.numberedList}
           active={list === "number"}
           disabled={disabled}
           onClick={() => {
@@ -431,7 +435,7 @@ export function EditorToolbar({
           1.
         </Tool>
         <Tool
-          label="Task list"
+          label={messages.taskList}
           icon={<IconCheck />}
           active={list === "check"}
           disabled={disabled}
@@ -480,7 +484,7 @@ export function EditorToolbar({
                     variant={marks.link ? "soft" : "ghost"}
                     size="sm"
                     icon={<IconLink />}
-                    aria-label="Edit link"
+                    aria-label={messages.editLink}
                     disabled={disabled}
                     onMouseDown={(event) => event.preventDefault()}
                   />
@@ -488,12 +492,12 @@ export function EditorToolbar({
               />
             }
           />
-          <Popover.Popup title="Link" size="sm" align="start">
+          <Popover.Popup title={messages.link} size="sm" align="start">
             <div className="fa-rich-text-link-form">
               <Field
-                label="Link address"
+                label={messages.linkAddress}
                 error={linkError}
-                hint="Use HTTP(S), mailto:, tel:, a relative path, query or #anchor."
+                hint={messages.linkHint}
               >
                 <Input
                   disabled={disabled}
@@ -505,7 +509,7 @@ export function EditorToolbar({
                         isSafeRichTextUrl(value.trim()) ? undefined : linkError,
                       );
                   }}
-                  placeholder="https://example.com"
+                  placeholder={messages.httpsExampleCom}
                   autoComplete="off"
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
@@ -521,8 +525,7 @@ export function EditorToolbar({
                 disabled={disabled}
                 onClick={() => applyLink()}
               >
-                Apply link
-              </Button>
+                {messages.applyLink} </Button>
               {marks.link ? (
                 <>
                   <Button
@@ -533,8 +536,7 @@ export function EditorToolbar({
                     disabled={disabled || !isSafeRichTextUrl(url.trim())}
                     onClick={() => openRichTextLink(url.trim())}
                   >
-                    Open link
-                  </Button>
+                    {messages.openLink} </Button>
                   <Button
                     type="button"
                     size="sm"
@@ -542,15 +544,14 @@ export function EditorToolbar({
                     disabled={disabled}
                     onClick={() => applyLink(true)}
                   >
-                    Remove link
-                  </Button>
+                    {messages.removeLink} </Button>
                 </>
               ) : null}
             </div>
           </Popover.Popup>
         </Popover.Root>
         <Tool
-          label="Undo"
+          label={messages.undo}
           icon={<IconUndo />}
           disabled={disabled || !canUndo}
           shortcut="mod+z"
@@ -560,7 +561,7 @@ export function EditorToolbar({
           }}
         />
         <Tool
-          label="Redo"
+          label={messages.redo}
           icon={<IconRedo />}
           disabled={disabled || !canRedo}
           shortcut="mod+shift+z"
@@ -578,7 +579,7 @@ export function EditorToolbar({
                 size="sm"
                 variant="ghost"
                 icon={<IconAttach />}
-                aria-label="Attach file"
+                aria-label={messages.attachFile}
                 status={upload.status}
                 statusAnnouncement={false}
                 tooltip={
@@ -598,7 +599,7 @@ export function EditorToolbar({
           ref={fileRef}
           type="file"
           className="fa-rich-text-file"
-          aria-label="File attachment"
+          aria-label={messages.fileAttachment}
           tabIndex={-1}
           accept={attachmentAccept}
           onChange={(event) => {

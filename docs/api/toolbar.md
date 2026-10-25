@@ -15,6 +15,6 @@ and `Spacer`, plus Base UI's `Input` and `Link` for text fields and links in the
 | children | `ReactNode` | See type | yes | — | Toolbar.Button, Toolbar.Group, Toolbar.Item, Toolbar.Separator and Toolbar.Spacer. |
 | className | `string \| undefined` | See type | no | — | Layout only. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
-| labels | `Partial<{ readonly more: "More"; }> \| undefined` | See type | no | — | Wording overrides (the More button). |
+| labels | `Partial<{ more: string; }> \| undefined` | See type | no | — | Wording overrides (the More button). |
 | overflow | `boolean \| undefined` | false, true | no | true | Fold items into a trailing More menu when they do not fit, by `priority` (default true). Off, the toolbar never folds; give it room or let it scroll. |
 | size | `ToolbarSize \| undefined` | "sm", "md" | no | "sm" | sm (default) for panel headers and editors, md beside fields. |

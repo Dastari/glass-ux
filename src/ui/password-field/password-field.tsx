@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { passwordFieldMessages } from "./messages.js"
 import { useState, type KeyboardEvent } from "react"
 import { IconDice, IconKey } from "../../icons/generated/icons.js"
 import { useControllable } from "../../lib/use-controllable.js"
@@ -75,11 +77,13 @@ export function PasswordInput({
   readOnly,
   ...rest
 }: PasswordInputProps) {
+  const messages = useMessages(passwordFieldMessages)
+
   const [text, setText] = useControllable(value, defaultValue, onValueChange)
   const [capsLock, setCapsLock] = useState(false)
   const [shown, setShown] = useControllable<boolean>(revealed, false, onRevealedChange)
   const measuring = strength ?? purpose === "new"
-  const estimate = measuring ? estimateStrength(text, userInputs) : null
+  const estimate = measuring ? estimateStrength(text, userInputs, messages) : null
   const generateOptions = generate === true ? {} : generate || null
   const canCopy = (copyable ?? Boolean(generateOptions)) && text !== ""
   const editable = !disabled && !readOnly
@@ -91,7 +95,7 @@ export function PasswordInput({
 
   const change = (next: string) => {
     setText(next)
-    if (measuring && onStrengthChange) onStrengthChange(estimateStrength(next, userInputs))
+    if (measuring && onStrengthChange) onStrengthChange(estimateStrength(next, userInputs, messages))
   }
 
   return (
@@ -127,12 +131,11 @@ export function PasswordInput({
             {trailing}
             {capsLock ? (
               <span className="fa-password-caps" aria-hidden>
-                Caps Lock is on
-              </span>
+                {messages.capsLockIsOn} </span>
             ) : null}
             {/* Always mounted, so assistive technology registers it before the message arrives. */}
             <span className="sr-only" role="status">
-              {capsLock ? "Caps Lock is on" : ""}
+              {capsLock ? messages.capsLockIsOn : ""}
             </span>
             {generateOptions && editable ? (
               <Button
@@ -140,14 +143,14 @@ export function PasswordInput({
                 size="sm"
                 className="fa-input-btn"
                 icon={<IconDice />}
-                aria-label="Generate a password"
+                aria-label={messages.generateAPassword}
                 onClick={() => {
                   change(generatePassword(generateOptions))
                   setShown(true)
                 }}
               />
             ) : null}
-            {canCopy ? <CopyButton value={() => text} label="Copy password" className="fa-input-btn" /> : null}
+            {canCopy ? <CopyButton value={() => text} label={messages.copyPassword} className="fa-input-btn" /> : null}
           </>
         }
       />
@@ -175,10 +178,11 @@ export interface PasswordFieldProps
  * `currentPasswordSchema()` (sign-in, confirm).
  */
 export function PasswordField({ label, hint, optional, required, aside, className, disabled, ...control }: PasswordFieldProps) {
+ const messages = useMessages(passwordFieldMessages)
   const { field, error, root } = useBoundField<string>()
   const value = field.state.value
   const measuring = control.strength ?? (control.purpose ?? "new") === "new"
-  const words = measuring && value ? describeStrength(estimateStrength(value, control.userInputs)) : undefined
+  const words = measuring && value ? describeStrength(estimateStrength(value, control.userInputs, messages)) : undefined
   return (
     <Field {...root} label={label} hint={words ?? hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <PasswordInput

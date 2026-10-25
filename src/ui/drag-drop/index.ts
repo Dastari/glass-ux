@@ -1,3 +1,4 @@
+import "./messages.js"
 export {
   DragDropProvider,
   DragHandle,

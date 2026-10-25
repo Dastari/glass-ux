@@ -34,7 +34,7 @@ A11y      role="log" without per-token chatter: completed answers are announced 
 | announcement | `string \| undefined` | See type | no | — | Polite announcement for completed answers (never per token). |
 | children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | footer | `ReactNode` | See type | no | — | Floats over the bottom of the log on the reading column: the composer. |
-| label | `string \| undefined` | See type | no | "Conversation" | Accessible name. |
+| label | `string \| undefined` | See type | no | — | Accessible name. |
 | landing | `ReactNode` | See type | no | — | The empty conversation: shown centred above the composer until the first message (the hero). While set, the composer sits with it in the middle; when it clears, the same composer moves to its floating place at the bottom. |
 | landingFooter | `ReactNode` | See type | no | — | Under the composer on the landing: suggestions. |
 | surface | `AiSurface \| undefined` | "canvas", "panel", "float" | no | "panel" | canvas: the full-page conversation · panel: docked panes, windows, the gallery. |

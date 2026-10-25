@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { pieMessages, getPieMessages } from "./messages.js"
 import { arc as d3arc, pie as d3pie, type PieArcDatum } from "d3-shape"
 import { memo, useMemo, useRef, type CSSProperties } from "react"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
@@ -42,12 +44,12 @@ interface Slice extends PieSlice {
   slotKey: number | "other"
 }
 
-function fold(data: readonly PieSlice[], max: number): Slice[] {
+function fold(data: readonly PieSlice[], max: number, messages = getPieMessages()): Slice[] {
   const slices: Slice[] = data.map((item, index) => ({ ...item, slotKey: item.tone ? 0 : slotFor(index, item.slot) }))
   if (slices.length <= max) return slices
   const head = slices.slice(0, max - 1)
   const rest = slices.slice(max - 1)
-  return [...head, { key: "other", label: `Other (${rest.length})`, value: rest.reduce((sum, item) => sum + item.value, 0), slotKey: "other" }]
+  return [...head, { key: "other", label: messages.other(rest.length), value: rest.reduce((sum, item) => sum + item.value, 0), slotKey: "other" }]
 }
 
 /**
@@ -61,19 +63,25 @@ function fold(data: readonly PieSlice[], max: number): Slice[] {
  *            highlights with the ring, and the glass tooltip with the slice at the cursor
  */
 export function PieChart(props: PieChartProps) {
-  const { label, title, state = "ready", data, donut = false, centre, totalLabel = "Total", maxSlices = 6, unit, format, categoryLabel = "Category", ...rest } = props
+  const messages = useMessages(pieMessages, { locale: props.locale })
+
+  const { label, title, state = "ready", data, donut = false, centre, totalLabel: totalLabelProp, maxSlices = 6, unit, format, categoryLabel: categoryLabelProp, ...rest } = props
+  const categoryLabel = categoryLabelProp ?? messages.category
+
+  const totalLabel = totalLabelProp ?? messages.total
+
   const store = useHoverStore()
   const locale = useLocale(props.locale)
   const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
-  const slices = useMemo(() => fold(data, Math.min(maxSlices, SLOT_COUNT)), [data, maxSlices])
+  const slices = useMemo(() => fold(data, Math.min(maxSlices, SLOT_COUNT), messages), [data, maxSlices, messages])
   const total = useMemo(() => slices.reduce((sum, item) => sum + Math.max(0, item.value), 0), [slices])
 
   const table = useMemo<ChartTableModel>(
     () => ({
       columns: [
         { key: "label", label: categoryLabel },
-        { key: "value", label: "Value", numeric: true },
-        { key: "share", label: "Share", numeric: true },
+        { key: "value", label: messages.value, numeric: true },
+        { key: "share", label: messages.share, numeric: true },
       ],
       rows: data.map((item) => ({ label: item.label, value: formatValue(item.value, fmt), share: formatShare(item.value, total, fmt.locale) })),
       values: data.map((item) => ({ value: item.value, share: shareFraction(item.value, total) })),
@@ -117,6 +125,8 @@ interface PiePlotProps {
 }
 
 const PiePlot = memo(function PiePlot({ box, slices, total, store, donut, centre, totalLabel, fmt, label }: PiePlotProps) {
+  const messages = useMessages(pieMessages, { locale: fmt.locale })
+
   const plotRef = useRef<HTMLDivElement>(null)
   const { width, height, tier, rem } = box
   const full = tier === "full"
@@ -213,7 +223,7 @@ const PiePlot = memo(function PiePlot({ box, slices, total, store, donut, centre
             count={slices.length}
             locate={angleAt}
             anchor={anchor}
-            label={`${label} — inspect slices`}
+            label={messages.inspectSlices(label)}
             valueText={valueText}
             initial={0}
             cursor="pointer"

@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { ipFieldMessages, getIpFieldMessages } from "./messages.js"
 import { IconNetwork } from "../../icons/generated/icons.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { useControllable } from "../../lib/use-controllable.js"
@@ -27,6 +29,8 @@ const PLACEHOLDER: Record<CidrMode, Record<IpVersion | "any", string>> = {
  * it becomes canonical (leading zeros gone, IPv6 compressed per RFC 5952, brackets dropped).
  */
 export function IpInput({ version = "any", cidr = "none", copyable = true, value, defaultValue = "", onValueChange, placeholder, icon, trailing, ...rest }: IpInputProps) {
+  const messages = useMessages(ipFieldMessages)
+
   const [text, setText] = useControllable(value, defaultValue, onValueChange)
   const options = { version, cidr }
   const valid = text ? normaliseIp(text, options) : null
@@ -41,7 +45,7 @@ export function IpInput({ version = "any", cidr = "none", copyable = true, value
       trailing={
         <>
           {trailing}
-          {copyable && valid ? <CopyButton value={valid} label={cidr === "none" ? "Copy address" : "Copy range"} className="fa-input-btn" /> : null}
+          {copyable && valid ? <CopyButton value={valid} label={cidr === "none" ? messages.copyAddress : messages.copyRange} className="fa-input-btn" /> : null}
         </>
       }
     />
@@ -53,13 +57,13 @@ export function IpInput({ version = "any", cidr = "none", copyable = true, value
  * "Host bits set: the network is 192.168.1.0/24". Undefined for an empty or unreadable value.
  * The host count is written in `options.locale` (default `getLocale()`).
  */
-export function describeIp(value: string, options: { version?: IpVersion | "any"; cidr?: CidrMode; locale?: string } = {}): string | undefined {
+export function describeIp(value: string, options: { version?: IpVersion | "any"; cidr?: CidrMode; locale?: string } = {}, messages = getIpFieldMessages(options.locale)): string | undefined {
   if (!value.trim()) return undefined
   const result = parseIp(value, options)
   if (!result.ok) return undefined
   const ip = result.value
-  if (!isNetworkAddress(ip)) return `Host bits set: the network is ${networkOf(ip).address}/${ip.prefix}`
-  return [scopeOf(ip), describeRange(ip, options.locale)].filter(Boolean).join(" · ") || undefined
+  if (!isNetworkAddress(ip)) return messages.hostBitsSetTheNetworkIs(networkOf(ip).address, ip.prefix)
+  return [scopeOf(ip, messages), describeRange(ip, options.locale, messages)].filter(Boolean).join(" · ") || undefined
 }
 
 export interface IpFieldProps extends FieldChrome, Omit<IpInputProps, "value" | "defaultValue" | "onValueChange" | "name" | "onBlur" | "invalid" | "required" | "disabled" | "className"> {
@@ -69,9 +73,10 @@ export interface IpFieldProps extends FieldChrome, Omit<IpInputProps, "value" | 
 
 /** IpInput bound to a string form field. Pair it with `ipSchema()`. */
 export function IpField({ label, hint, optional, required, aside, className, disabled, describe = true, ...control }: IpFieldProps) {
+ const messages = useMessages(ipFieldMessages)
   const { field, error, root } = useBoundField<string>()
   const locale = useLocale()
-  const derived = describe ? describeIp(field.state.value, { ...control, locale }) : undefined
+  const derived = describe ? describeIp(field.state.value, { ...control, locale }, messages) : undefined
   return (
     <Field {...root} label={label} hint={hint ?? derived} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <IpInput

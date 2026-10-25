@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { toolActivityMessages } from "./messages.js"
 import { Collapsible } from "@base-ui/react/collapsible";
 import { useEffect, useState } from "react";
 import {
@@ -21,20 +23,21 @@ import { Progress } from "../../ui/progress/index.js";
 import { Skeleton } from "../../ui/skeleton/index.js";
 import { AiCard } from "../card/index.js";
 import { EntityChip } from "../entity-chip/index.js";
-import { formatElapsed, plural, useNow } from "../format.js";
+import { formatElapsed, useNow } from "../format.js";
 import { useConversationHandlers } from "../handlers.js";
 import { JsonTree } from "../json-tree/index.js";
 import type { AiProviderStatus, AiToolCall, ToolStatus } from "../types.js";
 import { useLocale } from "../../lib/locale/use-locale.js";
 
-const STATUS_WORDS: Record<ToolStatus, string> = {
-  queued: "Queued",
-  running: "Running",
-  succeeded: "Done",
-  failed: "Failed",
-  cancelled: "Cancelled",
-  "awaiting-approval": "Waiting for approval",
-};
+function getSTATUS_WORDS(messages: typeof toolActivityMessages.defaults): Record<ToolStatus, string> { return {
+  queued: messages.queued,
+  running: messages.running,
+  succeeded: messages.done,
+  failed: messages.failed,
+  cancelled: messages.cancelled,
+  "awaiting-approval": messages.waitingForApproval,
+} }
+
 
 /** The status glyph shared by tool rows, groups and provider activity. */
 export function StatusGlyph({
@@ -79,6 +82,8 @@ function Elapsed({ ms, running }: { ms?: number; running: boolean }) {
 }
 
 function ToolDetails({ call }: { call: AiToolCall }) {
+  const messages = useMessages(toolActivityMessages)
+
   const handlers = useConversationHandlers();
   const [loaded, setLoaded] = useState<{
     value?: Pick<AiToolCall, "args" | "result">;
@@ -121,18 +126,18 @@ function ToolDetails({ call }: { call: AiToolCall }) {
         <FactList
           facts={[
             {
-              label: "Tool",
+              label: messages.tool,
               value: (
                 <TruncatedText numeric>
                   <code>{call.toolId}</code>
                 </TruncatedText>
               ),
             },
-            { label: "Status", value: STATUS_WORDS[call.status] },
+            { label: messages.status, value: getSTATUS_WORDS(messages)[call.status] },
             ...(call.targets?.length
               ? [
                   {
-                    label: "Targets",
+                    label: messages.targets,
                     value: (
                       <span className="fa-ai-tool-targets">
                         {call.targets.map((target) => (
@@ -160,22 +165,21 @@ function ToolDetails({ call }: { call: AiToolCall }) {
           </div>
         ) : state === "error" ? (
           <p className="fa-hint">
-            The tool details could not be loaded. They stay on the server.
-          </p>
+            {messages.theToolDetailsCouldNotBeLoadedThey} </p>
         ) : (
           <>
             <ToolJson
-              label="Arguments"
+              label={messages.arguments}
               value={args}
-              withheld="The server withheld the arguments."
+              withheld={messages.withheldArguments}
             />
             <ToolJson
-              label="Result"
+              label={messages.result}
               value={result}
               withheld={
                 call.status === "running"
-                  ? "The result appears when the tool finishes."
-                  : "No result is available to this browser."
+                  ? messages.theResultAppearsWhenTheToolFinishes
+                  : messages.noResultIsAvailableToThisBrowser
               }
             />
           </>
@@ -194,6 +198,8 @@ function ToolJson({
   value: unknown;
   withheld: string;
 }) {
+  const messages = useMessages(toolActivityMessages)
+
   if (value === undefined || value === null) {
     return (
       <div className="fa-ai-tool-json">
@@ -209,14 +215,14 @@ function ToolJson({
     <div className="fa-ai-tool-json">
       <div className="fa-ai-tool-json-head">
         <span className="fa-overline">{label}</span>
-        <CopyButton value={text} label={`Copy ${label.toLowerCase()}`} />
+        <CopyButton value={text} label={messages.copy(label.toLowerCase())} />
       </div>
       <JsonTree
         value={value}
         label={label}
         truncated={
           text.length > 64 * 1024
-            ? "Truncated to 64 KB in this view."
+            ? messages.truncatedTo64KbInThisView
             : undefined
         }
       />
@@ -243,6 +249,8 @@ export function ToolCallRow({
   defaultOpen = false,
   className,
 }: ToolCallRowProps) {
+  const messages = useMessages(toolActivityMessages)
+
   const running = call.status === "running";
   const label =
     running || call.status === "queued"
@@ -260,7 +268,7 @@ export function ToolCallRow({
     >
       <Collapsible.Trigger
         className="fa-ai-tool-row"
-        aria-label={`${label}, ${STATUS_WORDS[call.status].toLowerCase()}`}
+        aria-label={`${label}, ${getSTATUS_WORDS(messages)[call.status].toLowerCase()}`}
       >
         <StatusGlyph status={call.status} />
         <span className="fa-ai-tool-text">
@@ -290,7 +298,7 @@ export function ToolCallRow({
         {running ? (
           <Progress
             value={null}
-            aria-label="Tool running"
+            aria-label={messages.toolRunning}
             className="fa-ai-tool-progress"
             size="sm"
           />
@@ -329,6 +337,8 @@ export function ToolGroup({
   defaultOpen = false,
   className,
 }: ToolGroupProps) {
+  const messages = useMessages(toolActivityMessages)
+
   const locale = useLocale();
   if (calls.length === 1)
     return (
@@ -344,10 +354,10 @@ export function ToolGroup({
   const total = calls.reduce((sum, call) => sum + (call.elapsedMs ?? 0), 0);
   const label =
     status === "running"
-      ? `Running ${running} of ${plural(calls.length, "tool", undefined, locale)}`
+      ? messages.runningOf(running, messages.toolCount(calls.length, locale))
       : status === "awaiting-approval"
-        ? `${plural(calls.length, "tool", undefined, locale)} · waiting for approval`
-        : `Ran ${plural(calls.length, "tool", undefined, locale)}`;
+        ? messages.waitingForApproval2(messages.toolCount(calls.length, locale))
+        : messages.ran(messages.toolCount(calls.length, locale));
   return (
     <Collapsible.Root
       className={cx("fa-ai-tool fa-ai-tool-group", className)}
@@ -356,14 +366,14 @@ export function ToolGroup({
     >
       <Collapsible.Trigger
         className="fa-ai-tool-row"
-        aria-label={`${label}${failed ? `, ${failed} failed` : ""}`}
+        aria-label={`${label}${failed ? messages.failed2(failed) : ""}`}
       >
         <StatusGlyph status={status} />
         <span className="fa-ai-tool-text">
           <span className="fa-ai-tool-label">
             {label}
             {failed ? (
-              <span className="fa-ai-tool-failed"> · {failed} failed</span>
+              <span className="fa-ai-tool-failed"> · {failed} {messages.failed3}</span>
             ) : null}
           </span>
         </span>
@@ -390,7 +400,7 @@ export function ToolGroup({
         {status === "running" ? (
           <Progress
             value={null}
-            aria-label="Tool running"
+            aria-label={messages.toolRunning}
             className="fa-ai-tool-progress"
             size="sm"
           />
@@ -407,12 +417,13 @@ export function ToolGroup({
   );
 }
 
-const PROVIDER_WORDS: Record<AiProviderStatus["state"], string> = {
-  working: "Working",
-  waiting: "Waiting",
-  retrying: "Retrying",
-  searching: "Searching the web",
-};
+function getPROVIDER_WORDS(messages: typeof toolActivityMessages.defaults): Record<AiProviderStatus["state"], string> { return {
+  working: messages.working,
+  waiting: messages.waiting,
+  retrying: messages.retrying,
+  searching: messages.searchingTheWeb,
+} }
+
 
 /**
  * What the model is doing between tool calls: working, waiting on an endpoint, retrying
@@ -427,6 +438,8 @@ export function ProviderActivity({
   status: AiProviderStatus;
   className?: string;
 }) {
+ const messages = useMessages(toolActivityMessages)
+
   return (
     <div
       className={cx("fa-ai-tool fa-ai-provider", className)}
@@ -446,7 +459,7 @@ export function ProviderActivity({
         )}
         <span className="fa-ai-tool-text">
           <span className="fa-ai-tool-label">
-            {PROVIDER_WORDS[status.state]}
+            {getPROVIDER_WORDS(messages)[status.state]}
             {status.detail ? (
               <span className="fa-ai-tool-detail"> · {status.detail}</span>
             ) : null}

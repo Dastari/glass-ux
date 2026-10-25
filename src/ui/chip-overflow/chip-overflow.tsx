@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { chipOverflowMessages } from "./messages.js"
 import { useState, type ReactNode } from "react";
 import { Button } from "../button/index.js";
 import { EmptyState } from "../empty-state/index.js";
@@ -15,6 +17,8 @@ export interface ChipOverflowProps {
 }
 /** A compact chip collection with a searchable +N overflow popover. */
 export function ChipOverflow({ items, limit = 2, label }: ChipOverflowProps) {
+  const messages = useMessages(chipOverflowMessages)
+
   const [query, setQuery] = useState("");
   const visible = Number.isFinite(limit)
     ? Math.max(0, Math.floor(limit))
@@ -38,7 +42,7 @@ export function ChipOverflow({ items, limit = 2, label }: ChipOverflowProps) {
               <Button
                 size="xs"
                 variant="ghost"
-                aria-label={`${items.length - visible} more ${label}`}
+                aria-label={messages.more(items.length - visible, label)}
               >
                 +{items.length - visible}
               </Button>
@@ -46,7 +50,7 @@ export function ChipOverflow({ items, limit = 2, label }: ChipOverflowProps) {
           />
           <Popover.Popup title={label} align="start">
             <SearchField
-              aria-label={`Search ${label}`}
+              aria-label={messages.search(label)}
               value={query}
               onValueChange={setQuery}
             />
@@ -57,7 +61,7 @@ export function ChipOverflow({ items, limit = 2, label }: ChipOverflowProps) {
                 ))}
               </ul>
             ) : (
-              <EmptyState icon={null}>No matches</EmptyState>
+              <EmptyState icon={null}>{messages.noMatches}</EmptyState>
             )}
           </Popover.Popup>
         </Popover.Root>

@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { barMessages } from "./messages.js"
 import { memo, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react"
 import { cartesianInset, textWidth, YGrid, YLabels } from "../core/axes.js"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
@@ -80,6 +82,8 @@ interface Prepared {
  * Rows that do not fit in a ranked list fold into a "+N more" line — nothing is cut off.
  */
 export function BarChart(props: BarChartProps) {
+  const messages = useMessages(barMessages, { locale: props.locale })
+
   const {
     label,
     title,
@@ -92,13 +96,15 @@ export function BarChart(props: BarChartProps) {
     labels,
     unit,
     format,
-    categoryLabel = "Category",
+    categoryLabel: categoryLabelProp,
     edges,
     formatEdge,
     thresholds: thresholdProp,
     bands: bandProp,
     ...rest
   } = props
+  const categoryLabel = categoryLabelProp ?? messages.category
+
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
   const store = useHoverStore()
   const locale = useLocale(props.locale)
@@ -136,7 +142,7 @@ export function BarChart(props: BarChartProps) {
       columns: [
         { key: "category", label: categoryLabel },
         ...series.map((item) => ({ key: item.key, label: item.label, numeric: true })),
-        ...(stacked && series.length > 1 ? [{ key: "total", label: "Total", numeric: true }] : []),
+        ...(stacked && series.length > 1 ? [{ key: "total", label: messages.total, numeric: true }] : []),
       ],
       rows,
       values,
@@ -247,6 +253,8 @@ interface Mark {
 const GAP = 2
 
 const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacked, horizontal, labels, fmt, label, edges, formatEdge, thresholds, bands }: BarPlotProps) {
+  const messages = useMessages(barMessages)
+
   const id = useId()
   const plotRef = useRef<HTMLDivElement>(null)
   const { width, height, tier, rem } = box
@@ -454,13 +462,12 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
       ) : null}
       {geo.kind === "rows" && geo.shown < n ? (
         <span className="fa-chart-more" style={{ top: geo.shown * geo.pitch, height: geo.pitch }}>
-          +{n - geo.shown} more
-        </span>
+          +{n - geo.shown} {messages.more} </span>
       ) : null}
 
       {full ? (
         <>
-          <HitLayer store={store} count={count} locate={locate} anchor={anchor} label={`${label} — inspect values`} valueText={valueText} initial={0} />
+          <HitLayer store={store} count={count} locate={locate} anchor={anchor} label={messages.inspectValues(label)} valueText={valueText} initial={0} />
           <ChartTooltip store={store} anchor={plotRef}>
             {(hover) => {
               const rows: TooltipRow[] = visible.map((item) => ({
@@ -476,7 +483,7 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
                 <TooltipBody
                   title={categoryText(hover.index)}
                   rows={stacked ? rows.toReversed() : rows}
-                  footer={stacked && visible.length > 1 ? `Total ${formatValue(totals[hover.index], fmt)}` : undefined}
+                  footer={stacked && visible.length > 1 ? messages.total2(formatValue(totals[hover.index], fmt)) : undefined}
                 />
               )
             }}

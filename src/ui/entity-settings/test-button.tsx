@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { entitySettingsMessages } from "./messages.js"
 import { useState, type ReactNode } from "react"
 import { IconActivity } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -31,7 +33,10 @@ export interface TestButtonProps extends Omit<ButtonProps, "onClick" | "status" 
  * block below always holds its rows ("—" until a test runs), so nothing moves when a result
  * arrives (R9.1). A thrown error counts as a failed test with its message.
  */
-export function TestButton({ onTest, fields, children = "Test", resetKey, className, icon = <IconActivity />, ...button }: TestButtonProps) {
+export function TestButton({ onTest, fields, children: childrenProp, resetKey, className, icon = <IconActivity />, ...button }: TestButtonProps) {
+  const messages = useMessages(entitySettingsMessages)
+  const children = childrenProp ?? messages.test
+
   const { status, run } = useActionFeedback()
   const [result, setResult] = useState<TestResult | null>(null)
   const [stale, setStale] = useState(false)
@@ -47,7 +52,7 @@ export function TestButton({ onTest, fields, children = "Test", resetKey, classN
       try {
         next = await onTest()
       } catch (error) {
-        next = { ok: false, summary: error instanceof Error ? error.message : "The test did not finish — retry" }
+        next = { ok: false, summary: error instanceof Error ? error.message : messages.theTestDidNotFinishRetry }
       }
       setResult(next)
       setStale(false)
@@ -58,14 +63,14 @@ export function TestButton({ onTest, fields, children = "Test", resetKey, classN
   return (
     <div className={cx("fa-test", className)} data-result={result ? (result.ok ? "ok" : "failed") : undefined} data-stale={stale ? "" : undefined}>
       <div className="fa-test-row">
-        <Button {...button} type="button" icon={icon} status={status} pendingLabel="Testing…" successLabel={children} errorLabel={children} onClick={start}>
+        <Button {...button} type="button" icon={icon} status={status} pendingLabel={messages.testing} successLabel={children} errorLabel={children} onClick={start}>
           {children}
         </Button>
         <span className="fa-test-summary" data-tone={tone} aria-live="polite">
-          {result ? (stale ? `Last test: ${result.summary} · settings changed since` : result.summary) : "Not tested"}
+          {result ? (stale ? messages.lastTestSettingsChangedSince(result.summary) : result.summary) : messages.notTested}
         </span>
       </div>
-      <dl className="glass-inset fa-test-result" aria-label="Test result">
+      <dl className="glass-inset fa-test-result" aria-label={messages.testResult}>
         {fields.map((label) => (
           <div key={label} className="fa-test-fact">
             <dt className="fa-test-label">{label}</dt>

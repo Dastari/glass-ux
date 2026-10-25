@@ -1,4 +1,6 @@
 import { DirectionPortal } from "../../lib/direction-portal.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { contextSwitcherMessages } from "./messages.js"
 /**
  * ContextSwitcher — the context you work in, in the top bar (R5.2, R6.9): an organisation,
  * a project, a workspace. First after the logo, so the context you are in is always
@@ -97,10 +99,12 @@ export function ContextAvatar({
   size = "sm",
   decorative = true,
   icon,
-  allLabel = DEFAULT_SWITCHER_LABELS.all,
+  allLabel: allLabelProp,
   className,
   ...rest
 }: ContextAvatarProps) {
+ const messages = useMessages(contextSwitcherMessages)
+ const allLabel = allLabelProp ?? messages.all
   return (
     <span
       {...rest}
@@ -190,10 +194,8 @@ export function ContextSwitcher<I extends ContextItem>({
   icon,
   className,
 }: ContextSwitcherProps<I>) {
-  const labels = useMemo(
-    () => ({ ...DEFAULT_SWITCHER_LABELS, ...labelsProp }),
-    [labelsProp],
-  );
+  const translated = useMessages(contextSwitcherMessages);
+  const labels = useMemo(() => ({ ...translated, ...labelsProp }), [translated, labelsProp]);
   const locale = useLocale();
   const tree = useMemo(() => buildContextTree(items, locale), [items, locale]);
   const phone = useMediaQuery(SHELL_QUERIES.phone);
@@ -437,6 +439,9 @@ function SwitcherList({
   onOpenChangeComplete,
   trigger,
 }: SwitcherListProps) {
+  const messages = useMessages(contextSwitcherMessages)
+ const locale = useLocale()
+
   const popup = usePopupMetrics();
   const [localQuery, setLocalQuery] = useState("");
   const query = remote?.query ?? localQuery;
@@ -477,9 +482,9 @@ function SwitcherList({
             ? labels.loading
             : remote.error
               ? labels.unavailable
-              : `${items.length} loaded ${items.length === 1 ? "result" : "results"}${remote.hasNextPage ? "; more available" : ""}`
+              : messages.loadedResults(items.length, remote.hasNextPage, locale)
           : query.trim()
-            ? `${count} ${count === 1 ? "result" : "results"}`
+            ? messages.resultCount(count, locale)
             : ""}
       </Combobox.Status>
       {!remote && (
@@ -643,10 +648,8 @@ export function ContextSwitcherPanel<I extends ContextItem>({
   all = true,
   icon,
 }: ContextSwitcherPanelProps<I>) {
-  const labels = useMemo(
-    () => ({ ...DEFAULT_SWITCHER_LABELS, ...labelsProp }),
-    [labelsProp],
-  );
+  const translated = useMessages(contextSwitcherMessages);
+  const labels = useMemo(() => ({ ...translated, ...labelsProp }), [translated, labelsProp]);
   const locale = useLocale();
   const tree = useMemo(() => buildContextTree(items, locale), [items, locale]);
   return (

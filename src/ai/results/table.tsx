@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { resultsMessages, getResultsMessages } from "./messages.js"
 import { IconGrid, IconPopOut } from "../../icons/generated/icons.js";
 import {
   Badge,
@@ -38,7 +40,7 @@ const isRedacted = (value: unknown): value is RedactedValue =>
 
 function cellText(column: ResultColumn, value: ResultRow[string]): string {
   if (value === null || value === undefined) return "";
-  if (isRedacted(value)) return "Hidden";
+  if (isRedacted(value)) return getResultsMessages().hidden2;
   if (isEntity(value)) return value.label;
   if (column.type === "time" && typeof value === "number")
     return new Date(value).toISOString();
@@ -112,13 +114,15 @@ export function ResultTable({ result }: {
   /** The table result: `columns`, `rows` (the first 8 show inline), `total` for the count and Show all, and an optional row `noun`. */
   result: TableResult;
 }) {
+  const messages = useMessages(resultsMessages)
+
   const locale = useLocale();
   const handlers = useConversationHandlers();
   const rows = result.rows.slice(0, INLINE_ROWS);
-  const noun = result.noun ?? { one: "row", other: "rows" };
+  const noun = result.noun ?? { one: messages.row, other: messages.rows };
   const meta =
     result.total > rows.length
-      ? `${formatNumber(rows.length, 0, locale)} of ${formatNumber(result.total, 0, locale)}`
+      ? messages.of(formatNumber(rows.length, 0, locale), formatNumber(result.total, 0, locale))
       : `${formatNumber(result.total, 0, locale)} ${result.total === 1 ? noun.one : noun.other}`;
   const [titleColumn, ...restColumns] = result.columns;
   return (
@@ -137,8 +141,7 @@ export function ResultTable({ result }: {
             icon={<IconPopOut />}
             onClick={() => handlers.openResultWindow(result)}
           >
-            Show all {formatNumber(result.total, 0, locale)} {noun.other} in a window
-          </Button>
+            {messages.showAllInWindow(formatNumber(result.total, 0, locale), noun.other)} </Button>
         ) : undefined
       }
     >

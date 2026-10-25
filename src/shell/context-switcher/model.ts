@@ -1,3 +1,4 @@
+import { englishSwitcherLabels, contextSwitcherMessages } from "./messages.js"
 /**
  * The context switcher's model, pure: the parent/child tree, what a context includes,
  * search, the rows the popup lists and its labels. The contexts are whatever the host
@@ -262,37 +263,11 @@ export interface SwitcherNoun {
   article?: string
 }
 
-const capitalise = (text: string) => text.charAt(0).toUpperCase() + text.slice(1)
+/** The switcher's English labels for an application noun. */
+export function switcherLabels(noun: SwitcherNoun): SwitcherLabels { return englishSwitcherLabels(noun) }
 
-/**
- * The switcher's English labels for a noun: `switcherLabels({ one: "project", other:
- * "projects" })` gives "All projects", "Find a project", "Project: Atlas" and the rest.
- * Override single labels by spreading the result.
- */
-export function switcherLabels({ one, other, article = /^[aeiou]/i.test(one) ? "an" : "a" }: SwitcherNoun): SwitcherLabels {
-  return {
-    all: `All ${other}`,
-    allShort: "All",
-    recent: "Recent",
-    group: capitalise(other),
-    title: capitalise(one),
-    choose: `Choose ${article} ${one}`,
-    placeholder: `Find ${article} ${one}`,
-    search: `Search ${other}`,
-    popup: `Choose ${article} ${one}`,
-    missing: `${capitalise(one)} unavailable`,
-    loading: `Loading ${other}`,
-    unavailable: `${capitalise(one)} directory unavailable`,
-    none: `No ${other} returned`,
-    loadMore: `Load more ${other}`,
-    noMatch: (query) => `No ${other} match “${query}”`,
-    includes: (name, count) => `${name} and ${count} ${count === 1 ? one : other} under it`,
-    changed: (name) => `Now in ${name}`,
-  }
-}
-
-/** The switcher's labels when `labels` is not supplied: organisations. */
-export const DEFAULT_SWITCHER_LABELS: SwitcherLabels = switcherLabels({ one: "organisation", other: "organisations" })
+/** The switcher's English organisation labels; per-instance labels win over translations. */
+export const DEFAULT_SWITCHER_LABELS: SwitcherLabels = contextSwitcherMessages.defaults
 
 /**
  * The popup's groups. Without a query: the "all" row (unless `all` is false), Recent (most

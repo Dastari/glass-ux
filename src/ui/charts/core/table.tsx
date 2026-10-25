@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { chartCoreMessages } from "./messages.js"
 import { useRef } from "react"
 import { useScrollEdges } from "../../../lib/use-scroll-edges.js"
 
@@ -108,6 +110,8 @@ export function ChartTable({ model, caption, visible = false }: ChartTableProps)
 }
 
 function VisibleTable({ model, caption }: { model: ChartTableModel; caption: string }) {
+  const messages = useMessages(chartCoreMessages)
+
   const ref = useRef<HTMLDivElement>(null)
   const edges = useScrollEdges(ref)
   return (
@@ -120,7 +124,7 @@ function VisibleTable({ model, caption }: { model: ChartTableModel; caption: str
       data-scrolled-left={edges.left ? "" : undefined}
       data-scrolled-right={edges.right ? "" : undefined}
       role="region"
-      aria-label={`${caption} · table`}
+      aria-label={messages.table(caption)}
       // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scroll region must be keyboard scrollable (R20.6)
       tabIndex={0}
     >

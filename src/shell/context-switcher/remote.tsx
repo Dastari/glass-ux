@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { contextSwitcherMessages } from "./messages.js"
 import type { ReactNode } from "react";
 import { Button } from "../../ui/button/index.js";
 import { Notice } from "../../ui/notice/index.js";
@@ -82,6 +84,8 @@ export function RemoteFeedback({
   /** The switcher's labels. */
   labels: SwitcherLabels;
 }) {
+  const messages = useMessages(contextSwitcherMessages)
+
   return (
     <div className="fa-context-switcher-feedback" aria-busy={remote.loading}>
       {remote.loading ? (
@@ -92,8 +96,7 @@ export function RemoteFeedback({
           action={
             remote.onRetry ? (
               <Button size="sm" variant="ghost" onClick={remote.onRetry}>
-                Retry
-              </Button>
+                {messages.retry} </Button>
             ) : undefined
           }
         >

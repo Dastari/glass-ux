@@ -22,7 +22,7 @@ opens a ColorPicker in a popover. Works inside `Field` like any input.
 | eyeDropper | `boolean \| undefined` | false, true | no | — | Offer the browser's eyedropper where it has one (`window.EyeDropper`). Default true. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Show the invalid state (set by Field when its error shows). |
-| labels | `Partial<{ readonly picker: "Colour picker"; readonly area: "Lightness and chroma"; readonly areaValue: (lightness: number, chroma: number) => string; readonly hue: "Hue"; readonly alpha: "Opacity"; readonly hex: "Hex colour"; readonly eyeDropper: "Pick a colour from the screen"; readonly swatches: "Preset colours"; readonly open: "Choose a colour"; readonly none: "No colour"; readonly clear: "Clear colour"; }> \| undefined` | See type | no | — | Wording overrides for this picker. |
+| labels | `Partial<{ picker: string; area: string; areaValue: (lightness: number, chroma: number) => string; hue: string; alpha: string; hex: string; eyeDropper: string; swatches: string; open: string; none: string; clear: string; }> \| undefined` | See type | no | — | Wording overrides for this picker. |
 | locale | `string \| undefined` | See type | no | — | Formatting and wording locale; defaults to the nearest LocaleProvider. |
 | name | `string \| undefined` | See type | no | — | Name for a native form submission (a hidden input carries the hex value). |
 | onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when focus leaves the field, for form libraries' touched state. |

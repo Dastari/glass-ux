@@ -1,4 +1,6 @@
 import { isRtl, readingKey } from "../lib/direction.js"
+import { useMessages } from "../lib/i18n/index.js"
+import { shellMessages } from "./messages.js"
 /**
  * AppShell — the application frame (R5). It owns the viewport: the document never
  * scrolls; every pane scrolls inside itself.
@@ -326,6 +328,8 @@ function DrawerHandle({
   /** Called when the person double-clicks the handle or presses Enter or Space on it, to open or close the drawer. Dragging writes the drawer preference directly instead. */
   onToggle: () => void
 }) {
+  const messages = useMessages(shellMessages)
+
   const [dragging, setDragging] = useState(false)
   const prefs = useShellPrefs()
 
@@ -410,7 +414,7 @@ function DrawerHandle({
       role="separator"
       tabIndex={0}
       aria-orientation="vertical"
-      aria-label="Resize section navigation"
+      aria-label={messages.resizeSectionNavigation}
       aria-valuemin={open ? DRAWER_MIN_REM : 0}
       aria-valuemax={DRAWER_MAX_REM}
       aria-valuenow={open ? Math.round(widthRem) : 0}

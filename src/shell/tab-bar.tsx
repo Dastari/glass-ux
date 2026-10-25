@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { shellMessages } from "./messages.js"
 /**
  * TabBar — phone navigation (R6.7, R21): the rail becomes a floating glass pill above the
  * bottom safe area with four or five destinations and "More". The active tab is an accent
@@ -128,8 +130,8 @@ function Item({
 
 /** The last tab: opens the remaining destinations (MoreItem rows) in a bottom Sheet. */
 function More({
-  label = "More",
-  title = "More",
+  label: labelProp,
+  title: titleProp,
   active = false,
   children,
 }: {
@@ -139,6 +141,10 @@ function More({
   active?: boolean;
   children: ReactNode;
 }) {
+  const messages = useMessages(shellMessages)
+  const label = labelProp ?? messages.more
+  const title = titleProp ?? messages.more
+
   const [open, setOpen] = useState(false);
   return (
     <li className="fa-tabbar-entry">

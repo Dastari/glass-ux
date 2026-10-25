@@ -1,3 +1,4 @@
+import "./messages.js"
 export { Dock, WindowSwitcher, groupWindowsByScope, type WindowGroup } from "./dock.js"
 export {
   SNAP_LAYOUTS,

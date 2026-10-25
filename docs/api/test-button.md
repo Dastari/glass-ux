@@ -14,7 +14,7 @@ arrives (R9.1). A thrown error counts as a failed test with its message.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | block | `boolean \| undefined` | false, true | no | — | Stretch to the container width. |
-| children | `ReactNode` | See type | no | "Test" | Default "Test". |
+| children | `ReactNode` | See type | no | — | Default "Test". |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | disabledReason | `string \| undefined` | See type | no | — | Why the button is disabled (R12.3). Keeps the button focusable (aria-disabled) so the reason is reachable by hover, focus and screen readers. |
 | errorLabel | `ReactNode` | See type | no | — | Label shown after a failed action. Use onError to explain the failure. |

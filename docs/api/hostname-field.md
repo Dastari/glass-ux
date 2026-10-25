@@ -20,6 +20,7 @@ HostnameInput bound to a string form field. Pair it with `hostnameSchema()`.
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | identifier | `boolean \| undefined` | false, true | no | — | Identifiers (addresses, hostnames) get tabular figures (R8.4). Default true. |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
+| locale | `string \| undefined` | See type | no | — | Locale for validation wording. Defaults to getLocale(). |
 | netbios | `boolean \| undefined` | false, true | no | false | Warn (as the hint) when a single-label name passes NetBIOS's 15 characters. Default false. |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called with the new state when the show/hide password button is pressed. Pair with `revealed` to control it. |

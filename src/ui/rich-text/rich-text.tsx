@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { richTextMessages } from "./messages.js"
 import {
   lazy,
   Suspense,
@@ -17,7 +19,7 @@ import { Field } from "../field/index.js";
 import { useBoundField, type FieldChrome } from "../form/context.js";
 import { Skeleton } from "../skeleton/index.js";
 import { Segmented } from "../segmented/index.js";
-import { RICH_TEXT_VIEWS } from "./view-options.js";
+import { richTextViews } from "./view-options.js";
 import { BlockStyleLabel } from "./block-style.js";
 
 const Editor = lazy(() => import("./rich-text-editor.js"));
@@ -167,6 +169,8 @@ export function RichTextSkeleton({
   className,
   style,
 }: RichTextSkeletonProps) {
+  const messages = useMessages(richTextMessages)
+
   return (
     <div
       className={cx("fa-control fa-rich-text", className)}
@@ -191,10 +195,10 @@ export function RichTextSkeleton({
             <Skeleton.Block height="100%" width="100%" />
           </div>
           {[
-            <strong key="bold">B</strong>,
+            <strong key="bold">{messages.b}</strong>,
             null,
             null,
-            <s key="strike">S</s>,
+            <s key="strike">{messages.s}</s>,
             null,
             "1.",
             null,
@@ -213,7 +217,7 @@ export function RichTextSkeleton({
                     <IconCode />
                   )
                 }
-                aria-label="Loading formatting"
+                aria-label={messages.loadingFormatting}
                 disabled
                 tooltip={false}
                 tabIndex={-1}
@@ -228,10 +232,10 @@ export function RichTextSkeleton({
           <Segmented
             className="fa-rich-text-skeleton-modes fa-skel"
             size="sm"
-            options={RICH_TEXT_VIEWS}
+            options={richTextViews(messages)}
             value="visual"
             disabled
-            aria-label="Loading document view"
+            aria-label={messages.loadingDocumentView}
           />
         </div>
       </div>

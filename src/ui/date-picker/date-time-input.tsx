@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { datePickerMessages } from "./messages.js"
 import { Input as BaseInput } from "@base-ui/react/input"
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type FocusEvent, type KeyboardEvent, type Ref } from "react"
 import { IconCalendar } from "../../icons/generated/icons.js"
@@ -154,10 +156,14 @@ export function DateTimeInput({
   className,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
-  dateLabel = "Date",
-  timeLabel = "Time",
+  dateLabel: dateLabelProp,
+  timeLabel: timeLabelProp,
   ref,
 }: DateTimeInputProps) {
+  const messages = useMessages(datePickerMessages, { locale: localeProp })
+  const dateLabel = dateLabelProp ?? messages.date
+  const timeLabel = timeLabelProp ?? messages.time
+
   const locale = useLocale(localeProp)
   const [inner, setInner] = useState<WallClock | null>(defaultValue)
   const current = value === undefined ? inner : value
@@ -403,15 +409,15 @@ export function DateTimeInput({
           <span className="fa-input-unit fa-date-time-zone">
             <span aria-hidden>{zoneAt.short}</span>
             <span id={zoneId} className="sr-only">
-              {`Time zone ${zoneAt.long}`}
+              {messages.timeZone(zoneAt.long)}
             </span>
           </span>
         ) : null}
       </div>
       {readOnly || disabled ? null : (
         <Popover.Root open={open} onOpenChange={setOpen}>
-          <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconCalendar />} aria-label="Choose a date and time" />} />
-          <Popover.Popup size="sm" align="end" className="fa-date-popover fa-date-time-popover" finalFocus={dateRef} aria-label="Choose a date and time">
+          <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconCalendar />} aria-label={messages.chooseADateAndTime} />} />
+          <Popover.Popup size="sm" align="end" className="fa-date-popover fa-date-time-popover" finalFocus={dateRef} aria-label={messages.chooseADateAndTime}>
             <div className="fa-date-time-picker">
               <Calendar
                 locale={locale}
@@ -434,6 +440,7 @@ export function DateTimeInput({
               />
               <div className="fa-date-time-times">
                 <TimeList
+                  aria-label={messages.times}
                   listRef={listRef}
                   times={times}
                   value={parseTimeText(timeText, textOptions)}

@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { numberFieldMessages } from "./messages.js"
 import { NumberField as BaseNumberField } from "@base-ui/react/number-field"
 import type { FocusEvent, ReactNode, Ref } from "react"
 import { IconMinus, IconPlus } from "../../icons/generated/icons.js"
@@ -86,6 +88,8 @@ export function NumberField({
   ref,
   ...aria
 }: NumberFieldProps) {
+  const messages = useMessages(numberFieldMessages, { locale: locale })
+
   const resolvedLocale = useLocale(locale)
   return (
     <BaseNumberField.Root
@@ -130,11 +134,11 @@ export function NumberField({
         {steppers && !readOnly ? (
           <span className="fa-number-steppers">
             <BaseNumberField.Decrement
-              render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconMinus />} aria-label="Decrease" />}
+              render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconMinus />} aria-label={messages.decrease} />}
               tabIndex={-1}
             />
             <BaseNumberField.Increment
-              render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconPlus />} aria-label="Increase" />}
+              render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconPlus />} aria-label={messages.increase} />}
               tabIndex={-1}
             />
           </span>

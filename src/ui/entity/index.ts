@@ -1,3 +1,4 @@
+import "./messages.js"
 export {
   ENTITY_TIER_LIMITS,
   EntityIdentity,

@@ -2,6 +2,7 @@ export {
   defineMessagePack,
   defineMessages,
   plural,
+  registeredMessages,
   type Message,
   type MessageCatalog,
   type MessageDescriptor,

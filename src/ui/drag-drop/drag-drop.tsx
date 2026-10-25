@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { dragDropMessages } from "./messages.js"
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import {
@@ -18,7 +20,7 @@ import {
 import { createPortal } from "react-dom"
 import { IconGrip } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
-import { DRAG_INSTRUCTIONS, DEFAULT_ANNOUNCEMENTS, DragDropManager, type ActiveDrag, type DraggableRecord, type ZoneRecord } from "./manager.js"
+import { createAnnouncements, DragDropManager, type ActiveDrag, type DraggableRecord, type ZoneRecord } from "./manager.js"
 import type { DragDropAnnouncements, DragDropCallbacks, DragInfo, DraggableOptions, DropZoneOptions, DropZoneState } from "./types.js"
 
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect
@@ -58,13 +60,15 @@ export interface DragDropProviderProps extends DragDropCallbacks {
  * drops, and the lifecycle callbacks for every drag in it (`onDragStart` … `onDragEnd`).
  * Put one around a screen or the whole application; providers do not exchange items.
  */
-export function DragDropProvider({ children, announcements, instructions = DRAG_INSTRUCTIONS, autoScroll = true, ...callbacks }: DragDropProviderProps) {
+export function DragDropProvider({ children, announcements, instructions: instructionsProp, autoScroll = true, ...callbacks }: DragDropProviderProps) {
+ const messages = useMessages(dragDropMessages)
+ const instructions = instructionsProp ?? messages.pressSpaceOrEnterToLiftArrowKeys
   const [manager] = useState(() => new DragDropManager())
   const instructionsId = useId()
   const announcer = useRef<HTMLSpanElement | null>(null)
   useIsoLayoutEffect(() => {
     manager.callbacks = callbacks
-    manager.announcements = { ...DEFAULT_ANNOUNCEMENTS, ...announcements }
+    manager.announcements = { ...createAnnouncements(messages), ...announcements }
     manager.autoScroll = autoScroll
     manager.announcer = announcer.current
   })
@@ -115,6 +119,8 @@ export interface UseDraggableResult {
  * short press unless the handle is a grip; Space or Enter lifts with the keyboard.
  */
 export function useDraggable<T = unknown>(options: DraggableOptions<T> & { grip?: boolean }): UseDraggableResult {
+  const messages = useMessages(dragDropMessages)
+
   const { manager, instructionsId } = useProvider("useDraggable")
   const zoneId = useContext(ZoneIdContext)
   const record = useMemo<DraggableRecord>(() => manager.createDraggable(options.id, options as DraggableOptions<unknown>, zoneId), [manager, options.id]) // oxlint-disable-line react-hooks/exhaustive-deps -- the record lives as long as the id; options update below
@@ -139,7 +145,7 @@ export function useDraggable<T = unknown>(options: DraggableOptions<T> & { grip?
     handleProps: {
       tabIndex: 0,
       role: "button",
-      "aria-roledescription": "draggable",
+      "aria-roledescription": messages.draggable,
       "aria-describedby": instructionsId,
       "aria-disabled": disabled ? true : undefined,
       "aria-description": typeof disabled === "string" ? disabled : undefined,
@@ -221,6 +227,8 @@ export interface DragHandleProps extends Omit<ComponentProps<"button">, "childre
  * touch, drags at once without a long press.
  */
 export function DragHandle({ className, children, "aria-label": ariaLabel, ...rest }: DragHandleProps) {
+  const messages = useMessages(dragDropMessages)
+
   const context = useContext(DraggableContext)
   if (!context) throw new Error("DragHandle must be inside a Draggable.")
   const { handleRef, handleProps, label } = context
@@ -232,7 +240,7 @@ export function DragHandle({ className, children, "aria-label": ariaLabel, ...re
       type="button"
       role={undefined}
       className={cx("fa-dnd-handle", className)}
-      aria-label={ariaLabel ?? `Move ${label}`}
+      aria-label={ariaLabel ?? messages.move(label)}
     >
       {children ?? <IconGrip />}
     </button>

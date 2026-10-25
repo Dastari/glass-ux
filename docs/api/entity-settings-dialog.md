@@ -44,4 +44,4 @@ and Cancel / Save. One form spans every tab, so Save sends one document.
 | subtitle | `ReactNode` | See type | no | — | Data only (R2.2): "NST-C106 · Northstar Studio". |
 | tab | `string \| undefined` | See type | no | — | The open tab, when it lives in the URL (`?settings=snmp`). |
 | tabs | `readonly EntitySettingsTab[]` | See type | yes | — | Tab definitions in display order. |
-| title | `ReactNode` | See type | no | "Settings" | Default "Settings". |
+| title | `ReactNode` | See type | no | — | Default "Settings". |

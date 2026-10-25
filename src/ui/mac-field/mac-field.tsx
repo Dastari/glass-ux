@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { macFieldMessages, getMacFieldMessages } from "./messages.js"
 import { useEffect, useState } from "react"
 import { IconEthernet } from "../../icons/generated/icons.js"
 import { useControllable } from "../../lib/use-controllable.js"
@@ -25,6 +27,8 @@ export interface MacAddressInputProps extends Omit<NormalisedInputProps, "normal
 
 /** A MAC address in any notation, written one way when focus leaves the field. */
 export function MacAddressInput({ format = "colon", letterCase = "upper", copyable = true, value, defaultValue = "", onValueChange, placeholder, icon, trailing, ...rest }: MacAddressInputProps) {
+  const messages = useMessages(macFieldMessages)
+
   const [text, setText] = useControllable(value, defaultValue, onValueChange)
   const style = { format, case: letterCase } as const
   const digits = text ? macDigits(text) : null
@@ -42,7 +46,7 @@ export function MacAddressInput({ format = "colon", letterCase = "upper", copyab
       trailing={
         <>
           {trailing}
-          {copyable && digits ? <CopyButton value={formatMac(digits, style)} label="Copy MAC address" className="fa-input-btn" /> : null}
+          {copyable && digits ? <CopyButton value={formatMac(digits, style)} label={messages.copyMacAddress} className="fa-input-btn" /> : null}
         </>
       }
     />
@@ -71,11 +75,11 @@ export function useMacVendor(value: string, lookup: MacVendorLookup | undefined)
 }
 
 /** The hint for a MAC value: its vendor, or what kind of address it is. */
-export function describeMacValue(value: string, vendor: string | undefined): string | undefined {
+export function describeMacValue(value: string, vendor: string | undefined, messages = getMacFieldMessages()): string | undefined {
   const digits = macDigits(value)
   if (!digits) return undefined
-  const special = describeMac(digits)
-  return [vendor ? `Vendor · ${vendor}` : null, special].filter(Boolean).join(" · ") || undefined
+  const special = describeMac(digits, messages)
+  return [vendor ? messages.vendor(vendor) : null, special].filter(Boolean).join(" · ") || undefined
 }
 
 export interface MacAddressFieldProps
@@ -87,10 +91,11 @@ export interface MacAddressFieldProps
 
 /** MacAddressInput bound to a string form field. Pair it with `macSchema()`. */
 export function MacAddressField({ label, hint, optional, required, aside, className, disabled, lookupVendor, ...control }: MacAddressFieldProps) {
+ const messages = useMessages(macFieldMessages)
   const { field, error, root } = useBoundField<string>()
   const vendor = useMacVendor(field.state.value, lookupVendor)
   return (
-    <Field {...root} label={label} hint={hint ?? describeMacValue(field.state.value, vendor)} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
+    <Field {...root} label={label} hint={hint ?? describeMacValue(field.state.value, vendor, messages)} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <MacAddressInput
         {...control}
         name={field.name}

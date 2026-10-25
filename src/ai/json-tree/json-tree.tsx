@@ -1,4 +1,6 @@
 import { readingKey } from "../../lib/direction.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { jsonTreeMessages, getJsonTreeMessages } from "./messages.js"
 import { useRef, useState } from "react";
 import { IconChevronRight } from "../../icons/generated/icons.js";
 import { cx } from "../../lib/cx.js";
@@ -42,9 +44,9 @@ function Scalar({ value }: { value: unknown }) {
 
 function summary(value: Json[] | Record<string, Json>, locale: string) {
   if (Array.isArray(value))
-    return `${formatNumber(value.length, 0, locale)} ${value.length === 1 ? "item" : "items"}`;
+    return getJsonTreeMessages(locale).itemCount(value.length, locale);
   const keys = Object.keys(value).length;
-  return `${formatNumber(keys, 0, locale)} ${keys === 1 ? "key" : "keys"}`;
+  return getJsonTreeMessages(locale).keyCount(keys, locale);
 }
 
 function Node({
@@ -56,6 +58,8 @@ function Node({
   value: unknown;
   depth: number;
 }) {
+  const messages = useMessages(jsonTreeMessages)
+
   const kind = kindOf(value);
   const branch = kind === "array" || kind === "object";
   const [open, setOpen] = useState(depth < OPEN_DEPTH);
@@ -112,7 +116,7 @@ function Node({
         className="fa-ai-json-toggle"
         tabIndex={-1}
         tooltip={false}
-        aria-label={`${open ? "Collapse" : "Expand"} ${name ?? "root"}`}
+        aria-label={`${open ? messages.collapse : messages.expand} ${name ?? messages.root}`}
         onClick={() => {
           rowRef.current?.focus();
           setOpen((current) => !current);
@@ -146,7 +150,7 @@ function Node({
                 className="fa-ai-json-row"
                 role="treeitem"
                 tabIndex={-1}
-                aria-label={`Show more of ${name ?? "root"}`}
+                aria-label={messages.showMoreOf(name ?? messages.root)}
               >
                 <span className="fa-ai-json-spacer" />
                 <Button
@@ -159,9 +163,7 @@ function Node({
                     setShown((count) => count + PAGE * 5);
                   }}
                 >
-                  Show{" "}
-                  {formatNumber(Math.min(entries.length - shown, PAGE * 5), 0, locale)}{" "}
-                  more of {formatNumber(entries.length, 0, locale)}
+                  {messages.showMoreOfTotal(formatNumber(Math.min(entries.length - shown, PAGE * 5), 0, locale), formatNumber(entries.length, 0, locale))}
                 </Button>
               </li>
             ) : null}

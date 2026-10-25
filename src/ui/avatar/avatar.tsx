@@ -1,3 +1,6 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { avatarMessages } from "./messages.js"
 import { Avatar as BaseAvatar } from "@base-ui/react/avatar"
 import type { ComponentProps } from "react"
 import { cx } from "../../lib/cx.js"
@@ -8,12 +11,13 @@ export type Presence = "online" | "away" | "busy" | "offline"
 /** Fallback tints: the eight identity colours (src/styles/identity.css), shared with organisations. */
 const TINTS = ["1", "2", "3", "4", "5", "6", "7", "8"] as const
 
-const PRESENCE: Record<Presence, { tone: string; marker: "dot" | "ring"; label: string }> = {
-  online: { tone: "success", marker: "dot", label: "Online" },
-  away: { tone: "warning", marker: "dot", label: "Away" },
-  busy: { tone: "danger", marker: "dot", label: "Busy" },
-  offline: { tone: "neutral", marker: "ring", label: "Offline" },
-}
+function getPRESENCE(messages: typeof avatarMessages.defaults): Record<Presence, { tone: string; marker: "dot" | "ring"; label: string }> { return {
+  online: { tone: "success", marker: "dot", label: messages.online },
+  away: { tone: "warning", marker: "dot", label: messages.away },
+  busy: { tone: "danger", marker: "dot", label: messages.busy },
+  offline: { tone: "neutral", marker: "ring", label: messages.offline },
+} }
+
 
 /** "Avery Quinn" → "TM", "AzureAD\EllisPark" → "CW", "Front Counter" → "FC". */
 export function initials(name: string): string {
@@ -52,7 +56,9 @@ export interface AvatarProps extends Omit<ComponentProps<"span">, "children"> {
  * the palette, so a missing photo still identifies someone at a glance.
  */
 export function Avatar({ name, src, size = "md", presence, decorative = false, className, ...rest }: AvatarProps) {
-  const spec = presence ? PRESENCE[presence] : undefined
+ const messages = useMessages(avatarMessages)
+
+  const spec = presence ? getPRESENCE(messages)[presence] : undefined
   const label = spec ? `${name} · ${spec.label}` : name
   return (
     <span
@@ -85,10 +91,13 @@ export interface AvatarGroupProps extends Omit<ComponentProps<"span">, "children
 
 /** Overlapping faces for "who is here" (watchers, active sessions). */
 export function AvatarGroup({ people, max = 4, size = "sm", className, ...rest }: AvatarGroupProps) {
+  const messages = useMessages(avatarMessages)
+
+  const locale = useLocale()
   const shown = people.slice(0, people.length > max ? max - 1 : max)
   const others = people.slice(shown.length)
   return (
-    <span {...rest} role="group" aria-label={`${people.length} people`} className={cx("fa-avatar-group", className)} data-size={size}>
+    <span {...rest} role="group" aria-label={messages.people(people.length, locale)} className={cx("fa-avatar-group", className)} data-size={size}>
       {shown.map((person) => (
         <Avatar key={person.name} name={person.name} src={person.src} size={size} />
       ))}
@@ -97,7 +106,7 @@ export function AvatarGroup({ people, max = 4, size = "sm", className, ...rest }
           className="fa-avatar fa-avatar-more"
           data-size={size}
           role="img"
-          aria-label={`${others.length} more: ${others.map((person) => person.name).join(", ")}`}
+          aria-label={messages.more(others.length, others.map((person) => person.name).join(", "))}
           title={others.map((person) => person.name).join(", ")}
         >
           <span className="fa-avatar-face" data-tint="neutral">

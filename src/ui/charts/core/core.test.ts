@@ -65,9 +65,9 @@ describe("format", () => {
   })
   it("relative time for recent moments", () => {
     const now = new Date(2026, 9, 13, 11, 0)
-    expect(formatRelative(new Date(2026, 9, 13, 10, 58), now)).toBe("2 min ago")
-    expect(formatRelative(new Date(2026, 9, 13, 8, 0), now)).toBe("3 h ago")
-    expect(formatRelative(new Date(2026, 9, 12, 11, 0), now)).toBe("1 day ago")
+    expect(formatRelative(new Date(2026, 9, 13, 10, 58), now)).toBe(new Intl.RelativeTimeFormat("en-AU", { numeric: "auto", style: "short" }).format(-2, "minute"))
+    expect(formatRelative(new Date(2026, 9, 13, 8, 0), now)).toBe(new Intl.RelativeTimeFormat("en-AU", { numeric: "auto", style: "short" }).format(-3, "hour"))
+    expect(formatRelative(new Date(2026, 9, 12, 11, 0), now)).toBe("yesterday")
     expect(formatRelative(now, now)).toBe("now")
   })
   it("shares", () => {

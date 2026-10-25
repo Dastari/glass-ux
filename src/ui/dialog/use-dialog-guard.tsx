@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { dialogMessages } from "./messages.js"
 import { useCallback, useState, type ReactNode } from "react"
 import { AlertDialog } from "../alert-dialog/alert-dialog.js"
 import type { DialogChangeDetails } from "./dialog.js"
@@ -32,10 +34,15 @@ export function useDialogGuard({
   onOpenChange,
   dirty,
   onDiscard,
-  title = "Discard unsaved changes?",
-  description = "Your edits in this dialog are lost.",
-  confirmLabel = "Discard changes",
+  title: titleProp,
+  description: descriptionProp,
+  confirmLabel: confirmLabelProp,
 }: DialogGuardOptions) {
+  const messages = useMessages(dialogMessages)
+  const title = titleProp ?? messages.discardUnsavedChanges
+  const description = descriptionProp ?? messages.yourEditsInThisDialogAreLost
+  const confirmLabel = confirmLabelProp ?? messages.discardChanges
+
   const [asking, setAsking] = useState(false)
 
   const handleOpenChange = useCallback(
@@ -57,7 +64,7 @@ export function useDialogGuard({
       title={title}
       description={description}
       confirmLabel={confirmLabel}
-      cancelLabel="Keep editing"
+      cancelLabel={messages.keepEditing}
       tone="warning"
       onConfirm={() => {
         onDiscard?.()

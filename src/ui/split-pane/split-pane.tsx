@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { splitPaneMessages } from "./messages.js"
 /**
  * SplitPane — two panes and the divider between them: a tree beside a table, a list above
  * its details.
@@ -138,6 +140,8 @@ export function SplitPane({
   style,
   ...rest
 }: SplitPaneProps) {
+  const messages = useMessages(splitPaneMessages)
+
   const scope = useStorageScope()
   const key = storageKey === undefined ? (scope ? `glass-ux.split:${scope}:${name}` : null) : storageKey
   const [remembered, setRemembered] = useState<Remembered>(() => read(key))
@@ -265,7 +269,7 @@ export function SplitPane({
         variant="ghost"
         size="sm"
         icon={<IconSidebar />}
-        aria-label={narrow ? `${overlaid ? "Hide" : "Show"} ${giving}` : `Show ${giving}`}
+        aria-label={narrow ? `${overlaid ? messages.hide : messages.show} ${giving}` : messages.show2(giving)}
         aria-expanded={narrow ? overlaid : false}
         aria-controls={collapse === "start" ? startId : endId}
         onClick={() => (narrow ? setOverlay(!overlay) : setCollapsed(false))}
@@ -311,7 +315,7 @@ export function SplitPane({
           role="separator"
           tabIndex={0}
           aria-orientation={horizontal ? "vertical" : "horizontal"}
-          aria-label={`Resize ${startLabel}`}
+          aria-label={messages.resize(startLabel)}
           aria-controls={startId}
           aria-valuemin={percent(bounds().low)}
           aria-valuemax={percent(bounds().high)}

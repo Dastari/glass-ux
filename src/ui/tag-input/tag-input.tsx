@@ -1,3 +1,6 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { tagInputMessages } from "./messages.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import {
   useEffect,
@@ -115,6 +118,9 @@ export function TagInput({
   ref,
   ...aria
 }: TagInputProps) {
+  const messages = useMessages(tagInputMessages)
+ const locale = useLocale()
+
   const [current, commit] = useControllable<string[]>(value ?? undefined, defaultValue ?? [], onValueChange)
   const [query, setQuery] = useState("")
   const [open, setOpen] = useState(false)
@@ -141,7 +147,7 @@ export function TagInput({
   const hasList = Boolean(suggestions?.length || source)
   const createRow: OptionItem | null =
     hasList && allowCreate && typed && !exact && !current.some((item) => same(item, typed))
-      ? { value: `${CREATE}${typed}`, label: `Create “${typed}”`, icon: <IconPlus /> }
+      ? { value: `${CREATE}${typed}`, label: messages.create(typed), icon: <IconPlus /> }
       : null
   const items = createRow ? [createRow, ...offered] : offered
   const collection = useOptionCollection(items)
@@ -201,7 +207,7 @@ export function TagInput({
     firstInvalid !== -1
       ? `${current[firstInvalid]}: ${reasons[firstInvalid]}`
       : limitHit && max !== undefined
-        ? `Up to ${max} ${max === 1 ? "value" : "values"}`
+        ? messages.limit(max, locale)
         : undefined
   useEffect(() => {
     onErrorChange?.(message)
@@ -312,7 +318,7 @@ export function TagInput({
               <input
                 key={`edit-${item}`}
                 className="fa-chip fa-chip-edit"
-                aria-label={`Edit ${item}`}
+                aria-label={messages.edit(item)}
                 value={editing.text}
                 size={Math.max(editing.text.length, 4)}
                 autoFocus
@@ -347,7 +353,7 @@ export function TagInput({
                 +{hidden.length}
               </span>
               <span className="sr-only">
-                {hidden.length} more: {hidden.map(data.labelOf).join(", ")}
+                {hidden.length} {messages.more} {hidden.map(data.labelOf).join(", ")}
               </span>
             </span>
           ) : null}

@@ -1,7 +1,10 @@
+import { getPasswordFieldMessages } from "./messages.js"
 import { z } from "zod"
-import { estimateStrength, STRENGTH_LABELS, type StrengthScore } from "./strength.js"
+import { estimateStrength, type StrengthScore } from "./strength.js"
 
 export interface PasswordSchemaOptions {
+  /** Locale for validation wording. Defaults to getLocale(). */
+  locale?: string
   /** Default 12. */
   minLength?: number
   /** The weakest score accepted (0 too weak … 4 strong). Default 2 (fair). */
@@ -23,19 +26,19 @@ export function passwordSchema(options: PasswordSchemaOptions = {}) {
   const minScore = options.minScore ?? 2
   return z.string().superRefine((value, context) => {
     if (!value) {
-      if (options.required ?? true) context.addIssue({ code: "custom", message: "Enter a password" })
+      if (options.required ?? true) context.addIssue({ code: "custom", message: getPasswordFieldMessages(options.locale).enterAPassword })
       return
     }
     if (value.length < minLength) {
-      context.addIssue({ code: "custom", message: `Use ${minLength} characters or more` })
+      context.addIssue({ code: "custom", message: getPasswordFieldMessages(options.locale).useCharactersOrMore(minLength) })
       return
     }
-    const strength = estimateStrength(value, options.userInputs)
-    if (strength.score < minScore) context.addIssue({ code: "custom", message: `${STRENGTH_LABELS[strength.score]}: ${(strength.feedback ?? "choose a stronger password").replace(/^./, (char) => char.toLowerCase())}` })
+    const strength = estimateStrength(value, options.userInputs, getPasswordFieldMessages(options.locale))
+    if (strength.score < minScore) context.addIssue({ code: "custom", message: `${strength.label}: ${(strength.feedback ?? getPasswordFieldMessages(options.locale).chooseAStrongerPassword).replace(/^./, (char) => char.toLowerCase())}` })
   })
 }
 
 /** The password someone already has (sign-in, confirm before a change): just required. */
-export function currentPasswordSchema() {
-  return z.string().min(1, "Enter your password")
+export function currentPasswordSchema(locale?: string) {
+  return z.string().min(1, { error: () => getPasswordFieldMessages(locale).enterYourPassword })
 }

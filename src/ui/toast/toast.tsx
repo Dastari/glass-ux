@@ -1,5 +1,7 @@
 import { DirectionPortal } from "../../lib/direction-portal.js"
 import { useDirection } from "../../lib/locale/direction.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { toastMessages } from "./messages.js"
 import { Toast as BaseToast } from "@base-ui/react/toast"
 import type { ReactNode } from "react"
 import { IconClose, IconError, IconInfo, IconSuccess, IconWarning } from "../../icons/generated/icons.js"
@@ -20,6 +22,8 @@ export interface ToastOptions {
   action?: { label: string; onClick: () => void }
   /** ms before it dismisses itself; 0 keeps it until closed. Danger toasts stay longer. */
   timeout?: number
+  /** Locale for built-in toast controls when emitted for one region. Default: the Toaster’s enclosing locale. */
+  locale?: string
   /** Re-using an id updates that toast in place instead of stacking another. */
   id?: string
 }
@@ -34,9 +38,10 @@ const DANGER_TIMEOUT_MS = 8000
  */
 export const toastManager = BaseToast.createToastManager()
 
-function add({ tone = "info", action, timeout, ...rest }: ToastOptions) {
+function add({ tone = "info", action, timeout, locale, ...rest }: ToastOptions) {
   return toastManager.add({
     ...rest,
+    data: { locale },
     type: tone,
     // Danger is announced assertively (role=alert); everything else politely.
     priority: tone === "danger" ? "high" : "low",
@@ -94,37 +99,40 @@ export function ToastLayout({ tone, title, description, action, close }: ToastLa
   )
 }
 
-function ToastList() {
-  const { toasts } = BaseToast.useToastManager()
+function ToastItem({ item }: { item: ReturnType<typeof BaseToast.useToastManager>["toasts"][number] }) {
+  const data = item.data as { locale?: string } | undefined
+  const messages = useMessages(toastMessages, { locale: data?.locale })
   const phone = usePhoneLayout()
   const direction = useDirection()
-  return toasts.map((item) => {
-    const tone = toneOf(item.type)
-    return (
-      <BaseToast.Root
-        key={item.id}
-        toast={item}
-        className="glass-overlay glass-detached fa-toast"
-        data-tone={tone}
-        swipeDirection={phone ? "up" : [direction === "rtl" ? "left" : "right", "down"]}
-      >
-        <BaseToast.Content className="fa-toast-content">
-          <ToastLayout
-            tone={tone}
-            title={<BaseToast.Title className="fa-toast-title" />}
-            description={item.description ? <BaseToast.Description className="fa-toast-description" /> : null}
-            action={<BaseToast.Action className="fa-toast-action" render={<Button size="sm" />} />}
-            close={
-              <BaseToast.Close
-                className="fa-toast-close"
-                render={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label="Dismiss" />}
-              />
-            }
-          />
-        </BaseToast.Content>
-      </BaseToast.Root>
-    )
-  })
+  const tone = toneOf(item.type)
+  return (
+    <BaseToast.Root
+      toast={item}
+      className="glass-overlay glass-detached fa-toast"
+      data-tone={tone}
+      swipeDirection={phone ? "up" : [direction === "rtl" ? "left" : "right", "down"]}
+    >
+      <BaseToast.Content className="fa-toast-content">
+        <ToastLayout
+          tone={tone}
+          title={<BaseToast.Title className="fa-toast-title" />}
+          description={item.description ? <BaseToast.Description className="fa-toast-description" /> : null}
+          action={<BaseToast.Action className="fa-toast-action" render={<Button size="sm" />} />}
+          close={
+            <BaseToast.Close
+              className="fa-toast-close"
+              render={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label={messages.dismiss} />}
+            />
+          }
+        />
+      </BaseToast.Content>
+    </BaseToast.Root>
+  )
+}
+
+function ToastList() {
+  const { toasts } = BaseToast.useToastManager()
+  return toasts.map((item) => <ToastItem key={item.id} item={item} />)
 }
 
 /**
@@ -157,6 +165,8 @@ export function ToastPreview({ tone = "info", title, description, action }: {
   /** Label of the toast's action button, drawn inert; omit for a toast without an action. */
   action?: string
 }) {
+  const messages = useMessages(toastMessages)
+
   return (
     <div className="glass-overlay glass-detached fa-toast fa-toast-preview" data-tone={tone} role="presentation">
       <div className="fa-toast-content">
@@ -165,7 +175,7 @@ export function ToastPreview({ tone = "info", title, description, action }: {
           title={<p className="fa-toast-title">{title}</p>}
           description={description ? <p className="fa-toast-description">{description}</p> : null}
           action={action ? <Button size="sm" className="fa-toast-action" tabIndex={-1}>{action}</Button> : null}
-          close={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label="Dismiss" tabIndex={-1} className="fa-toast-close" />}
+          close={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label={messages.dismiss} tabIndex={-1} className="fa-toast-close" />}
         />
       </div>
     </div>

@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { windowsMessages } from "./messages.js"
 /**
  * Window scopes (R14.4): windows and the dock sit above the tenant scope. Each window records
  * the organisation it belongs to (WindowEntry.scope); the workspace only labels it. When a
@@ -71,6 +73,8 @@ export function WindowScopeChip({ scope }: {
   /** The window's scope id (`WindowEntry.scope`), or null for an unscoped window, which shows no chip. */
   scope: string | null
 }) {
+  const messages = useMessages(windowsMessages)
+
   const scopes = useWindowScopes()
   if (!scope || !scopes || scope === scopes.current) return null
   const info = describeScope(scopes, scope)
@@ -83,7 +87,7 @@ export function WindowScopeChip({ scope }: {
         data-chip={info.chip ? "" : undefined}
         data-icon={info.icon ? "" : undefined}
         role="img"
-        aria-label={`Organisation: ${info.label}`}
+        aria-label={messages.organisation(info.label)}
       >
         {info.chip ? (
           <span className="fa-window-scope-chip" aria-hidden>

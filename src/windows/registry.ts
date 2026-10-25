@@ -1,3 +1,4 @@
+import { getWindowsMessages } from "./messages.js"
 /**
  * The window kind registry (R14.2). A kind says how to title a window from its params and
  * how to load its body. Bodies are lazy, so every kind is its own code-split chunk and
@@ -84,8 +85,8 @@ export function onWindowKindsChange(listener: () => void) {
 }
 
 /** Title and subtitle for a window, falling back gracefully for an unknown kind. */
-export function describeWindow(kind: string, params: WindowParams) {
+export function describeWindow(kind: string, params: WindowParams, messages: ReturnType<typeof getWindowsMessages> = getWindowsMessages()) {
   const definition = kinds.get(kind)
-  if (!definition) return { title: "Unavailable window", subtitle: kind, icon: undefined }
+  if (!definition) return { title: messages.unavailableWindow, subtitle: kind, icon: undefined }
   return { title: definition.title(params), subtitle: definition.subtitle?.(params), icon: definition.icon }
 }

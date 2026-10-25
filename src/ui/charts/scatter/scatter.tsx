@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { scatterMessages } from "./messages.js"
 import { bin as d3bin, extent } from "d3-array"
 import { memo, useMemo, useRef, useState, type ReactNode } from "react"
 import { BarChart } from "../bar/bar-chart.js"
@@ -79,6 +81,8 @@ interface Dot {
  *            arrow keys stepping through dots left to right
  */
 export function ScatterChart(props: ScatterChartProps) {
+  const messages = useMessages(scatterMessages, { locale: props.locale })
+
   const { label, title, state = "ready", series, x: xAxis, y: yAxis, thresholds, bands, ...rest } = props
   const locale = useLocale(props.locale)
   // Each axis formats its numbers in the chart's locale.
@@ -92,8 +96,8 @@ export function ScatterChart(props: ScatterChartProps) {
   const table = useMemo<ChartTableModel>(
     () => ({
       columns: [
-        { key: "label", label: "Item" },
-        { key: "series", label: "Series" },
+        { key: "label", label: messages.item },
+        { key: "series", label: messages.series },
         { key: "x", label: x.label, numeric: true },
         { key: "y", label: y.label, numeric: true },
       ],
@@ -116,7 +120,7 @@ export function ScatterChart(props: ScatterChartProps) {
   const trail = (
     <span className="fa-chart-figure">
       <span className="fa-chart-figure-value">{formatValue(count, { locale })}</span>
-      <span className="fa-chart-figure-label">items</span>
+      <span className="fa-chart-figure-label">{messages.items}</span>
     </span>
   )
   return (
@@ -147,6 +151,8 @@ const ScatterPlot = memo(function ScatterPlot({
   thresholds?: readonly Threshold[]
   bands?: readonly ReferenceBand[]
 }) {
+  const messages = useMessages(scatterMessages)
+
   const plotRef = useRef<HTMLDivElement>(null)
   const { width, height, tier, rem } = box
   const full = tier === "full"
@@ -226,7 +232,7 @@ const ScatterPlot = memo(function ScatterPlot({
       {full ? (
         <>
           <DotHighlight store={store} dots={dots} width={width} height={height} rem={rem} />
-          <HitLayer store={store} count={dots.length} locate={locate} anchor={anchor} initial={0} label={`${label} — inspect points`} valueText={valueText} cursor="pointer" />
+          <HitLayer store={store} count={dots.length} locate={locate} anchor={anchor} initial={0} label={messages.inspectPoints(label)} valueText={valueText} cursor="pointer" />
           <ChartTooltip store={store} anchor={plotRef}>
             {(hover) => {
               const dot = dots[hover.index]
@@ -280,7 +286,11 @@ export interface HistogramProps extends ChartCommonProps, ValueFormat {
  * count. Tiers are the column chart's.
  */
 export function Histogram(props: HistogramProps) {
-  const { values, bins = 12, domain, countLabel = "Count", unit, format, ...rest } = props
+  const messages = useMessages(scatterMessages)
+
+  const { values, bins = 12, domain, countLabel: countLabelProp, unit, format, ...rest } = props
+  const countLabel = countLabelProp ?? messages.count
+
   const locale = useLocale(props.locale)
   const binned = useMemo(() => {
     const [lo, hi] = domain ?? (extent(values) as [number | undefined, number | undefined])
@@ -299,7 +309,7 @@ export function Histogram(props: HistogramProps) {
       series={[{ key: "count", label: countLabel, data: binned.counts }]}
       edges={binned.edges}
       formatEdge={formatEdge}
-      categoryLabel="Range"
+      categoryLabel={messages.range}
       labels={false}
     />
   )

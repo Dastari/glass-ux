@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { actionsMessages } from "./messages.js"
 import { useRouter } from "@tanstack/react-router";
 import {
   createContext,
@@ -112,6 +114,8 @@ const describe = (error: unknown) =>
  * it confirms in its own dialog).
  */
 export function useActionRunner() {
+  const messages = useMessages(actionsMessages)
+
   const services = useActionServices();
 
   const start = useCallback(
@@ -141,7 +145,7 @@ export function useActionRunner() {
       const fail = (error: unknown) =>
         services.toast({
           tone: "danger",
-          title: `${action.label} failed`,
+          title: messages.failed(action.label),
           description: describe(error),
         });
 
@@ -154,7 +158,7 @@ export function useActionRunner() {
             description: spec.body,
             confirmLabel: spec.confirmLabel,
             tone: spec.tone === "danger" ? "danger" : "warning",
-            failureTitle: `${action.label} failed`,
+            failureTitle: messages.failed(action.label),
             onConfirm: () => run(targets, context),
           })
           .then((confirmed) => {

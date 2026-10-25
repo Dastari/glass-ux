@@ -2,7 +2,7 @@
 import { cleanup, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it } from "vitest"
 import { LocaleProvider } from "../locale/index.js"
-import { configureMessages, defineMessagePack, defineMessages, MessagesProvider, plural, registerMessagePack, useMessages } from "./index.js"
+import { configureMessages, defineMessagePack, defineMessages, MessagesProvider, plural, registeredMessages, registerMessagePack, useMessages } from "./index.js"
 
 const demo = defineMessages("i18nDemo", {
   clear: "Clear",
@@ -29,6 +29,16 @@ afterEach(() => {
 })
 
 describe("messages", () => {
+  it("returns registry snapshots without exposing the live map", () => {
+    const before = registeredMessages()
+    const descriptor = defineMessages("registrySnapshot", { label: "Snapshot" })
+    expect(before.has("registrySnapshot")).toBe(false)
+    expect(registeredMessages().get("registrySnapshot")).toBe(descriptor)
+    const mutableCopy = new Map(registeredMessages())
+    mutableCopy.clear()
+    expect(registeredMessages().has("registrySnapshot")).toBe(true)
+  })
+
   it("uses the English defaults", () => {
     render(<Demo />)
     expect(screen.getByText("Clear · 3 rows")).toBeTruthy()

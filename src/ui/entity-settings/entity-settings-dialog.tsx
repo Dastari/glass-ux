@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { entitySettingsMessages } from "./messages.js"
 import { useStore } from "@tanstack/react-form"
 import { useCallback, useEffect, useRef, useState, type ComponentType, type PropsWithChildren, type ReactNode } from "react"
 import { IconLock, IconRefresh, IconWarning } from "../../icons/generated/icons.js"
@@ -115,8 +117,10 @@ export interface EntitySettingsDialogProps {
 
 /** A tab's loading shape: the rows a settings tab usually starts with (R9.3). */
 function TabSkeleton() {
+  const messages = useMessages(entitySettingsMessages)
+
   return (
-    <div className="fa-form-stack fa-entity-settings-tab" role="group" aria-busy="true" aria-label="Loading settings">
+    <div className="fa-form-stack fa-entity-settings-tab" role="group" aria-busy="true" aria-label={messages.loadingSettings}>
       <FieldSkeleton labelWidth="30%" />
       <FieldSkeleton labelWidth="22%" />
       <SettingRowSkeleton labelWidth="34%" />
@@ -167,7 +171,7 @@ export function EntitySettingsDialog({
   defaultTab,
   onTabChange,
   media,
-  title = "Settings",
+  title: titleProp,
   subtitle,
   entityName,
   onSaveError,
@@ -181,6 +185,9 @@ export function EntitySettingsDialog({
   onVerify,
   onReload,
 }: EntitySettingsDialogProps) {
+  const messages = useMessages(entitySettingsMessages)
+  const title = titleProp ?? messages.settings
+
   const [innerTab, setInnerTab] = useState(defaultTab ?? tabs[0]?.value ?? "")
   const requested = tab ?? innerTab
   const current = tabs.some((entry) => entry.value === requested) ? requested : (tabs[0]?.value ?? "")
@@ -315,8 +322,8 @@ export function EntitySettingsDialog({
     onOpenChange,
     dirty,
     onDiscard: () => form.reset(),
-    title: entityName ? `Discard changes to ${entityName}?` : "Discard unsaved changes?",
-    description: "Your edits in this dialog are lost.",
+    title: entityName ? messages.discardChangesTo(entityName) : messages.discardUnsavedChanges,
+    description: messages.yourEditsInThisDialogAreLost,
   })
 
   const sections: SettingsSection[] = tabs.map((entry) => ({
@@ -339,8 +346,7 @@ export function EntitySettingsDialog({
     <div className="fa-entity-settings-conflict" role="status" data-testid="settings-conflict">
       <IconWarning className="fa-entity-settings-conflict-icon" />
       <span className="fa-entity-settings-conflict-text">
-        {conflictTab && conflictTab.value !== current ? `${conflictTab.label} changed` : "Changed"} by {conflict.changedBy} since you opened it. Reload to see their changes.
-      </span>
+        {conflictTab && conflictTab.value !== current ? messages.changed(conflictTab.label) : messages.changed2} {messages.by} {conflict.changedBy} {messages.sinceYouOpenedItReloadToSeeTheir} </span>
       {onReload ? (
         <ActionButton
           size="sm"
@@ -351,8 +357,7 @@ export function EntitySettingsDialog({
             setConflicts((list) => list.filter((entry) => entry !== conflict))
           }}
         >
-          Reload
-        </ActionButton>
+          {messages.reload} </ActionButton>
       ) : null}
     </div>
   ) : null
@@ -371,7 +376,7 @@ export function EntitySettingsDialog({
       >
         <div ref={rootRef} hidden />
         <Dialog.Header media={media} title={title} subtitle={subtitle} />
-        <SettingsSections sections={sections} section={current} onSectionChange={select} label={entityName ? `${entityName} settings` : "Settings sections"} keepMounted />
+        <SettingsSections sections={sections} section={current} onSectionChange={select} label={entityName ? messages.settings2(entityName) : messages.settingsSections} keepMounted />
         <Dialog.Footer start={conflictNotice ?? footerStart}>
           <Button
             type="button"
@@ -380,20 +385,19 @@ export function EntitySettingsDialog({
               onOpenChange(false)
             }}
           >
-            Cancel
-          </Button>
+            {messages.cancel} </Button>
           <Button
             type="submit"
             variant="primary"
             icon={needsVerify ? <IconLock /> : undefined}
             status={status}
-            pendingLabel={phase === "verify" ? "Verifying…" : "Saving…"}
-            successLabel={phase === "verify" ? "Verified" : "Saved"}
-            errorLabel="Not saved"
-            disabledReason={loading ? "Loading settings" : saveDisabledReason || (!dirty && status === "idle" ? "No changes to save" : undefined)}
+            pendingLabel={phase === "verify" ? messages.verifying : messages.saving}
+            successLabel={phase === "verify" ? messages.verified : messages.saved}
+            errorLabel={messages.notSaved}
+            disabledReason={loading ? messages.loadingSettings : saveDisabledReason || (!dirty && status === "idle" ? messages.noChangesToSave : undefined)}
             data-verify={needsVerify ? "" : undefined}
           >
-            {needsVerify ? "Verify and save" : "Save"}
+            {needsVerify ? messages.verifyAndSave : messages.save}
           </Button>
         </Dialog.Footer>
       </form>

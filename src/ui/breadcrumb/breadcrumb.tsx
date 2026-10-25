@@ -1,4 +1,6 @@
 import { DirectionPortal } from "../../lib/direction-portal.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { breadcrumbMessages } from "./messages.js"
 import { Menu } from "@base-ui/react/menu"
 import { Popover } from "@base-ui/react/popover"
 import {
@@ -155,7 +157,10 @@ export interface BreadcrumbProps {
  * against its own width — first the middle crumbs, then to `‹ parent · current` — and each
  * crumb truncates with an ellipsis at a maximum width.
  */
-export function Breadcrumb({ items, renderLink, collapse = "auto", header, scope, className, "aria-label": label = "Breadcrumb" }: BreadcrumbProps) {
+export function Breadcrumb({ items, renderLink, collapse = "auto", header, scope, className, "aria-label": labelProp }: BreadcrumbProps) {
+  const messages = useMessages(breadcrumbMessages)
+  const label = labelProp ?? messages.breadcrumb
+
   const fold = use(BreadcrumbFoldContext)
   const folded = collapse === "current" || fold.folded
   const navRef = useRef<HTMLElement>(null)
@@ -197,7 +202,7 @@ export function Breadcrumb({ items, renderLink, collapse = "auto", header, scope
           </li>
         ) : null}
         <li className="fa-crumb" data-back="">
-          <CrumbAnchor crumb={parent} className="fa-crumb-link" aria-label={`Back to ${parent.label}`}>
+          <CrumbAnchor crumb={parent} className="fa-crumb-link" aria-label={messages.backTo(parent.label)}>
             <IconChevronLeft className="fa-crumb-back" />
             <span className="fa-crumb-label">{parent.label}</span>
           </CrumbAnchor>
@@ -356,10 +361,12 @@ function TargetItem({ target, children, selected, onChoose }: { target: CrumbTar
 }
 
 function EllipsisMenu({ crumbs }: { crumbs: Crumb[] }) {
+  const messages = useMessages(breadcrumbMessages)
+
   return (
     <Menu.Root>
       <Tooltip content={crumbs.map((crumb) => crumb.label).join(" › ")}>
-        <Menu.Trigger className="fa-crumb-link fa-crumb-ellipsis fa-pressable" aria-label={`Show ${crumbs.length} more`}>
+        <Menu.Trigger className="fa-crumb-link fa-crumb-ellipsis fa-pressable" aria-label={messages.showMore(crumbs.length)}>
           <IconMoreHorizontal />
         </Menu.Trigger>
       </Tooltip>
@@ -381,16 +388,18 @@ function EllipsisMenu({ crumbs }: { crumbs: Crumb[] }) {
  * runs after a sibling that is a callback (links close the trail by navigating).
  */
 function SiblingMenu({ crumb, variant = "bar", onChoose }: { crumb: Crumb; variant?: "bar" | "trail"; onChoose?: () => void }) {
+  const messages = useMessages(breadcrumbMessages)
+
   const siblings = crumb.siblings ?? []
   const searchable = siblings.length > BREADCRUMB_SEARCH_THRESHOLD
   const [query, setQuery] = useState("")
-  const name = crumb.siblingsLabel ?? `Switch from ${crumb.label}`
+  const name = crumb.siblingsLabel ?? messages.switchFrom(crumb.label)
 
   const menu = (
     <Menu.Root>
       {variant === "trail" ? (
         <Menu.Trigger className="fa-crumb-tree-switch fa-pressable" aria-label={name}>
-          <span aria-hidden>Switch</span>
+          <span aria-hidden>{messages.switch}</span>
           <IconChevronsUpDown />
         </Menu.Trigger>
       ) : (
@@ -405,9 +414,9 @@ function SiblingMenu({ crumb, variant = "bar", onChoose }: { crumb: Crumb; varia
           <>
             <div className="fa-control fa-crumb-search" data-size="sm">
               <IconSearch />
-              <Menu.Input className="fa-control-input" placeholder="Search" aria-label={name} />
+              <Menu.Input className="fa-control-input" placeholder={messages.search} aria-label={name} />
             </div>
-            <Menu.Empty className="fa-crumb-empty">No match for “{query.trim()}”</Menu.Empty>
+            <Menu.Empty className="fa-crumb-empty">{messages.noMatchFor(query.trim())}</Menu.Empty>
           </>
         ) : null}
         <Menu.List className="fa-crumb-menu-list">

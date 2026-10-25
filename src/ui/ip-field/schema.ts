@@ -1,7 +1,10 @@
+import { getIpFieldMessages } from "./messages.js"
 import { asCheck, textRule } from "../form/rules.js"
 import { parseIp, type CidrMode, type IpVersion } from "./ip.js"
 
 export interface IpSchemaOptions {
+  /** Locale for validation wording. Defaults to getLocale(). */
+  locale?: string
   version?: IpVersion | "any"
   cidr?: CidrMode
   required?: boolean
@@ -15,6 +18,6 @@ export interface IpSchemaOptions {
  *   ipSchema({ version: 4, cidr: "required" })       → "Add a prefix length, such as /24"
  */
 export function ipSchema(options: IpSchemaOptions = {}) {
-  const what = options.cidr === "required" ? "a network" : options.version === 6 ? "an IPv6 address" : options.version === 4 ? "an IPv4 address" : "an IP address"
-  return textRule((value) => asCheck(parseIp(value, options)), { required: options.required, requiredMessage: `Enter ${what}` })
+  const what = options.cidr === "required" ? getIpFieldMessages(options.locale).aNetwork : options.version === 6 ? getIpFieldMessages(options.locale).anIpv6Address : options.version === 4 ? getIpFieldMessages(options.locale).anIpv4Address : getIpFieldMessages(options.locale).anIpAddress
+  return textRule((value) => asCheck(parseIp(value, options)), { required: options.required, requiredMessage: () => getIpFieldMessages(options.locale).enter(what) })
 }

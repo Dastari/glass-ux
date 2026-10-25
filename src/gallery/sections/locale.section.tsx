@@ -1,3 +1,4 @@
+import { LanguageSpecimen } from "../locale-language.js"
 import { useState, type ReactNode } from "react"
 import { DirectionProvider, localeDirection, useDirection, type TextDirection, LocaleProvider, useLocale } from "../../lib/locale/index.js"
 import { DateField, TimeInput } from "../../ui/date-picker/index.js"
@@ -87,10 +88,12 @@ function Values({ heading }: { heading: ReactNode }) {
   )
 }
 
+
 export default function LocaleSection() {
   const [island, setIsland] = useState("en-US")
   return (
     <SectionPage>
+      <LanguageSpecimen />
       <Specimen title="Reading direction" description="Set the region’s dir attribute and DirectionProvider to the same direction. Menus, sheets and keyboard controls share the context.">
         <DirectionDemo />
       </Specimen>

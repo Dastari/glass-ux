@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { datePickerMessages } from "./messages.js"
 import { Input as BaseInput } from "@base-ui/react/input"
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FocusEvent, type KeyboardEvent, type Ref } from "react"
 import { IconClock } from "../../icons/generated/icons.js"
@@ -181,6 +183,8 @@ export function TimeInput({
   ref,
   ...aria
 }: TimeInputProps) {
+  const messages = useMessages(datePickerMessages, { locale: localeProp })
+
   const locale = useLocale(localeProp)
   const [inner, setInner] = useState<TimeValue | null>(defaultValue)
   const current = value === undefined ? inner : value
@@ -295,9 +299,10 @@ export function TimeInput({
       />
       {readOnly || disabled || !popup ? null : (
         <Popover.Root open={open} onOpenChange={setOpen}>
-          <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconClock />} aria-label="Choose a time" />} />
-          <Popover.Popup size="sm" align="start" anchor={boxRef} className="fa-time-popover" finalFocus={inputRef} aria-label="Choose a time">
+          <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconClock />} aria-label={messages.chooseATime} />} />
+          <Popover.Popup size="sm" align="start" anchor={boxRef} className="fa-time-popover" finalFocus={inputRef} aria-label={messages.chooseATime}>
             <TimeList
+              aria-label={messages.times}
               times={times}
               value={current && isTimeValue(current) ? current : null}
               near={localNow(seconds)}

@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { windowsMessages } from "./messages.js"
 /**
  * Window actions that give way when the app bar runs out of room (R14.1). A `Window.Action`
  * is one action: how it shows in the app bar (its children) and how it reads in the trailing
@@ -262,6 +264,8 @@ export function ActionsOverflow({ children }: { children: ReactNode }) {
 
 /** The trailing More menu: the folded actions in their bar order. */
 function MoreMenu({ store, folded, buttonRef, container }: { store: InfoStore; folded: ReadonlySet<string>; buttonRef: Ref<HTMLButtonElement>; container: () => HTMLElement | null }) {
+  const messages = useMessages(windowsMessages)
+
   useSyncExternalStore(store.subscribe, store.version, store.version);
   // Bar order: the order of the actions' places in the container (folded ones keep a place).
   const order = [...(container()?.querySelectorAll<HTMLElement>("[data-action]") ?? [])].map((element) => element.dataset.action!);
@@ -269,7 +273,7 @@ function MoreMenu({ store, folded, buttonRef, container }: { store: InfoStore; f
   return (
     <span className="fa-window-more" data-more="">
       <Menu.Root>
-        <Menu.Trigger render={<Button ref={buttonRef} variant="ghost" size="sm" icon={<IconMoreHorizontal />} aria-label="More actions" />} />
+        <Menu.Trigger render={<Button ref={buttonRef} variant="ghost" size="sm" icon={<IconMoreHorizontal />} aria-label={messages.moreActions} />} />
         <Menu.Popup align="end">
           {ids.map((id) => {
             const info = store.map.get(id);

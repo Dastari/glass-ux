@@ -15,7 +15,7 @@ page size, then the jump field, then the first/last buttons fold away.
 | compact | `boolean \| undefined` | false, true | no | false | One line: the range and previous/next only (short containers, card lists). |
 | cursor | `PaginationCursor \| undefined` | See type | no | — | Cursor mode: next/previous only, no last page or page jump. |
 | disabled | `boolean \| undefined` | false, true | no | false | Disables interaction while retaining the component’s disabled appearance. |
-| label | `string \| undefined` | See type | no | "Pages" | Names the navigation landmark, e.g. "Endpoint pages". |
+| label | `string \| undefined` | See type | no | — | Names the navigation landmark, e.g. "Endpoint pages". |
 | loading | `boolean \| undefined` | false, true | no | false | First load: the range is a placeholder and the buttons wait. |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for the range and page numbers. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | onPageChange | `((pageIndex: number) => void) \| undefined` | See type | no | — | Called with the zero-based index of the page the person asks for (first, previous, next, last or page jump); not used in cursor mode. Pair with `pageIndex` to control it. |

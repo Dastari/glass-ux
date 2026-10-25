@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { entitySettingsMessages } from "./messages.js"
 import { IconLock } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 
@@ -7,10 +9,12 @@ import { cx } from "../../lib/cx.js"
  * step-up first ("Verify and save"). Reads never do.
  */
 export function PrivilegedMark({ className }: { className?: string }) {
+  const messages = useMessages(entitySettingsMessages)
+
   return (
     <span className={cx("fa-privileged-mark", className)} data-privileged="">
       <IconLock aria-hidden />
-      <span className="sr-only"> (needs MFA)</span>
+      <span className="sr-only"> {messages.needsMfa}</span>
     </span>
   )
 }

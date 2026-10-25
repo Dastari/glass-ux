@@ -1,4 +1,6 @@
 import { DirectionPortal } from "../../lib/direction-portal.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { popoverMessages } from "./messages.js"
 import { Popover as BasePopover } from "@base-ui/react/popover"
 import type { ComponentProps, ReactNode } from "react"
 import { IconClose } from "../../icons/generated/icons.js"
@@ -28,6 +30,8 @@ export interface PopoverPopupProps extends Omit<ComponentProps<typeof BasePopove
  * grows out of it (transform-origin), which already says where it came from.
  */
 function PopoverPopup({ title, size = "md", side = "bottom", align = "center", anchor, className, children, ...rest }: PopoverPopupProps) {
+  const messages = useMessages(popoverMessages)
+
   const popup = usePopupMetrics()
   return (
     <BasePopover.Portal render={<DirectionPortal />} container={popupContainer()}>
@@ -43,7 +47,7 @@ function PopoverPopup({ title, size = "md", side = "bottom", align = "center", a
           {title ? (
             <div className="fa-popover-header">
               <BasePopover.Title className="fa-popover-title">{title}</BasePopover.Title>
-              <BasePopover.Close render={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label="Close" />} />
+              <BasePopover.Close render={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label={messages.close} />} />
             </div>
           ) : null}
           <div className="fa-popover-body">{children}</div>
@@ -55,12 +59,14 @@ function PopoverPopup({ title, size = "md", side = "bottom", align = "center", a
 
 /** Static popover surface for documentation. Same classes, no behaviour. */
 function PopoverPreview({ title, size = "md", children }: { title?: ReactNode; size?: PopoverSize; children: ReactNode }) {
+  const messages = useMessages(popoverMessages)
+
   return (
     <div className="glass-overlay fa-popup fa-popover fa-popover-preview" data-size={size}>
       {title ? (
         <div className="fa-popover-header">
           <span className="fa-popover-title">{title}</span>
-          <Button variant="ghost" size="sm" icon={<IconClose />} aria-label="Close" tabIndex={-1} />
+          <Button variant="ghost" size="sm" icon={<IconClose />} aria-label={messages.close} tabIndex={-1} />
         </div>
       ) : null}
       <div className="fa-popover-body">{children}</div>

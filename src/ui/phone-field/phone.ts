@@ -1,3 +1,4 @@
+import { getPhoneFieldMessages } from "./messages.js"
 /**
  * Phone numbers through libphonenumber-js, loaded on demand.
  *
@@ -155,15 +156,15 @@ export type PhoneCheck = { ok: true } | { ok: false; error: string }
  * only the E.164 shape is checked; the control loads it on mount, so by the time a person
  * leaves the field the full check runs.
  */
-export function checkPhone(value: string, kind: PhoneKind = "any", lib: PhoneLib | null = library): PhoneCheck {
+export function checkPhone(value: string, kind: PhoneKind = "any", lib: PhoneLib | null = library, locale?: string): PhoneCheck {
   const { number } = splitPhoneValue(value)
-  const noun = kind === "mobile" ? "mobile number" : "phone number"
-  if (!number.trim()) return { ok: false, error: `Enter a ${noun}` }
-  if (!lib) return E164_SHAPE.test(number) ? { ok: true } : { ok: false, error: `Enter a full ${noun}, with the area code` }
+  const noun = kind === "mobile" ? getPhoneFieldMessages(locale).mobileNumber : getPhoneFieldMessages(locale).phoneNumber
+  if (!number.trim()) return { ok: false, error: getPhoneFieldMessages(locale).enterA(noun) }
+  if (!lib) return E164_SHAPE.test(number) ? { ok: true } : { ok: false, error: getPhoneFieldMessages(locale).enterAFullWithTheAreaCode(noun) }
   const parsed = parsePhone(lib, number, undefined)
-  if (!parsed || !number.startsWith("+")) return { ok: false, error: `Enter a full ${noun}, with the area code` }
-  if (!parsed.valid) return { ok: false, error: `Check the ${noun}: it isn't a valid number for ${parsed.country ?? "its country"}` }
-  if (kind === "mobile" && !parsed.mobile) return { ok: false, error: "Enter a mobile number, not a landline" }
+  if (!parsed || !number.startsWith("+")) return { ok: false, error: getPhoneFieldMessages(locale).enterAFullWithTheAreaCode(noun) }
+  if (!parsed.valid) return { ok: false, error: getPhoneFieldMessages(locale).checkTheItIsnTAValidNumber(noun, parsed.country ?? getPhoneFieldMessages(locale).itsCountry) }
+  if (kind === "mobile" && !parsed.mobile) return { ok: false, error: getPhoneFieldMessages(locale).enterAMobileNumberNotALandline }
   return { ok: true }
 }
 

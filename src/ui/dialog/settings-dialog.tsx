@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { dialogMessages } from "./messages.js"
 import { useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from "react"
 import { VerticalTabs, type VerticalTabItem } from "../vertical-tabs/index.js"
 import { Dialog, useDialogScrollEdges, type DialogPopupProps, type DialogSize } from "./dialog.js"
@@ -65,6 +67,8 @@ export function SettingsDialog({
   size = "xl",
   initialFocus,
 }: SettingsDialogProps) {
+  const messages = useMessages(dialogMessages)
+
   const [uncontrolled, setUncontrolled] = useState(false)
   const open = openProp ?? uncontrolled
   const setOpen = (next: boolean) => {
@@ -78,7 +82,7 @@ export function SettingsDialog({
       {trigger ? <Dialog.Trigger render={trigger} /> : null}
       <Dialog.Popup size={size} kind="settings" initialFocus={initialFocus}>
         <Dialog.Header icon={icon} title={title} subtitle={subtitle} />
-        <SettingsSections sections={sections} section={section} defaultSection={defaultSection} onSectionChange={onSectionChange} label={typeof title === "string" ? `${title} sections` : "Sections"} />
+        <SettingsSections sections={sections} section={section} defaultSection={defaultSection} onSectionChange={onSectionChange} label={typeof title === "string" ? messages.sections(title) : messages.sections2} />
         <Dialog.Footer start={footerStart}>{footer}</Dialog.Footer>
         {guard.confirm}
       </Dialog.Popup>

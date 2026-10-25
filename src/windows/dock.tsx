@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { windowsMessages, getWindowsMessages } from "./messages.js"
 import { Badge } from "../ui/badge/index.js";
 /**
  * The dock (R14.4): open windows with a live status dot. It appears only when windows
@@ -48,9 +50,9 @@ function activate(
   else manager.focus(entry.id);
 }
 
-function stateText(entry: WindowEntry) {
-  if (entry.poppedOut) return "In its own window";
-  if (entry.minimised) return "Minimised";
+function stateText(entry: WindowEntry, messages = getWindowsMessages()) {
+  if (entry.poppedOut) return messages.inItsOwnWindow;
+  if (entry.minimised) return messages.minimised;
   return undefined;
 }
 
@@ -94,18 +96,19 @@ function DockItem({
   /** Tenant, organisation or entity scope supplied by the application. */
   scope: WindowScopeInfo | null;
 }) {
+ const messages = useMessages(windowsMessages)
   const manager = useWindowManager();
   const indicator = useWindowIndicator(entry.id);
   const {
     title,
     subtitle,
     icon: Icon,
-  } = describeWindow(entry.kind, entry.params);
+  } = describeWindow(entry.kind, entry.params, messages);
   const detail = [
     subtitle,
     scope?.label !== subtitle ? scope?.label : undefined,
     indicator?.label,
-    stateText(entry),
+    stateText(entry, messages),
   ]
     .filter(Boolean)
     .join(" · ");
@@ -153,6 +156,8 @@ export function Dock({ onOpenSwitcher }: {
   /** Called when the person presses the "All windows" button; open the `WindowSwitcher` here. The button is shown only when this is supplied. */
   onOpenSwitcher?: () => void;
 }) {
+  const messages = useMessages(windowsMessages)
+
   const windows = useWindows();
   const focusedId = useFocusedWindowId();
   const scopes = useWindowScopes();
@@ -163,7 +168,7 @@ export function Dock({ onOpenSwitcher }: {
   return (
     <nav
       className="glass-chrome fa-wm-dock"
-      aria-label="Open windows"
+      aria-label={messages.openWindows}
       data-scroll-x=""
       data-grouped={scopes ? "" : undefined}
     >
@@ -186,7 +191,7 @@ export function Dock({ onOpenSwitcher }: {
             ) : null}
             <ul
               className="fa-wm-dock-group-list"
-              aria-label={group.info?.label ?? "Windows"}
+              aria-label={group.info?.label ?? messages.windows}
             >
               {group.windows.map((entry) => (
                 <DockItem
@@ -206,7 +211,7 @@ export function Dock({ onOpenSwitcher }: {
           variant="ghost"
           size="sm"
           icon={<IconWindows />}
-          aria-label="All windows"
+          aria-label={messages.allWindows}
           onClick={onOpenSwitcher}
         />
       ) : null}
@@ -218,7 +223,7 @@ export function Dock({ onOpenSwitcher }: {
 export function WindowSwitcher({
   open,
   onOpenChange,
-  primaryLabel = "Current page",
+  primaryLabel: primaryLabelProp,
 }: {
   open: boolean;
   /** Called with the next open state when the sheet is dismissed (swipe, Esc, scrim) and with false after the person chooses a window. Pair with `open`. */
@@ -226,6 +231,9 @@ export function WindowSwitcher({
   /** Visible label for the primary action. */
   primaryLabel?: string;
 }) {
+  const messages = useMessages(windowsMessages)
+  const primaryLabel = primaryLabelProp ?? messages.currentPage
+
   const manager = useWindowManager();
   const windows = useWindows();
   const focusedId = useFocusedWindowId();
@@ -246,7 +254,7 @@ export function WindowSwitcher({
       onOpenChange={(next) => onOpenChange(next)}
     >
       <Sheet.Popup size="sm">
-        <Sheet.Header title="Windows" />
+        <Sheet.Header title={messages.windows} />
         <Sheet.Body>
           <ul className="fa-wm-switcher-list">
             <li className="fa-wm-switcher-row">
@@ -271,21 +279,21 @@ export function WindowSwitcher({
                 ) : null}
                 <ul
                   className="fa-wm-switcher-list"
-                  aria-label={group.info?.label ?? "Windows"}
+                  aria-label={group.info?.label ?? messages.windows}
                 >
                   {group.windows.map((entry) => {
                     const {
                       title,
                       subtitle,
                       icon: Icon,
-                    } = describeWindow(entry.kind, entry.params);
+                    } = describeWindow(entry.kind, entry.params, messages);
                     return (
                       <li key={entry.id} className="fa-wm-switcher-row">
                         <ListRow
                           title={title}
                           meta={subtitle}
                           icon={Icon ? <Icon /> : undefined}
-                          trailing={<Badge size="sm">{stateText(entry)}</Badge>}
+                          trailing={<Badge size="sm">{stateText(entry, messages)}</Badge>}
                           className="fa-wm-switcher-item"
                           selected={focusedId === entry.id && !entry.minimised}
                           onClick={() => choose(entry.id)}
@@ -294,7 +302,7 @@ export function WindowSwitcher({
                           variant="ghost"
                           size="sm"
                           icon={<IconClose />}
-                          aria-label={`Close ${title}`}
+                          aria-label={messages.close(title)}
                           onClick={() => void manager.close(entry.id)}
                         />
                       </li>

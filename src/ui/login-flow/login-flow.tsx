@@ -4,7 +4,8 @@ import { observeElementSizes } from "../../lib/resize-observer.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { Surface } from "../surface/index.js"
 import { FlowContext, useCooldown, type FlowValue, type LoginMessage } from "./flow-context.js"
-import { DEFAULT_LOGIN_LABELS } from "./labels.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { loginFlowMessages } from "./messages.js"
 import type { LoginFlowProps, LoginProvider, LoginView, TwoFactorChallenge } from "./types.js"
 import { ForgotPasswordView, ResetPasswordView, SignInView, SignUpView, TwoFactorView } from "./views.js"
 
@@ -136,7 +137,8 @@ export function LoginFlow(given: LoginFlowProps) {
     id,
   } = given
   const props: LoginFlowProps = { ...given, heading, headingLevel, providerPlacement, providerLayout }
-  const labels = useMemo(() => ({ ...DEFAULT_LOGIN_LABELS, ...labelOverrides }), [labelOverrides])
+  const translated = useMessages(loginFlowMessages)
+  const labels = useMemo(() => ({ ...translated, ...labelOverrides }), [translated, labelOverrides])
   const [requested, setView] = useControllable<LoginView>(viewProp, defaultView, onViewChange)
   const [identifier, setIdentifier] = useState(defaultIdentifier)
   const [remember, setRemember] = useState(typeof rememberOption === "object" ? rememberOption.defaultChecked : false)

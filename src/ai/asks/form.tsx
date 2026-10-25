@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { asksMessages } from "./messages.js"
 import { useId, useRef, useState } from "react";
 import {
   IconCalendar,
@@ -104,6 +106,8 @@ export function FormAsk({ ask }: {
   /** The form ask: the question and its `fields`, one per row, with values the agent knows pre-filled. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
   ask: Ask<"form">;
 }) {
+  const messages = useMessages(asksMessages)
+
   const id = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const { answered, submit, record } = useAskAnswer(ask);
@@ -115,7 +119,7 @@ export function FormAsk({ ask }: {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const errorOf = (field: FormField) =>
     field.required && !values[field.name]?.trim()
-      ? `Enter ${field.label.toLowerCase()}`
+      ? messages.enter(field.label.toLowerCase())
       : undefined;
   const missing = ask.fields.filter((field) => errorOf(field));
 
@@ -127,7 +131,7 @@ export function FormAsk({ ask }: {
       formRef.current
         ?.querySelector<HTMLElement>(`[name="${missing[0]!.name}"]`)
         ?.focus();
-      throw new Error("Fill the required fields");
+      throw new Error(messages.fillTheRequiredFields);
     }
     const summary = ask.fields
       .filter((field) => values[field.name])
@@ -139,7 +143,7 @@ export function FormAsk({ ask }: {
         return option?.label ?? values[field.name];
       })
       .join(" · ");
-    await submit({ type: "form", values, label: summary }, `Sent · ${summary}`);
+    await submit({ type: "form", values, label: summary }, messages.sent2(summary));
   };
 
   return (
@@ -154,12 +158,12 @@ export function FormAsk({ ask }: {
           <ActionButton
             variant="primary"
             size="sm"
-            pendingLabel="Sending…"
-            successLabel="Sent"
-            errorLabel="Check the fields"
+            pendingLabel={messages.sending}
+            successLabel={messages.sent}
+            errorLabel={messages.checkTheFields}
             onAction={send}
           >
-            {ask.submitLabel ?? "Send"}
+            {ask.submitLabel ?? messages.send}
           </ActionButton>
         }
       >
@@ -215,6 +219,8 @@ export function DateTimeAsk({ ask }: {
   /** The date-time ask: the question, suggested times, the IANA `timezone` they are read in and an optional `earliest` bound. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
   ask: Ask<"datetime">;
 }) {
+  const messages = useMessages(asksMessages)
+
   const id = useId();
   const locale = useLocale();
   const { answered, submit, record } = useAskAnswer(ask);
@@ -222,10 +228,10 @@ export function DateTimeAsk({ ask }: {
   // The exact entry: a wall clock in the ask's zone, or what the field could not accept.
   const [custom, setCustom] = useState("");
   const suggestion = ask.suggestions.find((item) => item.value === choice);
-  const chosen = resolveDateTime(suggestion?.value ?? custom, ask.timezone);
+  const chosen = resolveDateTime(suggestion?.value ?? custom, ask.timezone, messages);
   const earliestValue =
     ask.earliest && ask.earliest !== "now"
-      ? resolveDateTime(ask.earliest, ask.timezone)
+      ? resolveDateTime(ask.earliest, ask.timezone, messages)
       : undefined;
   const earliest = ask.earliest === "now" ? Date.now() : earliestValue?.time;
   const error =
@@ -234,7 +240,7 @@ export function DateTimeAsk({ ask }: {
     (chosen.time !== undefined &&
     earliest !== undefined &&
     chosen.time < earliest
-      ? "Choose a time after the earliest allowed time"
+      ? messages.chooseATimeAfterTheEarliestAllowedTime
       : undefined);
   const label =
     suggestion?.label ??
@@ -261,10 +267,10 @@ export function DateTimeAsk({ ask }: {
             variant="primary"
             size="sm"
             disabledReason={
-              error ?? (!label ? "Choose a time first" : undefined)
+              error ?? (!label ? messages.chooseATimeFirst : undefined)
             }
-            pendingLabel="Scheduling…"
-            successLabel="Scheduled"
+            pendingLabel={messages.scheduling}
+            successLabel={messages.scheduled}
             onAction={() =>
               submit(
                 {
@@ -272,20 +278,20 @@ export function DateTimeAsk({ ask }: {
                   value: new Date(chosen.time!).toISOString(),
                   label,
                 },
-                `Scheduled · ${label} (${ask.timezone})`,
+                messages.scheduled2(label, ask.timezone),
               )
             }
           >
-            {ask.submitLabel ?? "Schedule"}
+            {ask.submitLabel ?? messages.schedule}
           </ActionButton>
         }
       >
         <FormStack>
-          <Field label="Suggested times" nativeLabel={false} message="auto">
+          <Field label={messages.suggestedTimes} nativeLabel={false} message="auto">
             <RadioGroup
               variant="cards"
               value={choice ?? undefined}
-              aria-label="Suggested times"
+              aria-label={messages.suggestedTimes}
               onValueChange={(value) => {
                 setChoice(value);
                 setCustom("");
@@ -301,7 +307,7 @@ export function DateTimeAsk({ ask }: {
             </RadioGroup>
           </Field>
           <Field
-            label="Date and time"
+            label={messages.dateAndTime}
             hint={ask.timezone}
             error={custom && error ? error : undefined}
           >
@@ -339,6 +345,8 @@ export function ConfirmAsk({ ask }: {
   /** The confirmation ask: the question, `consequence`, `confirmLabel` and `tone`; `danger` adds the in-card second step. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
   ask: Ask<"confirm">;
 }) {
+  const messages = useMessages(asksMessages)
+
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [confirming, setConfirming] = useState(false);
@@ -348,7 +356,7 @@ export function ConfirmAsk({ ask }: {
   const confirm = () =>
     submit(
       { type: "confirm", confirmed: true },
-      `Confirmed · ${ask.confirmLabel}`,
+      messages.confirmed(ask.confirmLabel),
     );
   const step = (next: boolean) => {
     setConfirming(next);
@@ -378,23 +386,21 @@ export function ConfirmAsk({ ask }: {
               size="sm"
               onClick={() => step(false)}
             >
-              Back
-            </Button>
+              {messages.back} </Button>
           ) : (
             <ActionButton
               variant="ghost"
               size="sm"
-              pendingLabel="Sending…"
-              successLabel="Sent"
+              pendingLabel={messages.sending}
+              successLabel={messages.sent}
               onAction={() =>
                 submit(
                   { type: "confirm", confirmed: false },
-                  `Declined · ${ask.question}`,
+                  messages.declined(ask.question),
                 )
               }
             >
-              No
-            </ActionButton>
+              {messages.no} </ActionButton>
           )
         }
         footer={
@@ -417,8 +423,8 @@ export function ConfirmAsk({ ask }: {
                     : "warning"
               }
               size="sm"
-              pendingLabel="Confirming…"
-              successLabel="Confirmed"
+              pendingLabel={messages.confirming}
+              successLabel={messages.confirmed2}
               onAction={confirm}
             >
               {ask.confirmLabel}
@@ -446,11 +452,13 @@ export function ClarifyAsk({ ask }: {
   /** The clarification ask: the question, optional `suggestions` as one-tap answers and the free-text `placeholder`. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
   ask: Ask<"clarify">;
 }) {
+  const messages = useMessages(asksMessages)
+
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [text, setText] = useState("");
   const send = (value: string) =>
-    submit({ type: "text", value }, `Replied · ${value}`);
+    submit({ type: "text", value }, messages.replied(value));
   return (
     <AskShell resolved={answered} record={record}>
       <AskLayout
@@ -464,13 +472,12 @@ export function ClarifyAsk({ ask }: {
             variant="primary"
             size="sm"
             icon={<IconSend />}
-            disabledReason={text.trim() ? undefined : "Type a reply first"}
-            pendingLabel="Sending…"
-            successLabel="Sent"
+            disabledReason={text.trim() ? undefined : messages.typeAReplyFirst}
+            pendingLabel={messages.sending}
+            successLabel={messages.sent}
             onAction={() => send(text.trim())}
           >
-            Reply
-          </ActionButton>
+            {messages.reply} </ActionButton>
         }
       >
         <FormStack>
@@ -478,7 +485,7 @@ export function ClarifyAsk({ ask }: {
             <div
               className="fa-ai-ask-times"
               role="group"
-              aria-label="Suggested answers"
+              aria-label={messages.suggestedAnswers}
             >
               {ask.suggestions.map((suggestion) => (
                 <ActionButton
@@ -494,7 +501,7 @@ export function ClarifyAsk({ ask }: {
               ))}
             </div>
           ) : null}
-          <Field label="Your answer" message="auto">
+          <Field label={messages.yourAnswer} message="auto">
             <Textarea
               value={text}
               placeholder={ask.placeholder}

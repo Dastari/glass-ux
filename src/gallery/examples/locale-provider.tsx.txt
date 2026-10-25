@@ -1,3 +1,4 @@
+import { LanguageSpecimen } from "glass-ux/gallery/locale-language";
 import { useState, type ReactNode } from "react";
 import { LocaleProvider, useLocale } from "glass-ux/locale";
 import { DateField, TimeInput } from "glass-ux/date-picker";
@@ -42,6 +43,8 @@ export default function LocaleSection() {
   const [island, setIsland] = useState("en-US");
   return (
     <SectionPage>
+      <LanguageSpecimen />
+
       <Specimen
         title="A LocaleProvider region"
         description={

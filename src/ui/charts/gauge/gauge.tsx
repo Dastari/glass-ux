@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { gaugeMessages } from "./messages.js"
 import { arc as d3arc } from "d3-shape"
 import { memo, useMemo, type CSSProperties } from "react"
 import { meterLevel } from "../../meter/index.js"
@@ -41,6 +43,8 @@ export interface GaugeProps extends ChartCommonProps, ValueFormat {
  *   full     the arc, value, caption and the range's ends
  */
 export function Gauge(props: GaugeProps) {
+  const messages = useMessages(gaugeMessages, { locale: props.locale })
+
   const { label, title, state = "ready", value, min = 0, max = 100, warningAt = 0.75, dangerAt = 0.9, caption, unit, format, ...rest } = props
   const locale = useLocale(props.locale)
   const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
@@ -51,9 +55,9 @@ export function Gauge(props: GaugeProps) {
   const table = useMemo<ChartTableModel>(
     () => ({
       columns: [
-        { key: "label", label: "Measure" },
-        { key: "value", label: "Value", numeric: true },
-        { key: "range", label: "Range", numeric: true },
+        { key: "label", label: messages.measure },
+        { key: "value", label: messages.value, numeric: true },
+        { key: "range", label: messages.range, numeric: true },
       ],
       rows: [{ label: title ?? label, value: formatValue(value, fmt), range: `${formatValue(min, fmt)}–${formatValue(max, fmt)}` }],
       values: [{ value, range: `${min}–${max}` }],
@@ -183,6 +187,8 @@ export interface RadialBarProps extends ChartCommonProps, ValueFormat {
  *   full     the rings, labels with values, and a list legend
  */
 export function RadialBar(props: RadialBarProps) {
+  const messages = useMessages(gaugeMessages, { locale: props.locale })
+
   const { label, title, state = "ready", data, warningAt, dangerAt, unit, format, ...rest } = props
   const locale = useLocale(props.locale)
   const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
@@ -198,9 +204,9 @@ export function RadialBar(props: RadialBarProps) {
   const table = useMemo<ChartTableModel>(
     () => ({
       columns: [
-        { key: "label", label: "Measure" },
-        { key: "value", label: "Value", numeric: true },
-        { key: "share", label: "Of max", numeric: true },
+        { key: "label", label: messages.measure },
+        { key: "value", label: messages.value, numeric: true },
+        { key: "share", label: messages.ofMax, numeric: true },
       ],
       rows: items.map((item) => ({ label: item.label, value: formatValue(item.value, fmt), share: formatShare(item.value, item.max ?? 100, fmt.locale) })),
       values: items.map((item) => ({ value: item.value, share: shareFraction(item.value, item.max ?? 100) })),

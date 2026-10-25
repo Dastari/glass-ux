@@ -1,3 +1,4 @@
+import { getDatePickerMessages } from "./messages.js"
 import { getLocale } from "../../lib/locale/locale.js"
 import { dateTimeFormat } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
@@ -65,9 +66,9 @@ export function describeZonedValue(value: WallClock | null, timeZone: string, op
   const day = shortDay(parts.date, locale)
   if (resolved.kind === "gap") {
     const read = formatTimeText(resolved.wallClock.slice(11, 16), { ...options, locale })
-    return { warning: `Clocks skip ${typed} on ${day}; read as ${read} ${zone.short}` }
+    return { warning: getDatePickerMessages(locale).clocksSkipOnReadAs(typed, day, read, zone.short) }
   }
-  return { hint: `${typed} occurs twice on ${day}; read as the first (${zone.short})` }
+  return { hint: getDatePickerMessages(locale).occursTwiceOnReadAsThe(typed, day, zone.short) }
 }
 
 /**

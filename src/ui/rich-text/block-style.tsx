@@ -1,18 +1,24 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { richTextMessages } from "./messages.js"
 /** Internal block choices shared with the loading toolbar's intrinsic label measure. */
-export const RICH_TEXT_BLOCKS = [
-  { value: "paragraph", label: "Paragraph" },
-  { value: "h1", label: "Heading 1" },
-  { value: "h2", label: "Heading 2" },
-  { value: "h3", label: "Heading 3" },
-  { value: "quote", label: "Quote" },
-  { value: "code", label: "Code block" },
-];
+export function richTextBlocks(messages: typeof richTextMessages.defaults) { return [
+  { value: "paragraph", label: messages.paragraph },
+  { value: "h1", label: messages.heading1 },
+  { value: "h2", label: messages.heading2 },
+  { value: "h3", label: messages.heading3 },
+  { value: "quote", label: messages.quote },
+  { value: "code", label: messages.codeBlock },
+] }
+
+/** English block choices for internal typing. */
+export const RICH_TEXT_BLOCKS = richTextBlocks(richTextMessages.defaults)
 
 /** Keep the widest option in layout using the actual control font at every UI scale. */
 export function BlockStyleLabel({ value }: { value: string }) {
+  const messages = useMessages(richTextMessages)
   return (
     <span className="fa-rich-text-block-labels" aria-hidden="true">
-      {RICH_TEXT_BLOCKS.map((item) => (
+      {richTextBlocks(messages).map((item) => (
         <span
           key={item.value}
           data-active={item.value === value ? "" : undefined}

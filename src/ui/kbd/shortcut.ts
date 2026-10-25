@@ -1,3 +1,4 @@
+import { kbdMessages, getKbdMessages } from "./messages.js"
 /**
  * Keyboard shortcuts as data: "mod+shift+r", "ctrl+k", "shift+f10", "esc".
  *
@@ -51,65 +52,65 @@ export function parseShortcut(shortcut: string): ParsedShortcut {
 
 const MAC_GLYPH: Record<Modifier, string> = { ctrl: "⌃", alt: "⌥", shift: "⇧", mod: "⌘", meta: "⌘" }
 const MAC_ORDER: Modifier[] = ["ctrl", "alt", "shift", "mod", "meta"]
-const OTHER_LABEL: Record<Modifier, string> = { ctrl: "Ctrl", alt: "Alt", shift: "Shift", mod: "Ctrl", meta: "Win" }
+function modifierLabels(messages: typeof kbdMessages.defaults): Record<Modifier, string> { return { ctrl: messages.ctrl, alt: messages.alt, shift: messages.shift, mod: messages.ctrl, meta: messages.win } }
 const OTHER_ORDER: Modifier[] = ["mod", "ctrl", "alt", "shift", "meta"]
 
-const KEY_LABEL: Record<Platform, Record<string, string>> = {
+function keyLabels(messages: typeof kbdMessages.defaults): Record<Platform, Record<string, string>> { return {
   mac: {
     enter: "↵",
     esc: "esc",
     backspace: "⌫",
     delete: "⌦",
     tab: "⇥",
-    space: "Space",
+    space: messages.space,
     arrowup: "↑",
     arrowdown: "↓",
     arrowleft: "←",
     arrowright: "→",
-    contextmenu: "Menu",
+    contextmenu: messages.menu,
   },
   other: {
-    enter: "Enter",
-    esc: "Esc",
-    backspace: "Backspace",
-    delete: "Del",
-    tab: "Tab",
-    space: "Space",
+    enter: messages.enter,
+    esc: messages.esc,
+    backspace: messages.backspace,
+    delete: messages.deleteKey,
+    tab: messages.tab,
+    space: messages.space,
     arrowup: "↑",
     arrowdown: "↓",
     arrowleft: "←",
     arrowright: "→",
-    contextmenu: "Menu",
+    contextmenu: messages.menu,
   },
-}
+} }
 
-function keyLabel(key: string, platform: Platform) {
-  const named = KEY_LABEL[platform][key]
+function keyLabel(key: string, platform: Platform, messages = kbdMessages.defaults) {
+  const named = keyLabels(messages)[platform][key]
   if (named) return named
   if (/^f\d{1,2}$/.test(key)) return key.toUpperCase()
   return key.length === 1 ? key.toUpperCase() : key.charAt(0).toUpperCase() + key.slice(1)
 }
 
 /** The individual keycaps for a shortcut, in display order: ["⇧", "⌘", "R"] or ["Ctrl", "Shift", "R"]. */
-export function shortcutKeys(shortcut: string, platform: Platform): string[] {
+export function shortcutKeys(shortcut: string, platform: Platform, messages: ReturnType<typeof getKbdMessages> = getKbdMessages()): string[] {
   const { modifiers, key } = parseShortcut(shortcut)
   const order = platform === "mac" ? MAC_ORDER : OTHER_ORDER
   const seen = new Set<string>()
   const caps: string[] = []
   for (const modifier of order) {
     if (!modifiers.has(modifier)) continue
-    const label = platform === "mac" ? MAC_GLYPH[modifier] : OTHER_LABEL[modifier]
+    const label = platform === "mac" ? MAC_GLYPH[modifier] : modifierLabels(messages)[modifier]
     if (seen.has(label)) continue
     seen.add(label)
     caps.push(label)
   }
-  if (key) caps.push(keyLabel(key, platform))
+  if (key) caps.push(keyLabel(key, platform, messages))
   return caps
 }
 
 /** One string: "⇧⌘R" on macOS, "Ctrl+Shift+R" elsewhere. */
-export function formatShortcut(shortcut: string, platform: Platform): string {
-  const caps = shortcutKeys(shortcut, platform)
+export function formatShortcut(shortcut: string, platform: Platform, messages: ReturnType<typeof getKbdMessages> = getKbdMessages()): string {
+  const caps = shortcutKeys(shortcut, platform, messages)
   return platform === "mac" ? caps.join("") : caps.join("+")
 }
 

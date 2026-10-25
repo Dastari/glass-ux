@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { kbdMessages } from "./messages.js"
 import { useSyncExternalStore, type ComponentProps } from "react"
 import { cx } from "../../lib/cx.js"
 import { ariaShortcut, detectPlatform, formatShortcut, shortcutKeys, type Platform } from "./shortcut.js"
@@ -29,17 +31,18 @@ export interface KbdProps extends Omit<ComponentProps<"kbd">, "children"> {
  * the shortcut triggers, not here.
  */
 export function Kbd({ keys, variant = "keys", size = "md", className, ...rest }: KbdProps) {
+  const messages = useMessages(kbdMessages)
   const platform = usePlatform()
   if (variant === "text") {
     return (
       <kbd {...rest} className={cx("fa-kbd", className)} data-variant="text">
-        {formatShortcut(keys, platform)}
+        {formatShortcut(keys, platform, messages)}
       </kbd>
     )
   }
   return (
     <kbd {...rest} className={cx("fa-kbd", className)} data-variant="keys" data-size={size}>
-      {shortcutKeys(keys, platform).map((cap, index) => (
+      {shortcutKeys(keys, platform, messages).map((cap, index) => (
         <kbd key={`${cap}-${index}`} className="fa-kbd-key">
           {cap}
         </kbd>

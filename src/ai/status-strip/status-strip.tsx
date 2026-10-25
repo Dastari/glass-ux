@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { statusStripMessages } from "./messages.js"
 import { IconCloudOff, IconRefresh } from "../../icons/generated/icons.js";
 import { cx } from "../../lib/cx.js";
 import { Button } from "../../ui/button/index.js";
@@ -42,6 +44,8 @@ export function AiStatusStrip({
   model,
   className,
 }: AiStatusStripProps) {
+  const messages = useMessages(statusStripMessages)
+
   const now = useNow(stream === "reconnecting" && Boolean(retryAt), 1000);
   const locale = useLocale();
   const seconds = retryAt
@@ -74,12 +78,12 @@ export function AiStatusStrip({
           />
         )}
         {stream === "connected"
-          ? "Live"
+          ? messages.live
           : stream === "reconnecting"
-            ? `Reconnecting${attempt ? ` · attempt ${attempt}` : ""}${seconds !== null ? ` · ${seconds} s` : ""}`
+            ? `${messages.reconnecting}${attempt ? messages.attempt(attempt) : ""}${seconds !== null ? ` · ${seconds} s` : ""}`
             : stream === "reset"
-              ? "Conversation reloaded from the server"
-              : "Offline · history stays readable"}
+              ? messages.conversationReloadedFromTheServer
+              : messages.offlineHistoryStaysReadable}
       </span>
       {stream !== "connected" && onRetry ? (
         <Button
@@ -89,13 +93,12 @@ export function AiStatusStrip({
           className="fa-ai-status-retry"
           onClick={onRetry}
         >
-          Retry now
-        </Button>
+          {messages.retryNow} </Button>
       ) : null}
       <span className="fa-ai-status-meta">
         {budget && used !== null ? (
           <Tooltip
-            content={`${formatNumber(budget.used, 0, locale)} of ${formatNumber(budget.maximum, 0, locale)} ${budget.unit}`}
+            content={messages.of(formatNumber(budget.used, 0, locale), formatNumber(budget.maximum, 0, locale), budget.unit)}
           >
             <span
               className="fa-ai-status-item"

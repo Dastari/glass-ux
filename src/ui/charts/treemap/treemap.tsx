@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { treemapMessages } from "./messages.js"
 import { hierarchy, treemap as d3treemap, treemapSquarify, type HierarchyRectangularNode } from "d3-hierarchy"
 import { memo, useEffect, useMemo, useRef, type CSSProperties } from "react"
 import { colourKeys, DrillPathBar, hierarchyTable, useDrill, useHierarchy, type ColourBy, type HierarchyDatum, type Node } from "../core/drill.js"
@@ -39,7 +41,11 @@ type Rect = HierarchyRectangularNode<HierarchyDatum>
  *            direction
  */
 export function Treemap(props: TreemapProps) {
-  const { label, title, state = "ready", data, colourBy = "branch", groups, unit, format, nameLabel = "Name", ...rest } = props
+  const messages = useMessages(treemapMessages, { locale: props.locale })
+
+  const { label, title, state = "ready", data, colourBy = "branch", groups, unit, format, nameLabel: nameLabelProp, ...rest } = props
+  const nameLabel = nameLabelProp ?? messages.name
+
   const locale = useLocale(props.locale)
   const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const root = useHierarchy(data)
@@ -93,6 +99,8 @@ interface Tile {
 }
 
 const TreemapPlot = memo(function TreemapPlot({ box, focus, root, colour, store, fmt, label, onDrill, onUp }: TreemapPlotProps) {
+  const messages = useMessages(treemapMessages)
+
   const plotRef = useRef<HTMLDivElement>(null)
   const { width, height, tier, rem } = box
   const full = tier === "full"
@@ -196,7 +204,7 @@ const TreemapPlot = memo(function TreemapPlot({ box, focus, root, colour, store,
   const valueText = (index: number) => {
     const node = tiles[index]?.node
     if (!node) return ""
-    return `${node.data.label} · ${formatValue(node.value ?? 0, fmt)} · ${formatShare(node.value ?? 0, focus.value ?? 0, fmt.locale)}${target(index) ? " · press Enter to open" : ""}`
+    return `${node.data.label} · ${formatValue(node.value ?? 0, fmt)} · ${formatShare(node.value ?? 0, focus.value ?? 0, fmt.locale)}${target(index) ? messages.pressEnterToOpen : ""}`
   }
 
   return (
@@ -229,7 +237,7 @@ const TreemapPlot = memo(function TreemapPlot({ box, focus, root, colour, store,
             nav={nav}
             initial={top[0]?.index ?? 0}
             cursor="pointer"
-            label={`${label} — explore`}
+            label={messages.explore(label)}
             valueText={valueText}
             onActivate={(index) => {
               const node = target(index)
@@ -260,7 +268,7 @@ const TreemapPlot = memo(function TreemapPlot({ box, focus, root, colour, store,
                   title={node.data.label}
                   meta={`${formatValue(node.value ?? 0, fmt)} · ${formatShare(node.value ?? 0, total, fmt.locale)}`}
                   rows={rows}
-                  footer={[where, target(hover.index) ? "Click to open" : null].filter(Boolean).join(" · ") || undefined}
+                  footer={[where, target(hover.index) ? messages.clickToOpen : null].filter(Boolean).join(" · ") || undefined}
                 />
               )
             }}

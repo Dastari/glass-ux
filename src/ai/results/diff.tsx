@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { resultsMessages } from "./messages.js"
 import { IconColumns } from "../../icons/generated/icons.js"
 import { EntityChip } from "../entity-chip/index.js"
 import type { AiResult } from "../types.js"
@@ -16,6 +18,8 @@ export function ResultDiff({ result }: {
   /** The diff result: `lines` in order (added, removed or context), an optional `target` entity shown as a chip, and the title used in the accessible name. */
   result: DiffResult
 }) {
+  const messages = useMessages(resultsMessages)
+
   const added = result.lines.filter((line) => line.type === "add").length
   const removed = result.lines.filter((line) => line.type === "remove").length
   const numbered: Array<{ before: number; after: number }> = []
@@ -54,7 +58,7 @@ export function ResultDiff({ result }: {
               <span className="fa-ai-diff-number" role="cell" aria-hidden data-numeric>
                 {line.type === "remove" ? "" : after}
               </span>
-              <span className="fa-ai-diff-sign" role="cell" aria-label={line.type === "add" ? "Added" : line.type === "remove" ? "Removed" : undefined}>
+              <span className="fa-ai-diff-sign" role="cell" aria-label={line.type === "add" ? messages.added : line.type === "remove" ? messages.removed : undefined}>
                 {SIGN[line.type]}
               </span>
               <span className="fa-ai-diff-text" role="cell">

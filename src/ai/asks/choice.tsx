@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { asksMessages } from "./messages.js"
 import { useId, useState, type KeyboardEvent } from "react";
 import {
   IconArrowDown,
@@ -23,6 +25,8 @@ type Ask<T extends AiAsk["type"]> = Extract<AiAsk, { type: T }>;
  * given in the ask dock is shared with the transcript, where the marker becomes the record.
  */
 export function useAskAnswer(ask: AiAsk) {
+  const messages = useMessages(asksMessages)
+
   const handlers = useConversationHandlers();
   const dock = useAskDockApi();
   const shared = useAskResolution(ask.id);
@@ -62,9 +66,9 @@ export function useAskAnswer(ask: AiAsk) {
       at={ask.answeredAt ?? resolved?.at}
     >
       {ask.status === "expired"
-        ? `Expired · ${ask.question}`
+        ? messages.expired3(ask.question)
         : ask.status === "cancelled"
-          ? `Cancelled · ${ask.question}`
+          ? messages.cancelled(ask.question)
           : text}
     </AskRecord>
   );
@@ -81,6 +85,8 @@ export function SingleChoiceAsk({ ask }: {
   /** The single-choice ask: the question and its `options`. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
   ask: Ask<"single">;
 }) {
+  const messages = useMessages(asksMessages)
+
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [value, setValue] = useState<string | null>(null);
@@ -97,17 +103,17 @@ export function SingleChoiceAsk({ ask }: {
           <ActionButton
             variant="primary"
             size="sm"
-            disabledReason={chosen ? undefined : "Choose an option first"}
-            pendingLabel="Sending…"
-            successLabel="Sent"
+            disabledReason={chosen ? undefined : messages.chooseAnOptionFirst}
+            pendingLabel={messages.sending}
+            successLabel={messages.sent}
             onAction={() =>
               submit(
                 { type: "choice", value: chosen!.value, label: chosen!.label },
-                `Chose ${chosen!.label}${chosen!.meta ? ` · ${chosen!.meta}` : ""}`,
+                messages.chose(chosen!.label, chosen!.meta ? ` · ${chosen!.meta}` : ""),
               )
             }
           >
-            {ask.submitLabel ?? "Choose"}
+            {ask.submitLabel ?? messages.choose}
           </ActionButton>
         }
       >
@@ -141,6 +147,8 @@ export function MultiChoiceAsk({ ask }: {
   /** The multiple-choice ask: the question, its `options` and `min`, the fewest picks that can be sent (default 1). Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
   ask: Ask<"multi">;
 }) {
+  const messages = useMessages(asksMessages)
+
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const all = ask.options.map((option) => option.value);
@@ -159,26 +167,25 @@ export function MultiChoiceAsk({ ask }: {
         meta={ask.detail}
         footerStart={
           <span className="fa-ai-ask-count" data-numeric aria-live="polite">
-            {values.length} of {all.length} selected
-          </span>
+            {values.length} {messages.of} {all.length} {messages.selected} </span>
         }
         footer={
           <ActionButton
             variant="primary"
             size="sm"
             disabledReason={
-              values.length < min ? `Select at least ${min}` : undefined
+              values.length < min ? messages.selectAtLeast(min) : undefined
             }
-            pendingLabel="Sending…"
-            successLabel="Sent"
+            pendingLabel={messages.sending}
+            successLabel={messages.sent}
             onAction={() =>
               submit(
                 { type: "choices", values, label: labels.join(", ") },
-                `Selected ${labels.length === all.length ? `all ${all.length}` : labels.join(", ")}`,
+                messages.selected2(labels.length === all.length ? messages.all(all.length) : labels.join(", ")),
               )
             }
           >
-            {ask.submitLabel ?? "Continue"}
+            {ask.submitLabel ?? messages.continue}
           </ActionButton>
         }
       >
@@ -191,8 +198,8 @@ export function MultiChoiceAsk({ ask }: {
         >
           <Checkbox
             parent
-            label="Select all"
-            aria-label="Select all"
+            label={messages.selectAll}
+            aria-label={messages.selectAll}
             className="fa-ai-ask-check-all"
           />
           {ask.options.map((option) => (
@@ -221,6 +228,8 @@ export function QuickRepliesAsk({ ask }: {
   /** The quick-reply ask: the question and the `options` shown as pills; one tap answers. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
   ask: Ask<"quick">;
 }) {
+  const messages = useMessages(asksMessages)
+
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [pending, setPending] = useState<string | null>(null);
@@ -250,7 +259,7 @@ export function QuickRepliesAsk({ ask }: {
                       value: option.value,
                       label: option.label,
                     },
-                    `Replied · ${option.label}`,
+                    messages.replied(option.label),
                   );
                 }}
               >
@@ -272,6 +281,8 @@ export function RankAsk({ ask }: {
   /** The ranking ask: the question and its `options` in their starting order; the answer is the reordered list. Answers go to the `answer` conversation handler; once answered, expired or cancelled the card shows its record. */
   ask: Ask<"rank">;
 }) {
+  const messages = useMessages(asksMessages)
+
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
   const [order, setOrder] = useState(ask.options);
@@ -312,8 +323,8 @@ export function RankAsk({ ask }: {
           <ActionButton
             variant="primary"
             size="sm"
-            pendingLabel="Sending…"
-            successLabel="Sent"
+            pendingLabel={messages.sending}
+            successLabel={messages.sent}
             onAction={() =>
               submit(
                 {
@@ -321,11 +332,11 @@ export function RankAsk({ ask }: {
                   values: order.map((option) => option.value),
                   label: order.map((option) => option.label).join(" → "),
                 },
-                `Order · ${order.map((option) => option.label).join(" → ")}`,
+                messages.order(order.map((option) => option.label).join(" → ")),
               )
             }
           >
-            {ask.submitLabel ?? "Use this order"}
+            {ask.submitLabel ?? messages.useThisOrder}
           </ActionButton>
         }
       >
@@ -351,8 +362,8 @@ export function RankAsk({ ask }: {
                 variant="ghost"
                 size="sm"
                 icon={<IconArrowUp />}
-                aria-label={`Move ${option.label} up`}
-                disabledReason={index === 0 ? "Already first" : undefined}
+                aria-label={messages.moveUp(option.label)}
+                disabledReason={index === 0 ? messages.alreadyFirst : undefined}
                 onClick={() => move(index, -1)}
                 onKeyDown={(event) => onKeyDown(event, index)}
               />
@@ -361,9 +372,9 @@ export function RankAsk({ ask }: {
                 variant="ghost"
                 size="sm"
                 icon={<IconArrowDown />}
-                aria-label={`Move ${option.label} down`}
+                aria-label={messages.moveDown(option.label)}
                 disabledReason={
-                  index === order.length - 1 ? "Already last" : undefined
+                  index === order.length - 1 ? messages.alreadyLast : undefined
                 }
                 onClick={() => move(index, 1)}
                 onKeyDown={(event) => onKeyDown(event, index)}

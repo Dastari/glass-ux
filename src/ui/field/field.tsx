@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { fieldMessages } from "./messages.js"
 import { Field as BaseField } from "@base-ui/react/field";
 import { Fieldset as BaseFieldset } from "@base-ui/react/fieldset";
 import type { ComponentProps, ReactNode } from "react";
@@ -97,6 +99,8 @@ function FieldBase({
   children,
   ...rest
 }: FieldProps) {
+  const messages = useMessages(fieldMessages)
+
   const hasError =
     error !== undefined && error !== null && error !== false && error !== "";
   const reserve =
@@ -158,7 +162,7 @@ function FieldBase({
             *
           </span>
         ) : null}
-        {optional ? <span className="fa-field-optional">Optional</span> : null}
+        {optional ? <span className="fa-field-optional">{messages.optional}</span> : null}
         {aside ? <span className="fa-field-aside">{aside}</span> : null}
       </div>
     ) : null;

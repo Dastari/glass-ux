@@ -27,7 +27,7 @@ height for it. Click or Enter drills into a tile; the path, Backspace and Escape
 | groups | `readonly string[] \| undefined` | See type | no | — | Group order for `colourBy="group"`; defaults to largest first. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for this chart's numbers, dates and table. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
-| nameLabel | `string \| undefined` | See type | no | "Name" | Header for the table's name column ("Folder"). |
+| nameLabel | `string \| undefined` | See type | no | — | Header for the table's name column ("Folder"). |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | state | `ChartState \| undefined` | "error", "loading", "ready", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |

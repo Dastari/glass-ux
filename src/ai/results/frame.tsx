@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { resultsMessages } from "./messages.js"
 import type { ReactNode } from "react"
 import { IconDownload, IconPopOut } from "../../icons/generated/icons.js"
 import { Button } from "../../ui/button/index.js"
@@ -40,6 +42,8 @@ const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").re
  * in the same order: copy, export CSV, open in window.
  */
 export function ResultFrame({ result, icon, meta, copyText, csv, footer, flush = false, children }: ResultFrameProps) {
+  const messages = useMessages(resultsMessages)
+
   const handlers = useConversationHandlers()
   const line = [result.source, meta].filter(Boolean).join(" · ")
   return (
@@ -50,11 +54,11 @@ export function ResultFrame({ result, icon, meta, copyText, csv, footer, flush =
         meta={line || undefined}
         actions={
           <>
-            {copyText ? <CopyButton value={copyText} label="Copy" /> : null}
+            {copyText ? <CopyButton value={copyText} label={messages.copy} /> : null}
             {csv ? (
-              <Button variant="ghost" size="sm" icon={<IconDownload />} aria-label="Export CSV" onClick={() => download(`${slug(result.title)}.csv`, csv)} />
+              <Button variant="ghost" size="sm" icon={<IconDownload />} aria-label={messages.exportCsv} onClick={() => download(`${slug(result.title)}.csv`, csv)} />
             ) : null}
-            <Button variant="ghost" size="sm" icon={<IconPopOut />} aria-label="Open in a window" onClick={() => handlers.openResultWindow(result)} />
+            <Button variant="ghost" size="sm" icon={<IconPopOut />} aria-label={messages.openInAWindow} onClick={() => handlers.openResultWindow(result)} />
           </>
         }
       />

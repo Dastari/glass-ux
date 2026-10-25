@@ -3,6 +3,27 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.11 → 0.9.12
+
+No code changes are required.
+
+- Light mode is less washed out: the canvas is a step deeper (`--canvas` lightness 0.94,
+  was 0.972), the colour fields are stronger, panel glass is a little clearer (fill 0.5)
+  with a firmer edge and shadow, and `--fg-muted`, `--fg-subtle` and `--line` are darker.
+  Visual snapshots of light-mode screens need updating. Dark mode is unchanged.
+- The lighter chart tier (`--chart-l-a`, light mode) is 0.62 instead of 0.63, so every
+  data colour keeps 3:1 on the clearer panel glass.
+- `.canvas-silk` is now the artwork layer for every background with artwork, not only
+  Silk. Keep it mounted once behind the shell; it hides itself for backgrounds without
+  artwork and for Solid. CSS that set its `background` or `mask` should set
+  `--canvas-overlay-colour`, `--canvas-overlay-fill` or `--canvas-overlay-mask` instead.
+- `BACKGROUNDS` is now a mutable `BackgroundStyle[]` (like `PALETTES`) and
+  `BackgroundStyle` accepts application ids from `defineBackground`. A `switch` over
+  `BackgroundStyle` needs a `default` branch.
+- The appearance controls now offer six more palettes and ten more backgrounds; an
+  application with its own controls built from `PALETTES` and `BACKGROUNDS` gets them
+  automatically. Lock or filter them with `configureAppearance` if a product should not.
+
 ## 0.9.10 → 0.9.11
 
 No code changes are required.

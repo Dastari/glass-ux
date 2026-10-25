@@ -46,24 +46,44 @@ export function ComponentDirectory() {
 
 ## CSS names and verification
 
-The canvas background is a persisted appearance preference. Choose `silk` (the existing
-ambient fields and line overlay), `mesh`, `grid`, `contours`, `facets` or `plain` with
+The canvas background is a persisted appearance preference, set with
 `configureAppearance({ defaults: { background: "grid" } })` or
 `useAppearance().update({ background: "grid" })`. `BACKGROUNDS` and `BACKGROUND_LABELS`
 are exported from `glass-ux/appearance` for application controls. The boot script applies
 the choice before first paint, alongside palette and mode.
 
-Put `class="canvas-ambient"` (or `canvas-background`) on the application canvas. Keep the
-existing `<div class="canvas-silk" aria-hidden="true"></div>` behind the shell for Silk's
-line overlay; it hides automatically for other backgrounds and Solid material. All styles
-use semantic palette tokens and require no remote images. A bounded preview can set
-`data-background="contours"` locally and `background-attachment: scroll` without changing
-the application's preference.
+| Kind | Backgrounds |
+| --- | --- |
+| Colour fields | `silk` (fields and flowing hairlines, the default), `mesh`, `currents`, `waves`, `contours`, `facets`, `grid` |
+| Digital | `pixels`, `circuit`, `network` |
+| Scenes | `skyline`, `harbour`, `forest`, `hills`, `garden` |
+| Plain and pictures | `plain`, `image` (shows `backgroundImage` under a veil of the canvas colour) |
 
-Glass UX includes Ocean, Aurora, Emerald, Sunset, Graphite and Ruby palettes. Select a
-palette through `configureAppearance` or the appearance provider, and use semantic roles
-such as `--accent-text` in components. Application palettes can be registered with
-`definePalette`; their CSS and branding belong to the host.
+Put `class="canvas-ambient"` (or `canvas-background`) on the application canvas. Keep one
+`<div class="canvas-silk" aria-hidden="true"></div>` behind the shell: it is the artwork
+layer for every background that has artwork (the name predates the others), and it hides
+itself for the rest and for Solid material. Artwork is an alpha mask painted in the
+palette's own roles, so it follows palette and mode, and none of it loads remote images.
+A bounded preview, such as a background swatch, can set `data-background="contours"` and
+`background-attachment: scroll` locally and hold its own artwork layer with
+`<span class="canvas-silk" data-background="contours" data-contained></span>`.
+
+Applications can register their own background with `defineBackground(id, label)` and
+style `:where(:root[data-background="<id>"]) :is(.canvas-ambient, .canvas-background)` by
+setting `--canvas-image` and `--canvas-image-size`.
+
+Glass UX includes Ocean, Aurora, Emerald, Sunset, Graphite, Ruby, Lagoon, Indigo, Rose,
+Moss, Sand and Slate palettes. Select a palette through `configureAppearance` or the
+appearance provider, and use semantic roles such as `--accent-text` in components.
+Application palettes can be registered with `definePalette`; their CSS and branding belong
+to the host.
+
+A person's own colours layer over the palette: `accentColor`, `accentColor2` and
+`canvasTint` take `#rrggbb` values. The accent's lightness is adjusted until text on it
+and accent text meet AA, so any colour is safe to offer; `customColourVars` returns the
+parameters for previews. A picture background is `background: "image"` with
+`backgroundImage` set to a URL or a data URL; pass uploads through
+`prepareBackgroundImage(file)`, which downsizes them to fit in stored preferences.
 
 Tailwind's `p-panel` utility reads `--inset-panel`. It is not a CSS variable named `--p-panel`.
 Use `--inset-tile`, `--inset-panel`, `--inset-dialog`, semantic gap roles and radius roles in

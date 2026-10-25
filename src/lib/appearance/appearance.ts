@@ -11,6 +11,7 @@
  * and the Appearance UI shows it as fixed.
  */
 import { FONT_DEFAULTS, FONT_OPTIONS, FONT_PRELOAD } from "./fonts.js";
+import { BOOT_CUSTOM_COLOUR, CUSTOM_COLOUR_VARS, customColourVars, normalizeHex } from "./custom-colour.js";
 
 /** Colour modes a person can choose; `system` follows the operating system's light or dark setting. */
 export const MODES = ["system", "light", "dark"] as const;
@@ -22,6 +23,12 @@ export const PALETTES: string[] = [
   "sunset",
   "graphite",
   "ruby",
+  "lagoon",
+  "indigo",
+  "rose",
+  "moss",
+  "sand",
+  "slate",
 ];
 /** Spacing densities: `comfortable` (the default) or `compact`. */
 export const DENSITIES = ["comfortable", "compact"] as const;
@@ -36,25 +43,53 @@ export const GLASS_LEVELS = ["full", "reduced", "solid"] as const;
 export const GLASS_RENDERINGS = ["live", "baked"] as const;
 /** Motion preferences; `system` follows the operating system's reduced-motion setting. */
 export const MOTION_LEVELS = ["system", "full", "reduced"] as const;
-/** Palette-aware canvas styles, from textured to plain. */
-export const BACKGROUNDS = [
+/** The library's canvas styles: colour fields, then artwork (digital, then scenes), then plain and a picture. */
+export const BUILT_IN_BACKGROUNDS = [
   "silk",
   "mesh",
-  "grid",
+  "currents",
+  "waves",
   "contours",
   "facets",
+  "grid",
+  "pixels",
+  "circuit",
+  "network",
+  "skyline",
+  "harbour",
+  "forest",
+  "hills",
+  "garden",
   "plain",
+  "image",
 ] as const;
-/** Canvas treatment used by the `canvas-ambient` and `canvas-background` utilities. */
-export type BackgroundStyle = (typeof BACKGROUNDS)[number];
+/**
+ * Canvas treatment used by the `canvas-ambient` and `canvas-background` utilities: a built-in
+ * style, or one an application registers with `defineBackground`. `image` shows
+ * `Appearance.backgroundImage`.
+ */
+export type BackgroundStyle = (typeof BUILT_IN_BACKGROUNDS)[number] | (string & {});
+/** Background ids the appearance controls offer and stored preferences accept; `defineBackground` appends application backgrounds. */
+export const BACKGROUNDS: BackgroundStyle[] = [...BUILT_IN_BACKGROUNDS];
 /** Informational labels shared by appearance controls. */
 export const BACKGROUND_LABELS: Record<BackgroundStyle, string> = {
   silk: "Silk",
   mesh: "Mesh",
-  grid: "Grid",
+  currents: "Currents",
+  waves: "Waves",
   contours: "Contours",
   facets: "Facets",
+  grid: "Grid",
+  pixels: "Pixels",
+  circuit: "Circuit",
+  network: "Network",
+  skyline: "Skyline",
+  harbour: "Harbour",
+  forest: "Forest",
+  hills: "Hills",
+  garden: "Garden",
   plain: "Plain",
+  image: "Picture",
 };
 
 export type Mode = (typeof MODES)[number];
@@ -89,8 +124,22 @@ export interface Appearance {
   borderWidth: number;
   /** 0.875 – 1.25; scales type, spacing and controls together. */
   uiScale: number;
-  /** Optional custom accent hue (0–360) layered over the palette. */
+  /** Optional custom accent hue (0–360) layered over the palette. Ignored while `accentColor` is set. */
   accentHue: number | null;
+  /**
+   * Optional custom accent colour (`#rrggbb`) layered over the palette. Its lightness is
+   * adjusted until text on it and accent text meet contrast (customColourVars).
+   */
+  accentColor?: string | null;
+  /** Optional second accent colour (`#rrggbb`); only its hue is used, and only with `accentColor`. */
+  accentColor2?: string | null;
+  /** Optional canvas tint (`#rrggbb`): its hue tints the neutral greys and the canvas's colour fields. */
+  canvasTint?: string | null;
+  /**
+   * The picture the `image` background shows: an `https:` or `http:` URL, a same-site path,
+   * a `blob:` URL, or an image data URL (see `prepareBackgroundImage`).
+   */
+  backgroundImage?: string | null;
   /** Interface face (FONT_OPTIONS.sans). */
   fontSans: string;
   /** Display face for display and headline text, or "match" to use the interface face. */
@@ -111,6 +160,10 @@ export const BASE_APPEARANCE: Appearance = {
   borderWidth: 1,
   uiScale: 1,
   accentHue: null,
+  accentColor: null,
+  accentColor2: null,
+  canvasTint: null,
+  backgroundImage: null,
   fontSans: FONT_DEFAULTS.sans,
   fontDisplay: FONT_DEFAULTS.display,
   fontMono: FONT_DEFAULTS.mono,
@@ -173,6 +226,12 @@ export const PALETTE_LABELS: Record<Palette, string> = {
   sunset: "Sunset",
   graphite: "Graphite",
   ruby: "Ruby",
+  lagoon: "Lagoon",
+  indigo: "Indigo",
+  rose: "Rose",
+  moss: "Moss",
+  sand: "Sand",
+  slate: "Slate",
 };
 
 /** The transparency levels' names, as every appearance control shows them. */
@@ -192,6 +251,18 @@ const pick = <T extends string>(
   options: readonly T[],
   fallback: T,
 ): T => (options.includes(value as T) ? (value as T) : fallback);
+
+/** The longest picture URL kept, in characters; a larger data URL would not fit in storage anyway. */
+const MAX_IMAGE_URL = 4_000_000;
+/** Picture URLs the `image` background accepts: web and same-site addresses, blobs and image data. */
+const IMAGE_URL = /^(https?:\/\/|\/(?!\/)|\.{1,2}\/|blob:|data:image\/(png|jpe?g|webp|avif|gif);base64,|data:image\/svg\+xml[;,])/i;
+
+/** A picture URL the `image` background may show, or null (see `Appearance.backgroundImage`). */
+export function normalizeImageUrl(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const url = value.trim();
+  return url.length > 0 && url.length <= MAX_IMAGE_URL && IMAGE_URL.test(url) ? url : null;
+}
 
 /**
  * Read any value (typically parsed stored preferences) as a complete Appearance: unknown
@@ -217,6 +288,10 @@ export function normalizeAppearance(input: unknown): Appearance {
       raw.accentHue === null || raw.accentHue === undefined
         ? d.accentHue
         : clamp(raw.accentHue, 0, 360, 25),
+    accentColor: raw.accentColor === undefined ? (d.accentColor ?? null) : normalizeHex(raw.accentColor),
+    accentColor2: raw.accentColor2 === undefined ? (d.accentColor2 ?? null) : normalizeHex(raw.accentColor2),
+    canvasTint: raw.canvasTint === undefined ? (d.canvasTint ?? null) : normalizeHex(raw.canvasTint),
+    backgroundImage: raw.backgroundImage === undefined ? (d.backgroundImage ?? null) : normalizeImageUrl(raw.backgroundImage),
     fontSans: pick(raw.fontSans, FONT_IDS.sans, d.fontSans),
     fontDisplay: pick(raw.fontDisplay, FONT_IDS.display, d.fontDisplay),
     fontMono: pick(raw.fontMono, FONT_IDS.mono, d.fontMono),
@@ -280,16 +355,24 @@ export function applyAppearance(
   set("--radius-scale", appearance.radiusScale, 1);
   set("--border-width", appearance.borderWidth, 1, "px");
   set("--ui-scale", appearance.uiScale, 1);
-  if (appearance.accentHue === null) {
-    root.style.removeProperty("--accent-h");
-    root.style.removeProperty("--accent-2-h");
-  } else {
-    root.style.setProperty("--accent-h", String(appearance.accentHue));
-    root.style.setProperty(
-      "--accent-2-h",
-      String((appearance.accentHue + 340) % 360),
-    );
+  // Custom colours set palette parameters inline; an accent colour replaces the accent hue.
+  const custom = customColourVars({
+    accentColor: appearance.accentColor ?? null,
+    accentColor2: appearance.accentColor2 ?? null,
+    canvasTint: appearance.canvasTint ?? null,
+  });
+  if (appearance.accentHue !== null && !("--accent-h" in custom)) {
+    custom["--accent-h"] = String(appearance.accentHue);
+    custom["--accent-2-h"] = String((appearance.accentHue + 340) % 360);
   }
+  for (const name of CUSTOM_COLOUR_VARS) {
+    const value = custom[name];
+    if (value === undefined) root.style.removeProperty(name);
+    else root.style.setProperty(name, value);
+  }
+  const picture = normalizeImageUrl(appearance.backgroundImage);
+  if (picture) root.style.setProperty("--canvas-picture", `url(${JSON.stringify(picture)})`);
+  else root.style.removeProperty("--canvas-picture");
   if (root.ownerDocument === document) preloadFonts(appearance);
 }
 
@@ -307,9 +390,12 @@ try{s=JSON.parse(localStorage.getItem(${j(APPEARANCE_STORAGE_KEY)})||"null")}cat
 s=s&&typeof s==="object"?s:{};
 function o(v,a,f){return a.indexOf(v)>=0?v:f}
 function n(v,lo,hi,f){return typeof v==="number"&&isFinite(v)?Math.min(hi,Math.max(lo,v)):f}
+function x(v){if(typeof v!=="string")return null;var m=/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(v.trim());if(!m)return null;var h=m[1].toLowerCase();return "#"+(h.length===3?h.replace(/./g,function(c){return c+c}):h)}
+function u(v){if(typeof v!=="string")return null;v=v.trim();return v.length>0&&v.length<=${MAX_IMAGE_URL}&&${IMAGE_URL.toString()}.test(v)?v:null}
 var a={mode:o(s.mode,${j(MODES)},D.mode),palette:o(s.palette,${j(PALETTES)},D.palette),density:o(s.density,${j(DENSITIES)},D.density),glass:o(s.glass,${j(GLASS_LEVELS)},D.glass),motion:o(s.motion,${j(MOTION_LEVELS)},D.motion),background:o(s.background,${j(BACKGROUNDS)},D.background||"silk"),
 radiusScale:n(s.radiusScale,0,1.5,D.radiusScale),borderWidth:n(s.borderWidth,0.5,2,D.borderWidth),uiScale:n(s.uiScale,0.875,1.25,D.uiScale),
 accentHue:s.accentHue==null?D.accentHue:n(s.accentHue,0,360,25),
+accentColor:s.accentColor===undefined?(D.accentColor||null):x(s.accentColor),accentColor2:s.accentColor2===undefined?(D.accentColor2||null):x(s.accentColor2),canvasTint:s.canvasTint===undefined?(D.canvasTint||null):x(s.canvasTint),backgroundImage:s.backgroundImage===undefined?(D.backgroundImage||null):u(s.backgroundImage),
 fontSans:o(s.fontSans,${j(FONT_IDS.sans)},D.fontSans),fontDisplay:o(s.fontDisplay,${j(FONT_IDS.display)},D.fontDisplay),fontMono:o(s.fontMono,${j(FONT_IDS.mono)},D.fontMono)};
 for(var k in L)a[k]=L[k];
 var m=a.mode;if(m==="system")m=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
@@ -320,7 +406,10 @@ d.dataset.fontSans=a.fontSans;d.dataset.fontDisplay=a.fontDisplay;d.dataset.font
 if(a.radiusScale!==1)d.style.setProperty("--radius-scale",String(a.radiusScale));
 if(a.borderWidth!==1)d.style.setProperty("--border-width",a.borderWidth+"px");
 if(a.uiScale!==1)d.style.setProperty("--ui-scale",String(a.uiScale));
-if(a.accentHue!==null){d.style.setProperty("--accent-h",String(a.accentHue));d.style.setProperty("--accent-2-h",String((a.accentHue+340)%360))}
+var C=(${BOOT_CUSTOM_COLOUR})(a.accentColor,a.accentColor2,a.canvasTint);
+if(a.accentHue!==null&&!("--accent-h" in C)){C["--accent-h"]=String(a.accentHue);C["--accent-2-h"]=String((a.accentHue+340)%360)}
+${j(CUSTOM_COLOUR_VARS)}.forEach(function(k){if(C[k]!==undefined)d.style.setProperty(k,C[k])});
+var I=u(a.backgroundImage);if(I)d.style.setProperty("--canvas-picture","url("+JSON.stringify(I)+")");
 [a.fontSans,a.fontDisplay,a.fontMono].forEach(function(id){var h=P[id];if(!h||document.head.querySelector('link[rel="preload"][href="'+h+'"]'))return;var l=document.createElement("link");l.rel="preload";l.as="font";l.type="font/woff2";l.crossOrigin="anonymous";l.href=h;document.head.appendChild(l)});
 }catch(e){}})()`;
 }
@@ -331,5 +420,18 @@ export function definePalette(id: string, label: string): string {
     throw new Error("Use a lowercase CSS-safe palette identifier");
   if (!PALETTES.includes(id)) PALETTES.push(id);
   PALETTE_LABELS[id] = label;
+  return id;
+}
+
+/**
+ * Register an application-owned background before configuring its defaults. Its CSS belongs
+ * to the application: set `--canvas-image` (and `--canvas-image-size`) for
+ * `:where(:root[data-background="<id>"]) :is(.canvas-ambient, .canvas-background)`.
+ */
+export function defineBackground(id: string, label: string): string {
+  if (!/^[a-z][a-z0-9-]*$/.test(id))
+    throw new Error("Use a lowercase CSS-safe background identifier");
+  if (!BACKGROUNDS.includes(id)) BACKGROUNDS.push(id);
+  BACKGROUND_LABELS[id] = label;
   return id;
 }

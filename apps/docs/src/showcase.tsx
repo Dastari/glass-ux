@@ -897,7 +897,9 @@ function AppearanceLab() {
               aria-hidden
               className="showcase-background-swatch canvas-ambient"
               data-background={background}
-            />
+            >
+              <span className="canvas-silk" data-background={background} data-contained />
+            </span>
             <span>{BACKGROUND_LABELS[background]}</span>
           </Button>
         ))}

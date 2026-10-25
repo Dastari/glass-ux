@@ -337,13 +337,6 @@
     background-attachment: scroll;
     overflow: hidden;
   }
-  .showcase-background-swatch[data-background="silk"]::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--silk);
-    mask: url("glass-ux/assets/canvas/silk.svg") center / cover no-repeat;
-  }
   /* The network workspace's box while its chunk loads (same height as .network-frame). */
   .network-frame-placeholder {
     height: clamp(38rem, 88svh, 54rem);

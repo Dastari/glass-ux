@@ -314,9 +314,9 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
         />
       </div>
     );
-  // One line that gives way in order (fa-fit-row): the palette and blur fold to menus first, then
-  // density, animations and material; the background select truncates last; the mode switch
-  // keeps its icons.
+  // One line that gives way in order (fa-fit-row): the palette folds to a menu first, then blur
+  // and density, animations and material; the background select truncates last; the mode
+  // switch keeps its icons.
   return (
     <div
       className="docs-toolbar fa-fit-row"
@@ -361,7 +361,7 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <Segmented
         size="sm"
-        className="fa-fit-1"
+        className="fa-fit-2"
         aria-label="Blur"
         value={rendering}
         onValueChange={setGlassRendering}

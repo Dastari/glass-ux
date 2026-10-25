@@ -68,6 +68,24 @@
     width: min(100%, 22rem);
     accent-color: var(--accent);
   }
+  .colour-custom,
+  .colour-picture {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .colour-custom-label {
+    min-width: 8rem;
+  }
+  .colour-custom-input {
+    inline-size: var(--control-h-md);
+    block-size: var(--control-h-md);
+    padding: 0;
+    border: var(--border-width) solid var(--line-strong);
+    border-radius: var(--radius-control);
+    background: transparent;
+    cursor: pointer;
+  }
   .colour-roles {
     display: flex;
     flex-direction: column;

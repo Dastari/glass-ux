@@ -4,6 +4,37 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+Ten new canvas backgrounds, six palettes, custom colours and picture backgrounds, and a
+light mode with more depth. No code changes are required; the
+[migration guide](docs/migration.md) lists what to review.
+
+### Added
+
+- Backgrounds: Currents and Waves (colour fields), Pixels, Circuit and Network (digital),
+  and Skyline, Harbour, Forest, Hills and Garden (scenes). Their artwork is an alpha mask
+  painted in each palette's roles, so it follows palette and mode, including baked frost.
+- Palettes: Lagoon, Indigo, Rose, Moss, Sand and Slate.
+- Custom colours: `accentColor`, `accentColor2` and `canvasTint` appearance preferences
+  (hex), layered over the palette. The accent's lightness is adjusted until text on it and
+  accent text reach AA (`customColourVars`).
+- Picture backgrounds: `background: "image"` with `backgroundImage` (a URL or data URL),
+  under a veil of the canvas colour; `prepareBackgroundImage(file)` downsizes uploads.
+- `defineBackground(id, label)` registers an application-owned background.
+- Canvas artwork roles: `--canvas-ink`, `--canvas-ink-2`, `--canvas-line`,
+  `--canvas-line-2`, `--canvas-glow` and `--canvas-veil`.
+- Colour foundations page: custom colour and picture background controls.
+
+### Changed
+
+- Light mode: a deeper canvas, stronger colour fields, clearer panel glass with a firmer
+  edge and shadow, and darker secondary text and hairlines.
+- `.canvas-silk` is the artwork layer for every background with artwork.
+- Baked frost draws artwork filled with gradients as well as flat colours.
+- An appearance change that does not fit in storage is kept out and logged, instead of
+  throwing.
+
 ## 0.9.11
 
 File type icons and a `FileIcon` that picks one, an `Image` frame with loading, empty and

@@ -18,7 +18,11 @@ Read [the theme and layout contract](layout-contract.md) before composing the fi
 
 An application-owned palette is CSS containing the named `data-palette` selector and the
 palette parameters. Register its identifier and label with `definePalette(id, label)`, then
-use it in `configureAppearance`. Use a project storage key to retain existing preferences.
+use it in `configureAppearance`. A brand colour without a full palette can be a default
+instead: `configureAppearance({ defaults: { accentColor: "#0b6e4f" } })`, adjusted for
+contrast like any custom colour. `defineBackground(id, label)` registers an
+application-owned canvas, and `backgroundImage` with `background: "image"` shows a
+company picture behind the glass (see [the layout contract](layout-contract.md#css-names-and-verification)). Use a project storage key to retain existing preferences.
 Configure product marks with `configureBrand`; the library ships no application logos.
 
 Components format with the page's `<html lang>`, or with `configureLocale()` from

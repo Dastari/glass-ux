@@ -76,8 +76,15 @@ function subscribeAppearance(notify: () => void) {
 }
 
 function writeAppearance(next: Appearance | null) {
-  if (next) localStorage.setItem(APPEARANCE_STORAGE_KEY, JSON.stringify(next))
-  else localStorage.removeItem(APPEARANCE_STORAGE_KEY)
+  if (next) {
+    try {
+      localStorage.setItem(APPEARANCE_STORAGE_KEY, JSON.stringify(next))
+    } catch (error) {
+      // Storage is full, usually from a large picture: keep the previous preferences.
+      console.warn("glass-ux: appearance not saved; use prepareBackgroundImage for pictures", error)
+      return
+    }
+  } else localStorage.removeItem(APPEARANCE_STORAGE_KEY)
   for (const notify of listeners) notify()
 }
 

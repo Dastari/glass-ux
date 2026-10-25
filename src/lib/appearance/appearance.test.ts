@@ -41,6 +41,16 @@ const cases: Array<Partial<Appearance> | null | string> = [
   { fontSans: "comic-sans", fontDisplay: "nope", fontMono: "nope" },
   { background: "contours" },
   { background: "invalid" as never },
+  { background: "skyline", palette: "moss" },
+  { accentColor: "#FF6A00", accentColor2: "#0af", canvasTint: "#2d6a4f" },
+  { accentColor: "#ffe066", mode: "light" },
+  { accentColor: "#111111", accentHue: 120 },
+  { accentColor: "red", canvasTint: "#12345", accentHue: 200 },
+  { canvasTint: "#c9a227", accentColor2: "#00ff00" },
+  { background: "image", backgroundImage: "https://example.com/wall.jpg" },
+  { background: "image", backgroundImage: "data:image/png;base64,iVBORw0KGgo=" },
+  { background: "image", backgroundImage: 'javascript:alert(1)' },
+  { background: "image", backgroundImage: '/pictures/a "quoted" name.webp' },
 ];
 
 function runBoot(stored: Partial<Appearance> | null | string) {

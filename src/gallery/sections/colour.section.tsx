@@ -1,9 +1,93 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { contrastRatio } from "../foundations/color-math.js"
 import { Rules, SectionPage, Specimen } from "../kit.js"
 import { IconEndpoint, IconSparkle } from "../../icons/generated/icons.js"
-import { PALETTES, PALETTE_LABELS, useAppearance } from "../../lib/appearance/index.js"
+import { PALETTES, PALETTE_LABELS, prepareBackgroundImage, useAppearance, type Appearance } from "../../lib/appearance/index.js"
 import { Button } from "../../ui/button/index.js"
+import { SCENE_IMAGES } from "../fixtures/scenes.js"
+
+/** Each custom colour, and the role a colour input starts from until one is chosen. */
+const CUSTOM_COLOURS = [
+  ["accentColor", "Accent", "--accent"],
+  ["accentColor2", "Second accent", "--accent-2"],
+  ["canvasTint", "Canvas tint", "--ambient-1"],
+] as const satisfies ReadonlyArray<readonly [keyof Appearance, string, string]>
+
+/** A colour input's value before anything is painted: black. */
+const NO_COLOUR = "#000000" // tokens:allow a colour input needs a hex value
+
+/** A role's current colour as `#rrggbb`, read back from a 1 × 1 canvas (colour inputs take only hex). */
+function roleHex(role: string) {
+  const canvas = document.createElement("canvas")
+  canvas.width = canvas.height = 1
+  const context = canvas.getContext("2d", { willReadFrequently: true })
+  if (!context) return NO_COLOUR
+  context.fillStyle = getComputedStyle(document.documentElement).getPropertyValue(role).trim()
+  context.fillRect(0, 0, 1, 1)
+  const [r = 0, g = 0, b = 0] = context.getImageData(0, 0, 1, 1).data
+  return `#${[r, g, b].map((channel) => channel.toString(16).padStart(2, "0")).join("")}`
+}
+
+/** Custom colours: each one is a colour input over the palette, with a way back to it. */
+function CustomColours() {
+  const { appearance, update } = useAppearance()
+  useThemeVersion()
+  return (
+    <div className="colour-custom">
+      {CUSTOM_COLOURS.map(([key, label, role]) => {
+        const value = appearance[key] ?? null
+        const fallback = typeof document === "undefined" ? NO_COLOUR : roleHex(role)
+        return (
+          <label key={key} className="colour-hue">
+            <span className="fa-label colour-custom-label">{label}</span>
+            <input type="color" className="colour-custom-input" value={value ?? fallback} onChange={(event) => update({ [key]: event.target.value })} />
+            <span className="type-caption text-fg-muted" data-numeric>
+              {value ?? "Palette default"}
+            </span>
+            <Button size="sm" variant="ghost" disabled={value === null} onClick={() => update({ [key]: null })}>
+              Reset
+            </Button>
+          </label>
+        )
+      })}
+    </div>
+  )
+}
+
+/** A picture as the page canvas: a sample scene, or a file the browser downsizes first. */
+function PictureBackground() {
+  const { appearance, update } = useAppearance()
+  const input = useRef<HTMLInputElement>(null)
+  const [error, setError] = useState<string | null>(null)
+  const choose = async (file: File | undefined) => {
+    if (!file) return
+    setError(null)
+    try {
+      update({ background: "image", backgroundImage: await prepareBackgroundImage(file) })
+    } catch {
+      setError("That file is not a picture this browser can open.")
+    }
+  }
+  return (
+    <div className="colour-picture">
+      <div className="flex flex-wrap items-center gap-2">
+        {Object.entries(SCENE_IMAGES).map(([name, url]) => (
+          <Button key={name} size="sm" variant="secondary" aria-pressed={appearance.background === "image" && appearance.backgroundImage === url} onClick={() => update({ background: "image", backgroundImage: url })}>
+            {name[0]!.toUpperCase() + name.slice(1)}
+          </Button>
+        ))}
+        <Button size="sm" variant="secondary" onClick={() => input.current?.click()}>
+          Choose a picture…
+        </Button>
+        <input ref={input} type="file" accept="image/*" hidden onChange={(event) => void choose(event.target.files?.[0])} />
+        <Button size="sm" variant="ghost" disabled={appearance.background !== "image"} onClick={() => update({ background: "silk", backgroundImage: null })}>
+          Back to Silk
+        </Button>
+      </div>
+      {error ? <p className="type-caption text-danger-text">{error}</p> : null}
+    </div>
+  )
+}
 
 const TEXT_ROLES = [
   ["--fg", "Primary text"],
@@ -74,8 +158,8 @@ export default function ColourSection() {
               type="button"
               data-palette={palette}
               className="colour-palette glass-control fa-pressable"
-              aria-pressed={appearance.palette === palette && appearance.accentHue === null}
-              onClick={() => update({ palette, accentHue: null })}
+              aria-pressed={appearance.palette === palette && appearance.accentHue === null && !appearance.accentColor}
+              onClick={() => update({ palette, accentHue: null, accentColor: null, accentColor2: null, canvasTint: null })}
             >
               <span className="colour-palette-bar" />
               <span className="type-label">{PALETTE_LABELS[palette]}</span>
@@ -104,6 +188,14 @@ export default function ColourSection() {
             Reset
           </Button>
         </label>
+      </Specimen>
+
+      <Specimen title="Custom colours" description="An accent, a second accent and a canvas tint, layered over the palette. The accent's lightness moves until text on it and accent text reach AA; the tint's hue colours the greys and the canvas." layout="stack">
+        <CustomColours />
+      </Specimen>
+
+      <Specimen title="Picture background" description="The Picture background shows a person's own image under a veil of the canvas colour, so glass and text stay readable. Uploads are downsized before they are stored." layout="stack">
+        <PictureBackground />
       </Specimen>
 
       <Specimen title="Text on glass" description="Each text role measured against the panel fill over the canvas, in the current mode and palette. AA requires 4.5:1." layout="stack">

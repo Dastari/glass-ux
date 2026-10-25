@@ -10,8 +10,6 @@ const walk = dir => readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
 const physical = /^(?:left|right|(?:margin|padding|border)-(?:left|right)(?:-[\w-]+)?|border-(?:top|bottom)-(?:left|right)-radius)$/
 const failures = []
 for (const file of ["styles", "ui", "shell", "windows", "ai"].flatMap(dir => walk(`src/${dir}`))) {
-  // The table is maintained by the separate data-table RTL audit.
-  if (file.startsWith("src/ui/data-table/")) continue
   const source = readFileSync(file, "utf8")
   const lines = source.split("\n")
   postcss.parse(source, { from: file }).walkDecls(decl => {

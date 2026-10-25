@@ -57,6 +57,7 @@ describe("application column defaults", () => {
       useTablePreferences("saved", ["serial"]),
     );
     expect(result.current[0]).toEqual({
+      order: null,
       widths: { name: 18 },
       hidden: ["ip"],
       pinned: ["name"],
@@ -88,5 +89,35 @@ describe("application column defaults", () => {
     expect(result.current[0].hidden).toEqual([]);
     rerender({ id: "two" });
     expect(result.current[0].hidden).toEqual(["serial"]);
+  });
+});
+
+describe("column order persistence", () => {
+  it("sanitises and deduplicates stored order without losing pins or widths", () => {
+    localStorage.setItem(
+      "glass-ux.table.order.v1",
+      JSON.stringify({
+        order: ["status", 4, "name", "status"],
+        widths: { name: 12 },
+        pinned: ["name"],
+      }),
+    );
+    expect(readPreferences("order")).toMatchObject({
+      order: ["status", "name"],
+      widths: { name: 12 },
+      pinned: ["name"],
+    });
+  });
+  it("writes through and restores order after remount", () => {
+    const first = renderHook(() => useTablePreferences("order"));
+    act(() =>
+      first.result.current[1]((current) => ({
+        ...current,
+        order: ["quantity", "name"],
+      })),
+    );
+    first.unmount();
+    const next = renderHook(() => useTablePreferences("order"));
+    expect(next.result.current[0].order).toEqual(["quantity", "name"]);
   });
 });

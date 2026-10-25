@@ -1,3 +1,11 @@
+import { MessagesProvider, useMessages } from "../../lib/i18n/use-messages.js";
+import { dataTableMessages } from "./messages.js";
+import { CellEditStore } from "./edit-state.js";
+import { EditingContext } from "./editing.js";
+import { ExportMenu } from "./export-menu.js";
+import { exportCsv, exportTsv, type DataTableExportColumn } from "./export.js";
+import { normaliseColumnOrder, moveColumn } from "./column-order.js";
+import { DragDropProvider } from "../drag-drop/index.js";
 import {
   functionalUpdate,
   useTable,
@@ -115,8 +123,6 @@ import {
   applyMove,
   clampLine,
   moveRow,
-  positionText,
-  reorderMessages,
   reorderUnavailable,
   revealSlot,
   ReorderSession,
@@ -150,7 +156,7 @@ import type {
 const SELECT_WIDTH = 2.625;
 /** --fa-dt-grip-w: the reorder grip column (the checkbox column's width). */
 const GRIP_WIDTH = 2.625;
-const LOCKED_REASON = "This row is locked in place";
+
 /** --space-1 and --space-2: gaps and padding in the trailing cell. */
 const TRAIL_GAP = 0.25;
 const TRAIL_PAD = 1;
@@ -174,7 +180,6 @@ const COMPACT_HEIGHT = 14;
  */
 const STATUS_ONLY_HEIGHT = 7;
 const DEFAULT_PAGE_SIZES = [25, 50, 100] as const;
-const DEFAULT_NOUN = { one: "row", other: "rows" };
 
 function stableKey(value: unknown) {
   try {
@@ -195,8 +200,10 @@ function firstGroupPages(current: DataTableState): Partial<DataTableState> {
 
 /** A click that ends a drag selecting text in the row: not a press (rowOpen "click"). */
 function endsTextSelection(row: Element) {
-  const selection = typeof window === "undefined" ? null : window.getSelection();
-  if (!selection || selection.isCollapsed || !selection.rangeCount) return false;
+  const selection =
+    typeof window === "undefined" ? null : window.getSelection();
+  if (!selection || selection.isCollapsed || !selection.rangeCount)
+    return false;
   return selection.getRangeAt(0).intersectsNode(row);
 }
 
@@ -241,7 +248,13 @@ interface Lift {
 
 type ActiveReorder =
   | { kind: "pointer"; rowId: string; key: unknown; drag: PointerReorder }
-  | { kind: "keyboard"; rowId: string; key: unknown; lift: Lift; session: ReorderSession };
+  | {
+      kind: "keyboard";
+      rowId: string;
+      key: unknown;
+      lift: Lift;
+      session: ReorderSession;
+    };
 
 const isThenable = (value: unknown): value is PromiseLike<unknown> =>
   typeof (value as { then?: unknown } | null | undefined)?.then === "function";
@@ -280,7 +293,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     refetching = false,
     error,
     onRetry,
-    emptyMessage = "No rows",
+    emptyMessage,
     emptyAction,
     selectable = true,
     actions,
@@ -301,6 +314,53 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     reorder,
   } = props;
   const locale = useLocale(props.locale);
+  const messages = useMessages(dataTableMessages, {
+    labels: props.labels,
+    locale,
+  });
+  const m = messages;
+  const providedMessages = useMemo(
+    () => ({ "data-table": messages }),
+    [messages],
+  );
+  const reorderMessages = {
+    lifted: m.reorderLifted,
+    moved: m.reorderMoved,
+    dropped: m.reorderDropped,
+    cancelled: m.reorderCancelled,
+    failed: m.reorderFailed,
+    instructions: m.reorderInstructions,
+    hint: m.reorderHint,
+  };
+  const [notice, setNotice] = useState("");
+  const announceCell = useCallback(
+    (message: string) =>
+      setNotice((current) =>
+        current === message ? `${message}\u00a0` : message,
+      ),
+    [],
+  );
+  const editNavigation = useRef<
+    (rowId: string, columnId: string, delta: -1 | 1) => boolean
+  >(() => false);
+  const pendingEditFocus = useRef<{ rowId: string; columnId: string } | null>(
+    null,
+  );
+  const navigateEdit = useCallback(
+    (rowId: string, columnId: string, delta: -1 | 1) =>
+      editNavigation.current(rowId, columnId, delta),
+    [],
+  );
+  const editStore = useMemo(() => new CellEditStore(), [id]);
+  const editContext = useMemo(
+    () => ({
+      save: props.onCellEdit,
+      announce: announceCell,
+      store: editStore,
+      navigate: navigateEdit,
+    }),
+    [props.onCellEdit, announceCell, editStore, navigateEdit],
+  );
   const reorderable = Boolean(reorder);
   // Grouped tables load each group's rows in place ("Show more") instead.
   const infinite = grouping ? undefined : props.infinite;
@@ -425,7 +485,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const density = props.density ?? preferences.density ?? undefined;
 
   /* ── Column metadata (ids resolved the way TanStack does) ─────────────────────── */
-  const definitions = useMemo(
+  const baseDefinitions = useMemo(
     () =>
       columns.map((def) => {
         const columnId = columnIdOf(
@@ -440,6 +500,15 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       }),
     [columns],
   );
+  const columnOrder = normaliseColumnOrder(
+    baseDefinitions.map((entry) => entry.id),
+    props.columnOrder ?? preferences.order ?? props.defaultColumnOrder,
+  );
+  const orderKey = JSON.stringify(columnOrder);
+  const definitions = useMemo(() => {
+    const byId = new Map(baseDefinitions.map((entry) => [entry.id, entry]));
+    return (JSON.parse(orderKey) as string[]).map((id) => byId.get(id)!);
+  }, [baseDefinitions, orderKey]);
   const metaById = useMemo(
     () => new Map(definitions.map((entry) => [entry.id, entry])),
     [definitions],
@@ -458,6 +527,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       rootRef.current?.querySelector<HTMLElement>(".fa-dt-filters-button") ??
       null,
     locale,
+    messages,
   });
   const filtered = useMemo(
     () => new Set(filters.map((filter) => filter.id)),
@@ -542,7 +612,13 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   // not on every render (a toolbar is usually new JSX each time) — and whenever the body's
   // scroller changes size for another reason (filter chips wrapping, the footer).
   const hasToolbar = Boolean(toolbar);
-  useLayoutEffect(measureMetrics, [measureMetrics, size.width, size.height, density, hasToolbar]);
+  useLayoutEffect(measureMetrics, [
+    measureMetrics,
+    size.width,
+    size.height,
+    density,
+    hasToolbar,
+  ]);
   useEffect(() => {
     const scroller = scrollRef.current;
     if (!scroller) return;
@@ -561,7 +637,12 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   /* ── Container-aware column layout (R16.2) ────────────────────────────────────── */
   const layoutColumns = useMemo<LayoutColumn[]>(
     () =>
-      orderColumns(definitions, pinnedIds).map((entry) => ({
+      orderColumns(
+        definitions,
+        definitions
+          .filter((entry) => pinnedSet.has(entry.id))
+          .map((entry) => entry.id),
+      ).map((entry) => ({
         id: entry.id,
         priority: entry.meta.priority,
         width: preferences.widths[entry.id] ?? entry.meta.width,
@@ -582,7 +663,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const contentWidth = measured
     ? (size.width - metrics.gutter) / metrics.rem
     : 0;
-  const chrome = (selectable ? SELECT_WIDTH : 0) + (reorderable ? GRIP_WIDTH : 0);
+  const chrome =
+    (selectable ? SELECT_WIDTH : 0) + (reorderable ? GRIP_WIDTH : 0);
   const layout = useMemo(() => {
     const first = computeColumnLayout(
       layoutColumns,
@@ -624,7 +706,12 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const cardColumns = useMemo(
     () =>
       columnInfos(
-        orderColumns(definitions, pinnedIds).map((entry) => entry.id),
+        orderColumns(
+          definitions,
+          definitions
+            .filter((entry) => pinnedSet.has(entry.id))
+            .map((entry) => entry.id),
+        ).map((entry) => entry.id),
         metaById,
         new Set(),
       ),
@@ -647,8 +734,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       layoutColumns,
       layout.visible,
       {
-        selectWidth:
-          selectable || reorderable ? "var(--fa-dt-lead-w)" : null,
+        selectWidth: selectable || reorderable ? "var(--fa-dt-lead-w)" : null,
       },
     );
     const mins = layout.visible.map(
@@ -838,13 +924,13 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const [contextContent, setContextContent] = useState<MenuContent<T> | null>(
     null,
   );
-  const noun = props.noun ?? DEFAULT_NOUN;
+  const noun = props.noun ?? { one: m.row, other: m.rows };
   const loadMore = useLoadMore({
     infinite,
     resultKey,
     loaded: data.length,
     refetching,
-    failedMessage: `Couldn't load more ${noun.other}`,
+    failedMessage: m.loadMoreFailed(noun.other),
   });
 
   /* ── Search (R16.8): the toolbar field, `/` to focus it ───────────────────────── */
@@ -855,33 +941,37 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         ? {
             value: searchQuery,
             onChange: setSearch,
-            label: `Search ${noun.other}`,
-            placeholder: search.placeholder ?? `Search ${noun.other}`,
+            label: m.searchRows(noun.other),
+            placeholder: search.placeholder ?? m.searchRows(noun.other),
             handle: searchHandle,
           }
         : undefined,
-    [search, searchQuery, setSearch, noun.other],
+    [search, searchQuery, setSearch, noun.other, m],
   );
   const searching = Boolean(search) && searchQuery !== "";
 
   /* ── Reordering: why it is unavailable, and each row's grip ───────────────────── */
   const reorderReason = reorder
-    ? reorderUnavailable({
-        disabled: reorder.disabled,
-        sorted: sorting.length > 0,
-        searched: searching,
-        filtered: filters.length > 0 || toggles.some((toggle) => toggle.checked),
-        grouped: Boolean(grouping) && !reorder.withinGroups,
-        paged:
-          !grouping &&
-          !reorder.withinPage &&
-          (Boolean(cursor) ||
-            Boolean(infinite?.hasMore) ||
-            pagination.pageIndex > 0 ||
-            (rowCount !== undefined && rowCount > rows.length)),
-        held: liveRows.pending > 0,
-        saving: shownMove?.status === "pending",
-      })
+    ? reorderUnavailable(
+        {
+          disabled: reorder.disabled,
+          sorted: sorting.length > 0,
+          searched: searching,
+          filtered:
+            filters.length > 0 || toggles.some((toggle) => toggle.checked),
+          grouped: Boolean(grouping) && !reorder.withinGroups,
+          paged:
+            !grouping &&
+            !reorder.withinPage &&
+            (Boolean(cursor) ||
+              Boolean(infinite?.hasMore) ||
+              pagination.pageIndex > 0 ||
+              (rowCount !== undefined && rowCount > rows.length)),
+          held: liveRows.pending > 0,
+          saving: shownMove?.status === "pending",
+        },
+        m,
+      )
     : null;
   const canReorder = reorder?.canReorder;
   const lockedReason = reorder?.lockedReason;
@@ -889,9 +979,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     (row: T) =>
       reorderReason ??
       (canReorder && !canReorder(row)
-        ? lockedReason?.(row) || LOCKED_REASON
+        ? lockedReason?.(row) || m.lockedRow
         : ""),
-    [reorderReason, canReorder, lockedReason],
+    [reorderReason, canReorder, lockedReason, m],
   );
   const gripOf = useMemo(
     () =>
@@ -1071,9 +1161,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const announcerRef = useRef<HTMLDivElement>(null);
   const reorderRef = useRef<ActiveReorder | null>(null);
   const moveToken = useRef(0);
-  const [gripTooltip] = useState(() =>
-    TooltipPrimitive.createHandle<string>(),
-  );
+  const [gripTooltip] = useState(() => TooltipPrimitive.createHandle<string>());
 
   /** Say it in the live region; the same message twice is still announced. */
   const announce = useCallback((message: string) => {
@@ -1094,7 +1182,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     if (reason) return reason;
     const lines = current.lines;
     const line = lines
-      ? lines.findIndex((entry) => entry.kind === "row" && entry.row.id === rowId)
+      ? lines.findIndex(
+          (entry) => entry.kind === "row" && entry.row.id === rowId,
+        )
       : current.order.indexOf(rowId);
     if (line < 0) return null;
     let first = 0;
@@ -1160,7 +1250,11 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   }, []);
 
   const positionOf = (lift: Lift, line: number) =>
-    positionText(line - lift.first + 1, lift.last - lift.first + 1, lift.group?.label);
+    m.reorderPosition(
+      line - lift.first + 1,
+      lift.last - lift.first + 1,
+      lift.group?.label,
+    );
 
   /** Report the move to the host and show it at once; a rejected promise reverts it. */
   const commitMove = useCallback(
@@ -1238,8 +1332,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           const onError = latest.current.props.reorder?.onError;
           if (onError) onError(error, move);
           else
-            toast.danger(`${lift.label} was not moved`, {
-              description: reason || "The new order was not saved.",
+            toast.danger(m.rowNotMoved(lift.label), {
+              description: reason || m.orderNotSaved,
             });
           const element = scrollRef.current?.querySelector<HTMLElement>(
             `[data-item="row"][data-index="${lift.line}"]`,
@@ -1256,7 +1350,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       );
     },
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- positionOf is pure; everything else is read through refs
-    [announce],
+    [announce, m],
   );
 
   const gripController = useMemo<GripController>(
@@ -1277,11 +1371,17 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           onStart: () => {
             setActiveIndex(lift.line);
             announce(
-              reorderMessages.lifted(lift.label, positionOf(lift, lift.line), true),
+              reorderMessages.lifted(
+                lift.label,
+                positionOf(lift, lift.line),
+                true,
+              ),
             );
           },
           onTarget: (target) =>
-            announce(reorderMessages.moved(lift.label, positionOf(lift, target))),
+            announce(
+              reorderMessages.moved(lift.label, positionOf(lift, target)),
+            ),
           onDrop: (target) => {
             reorderRef.current = null;
             commitMove(lift, target, "pointer");
@@ -1290,7 +1390,10 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
             if (reorderRef.current?.kind !== "pointer") return;
             reorderRef.current = null;
             announce(
-              reorderMessages.cancelled(lift.label, positionOf(lift, lift.line)),
+              reorderMessages.cancelled(
+                lift.label,
+                positionOf(lift, lift.line),
+              ),
             );
           },
         });
@@ -1366,7 +1469,10 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
               lift.measure(lift.line).size,
             );
             announce(
-              reorderMessages.moved(lift.label, positionOf(lift, session.target)),
+              reorderMessages.moved(
+                lift.label,
+                positionOf(lift, session.target),
+              ),
             );
             return;
           }
@@ -1384,7 +1490,10 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
             reorderRef.current = null;
             session.finish(true);
             announce(
-              reorderMessages.cancelled(lift.label, positionOf(lift, lift.line)),
+              reorderMessages.cancelled(
+                lift.label,
+                positionOf(lift, lift.line),
+              ),
             );
             return;
           default:
@@ -1404,7 +1513,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       },
     }),
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- positionOf is pure; the rest are stable
-    [gripTooltip, domId, prepareLift, commitMove, announce],
+    [gripTooltip, domId, prepareLift, commitMove, announce, m],
   );
 
   // Rows replaced, or the layout switched, mid-gesture: the line indexes no longer hold.
@@ -1458,7 +1567,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                 size="sm"
                 className="fa-dt-row-button fa-dt-actions"
                 icon={<IconMoreHorizontal />}
-                aria-label={`Actions for ${rowLabel}`}
+                aria-label={m.actionsFor(rowLabel)}
                 tabIndex={tabIndex}
                 data-dt-interactive=""
               />
@@ -1502,7 +1611,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       },
       grip: reorderable ? gripController : undefined,
     }),
-    [toggleRow, rowMenu, actionsOf, setGroups, reorderable, gripController],
+    [toggleRow, rowMenu, actionsOf, setGroups, reorderable, gripController, m],
   );
 
   const commitWidth = useCallback(
@@ -1515,8 +1624,55 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     [updatePreferences],
   );
 
+  const changeColumnOrder = (id: string, target: number) => {
+    const next = moveColumn(columnOrder, id, target, pinnedSet);
+    props.onColumnOrderChange?.(next);
+    if (props.columnOrder === undefined)
+      updatePreferences((current) => ({ ...current, order: next }));
+    const group = next.filter(
+      (other) => pinnedSet.has(other) === pinnedSet.has(id),
+    );
+    setNotice(
+      messages.columnMoved(
+        metaById.get(id)?.meta.label ?? id,
+        group.indexOf(id) + 1,
+        group.length,
+      ),
+    );
+  };
+  const columnOrderRef = useRef({ changeColumnOrder, columnOrder, pinnedSet });
+  columnOrderRef.current = { changeColumnOrder, columnOrder, pinnedSet };
+
   const headerController = useMemo<HeaderController>(
     () => ({
+      reorderColumn: (id, target) => {
+        const current = columnOrderRef.current;
+        const group = current.columnOrder.filter(
+          (other) => current.pinnedSet.has(other) === current.pinnedSet.has(id),
+        );
+        if (group.includes(target))
+          current.changeColumnOrder(id, group.indexOf(target));
+      },
+      moveColumn: (id, to) => {
+        const current = columnOrderRef.current;
+        const group = current.columnOrder.filter(
+          (other) => current.pinnedSet.has(other) === current.pinnedSet.has(id),
+        );
+        const at = group.indexOf(id);
+        const rtl =
+          rootRef.current &&
+          getComputedStyle(rootRef.current).direction === "rtl";
+        current.changeColumnOrder(
+          id,
+          typeof to === "number"
+            ? to
+            : to === "start"
+              ? 0
+              : to === "end"
+                ? group.length - 1
+                : at + (to === "left" ? (rtl ? 1 : -1) : rtl ? -1 : 1),
+        );
+      },
       getColumn: (columnId) =>
         latest.current.table.getColumn(columnId) as never,
       toggleSort: (columnId, event) =>
@@ -1572,13 +1728,22 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           delete widths[columnId];
           return { ...current, widths };
         }),
-      resetColumns: () =>
+      resetColumns: () => {
+        const current = latest.current.props;
+        current.onColumnOrderChange?.(
+          normaliseColumnOrder(
+            current.columns.map((column) => columnIdOf(column)),
+            current.defaultColumnOrder,
+          ),
+        );
         updatePreferences((current) => ({
           ...current,
           widths: {},
+          order: null,
           hidden: [...(latest.current.props.defaultHiddenColumns ?? [])],
           pinned: null,
-        })),
+        }));
+      },
       openFilter: (columnId) => {
         const entry = latest.current.metaById.get(columnId);
         const cell = entry
@@ -1658,7 +1823,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     [actionsOf],
   );
 
-  /** "Only this value" / "Exclude this value" for the right-clicked cell, when its column filters by value. */
+  /** m.onlyValue / m.excludeValue for the right-clicked cell, when its column filters by value. */
   const resolveCellFilter = (
     rowId: string,
     target: EventTarget | null,
@@ -1673,7 +1838,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     if (!columnId) return null;
     const row = pageRows.find((entry) => entry.id === rowId);
     const found = row
-      ? cellFilter(filterController, columnId, row.getValue(columnId))
+      ? cellFilter(filterController, columnId, row.getValue(columnId), m)
       : null;
     return found ? (
       <CellFilterItems target={found} controller={filterController} />
@@ -1793,9 +1958,23 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       case "ArrowRight":
         if (hit.kind !== "group") return false;
         event.preventDefault();
-        if (collapsed === (event.key === "ArrowLeft")) return true;
+        if (
+          collapsed ===
+          (event.key ===
+            (getComputedStyle(rootRef.current!).direction === "rtl"
+              ? "ArrowRight"
+              : "ArrowLeft"))
+        )
+          return true;
         setGroups((current) =>
-          setCollapsed(current, hit.groupId, event.key === "ArrowLeft"),
+          setCollapsed(
+            current,
+            hit.groupId,
+            event.key ===
+              (getComputedStyle(rootRef.current!).direction === "rtl"
+                ? "ArrowRight"
+                : "ArrowLeft"),
+          ),
         );
         return true;
       default:
@@ -1948,8 +2127,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     (cursor || grouping ? 0 : pagination.pageIndex * pagination.pageSize) + 2;
   const totalRows = grouping
     ? undefined
-    : (rowCount ??
-      (cursor || loadMore.active ? undefined : data.length));
+    : (rowCount ?? (cursor || loadMore.active ? undefined : data.length));
   const showTail = loadMore.active && !showSkeleton && !showError && !showEmpty;
   const colCount =
     visibleColumns.length + (selectable ? 2 : 1) + (reorderable ? 1 : 0);
@@ -2048,12 +2226,12 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                         searchHandle.current?.focus({ open: false });
                       }}
                     >
-                      Clear search
+                      {m.clearSearch}
                     </Button>
                   ) : null}
                   {filters.length ? (
                     <Button size="sm" onClick={filterController.clearAll}>
-                      Clear filters
+                      {m.clearFilters}
                     </Button>
                   ) : null}
                 </>
@@ -2066,7 +2244,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
               noun,
               searching ? searchQuery : "",
               filters.length,
-              emptyMessage,
+              emptyMessage ?? m.noRows,
+              m,
             )}
           </BodyMessage>
         )}
@@ -2157,7 +2336,12 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
 
   const settingsColumns = useMemo(
     () =>
-      orderColumns(definitions, pinnedIds).map((entry) => ({
+      orderColumns(
+        definitions,
+        definitions
+          .filter((entry) => pinnedSet.has(entry.id))
+          .map((entry) => entry.id),
+      ).map((entry) => ({
         id: entry.id,
         label: entry.meta.label,
         hideable: entry.meta.hideable,
@@ -2185,206 +2369,430 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         controller={headerController}
       />
     ),
-    [settingsColumns, userHidden, autoHiddenSet, effectiveDensity, headerController],
+    [
+      settingsColumns,
+      userHidden,
+      autoHiddenSet,
+      effectiveDensity,
+      headerController,
+    ],
   );
+
+  const exportColumns: DataTableExportColumn<T>[] = visibleColumns.map(
+    (column) => ({
+      id: column.id,
+      header: column.meta.label,
+      value: (row) =>
+        column.meta.exportValue
+          ? column.meta.exportValue(row)
+          : table.getColumn(column.id)?.accessorFn?.(row, 0),
+    }),
+  );
+  const exportSettings = typeof props.export === "object" ? props.export : {};
+  const exportRows = selected
+    ? selectedTargets
+    : pageRows.map((row) => row.original);
+  const runExport = async (format: "csv" | "tsv") => {
+    try {
+      if (props.onExport) {
+        await props.onExport({
+          format,
+          columns: exportColumns,
+          filters,
+          sort: sorting,
+          selection,
+        });
+        return;
+      }
+      const options = {
+        rows: exportRows,
+        columns: exportColumns,
+        headers: format === "csv" ? true : exportSettings.headers,
+        bom: exportSettings.bom,
+      };
+      if (format === "tsv") {
+        await navigator.clipboard.writeText(exportTsv(options));
+        announceCell(messages.copiedRows(exportRows.length));
+        return;
+      }
+      const url = URL.createObjectURL(
+        new Blob([exportCsv(options)], { type: "text/csv;charset=utf-8" }),
+      );
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = exportSettings.filename ?? `${id}.csv`;
+      anchor.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : messages.exportFailed);
+    }
+  };
+  const onCopy = (event: React.ClipboardEvent<HTMLDivElement>) => {
+    if (
+      (event.target as Element).closest(
+        "input, textarea, [contenteditable='true'], [data-editing]",
+      )
+    )
+      return;
+    if (selected) {
+      event.preventDefault();
+      event.clipboardData.setData(
+        "text/plain",
+        exportTsv({
+          rows: exportRows,
+          columns: exportColumns,
+          headers: exportSettings.headers,
+        }),
+      );
+      announceCell(messages.copiedRows(exportRows.length));
+    } else {
+      const cell = (event.target as Element).closest(
+        ".fa-dt-cell, [data-cell-editable]",
+      );
+      if (cell) {
+        event.preventDefault();
+        event.clipboardData.setData("text/plain", cell.textContent ?? "");
+      }
+    }
+  };
+
+  const focusEditable = (target: { rowId: string; columnId: string }) => {
+    const row = [
+      ...(rootRef.current?.querySelectorAll<HTMLElement>("[data-row-id]") ??
+        []),
+    ].find((element) => element.dataset.rowId === target.rowId);
+    const key = metaById.get(target.columnId)?.key;
+    const field = row?.querySelector<HTMLElement>(
+      `[data-col="${key}"] [data-cell-editable]`,
+    );
+    if (!field) return false;
+    field.focus({ preventScroll: true });
+    field.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "F2", bubbles: true }),
+    );
+    return true;
+  };
+  editNavigation.current = (rowId, columnId, delta) => {
+    const fieldsFor = (id: string) => {
+      const row = rowsById.get(id);
+      const more = expandAll || expanded.has(id);
+      const fields =
+        mode === "cards"
+          ? [
+              cards.title,
+              cards.subtitle,
+              cards.status,
+              ...cards.meta,
+              ...(more ? cards.details : []),
+            ].filter((field) => field !== undefined)
+          : [...visibleColumns, ...(more ? hiddenColumns : [])];
+      return fields.filter(
+        (field) =>
+          field.meta.edit &&
+          field.meta.editable !== false &&
+          (typeof field.meta.editable !== "function" ||
+            field.meta.editable(row)) &&
+          ((id === rowId && field.id === columnId) ||
+            editStore.read(JSON.stringify([id, field.id]))?.status !==
+              "pending"),
+      );
+    };
+    let rowIndex = order.indexOf(rowId);
+    if (rowIndex < 0) return false;
+    let fieldIndex =
+      fieldsFor(rowId).findIndex((field) => field.id === columnId) + delta;
+    while (rowIndex >= 0 && rowIndex < order.length) {
+      const targetId = order[rowIndex]!;
+      const fields = fieldsFor(targetId);
+      const field = fields[fieldIndex];
+      if (field) {
+        const target = { rowId: targetId, columnId: field.id };
+        if (!focusEditable(target)) {
+          pendingEditFocus.current = target;
+          const line = lines
+            ? lines.findIndex(
+                (item) => item.kind === "row" && item.row.id === targetId,
+              )
+            : rowIndex;
+          focusRow(line);
+        }
+        return true;
+      }
+      rowIndex += delta;
+      if (rowIndex < 0 || rowIndex >= order.length) break;
+      fieldIndex = delta > 0 ? 0 : fieldsFor(order[rowIndex]!).length - 1;
+    }
+    return false;
+  };
+  useLayoutEffect(() => {
+    const request = pendingEditFocus.current;
+    if (request && focusEditable(request)) pendingEditFocus.current = null;
+  });
 
   return (
     // Cells, the footer and filter summaries inside read the table's locale.
     <LocaleProvider locale={locale}>
-    {/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- delegated: "/" anywhere inside the table focuses its search (R16.8) */}
-    <div
-      ref={rootRef}
-      id={domId}
-      className={cx("fa-dt", className)}
-      onKeyDown={searchBinding ? onRootKeyDown : undefined}
-      data-height={height}
-      data-mode={mode}
-      data-density={density}
-      data-selectable={selectable ? "" : undefined}
-      data-reorderable={reorderable ? "" : undefined}
-      data-trail={layout.trailButtons}
-      data-pinned={
-        visibleColumns.some((column) => column.pinned) ? "" : undefined
-      }
-      data-scrolled-top={edges.top ? "" : undefined}
-      data-scrolled-bottom={edges.bottom ? "" : undefined}
-      data-scrolled-left={edges.left ? "" : undefined}
-      data-refetching={refetching ? "" : undefined}
-      data-measured={measured ? "" : undefined}
-      data-tier={statusOnly ? "status" : undefined}
-      style={rootVars}
-    >
-      <span ref={probeRef} className="fa-dt-probe" aria-hidden />
-      {toolbar || hasFilterBar || searchBinding || mode === "cards" ? (
-        <div className="fa-dt-toolbar">
-          {hasFilterBar || searchBinding ? (
-            <FilterBar
-              controller={filterController}
-              toggles={toggles}
-              search={searchBinding}
-            />
-          ) : null}
-          {toolbar || mode === "cards" ? (
-            <div className="fa-dt-toolbar-end">
-              {toolbar}
-              {mode === "cards" ? settingsMenu : null}
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-      <div className="fa-dt-frame">
-        <div
-          role="grid"
-          className="fa-dt-grid"
-          aria-label={label}
-          aria-rowcount={
-            showSkeleton || showError || showEmpty
-              ? -1
-              : totalRows === undefined
-                ? -1
-                : totalRows + 1
-          }
-          aria-colcount={colCount}
-          aria-multiselectable={selectable || undefined}
-          aria-busy={
-            loading || refetching || Boolean(infinite?.loadingMore) || undefined
-          }
-          tabIndex={-1}
-          onKeyDown={onGridKeyDown}
-        >
-          {mode === "table" ? (
+      <MessagesProvider messages={providedMessages}>
+        <EditingContext value={editContext}>
+          <DragDropProvider
+            instructions={m.columnDragInstructions}
+            announcements={{
+              lifted: (item, place, input) =>
+                m.reorderLifted(
+                  item.label,
+                  m.reorderPosition(place.position ?? 1, place.count ?? 1),
+                  input === "pointer",
+                ),
+              moved: (item, place, reason) =>
+                reason ??
+                m.reorderMoved(
+                  item.label,
+                  m.reorderPosition(place.position ?? 1, place.count ?? 1),
+                ),
+              dropped: (item, place) =>
+                m.reorderDropped(
+                  item.label,
+                  m.reorderPosition(place.position ?? 1, place.count ?? 1),
+                ),
+              cancelled: (item, place) =>
+                m.reorderCancelled(
+                  item.label,
+                  m.reorderPosition(place.position ?? 1, place.count ?? 1),
+                ),
+              blocked: (item) => m.columnMoveBlocked(item.label),
+              failed: (item, _place, reason) =>
+                reason ?? m.columnMoveBlocked(item.label),
+            }}
+          >
+            {/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- delegated: "/" anywhere inside the table focuses its search (R16.8) */}
             <div
-              role="rowgroup"
-              ref={headRef}
-              className="glass-inset fa-dt-head"
+              ref={rootRef}
+              id={domId}
+              className={cx("fa-dt", className)}
+              onCopy={onCopy}
+              onKeyDown={searchBinding ? onRootKeyDown : undefined}
+              data-height={height}
+              data-mode={mode}
+              data-density={density}
+              data-selectable={selectable ? "" : undefined}
+              data-reorderable={reorderable ? "" : undefined}
+              data-trail={layout.trailButtons}
+              data-pinned={
+                visibleColumns.some((column) => column.pinned) ? "" : undefined
+              }
+              data-scrolled-top={edges.top ? "" : undefined}
+              data-scrolled-bottom={edges.bottom ? "" : undefined}
+              data-scrolled-left={edges.left ? "" : undefined}
+              data-refetching={refetching ? "" : undefined}
+              data-measured={measured ? "" : undefined}
+              data-tier={statusOnly ? "status" : undefined}
+              style={rootVars}
             >
-              <DataTableHeader
-                columns={visibleColumns}
-                sorting={sorting}
-                sized={sized}
-                selectable={selectable}
-                pageSelection={pageSelection(selection, order)}
-                pageRowCount={order.length}
-                loadedRows={Boolean(infinite)}
-                hiddenCount={hiddenColumns.length}
-                expandedAll={expandAll}
-                columnMenu={columnMenu}
-                controller={headerController}
-                filtered={filtered}
-                settings={settingsMenu}
-                reorderable={reorderable}
-              />
-            </div>
-          ) : null}
-          {/* The body box: a fill table's scroller is absolutely positioned inside it, which
+              <span ref={probeRef} className="fa-dt-probe" aria-hidden />
+              {toolbar ||
+              props.export ||
+              hasFilterBar ||
+              searchBinding ||
+              mode === "cards" ? (
+                <div className="fa-dt-toolbar">
+                  {hasFilterBar || searchBinding ? (
+                    <FilterBar
+                      controller={filterController}
+                      toggles={toggles}
+                      search={searchBinding}
+                    />
+                  ) : null}
+                  {toolbar || props.export || mode === "cards" ? (
+                    <div className="fa-dt-toolbar-end">
+                      {props.export ? (
+                        <ExportMenu
+                          run={(format) => {
+                            void runExport(format);
+                          }}
+                        />
+                      ) : null}
+                      {toolbar}
+                      {mode === "cards" ? settingsMenu : null}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+              <div className="fa-dt-frame">
+                <div
+                  role="grid"
+                  className="fa-dt-grid"
+                  aria-label={label}
+                  aria-rowcount={
+                    showSkeleton || showError || showEmpty
+                      ? -1
+                      : totalRows === undefined
+                        ? -1
+                        : totalRows + 1
+                  }
+                  aria-colcount={colCount}
+                  aria-multiselectable={selectable || undefined}
+                  aria-busy={
+                    loading ||
+                    refetching ||
+                    Boolean(infinite?.loadingMore) ||
+                    undefined
+                  }
+                  tabIndex={-1}
+                  onKeyDown={onGridKeyDown}
+                >
+                  {mode === "table" ? (
+                    <div
+                      role="rowgroup"
+                      ref={headRef}
+                      className="glass-inset fa-dt-head"
+                    >
+                      <DataTableHeader
+                        columns={visibleColumns}
+                        sorting={sorting}
+                        sized={sized}
+                        selectable={selectable}
+                        pageSelection={pageSelection(selection, order)}
+                        pageRowCount={order.length}
+                        loadedRows={Boolean(infinite)}
+                        hiddenCount={hiddenColumns.length}
+                        expandedAll={expandAll}
+                        columnMenu={columnMenu}
+                        controller={headerController}
+                        filtered={filtered}
+                        settings={settingsMenu}
+                        reorderable={reorderable}
+                      />
+                    </div>
+                  ) : null}
+                  {/* The body box: a fill table's scroller is absolutely positioned inside it, which
               makes the scroller a relayout boundary (rows mount without laying out the page). */}
-          <div className="fa-dt-body">
-            <div
-              ref={scrollRef}
-              className="fa-dt-scroll"
-              data-scroll-container=""
-              onScroll={onScroll}
-            >
-              {body}
+                  <div className="fa-dt-body">
+                    <div
+                      ref={scrollRef}
+                      className="fa-dt-scroll"
+                      data-scroll-container=""
+                      onScroll={onScroll}
+                    >
+                      {body}
+                    </div>
+                  </div>
+                </div>
+                <div className="fa-dt-progress" aria-hidden />
+                {liveRows.pending > 0 ? (
+                  <div className="fa-dt-new">
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      shape="circle"
+                      icon={<IconArrowUp />}
+                      onClick={applyPending}
+                    >
+                      {m.newRows(liveRows.pending)}
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+              <DataTableFooter<T>
+                pageIndex={pagination.pageIndex}
+                pageSize={pagination.pageSize}
+                pageRows={data.length}
+                rowCount={rowCount}
+                pageSizes={pageSizes}
+                cursor={cursor}
+                onPageChange={(pageIndex) =>
+                  setPagination((current) => ({ ...current, pageIndex }))
+                }
+                onPageSizeChange={(pageSize) =>
+                  setPagination({ pageIndex: 0, pageSize })
+                }
+                compact={compactFooter}
+                disabled={showSkeleton}
+                loading={showSkeleton}
+                updatedAt={updatedAt}
+                status={status}
+                label={label}
+                countLabel={
+                  loadMore.active
+                    ? rowCount !== undefined
+                      ? m.loadedOf(
+                          formatNumber(data.length, 0, locale),
+                          formatCount(rowCount, noun, locale),
+                        )
+                      : m.loaded(formatCount(data.length, noun, locale))
+                    : formatCount(
+                        grouping ? groupTotal : (rowCount ?? data.length),
+                        noun,
+                        locale,
+                      )
+                }
+                counted={Boolean(grouping) || Boolean(infinite)}
+                bulk={{
+                  count: selected,
+                  targets: selectedTargets,
+                  groups: bulkGroups,
+                  onRun,
+                  label: formatCount(selectedTargets.length, noun, locale),
+                  custom: renderBulkActions?.(selectedTargets, () =>
+                    setSelection({}),
+                  ),
+                  clear: () => setSelection({}),
+                  narrow: measured && widthRem < 40,
+                }}
+              />
+              {hasActions && !renderRowActions ? (
+                <RowActionsMenu<T>
+                  handle={rowMenu}
+                  resolve={resolveRowMenu}
+                  onRun={onRun}
+                />
+              ) : null}
+              {mode === "table" ? (
+                <ColumnMenu
+                  handle={columnMenu}
+                  controller={headerController}
+                  sorting={sorting}
+                  sized={sized}
+                  pinned={pinnedSet}
+                  filters={filterController}
+                />
+              ) : null}
+              {hasFilterBar ? (
+                <FilterPopover controller={filterController} />
+              ) : null}
+              {reorderable ? (
+                <>
+                  <span id={`${domId}-reorder-help`} hidden>
+                    {reorderMessages.instructions}
+                  </span>
+                  <div
+                    ref={announcerRef}
+                    className="fa-dt-announcer"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                  />
+                  <TooltipPrimitive.Root
+                    handle={gripTooltip}
+                    disableHoverablePopup
+                  >
+                    {({ payload }) => (
+                      <TooltipPopup side="top" align="center" arrow>
+                        {payload ?? null}
+                      </TooltipPopup>
+                    )}
+                  </TooltipPrimitive.Root>
+                </>
+              ) : null}
             </div>
-          </div>
-        </div>
-        <div className="fa-dt-progress" aria-hidden />
-        {liveRows.pending > 0 ? (
-          <div className="fa-dt-new">
-            <Button
-              size="sm"
-              variant="primary"
-              shape="circle"
-              icon={<IconArrowUp />}
-              onClick={applyPending}
+            <div
+              className="fa-dt-announcer"
+              aria-live="polite"
+              aria-atomic="true"
             >
-              {liveRows.pending} new
-            </Button>
-          </div>
-        ) : null}
-      </div>
-      <DataTableFooter<T>
-        pageIndex={pagination.pageIndex}
-        pageSize={pagination.pageSize}
-        pageRows={data.length}
-        rowCount={rowCount}
-        pageSizes={pageSizes}
-        cursor={cursor}
-        onPageChange={(pageIndex) =>
-          setPagination((current) => ({ ...current, pageIndex }))
-        }
-        onPageSizeChange={(pageSize) =>
-          setPagination({ pageIndex: 0, pageSize })
-        }
-        compact={compactFooter}
-        disabled={showSkeleton}
-        loading={showSkeleton}
-        updatedAt={updatedAt}
-        status={status}
-        label={label}
-        countLabel={
-          loadMore.active
-            ? rowCount !== undefined
-              ? `${formatNumber(data.length, 0, locale)} of ${formatCount(rowCount, noun, locale)}`
-              : `${formatCount(data.length, noun, locale)} loaded`
-            : formatCount(
-                grouping ? groupTotal : (rowCount ?? data.length),
-                noun,
-                locale,
-              )
-        }
-        counted={Boolean(grouping) || Boolean(infinite)}
-        bulk={{
-          count: selected,
-          targets: selectedTargets,
-          groups: bulkGroups,
-          onRun,
-          label: formatCount(selectedTargets.length, noun, locale),
-          custom: renderBulkActions?.(selectedTargets, () => setSelection({})),
-          clear: () => setSelection({}),
-          narrow: measured && widthRem < 40,
-        }}
-      />
-      {hasActions && !renderRowActions ? (
-        <RowActionsMenu<T>
-          handle={rowMenu}
-          resolve={resolveRowMenu}
-          onRun={onRun}
-        />
-      ) : null}
-      {mode === "table" ? (
-        <ColumnMenu
-          handle={columnMenu}
-          controller={headerController}
-          sorting={sorting}
-          sized={sized}
-          pinned={pinnedSet}
-          filters={filterController}
-        />
-      ) : null}
-      {hasFilterBar ? <FilterPopover controller={filterController} /> : null}
-      {reorderable ? (
-        <>
-          <span id={`${domId}-reorder-help`} hidden>
-            {reorderMessages.instructions}
-          </span>
-          <div
-            ref={announcerRef}
-            className="fa-dt-announcer"
-            aria-live="assertive"
-            aria-atomic="true"
-          />
-          <TooltipPrimitive.Root handle={gripTooltip} disableHoverablePopup>
-            {({ payload }) => (
-              <TooltipPopup side="top" align="center" arrow>
-                {payload ?? null}
-              </TooltipPopup>
-            )}
-          </TooltipPrimitive.Root>
-        </>
-      ) : null}
-    </div>
+              {notice}
+            </div>
+          </DragDropProvider>
+        </EditingContext>
+      </MessagesProvider>
     </LocaleProvider>
   );
 }

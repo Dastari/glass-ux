@@ -6,7 +6,7 @@
  */
 @layer components {
   .fa-dt-text {
-    min-width: 0;
+    min-inline-size: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -31,7 +31,7 @@
   .fa-dt-two-line {
     display: flex;
     flex-direction: column;
-    min-width: 0;
+    min-inline-size: 0;
   }
   .fa-dt-two-line-sub {
     color: var(--fg-muted);
@@ -46,7 +46,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--space-2);
-    min-width: 0;
+    min-inline-size: 0;
   }
   /* The sparkline's box, shared with its skeleton. It gives way before the value. */
   .fa-dt-spark,
@@ -54,16 +54,16 @@
     --_w: 4.5rem;
     --_h: 1.75rem; /* the inline sparkline height, as in Metric's micro tier */
     flex: 0 1 auto;
-    width: var(--_w);
-    min-width: 0;
-    height: var(--_h);
+    inline-size: var(--_w);
+    min-inline-size: 0;
+    block-size: var(--_h);
   }
   .fa-dt-spark {
     display: block;
   }
   .fa-dt-spark-value {
     flex: none;
-    min-width: 3.5ch;
+    min-inline-size: 3.5ch;
     font-variant-numeric: tabular-nums;
     text-align: end;
   }

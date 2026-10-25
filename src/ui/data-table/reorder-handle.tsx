@@ -1,24 +1,29 @@
-import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, SyntheticEvent } from "react"
-import { IconGrip } from "../../icons/generated/icons.js"
-import { TOOLTIP_DELAY_MS, TooltipPrimitive } from "../tooltip/index.js"
+import { useDataTableMessages } from "./use-messages.js";
+import type {
+  KeyboardEvent as ReactKeyboardEvent,
+  PointerEvent as ReactPointerEvent,
+  SyntheticEvent,
+} from "react";
+import { IconGrip } from "../../icons/generated/icons.js";
+import { TOOLTIP_DELAY_MS, TooltipPrimitive } from "../tooltip/index.js";
 
 /** What every grip shares (one object per table, inside the RowController). */
 export interface GripController {
   /** One tooltip for every grip: how to reorder, or a disabled grip's reason. */
-  tooltip: TooltipPrimitive.Handle<string>
+  tooltip: TooltipPrimitive.Handle<string>;
   /** The visible instruction an available grip's tooltip shows. */
-  hint: string
+  hint: string;
   /** Element id of the keyboard instructions (aria-describedby on an available grip). */
-  helpId: string
+  helpId: string;
   /** Prefix for a disabled grip's reason element id. */
-  idBase: string
-  pointerDown: (rowId: string, event: ReactPointerEvent<HTMLElement>) => void
-  keyDown: (rowId: string, event: ReactKeyboardEvent<HTMLElement>) => void
-  blur: (rowId: string) => void
+  idBase: string;
+  pointerDown: (rowId: string, event: ReactPointerEvent<HTMLElement>) => void;
+  keyDown: (rowId: string, event: ReactKeyboardEvent<HTMLElement>) => void;
+  blur: (rowId: string) => void;
 }
 
 /** Keep touch long-press and right-click on the grip from opening the row's context menu. */
-const stop = (event: SyntheticEvent) => event.stopPropagation()
+const stop = (event: SyntheticEvent) => event.stopPropagation();
 
 /**
  * A row's reorder grip: "Reorder <row>". `reason` is "" when the row can move, otherwise why it
@@ -33,16 +38,17 @@ export function GripButton({
   reason,
   grip,
 }: {
-  rowId: string
+  rowId: string;
   /** The line index, for a unique reason id. */
-  index: number
-  label: string
-  tabIndex: number
-  reason: string
-  grip: GripController
+  index: number;
+  label: string;
+  tabIndex: number;
+  reason: string;
+  grip: GripController;
 }) {
-  const disabled = reason !== ""
-  const reasonId = `${grip.idBase}-${index}`
+  const m = useDataTableMessages();
+  const disabled = reason !== "";
+  const reasonId = `${grip.idBase}-${index}`;
   return (
     <>
       <TooltipPrimitive.Trigger
@@ -53,22 +59,22 @@ export function GripButton({
           <button
             type="button"
             className="fa-dt-grip-button"
-            aria-label={`Reorder ${label}`}
+            aria-label={m.reorderRow(label)}
             aria-disabled={disabled || undefined}
             aria-describedby={disabled ? reasonId : grip.helpId}
             tabIndex={tabIndex}
             data-dt-interactive=""
             onPointerDown={(event) => {
-              stop(event)
-              if (disabled) return
+              stop(event);
+              if (disabled) return;
               // The hint has done its job once the grip is taken.
-              grip.tooltip.close()
-              grip.pointerDown(rowId, event)
+              grip.tooltip.close();
+              grip.pointerDown(rowId, event);
             }}
             onTouchStart={stop}
             onContextMenu={(event) => {
-              event.preventDefault()
-              stop(event)
+              event.preventDefault();
+              stop(event);
             }}
             onKeyDown={(event) => grip.keyDown(rowId, event)}
             onBlur={() => grip.blur(rowId)}
@@ -83,5 +89,5 @@ export function GripButton({
         </span>
       ) : null}
     </>
-  )
+  );
 }

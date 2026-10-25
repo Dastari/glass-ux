@@ -73,3 +73,20 @@ export {
 export { useTableUrlState } from "./use-table-url-state.js";
 
 export { localPage } from "./local-page.js";
+
+export type {
+  CellEditorProps,
+  DataTableColumnEdit,
+  DataTableCellEdit,
+} from "./edit-types.js";
+export {
+  exportCsv,
+  exportTsv,
+  type DataTableExportOptions,
+  type DataTableExportColumn,
+} from "./export.js";
+export type {
+  DataTableExportSettings,
+  DataTableExportRequest,
+} from "./types.js";
+export type { DataTableMessages } from "./messages.js";

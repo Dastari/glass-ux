@@ -6,72 +6,95 @@ import {
   type DeepKeys,
   type DeepValue,
   type RowData,
-} from "@tanstack/react-table"
-import type { ReactNode } from "react"
-import type { CardRole, CellSkeleton, ColumnAlign, DataColumnMeta, DataTableFeatures } from "./features.js"
-import { isNoFilter, type ColumnFilterSetting } from "./filters/types.js"
+} from "@tanstack/react-table";
+import type { ReactNode } from "react";
+import type {
+  CardRole,
+  CellSkeleton,
+  ColumnAlign,
+  DataColumnMeta,
+  DataTableFeatures,
+} from "./features.js";
+import { isNoFilter, type ColumnFilterSetting } from "./filters/types.js";
 
-export type ColumnPriority = 1 | 2 | 3 | 4 | 5
+import type { DataTableColumnEdit } from "./edit-types.js";
+
+export type ColumnPriority = 1 | 2 | 3 | 4 | 5;
 
 /**
  * A Glass UX column: a TanStack v9 column definition plus the metadata the table needs to
  * lay itself out against its container. Widths are rem.
  */
 export interface DataColumnSpec<T extends RowData, V = unknown> {
-  id?: string
+  id?: string;
+  /** Inline editor, typed to this accessor's value. Requires the table's onCellEdit. */
+  edit?: DataTableColumnEdit<T, V>;
+  /** Allow edits for all rows or only matching rows (default true with edit). */
+  editable?: boolean | ((row: T) => boolean);
+  /** Plain export data. Defaults to the raw accessor value, never rendered JSX. */
+  exportValue?: (row: T) => unknown;
   /** Column name. Also labels the field in cards, the "+N" detail and menus. */
-  header: string
+  header: string;
   /** Cell renderer. Return a string for plain text (it truncates with an ellipsis). */
-  cell?: (context: CellContext<DataTableFeatures, T, V>) => ReactNode
+  cell?: (context: CellContext<DataTableFeatures, T, V>) => ReactNode;
   /** 1 = never hide … 5 = hide first when the container narrows (default 3). */
-  priority?: ColumnPriority
+  priority?: ColumnPriority;
   /** Preferred width in rem (default 10). */
-  width?: number
+  width?: number;
   /** Narrowest the column may shrink to before it hides (default 80% of width). */
-  minWidth?: number
+  minWidth?: number;
   /** Widest the column may grow to when there is spare room (default 250% of width). */
-  maxWidth?: number
+  maxWidth?: number;
   /** Alignment of the overlay relative to its anchor. */
-  align?: ColumnAlign
+  align?: ColumnAlign;
   /** Pin to the start edge. Pinned columns never hide and never shrink. */
-  pin?: boolean
+  pin?: boolean;
   /** "ellipsis" (default) or "wrap" to at most two lines. */
-  truncate?: "ellipsis" | "wrap"
+  truncate?: "ellipsis" | "wrap";
   /** Role in the card list (default: meta for priority ≤ 3, otherwise hidden). */
-  cardRole?: CardRole
+  cardRole?: CardRole;
   /** The server can sort by this column. Shift-click adds it to a multi-sort. */
-  sortable?: boolean
+  sortable?: boolean;
   /** Sort descending on the first click (times, numbers). */
-  sortDescFirst?: boolean
+  sortDescFirst?: boolean;
   /** Take a share of spare width (default true). */
-  grow?: boolean
+  grow?: boolean;
   /** Flash when a live update changes the value (default true). */
-  flash?: boolean
+  flash?: boolean;
   /** Allow hiding from the column menu (default true, except pinned columns). */
-  hideable?: boolean
+  hideable?: boolean;
   /** Placeholder shape while loading (default text; number for end-aligned columns). */
-  skeleton?: CellSkeleton
+  skeleton?: CellSkeleton;
   /**
    * How the server filters this column (R16.7): `filters.options({ field: "Os", … })`, or
    * `{ none: "reason" }` when it truly cannot be narrowed. See docs/data-filters.md.
    */
-  filter?: ColumnFilterSetting
+  filter?: ColumnFilterSetting;
 }
 
-export type DataTableColumn<T extends RowData> = ColumnDef<DataTableFeatures, T, any>
+export type DataTableColumn<T extends RowData> = ColumnDef<
+  DataTableFeatures,
+  T,
+  any
+>;
 
-const round = (value: number) => Math.round(value * 100) / 100
+const round = (value: number) => Math.round(value * 100) / 100;
 
 /** Resolves a column spec into its column meta, applying defaults: width 10rem, min 0.8× and max 2.5× width, priority 3 (1 when pinned), start alignment, ellipsis truncation and a filter only when the column can be filtered. */
-export function resolveColumnMeta(spec: DataColumnSpec<never, never>): DataColumnMeta {
-  const width = spec.width ?? 10
-  const minWidth = Math.min(spec.minWidth ?? round(width * 0.8), width)
-  const maxWidth = Math.max(spec.maxWidth ?? round(width * 2.5), width)
-  const pin = Boolean(spec.pin)
-  const priority = pin ? 1 : (spec.priority ?? 3)
-  const align = spec.align ?? "start"
+export function resolveColumnMeta(
+  spec: DataColumnSpec<never, never>,
+): DataColumnMeta {
+  const width = spec.width ?? 10;
+  const minWidth = Math.min(spec.minWidth ?? round(width * 0.8), width);
+  const maxWidth = Math.max(spec.maxWidth ?? round(width * 2.5), width);
+  const pin = Boolean(spec.pin);
+  const priority = pin ? 1 : (spec.priority ?? 3);
+  const align = spec.align ?? "start";
   return {
     label: spec.header,
+    edit: spec.edit as DataColumnMeta["edit"],
+    editable: spec.editable as DataColumnMeta["editable"],
+    exportValue: spec.exportValue as DataColumnMeta["exportValue"],
     priority,
     width,
     minWidth,
@@ -87,11 +110,11 @@ export function resolveColumnMeta(spec: DataColumnSpec<never, never>): DataColum
     plain: !spec.cell,
     filter: spec.filter && !isNoFilter(spec.filter) ? spec.filter : null,
     ...(isNoFilter(spec.filter) ? { noFilter: spec.filter.none } : {}),
-  }
+  };
 }
 
 function toDefinition(spec: DataColumnSpec<never, never>) {
-  const meta = resolveColumnMeta(spec)
+  const meta = resolveColumnMeta(spec);
   return {
     ...(spec.id ? { id: spec.id } : {}),
     header: spec.header,
@@ -101,14 +124,20 @@ function toDefinition(spec: DataColumnSpec<never, never>) {
     maxSize: meta.maxWidth,
     enableSorting: Boolean(spec.sortable),
     enableColumnFilter: Boolean(meta.filter),
-    ...(spec.sortDescFirst !== undefined ? { sortDescFirst: spec.sortDescFirst } : {}),
+    ...(spec.sortDescFirst !== undefined
+      ? { sortDescFirst: spec.sortDescFirst }
+      : {}),
     enableHiding: meta.hideable,
     meta,
-  }
+  };
 }
 
 type AccessorValue<T extends RowData, TAccessor> =
-  TAccessor extends AccessorFn<T, infer TReturn> ? TReturn : TAccessor extends DeepKeys<T> ? DeepValue<T, TAccessor> : never
+  TAccessor extends AccessorFn<T, infer TReturn>
+    ? TReturn
+    : TAccessor extends DeepKeys<T>
+      ? DeepValue<T, TAccessor>
+      : never;
 
 /**
  * Column helper bound to the DataTable feature set. Keep the result at module scope (or
@@ -121,36 +150,59 @@ type AccessorValue<T extends RowData, TAccessor> =
  *   ])
  */
 export function createDataTableColumns<T extends RowData>() {
-  const helper = createColumnHelper<DataTableFeatures, T>()
+  const helper = createColumnHelper<DataTableFeatures, T>();
   return {
-    accessor<TAccessor extends AccessorFn<T> | DeepKeys<T>, TValue extends AccessorValue<T, TAccessor>>(
+    accessor<
+      TAccessor extends AccessorFn<T> | DeepKeys<T>,
+      TValue extends AccessorValue<T, TAccessor>,
+    >(
       accessor: TAccessor,
-      spec: DataColumnSpec<T, TValue>
+      spec: DataColumnSpec<T, TValue>,
     ): ColumnDef<DataTableFeatures, T, TValue> {
-      return helper.accessor(accessor as never, toDefinition(spec as unknown as DataColumnSpec<never, never>) as never) as never
+      return helper.accessor(
+        accessor as never,
+        toDefinition(spec as unknown as DataColumnSpec<never, never>) as never,
+      ) as never;
     },
     /** A column without an accessor (computed content). Needs an id. */
-    display(spec: DataColumnSpec<T, unknown> & { id: string }): ColumnDef<DataTableFeatures, T, unknown> {
-      return helper.display(toDefinition(spec as unknown as DataColumnSpec<never, never>) as never) as never
+    display(
+      spec: DataColumnSpec<T, unknown> & { id: string },
+    ): ColumnDef<DataTableFeatures, T, unknown> {
+      return helper.display(
+        toDefinition(spec as unknown as DataColumnSpec<never, never>) as never,
+      ) as never;
     },
     columns: helper.columns,
-  }
+  };
 }
 
 /**
  * A column's id as TanStack resolves it: the explicit id, else the accessor key (dots
  * become underscores), else a string header.
  */
-export function columnIdOf(def: { id?: string; accessorKey?: unknown; header?: unknown }): string {
-  if (def.id) return def.id
-  if (def.accessorKey !== undefined) return String(def.accessorKey).replaceAll(".", "_")
-  return typeof def.header === "string" ? def.header : ""
+export function columnIdOf(def: {
+  id?: string;
+  accessorKey?: unknown;
+  header?: unknown;
+}): string {
+  if (def.id) return def.id;
+  if (def.accessorKey !== undefined)
+    return String(def.accessorKey).replaceAll(".", "_");
+  return typeof def.header === "string" ? def.header : "";
 }
 
 /** Resolved metadata for a TanStack column (defaults applied even for raw definitions). */
-export function metaOf(column: { columnDef: { meta?: DataColumnMeta; header?: unknown }; id: string }): DataColumnMeta {
+export function metaOf(column: {
+  columnDef: { meta?: DataColumnMeta; header?: unknown };
+  id: string;
+}): DataColumnMeta {
   return (
     column.columnDef.meta ??
-    resolveColumnMeta({ header: typeof column.columnDef.header === "string" ? column.columnDef.header : column.id })
-  )
+    resolveColumnMeta({
+      header:
+        typeof column.columnDef.header === "string"
+          ? column.columnDef.header
+          : column.id,
+    })
+  );
 }

@@ -95,8 +95,11 @@
     --chart-wash: 14%;
   }
 
+  /* The shell owns the viewport on screen (R5.1); on paper the document flows. */
   html,
   body {
+    height: auto;
+    overflow: visible;
     background: oklch(1 0 0);
     color: var(--fg);
   }

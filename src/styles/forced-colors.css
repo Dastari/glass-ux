@@ -136,19 +136,19 @@
   .fa-switch[data-checked] .fa-switch-icon {
     color: Highlight;
   }
-  .fa-check:is([data-checked], [data-indeterminate]) {
+  :is(.fa-check:is([data-checked], [data-indeterminate]), .fa-radio[data-checked], .fa-radio-card[data-checked] .fa-radio-card-circle) {
     forced-color-adjust: none;
     border-color: Highlight;
     background: Highlight;
     color: HighlightText;
   }
-  .fa-check:is([data-checked], [data-indeterminate])::before {
+  :is(.fa-check:is([data-checked], [data-indeterminate]), .fa-radio[data-checked], .fa-radio-card[data-checked] .fa-radio-card-circle)::before {
     display: none;
   }
   .fa-check:is([data-checked], [data-indeterminate]) .fa-icon {
     color: HighlightText;
   }
-  .fa-radio[data-checked] .fa-radio-indicator {
+  :is(.fa-radio[data-checked], .fa-radio-card[data-checked]) .fa-radio-indicator {
     forced-color-adjust: none;
     background: HighlightText;
   }
@@ -215,14 +215,22 @@
   :is(.fa-chart-series, .fa-chart-bar, .fa-chart-dot, .fa-chart-key, .fa-chart-swatch, .fa-chart-brush-line, .fa-chart-brush-area, .fa-spark-line) {
     forced-color-adjust: none;
   }
-  :is(.fa-chart-grid, .fa-chart-crosshair, .fa-chart-marker-rule) {
-    stroke: GrayText;
+  /* Gridlines stay recessive: the text colour at low opacity, not GrayText (which means
+     disabled and is often vivid in high-contrast themes). */
+  .fa-chart-grid {
+    stroke: CanvasText;
+    stroke-opacity: 0.3;
   }
-  .fa-chart-threshold {
+  .fa-chart-grid[data-baseline],
+  .fa-chart-marker-rule {
+    stroke: CanvasText;
+    stroke-opacity: 0.6;
+  }
+  :is(.fa-chart-crosshair, .fa-chart-threshold) {
     stroke: CanvasText;
   }
   .fa-chart-band {
-    fill: transparent;
+    forced-color-adjust: none;
   }
   :is(.fa-chart-selection-band, .fa-chart-zoom-rect) {
     border-color: Highlight;

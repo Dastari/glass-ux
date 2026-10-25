@@ -278,3 +278,18 @@
     }
   }
 }
+
+/* Print: the documentation as one long document (the library's print layer does the rest). */
+@media print {
+  .docs-layout {
+    display: block;
+    height: auto;
+    padding: 0;
+  }
+  .docs-content {
+    overflow: visible;
+  }
+  .docs-header {
+    display: none;
+  }
+}

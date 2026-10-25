@@ -1,0 +1,49 @@
+import { z } from "zod";
+import { CascaderField } from "glass-ux/cascader";
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+import { LOCATIONS } from "glass-ux/gallery/sections/pickers.fixtures";
+
+function FormDemo() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { site: null as string[] | null },
+    validators: {
+      onDynamic: z.object({
+        site: z
+          .array(z.string())
+          .nullable()
+          .refine((value) => value !== null, "Choose a delivery site"),
+      }),
+    },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="Delivery" className="w-full">
+      <FormStack>
+        <form.AppField name="site">
+          {() => (
+            <CascaderField label="Delivery site" options={LOCATIONS} placeholder="Choose a site" />
+          )}
+        </form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  );
+}
+
+export default function CascaderSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="In a form"
+        description="CascaderField binds to string[] | null, or string[][] with multiple."
+      >
+        <FormDemo />
+      </Specimen>
+    </SectionPage>
+  );
+}

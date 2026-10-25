@@ -1,0 +1,59 @@
+import { z } from "zod";
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+import { TreeSelectField } from "glass-ux/tree-select";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+import { ORG_CHART } from "glass-ux/gallery/sections/pickers.fixtures";
+
+function FormDemo() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { owner: null as string | null, watchers: [] as string[] },
+    validators: {
+      onDynamic: z.object({
+        owner: z
+          .string({ message: "Choose an owner" })
+          .nullable()
+          .refine((value) => value !== null, "Choose an owner"),
+        watchers: z.array(z.string()).max(4, "Choose at most four"),
+      }),
+    },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="Asset ownership" className="w-full">
+      <FormStack>
+        <form.AppField name="owner">
+          {() => <TreeSelectField label="Owner" nodes={ORG_CHART} placeholder="Choose a person" />}
+        </form.AppField>
+        <form.AppField name="watchers">
+          {() => (
+            <TreeSelectField
+              label="Watchers"
+              multiple
+              optional
+              nodes={ORG_CHART}
+              placeholder="Choose teams or people"
+            />
+          )}
+        </form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  );
+}
+
+export default function TreeSelectSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="In a form"
+        description="TreeSelectField binds to string | null, or string[] with multiple; the first error replaces the hint in place."
+      >
+        <FormDemo />
+      </Specimen>
+    </SectionPage>
+  );
+}

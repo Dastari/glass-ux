@@ -139,7 +139,7 @@ export function reorderUnavailable(
 
 /** "3 of 12", or "3 of 8 in Phones" within a group. */
 export function positionText(position: number, count: number, group?: string) {
-  return resolveDataTableMessages(getLocale()).reorderPosition(position, count, group);
+  return resolveDataTableMessages(getLocale()).reorderPosition({ position: position, count: count, group: group });
 }
 
 export const reorderMessages = {

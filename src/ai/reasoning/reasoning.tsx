@@ -1,3 +1,4 @@
+import { messageContent } from "../../lib/i18n/message-content.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { reasoningMessages } from "./messages.js"
 import { Collapsible } from "@base-ui/react/collapsible"
@@ -29,13 +30,13 @@ export function Reasoning({ reasoning, defaultOpen = false, className }: Reasoni
   const now = useNow(running, 1000)
   const locale = useLocale()
   const seconds = running ? Math.max(reasoning.seconds, (now - started) / 1000) : reasoning.seconds
-  const time = seconds < 60 ? `${Math.max(1, Math.round(seconds))}\u2009s` : formatElapsed(Math.round(seconds) * 1000, locale)
+  const time = formatElapsed(Math.max(1, Math.round(seconds)) * 1000, locale)
   return (
     <Collapsible.Root className={cx("fa-ai-reasoning", className)} defaultOpen={defaultOpen} data-running={running ? "" : undefined}>
       <Collapsible.Trigger className="fa-ai-reasoning-trigger">
         <IconLightbulb className="fa-ai-reasoning-icon" />
         <span className="fa-ai-reasoning-label">
-          {running ? messages.thinking : messages.thoughtFor} <span data-numeric>{time}</span>
+          {messageContent((running ? messages.thinking : messages.thoughtFor)("{time}"), { time: <span data-numeric>{time}</span> })}
         </span>
         <IconChevronRight className="fa-ai-reasoning-chevron" />
       </Collapsible.Trigger>

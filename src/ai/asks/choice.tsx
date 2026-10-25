@@ -109,7 +109,7 @@ export function SingleChoiceAsk({ ask }: {
             onAction={() =>
               submit(
                 { type: "choice", value: chosen!.value, label: chosen!.label },
-                messages.chose(chosen!.label, chosen!.meta ? ` · ${chosen!.meta}` : ""),
+                messages.chose(chosen!.label, chosen!.meta),
               )
             }
           >
@@ -167,7 +167,7 @@ export function MultiChoiceAsk({ ask }: {
         meta={ask.detail}
         footerStart={
           <span className="fa-ai-ask-count" data-numeric aria-live="polite">
-            {values.length} {messages.requestPosition} {all.length} {messages.selected} </span>
+            {messages.selectionStatus(values.length, all.length)} </span>
         }
         footer={
           <ActionButton

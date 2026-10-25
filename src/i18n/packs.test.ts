@@ -13,7 +13,7 @@ import ar from "./ar.js"
 import he from "./he.js"
 
 // Load every library descriptor, including ones whose components have not rendered yet.
-import.meta.glob("../{ui,shell,windows,ai}/**/messages.ts", { eager: true })
+import.meta.glob("../{ui,shell,windows,ai}/**/*messages.ts", { eager: true })
 
 const packs = [de, fr, es, itPack, ptBR, nl, ja, zhHans, ko, ar, he]
 
@@ -43,7 +43,7 @@ describe("shipped language packs", () => {
   })
 
   it.each(packs)("$locale retains interpolated application content", (pack: MessagePack) => {
-    const samples: Array<[string, string, string[]]> = [
+    const samples: Array<[string, string, Array<string | number>]> = [
       ["actions", "actionsFor", ["cedar-sample"]],
       ["addressField", "noAddressesMatch", ["cedar-sample"]],
       ["datePicker", "enterATimeFromTo", ["09:15", "17:30"]],
@@ -51,20 +51,20 @@ describe("shipped language packs", () => {
       ["windows", "controlLabel", ["sample-action", "cedar-sample"]],
       ["asks", "order", ["cedar-sample"]],
       ["desktop", "sessionOnEnded", ["cedar-sample"]],
-      ["message", "turn", ["17"]],
-      ["toolActivity", "runningOf", ["17", "23"]],
+      ["message", "turn", [17]],
+      ["toolActivity", "runningOf", [17, "23"]],
     ]
     const namespaces = pack.messages as Record<string, MessageSet>
     for (const [namespace, key, args] of samples) {
       const message = namespaces[namespace]?.[key]
       expect(typeof message, `${pack.locale}/${namespace}.${key}`).toBe("function")
       const result = typeof message === "function" ? message(...args) : ""
-      for (const value of args) expect(result, `${pack.locale}/${namespace}.${key}`).toContain(value)
+      for (const value of args) expect(result, `${pack.locale}/${namespace}.${key}`).toContain(String(value))
     }
   })
 
   it("keeps interpolations and applies language-specific count rules", () => {
-    expect(de.messages.pagination?.of2("1–10", "50")).toContain("50")
+    expect(de.messages.pagination?.rowRange("1–10", "50")).toContain("50")
     expect(de.messages.results?.fileCount(1, "de")).toBe("1 Datei")
     expect(de.messages.results?.fileCount(3, "de")).toBe("3 Dateien")
     for (const pack of packs) {

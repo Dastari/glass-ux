@@ -1,3 +1,4 @@
+import { messageContent } from "../../lib/i18n/message-content.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { entitySettingsMessages } from "./messages.js"
 import type { ReactNode } from "react"
@@ -96,11 +97,10 @@ export function InheritedSetting({
         description={
           overridden ? (
             <>
-              <span className="fa-inherited-scope">{messages.overriddenFor} {scope}</span>
-              <span className="fa-inherited-was"> {messages.inherits} {valueText(source)}</span>
+              <span className="fa-inherited-scope">{messageContent(messages.overriddenFor(scope, "{source}"), { source: <span className="fa-inherited-was">{valueText(source)}</span> })}</span>
             </>
           ) : (
-            <span className="fa-inherited-scope">{messages.inheritedFrom} {valueText(source)}</span>
+            <span className="fa-inherited-scope">{messageContent(messages.inheritedFrom("{source}"), { source: valueText(source) })}</span>
           )
         }
         control={

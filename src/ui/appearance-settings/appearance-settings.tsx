@@ -123,7 +123,7 @@ export function AppearanceSettings({
                 disabled={fixed}
                 value={appearance.accentColor ? null : appearance.palette}
                 onValueChange={(palette) => update({ palette, accentHue: null, accentColor: null, accentColor2: null, canvasTint: null })}
-                options={palettes.map((palette) => ({ value: palette, label: PALETTE_LABELS[palette] ?? palette, palette }))}
+                options={palettes.map((palette) => ({ value: palette, label: t[`palette${palette.charAt(0).toUpperCase()}${palette.slice(1)}` as keyof typeof t] as string ?? PALETTE_LABELS[palette] ?? palette, palette }))}
               />
             }
           />
@@ -169,6 +169,7 @@ export function AppearanceSettings({
         <FormGroup key="background" label={t.background}>
           <BackgroundTiles
             label={t.background}
+            messages={t}
             value={appearance.background ?? "silk"}
             options={backgrounds}
             disabled={fixed || isLocked("background")}
@@ -365,6 +366,7 @@ export function AppearanceSettings({
 
 /** Background tiles: a radio group whose options preview the background, artwork included. */
 function BackgroundTiles({
+  messages,
   label,
   value,
   options,
@@ -372,6 +374,7 @@ function BackgroundTiles({
   onValueChange,
 }: {
   label: string
+  messages: typeof appearanceSettingsMessages.defaults
   value: BackgroundStyle
   options: readonly BackgroundStyle[]
   disabled: boolean
@@ -390,7 +393,7 @@ function BackgroundTiles({
           <span className="fa-appearance-background-preview canvas-ambient" data-background={background} aria-hidden>
             <span className="canvas-silk" data-background={background} data-contained />
           </span>
-          <span className="fa-appearance-background-label">{BACKGROUND_LABELS[background] ?? background}</span>
+          <span className="fa-appearance-background-label">{messages[`background${background.charAt(0).toUpperCase()}${background.slice(1)}` as keyof typeof messages] as string ?? BACKGROUND_LABELS[background] ?? background}</span>
         </BaseRadio.Root>
       ))}
     </BaseRadioGroup>

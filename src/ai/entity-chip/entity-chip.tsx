@@ -172,7 +172,7 @@ export function EntityChip({
     "data-kind": entity.kind,
     "data-variant": variant === "plain" ? "plain" : undefined,
     "data-unverified": entity.verified === false ? "" : undefined,
-    "aria-label": `${entityName(resolver.kinds, entity, entityMessages)}${entity.verified === false ? messages.unverifiedLabel : ""}`,
+    "aria-label": (entity.verified === false ? messages.unverifiedLabel : (label: string) => label)(entityName(resolver.kinds, entity, entityMessages)),
     href,
     onClick: navigate,
   };

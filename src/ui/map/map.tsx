@@ -990,14 +990,14 @@ export function GeoMap<T>({
       aria-busy={phase !== "ready" && !failed ? true : undefined}
     >
       <p id={hintId} className="sr-only">
-        {messages.markerInstructions(number.format(points.length), points.length === 1 ? noun.one : noun.other, points.length ? `: ${describeCounts(counts, statusLabels)}` : "")}
+        {messages.markerInstructions({ count: number.format(points.length), noun: points.length === 1 ? noun.one : noun.other, status: points.length ? describeCounts(counts, statusLabels) : "" })}
       </p>
       <div ref={stageRef} className="fa-map-stage" inert={view === "list" ? true : undefined}>
         <MapSilhouette region={home} box={frameBox} />
         <div ref={canvasRef} className="fa-map-canvas" />
         {failed ? (
           <div className="fa-map-failed">
-            <p>{messages.theMapCouldNotStart}{error && /webgl/i.test(error) ? messages.thisBrowserHasWebglTurnedOff : ""}.</p>
+            <p>{error && /webgl/i.test(error) ? messages.webglError : `${messages.theMapCouldNotStart}.`}</p>
             {onViewChange ? (
               <Button size="sm" icon={<IconList />} onClick={() => onViewChange("list")}>
                 {messages.viewAsList} </Button>

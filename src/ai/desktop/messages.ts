@@ -18,7 +18,7 @@ export const desktopMessages = defineMessages("desktop", {
   expired: "Expired",
   noSignal: "No signal",
   leaseLeft: (time: string) => `lease ${time} left`,
-  isSignedIn: "is signed in",
+  isSignedIn: (name: string) => `${name} is signed in`,
   assistant: "Assistant",
   steps: "Steps",
   actionWaitingForApproval: "Action waiting for approval",

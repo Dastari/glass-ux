@@ -15,7 +15,7 @@ const english = {
   emptyAssigned: "No items assigned",
   noMatch: (query: string) => `No match for “${query}”`,
   moved: (count: number, list: string) => (count === 1 ? `1 item moved to ${list}` : `${count} items moved to ${list}`),
-  reordered: (label: string, position: number, total: number) => `${label}, position ${position} of ${total}`,
+  reordered: ({ label, position, total }: { label: string; position: number; total: number }) => `${label}, position ${position} of ${total}`,
   reorderHint: "Alt+Up or Alt+Down moves the focused item.",
   reorder: (label: string) => `Reorder ${label}`,
 }

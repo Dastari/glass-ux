@@ -197,7 +197,7 @@ export function describeRange(ip: ParsedIp, locale = getLocale(), messages: Retu
   if (prefix === 32) return messages.hostCount(1, locale)
   if (prefix === 31) return messages.pointToPointRange(toText(start), toText(start + 1))
   const hosts = size - 2
-  return messages.hosts(numberFormat(locale).format(hosts), toText(start + 1), toText(start + size - 2))
+  return messages.hosts({ count: numberFormat(locale).format(hosts), first: toText(start + 1), last: toText(start + size - 2) })
 }
 
 /** Private, loopback, link-local and other special ranges, for a quiet hint. */

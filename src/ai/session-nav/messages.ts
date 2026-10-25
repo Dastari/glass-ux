@@ -37,7 +37,7 @@ export const sessionNavMessages = defineMessages("sessionNav", {
   noArchivedConversations: "No archived conversations",
   noConversationsYet: "No conversations yet",
   aiSettings: "AI settings",
-  unreadLabel: ", unread",
+  unreadLabel: (label: string) => `${label}, unread`,
   deleteAction: "Delete",
 })
 

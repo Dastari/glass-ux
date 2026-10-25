@@ -176,7 +176,7 @@ export function EntityPickerAsk({ ask }: {
             disabledReason={
               picked.length
                 ? undefined
-                : messages.chooseFirst(ask.multiple ? messages.atLeastOne : "one")
+                : messages.chooseFirst(Boolean(ask.multiple))
             }
             pendingLabel={messages.sending}
             successLabel={messages.sent}

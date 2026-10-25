@@ -3,18 +3,11 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for asks. */
 export const asksMessages = defineMessages("asks", {
-  denied: "Denied · ",
-  expired: "Expired · ",
-  revoked: "Revoked · ",
-  cancelledWithTheRun: "Cancelled with the run · ",
-  failed: "Failed · ",
-  approvedRunning: "Approved · running · ",
   revoking: "Revoking…",
   revokedStatus: "Revoked",
   revoke: "Revoke",
-  on: "on",
   expiredStatus: "Expired",
-  expiresIn: "Expires in",
+  expiresIn: (time: string) => `Expires in ${time}`,
   assuredMfa: "Assured · MFA",
   confirm: "Confirm",
   approveWithMfa: "Approve with MFA",
@@ -35,7 +28,7 @@ export const asksMessages = defineMessages("asks", {
   review: "Review",
   waitingForYou: "Waiting for you",
   requests: "Requests",
-  requestPosition: "of",
+  requestPosition: (position: number, total: number) => `${position} of ${total}`,
   previousRequest: "Previous request",
   thisIsTheOldestRequest: "This is the oldest request",
   nextRequest: "Next request",
@@ -47,9 +40,8 @@ export const asksMessages = defineMessages("asks", {
   chooseAnOptionFirst: "Choose an option first",
   sending: "Sending…",
   sent: "Sent",
-  chose: (label: string, meta: string) => `Chose ${label}${meta}`,
+  chose: (label: string, meta?: string) => `Chose ${label}${meta ? ` · ${meta}` : ""}`,
   choose: "Choose",
-  selected: "selected",
   selectAtLeast: (minimum: number) => `Select at least ${minimum}`,
   all: (count: number) => `all ${count}`,
   selectedSummary: (selection: string) => `Selected ${selection}`,
@@ -72,8 +64,7 @@ export const asksMessages = defineMessages("asks", {
   noMatches: "No matches",
   selectedCount: (count: number) => `${count} selected`,
   chooseEntities: (noun: string) => `Choose ${noun}`,
-  atLeastOne: "at least one",
-  chooseFirst: (minimum: string) => `Choose ${minimum} first`,
+  chooseFirst: (multiple: boolean): string => multiple ? "Choose at least one first" : "Choose one first",
   chosenEntities: (labels: string) => `Chose ${labels}`,
   useSelected: "Use selected",
   search: (noun: string) => `Search ${noun}`,
@@ -101,6 +92,8 @@ export const asksMessages = defineMessages("asks", {
   suggestedAnswers: "Suggested answers",
   yourAnswer: "Your answer",
   chooseOneEntity: (noun: string) => `Choose a ${noun}`,
+  selectionStatus: (count: number, total: number) => `${count} of ${total} selected`,
+  approvalRecord: ({ state, action, targets, outcome }: { state: string; action: string; targets: string; outcome?: string }) => `${state === "executed" ? "" : state === "denied" ? "Denied · " : state === "expired" ? "Expired · " : state === "revoked" ? "Revoked · " : state === "cancelled" ? "Cancelled with the run · " : state === "failed" ? "Failed · " : "Approved · running · "}${action} on ${targets}${outcome ? ` · ${outcome}` : ""}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

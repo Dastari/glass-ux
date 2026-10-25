@@ -4,7 +4,6 @@ import { getLocale } from "../lib/locale/locale.js"
 /** English defaults for shell. */
 export const shellMessages = defineMessages("shell", {
   resizeSectionNavigation: "Resize section navigation",
-  overImagery: (className: string) => `${className} over-imagery`,
   hideInspector: "Hide inspector",
   collapseSectionNavigation: "Collapse section navigation",
   search: (noun: string) => `Search ${noun}`,
@@ -16,8 +15,7 @@ export const shellMessages = defineMessages("shell", {
   switchToLightMode: "Switch to light mode",
   switchToDarkMode: "Switch to dark mode",
   showInspector: "Show inspector",
-  unread: (count: number, noun: string) => `, ${count} unread ${noun}`,
-  account: (name: string, unread: string) => `Account: ${name}${unread}`,
+  account: (name: string, unread: number) => `Account: ${name}${unread > 0 ? `, ${unread} unread ${unread === 1 ? "notification" : "notifications"}` : ""}`,
   timerOn: (label: string) => `Timer on ${label}`,
   runningFor: (name: string, time: string) => `${name}, running for ${time}`,
 })

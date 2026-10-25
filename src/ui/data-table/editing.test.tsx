@@ -27,7 +27,7 @@ afterEach(cleanup);
 function specimen(save = vi.fn(), labels = {}) {
   const announce = vi.fn();
   const result = render(
-    <MessagesProvider messages={{ "data-table": labels }}>
+    <MessagesProvider messages={{ dataTable: labels }}>
       <EditingContext value={{ save, announce }}>
         <EditableValue
           row={{ name: "Cedar", quantity: 2 }}

@@ -11,7 +11,7 @@ export const paginationMessages = defineMessages("pagination", {
   perPage: (count: string) => `${count} per page`,
   rowsPerPage: "Rows per page",
   pageInput: (total: string) => `Page, of ${total}`,
-  pageTotal: "of",
+  pageTotal: (total: string) => `of ${total}`,
   noRows: "No rows",
   emptyRange: (total: string) => `0 of ${total}`,
   rowRange: (range: string, total: string) => `${range} of ${total}`,

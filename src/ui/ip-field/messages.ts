@@ -19,7 +19,7 @@ export const ipFieldMessages = defineMessages("ipField", {
   prefixOutOfRange: (maximum: number) => `Enter a prefix length from 0 to ${maximum}`,
   network: (address: string, prefix: number) => `Network ${address}/${prefix}`,
   pointToPointRange: (first: string, last: string) => `2 hosts · ${first}–${last}`,
-  hosts: (count: string, first: string, last: string) => `${count} hosts · ${first}–${last}`,
+  hosts: ({ count, first, last }: { count: string; first: string; last: string }) => `${count} hosts · ${first}–${last}`,
   private: "Private",
   loopback: "Loopback",
   linkLocal: "Link-local",

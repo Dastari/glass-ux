@@ -433,7 +433,7 @@ export function ReferenceInput<R extends string = string>({
         data-invalid={invalid ? "" : undefined}
         data-has-value={links.length > 0 ? "" : undefined}
       >
-        <BaseCombobox.Chips className="fa-multi-chips" aria-label={links.length > 0 ? `${links.length} ${links.length === 1 ? "link" : "links"}` : undefined}>
+        <BaseCombobox.Chips className="fa-multi-chips" aria-label={links.length > 0 ? messages.linkCount(links.length, locale) : undefined}>
           {links.map((link) => {
             const key = referenceKey(link.target)
             const options = relations ? relationsFor(link.target, relations) : []

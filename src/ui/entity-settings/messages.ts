@@ -8,10 +8,6 @@ export const entitySettingsMessages = defineMessages("entitySettings", {
   discardEntityTitle: (name: string) => `Discard changes to ${name}?`,
   discardTitle: "Discard unsaved changes?",
   discardDescription: "Your edits in this dialog are lost.",
-  changed: (section: string) => `${section} changed`,
-  changedStatus: "Changed",
-  by: "by",
-  sinceYouOpenedItReloadToSeeTheir: "since you opened it. Reload to see their changes.",
   reload: "Reload",
   entitySettings: (name: string) => `${name} settings`,
   settingsSections: "Settings sections",
@@ -27,9 +23,8 @@ export const entitySettingsMessages = defineMessages("entitySettings", {
   thisItem: "this item",
   enforcedByItCanTBeChangedHere: (source: string) => `Enforced by ${source}: it can't be changed here`,
   enforcedBy: (source: string) => `Enforced by ${source}`,
-  overriddenFor: "Overridden for",
-  inherits: "· inherits",
-  inheritedFrom: "Inherited from",
+  overriddenFor: (scope: string, source: string) => `Overridden for ${scope} · inherits ${source}`,
+  inheritedFrom: (source: string) => `Inherited from ${source}`,
   reset: "Reset",
   override: "Override",
   needsMfa: "(needs MFA)",
@@ -50,6 +45,7 @@ export const entitySettingsMessages = defineMessages("entitySettings", {
   testResult: "Test result",
   set: "Set",
   clearedWhenYouSave: "Cleared when you save",
+  conflictNotice: (section: string | undefined, author: string) => `${section ? `${section} changed` : "Changed"} by ${author} since you opened it. Reload to see their changes.`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

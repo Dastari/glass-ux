@@ -802,7 +802,7 @@ const LinePlot = memo(function LinePlot({
     return selection.low === selection.high ? nearestIndex(xs, selection.low) === index : at >= selection.low && at <= selection.high
   }
   const valueText = (index: number) =>
-    `${xText(index)} · ${visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`).join(", ")}${isSelected(index) ? messages.selectionLabel : ""}`
+    (isSelected(index) ? messages.selectionLabel : (label: string) => label)(`${xText(index)} · ${new Intl.ListFormat(fmt.locale, { type: "unit" }).format(visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`))}`)
 
   // A committed zoom, pan or reset is announced politely (the region stays mounted, R20.9).
   const [announcement, setAnnouncement] = useState("")

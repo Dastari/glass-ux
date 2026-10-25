@@ -157,7 +157,7 @@ export function ConversationContext({
             value={budget.used}
             max={budget.maximum}
             label={budget.label}
-            valueText={messages.budgetSummary(used, formatNumber(budget.used, 0, locale), formatNumber(budget.maximum, 0, locale), budget.unit)}
+            valueText={messages.budgetSummary({ percent: used, used: formatNumber(budget.used, 0, locale), maximum: formatNumber(budget.maximum, 0, locale), unit: budget.unit })}
             warningAt={0.8}
             dangerAt={0.95}
           />

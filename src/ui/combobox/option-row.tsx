@@ -139,7 +139,7 @@ export function OptionMore({ more }: {
 
   const locale = useLocale()
   if (more <= 0) return null
-  return <div className="fa-option-more">{numberFormat(locale).format(more)} {messages.moreResults}</div>
+  return <div className="fa-option-more">{messages.moreResults(numberFormat(locale).format(more))}</div>
 }
 
 /** What a screen reader hears about the list (render inside the popup's Status part). */

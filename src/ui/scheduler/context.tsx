@@ -97,7 +97,7 @@ export function describeWhen(range: { allDay: boolean; startDay: IsoDate; endDay
 
 /** The accessible name of an event button. */
 export function eventName(placed: PlacedEvent, context: Pick<SchedulerContextValue, "locale" | "t" | "resourceTitle">): string {
-  return context.t.eventLabel(placed.event.title, describeWhen(placed, context.locale, context.t), context.resourceTitle(placed.event.resourceId))
+  return context.t.eventLabel({ title: placed.event.title, when: describeWhen(placed, context.locale, context.t), resource: context.resourceTitle(placed.event.resourceId) })
 }
 
 /** "HH:mm" for minutes since midnight. */

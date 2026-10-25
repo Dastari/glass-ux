@@ -1,3 +1,4 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { sessionNavMessages } from "./messages.js"
 import { useMemo, useRef, useState } from "react";
@@ -123,6 +124,7 @@ function SessionOrganisation({
   organisation: AiSession["organisation"];
 }) {
   const messages = useMessages(sessionNavMessages)
+  const locale = useLocale()
 
   if (organisation === undefined) return null;
   const name = organisation ? organisation.label : messages.allOrganisations;
@@ -143,6 +145,7 @@ function SessionOrganisation({
 /** The session row's state at the trailing edge: spinner, a toned dot, or the time. */
 function SessionState({ session }: { session: AiSession }) {
   const messages = useMessages(sessionNavMessages)
+  const locale = useLocale()
 
   if (session.activity === "working") {
     return (
@@ -192,6 +195,7 @@ function RenameField({
   onDone: (title: string | null) => void;
 }) {
   const messages = useMessages(sessionNavMessages)
+  const locale = useLocale()
 
   const [value, setValue] = useState(session.title);
   const done = useRef(false);
@@ -259,6 +263,7 @@ export function SessionNav({
   className,
 }: SessionNavProps) {
   const messages = useMessages(sessionNavMessages)
+  const locale = useLocale()
 
   const now = useNow(true, 60_000);
   const [query, setQuery] = useState(initialQuery);
@@ -383,7 +388,7 @@ export function SessionNav({
             selected={active}
             className="fa-ai-session-row"
             aria-current={active ? "page" : undefined}
-            aria-label={`${session.title}${session.organisation !== undefined ? `, ${session.organisation ? session.organisation.label : messages.allScopes}` : ""}${status ? `, ${status.toLowerCase()}` : ""}${session.unread ? messages.unreadLabel : ""}`}
+            aria-label={(session.unread ? messages.unreadLabel : (label: string) => label)(new Intl.ListFormat(locale, { type: "unit" }).format([session.title, session.organisation !== undefined ? session.organisation ? session.organisation.label : messages.allScopes : "", status?.toLowerCase() ?? ""].filter(Boolean)))}
             data-unread={session.unread ? "" : undefined}
             onClick={(event) =>
               select(session.id, {

@@ -4,12 +4,11 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for statusStrip. */
 export const statusStripMessages = defineMessages("statusStrip", {
   live: "Live",
-  reconnectStatus: (attempt: number) => ` · attempt ${attempt}`,
+  reconnectStatus: ({ attempt, time }: { attempt?: number; time?: string }) => `Reconnecting${attempt ? ` · attempt ${attempt}` : ""}${time ? ` · ${time}` : ""}`,
   reloaded: "Conversation reloaded from the server",
   offlineHistoryStaysReadable: "Offline · history stays readable",
   retryNow: "Retry now",
-  budgetUsage: (used: string, maximum: string, unit: string) => `${used} of ${maximum} ${unit}`,
-  reconnecting: 'Reconnecting',
+  budgetUsage: ({ used, maximum, unit }: { used: string; maximum: string; unit: string }) => `${used} of ${maximum} ${unit}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

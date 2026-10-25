@@ -16,8 +16,7 @@ export const mapMessages = defineMessages("map", {
   resetView: "Reset view",
   theMapCouldNotStart: "The map could not start",
   theMapIsLoading: "The map is loading",
-  markerInstructions: (count: string, noun: string, status: string) => `${count} ${noun}${status}. Arrow keys move between markers; Enter opens one.`,
-  thisBrowserHasWebglTurnedOff: ": this browser has WebGL turned off",
+  markerInstructions: ({ count, noun, status }: { count: string; noun: string; status: string }) => `${count} ${noun}${status ? `: ${status}` : ""}. Arrow keys move between markers; Enter opens one.`,
   mapControls: "Map controls",
   zoomIn: "Zoom in",
   zoomOut: "Zoom out",
@@ -29,6 +28,7 @@ export const mapMessages = defineMessages("map", {
   pinAt: (coordinates: string) => `Pin at ${coordinates}`,
   site: 'site',
   sites: 'sites',
+  webglError: "The map could not start: this browser has WebGL turned off.",
 })
 
 declare module "../../lib/i18n/catalog.js" {

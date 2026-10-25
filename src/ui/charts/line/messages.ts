@@ -10,7 +10,7 @@ export const lineMessages = defineMessages("line", {
   inspectValuesEnterSelects: (label: string) => `${label} — inspect values, Enter selects`,
   inspectValues: (label: string) => `${label} — inspect values`,
   total: (value: string) => `Total ${value}`,
-  selectionLabel: " · selected",
+  selectionLabel: (label: string) => `${label} · selected`,
 })
 
 declare module "../../../lib/i18n/catalog.js" {

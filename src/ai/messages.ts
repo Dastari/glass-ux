@@ -5,11 +5,6 @@ import { getLocale } from "../lib/locale/locale.js"
 export const aiMessages = defineMessages("ai", {
   item: "Item",
   items: "Items",
-  minS: (minutes: number, minuteSpace: string, seconds: string, secondSpace: string) => `${minutes}${minuteSpace}min ${seconds}${secondSpace}s`,
-  inAMinute: "in a minute",
-  inMin: (minutes: number, space: string) => `in ${minutes}${space}min`,
-  inH: (hours: number, space: string) => `in ${hours}${space}h`,
-  inDays: (days: number) => `in ${days} days`,
 })
 
 declare module "../lib/i18n/catalog.js" {

@@ -198,7 +198,10 @@ import { registerMessagePack, configureMessages, MessagesProvider, defineMessage
 import { LocaleProvider } from "glass-ux/locale";
 
 registerMessagePack(de);
-configureMessages({ pagination: { pages: "Ergebnisse" } });
+configureMessages({ pagination: {
+  pages: "Ergebnisse",
+  rowRange: (range: string, total: string) => `${range} von ${total}`,
+} });
 
 function GermanRegion({ children }) {
   return (
@@ -225,6 +228,12 @@ for product wording and providers for one region. Explicit text props such as `p
 keep their precedence. Application content is not translated. Pass `locale` to schema
 helpers when a form's provider differs from the application locale. Set `lang` and `dir`
 on the host region as appropriate; `LocaleProvider` does not change DOM direction.
+
+**Message keys.** Keys name their purpose (`discardTitle`, `rowRange`), rather than copying
+the English sentence. Function messages take named, typed parameters; messages with more
+than two values take one object. Pass raw values into a whole message so translations
+control word order and punctuation. Never join translated sentence fragments. The table
+namespace is `dataTable`; for example, `configureMessages({ dataTable: { noRows: "No results" } })`.
 
 ## Build a typed form
 

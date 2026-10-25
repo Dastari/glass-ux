@@ -6,7 +6,7 @@ import { Button } from "../../ui/button/index.js";
 import { ToneDot } from "../../ui/tone-dot/index.js";
 import { TruncatedText } from "../../ui/truncated-text/index.js";
 import { Tooltip } from "../../ui/tooltip/index.js";
-import { formatNumber, useNow } from "../format.js";
+import { formatNumber, formatElapsed, useNow } from "../format.js";
 import type { AiBudget, StreamState } from "../types.js";
 import { useLocale } from "../../lib/locale/use-locale.js";
 
@@ -80,7 +80,7 @@ export function AiStatusStrip({
         {stream === "connected"
           ? messages.live
           : stream === "reconnecting"
-            ? `${messages.reconnecting}${attempt ? messages.reconnectStatus(attempt) : ""}${seconds !== null ? ` · ${seconds} s` : ""}`
+            ? messages.reconnectStatus({ attempt, time: seconds !== null ? formatElapsed(seconds * 1000, locale) : undefined })
             : stream === "reset"
               ? messages.reloaded
               : messages.offlineHistoryStaysReadable}
@@ -98,7 +98,7 @@ export function AiStatusStrip({
       <span className="fa-ai-status-meta">
         {budget && used !== null ? (
           <Tooltip
-            content={messages.budgetUsage(formatNumber(budget.used, 0, locale), formatNumber(budget.maximum, 0, locale), budget.unit)}
+            content={messages.budgetUsage({ used: formatNumber(budget.used, 0, locale), maximum: formatNumber(budget.maximum, 0, locale), unit: budget.unit })}
           >
             <span
               className="fa-ai-status-item"

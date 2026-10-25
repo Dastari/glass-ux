@@ -8,8 +8,6 @@ export const jsonTreeMessages = defineMessages("jsonTree", {
   expand: "Expand",
   root: "root",
   showMoreOf: (name: string | number) => `Show more of ${name}`,
-  show: "Show",
-  moreOf: "more of",
   itemCount: (count: number, locale = "en-US") => plural(locale, count, { one: `${numberFormat(locale).format(count)} item`, other: `${numberFormat(locale).format(count)} items` }),
   keyCount: (count: number, locale = "en-US") => plural(locale, count, { one: `${numberFormat(locale).format(count)} key`, other: `${numberFormat(locale).format(count)} keys` }),
   showMoreOfTotal: (count: string, total: string) => `Show ${count} more of ${total}`,

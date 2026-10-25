@@ -19,7 +19,7 @@ it("resolves per-table locale, provider and labels for table summaries and built
   registerMessagePack({
     locale: "zz",
     messages: {
-      "data-table": {
+      dataTable: {
         columnsDensity: "Columnas",
         summaryContains: (label, value) => `${label} incluye ${value}`,
         justNow: "ahora",
@@ -33,7 +33,7 @@ it("resolves per-table locale, provider and labels for table summaries and built
       labels: { clear: "Borrar" },
     });
     return (
-      <MessagesProvider messages={{ "data-table": m }}>
+      <MessagesProvider messages={{ dataTable: m }}>
         <SettingsMenu
           columns={[]}
           userHidden={new Set()}

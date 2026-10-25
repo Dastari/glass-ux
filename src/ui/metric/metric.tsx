@@ -108,7 +108,7 @@ export function Metric({
   const fmt = (n: number) => formatMetric(n, unit, format, locale)
   const shown = hover !== null ? data[hover] : value
   const summary = stats
-    ? messages.minimumAverageMaximum(label, range ? `, ${range.toLowerCase()}` : "", fmt(stats.min), fmt(stats.avg), fmt(stats.max), fmt(stats.last))
+    ? messages.minimumAverageMaximum({ label: label, range: range ? `, ${range.toLowerCase()}` : "", minimum: fmt(stats.min), average: fmt(stats.avg), maximum: fmt(stats.max), current: fmt(stats.last) })
     : undefined
 
   return (

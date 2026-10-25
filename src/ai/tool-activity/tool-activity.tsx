@@ -366,14 +366,14 @@ export function ToolGroup({
     >
       <Collapsible.Trigger
         className="fa-ai-tool-row"
-        aria-label={`${label}${failed ? messages.failedSummary(failed) : ""}`}
+        aria-label={failed ? messages.failedSummary(label, failed) : label}
       >
         <StatusGlyph status={status} />
         <span className="fa-ai-tool-text">
           <span className="fa-ai-tool-label">
             {label}
             {failed ? (
-              <span className="fa-ai-tool-failed"> · {failed} {messages.failedStatus}</span>
+              <span className="fa-ai-tool-failed"> · {messages.failedStatus(failed)}</span>
             ) : null}
           </span>
         </span>

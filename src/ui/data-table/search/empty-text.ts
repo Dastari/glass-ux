@@ -15,7 +15,7 @@ export function emptyText(
   m = resolveDataTableMessages(getLocale()),
 ): ReactNode {
   if (query && filterCount)
-    return m.emptyQueryFilters(noun.other, query, filterCount);
+    return m.emptyQueryFilters({ noun: noun.other, query: query, count: filterCount });
   if (query) return m.emptyQuery(noun.other, query);
   if (filterCount) return m.emptyFilters(noun.other);
   return fallback;

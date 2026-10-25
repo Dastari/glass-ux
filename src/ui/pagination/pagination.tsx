@@ -231,7 +231,7 @@ function PageJump({
         />
       </span>
       <span className="fa-pager-of" data-numeric>
-        {messages.pageTotal} {numberFormat(locale).format(pageCount)}
+        {messages.pageTotal(numberFormat(locale).format(pageCount))}
       </span>
     </span>
   )

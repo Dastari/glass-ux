@@ -346,7 +346,7 @@ export function EntitySettingsDialog({
     <div className="fa-entity-settings-conflict" role="status" data-testid="settings-conflict">
       <IconWarning className="fa-entity-settings-conflict-icon" />
       <span className="fa-entity-settings-conflict-text">
-        {conflictTab && conflictTab.value !== current ? messages.changed(conflictTab.label) : messages.changedStatus} {messages.by} {conflict.changedBy} {messages.sinceYouOpenedItReloadToSeeTheir} </span>
+        {messages.conflictNotice(conflictTab && conflictTab.value !== current ? conflictTab.label : undefined, conflict.changedBy)} </span>
       {onReload ? (
         <ActionButton
           size="sm"

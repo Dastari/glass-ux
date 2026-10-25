@@ -180,8 +180,8 @@ const SunburstPlot = memo(function SunburstPlot({ box, focus, colour, store, fmt
   const nav = (index: number, key: string) => ringNav(arcs, index, key)
   const valueText = (index: number) => {
     const a = arcs[index]
-    if (!a) return `${focus.data.label} · ${formatValue(focus.value ?? 0, fmt)}${onUp ? messages.pressEscapeToGoUp : ""}`
-    return `${a.node.data.label} · ${formatValue(a.node.value ?? 0, fmt)} · ${formatShare(a.node.value ?? 0, focus.value ?? 0, fmt.locale)}${a.node.children?.length ? messages.pressEnterToOpen : ""}`
+    if (!a) return (onUp ? messages.pressEscapeToGoUp : (label: string) => label)(`${focus.data.label} · ${formatValue(focus.value ?? 0, fmt)}`)
+    return (a.node.children?.length ? messages.pressEnterToOpen : (label: string) => label)(`${a.node.data.label} · ${formatValue(a.node.value ?? 0, fmt)} · ${formatShare(a.node.value ?? 0, focus.value ?? 0, fmt.locale)}`)
   }
   const list: LegendItem[] = (focus.children ?? []).slice(0, 8).map((child) => {
     const slot = colour(child)

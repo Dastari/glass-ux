@@ -320,7 +320,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   });
   const m = messages;
   const providedMessages = useMemo(
-    () => ({ "data-table": messages }),
+    () => ({ dataTable: messages }),
     [messages],
   );
   const reorderMessages = {
@@ -1251,9 +1251,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
 
   const positionOf = (lift: Lift, line: number) =>
     m.reorderPosition(
-      line - lift.first + 1,
-      lift.last - lift.first + 1,
-      lift.group?.label,
+      { position: line - lift.first + 1, count: lift.last - lift.first + 1, group: lift.group?.label },
     );
 
   /** Report the move to the host and show it at once; a rejected promise reverts it. */
@@ -1323,11 +1321,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           });
           const reason = error instanceof Error ? error.message : undefined;
           announce(
-            reorderMessages.failed(
-              lift.label,
-              positionOf(lift, lift.line),
-              reason,
-            ),
+            reorderMessages.failed({ label: lift.label, position: positionOf(lift, lift.line), reason }),
           );
           const onError = latest.current.props.reorder?.onError;
           if (onError) onError(error, move);
@@ -1371,11 +1365,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           onStart: () => {
             setActiveIndex(lift.line);
             announce(
-              reorderMessages.lifted(
-                lift.label,
-                positionOf(lift, lift.line),
-                true,
-              ),
+              reorderMessages.lifted({ label: lift.label, position: positionOf(lift, lift.line), pointer: true }),
             );
           },
           onTarget: (target) =>
@@ -1443,7 +1433,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
             session,
           };
           announce(
-            reorderMessages.lifted(lift.label, positionOf(lift, lift.line)),
+            reorderMessages.lifted({ label: lift.label, position: positionOf(lift, lift.line) }),
           );
           return;
         }
@@ -1634,9 +1624,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     );
     setNotice(
       messages.columnMoved(
-        metaById.get(id)?.meta.label ?? id,
-        group.indexOf(id) + 1,
-        group.length,
+        { label: metaById.get(id)?.meta.label ?? id, position: group.indexOf(id) + 1, count: group.length },
       ),
     );
   };
@@ -2539,25 +2527,23 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
             announcements={{
               lifted: (item, place, input) =>
                 m.reorderLifted(
-                  item.label,
-                  m.reorderPosition(place.position ?? 1, place.count ?? 1),
-                  input === "pointer",
+                  { label: item.label, position: m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }), pointer: input === "pointer" },
                 ),
               moved: (item, place, reason) =>
                 reason ??
                 m.reorderMoved(
                   item.label,
-                  m.reorderPosition(place.position ?? 1, place.count ?? 1),
+                  m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }),
                 ),
               dropped: (item, place) =>
                 m.reorderDropped(
                   item.label,
-                  m.reorderPosition(place.position ?? 1, place.count ?? 1),
+                  m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }),
                 ),
               cancelled: (item, place) =>
                 m.reorderCancelled(
                   item.label,
-                  m.reorderPosition(place.position ?? 1, place.count ?? 1),
+                  m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }),
                 ),
               blocked: (item) => m.columnMoveBlocked(item.label),
               failed: (item, _place, reason) =>

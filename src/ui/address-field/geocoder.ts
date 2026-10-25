@@ -217,7 +217,7 @@ export class GeocoderError extends Error {
     readonly status: number,
     readonly code: string
   ) {
-    super(getAddressFieldMessages().addressLookupFailed(status, code ? ` ${code}` : ""))
+    super(getAddressFieldMessages().addressLookupFailed(status, code))
     this.name = "GeocoderError"
   }
 }

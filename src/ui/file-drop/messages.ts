@@ -5,8 +5,8 @@ import { getLocale } from "../../lib/locale/locale.js"
 export const fileDropMessages = defineMessages("fileDrop", {
   maxPerFile: (size: string) => `Max ${size} per file`,
   dropToAdd: "Drop to add",
-  browseFiles: "Drop files here or ",
-  browseFile: "Drop a file here or ",
+  browseFiles: (browse: string) => `Drop files here or ${browse}`,
+  browseFile: (browse: string) => `Drop a file here or ${browse}`,
   browse: "browse",
   uploaded: (name: string) => `${name} uploaded`,
   uploadFailed: "Upload failed",
@@ -17,10 +17,9 @@ export const fileDropMessages = defineMessages("fileDrop", {
   upload: (name: string) => `${name} upload`,
   remove: (name: string) => `Remove ${name}`,
   files: (type: string) => `${type} files`,
-  or: (first: string, second: string) => `${first} or ${second}`,
   isNotAFile: (name: string, type: string) => `${name} is not a ${type} file`,
   isLargerThan: (name: string, size: string) => `${name} is larger than ${size}`,
-  wasNotAddedTheLimitIs: (name: string, count: number, locale = "en-US") => plural(locale, count, { one: `${name} was not added — the limit is ${count} file`, other: `${name} was not added — the limit is ${count} files` }),
+  wasNotAddedTheLimitIs: ({ name, count, locale = "en-US" }: { name: string; count: number; locale?: string }) => plural(locale, count, { one: `${name} was not added — the limit is ${count} file`, other: `${name} was not added — the limit is ${count} files` }),
   moreNotAdded: (reason: string, count: number) => `${reason} · ${count} more not added`,
   filesLabel: "Files",
 })

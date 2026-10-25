@@ -4,8 +4,8 @@ import { getLocale } from "../../../lib/locale/locale.js"
 /** English defaults for sunburst. */
 export const sunburstMessages = defineMessages("sunburst", {
   name: "Name",
-  pressEscapeToGoUp: " · press Escape to go up",
-  pressEnterToOpen: " · press Enter to open",
+  pressEscapeToGoUp: (label: string) => `${label} · press Escape to go up`,
+  pressEnterToOpen: (label: string) => `${label} · press Enter to open`,
   explore: (label: string) => `${label} — explore`,
   clickToGoBackTo: (label: string) => `Click to go back to ${label}`,
   clickToOpen: "Click to open",

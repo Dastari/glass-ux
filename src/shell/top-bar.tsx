@@ -498,14 +498,10 @@ export function AccountButton({
 }: AccountButtonProps) {
   const messages = useMessages(shellMessages)
 
-  const unreadText =
-    unread > 0
-      ? messages.unread(unread, unread === 1 ? "notification" : "notifications")
-      : "";
   return (
     <button
       type="button"
-      aria-label={messages.account(name, unreadText)}
+      aria-label={messages.account(name, unread)}
       {...rest}
       className={cx("fa-shell-account fa-pressable", className)}
     >

@@ -6,7 +6,7 @@ export const entityChipMessages = defineMessages("entityChip", {
   remove: (name: string) => `Remove ${name}`,
   openInAWindow: (name: string) => `Open ${name} in a window`,
   unverifiedDescription: "Named by Assistant; not confirmed by the application yet.",
-  unverifiedLabel: ", not verified",
+  unverifiedLabel: (label: string) => `${label}, not verified`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

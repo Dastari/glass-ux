@@ -1,3 +1,5 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { messageContent } from "../../lib/i18n/message-content.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { asksMessages } from "./messages.js"
 import {
@@ -37,8 +39,8 @@ const RECORD_STATUS = {
   pending: "awaiting-approval",
 } as const satisfies Record<ApprovalState, string>;
 
-function targetsText(ask: Approval) {
-  return ask.targets.map((target) => target.label).join(", ");
+function targetsText(ask: Approval, locale: string) {
+  return new Intl.ListFormat(locale, { type: "unit" }).format(ask.targets.map((target) => target.label));
 }
 
 export interface ApprovalRecordProps {
@@ -54,21 +56,8 @@ export interface ApprovalRecordProps {
  */
 export function ApprovalRecord({ ask, onRevoke }: ApprovalRecordProps) {
   const messages = useMessages(asksMessages)
+  const locale = useLocale()
 
-  const prefix =
-    ask.state === "executed"
-      ? ""
-      : ask.state === "denied"
-        ? messages.denied
-        : ask.state === "expired"
-          ? messages.expired
-          : ask.state === "revoked"
-            ? messages.revoked
-            : ask.state === "cancelled"
-              ? messages.cancelledWithTheRun
-              : ask.state === "failed"
-                ? messages.failed
-                : messages.approvedRunning;
   return (
     <AskRecord
       status={RECORD_STATUS[ask.state]}
@@ -88,17 +77,9 @@ export function ApprovalRecord({ ask, onRevoke }: ApprovalRecordProps) {
         ) : undefined
       }
     >
-      {prefix}
-      {ask.action} {messages.on}{" "}
-      {ask.targets.map((entity, index) => (
-        <span key={`${entity.kind}:${entity.id}`}>
-          {index ? ", " : ""}
-          <EntityChip entity={entity} size="sm" />
-        </span>
-      ))}
-      {ask.outcome ? (
-        <span className="fa-ai-ask-record-outcome"> · {ask.outcome}</span>
-      ) : null}
+      {messageContent(messages.approvalRecord({ state: ask.state, action: ask.action, targets: "{targets}", outcome: ask.outcome }), {
+        targets: new Intl.ListFormat(locale, { type: "unit" }).formatToParts(ask.targets.map((_, index) => String(index))).map((part, index) => part.type === "element" ? <EntityChip key={index} entity={ask.targets[Number(part.value)]!} size="sm" /> : part.value),
+      })}
     </AskRecord>
   );
 }
@@ -118,7 +99,7 @@ function Expiry({ at, onExpire }: { at: number; onExpire: () => void }) {
       data-soon={left < 60_000 ? "" : undefined}
       className="fa-ai-ask-expiry"
     >
-      {messages.expiresIn} {formatCountdown(left)}
+      {messages.expiresIn(formatCountdown(left))}
     </span>
   );
 }
@@ -140,6 +121,7 @@ export function ApprovalCard({ ask }: {
   ask: Approval;
 }) {
   const messages = useMessages(asksMessages)
+  const locale = useLocale()
 
   const id = useId();
   const handlers = useConversationHandlers();
@@ -162,7 +144,7 @@ export function ApprovalCard({ ask }: {
   const resolved = state !== "pending";
   const danger = ask.risk === "danger";
   const twoStep = danger || Boolean(ask.stepUp);
-  const target = targetsText(ask);
+  const target = targetsText(ask, locale);
 
   const settle = useCallback(
     (next: ApprovalState) => {

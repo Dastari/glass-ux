@@ -204,7 +204,7 @@ const TreemapPlot = memo(function TreemapPlot({ box, focus, root, colour, store,
   const valueText = (index: number) => {
     const node = tiles[index]?.node
     if (!node) return ""
-    return `${node.data.label} · ${formatValue(node.value ?? 0, fmt)} · ${formatShare(node.value ?? 0, focus.value ?? 0, fmt.locale)}${target(index) ? messages.pressEnterToOpen : ""}`
+    return (target(index) ? messages.pressEnterToOpen : (label: string) => label)(`${node.data.label} · ${formatValue(node.value ?? 0, fmt)} · ${formatShare(node.value ?? 0, focus.value ?? 0, fmt.locale)}`)
   }
 
   return (

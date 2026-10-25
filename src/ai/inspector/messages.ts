@@ -11,7 +11,7 @@ export const inspectorMessages = defineMessages("inspector", {
   sources: "Sources",
   budget: "Budget",
   resets: (time: string) => `Resets ${time}`,
-  budgetSummary: (percent: number, used: string, maximum: string, unit: string) => `${percent}% · ${used} of ${maximum} ${unit}`,
+  budgetSummary: ({ percent, used, maximum, unit }: { percent: number; used: string; maximum: string; unit: string }) => `${percent}% · ${used} of ${maximum} ${unit}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

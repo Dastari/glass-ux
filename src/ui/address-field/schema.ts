@@ -43,7 +43,7 @@ export function addressSchema(options: AddressSchemaOptions = {}) {
       if (!value.locality.trim()) context.addIssue({ code: "custom", path: ["locality"], message: getAddressFieldMessages(options.locale).enterThe(convention.locality.toLowerCase()) })
       if (!value.country.code) context.addIssue({ code: "custom", path: ["country"], message: getAddressFieldMessages(options.locale).chooseACountry })
       if (value.postcode.trim() && !isPostcode(value.country.code, value.postcode)) {
-        const example = convention.postcodeExample ? getAddressFieldMessages(options.locale).suchAs(convention.postcodeExample) : ""
+        const example = convention.postcodeExample
         context.addIssue({ code: "custom", path: ["postcode"], message: getAddressFieldMessages(options.locale).checkThe(convention.postcode.toLowerCase(), example) })
       }
       if (options.requireLocation && !value.location) context.addIssue({ code: "custom", path: ["line1"], message: getAddressFieldMessages(options.locale).addressRequired })

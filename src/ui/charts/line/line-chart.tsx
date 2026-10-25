@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { lineMessages, getLineMessages } from "./messages.js"
 import { memo, useCallback, useEffect, useId, useMemo, useRef, useState, type ComponentProps, type CSSProperties, type ReactNode } from "react"
 import { cartesianInset, ChartText, XLabels, YGrid, YLabels } from "../core/axes.js"
 import { DECIMATE_ABOVE, lttbIndices } from "../core/decimate.js"
@@ -83,9 +85,15 @@ export interface LineChartProps extends ChartCommonProps, ValueFormat {
 }
 
 /** A bridge's tooltip (its native SVG title). */
-export const GAP_BRIDGE_TITLE = "No samples available · visual bridge only"
+function getGAP_BRIDGE_TITLE(messages: typeof lineMessages.defaults) { return messages.noSamplesAvailableVisualBridgeOnly }
+/** English defaults; rendered controls resolve their locale's messages. */
+export const GAP_BRIDGE_TITLE = getGAP_BRIDGE_TITLE(lineMessages.defaults)
+
 /** The sentence a chart with bridges adds to its accessible description. */
-export const GAP_BRIDGE_NOTE = "Dashed lines join readings across times with no samples."
+function getGAP_BRIDGE_NOTE(messages: typeof lineMessages.defaults) { return messages.dashedLinesJoinReadingsAcrossTimesWithNo }
+/** English defaults; rendered controls resolve their locale's messages. */
+export const GAP_BRIDGE_NOTE = getGAP_BRIDGE_NOTE(lineMessages.defaults)
+
 
 interface Prepared {
   xs: number[]
@@ -155,7 +163,11 @@ function prepare(
  *            head (Metric's model)
  */
 export function LineChart(props: LineChartProps) {
-  const { label, title, state = "ready", series, x, unit, format, xLabel = "Time", formatX, area, stacked, now, thresholds, markers, domain, onActivate, selected, gaps = "break", maxBridge, ...rest } = props
+  const messages = useMessages(lineMessages, { locale: props.locale })
+
+  const { label, title, state = "ready", series, x, unit, format, xLabel: xLabelProp, formatX, area, stacked, now, thresholds, markers, domain, onActivate, selected, gaps = "break", maxBridge, ...rest } = props
+  const xLabel = xLabelProp ?? messages.time
+
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
   const store = useHoverStore()
   const prepared = useMemo(() => prepare(x, series, domain, stacked, thresholds, hidden), [x, series, domain, stacked, thresholds, hidden])
@@ -232,7 +244,7 @@ export function LineChart(props: LineChartProps) {
       trail={trail}
       trailOptional={!single}
       trailSize={single ? "value" : "figure"}
-      note={bridged ? GAP_BRIDGE_NOTE : undefined}
+      note={bridged ? getGAP_BRIDGE_NOTE(messages) : undefined}
     >
       {(box) => (
         <LinePlot
@@ -293,7 +305,7 @@ function lineTable(x: readonly XValue[], series: readonly LineSeries[], fmt: Loc
     values.push(raw)
   }
   return {
-    columns: [{ key: "x", label: step > 1 ? `${xLabel} (1 in ${step} samples)` : xLabel }, ...series.map((item) => ({ key: item.key, label: item.label, numeric: true }))],
+    columns: [{ key: "x", label: step > 1 ? getLineMessages(fmt.locale).count1InSamples(xLabel, step) : xLabel }, ...series.map((item) => ({ key: item.key, label: item.label, numeric: true }))],
     rows,
     values,
   }
@@ -402,6 +414,8 @@ interface DrawnSeries {
 }
 
 const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, thresholds, markers, fmt, label, xText, now, formatX, onActivate, selected, bridge, maxBridge }: LinePlotProps) {
+  const messages = useMessages(lineMessages)
+
   // A live window that moved on (samples dropped at the start, new ones at the end) redraws
   // its paths at once; any other change to the data morphs them (marks.css).
   const [shown, setShown] = useState({ prepared, sliding: false })
@@ -540,7 +554,7 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
     return selection.low === selection.high ? nearestIndex(xs, selection.low) === index : at >= selection.low && at <= selection.high
   }
   const valueText = (index: number) =>
-    `${xText(index)} · ${visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`).join(", ")}${isSelected(index) ? " · selected" : ""}`
+    `${xText(index)} · ${visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`).join(", ")}${isSelected(index) ? messages.selected : ""}`
 
   const zeroY = domain[0] <= 0 && domain[1] >= 0 ? 0 : undefined
 
@@ -622,7 +636,7 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
             ))}
             {bridges.map(({ key, d }) => (
               <path key={`b${key}`} className="fa-chart-bridge" data-enter="" style={{ d: cssPath(d) } as CSSProperties}>
-                <title>{GAP_BRIDGE_TITLE}</title>
+                <title>{getGAP_BRIDGE_TITLE(messages)}</title>
               </path>
             ))}
             {lines.map((d, index) => (
@@ -677,7 +691,7 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
             locate={(lx) => locate(lx)}
             anchor={anchor}
             snap
-            label={onActivate ? `${label} — inspect values, Enter selects` : `${label} — inspect values`}
+            label={onActivate ? messages.inspectValuesEnterSelects(label) : messages.inspectValues(label)}
             valueText={valueText}
             cursor={onActivate ? "pointer" : "crosshair"}
             onActivate={onActivate}
@@ -712,7 +726,7 @@ const LinePlot = memo(function LinePlot({ box, prepared, store, stacked, area, t
                     footer={
                       total !== null || marker ? (
                         <>
-                          {total !== null ? `Total ${formatValue(total, fmt)}` : null}
+                          {total !== null ? messages.total(formatValue(total, fmt)) : null}
                           {total !== null && marker ? " · " : null}
                           {marker?.label}
                         </>

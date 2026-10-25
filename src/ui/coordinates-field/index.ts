@@ -1,3 +1,4 @@
+import type {} from "./messages.js"
 export { CoordinatesField, CoordinatesInput, isReadable, UNREADABLE, type CoordinatesFieldProps, type CoordinatesInputProps } from "./coordinates-field.js"
 export {
   COORDINATE_DECIMALS,

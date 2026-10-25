@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { windowsMessages } from "./messages.js"
 /**
  * The workspace: everything in it is a window (R5.3, R14).
  *
@@ -34,16 +36,7 @@ import { PHONE_QUERY, useMediaQuery } from "../lib/use-media-query.js";
 import { Button } from "../ui/button/index.js";
 import { createDragStore, type DragStore } from "./drag.js";
 import { Dock, WindowSwitcher } from "./dock.js";
-import {
-  SNAP_LAYOUTS,
-  SNAP_ZONES,
-  SNAP_ZONE_LABELS,
-  assignTiles,
-  clamp,
-  fracVars,
-  maxTileColumns,
-  type FracRect,
-} from "./geometry.js";
+import { SNAP_LAYOUTS, SNAP_ZONES, assignTiles, clamp, fracVars, maxTileColumns, type FracRect } from "./geometry.js";
 import {
   ManagedWindow,
   WorkspaceLinkContext,
@@ -181,6 +174,8 @@ export function Workspace({
   scopes,
   className,
 }: WorkspaceProps) {
+  const messages = useMessages(windowsMessages)
+
   const manager = useWindowManager();
   const windows = useWindows();
   const focusedId = useFocusedWindowId();
@@ -258,7 +253,7 @@ export function Workspace({
           variant="ghost"
           size="sm"
           icon={<IconWindows />}
-          aria-label="Switch windows"
+          aria-label={messages.switchWindows}
           onClick={() => setSwitcherOpen(true)}
         />
       ),
@@ -480,6 +475,8 @@ function SplitHandle({
   stageRef: RefObject<HTMLDivElement | null>;
   minFraction: number;
 }) {
+  const messages = useMessages(windowsMessages)
+
   const [active, setActive] = useState(false);
   const name = `--_d${index + 1}`;
   const bounds = () => {
@@ -540,7 +537,7 @@ function SplitHandle({
       role="separator"
       tabIndex={0}
       aria-orientation="vertical"
-      aria-label={`Resize column ${index + 1}`}
+      aria-label={messages.resizeColumn(index + 1)}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(value * 100)}
@@ -567,6 +564,8 @@ function useDrag(drag: DragStore) {
 
 /** The snap bar (layouts to drop onto) and the live preview of where the window will land. */
 function SnapOverlay({ drag }: { drag: DragStore }) {
+  const messages = useMessages(windowsMessages)
+
   const { id, target, layout } = useDrag(drag);
   const previewRef = useRef<HTMLDivElement>(null);
   // The preview moves between zones with transform only (measured, then inverted).
@@ -628,12 +627,12 @@ function SnapOverlay({ drag }: { drag: DragStore }) {
         </div>
         <span className="fa-wm-snap-label" role="status" aria-live="polite">
           {target === "tile"
-            ? "Tile beside the page"
+            ? messages.tileBesideThePage
             : target === "maximise"
-              ? "Maximise window"
+              ? messages.maximiseWindow
               : target
-                ? SNAP_ZONE_LABELS[target]
-                : "Drag to a layout to snap the window"}
+                ? messages[{"left-half": "snapLeftHalf", "right-half": "snapRightHalf", "left-third": "snapLeftThird", "centre-third": "snapCentreThird", "right-third": "snapRightThird", "left-two-thirds": "snapLeftTwoThirds", "right-two-thirds": "snapRightTwoThirds", "top-left": "snapTopLeftQuarter", "top-right": "snapTopRightQuarter", "bottom-left": "snapBottomLeftQuarter", "bottom-right": "snapBottomRightQuarter"}[target] as keyof typeof messages] as string
+                : messages.dragToALayoutToSnapTheWindow}
         </span>
       </div>
     </>

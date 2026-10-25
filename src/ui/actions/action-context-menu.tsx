@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { actionsMessages } from "./messages.js"
 import type { ReactElement } from "react"
 import { resolveActions, type ActionSet } from "../../lib/actions/actions.js"
 import { ContextMenu } from "../context-menu/index.js"
@@ -22,11 +24,13 @@ export interface ActionContextMenuProps<T> {
  * menu its ⋯ button opens (R11.6) — the same definition, the same item parts.
  */
 export function ActionContextMenu<T>({ set, targets, label, children }: ActionContextMenuProps<T>) {
+  const messages = useMessages(actionsMessages)
+
   const groups = resolveActions(set, targets, "context")
   return (
     <ContextMenu.Root disabled={!groups.length}>
       <ContextMenu.Trigger render={children} />
-      <ContextMenu.Popup aria-label={`Actions for ${label}`}>
+      <ContextMenu.Popup aria-label={messages.actionsFor(label)}>
         <ActionMenuItems groups={groups} targets={targets} surface="context" />
       </ContextMenu.Popup>
     </ContextMenu.Root>

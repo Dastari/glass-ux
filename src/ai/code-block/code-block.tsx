@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { codeBlockMessages } from "./messages.js"
 import { useEffect, useId, useMemo, useState, type CSSProperties } from "react";
 import {
   IconChevronDown,
@@ -56,6 +58,8 @@ export function CodeBlock({
   maxLines = COLLAPSED_LINES,
   className,
 }: CodeBlockProps) {
+  const messages = useMessages(codeBlockMessages)
+
   const text = code.replace(/\n$/, "");
   const lines = useMemo(() => text.split("\n"), [text]);
   const [highlighted, setHighlighted] = useState<{
@@ -67,7 +71,7 @@ export function CodeBlock({
   const [wrap, setWrap] = useState(initialWrap);
   const [expanded, setExpanded] = useState(false);
   const id = useId();
-  const label = title ?? languageLabel(language);
+  const label = title ?? languageLabel(language, messages);
   const collapsible = maxLines > 0 && lines.length > maxLines + 2;
   const collapsed = collapsible && !expanded;
 
@@ -95,25 +99,25 @@ export function CodeBlock({
       breakout
       className={cx("fa-ai-code", className)}
       data-wrap={wrap ? "" : undefined}
-      aria-label={accessibleLabel ?? `${label} code`}
+      aria-label={accessibleLabel ?? messages.code(label)}
     >
       <AiCard.Header
         icon={<IconCode />}
         title={label}
         level={headingLevel}
-        meta={lines.length > 1 ? `${lines.length} lines` : undefined}
+        meta={lines.length > 1 ? messages.lines(lines.length) : undefined}
         actions={
           <>
             <Button
               variant="ghost"
               size="sm"
               icon={<IconWrapText />}
-              aria-label="Wrap lines"
+              aria-label={messages.wrapLines}
               aria-pressed={wrap}
               data-pressed={wrap ? "" : undefined}
               onClick={() => setWrap((value) => !value)}
             />
-            <CopyButton value={text} label="Copy code" />
+            <CopyButton value={text} label={messages.copyCode} />
           </>
         }
       />
@@ -125,7 +129,7 @@ export function CodeBlock({
         // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scroll region must be keyboard scrollable (R20.6)
         tabIndex={0}
         role="region"
-        aria-label={`${accessibleLabel ?? `${label} code`} source`}
+        aria-label={messages.source(accessibleLabel ?? messages.code(label))}
       >
         <pre
           className="fa-ai-code-pre"
@@ -161,7 +165,7 @@ export function CodeBlock({
             aria-controls={id}
             onClick={() => setExpanded((value) => !value)}
           >
-            {expanded ? "Show fewer lines" : `Show all ${lines.length} lines`}
+            {expanded ? messages.showFewerLines : messages.showAllLines(lines.length)}
           </Button>
         </div>
       ) : null}

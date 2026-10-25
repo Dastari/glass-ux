@@ -1,3 +1,4 @@
+import { getAsksMessages } from "./messages.js"
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react"
 import type { AiAsk, ApprovalState } from "../types.js"
 
@@ -53,8 +54,8 @@ export function isAskPending(ask: AiAsk) {
 }
 
 /** The marker's and the dock's words for what is pending. */
-export function waitingLabel(ask: AiAsk) {
-  return ask.type === "approval" || ask.type === "confirm" ? "Waiting for your decision" : "Waiting for your answer"
+export function waitingLabel(ask: AiAsk, messages = getAsksMessages()) {
+  return ask.type === "approval" || ask.type === "confirm" ? messages.waitingForYourDecision : messages.waitingForYourAnswer
 }
 
 export interface AskDockProviderProps {

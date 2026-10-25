@@ -1,3 +1,4 @@
+import type {} from "./messages.js"
 export {
   BREADCRUMB_BACK_MIN,
   BREADCRUMB_SEARCH_THRESHOLD,

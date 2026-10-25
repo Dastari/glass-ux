@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { topologyMessages } from "./messages.js"
 /**
  * TopologyCanvas — a pannable, zoomable map of a tree of nodes (a network: gateway, then
  * switches and access points, then clients clustered by kind). UniFi-style rows, elbow
@@ -138,19 +140,22 @@ export function TopologyViewToggle({ view, onViewChange, size = "md" }: {
   onViewChange: (view: TopologyView) => void
   size?: "sm" | "md"
 }) {
+  const messages = useMessages(topologyMessages)
+
   return view === "map" ? (
-    <Button variant="secondary" size={size} icon={<IconList />} aria-label="View as list" data-topology-control="view" onClick={() => onViewChange("list")} />
+    <Button variant="secondary" size={size} icon={<IconList />} aria-label={messages.viewAsList} data-topology-control="view" onClick={() => onViewChange("list")} />
   ) : (
     <Button variant="secondary" size={size} icon={<IconNetwork />} onClick={() => onViewChange("map")} data-topology-control="view">
-      View as map
-    </Button>
+      {messages.viewAsMap} </Button>
   )
 }
 
 /** The canvas's loading shape: a root, a row of three, a row of clusters (R9.3). */
 export function TopologySkeleton({ className }: { className?: string }) {
+  const messages = useMessages(topologyMessages)
+
   return (
-    <div className={cx("fa-topology-skeleton", className)} role="status" aria-busy="true" aria-label="Loading the map">
+    <div className={cx("fa-topology-skeleton", className)} role="status" aria-busy="true" aria-label={messages.loadingTheMap}>
       <div className="fa-topology-skeleton-row">
         <Skeleton.Block radius="tile" className="fa-topology-skeleton-tile" />
       </div>
@@ -268,10 +273,13 @@ export function TopologyCanvas<T>({
   onViewChange,
   list,
   minimap = true,
-  emptyText = "Nothing to draw",
+  emptyText: emptyTextProp,
   insets,
   className,
 }: TopologyCanvasProps<T>) {
+  const messages = useMessages(topologyMessages)
+  const emptyText = emptyTextProp ?? messages.nothingToDraw
+
   const rootRef = useRef<HTMLDivElement>(null)
   const probeRef = useRef<HTMLSpanElement>(null)
   const measureRef = useRef<HTMLSpanElement>(null)
@@ -335,7 +343,7 @@ export function TopologyCanvas<T>({
   // Laid out, and the chrome over it known: until then the loading shape holds the box.
   const ready = Boolean(layout && nodes) && !pending
   /** Why the zoom, fit and minimap controls are unavailable (R12). */
-  const controlsReason = ready ? undefined : "The map is loading"
+  const controlsReason = ready ? undefined : messages.theMapIsLoading
   const empty = ready && !nodes?.length
 
   /* ── The camera: one transform per frame ────────────────────────────────── */
@@ -812,7 +820,7 @@ export function TopologyCanvas<T>({
         {world && nodeMenu ? (
           <ContextMenu.Root disabled={!menuGroups.length}>
             <ContextMenu.Trigger render={world} onContextMenuCapture={onContextMenuCapture} />
-            <ContextMenu.Popup aria-label={menu ? `Actions for ${menu.label}` : "Actions"}>
+            <ContextMenu.Popup aria-label={menu ? messages.actionsFor(menu.label) : messages.actions}>
               {menu ? <ActionMenuItems groups={menuGroups} targets={menu.targets} surface="context" /> : null}
             </ContextMenu.Popup>
           </ContextMenu.Root>
@@ -854,16 +862,16 @@ export function TopologyCanvas<T>({
               </svg>
             </div>
           ) : null}
-          <div className="fa-topology-controls" role="toolbar" aria-label="Map controls" aria-orientation="vertical">
-            <Button variant="secondary" icon={<IconZoomIn />} aria-label="Zoom in" shortcut="+" onClick={() => zoomAt(ZOOM_STEP, undefined, true)} disabledReason={controlsReason} data-topology-control="zoom-in" />
-            <Button variant="secondary" icon={<IconZoomOut />} aria-label="Zoom out" shortcut="-" onClick={() => zoomAt(1 / ZOOM_STEP, undefined, true)} disabledReason={controlsReason} data-topology-control="zoom-out" />
-            <Button variant="secondary" icon={<IconFullscreen />} aria-label="Fit to view" shortcut="0" onClick={() => fit(true)} disabledReason={controlsReason} data-topology-control="fit" />
+          <div className="fa-topology-controls" role="toolbar" aria-label={messages.mapControls} aria-orientation="vertical">
+            <Button variant="secondary" icon={<IconZoomIn />} aria-label={messages.zoomIn} shortcut="+" onClick={() => zoomAt(ZOOM_STEP, undefined, true)} disabledReason={controlsReason} data-topology-control="zoom-in" />
+            <Button variant="secondary" icon={<IconZoomOut />} aria-label={messages.zoomOut} shortcut="-" onClick={() => zoomAt(1 / ZOOM_STEP, undefined, true)} disabledReason={controlsReason} data-topology-control="zoom-out" />
+            <Button variant="secondary" icon={<IconFullscreen />} aria-label={messages.fitToView} shortcut="0" onClick={() => fit(true)} disabledReason={controlsReason} data-topology-control="fit" />
             {minimap ? (
               <Button
                 variant="secondary"
                 icon={<IconLayers />}
-                aria-label="Minimap"
-                tooltip={showMinimap ? "Minimap: shown while part of the map is out of view" : "Minimap: off"}
+                aria-label={messages.minimap}
+                tooltip={showMinimap ? messages.minimapShownWhilePartOfTheMapIs : messages.minimapOff}
                 aria-pressed={showMinimap}
                 onClick={() => setShowMinimap((value) => !value)}
                 disabledReason={controlsReason}

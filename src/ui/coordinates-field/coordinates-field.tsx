@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { coordinatesFieldMessages, getCoordinatesFieldMessages } from "./messages.js"
 import { lazy, Suspense, useState, useSyncExternalStore } from "react"
 import { IconLocate, IconMapPin } from "../../icons/generated/icons.js"
 import { useParsedText } from "../../lib/use-parsed-text.js"
@@ -72,14 +74,15 @@ const useLocateState = () =>
     () => "unknown" as LocateState
   )
 
-const GEOLOCATION_ERRORS: Record<number, string> = {
-  1: "Location is blocked for this site. Allow it in the browser's site settings, then try again.",
-  2: "This device could not work out where it is. Try again outside, or enter the coordinates.",
-  3: "Finding the location took too long. Try again, or enter the coordinates.",
-}
+function getGEOLOCATION_ERRORS(messages: typeof coordinatesFieldMessages.defaults): Record<number, string> { return {
+  1: messages.locationIsBlockedForThisSiteAllowIt,
+  2: messages.thisDeviceCouldNotWorkOutWhereIt,
+  3: messages.findingTheLocationTookTooLongTryAgain,
+} }
+
 
 /** The device's position (rounded like everything else), or a rejection with a message. */
-function currentPosition(): Promise<LatLng> {
+function currentPosition(messages = getCoordinatesFieldMessages()): Promise<LatLng> {
   return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -87,7 +90,7 @@ function currentPosition(): Promise<LatLng> {
         if (parsed.ok) resolve(parsed.value)
         else reject(new Error(parsed.error))
       },
-      (error) => reject(new Error(GEOLOCATION_ERRORS[error.code] ?? "The location is not available")),
+      (error) => reject(new Error(getGEOLOCATION_ERRORS(messages)[error.code] ?? messages.theLocationIsNotAvailable)),
       { enableHighAccuracy: true, timeout: 15_000, maximumAge: 60_000 }
     )
   })
@@ -135,6 +138,8 @@ export function CoordinatesInput({
   readOnly,
   ...rest
 }: CoordinatesInputProps) {
+  const messages = useMessages(coordinatesFieldMessages)
+
   const text = useParsedText<LatLng | null>({ value, defaultValue, onValueChange, parse: readCoordinates, format: showCoordinates, same: samePoint })
   const current = text.value
   const readable = isReadable(current) && showCoordinates(current) !== ""
@@ -147,8 +152,8 @@ export function CoordinatesInput({
 
   const useMyLocation = () =>
     void locating.run(
-      async () => set(await currentPosition()),
-      (error) => toast.danger("Location not found", { description: error instanceof Error ? error.message : String(error) })
+      async () => set(await currentPosition(messages)),
+      (error) => toast.danger(messages.locationNotFound, { description: error instanceof Error ? error.message : String(error) })
     )
 
   return (
@@ -171,23 +176,23 @@ export function CoordinatesInput({
       trailing={
         <>
           {trailing}
-          {copyable && readable ? <CopyButton value={formatCoordinates(current)} label="Copy coordinates" className="fa-input-btn" /> : null}
+          {copyable && readable ? <CopyButton value={formatCoordinates(current)} label={messages.copyCoordinates} className="fa-input-btn" /> : null}
           {map && editable ? (
             <Popover.Root open={picking} onOpenChange={setPicking}>
-              <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconMapPin />} aria-label="Pick on map" />} />
-              <Popover.Popup size="lg" align="end" title="Pick on map" className="fa-coordinates-popup">
+              <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconMapPin />} aria-label={messages.pickOnMap} />} />
+              <Popover.Popup size="lg" align="end" title={messages.pickOnMap} className="fa-coordinates-popup">
                 <Suspense fallback={<div className="fa-coordinates-map fa-coordinates-map-loading glass-inset" aria-hidden />}>
                   <PinMap
                     config={map}
                     value={readable ? current : null}
                     onValueChange={(point) => set(point)}
-                    label="Pick the point: click the map or drag the pin"
+                    label={messages.pickThePointClickTheMapOrDrag}
                     fallback={mapFallback}
                     zoom={15}
                     className="fa-coordinates-map"
                   />
                 </Suspense>
-                <p className="fa-coordinates-caption">{readable ? formatDms(current) : "Click the map to place the pin, then drag it to adjust."}</p>
+                <p className="fa-coordinates-caption">{readable ? formatDms(current) : messages.clickTheMapToPlaceThePinThen}</p>
               </Popover.Popup>
             </Popover.Root>
           ) : null}
@@ -197,9 +202,9 @@ export function CoordinatesInput({
               size="sm"
               className="fa-input-btn"
               icon={<IconLocate />}
-              aria-label="Use my location"
+              aria-label={messages.useMyLocation}
               status={locating.status}
-              disabledReason={locateStatus === "denied" ? "Location is blocked for this site. Allow it in the browser's site settings." : undefined}
+              disabledReason={locateStatus === "denied" ? messages.locationIsBlockedForThisSiteAllowIt2 : undefined}
               onClick={useMyLocation}
             />
           ) : null}

@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { selectMessages } from "./messages.js"
 import { Select as BaseSelect } from "@base-ui/react/select"
 import { useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconCheck, IconChevronsUpDown } from "../../icons/generated/icons.js"
@@ -92,7 +94,7 @@ export function Select<V extends string = string>({
   value,
   defaultValue,
   onValueChange,
-  placeholder = "Choose…",
+  placeholder: placeholderProp,
   size = "md",
   width,
   icon,
@@ -108,6 +110,9 @@ export function Select<V extends string = string>({
   ref,
   ...aria
 }: SelectProps<V>) {
+  const messages = useMessages(selectMessages)
+  const placeholder = placeholderProp ?? messages.choose
+
   const [open, setOpen] = useState(false)
   const flat = flattenOptions(options)
   const find = (current: V | null) => flat.find((option) => option.value === current)

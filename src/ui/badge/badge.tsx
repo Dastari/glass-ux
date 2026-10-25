@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { badgeMessages } from "./messages.js"
 import type { ComponentProps, ReactNode } from "react"
 import { IconSpinner } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -58,16 +60,19 @@ interface StatusSpec {
 }
 
 /** One definition of how each status looks, shared by badges, dots and the tree. */
-export const STATUS: Record<StatusKind, StatusSpec> = {
-  online: { tone: "success", marker: "dot", label: "Online" },
-  offline: { tone: "neutral", marker: "dot", label: "Offline" },
-  warning: { tone: "warning", marker: "dot", label: "Warning" },
-  error: { tone: "danger", marker: "dot", label: "Error" },
-  installing: { tone: "info", marker: "spinner", label: "Installing" },
-  maintenance: { tone: "neutral", marker: "ring", label: "Maintenance" },
-  connecting: { tone: "info", marker: "pulse", label: "Connecting" },
-  live: { tone: "success", marker: "pulse", label: "Live" },
-}
+function getSTATUS(messages: typeof badgeMessages.defaults): Record<StatusKind, StatusSpec> { return {
+  online: { tone: "success", marker: "dot", label: messages.online },
+  offline: { tone: "neutral", marker: "dot", label: messages.offline },
+  warning: { tone: "warning", marker: "dot", label: messages.warning },
+  error: { tone: "danger", marker: "dot", label: messages.error },
+  installing: { tone: "info", marker: "spinner", label: messages.installing },
+  maintenance: { tone: "neutral", marker: "ring", label: messages.maintenance },
+  connecting: { tone: "info", marker: "pulse", label: messages.connecting },
+  live: { tone: "success", marker: "pulse", label: messages.live },
+} }
+/** English defaults; rendered controls resolve their locale's messages. */
+export const STATUS: Record<StatusKind, StatusSpec> = getSTATUS(badgeMessages.defaults)
+
 
 export interface StatusBadgeProps extends Omit<BadgeProps, "tone" | "marker" | "icon"> {
   /** Current operation or connection status. */
@@ -76,7 +81,9 @@ export interface StatusBadgeProps extends Omit<BadgeProps, "tone" | "marker" | "
 
 /** A status as a badge. The label defaults to the state name. */
 export function StatusBadge({ status, children, ...rest }: StatusBadgeProps) {
-  const spec = STATUS[status]
+ const messages = useMessages(badgeMessages)
+
+  const spec = getSTATUS(messages)[status]
   return (
     <Badge {...rest} tone={spec.tone} marker={spec.marker} data-status={status}>
       {children ?? spec.label}
@@ -95,7 +102,9 @@ export interface StatusDotProps extends Omit<ComponentProps<"span">, "children">
 
 /** The bare status dot: tree rows, dock icons, avatar presence, table cells. */
 export function StatusDot({ status, label, overlay = false, className, ...rest }: StatusDotProps) {
-  const spec = STATUS[status]
+ const messages = useMessages(badgeMessages)
+
+  const spec = getSTATUS(messages)[status]
   return (
     <span
       role={label ? "img" : undefined}

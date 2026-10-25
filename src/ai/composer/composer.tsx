@@ -1,3 +1,6 @@
+import { aiMessages } from "../messages.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { composerMessages } from "./messages.js"
 import { Popover as BasePopover } from "@base-ui/react/popover";
 import {
   useCallback,
@@ -275,10 +278,12 @@ function CommandList({
   /** Called with the zero-based index of the row under the pointer. Pair with `active` to move the highlight. */
   onActive: (index: number) => void;
 }) {
+  const messages = useMessages(composerMessages)
+
   if (!commands.length)
-    return <div className="fa-ai-options-empty">No commands match</div>;
+    return <div className="fa-ai-options-empty">{messages.noCommandsMatch}</div>;
   return (
-    <div id={id} role="listbox" className="fa-ai-options" aria-label="Commands">
+    <div id={id} role="listbox" className="fa-ai-options" aria-label={messages.commands}>
       {commands.map((command, index) => {
         const Icon = command.icon;
         return (
@@ -361,6 +366,8 @@ export function AttachmentChip({
   /** Called when the remove button is pressed; without it the chip has no remove button. */
   onRemove?: () => void;
 }) {
+  const messages = useMessages(composerMessages)
+
   const uploading =
     attachment.state === "uploading" || attachment.state === "scanning";
   const rejected = attachment.state === "rejected";
@@ -386,11 +393,11 @@ export function AttachmentChip({
         </TruncatedText>
         <span className="fa-ai-attachment-meta" data-numeric>
           {rejected
-            ? (attachment.reason ?? "Rejected")
+            ? (attachment.reason ?? messages.rejected)
             : attachment.state === "scanning"
-              ? "Scanning…"
+              ? messages.scanning
               : uploading
-                ? `Uploading · ${Math.round((attachment.progress ?? 0) * 100)}%`
+                ? messages.uploading(Math.round((attachment.progress ?? 0) * 100))
                 : formatBytes(attachment.size)}
         </span>
       </span>
@@ -402,7 +409,7 @@ export function AttachmentChip({
               : Math.round((attachment.progress ?? 0) * 100)
           }
           size="sm"
-          aria-label={`${attachment.name} upload`}
+          aria-label={messages.upload(attachment.name)}
         />
       ) : null}
       {rejected ? <IconWarning className="fa-ai-attachment-warning" /> : null}
@@ -413,7 +420,7 @@ export function AttachmentChip({
           size="xs"
           type="button"
           className="fa-ai-chip-remove fa-pressable"
-          aria-label={`Remove ${attachment.name}`}
+          aria-label={messages.remove(attachment.name)}
           onClick={onRemove}
         >
           <IconClose />
@@ -446,7 +453,7 @@ export function Composer({
   onStop,
   onEditLast,
   run = "idle",
-  placeholder = "Ask Assistant…",
+  placeholder: placeholderProp,
   minRows = 1,
   maxRows = 10,
   context = [],
@@ -464,8 +471,13 @@ export function Composer({
   size = "md",
   status,
   className,
-  "aria-label": ariaLabel = "Message Assistant",
+  "aria-label": ariaLabelProp,
 }: ComposerProps) {
+  const messages = useMessages(composerMessages)
+ const entityMessages = useMessages(aiMessages)
+  const placeholder = placeholderProp ?? messages.askAssistant
+  const ariaLabel = ariaLabelProp ?? messages.messageAssistant
+
   const id = useId();
   const resolver = useEntityResolver();
   const material = useCardMaterial();
@@ -668,7 +680,7 @@ export function Composer({
         className="fa-ai-composer-input"
         value={value}
         rows={minRows}
-        placeholder={listening ? "Listening…" : placeholder}
+        placeholder={listening ? messages.listening : placeholder}
         disabled={disabled}
         aria-label={ariaLabel}
         aria-describedby={disabledReason ? `${id}-reason` : undefined}
@@ -702,12 +714,12 @@ export function Composer({
                 size="sm"
                 icon={<IconAttach />}
                 className="fa-ai-composer-tool"
-                aria-label="Attach files"
-                tooltip="Attach files"
+                aria-label={messages.attachFiles}
+                tooltip={messages.attachFiles}
                 disabledReason={disabledReason}
                 onClick={() => fileRef.current?.click()}
               >
-                <span className="fa-ai-composer-tool-label">Attach</span>
+                <span className="fa-ai-composer-tool-label">{messages.attach}</span>
               </Button>
             </>
           ) : null}
@@ -720,8 +732,8 @@ export function Composer({
                     size="sm"
                     className="fa-ai-composer-tool fa-ai-composer-model"
                     iconEnd={<IconChevronDown />}
-                    aria-label={`Model: ${model.name}`}
-                    tooltip={`Model · ${model.name}`}
+                    aria-label={messages.model(model.name)}
+                    tooltip={messages.model2(model.name)}
                   >
                     <span className="fa-ai-composer-tool-label">
                       {model.name}
@@ -738,20 +750,19 @@ export function Composer({
                 <FactList
                   facts={[
                     {
-                      label: "Model",
+                      label: messages.model3,
                       value: <TruncatedText>{model.name}</TruncatedText>,
                     },
                     ...(model.effort
-                      ? [{ label: "Reasoning", value: model.effort }]
+                      ? [{ label: messages.reasoning, value: model.effort }]
                       : []),
                     ...(model.runtime
-                      ? [{ label: "Runtime", value: model.runtime }]
+                      ? [{ label: messages.runtime, value: model.runtime }]
                       : []),
                   ]}
                 />
                 <p className="fa-hint">
-                  The model is chosen for the whole workspace.
-                </p>
+                  {messages.theModelIsChosenForTheWholeWorkspace} </p>
                 {onOpenSettings ? (
                   <Button
                     size="sm"
@@ -759,8 +770,7 @@ export function Composer({
                     block
                     onClick={onOpenSettings}
                   >
-                    AI settings
-                  </Button>
+                    {messages.aiSettings} </Button>
                 ) : null}
               </Popover.Popup>
             </BasePopover.Root>
@@ -775,11 +785,11 @@ export function Composer({
                     icon={<IconLayers />}
                     iconEnd={<IconChevronDown />}
                     className="fa-ai-composer-tool"
-                    aria-label="Context"
-                    tooltip="Context"
+                    aria-label={messages.context}
+                    tooltip={messages.context}
                     disabledReason={disabledReason}
                   >
-                    <span className="fa-ai-composer-tool-label">Context</span>
+                    <span className="fa-ai-composer-tool-label">{messages.context}</span>
                   </Button>
                 }
               />
@@ -790,7 +800,7 @@ export function Composer({
                 size="lg"
               >
                 <div className="fa-ai-context-head">
-                  <span className="fa-overline">In this conversation</span>
+                  <span className="fa-overline">{messages.inThisConversation}</span>
                 </div>
                 {context.length ? (
                   <ul className="fa-ai-context-list">
@@ -805,13 +815,13 @@ export function Composer({
                         />
                         <span className="fa-item-label">{entity.label}</span>
                         <span className="fa-item-trail">
-                          {kindSpec(resolver.kinds, entity.kind).noun}
+                          {kindSpec(resolver.kinds, entity.kind, entityMessages).noun}
                         </span>
                         <Button
                           variant="ghost"
                           size="sm"
                           icon={<IconClose />}
-                          aria-label={`Remove ${entity.label}`}
+                          aria-label={messages.remove(entity.label)}
                           onClick={() =>
                             onContextChange(
                               context.filter((item) => item !== entity),
@@ -823,14 +833,13 @@ export function Composer({
                   </ul>
                 ) : (
                   <p className="fa-ai-options-empty">
-                    Workspace · everything you can access
-                  </p>
+                    {messages.workspaceEverythingYouCanAccess} </p>
                 )}
                 {resolver.search ? (
                   <div className="fa-ai-context-search">
                     <Combobox
-                      aria-label="Search entities"
-                      placeholder="Add an entity"
+                      aria-label={messages.searchEntities}
+                      placeholder={messages.addAnEntity}
                       source={contextSource}
                       value={null}
                       onValueChange={(value) => {
@@ -862,13 +871,13 @@ export function Composer({
             size={size}
             icon={<IconMic />}
             className="fa-ai-composer-mic"
-            aria-label={listening ? "Stop dictation" : "Dictate"}
+            aria-label={listening ? messages.stopDictation : messages.dictate}
             aria-pressed={listening}
             disabledReason={
               disabledReason ??
               (dictation.supported
                 ? undefined
-                : "Dictation needs microphone access")
+                : messages.dictationNeedsMicrophoneAccess)
             }
             onClick={() =>
               dictation.active
@@ -883,7 +892,7 @@ export function Composer({
             size={size}
             icon={busy ? <IconStop /> : <IconArrowUp />}
             className={busy ? "fa-ai-composer-stop" : "fa-ai-composer-submit"}
-            aria-label={busy ? "Stop response" : "Send"}
+            aria-label={busy ? messages.stopResponse : messages.send}
             shortcut={busy ? "esc" : "enter"}
             status={
               run === (busy ? "stopping" : "sending") ? "pending" : undefined
@@ -892,7 +901,7 @@ export function Composer({
               busy
                 ? undefined
                 : (disabledReason ??
-                  (canSend ? undefined : "Type a message first"))
+                  (canSend ? undefined : messages.typeAMessageFirst))
             }
             onClick={busy ? onStop : () => void send()}
           />
@@ -905,7 +914,7 @@ export function Composer({
           Boolean(menu) && (menu?.type === "slash" ? commands.length > 0 : true)
         }
         onClose={() => setMenu(null)}
-        label={menu?.type === "slash" ? "Commands" : "Mention"}
+        label={menu?.type === "slash" ? messages.commands : messages.mention}
       >
         {menu?.type === "slash" ? (
           <CommandList
@@ -917,7 +926,7 @@ export function Composer({
           />
         ) : menu?.type === "mention" ? (
           <>
-            <div className="fa-popup-group-label">Mention</div>
+            <div className="fa-popup-group-label">{messages.mention}</div>
             <EntityOptionList
               id={`${id}-menu`}
               query={menu.query}
@@ -931,7 +940,7 @@ export function Composer({
               onPick={pickMention}
               onActive={setActive}
               empty={
-                menu.query ? `Nothing matches "${menu.query}"` : "Type a name"
+                menu.query ? messages.nothingMatches(menu.query) : messages.typeAName
               }
             />
           </>

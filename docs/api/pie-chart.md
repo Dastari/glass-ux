@@ -17,7 +17,7 @@ replaces the total with that slice's value and share.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| categoryLabel | `string \| undefined` | See type | no | "Category" | Header for the table's first column. |
+| categoryLabel | `string \| undefined` | See type | no | — | Header for the table's first column. |
 | centre | `{ value: string; label: string; } \| undefined` | See type | no | — | What the centre says when nothing is hovered. Defaults to the total. |
 | data | `readonly PieSlice[]` | See type | yes | — | Typed records rendered by the component. |
 | donut | `boolean \| undefined` | false, true | no | false | A ring with the total (or `centre`) inside. Pie is the solid disc. |
@@ -30,7 +30,7 @@ replaces the total with that slice's value and share.
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
 | state | `ChartState \| undefined` | "error", "ready", "loading", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
-| totalLabel | `string \| undefined` | See type | no | "Total" | Label under the centre total ("Endpoints"). |
+| totalLabel | `string \| undefined` | See type | no | — | Label under the centre total ("Endpoints"). |
 | unit | `ChartUnit \| undefined` | See type | no | — | "%", "GB", "ms", or a counted noun ({ one, other })… "%" sticks to the number; other units take a space. |
 
 Inherited properties:

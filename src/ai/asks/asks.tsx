@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { asksMessages } from "./messages.js"
 import { useContext, useEffect, useId, useRef } from "react"
 import { IconChevronDown, IconChevronLeft, IconChevronRight, IconChevronUp, IconHelp } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -89,6 +91,8 @@ export function AskMarker({ ask, className }: {
   ask: AiAsk
   className?: string
 }) {
+  const messages = useMessages(asksMessages)
+
   const dock = useAskDockApi()
   return (
     <AskRecord
@@ -98,12 +102,11 @@ export function AskMarker({ ask, className }: {
       action={
         dock ? (
           <Button variant="ghost" size="sm" onClick={() => dock.show(ask.id)}>
-            Review
-          </Button>
+            {messages.review} </Button>
         ) : undefined
       }
     >
-      {waitingLabel(ask)} · {ask.question}
+      {waitingLabel(ask, messages)} · {ask.question}
     </AskRecord>
   )
 }
@@ -123,6 +126,8 @@ function dockTone(ask: AiAsk) {
  * composer and the transcript keep working.
  */
 export function AskDock({ className }: { className?: string }) {
+  const messages = useMessages(asksMessages)
+
   const id = useId()
   const dock = useAskDockState()
   const items = useRef(new Map<string, HTMLDivElement>())
@@ -140,7 +145,7 @@ export function AskDock({ className }: { className?: string }) {
   const count = entries.length
 
   return (
-    <section className={cx("glass-overlay fa-ai-ask-dock", className)} data-collapsed={collapsed ? "" : undefined} data-tone={dockTone(current)} aria-label="Waiting for you">
+    <section className={cx("glass-overlay fa-ai-ask-dock", className)} data-collapsed={collapsed ? "" : undefined} data-tone={dockTone(current)} aria-label={messages.waitingForYou}>
       <div className="fa-ai-ask-dock-bar">
         <PendingGlyph ask={current} />
         {collapsed ? (
@@ -148,27 +153,27 @@ export function AskDock({ className }: { className?: string }) {
             <TruncatedText>{current.question}</TruncatedText>
           </button>
         ) : (
-          <span className="fa-ai-ask-dock-label">{waitingLabel(current)}</span>
+          <span className="fa-ai-ask-dock-label">{waitingLabel(current, messages)}</span>
         )}
         {count > 1 ? (
-          <div className="fa-ai-ask-dock-pager" role="group" aria-label="Requests">
+          <div className="fa-ai-ask-dock-pager" role="group" aria-label={messages.requests}>
             <span className="fa-ai-ask-dock-count" data-numeric aria-live="polite">
-              {index + 1} of {count}
+              {index + 1} {messages.of} {count}
             </span>
             <Button
               variant="ghost"
               size="sm"
               icon={<IconChevronLeft />}
-              aria-label="Previous request"
-              disabledReason={index === 0 ? "This is the oldest request" : undefined}
+              aria-label={messages.previousRequest}
+              disabledReason={index === 0 ? messages.thisIsTheOldestRequest : undefined}
               onClick={() => dock.setCurrent(entries[index - 1]!.id)}
             />
             <Button
               variant="ghost"
               size="sm"
               icon={<IconChevronRight />}
-              aria-label="Next request"
-              disabledReason={index === count - 1 ? "This is the newest request" : undefined}
+              aria-label={messages.nextRequest}
+              disabledReason={index === count - 1 ? messages.thisIsTheNewestRequest : undefined}
               onClick={() => dock.setCurrent(entries[index + 1]!.id)}
             />
           </div>
@@ -177,7 +182,7 @@ export function AskDock({ className }: { className?: string }) {
           variant="ghost"
           size="sm"
           icon={collapsed ? <IconChevronUp /> : <IconChevronDown />}
-          aria-label={collapsed ? "Expand" : "Collapse"}
+          aria-label={collapsed ? messages.expand : messages.collapse}
           aria-expanded={!collapsed}
           aria-controls={`${id}-body`}
           onClick={() => dock.setCollapsed(!collapsed)}

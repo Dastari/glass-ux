@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { settingRowMessages } from "./messages.js"
 import { Field as BaseField } from "@base-ui/react/field"
 import { createContext, useContext, useId, type ComponentProps, type ReactNode } from "react"
 import { IconCheck, IconClose, IconSpinner } from "../../icons/generated/icons.js"
@@ -58,6 +60,8 @@ export function SettingRow({
   className,
   ...rest
 }: SettingRowProps) {
+  const messages = useMessages(settingRowMessages)
+
   const labelId = useId()
   const descriptionId = useId()
   const showError = status === "error" && error
@@ -97,7 +101,7 @@ export function SettingRow({
             ) : null}
             {/* Always mounted with the control, so the save outcome is announced when it changes. */}
             <span className="sr-only" role="status">
-              {status === "pending" ? "Saving" : status === "success" ? "Saved" : status === "error" ? "Not saved" : ""}
+              {status === "pending" ? messages.saving : status === "success" ? messages.saved : status === "error" ? messages.notSaved : ""}
             </span>
             <SettingRowContext.Provider value={{ labelId, descriptionId: hasDescription ? descriptionId : undefined }}>
               {control}

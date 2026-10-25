@@ -17,7 +17,7 @@ button keeps its size throughout. Inside an Input's box, give it `className="fa-
 | disabledReason | `string \| undefined` | See type | no | — | Why the button is disabled (R12.3). Keeps the button focusable (aria-disabled) so the reason is reachable by hover, focus and screen readers. |
 | errorLabel | `ReactNode` | See type | no | — | Label shown after a failed action. Use onError to explain the failure. |
 | iconEnd | `ReactNode` | See type | no | — | Trailing icon (chevrons, external-link). |
-| label | `string \| undefined` | See type | no | "Copy" | Names what is copied: "Copy IP address". Also its tooltip. Default "Copy". |
+| label | `string \| undefined` | See type | no | — | Names what is copied: "Copy IP address". Also its tooltip. Default "Copy". |
 | pendingLabel | `ReactNode` | See type | no | — | Label shown while the asynchronous action runs. Its width is reserved with the other feedback labels. |
 | shape | `"circle" \| "default" \| undefined` | "circle", "default" | no | — | Circular instead of the control radius (send buttons, avatars-as-buttons). |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard shortcut shown in the tooltip, e.g. "mod+k". |

@@ -12,7 +12,7 @@ The option rows for entity search (the composer's
 | --- | --- | --- | --- | --- | --- |
 | active | `number` | See type | yes | — | Marks the current destination or active choice. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
-| empty | `string \| undefined` | See type | no | "No matches" | Content shown when there are no matching items. |
+| empty | `string \| undefined` | See type | no | — | Content shown when there are no matching items. |
 | id | `string` | See type | yes | — | A stable element or component identifier. |
 | onActive | `(index: number) => void` | See type | yes | — | Called with the zero-based index of the row under the pointer. Pair with `active` to move the highlight. |
 | onPick | `(entity: EntityRef) => void` | See type | yes | — | Called with the entity the person clicks or presses Enter or Space on; adding or removing the pick is up to the caller. |

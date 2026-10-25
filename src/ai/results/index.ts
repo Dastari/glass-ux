@@ -1,3 +1,4 @@
+import type {} from "./messages.js"
 export { ResultChart } from "./chart.js"
 export { ResultDetail } from "./detail.js"
 export { ResultDiff } from "./diff.js"

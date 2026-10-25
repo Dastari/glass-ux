@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { richTextMessages } from "./messages.js"
 import { Field as BaseField } from "@base-ui/react/field";
 import { CodeNode } from "@lexical/code";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -44,7 +46,7 @@ import { LinkActivation } from "./link-activation.js";
 import { MARKDOWN_TRANSFORMERS } from "./markdown.js";
 import type { RichTextInputProps, RichTextView } from "./rich-text.js";
 import { isSafeRichTextUrl } from "./urls.js";
-import { RICH_TEXT_VIEWS } from "./view-options.js";
+import { richTextViews } from "./view-options.js";
 
 const EXTERNAL_TAG = "glass-rich-text-source";
 const THEME = {
@@ -298,7 +300,7 @@ export default function RichTextEditor({
   defaultView = "visual",
   onViewChange,
   sourceView = true,
-  placeholder = "Write a document…",
+  placeholder: placeholderProp,
   minHeight = 160,
   maxHeight = 480,
   resize = true,
@@ -312,6 +314,9 @@ export default function RichTextEditor({
   onError,
   ...props
 }: RichTextInputProps) {
+  const messages = useMessages(richTextMessages)
+  const placeholder = placeholderProp ?? messages.writeADocument
+
   const [innerView, setView] = useState<RichTextView>(defaultView);
   const view = sourceView ? (controlledView ?? innerView) : "visual";
   const namespace = useId();
@@ -375,10 +380,10 @@ export default function RichTextEditor({
               <Segmented
                 className="fa-rich-text-modes"
                 size="sm"
-                options={RICH_TEXT_VIEWS}
+                options={richTextViews(messages)}
                 value={view}
                 disabled={disabled}
-                aria-label="Document view"
+                aria-label={messages.documentView}
                 onValueChange={(next) => {
                   if (controlledView === undefined) setView(next);
                   onViewChange?.(next);

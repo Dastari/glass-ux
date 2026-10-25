@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { desktopMessages } from "./messages.js"
 import type { CSSProperties, ReactNode } from "react";
 import {
   IconCursor,
@@ -85,16 +87,17 @@ export interface DesktopSessionProps {
   onResume?: () => void;
 }
 
-const TITLES: Record<DesktopState, (label: string) => string> = {
-  observing: (label) => `Watching ${label}`,
-  controlling: (label) => `Assistant is controlling ${label}`,
-  "awaiting-action": (label) => `Assistant needs approval on ${label}`,
-  paused: (label) => `Assistant paused on ${label}`,
-  human: (label) => `You have control of ${label}`,
-  ended: (label) => `Session on ${label} ended`,
-  expired: (label) => `Control of ${label} expired`,
-  failed: (label) => `Lost the session on ${label}`,
-};
+function getTITLES(messages: typeof desktopMessages.defaults): Record<DesktopState, (label: string) => string> { return {
+  observing: (label) => messages.watching(label),
+  controlling: (label) => messages.assistantIsControlling(label),
+  "awaiting-action": (label) => messages.assistantNeedsApprovalOn(label),
+  paused: (label) => messages.assistantPausedOn(label),
+  human: (label) => messages.youHaveControlOf(label),
+  ended: (label) => messages.sessionOnEnded(label),
+  expired: (label) => messages.controlOfExpired(label),
+  failed: (label) => messages.lostTheSessionOn(label),
+} }
+
 
 const TONES: Record<DesktopState, AiCardTone> = {
   observing: "info",
@@ -107,16 +110,17 @@ const TONES: Record<DesktopState, AiCardTone> = {
   failed: "danger",
 };
 
-const BADGES: Record<DesktopState, string> = {
-  observing: "View only",
-  controlling: "AI in control",
-  "awaiting-action": "Waiting for approval",
-  paused: "AI paused",
-  human: "You have control",
-  ended: "Ended",
-  expired: "Expired",
-  failed: "No signal",
-};
+function getBADGES(messages: typeof desktopMessages.defaults): Record<DesktopState, string> { return {
+  observing: messages.viewOnly,
+  controlling: messages.aiInControl,
+  "awaiting-action": messages.waitingForApproval,
+  paused: messages.aiPaused,
+  human: messages.youHaveControl,
+  ended: messages.ended,
+  expired: messages.expired,
+  failed: messages.noSignal,
+} }
+
 
 const resolved = () => Promise.resolve();
 
@@ -141,14 +145,16 @@ export function DesktopSession({
   onTakeOver,
   onResume,
 }: DesktopSessionProps) {
-  const title = TITLES[state](target.label);
+  const messages = useMessages(desktopMessages)
+
+  const title = getTITLES(messages)[state](target.label);
   const active = state !== "ended" && state !== "expired" && state !== "failed";
   const now = useNow(active, 1000);
   const locale = useLocale();
   const elapsed = formatElapsed(Math.max(0, now - startedAt), locale);
   const lease =
     leaseEndsAt && state === "controlling"
-      ? `lease ${formatCountdown(leaseEndsAt - now)} left`
+      ? messages.leaseLeft(formatCountdown(leaseEndsAt - now))
       : null;
   const ratio = screen ? `${screen.width} / ${screen.height}` : "16 / 10";
   return (
@@ -173,8 +179,7 @@ export function DesktopSession({
                   ) : (
                     user
                   ))}{" "}
-                is signed in
-              </span>
+                {messages.isSignedIn} </span>
             ) : null}
             {[active ? elapsed : null, lease, reason]
               .filter(Boolean)
@@ -218,17 +223,16 @@ export function DesktopSession({
             }
             marker={state === "controlling" ? "pulse" : "dot"}
           >
-            {BADGES[state]}
+            {getBADGES(messages)[state]}
           </Badge>
           {state === "controlling" ? (
             <span className="glass-float fa-ai-desktop-cursor" aria-hidden>
               <IconCursor />
-              Assistant
-            </span>
+              {messages.assistant} </span>
           ) : null}
         </div>
         <div className="fa-ai-desktop-side">
-          <ol className="fa-ai-desktop-steps" aria-label="Steps">
+          <ol className="fa-ai-desktop-steps" aria-label={messages.steps}>
             {steps.map((step) => (
               <li
                 key={step.id}
@@ -244,7 +248,7 @@ export function DesktopSession({
             <div
               className="glass-inset fa-ai-desktop-action"
               role="group"
-              aria-label="Action waiting for approval"
+              aria-label={messages.actionWaitingForApproval}
             >
               <span className="fa-label">{pendingAction.label}</span>
               <span className="fa-hint">{pendingAction.effect}</span>
@@ -252,21 +256,19 @@ export function DesktopSession({
                 <ActionButton
                   size="sm"
                   variant="ghost"
-                  pendingLabel="Denying…"
-                  successLabel="Denied"
+                  pendingLabel={messages.denying}
+                  successLabel={messages.denied}
                   onAction={pendingAction.onDeny ?? resolved}
                 >
-                  Deny
-                </ActionButton>
+                  {messages.deny} </ActionButton>
                 <ActionButton
                   size="sm"
                   variant="warning"
-                  pendingLabel="Approving…"
-                  successLabel="Approved"
+                  pendingLabel={messages.approving}
+                  successLabel={messages.approved}
                   onAction={pendingAction.onApprove ?? resolved}
                 >
-                  Approve once
-                </ActionButton>
+                  {messages.approveOnce} </ActionButton>
               </div>
             </div>
           ) : null}
@@ -276,12 +278,11 @@ export function DesktopSession({
         <AiCard.Footer className="fa-ai-desktop-footer">
           {state === "human" || state === "paused" ? (
             <Button size="lg" icon={<IconPlay />} onClick={onResume}>
-              {state === "human" ? "Hand back to Assistant" : "Resume"}
+              {state === "human" ? messages.handBackToAssistant : messages.resume}
             </Button>
           ) : state === "controlling" || state === "awaiting-action" ? (
             <Button size="lg" icon={<IconPause />} onClick={onTakeOver}>
-              Take over
-            </Button>
+              {messages.takeOver} </Button>
           ) : null}
           <Button
             size="lg"
@@ -292,8 +293,7 @@ export function DesktopSession({
             tooltip={false}
             onClick={onStop}
           >
-            Stop
-          </Button>
+            {messages.stop} </Button>
         </AiCard.Footer>
       ) : null}
     </AiCard.Root>

@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { sunburstMessages } from "./messages.js"
 import { hierarchy, partition } from "d3-hierarchy"
 import { arc as d3arc } from "d3-shape"
 import { memo, useEffect, useMemo, useRef, type CSSProperties } from "react"
@@ -50,7 +52,11 @@ interface ArcNode {
  *            the glass tooltip with the arc at the cursor
  */
 export function Sunburst(props: SunburstProps) {
-  const { label, title, state = "ready", data, colourBy = "branch", groups, depth = 3, unit, format, nameLabel = "Name", ...rest } = props
+  const messages = useMessages(sunburstMessages, { locale: props.locale })
+
+  const { label, title, state = "ready", data, colourBy = "branch", groups, depth = 3, unit, format, nameLabel: nameLabelProp, ...rest } = props
+  const nameLabel = nameLabelProp ?? messages.name
+
   const locale = useLocale(props.locale)
   const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const root = useHierarchy(data)
@@ -91,6 +97,8 @@ interface SunburstPlotProps {
 const TAU = Math.PI * 2
 
 const SunburstPlot = memo(function SunburstPlot({ box, focus, colour, store, fmt, label, rings: ringCount, onDrill, onUp }: SunburstPlotProps) {
+  const messages = useMessages(sunburstMessages)
+
   const plotRef = useRef<HTMLDivElement>(null)
   const { width, height, tier, rem } = box
   const full = tier === "full"
@@ -172,8 +180,8 @@ const SunburstPlot = memo(function SunburstPlot({ box, focus, colour, store, fmt
   const nav = (index: number, key: string) => ringNav(arcs, index, key)
   const valueText = (index: number) => {
     const a = arcs[index]
-    if (!a) return `${focus.data.label} · ${formatValue(focus.value ?? 0, fmt)}${onUp ? " · press Escape to go up" : ""}`
-    return `${a.node.data.label} · ${formatValue(a.node.value ?? 0, fmt)} · ${formatShare(a.node.value ?? 0, focus.value ?? 0, fmt.locale)}${a.node.children?.length ? " · press Enter to open" : ""}`
+    if (!a) return `${focus.data.label} · ${formatValue(focus.value ?? 0, fmt)}${onUp ? messages.pressEscapeToGoUp : ""}`
+    return `${a.node.data.label} · ${formatValue(a.node.value ?? 0, fmt)} · ${formatShare(a.node.value ?? 0, focus.value ?? 0, fmt.locale)}${a.node.children?.length ? messages.pressEnterToOpen : ""}`
   }
   const list: LegendItem[] = (focus.children ?? []).slice(0, 8).map((child) => {
     const slot = colour(child)
@@ -212,7 +220,7 @@ const SunburstPlot = memo(function SunburstPlot({ box, focus, colour, store, fmt
             nav={nav}
             initial={0}
             cursor="pointer"
-            label={`${label} — explore`}
+            label={messages.explore(label)}
             valueText={valueText}
             bounds={{ left: cx - r, top: cy - r, width: 2 * r, height: 2 * r }}
             onActivate={(index) => {
@@ -231,7 +239,7 @@ const SunburstPlot = memo(function SunburstPlot({ box, focus, colour, store, fmt
                 return (
                   <TooltipBody
                     rows={[{ key: "focus", label: focus.data.label, value: formatValue(focus.value ?? 0, fmt), tone: "neutral", shape: "dot" }]}
-                    footer={onUp ? `Click to go back to ${focus.parent?.data.label ?? ""}` : undefined}
+                    footer={onUp ? messages.clickToGoBackTo(focus.parent?.data.label ?? "") : undefined}
                   />
                 )
               }
@@ -254,7 +262,7 @@ const SunburstPlot = memo(function SunburstPlot({ box, focus, colour, store, fmt
                       ...(a.slot === "other" ? { tone: "neutral" } : { slot: a.slot }),
                     },
                   ]}
-                  footer={a.node.children?.length ? "Click to open" : undefined}
+                  footer={a.node.children?.length ? messages.clickToOpen : undefined}
                 />
               )
             }}
@@ -278,6 +286,8 @@ function SunburstHover({ store, arcs, cx, cy }: { store: HoverStore; arcs: ArcNo
 }
 
 function SunburstCentre({ store, arcs, focus, fmt, cx, cy, hole, rem, interactive, canGoUp }: { store: HoverStore; arcs: ArcNode[]; focus: Node; fmt: LocalizedFormat; cx: number; cy: number; hole: number; rem: number; interactive: boolean; canGoUp: boolean }) {
+  const messages = useMessages(sunburstMessages)
+
   const hover = useStoreValue(store)
   const a = interactive && hover ? arcs[hover.index] : undefined
   const onCentre = interactive && hover && hover.index === arcs.length
@@ -289,7 +299,7 @@ function SunburstCentre({ store, arcs, focus, fmt, cx, cy, hole, rem, interactiv
       <data className="fa-chart-centre-value" value={node.value ?? 0}>
         {formatValue(node.value ?? 0, fmt)}
       </data>
-      <span className="fa-chart-centre-label" hidden={hole < 2.25 * rem}>{onCentre && canGoUp ? `Back to ${focus.parent?.data.label ?? ""}` : a ? `${node.data.label} · ${formatShare(node.value ?? 0, focus.value ?? 0, fmt.locale)}` : node.data.label}</span>
+      <span className="fa-chart-centre-label" hidden={hole < 2.25 * rem}>{onCentre && canGoUp ? messages.backTo(focus.parent?.data.label ?? "") : a ? `${node.data.label} · ${formatShare(node.value ?? 0, focus.value ?? 0, fmt.locale)}` : node.data.label}</span>
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import type {} from "./messages.js"
 export { RichTextInput, RichTextField, RichTextSkeleton } from "./rich-text.js";
 export type {
   RichTextInputProps,

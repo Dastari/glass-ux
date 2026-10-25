@@ -1,3 +1,4 @@
+import { getMacFieldMessages } from "./messages.js"
 /**
  * MAC addresses (EUI-48): accept any separator people paste ("aa:bb:cc:dd:ee:ff",
  * "AA-BB-CC-DD-EE-FF", Cisco "aabb.ccdd.eeff", "aabbccddeeff") and write them one way.
@@ -72,10 +73,10 @@ export function macFacts(digits: string): MacFacts {
 }
 
 /** A quiet hint for addresses whose vendor lookup cannot help. */
-export function describeMac(digits: string): string | null {
+export function describeMac(digits: string, messages: ReturnType<typeof getMacFieldMessages> = getMacFieldMessages()): string | null {
   const facts = macFacts(digits)
-  if (facts.broadcast) return "Broadcast address"
-  if (facts.multicast) return "Multicast address"
-  if (facts.locallyAdministered) return "Locally administered: often a randomised Wi-Fi address"
+  if (facts.broadcast) return messages.broadcastAddress
+  if (facts.multicast) return messages.multicastAddress
+  if (facts.locallyAdministered) return messages.locallyAdministeredOftenARandomisedWiFiAddress
   return null
 }

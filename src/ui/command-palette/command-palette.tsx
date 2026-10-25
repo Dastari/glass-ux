@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { commandPaletteMessages } from "./messages.js"
 import { Autocomplete } from "@base-ui/react/autocomplete"
 import { Dialog as BaseDialog } from "@base-ui/react/dialog"
 import {
@@ -58,13 +60,13 @@ type GroupEntry = {
 
 const RECENT_KEY = "command-palette.recent.v1"
 const RECENT_LIMIT = 5
-const RECENT_GROUP = "Recent"
+const RECENT_GROUP = commandPaletteMessages.defaults.recent
 /**
  * Default palette group order: Recent, then every group not listed (a selected target's actions
  * and host record groups, in registration order), then the generic Actions and Navigation groups.
  * Hosts extend it through `groupOrder`, e.g. `[...DEFAULT_PALETTE_GROUP_ORDER, "Projects"]`.
  */
-export const DEFAULT_PALETTE_GROUP_ORDER: readonly string[] = [RECENT_GROUP, "*", "Actions", "Navigation"]
+export const DEFAULT_PALETTE_GROUP_ORDER: readonly string[] = [RECENT_GROUP, "*", commandPaletteMessages.defaults.actions, commandPaletteMessages.defaults.navigation]
 const DEFAULT_ORDER = DEFAULT_PALETTE_GROUP_ORDER
 
 /* ── Registry ───────────────────────────────────────────────────────────────── */
@@ -352,6 +354,8 @@ export interface CommandPanelProps {
  * the modal palette, and on its own in the gallery.
  */
 export function CommandPanel({ commands, onRun, loading = false, groupOrder = DEFAULT_ORDER, defaultQuery = "", className }: CommandPanelProps) {
+  const messages = useMessages(commandPaletteMessages)
+
   const [query, setQuery] = useState(defaultQuery)
   // The server (and hydration) render without recents; the client reads them after.
   const recent = useSyncExternalStore(subscribeRecent, readRecent, () => NO_RECENT)
@@ -381,8 +385,8 @@ export function CommandPanel({ commands, onRun, loading = false, groupOrder = DE
           <IconSearch />
           <Autocomplete.Input
             className="fa-palette-input"
-            placeholder="Type a command or search"
-            aria-label="Search commands"
+            placeholder={messages.typeACommandOrSearch}
+            aria-label={messages.searchCommands}
             aria-describedby={hintsId}
           />
           <Kbd keys="esc" size="sm" className="fa-palette-esc" aria-hidden />
@@ -394,16 +398,16 @@ export function CommandPanel({ commands, onRun, loading = false, groupOrder = DE
           // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrollable region must be reachable by keyboard
           tabIndex={0}
           role="group"
-          aria-label="Results"
+          aria-label={messages.results}
         >
-          <Autocomplete.Status className="sr-only">{loading ? "Searching" : ""}</Autocomplete.Status>
+          <Autocomplete.Status className="sr-only">{loading ? messages.searching : ""}</Autocomplete.Status>
           <Autocomplete.Empty className="fa-palette-empty">
-            {query.trim() && !loading ? `No commands match “${query.trim()}”` : null}
+            {query.trim() && !loading ? messages.noCommandsMatch(query.trim()) : null}
           </Autocomplete.Empty>
           <Autocomplete.List className="fa-palette-groups">
             {(group: GroupEntry) => (
               <Autocomplete.Group key={group.value} items={group.items} className="fa-palette-group">
-                <Autocomplete.GroupLabel className="fa-popup-group-label">{group.value}</Autocomplete.GroupLabel>
+                <Autocomplete.GroupLabel className="fa-popup-group-label">{group.value === RECENT_GROUP ? messages.recent : group.value}</Autocomplete.GroupLabel>
                 <Autocomplete.Collection>
                   {(entry: Entry) => {
                     const { command } = entry
@@ -442,16 +446,13 @@ export function CommandPanel({ commands, onRun, loading = false, groupOrder = DE
           <span className="fa-palette-hint">
             <Kbd keys="up" size="sm" />
             <Kbd keys="down" size="sm" />
-            Navigate
-          </span>
+            {messages.navigate} </span>
           <span className="fa-palette-hint">
             <Kbd keys="enter" size="sm" />
-            Run
-          </span>
+            {messages.run} </span>
           <span className="fa-palette-hint">
             <Kbd keys="esc" size="sm" />
-            Close
-          </span>
+            {messages.close} </span>
         </footer>
       </Autocomplete.Root>
     </div>
@@ -486,6 +487,8 @@ interface CommandPaletteProps {
 }
 
 function CommandPalette({ store, open, onOpenChange, groupOrder }: CommandPaletteProps) {
+  const messages = useMessages(commandPaletteMessages)
+
   const commands = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot)
   const loading = useSyncExternalStore(store.subscribe, store.getLoading, store.getLoading)
   const pending = useRef<PaletteCommand | null>(null)
@@ -512,11 +515,11 @@ function CommandPalette({ store, open, onOpenChange, groupOrder }: CommandPalett
         void command.run()
       }}
     >
-      <DialogSurface mode="dialog" kind="palette" size="md" aria-label="Command palette">
-        <BaseDialog.Title className="sr-only">Command palette</BaseDialog.Title>
+      <DialogSurface mode="dialog" kind="palette" size="md" aria-label={messages.commandPalette}>
+        <BaseDialog.Title className="sr-only">{messages.commandPalette}</BaseDialog.Title>
         <CommandPanel key={open ? "open" : "closed"} commands={commands} loading={loading} onRun={run} groupOrder={groupOrder} />
         {/* Lets touch screen readers leave the modal; after the panel so the field takes focus. */}
-        <BaseDialog.Close className="sr-only">Close command palette</BaseDialog.Close>
+        <BaseDialog.Close className="sr-only">{messages.closeCommandPalette}</BaseDialog.Close>
       </DialogSurface>
     </BaseDialog.Root>
   )

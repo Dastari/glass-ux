@@ -37,7 +37,7 @@ Inherited properties:
 | children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
-| placeholder | `string \| undefined` | See type | no | "1h 30m" | The prompt shown while the value is empty. It does not replace the field’s label. |
+| placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
 | style | `React.CSSProperties \| ((state: import("@base-ui/react").InputState) => React.CSSProperties \| undefined) \| undefined` | See type | no | — | Style applied to the element, or a function that returns a style object based on the component's state. |

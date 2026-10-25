@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { shellMessages } from "./messages.js"
 import { TruncatedText } from "../ui/truncated-text/index.js";
 import { PanelHeader } from "../ui/surface/index.js";
 /**
@@ -51,6 +53,8 @@ function InspectorPane({
   open,
   onClose,
 }: InspectorProps & { open: boolean; onClose: () => void }) {
+  const messages = useMessages(shellMessages)
+
   const paneRef = useRef<HTMLElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const edges = useScrollEdges(bodyRef);
@@ -75,7 +79,7 @@ function InspectorPane({
                 variant="ghost"
                 size="sm"
                 icon={<IconClose />}
-                aria-label="Hide inspector"
+                aria-label={messages.hideInspector}
                 onClick={onClose}
               />
             </>

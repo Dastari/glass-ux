@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { paginationMessages } from "./messages.js"
 import { Select } from "@base-ui/react/select"
 import { useState, type ComponentProps } from "react"
 import { IconCheck, IconChevronLeft, IconChevronRight, IconChevronsUpDown, IconPageFirst, IconPageLast } from "../../icons/generated/icons.js"
@@ -64,20 +66,23 @@ export function Pagination({
   onPageSizeChange,
   cursor,
   compact = false,
-  label = "Pages",
+  label: labelProp,
   disabled: disabledProp = false,
   loading = false,
   locale: localeProp,
   className,
   ...rest
 }: PaginationProps) {
+  const messages = useMessages(paginationMessages, { locale: localeProp })
+  const label = labelProp ?? messages.pages
+
   const locale = useLocale(localeProp)
   const disabled = disabledProp || loading
   const pageCount = rowCount === undefined ? undefined : pageCountOf(rowCount, pageSize)
   const hasPrevious = cursor ? cursor.hasPrevious : pageIndex > 0
   const hasNext = cursor ? cursor.hasNext : pageCount !== undefined && pageIndex < pageCount - 1
   const go = (index: number) => onPageChange?.(index)
-  const range = formatRange(pageIndex, pageSize, pageRows, rowCount, locale)
+  const range = formatRange(pageIndex, pageSize, pageRows, rowCount, locale, messages)
 
   return (
     <nav {...rest} aria-label={label} className={cx("fa-pager", className)} data-compact={compact ? "" : undefined} data-cursor={cursor ? "" : undefined}>
@@ -85,7 +90,7 @@ export function Pagination({
         {loading ? <Skeleton.Text type="label" className="fa-pager-range-skeleton" /> : range}
       </span>
       {!compact && onPageSizeChange && pageSizes.length > 1 ? (
-        <PageSizeSelect value={pageSize} options={pageSizes} onChange={onPageSizeChange} disabled={disabled} />
+        <PageSizeSelect locale={locale} value={pageSize} options={pageSizes} onChange={onPageSizeChange} disabled={disabled} />
       ) : null}
       <span className="fa-pager-buttons">
         {!compact && (cursor ? cursor.onFirst : true) ? (
@@ -94,7 +99,7 @@ export function Pagination({
             size="sm"
             className="fa-pager-edge"
             icon={<IconPageFirst />}
-            aria-label="First page"
+            aria-label={messages.firstPage}
             disabled={disabled || !hasPrevious}
             onClick={() => (cursor ? cursor.onFirst?.() : go(0))}
           />
@@ -103,7 +108,7 @@ export function Pagination({
           variant="ghost"
           size="sm"
           icon={<IconChevronLeft />}
-          aria-label="Previous page"
+          aria-label={messages.previousPage}
           disabled={disabled || !hasPrevious}
           onClick={() => (cursor ? cursor.onPrevious() : go(pageIndex - 1))}
         />
@@ -114,7 +119,7 @@ export function Pagination({
           variant="ghost"
           size="sm"
           icon={<IconChevronRight />}
-          aria-label="Next page"
+          aria-label={messages.nextPage}
           disabled={disabled || !hasNext}
           onClick={() => (cursor ? cursor.onNext() : go(pageIndex + 1))}
         />
@@ -124,7 +129,7 @@ export function Pagination({
             size="sm"
             className="fa-pager-edge"
             icon={<IconPageLast />}
-            aria-label="Last page"
+            aria-label={messages.lastPage}
             disabled={disabled || !hasNext || pageCount === undefined}
             onClick={() => pageCount !== undefined && go(pageCount - 1)}
           />
@@ -135,22 +140,26 @@ export function Pagination({
 }
 
 function PageSizeSelect({
+  locale,
   value,
   options,
   onChange,
   disabled,
 }: {
+  locale: string
   value: number
   options: readonly number[]
   /** Called with the chosen page size. */
   onChange: (value: number) => void
   disabled: boolean
 }) {
-  const items = options.map((option) => ({ value: option, label: `${option} per page` }))
+  const messages = useMessages(paginationMessages, { locale })
+
+  const items = options.map((option) => ({ value: option, label: messages.perPage(numberFormat(locale).format(option)) }))
   const popup = usePopupMetrics()
   return (
     <Select.Root items={items} value={value} onValueChange={(next) => next !== null && onChange(next as number)} disabled={disabled}>
-      <Select.Trigger className="fa-control fa-pager-size" data-size="sm" aria-label="Rows per page">
+      <Select.Trigger className="fa-control fa-pager-size" data-size="sm" aria-label={messages.rowsPerPage}>
         <Select.Value className="fa-pager-size-value" />
         <Select.Icon className="fa-pager-size-icon">
           <IconChevronsUpDown />
@@ -191,6 +200,8 @@ function PageJump({
   onChange: (pageIndex: number) => void
   disabled: boolean
 }) {
+  const messages = useMessages(paginationMessages, { locale })
+
   // The typed page while editing; otherwise the field shows the current page.
   const [draft, setDraft] = useState<string | null>(null)
   const commit = () => {
@@ -206,7 +217,7 @@ function PageJump({
         <input
           className="fa-control-input"
           inputMode="numeric"
-          aria-label={`Page, of ${pageCount}`}
+          aria-label={messages.pageOf(numberFormat(locale).format(pageCount))}
           value={draft ?? String(pageIndex + 1)}
           disabled={disabled}
           onChange={(event) => setDraft(event.target.value.replace(/[^0-9]/g, ""))}
@@ -219,7 +230,7 @@ function PageJump({
         />
       </span>
       <span className="fa-pager-of" data-numeric>
-        of {numberFormat(locale).format(pageCount)}
+        {messages.of} {numberFormat(locale).format(pageCount)}
       </span>
     </span>
   )

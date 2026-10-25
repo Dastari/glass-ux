@@ -1,3 +1,7 @@
+import { comboboxMessages } from "../combobox/messages.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { referenceInputMessages } from "./messages.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { useEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type ReactNode, type Ref } from "react"
 import { IconCheck, IconChevronDown, IconPlus } from "../../icons/generated/icons.js"
@@ -164,14 +168,16 @@ interface RelationMenuProps<R extends string> {
 
 /** The relation before a chip, as a menu button: "Assigned to ▾". */
 function RelationMenu<R extends string>({ link, label, options, onChange }: RelationMenuProps<R>) {
+  const messages = useMessages(referenceInputMessages)
+
   const current = options.find((relation) => relation.value === link.relation)
   return (
     <Menu.Root>
-      <Menu.Trigger className="fa-ref-relation fa-pressable" aria-label={`Relation to ${label}: ${current?.label ?? link.relation}`} data-relation={link.relation}>
+      <Menu.Trigger className="fa-ref-relation fa-pressable" aria-label={messages.relationTo(label, current?.label ?? link.relation)} data-relation={link.relation}>
         <span className="fa-ref-relation-label">{current?.label ?? link.relation}</span>
         <IconChevronDown />
       </Menu.Trigger>
-      <Menu.Popup align="start" aria-label={`Relation to ${label}`}>
+      <Menu.Popup align="start" aria-label={messages.relationTo2(label)}>
         <Menu.RadioGroup value={link.relation} onValueChange={(next) => onChange(next as R)}>
           {options.map((relation) => (
             <Menu.RadioItem key={relation.value} value={relation.value}>
@@ -211,8 +217,8 @@ export function ReferenceInput<R extends string = string>({
   max,
   kindFilter,
   direction = "to",
-  emptyText = "None",
-  placeholder = "Type @ to link",
+  emptyText: emptyTextProp,
+  placeholder: placeholderProp,
   width,
   disabled,
   readOnly: readOnlyProp,
@@ -224,6 +230,13 @@ export function ReferenceInput<R extends string = string>({
   ref,
   ...aria
 }: ReferenceInputProps<R>) {
+  const messages = useMessages(referenceInputMessages)
+ const optionMessages = useMessages(comboboxMessages)
+ const optionLocale = useLocale()
+ const locale = useLocale()
+  const emptyText = emptyTextProp ?? messages.none
+  const placeholder = placeholderProp ?? messages.typeToLink
+
   const popup = usePopupMetrics()
   const readOnly = Boolean(readOnlyProp) || direction === "from"
   const [inner, setInner] = useState<ReferenceLink<R>[]>(defaultValue ?? [])
@@ -266,7 +279,7 @@ export function ReferenceInput<R extends string = string>({
   const display: OptionItem[] = ordered.map((target) => {
     const key = referenceKey(target)
     const linked = keys.includes(key)
-    const reason = linked ? undefined : (disabledReason?.(target) ?? (atMax ? `Up to ${max} ${max === 1 ? "link" : "links"}` : undefined))
+    const reason = linked ? undefined : (disabledReason?.(target) ?? (atMax ? messages.limit(max, locale) : undefined))
     const Icon = kindOf(target.kind)?.icon
     const elsewhere = currentOrganisation && target.organisation && target.organisation.id !== currentOrganisation ? target.organisation.name : undefined
     return {
@@ -383,7 +396,7 @@ export function ReferenceInput<R extends string = string>({
   const quiet = status === "loading" || status === "error" || search.needsMore > 0
   const twoLine = hasSecondLine(display)
   const grouped = groupOptions(display) !== null
-  const kindName = kind ? (kindOf(kind)?.plural ?? kind) : "Everything"
+  const kindName = kind ? (kindOf(kind)?.plural ?? kind) : messages.everything
 
   return (
     <BaseCombobox.Root
@@ -427,7 +440,7 @@ export function ReferenceInput<R extends string = string>({
                 key={key}
                 className="fa-ref-chip"
                 aria-label={chipLabel(link)}
-                aria-description="Press Backspace or Delete to remove"
+                aria-description={messages.pressBackspaceOrDeleteToRemove}
                 data-flash={flash === key ? "" : undefined}
                 data-relation={link.relation}
                 data-reference={key}
@@ -456,7 +469,7 @@ export function ReferenceInput<R extends string = string>({
             placeholder={links.length > 0 ? undefined : placeholder}
             aria-invalid={invalid || undefined}
             aria-keyshortcuts={filterable ? "Alt+ArrowLeft Alt+ArrowRight" : undefined}
-            aria-description={links.length > 0 ? `${links.length} linked. From the start of the input, press Left Arrow to reach them.` : undefined}
+            aria-description={links.length > 0 ? messages.linkedFromTheStartOfTheInput(links.length) : undefined}
             onBlur={onBlur}
             onKeyDown={onKeyDown}
             className="fa-control-input fa-multi-input"
@@ -468,12 +481,11 @@ export function ReferenceInput<R extends string = string>({
             className="fa-ref-add"
             icon={<IconPlus />}
             disabled={disabled}
-            disabledReason={atMax ? `Up to ${max} ${max === 1 ? "link" : "links"}` : undefined}
+            disabledReason={atMax ? messages.limit(max, locale) : undefined}
             onMouseDown={(event) => event.preventDefault()}
             onClick={startLink}
           >
-            Link…
-          </Button>
+            {messages.link} </Button>
         </BaseCombobox.Chips>
       </BaseCombobox.InputGroup>
 
@@ -481,7 +493,7 @@ export function ReferenceInput<R extends string = string>({
         <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BaseCombobox.Popup className="glass-overlay fa-popup fa-combobox-popup fa-ref-popup" aria-busy={status === "loading" || status === "refreshing" || undefined} data-status={status}>
             {filterable ? (
-              <div className="fa-ref-kinds" role="group" aria-label="Kind">
+              <div className="fa-ref-kinds" role="group" aria-label={messages.kind}>
                 {[null, ...kinds.map((entry) => entry.id)].map((entry) => {
                   const spec = entry ? kindOf(entry) : undefined
                   const Icon = spec?.icon
@@ -497,22 +509,21 @@ export function ReferenceInput<R extends string = string>({
                       onClick={() => setKind(entry)}
                     >
                       {Icon ? <Icon /> : null}
-                      {spec?.plural ?? "All"}
+                      {spec?.plural ?? messages.all}
                     </button>
                   )
                 })}
               </div>
             ) : null}
-            <BaseCombobox.Status className="sr-only">{[filterable ? `Showing ${kindName}.` : "", statusAnnouncement(status, display.length, query)].filter(Boolean).join(" ")}</BaseCombobox.Status>
+            <BaseCombobox.Status className="sr-only">{[filterable ? messages.showing(kindName) : "", statusAnnouncement(status, display.length, query, optionMessages, optionLocale)].filter(Boolean).join(" ")}</BaseCombobox.Status>
             <div className="fa-ref-results" data-scroll-container>
               <OptionStatus status={status} twoLine={twoLine} needsMore={search.needsMore} onRetry={search.retry} />
               {atMax ? (
                 <div className="fa-option-note">
-                  Up to {max} {max === 1 ? "link" : "links"} — remove one to link another
-                </div>
+                  {messages.limitNote(max, locale)} </div>
               ) : null}
               <BaseCombobox.Empty className="fa-combobox-empty-slot">
-                {quiet ? null : <div className="fa-combobox-empty">{query ? `No ${kind ? kindName.toLowerCase() : "matches"} for “${query}”` : "Type a name to search"}</div>}
+                {quiet ? null : <div className="fa-combobox-empty">{query ? messages.noFor(kind ? kindName.toLowerCase() : messages.matches, query) : messages.typeANameToSearch}</div>}
               </BaseCombobox.Empty>
               <BaseCombobox.List className="fa-select-list">
                 {grouped

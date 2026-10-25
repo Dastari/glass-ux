@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { conversationMessages } from "./messages.js"
 import {
   Children,
   createContext,
@@ -109,10 +111,13 @@ export function ConversationLog({
   footer,
   landing,
   landingFooter,
-  label = "Conversation",
+  label: labelProp,
   className,
   ...rest
 }: ConversationLogProps) {
+  const messages = useMessages(conversationMessages)
+  const label = labelProp ?? messages.conversation
+
   const rootRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const columnRef = useRef<HTMLDivElement>(null)
@@ -341,7 +346,7 @@ export function ConversationLog({
                   onClick={() => scrollToBottom(true)}
                 >
                   <IconArrowDown />
-                  {unseen ? "New messages" : "Scroll to end"}
+                  {unseen ? messages.newMessages : messages.scrollToEnd}
                 </button>
                 <AiSurfaceProvider surface="float">
                   <AskDock />
@@ -377,6 +382,8 @@ export function TurnNavigator({ turns, active, onNavigate }: {
   /** Called with a turn's `index` (not its position in `turns`) when its dash is clicked or reached with the arrow keys, Home or End. */
   onNavigate: (index: number) => void
 }) {
+  const messages = useMessages(conversationMessages)
+
   const refs = useRef<Array<HTMLButtonElement | null>>([])
   const [pointer, setPointer] = useState<number | null>(null)
   const move = (event: KeyboardEvent, position: number) => {
@@ -396,7 +403,7 @@ export function TurnNavigator({ turns, active, onNavigate }: {
     onNavigate(turns[next]!.index)
   }
   return (
-    <nav className="fa-ai-turns" aria-label="Conversation turns" onPointerLeave={() => setPointer(null)}>
+    <nav className="fa-ai-turns" aria-label={messages.conversationTurns} onPointerLeave={() => setPointer(null)}>
       {turns.map((turn, position) => {
         const distance = pointer === null ? 9 : Math.abs(pointer - position)
         return (
@@ -407,7 +414,7 @@ export function TurnNavigator({ turns, active, onNavigate }: {
               }}
               type="button"
               className="fa-ai-turn-dash"
-              aria-label={`Prompt ${position + 1}: ${turn.preview}`}
+              aria-label={messages.prompt(position + 1, turn.preview)}
               aria-current={turn.index === active ? "step" : undefined}
               data-near={distance === 0 ? "0" : distance === 1 ? "1" : distance === 2 ? "2" : undefined}
               tabIndex={turn.index === active ? 0 : -1}

@@ -1,3 +1,6 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { durationFieldMessages } from "./messages.js"
 import { IconClock } from "../../icons/generated/icons.js"
 import { sameNumber, useParsedText } from "../../lib/use-parsed-text.js"
 import { Field } from "../field/index.js"
@@ -24,7 +27,9 @@ export interface DurationInputProps extends Omit<InputProps, "value" | "defaultV
  * A duration typed the way people say it — "1h 30m", "90", "1:30", "1.5 hours", "2 days" — held
  * as whole seconds and rewritten compactly when focus leaves ("90" → "1h 30m").
  */
-export function DurationInput({ value, defaultValue = null, onValueChange, units = ["d", "h", "m"], defaultUnit = "m", placeholder = "1h 30m", icon, onBlur, width = "short", ...rest }: DurationInputProps) {
+export function DurationInput({ value, defaultValue = null, onValueChange, units = ["d", "h", "m"], defaultUnit = "m", placeholder: placeholderProp, icon, onBlur, width = "short", ...rest }: DurationInputProps) {
+ const messages = useMessages(durationFieldMessages)
+ const placeholder = placeholderProp ?? messages.example
   const text = useParsedText<number | null>({
     value,
     defaultValue,
@@ -61,9 +66,10 @@ export interface DurationFieldProps
 
 /** DurationInput bound to a `number | null` (seconds) form field. Pair it with `durationSchema()`. */
 export function DurationField({ label, hint, optional, required, aside, className, disabled, describe = true, ...control }: DurationFieldProps) {
+ const locale = useLocale()
   const { field, error, root } = useBoundField<number | null>()
   const seconds = field.state.value
-  const derived = describe && seconds !== null && !Number.isNaN(seconds) ? formatDuration(seconds, { units: control.units ?? ["d", "h", "m"], style: "long" }) : undefined
+  const derived = describe && seconds !== null && !Number.isNaN(seconds) ? formatDuration(seconds, { units: control.units ?? ["d", "h", "m"], style: "long", locale }) : undefined
   return (
     <Field {...root} label={label} hint={hint ?? derived} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <DurationInput

@@ -42,7 +42,7 @@ box grows.
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | unit | `ChartUnit \| undefined` | See type | no | — | "%", "GB", "ms", or a counted noun ({ one, other })… "%" sticks to the number; other units take a space. |
 | x | `readonly XValue[]` | See type | yes | — | Shared x values, ascending: Dates for time series, numbers otherwise. |
-| xLabel | `string \| undefined` | See type | no | "Time" | Label for x in the table and readout ("Time", "Sample"). |
+| xLabel | `string \| undefined` | See type | no | — | Label for x in the table and readout ("Time", "Sample"). |
 
 Inherited properties:
 

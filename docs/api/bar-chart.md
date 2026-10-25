@@ -21,7 +21,7 @@ Rows that do not fit in a ranked list fold into a "+N more" line — nothing is 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | categories | `readonly string[]` | See type | yes | — | One label per band: days, processes, organisations. |
-| categoryLabel | `string \| undefined` | See type | no | "Category" | Header for the category column of the table ("Process", "Day"). |
+| categoryLabel | `string \| undefined` | See type | no | — | Header for the category column of the table ("Process", "Day"). |
 | domain | `Domain \| undefined` | See type | no | — | Fixed value range; defaults to zero → the data, rounded to nice ticks. |
 | edges | `readonly number[] \| undefined` | See type | no | — | Bin edges for a histogram: n + 1 numbers; bars touch and the axis labels the edges. |
 | emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |

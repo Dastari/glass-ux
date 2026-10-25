@@ -1,3 +1,4 @@
+import type {} from "./messages.js"
 export { useBleed, useBleedInsets, type Bleed, type BleedChromeOptions, type BleedChromeProps, type BleedEdge, type BleedInsets } from "./bleed.js"
 export { AppShell, DrawerPlacement, useOptionalShell, useShell, type AppShellProps, type ShellContextValue } from "./app-shell.js"
 export { EntityHeader, EntityHeaderSkeleton, type EntityHeaderProps } from "./entity-header.js"

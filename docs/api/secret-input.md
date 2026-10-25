@@ -1,6 +1,6 @@
 # SecretInput
 
-A write-only secret (BR notes): a stored value is never shown, only "Set", with Replace
+A write-only secret (BR notes): a stored value is never shown, only messages.set, with Replace
 and Clear. Replace swaps in an empty password box (with Keep current to back out); Clear
 marks it for removal on save (with Undo). With nothing stored, the box takes a new value.
 

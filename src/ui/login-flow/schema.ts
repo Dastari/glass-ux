@@ -1,3 +1,4 @@
+import { getLoginFlowMessages } from "./messages.js"
 /**
  * Zod schemas for each LoginFlow form, built from the flow's identifier kind, labels and
  * password policy. Messages come from the labels or the typed fields' own parsers.
@@ -9,7 +10,7 @@ import { passwordSchema } from "../password-field/index.js"
 import type { LoginFlowLabels, LoginIdentifierKind, LoginPasswordPolicy } from "./types.js"
 
 /** The identifier rule for sign-in and reset requests. */
-export function loginIdentifierSchema(kind: LoginIdentifierKind, labels: LoginFlowLabels) {
+export function loginIdentifierSchema(kind: LoginIdentifierKind, labels: LoginFlowLabels, locale?: string) {
   return z.string().superRefine((value, context) => {
     const text = value.trim()
     if (!text) {
@@ -18,26 +19,26 @@ export function loginIdentifierSchema(kind: LoginIdentifierKind, labels: LoginFl
     }
     // Either-kind fields only check addresses that look like one.
     if (kind === "email" || (kind === "email-or-username" && text.includes("@"))) {
-      const parsed = parseEmail(text)
+      const parsed = parseEmail(text, locale)
       if (!parsed.ok) context.addIssue({ code: "custom", message: parsed.error })
     }
   })
 }
 
 /** A new password under the host's policy. */
-export function newPasswordSchema(policy: LoginPasswordPolicy | undefined) {
+export function newPasswordSchema(policy: LoginPasswordPolicy | undefined, locale?: string) {
   if (typeof policy === "function")
     return z.string().superRefine((value, context) => {
       const message = policy(value)
       if (message) context.addIssue({ code: "custom", message })
     })
-  return passwordSchema(policy)
+  return passwordSchema({ ...policy, locale })
 }
 
 /** A complete one-time code. */
-export function codeSchema(length: number, characters: OtpCharacters) {
-  const message = `Enter the ${length}-${characters === "numeric" ? "digit" : "character"} code`
-  return z.string().refine((value) => isCompleteOtp(value, length, characters), message)
+export function codeSchema(length: number, characters: OtpCharacters, locale?: string) {
+  const message = () => { const messages: ReturnType<typeof getLoginFlowMessages> = getLoginFlowMessages(locale); return messages.enterTheCode(length, characters === "numeric" ? messages.digit : messages.character) }
+  return z.string().refine((value) => isCompleteOtp(value, length, characters), { error: message })
 }
 
 /** Adds the confirmation rule to a schema whose values have `password` and `confirm`. */

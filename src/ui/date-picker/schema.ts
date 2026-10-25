@@ -1,3 +1,4 @@
+import { getDatePickerMessages } from "./messages.js"
 import { z } from "zod"
 import { getLocale } from "../../lib/locale/locale.js"
 import { datePlaceholder, formatDateText, isIsoDate } from "./calendar-date.js"
@@ -5,6 +6,8 @@ import { formatTimeText, isTimeValue, timeToSeconds, type TimeTextOptions, type 
 import { isWallClock, resolveWallClock, splitWallClock, type WallClock } from "./zoned-time.js"
 
 export interface TimeSchemaOptions extends TimeTextOptions {
+  /** Locale for validation wording. Defaults to getLocale(). */
+  locale?: string
   /** Empty is an error ("Enter a time"). Default false. */
   required?: boolean
   /** Earliest allowed time. */
@@ -28,14 +31,14 @@ export function timeSchema(options: TimeSchemaOptions = {}) {
   const messages = () => {
     const text = { ...options, locale: options.locale ?? getLocale() }
     const show = (time: TimeValue) => formatTimeText(time, text)
-    const example = `Enter a time such as ${show(options.seconds ? "09:30:00" : "09:30")}`
+    const example = getDatePickerMessages(options.locale).enterATimeSuchAs(show(options.seconds ? "09:30:00" : "09:30"))
     const range =
       options.min && options.max
-        ? `Enter a time from ${show(options.min)} to ${show(options.max)}`
+        ? getDatePickerMessages(options.locale).enterATimeFromTo(show(options.min), show(options.max))
         : options.max
-          ? `Enter a time of ${show(options.max)} or earlier`
+          ? getDatePickerMessages(options.locale).enterATimeOfOrEarlier(show(options.max))
           : options.min
-            ? `Enter a time of ${show(options.min)} or later`
+            ? getDatePickerMessages(options.locale).enterATimeOfOrLater(show(options.min))
             : example
     return { example, range }
   }
@@ -43,7 +46,7 @@ export function timeSchema(options: TimeSchemaOptions = {}) {
     .custom<TimeValue | null>((value) => value === null || typeof value === "string", { error: () => messages().example })
     .superRefine((value, context) => {
       if (value === null || !value.trim()) {
-        if (options.required) context.addIssue({ code: "custom", message: "Enter a time" })
+        if (options.required) context.addIssue({ code: "custom", message: getDatePickerMessages(options.locale).enterATime })
         return
       }
       if (!isTimeValue(value, { seconds: Boolean(options.seconds) })) {
@@ -56,6 +59,8 @@ export function timeSchema(options: TimeSchemaOptions = {}) {
 }
 
 export interface DateTimeSchemaOptions extends Omit<TimeTextOptions, "seconds"> {
+  /** Locale for validation wording. Defaults to getLocale(). */
+  locale?: string
   /** Empty is an error ("Enter a date and time"). Default false. */
   required?: boolean
   /** Earliest allowed wall-clock date and time. */
@@ -92,39 +97,39 @@ export function dateTimeSchema(options: DateTimeSchemaOptions = {}) {
     }
     const range =
       options.min && options.max
-        ? `Enter a date and time from ${show(options.min)} to ${show(options.max)}`
+        ? getDatePickerMessages(options.locale).enterADateAndTimeFromTo(show(options.min), show(options.max))
         : options.max
-          ? `Enter a date and time on or before ${show(options.max)}`
+          ? getDatePickerMessages(options.locale).enterADateAndTimeOnOrBefore(show(options.max))
           : options.min
-            ? `Enter a date and time on or after ${show(options.min)}`
-            : "Enter a date and time"
-    return { locale, range, timeExample: `Enter a time such as ${formatTimeText("09:30", text)}` }
+            ? getDatePickerMessages(options.locale).enterADateAndTimeOnOrAfter(show(options.min))
+            : getDatePickerMessages(options.locale).enterADateAndTime
+    return { locale, range, timeExample: getDatePickerMessages(options.locale).enterATimeSuchAs(formatTimeText("09:30", text)) }
   }
   return z
-    .custom<WallClock | null>((value) => value === null || typeof value === "string", { message: "Enter a date and time" })
+    .custom<WallClock | null>((value) => value === null || typeof value === "string", { message: getDatePickerMessages(options.locale).enterADateAndTime })
     .superRefine((value, context) => {
       const issue = (message: string) => context.addIssue({ code: "custom", message })
       if (value === null || !value.trim()) {
-        if (options.required) issue("Enter a date and time")
+        if (options.required) issue(getDatePickerMessages(options.locale).enterADateAndTime)
         return
       }
       if (!isWallClock(value)) {
         const cut = value.lastIndexOf("T")
         const date = (cut < 0 ? value : value.slice(0, cut)).trim()
         const time = (cut < 0 ? "" : value.slice(cut + 1)).trim()
-        if (!date) issue("Enter a date")
-        else if (!isIsoDate(date)) issue(`Enter a date as ${datePlaceholder(messages().locale)}`)
-        else if (!time) issue("Enter a time")
+        if (!date) issue(getDatePickerMessages(options.locale).enterADate)
+        else if (!isIsoDate(date)) issue(getDatePickerMessages(options.locale).enterADateAs(datePlaceholder(messages().locale)))
+        else if (!time) issue(getDatePickerMessages(options.locale).enterATime)
         else if (!isTimeValue(time)) issue(messages().timeExample)
-        else issue("Enter a date and time")
+        else issue(getDatePickerMessages(options.locale).enterADateAndTime)
         return
       }
       const at = value.slice(0, 16)
       if ((options.min && at < options.min.slice(0, 16)) || (options.max && at > options.max.slice(0, 16))) return issue(messages().range)
       if (options.timeZone && options.daylightSaving === "reject") {
         const kind = resolveWallClock(value, options.timeZone)?.kind
-        if (kind === "gap") issue("This time does not exist during the daylight-saving change; choose another time")
-        if (kind === "overlap") issue("This time occurs twice during the daylight-saving change; choose an unambiguous time")
+        if (kind === "gap") issue(getDatePickerMessages(options.locale).thisTimeDoesNotExistDuringTheDaylightSaving)
+        if (kind === "overlap") issue(getDatePickerMessages(options.locale).thisTimeOccursTwiceDuringTheDaylightSavingChange)
       }
     })
 }

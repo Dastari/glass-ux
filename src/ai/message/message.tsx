@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { messageMessages } from "./messages.js"
 import { memo, type ComponentProps, type ReactNode } from "react";
 import {
   IconEdit,
@@ -132,6 +134,8 @@ export const UserMessage = memo(function UserMessage({
   className,
   ...rest
 }: UserMessageProps) {
+  const messages = useMessages(messageMessages)
+
   const handlers = useConversationHandlers();
   const text = messageText(message);
   return (
@@ -139,7 +143,7 @@ export const UserMessage = memo(function UserMessage({
       {...rest}
       className={cx("fa-ai-msg", className)}
       data-role="user"
-      aria-label="You"
+      aria-label={messages.you}
     >
       <div className="fa-ai-msg-body">
         {message.attachments?.length ? (
@@ -162,12 +166,12 @@ export const UserMessage = memo(function UserMessage({
                 variant="ghost"
                 size="sm"
                 icon={<IconEdit />}
-                aria-label="Edit message"
+                aria-label={messages.editMessage}
                 shortcut="up"
                 onClick={() => handlers.editMessage(message)}
               />
             ) : null}
-            <CopyButton value={text} label="Copy message" />
+            <CopyButton value={text} label={messages.copyMessage} />
           </div>
           <Time at={message.createdAt} />
         </footer>
@@ -179,28 +183,29 @@ export const UserMessage = memo(function UserMessage({
 /* ── Assistant ────────────────────────────────────────────────────────────── */
 
 function RunFailure({ message }: { message: AiMessage }) {
+  const messages = useMessages(messageMessages)
+
   const handlers = useConversationHandlers();
   const failure = message.failure;
   return (
     <Notice
       className="fa-ai-block"
       tone="danger"
-      title="This response did not complete."
+      title={messages.thisResponseDidNotComplete}
       action={
         failure?.retryable !== false ? (
           <ActionButton
             size="sm"
             icon={<IconRefresh />}
-            pendingLabel="Retrying…"
-            successLabel="Retried"
+            pendingLabel={messages.retrying}
+            successLabel={messages.retried}
             onAction={() => handlers.retry(message)}
           >
-            Retry
-          </ActionButton>
+            {messages.retry} </ActionButton>
         ) : undefined
       }
     >
-      {failure?.reason ?? "The AI service ended this run without an answer."}
+      {failure?.reason ?? messages.theAiServiceEndedThisRunWithoutAn}
       {failure?.code ? (
         <code className="fa-ai-msg-code"> {failure.code}</code>
       ) : null}
@@ -233,6 +238,8 @@ export const AssistantMessage = memo(function AssistantMessage({
   className,
   ...rest
 }: AssistantMessageProps) {
+  const messages = useMessages(messageMessages)
+
   const handlers = useConversationHandlers();
   const streaming = message.state === "streaming";
   const text = messageText(message);
@@ -243,7 +250,7 @@ export const AssistantMessage = memo(function AssistantMessage({
       data-role="assistant"
       data-state={message.state}
       data-latest={latest ? "" : undefined}
-      aria-label="Assistant"
+      aria-label={messages.assistant}
       aria-busy={streaming || undefined}
     >
       <div className="fa-ai-msg-mark">
@@ -269,16 +276,14 @@ export const AssistantMessage = memo(function AssistantMessage({
                 size="sm"
                 variant="ghost"
                 icon={<IconRefresh />}
-                pendingLabel="Regenerating…"
-                successLabel="Regenerated"
+                pendingLabel={messages.regenerating}
+                successLabel={messages.regenerated}
                 onAction={() => handlers.retry(message)}
               >
-                Regenerate
-              </ActionButton>
+                {messages.regenerate} </ActionButton>
             }
           >
-            You stopped this response.
-          </Notice>
+            {messages.youStoppedThisResponse} </Notice>
         ) : null}
         <footer
           className="fa-ai-msg-foot"
@@ -293,25 +298,25 @@ export const AssistantMessage = memo(function AssistantMessage({
             ) : null}
           </span>
           <div className="fa-ai-msg-actions">
-            {text ? <CopyButton value={text} label="Copy response" /> : null}
+            {text ? <CopyButton value={text} label={messages.copyResponse} /> : null}
             {message.state === "complete" ? (
               <>
                 <ActionButton
                   variant="ghost"
                   size="sm"
                   icon={<IconRefresh />}
-                  aria-label="Regenerate"
+                  aria-label={messages.regenerate}
                   onAction={() => handlers.retry(message)}
                 />
                 <ButtonGroup
                   className="fa-ai-msg-feedback"
-                  aria-label="Feedback"
+                  aria-label={messages.feedback}
                 >
                   <Button
                     variant={message.feedback === "up" ? "soft" : "ghost"}
                     size="sm"
                     icon={<IconThumbsUp />}
-                    aria-label="Good response"
+                    aria-label={messages.goodResponse}
                     aria-pressed={message.feedback === "up"}
                     onClick={() =>
                       handlers.feedback(
@@ -324,7 +329,7 @@ export const AssistantMessage = memo(function AssistantMessage({
                     variant={message.feedback === "down" ? "soft" : "ghost"}
                     size="sm"
                     icon={<IconThumbsDown />}
-                    aria-label="Bad response"
+                    aria-label={messages.badResponse}
                     aria-pressed={message.feedback === "down"}
                     onClick={() =>
                       handlers.feedback(
@@ -340,7 +345,7 @@ export const AssistantMessage = memo(function AssistantMessage({
               variant="ghost"
               size="sm"
               icon={<IconPopOut />}
-              aria-label="Open in a window"
+              aria-label={messages.openInAWindow}
               onClick={() => handlers.openMessageWindow(message)}
             />
           </div>
@@ -387,12 +392,14 @@ export function Turn({
   /** The turn's number, written to `data-turn` for the navigator's TurnAnchor `index` and used in the default label "Turn {index}". */
   index: number;
 }) {
+  const messages = useMessages(messageMessages)
+
   return (
     <section
       {...rest}
       className={cx("fa-ai-turn", className)}
       data-turn={index}
-      aria-label={rest["aria-label"] ?? `Turn ${index}`}
+      aria-label={rest["aria-label"] ?? messages.turn(index)}
     />
   );
 }
@@ -448,5 +455,7 @@ export function MessageSkeleton({
 }
 
 function PurgedMessage() {
-  return <Notice>Removed under the conversation retention policy.</Notice>;
+  const messages = useMessages(messageMessages)
+
+  return <Notice>{messages.removedUnderTheConversationRetentionPolicy}</Notice>;
 }

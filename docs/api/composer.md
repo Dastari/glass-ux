@@ -41,7 +41,7 @@ Width  container-aware down to the docked pane: labels drop to icons, the model 
 | onSend | `((text: string) => void \| Promise<void>) \| undefined` | See type | no | — | Called with the trimmed text; clear the composer by resolving. |
 | onStop | `(() => void) \| undefined` | See type | no | — | Called when the person stops a running response: the Stop button or Esc while `run` is `running` or `stopping` and no menu is open. |
 | onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the full text on every edit, pick from a menu, dictation and the clear after a send (`""`). Pair with `value` to control it. |
-| placeholder | `string \| undefined` | See type | no | "Ask Assistant…" | The prompt shown while the value is empty. It does not replace the field’s label. |
+| placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | run | `RunState \| undefined` | "idle", "running", "sending", "stopping" | no | "idle" | Operation invoked by the component. |
 | size | `"md" \| "lg" \| undefined` | "md", "lg" | no | "md" | md: conversations and panes · lg: the landing hero (bigger send circle). |
 | status | `ReactNode` | See type | no | — | The conversation's status line (AiStatusStrip), the last row inside the composer. |

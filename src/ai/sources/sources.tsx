@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { sourcesMessages } from "./messages.js"
 import { createContext, useContext, useId, type ReactNode } from "react";
 import { IconExternalLink } from "../../icons/generated/icons.js";
 import { cx } from "../../lib/cx.js";
@@ -29,6 +31,8 @@ export function CitationMarker({ index }: {
   /** The footnote number, matched against `index` in the message's sources; an unmatched number renders as a plain superscript. */
   index: number;
 }) {
+  const messages = useMessages(sourcesMessages)
+
   const source = useContext(SourcesContext).find(
     (item) => item.index === index,
   );
@@ -40,7 +44,7 @@ export function CitationMarker({ index }: {
       </sup>
     );
   const external = safeExternalHref(source.href);
-  const label = `Source ${index}: ${source.title}`;
+  const label = messages.source(index, source.title);
   return (
     <Tooltip
       content={source.site ? `${source.title} · ${source.site}` : source.title}
@@ -93,11 +97,13 @@ export function SourceList({
   sources: AiSource[];
   className?: string;
 }) {
+  const messages = useMessages(sourcesMessages)
+
   const resolver = useEntityResolver();
   const listId = useId();
   return (
     <section className={cx("fa-ai-sources", className)}>
-      <h4 className="fa-overline fa-ai-sources-title">Sources</h4>
+      <h4 className="fa-overline fa-ai-sources-title">{messages.sources}</h4>
       <ol className="fa-ai-sources-list">
         {sources.map((source) => {
           const external = safeExternalHref(source.href);
@@ -129,7 +135,7 @@ export function SourceList({
                 {external ? (
                   <IconExternalLink
                     className="fa-ai-source-external"
-                    label="Opens in a new tab"
+                    label={messages.opensInANewTab}
                   />
                 ) : null}
               </a>

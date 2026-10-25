@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { resultsMessages, getResultsMessages } from "./messages.js"
 import { IconCode, IconGauge, IconLock } from "../../icons/generated/icons.js";
 import { FactList } from "../../ui/fact-list/index.js";
 import { Metric } from "../../ui/metric/index.js";
@@ -21,13 +23,7 @@ import { getLocale } from "../../lib/locale/locale.js";
  * Data classification, lowest to highest. A tool's browser
  * preview carries a cap; anything classified above it is withheld from the browser.
  */
-export const CLASSIFICATIONS = [
-  "Public",
-  "Internal",
-  "Confidential",
-  "Restricted",
-  "Secret",
-] as const;
+export const CLASSIFICATIONS = ["Public", "Internal", "Confidential", "Restricted", "Secret"] as const;
 export type Classification = (typeof CLASSIFICATIONS)[number];
 
 export interface DisclosureRule {
@@ -85,11 +81,11 @@ const humanise = (key: string) =>
     .replace(/^./, (c) => c.toUpperCase());
 const rank = (classification?: Classification) =>
   classification ? CLASSIFICATIONS.indexOf(classification) : 0;
-const withheld = (classification?: Classification): RedactedValue => ({
+const withheld = (classification?: Classification, locale = getLocale()): RedactedValue => ({
   redacted: true,
   reason: classification
-    ? `Withheld · ${classification}`
-    : "Withheld from the browser",
+    ? getResultsMessages(locale).withheld(getResultsMessages(locale)[classification.toLowerCase() as "public" | "internal" | "confidential" | "restricted" | "secret"])
+    : getResultsMessages(locale).withheldFromTheBrowser,
 });
 
 /** Infer a disclosure from the value when none was sent (development tools). */
@@ -119,11 +115,11 @@ function scalarText(value: unknown, unit: string | undefined, locale: string): s
         : `${text}${THIN_SPACE}${unit}`
       : text;
   }
-  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "boolean") return value ? getResultsMessages(locale).yes : getResultsMessages(locale).no;
   if (Array.isArray(value))
-    return `${formatNumber(value.length, 0, locale)} ${value.length === 1 ? "item" : "items"}`;
+    return getResultsMessages(locale).itemCount(value.length, locale);
   if (isRecord(value))
-    return `${formatNumber(Object.keys(value).length, 0, locale)} fields`;
+    return getResultsMessages(locale).fieldCount(Object.keys(value).length, locale);
   return String(value);
 }
 
@@ -209,7 +205,7 @@ export function resolvePreview(
       redacted: {
         redacted: true,
         reason:
-          "No browser-safe preview: the result is above this tool’s preview class",
+          getResultsMessages(locale).noBrowserSafePreviewTheResultIsAboveThis,
       },
     };
   }
@@ -220,7 +216,7 @@ export function resolvePreview(
       type: "value",
       label: preview.title,
       value: null,
-      redacted: withheld(root.rule?.classification),
+      redacted: withheld(root.rule?.classification, locale),
     };
   const { typename, value, disclosure, total } = locate(preview.value, root);
   const hidden = (field: Disclosure) => rank(field.rule?.classification) > cap;
@@ -238,7 +234,7 @@ export function resolvePreview(
         ...base,
         type: "table",
         total: total ?? value.length,
-        columns: [{ key: "value", header: item.label ?? "Value", priority: 1 }],
+        columns: [{ key: "value", header: item.label ?? getResultsMessages(locale).value, priority: 1 }],
         rows: items.map((entry) => ({ value: scalarText(entry, undefined, locale) })),
       };
     }
@@ -278,7 +274,7 @@ export function resolvePreview(
         columns.map((column, columnIndex) => {
           const field = item.fields[column.key]!;
           if (hidden(field))
-            return [column.key, withheld(field.rule?.classification)];
+            return [column.key, withheld(field.rule?.classification, locale)];
           if (columnIndex === 0 && entities[rowIndex])
             return [column.key, entities[rowIndex]!];
           const cell = record[column.key];
@@ -339,7 +335,7 @@ export function resolvePreview(
         ? {
             label: field.label ?? humanise(key),
             value: "",
-            redacted: withheld(field.rule?.classification),
+            redacted: withheld(field.rule?.classification, locale),
           }
         : {
             label: field.label ?? humanise(key),
@@ -382,13 +378,15 @@ export function Redacted({
   /** Called from Reveal; without it the button is disabled with the value's `reason`. */
   onReveal?: () => void;
 }) {
+  const messages = useMessages(resultsMessages)
+
   return (
     <span className="fa-ai-redacted">
       <IconLock className="fa-ai-redacted-icon" />
       <span className="fa-ai-redacted-mask" aria-hidden>
         ••••••
       </span>
-      <span className="sr-only">Hidden.</span>
+      <span className="sr-only">{messages.hidden}</span>
       <Button
         variant="ghost"
         size="sm"
@@ -396,8 +394,7 @@ export function Redacted({
         disabledReason={onReveal ? undefined : value.reason}
         onClick={onReveal}
       >
-        Reveal
-      </Button>
+        {messages.reveal} </Button>
     </span>
   );
 }
@@ -453,6 +450,8 @@ export function ResultJson({ result }: {
   /** The JSON result: any JSON `value`, shown as a tree labelled by the title; `truncated` adds a note that the server cut it short. */
   result: JsonResult;
 }) {
+  const messages = useMessages(resultsMessages)
+
   return (
     <ResultFrame
       result={result}
@@ -462,7 +461,7 @@ export function ResultJson({ result }: {
       <JsonTree
         value={result.value}
         label={result.title}
-        truncated={result.truncated ? "Truncated by the server." : undefined}
+        truncated={result.truncated ? messages.truncatedByTheServer : undefined}
       />
     </ResultFrame>
   );

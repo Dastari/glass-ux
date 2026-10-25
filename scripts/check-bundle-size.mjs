@@ -33,8 +33,9 @@ const BUDGETS = [
   { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text'] },
   { entry: 'glass-ux/map', named: 'GeoMap', gzip: 75_000, forbid: ['maplibre-gl'] },
   { entry: 'glass-ux/ai/code-block', named: 'CodeBlock', gzip: 40_000, forbid: ['shiki', '@shikijs/core'] },
-  { entry: 'glass-ux/ai/results', named: 'ResultBlock', gzip: 99_000, forbid: ['d3-scale', '@tanstack/form-core'] },
-  { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 227_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki'] },
+  // Interface messages and the resolver add about 1–2 KB gzip to these compositions.
+  { entry: 'glass-ux/ai/results', named: 'ResultBlock', gzip: 101_000, forbid: ['d3-scale', '@tanstack/form-core'] },
+  { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 230_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki'] },
 ]
 
 /** Packages large enough to be worth reporting when an entry pulls them in. */

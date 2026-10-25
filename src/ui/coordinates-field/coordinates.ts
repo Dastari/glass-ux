@@ -1,3 +1,4 @@
+import { coordinatesFieldMessages, getCoordinatesFieldMessages } from "./messages.js"
 /**
  * Latitude and longitude (WGS 84) from whatever people paste:
  *
@@ -58,9 +59,9 @@ export function formatDms(value: LatLng): string {
   return `${toDms(value.lat, "lat")} ${toDms(value.lng, "lng")}`
 }
 
-export const LATITUDE_RANGE = "Latitude must be between -90 and 90"
-export const LONGITUDE_RANGE = "Longitude must be between -180 and 180"
-export const COORDINATES_EXAMPLE = "Enter a latitude and longitude, such as -42.88334, 147.32688"
+export const LATITUDE_RANGE = coordinatesFieldMessages.defaults.latitudeRange
+export const LONGITUDE_RANGE = coordinatesFieldMessages.defaults.longitudeRange
+export const COORDINATES_EXAMPLE = coordinatesFieldMessages.defaults.enterALatitudeAndLongitudeSuchAs4288334
 
 /** Whether a number is a finite latitude between -90 and 90 degrees inclusive. */
 export const isLatitude = (value: number) => Number.isFinite(value) && value >= -90 && value <= 90
@@ -146,21 +147,22 @@ function splitPair(text: string): [string, string] | null {
 }
 
 /** Parse and validate; the value is rounded to COORDINATE_DECIMALS. */
-export function parseCoordinates(text: string): CoordinatesResult {
+export function parseCoordinates(text: string, locale?: string): CoordinatesResult {
+  const messages: ReturnType<typeof getCoordinatesFieldMessages> = getCoordinatesFieldMessages(locale)
   const source = text.trim()
-  if (!source) return { ok: false, error: COORDINATES_EXAMPLE }
+  if (!source) return { ok: false, error: messages.enterALatitudeAndLongitudeSuchAs4288334 }
   const linked = /^(https?:|geo:)/i.test(source) ? fromLink(source) : null
-  if (/^(https?:|geo:)/i.test(source) && !linked) return { ok: false, error: "That link has no coordinates in it — copy them from the map instead" }
+  if (/^(https?:|geo:)/i.test(source) && !linked) return { ok: false, error: messages.thatLinkHasNoCoordinatesInIt }
   let pair: LatLng
   let swapped = false
   if (linked) {
     pair = linked
   } else {
     const parts = splitPair(source)
-    if (!parts) return { ok: false, error: COORDINATES_EXAMPLE }
+    if (!parts) return { ok: false, error: messages.enterALatitudeAndLongitudeSuchAs4288334 }
     const first = parseAxis(parts[0])
     const second = parseAxis(parts[1])
-    if (!first || !second) return { ok: false, error: COORDINATES_EXAMPLE }
+    if (!first || !second) return { ok: false, error: messages.enterALatitudeAndLongitudeSuchAs4288334 }
     const firstIsLng = first.hemisphere === "E" || first.hemisphere === "W"
     const secondIsLat = second.hemisphere === "N" || second.hemisphere === "S"
     if (firstIsLng || secondIsLat) {
@@ -172,8 +174,8 @@ export function parseCoordinates(text: string): CoordinatesResult {
       pair = { lat: signed(first), lng: signed(second) }
     }
   }
-  if (!isLatitude(pair.lat)) return { ok: false, error: LATITUDE_RANGE, raw: pair }
-  if (!isLongitude(pair.lng)) return { ok: false, error: LONGITUDE_RANGE, raw: pair }
+  if (!isLatitude(pair.lat)) return { ok: false, error: messages.latitudeRange, raw: pair }
+  if (!isLongitude(pair.lng)) return { ok: false, error: messages.longitudeRange, raw: pair }
   return { ok: true, value: { lat: round(pair.lat), lng: round(pair.lng) }, ...(swapped ? { swapped } : {}) }
 }
 

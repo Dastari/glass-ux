@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { phoneFieldMessages } from "./messages.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { Input as BaseInput } from "@base-ui/react/input"
 import { useMemo, useRef, useState, type ClipboardEvent, type FocusEvent, type MouseEvent, type Ref } from "react"
@@ -144,6 +146,8 @@ export function PhoneInput({
   ref,
   "aria-label": ariaLabel,
 }: PhoneInputProps) {
+  const messages = useMessages(phoneFieldMessages)
+
   const lib = usePhoneLibrary()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [focused, setFocused] = useState(false)
@@ -292,11 +296,10 @@ export function PhoneInput({
       {extension ? (
         <span className="fa-phone-ext">
           <span className="fa-phone-ext-label" aria-hidden>
-            ext.
-          </span>
+            {messages.ext} </span>
           <input
             className="fa-phone-ext-input"
-            aria-label="Extension"
+            aria-label={messages.extension}
             inputMode="numeric"
             autoComplete="tel-extension"
             maxLength={8}
@@ -307,7 +310,7 @@ export function PhoneInput({
           />
         </span>
       ) : null}
-      {copyable && valid ? <CopyButton value={current} label="Copy number" className="fa-input-btn" /> : null}
+      {copyable && valid ? <CopyButton value={current} label={messages.copyNumber} className="fa-input-btn" /> : null}
     </div>
     </div>
   )
@@ -327,6 +330,8 @@ interface CountryPickerProps {
 }
 
 function CountryPicker({ value, onValueChange, countries, priority, flags, disabled, readOnly }: CountryPickerProps) {
+  const messages = useMessages(phoneFieldMessages)
+
   const [query, setQuery] = useState("")
   const popup = usePopupMetrics()
   const locale = useLocale()
@@ -359,7 +364,7 @@ function CountryPicker({ value, onValueChange, countries, priority, flags, disab
     >
       <BaseCombobox.Trigger
         className="fa-phone-country fa-pressable"
-        aria-label={`Country: ${chosen?.name ?? value}${calling ? ` (+${calling})` : ""}`}
+        aria-label={messages.country(chosen?.name ?? value, calling ? ` (+${calling})` : "")}
         disabled={disabled}
       >
         {flags ? <CountryFlag code={value} /> : null}
@@ -369,14 +374,14 @@ function CountryPicker({ value, onValueChange, countries, priority, flags, disab
       </BaseCombobox.Trigger>
       <BaseCombobox.Portal container={popupContainer()}>
         <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
-          <BaseCombobox.Popup className="glass-overlay fa-popup fa-phone-country-popup" aria-label="Choose a country">
+          <BaseCombobox.Popup className="glass-overlay fa-popup fa-phone-country-popup" aria-label={messages.chooseACountry}>
             <div className="fa-control fa-input fa-phone-country-search" data-size="sm">
               <IconSearch />
-              <BaseCombobox.Input className="fa-control-input" placeholder="Country or code" aria-label="Search countries" />
+              <BaseCombobox.Input className="fa-control-input" placeholder={messages.countryOrCode} aria-label={messages.searchCountries} />
             </div>
-            <BaseCombobox.Status className="sr-only">{query.trim() ? `${filtered.length} ${filtered.length === 1 ? "country" : "countries"}` : ""}</BaseCombobox.Status>
+            <BaseCombobox.Status className="sr-only">{query.trim() ? messages.countryCount(filtered.length, locale) : ""}</BaseCombobox.Status>
             <BaseCombobox.Empty className="fa-combobox-empty-slot">
-              <div className="fa-combobox-empty">No country matches “{query.trim()}”</div>
+              <div className="fa-combobox-empty">{messages.noCountryMatches(query.trim())}</div>
             </BaseCombobox.Empty>
             <BaseCombobox.List className="fa-select-list fa-phone-country-list">
               {(country: Country) => (

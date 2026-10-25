@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { urlFieldMessages } from "./messages.js"
 import { IconExternalLink, IconLink } from "../../icons/generated/icons.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { Button } from "../button/index.js"
@@ -13,6 +15,8 @@ export interface UrlInputProps extends Omit<NormalisedInputProps, "normalise" | 
 
 /** A web address. A missing scheme is added on blur ("https://"); the URL is written canonically. */
 export function UrlInput({ schemes, defaultScheme, requireTld, openable = true, value, defaultValue = "", onValueChange, placeholder, icon, trailing, ...rest }: UrlInputProps) {
+  const messages = useMessages(urlFieldMessages)
+
   const [text, setText] = useControllable(value, defaultValue, onValueChange)
   const options = { schemes, defaultScheme, requireTld }
   const valid = text ? normaliseUrl(text, options) : null
@@ -26,7 +30,7 @@ export function UrlInput({ schemes, defaultScheme, requireTld, openable = true, 
       value={text}
       onValueChange={setText}
       icon={icon === undefined ? <IconLink /> : icon}
-      placeholder={placeholder ?? `${defaultScheme ?? schemes?.[0] ?? "https"}://northstar.example`}
+      placeholder={placeholder ?? messages.northstarExample(defaultScheme ?? schemes?.[0] ?? "https")}
       normalise={(next) => normaliseUrl(next, options)}
       trailing={
         <>
@@ -37,7 +41,7 @@ export function UrlInput({ schemes, defaultScheme, requireTld, openable = true, 
               size="sm"
               className="fa-input-btn"
               icon={<IconExternalLink />}
-              aria-label="Open in a new tab"
+              aria-label={messages.openInANewTab}
               onClick={() => window.open(valid, "_blank", "noopener,noreferrer")}
             />
           ) : null}
@@ -56,9 +60,11 @@ export interface UrlFieldProps
 
 /** UrlInput bound to a string form field. Pair it with `urlSchema()`. */
 export function UrlField({ label, hint, optional, required, aside, className, disabled, warnInsecure, ...control }: UrlFieldProps) {
+  const messages = useMessages(urlFieldMessages)
+
   const { field, error, root } = useBoundField<string>()
   const value = field.state.value
-  const warn = (warnInsecure ?? (control.schemes ?? ["https"]).includes("https")) && isInsecure(value) ? "Not encrypted: http:// sends everything in the clear" : undefined
+  const warn = (warnInsecure ?? (control.schemes ?? ["https"]).includes("https")) && isInsecure(value) ? messages.notEncryptedHttpSendsEverythingInTheClear : undefined
   return (
     <Field {...root} label={label} hint={hint ?? warn} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <UrlInput

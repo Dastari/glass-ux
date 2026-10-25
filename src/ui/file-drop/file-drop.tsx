@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { fileDropMessages } from "./messages.js"
 import { Field as BaseField } from "@base-ui/react/field"
 import { useLayoutEffect, useRef, useState, type ComponentProps, type DragEvent, type ReactNode } from "react"
 import { IconClose, IconFile, IconUpload } from "../../icons/generated/icons.js"
@@ -59,6 +61,8 @@ export function FileDrop({
   className,
   "aria-label": ariaLabel,
 }: FileDropProps) {
+  const messages = useMessages(fileDropMessages)
+
   const locale = useLocale()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const depth = useRef(0)
@@ -68,13 +72,13 @@ export function FileDrop({
   const take = (list: FileList | null) => {
     const files = list ? [...list] : []
     if (files.length === 0) return
-    const { accepted, rejected } = screenFiles(files, { accept, maxSize, maxFiles, existing, locale })
+    const { accepted, rejected } = screenFiles(files, { accept, maxSize, maxFiles, existing, locale }, messages)
     onFiles(accepted, rejected)
   }
 
   const limits =
     hint ??
-    [maxSize !== undefined ? `Max ${formatBytes(maxSize, locale)} per file` : null, accept ? describeAccept(accept) : null]
+    [maxSize !== undefined ? messages.maxPerFile(formatBytes(maxSize, locale)) : null, accept ? describeAccept(accept, locale, messages) : null]
       .filter(Boolean)
       .join(" · ")
 
@@ -133,8 +137,8 @@ export function FileDrop({
       </span>
       <span className="fa-file-drop-text">
         <span className="fa-file-drop-title">
-          {dragging ? "Drop to add" : multiple ? "Drop files here or " : "Drop a file here or "}
-          {dragging ? null : <span className="fa-file-drop-link">browse</span>}
+          {dragging ? messages.dropToAdd : multiple ? messages.dropFilesHereOr : messages.dropAFileHereOr}
+          {dragging ? null : <span className="fa-file-drop-link">{messages.browse}</span>}
         </span>
         {limits ? <span className="fa-file-drop-hint">{limits}</span> : null}
       </span>
@@ -175,12 +179,14 @@ function focusAfterRemoval(row: HTMLElement) {
 
 /** The outcome of an upload, kept in an always-mounted polite live region. */
 function useUploadAnnouncement(name: string, status: FileStatus, error?: string) {
+  const messages = useMessages(fileDropMessages)
+
   const [announcement, setAnnouncement] = useState("")
   const [previous, setPrevious] = useState(status)
   if (previous !== status) {
     setPrevious(status)
     setAnnouncement(
-      status === "done" ? `${name} uploaded` : status === "error" ? `${name} failed: ${error ?? "Upload failed"}` : ""
+      status === "done" ? messages.uploaded(name) : status === "error" ? messages.failed(name, error ?? messages.uploadFailed) : ""
     )
   }
   return announcement
@@ -188,6 +194,8 @@ function useUploadAnnouncement(name: string, status: FileStatus, error?: string)
 
 /** One file in a FileList: name, size and state, a progress bar of fixed height, remove. */
 export function FileRow({ name, size, status = "done", progress, error, onRemove, className, ref, ...rest }: FileRowProps) {
+  const messages = useMessages(fileDropMessages)
+
   const rowRef = useRef<HTMLLIElement | null>(null)
   const setRow = (node: HTMLLIElement | null) => {
     rowRef.current = node
@@ -207,12 +215,12 @@ export function FileRow({ name, size, status = "done", progress, error, onRemove
   const state =
     status === "uploading"
       ? progress === null || progress === undefined
-        ? "Uploading"
+        ? messages.uploading
         : `${Math.round(progress)}%`
       : status === "queued"
-        ? "Waiting"
+        ? messages.waiting
         : status === "done"
-          ? "Uploaded"
+          ? messages.uploaded2
           : null
   return (
     <li {...rest} ref={setRow} className={cx("fa-file-row", className)} data-status={status}>
@@ -223,7 +231,7 @@ export function FileRow({ name, size, status = "done", progress, error, onRemove
         <div className="fa-file-row-head">
           <TruncatedText className="fa-file-row-name">{name}</TruncatedText>
           {status === "error" ? (
-            <TruncatedText className="fa-file-row-error">{error ?? "Upload failed"}</TruncatedText>
+            <TruncatedText className="fa-file-row-error">{error ?? messages.uploadFailed}</TruncatedText>
           ) : (
             <span className="fa-file-row-meta" data-numeric>
               {formatBytes(size, locale)}
@@ -236,7 +244,7 @@ export function FileRow({ name, size, status = "done", progress, error, onRemove
           size="sm"
           showValue={false}
           tone={status === "error" ? "danger" : status === "done" ? "success" : "accent"}
-          aria-label={`${name} upload`}
+          aria-label={messages.upload(name)}
           className="fa-file-row-progress"
         />
       </div>
@@ -245,7 +253,7 @@ export function FileRow({ name, size, status = "done", progress, error, onRemove
           variant="ghost"
           size="sm"
           icon={<IconClose />}
-          aria-label={`Remove ${name}`}
+          aria-label={messages.remove(name)}
           data-file-remove=""
           onClick={onRemove}
         />

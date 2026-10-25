@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { countrySelectMessages } from "./messages.js"
 import { useMemo } from "react"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { Combobox, type ComboboxOption, type ComboboxProps } from "../combobox/index.js"
@@ -21,7 +23,10 @@ export interface CountrySelectProps extends Omit<ComboboxProps<string>, "options
  * Choose a country by typing its name: every ISO 3166-1 country, named by the platform in the
  * locale, with its flag and code. The value is the ISO 3166-1 alpha-2 code ("AU").
  */
-export function CountrySelect({ countries, priority = ["AU", "NZ"], flags = true, locale: localeProp, value, defaultValue, placeholder = "Choose a country", ...rest }: CountrySelectProps) {
+export function CountrySelect({ countries, priority = ["AU", "NZ"], flags = true, locale: localeProp, value, defaultValue, placeholder: placeholderProp, ...rest }: CountrySelectProps) {
+  const messages = useMessages(countrySelectMessages, { locale: localeProp })
+  const placeholder = placeholderProp ?? messages.chooseACountry
+
   const locale = useLocale(localeProp)
   const options = useMemo<Array<ComboboxOption<string>>>(
     () =>

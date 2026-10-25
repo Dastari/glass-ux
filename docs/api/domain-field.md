@@ -19,6 +19,7 @@ DomainInput bound to a string form field. Pair it with `domainSchema()`.
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | identifier | `boolean \| undefined` | false, true | no | — | Identifiers (addresses, hostnames) get tabular figures (R8.4). Default true. |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
+| locale | `string \| undefined` | See type | no | — | Locale for validation wording. Defaults to getLocale(). |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called with the new state when the show/hide password button is pressed. Pair with `revealed` to control it. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |

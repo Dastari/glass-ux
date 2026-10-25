@@ -1,3 +1,4 @@
+import { loginFlowMessages } from "./messages.js"
 import {
   IconApple,
   IconDiscord,
@@ -14,13 +15,13 @@ export type LoginProviderPreset = "google" | "github" | "microsoft" | "apple" | 
 
 /** Name and monochrome mark for each preset. The host still owns the OAuth configuration. */
 export const LOGIN_PROVIDERS: Readonly<Record<LoginProviderPreset, LoginProvider>> = {
-  google: { id: "google", label: "Google", icon: <IconGoogle /> },
-  github: { id: "github", label: "GitHub", icon: <IconGithub /> },
-  microsoft: { id: "microsoft", label: "Microsoft", icon: <IconMicrosoft /> },
-  apple: { id: "apple", label: "Apple", icon: <IconApple /> },
-  slack: { id: "slack", label: "Slack", icon: <IconSlack /> },
-  discord: { id: "discord", label: "Discord", icon: <IconDiscord /> },
-  facebook: { id: "facebook", label: "Facebook", icon: <IconFacebook /> },
+  google: { id: "google", label: loginFlowMessages.defaults.providerGoogle, icon: <IconGoogle /> },
+  github: { id: "github", label: loginFlowMessages.defaults.providerGitHub, icon: <IconGithub /> },
+  microsoft: { id: "microsoft", label: loginFlowMessages.defaults.providerMicrosoft, icon: <IconMicrosoft /> },
+  apple: { id: "apple", label: loginFlowMessages.defaults.providerApple, icon: <IconApple /> },
+  slack: { id: "slack", label: loginFlowMessages.defaults.providerSlack, icon: <IconSlack /> },
+  discord: { id: "discord", label: loginFlowMessages.defaults.providerDiscord, icon: <IconDiscord /> },
+  facebook: { id: "facebook", label: loginFlowMessages.defaults.providerFacebook, icon: <IconFacebook /> },
 }
 
 /**

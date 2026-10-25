@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { comboboxMessages, getComboboxMessages } from "./messages.js"
 /**
  * The row and list states shared by every list popup: Combobox, MultiSelect,
  * Autocomplete, TagInput — and reusable by the AI composer's @-mentions and the command
@@ -93,6 +95,8 @@ export interface OptionStatusProps {
  * a prompt for more characters. Rows are exactly one option tall.
  */
 export function OptionStatus({ status, twoLine = false, needsMore = 0, onRetry }: OptionStatusProps) {
+  const messages = useMessages(comboboxMessages)
+
   return (
     <>
       {status === "refreshing" ? <div className="fa-option-progress fa-shimmer" aria-hidden /> : null}
@@ -109,19 +113,17 @@ export function OptionStatus({ status, twoLine = false, needsMore = 0, onRetry }
       {status === "error" ? (
         <div className="fa-option-note" data-tone="danger" role="alert">
           <IconAlert />
-          <span className="fa-option-note-text">Search failed — check the connection and retry.</span>
+          <span className="fa-option-note-text">{messages.searchFailedCheckTheConnectionAndRetry}</span>
           {onRetry ? (
             <Button size="sm" variant="ghost" onClick={onRetry} className="fa-option-retry">
-              Retry
-            </Button>
+              {messages.retry} </Button>
           ) : null}
         </div>
       ) : null}
       {needsMore > 0 ? (
         <div className="fa-option-note">
           <span className="fa-option-note-text">
-            Type {needsMore} more {needsMore === 1 ? "character" : "characters"} to search
-          </span>
+            {messages.typeMoreCharacters(needsMore)} </span>
         </div>
       ) : null}
     </>
@@ -133,18 +135,20 @@ export function OptionMore({ more }: {
   /** How many results were left out of the list; nothing renders when 0 or less. */
   more: number
 }) {
+  const messages = useMessages(comboboxMessages)
+
   const locale = useLocale()
   if (more <= 0) return null
-  return <div className="fa-option-more">{numberFormat(locale).format(more)} more — refine your search</div>
+  return <div className="fa-option-more">{numberFormat(locale).format(more)} {messages.moreRefineYourSearch}</div>
 }
 
 /** What a screen reader hears about the list (render inside the popup's Status part). */
-export function statusAnnouncement(status: SearchStatus, count: number, query: string) {
-  if (status === "loading") return "Loading results"
-  if (status === "error") return "Search failed"
+export function statusAnnouncement(status: SearchStatus, count: number, query: string, messages = getComboboxMessages(), locale = "en-US") {
+  if (status === "loading") return messages.loadingResults
+  if (status === "error") return messages.searchFailed
   if (!query.trim()) return ""
-  if (count === 0) return `No matches for “${query.trim()}”`
-  return `${count} ${count === 1 ? "result" : "results"}`
+  if (count === 0) return messages.noMatchesFor(query.trim())
+  return messages.resultCount(count, locale)
 }
 
 /** Split a flat option list into Base UI groups when any option names a group. */

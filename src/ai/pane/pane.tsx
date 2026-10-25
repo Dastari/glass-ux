@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { paneMessages } from "./messages.js"
 import type { ComponentProps, ReactNode } from "react";
 import { cx } from "../../lib/cx.js";
 import { TruncatedText } from "../../ui/truncated-text/index.js";
@@ -26,7 +28,7 @@ export interface AssistantPaneProps extends Omit<
  * rest. Everything inside is container-aware down to 20rem; the pane sets no widths itself.
  */
 export function AssistantPane({
-  title = "Assistant",
+  title: titleProp,
   scope,
   actions,
   working = false,
@@ -34,6 +36,9 @@ export function AssistantPane({
   className,
   ...rest
 }: AssistantPaneProps) {
+  const messages = useMessages(paneMessages)
+  const title = titleProp ?? messages.assistant
+
   return (
     <aside
       {...rest}

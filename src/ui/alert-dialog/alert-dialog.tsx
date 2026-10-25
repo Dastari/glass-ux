@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { alertDialogMessages } from "./messages.js"
 import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog"
 import {
   useEffect,
@@ -80,13 +82,16 @@ export function AlertDialog({
   title,
   description,
   confirmLabel,
-  cancelLabel = "Cancel",
+  cancelLabel: cancelLabelProp,
   pendingLabel,
   tone = "danger",
   icon,
   onConfirm,
   failureTitle,
 }: AlertDialogProps) {
+  const messages = useMessages(alertDialogMessages)
+  const cancelLabel = cancelLabelProp ?? messages.cancel
+
   const [uncontrolled, setUncontrolled] = useState(defaultOpen)
   const open = openProp ?? uncontrolled
   const { status, run, reset } = useActionFeedback()
@@ -112,7 +117,7 @@ export function AlertDialog({
       (error) =>
         toast({
           tone: "danger",
-          title: failureTitle ?? `${confirmLabel} failed`,
+          title: failureTitle ?? messages.failed(confirmLabel),
           description: error instanceof Error ? error.message : String(error),
         })
     )
@@ -233,10 +238,13 @@ export interface AlertDialogPreviewProps {
 /** The alert surface in the page flow, for documentation. Real parts, non-modal. */
 export function AlertDialogPreview({
   tone = "danger",
-  cancelLabel = "Cancel",
+  cancelLabel: cancelLabelProp,
   status = "idle",
   ...rest
 }: AlertDialogPreviewProps) {
+  const messages = useMessages(alertDialogMessages)
+  const cancelLabel = cancelLabelProp ?? messages.cancel
+
   return (
     <Dialog.Preview size="sm" kind="alert">
       <AlertLayout {...rest} tone={tone} cancelLabel={cancelLabel} status={status} />

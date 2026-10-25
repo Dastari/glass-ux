@@ -1,3 +1,4 @@
+import { passwordFieldMessages, getPasswordFieldMessages } from "./messages.js"
 /**
  * Password strength, estimated in the browser without a dictionary download.
  *
@@ -23,7 +24,7 @@ export interface Strength {
 }
 
 /** The strength label for each score, indexed 0 ("Too weak") to 4 ("Strong"). */
-export const STRENGTH_LABELS: readonly string[] = ["Too weak", "Weak", "Fair", "Good", "Strong"]
+export const STRENGTH_LABELS: readonly string[] = [passwordFieldMessages.defaults.tooWeak, passwordFieldMessages.defaults.weak, passwordFieldMessages.defaults.fair, passwordFieldMessages.defaults.good, passwordFieldMessages.defaults.strong]
 
 /** The commonest passwords and their stems (lower case, l33t undone). */
 const COMMON = new Set(
@@ -75,13 +76,14 @@ function patternLength(password: string) {
 }
 
 /** Estimate a password's strength. `userInputs` are the person's own details (name, email, organisation). */
-export function estimateStrength(password: string, userInputs: readonly string[] = []): Strength {
-  if (!password) return { score: 0, label: STRENGTH_LABELS[0]!, feedback: "Enter a password", bits: 0 }
+export function estimateStrength(password: string, userInputs: readonly string[] = [], messages: ReturnType<typeof getPasswordFieldMessages> = getPasswordFieldMessages()): Strength {
+  const strengthLabels = [messages.tooWeak, messages.weak, messages.fair, messages.good, messages.strong]
+  if (!password) return { score: 0, label: strengthLabels[0]!, feedback: messages.enterAPassword, bits: 0 }
   const lower = password.toLowerCase()
   // The word inside decorations: "Summer2024!" → summer, "P@ssw0rd1" → p@ssw0rd → password.
   const stem = lower.replace(/^[^a-z@$]+|[^a-z]+$/g, "")
   const digitsOnly = lower.replace(/\D/g, "")
-  const result = (score: StrengthScore, feedback: string | null, bits: number): Strength => ({ score, label: STRENGTH_LABELS[score]!, feedback, bits: Math.round(bits) })
+  const result = (score: StrengthScore, feedback: string | null, bits: number): Strength => ({ score, label: strengthLabels[score]!, feedback, bits: Math.round(bits) })
 
   // Effective length: predictable characters count a quarter.
   const predictable = patternLength(password)
@@ -91,28 +93,28 @@ export function estimateStrength(password: string, userInputs: readonly string[]
   // Common passwords, whole or as the stem ("Password1!", "P@ssw0rd2024").
   const common = (text: string) => COMMON.has(text) || COMMON.has(unleet(text))
   if (common(lower) || (stem.length >= 4 && stem.length >= lower.length - 6 && common(stem))) {
-    return result(0, "Avoid common passwords and their variations", 8)
+    return result(0, messages.strengthFeedback5, 8)
   }
   // The person's own details.
   for (const input of userInputs) {
     for (const part of input.toLowerCase().split(/[^a-z0-9]+/)) {
       if (part.length >= 3 && lower.includes(part)) {
         effective -= part.length * 0.8
-        feedback = "Avoid your name, email or organisation"
+        feedback = messages.strengthFeedback6
       }
     }
   }
   // Years (1950–2039) are guessed early.
   if (/(19[5-9]\d|20[0-3]\d)/.test(lower)) {
     effective -= 3
-    feedback ??= "Avoid years and dates"
+    feedback ??= messages.strengthFeedback7
   }
-  if (predictable > password.length / 2) feedback ??= "Avoid repeated characters, sequences and keyboard runs"
-  if (digitsOnly.length === password.length) feedback ??= "Mix in letters, or use a longer passphrase"
+  if (predictable > password.length / 2) feedback ??= messages.strengthFeedback8
+  if (digitsOnly.length === password.length) feedback ??= messages.strengthFeedback9
 
   const bits = Math.max(0, effective) * Math.log2(poolSize(password))
   const score: StrengthScore = bits < 28 ? 0 : bits < 40 ? 1 : bits < 60 ? 2 : bits < 80 ? 3 : 4
   if (score >= 4) return result(4, null, bits)
-  if (!feedback) feedback = password.length < 12 ? "Use 12 characters or more" : "Add another word or a few more characters"
+  if (!feedback) feedback = password.length < 12 ? messages.strengthFeedback10 : messages.strengthFeedback11
   return result(score, feedback, bits)
 }

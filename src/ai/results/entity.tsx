@@ -1,3 +1,6 @@
+import { aiMessages } from "../messages.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { resultsMessages } from "./messages.js"
 import { IconMoreHorizontal } from "../../icons/generated/icons.js";
 import {
   ActionBar,
@@ -97,13 +100,16 @@ export function ResultEntities({ result }: {
   /** The entity-list result: the `entities` shown as rows, each with an optional `detail`, and `total` for the count (defaults to the number of entities). */
   result: EntitiesResult;
 }) {
+  const messages = useMessages(resultsMessages)
+ const entityMessages = useMessages(aiMessages)
+
   const locale = useLocale();
   const resolver = useEntityResolver();
   const handlers = useConversationHandlers();
   const first = result.entities[0];
   const plural = first
-    ? kindSpec(resolver.kinds, first.kind).plural.toLowerCase()
-    : "items";
+    ? kindSpec(resolver.kinds, first.kind, entityMessages).plural.toLowerCase()
+    : messages.items;
   const total = result.total ?? result.entities.length;
   return (
     <ResultFrame
@@ -117,7 +123,7 @@ export function ResultEntities({ result }: {
       }
       meta={
         total > result.entities.length
-          ? `${formatNumber(result.entities.length, 0, locale)} of ${formatNumber(total, 0, locale)}`
+          ? messages.of(formatNumber(result.entities.length, 0, locale), formatNumber(total, 0, locale))
           : `${formatNumber(total, 0, locale)} ${plural}`
       }
       copyText={result.entities
@@ -133,8 +139,7 @@ export function ResultEntities({ result }: {
             size="sm"
             onClick={() => handlers.openResultWindow(result)}
           >
-            Show all {formatNumber(total, 0, locale)} {plural} in a window
-          </Button>
+            {messages.showAllInWindow(formatNumber(total, 0, locale), plural)} </Button>
         ) : undefined
       }
     >

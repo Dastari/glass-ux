@@ -1,3 +1,6 @@
+import { aiMessages } from "../messages.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { entityChipMessages } from "./messages.js"
 import { PreviewCard } from "@base-ui/react/preview-card";
 import type { ComponentProps, MouseEvent, ReactNode } from "react";
 import { IconClose, IconPopOut } from "../../icons/generated/icons.js";
@@ -109,6 +112,9 @@ export function EntityChip({
   className,
   ...rest
 }: EntityChipProps) {
+  const messages = useMessages(entityChipMessages)
+ const entityMessages = useMessages(aiMessages)
+
   const resolver = useEntityResolver();
   const popup = usePopupMetrics();
   const custom = resolver.render?.(
@@ -135,7 +141,7 @@ export function EntityChip({
           shape="circle"
           size="xs"
           className="fa-ai-chip-remove"
-          aria-label={`Remove ${entity.label}`}
+          aria-label={messages.remove(entity.label)}
           onClick={onRemove}
         >
           <IconClose />
@@ -165,7 +171,7 @@ export function EntityChip({
     "data-kind": entity.kind,
     "data-variant": variant === "plain" ? "plain" : undefined,
     "data-unverified": entity.verified === false ? "" : undefined,
-    "aria-label": `${entityName(resolver.kinds, entity)}${entity.verified === false ? ", not verified" : ""}`,
+    "aria-label": `${entityName(resolver.kinds, entity, entityMessages)}${entity.verified === false ? messages.notVerified : ""}`,
     href,
     onClick: navigate,
   };
@@ -267,6 +273,8 @@ export function EntityQuickActions({
 }
 
 function OpenWindowButton({ entity }: { entity: EntityRef }) {
+  const messages = useMessages(entityChipMessages)
+
   const resolver = useEntityResolver();
   return (
     <Button
@@ -274,7 +282,7 @@ function OpenWindowButton({ entity }: { entity: EntityRef }) {
       variant="ghost"
       className="fa-ai-preview-window"
       icon={<IconPopOut />}
-      aria-label={`Open ${entity.label} in a window`}
+      aria-label={messages.openInAWindow(entity.label)}
       onClick={() => resolver.openWindow(entity)}
     />
   );
@@ -293,6 +301,8 @@ export function EntityPreviewContent({
   /** Supporting actions rendered in the action slot. */
   actions?: boolean;
 }) {
+  const messages = useMessages(entityChipMessages)
+
   const custom = useEntityResolver().render?.(entity, "preview", {
     subtitle: data?.subtitle,
     facts: data?.facts,
@@ -320,8 +330,7 @@ export function EntityPreviewContent({
       <EntityStateBadge entity={entity} />
       {entity.verified === false ? (
         <p className="fa-hint">
-          Named by Assistant; not confirmed by the application yet.
-        </p>
+          {messages.namedByAssistantNotConfirmedByTheApplication} </p>
       ) : null}
       {data?.facts?.length ? (
         <FactList

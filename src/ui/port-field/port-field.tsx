@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { portFieldMessages } from "./messages.js"
 import { cx } from "../../lib/cx.js"
 import { Field } from "../field/index.js"
 import { useBoundField, type FieldChrome } from "../form/context.js"
@@ -17,8 +19,9 @@ export interface PortInputProps extends Omit<NumberFieldProps, "min" | "max" | "
  * default, because nobody clicks from 443 to 8443.
  */
 export function PortInput({ service = true, services, steppers = false, width = "short", className, value, defaultValue, ...rest }: PortInputProps) {
+  const messages = useMessages(portFieldMessages, { locale: rest.locale })
   const current = value ?? defaultValue ?? null
-  const name = service && current !== null ? (services?.[current] ?? serviceOf(current)) : undefined
+  const name = service && current !== null ? (services?.[current] ?? serviceOf(current, messages)) : undefined
   return (
     <NumberField
       {...rest}

@@ -1,7 +1,10 @@
+import { getPhoneFieldMessages } from "./messages.js"
 import { textRule } from "../form/rules.js"
 import { checkPhone, type PhoneKind } from "./phone.js"
 
 export interface PhoneSchemaOptions {
+  /** Locale for validation wording. Defaults to getLocale(). */
+  locale?: string
   required?: boolean
   /** "mobile" refuses landlines. Default "any". */
   kind?: PhoneKind
@@ -19,7 +22,7 @@ export interface PhoneSchemaOptions {
  */
 export function phoneSchema(options: PhoneSchemaOptions = {}) {
   const kind = options.kind ?? "any"
-  return textRule((value) => checkPhone(value, kind), { required: options.required, requiredMessage: kind === "mobile" ? "Enter a mobile number" : "Enter a phone number" })
+  return textRule((value) => checkPhone(value, kind, undefined, options.locale), { required: options.required, requiredMessage: () => kind === "mobile" ? getPhoneFieldMessages(options.locale).enterAMobileNumber : getPhoneFieldMessages(options.locale).enterAPhoneNumber })
 }
 
 /** `phoneSchema` with `kind: "mobile"`: also refuses numbers that are not mobiles once the library has loaded. */

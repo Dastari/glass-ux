@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { mapMessages } from "./messages.js"
 /**
  * PinMap — a small map with one pin: where an address is, or where a person points.
  *
@@ -64,6 +66,8 @@ const describe = (point: PinPoint) => `${point.lat.toFixed(5)}, ${point.lng.toFi
 
 /** A map with one draggable pin for choosing a location: drag, click or nudge it with the arrow keys (Shift moves further). Controlled through `value`; without `onValueChange` it is a read-only preview. */
 export function PinMap({ config, value, onValueChange, label, zoom = 16, fallback = WORLD, className }: PinMapProps) {
+  const messages = useMessages(mapMessages)
+
   const rootRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<PinEngine | null>(null)
@@ -180,13 +184,13 @@ export function PinMap({ config, value, onValueChange, label, zoom = 16, fallbac
           <IconMapPin />
         </div>
       ) : null}
-      {phase === "failed" ? <p className="fa-pin-map-note">The map could not load. {value ? describe(value) : null}</p> : null}
+      {phase === "failed" ? <p className="fa-pin-map-note">{messages.theMapCouldNotLoad} {value ? describe(value) : null}</p> : null}
       {engine && value
         ? createPortal(
             <button
               type="button"
               className="fa-pin-map-pin"
-              aria-label={editable ? `Pin at ${describe(value)}. Drag it or use the arrow keys to move it.` : `Pin at ${describe(value)}`}
+              aria-label={editable ? messages.pinAtDragItOrUseThe(describe(value)) : messages.pinAt(describe(value))}
               aria-disabled={editable ? undefined : true}
               tabIndex={editable ? 0 : -1}
               onKeyDown={onPinKey}
@@ -198,8 +202,8 @@ export function PinMap({ config, value, onValueChange, label, zoom = 16, fallbac
         : null}
       {phase === "ready" ? (
         <div className="fa-pin-map-controls over-imagery">
-          <Button variant="secondary" size="xs" icon={<IconZoomIn />} aria-label="Zoom in" onClick={() => engine?.zoomBy(1)} />
-          <Button variant="secondary" size="xs" icon={<IconZoomOut />} aria-label="Zoom out" onClick={() => engine?.zoomBy(-1)} />
+          <Button variant="secondary" size="xs" icon={<IconZoomIn />} aria-label={messages.zoomIn} onClick={() => engine?.zoomBy(1)} />
+          <Button variant="secondary" size="xs" icon={<IconZoomOut />} aria-label={messages.zoomOut} onClick={() => engine?.zoomBy(-1)} />
         </div>
       ) : null}
       {credits.length ? (

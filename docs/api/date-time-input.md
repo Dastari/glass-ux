@@ -16,7 +16,7 @@ Each part is one tab stop; the time part steps with the arrow keys like TimeInpu
 | aria-label | `string \| undefined` | See type | no | — | Accessible name of the group when no Field label names it. |
 | aria-labelledby | `string \| undefined` | See type | no | — | IDs of elements that name the group. |
 | className | `string \| undefined` | See type | no | — | Layout only. Applied to the control box. |
-| dateLabel | `string \| undefined` | See type | no | "Date" | Accessible names of the two parts (default "Date", "Time"). |
+| dateLabel | `string \| undefined` | See type | no | — | Accessible names of the two parts (default "Date", "Time"). |
 | defaultTime | `string \| undefined` | See type | no | — | The time filled in when a day is entered or picked before any time ("09:00"). |
 | defaultValue | `string \| null \| undefined` | See type | no | null | The initial date and time when uncontrolled. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
@@ -36,7 +36,7 @@ Each part is one tab stop; the time part steps with the arrow keys like TimeInpu
 | size | `DateFieldSize \| undefined` | "sm", "md", "lg" | no | "md" | The box height, matching DateField. |
 | step | `number \| undefined` | See type | no | 15 | Minutes between suggested times, and between arrow-key steps on the minutes (default 15). |
 | suggestions | `readonly string[] \| undefined` | See type | no | — | Explicit times to offer in the list instead of every `step` minutes. |
-| timeLabel | `string \| undefined` | See type | no | "Time" | Accessible name of the time part (default "Time"). |
+| timeLabel | `string \| undefined` | See type | no | — | Accessible name of the time part (default "Time"). |
 | timeZone | `string \| undefined` | See type | no | — | IANA zone the wall clock is read in ("Australia/Sydney"). Shown in the box as its abbreviation or offset on that date; the list leaves out times a daylight-saving change skips. The value never converts: use `resolveWallClock` for the instant. |
 | value | `string \| null \| undefined` | See type | no | — | A wall-clock date and time (`2026-10-21T09:30`) with no offset, or null when empty. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "medium" | Content width (R15.6). Default medium. |

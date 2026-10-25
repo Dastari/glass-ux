@@ -16,6 +16,7 @@ A web address. A missing scheme is added on blur ("https://"); the URL is writte
 | defaultValue | `string \| undefined` | See type | no | "" | The initial value when using the component without controlling its state. |
 | icon | `ReactNode` | See type | no | — | Leading icon. Pass the icon without a size. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field (inside a Field, set `error` on the Field instead). |
+| locale | `string \| undefined` | See type | no | — | Locale for validation wording. Defaults to getLocale(). |
 | onClear | `(() => void) \| undefined` | See type | no | — | Called after the clear button or Escape empties the field. |
 | onRevealedChange | `((revealed: boolean) => void) \| undefined` | See type | no | — | Called with the new state when the show/hide password button is pressed. Pair with `revealed` to control it. |
 | onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the text as typed on each keystroke, and with its canonical form on blur when that differs. Pair with `value` to control it; use `defaultValue` otherwise. |

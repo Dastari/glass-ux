@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { reasoningMessages } from "./messages.js"
 import { Collapsible } from "@base-ui/react/collapsible"
 import { useState } from "react"
 import { IconChevronRight, IconLightbulb } from "../../icons/generated/icons.js"
@@ -20,6 +22,8 @@ export interface ReasoningProps {
  * summary the provider chose to show.
  */
 export function Reasoning({ reasoning, defaultOpen = false, className }: ReasoningProps) {
+  const messages = useMessages(reasoningMessages)
+
   const running = Boolean(reasoning.running)
   const [started] = useState(() => Date.now() - reasoning.seconds * 1000)
   const now = useNow(running, 1000)
@@ -31,7 +35,7 @@ export function Reasoning({ reasoning, defaultOpen = false, className }: Reasoni
       <Collapsible.Trigger className="fa-ai-reasoning-trigger">
         <IconLightbulb className="fa-ai-reasoning-icon" />
         <span className="fa-ai-reasoning-label">
-          {running ? "Thinking" : "Thought for"} <span data-numeric>{time}</span>
+          {running ? messages.thinking : messages.thoughtFor} <span data-numeric>{time}</span>
         </span>
         <IconChevronRight className="fa-ai-reasoning-chevron" />
       </Collapsible.Trigger>

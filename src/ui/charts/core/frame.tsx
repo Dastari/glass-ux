@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { chartCoreMessages } from "./messages.js"
 import { useId, useRef, useState, type ComponentProps, type ReactNode } from "react"
 import { IconChartLine, IconError, IconTable } from "../../../icons/generated/icons.js"
 import { cx } from "../../../lib/cx.js"
@@ -88,8 +90,8 @@ export function ChartFrame({
   label,
   title,
   state = "ready",
-  emptyText = "No data",
-  errorText = "Couldn’t load this chart",
+  emptyText: emptyTextProp,
+  errorText: errorTextProp,
   onRetry,
   table,
   head,
@@ -104,6 +106,10 @@ export function ChartFrame({
   locale: localeProp,
   ...rest
 }: ChartFrameProps) {
+  const messages = useMessages(chartCoreMessages, { locale: localeProp })
+  const emptyText = emptyTextProp ?? messages.noData
+  const errorText = errorTextProp ?? messages.couldnTLoadThisChart
+
   const locale = useLocale(localeProp)
   const rootRef = useRef<HTMLElement>(null)
   const plotRef = useRef<HTMLDivElement>(null)
@@ -138,8 +144,7 @@ export function ChartFrame({
           action={
             state === "error" && onRetry ? (
               <Button size="sm" variant="secondary" onClick={onRetry}>
-                Retry
-              </Button>
+                {messages.retry} </Button>
             ) : undefined
           }
         >
@@ -178,7 +183,7 @@ export function ChartFrame({
                   size="xs"
                   variant="ghost"
                   icon={<IconTable />}
-                  aria-label={view === "table" ? "View as chart" : "View as table"}
+                  aria-label={view === "table" ? messages.viewAsChart : messages.viewAsTable}
                   aria-pressed={view === "table"}
                   disabled={state !== "ready"}
                   onClick={() => setView((current) => (current === "table" ? "chart" : "table"))}
@@ -187,9 +192,9 @@ export function ChartFrame({
                   className="fa-chart-copy"
                   size="xs"
                   variant="ghost"
-                  label="Copy as CSV"
+                  label={messages.copyAsCsv}
                   value={() => chartTableToCsv(table)}
-                  disabledReason={state === "ready" ? undefined : COPY_UNAVAILABLE[state]}
+                  disabledReason={state === "ready" ? undefined : getCOPY_UNAVAILABLE(messages)[state]}
                 />
               </div>
             ) : null}
@@ -216,11 +221,12 @@ export function ChartFrame({
 }
 
 /** Why "Copy as CSV" is unavailable in each state but ready (R11.3). */
-const COPY_UNAVAILABLE: Record<Exclude<ChartState, "ready">, string> = {
-  loading: "The data is still loading",
-  empty: "There is no data to copy",
-  error: "The data didn’t load",
-}
+function getCOPY_UNAVAILABLE(messages: typeof chartCoreMessages.defaults): Record<Exclude<ChartState, "ready">, string> { return {
+  loading: messages.theDataIsStillLoading,
+  empty: messages.thereIsNoDataToCopy,
+  error: messages.theDataDidnTLoad,
+} }
+
 
 function HeadSkeleton({ tier }: { tier: ChartTier }) {
   return (

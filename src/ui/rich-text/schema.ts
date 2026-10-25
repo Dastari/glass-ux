@@ -1,3 +1,4 @@
+import { getRichTextMessages } from "./messages.js"
 import { numberFormat } from "../../lib/locale/intl.js";
 import { getLocale } from "../../lib/locale/locale.js";
 import { textRule } from "../form/rules.js";
@@ -22,9 +23,9 @@ export function richTextSchema({
       maxLength !== undefined && value.length > maxLength
         ? {
             ok: false,
-            error: `Keep the document within ${numberFormat(locale ?? getLocale()).format(maxLength)} characters`,
+            error: getRichTextMessages(locale).keepTheDocumentWithinCharacters(numberFormat(locale ?? getLocale()).format(maxLength)),
           }
         : { ok: true },
-    { required, requiredMessage: "Write a document" },
+    { required, requiredMessage: () => getRichTextMessages(locale).writeADocument2 },
   );
 }

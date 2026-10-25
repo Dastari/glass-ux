@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { windowsMessages } from "./messages.js"
 /**
  * A window in the workspace: the frame, wired to the store.
  *
@@ -352,10 +354,11 @@ const KEY_DELTAS: Record<string, [number, number]> = {
 
 type KeyboardGesture = "move" | "resize"
 
-const GESTURE_HINTS: Record<KeyboardGesture, string> = {
-  move: "Moving window. Arrow keys move it, Enter places it, Escape cancels.",
-  resize: "Resizing window. Arrow keys change its size, Enter keeps it, Escape cancels.",
-}
+function getGESTURE_HINTS(messages: typeof windowsMessages.defaults): Record<KeyboardGesture, string> { return {
+  move: messages.movingWindowArrowKeysMoveItEnterPlaces,
+  resize: messages.resizingWindowArrowKeysChangeItsSizeEnter,
+} }
+
 
 /**
  * Move or resize a window from the keyboard. Like the pointer gestures, nudges write the
@@ -370,6 +373,8 @@ function useKeyboardGesture(
   link: WorkspaceLink,
   announce: (message: string) => void
 ) {
+  const messages = useMessages(windowsMessages)
+
   const minSize = getWindowKind(entry.kind)?.minSize ?? DEFAULT_MIN_WINDOW_SIZE
   // Ends the active gesture: commit, cancel, or (null, on unmount) only drop the listeners.
   const stopRef = useRef<((commit: boolean | null) => void) | null>(null)
@@ -408,8 +413,8 @@ function useKeyboardGesture(
         flushSync(() => manager.float(entry.id, commit ? next : start))
         settleFrame(frame, state, false)
       }
-      const noun = gesture === "move" ? "Move" : "Resize"
-      announce(commit ? `${noun} finished.` : `${noun} cancelled.`)
+      const noun = gesture === "move" ? messages.move : messages.resize
+      announce(commit ? messages.finished(noun) : messages.cancelled(noun))
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -447,7 +452,7 @@ function useKeyboardGesture(
     document.addEventListener("keydown", onKeyDown, true)
     document.addEventListener("pointerdown", onPointerDown, true)
     stopRef.current = stop
-    announce(GESTURE_HINTS[gesture])
+    announce(getGESTURE_HINTS(messages)[gesture])
     frame.focus({ preventScroll: true })
   }
 }
@@ -467,6 +472,8 @@ function sameWindowProps(a: ManagedWindowProps, b: ManagedWindowProps) {
  * when { id, kind, params } change.
  */
 export const ManagedWindow = memo(function ManagedWindow({ entry, focused, geometry, vars, hidden }: ManagedWindowProps) {
+  const messages = useMessages(windowsMessages)
+
   const manager = useWindowManager()
   const link = useContext(WorkspaceLinkContext)
   if (!link) throw new Error("ManagedWindow must be rendered by a Workspace")
@@ -474,7 +481,7 @@ export const ManagedWindow = memo(function ManagedWindow({ entry, focused, geome
   const titleId = useId()
   const [actionsSlot, setActionsSlot] = useState<HTMLDivElement | null>(null)
   const [statusSlot, setStatusSlot] = useState<HTMLElement | null>(null)
-  const { title, subtitle, icon: Icon } = describeWindow(entry.kind, entry.params)
+  const { title, subtitle, icon: Icon } = describeWindow(entry.kind, entry.params, messages)
   const beginDrag = useWindowDrag(entry, frameRef, manager, link)
   const beginResize = useWindowResize(entry, frameRef, manager, link)
   // Gesture hints go straight to an always-mounted live region: no re-render per gesture.
@@ -581,13 +588,13 @@ export const ManagedWindow = memo(function ManagedWindow({ entry, focused, geome
             />
           }
         />
-        <ContextMenu.Popup aria-label={`Window menu for ${title}`}>
-          <ContextMenu.Item onClick={() => beginKeyboardGesture("move")}>Move</ContextMenu.Item>
-          <ContextMenu.Item onClick={() => beginKeyboardGesture("resize")}>Resize</ContextMenu.Item>
+        <ContextMenu.Popup aria-label={messages.windowMenuFor(title)}>
+          <ContextMenu.Item onClick={() => beginKeyboardGesture("move")}>{messages.move}</ContextMenu.Item>
+          <ContextMenu.Item onClick={() => beginKeyboardGesture("resize")}>{messages.resize}</ContextMenu.Item>
           <ContextMenu.Separator />
-          <ContextMenu.Item onClick={() => manager.toggleMaximise(entry.id)}>{maximised ? "Restore" : "Maximise"}</ContextMenu.Item>
-          <ContextMenu.Item onClick={() => manager.minimise(entry.id)}>Minimise</ContextMenu.Item>
-          <ContextMenu.Item onClick={() => void manager.close(entry.id)}>Close</ContextMenu.Item>
+          <ContextMenu.Item onClick={() => manager.toggleMaximise(entry.id)}>{maximised ? messages.restore : messages.maximise}</ContextMenu.Item>
+          <ContextMenu.Item onClick={() => manager.minimise(entry.id)}>{messages.minimise}</ContextMenu.Item>
+          <ContextMenu.Item onClick={() => void manager.close(entry.id)}>{messages.close2}</ContextMenu.Item>
         </ContextMenu.Popup>
       </ContextMenu.Root>
       <WindowContext.Provider value={context}>

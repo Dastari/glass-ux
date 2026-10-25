@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { dialogMessages } from "./messages.js"
 import { Dialog as BaseDialog } from "@base-ui/react/dialog"
 import { Drawer } from "@base-ui/react/drawer"
 import {
@@ -306,6 +308,8 @@ function DialogHeader({
   children,
   ...rest
 }: DialogHeaderProps) {
+  const messages = useMessages(dialogMessages)
+
   return (
     <header {...rest} className={cx("fa-dialog-header", className)}>
       {media ? (
@@ -325,7 +329,7 @@ function DialogHeader({
       {close ? (
         <DialogClosePart
           className="fa-dialog-close"
-          render={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label="Close" />}
+          render={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label={messages.close} />}
         />
       ) : null}
     </header>

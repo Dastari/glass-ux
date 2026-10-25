@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { swatchPickerMessages } from "./messages.js"
 import { Toggle } from "@base-ui/react/toggle"
 import { ToggleGroup } from "@base-ui/react/toggle-group"
 import { use, useId, useRef, type CSSProperties, type FocusEvent } from "react"
@@ -110,6 +112,8 @@ export function SwatchPicker<V extends string = string>({
   id,
   ...aria
 }: SwatchPickerProps<V>) {
+  const messages = useMessages(swatchPickerMessages)
+
   // null is a controlled "nothing picked"; only undefined leaves the picker uncontrolled.
   const [current, setCurrent] = useControllable<V | null | undefined>(value, defaultValue, (next) => {
     if (next != null) onValueChange?.(next)
@@ -175,7 +179,7 @@ export function SwatchPicker<V extends string = string>({
         data-disabled={disabled ? "" : undefined}
       >
         <Menu.Root>
-          <Tooltip content={chosen?.label ?? "None chosen"} describe={false}>
+          <Tooltip content={chosen?.label ?? messages.noneChosen} describe={false}>
             <MenuPrimitive.Trigger
               className="fa-swatch-picker-trigger fa-pressable fa-lit"
               disabled={disabled}

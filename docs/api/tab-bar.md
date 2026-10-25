@@ -54,8 +54,8 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | active | `boolean \| undefined` | false, true | no | false | Marks the current destination or active choice. |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
-| label | `string \| undefined` | See type | no | "More" | The visible or accessible label for this component. |
-| title | `string \| undefined` | See type | no | "More" | The heading or title content. |
+| label | `string \| undefined` | See type | no | — | The visible or accessible label for this component. |
+| title | `string \| undefined` | See type | no | — | The heading or title content. |
 
 ## TabBar.MoreItem
 

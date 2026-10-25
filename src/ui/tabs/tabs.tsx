@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { tabsMessages } from "./messages.js"
 import { Menu } from "@base-ui/react/menu"
 import { Tabs as BaseTabs } from "@base-ui/react/tabs"
 import {
@@ -67,9 +69,11 @@ function TabContent({ item }: { item: TabItem }) {
 }
 
 function MoreFace() {
+  const messages = useMessages(tabsMessages)
+
   return (
     <>
-      <span className="fa-tab-label">More</span>
+      <span className="fa-tab-label">{messages.more}</span>
       <IconChevronDown className="fa-tabs-more-chevron" />
     </>
   )
@@ -189,6 +193,8 @@ export interface TabsListProps {
  * menu, and the active tab is always swapped back in so it stays visible (R6.6).
  */
 function TabsList({ items, className, ...rest }: TabsListProps) {
+  const messages = useMessages(tabsMessages)
+
   const { value, select } = useTabsContext()
   const activeIndex = items.findIndex((item) => item.value === value)
   const { barRef, measureRef, visible, hidden, solo } = useTabOverflow(items, activeIndex)
@@ -215,7 +221,7 @@ function TabsList({ items, className, ...rest }: TabsListProps) {
       </BaseTabs.List>
       {hidden.length > 0 ? (
         <Menu.Root>
-          <Menu.Trigger className="fa-tab fa-tabs-more" aria-label={`More tabs (${hidden.length})`}>
+          <Menu.Trigger className="fa-tab fa-tabs-more" aria-label={messages.moreTabs(hidden.length)}>
             <MoreFace />
           </Menu.Trigger>
           <NavMenuPopup
@@ -289,6 +295,8 @@ export interface TabNavProps<T extends TabItem> {
  * TanStack Router.
  */
 export function TabNav<T extends TabItem>({ items, value, renderLink, className, ...rest }: TabNavProps<T>) {
+  const messages = useMessages(tabsMessages)
+
   const activeIndex = items.findIndex((item) => item.value === value)
   const { barRef, measureRef, visible, hidden, solo } = useTabOverflow(items, activeIndex)
   const listRef = useRef<HTMLDivElement>(null)
@@ -324,7 +332,7 @@ export function TabNav<T extends TabItem>({ items, value, renderLink, className,
         </div>
         {hidden.length > 0 ? (
           <Menu.Root>
-            <Menu.Trigger className="fa-tab fa-tabs-more" aria-label={`More tabs (${hidden.length})`}>
+            <Menu.Trigger className="fa-tab fa-tabs-more" aria-label={messages.moreTabs(hidden.length)}>
               <MoreFace />
             </Menu.Trigger>
             <NavMenuPopup align="end">

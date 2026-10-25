@@ -1,3 +1,4 @@
+import type {} from "./messages.js"
 export { describeStrength, PasswordField, PasswordInput, type PasswordFieldProps, type PasswordInputProps, type PasswordPurpose } from "./password-field.js"
 export { generatePassword, type GenerateOptions, type RandomSource } from "./generate.js"
 export { estimateStrength, STRENGTH_LABELS, type Strength, type StrengthScore } from "./strength.js"

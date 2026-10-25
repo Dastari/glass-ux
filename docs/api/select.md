@@ -26,7 +26,7 @@ enough to need typing.
 | onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called with true when the popup opens and false when it closes. |
 | onValueChange | `((value: V \| null) => void) \| undefined` | See type | no | — | Called with the chosen option's value when one is picked. Pair with `value` to control it; use `defaultValue` otherwise. |
 | options | `SelectOptions<V>` | See type | yes | — | The available choices, including their values and visible labels. |
-| placeholder | `string \| undefined` | See type | no | "Choose…" | Shown while nothing is chosen. Name the choice ("Choose an environment"), not "Select…". |
+| placeholder | `string \| undefined` | See type | no | — | Shown while nothing is chosen. Name the choice ("Choose an environment"), not "Select…". |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
 | ref | `Ref<HTMLButtonElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |

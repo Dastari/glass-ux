@@ -1,3 +1,4 @@
+import { getAsksMessages } from "./messages.js"
 import { isWallClock, resolveWallClock } from "../../ui/date-picker/zoned-time.js";
 
 /**
@@ -8,31 +9,32 @@ import { isWallClock, resolveWallClock } from "../../ui/date-picker/zoned-time.j
 export function resolveDateTime(
   value: string,
   timezone: string,
+  messages: ReturnType<typeof getAsksMessages> = getAsksMessages(),
 ): { time: number; error?: never } | { time?: never; error: string } {
   try {
     new Intl.DateTimeFormat("en-CA", { timeZone: timezone });
   } catch {
-    return { error: "The supplied time zone is invalid" };
+    return { error: messages.theSuppliedTimeZoneIsInvalid };
   }
   if (/[zZ]$|[+-]\d{2}:?\d{2}$/.test(value)) {
     const time = Date.parse(value);
     return Number.isFinite(time)
       ? { time }
-      : { error: "Choose a valid date and time" };
+      : { error: messages.chooseAValidDateAndTime };
   }
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value))
-    return { error: "Choose both a date and time" };
+    return { error: messages.chooseBothADateAndTime };
   const resolved = isWallClock(value) ? resolveWallClock(value, timezone) : null;
-  if (!resolved) return { error: "Choose a valid date and time" };
+  if (!resolved) return { error: messages.chooseAValidDateAndTime };
   if (resolved.kind === "gap")
     return {
       error:
-        "This time does not exist during the daylight-saving change; choose another time",
+        messages.thisTimeDoesNotExistDuringTheDaylightSaving,
     };
   if (resolved.kind === "overlap")
     return {
       error:
-        "This time occurs twice during the daylight-saving change; choose an unambiguous time",
+        messages.thisTimeOccursTwiceDuringTheDaylightSavingChange,
     };
   return { time: resolved.epochMs };
 }

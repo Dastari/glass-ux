@@ -1,3 +1,4 @@
+import { addressFieldMessages, getAddressFieldMessages } from "./messages.js"
 /**
  * Address lookup behind a host-supplied adapter. The default browser adapter requests
  * GET /api/geocode on the application's origin; Glass UX does not provide that server.
@@ -175,14 +176,32 @@ export function photonToSuggestions(features: readonly PhotonFeature[], query = 
 export const PHOTON_PUBLIC_URL = "https://photon.komoot.io"
 
 const PHOTON_ATTRIBUTION: GeocoderAttribution = {
-  provider: "Search by Photon",
+  provider: addressFieldMessages.defaults.searchByPhoton,
   providerHref: "https://photon.komoot.io",
-  data: "© OpenStreetMap contributors",
+  data: addressFieldMessages.defaults.openstreetmapContributors,
   dataHref: "https://www.openstreetmap.org/copyright",
 }
 
+const attributionDefaults = new WeakMap<GeocoderAttribution, { provider: boolean; data: boolean }>()
+function photonAttribution(overrides: Partial<GeocoderAttribution> = {}): GeocoderAttribution {
+  const attribution = { ...PHOTON_ATTRIBUTION, ...overrides }
+  attributionDefaults.set(attribution, { provider: overrides.provider === undefined, data: overrides.data === undefined })
+  return attribution
+}
+
+/** Resolve only built-in attribution wording; application attribution stays as supplied. */
+export function localiseGeocoderAttribution(attribution: GeocoderAttribution, messages: typeof addressFieldMessages.defaults): GeocoderAttribution {
+  const defaults = attributionDefaults.get(attribution)
+  return {
+    ...attribution,
+    provider: defaults?.provider ? messages.searchByPhoton : attribution.provider,
+    data: defaults?.data ? messages.openstreetmapContributors : attribution.data,
+  }
+}
+
+
 export interface ServerGeocoderOptions {
-  /** The server route. Default "/api/geocode" (same origin). */
+/** The server route. Default "/api/geocode" (same origin). */
   url?: string
   /** Result language when the query does not set one. Default "en". */
   lang?: string
@@ -198,7 +217,7 @@ export class GeocoderError extends Error {
     readonly status: number,
     readonly code: string
   ) {
-    super(`Address lookup failed (${status}${code ? ` ${code}` : ""})`)
+    super(getAddressFieldMessages().addressLookupFailed(status, code ? ` ${code}` : ""))
     this.name = "GeocoderError"
   }
 }
@@ -212,7 +231,7 @@ export function createServerGeocoder(options: ServerGeocoderOptions = {}): Geoco
   return {
     minChars: 3,
     debounceMs: 300,
-    attribution: { ...PHOTON_ATTRIBUTION, ...options.attribution },
+    attribution: photonAttribution(options.attribution),
     async search(query, { signal, bias, countries, lang, limit }) {
       const params = new URLSearchParams({ q: query, limit: String(Math.min(limit ?? options.limit ?? 6, 10)), lang: lang ?? options.lang ?? "en" })
       for (const country of countries ?? []) params.append("country", country.toUpperCase())
@@ -243,7 +262,7 @@ export function createPhotonGeocoder(options: PhotonOptions = {}): GeocoderAdapt
   return {
     minChars: 3,
     debounceMs: 300,
-    attribution: { ...PHOTON_ATTRIBUTION, ...options.attribution },
+    attribution: photonAttribution(options.attribution),
     async search(query, { signal, bias, countries, lang, limit }) {
       const params = new URLSearchParams({ q: query, limit: String(limit ?? options.limit ?? 6), lang: lang ?? options.lang ?? "en" })
       for (const layer of layers) params.append("layer", layer)
@@ -255,7 +274,7 @@ export function createPhotonGeocoder(options: PhotonOptions = {}): GeocoderAdapt
         params.set("location_bias_scale", "0.3")
       }
       const response = await fetch(`${base}/api?${params}`, { signal, headers: { Accept: "application/json" } })
-      if (!response.ok) throw new Error(`Address lookup failed (${response.status})`)
+      if (!response.ok) throw new Error(getAddressFieldMessages().addressLookupFailed2(response.status))
       const body = (await response.json()) as { features?: PhotonFeature[] }
       return photonToSuggestions(body.features ?? [], query)
     },

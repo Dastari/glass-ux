@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { entitySettingsMessages } from "./messages.js"
 import { useRef, type FocusEvent, type ReactNode } from "react"
 import { IconKey } from "../../icons/generated/icons.js"
 import { Button } from "../button/index.js"
@@ -24,11 +26,13 @@ export interface SecretInputProps {
 }
 
 /**
- * A write-only secret (BR notes): a stored value is never shown, only "Set", with Replace
+ * A write-only secret (BR notes): a stored value is never shown, only messages.set, with Replace
  * and Clear. Replace swaps in an empty password box (with Keep current to back out); Clear
  * marks it for removal on save (with Undo). With nothing stored, the box takes a new value.
  */
 export function SecretInput({ value, onValueChange, onBlur, width, disabled, invalid, name = "secret", id, placeholder }: SecretInputProps) {
+  const messages = useMessages(entitySettingsMessages)
+
   const boxRef = useRef<HTMLInputElement>(null)
   const replace = () => {
     onValueChange({ ...value, action: "replace", value: "" })
@@ -39,7 +43,7 @@ export function SecretInput({ value, onValueChange, onBlur, width, disabled, inv
       <Input
         id={id}
         readOnly
-        value="Set"
+        value={messages.set}
         icon={<IconKey />}
         width={width}
         disabled={disabled}
@@ -48,20 +52,18 @@ export function SecretInput({ value, onValueChange, onBlur, width, disabled, inv
         data-secret-state="set"
         trailing={
           <>
-            <Button size="sm" variant="ghost" className="fa-input-btn fa-secret-btn" disabled={disabled} onClick={replace} aria-label={`Replace ${name}`} tooltip={false}>
-              Replace
-            </Button>
+            <Button size="sm" variant="ghost" className="fa-input-btn fa-secret-btn" disabled={disabled} onClick={replace} aria-label={messages.replace(name)} tooltip={false}>
+              {messages.replace2} </Button>
             <Button
               size="sm"
               variant="ghost"
               className="fa-input-btn fa-secret-btn"
               disabled={disabled}
               onClick={() => onValueChange({ ...value, action: "clear", value: "" })}
-              aria-label={`Clear ${name}`}
+              aria-label={messages.clear(name)}
               tooltip={false}
             >
-              Clear
-            </Button>
+              {messages.clear2} </Button>
           </>
         }
       />
@@ -72,7 +74,7 @@ export function SecretInput({ value, onValueChange, onBlur, width, disabled, inv
       <Input
         id={id}
         readOnly
-        value="Cleared when you save"
+        value={messages.clearedWhenYouSave}
         icon={<IconKey />}
         width={width}
         disabled={disabled}
@@ -86,11 +88,10 @@ export function SecretInput({ value, onValueChange, onBlur, width, disabled, inv
             className="fa-input-btn fa-secret-btn"
             disabled={disabled}
             onClick={() => onValueChange({ ...value, action: "keep", value: "" })}
-            aria-label={`Undo clearing ${name}`}
+            aria-label={messages.undoClearing(name)}
             tooltip={false}
           >
-            Undo
-          </Button>
+            {messages.undo} </Button>
         }
       />
     )
@@ -103,7 +104,7 @@ export function SecretInput({ value, onValueChange, onBlur, width, disabled, inv
       autoComplete="new-password"
       spellCheck={false}
       value={value.value}
-      placeholder={placeholder ?? (value.stored ? "New value" : undefined)}
+      placeholder={placeholder ?? (value.stored ? messages.newValue : undefined)}
       width={width}
       disabled={disabled}
       invalid={invalid}
@@ -118,11 +119,10 @@ export function SecretInput({ value, onValueChange, onBlur, width, disabled, inv
             className="fa-input-btn fa-secret-btn"
             disabled={disabled}
             onClick={() => onValueChange({ ...value, action: "keep", value: "" })}
-            aria-label={`Keep the current ${name}`}
+            aria-label={messages.keepTheCurrent(name)}
             tooltip={false}
           >
-            Keep current
-          </Button>
+            {messages.keepCurrent} </Button>
         ) : undefined
       }
     />

@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { hostnameFieldMessages } from "./messages.js"
 import { IconGlobe, IconServer } from "../../icons/generated/icons.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { CopyButton } from "../copy-button/index.js"
@@ -15,6 +17,8 @@ export interface HostnameInputProps extends HostTextProps, HostnameOptions {}
 
 /** A host name: one label ("NST-C106") or a dotted name ("printer.northstar.local"). A pasted URL gives its host. */
 export function HostnameInput({ fqdn, wildcard, case: letterCase, copyable = false, value, defaultValue = "", onValueChange, placeholder, icon, trailing, ...rest }: HostnameInputProps) {
+  const messages = useMessages(hostnameFieldMessages)
+
   const [text, setText] = useControllable(value, defaultValue, onValueChange)
   const options = { fqdn, wildcard, case: letterCase }
   const valid = text ? normaliseHostname(text, options) : null
@@ -29,7 +33,7 @@ export function HostnameInput({ fqdn, wildcard, case: letterCase, copyable = fal
       trailing={
         <>
           {trailing}
-          {copyable && valid ? <CopyButton value={valid} label="Copy host name" className="fa-input-btn" /> : null}
+          {copyable && valid ? <CopyButton value={valid} label={messages.copyHostName} className="fa-input-btn" /> : null}
         </>
       }
     />
@@ -40,6 +44,8 @@ export interface DomainInputProps extends HostTextProps, Omit<HostnameOptions, "
 
 /** A domain ("northstar.example"), lower case; Unicode becomes punycode; a pasted URL gives its host. */
 export function DomainInput({ wildcard, case: letterCase, copyable = false, value, defaultValue = "", onValueChange, placeholder, icon, trailing, ...rest }: DomainInputProps) {
+  const messages = useMessages(hostnameFieldMessages)
+
   const [text, setText] = useControllable(value, defaultValue, onValueChange)
   const options = { wildcard, case: letterCase }
   const valid = text ? normaliseDomain(text, options) : null
@@ -54,7 +60,7 @@ export function DomainInput({ wildcard, case: letterCase, copyable = false, valu
       trailing={
         <>
           {trailing}
-          {copyable && valid ? <CopyButton value={valid} label="Copy domain" className="fa-input-btn" /> : null}
+          {copyable && valid ? <CopyButton value={valid} label={messages.copyDomain} className="fa-input-btn" /> : null}
         </>
       }
     />
@@ -70,9 +76,11 @@ export interface HostnameFieldProps extends FieldChrome, Omit<HostnameInputProps
 
 /** HostnameInput bound to a string form field. Pair it with `hostnameSchema()`. */
 export function HostnameField({ label, hint, optional, required, aside, className, disabled, netbios = false, ...control }: HostnameFieldProps) {
+  const messages = useMessages(hostnameFieldMessages)
+
   const { field, error, root } = useBoundField<string>()
   const value = field.state.value
-  const long = netbios && !value.includes(".") && value.length > NETBIOS_MAX ? `Longer than ${NETBIOS_MAX} characters: older Windows tools see only the first ${NETBIOS_MAX}` : undefined
+  const long = netbios && !value.includes(".") && value.length > NETBIOS_MAX ? messages.longerThanCharactersOlderWindowsToolsSeeOnly(NETBIOS_MAX, NETBIOS_MAX) : undefined
   return (
     <Field {...root} label={label} hint={hint ?? long} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <HostnameInput

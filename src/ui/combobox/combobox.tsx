@@ -1,3 +1,6 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { useMessages } from "../../lib/i18n/index.js"
+import { comboboxMessages, getComboboxMessages } from "./messages.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { useMemo, useState, type FocusEvent, type ReactNode, type Ref } from "react"
 import { IconCheck, IconChevronsUpDown, IconClose } from "../../icons/generated/icons.js"
@@ -13,7 +16,7 @@ import { popupContainer } from "../../lib/popup-container.js"
 export type ComboboxOption<V extends string = string> = OptionItem<V>
 
 /** The default empty row: states the query (R2.5). */
-export const noMatches = (query: string) => (query.trim() ? `No matches for “${query.trim()}”` : "No options")
+export const noMatches = (query: string) => (query.trim() ? getComboboxMessages().noMatchesFor(query.trim()) : getComboboxMessages().noOptions)
 
 /** Static filtering: label and description, ignoring case and diacritics. */
 export const optionFilter = (item: OptionItem, query: string) => matches(`${item.label} ${item.description ?? ""}`, query)
@@ -103,9 +106,12 @@ export function ComboboxPopup<V extends string = string>({
   query,
   search,
   loading = false,
-  empty = noMatches,
+  empty: emptyProp,
   check = true,
 }: ComboboxPopupProps<V>) {
+ const optionMessages = useMessages(comboboxMessages)
+ const optionLocale = useLocale()
+ const empty = emptyProp ?? ((query: string) => query.trim() ? optionMessages.noMatchesFor(query.trim()) : optionMessages.noOptions)
   const status = loading ? "loading" : (search?.status ?? "idle")
   const twoLine = hasSecondLine(items)
   const grouped = groupOptions(items) !== null
@@ -124,7 +130,7 @@ export function ComboboxPopup<V extends string = string>({
           aria-busy={status === "loading" || status === "refreshing" || undefined}
           data-status={status}
         >
-          <BaseCombobox.Status className="sr-only">{statusAnnouncement(status, items.length, query)}</BaseCombobox.Status>
+          <BaseCombobox.Status className="sr-only">{statusAnnouncement(status, items.length, query, optionMessages, optionLocale)}</BaseCombobox.Status>
           <OptionStatus status={status} twoLine={twoLine} needsMore={search?.needsMore} onRetry={search?.retry} />
           <BaseCombobox.Empty className="fa-combobox-empty-slot">
             {quiet ? null : <div className="fa-combobox-empty">{empty(query)}</div>}
@@ -214,6 +220,8 @@ export function Combobox<V extends string = string>({
   ref,
   ...aria
 }: ComboboxProps<V>) {
+  const messages = useMessages(comboboxMessages)
+
   const [query, setQuery] = useState("")
   const [inner, setInner] = useState<V | null>(defaultValue ?? null)
   const current = value === undefined ? inner : value
@@ -261,13 +269,13 @@ export function Combobox<V extends string = string>({
             <BaseCombobox.Clear
               // Base UI's default "x" text is dropped: the Button shows the icon.
               render={({ children: _text, ...props }) => (
-                <Button {...props} variant="ghost" size="sm" className="fa-input-btn" icon={<IconClose />} aria-label="Clear" />
+                <Button {...props} variant="ghost" size="sm" className="fa-input-btn" icon={<IconClose />} aria-label={messages.clear} />
               )}
               tabIndex={-1}
             />
             <BaseCombobox.Trigger
               render={
-                <Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconChevronsUpDown />} aria-label="Show options" />
+                <Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconChevronsUpDown />} aria-label={messages.showOptions} />
               }
               tabIndex={-1}
             />

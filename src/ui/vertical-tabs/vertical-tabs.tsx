@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { verticalTabsMessages } from "./messages.js"
 import { Menu } from "@base-ui/react/menu"
 import { Tabs as BaseTabs } from "@base-ui/react/tabs"
 import {
@@ -37,14 +39,17 @@ export interface VerticalTabItem {
 
 export type VerticalTabMarker = "dirty" | "error" | "saved"
 
-const MARKER_TEXT: Record<VerticalTabMarker, string> = { dirty: "unsaved changes", error: "has errors", saved: "saved" }
+function getMARKER_TEXT(messages: typeof verticalTabsMessages.defaults): Record<VerticalTabMarker, string> { return { dirty: messages.unsavedChanges, error: messages.hasErrors, saved: messages.saved } }
+
 
 /** The section's marker: a dot, named for assistive tech. */
 function Marker({ marker }: { marker?: VerticalTabMarker }) {
+ const messages = useMessages(verticalTabsMessages)
+
   if (!marker) return null
   return (
     <span className="fa-vtab-marker" data-marker={marker}>
-      <span className="sr-only">, {MARKER_TEXT[marker]}</span>
+      <span className="sr-only">, {getMARKER_TEXT(messages)[marker]}</span>
     </span>
   )
 }

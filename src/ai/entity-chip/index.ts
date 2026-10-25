@@ -1,3 +1,4 @@
+import type {} from "./messages.js"
 export {
   EntityChip,
   EntityGlyph,

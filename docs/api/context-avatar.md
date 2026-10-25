@@ -12,10 +12,10 @@ an organisation or project never reads as a person (people are round, ui/avatar)
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| allLabel | `string \| undefined` | See type | no | DEFAULT_SWITCHER_LABELS.all | The accessible name for the "all" scope when not decorative (default "All organisations"). |
+| allLabel | `string \| undefined` | See type | no | — | The accessible name for the "all" scope when not decorative (default "All organisations"). |
 | decorative | `boolean \| undefined` | false, true | no | true | Hidden from assistive tech (default): a visible name sits beside it. |
 | icon | `ReactNode` | See type | no | — | The glyph for the "all" scope (default the organisation glyph). |
-| item | `Pick<ContextItem, "id" \| "icon" \| "name" \| "avatarSrc" \| "initials" \| "tint"> \| null` | See type | yes | — | The context, or null for the "all" scope. |
+| item | `Pick<ContextItem, "id" \| "icon" \| "name" \| "tint" \| "avatarSrc" \| "initials"> \| null` | See type | yes | — | The context, or null for the "all" scope. |
 | size | `ContextAvatarSize \| undefined` | "xs", "sm", "md", "lg" | no | "sm" | xs 20 (lists, chips) · sm 24 (top bar, dock) · md 32 · lg 40 (page headers). |
 
 Inherited properties:

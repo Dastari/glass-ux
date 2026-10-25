@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { progressMessages } from "./messages.js"
 import { Progress as BaseProgress } from "@base-ui/react/progress"
 import { useId, type ReactNode } from "react"
 import { cx } from "../../lib/cx.js"
@@ -45,6 +47,8 @@ export function Progress({
   className,
   "aria-label": ariaLabel,
 }: ProgressProps) {
+  const messages = useMessages(progressMessages)
+
   const metaId = useId()
   const pct = value === null ? null : percent(value, max)
   return (
@@ -63,7 +67,7 @@ export function Progress({
         className="fa-progress-bar"
         aria-label={label ? undefined : ariaLabel}
         aria-describedby={meta ? metaId : undefined}
-        getAriaValueText={(_, current) => (current === null ? "In progress" : `${percent(current, max)}%`)}
+        getAriaValueText={(_, current) => (current === null ? messages.inProgress : `${percent(current, max)}%`)}
       >
         {label || showValue ? (
           <div className="fa-progress-head">
@@ -142,6 +146,8 @@ const RING_R = 15.5 // on a 36-unit box, leaving room for the stroke
 
 /** A compact circular progress for inline and icon-sized spots. `lg` prints the percentage. */
 export function ProgressRing({ value, max = 100, size = "md", tone = "accent", className, ...rest }: ProgressRingProps) {
+  const messages = useMessages(progressMessages)
+
   const pct = value === null ? null : percent(value, max)
   return (
     <BaseProgress.Root
@@ -151,7 +157,7 @@ export function ProgressRing({ value, max = 100, size = "md", tone = "accent", c
       className={cx("fa-ring", className)}
       data-size={size}
       data-tone={tone}
-      getAriaValueText={(_, current) => (current === null ? "In progress" : `${percent(current, max)}%`)}
+      getAriaValueText={(_, current) => (current === null ? messages.inProgress : `${percent(current, max)}%`)}
     >
       <svg viewBox="0 0 36 36" className="fa-ring-svg" aria-hidden>
         <circle className="fa-ring-track" cx="18" cy="18" r={RING_R} pathLength={100} />

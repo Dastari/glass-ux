@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { inspectorMessages } from "./messages.js"
 import type { ComponentProps, ReactNode } from "react";
 import { IconPuzzle } from "../../icons/generated/icons.js";
 import { cx } from "../../lib/cx.js";
@@ -74,6 +76,8 @@ export function ConversationContext({
   className,
   ...rest
 }: ConversationContextProps) {
+  const messages = useMessages(inspectorMessages)
+
   const now = useNow(false);
   const locale = useLocale();
   const summary = toolSummary(tools);
@@ -82,20 +86,19 @@ export function ConversationContext({
     : 0;
   return (
     <div {...rest} className={cx("fa-ai-context-panel", className)}>
-      <Section title="Scope">
+      <Section title={messages.scope}>
         <div className="fa-ai-context-chips">
           {scope ? (
             <EntityChip entity={scope} size="sm" />
           ) : (
             <span className="fa-ai-context-workspace">
-              Workspace · everything you can access
-            </span>
+              {messages.workspaceEverythingYouCanAccess} </span>
           )}
         </div>
       </Section>
       {referenced.length ? (
         <Section
-          title="Referenced"
+          title={messages.referenced}
           meta={<CountBadge value={referenced.length} />}
         >
           <div className="fa-ai-context-chips">
@@ -110,7 +113,7 @@ export function ConversationContext({
         </Section>
       ) : null}
       {summary.length ? (
-        <Section title="Tools used" meta={<CountBadge value={tools.length} />}>
+        <Section title={messages.toolsUsed} meta={<CountBadge value={tools.length} />}>
           <ul className="fa-ai-context-tools">
             {summary.map(({ call, count, ms, failed }) => {
               const Icon = call.icon ?? IconPuzzle;
@@ -127,8 +130,7 @@ export function ConversationContext({
                     {failed ? (
                       <span className="fa-ai-context-failed">
                         {" "}
-                        · {failed} failed
-                      </span>
+                        · {failed} {messages.failed} </span>
                     ) : null}
                   </span>
                 </li>
@@ -138,16 +140,16 @@ export function ConversationContext({
         </Section>
       ) : null}
       {sources.length ? (
-        <Section title="Sources" meta={<CountBadge value={sources.length} />}>
+        <Section title={messages.sources} meta={<CountBadge value={sources.length} />}>
           <SourceList sources={sources} className="fa-ai-context-sources" />
         </Section>
       ) : null}
       {budget ? (
         <Section
-          title="Budget"
+          title={messages.budget}
           meta={
             budget.resetsAt
-              ? `Resets ${formatIn(budget.resetsAt, now)}`
+              ? messages.resets(formatIn(budget.resetsAt, now, locale))
               : undefined
           }
         >
@@ -155,7 +157,7 @@ export function ConversationContext({
             value={budget.used}
             max={budget.maximum}
             label={budget.label}
-            valueText={`${used}% · ${formatNumber(budget.used, 0, locale)} of ${formatNumber(budget.maximum, 0, locale)} ${budget.unit}`}
+            valueText={messages.of(used, formatNumber(budget.used, 0, locale), formatNumber(budget.maximum, 0, locale), budget.unit)}
             warningAt={0.8}
             dangerAt={0.95}
           />

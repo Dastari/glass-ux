@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { otpFieldMessages } from "./messages.js"
 import { OTPField } from "@base-ui/react/otp-field"
 import { Fragment, useRef, type ClipboardEvent } from "react"
 import { IconCheck } from "../../icons/generated/icons.js"
@@ -76,6 +78,8 @@ export function OtpInput({
   className,
   "aria-label": ariaLabel,
 }: OtpInputProps) {
+  const messages = useMessages(otpFieldMessages)
+
   const [code, setCode] = useControllable(value, defaultValue, onValueChange)
   const rootRef = useRef<HTMLDivElement>(null)
   const layout = groups ?? defaultGroups(length)
@@ -136,7 +140,7 @@ export function OtpInput({
                   key={slot}
                   className="fa-otp-box"
                   onPaste={onPaste}
-                  aria-label={slot === 0 ? undefined : `Character ${slot + 1} of ${length}`}
+                  aria-label={slot === 0 ? undefined : messages.characterOf(slot + 1, length)}
                 />
               )
             })}

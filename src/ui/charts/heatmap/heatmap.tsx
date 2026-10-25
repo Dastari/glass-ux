@@ -1,3 +1,5 @@
+import { useMessages } from "../../../lib/i18n/index.js"
+import { heatmapMessages } from "./messages.js"
 import { memo, useMemo, useRef, type CSSProperties } from "react"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
 import { formatClock, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
@@ -40,7 +42,13 @@ export interface HeatmapProps extends ChartCommonProps, ValueFormat {
  *   full     row and column labels, the step legend, the cell tooltip and 2-D arrow keys
  */
 export function Heatmap(props: HeatmapProps) {
-  const { label, title, state = "ready", rows, columns, values, domain, steps = 5, formatColumn, rowLabel = "Category", columnLabel = "Time", unit, format, ...rest } = props
+  const messages = useMessages(heatmapMessages, { locale: props.locale })
+
+  const { label, title, state = "ready", rows, columns, values, domain, steps = 5, formatColumn, rowLabel: rowLabelProp, columnLabel: columnLabelProp, unit, format, ...rest } = props
+  const columnLabel = columnLabelProp ?? messages.time
+
+  const rowLabel = rowLabelProp ?? messages.category
+
   const store = useHoverStore()
   const locale = useLocale(props.locale)
   const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
@@ -65,7 +73,7 @@ export function Heatmap(props: HeatmapProps) {
   const trail =
     columns.length > 0 ? (
       <span className="fa-chart-figure">
-        <span className="fa-chart-figure-label">Peak {columnText(columns[peak]!)}</span>
+        <span className="fa-chart-figure-label">{messages.peak} {columnText(columns[peak]!)}</span>
         <span className="fa-chart-figure-value">{formatValue(totals[peak], fmt)}</span>
       </span>
     ) : null
@@ -120,6 +128,8 @@ interface HeatmapPlotProps {
 }
 
 const HeatmapPlot = memo(function HeatmapPlot({ box, rows, columns, values, totals, range, steps, store, fmt, columnText, label }: HeatmapPlotProps) {
+  const messages = useMessages(heatmapMessages)
+
   const plotRef = useRef<HTMLDivElement>(null)
   const { width, height, tier, rem } = box
   const full = tier === "full"
@@ -227,7 +237,7 @@ const HeatmapPlot = memo(function HeatmapPlot({ box, rows, columns, values, tota
       {full ? (
         <>
           <CellHighlight store={store} layout={layout} nCols={nCols} width={width} height={height} rem={rem} />
-          <HitLayer store={store} count={count} locate={locate} anchor={anchor} nav={nav} initial={0} label={`${label} — inspect cells`} valueText={valueText} cursor="pointer" />
+          <HitLayer store={store} count={count} locate={locate} anchor={anchor} nav={nav} initial={0} label={messages.inspectCells(label)} valueText={valueText} cursor="pointer" />
           <ChartTooltip store={store} anchor={plotRef}>
             {(hover) => {
               const row = Math.floor(hover.index / nCols)
@@ -237,7 +247,7 @@ const HeatmapPlot = memo(function HeatmapPlot({ box, rows, columns, values, tota
                   title={rows[row]}
                   meta={columnText(columns[col]!)}
                   rows={[{ key: "v", label: rows[row] ?? "", value: formatValue(values[row]?.[col] ?? null, fmt), shape: "box", slot: 1 }]}
-                  footer={`${formatValue(totals[col], fmt)} across all rows`}
+                  footer={messages.acrossAllRows(formatValue(totals[col], fmt))}
                 />
               )
             }}

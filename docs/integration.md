@@ -11,6 +11,7 @@ Read [the theme and layout contract](layout-contract.md) before composing the fi
 | Form control plus separate error markup                | `Field`, a typed bound field and its schema helper            |
 | Entity name, icon and action menu assembled repeatedly | `EntityIdentity` and a shared `ActionSet`                     |
 | Interactive table                                      | `DataTable`, typed columns, filters and a host data adapter   |
+| Built-in interface wording and translations             | `glass-ux/i18n`, `glass-ux/i18n/<tag>` and `LocaleProvider`     |
 | Local palette dropdown                                 | `SwatchPicker` and the appearance runtime                     |
 | Browser tooltip on truncated text                      | `TruncatedText` or `Tooltip`                                  |
 | Repeated clipboard handler                             | `CopyButton`                                                  |

@@ -1,3 +1,4 @@
+import { codeBlockMessages, getCodeBlockMessages } from "./messages.js"
 /**
  * Lazy syntax highlighting. Shiki loads on the first code block that needs it: the core and
  * the JavaScript regex engine (no WASM), when the browser is idle. Each grammar loads the
@@ -43,16 +44,16 @@ const ALIASES: Record<string, string> = {
 
 /** Display names for the language label. */
 export const LANGUAGE_LABELS: Record<string, string> = {
-  powershell: "PowerShell",
-  bash: "Bash",
-  json: "JSON",
-  yaml: "YAML",
-  typescript: "TypeScript",
-  sql: "SQL",
-  xml: "XML",
-  ini: "INI",
-  log: "Log",
-  text: "Text",
+  powershell: codeBlockMessages.defaults.languagePowershell,
+  bash: codeBlockMessages.defaults.languageBash,
+  json: codeBlockMessages.defaults.languageJson,
+  yaml: codeBlockMessages.defaults.languageYaml,
+  typescript: codeBlockMessages.defaults.languageTypescript,
+  sql: codeBlockMessages.defaults.languageSql,
+  xml: codeBlockMessages.defaults.languageXml,
+  ini: codeBlockMessages.defaults.languageIni,
+  log: codeBlockMessages.defaults.log,
+  text: codeBlockMessages.defaults.text,
 }
 
 /** The bundled grammar for a language name or alias (case-insensitive, e.g. `ps1` → `powershell`), or `null` when none is bundled and the code stays plain. */
@@ -62,10 +63,12 @@ export function resolveLanguage(language: string | undefined) {
 }
 
 /** The display name for a code block's language label: the bundled grammar's name, otherwise the given name as written, or "Text" when none is given. */
-export function languageLabel(language: string | undefined) {
+export function languageLabel(language: string | undefined, messages: ReturnType<typeof getCodeBlockMessages> = getCodeBlockMessages()) {
   const resolved = resolveLanguage(language)
+  if (resolved === "log") return messages.log
+  if (resolved === "text") return messages.text
   if (resolved) return LANGUAGE_LABELS[resolved] ?? resolved
-  return language ? language : "Text"
+  return language ? language : messages.text
 }
 
 /** Each grammar is its own chunk, fetched the first time a block in that language shows. */

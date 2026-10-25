@@ -1,3 +1,4 @@
+import { addressFieldMessages, getAddressFieldMessages } from "./messages.js"
 /**
  * The library's street address: what AddressInput edits and the geocoder fills. Generic — an
  * application maps it to its own model through an application-owned adapter.
@@ -74,67 +75,67 @@ export const isEmptyAddress = (value: AddressValue | null | undefined) =>
  */
 export const ADMIN1_REGIONS: Readonly<Record<string, ReadonlyArray<readonly [code: string, name: string]>>> = {
   AU: [
-    ["AU-ACT", "Australian Capital Territory"],
-    ["AU-NSW", "New South Wales"],
-    ["AU-NT", "Northern Territory"],
-    ["AU-QLD", "Queensland"],
-    ["AU-SA", "South Australia"],
-    ["AU-TAS", "Tasmania"],
-    ["AU-VIC", "Victoria"],
-    ["AU-WA", "Western Australia"],
+    ["AU-ACT", addressFieldMessages.defaults.regionAUACT],
+    ["AU-NSW", addressFieldMessages.defaults.regionAUNSW],
+    ["AU-NT", addressFieldMessages.defaults.regionAUNT],
+    ["AU-QLD", addressFieldMessages.defaults.regionAUQLD],
+    ["AU-SA", addressFieldMessages.defaults.regionAUSA],
+    ["AU-TAS", addressFieldMessages.defaults.regionAUTAS],
+    ["AU-VIC", addressFieldMessages.defaults.regionAUVIC],
+    ["AU-WA", addressFieldMessages.defaults.regionAUWA],
   ],
   NZ: [
-    ["NZ-AUK", "Auckland"],
-    ["NZ-BOP", "Bay of Plenty"],
-    ["NZ-CAN", "Canterbury"],
-    ["NZ-CIT", "Chatham Islands"],
-    ["NZ-GIS", "Gisborne"],
-    ["NZ-HKB", "Hawke's Bay"],
-    ["NZ-MBH", "Marlborough"],
-    ["NZ-MWT", "Manawatū-Whanganui"],
-    ["NZ-NSN", "Nelson"],
-    ["NZ-NTL", "Northland"],
-    ["NZ-OTA", "Otago"],
-    ["NZ-STL", "Southland"],
-    ["NZ-TAS", "Tasman"],
-    ["NZ-TKI", "Taranaki"],
-    ["NZ-WGN", "Wellington"],
-    ["NZ-WKO", "Waikato"],
-    ["NZ-WTC", "West Coast"],
+    ["NZ-AUK", addressFieldMessages.defaults.regionNZAUK],
+    ["NZ-BOP", addressFieldMessages.defaults.regionNZBOP],
+    ["NZ-CAN", addressFieldMessages.defaults.regionNZCAN],
+    ["NZ-CIT", addressFieldMessages.defaults.regionNZCIT],
+    ["NZ-GIS", addressFieldMessages.defaults.regionNZGIS],
+    ["NZ-HKB", addressFieldMessages.defaults.regionNZHKB],
+    ["NZ-MBH", addressFieldMessages.defaults.regionNZMBH],
+    ["NZ-MWT", addressFieldMessages.defaults.regionNZMWT],
+    ["NZ-NSN", addressFieldMessages.defaults.regionNZNSN],
+    ["NZ-NTL", addressFieldMessages.defaults.regionNZNTL],
+    ["NZ-OTA", addressFieldMessages.defaults.regionNZOTA],
+    ["NZ-STL", addressFieldMessages.defaults.regionNZSTL],
+    ["NZ-TAS", addressFieldMessages.defaults.regionNZTAS],
+    ["NZ-TKI", addressFieldMessages.defaults.regionNZTKI],
+    ["NZ-WGN", addressFieldMessages.defaults.regionNZWGN],
+    ["NZ-WKO", addressFieldMessages.defaults.regionNZWKO],
+    ["NZ-WTC", addressFieldMessages.defaults.regionNZWTC],
   ],
   GB: [
-    ["GB-ENG", "England"],
-    ["GB-NIR", "Northern Ireland"],
-    ["GB-SCT", "Scotland"],
-    ["GB-WLS", "Wales"],
+    ["GB-ENG", addressFieldMessages.defaults.regionGBENG],
+    ["GB-NIR", addressFieldMessages.defaults.regionGBNIR],
+    ["GB-SCT", addressFieldMessages.defaults.regionGBSCT],
+    ["GB-WLS", addressFieldMessages.defaults.regionGBWLS],
   ],
   CA: [
-    ["CA-AB", "Alberta"],
-    ["CA-BC", "British Columbia"],
-    ["CA-MB", "Manitoba"],
-    ["CA-NB", "New Brunswick"],
-    ["CA-NL", "Newfoundland and Labrador"],
-    ["CA-NS", "Nova Scotia"],
-    ["CA-NT", "Northwest Territories"],
-    ["CA-NU", "Nunavut"],
-    ["CA-ON", "Ontario"],
-    ["CA-PE", "Prince Edward Island"],
-    ["CA-QC", "Quebec"],
-    ["CA-SK", "Saskatchewan"],
-    ["CA-YT", "Yukon"],
+    ["CA-AB", addressFieldMessages.defaults.regionCAAB],
+    ["CA-BC", addressFieldMessages.defaults.regionCABC],
+    ["CA-MB", addressFieldMessages.defaults.regionCAMB],
+    ["CA-NB", addressFieldMessages.defaults.regionCANB],
+    ["CA-NL", addressFieldMessages.defaults.regionCANL],
+    ["CA-NS", addressFieldMessages.defaults.regionCANS],
+    ["CA-NT", addressFieldMessages.defaults.regionCANT],
+    ["CA-NU", addressFieldMessages.defaults.regionCANU],
+    ["CA-ON", addressFieldMessages.defaults.regionCAON],
+    ["CA-PE", addressFieldMessages.defaults.regionCAPE],
+    ["CA-QC", addressFieldMessages.defaults.regionCAQC],
+    ["CA-SK", addressFieldMessages.defaults.regionCASK],
+    ["CA-YT", addressFieldMessages.defaults.regionCAYT],
   ],
   US: [
-    ["US-AL", "Alabama"], ["US-AK", "Alaska"], ["US-AZ", "Arizona"], ["US-AR", "Arkansas"], ["US-CA", "California"],
-    ["US-CO", "Colorado"], ["US-CT", "Connecticut"], ["US-DE", "Delaware"], ["US-DC", "District of Columbia"], ["US-FL", "Florida"],
-    ["US-GA", "Georgia"], ["US-HI", "Hawaii"], ["US-ID", "Idaho"], ["US-IL", "Illinois"], ["US-IN", "Indiana"],
-    ["US-IA", "Iowa"], ["US-KS", "Kansas"], ["US-KY", "Kentucky"], ["US-LA", "Louisiana"], ["US-ME", "Maine"],
-    ["US-MD", "Maryland"], ["US-MA", "Massachusetts"], ["US-MI", "Michigan"], ["US-MN", "Minnesota"], ["US-MS", "Mississippi"],
-    ["US-MO", "Missouri"], ["US-MT", "Montana"], ["US-NE", "Nebraska"], ["US-NV", "Nevada"], ["US-NH", "New Hampshire"],
-    ["US-NJ", "New Jersey"], ["US-NM", "New Mexico"], ["US-NY", "New York"], ["US-NC", "North Carolina"], ["US-ND", "North Dakota"],
-    ["US-OH", "Ohio"], ["US-OK", "Oklahoma"], ["US-OR", "Oregon"], ["US-PA", "Pennsylvania"], ["US-RI", "Rhode Island"],
-    ["US-SC", "South Carolina"], ["US-SD", "South Dakota"], ["US-TN", "Tennessee"], ["US-TX", "Texas"], ["US-UT", "Utah"],
-    ["US-VT", "Vermont"], ["US-VA", "Virginia"], ["US-WA", "Washington"], ["US-WV", "West Virginia"], ["US-WI", "Wisconsin"],
-    ["US-WY", "Wyoming"],
+    ["US-AL", addressFieldMessages.defaults.regionUSAL], ["US-AK", addressFieldMessages.defaults.regionUSAK], ["US-AZ", addressFieldMessages.defaults.regionUSAZ], ["US-AR", addressFieldMessages.defaults.regionUSAR], ["US-CA", addressFieldMessages.defaults.regionUSCA],
+    ["US-CO", addressFieldMessages.defaults.regionUSCO], ["US-CT", addressFieldMessages.defaults.regionUSCT], ["US-DE", addressFieldMessages.defaults.regionUSDE], ["US-DC", addressFieldMessages.defaults.regionUSDC], ["US-FL", addressFieldMessages.defaults.regionUSFL],
+    ["US-GA", addressFieldMessages.defaults.regionUSGA], ["US-HI", addressFieldMessages.defaults.regionUSHI], ["US-ID", addressFieldMessages.defaults.regionUSID], ["US-IL", addressFieldMessages.defaults.regionUSIL], ["US-IN", addressFieldMessages.defaults.regionUSIN],
+    ["US-IA", addressFieldMessages.defaults.regionUSIA], ["US-KS", addressFieldMessages.defaults.regionUSKS], ["US-KY", addressFieldMessages.defaults.regionUSKY], ["US-LA", addressFieldMessages.defaults.regionUSLA], ["US-ME", addressFieldMessages.defaults.regionUSME],
+    ["US-MD", addressFieldMessages.defaults.regionUSMD], ["US-MA", addressFieldMessages.defaults.regionUSMA], ["US-MI", addressFieldMessages.defaults.regionUSMI], ["US-MN", addressFieldMessages.defaults.regionUSMN], ["US-MS", addressFieldMessages.defaults.regionUSMS],
+    ["US-MO", addressFieldMessages.defaults.regionUSMO], ["US-MT", addressFieldMessages.defaults.regionUSMT], ["US-NE", addressFieldMessages.defaults.regionUSNE], ["US-NV", addressFieldMessages.defaults.regionUSNV], ["US-NH", addressFieldMessages.defaults.regionUSNH],
+    ["US-NJ", addressFieldMessages.defaults.regionUSNJ], ["US-NM", addressFieldMessages.defaults.regionUSNM], ["US-NY", addressFieldMessages.defaults.regionUSNY], ["US-NC", addressFieldMessages.defaults.regionUSNC], ["US-ND", addressFieldMessages.defaults.regionUSND],
+    ["US-OH", addressFieldMessages.defaults.regionUSOH], ["US-OK", addressFieldMessages.defaults.regionUSOK], ["US-OR", addressFieldMessages.defaults.regionUSOR], ["US-PA", addressFieldMessages.defaults.regionUSPA], ["US-RI", addressFieldMessages.defaults.regionUSRI],
+    ["US-SC", addressFieldMessages.defaults.regionUSSC], ["US-SD", addressFieldMessages.defaults.regionUSSD], ["US-TN", addressFieldMessages.defaults.regionUSTN], ["US-TX", addressFieldMessages.defaults.regionUSTX], ["US-UT", addressFieldMessages.defaults.regionUSUT],
+    ["US-VT", addressFieldMessages.defaults.regionUSVT], ["US-VA", addressFieldMessages.defaults.regionUSVA], ["US-WA", addressFieldMessages.defaults.regionUSWA], ["US-WV", addressFieldMessages.defaults.regionUSWV], ["US-WI", addressFieldMessages.defaults.regionUSWI],
+    ["US-WY", addressFieldMessages.defaults.regionUSWY],
   ],
 }
 
@@ -176,17 +177,17 @@ interface Convention {
   postcodeExample?: string
 }
 
-const CONVENTIONS: Readonly<Record<string, Convention>> = {
-  AU: { locality: "Suburb or town", region: "State or territory", postcode: "Postcode", regionOnLine: true, postcodePattern: /^\d{4}$/, postcodeExample: "7000" },
-  NZ: { locality: "Town or city", region: "Region", postcode: "Postcode", regionOnLine: false, postcodePattern: /^\d{4}$/, postcodeExample: "7273" },
-  US: { locality: "City", region: "State", postcode: "ZIP code", regionOnLine: true, postcodePattern: /^\d{5}(-\d{4})?$/, postcodeExample: "94103" },
-  CA: { locality: "City", region: "Province or territory", postcode: "Postal code", regionOnLine: true, postcodePattern: /^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$/, postcodeExample: "K1A 0B1" },
-  GB: { locality: "Town or city", region: "Nation", postcode: "Postcode", regionOnLine: false, postcodePattern: /^[A-Za-z]{1,2}\d[A-Za-z\d]? ?\d[A-Za-z]{2}$/, postcodeExample: "SW1A 2AA" },
-}
-const DEFAULT_CONVENTION: Convention = { locality: "Town or city", region: "State or region", postcode: "Postcode", regionOnLine: false }
+function conventions(messages: typeof addressFieldMessages.defaults): Readonly<Record<string, Convention>> { return {
+  AU: { locality: messages.addressSuburbOrTown, region: messages.addressStateOrTerritory, postcode: messages.addressPostcode, regionOnLine: true, postcodePattern: /^\d{4}$/, postcodeExample: "7000" },
+  NZ: { locality: messages.addressTownOrCity, region: messages.addressRegion, postcode: messages.addressPostcode, regionOnLine: false, postcodePattern: /^\d{4}$/, postcodeExample: "7273" },
+  US: { locality: messages.addressCity, region: messages.addressState, postcode: messages.addressZipCode, regionOnLine: true, postcodePattern: /^\d{5}(-\d{4})?$/, postcodeExample: "94103" },
+  CA: { locality: messages.addressCity, region: messages.addressProvinceOrTerritory, postcode: messages.addressPostalCode, regionOnLine: true, postcodePattern: /^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$/, postcodeExample: "K1A 0B1" },
+  GB: { locality: messages.addressTownOrCity, region: messages.addressNation, postcode: messages.addressPostcode, regionOnLine: false, postcodePattern: /^[A-Za-z]{1,2}\d[A-Za-z\d]? ?\d[A-Za-z]{2}$/, postcodeExample: "SW1A 2AA" },
+} }
+function defaultConvention(messages: typeof addressFieldMessages.defaults): Convention { return { locality: messages.addressTownOrCity, region: messages.addressStateOrRegion, postcode: messages.addressPostcode, regionOnLine: false } }
 
 /** The labels and postcode rule for a country's addresses. */
-export const addressConvention = (country: string) => CONVENTIONS[country.toUpperCase()] ?? DEFAULT_CONVENTION
+export const addressConvention = (country: string, messages: ReturnType<typeof getAddressFieldMessages> = getAddressFieldMessages()) => conventions(messages)[country.toUpperCase()] ?? defaultConvention(messages)
 
 /** True when the postcode fits the country's pattern (or the library has none for it). */
 export function isPostcode(country: string, postcode: string) {

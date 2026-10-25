@@ -11,7 +11,6 @@ import {
   formatAbsolute as sharedAbsolute,
   formatCount,
   formatNumber as sharedNumber,
-  formatRelative as sharedRelative,
 } from "../ui/data-table/format.js";
 
 /** U+2009 THIN SPACE between a number and its unit (`2.3 s`). */
@@ -24,7 +23,15 @@ export function formatNumber(value: number, fractionDigits = 0, locale = getLoca
 
 /** Shared relative time, including future instants; older dates are written in `locale`. */
 export function formatRelative(time: number, now: number, locale = getLocale()) {
-  return sharedRelative(time, now, locale);
+  const delta = time - now
+  if (!Number.isFinite(delta)) return "—"
+  const format = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" })
+  const absolute = Math.abs(delta)
+  if (absolute < 60_000) return format.format(0, "second")
+  if (absolute < 3_600_000) return format.format(Math.trunc(delta / 60_000), "minute")
+  if (absolute < 86_400_000) return format.format(Math.trunc(delta / 3_600_000), "hour")
+  if (absolute < 7 * 86_400_000 || delta > 0) return format.format(Math.trunc(delta / 86_400_000), "day")
+  return dateTimeFormat(locale, { day: "numeric", month: "short", ...(new Date(time).getFullYear() === new Date(now).getFullYear() ? {} : { year: "numeric" }) }).format(time)
 }
 
 /** Full timestamp for hover tooltips, in `locale`. */
@@ -41,25 +48,25 @@ export function formatClock(time: number, locale = getLocale()) {
 
 /** "0.4 s", "2.3 s", "48 s", "1 min 4 s"; the decimal mark is `locale`'s. */
 export function formatElapsed(ms: number, locale = getLocale()) {
-  if (ms < 10_000) return `${formatNumber(ms / 1000, 1, locale)}${THIN_SPACE}s`;
-  if (ms < 60_000) return `${Math.round(ms / 1000)}${THIN_SPACE}s`;
-  const minutes = Math.floor(ms / 60_000);
-  const seconds = Math.round((ms % 60_000) / 1000);
-  return seconds
-    ? `${minutes}${THIN_SPACE}min ${seconds}${THIN_SPACE}s`
-    : `${minutes}${THIN_SPACE}min`;
+  const unit = (value: number, name: "second" | "minute", decimals = 0) => {
+    const suffix = new Intl.NumberFormat(locale, { style: "unit", unit: name, unitDisplay: "narrow" }).formatToParts(value).find((part) => part.type === "unit")?.value ?? ""
+    return `${formatNumber(value, decimals, locale)}${THIN_SPACE}${suffix}`
+  }
+  if (ms < 10_000) return unit(ms / 1000, "second", 1)
+  if (ms < 60_000) return unit(Math.round(ms / 1000), "second")
+  const minutes = Math.floor(ms / 60_000)
+  const seconds = Math.round((ms % 60_000) / 1000)
+  return [unit(minutes, "minute"), seconds ? unit(seconds, "second") : ""].filter(Boolean).join(" ")
 }
 
-/** A future time, relative: "in 40 min", "in 9 h", "in 3 days". */
-export function formatIn(time: number, now: number) {
-  const delta = time - now;
-  if (delta <= 60_000) return "in a minute";
-  if (delta < 3_600_000)
-    return `in ${Math.round(delta / 60_000)}${THIN_SPACE}min`;
-  if (delta < 86_400_000)
-    return `in ${Math.round(delta / 3_600_000)}${THIN_SPACE}h`;
-  const days = Math.round(delta / 86_400_000);
-  return days === 1 ? "tomorrow" : `in ${days} days`;
+/** A future time in the resolved locale. */
+export function formatIn(time: number, now: number, locale = getLocale()) {
+  const delta = time - now
+  const format = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" })
+  if (delta <= 60_000) return format.format(1, "minute")
+  if (delta < 3_600_000) return format.format(Math.round(delta / 60_000), "minute")
+  if (delta < 86_400_000) return format.format(Math.round(delta / 3_600_000), "hour")
+  return format.format(Math.round(delta / 86_400_000), "day")
 }
 
 /** "4:32" for a countdown. */

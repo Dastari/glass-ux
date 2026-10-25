@@ -11,9 +11,11 @@
  *   node scripts/pack-release.mjs --out .handoff/release   write the archive there
  *   node scripts/pack-release.mjs --check                  pack to a temporary folder, check, discard
  */
+import { minify } from "vite"
 import { execFileSync } from "node:child_process"
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
+import { gzipSync, gunzipSync } from "node:zlib"
 import { dirname, join, relative, resolve } from "node:path"
 
 const root = resolve(import.meta.dirname, "..")
@@ -61,12 +63,19 @@ try {
     if (existsSync(join(root, entry)) && !staged.includes(entry)) copy(entry)
   }
 
-  // The maps are not shipped, so the comments pointing at them go too.
+  // Compact the staged ESM without bundling, mangling names or changing module boundaries.
+  // This is a release-time step; consumers still install an already-built archive.
   for (const path of staged.filter((file) => file.endsWith(".js"))) {
     const file = join(stage, path)
-    const text = readFileSync(file, "utf8")
-    const stripped = text.replace(/\n\/\/# sourceMappingURL=\S+\s*$/, "\n")
-    if (stripped !== text) writeFileSync(file, stripped)
+    const result = await minify(path, readFileSync(file, "utf8"), {
+      module: true,
+      mangle: false,
+      compress: { target: "es2022", keepNames: { function: true, class: true } },
+      codegen: { legalComments: "inline" },
+    })
+    if (result.errors.length) fail(`could not compact ${path}: ${result.errors.map((error) => error.message).join("; ")}`)
+    const legal = result.legalComments.map((comment) => `/*${comment}*/`).join("\n")
+    writeFileSync(file, `${legal}${legal ? "\n" : ""}${result.code}\n`)
   }
 
   const exports = Object.fromEntries(Object.entries(pkg.exports).filter(([key]) => !key.startsWith("./gallery")))
@@ -85,7 +94,7 @@ try {
     }
   }
   const references = {
-    ".js": /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s+|new URL\(\s*)["'](\.{1,2}\/[^"']+)["']/g,
+    ".js": /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*|new URL\(\s*)["'](\.{1,2}\/[^"']+)["']/g,
     ".d.ts": /(?:\bfrom\s*|\bimport\s*\(\s*)["'](\.{1,2}\/[^"']+)["']/g,
     ".css": /(?:@import\s+|url\(\s*)["']?(\.{1,2}\/[^"')\s]+)["']?/g,
   }
@@ -104,7 +113,10 @@ try {
   const destination = check ? mkdtempSync(join(tmpdir(), "glass-ux-archive-")) : out
   const archive = `${pkg.name}-${pkg.version}.tgz`
   execFileSync("pnpm", ["pack", "--pack-destination", destination], { cwd: stage, stdio: ["ignore", "ignore", "inherit"] })
-  const archiveBytes = statSync(join(destination, archive)).size
+  const archivePath = join(destination, archive)
+  // Language packs compress well; use the strongest gzip setting on the unchanged tar.
+  writeFileSync(archivePath, gzipSync(gunzipSync(readFileSync(archivePath)), { level: 9 }))
+  const archiveBytes = statSync(archivePath).size
   if (check) rmSync(destination, { recursive: true, force: true })
 
   const mb = (bytes) => `${(bytes / 1_000_000).toFixed(1)} MB`
@@ -114,7 +126,7 @@ try {
       (check ? " (checked, not kept)" : ` → ${shown(join(destination, archive))}`),
   )
   if (unpacked > BUDGET.unpacked) fail(`unpacked size ${mb(unpacked)} is over the ${mb(BUDGET.unpacked)} budget`)
-  if (archiveBytes > BUDGET.archive) fail(`archive size ${mb(archiveBytes)} is over the ${mb(BUDGET.archive)} budget`)
+  if (archiveBytes > BUDGET.archive) fail(`archive size ${mb(archiveBytes)} (${archiveBytes} bytes) is over the ${mb(BUDGET.archive)} budget`)
 } catch (error) {
   if (!(error instanceof PackError)) throw error
   console.error(`pack-release: ${error.message}`)

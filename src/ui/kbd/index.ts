@@ -1,3 +1,4 @@
+import type {} from "./messages.js"
 export { Kbd, useAriaShortcut, usePlatform, type KbdProps } from "./kbd.js"
 export {
   ariaShortcut,

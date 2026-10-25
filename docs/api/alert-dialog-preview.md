@@ -10,7 +10,7 @@ The alert surface in the page flow, for documentation. Real parts, non-modal.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| cancelLabel | `string \| undefined` | See type | no | "Cancel" | Visible label for cancelling or dismissing the request. |
+| cancelLabel | `string \| undefined` | See type | no | — | Visible label for cancelling or dismissing the request. |
 | confirmLabel | `string` | See type | yes | — | Visible label naming the outcome of the confirmation. |
 | description | `ReactNode` | See type | no | — | Additional content describing the value, state, or consequence. |
 | pendingLabel | `string \| undefined` | See type | no | — | Label shown while the asynchronous action runs. Its width is reserved with the other feedback labels. |

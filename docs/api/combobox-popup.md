@@ -13,7 +13,7 @@ the empty row, options (grouped when they name a group) and the "N more" footer.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | check | `boolean \| undefined` | false, true | no | true | Reserve the ✓ column (single and multiple choice). |
-| empty | `((query: string) => ReactNode) \| undefined` | See type | no | noMatches | Text for the empty row; receives the current query. |
+| empty | `((query: string) => ReactNode) \| undefined` | See type | no | — | Text for the empty row; receives the current query. |
 | items | `OptionItem<V>[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
 | loading | `boolean \| undefined` | false, true | no | false | Show skeleton rows (static lists loading from elsewhere). |
 | query | `string` | See type | yes | — | Current search text or typed query state. |

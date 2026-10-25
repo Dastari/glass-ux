@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { datePickerMessages } from "./messages.js"
 import { useMemo, useRef, useState, type KeyboardEvent } from "react"
 import { IconChevronLeft, IconChevronRight } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -72,6 +74,8 @@ function monthStart(iso: IsoDate) {
  * week come from the locale.
  */
 export function Calendar(props: CalendarProps) {
+  const messages = useMessages(datePickerMessages, { locale: props.locale })
+
   const { min, max, today = todayIso(), defaultMonth, autoFocus, className } = props
   const locale = useLocale(props.locale)
   const range = props.mode === "range" ? (props.value ?? null) : null
@@ -176,11 +180,11 @@ export function Calendar(props: CalendarProps) {
   return (
     <div className={cx("fa-calendar", className)} data-mode={props.mode ?? "single"} data-picking={anchor ? "" : undefined}>
       <div className="fa-calendar-head">
-        <Button variant="ghost" size="sm" icon={<IconChevronLeft />} aria-label="Previous month" disabledReason={prevDisabled ? "No earlier dates can be chosen" : undefined} onClick={() => showMonth(-1)} />
+        <Button variant="ghost" size="sm" icon={<IconChevronLeft />} aria-label={messages.previousMonth} disabledReason={prevDisabled ? messages.noEarlierDatesCanBeChosen : undefined} onClick={() => showMonth(-1)} />
         <div className="fa-calendar-title" aria-live="polite">
           {title}
         </div>
-        <Button variant="ghost" size="sm" icon={<IconChevronRight />} aria-label="Next month" disabledReason={nextDisabled ? "No later dates can be chosen" : undefined} onClick={() => showMonth(1)} />
+        <Button variant="ghost" size="sm" icon={<IconChevronRight />} aria-label={messages.nextMonth} disabledReason={nextDisabled ? messages.noLaterDatesCanBeChosen : undefined} onClick={() => showMonth(1)} />
       </div>
       <div
         role="grid"

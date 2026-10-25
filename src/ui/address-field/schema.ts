@@ -1,7 +1,10 @@
+import { getAddressFieldMessages } from "./messages.js"
 import { z } from "zod"
 import { addressConvention, isPostcode, type AddressValue } from "./address.js"
 
 export interface AddressSchemaOptions {
+  /** Locale for validation wording. Defaults to getLocale(). */
+  locale?: string
   /** An address must be given (a street or a locality, and a country). Default false: empty is fine. */
   required?: boolean
   /** The position must be known (from the lookup or the pin). Default false: the server can geocode. */
@@ -23,11 +26,11 @@ const point = z.object({ lat: z.number(), lng: z.number() })
 export function addressSchema(options: AddressSchemaOptions = {}) {
   return z
     .object({
-      line1: z.string().max(120, "Use 120 characters or fewer"),
-      line2: z.string().max(120, "Use 120 characters or fewer"),
-      locality: z.string().max(80, "Use 80 characters or fewer"),
+      line1: z.string().max(120, { error: () => getAddressFieldMessages(options.locale).use120CharactersOrFewer }),
+      line2: z.string().max(120, { error: () => getAddressFieldMessages(options.locale).use120CharactersOrFewer }),
+      locality: z.string().max(80, { error: () => getAddressFieldMessages(options.locale).use80CharactersOrFewer }),
       region,
-      postcode: z.string().max(12, "Use 12 characters or fewer"),
+      postcode: z.string().max(12, { error: () => getAddressFieldMessages(options.locale).use12CharactersOrFewer }),
       country: region,
       location: point.nullable(),
       pinned: z.boolean(),
@@ -35,14 +38,14 @@ export function addressSchema(options: AddressSchemaOptions = {}) {
     .superRefine((value: AddressValue, context) => {
       const started = Boolean(value.line1.trim() || value.line2.trim() || value.locality.trim() || value.postcode.trim() || value.location)
       if (!started && !options.required) return
-      const convention = addressConvention(value.country.code)
-      if (!value.line1.trim()) context.addIssue({ code: "custom", path: ["line1"], message: "Enter the street address, or a PO Box" })
-      if (!value.locality.trim()) context.addIssue({ code: "custom", path: ["locality"], message: `Enter the ${convention.locality.toLowerCase()}` })
-      if (!value.country.code) context.addIssue({ code: "custom", path: ["country"], message: "Choose a country" })
+      const convention = addressConvention(value.country.code, getAddressFieldMessages(options.locale))
+      if (!value.line1.trim()) context.addIssue({ code: "custom", path: ["line1"], message: getAddressFieldMessages(options.locale).enterTheStreetAddressOrAPoBox })
+      if (!value.locality.trim()) context.addIssue({ code: "custom", path: ["locality"], message: getAddressFieldMessages(options.locale).enterThe(convention.locality.toLowerCase()) })
+      if (!value.country.code) context.addIssue({ code: "custom", path: ["country"], message: getAddressFieldMessages(options.locale).chooseACountry })
       if (value.postcode.trim() && !isPostcode(value.country.code, value.postcode)) {
-        const example = convention.postcodeExample ? `, such as ${convention.postcodeExample}` : ""
-        context.addIssue({ code: "custom", path: ["postcode"], message: `Check the ${convention.postcode.toLowerCase()}${example}` })
+        const example = convention.postcodeExample ? getAddressFieldMessages(options.locale).suchAs(convention.postcodeExample) : ""
+        context.addIssue({ code: "custom", path: ["postcode"], message: getAddressFieldMessages(options.locale).checkThe(convention.postcode.toLowerCase(), example) })
       }
-      if (options.requireLocation && !value.location) context.addIssue({ code: "custom", path: ["line1"], message: "Choose the address from the suggestions, or place the pin" })
+      if (options.requireLocation && !value.location) context.addIssue({ code: "custom", path: ["line1"], message: getAddressFieldMessages(options.locale).chooseTheAddressFromTheSuggestionsOrPlace })
     })
 }

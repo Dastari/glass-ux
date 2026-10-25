@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { actionsMessages } from "./messages.js"
 import { Fragment, useLayoutEffect, useRef, useState, type ReactElement } from "react"
 import { IconMoreHorizontal } from "../../icons/generated/icons.js"
 import { resolveActions, type ActionSet, type ActionSurface, type ResolvedAction, type ResolvedGroup } from "../../lib/actions/actions.js"
@@ -123,14 +125,16 @@ export interface ActionMenuProps<T> {
 
 /** The row ⋯ menu (R12.1): a ghost icon button that opens every action for the row. */
 export function ActionMenu<T>({ set, targets, label, size = "sm", trigger, align = "end" }: ActionMenuProps<T>) {
+  const messages = useMessages(actionsMessages)
+
   const groups = resolveActions(set, targets, "menu")
   if (!groups.length) return null
   return (
     <Menu.Root>
       <Menu.Trigger
-        render={trigger ?? <Button variant="ghost" size={size} icon={<IconMoreHorizontal />} aria-label={`Actions for ${label}`} />}
+        render={trigger ?? <Button variant="ghost" size={size} icon={<IconMoreHorizontal />} aria-label={messages.actionsFor(label)} />}
       />
-      <Menu.Popup align={align} aria-label={`Actions for ${label}`}>
+      <Menu.Popup align={align} aria-label={messages.actionsFor(label)}>
         <ActionMenuItems groups={groups} targets={targets} surface="menu" />
       </Menu.Popup>
     </Menu.Root>
@@ -158,6 +162,8 @@ export function ActionMenuPreview<T>({
   /** Ranges or value highlighted in a search result. */
   highlight?: string
 }) {
+  const messages = useMessages(actionsMessages)
+
   const groups = resolveActions(set, targets, "menu")
   const open = groups.flatMap((group) => group.actions).find((action) => action.id === openSubmenu)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -186,7 +192,7 @@ export function ActionMenuPreview<T>({
   )
   return (
     <div ref={rootRef} className="fa-action-menu-preview">
-      <MenuPreview.Surface label={`Actions for ${label}`}>
+      <MenuPreview.Surface label={messages.actionsFor(label)}>
         {groups.map((group, index) => (
           <Fragment key={group.group}>
             {group.group === "danger" && index > 0 ? <MenuPreview.Separator /> : null}

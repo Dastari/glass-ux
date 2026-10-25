@@ -1,3 +1,4 @@
+import { windowsMessages } from "./messages.js"
 /**
  * Window geometry: snap zones, tiling assignment and rectangle maths. Pure functions,
  * no DOM, so the store, the workspace and the tests share one definition.
@@ -43,25 +44,25 @@ export function isSnapZone(value: unknown): value is SnapZone {
 
 /** The layouts offered in the snap bar while dragging, left to right. */
 export const SNAP_LAYOUTS: ReadonlyArray<{ label: string; zones: readonly SnapZone[] }> = [
-  { label: "Halves", zones: ["left-half", "right-half"] },
-  { label: "Thirds", zones: ["left-third", "centre-third", "right-third"] },
-  { label: "Two thirds and one third", zones: ["left-two-thirds", "right-third"] },
-  { label: "Quarters", zones: ["top-left", "top-right", "bottom-left", "bottom-right"] },
+  { label: windowsMessages.defaults.snapHalves, zones: ["left-half", "right-half"] },
+  { label: windowsMessages.defaults.snapThirds, zones: ["left-third", "centre-third", "right-third"] },
+  { label: windowsMessages.defaults.snapTwoThirdsAndOneThird, zones: ["left-two-thirds", "right-third"] },
+  { label: windowsMessages.defaults.snapQuarters, zones: ["top-left", "top-right", "bottom-left", "bottom-right"] },
 ]
 
 /** English names for each snap zone, for the snap bar's accessible names and tooltips. */
 export const SNAP_ZONE_LABELS: Record<SnapZone, string> = {
-  "left-half": "Left half",
-  "right-half": "Right half",
-  "left-third": "Left third",
-  "centre-third": "Centre third",
-  "right-third": "Right third",
-  "left-two-thirds": "Left two thirds",
-  "right-two-thirds": "Right two thirds",
-  "top-left": "Top left quarter",
-  "top-right": "Top right quarter",
-  "bottom-left": "Bottom left quarter",
-  "bottom-right": "Bottom right quarter",
+  "left-half": windowsMessages.defaults.snapLeftHalf,
+  "right-half": windowsMessages.defaults.snapRightHalf,
+  "left-third": windowsMessages.defaults.snapLeftThird,
+  "centre-third": windowsMessages.defaults.snapCentreThird,
+  "right-third": windowsMessages.defaults.snapRightThird,
+  "left-two-thirds": windowsMessages.defaults.snapLeftTwoThirds,
+  "right-two-thirds": windowsMessages.defaults.snapRightTwoThirds,
+  "top-left": windowsMessages.defaults.snapTopLeftQuarter,
+  "top-right": windowsMessages.defaults.snapTopRightQuarter,
+  "bottom-left": windowsMessages.defaults.snapBottomLeftQuarter,
+  "bottom-right": windowsMessages.defaults.snapBottomRightQuarter,
 }
 
 const EPSILON = 0.001

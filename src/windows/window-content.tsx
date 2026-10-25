@@ -1,3 +1,5 @@
+import { useMessages } from "../lib/i18n/index.js"
+import { windowsMessages } from "./messages.js"
 import { EmptyState } from "../ui/empty-state/index.js";
 /**
  * Window bodies: the lazy kind component, and the slots a body uses to put things in its
@@ -83,13 +85,14 @@ export interface WindowContentHostProps {
 /** Loads and renders a window's body. Shows a skeleton in the body's box while loading. */
 export const WindowContentHost = memo(
   function WindowContentHost({ id, kind, params }: WindowContentHostProps) {
+  const messages = useMessages(windowsMessages)
+
     const Body = useKindBody(kind);
     if (!Body) {
       return (
         <WindowFrame.Body>
           <EmptyState icon={null}>
-            This window is not available in this version.
-          </EmptyState>
+            {messages.thisWindowIsNotAvailableInThisVersion} </EmptyState>
         </WindowFrame.Body>
       );
     }
@@ -112,8 +115,10 @@ export const WindowContentHost = memo(
  * busy status named "Loading window", so assistive technology hears why the body is empty.
  */
 export function WindowBodySkeleton() {
+  const messages = useMessages(windowsMessages)
+
   return (
-    <WindowFrame.Body role="status" aria-busy="true" aria-label="Loading window">
+    <WindowFrame.Body role="status" aria-busy="true" aria-label={messages.loadingWindow}>
       <div className="fa-window-skeleton">
         <Skeleton.Text type="subtitle" width="40%" />
         <Skeleton.Text lines={3} width="70%" />

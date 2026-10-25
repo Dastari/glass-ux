@@ -20,7 +20,7 @@ the focused node's menu.
 | clusters | `Readonly<Record<string, TopologyClusterSpec>> \| undefined` | See type | no | — | How cluster keys are named and ordered. |
 | defaultSelectedId | `string \| null \| undefined` | See type | no | — | The node selected at first when the selection is uncontrolled. |
 | describeNode | `((node: TopologyNode<T>) => string) \| undefined` | See type | no | — | The node's accessible name: "Switch ORB-SW-CORE, Online, wired 1 Gbps to FA-GW01". Default: its label. |
-| emptyText | `ReactNode` | See type | no | "Nothing to draw" | One line for an empty map (R2.5). |
+| emptyText | `ReactNode` | See type | no | — | One line for an empty map (R2.5). |
 | frameKey | `unknown` | See type | no | — | Re-fit when this changes (another network). Live changes to the same map keep the camera. |
 | insets | `TopologyInsets \| null \| undefined` | See type | no | — | Page chrome floating over a full-bleed canvas, in CSS pixels (useBleed): fitting, the controls, the minimap and the way to a focused node stay clear of it, and an untouched camera re-fits when it changes. `null` means "being measured": the canvas holds its loading shape and its first frame back until it is known, so nothing jumps (R9). |
 | label | `string` | See type | yes | — | Names the map: "Network map, Office LAN". |

@@ -1,3 +1,4 @@
+import { getIpFieldMessages } from "./messages.js"
 /**
  * IP addresses and CIDR prefixes: parse what people type or paste, normalise it, and describe
  * a range. Pure functions, shared by IpInput and its schema helper.
@@ -16,6 +17,8 @@ export type IpVersion = 4 | 6
 export type CidrMode = "none" | "optional" | "required"
 
 export interface IpOptions {
+ /** Locale for validation wording. Defaults to getLocale(). */
+ locale?: string
   /** Accept IPv4, IPv6 or either (default). */
   version?: IpVersion | "any"
   /** A prefix length: "none" (default), "optional" or "required". */
@@ -34,13 +37,9 @@ export interface ParsedIp {
 
 export type IpResult = { ok: true; value: ParsedIp } | { ok: false; error: string }
 
-const EXAMPLE: Record<IpVersion | "any", string> = {
-  4: "such as 192.168.1.10",
-  6: "such as 2001:db8::1",
-  any: "such as 192.168.1.10 or 2001:db8::1",
-}
+function examples(messages: ReturnType<typeof getIpFieldMessages>) { return { 4: messages.example4, 6: messages.example6, any: messages.exampleAny } }
 
-const kind = (version: IpVersion | "any") => (version === 4 ? "an IPv4 address" : version === 6 ? "an IPv6 address" : "an IP address")
+const kind = (version: IpVersion | "any", messages: ReturnType<typeof getIpFieldMessages> = getIpFieldMessages()) => (version === 4 ? messages.anIpv4Address : version === 6 ? messages.anIpv6Address : messages.anIpAddress)
 
 /** IPv4 dotted decimal → 4 bytes, or null. Leading zeros are read as decimal. */
 export function parseIpv4(text: string): number[] | null {
@@ -121,14 +120,15 @@ export function formatIpv6(bytes: readonly number[]) {
 
 /** Parse an address, with or without a prefix, into canonical form. */
 export function parseIp(text: string, options: IpOptions = {}): IpResult {
+  const messages: ReturnType<typeof getIpFieldMessages> = getIpFieldMessages(options.locale)
   const version = options.version ?? "any"
   const cidr = options.cidr ?? "none"
   let source = text.trim()
-  if (!source) return { ok: false, error: `Enter ${kind(version)}` }
+  if (!source) return { ok: false, error: messages.enter(kind(version, messages)) }
   // "[2001:db8::1]" from a URL, or with a port ("[::1]:8080" is not an address; reject the port).
   if (source.startsWith("[")) {
     const close = source.indexOf("]")
-    if (close === -1) return { ok: false, error: `Enter ${kind(version)} ${EXAMPLE[version]}` }
+    if (close === -1) return { ok: false, error: messages.enter2(kind(version, messages), examples(messages)[version]) }
     source = source.slice(1, close) + source.slice(close + 1)
   }
   let prefix: number | null = null
@@ -136,23 +136,23 @@ export function parseIp(text: string, options: IpOptions = {}): IpResult {
   if (slash !== -1) {
     const length = source.slice(slash + 1).trim()
     source = source.slice(0, slash).trim()
-    if (cidr === "none") return { ok: false, error: `Enter one address, without a prefix length` }
-    if (!/^\d{1,3}$/.test(length)) return { ok: false, error: "Enter a prefix length after the /, such as /24" }
+    if (cidr === "none") return { ok: false, error: messages.enterOneAddressWithoutAPrefixLength }
+    if (!/^\d{1,3}$/.test(length)) return { ok: false, error: messages.enterAPrefixLengthAfterTheSuch }
     prefix = Number(length)
   } else if (cidr === "required") {
-    return { ok: false, error: version === 6 ? "Add a prefix length, such as /64" : "Add a prefix length, such as /24" }
+    return { ok: false, error: version === 6 ? messages.addAPrefixLengthSuchAs64 : messages.addAPrefixLengthSuchAs24 }
   }
   const v4 = version !== 6 ? parseIpv4(source) : null
   const v6 = !v4 && version !== 4 ? parseIpv6(source) : null
   const bytes = v4 ?? v6
   if (!bytes) {
-    if (version === 4 && parseIpv6(source)) return { ok: false, error: `Enter an IPv4 address ${EXAMPLE[4]}` }
-    if (version === 6 && parseIpv4(source)) return { ok: false, error: `Enter an IPv6 address ${EXAMPLE[6]}` }
-    return { ok: false, error: `Enter ${kind(version)} ${EXAMPLE[version]}` }
+    if (version === 4 && parseIpv6(source)) return { ok: false, error: messages.enterAnIpv4Address(messages.example4) }
+    if (version === 6 && parseIpv4(source)) return { ok: false, error: messages.enterAnIpv6Address(messages.example6) }
+    return { ok: false, error: messages.enter2(kind(version, messages), examples(messages)[version]) }
   }
   const resolved: IpVersion = v4 ? 4 : 6
   const maxPrefix = resolved === 4 ? 32 : 128
-  if (prefix !== null && prefix > maxPrefix) return { ok: false, error: `Enter a prefix length from 0 to ${maxPrefix}` }
+  if (prefix !== null && prefix > maxPrefix) return { ok: false, error: messages.enterAPrefixLengthFrom0To(maxPrefix) }
   return { ok: true, value: { version: resolved, address: resolved === 4 ? formatIpv4(bytes) : formatIpv6(bytes), prefix, bytes } }
 }
 
@@ -186,34 +186,34 @@ export const isNetworkAddress = (ip: ParsedIp) => ip.prefix === null || networkO
  * IPv6 prefixes give their size ("/64 · 18,446,744,073,709,551,616 addresses" is not
  * useful), so only the network is named.
  */
-export function describeRange(ip: ParsedIp, locale = getLocale()): string | null {
+export function describeRange(ip: ParsedIp, locale = getLocale(), messages: ReturnType<typeof getIpFieldMessages> = getIpFieldMessages(locale)): string | null {
   if (ip.prefix === null) return null
   const network = networkOf(ip)
-  if (ip.version === 6) return `Network ${network.address}/${ip.prefix}`
+  if (ip.version === 6) return messages.network(network.address, ip.prefix)
   const prefix = ip.prefix
   const size = 2 ** (32 - prefix)
   const start = network.bytes.reduce((sum, byte) => sum * 256 + byte, 0)
   const toText = (value: number) => [24, 16, 8, 0].map((shift) => Math.floor(value / 2 ** shift) % 256).join(".")
-  if (prefix === 32) return "1 host"
-  if (prefix === 31) return `2 hosts · ${toText(start)}–${toText(start + 1)}`
+  if (prefix === 32) return messages.hostCount(1, locale)
+  if (prefix === 31) return messages.count2Hosts(toText(start), toText(start + 1))
   const hosts = size - 2
-  return `${numberFormat(locale).format(hosts)} hosts · ${toText(start + 1)}–${toText(start + size - 2)}`
+  return messages.hosts(numberFormat(locale).format(hosts), toText(start + 1), toText(start + size - 2))
 }
 
 /** Private, loopback, link-local and other special ranges, for a quiet hint. */
-export function scopeOf(ip: ParsedIp): string | null {
+export function scopeOf(ip: ParsedIp, messages: ReturnType<typeof getIpFieldMessages> = getIpFieldMessages()): string | null {
   const [a = 0, b = 0] = ip.bytes
   if (ip.version === 4) {
-    if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)) return "Private"
-    if (a === 127) return "Loopback"
-    if (a === 169 && b === 254) return "Link-local"
-    if (a === 100 && b >= 64 && b <= 127) return "Carrier-grade NAT"
-    if (a >= 224 && a <= 239) return "Multicast"
+    if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)) return messages.private
+    if (a === 127) return messages.loopback
+    if (a === 169 && b === 254) return messages.linkLocal
+    if (a === 100 && b >= 64 && b <= 127) return messages.carrierGradeNat
+    if (a >= 224 && a <= 239) return messages.multicast
     return null
   }
-  if (ip.bytes.every((byte, index) => byte === (index === 15 ? 1 : 0))) return "Loopback"
-  if (a === 0xfe && (b & 0xc0) === 0x80) return "Link-local"
-  if ((a & 0xfe) === 0xfc) return "Unique local"
-  if (a === 0xff) return "Multicast"
+  if (ip.bytes.every((byte, index) => byte === (index === 15 ? 1 : 0))) return messages.loopback
+  if (a === 0xfe && (b & 0xc0) === 0x80) return messages.linkLocal
+  if ((a & 0xfe) === 0xfc) return messages.uniqueLocal
+  if (a === 0xff) return messages.multicast
   return null
 }

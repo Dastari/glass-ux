@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { addressFieldMessages } from "./messages.js"
 /**
  * AddressInput — a street address found by typing, then edited as structured fields.
  *
@@ -49,7 +51,7 @@ import {
   type AddressValue,
   type GeoPoint,
 } from "./address.js"
-import { createServerGeocoder, type AddressSuggestion, type GeocoderAdapter, type GeocoderBias } from "./geocoder.js"
+import { createServerGeocoder, localiseGeocoderAttribution, type AddressSuggestion, type GeocoderAdapter, type GeocoderBias } from "./geocoder.js"
 
 // The map (and MapLibre) load only when an address field shows one.
 const PinMap = lazy(() => import("../map/pin-map.js").then((module) => ({ default: module.PinMap })))
@@ -164,6 +166,8 @@ function AddressEditor({
   disabled,
   className,
 }: EditorProps) {
+  const messages = useMessages(addressFieldMessages)
+
   const locale = useLocale()
   const [manual, setManual] = useState(false)
   const [query, setQuery] = useState("")
@@ -188,7 +192,7 @@ function AddressEditor({
             label: result.label,
             description: [result.description, result.value.country.code && result.value.country.code !== homeCountry ? result.value.country.name : ""].filter(Boolean).join(", "),
             icon: result.kind === "place" ? <IconHome /> : <IconMapPin />,
-            meta: result.kind === "street" ? "Street" : undefined,
+            meta: result.kind === "street" ? messages.street : undefined,
           })
         )
       },
@@ -209,9 +213,9 @@ function AddressEditor({
   }
 
   const country = value.country.code || homeCountry
-  const convention = addressConvention(country)
+  const convention = addressConvention(country, messages)
   const regions = ADMIN1_REGIONS[country]
-  const attribution = geocoder.attribution
+  const attribution = localiseGeocoderAttribution(geocoder.attribution, messages)
 
   const setLocation = (point: GeoPoint) => onValueChange({ ...value, location: { lat: point.lat, lng: point.lng }, pinned: true })
 
@@ -238,7 +242,7 @@ function AddressEditor({
     <div className={cx("fa-address", className)} data-expanded={expanded ? "" : undefined}>
       <Field
         // Once the parts show, the lookup row is for finding another address; the parts carry the value.
-        label={expanded ? "Find a different address" : label}
+        label={expanded ? messages.findADifferentAddress : label}
         hint={hint}
         optional={optional}
         required={required}
@@ -256,8 +260,7 @@ function AddressEditor({
                 requestAnimationFrame(() => firstFieldRef.current?.focus())
               }}
             >
-              Enter manually
-            </Button>
+              {messages.enterManually} </Button>
           )
         }
       >
@@ -267,8 +270,8 @@ function AddressEditor({
           onValueChange={setQuery}
           onPick={pick}
           icon={<IconSearch />}
-          placeholder={placeholder ?? "Start typing an address"}
-          empty={(text) => `No addresses match “${text.trim()}”`}
+          placeholder={placeholder ?? messages.startTypingAnAddress}
+          empty={(text) => messages.noAddressesMatch(text.trim())}
           footer={
             <>
               {attribution.providerHref ? (
@@ -295,20 +298,20 @@ function AddressEditor({
 
       {expanded ? (
         <>
-          {partField("line1", "Street address", { autoComplete: "address-line1", ref: firstFieldRef })}
-          {partField("line2", "Unit, level or building", { optional: true, width: "medium", autoComplete: "address-line2" })}
+          {partField("line1", messages.streetAddress, { autoComplete: "address-line1", ref: firstFieldRef })}
+          {partField("line2", messages.unitLevelOrBuilding, { optional: true, width: "medium", autoComplete: "address-line2" })}
           {partField("locality", convention.locality, { width: "medium", autoComplete: "address-level2" })}
           <Field label={convention.region} error={parts.region.error} name={parts.region.name} disabled={disabled} nativeLabel={!regions}>
             {regions ? (
               <Select<string>
-                options={regions.map(([code, name]) => ({ value: code, label: name }))}
+                options={regions.map(([code, name]) => ({ value: code, label: String(messages[("region" + code.replace("-", "")) as keyof typeof messages] ?? name) }))}
                 value={value.region.code || null}
                 onValueChange={(code) => {
                   const match = regions.find(([regionCode]) => regionCode === code)
                   parts.region.onChange(match ? { code: match[0], name: match[1] } : { code: "", name: "" })
                 }}
                 onBlur={() => parts.region.onBlur()}
-                placeholder={`Choose a ${convention.region.toLowerCase().split(" or ")[0]}`}
+                placeholder={messages.chooseA(convention.region)}
                 width="medium"
                 invalid={Boolean(parts.region.error)}
                 disabled={disabled}
@@ -326,7 +329,7 @@ function AddressEditor({
             )}
           </Field>
           {partField("postcode", convention.postcode, { width: "short", autoComplete: "postal-code", inputMode: country === "AU" || country === "NZ" ? "numeric" : "text" })}
-          <Field label="Country" error={parts.country.error} name={parts.country.name} disabled={disabled}>
+          <Field label={messages.country} error={parts.country.error} name={parts.country.name} disabled={disabled}>
             <CountrySelect
               value={value.country.code || null}
               onValueChange={(code) => {
@@ -380,23 +383,24 @@ function AddressMap({
   onReset: () => void
   disabled?: boolean
 }) {
+  const messages = useMessages(addressFieldMessages)
+
   const where = value.location ? `${value.location.lat.toFixed(5)}, ${value.location.lng.toFixed(5)}` : ""
   const caption = !value.location
-    ? "No position yet: choose a suggestion, or click the map to place the pin."
+    ? messages.noPositionYetChooseASuggestionOrClick
     : value.pinned
-      ? `${where} · placed by hand`
-      : `${where} · from the address. Drag the pin to adjust it.`
+      ? messages.placedByHand(where)
+      : messages.fromTheAddressDragThePin(where)
   return (
     <div className="fa-address-map">
       <span className="fa-label fa-address-map-label">
-        Position
-      </span>
+        {messages.position} </span>
       <Suspense fallback={<div className="fa-address-map-well glass-inset" aria-hidden />}>
         <PinMap
           config={map}
           value={value.location}
           onValueChange={disabled ? undefined : onPlace}
-          label={`Map of ${formatAddress(value) || "the address"}`}
+          label={messages.mapOf(formatAddress(value) || messages.theAddress)}
           fallback={fallback}
           className="fa-address-map-well"
         />
@@ -404,9 +408,8 @@ function AddressMap({
       <div className="fa-address-map-caption">
         <span className="fa-address-map-text">{caption}</span>
         {value.pinned && !disabled ? (
-          <Button variant="ghost" size="xs" onClick={onReset} disabledReason={lookupPoint ? undefined : "Choose the address from the lookup first"}>
-            Reset pin
-          </Button>
+          <Button variant="ghost" size="xs" onClick={onReset} disabledReason={lookupPoint ? undefined : messages.chooseTheAddressFromTheLookupFirst}>
+            {messages.resetPin} </Button>
         ) : null}
       </div>
     </div>
@@ -547,7 +550,10 @@ export interface AddressViewProps {
  * An address to read, not edit: the postal block in a recessed well with Copy, and optionally
  * its map. Put it in a Field for a label ("Address") and a hint ("Change it in …").
  */
-export function AddressView({ value, homeCountry = "AU", map, copyable = true, empty = "No address yet", className }: AddressViewProps) {
+export function AddressView({ value, homeCountry = "AU", map, copyable = true, empty: emptyProp, className }: AddressViewProps) {
+  const messages = useMessages(addressFieldMessages)
+  const empty = emptyProp ?? messages.noAddressYet
+
   const lines = addressLines(value, homeCountry)
   const blank = isEmptyAddress(value)
   return (
@@ -556,11 +562,11 @@ export function AddressView({ value, homeCountry = "AU", map, copyable = true, e
         <address className="fa-address-view-lines" data-empty={blank ? "" : undefined}>
           {blank ? empty : lines.map((line) => <span key={line}>{line}</span>)}
         </address>
-        {copyable && !blank ? <CopyButton value={formatAddress(value, homeCountry)} label="Copy address" className="fa-input-btn" /> : null}
+        {copyable && !blank ? <CopyButton value={formatAddress(value, homeCountry)} label={messages.copyAddress} className="fa-input-btn" /> : null}
       </div>
       {map && value.location ? (
         <Suspense fallback={<div className="fa-address-map-well glass-inset" aria-hidden />}>
-          <PinMap config={map} value={value.location} label={`Map of ${formatAddress(value, homeCountry)}`} className="fa-address-map-well" />
+          <PinMap config={map} value={value.location} label={messages.mapOf(formatAddress(value, homeCountry))} className="fa-address-map-well" />
         </Suspense>
       ) : null}
     </div>

@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { resultsMessages } from "./messages.js"
 import { cx } from "../../lib/cx.js"
 import { useEntityResolver } from "../entity-chip/index.js"
 import { Skeleton } from "../../ui/skeleton/index.js"
@@ -76,9 +78,11 @@ export interface ResultSkeletonProps {
  * anything below (R9.3).
  */
 export function ResultSkeleton({ type, count, className }: ResultSkeletonProps) {
+  const messages = useMessages(resultsMessages)
+
   const rows = count ?? (type === "table" ? INLINE_ROWS : 4)
   return (
-    <AiCard.Root breakout className={cx("fa-ai-result", className)} data-type={type} aria-busy="true" aria-label="Loading result">
+    <AiCard.Root breakout className={cx("fa-ai-result", className)} data-type={type} aria-busy="true" aria-label={messages.loadingResult}>
       <header className="fa-ai-card-header" aria-hidden>
         <Skeleton.Block width="var(--icon-sm)" height="var(--icon-sm)" radius="item" />
         <div className="fa-ai-card-heading">

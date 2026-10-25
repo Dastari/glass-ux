@@ -12,6 +12,6 @@ every crumb truncates with an ellipsis.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| label | `string \| undefined` | See type | no | "Drill path" | The visible or accessible label for this component. |
+| label | `string \| undefined` | See type | no | — | The visible or accessible label for this component. |
 | onSelect | `(depth: number) => void` | See type | yes | — | Called with the zero-based depth of the ancestor the person clicks (0 is the root); not called for the current node. Pass `useDrill().to`. |
 | trail | `readonly Node[]` | See type | yes | — | Root first, focused node last, as `useDrill().trail` returns it; the last node renders as the current place. |

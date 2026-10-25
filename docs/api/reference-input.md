@@ -26,7 +26,7 @@ Read-only (or `direction="from"` for backlinks) it lists the chips in a recessed
 | direction | `"from" \| "to" \| undefined` | "from", "to" | no | "to" | `from`: backlinks, read with each relation's inverse label. Implies read-only. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | disabledReason | `((target: ReferenceTarget) => string \| undefined) \| undefined` | See type | no | — | Why a target cannot be linked here ("This device"), or nothing. |
-| emptyText | `string \| undefined` | See type | no | "None" | What a read-only input with no links says. |
+| emptyText | `string \| undefined` | See type | no | — | What a read-only input with no links says. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Marks the control invalid. Pair it with an accessible validation message. |
 | kindFilter | `boolean \| undefined` | false, true | no | — | Show the kind filter chips in the popup (default when there is more than one kind). |
@@ -35,7 +35,7 @@ Read-only (or `direction="from"` for backlinks) it lists the chips in a recessed
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
 | onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the search input loses focus, so a form can mark the field touched. |
 | onValueChange | `((links: ReferenceLink<R>[]) => void) \| undefined` | See type | no | — | Called with the full, de-duplicated list of links whenever one is added, removed or given another relation. Pair with `value` to control it; use `defaultValue` otherwise. |
-| placeholder | `string \| undefined` | See type | no | "Type @ to link" | The prompt shown while the value is empty. It does not replace the field’s label. |
+| placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | relations | `readonly ReferenceRelation<R>[] \| undefined` | See type | no | — | Relations a chip's menu offers. Omit for plain context chips (the AI composer). |

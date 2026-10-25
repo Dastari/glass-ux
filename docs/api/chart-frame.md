@@ -17,8 +17,8 @@ The parent must give it a definite height.
 | --- | --- | --- | --- | --- | --- |
 | children | `(box: PlotBox) => ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | compactHead | `boolean \| undefined` | false, true | no | false | Whether the head row exists in the compact tier (it always does in full). Fixed per chart type so the skeleton and the loaded chart share one geometry. |
-| emptyText | `ReactNode` | See type | no | "No data" | One factual line for the empty state (R2.5): "No samples in the last hour". |
-| errorText | `ReactNode` | See type | no | "Couldn’t load this chart" | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
+| emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
+| errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
 | head | `((tier: ChartTier) => ReactNode) \| undefined` | See type | no | — | Legend or readout for the head row (compact and full tiers). |
 | kind | `ChartKind` | "line", "column", "bar", "pie", "gauge", "heatmap", "scatter", "treemap", "sunburst" | yes | — | Semantic entity or content kind, used to choose labels and rendering. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |

@@ -23,7 +23,7 @@ zone's abbreviation and offset now, so daylight saving is visible. The value is 
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
 | onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the text input loses focus, so a form can mark the field touched. |
 | onValueChange | `((value: string \| null) => void) \| undefined` | See type | no | — | Called with the chosen option's value when one is picked, or null when the selection is cleared. Typing alone does not call it. Pair with `value` to control it; use `defaultValue` otherwise. |
-| placeholder | `string \| undefined` | See type | no | "Choose a time zone" | The prompt shown while the value is empty. It does not replace the field’s label. |
+| placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |

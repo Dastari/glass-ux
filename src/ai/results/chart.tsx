@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { resultsMessages } from "./messages.js"
 import { lazy, Suspense } from "react";
 import { IconChartLine, IconReporting } from "../../icons/generated/icons.js";
 import { Skeleton } from "../../ui/skeleton/index.js";
@@ -12,6 +14,8 @@ export function ResultChart({ result }: {
   /** The chart result: `chart` (line or bar), x-axis `labels`, `series`, optional `unit` and `domain`; copy and CSV export use the same values. */
   result: ChartResult
 }) {
+  const messages = useMessages(resultsMessages)
+
   return (
     <ResultFrame
       result={result}
@@ -21,7 +25,7 @@ export function ResultChart({ result }: {
         ...result.series.map((item) => [item.name, ...item.values].join("\t")),
       ].join("\n")}
       csv={[
-        ["Series", ...result.labels].join(","),
+        [messages.series, ...result.labels].join(","),
         ...result.series.map((item) => [item.name, ...item.values].join(",")),
       ].join("\n")}
     >

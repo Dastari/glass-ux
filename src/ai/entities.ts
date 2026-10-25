@@ -1,3 +1,4 @@
+import { aiMessages, getAiMessages } from "./messages.js"
 /**
  * Entity kinds for AI output: one glyph, one noun and one route per kind. The kinds belong
  * to the application, which registers them with the EntityResolver; context links, entity
@@ -24,11 +25,12 @@ export function defineEntityKinds<K extends EntityKinds>(kinds: K): K {
   return kinds
 }
 
-const UNKNOWN: EntityKindSpec = { icon: IconLink, noun: "Item", plural: "Items", segment: "" }
+function getUNKNOWN(messages: typeof aiMessages.defaults): EntityKindSpec { return { icon: IconLink, noun: messages.item, plural: messages.items, segment: "" } }
+
 
 /** The registered spec (glyph, nouns, route segment) for an entity kind; unregistered kinds get a link glyph, "Item"/"Items" and no route. */
-export function kindSpec(kinds: EntityKinds, kind: EntityKind): EntityKindSpec {
-  return kinds[kind] ?? UNKNOWN
+export function kindSpec(kinds: EntityKinds, kind: EntityKind, messages: ReturnType<typeof getAiMessages> = getAiMessages()): EntityKindSpec {
+  return kinds[kind] ?? getUNKNOWN(messages)
 }
 
 /** The entity's route: `/<segment>/<id>`. */
@@ -76,8 +78,8 @@ export function hostOf(href: string) {
 }
 
 /** Accessible name for an entity reference: "Endpoint NST-C106, online". */
-export function entityName(kinds: EntityKinds, ref: EntityRef) {
-  const parts = [`${kindSpec(kinds, ref.kind).noun} ${ref.label}`]
+export function entityName(kinds: EntityKinds, ref: EntityRef, messages: ReturnType<typeof getAiMessages> = getAiMessages()) {
+  const parts = [`${kindSpec(kinds, ref.kind, messages).noun} ${ref.label}`]
   if (ref.status) parts.push(ref.status)
   if (ref.meta) parts.push(ref.meta)
   if (ref.state) parts.push(ref.state.label)

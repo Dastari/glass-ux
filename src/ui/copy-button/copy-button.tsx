@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { copyButtonMessages, getCopyButtonMessages } from "./messages.js"
 import { IconCopy } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { Button, useActionFeedback, type ButtonProps } from "../button/index.js"
@@ -13,7 +15,7 @@ export interface CopyButtonProps extends Omit<ButtonProps, "onClick" | "status" 
 }
 
 /** Write text to the clipboard; falls back to a hidden textarea where the API is unavailable. */
-export async function copyText(text: string): Promise<void> {
+export async function copyText(text: string, messages = getCopyButtonMessages()): Promise<void> {
   if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
     await navigator.clipboard.writeText(text)
     return
@@ -27,23 +29,27 @@ export async function copyText(text: string): Promise<void> {
   area.select()
   const done = document.execCommand("copy")
   area.remove()
-  if (!done) throw new Error("Copy is not available in this browser")
+  if (!done) throw new Error(messages.copyIsNotAvailableInThisBrowser)
 }
 
-const COPY_ANNOUNCEMENT = { success: "Copied", error: "Copy failed" }
+function getCOPY_ANNOUNCEMENT(messages: typeof copyButtonMessages.defaults) { return { success: messages.copied, error: messages.copyFailed } }
+
 
 /**
  * Copies a value and confirms in place: the icon becomes a drawn ✓ for the feedback hold,
  * or ✕ when the clipboard refuses (R9.2), and a polite announcement says "Copied". The
  * button keeps its size throughout. Inside an Input's box, give it `className="fa-input-btn"`.
  */
-export function CopyButton({ value, label = "Copy", showLabel = false, variant = "ghost", size = "sm", className, disabled, ...rest }: CopyButtonProps) {
+export function CopyButton({ value, label: labelProp, showLabel = false, variant = "ghost", size = "sm", className, disabled, ...rest }: CopyButtonProps) {
+  const messages = useMessages(copyButtonMessages)
+  const label = labelProp ?? messages.copy
+
   const { status, run } = useActionFeedback()
   const copy = async () => {
     const text = typeof value === "function" ? value() : value
     await run(
-      () => copyText(text),
-      () => toast.danger("Not copied", { description: "The browser blocked the clipboard. Select the text and copy it instead." })
+      () => copyText(text, messages),
+      () => toast.danger(messages.notCopied, { description: messages.theBrowserBlockedTheClipboardSelectTheText })
     )
   }
   return (
@@ -54,9 +60,9 @@ export function CopyButton({ value, label = "Copy", showLabel = false, variant =
       className={cx("fa-copy-button", className)}
       icon={<IconCopy />}
       aria-label={label}
-      tooltip={status === "success" ? "Copied" : status === "error" ? "Copy failed" : undefined}
+      tooltip={status === "success" ? messages.copied : status === "error" ? messages.copyFailed : undefined}
       status={status}
-      statusAnnouncement={COPY_ANNOUNCEMENT}
+      statusAnnouncement={getCOPY_ANNOUNCEMENT(messages)}
       disabled={disabled || (typeof value === "string" && !value)}
       onClick={() => void copy()}
     >

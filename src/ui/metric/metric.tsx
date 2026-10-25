@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { metricMessages } from "./messages.js"
 import { useState, type ComponentProps, type ReactNode } from "react"
 import { IconMinus, IconTrendDown, IconTrendUp } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -54,10 +56,12 @@ export interface MetricProps extends Omit<ComponentProps<"div">, "children"> {
 }
 
 function Delta({ delta, unit = "", better = "up", label, locale }: { delta: number; unit?: string; better?: "up" | "down" | "none"; label?: string; locale: string }) {
+  const messages = useMessages(metricMessages)
+
   const trend = delta > 0 ? "up" : delta < 0 ? "down" : "flat"
   const good = better === "none" || trend === "flat" ? undefined : (trend === better) === true
   const Icon = trend === "up" ? IconTrendUp : trend === "down" ? IconTrendDown : IconMinus
-  const words = trend === "up" ? "Up" : trend === "down" ? "Down" : "No change"
+  const words = trend === "up" ? messages.up : trend === "down" ? messages.down : messages.noChange
   return (
     <span className="fa-metric-delta" data-good={good === undefined ? undefined : String(good)}>
       <Icon className="fa-metric-delta-icon" label={words} />
@@ -96,13 +100,15 @@ export function Metric({
   className,
   ...rest
 }: MetricProps) {
+  const messages = useMessages(metricMessages, { locale: localeProp })
+
   const [hover, setHover] = useState<number | null>(null)
   const locale = useLocale(localeProp)
   const stats = seriesStats(data)
   const fmt = (n: number) => formatMetric(n, unit, format, locale)
   const shown = hover !== null ? data[hover] : value
   const summary = stats
-    ? `${label}${range ? `, ${range.toLowerCase()}` : ""}: minimum ${fmt(stats.min)}, average ${fmt(stats.avg)}, maximum ${fmt(stats.max)}, latest ${fmt(stats.last)}`
+    ? messages.minimumAverageMaximum(label, range ? `, ${range.toLowerCase()}` : "", fmt(stats.min), fmt(stats.avg), fmt(stats.max), fmt(stats.last))
     : undefined
 
   return (
@@ -117,18 +123,18 @@ export function Metric({
             {shown === null || shown === undefined ? "—" : fmt(shown)}
           </data>
           {hover !== null ? (
-            <span className="fa-metric-readout">{times?.[hover] ?? `${data.length - 1 - hover} samples ago`}</span>
+            <span className="fa-metric-readout">{times?.[hover] ?? messages.samplesAgo(data.length - 1 - hover)}</span>
           ) : delta !== undefined ? (
             <Delta delta={delta} unit={deltaUnit} better={better} label={deltaLabel} locale={locale} />
           ) : null}
         </div>
         {stats ? (
           <div className="fa-metric-stats" data-numeric>
-            <span>Min {fmt(stats.min)}</span>
+            <span>{messages.min} {fmt(stats.min)}</span>
             <span aria-hidden>·</span>
-            <span>Avg {fmt(stats.avg)}</span>
+            <span>{messages.avg} {fmt(stats.avg)}</span>
             <span aria-hidden>·</span>
-            <span>Max {fmt(stats.max)}</span>
+            <span>{messages.max} {fmt(stats.max)}</span>
           </div>
         ) : null}
         {data.length > 1 ? (
@@ -155,7 +161,7 @@ export function Metric({
       {/* Always mounted: the hovered reading is announced when it replaces the value. */}
       <span className="sr-only" aria-live="polite">
         {hover !== null && shown !== null && shown !== undefined
-          ? `${fmt(shown)}, ${times?.[hover] ?? `${data.length - 1 - hover} samples ago`}`
+          ? `${fmt(shown)}, ${times?.[hover] ?? messages.samplesAgo(data.length - 1 - hover)}`
           : ""}
       </span>
     </div>

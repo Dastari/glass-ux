@@ -1,3 +1,5 @@
+import { useMessages } from "../../lib/i18n/index.js"
+import { inputMessages } from "./messages.js"
 import { Input as BaseInput } from "@base-ui/react/input"
 import { useRef, useState, type MouseEvent, type ReactNode, type Ref } from "react"
 import { IconClose, IconEye, IconEyeOff, IconSearch } from "../../icons/generated/icons.js"
@@ -75,6 +77,8 @@ export function Input({
   onKeyDown,
   ...rest
 }: InputProps) {
+  const messages = useMessages(inputMessages)
+
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [revealedInner, setRevealedInner] = useState(false)
   const revealed = revealedProp ?? revealedInner
@@ -153,7 +157,7 @@ export function Input({
         <Kbd keys={shortcut} size="sm" className="fa-input-kbd" aria-hidden />
       ) : null}
       {showClear ? (
-        <Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconClose />} aria-label="Clear" tabIndex={-1} onClick={clear} />
+        <Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconClose />} aria-label={messages.clear} tabIndex={-1} onClick={clear} />
       ) : null}
       {isPassword && !disabled ? (
         <Button
@@ -161,7 +165,7 @@ export function Input({
           size="sm"
           className="fa-input-btn"
           icon={revealed ? <IconEyeOff /> : <IconEye />}
-          aria-label={revealed ? "Hide password" : "Show password"}
+          aria-label={revealed ? messages.hidePassword : messages.showPassword}
           aria-pressed={revealed}
           onClick={() => {
             setRevealed(!revealed)
@@ -182,7 +186,10 @@ export interface SearchFieldProps extends Omit<InputProps, "type" | "icon" | "cl
  * Search box: magnifier, clear button while filled, Esc clears, optional ⌘K hint for the
  * top bar. Filtering lists, tables and the command palette all use this one field.
  */
-export function SearchField({ placeholder = "Search", ...rest }: SearchFieldProps) {
+export function SearchField({ placeholder: placeholderProp, ...rest }: SearchFieldProps) {
+  const messages = useMessages(inputMessages)
+  const placeholder = placeholderProp ?? messages.search
+
   return (
     <Input
       {...rest}

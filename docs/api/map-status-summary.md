@@ -11,4 +11,4 @@ Status counts as dot · number · label chips (clusters, popups, legends).
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | counts | `Readonly<Record<"danger" \| "warning" \| "healthy" \| "unknown", number>>` | See type | yes | — | Points per status; statuses with zero are left out. |
-| labels | `Readonly<Record<"danger" \| "warning" \| "healthy" \| "unknown", string>> \| undefined` | See type | no | DEFAULT_STATUS_LABELS | Label per status; defaults to `DEFAULT_STATUS_LABELS`. |
+| labels | `Readonly<Record<"danger" \| "warning" \| "healthy" \| "unknown", string>> \| undefined` | See type | no | — | Label per status; defaults to `DEFAULT_STATUS_LABELS`. |

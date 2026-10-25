@@ -1,3 +1,4 @@
+import { getMoneyFieldMessages } from "./messages.js"
 import { numberRule } from "../form/rules.js"
 import { DEFAULT_CURRENCY, formatMoney } from "./money.js"
 
@@ -15,13 +16,13 @@ export function moneySchema(options: { required?: boolean; min?: number; max?: n
   const show = (minor: number) => formatMoney(minor, { currency, locale: options.locale })
   const range = () =>
     min !== undefined && options.max !== undefined
-      ? `Enter an amount from ${show(min)} to ${show(options.max)}`
+      ? getMoneyFieldMessages(options.locale).enterAnAmountFromTo(show(min), show(options.max))
       : options.max !== undefined
-        ? `Enter an amount up to ${show(options.max)}`
+        ? getMoneyFieldMessages(options.locale).enterAnAmountUpTo(show(options.max))
         : min !== undefined
           ? min === 0
-            ? "Enter an amount of zero or more"
-            : `Enter an amount of ${show(min)} or more`
-          : "Enter an amount"
-  return numberRule({ required: options.required, requiredMessage: "Enter an amount", rangeMessage: range, min, max: options.max, integer: true })
+            ? getMoneyFieldMessages(options.locale).enterAnAmountOfZeroOrMore
+            : getMoneyFieldMessages(options.locale).enterAnAmountOfOrMore(show(min))
+          : getMoneyFieldMessages(options.locale).enterAnAmount
+  return numberRule({ required: options.required, requiredMessage: () => getMoneyFieldMessages(options.locale).enterAnAmount, rangeMessage: range, min, max: options.max, integer: true })
 }

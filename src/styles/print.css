@@ -1,0 +1,247 @@
+/*
+ * Print. A page made of library components prints as a document on white paper:
+ *
+ *   materials     every glass material is a white surface with a hairline border: no blur,
+ *                 no fill tint, rims, lens, sheen, grain or shadow
+ *   canvas        white, without its artwork or picture
+ *   text          near black; muted and subtle text step darker; the accent's text is dark
+ *   chrome        the rail, top bar, tab bar, section drawer, inspector, window dock, toasts,
+ *                 tooltips and scroll-edge hairlines are left out; mark anything that should
+ *                 print anyway with data-print="keep", and anything else to leave out with
+ *                 data-print="hide"
+ *   flow          the shell stops owning the viewport: the workspace, panels and scroll
+ *                 containers grow to their content so every page prints, not just the first
+ *                 screen; charts, cards, tiles, setting rows and table rows avoid page breaks
+ *   tables        DataTable prints every loaded row in document flow, its header repeated by
+ *                 nothing (rows are not a <table>); rows not loaded yet (infinite, paged) are
+ *                 not fetched
+ *   charts        print in colour, with their legends; the data keeps its palette roles
+ *   links         in long-form content (Markdown, rich text, <article>, [data-print-links])
+ *                 an external link prints its address after the text
+ *
+ * Every rule here is unlayered, so it wins over the layered library and application styles
+ * it has to undo; inline geometry that the virtualiser writes needs !important.
+ */
+@media print {
+  /* ── Roles: a light, paper palette whatever the mode and palette ───────── */
+  :root,
+  [data-mode="light"],
+  [data-mode="dark"],
+  [data-palette] {
+    color-scheme: light;
+
+    --canvas: oklch(1 0 0);
+    --canvas-solid: oklch(1 0 0);
+    --fg: oklch(0.16 0 0);
+    --fg-muted: oklch(0.3 0.01 var(--neutral-h));
+    --fg-subtle: oklch(0.38 0.01 var(--neutral-h));
+    --fg-disabled: oklch(0.55 0.005 var(--neutral-h));
+    --fg-inverse: oklch(1 0 0);
+    --line: oklch(0 0 0 / 0.16);
+    --line-strong: oklch(0 0 0 / 0.3);
+    --fill-hover: transparent;
+    --fill-press: transparent;
+    --fill-muted: oklch(0 0 0 / 0.05);
+
+    --accent: oklch(0.5 var(--accent-c) var(--accent-h));
+    --accent-text: oklch(0.4 var(--accent-c) var(--accent-h));
+    --accent-fg: oklch(1 0 0);
+    --accent-soft: oklch(0.5 var(--accent-c) var(--accent-h) / 0.1);
+    --accent-line: oklch(0.5 var(--accent-c) var(--accent-h) / 0.45);
+    --accent-ring: transparent;
+    --accent-glow: transparent;
+
+    --success-text: oklch(0.42 0.13 152);
+    --warning-text: oklch(0.45 0.12 60);
+    --danger-text: oklch(0.45 0.19 22);
+    --info-text: oklch(0.42 0.16 252);
+
+    --surface-1: oklch(1 0 0);
+    --surface-2: oklch(1 0 0);
+    --surface-3: oklch(1 0 0);
+    --sticky-fill: oklch(1 0 0);
+    --glass-fill-chrome: oklch(1 0 0);
+    --glass-fill-panel: oklch(1 0 0);
+    --glass-fill-overlay: oklch(1 0 0);
+    --glass-fill-float: oklch(1 0 0);
+    --glass-fill-card: oklch(1 0 0);
+    --glass-fill-control: oklch(1 0 0);
+    --glass-fill-control-hover: oklch(1 0 0);
+    --glass-fill-inset: oklch(0.97 0 0);
+    --glass-edge: oklch(0 0 0 / 0.22);
+    --glass-rim: transparent;
+    --glass-rim-top: transparent;
+    --glass-rim-bottom: transparent;
+    --glass-lens: transparent;
+    --glass-sheen: none;
+    --glass-grain: none;
+    --specular: transparent;
+    --specular-rim: transparent;
+    --sheen-solid: none;
+    --shadow-1: none;
+    --shadow-2: none;
+    --shadow-3: none;
+    --shadow-4: none;
+    --shadow-accent: none;
+    --shadow-danger: none;
+    --shadow-success: none;
+    --shadow-warning: none;
+    --halo-colour: oklch(1 0 0);
+
+    /* The data colours at their light-mode depth, which reads on paper. */
+    --chart-1-l: 0.58;
+    --chart-l-a: 0.62;
+    --chart-l-b: 0.44;
+    --chart-wash: 14%;
+  }
+
+  html,
+  body {
+    background: oklch(1 0 0);
+    color: var(--fg);
+  }
+
+  /* ── Materials: white with a hairline, nothing filters the backdrop ───── */
+  *,
+  *::before,
+  *::after {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-card, .glass-control, .glass-detached) {
+    background-color: oklch(1 0 0);
+    background-image: none;
+    border-color: var(--glass-edge);
+    box-shadow: none;
+    color: var(--fg);
+  }
+  :is(.glass-chrome, .glass-panel, .glass-detached)::before {
+    background: oklch(1 0 0);
+    box-shadow: none;
+  }
+  .glass-inset {
+    box-shadow: none;
+  }
+  .glass-scrim {
+    display: none;
+  }
+
+  /* ── Canvas: white, no artwork ──────────────────────────────────────────── */
+  :is(.canvas-ambient, .canvas-background) {
+    background: oklch(1 0 0);
+  }
+  .canvas-silk {
+    display: none;
+  }
+
+  /* ── Chrome that has no meaning on paper ─────────────────────────────── */
+  :is(
+      .fa-shell-slot-brand,
+      .fa-shell-slot-top,
+      .fa-shell-slot-rail,
+      .fa-shell-slot-drawer,
+      .fa-shell-drawer-handle,
+      .fa-shell-slot-inspector,
+      .fa-shell-slot-tabbar,
+      .fa-shell-rail,
+      .fa-shell-topbar,
+      .fa-tabbar,
+      .fa-shell-drawer,
+      .fa-shell-inspector,
+      .fa-wm-dock,
+      .fa-toast-viewport,
+      .fa-tooltip-positioner,
+      .fa-chart-tip,
+      .fa-chart-tools,
+      .fa-chart-hit,
+      .fa-dt-progress,
+      .fa-dt-new
+    ):not([data-print="keep"]),
+  [data-print="hide"] {
+    display: none !important;
+  }
+  /* Scroll-edge hairlines and fades: on paper nothing scrolls. */
+  .fa-dt-frame::before {
+    display: none;
+  }
+  .fa-panel > .fa-panel-footer {
+    box-shadow: none;
+  }
+  .fa-scroll,
+  .fa-scroll-viewport {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .fa-scroll-bar {
+    display: none;
+  }
+
+  /* ── Flow: the document grows to its content ─────────────────────────── */
+  .fa-shell {
+    display: block;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+  }
+  .fa-shell-slot-work {
+    display: block;
+    padding: 0;
+  }
+  :is(.fa-panel[data-scroll], .fa-panel[data-scroll] > .fa-panel-body, .fa-scroll, .fa-scroll-viewport),
+  [data-scroll-container]:not(.fa-chart *) {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  /* ── Page breaks ───────────────────────────────────────────────────────── */
+  :is(.fa-chart, .glass-card, .fa-metric, .fa-detail-tile, .fa-setting-row, .fa-list-row, .fa-dt-row, .fa-fact-list, tr, figure, img) {
+    break-inside: avoid;
+  }
+  :is(.fa-panel-header, h1, h2, h3, h4) {
+    break-after: avoid;
+  }
+
+  /* ── DataTable: every loaded row in flow ─────────────────────────────── */
+  .fa-dt,
+  .fa-dt-frame,
+  .fa-dt-grid,
+  .fa-dt-body {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .fa-dt-scroll {
+    position: static;
+    height: auto;
+    overflow: visible;
+    contain: none;
+  }
+  .fa-dt-rows {
+    height: auto !important;
+  }
+  .fa-dt-rows > .fa-dt-row {
+    position: relative;
+    transform: none !important;
+  }
+  .fa-dt-head {
+    overflow: visible;
+  }
+
+  /* ── Charts: in colour, with their legends ─────────────────────────────── */
+  :is(.fa-chart, .fa-spark, .fa-metric, .fa-chart-legend, .fa-tone-dot, .fa-badge, .fa-meter) {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .fa-chart-brush-shade {
+    background-color: oklch(1 0 0 / 0.6);
+  }
+
+  /* ── Links in long-form content print their address ───────────────── */
+  :is(.fa-ai-md, .fa-rich-text-content, article, [data-print-links]) a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    color: var(--fg-muted);
+    font-size: 0.85em;
+    overflow-wrap: anywhere;
+  }
+}

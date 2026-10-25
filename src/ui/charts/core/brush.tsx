@@ -270,7 +270,7 @@ export function BrushStrip({ xs, series, domain, window: view, full, min, onComm
         className="fa-chart-brush-window"
         role="slider"
         tabIndex={0}
-        aria-label={label}
+        aria-label={t.brushWindow}
         aria-valuemin={0}
         aria-valuemax={Math.max(0, n - 1 - (endIndex - startIndex))}
         aria-valuenow={startIndex}

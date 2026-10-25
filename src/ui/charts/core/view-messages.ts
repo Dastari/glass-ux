@@ -23,6 +23,8 @@ export const chartViewMessages = defineMessages("chartView", {
   showing: (from: string, to: string) => `Showing ${from} to ${to}`,
   showingAll: "Showing the whole range",
   brush: "Overview",
+  /** The brush's window, a slider that pans. */
+  brushWindow: "Visible range",
   brushStart: "Start of the visible range",
   brushEnd: "End of the visible range",
 })

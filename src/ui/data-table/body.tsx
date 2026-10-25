@@ -1,4 +1,5 @@
 import type { RowData } from "@tanstack/react-table"
+import { usePrinting } from "../../lib/use-printing.js"
 import type { Row, RowSelectionState } from "@tanstack/react-table"
 import { defaultRangeExtractor, useVirtualizer, type Virtualizer } from "@tanstack/react-virtual"
 import { Fragment, useCallback, useLayoutEffect, type HTMLAttributes, type ReactElement, type ReactNode, type Ref, type RefObject } from "react"
@@ -95,6 +96,7 @@ export function VirtualRows<T extends RowData>({
     (row: Row<DataTableFeatures, T> | undefined) => Boolean(row && hidden.length && (expandAll || expanded.has(row.id))),
     [expandAll, expanded, hidden.length]
   )
+  const printing = usePrinting()
   const lineCount = items ? items.length : rows.length
   const count = lineCount + (renderTail ? 1 : 0)
   const rowAt = (index: number): Row<DataTableFeatures, T> | undefined => {
@@ -117,7 +119,8 @@ export function VirtualRows<T extends RowData>({
     getScrollElement: () => scrollRef.current,
     estimateSize: (index) => rowHeight + (isExpanded(rowAt(index)) ? detailHeight : 0),
     getItemKey: keyAt,
-    overscan: renderAll ? count : 6,
+    // Printing lays out every loaded row (print.css puts them in document flow).
+    overscan: renderAll || printing ? count : 6,
     initialRect: { width: 0, height: renderAll ? count * rowHeight : 0 },
     rangeExtractor: (range) => {
       const indexes = defaultRangeExtractor(range)

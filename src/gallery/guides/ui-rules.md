@@ -150,6 +150,16 @@ follows a fine pointer and a glint on the rim nearest it.
 - **R4.8** Repeated cards in a long list use `glass-card`: the panel look without a blur pass.
 - **R4.9** Lit controls (`fa-lit`) and pressable controls (`fa-pressable`) come from the shared
   recipes; the highlight never paints over text, and Solid keeps only the static rims.
+- **R4.10** Print: the library's print layer (`src/styles/print.css`, part of the stylesheet)
+  turns every material into a white surface with a hairline border, removes blur, canvas
+  artwork and shadows, sets text near black with dark accent text, and lets the shell, panels
+  and scroll containers grow so every page prints. It leaves out the rail, top bar, tab bar,
+  section drawer, inspector, window dock, toasts, tooltips and scroll-edge hairlines; mark
+  chrome that must print with `data-print="keep"` and anything else to leave out with
+  `data-print="hide"`. Charts print in colour with their legends; charts, cards, tiles,
+  setting rows and table rows avoid page breaks; a DataTable prints every loaded row (rows
+  not yet loaded by paging or infinite scroll are not fetched); external links in long-form
+  content (Markdown, rich text, `<article>`, `[data-print-links]`) print their address.
 
 ## R5 · Layout
 
@@ -397,6 +407,14 @@ follows a fine pointer and a glint on the rim nearest it.
 - **R20.8** Count badges on a tile use the solid, ringed overlay so they read on any surface.
 - **R20.9** Announce outcomes with polite live regions that stay mounted, so the first message
   is not lost.
+- **R20.10** Forced colours (Windows High Contrast): every control keeps a visible boundary
+  (`ButtonText` or `CanvasText` borders, transparent borders that the system colours), focus
+  is an outline in `Highlight`, selected, checked and current states use `Highlight` and
+  `HighlightText` or a `Highlight` border rather than a fill alone, disabled controls use
+  `GrayText`, icons use `currentColor`, and materials become `Canvas` with a border. Status
+  carried by colour alone (a ToneDot, a chart series) keeps a shape or a label. Components
+  get this from `src/styles/forced-colors.css`; a host's own controls follow the same
+  pattern and are checked with forced colours emulated.
 
 ## R21 · Phones and touch
 
@@ -457,8 +475,8 @@ A short checklist for people and agents composing a screen:
 2. Materials: one blurred layer at a time; panels and cards from Surface and Panel props.
 3. Stability: errors, loading and live updates do not move buttons; skeletons match.
 4. Containers: the view works from a phone column to a wide pane, and no toolbar overflows.
-5. Appearance: correct in light, dark, Glass, Frosted, Solid, Still, compact density and a
-   non-default UI scale.
+5. Appearance: correct in light, dark, Glass, Frosted, Solid, Still, compact density, a
+   non-default UI scale, forced colours and print preview.
 6. Keyboard: every action reachable, focus visible and returned, unavailable actions explain
    why.
 7. Checks: `pnpm check`, `pnpm docs:build`, the affected browser tests, and

@@ -1,0 +1,245 @@
+/*
+ * Forced colours (Windows High Contrast and other forced palettes). The browser replaces
+ * colours with the person's system colours and drops box-shadow, so anything drawn with an
+ * inset ring, a tinted fill or a shadow halo disappears. This layer puts the meaning back
+ * in system colours:
+ *
+ *   boundaries   every control has one: a real border in ButtonText or CanvasText, or an
+ *                outline where the control has no border to colour (Switch, Segmented,
+ *                Slider track, Badge), so nothing changes size
+ *   focus        one visible outline in Highlight, including where a component draws its
+ *                ring with box-shadow or hides the outline behind a highlight fill
+ *   state        selected, checked, current and pressed use Highlight and HighlightText
+ *                (forced-color-adjust: none on that element only), or a Highlight outline
+ *                where a fill would hide a list's text
+ *   disabled     GrayText, at full opacity (the opacity dimming would hide it further)
+ *   materials    Canvas with a CanvasText border; nothing filters the backdrop
+ *   icons        follow the text (currentColor), so they take the system colour
+ *   data         chart series keep their colours (their identity is the colour, and a
+ *                legend names it); grids, references and labels take system colours.
+ *                Status dots keep their tone and gain a ring, and carry their label.
+ *
+ * Unlayered, so it wins over the layered component styles it corrects.
+ */
+@media (forced-colors: active) {
+  /* ── Materials ─────────────────────────────────────────────────────────── */
+  :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-card, .glass-detached) {
+    border: var(--border-width) solid CanvasText;
+    background: Canvas;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  :is(.glass-chrome, .glass-panel, .glass-detached)::before {
+    border-color: CanvasText;
+    background: Canvas;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* ── Focus: one Highlight outline ──────────────────────────────────────── */
+  :focus-visible {
+    outline: var(--focus-ring-width) solid Highlight;
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-control:is(:focus-within, [data-focused]) {
+    outline: var(--focus-ring-width) solid Highlight;
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-control :focus-visible {
+    outline: none;
+  }
+  /* Rows and list items draw focus inside their box. */
+  :is(.fa-item, .fa-dt-rows > .fa-dt-row, .fa-tab, .fa-segmented-item):focus-visible {
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+
+  /* ── Control boundaries ───────────────────────────────────────────────── */
+  .fa-btn {
+    border-color: ButtonText;
+    color: ButtonText;
+  }
+  :is(.fa-control, .fa-select-trigger, .fa-check, .fa-radio-card, .glass-control) {
+    border-color: CanvasText;
+  }
+  :is(.fa-switch, .fa-segmented, .fa-slider-track, .fa-badge) {
+    outline: var(--border-width) solid ButtonText;
+    outline-offset: calc(var(--border-width) * -1);
+  }
+  :is(.fa-switch, .fa-segmented):focus-visible,
+  .fa-slider-thumb:has(:focus-visible) {
+    outline: var(--focus-ring-width) solid Highlight;
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* ── Lists: highlight is Highlight, selection is a Highlight outline ─── */
+  .fa-item:is([data-highlighted], [data-popup-open]):not([data-disabled]) {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .fa-item:is([data-highlighted], [data-popup-open]):not([data-disabled]) * {
+    color: inherit;
+  }
+  .fa-item:is([data-selected], [data-active], [aria-current="page"], [aria-selected="true"]),
+  .fa-dt-rows > .fa-dt-row[data-selected],
+  .fa-dt-card[data-selected],
+  .fa-radio-card[data-checked] {
+    outline: var(--focus-ring-width) solid Highlight;
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-menu-dot,
+  .fa-tree-row[data-selected]::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  /* ── Tabs and Segmented: the indicator in Highlight ───────────────────── */
+  .fa-tabs-indicator {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+  .fa-segmented-indicator,
+  .fa-segmented:not([data-ready]) > .fa-segmented-item[data-pressed],
+  .fa-segmented-trigger {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .fa-segmented-item[data-pressed] {
+    forced-color-adjust: none;
+    color: HighlightText;
+  }
+
+  /* ── Switch, Checkbox, Radio ──────────────────────────────────────────── */
+  .fa-switch {
+    forced-color-adjust: none;
+    background: Canvas;
+    color: CanvasText;
+  }
+  .fa-switch::before {
+    display: none;
+  }
+  .fa-switch-thumb {
+    background: ButtonText;
+    box-shadow: none;
+  }
+  .fa-switch-icon {
+    color: Canvas;
+  }
+  .fa-switch[data-checked] {
+    background: Highlight;
+    outline-color: Highlight;
+  }
+  .fa-switch[data-checked] .fa-switch-thumb {
+    background: HighlightText;
+  }
+  .fa-switch[data-checked] .fa-switch-icon {
+    color: Highlight;
+  }
+  .fa-check:is([data-checked], [data-indeterminate]) {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .fa-check:is([data-checked], [data-indeterminate])::before {
+    display: none;
+  }
+  .fa-check:is([data-checked], [data-indeterminate]) .fa-icon {
+    color: HighlightText;
+  }
+  .fa-radio[data-checked] .fa-radio-indicator {
+    forced-color-adjust: none;
+    background: HighlightText;
+  }
+
+  /* ── Slider, Meter, Progress: the filled part in Highlight ───────────── */
+  :is(.fa-slider-fill, .fa-slider-tick[data-active], .fa-meter-indicator, .fa-progress-indicator) {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+  .fa-slider-thumb::before {
+    forced-color-adjust: none;
+    background: ButtonText;
+    box-shadow: none;
+  }
+  .fa-ring-arc {
+    stroke: Highlight;
+  }
+
+  /* ── Calendar ─────────────────────────────────────────────────────────── */
+  .fa-calendar[data-mode="single"] .fa-calendar-day[data-selected],
+  .fa-calendar-cell:is([data-range-start], [data-range-end]) .fa-calendar-day {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .fa-calendar-cell[data-in-range]::before {
+    border-block: var(--border-width) solid Highlight;
+    background: transparent;
+  }
+
+  /* ── Badges and status dots: keep the tone, add a ring ───────────────── */
+  :is(.fa-status-dot, .fa-badge-dot, .fa-notify-dot) {
+    forced-color-adjust: none;
+    outline: var(--border-width) solid CanvasText;
+  }
+  .fa-count {
+    border: var(--border-width) solid CanvasText;
+  }
+
+  /* ── Disabled: GrayText, not faded ────────────────────────────────────── */
+  :is(
+      .fa-btn:is(:disabled, [data-disabled], [aria-disabled="true"]),
+      .fa-control[data-disabled],
+      .fa-item[data-disabled],
+      .fa-check[data-disabled],
+      .fa-switch[data-disabled],
+      .fa-slider[data-disabled],
+      .fa-tab[data-disabled],
+      .fa-segmented-item[data-disabled],
+      .fa-calendar-day:disabled
+    ) {
+    border-color: GrayText;
+    color: GrayText;
+    opacity: 1;
+  }
+  .fa-switch[data-disabled] {
+    outline-color: GrayText;
+  }
+  .fa-switch[data-disabled] .fa-switch-thumb {
+    background: GrayText;
+  }
+
+  /* ── Charts: series keep their colours, the frame takes system colours ── */
+  :is(.fa-chart-series, .fa-chart-bar, .fa-chart-dot, .fa-chart-key, .fa-chart-swatch, .fa-chart-brush-line, .fa-chart-brush-area, .fa-spark-line) {
+    forced-color-adjust: none;
+  }
+  :is(.fa-chart-grid, .fa-chart-crosshair, .fa-chart-marker-rule) {
+    stroke: GrayText;
+  }
+  .fa-chart-threshold {
+    stroke: CanvasText;
+  }
+  .fa-chart-band {
+    fill: transparent;
+  }
+  :is(.fa-chart-selection-band, .fa-chart-zoom-rect) {
+    border-color: Highlight;
+    background: transparent;
+    fill: transparent;
+  }
+  .fa-chart-selection-rule {
+    stroke: Highlight;
+  }
+  .fa-chart-brush-window {
+    border-color: Highlight;
+  }
+  .fa-chart-brush-handle {
+    forced-color-adjust: none;
+    background: ButtonText;
+  }
+  :is(.fa-chart-threshold-label, .fa-chart-marker-label, .fa-chart-band-label, .fa-chart-ring-label) {
+    text-shadow: none;
+  }
+}

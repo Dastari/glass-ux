@@ -302,6 +302,7 @@ export function TimeInput({
           <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconClock />} aria-label={messages.chooseATime} />} />
           <Popover.Popup size="sm" align="start" anchor={boxRef} className="fa-time-popover" finalFocus={inputRef} aria-label={messages.chooseATime}>
             <TimeList
+              aria-label={messages.times}
               times={times}
               value={current && isTimeValue(current) ? current : null}
               near={localNow(seconds)}

@@ -440,6 +440,7 @@ export function DateTimeInput({
               />
               <div className="fa-date-time-times">
                 <TimeList
+                  aria-label={messages.times}
                   listRef={listRef}
                   times={times}
                   value={parseTimeText(timeText, textOptions)}

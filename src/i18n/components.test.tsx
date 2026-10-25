@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { LocaleProvider } from "../lib/locale/index.js"
 import { configureMessages, MessagesProvider, registerMessagePack } from "../lib/i18n/index.js"
 import { Pagination } from "../ui/pagination/index.js"
-import { DateField } from "../ui/date-picker/index.js"
+import { DateField, TimeInput } from "../ui/date-picker/index.js"
+import { Metric } from "../ui/metric/index.js"
 import { LoginFlow } from "../ui/login-flow/index.js"
 import { ContextSwitcher } from "../shell/context-switcher/index.js"
 import { WindowFrame } from "../windows/index.js"
@@ -26,6 +27,13 @@ function Region({ children, locale = "de" }: { children: React.ReactNode; locale
 }
 
 describe("language packs in rendered components", () => {
+  it("keeps nested controls in an explicit locale above the surrounding provider", async () => {
+    render(<Region locale="en-AU"><Metric label="Traffic" value={12} delta={2} locale="de" /><TimeInput aria-label="Sample time" defaultValue="09:30" locale="de" /></Region>)
+    expect(screen.getByRole("img", { name: "Aufwärts" })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Wählen Sie eine Zeit" }))
+    expect(await screen.findByRole("listbox", { name: "Zeiten" })).toBeInTheDocument()
+  })
+
   it("ui: changes pagination and date controls in place, preserving state and explicit wording", () => {
     const view = render(<Region><Pagination pageIndex={1} pageSize={10} pageRows={10} rowCount={50} /><DateField aria-label="Date value" defaultValue="2026-10-03" /></Region>)
     const next = screen.getByRole("button", { name: "Nächste Seite" })

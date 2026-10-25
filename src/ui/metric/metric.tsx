@@ -56,7 +56,7 @@ export interface MetricProps extends Omit<ComponentProps<"div">, "children"> {
 }
 
 function Delta({ delta, unit = "", better = "up", label, locale }: { delta: number; unit?: string; better?: "up" | "down" | "none"; label?: string; locale: string }) {
-  const messages = useMessages(metricMessages)
+  const messages = useMessages(metricMessages, { locale })
 
   const trend = delta > 0 ? "up" : delta < 0 ? "down" : "flat"
   const good = better === "none" || trend === "flat" ? undefined : (trend === better) === true

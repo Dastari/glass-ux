@@ -259,3 +259,23 @@
     line-height: inherit;
   }
 }
+
+/* Print: the gallery's own shell flows, and the document's section rail is left out. */
+@media print {
+  .gallery-shell {
+    display: block;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+  }
+  .gallery-content {
+    margin: 0;
+    overflow: visible;
+  }
+  .gallery-document-layout {
+    display: block;
+  }
+  .gallery-document-rail {
+    display: none;
+  }
+}

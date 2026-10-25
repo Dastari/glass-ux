@@ -13,6 +13,8 @@ import type { ChartTableModel, ChartTableValue } from "../core/table.js"
 import type { ChartTier } from "../core/tier.js"
 import { ChartTooltip, TooltipBody, type TooltipRow } from "../core/tooltip.js"
 import { LiveRegion } from "../line/line-chart.js"
+import { resolveBands, type ReferenceBand, type Threshold } from "../core/reference.js"
+import { ReferenceLabels, ReferenceMarks, useReferenceNotes } from "../core/reference-layer.js"
 
 export interface BarSeries {
   key: string
@@ -44,6 +46,14 @@ export interface BarChartProps extends ChartCommonProps, ValueFormat {
   edges?: readonly number[]
   /** Format a bin edge. */
   formatEdge?: (value: number) => string
+  /**
+   * Lines across the columns at values (a quota, a target), labelled at the line's end.
+   * Vertical columns only. A status tone without `bands` shades the range up to the next
+   * status threshold.
+   */
+  thresholds?: readonly Threshold[]
+  /** Shaded ranges on the value axis behind the columns. Vertical columns only. */
+  bands?: readonly ReferenceBand[]
 }
 
 interface Prepared {
@@ -85,6 +95,8 @@ export function BarChart(props: BarChartProps) {
     categoryLabel = "Category",
     edges,
     formatEdge,
+    thresholds: thresholdProp,
+    bands: bandProp,
     ...rest
   } = props
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
@@ -93,14 +105,19 @@ export function BarChart(props: BarChartProps) {
   const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
   const stacked = layout === "stacked"
   const horizontal = orientation === "horizontal"
+  // References sit on a vertical value axis: columns only.
+  const thresholds = horizontal ? undefined : thresholdProp
+  const bands = horizontal ? undefined : bandProp
 
   const prepared = useMemo<Prepared>(() => {
     const slots = new Map(series.map((item, index) => [item.key, slotFor(index, item.slot)]))
     const visible = series.filter((item) => !hidden.has(item.key))
     const totals = categories.map((_, index) => visible.reduce((sum, item) => sum + Math.max(0, item.data[index] ?? 0), 0))
     const values = stacked ? totals : visible.flatMap((item) => item.data)
-    return { visible, slots, totals, domain: valueDomain(values, domain, { zero: true }), integer: allIntegers(values) }
-  }, [series, hidden, categories, stacked, domain])
+    const references = [...(thresholds ?? []).map((item) => item.value), ...(bands ?? []).flatMap((item) => [item.from, item.to])]
+    return { visible, slots, totals, domain: valueDomain([...values, ...references], domain, { zero: true }), integer: allIntegers(values) }
+  }, [series, hidden, categories, stacked, domain, thresholds, bands])
+  const notes = useReferenceNotes({ thresholds, bands, fmt })
 
   const table = useMemo<ChartTableModel>(() => {
     const rows = categories.map((category, index) => {
@@ -123,8 +140,9 @@ export function BarChart(props: BarChartProps) {
       ],
       rows,
       values,
+      notes: notes.length ? notes : undefined,
     }
-  }, [categories, series, fmt, stacked, categoryLabel, edges, formatEdge])
+  }, [categories, series, fmt, stacked, categoryLabel, edges, formatEdge, notes])
 
   const legendItems: LegendItem[] = series.map((item) => ({ key: item.key, label: item.label, slot: prepared.slots.get(item.key), tone: item.tone, shape: "box" }))
   const toggle = (key: string) =>
@@ -160,6 +178,7 @@ export function BarChart(props: BarChartProps) {
       compactHead={series.length > 1}
       trail={trail}
       trailOptional
+      note={notes.length ? notes.join(" ") : undefined}
     >
       {(box) => (
         <BarPlot
@@ -174,6 +193,8 @@ export function BarChart(props: BarChartProps) {
           label={label}
           edges={edges}
           formatEdge={formatEdge}
+          thresholds={thresholds}
+          bands={bands}
         />
       )}
     </ChartFrame>
@@ -204,6 +225,8 @@ interface BarPlotProps {
   label: string
   edges?: readonly number[]
   formatEdge?: (value: number) => string
+  thresholds?: readonly Threshold[]
+  bands?: readonly ReferenceBand[]
 }
 
 interface Mark {
@@ -223,7 +246,7 @@ interface Mark {
 
 const GAP = 2
 
-const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacked, horizontal, labels, fmt, label, edges, formatEdge }: BarPlotProps) {
+const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacked, horizontal, labels, fmt, label, edges, formatEdge, thresholds, bands }: BarPlotProps) {
   const id = useId()
   const plotRef = useRef<HTMLDivElement>(null)
   const { width, height, tier, rem } = box
@@ -329,6 +352,13 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
   const categoryText = (index: number) => (edges ? edgeLabel(edges, index, formatEdge) : (categories[index] ?? ""))
   const valueText = (index: number) => `${categoryText(index)} · ${visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`).join(", ")}`
   const sum = useMemo(() => totals.reduce((a, b) => a + b, 0), [totals])
+  const reference = useMemo(() => {
+    if (geo.kind !== "columns" || micro || (!thresholds?.length && !bands?.length)) return null
+    const { inset } = geo
+    const y0 = inset.top
+    const y1 = height - inset.bottom
+    return { py: linear(domain, [y1, y0]), x0: inset.left, x1: width - inset.right, y0, y1, rem, shaded: resolveBands(thresholds, bands, domain[1]) }
+  }, [geo, micro, thresholds, bands, height, width, domain, rem])
 
   return (
     <div ref={plotRef} className="fa-chart-layer">
@@ -349,6 +379,7 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
             <line className="fa-chart-grid" data-baseline="" x1={geo.inset.left} x2={width - geo.inset.right} y1={Math.round(height - geo.inset.bottom) - 0.5} y2={Math.round(height - geo.inset.bottom) - 0.5} />
           )
         ) : null}
+        {reference ? <ReferenceMarks geometry={reference} thresholds={thresholds ?? []} bands={reference.shaded} shade={full} /> : null}
         {marks.map((mark) => (
           <path
             key={mark.key}
@@ -370,6 +401,7 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
       {!micro ? (
         <div className="fa-chart-labels" aria-hidden>
           {geo.kind === "columns" && full ? <YLabels ticks={geo.yTicks.values} step={geo.yTicks.step} y={linear(domain, [height - geo.inset.bottom, geo.inset.top])} x0={geo.inset.left} format={fmt} gap={0.5 * rem} /> : null}
+          {reference && full ? <ReferenceLabels geometry={reference} thresholds={thresholds ?? []} bands={bands ?? []} fmt={fmt} /> : null}
           {geo.kind === "rows"
             ? categories.slice(0, geo.shown).map((category, index) => (
                 <span key={index}>

@@ -72,6 +72,16 @@ export interface ChartFrameProps extends ChartCommonProps {
   rule?: TierRule
   /** A sentence that explains how the marks are drawn, added to the figure's accessible description. */
   note?: string
+  /**
+   * Controls placed before "View as table" in the full tier's head (a chart's "Reset zoom").
+   * They should hold their space whether or not they show, so the head never moves.
+   */
+  tools?: ReactNode
+  /**
+   * A strip under the plot in the full tier (LineChart's overview brush). Its box is kept
+   * while the chart loads, as a skeleton, so loading moves nothing (R9.3).
+   */
+  foot?: ReactNode
   children: (box: PlotBox) => ReactNode
 }
 
@@ -99,6 +109,8 @@ export function ChartFrame({
   trailSize = "figure",
   rule = DEFAULT_TIERS,
   note,
+  tools,
+  foot,
   children,
   className,
   locale: localeProp,
@@ -173,6 +185,7 @@ export function ChartFrame({
             </div>
             {tier === "full" && table ? (
               <div className="fa-chart-tools">
+                {tools}
                 <Button
                   className="fa-chart-view"
                   size="xs"
@@ -198,6 +211,9 @@ export function ChartFrame({
         <div ref={plotRef} className="fa-chart-plot" data-view={tableView ? "table" : "chart"}>
           {body}
         </div>
+        {tier === "full" && foot !== undefined && (state === "ready" || state === "loading") && !tableView ? (
+          <div className="fa-chart-foot">{state === "loading" ? <span className="fa-skel fa-chart-foot-skel" aria-hidden /> : foot}</div>
+        ) : null}
         {tier === "micro" && trail !== undefined && (state === "ready" || state === "loading") ? (
           <div className="fa-chart-trail" data-size={trailSize} data-optional={trailOptional ? "" : undefined}>
             {state === "loading" ? <Skeleton.Text type="caption" className="fa-chart-skel-text" data-part="trail" /> : trail}

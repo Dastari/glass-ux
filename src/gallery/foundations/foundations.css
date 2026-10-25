@@ -317,6 +317,36 @@
     border-radius: var(--radius-tile);
     background: var(--surface-3);
   }
+  /* "Print and high contrast": a plain reference table on the canvas. */
+  .materials-modes {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .materials-modes-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .materials-modes-table :is(th, td) {
+    padding: var(--space-2) var(--space-3);
+    border-block-end: var(--border-width) solid var(--line);
+    text-align: start;
+    vertical-align: top;
+  }
+  .materials-modes-table thead th {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    font-weight: var(--weight-medium);
+  }
+  .materials-modes-table tbody th {
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+  }
+  .materials-modes-table td {
+    color: var(--fg-muted);
+  }
   .materials-toolbar {
     display: flex;
     align-items: center;

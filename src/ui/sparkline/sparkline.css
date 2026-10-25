@@ -72,6 +72,27 @@
     stop-color: var(--_wash);
     stop-opacity: 0;
   }
+  /* thresholds: hairlines in the tone's line colour, under the series; dashed for a soft reference. */
+  .fa-spark-threshold {
+    stroke: var(--line-strong);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  .fa-spark-threshold[data-tone="warning"] {
+    stroke: var(--warning-line);
+  }
+  .fa-spark-threshold[data-tone="danger"] {
+    stroke: var(--danger-line);
+  }
+  .fa-spark-threshold[data-tone="success"] {
+    stroke: var(--success-line);
+  }
+  .fa-spark-threshold[data-tone="info"] {
+    stroke: var(--info-line);
+  }
+  .fa-spark-threshold[data-dashed] {
+    stroke-dasharray: 4 3;
+  }
   .fa-spark-reference {
     stroke: var(--line-strong);
     stroke-width: 1;

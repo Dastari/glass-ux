@@ -20,6 +20,7 @@ plot is inset by the dot's radius so nothing is ever cut off at the edges.
 | label | `string \| undefined` | See type | no | — | Accessible summary. Omit when a parent already describes the chart. |
 | onHover | `((index: number \| null) => void) \| undefined` | See type | no | — | Turn on pointer hit-testing; called with the nearest index, or null on leave. |
 | reference | `number \| undefined` | See type | no | — | A horizontal hairline at this value (e.g. the average). |
+| thresholds | `readonly SparklineThreshold[] \| undefined` | See type | no | — | Hairlines at values in their tone (a warning limit, a target). Without a fixed `domain` the range grows to include them, so a line is never pinned to an edge. They carry no label: name what they mean in `label` or beside the sparkline. |
 | tone | `SparklineTone \| undefined` | "data", "danger", "warning", "success", "accent", "neutral", "info" | no | "data" | Line colour: the data colour, or a status tone only when the series is in that state. |
 
 Inherited properties:

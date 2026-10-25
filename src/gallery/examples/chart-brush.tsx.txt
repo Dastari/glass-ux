@@ -1,0 +1,74 @@
+import { useState } from "react";
+import { ChartBrush, LineChart, type XDomain } from "glass-ux/charts";
+import { timeline, walk } from "glass-ux/gallery/sections/charts.fixtures";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+// A day of five-minute samples from a fictional build server, for zoom and the brush.
+const day = timeline(288, 5);
+const queue = walk(288, 512, { base: 38, swing: 10, spikes: 0.03, spike: 45 });
+const latency = walk(288, 513, {
+  base: 120,
+  swing: 30,
+  min: 40,
+  max: 400,
+  spikes: 0.04,
+  spike: 140,
+  digits: 0,
+});
+
+/** A standalone brush driving two charts. */
+function Overview() {
+  const [range, setRange] = useState<XDomain | null>([day[200]!, day[260]!]);
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <div className="grid w-full gap-3 md:grid-cols-2">
+        <div className="charts-pane" data-size="short">
+          <LineChart
+            x={day}
+            series={[{ key: "queue", label: "Queue depth", data: queue }]}
+            unit="%"
+            domain={[0, 100]}
+            label="Build queue · fictional"
+            title="Build queue"
+            xDomain={range}
+            onXDomainChange={setRange}
+          />
+        </div>
+        <div className="charts-pane" data-size="short">
+          <LineChart
+            x={day}
+            series={[{ key: "latency", label: "Latency", data: latency }]}
+            unit="ms"
+            label="Request latency · fictional"
+            title="Latency"
+            xDomain={range}
+            onXDomainChange={setRange}
+          />
+        </div>
+      </div>
+      <ChartBrush
+        data-testid="chart-brush"
+        x={day}
+        series={[{ key: "queue", data: queue }]}
+        domain={[0, 100]}
+        label="Build queue · last 24 hours"
+        value={range}
+        onValueChange={setRange}
+      />
+    </div>
+  );
+}
+
+export default function LineChartSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="ChartBrush"
+        description="The overview on its own: its window is a controlled x domain for any number of charts. The handles and the window are sliders: arrows step one sample, Page keys a tenth."
+        wide
+      >
+        <Overview />
+      </Specimen>
+    </SectionPage>
+  );
+}

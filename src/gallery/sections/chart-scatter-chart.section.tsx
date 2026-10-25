@@ -50,6 +50,21 @@ export default function ScatterChartSection() {
         </div>
       </Specimen>
       <Specimen
+        title="Thresholds and bands"
+        description="A limit on the y axis with its status tone, and the healthy range shaded. The x axis carries measurements, not times, so a scatter has no event markers."
+        wide
+      >
+        <div className="charts-pane" data-testid="chart-scatter-references">
+          <ScatterChart
+            {...sample}
+            label="Effort against delivered items, with limits · fictional"
+            title="Studio projects"
+            thresholds={[{ value: 13, label: "Capacity", tone: "warning" }]}
+            bands={[{ from: 8, to: 12, label: "Planned" }]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
         title="Responsive sizes"
         description="The same ScatterChart adapts to row, tile and full-panel sizes."
         wide

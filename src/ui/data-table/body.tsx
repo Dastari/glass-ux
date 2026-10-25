@@ -1,4 +1,5 @@
 import { useDataTableMessages } from "./use-messages.js";
+import { usePrinting } from "../../lib/use-printing.js";
 import type { RowData } from "@tanstack/react-table";
 import type { Row, RowSelectionState } from "@tanstack/react-table";
 import {
@@ -110,6 +111,7 @@ export function VirtualRows<T extends RowData>({
       Boolean(row && hidden.length && (expandAll || expanded.has(row.id))),
     [expandAll, expanded, hidden.length],
   );
+  const printing = usePrinting();
   const lineCount = items ? items.length : rows.length;
   const count = lineCount + (renderTail ? 1 : 0);
   const rowAt = (index: number): Row<DataTableFeatures, T> | undefined => {
@@ -136,7 +138,8 @@ export function VirtualRows<T extends RowData>({
     estimateSize: (index) =>
       rowHeight + (isExpanded(rowAt(index)) ? detailHeight : 0),
     getItemKey: keyAt,
-    overscan: renderAll ? count : 6,
+    // Printing lays out every loaded row (print.css puts them in document flow).
+    overscan: renderAll || printing ? count : 6,
     initialRect: { width: 0, height: renderAll ? count * rowHeight : 0 },
     rangeExtractor: (range) => {
       const indexes = defaultRangeExtractor(range);

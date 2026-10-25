@@ -24,6 +24,20 @@ const FILLS: Array<[string, string]> = [
   ["glass-inset", "Wells, table headers"],
 ]
 
+/** What print and forced colours change, part by part. */
+const PRINT_CONTRAST: Array<[part: string, print: string, contrast: string]> = [
+  ["Materials", "White with a hairline border; no blur, tint, rim or shadow", "The system's Canvas with a CanvasText border; no blur"],
+  ["Canvas", "White, without artwork or a picture", "Canvas"],
+  ["Text", "Near black; accent text dark", "CanvasText; links LinkText"],
+  ["Controls", "As drawn, without shadows", "A ButtonText border on every control"],
+  ["Selected, checked, current", "As drawn", "Highlight with HighlightText, or a Highlight border"],
+  ["Focus", "Not shown", "A Highlight outline"],
+  ["Disabled", "As drawn", "GrayText"],
+  ["Chrome", "Rail, top bar, tab bar, drawers, docks, toasts and tooltips left out", "As drawn, with borders"],
+  ["Charts", "In colour, with legends", "Series keep their colours; grid and labels take system colours"],
+  ["Tables", "Every loaded row, in page flow", "Selected rows in Highlight"],
+]
+
 export default function MaterialsSection() {
   return (
     <SectionPage>
@@ -83,6 +97,33 @@ export default function MaterialsSection() {
         <div className="glass-float materials-toolbar">
           <Button variant="ghost" size="sm" icon={<IconEndpoint />} aria-label="Remote control" />
           <span className="type-label">NST-C106 · 1920 × 1080 · 28 ms</span>
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="Print and high contrast"
+        description="Both are automatic. data-print=&quot;keep&quot; prints chrome that is normally left out; data-print=&quot;hide&quot; leaves anything out."
+        wide
+      >
+        <div className="materials-modes" data-testid="materials-modes">
+          <table className="materials-modes-table">
+            <thead>
+              <tr>
+                <th scope="col">Part</th>
+                <th scope="col">Print</th>
+                <th scope="col">High contrast (forced colours)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PRINT_CONTRAST.map(([part, print, contrast]) => (
+                <tr key={part}>
+                  <th scope="row">{part}</th>
+                  <td>{print}</td>
+                  <td>{contrast}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </Specimen>
 

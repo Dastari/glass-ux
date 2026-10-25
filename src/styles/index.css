@@ -1,6 +1,7 @@
 /*
  * Design-system stylesheet: fonts, tokens, themes, materials, data colours, identity
- * colours, brand tones, base, motion, recipes and every library component. Imported by an
+ * colours, brand tones, base, motion, recipes, every library component, then the print and
+ * forced-colours layers. Imported by an
  * application's CSS entry (see src/app.css), which owns the Tailwind pipeline and the
  * cascade-layer order. The @scope fallback follows the palette parameters it must override.
  */
@@ -17,3 +18,5 @@
 @import "./motion.css";
 @import "./recipes.css";
 @import "./components.css";
+@import "./print.css";
+@import "./forced-colors.css";

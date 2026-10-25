@@ -32,6 +32,12 @@ export interface ChartTableModel {
    * "Copy as CSV" (`chartTableToCsv`); a cell left `undefined` falls back to its text in `rows`.
    */
   values?: Array<Record<string, ChartTableValue>>
+  /**
+   * Sentences about the chart that are not rows: its reference lines, bands and events.
+   * Shown under the visible table; "Copy as CSV" leaves them out, so the CSV stays one
+   * record per row.
+   */
+  notes?: readonly string[]
 }
 
 export interface ChartTableCsvOptions {
@@ -119,6 +125,13 @@ function VisibleTable({ model, caption }: { model: ChartTableModel; caption: str
       tabIndex={0}
     >
       <TableMarkup model={model} caption={caption} visible />
+      {model.notes?.length ? (
+        <div className="fa-chart-table-notes">
+          {model.notes.map((note) => (
+            <p key={note}>{note}</p>
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }

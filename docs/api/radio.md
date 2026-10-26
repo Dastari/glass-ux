@@ -1,6 +1,7 @@
 # Radio
 
 One option of a RadioGroup. The chosen circle fills with the accent around a dot.
+Each option is its own Field item, so inside a Field every radio keeps its own id and name.
 
 `import { Radio } from "glass-ux/radio"`
 

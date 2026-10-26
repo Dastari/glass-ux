@@ -3,6 +3,16 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.12 → 0.9.13
+
+No code changes are required.
+
+- A required `Combobox` or `ComboboxField` no longer shows its Clear button. Pass
+  `clearable` to keep it, or `clearable={false}` to hide it on an optional one. CSS that hid
+  the button (`.fa-combobox button[aria-label="Clear"]`) can go.
+- Radios, radio cards and labelled checkboxes inside a `Field` each have their own id. Tests
+  that found options by a shared id should find them by role and name.
+
 ## 0.9.11 → 0.9.12
 
 No code changes are required.

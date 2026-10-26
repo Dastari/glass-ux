@@ -13,6 +13,7 @@ locale, with its flag and code. The value is the ISO 3166-1 alpha-2 code ("AU").
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string \| undefined` | See type | no | — | Accessible name when a visible label does not name the control. |
 | className | `string \| undefined` | See type | no | — | Layout only. Applied to the control box. |
+| clearable | `boolean \| undefined` | false, true | no | — | Show the Clear button, which empties the choice. Default: on unless `required`, since a required choice should not be one press from empty. Typing still changes the choice. |
 | countries | `readonly string[] \| undefined` | See type | no | — | Only these ISO codes. |
 | defaultValue | `string \| null \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |

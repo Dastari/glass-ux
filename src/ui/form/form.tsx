@@ -265,11 +265,13 @@ export interface ComboboxFieldProps<V extends string = string> extends Chrome {
   icon?: ReactNode;
   /** Shows loading feedback in the space reserved for the content. */
   loading?: boolean;
+  /** Show the Clear button. Default: on unless `required`. */
+  clearable?: boolean;
 }
 
 export interface MultiSelectFieldProps<
   V extends string = string,
-> extends ComboboxFieldProps<V> {
+> extends Omit<ComboboxFieldProps<V>, "clearable"> {
   /** Chips wrap onto more lines in a form (default). */
   wrap?: boolean;
 }

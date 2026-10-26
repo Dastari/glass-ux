@@ -44,6 +44,8 @@ export interface AutocompleteProps<V extends string = string> {
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
+  /** Show the Clear button, which empties the text. Default true. */
+  clearable?: boolean
   /** Marks the control invalid. Pair it with an accessible validation message. */
   invalid?: boolean
   name?: string
@@ -79,6 +81,7 @@ export function Autocomplete<V extends string = string>({
   disabled,
   readOnly,
   required,
+  clearable = true,
   invalid,
   name,
   id,
@@ -149,7 +152,7 @@ export function Autocomplete<V extends string = string>({
           onBlur={onBlur}
           className="fa-control-input"
         />
-        {readOnly ? null : (
+        {readOnly || !clearable ? null : (
           <BaseAutocomplete.Clear
             // Base UI's default "x" text is dropped: the Button shows the icon.
             render={({ children: _text, ...props }) => (

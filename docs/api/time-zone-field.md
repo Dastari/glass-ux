@@ -13,6 +13,7 @@ TimeZoneSelect bound to a `string | null` form field (IANA name). Pair it with `
 | aria-label | `string \| undefined` | See type | no | — | Accessible name when a visible label does not name the control. |
 | aside | `ReactNode` | See type | no | — | Right side of the label row: a live value readout or a small link. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| clearable | `boolean \| undefined` | false, true | no | — | Show the Clear button, which empties the choice. Default: on unless `required`, since a required choice should not be one press from empty. Typing still changes the choice. |
 | describe | `boolean \| undefined` | false, true | no | true | Show the zone's offset and local time now as the hint when none is given. Default true. |
 | empty | `((query: string) => ReactNode) \| undefined` | See type | no | — | Text for the empty row. Default: No matches for “query”. |
 | hint | `ReactNode` | See type | no | — | The message line's resting text. Only when the format or consequence is not obvious (R2.8). |

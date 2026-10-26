@@ -13,6 +13,7 @@ CountrySelect bound to a `string | null` form field (ISO code). Pair it with `co
 | aria-label | `string \| undefined` | See type | no | — | Accessible name when a visible label does not name the control. |
 | aside | `ReactNode` | See type | no | — | Right side of the label row: a live value readout or a small link. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| clearable | `boolean \| undefined` | false, true | no | — | Show the Clear button, which empties the choice. Default: on unless `required`, since a required choice should not be one press from empty. Typing still changes the choice. |
 | countries | `readonly string[] \| undefined` | See type | no | — | Only these ISO codes. |
 | empty | `((query: string) => ReactNode) \| undefined` | See type | no | — | Text for the empty row. Default: No matches for “query”. |
 | flags | `boolean \| undefined` | false, true | no | — | Flags beside the names (SVG, lazy; never emoji). Default true. |

@@ -14,6 +14,7 @@ then clears.
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string \| undefined` | See type | no | — | Accessible name when a visible label does not name the control. |
 | className | `string \| undefined` | See type | no | — | Layout only. Applied to the control box. |
+| clearable | `boolean \| undefined` | false, true | no | !required | Show the Clear button, which empties the choice. Default: on unless `required`, since a required choice should not be one press from empty. Typing still changes the choice. |
 | defaultValue | `V \| null \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | empty | `((query: string) => ReactNode) \| undefined` | See type | no | — | Text for the empty row. Default: No matches for “query”. |

@@ -4,6 +4,23 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+Accessible names for every option in a radio or checkbox group inside a Field, and Clear
+buttons that required pickers can leave out.
+
+### Fixed
+
+- `RadioGroupField`, and any `Radio`, `RadioCard` or labelled `Checkbox` inside a `Field`,
+  gave every option the Field's id, so only the first option had an accessible name. Each
+  option is now its own Field item with its own id and name.
+
+### Changed
+
+- `Combobox` and `ComboboxField` take `clearable`. It defaults to on unless `required`, so a
+  required choice no longer offers a button that empties it. `Autocomplete` takes
+  `clearable` too (default on).
+
 ## 0.9.12
 
 The interface in eleven more languages and right to left; Next.js App Router support; new

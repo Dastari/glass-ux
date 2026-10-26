@@ -180,6 +180,11 @@ export interface ComboboxProps<V extends string = string> {
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
+  /**
+   * Show the Clear button, which empties the choice. Default: on unless `required`, since a
+   * required choice should not be one press from empty. Typing still changes the choice.
+   */
+  clearable?: boolean
   /** Marks the control invalid. Pair it with an accessible validation message. */
   invalid?: boolean
   name?: string
@@ -213,6 +218,7 @@ export function Combobox<V extends string = string>({
   disabled,
   readOnly,
   required,
+  clearable = !required,
   invalid,
   name,
   id,
@@ -267,13 +273,15 @@ export function Combobox<V extends string = string>({
         />
         {readOnly ? null : (
           <>
-            <BaseCombobox.Clear
-              // Base UI's default "x" text is dropped: the Button shows the icon.
-              render={({ children: _text, ...props }) => (
-                <Button {...props} variant="ghost" size="sm" className="fa-input-btn" icon={<IconClose />} aria-label={messages.clear} />
-              )}
-              tabIndex={-1}
-            />
+            {clearable ? (
+              <BaseCombobox.Clear
+                // Base UI's default "x" text is dropped: the Button shows the icon.
+                render={({ children: _text, ...props }) => (
+                  <Button {...props} variant="ghost" size="sm" className="fa-input-btn" icon={<IconClose />} aria-label={messages.clear} />
+                )}
+                tabIndex={-1}
+              />
+            ) : null}
             <BaseCombobox.Trigger
               render={
                 <Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconChevronsUpDown />} aria-label={messages.showOptions} />

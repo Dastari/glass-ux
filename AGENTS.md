@@ -39,7 +39,80 @@ Never commit node_modules, test output, credentials or .handoff notes.
 The release package is built once and installed from the versioned GitHub release archive.
 Do not add an installation-time build or make a consumer depend on an unpublished workspace.
 Pack it with `pnpm pack:release`, not `pnpm pack`: the archive leaves out the gallery, source
-maps and other docs-site-only files, and `pnpm pack:check` enforces its size budget.
+maps and other docs-site-only files, and `pnpm pack:check` enforces its size budget. The
+JavaScript ships as built, readable ESM: do not minify the package to fit the budget. Raising
+the budget is a deliberate decision with its reason in `scripts/pack-release.mjs`.
+
+## Working in this repository
+
+- The docs app reads the built `dist`, not `src`: run `pnpm build` (after `pnpm docs:api` for
+  catalogue changes) before checking a page in the dev server.
+- Playwright reuses any server already on its port (4220 by default). When several checkouts
+  or agents test at once, give each its own `GLASS_UX_DEV_PORT`, or a run can test another
+  checkout's code and pass.
+- `pnpm docs:api` and `pnpm docs:build` sometimes reorder a union in
+  `docs/api/context-avatar.md` and `src/gallery/api/context-avatar.json`; revert that noise.
+  When generated files (`docs/api/typedoc.json`, `src/gallery/*.generated.json`) conflict in a
+  merge, take either side and regenerate rather than merging them by hand.
+- Generated sources have their own authoring scripts: icons in `scripts/icon-authoring`
+  (`pnpm icons`, rules in docs/icon-spec.md) and canvas artwork in `scripts/build-canvas.mjs`
+  (alpha masks painted in palette roles). Never hand-edit their output.
+- The owner judges visual changes in a browser. Serve the built fixtures or docs on the LAN
+  (`--host 0.0.0.0`) with an index page and keys or toggles to compare variants; built pages
+  need relative or correct base asset paths, or fonts and artwork silently go missing.
+
+## Words and direction
+
+- Every built-in word is a message: declare it in the component's `messages.ts` with
+  `defineMessages` (see `src/lib/i18n/catalog.ts`) and read it with `useMessages`. Keys name
+  the purpose (`discardTitle`, not the English text), function messages take typed,
+  meaningful parameters (an object beyond two), and sentences are whole messages, never
+  fragments joined in code. `src/i18n/*.test.ts` enforces this.
+- A new or changed message needs every language pack in `src/i18n/` updated; the pack
+  coverage test fails otherwise. Translate as a native UI editor would, with each language's
+  usual register and consistent terms.
+- Library CSS uses logical properties (`pnpm logical:check`). Physical geometry that must not
+  mirror (chart x axes, the colour picker's axes) carries `/* logical:allow <reason> */`.
+  In-house keyboard and pointer code follows the reading direction (`readingKey`, `isRtl`).
+- Modules that need the client get `"use client"` at build time; keep formatting helpers,
+  tokens, schemas and `appearanceBootScript` free of hooks so server components can call them.
+
+## Releases
+
+The owner releases without waiting for the GitHub e2e run (about 75 minutes), and still
+decides when to publish. The local route:
+
+1. `pnpm check`, the browser specs the change affects, `GLASS_UX_BASE=/glass-ux/ pnpm
+   docs:build`, `pnpm pack:check`, and `pnpm test:production` for larger releases.
+2. Bump `package.json`, the install URL in README.md and docs/getting-started.md, the
+   CHANGELOG heading and docs/migration.md; run `pnpm docs:api` for the documentation version.
+3. Assets as `release.yml` builds them: `node scripts/pack-release.mjs --out
+   .handoff/release`, `tar -czf .handoff/release/glass-ux-docs.tar.gz -C apps/docs/dist .`,
+   and `sha256sum *.tgz *.tar.gz > SHA256SUMS` in that folder.
+4. Fast-forward `main`, push an annotated tag `vX.Y.Z`, then `gh release create vX.Y.Z
+   <assets> --verify-tag --title … --notes-file …` (summary, changelog section, install
+   command). Cancel the tag's Release run, which would only repeat the e2e; download the
+   archive and check it against SHA256SUMS.
+
+## Settled decisions
+
+- Material level (Glass, Frosted, Solid) can be set per surface; live or baked blur is one
+  application-wide setting (`configureAppearance({ glassRendering })`), not per surface.
+- Images and media take no drop shadows or reflections; hover effects stay within the
+  Image component's trimmed set and are off under Still or reduced motion.
+- File type icons stay monochrome (applications colour them through `data-file-kind`); the
+  PDF icon has no lettering. `endpoint` is the managed device; `desktop` is a workstation.
+
+## Open follow-ups
+
+- Slider: a visible value bubble over an end thumb overhangs while shown (fixing it shifts
+  the bubble inward at the ends, a visual change for the owner to approve).
+- Sparkline has no `gaps` option yet (LineChart has `gaps="bridge"`).
+- File context menus have no icon for "Copy path".
+- Native-speaker review: "chroma" in the Arabic and Hebrew colour picker messages, and
+  "preview class" in Japanese, Korean, Arabic and Hebrew (`results.previewUnavailable`).
+- Next.js support is verified with webpack (`pnpm test:next`), not Turbopack; forced colours
+  only with Chromium's emulation, not Windows High Contrast itself.
 
 For adoption into a consuming application, read docs/getting-started.md and docs/integration.md.
 Bundled skills under skills/ cover adoption, component choice, forms, data views, assistant UI

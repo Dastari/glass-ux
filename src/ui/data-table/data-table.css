@@ -1150,9 +1150,15 @@
     min-inline-size: 0;
   }
   .fa-dt-bulk {
+    /* component token: the buttons' inset from the bar's edge. The bar shares its grid cell
+       with the status bar, so the footer keeps one height whether rows are selected or not. */
+    --_inset: var(--space-1);
     gap: var(--space-2);
-    padding-inline: var(--space-3) var(--space-1);
-    border-radius: var(--radius-control);
+    min-block-size: calc(var(--control-h-sm) + var(--_inset) * 2);
+    padding-block: var(--_inset);
+    padding-inline: var(--space-3) var(--_inset);
+    /* Concentric with the buttons' corners. */
+    border-radius: calc(var(--radius-control) + var(--_inset));
     background-color: var(--accent-soft);
     box-shadow: inset 0 0 0 var(--border-width)
       color-mix(in oklab, var(--accent-line) 55%, transparent);

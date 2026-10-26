@@ -101,7 +101,8 @@ test.describe("docs toolbar fit", () => {
       if (state.shown) expect(state.forms.Mode).toBe("icons");
     }
     expect(folded(seen[1920]!)).toEqual([false, false, false, false]);
-    expect(folded(seen[1500]!)).toEqual([false, false, false, false]);
+    // Twelve palettes: the palette folds to its menu first, and already at 1500px.
+    expect(folded(seen[1500]!)).toEqual([true, false, false, false]);
     // The palette gives way before any segmented control.
     expect(folded(seen[1280]!)).toEqual([true, false, false, false]);
     expect(seen[1024]!.shown).toBe(true);
@@ -153,12 +154,12 @@ test.describe("docs toolbar fit", () => {
   test("folds and unfolds once each way while the window resizes slowly", async ({
     page,
   }) => {
-    test.setTimeout(120000);
-    await page.setViewportSize({ width: 1600, height: 900 });
+    test.setTimeout(240000);
+    await page.setViewportSize({ width: 1920, height: 900 });
     await page.goto("components/swatch-picker/");
     await expect(page.locator(".docs-header .docs-toolbar")).toBeVisible();
     const widths: number[] = [];
-    for (let width = 1600; width >= 980; width -= 6) widths.push(width);
+    for (let width = 1920; width >= 980; width -= 6) widths.push(width);
     const run = async (sequence: number[]) => {
       const history: boolean[][] = [];
       for (const width of sequence) {
@@ -198,7 +199,7 @@ test.describe("docs toolbar fit", () => {
     const menu = page.getByRole("menu");
     await expect(menu).toBeVisible();
     await expect(menu.getByRole("menuitemradio", { name: "Ocean" })).toHaveAttribute("aria-checked", "true");
-    await expect(menu.getByRole("menuitemradio")).toHaveText(["Ocean", "Aurora", "Emerald", "Sunset", "Graphite", "Ruby"]);
+    await expect(menu.getByRole("menuitemradio")).toHaveText(["Ocean", "Aurora", "Emerald", "Sunset", "Graphite", "Ruby", "Lagoon", "Indigo", "Rose", "Moss", "Sand", "Slate"]);
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
@@ -264,7 +265,7 @@ test("phone appearance sheet keeps every swatch @responsive", async ({ page }) =
   const sheet = page.getByRole("dialog", { name: "Appearance", exact: true });
   const palette = sheet.getByRole("group", { name: "Palette", exact: true });
   await expect(palette).toHaveAttribute("data-form", "full");
-  await expect(palette.getByRole("button")).toHaveCount(6);
+  await expect(palette.getByRole("button")).toHaveCount(12);
   const fits = await palette.evaluate((element) => {
     const bounds = element.closest('[role="dialog"]')!.getBoundingClientRect();
     return Array.from(element.querySelectorAll("button")).every((button) => {

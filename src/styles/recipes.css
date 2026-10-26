@@ -211,6 +211,10 @@
   .fa-fit-row > * {
     flex: 0 0 auto;
   }
+  /* fa-fit-0 gives way before every numbered level: a wide control that should fold first. */
+  .fa-fit-row > .fa-fit-0 {
+    flex-shrink: 1000000000000000;
+  }
   .fa-fit-row > .fa-fit-1 {
     flex-shrink: 1000000000000;
   }

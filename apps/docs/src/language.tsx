@@ -57,7 +57,8 @@ export async function setDocsLanguage(language: DocsLanguage, remember = true) {
 
 /**
  * Restore the remembered language at start-up. The `?lang=` and `?dir=` preview parameters
- * win for that visit and are not remembered.
+ * set only the page's `lang` and reading direction for that visit (the components keep
+ * English), as the right-to-left checks expect; the language menu is what translates.
  */
 export function restoreDocsLanguage() {
   const params = new URLSearchParams(location.search);
@@ -66,8 +67,7 @@ export function restoreDocsLanguage() {
   if (previewLanguage || previewDirection) {
     if (previewLanguage) document.documentElement.lang = previewLanguage;
     if (previewDirection === "rtl" || previewDirection === "ltr") document.documentElement.dir = previewDirection;
-    current = { language: known(previewLanguage) ? previewLanguage : "en", direction: document.documentElement.dir === "rtl" ? "rtl" : "ltr" };
-    if (known(previewLanguage) && previewLanguage !== "en") void setDocsLanguage(previewLanguage, false);
+    current = { language: "en", direction: document.documentElement.dir === "rtl" ? "rtl" : "ltr" };
     return;
   }
   const stored = localStorage.getItem(STORAGE_KEY);

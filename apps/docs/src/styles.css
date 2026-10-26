@@ -145,10 +145,16 @@
     gap: var(--gap-controls);
   }
   /* The background select gives way last, truncating its value. */
-  .docs-background-select,
-  .docs-language-select {
+  .docs-background-select {
     width: 7rem;
     min-width: 5.5rem;
+  }
+  /* The interface language sits under the sidebar's links, across its width. */
+  .docs-language {
+    padding: var(--space-1) var(--space-2) var(--space-2);
+  }
+  .docs-language-select {
+    width: 100%;
   }
   .docs-toolbar[data-expanded] {
     display: flex;

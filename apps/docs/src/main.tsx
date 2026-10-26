@@ -233,13 +233,26 @@ function AppearanceChoices<V extends string>({
   );
 }
 
+/** The components' interface language in the appearance sheet: touch-sized choices like the rest. */
+function LanguageChoices() {
+  const { language } = useDocsLanguage();
+  return (
+    <AppearanceChoices<DocsLanguage>
+      label="Interface language"
+      value={language}
+      onValueChange={(next) => void setDocsLanguage(next)}
+      options={LANGUAGES.map((option) => ({ value: option.value, label: option.label }))}
+    />
+  );
+}
+
 /** The components' interface language; the docs' own prose stays English. */
-function LanguageSelect({ expanded = false }: { expanded?: boolean }) {
+function LanguageSelect() {
   const { language } = useDocsLanguage();
   return (
     <Select<DocsLanguage>
       size="sm"
-      className={expanded ? undefined : "docs-language-select fa-fit-5"}
+      className="docs-language-select"
       aria-label="Interface language"
       value={language}
       onValueChange={(next) => {
@@ -330,15 +343,12 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
             label: BACKGROUND_LABELS[value],
           }))}
         />
-        <div className="docs-appearance-control">
-          <span className="type-label">Language</span>
-          <LanguageSelect expanded />
-        </div>
+        <LanguageChoices />
       </div>
     );
-  // One line that gives way in order (fa-fit-row): the palette folds to a menu first, then blur
-  // and density, animations and material; the background select truncates last; the mode
-  // switch keeps its icons.
+  // One line that gives way in order (fa-fit-row): the palette folds to a menu first (its
+  // twelve swatches are the widest control), then blur, density, animations and material;
+  // the background select truncates last; the mode switch keeps its icons.
   return (
     <div
       className="docs-toolbar fa-fit-row"
@@ -359,7 +369,7 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <SwatchPicker
         size="sm"
-        className="fa-fit-1"
+        className="fa-fit-0"
         aria-label="Palette"
         value={appearance.palette}
         onValueChange={(palette) => update({ palette, accentHue: null })}
@@ -383,7 +393,7 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <Segmented
         size="sm"
-        className="fa-fit-2"
+        className="fa-fit-1"
         aria-label="Blur"
         value={rendering}
         onValueChange={setGlassRendering}
@@ -411,7 +421,6 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
           { value: "compact", label: "Compact" },
         ]}
       />
-      <LanguageSelect />
       <Select
         size="sm"
         className="docs-background-select fa-fit-5"
@@ -639,8 +648,8 @@ function Layout() {
           </nav>
         ) : null}
       </SectionDrawer.Body>
-      {showTypes || showSource ? (
-        <SectionDrawer.Footer>
+      <SectionDrawer.Footer>
+        {showTypes || showSource ? (
           <SectionDrawer.List>
             {showTypes ? (
               <SectionDrawer.Item
@@ -659,8 +668,11 @@ function Layout() {
               />
             ) : null}
           </SectionDrawer.List>
-        </SectionDrawer.Footer>
-      ) : null}
+        ) : null}
+        <div className="docs-language">
+          <LanguageSelect />
+        </div>
+      </SectionDrawer.Footer>
     </div>
   );
   return (

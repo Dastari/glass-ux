@@ -130,11 +130,11 @@ function HeaderCell({
       : undefined;
   const label = (
     <>
-      <span className="fa-dt-th-label">{meta.label}</span>
+      <span className="fa-dt-th-label" aria-hidden={filtered || undefined}>{meta.label}</span>
       {filtered ? (
         <>
           <IconFilter className="fa-dt-filter-glyph" />
-          <span className="sr-only">{m.filtered}</span>
+          <span className="sr-only">{m.filtered(meta.label)}</span>
         </>
       ) : null}
       {sortable ? <SortGlyph direction={direction} /> : null}

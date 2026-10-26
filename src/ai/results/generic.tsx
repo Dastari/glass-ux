@@ -205,7 +205,7 @@ export function resolvePreview(
       redacted: {
         redacted: true,
         reason:
-          getResultsMessages(locale).noBrowserSafePreviewTheResultIsAboveThis,
+          getResultsMessages(locale).previewUnavailable,
       },
     };
   }

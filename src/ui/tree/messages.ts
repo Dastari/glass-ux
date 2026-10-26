@@ -3,14 +3,14 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for tree. */
 export const treeMessages = defineMessages("tree", {
-  noMatchFor: (value0: unknown) => `No match for “${value0}”`,
+  noMatchFor: (query: string) => `No match for “${query}”`,
   loading: "Loading…",
   couldnTLoad: "Couldn't load",
   couldnTLoadMore: "Couldn't load more",
   loadMore: "Load more",
-  retry: (value0: unknown) => `${value0} · Retry`,
-  loading2: "Loading",
-  retry2: "Retry",
+  retry: (reason: string) => `${reason} · Retry`,
+  loadingStatus: "Loading",
+  retryAction: "Retry",
 })
 
 declare module "../../lib/i18n/catalog.js" {

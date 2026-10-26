@@ -123,7 +123,7 @@ export function ResultEntities({ result }: {
       }
       meta={
         total > result.entities.length
-          ? messages.of(formatNumber(result.entities.length, 0, locale), formatNumber(total, 0, locale))
+          ? messages.resultPosition(formatNumber(result.entities.length, 0, locale), formatNumber(total, 0, locale))
           : `${formatNumber(total, 0, locale)} ${plural}`
       }
       copyText={result.entities

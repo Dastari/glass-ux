@@ -93,28 +93,28 @@ export function estimateStrength(password: string, userInputs: readonly string[]
   // Common passwords, whole or as the stem ("Password1!", "P@ssw0rd2024").
   const common = (text: string) => COMMON.has(text) || COMMON.has(unleet(text))
   if (common(lower) || (stem.length >= 4 && stem.length >= lower.length - 6 && common(stem))) {
-    return result(0, messages.strengthFeedback5, 8)
+    return result(0, messages.commonPassword, 8)
   }
   // The person's own details.
   for (const input of userInputs) {
     for (const part of input.toLowerCase().split(/[^a-z0-9]+/)) {
       if (part.length >= 3 && lower.includes(part)) {
         effective -= part.length * 0.8
-        feedback = messages.strengthFeedback6
+        feedback = messages.personalPassword
       }
     }
   }
   // Years (1950–2039) are guessed early.
   if (/(19[5-9]\d|20[0-3]\d)/.test(lower)) {
     effective -= 3
-    feedback ??= messages.strengthFeedback7
+    feedback ??= messages.datePassword
   }
-  if (predictable > password.length / 2) feedback ??= messages.strengthFeedback8
-  if (digitsOnly.length === password.length) feedback ??= messages.strengthFeedback9
+  if (predictable > password.length / 2) feedback ??= messages.predictablePassword
+  if (digitsOnly.length === password.length) feedback ??= messages.numericPassword
 
   const bits = Math.max(0, effective) * Math.log2(poolSize(password))
   const score: StrengthScore = bits < 28 ? 0 : bits < 40 ? 1 : bits < 60 ? 2 : bits < 80 ? 3 : 4
   if (score >= 4) return result(4, null, bits)
-  if (!feedback) feedback = password.length < 12 ? messages.strengthFeedback10 : messages.strengthFeedback11
+  if (!feedback) feedback = password.length < 12 ? messages.shortPassword : messages.longerPassword
   return result(score, feedback, bits)
 }

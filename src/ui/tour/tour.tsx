@@ -267,7 +267,7 @@ export function Tour({
             >
               {element ? <BasePopover.Arrow className="fa-tour-arrow" /> : null}
               <span className="sr-only" aria-live="polite">
-                {step ? t.announce(position, total, step.title) : ""}
+                {step ? t.announce({ step: position, total: total, title: step.title }) : ""}
               </span>
               <BasePopover.Title id={titleId} className="fa-tour-title">
                 {step?.title}

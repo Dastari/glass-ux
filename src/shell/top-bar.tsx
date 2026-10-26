@@ -342,7 +342,7 @@ export function SearchTrigger({
   ...rest
 }: SearchTriggerProps) {
   const messages = useMessages(shellMessages)
-  const placeholder = placeholderProp ?? messages.search2
+  const placeholder = placeholderProp ?? messages.searchPlaceholder
 
   const platform = usePlatform();
   const aria = useAriaShortcut(shortcut);
@@ -362,7 +362,7 @@ export function SearchTrigger({
       type="button"
       {...rest}
       className={cx("fa-control fa-shell-search", className)}
-      aria-label={messages.search3}
+      aria-label={messages.searchLabel}
       aria-keyshortcuts={aria}
       onClick={onOpen}
     >
@@ -498,14 +498,10 @@ export function AccountButton({
 }: AccountButtonProps) {
   const messages = useMessages(shellMessages)
 
-  const unreadText =
-    unread > 0
-      ? messages.unread(unread, unread === 1 ? "notification" : "notifications")
-      : "";
   return (
     <button
       type="button"
-      aria-label={messages.account(name, unreadText)}
+      aria-label={messages.account(name, unread)}
       {...rest}
       className={cx("fa-shell-account fa-pressable", className)}
     >

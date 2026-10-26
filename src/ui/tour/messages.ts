@@ -7,7 +7,7 @@ const english = {
   done: "Done",
   skip: "Skip tour",
   /** Announced when a step shows: its position and title. */
-  announce: (step: number, total: number, title: string) => `Step ${step} of ${total}: ${title}`,
+  announce: ({ step, total, title }: { step: number; total: number; title: string }) => `Step ${step} of ${total}: ${title}`,
 }
 
 /** Tour's English wording. */

@@ -4,9 +4,9 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for breadcrumb. */
 export const breadcrumbMessages = defineMessages("breadcrumb", {
   breadcrumb: "Breadcrumb",
-  backTo: (value0: unknown) => `Back to ${value0}`,
-  showMore: (value0: unknown) => `Show ${value0} more`,
-  switchFrom: (value0: unknown) => `Switch from ${value0}`,
+  backTo: (label: string) => `Back to ${label}`,
+  showMore: (count: number) => `Show ${count} more`,
+  switchFrom: (label: string) => `Switch from ${label}`,
   switch: "Switch",
   search: "Search",
   noMatchFor: (query: string) => `No match for “${query}”`,

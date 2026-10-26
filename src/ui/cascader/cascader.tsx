@@ -410,11 +410,11 @@ export function Cascader(props: CascaderProps) {
           </span>
         ))}
         {keys.length > visible ? (
-          <span className="fa-chip" data-overflow="" title={chipPaths.slice(visible).map(fullPath).join(", ")}>
+          <span className="fa-chip" data-overflow="" title={new Intl.ListFormat(locale, { type: "unit" }).format(chipPaths.slice(visible).map(fullPath))}>
             <span className="fa-chip-label" aria-hidden>
               +{keys.length - visible}
             </span>
-            <span className="sr-only">{t.more(keys.length - visible, chipPaths.slice(visible).map(fullPath).join(", "))}</span>
+            <span className="sr-only">{t.more(keys.length - visible, new Intl.ListFormat(locale, { type: "unit" }).format(chipPaths.slice(visible).map(fullPath)))}</span>
           </span>
         ) : null}
       </span>

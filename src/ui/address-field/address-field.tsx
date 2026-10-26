@@ -195,7 +195,7 @@ export function AddressEditor({
           (result): OptionItem<string> => ({
             value: result.id,
             label: result.label,
-            description: [result.description, result.value.country.code && result.value.country.code !== homeCountry ? result.value.country.name : ""].filter(Boolean).join(", "),
+            description: new Intl.ListFormat(locale, { type: "unit" }).format([result.description, result.value.country.code && result.value.country.code !== homeCountry ? result.value.country.name : ""].filter(Boolean)),
             icon: result.kind === "place" ? <IconHome /> : <IconMapPin />,
             meta: result.kind === "street" ? messages.street : undefined,
           })
@@ -392,7 +392,7 @@ function AddressMap({
 
   const where = value.location ? `${value.location.lat.toFixed(5)}, ${value.location.lng.toFixed(5)}` : ""
   const caption = !value.location
-    ? messages.noPositionYetChooseASuggestionOrClick
+    ? messages.unplacedPin
     : value.pinned
       ? messages.placedByHand(where)
       : messages.fromTheAddressDragThePin(where)
@@ -413,7 +413,7 @@ function AddressMap({
       <div className="fa-address-map-caption">
         <span className="fa-address-map-text">{caption}</span>
         {value.pinned && !disabled ? (
-          <Button variant="ghost" size="xs" onClick={onReset} disabledReason={lookupPoint ? undefined : messages.chooseTheAddressFromTheLookupFirst}>
+          <Button variant="ghost" size="xs" onClick={onReset} disabledReason={lookupPoint ? undefined : messages.resetPinUnavailable}>
             {messages.resetPin} </Button>
         ) : null}
       </div>

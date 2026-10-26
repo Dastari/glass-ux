@@ -4,10 +4,10 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for dialog. */
 export const dialogMessages = defineMessages("dialog", {
   close: "Close",
-  sections: (value0: unknown) => `${value0} sections`,
-  sections2: "Sections",
-  discardUnsavedChanges: "Discard unsaved changes?",
-  yourEditsInThisDialogAreLost: "Your edits in this dialog are lost.",
+  sectionLabel: (title: string) => `${title} sections`,
+  sections: "Sections",
+  discardTitle: "Discard unsaved changes?",
+  discardDescription: "Your edits in this dialog are lost.",
   discardChanges: "Discard changes",
   keepEditing: "Keep editing",
 })

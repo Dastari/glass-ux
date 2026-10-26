@@ -23,9 +23,9 @@ export function richTextSchema({
       maxLength !== undefined && value.length > maxLength
         ? {
             ok: false,
-            error: getRichTextMessages(locale).keepTheDocumentWithinCharacters(numberFormat(locale ?? getLocale()).format(maxLength)),
+            error: getRichTextMessages(locale).documentTooLong(numberFormat(locale ?? getLocale()).format(maxLength)),
           }
         : { ok: true },
-    { required, requiredMessage: () => getRichTextMessages(locale).writeADocument2 },
+    { required, requiredMessage: () => getRichTextMessages(locale).documentPlaceholder },
   );
 }

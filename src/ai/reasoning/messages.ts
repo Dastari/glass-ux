@@ -3,8 +3,8 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for reasoning. */
 export const reasoningMessages = defineMessages("reasoning", {
-  thinking: "Thinking",
-  thoughtFor: "Thought for",
+  thinking: (time: string) => `Thinking ${time}`,
+  thoughtFor: (time: string) => `Thought for ${time}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

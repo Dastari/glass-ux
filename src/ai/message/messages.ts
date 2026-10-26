@@ -10,7 +10,7 @@ export const messageMessages = defineMessages("message", {
   retrying: "Retrying…",
   retried: "Retried",
   retry: "Retry",
-  theAiServiceEndedThisRunWithoutAn: "The AI service ended this run without an answer.",
+  emptyResponse: "The AI service ended this run without an answer.",
   assistant: "Assistant",
   regenerating: "Regenerating…",
   regenerated: "Regenerated",
@@ -21,8 +21,8 @@ export const messageMessages = defineMessages("message", {
   goodResponse: "Good response",
   badResponse: "Bad response",
   openInAWindow: "Open in a window",
-  turn: (value0: unknown) => `Turn ${value0}`,
-  removedUnderTheConversationRetentionPolicy: "Removed under the conversation retention policy.",
+  turn: (index: number) => `Turn ${index}`,
+  retentionNotice: "Removed under the conversation retention policy.",
 })
 
 declare module "../../lib/i18n/catalog.js" {

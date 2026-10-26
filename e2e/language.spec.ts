@@ -36,6 +36,18 @@ test("language packs switch built-in controls without resetting their state @res
   await page.getByRole("button", { name: "Schließen", exact: true }).click()
 
   await specimen.getByRole("combobox", { name: "Language", exact: true }).click()
+  await page.getByRole("option", { name: "日本語", exact: true }).click()
+  await expect(controls.getByRole("button", { name: "次のページ", exact: true })).toBeVisible()
+  await expect(jump).toHaveAttribute("aria-label", "ページ（全5ページ）")
+  await expect(jump).toHaveValue("2")
+
+  await specimen.getByRole("combobox", { name: "Language", exact: true }).click()
+  await page.getByRole("option", { name: "עברית", exact: true }).click()
+  await expect(specimen.locator('[lang="he"]')).toHaveAttribute("dir", "rtl")
+  await expect(controls.getByRole("button", { name: "העמוד הבא", exact: true })).toBeVisible()
+  await expect(jump).toHaveValue("2")
+
+  await specimen.getByRole("combobox", { name: "Language", exact: true }).click()
   await page.getByRole("option", { name: "العربية", exact: true }).click()
   await expect(specimen.locator('[lang="ar"]')).toHaveAttribute("dir", "rtl")
   await expect(controls.getByRole("button", { name: "Next page", exact: true })).toHaveCount(0)

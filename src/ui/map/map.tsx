@@ -873,7 +873,7 @@ export function GeoMap<T>({
       const point = byId.get(slot.id)
       if (!point) return null
       const status = point.status
-      const text = [point.label, point.description, statusLabels[status]].filter(Boolean).join(", ")
+      const text = new Intl.ListFormat(locale, { type: "unit" }).format([point.label, point.description, statusLabels[status]].filter((part): part is string => Boolean(part)))
       return createPortal(
         <MarkerButton
           slot={slot}
@@ -990,14 +990,14 @@ export function GeoMap<T>({
       aria-busy={phase !== "ready" && !failed ? true : undefined}
     >
       <p id={hintId} className="sr-only">
-        {messages.arrowKeysMoveBetweenMarkersEnter(number.format(points.length), points.length === 1 ? noun.one : noun.other, points.length ? `: ${describeCounts(counts, statusLabels)}` : "")}
+        {messages.markerInstructions({ count: number.format(points.length), noun: points.length === 1 ? noun.one : noun.other, status: points.length ? describeCounts(counts, statusLabels) : "" })}
       </p>
       <div ref={stageRef} className="fa-map-stage" inert={view === "list" ? true : undefined}>
         <MapSilhouette region={home} box={frameBox} />
         <div ref={canvasRef} className="fa-map-canvas" />
         {failed ? (
           <div className="fa-map-failed">
-            <p>{messages.theMapCouldNotStart}{error && /webgl/i.test(error) ? messages.thisBrowserHasWebglTurnedOff : ""}.</p>
+            <p>{error && /webgl/i.test(error) ? messages.webglError : `${messages.theMapCouldNotStart}.`}</p>
             {onViewChange ? (
               <Button size="sm" icon={<IconList />} onClick={() => onViewChange("list")}>
                 {messages.viewAsList} </Button>

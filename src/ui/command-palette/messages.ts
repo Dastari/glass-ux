@@ -10,7 +10,7 @@ export const commandPaletteMessages = defineMessages("commandPalette", {
   searchCommands: "Search commands",
   results: "Results",
   searching: "Searching",
-  noCommandsMatch: (value0: unknown) => `No commands match “${value0}”`,
+  noCommandsMatch: (query: string) => `No commands match “${query}”`,
   navigate: "Navigate",
   run: "Run",
   close: "Close",

@@ -205,7 +205,7 @@ function RunFailure({ message }: { message: AiMessage }) {
         ) : undefined
       }
     >
-      {failure?.reason ?? messages.theAiServiceEndedThisRunWithoutAn}
+      {failure?.reason ?? messages.emptyResponse}
       {failure?.code ? (
         <code className="fa-ai-msg-code"> {failure.code}</code>
       ) : null}
@@ -457,5 +457,5 @@ export function MessageSkeleton({
 function PurgedMessage() {
   const messages = useMessages(messageMessages)
 
-  return <Notice>{messages.removedUnderTheConversationRetentionPolicy}</Notice>;
+  return <Notice>{messages.retentionNotice}</Notice>;
 }

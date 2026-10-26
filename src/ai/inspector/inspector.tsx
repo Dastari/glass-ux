@@ -92,7 +92,7 @@ export function ConversationContext({
             <EntityChip entity={scope} size="sm" />
           ) : (
             <span className="fa-ai-context-workspace">
-              {messages.workspaceEverythingYouCanAccess} </span>
+              {messages.workspaceScope} </span>
           )}
         </div>
       </Section>
@@ -130,7 +130,7 @@ export function ConversationContext({
                     {failed ? (
                       <span className="fa-ai-context-failed">
                         {" "}
-                        · {failed} {messages.failed} </span>
+                        · {messages.failed(failed)} </span>
                     ) : null}
                   </span>
                 </li>
@@ -157,7 +157,7 @@ export function ConversationContext({
             value={budget.used}
             max={budget.maximum}
             label={budget.label}
-            valueText={messages.of(used, formatNumber(budget.used, 0, locale), formatNumber(budget.maximum, 0, locale), budget.unit)}
+            valueText={messages.budgetSummary({ percent: used, used: formatNumber(budget.used, 0, locale), maximum: formatNumber(budget.maximum, 0, locale), unit: budget.unit })}
             warningAt={0.8}
             dangerAt={0.95}
           />

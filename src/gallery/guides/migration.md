@@ -7,6 +7,24 @@ then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everyth
 
 No code changes are required.
 
+- Built-in wording now comes from `glass-ux/i18n`. English text is unchanged except
+  relative times and long durations, which `Intl` formats in the component's locale
+  ("3 min ago" may read "3 minutes ago"); update text snapshots that assert them. To show
+  another language, register its pack: `registerMessagePack(de)` from `glass-ux/i18n/de`.
+- Library CSS uses logical properties (`margin-inline-start` rather than `margin-left`).
+  Application CSS that overrides a library rule with the physical property now adds to it
+  instead of replacing it; override the logical property.
+- Server components can import the library: modules that need the client say so. Apps that
+  wrapped library imports in their own `"use client"` files can keep them.
+- Development warnings test `process.env.NODE_ENV !== "production"`. Vite, webpack, Next.js
+  and esbuild define it; a custom bundler must too.
+- Charts: `Threshold.tone` is optional. Passing `bands` (even `[]`) replaces the shading a
+  status threshold implied before.
+- `print.css` and `forced-colors.css` are unlayered so they win over component styles. An
+  application with its own shell grid adds print rules for it (see docs/ui-rules.md R4.10).
+- DataTable stores column order with the existing per-person column state; earlier stored
+  preferences are read as before.
+
 - Light mode is less washed out: the canvas is a step deeper (`--canvas` lightness 0.94,
   was 0.972), the colour fields are stronger, panel glass is a little clearer (fill 0.5)
   with a firmer edge and shadow, and `--fg-muted`, `--fg-subtle` and `--line` are darker.

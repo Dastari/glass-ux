@@ -108,7 +108,7 @@ export function Metric({
   const fmt = (n: number) => formatMetric(n, unit, format, locale)
   const shown = hover !== null ? data[hover] : value
   const summary = stats
-    ? messages.minimumAverageMaximum(label, range ? `, ${range.toLowerCase()}` : "", fmt(stats.min), fmt(stats.avg), fmt(stats.max), fmt(stats.last))
+    ? messages.minimumAverageMaximum({ label: label, range: range ? range.toLowerCase() : "", minimum: fmt(stats.min), average: fmt(stats.avg), maximum: fmt(stats.max), current: fmt(stats.last) })
     : undefined
 
   return (
@@ -130,11 +130,11 @@ export function Metric({
         </div>
         {stats ? (
           <div className="fa-metric-stats" data-numeric>
-            <span>{messages.min} {fmt(stats.min)}</span>
+            <span>{messages.min(fmt(stats.min))}</span>
             <span aria-hidden>·</span>
-            <span>{messages.avg} {fmt(stats.avg)}</span>
+            <span>{messages.avg(fmt(stats.avg))}</span>
             <span aria-hidden>·</span>
-            <span>{messages.max} {fmt(stats.max)}</span>
+            <span>{messages.max(fmt(stats.max))}</span>
           </div>
         ) : null}
         {data.length > 1 ? (

@@ -3,7 +3,7 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for sources. */
 export const sourcesMessages = defineMessages("sources", {
-  source: (value0: unknown, value1: unknown) => `Source ${value0}: ${value1}`,
+  source: (index: number, title: string) => `Source ${index}: ${title}`,
   sources: "Sources",
   opensInANewTab: "Opens in a new tab",
 })

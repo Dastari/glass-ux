@@ -4,25 +4,23 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for referenceInput. */
 export const referenceInputMessages = defineMessages("referenceInput", {
-  relationTo: (value0: unknown, value1: unknown) => `Relation to ${value0}: ${value1}`,
-  relationTo2: (value0: unknown) => `Relation to ${value0}`,
+  relationTo: (name: string, relation: string) => `Relation to ${name}: ${relation}`,
+  relationLabel: (name: string) => `Relation to ${name}`,
   none: "None",
   typeToLink: "Type @ to link",
-  upTo: (value0: unknown, value1: unknown) => `Up to ${value0} ${value1}`,
   everything: "Everything",
   pressBackspaceOrDeleteToRemove: "Press Backspace or Delete to remove",
-  linkedFromTheStartOfTheInput: (value0: unknown) => `${value0} linked. From the start of the input, press Left Arrow to reach them.`,
+  linkedFromTheStartOfTheInput: (count: number) => `${count} linked. From the start of the input, press Left Arrow to reach them.`,
   link: "Link…",
   kind: "Kind",
   all: "All",
-  showing: (value0: unknown) => `Showing ${value0}.`,
-  upTo2: "Up to",
-  removeOneToLinkAnother: "— remove one to link another",
-  noFor: (value0: unknown, value1: unknown) => `No ${value0} for “${value1}”`,
+  showing: (kind: string) => `Showing ${kind}.`,
+  noFor: (kind: string, query: string) => `No ${kind} for “${query}”`,
   typeANameToSearch: "Type a name to search",
   limit: (count: number, locale = "en-US") => plural(locale, count, { one: `Up to ${numberFormat(locale).format(count)} link`, other: `Up to ${numberFormat(locale).format(count)} links` }),
   matches: 'matches',
   limitNote: (count: number, locale = "en-US") => plural(locale, count, { one: `Up to ${count} link — remove one to link another`, other: `Up to ${count} links — remove one to link another` }),
+  linkCount: (count: number, locale = "en-AU") => plural(locale, count, { one: `${count} link`, other: `${count} links` }),
 })
 
 declare module "../../lib/i18n/catalog.js" {

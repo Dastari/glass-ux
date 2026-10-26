@@ -3,14 +3,14 @@ import { getLocale } from "../../../lib/locale/locale.js"
 
 /** English defaults for line. */
 export const lineMessages = defineMessages("line", {
-  noSamplesAvailableVisualBridgeOnly: "No samples available · visual bridge only",
-  dashedLinesJoinReadingsAcrossTimesWithNo: "Dashed lines join readings across times with no samples.",
+  gapLabel: "No samples available · visual bridge only",
+  gapDescription: "Dashed lines join readings across times with no samples.",
   time: "Time",
-  count1InSamples: (value0: unknown, value1: unknown) => `${value0} (1 in ${value1} samples)`,
-  inspectValuesEnterSelects: (value0: unknown) => `${value0} — inspect values, Enter selects`,
-  inspectValues: (value0: unknown) => `${value0} — inspect values`,
-  total: (value0: unknown) => `Total ${value0}`,
-  selected: " · selected",
+  sampleInterval: (label: string, interval: number) => `${label} (1 in ${interval} samples)`,
+  inspectValuesEnterSelects: (label: string) => `${label} — inspect values, Enter selects`,
+  inspectValues: (label: string) => `${label} — inspect values`,
+  total: (value: string) => `Total ${value}`,
+  selectionLabel: (label: string) => `${label} · selected`,
 })
 
 declare module "../../../lib/i18n/catalog.js" {

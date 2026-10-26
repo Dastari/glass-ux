@@ -267,7 +267,7 @@ function DataRowView<T extends RowData>({
             size="sm"
             className="fa-dt-row-button fa-dt-expand"
             icon={expanded ? <IconChevronUp /> : <IconChevronDown />}
-            aria-label={m.moreFields(expanded, hidden.length, label)}
+            aria-label={m.moreFields({ expanded: expanded, count: hidden.length, label: label })}
             aria-expanded={expanded}
             tabIndex={tabIndex}
             data-dt-interactive=""

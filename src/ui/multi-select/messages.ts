@@ -3,8 +3,8 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for multiSelect. */
 export const multiSelectMessages = defineMessages("multiSelect", {
-  selected: (value0: unknown) => `${value0} selected`,
-  more: "more:",
+  selected: (count: number) => `${count} selected`,
+  more: (count: number, labels: string) => `${count} more: ${labels}`,
   showOptions: "Show options",
 })
 

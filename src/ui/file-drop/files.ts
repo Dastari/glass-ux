@@ -86,7 +86,7 @@ export function screenFiles(files: File[], limits: FileLimits = {}, messages: Re
       rejected.push({
         file,
         reason: "count",
-        message: messages.wasNotAddedTheLimitIs(file.name, limits.maxFiles!, limits.locale),
+        message: messages.wasNotAddedTheLimitIs({ name: file.name, count: limits.maxFiles!, locale: limits.locale }),
       })
     } else {
       accepted.push(file)

@@ -143,7 +143,7 @@ export function FormAsk({ ask }: {
         return option?.label ?? values[field.name];
       })
       .join(" · ");
-    await submit({ type: "form", values, label: summary }, messages.sent2(summary));
+    await submit({ type: "form", values, label: summary }, messages.sentSummary(summary));
   };
 
   return (
@@ -240,7 +240,7 @@ export function DateTimeAsk({ ask }: {
     (chosen.time !== undefined &&
     earliest !== undefined &&
     chosen.time < earliest
-      ? messages.chooseATimeAfterTheEarliestAllowedTime
+      ? messages.timeTooEarly
       : undefined);
   const label =
     suggestion?.label ??
@@ -278,7 +278,7 @@ export function DateTimeAsk({ ask }: {
                   value: new Date(chosen.time!).toISOString(),
                   label,
                 },
-                messages.scheduled2(label, ask.timezone),
+                messages.scheduledSummary(label, ask.timezone),
               )
             }
           >
@@ -424,7 +424,7 @@ export function ConfirmAsk({ ask }: {
               }
               size="sm"
               pendingLabel={messages.confirming}
-              successLabel={messages.confirmed2}
+              successLabel={messages.confirmedStatus}
               onAction={confirm}
             >
               {ask.confirmLabel}

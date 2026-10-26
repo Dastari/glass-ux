@@ -1,3 +1,4 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { aiMessages } from "../messages.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { asksMessages } from "./messages.js"
@@ -114,6 +115,7 @@ export function EntityPickerAsk({ ask }: {
   ask: Ask;
 }) {
   const messages = useMessages(asksMessages)
+  const locale = useLocale()
 
   const id = useId();
   const resolver = useEntityResolver();
@@ -165,8 +167,8 @@ export function EntityPickerAsk({ ask }: {
         footerStart={
           <span className="fa-ai-ask-count" data-numeric aria-live="polite">
             {picked.length
-              ? messages.selected3(picked.length)
-              : ask.multiple ? messages.choose2(spec.plural.toLowerCase()) : messages.chooseOneEntity(spec.noun.toLowerCase())}
+              ? messages.selectedCount(picked.length)
+              : ask.multiple ? messages.chooseEntities(spec.plural.toLowerCase()) : messages.chooseOneEntity(spec.noun.toLowerCase())}
           </span>
         }
         footer={
@@ -176,7 +178,7 @@ export function EntityPickerAsk({ ask }: {
             disabledReason={
               picked.length
                 ? undefined
-                : messages.chooseFirst(ask.multiple ? messages.atLeastOne : "one")
+                : messages.chooseFirst(Boolean(ask.multiple))
             }
             pendingLabel={messages.sending}
             successLabel={messages.sent}
@@ -185,9 +187,9 @@ export function EntityPickerAsk({ ask }: {
                 {
                   type: "entities",
                   ids: picked.map((entity) => entity.id),
-                  label: labels.join(", "),
+                  label: new Intl.ListFormat(locale, { type: "unit" }).format(labels),
                 },
-                messages.chose2(labels.join(", ")),
+                messages.chosenEntities(new Intl.ListFormat(locale, { type: "unit" }).format(labels)),
               )
             }
           >

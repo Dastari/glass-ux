@@ -144,7 +144,7 @@ export function TransferList({
         const next = reorderValues(assigned, from, to)
         commit(next)
         const item = byValue.get(next[to]!)
-        setAnnouncement(t.reordered(item?.label ?? next[to]!, to + 1, next.length))
+        setAnnouncement(t.reordered({ label: item?.label ?? next[to]!, position: to + 1, total: next.length }))
       }}
       messages={t}
     />

@@ -4,7 +4,7 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for percentField. */
 export const percentFieldMessages = defineMessages("percentField", {
   enterAPercentage: "Enter a percentage",
-  enterAPercentageFromTo: (value0: unknown, value1: unknown) => `Enter a percentage from ${value0} to ${value1}`,
+  enterAPercentageFromTo: (minimum: number, maximum: number) => `Enter a percentage from ${minimum} to ${maximum}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

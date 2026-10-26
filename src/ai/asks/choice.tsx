@@ -1,3 +1,4 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { asksMessages } from "./messages.js"
 import { useId, useState, type KeyboardEvent } from "react";
@@ -66,7 +67,7 @@ export function useAskAnswer(ask: AiAsk) {
       at={ask.answeredAt ?? resolved?.at}
     >
       {ask.status === "expired"
-        ? messages.expired3(ask.question)
+        ? messages.expiredQuestion(ask.question)
         : ask.status === "cancelled"
           ? messages.cancelled(ask.question)
           : text}
@@ -109,7 +110,7 @@ export function SingleChoiceAsk({ ask }: {
             onAction={() =>
               submit(
                 { type: "choice", value: chosen!.value, label: chosen!.label },
-                messages.chose(chosen!.label, chosen!.meta ? ` · ${chosen!.meta}` : ""),
+                messages.chose(chosen!.label, chosen!.meta),
               )
             }
           >
@@ -148,6 +149,7 @@ export function MultiChoiceAsk({ ask }: {
   ask: Ask<"multi">;
 }) {
   const messages = useMessages(asksMessages)
+  const locale = useLocale()
 
   const id = useId();
   const { answered, submit, record } = useAskAnswer(ask);
@@ -167,7 +169,7 @@ export function MultiChoiceAsk({ ask }: {
         meta={ask.detail}
         footerStart={
           <span className="fa-ai-ask-count" data-numeric aria-live="polite">
-            {values.length} {messages.of} {all.length} {messages.selected} </span>
+            {messages.selectionStatus(values.length, all.length)} </span>
         }
         footer={
           <ActionButton
@@ -180,8 +182,8 @@ export function MultiChoiceAsk({ ask }: {
             successLabel={messages.sent}
             onAction={() =>
               submit(
-                { type: "choices", values, label: labels.join(", ") },
-                messages.selected2(labels.length === all.length ? messages.all(all.length) : labels.join(", ")),
+                { type: "choices", values, label: new Intl.ListFormat(locale, { type: "unit" }).format(labels) },
+                messages.selectedSummary(labels.length === all.length ? messages.all(all.length) : new Intl.ListFormat(locale, { type: "unit" }).format(labels)),
               )
             }
           >

@@ -3,10 +3,10 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for moneyField. */
 export const moneyFieldMessages = defineMessages("moneyField", {
-  enterAnAmountFromTo: (value0: unknown, value1: unknown) => `Enter an amount from ${value0} to ${value1}`,
-  enterAnAmountUpTo: (value0: unknown) => `Enter an amount up to ${value0}`,
+  enterAnAmountFromTo: (minimum: string, maximum: string) => `Enter an amount from ${minimum} to ${maximum}`,
+  enterAnAmountUpTo: (maximum: string) => `Enter an amount up to ${maximum}`,
   enterAnAmountOfZeroOrMore: "Enter an amount of zero or more",
-  enterAnAmountOfOrMore: (value0: unknown) => `Enter an amount of ${value0} or more`,
+  enterAnAmountOfOrMore: (minimum: string) => `Enter an amount of ${minimum} or more`,
   enterAnAmount: "Enter an amount",
 })
 

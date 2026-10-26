@@ -311,7 +311,7 @@ export function TagInput({
         <BaseCombobox.Chips
           ref={chipsRef}
           className="fa-multi-chips"
-          aria-label={current.length > 0 ? `${current.length} ${current.length === 1 ? "value" : "values"}` : undefined}
+          aria-label={current.length > 0 ? messages.valueCount(current.length, locale) : undefined}
         >
           {shown.map((item, index) =>
             editing?.index === index ? (
@@ -348,12 +348,12 @@ export function TagInput({
             )
           )}
           {hidden.length > 0 ? (
-            <span className="fa-chip" data-overflow="" title={hidden.map(data.labelOf).join(", ")}>
+            <span className="fa-chip" data-overflow="" title={new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf))}>
               <span className="fa-chip-label" aria-hidden>
                 +{hidden.length}
               </span>
               <span className="sr-only">
-                {hidden.length} {messages.more} {hidden.map(data.labelOf).join(", ")}
+                {messages.more(hidden.length, new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf)))}
               </span>
             </span>
           ) : null}

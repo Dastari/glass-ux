@@ -39,8 +39,8 @@ export function useDialogGuard({
   confirmLabel: confirmLabelProp,
 }: DialogGuardOptions) {
   const messages = useMessages(dialogMessages)
-  const title = titleProp ?? messages.discardUnsavedChanges
-  const description = descriptionProp ?? messages.yourEditsInThisDialogAreLost
+  const title = titleProp ?? messages.discardTitle
+  const description = descriptionProp ?? messages.discardDescription
   const confirmLabel = confirmLabelProp ?? messages.discardChanges
 
   const [asking, setAsking] = useState(false)

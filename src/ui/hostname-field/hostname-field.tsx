@@ -80,7 +80,7 @@ export function HostnameField({ label, hint, optional, required, aside, classNam
 
   const { field, error, root } = useBoundField<string>()
   const value = field.state.value
-  const long = netbios && !value.includes(".") && value.length > NETBIOS_MAX ? messages.longerThanCharactersOlderWindowsToolsSeeOnly(NETBIOS_MAX, NETBIOS_MAX) : undefined
+  const long = netbios && !value.includes(".") && value.length > NETBIOS_MAX ? messages.legacyNameWarning(NETBIOS_MAX, NETBIOS_MAX) : undefined
   return (
     <Field {...root} label={label} hint={hint ?? long} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <HostnameInput

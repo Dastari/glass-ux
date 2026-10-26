@@ -138,7 +138,7 @@ function CardView<T extends RowData>({
       size="sm"
       className="fa-dt-card-more"
       icon={expanded ? <IconChevronUp /> : <IconChevronDown />}
-      aria-label={m.moreFields(expanded, layout.details.length, label)}
+      aria-label={m.moreFields({ expanded: expanded, count: layout.details.length, label: label })}
       aria-expanded={expanded}
       tabIndex={tabIndex}
       data-dt-interactive=""

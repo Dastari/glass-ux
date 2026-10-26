@@ -59,8 +59,8 @@ function LanguageControls() {
         <Dialog.Root>
           <Dialog.Trigger render={<Button>{dialog.discardChanges}</Button>} />
           <Dialog.Popup>
-            <Dialog.Header title={dialog.discardUnsavedChanges} />
-            <Dialog.Body>{dialog.yourEditsInThisDialogAreLost}</Dialog.Body>
+            <Dialog.Header title={dialog.discardTitle} />
+            <Dialog.Body>{dialog.discardDescription}</Dialog.Body>
             <Dialog.Footer><Dialog.Close render={<Button>{dialog.keepEditing}</Button>} /></Dialog.Footer>
           </Dialog.Popup>
         </Dialog.Root>

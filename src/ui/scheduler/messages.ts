@@ -25,7 +25,7 @@ export const schedulerMessages = defineMessages("scheduler", {
   /** A time range: "9:00 am to 10:30 am". */
   timeRange: (start: string, end: string) => `${start} to ${end}`,
   /** An event's accessible name: its title, when, and where. */
-  eventLabel: (title: string, when: string, resource?: string) => [title, when, resource].filter(Boolean).join(", "),
+  eventLabel: ({ title, when, resource }: { title: string; when: string; resource?: string }) => [title, when, resource].filter(Boolean).join(", "),
   /** How to edit a focused event. */
   editHint: "Arrow keys move it, Shift and arrow keys change its end, Enter opens it",
   /** The time grid's name and how to choose a slot with the keyboard. */

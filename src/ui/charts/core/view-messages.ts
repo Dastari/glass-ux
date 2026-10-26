@@ -9,7 +9,7 @@ export const chartViewMessages = defineMessages("chartView", {
   threshold: (label: string, value: string) => (label ? `${label} at ${value}` : value),
   thresholds: (list: string) => `Reference lines: ${list}.`,
   /** A band in the description: "Normal range, 20% to 60%". */
-  band: (label: string, from: string, to: string) => (label ? `${label}, ${from} to ${to}` : `${from} to ${to}`),
+  band: ({ label, from, to }: { label: string; from: string; to: string }) => (label ? `${label}, ${from} to ${to}` : `${from} to ${to}`),
   bands: (list: string) => `Shaded ranges: ${list}.`,
   /** A marker in the description: "Agent restarted at 10:23". */
   marker: (label: string, at: string) => `${label} at ${at}`,

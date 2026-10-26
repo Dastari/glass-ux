@@ -128,8 +128,8 @@ export function dateTimeSchema(options: DateTimeSchemaOptions = {}) {
       if ((options.min && at < options.min.slice(0, 16)) || (options.max && at > options.max.slice(0, 16))) return issue(messages().range)
       if (options.timeZone && options.daylightSaving === "reject") {
         const kind = resolveWallClock(value, options.timeZone)?.kind
-        if (kind === "gap") issue(getDatePickerMessages(options.locale).thisTimeDoesNotExistDuringTheDaylightSaving)
-        if (kind === "overlap") issue(getDatePickerMessages(options.locale).thisTimeOccursTwiceDuringTheDaylightSavingChange)
+        if (kind === "gap") issue(getDatePickerMessages(options.locale).skippedTime)
+        if (kind === "overlap") issue(getDatePickerMessages(options.locale).repeatedTime)
       }
     })
 }

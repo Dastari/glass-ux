@@ -37,9 +37,7 @@ export interface ParsedIp {
 
 export type IpResult = { ok: true; value: ParsedIp } | { ok: false; error: string }
 
-function examples(messages: ReturnType<typeof getIpFieldMessages>) { return { 4: messages.example4, 6: messages.example6, any: messages.exampleAny } }
 
-const kind = (version: IpVersion | "any", messages: ReturnType<typeof getIpFieldMessages> = getIpFieldMessages()) => (version === 4 ? messages.anIpv4Address : version === 6 ? messages.anIpv6Address : messages.anIpAddress)
 
 /** IPv4 dotted decimal → 4 bytes, or null. Leading zeros are read as decimal. */
 export function parseIpv4(text: string): number[] | null {
@@ -124,11 +122,11 @@ export function parseIp(text: string, options: IpOptions = {}): IpResult {
   const version = options.version ?? "any"
   const cidr = options.cidr ?? "none"
   let source = text.trim()
-  if (!source) return { ok: false, error: messages.enter(kind(version, messages)) }
+  if (!source) return { ok: false, error: messages.enter(version) }
   // "[2001:db8::1]" from a URL, or with a port ("[::1]:8080" is not an address; reject the port).
   if (source.startsWith("[")) {
     const close = source.indexOf("]")
-    if (close === -1) return { ok: false, error: messages.enter2(kind(version, messages), examples(messages)[version]) }
+    if (close === -1) return { ok: false, error: messages.invalidAddressExample(version) }
     source = source.slice(1, close) + source.slice(close + 1)
   }
   let prefix: number | null = null
@@ -136,23 +134,23 @@ export function parseIp(text: string, options: IpOptions = {}): IpResult {
   if (slash !== -1) {
     const length = source.slice(slash + 1).trim()
     source = source.slice(0, slash).trim()
-    if (cidr === "none") return { ok: false, error: messages.enterOneAddressWithoutAPrefixLength }
+    if (cidr === "none") return { ok: false, error: messages.singleAddressRequired }
     if (!/^\d{1,3}$/.test(length)) return { ok: false, error: messages.enterAPrefixLengthAfterTheSuch }
     prefix = Number(length)
   } else if (cidr === "required") {
-    return { ok: false, error: version === 6 ? messages.addAPrefixLengthSuchAs64 : messages.addAPrefixLengthSuchAs24 }
+    return { ok: false, error: version === 6 ? messages.versionSixPrefix : messages.versionFourPrefix }
   }
   const v4 = version !== 6 ? parseIpv4(source) : null
   const v6 = !v4 && version !== 4 ? parseIpv6(source) : null
   const bytes = v4 ?? v6
   if (!bytes) {
-    if (version === 4 && parseIpv6(source)) return { ok: false, error: messages.enterAnIpv4Address(messages.example4) }
-    if (version === 6 && parseIpv4(source)) return { ok: false, error: messages.enterAnIpv6Address(messages.example6) }
-    return { ok: false, error: messages.enter2(kind(version, messages), examples(messages)[version]) }
+    if (version === 4 && parseIpv6(source)) return { ok: false, error: messages.invalidAddressExample(4) }
+    if (version === 6 && parseIpv4(source)) return { ok: false, error: messages.invalidAddressExample(6) }
+    return { ok: false, error: messages.invalidAddressExample(version) }
   }
   const resolved: IpVersion = v4 ? 4 : 6
   const maxPrefix = resolved === 4 ? 32 : 128
-  if (prefix !== null && prefix > maxPrefix) return { ok: false, error: messages.enterAPrefixLengthFrom0To(maxPrefix) }
+  if (prefix !== null && prefix > maxPrefix) return { ok: false, error: messages.prefixOutOfRange(maxPrefix) }
   return { ok: true, value: { version: resolved, address: resolved === 4 ? formatIpv4(bytes) : formatIpv6(bytes), prefix, bytes } }
 }
 
@@ -195,9 +193,9 @@ export function describeRange(ip: ParsedIp, locale = getLocale(), messages: Retu
   const start = network.bytes.reduce((sum, byte) => sum * 256 + byte, 0)
   const toText = (value: number) => [24, 16, 8, 0].map((shift) => Math.floor(value / 2 ** shift) % 256).join(".")
   if (prefix === 32) return messages.hostCount(1, locale)
-  if (prefix === 31) return messages.count2Hosts(toText(start), toText(start + 1))
+  if (prefix === 31) return messages.pointToPointRange(toText(start), toText(start + 1))
   const hosts = size - 2
-  return messages.hosts(numberFormat(locale).format(hosts), toText(start + 1), toText(start + size - 2))
+  return messages.hosts({ count: numberFormat(locale).format(hosts), first: toText(start + 1), last: toText(start + size - 2) })
 }
 
 /** Private, loopback, link-local and other special ranges, for a quiet hint. */

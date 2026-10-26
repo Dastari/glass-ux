@@ -4,14 +4,14 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for inspector. */
 export const inspectorMessages = defineMessages("inspector", {
   scope: "Scope",
-  workspaceEverythingYouCanAccess: "Workspace · everything you can access",
+  workspaceScope: "Workspace · everything you can access",
   referenced: "Referenced",
   toolsUsed: "Tools used",
-  failed: "failed",
+  failed: (count: number) => `${count} failed`,
   sources: "Sources",
   budget: "Budget",
-  resets: (value0: unknown) => `Resets ${value0}`,
-  of: (value0: unknown, value1: unknown, value2: unknown, value3: unknown) => `${value0}% · ${value1} of ${value2} ${value3}`,
+  resets: (time: string) => `Resets ${time}`,
+  budgetSummary: ({ percent, used, maximum, unit }: { percent: number; used: string; maximum: string; unit: string }) => `${percent}% · ${used} of ${maximum} ${unit}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

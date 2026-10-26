@@ -1,4 +1,4 @@
-import { dragDropMessages, getDragDropMessages } from "./messages.js"
+import { dragDropMessages } from "./messages.js"
 /**
  * The drag and drop engine behind DragDropProvider: registries of draggables and zones, one
  * session at a time, pointer and keyboard input, hit-testing, the preview ("ghost"), sortable
@@ -223,26 +223,23 @@ const GEOMETRY_TTL = 250
 const INTERACTIVE = "button, a[href], input, select, textarea, label, [contenteditable]:not([contenteditable='false']), [data-dnd-ignore]"
 
 const cleanReason = (reason: string | null | undefined) => (reason ? reason.replace(/[.\s]+$/, "") : "")
-const pos = (place: AnnouncedPlace, messages: ReturnType<typeof getDragDropMessages> = getDragDropMessages()) => (place.position !== null && place.count !== null ? messages.positionOf(place.position, place.count) : "")
-
-/** The default English messages. */
+/** Resolve whole announcements so each language controls placement and punctuation. */
 export function createAnnouncements(messages: typeof dragDropMessages.defaults): DragDropAnnouncements { return {
-  lifted: (item, place, input) =>
-    messages.lifted(item.label, place.zone ? messages.in(place.zone, pos(place, messages)) : "", input === "keyboard" ? messages.arrowKeysMoveItSpaceOrEnter : ""),
-  moved: (item, place, blocked) =>
-    blocked !== null ? `${place.zone ?? messages.here}: ${cleanReason(blocked) || messages.cannotBeDroppedHere(item.label)}.` : place.zone ? `${place.zone}${pos(place, messages)}.` : messages.notOverADropArea,
-  dropped: (item, place) => messages.dropped(item.label, place.zone ? messages.in(place.zone, pos(place, messages)) : ""),
-  cancelled: (item, place) => messages.moveCancelledReturned(item.label, place.zone ? messages.to(place.zone, pos(place, messages)) : ""),
-  blocked: (item, zone, reason) => messages.cannotBeDroppedIn(item.label, zone, reason ? `: ${cleanReason(reason)}` : ""),
-  failed: (item, zone, reason) => messages.couldNotBeDroppedIn(item.label, zone, reason ? `: ${cleanReason(reason)}` : ""),
-}
-}
+  lifted: (item, place, input) => messages.lifted({ label: item.label, ...place, keyboard: input === "keyboard" }),
+  moved: (item, place, blocked) => blocked !== null
+    ? messages.moveBlocked({ zone: place.zone, label: item.label, reason: cleanReason(blocked) })
+    : place.zone ? messages.moved({ ...place, zone: place.zone }) : messages.notOverADropArea,
+  dropped: (item, place) => messages.dropped({ label: item.label, ...place }),
+  cancelled: (item, place) => messages.moveCancelledReturned({ label: item.label, ...place }),
+  blocked: (item, zone, reason) => messages.cannotBeDroppedIn({ label: item.label, zone, reason: cleanReason(reason) }),
+  failed: (item, zone, reason) => messages.couldNotBeDroppedIn({ label: item.label, zone, reason: cleanReason(reason) }),
+} }
 
 /** The default English announcements. */
 export const DEFAULT_ANNOUNCEMENTS = createAnnouncements(dragDropMessages.defaults)
 
 /** Instructions read with every handle (aria-describedby). */
-export const DRAG_INSTRUCTIONS = dragDropMessages.defaults.pressSpaceOrEnterToLiftArrowKeys
+export const DRAG_INSTRUCTIONS = dragDropMessages.defaults.dragInstructions
 
 function accepts(accept: DropAccept | undefined, item: DragItem) {
   if (accept === undefined) return true

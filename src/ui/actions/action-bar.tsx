@@ -116,7 +116,7 @@ function HeaderButton<T>({ action, targets, label }: HeaderButtonProps<T>) {
   // A primary with children is a split button; any other parent is a menu button.
   if (action.children.length) {
     const menu = (
-      <Menu.Popup align="end" aria-label={messages.for(action.label, label)}>
+      <Menu.Popup align="end" aria-label={messages.actionLabel(action.label, label)}>
         <ActionMenuItems
           // The split button's main half already runs the parent; don't list it again.
           groups={[{ group: action.definition.group, actions: action.children.filter((child) => !child.id.endsWith(":self")) }]}

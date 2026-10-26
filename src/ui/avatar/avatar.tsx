@@ -106,8 +106,8 @@ export function AvatarGroup({ people, max = 4, size = "sm", className, ...rest }
           className="fa-avatar fa-avatar-more"
           data-size={size}
           role="img"
-          aria-label={messages.more(others.length, others.map((person) => person.name).join(", "))}
-          title={others.map((person) => person.name).join(", ")}
+          aria-label={messages.more(others.length, new Intl.ListFormat(locale, { type: "unit" }).format(others.map((person) => person.name)))}
+          title={new Intl.ListFormat(locale, { type: "unit" }).format(others.map((person) => person.name))}
         >
           <span className="fa-avatar-face" data-tint="neutral">
             <span className="fa-avatar-initials">+{others.length}</span>

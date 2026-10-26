@@ -27,7 +27,7 @@ export function parseEmail(text: string, locale?: string): EmailResult {
   if (labels.length < 2 || labels.some((label) => !LABEL.test(label)) || !/^(?:[a-z]{2,63}|xn--[a-z0-9-]+)$/.test(labels.at(-1) ?? "")) { // tokens:allow a regular expression, not a class
     return { ok: false, error: getEmailFieldMessages(locale).enterAnEmailSuchAs(EMAIL_EXAMPLE) }
   }
-  if (source.length > 254) return { ok: false, error: getEmailFieldMessages(locale).use254CharactersOrFewer }
+  if (source.length > 254) return { ok: false, error: getEmailFieldMessages(locale).emailTooLong }
   return { ok: true, value: `${local}@${domain}` }
 }
 

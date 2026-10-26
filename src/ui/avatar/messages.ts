@@ -8,7 +8,7 @@ export const avatarMessages = defineMessages("avatar", {
   away: "Away",
   busy: "Busy",
   offline: "Offline",
-  more: (value0: unknown, value1: unknown) => `${value0} more: ${value1}`,
+  more: (count: number, names: string) => `${count} more: ${names}`,
   people: (count: number, locale = "en-US") => plural(locale, count, { one: `${numberFormat(locale).format(count)} person`, other: `${numberFormat(locale).format(count)} people` }),
 })
 

@@ -733,7 +733,7 @@ export function Composer({
                     className="fa-ai-composer-tool fa-ai-composer-model"
                     iconEnd={<IconChevronDown />}
                     aria-label={messages.model(model.name)}
-                    tooltip={messages.model2(model.name)}
+                    tooltip={messages.modelSummary(model.name)}
                   >
                     <span className="fa-ai-composer-tool-label">
                       {model.name}
@@ -750,7 +750,7 @@ export function Composer({
                 <FactList
                   facts={[
                     {
-                      label: messages.model3,
+                      label: messages.modelLabel,
                       value: <TruncatedText>{model.name}</TruncatedText>,
                     },
                     ...(model.effort
@@ -762,7 +762,7 @@ export function Composer({
                   ]}
                 />
                 <p className="fa-hint">
-                  {messages.theModelIsChosenForTheWholeWorkspace} </p>
+                  {messages.workspaceModel} </p>
                 {onOpenSettings ? (
                   <Button
                     size="sm"
@@ -833,7 +833,7 @@ export function Composer({
                   </ul>
                 ) : (
                   <p className="fa-ai-options-empty">
-                    {messages.workspaceEverythingYouCanAccess} </p>
+                    {messages.workspaceScope} </p>
                 )}
                 {resolver.search ? (
                   <div className="fa-ai-context-search">

@@ -84,7 +84,7 @@ const defaults = {
 /** English defaults for LoginFlow. */
 export const loginFlowMessages = defineMessages("loginFlow", {
   ...defaults,
-  enterTheCode: (value0: unknown, value1: unknown) => `Enter the ${value0}-${value1} code`,
+  enterTheCode: (length: number, numeric: boolean) => `Enter the ${length}-${numeric ? "digit" : "character"} code`,
   providerGoogle: "Google",
   providerGitHub: "GitHub",
   providerMicrosoft: "Microsoft",
@@ -92,8 +92,6 @@ export const loginFlowMessages = defineMessages("loginFlow", {
   providerSlack: "Slack",
   providerDiscord: "Discord",
   providerFacebook: "Facebook",
-  digit: "digit",
-  character: "character",
 })
 
 declare module "../../lib/i18n/catalog.js" {

@@ -5,9 +5,9 @@ import { getLocale } from "../../../lib/locale/locale.js"
 export const barMessages = defineMessages("bar", {
   category: "Category",
   total: "Total",
-  more: "more",
-  inspectValues: (value0: unknown) => `${value0} — inspect values`,
-  total2: (value0: unknown) => `Total ${value0}`,
+  more: (count: number) => `+${count} more`,
+  inspectValues: (label: string) => `${label} — inspect values`,
+  totalValue: (value: string) => `Total ${value}`,
 })
 
 declare module "../../../lib/i18n/catalog.js" {

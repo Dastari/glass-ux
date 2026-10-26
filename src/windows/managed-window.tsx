@@ -356,8 +356,8 @@ const KEY_DELTAS: Record<string, [number, number]> = {
 type KeyboardGesture = "move" | "resize"
 
 function getGESTURE_HINTS(messages: typeof windowsMessages.defaults): Record<KeyboardGesture, string> { return {
-  move: messages.movingWindowArrowKeysMoveItEnterPlaces,
-  resize: messages.resizingWindowArrowKeysChangeItsSizeEnter,
+  move: messages.moveInstructions,
+  resize: messages.resizeInstructions,
 } }
 
 
@@ -595,7 +595,7 @@ export const ManagedWindow = memo(function ManagedWindow({ entry, focused, geome
           <ContextMenu.Separator />
           <ContextMenu.Item onClick={() => manager.toggleMaximise(entry.id)}>{maximised ? messages.restore : messages.maximise}</ContextMenu.Item>
           <ContextMenu.Item onClick={() => manager.minimise(entry.id)}>{messages.minimise}</ContextMenu.Item>
-          <ContextMenu.Item onClick={() => void manager.close(entry.id)}>{messages.close2}</ContextMenu.Item>
+          <ContextMenu.Item onClick={() => void manager.close(entry.id)}>{messages.closeAction}</ContextMenu.Item>
         </ContextMenu.Popup>
       </ContextMenu.Root>
       <WindowContext.Provider value={context}>

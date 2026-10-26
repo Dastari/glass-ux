@@ -92,7 +92,7 @@ export const WindowContentHost = memo(
       return (
         <WindowFrame.Body>
           <EmptyState icon={null}>
-            {messages.thisWindowIsNotAvailableInThisVersion} </EmptyState>
+            {messages.unavailableNotice} </EmptyState>
         </WindowFrame.Body>
       );
     }

@@ -3,9 +3,9 @@ import { richTextMessages } from "./messages.js"
 /** Internal block choices shared with the loading toolbar's intrinsic label measure. */
 export function richTextBlocks(messages: typeof richTextMessages.defaults) { return [
   { value: "paragraph", label: messages.paragraph },
-  { value: "h1", label: messages.heading1 },
-  { value: "h2", label: messages.heading2 },
-  { value: "h3", label: messages.heading3 },
+  { value: "h1", label: messages.headingOne },
+  { value: "h2", label: messages.headingTwo },
+  { value: "h3", label: messages.headingThree },
   { value: "quote", label: messages.quote },
   { value: "code", label: messages.codeBlock },
 ] }

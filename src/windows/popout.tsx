@@ -112,7 +112,7 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
       <main className="fa-wm-popout-empty">
         {gone ? (
           <EmptyState icon={null}>
-            {messages.thisWindowWasClosedInTheWorkspace} </EmptyState>
+            {messages.closedNotice} </EmptyState>
         ) : null}
       </main>
     );

@@ -1,3 +1,4 @@
+import { getLocale } from "../../lib/locale/locale.js"
 import { getUrlFieldMessages } from "./messages.js"
 /**
  * Web addresses: add the scheme people leave off, refuse schemes that are not links
@@ -26,7 +27,7 @@ const SCHEME = /^([a-z][a-z0-9+.-]*):/i
 /** Validate and normalise. A bare origin loses its trailing slash ("https://northstar.example"). */
 export function parseUrl(text: string, options: UrlOptions = {}): UrlResult {
   const schemes = (options.schemes ?? ["https", "http"]).map((scheme) => scheme.toLowerCase())
-  const example = getUrlFieldMessages(options.locale).suchAsNorthstarExample(schemes[0] ?? "https")
+  const example = `${schemes[0] ?? "https"}://northstar.example`
   let source = text.trim()
   if (!source) return { ok: false, error: getUrlFieldMessages(options.locale).enterAWebAddress }
   let addedScheme = false
@@ -39,15 +40,15 @@ export function parseUrl(text: string, options: UrlOptions = {}): UrlResult {
   }
   const given = (SCHEME.exec(source)?.[1] ?? "").toLowerCase()
   if (!schemes.includes(given)) {
-    return { ok: false, error: schemes.length === 1 ? getUrlFieldMessages(options.locale).startTheAddressWith(schemes[0]) : getUrlFieldMessages(options.locale).useAnAddressThatStartsWith(schemes.map((entry) => `${entry}://`).join(" or ")) }
+    return { ok: false, error: schemes.length === 1 ? getUrlFieldMessages(options.locale).startTheAddressWith(schemes[0]) : getUrlFieldMessages(options.locale).useAnAddressThatStartsWith(new Intl.ListFormat(options.locale ?? getLocale(), { type: "disjunction" }).format(schemes.map((entry) => `${entry}://`))) }
   }
   let url: URL
   try {
     url = new URL(source)
   } catch {
-    return { ok: false, error: getUrlFieldMessages(options.locale).enterAWebAddress2(example) }
+    return { ok: false, error: getUrlFieldMessages(options.locale).invalidUrlExample(example) }
   }
-  if (!url.hostname) return { ok: false, error: getUrlFieldMessages(options.locale).enterAWebAddress2(example) }
+  if (!url.hostname) return { ok: false, error: getUrlFieldMessages(options.locale).invalidUrlExample(example) }
   const host = url.hostname.replace(/^\[|\]$/g, "")
   const isIp = /^\d{1,3}(\.\d{1,3}){3}$/.test(host) || host.includes(":")
   if ((options.requireTld ?? true) && !isIp && host !== "localhost" && !host.includes(".")) {

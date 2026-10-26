@@ -482,7 +482,7 @@ function SwitcherList({
             ? labels.loading
             : remote.error
               ? labels.unavailable
-              : messages.loadedResults(items.length, remote.hasNextPage, locale)
+              : messages.loadedResults({ count: items.length, more: remote.hasNextPage, locale: locale })
           : query.trim()
             ? messages.resultCount(count, locale)
             : ""}

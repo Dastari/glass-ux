@@ -64,7 +64,7 @@ export function UrlField({ label, hint, optional, required, aside, className, di
 
   const { field, error, root } = useBoundField<string>()
   const value = field.state.value
-  const warn = (warnInsecure ?? (control.schemes ?? ["https"]).includes("https")) && isInsecure(value) ? messages.notEncryptedHttpSendsEverythingInTheClear : undefined
+  const warn = (warnInsecure ?? (control.schemes ?? ["https"]).includes("https")) && isInsecure(value) ? messages.insecureUrl : undefined
   return (
     <Field {...root} label={label} hint={hint ?? warn} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <UrlInput

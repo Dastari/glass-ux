@@ -4,7 +4,7 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for tabs. */
 export const tabsMessages = defineMessages("tabs", {
   more: "More",
-  moreTabs: (value0: unknown) => `More tabs (${value0})`,
+  moreTabs: (count: number) => `More tabs (${count})`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

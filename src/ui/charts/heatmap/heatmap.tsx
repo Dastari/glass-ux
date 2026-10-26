@@ -73,7 +73,7 @@ export function Heatmap(props: HeatmapProps) {
   const trail =
     columns.length > 0 ? (
       <span className="fa-chart-figure">
-        <span className="fa-chart-figure-label">{messages.peak} {columnText(columns[peak]!)}</span>
+        <span className="fa-chart-figure-label">{messages.peak(columnText(columns[peak]!))}</span>
         <span className="fa-chart-figure-value">{formatValue(totals[peak], fmt)}</span>
       </span>
     ) : null

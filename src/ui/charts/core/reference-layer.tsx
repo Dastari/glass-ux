@@ -175,7 +175,7 @@ export function useReferenceNotes({
   return useMemo(() => {
     const notes: string[] = []
     if (thresholds?.length) notes.push(t.thresholds(joinList(thresholds.toSorted((a, b) => a.value - b.value).map((item) => t.threshold(item.label ?? "", formatValue(item.value, fmt))), locale)))
-    if (bands?.length) notes.push(t.bands(joinList(bands.map((item) => t.band(item.label ?? "", formatValue(Math.min(item.from, item.to), fmt), formatValue(Math.max(item.from, item.to), fmt))), locale)))
+    if (bands?.length) notes.push(t.bands(joinList(bands.map((item) => t.band({ label: item.label ?? "", from: formatValue(Math.min(item.from, item.to), fmt), to: formatValue(Math.max(item.from, item.to), fmt) })), locale)))
     if (markers?.length && xText) notes.push(t.markers(joinList(markers.map((item) => t.marker(item.detail ? `${item.label} (${item.detail})` : item.label, xText(item.x))), locale)))
     return notes
   }, [thresholds, bands, markers, fmt, xText, t, locale])

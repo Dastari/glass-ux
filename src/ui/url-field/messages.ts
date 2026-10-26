@@ -4,14 +4,13 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for urlField. */
 export const urlFieldMessages = defineMessages("urlField", {
   enterAWebAddress: "Enter a web address",
-  northstarExample: (value0: unknown) => `${value0}://northstar.example`,
+  northstarExample: (scheme: string) => `${scheme}://northstar.example`,
   openInANewTab: "Open in a new tab",
-  notEncryptedHttpSendsEverythingInTheClear: "Not encrypted: http:// sends everything in the clear",
-  suchAsNorthstarExample: (value0: unknown) => `such as ${value0}://northstar.example`,
-  startTheAddressWith: (value0: unknown) => `Start the address with ${value0}://`,
-  useAnAddressThatStartsWith: (value0: unknown) => `Use an address that starts with ${value0}`,
-  enterAWebAddress2: (value0: unknown) => `Enter a web address ${value0}`,
-  enterAFullAddress: (value0: unknown) => `Enter a full address ${value0}`,
+  insecureUrl: "Not encrypted: http:// sends everything in the clear",
+  startTheAddressWith: (scheme: undefined | string) => `Start the address with ${scheme}://`,
+  useAnAddressThatStartsWith: (schemes: string) => `Use an address that starts with ${schemes}`,
+  invalidUrlExample: (example: string) => `Enter a web address such as ${example}`,
+  enterAFullAddress: (example: string) => `Enter a full address such as ${example}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

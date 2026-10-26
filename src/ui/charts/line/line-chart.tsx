@@ -101,12 +101,12 @@ export interface LineChartProps extends ChartCommonProps, ValueFormat {
 }
 
 /** A bridge's tooltip (its native SVG title). */
-function getGAP_BRIDGE_TITLE(messages: typeof lineMessages.defaults) { return messages.noSamplesAvailableVisualBridgeOnly }
+function getGAP_BRIDGE_TITLE(messages: typeof lineMessages.defaults) { return messages.gapLabel }
 /** English defaults; rendered controls resolve their locale's messages. */
 export const GAP_BRIDGE_TITLE = getGAP_BRIDGE_TITLE(lineMessages.defaults)
 
 /** The sentence a chart with bridges adds to its accessible description. */
-function getGAP_BRIDGE_NOTE(messages: typeof lineMessages.defaults) { return messages.dashedLinesJoinReadingsAcrossTimesWithNo }
+function getGAP_BRIDGE_NOTE(messages: typeof lineMessages.defaults) { return messages.gapDescription }
 /** English defaults; rendered controls resolve their locale's messages. */
 export const GAP_BRIDGE_NOTE = getGAP_BRIDGE_NOTE(lineMessages.defaults)
 
@@ -423,7 +423,7 @@ function lineTable(
   }
   return {
     columns: [
-      { key: "x", label: step > 1 ? getLineMessages(fmt.locale).count1InSamples(xLabel, step) : xLabel },
+      { key: "x", label: step > 1 ? getLineMessages(fmt.locale).sampleInterval(xLabel, step) : xLabel },
       ...series.map((item) => ({ key: item.key, label: item.label, numeric: true })),
       ...(markers?.length ? [{ key: "__event", label: eventLabel }] : []),
     ],
@@ -802,7 +802,7 @@ const LinePlot = memo(function LinePlot({
     return selection.low === selection.high ? nearestIndex(xs, selection.low) === index : at >= selection.low && at <= selection.high
   }
   const valueText = (index: number) =>
-    `${xText(index)} · ${visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`).join(", ")}${isSelected(index) ? messages.selected : ""}`
+    (isSelected(index) ? messages.selectionLabel : (label: string) => label)(`${xText(index)} · ${new Intl.ListFormat(fmt.locale, { type: "unit" }).format(visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`))}`)
 
   // A committed zoom, pan or reset is announced politely (the region stays mounted, R20.9).
   const [announcement, setAnnouncement] = useState("")

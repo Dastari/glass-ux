@@ -62,7 +62,10 @@ test("mouse: the spotlight lights the target, buttons stay put, Done completes",
   // Next and Back keep their size between steps; Next becomes Done in the same box.
   const before = (await next.boundingBox())!;
   await next.click();
+  await expect(page.getByRole("dialog", { name: "New order" })).toBeVisible();
   await next.click();
+  // The missing Archive target resolves asynchronously before the Orders step appears.
+  await expect(page.getByRole("dialog", { name: "Orders", exact: true })).toBeVisible();
   await next.click();
   await expect(page.getByRole("dialog", { name: "Panel settings" })).toBeVisible();
   await expect(next).toHaveAccessibleName("Done");

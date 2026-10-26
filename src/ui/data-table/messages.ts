@@ -3,7 +3,7 @@ import { defineMessages } from "../../lib/i18n/catalog.js";
 
 /** English wording for DataTable, including cell editors and export. */
 const cellDefaults = {
-  sparkSummary: (label: string, current: string, low: string, high: string) =>
+  sparkSummary: ({ label, current, low, high }: { label: string; current: string; low: string; high: string }) =>
     `${label}: now ${current}, low ${low}, high ${high}`,
   noData: (label: string) => `${label}: no data`,
   never: "Never",
@@ -18,7 +18,7 @@ const cellDefaults = {
   daysAgo: (n: number) => `${n} days ago`,
 };
 export const dataTableCellMessages = /* @__PURE__ */ defineMessages(
-  "data-table",
+  "dataTable",
   cellDefaults as DataTableCellMessages,
 );
 type CellMessageDefaults = typeof cellDefaults;
@@ -28,7 +28,7 @@ export interface DataTableCellMessages extends CellMessageDefaults {}
 const defaults = {
   ...dataTableCellMessages.defaults,
   draggable: "draggable",
-  filtered: ", filtered",
+  filtered: (label: string) => `${label}, filtered`,
   rowNotMoved: (label: string) => `${label} was not moved`,
   columnDragInstructions:
     "Press Space or Enter to lift. Arrow keys move, Space or Enter drops, Escape cancels.",
@@ -85,7 +85,7 @@ const defaults = {
   from: "From",
   to: "To",
   selectRow: (label: string) => `Select ${label}`,
-  moreFields: (expanded: boolean, count: number, label: string) =>
+  moreFields: ({ expanded, count, label }: { expanded: boolean; count: number; label: string }) =>
     `${expanded ? "Hide" : "Show"} ${count} more fields for ${label}`,
   columnOptions: (label: string) => `${label} column options`,
   resizeColumn: (label: string) => `Resize ${label} column`,
@@ -128,7 +128,7 @@ const defaults = {
     `${label} ${condition.toLowerCase()}`,
   updated: (relative: string) => `Updated ${relative}`,
   today: "Today",
-  last24h: "Last 24 hours",
+  lastDay: "Last 24 hours",
   future: "In the future",
   beforeYesterday: "Before yesterday",
   recentDays: (days: number) => `Last ${days} days`,
@@ -154,7 +154,7 @@ const defaults = {
   onOrAfter: "On or after",
   emptyQuery: (noun: string, query: string) => `No ${noun} match "${query}"`,
   emptyFilters: (noun: string) => `No ${noun} match these filters`,
-  emptyQueryFilters: (noun: string, query: string, count: number) =>
+  emptyQueryFilters: ({ noun, query, count }: { noun: string; query: string; count: number }) =>
     `No ${noun} match "${query}" and ${count} ${count === 1 ? "filter" : "filters"}`,
   summaryContains: (label: string, value: string) =>
     `${label} contains "${value}"`,
@@ -178,9 +178,9 @@ const defaults = {
   reorderPaged: "Show every row on one page to reorder",
   reorderHeld: "Show the new rows to reorder",
   reorderSaving: "Saving the previous move…",
-  reorderPosition: (position: number, count: number, group?: string) =>
+  reorderPosition: ({ position, count, group }: { position: number; count: number; group?: string }) =>
     `${position} of ${count}${group ? ` in ${group}` : ""}`,
-  reorderLifted: (label: string, position: string, pointer = false) =>
+  reorderLifted: ({ label, position, pointer = false }: { label: string; position: string; pointer?: boolean }) =>
     pointer
       ? `Lifted ${label}, position ${position}.`
       : `Lifted ${label}, position ${position}. Use the arrow keys to move, Space to drop, Escape to cancel.`,
@@ -190,7 +190,7 @@ const defaults = {
     `Dropped ${label} at position ${position}.`,
   reorderCancelled: (label: string, position: string) =>
     `Reorder cancelled. ${label} returned to position ${position}.`,
-  reorderFailed: (label: string, position: string, reason?: string) =>
+  reorderFailed: ({ label, position, reason }: { label: string; position: string; reason?: string }) =>
     `${label} could not be moved${reason ? `: ${reason.replace(/[.\s]+$/, "")}` : ""}. Returned to position ${position}.`,
   reorderInstructions:
     "Press Space to lift, the arrow keys to move, Space to drop and Escape to cancel. Alt with an arrow key moves one place.",
@@ -212,12 +212,12 @@ const defaults = {
   moveRight: "Move right",
   moveStart: "Move to start",
   moveEnd: "Move to end",
-  columnMoved: (label: string, position: number, count: number) =>
+  columnMoved: ({ label, position, count }: { label: string; position: number; count: number }) =>
     `${label} column moved to position ${position} of ${count}`,
   reorderColumn: (label: string) => `Reorder ${label} column`,
 };
 export const dataTableMessages = /* @__PURE__ */ defineMessages(
-  "data-table",
+  "dataTable",
   defaults as DataTableMessages,
 );
 type TableMessageDefaults = typeof defaults;
@@ -226,7 +226,7 @@ export interface DataTableMessages extends TableMessageDefaults {}
 
 declare module "../../lib/i18n/catalog.js" {
   interface MessageCatalog {
-    "data-table": DataTableMessages;
+    dataTable: DataTableMessages;
   }
 }
 

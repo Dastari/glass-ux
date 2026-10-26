@@ -127,7 +127,7 @@ export function presetLabel(
     case "today":
       return m.today;
     case "last24h":
-      return m.last24h;
+      return m.lastDay;
     case "future":
       return m.future;
     case "recent":

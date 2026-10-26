@@ -7,7 +7,7 @@ export const timeZoneSelectMessages = defineMessages("timeZoneSelect", {
   chooseATimeZoneFromTheList: "Choose a time zone from the list",
   suggested: "Suggested",
   allTimeZones: "All time zones",
-  thereNow: (value0: unknown, value1: unknown) => `${value0} · ${value1} there now`,
+  thereNow: (zone: string, time: string) => `${zone} · ${time} there now`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

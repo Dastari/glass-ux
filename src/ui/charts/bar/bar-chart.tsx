@@ -358,7 +358,7 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
     return { x: x0 + band * (index + 0.5), y: py(top) }
   }
   const categoryText = (index: number) => (edges ? edgeLabel(edges, index, formatEdge) : (categories[index] ?? ""))
-  const valueText = (index: number) => `${categoryText(index)} · ${visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`).join(", ")}`
+  const valueText = (index: number) => `${categoryText(index)} · ${new Intl.ListFormat(fmt.locale, { type: "unit" }).format(visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`))}`
   const sum = useMemo(() => totals.reduce((a, b) => a + b, 0), [totals])
   const reference = useMemo(() => {
     if (geo.kind !== "columns" || micro || (!thresholds?.length && !bands?.length)) return null
@@ -462,7 +462,7 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
       ) : null}
       {geo.kind === "rows" && geo.shown < n ? (
         <span className="fa-chart-more" style={{ top: geo.shown * geo.pitch, height: geo.pitch }}>
-          +{n - geo.shown} {messages.more} </span>
+          {messages.more(n - geo.shown)} </span>
       ) : null}
 
       {full ? (
@@ -483,7 +483,7 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
                 <TooltipBody
                   title={categoryText(hover.index)}
                   rows={stacked ? rows.toReversed() : rows}
-                  footer={stacked && visible.length > 1 ? messages.total2(formatValue(totals[hover.index], fmt)) : undefined}
+                  footer={stacked && visible.length > 1 ? messages.totalValue(formatValue(totals[hover.index], fmt)) : undefined}
                 />
               )
             }}

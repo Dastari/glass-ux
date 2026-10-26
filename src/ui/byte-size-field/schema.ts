@@ -21,8 +21,8 @@ export function byteSizeSchema(options: { required?: boolean; min?: number; max?
           : getByteSizeFieldMessages(options.locale).enterASize
   return numberRule({
     required: options.required,
-    requiredMessage: () => getByteSizeFieldMessages(options.locale).enterASizeSuchAs500Mb,
-    invalidMessage: () => getByteSizeFieldMessages(options.locale).enterASizeSuchAs500MbOr,
+    requiredMessage: () => getByteSizeFieldMessages(options.locale).invalidSize,
+    invalidMessage: () => getByteSizeFieldMessages(options.locale).sizeExamples,
     rangeMessage: range,
     min: options.min ?? 0,
     max: options.max,

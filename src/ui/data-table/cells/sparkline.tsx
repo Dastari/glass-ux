@@ -44,10 +44,7 @@ export function SparklineCell({
   const current = value ?? stats?.last;
   const summary = stats
     ? m.sparkSummary(
-        label,
-        formatWithUnit(current ?? stats.last, unit, 0, locale),
-        formatWithUnit(stats.min, unit, 0, locale),
-        formatWithUnit(stats.max, unit, 0, locale),
+        { label: label, current: formatWithUnit(current ?? stats.last, unit, 0, locale), low: formatWithUnit(stats.min, unit, 0, locale), high: formatWithUnit(stats.max, unit, 0, locale) },
       )
     : m.noData(label);
   return (

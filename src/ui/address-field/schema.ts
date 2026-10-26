@@ -26,11 +26,11 @@ const point = z.object({ lat: z.number(), lng: z.number() })
 export function addressSchema(options: AddressSchemaOptions = {}) {
   return z
     .object({
-      line1: z.string().max(120, { error: () => getAddressFieldMessages(options.locale).use120CharactersOrFewer }),
-      line2: z.string().max(120, { error: () => getAddressFieldMessages(options.locale).use120CharactersOrFewer }),
-      locality: z.string().max(80, { error: () => getAddressFieldMessages(options.locale).use80CharactersOrFewer }),
+      line1: z.string().max(120, { error: () => getAddressFieldMessages(options.locale).streetTooLong }),
+      line2: z.string().max(120, { error: () => getAddressFieldMessages(options.locale).streetTooLong }),
+      locality: z.string().max(80, { error: () => getAddressFieldMessages(options.locale).localityTooLong }),
       region,
-      postcode: z.string().max(12, { error: () => getAddressFieldMessages(options.locale).use12CharactersOrFewer }),
+      postcode: z.string().max(12, { error: () => getAddressFieldMessages(options.locale).postcodeTooLong }),
       country: region,
       location: point.nullable(),
       pinned: z.boolean(),
@@ -43,9 +43,9 @@ export function addressSchema(options: AddressSchemaOptions = {}) {
       if (!value.locality.trim()) context.addIssue({ code: "custom", path: ["locality"], message: getAddressFieldMessages(options.locale).enterThe(convention.locality.toLowerCase()) })
       if (!value.country.code) context.addIssue({ code: "custom", path: ["country"], message: getAddressFieldMessages(options.locale).chooseACountry })
       if (value.postcode.trim() && !isPostcode(value.country.code, value.postcode)) {
-        const example = convention.postcodeExample ? getAddressFieldMessages(options.locale).suchAs(convention.postcodeExample) : ""
+        const example = convention.postcodeExample
         context.addIssue({ code: "custom", path: ["postcode"], message: getAddressFieldMessages(options.locale).checkThe(convention.postcode.toLowerCase(), example) })
       }
-      if (options.requireLocation && !value.location) context.addIssue({ code: "custom", path: ["line1"], message: getAddressFieldMessages(options.locale).chooseTheAddressFromTheSuggestionsOrPlace })
+      if (options.requireLocation && !value.location) context.addIssue({ code: "custom", path: ["line1"], message: getAddressFieldMessages(options.locale).addressRequired })
     })
 }

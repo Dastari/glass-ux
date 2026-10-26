@@ -874,7 +874,7 @@ export function TopologyCanvas<T>({
                 variant="secondary"
                 icon={<IconLayers />}
                 aria-label={messages.minimap}
-                tooltip={showMinimap ? messages.minimapShownWhilePartOfTheMapIs : messages.minimapOff}
+                tooltip={showMinimap ? messages.minimapVisible : messages.minimapOff}
                 aria-pressed={showMinimap}
                 onClick={() => setShowMinimap((value) => !value)}
                 disabledReason={controlsReason}

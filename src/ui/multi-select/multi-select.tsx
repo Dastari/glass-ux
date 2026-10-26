@@ -1,3 +1,4 @@
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { multiSelectMessages } from "./messages.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
@@ -140,6 +141,7 @@ export function MultiSelect<V extends string = string>({
   ...aria
 }: MultiSelectProps<V>) {
   const messages = useMessages(multiSelectMessages)
+  const locale = useLocale()
 
   const [current, commit] = useControllable<V[]>(value ?? undefined, defaultValue ?? [], onValueChange)
   const [query, setQuery] = useState("")
@@ -203,12 +205,12 @@ export function MultiSelect<V extends string = string>({
             <OptionChip key={key} label={data.labelOf(key)} icon={data.itemOf(key)?.icon} readOnly={readOnly} />
           ))}
           {hidden.length > 0 ? (
-            <span className="fa-chip" data-overflow="" title={hidden.map(data.labelOf).join(", ")}>
+            <span className="fa-chip" data-overflow="" title={new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf))}>
               <span className="fa-chip-label" aria-hidden>
                 +{hidden.length}
               </span>
               <span className="sr-only">
-                {hidden.length} {messages.more} {hidden.map(data.labelOf).join(", ")}
+                {messages.more(hidden.length, new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf)))}
               </span>
             </span>
           ) : null}

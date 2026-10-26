@@ -1,3 +1,4 @@
+import { numberFormat } from "../../lib/locale/intl.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { statusStripMessages } from "./messages.js"
 import { IconCloudOff, IconRefresh } from "../../icons/generated/icons.js";
@@ -51,6 +52,7 @@ export function AiStatusStrip({
   const seconds = retryAt
     ? Math.max(0, Math.ceil((retryAt - now) / 1000))
     : null;
+  const secondUnit = numberFormat(locale, { style: "unit", unit: "second", unitDisplay: "narrow" }).formatToParts(1).find((part) => part.type === "unit")?.value ?? ""
   const used = budget ? percent(budget) : null;
   return (
     <div
@@ -80,9 +82,9 @@ export function AiStatusStrip({
         {stream === "connected"
           ? messages.live
           : stream === "reconnecting"
-            ? `${messages.reconnecting}${attempt ? messages.attempt(attempt) : ""}${seconds !== null ? ` · ${seconds} s` : ""}`
+            ? messages.reconnectStatus({ attempt, time: seconds !== null ? `${formatNumber(seconds, 0, locale)} ${secondUnit}` : undefined })
             : stream === "reset"
-              ? messages.conversationReloadedFromTheServer
+              ? messages.reloaded
               : messages.offlineHistoryStaysReadable}
       </span>
       {stream !== "connected" && onRetry ? (
@@ -98,7 +100,7 @@ export function AiStatusStrip({
       <span className="fa-ai-status-meta">
         {budget && used !== null ? (
           <Tooltip
-            content={messages.of(formatNumber(budget.used, 0, locale), formatNumber(budget.maximum, 0, locale), budget.unit)}
+            content={messages.budgetUsage({ used: formatNumber(budget.used, 0, locale), maximum: formatNumber(budget.maximum, 0, locale), unit: budget.unit })}
           >
             <span
               className="fa-ai-status-item"

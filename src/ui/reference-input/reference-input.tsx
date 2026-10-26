@@ -179,7 +179,7 @@ function RelationMenu<R extends string>({ link, label, options, onChange }: Rela
         <span className="fa-ref-relation-label">{current?.label ?? link.relation}</span>
         <IconChevronDown />
       </Menu.Trigger>
-      <Menu.Popup align="start" aria-label={messages.relationTo2(label)}>
+      <Menu.Popup align="start" aria-label={messages.relationLabel(label)}>
         <Menu.RadioGroup value={link.relation} onValueChange={(next) => onChange(next as R)}>
           {options.map((relation) => (
             <Menu.RadioItem key={relation.value} value={relation.value}>
@@ -433,7 +433,7 @@ export function ReferenceInput<R extends string = string>({
         data-invalid={invalid ? "" : undefined}
         data-has-value={links.length > 0 ? "" : undefined}
       >
-        <BaseCombobox.Chips className="fa-multi-chips" aria-label={links.length > 0 ? `${links.length} ${links.length === 1 ? "link" : "links"}` : undefined}>
+        <BaseCombobox.Chips className="fa-multi-chips" aria-label={links.length > 0 ? messages.linkCount(links.length, locale) : undefined}>
           {links.map((link) => {
             const key = referenceKey(link.target)
             const options = relations ? relationsFor(link.target, relations) : []

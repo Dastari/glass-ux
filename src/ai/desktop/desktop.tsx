@@ -1,3 +1,4 @@
+import { messageContent } from "../../lib/i18n/message-content.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { desktopMessages } from "./messages.js"
 import type { CSSProperties, ReactNode } from "react";
@@ -173,13 +174,7 @@ export function DesktopSession({
           <span className="fa-ai-desktop-meta">
             {userIdentity || userEntity || user ? (
               <span>
-                {userIdentity ??
-                  (userEntity ? (
-                    <EntityChip entity={userEntity} size="sm" />
-                  ) : (
-                    user
-                  ))}{" "}
-                {messages.isSignedIn} </span>
+                {messageContent(messages.isSignedIn("{name}"), { name: userIdentity ?? (userEntity ? <EntityChip entity={userEntity} size="sm" /> : user) })} </span>
             ) : null}
             {[active ? elapsed : null, lease, reason]
               .filter(Boolean)

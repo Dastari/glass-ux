@@ -29,12 +29,12 @@ export function resolveDateTime(
   if (resolved.kind === "gap")
     return {
       error:
-        messages.thisTimeDoesNotExistDuringTheDaylightSaving,
+        messages.skippedTime,
     };
   if (resolved.kind === "overlap")
     return {
       error:
-        messages.thisTimeOccursTwiceDuringTheDaylightSavingChange,
+        messages.repeatedTime,
     };
   return { time: resolved.epochMs };
 }

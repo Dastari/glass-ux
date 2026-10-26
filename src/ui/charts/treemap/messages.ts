@@ -4,8 +4,8 @@ import { getLocale } from "../../../lib/locale/locale.js"
 /** English defaults for treemap. */
 export const treemapMessages = defineMessages("treemap", {
   name: "Name",
-  pressEnterToOpen: " · press Enter to open",
-  explore: (value0: unknown) => `${value0} — explore`,
+  pressEnterToOpen: (label: string) => `${label} · press Enter to open`,
+  explore: (label: string) => `${label} — explore`,
   clickToOpen: "Click to open",
 })
 

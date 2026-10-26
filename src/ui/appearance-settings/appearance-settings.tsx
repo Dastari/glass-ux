@@ -79,6 +79,21 @@ export function AppearanceSettings({
 }: AppearanceSettingsProps) {
   const t = useMessages(appearanceSettingsMessages, { labels })
   const { appearance, update, reset: resetAll } = useAppearance()
+  const paletteNames: Readonly<Record<string, string>> = {
+    ocean: t.paletteOcean,
+    aurora: t.paletteAurora,
+    emerald: t.paletteEmerald,
+    sunset: t.paletteSunset,
+    graphite: t.paletteGraphite,
+    ruby: t.paletteRuby,
+    lagoon: t.paletteLagoon,
+    indigo: t.paletteIndigo,
+    rose: t.paletteRose,
+    moss: t.paletteMoss,
+    sand: t.paletteSand,
+    slate: t.paletteSlate,
+  }
+
 
   /** A row for one knob: hidden or fixed when the application locked it. */
   const row = (key: keyof Appearance | Array<keyof Appearance>, render: (fixed: boolean) => ReactNode) => {
@@ -123,7 +138,7 @@ export function AppearanceSettings({
                 disabled={fixed}
                 value={appearance.accentColor ? null : appearance.palette}
                 onValueChange={(palette) => update({ palette, accentHue: null, accentColor: null, accentColor2: null, canvasTint: null })}
-                options={palettes.map((palette) => ({ value: palette, label: PALETTE_LABELS[palette] ?? palette, palette }))}
+                options={palettes.map((palette) => ({ value: palette, label: paletteNames[palette] ?? PALETTE_LABELS[palette] ?? palette, palette }))}
               />
             }
           />
@@ -134,7 +149,7 @@ export function AppearanceSettings({
       const rows = (
         [
           ["accentColor", t.accent, t.accentDescription],
-          ["accentColor2", t.accent2, t.accent2Description],
+          ["accentColor2", t.secondAccent, t.secondAccentDescription],
           ["canvasTint", t.tint, t.tintDescription],
         ] as const
       ).map(([key, label, description]) =>
@@ -169,6 +184,7 @@ export function AppearanceSettings({
         <FormGroup key="background" label={t.background}>
           <BackgroundTiles
             label={t.background}
+            messages={t}
             value={appearance.background ?? "silk"}
             options={backgrounds}
             disabled={fixed || isLocked("background")}
@@ -365,6 +381,7 @@ export function AppearanceSettings({
 
 /** Background tiles: a radio group whose options preview the background, artwork included. */
 function BackgroundTiles({
+  messages,
   label,
   value,
   options,
@@ -372,11 +389,31 @@ function BackgroundTiles({
   onValueChange,
 }: {
   label: string
+  messages: typeof appearanceSettingsMessages.defaults
   value: BackgroundStyle
   options: readonly BackgroundStyle[]
   disabled: boolean
   onValueChange: (value: BackgroundStyle) => void
 }) {
+  const backgroundNames: Readonly<Record<string, string>> = {
+    silk: messages.backgroundSilk,
+    mesh: messages.backgroundMesh,
+    currents: messages.backgroundCurrents,
+    waves: messages.backgroundWaves,
+    contours: messages.backgroundContours,
+    facets: messages.backgroundFacets,
+    grid: messages.backgroundGrid,
+    pixels: messages.backgroundPixels,
+    circuit: messages.backgroundCircuit,
+    network: messages.backgroundNetwork,
+    skyline: messages.backgroundSkyline,
+    harbour: messages.backgroundHarbour,
+    forest: messages.backgroundForest,
+    hills: messages.backgroundHills,
+    garden: messages.backgroundGarden,
+    plain: messages.backgroundPlain,
+    image: messages.backgroundImage,
+  }
   return (
     <BaseRadioGroup<BackgroundStyle>
       className="fa-appearance-backgrounds"
@@ -390,7 +427,7 @@ function BackgroundTiles({
           <span className="fa-appearance-background-preview canvas-ambient" data-background={background} aria-hidden>
             <span className="canvas-silk" data-background={background} data-contained />
           </span>
-          <span className="fa-appearance-background-label">{BACKGROUND_LABELS[background] ?? background}</span>
+          <span className="fa-appearance-background-label">{backgroundNames[background] ?? BACKGROUND_LABELS[background] ?? background}</span>
         </BaseRadio.Root>
       ))}
     </BaseRadioGroup>

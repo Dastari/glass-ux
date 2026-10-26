@@ -19,8 +19,8 @@ export function durationSchema(options: { /** Locale for validation wording. Def
           : getDurationFieldMessages(options.locale).enterADuration
   return numberRule({
     required: options.required,
-    requiredMessage: () => getDurationFieldMessages(options.locale).enterADurationSuchAs1h30m,
-    invalidMessage: () => getDurationFieldMessages(options.locale).enterADurationSuchAs1h30m90m,
+    requiredMessage: () => getDurationFieldMessages(options.locale).invalidDuration,
+    invalidMessage: () => getDurationFieldMessages(options.locale).durationExamples,
     rangeMessage: range,
     min: options.min ?? 0,
     max: options.max,

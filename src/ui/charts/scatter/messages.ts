@@ -6,7 +6,7 @@ export const scatterMessages = defineMessages("scatter", {
   item: "Item",
   series: "Series",
   items: "items",
-  inspectPoints: (value0: unknown) => `${value0} — inspect points`,
+  inspectPoints: (label: string) => `${label} — inspect points`,
   count: "Count",
   range: "Range",
 })

@@ -4,11 +4,11 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for tagInput. */
 export const tagInputMessages = defineMessages("tagInput", {
-  create: (value0: unknown) => `Create “${value0}”`,
-  upTo: (value0: unknown, value1: unknown) => `Up to ${value0} ${value1}`,
-  edit: (value0: unknown) => `Edit ${value0}`,
-  more: "more:",
+  create: (label: string) => `Create “${label}”`,
+  edit: (label: string) => `Edit ${label}`,
+  more: (count: number, labels: string) => `${count} more: ${labels}`,
   limit: (count: number, locale = "en-US") => plural(locale, count, { one: `Up to ${numberFormat(locale).format(count)} value`, other: `Up to ${numberFormat(locale).format(count)} values` }),
+  valueCount: (count: number, locale = "en-AU") => plural(locale, count, { one: `${count} value`, other: `${count} values` }),
 })
 
 declare module "../../lib/i18n/catalog.js" {

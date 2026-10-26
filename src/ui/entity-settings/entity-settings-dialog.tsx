@@ -322,8 +322,8 @@ export function EntitySettingsDialog({
     onOpenChange,
     dirty,
     onDiscard: () => form.reset(),
-    title: entityName ? messages.discardChangesTo(entityName) : messages.discardUnsavedChanges,
-    description: messages.yourEditsInThisDialogAreLost,
+    title: entityName ? messages.discardEntityTitle(entityName) : messages.discardTitle,
+    description: messages.discardDescription,
   })
 
   const sections: SettingsSection[] = tabs.map((entry) => ({
@@ -346,7 +346,7 @@ export function EntitySettingsDialog({
     <div className="fa-entity-settings-conflict" role="status" data-testid="settings-conflict">
       <IconWarning className="fa-entity-settings-conflict-icon" />
       <span className="fa-entity-settings-conflict-text">
-        {conflictTab && conflictTab.value !== current ? messages.changed(conflictTab.label) : messages.changed2} {messages.by} {conflict.changedBy} {messages.sinceYouOpenedItReloadToSeeTheir} </span>
+        {messages.conflictNotice(conflictTab && conflictTab.value !== current ? conflictTab.label : undefined, conflict.changedBy)} </span>
       {onReload ? (
         <ActionButton
           size="sm"
@@ -376,7 +376,7 @@ export function EntitySettingsDialog({
       >
         <div ref={rootRef} hidden />
         <Dialog.Header media={media} title={title} subtitle={subtitle} />
-        <SettingsSections sections={sections} section={current} onSectionChange={select} label={entityName ? messages.settings2(entityName) : messages.settingsSections} keepMounted />
+        <SettingsSections sections={sections} section={current} onSectionChange={select} label={entityName ? messages.entitySettings(entityName) : messages.settingsSections} keepMounted />
         <Dialog.Footer start={conflictNotice ?? footerStart}>
           <Button
             type="button"

@@ -1,4 +1,19 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+/** The header switch on desktop; the Visual style choice in the Appearance sheet on phones. */
+async function chooseStyle(page: Page, style: "Flat" | "Glass") {
+  const header = page.locator(".docs-style-switch").filter({ visible: true });
+  if (await header.count()) {
+    await header.getByRole("button", { name: style, exact: true }).click();
+    return;
+  }
+  await page.getByRole("button", { name: "Appearance", exact: true }).click();
+  await page
+    .getByRole("group", { name: "Visual style", exact: true })
+    .getByRole("button", { name: style, exact: true })
+    .click();
+  await page.keyboard.press("Escape");
+}
 
 for (const mode of ["light", "dark"] as const) {
   test(`Flat keeps palette, geometry and project state across comparisons (${mode}) @responsive`, async ({ page }, info) => {
@@ -34,12 +49,11 @@ for (const mode of ["light", "dark"] as const) {
     const table = studio.locator(".fa-dt");
     await expect(table).toBeVisible();
     await table.evaluate((el) => el.setAttribute("data-comparison-state", "retained"));
-    const comparison = page.locator(".docs-style-switch").filter({ visible: true });
-    await comparison.getByRole("button", { name: "Glass", exact: true }).click();
+    await chooseStyle(page, "Glass");
     await expect(page.locator("html")).toHaveAttribute("data-glass", "full");
     await expect(page.locator("html")).toHaveAttribute("data-background", "waves");
     await expect(page.locator("html")).toHaveAttribute("data-motion", "full");
-    await comparison.getByRole("button", { name: "Flat", exact: true }).click();
+    await chooseStyle(page, "Flat");
     await expect(table).toHaveAttribute("data-comparison-state", "retained");
     await expect(page.locator("html")).toHaveAttribute("data-glass", "solid");
     await expect(page.locator("html")).toHaveAttribute("data-motion", "reduced");
@@ -55,10 +69,10 @@ for (const mode of ["light", "dark"] as const) {
     await expect(dialog).toHaveCount(0);
     await expect(primary).toBeFocused();
     await page.screenshot({ path: info.outputPath(`flat-${mode}.png`), fullPage: true });
-    await comparison.getByRole("button", { name: "Glass", exact: true }).click();
+    await chooseStyle(page, "Glass");
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("data-style", "glass");
-    await comparison.getByRole("button", { name: "Flat", exact: true }).click();
+    await chooseStyle(page, "Flat");
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute("data-style", "flat");
   });

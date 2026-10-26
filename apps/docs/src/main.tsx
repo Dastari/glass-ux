@@ -750,7 +750,6 @@ function Layout() {
                       </span>
                     </Button>
                   </div>
-                  <VisualStyleSwitch />
                 </header>
               ) : (
                 <SectionDrawer.Root

@@ -12,19 +12,6 @@
   :root[data-style="flat"] .docs-glass-only {
     display: none;
   }
-  .docs-mobile-header:has(.docs-style-switch) {
-    flex-wrap: wrap;
-  }
-  .docs-mobile-header .docs-style-switch {
-    --_h: calc(var(--target-min) + var(--space-1));
-    order: 1;
-  }
-  .docs-mobile-header .gallery-brand-name {
-    display: none;
-  }
-  .docs-mobile-header .docs-mobile-actions {
-    order: 2;
-  }
   :root[data-style="flat"] .docs-mobile-header {
     padding-inline: var(--space-2);
   }

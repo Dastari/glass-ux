@@ -5,6 +5,7 @@ import { useId, type ReactNode } from "react"
 import { IconCheck, IconMinus } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { ChoiceRow, descriptionId, type ChoiceSize, type ChoiceTone } from "../field/index.js"
+import { FieldOptionItem } from "../field/field.js"
 
 export interface CheckboxProps extends Omit<BaseCheckbox.Root.Props, "className" | "render" | "nativeButton"> {
   className?: string
@@ -49,10 +50,13 @@ export function Checkbox({ label, description, className, disabled, id, ...rest 
   const autoId = useId()
   if (!label) return <CheckboxBox {...rest} id={id} disabled={disabled} className={className} />
   const controlId = id ?? autoId
+  // A labelled checkbox is its own Field item, so in a group inside a Field each keeps its id and name.
   return (
-    <ChoiceRow controlId={controlId} label={label} description={description} disabled={disabled} className={className}>
-      <CheckboxBox {...rest} id={controlId} aria-describedby={description ? descriptionId(controlId) : undefined} disabled={disabled} />
-    </ChoiceRow>
+    <FieldOptionItem>
+      <ChoiceRow controlId={controlId} label={label} description={description} disabled={disabled} className={className}>
+        <CheckboxBox {...rest} id={controlId} aria-describedby={description ? descriptionId(controlId) : undefined} disabled={disabled} />
+      </ChoiceRow>
+    </FieldOptionItem>
   )
 }
 

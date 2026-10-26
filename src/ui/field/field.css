@@ -365,6 +365,10 @@
 }
 
 @layer components {
+  /* One option's Field item (Radio, RadioCard, labelled Checkbox): a scope for its id, not a box. */
+  .fa-field-item {
+    display: contents;
+  }
   .fa-field-warning {
     display: flex;
     align-items: center;

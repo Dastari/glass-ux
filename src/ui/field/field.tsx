@@ -2,7 +2,7 @@ import { useMessages } from "../../lib/i18n/index.js"
 import { fieldMessages } from "./messages.js"
 import { Field as BaseField } from "@base-ui/react/field";
 import { Fieldset as BaseFieldset } from "@base-ui/react/fieldset";
-import type { ComponentProps, ReactNode } from "react";
+import { createContext, useContext, type ComponentProps, type ReactNode } from "react";
 import { IconAlert } from "../../icons/generated/icons.js";
 import { cx } from "../../lib/cx.js";
 import { numberFormat } from "../../lib/locale/intl.js";
@@ -168,6 +168,7 @@ function FieldBase({
     ) : null;
 
   const root = (
+    <InFieldContext.Provider value>
     <BaseField.Root
       {...rest}
       invalid={hasError ? true : invalid}
@@ -195,6 +196,7 @@ function FieldBase({
         </>
       )}
     </BaseField.Root>
+    </InFieldContext.Provider>
   );
 
   if (!legend) return root;
@@ -393,9 +395,31 @@ export function ChoiceRow({
   );
 }
 
+/** Whether a component is inside a Field (ours or its Root part): Base UI's Field items need one. */
+const InFieldContext = createContext(false);
+
+/** The Root part for custom layouts; it also tells options inside that they are in a Field. */
+function FieldRootPart(props: ComponentProps<typeof BaseField.Root>) {
+  return (
+    <InFieldContext.Provider value>
+      <BaseField.Root {...props} />
+    </InFieldContext.Provider>
+  );
+}
+
+/**
+ * One option of a radio or checkbox group. Inside a Field it becomes a Base UI Field item, so
+ * the option keeps its own id and accessible name instead of taking the Field's; elsewhere it
+ * renders its children as they are. It adds no box (`display: contents`).
+ */
+export function FieldOptionItem({ children }: { children: ReactNode }) {
+  const inField = useContext(InFieldContext);
+  return inField ? <BaseField.Item className="fa-field-item">{children}</BaseField.Item> : <>{children}</>;
+}
+
 /** Field namespace: `<Field label …>` plus the parts for custom layouts. */
 export const Field = Object.assign(FieldBase, {
-  Root: BaseField.Root,
+  Root: FieldRootPart,
   Label: BaseField.Label,
   Description: BaseField.Description,
   Error: BaseField.Error,

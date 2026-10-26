@@ -4,6 +4,7 @@ import { RadioGroup as BaseRadioGroup } from "@base-ui/react/radio-group"
 import { useId, type ReactNode } from "react"
 import { cx } from "../../lib/cx.js"
 import { ChoiceRow, descriptionId, type ChoiceSize, type ChoiceTone } from "../field/index.js"
+import { FieldOptionItem } from "../field/field.js"
 
 export interface RadioProps<V extends string = string>
   extends Omit<BaseRadio.Root.Props<V>, "className" | "render" | "nativeButton"> {
@@ -31,15 +32,25 @@ function RadioCircle<V extends string>({ className, size = "md", tone, ...rest }
   )
 }
 
-/** One option of a RadioGroup. The chosen circle fills with the accent around a dot. */
+/**
+ * One option of a RadioGroup. The chosen circle fills with the accent around a dot.
+ * Each option is its own Field item, so inside a Field every radio keeps its own id and name.
+ */
 export function Radio<V extends string = string>({ label, description, className, disabled, id, ...rest }: RadioProps<V>) {
   const autoId = useId()
-  if (!label) return <RadioCircle {...rest} id={id} disabled={disabled} className={className} />
   const controlId = id ?? autoId
+  if (!label)
+    return (
+      <FieldOptionItem>
+        <RadioCircle {...rest} id={controlId} disabled={disabled} className={className} />
+      </FieldOptionItem>
+    )
   return (
-    <ChoiceRow controlId={controlId} label={label} description={description} disabled={disabled} className={className}>
-      <RadioCircle {...rest} id={controlId} aria-describedby={description ? descriptionId(controlId) : undefined} disabled={disabled} />
-    </ChoiceRow>
+    <FieldOptionItem>
+      <ChoiceRow controlId={controlId} label={label} description={description} disabled={disabled} className={className}>
+        <RadioCircle {...rest} id={controlId} aria-describedby={description ? descriptionId(controlId) : undefined} disabled={disabled} />
+      </ChoiceRow>
+    </FieldOptionItem>
   )
 }
 
@@ -114,8 +125,10 @@ export interface RadioCardProps<V extends string = string>
 export function RadioCard<V extends string = string>({ title, description, icon, tone, className, ...rest }: RadioCardProps<V>) {
   const id = useId()
   return (
+    <FieldOptionItem>
     <BaseRadio.Root
       {...rest}
+      id={rest.id ?? id}
       nativeButton
       // oxlint-disable-next-line jsx-a11y/control-has-associated-label -- named by its title (aria-labelledby)
       render={<button type="button" />}
@@ -143,5 +156,6 @@ export function RadioCard<V extends string = string>({ title, description, icon,
         ) : null}
       </span>
     </BaseRadio.Root>
+    </FieldOptionItem>
   )
 }

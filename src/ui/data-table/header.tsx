@@ -114,6 +114,7 @@ function HeaderCell({
   controller: HeaderController;
 }) {
   const m = useDataTableMessages();
+  const labelId = useId();
   const drag = useDraggable({
     id: column.id,
     type: column.pinned ? "pinned-column" : "column",
@@ -130,7 +131,7 @@ function HeaderCell({
       : undefined;
   const label = (
     <>
-      <span className="fa-dt-th-label" aria-hidden={filtered || undefined}>{meta.label}</span>
+      <span id={labelId} className="fa-dt-th-label" aria-hidden={filtered || undefined}>{meta.label}</span>
       {filtered ? (
         <>
           <IconFilter className="fa-dt-filter-glyph" />
@@ -154,6 +155,8 @@ function HeaderCell({
     <div
       ref={drag.ref}
       role="columnheader"
+      // Named by the label alone: the grip, menu button and resize separator have their own names.
+      aria-labelledby={labelId}
       className="fa-dt-th"
       tabIndex={-1}
       onContextMenu={(event) => {

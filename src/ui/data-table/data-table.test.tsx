@@ -285,3 +285,45 @@ describe("rowOpen", () => {
     expect(open).toHaveBeenCalledWith(rows[0]);
   });
 });
+
+describe("column header names", () => {
+  it("names each header by its label alone; its controls keep their own names", () => {
+    const filterable = col.columns([
+      col.accessor("name", { header: "Name", pin: true, cardRole: "title" }),
+      col.accessor("serial", {
+        header: "Serial",
+        cardRole: "meta",
+        filter: { type: "text" },
+      }),
+    ]);
+    render(
+      <TooltipProvider>
+        <DataTable
+          id="header-names"
+          label="Devices"
+          rows={rows}
+          columns={filterable}
+          getRowId={(row) => row.id}
+          rowCount={1}
+          height="auto"
+          selectable={false}
+          defaultState={{ filters: [{ id: "serial", value: "ACORN" }] }}
+        />
+      </TooltipProvider>,
+    );
+    expect(
+      screen.getByRole("columnheader", { name: "Name" }),
+    ).toBeInTheDocument();
+    // A filtered header is still named by its label; the state stays in its text.
+    const serial = screen.getByRole("columnheader", { name: "Serial" });
+    expect(serial).toHaveAttribute("data-filtered");
+    expect(serial).toHaveTextContent("Serial, filtered");
+    expect(
+      screen.getByRole("button", { name: "Serial column options" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("separator", { name: "Resize Serial column" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Reorder Serial column")).toBeInTheDocument();
+  });
+});

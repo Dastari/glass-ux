@@ -120,3 +120,36 @@ test("RTL header moves follow visual direction and pinned cells stick to the sta
   expect(style.direction).toBe("rtl");
   expect(style.right).not.toBe("auto");
 });
+
+test("each column header is named by its label, not its controls", async ({
+  page,
+}) => {
+  const table = page.getByTestId("dt-inventory");
+  await expect(
+    table.getByRole("columnheader", { name: "Status", exact: true }),
+  ).toHaveCount(1);
+  const status = table.locator('.fa-dt-th[data-col="status"]');
+  await expect(status).toHaveAccessibleName("Status");
+  await expect(
+    status.getByRole("separator", {
+      name: "Resize Status column",
+      exact: true,
+    }),
+  ).toHaveCount(1);
+  const snapshot = await page
+    .context()
+    .newCDPSession(page)
+    .then(async (cdp) => {
+      const { nodes } = await cdp.send("Accessibility.getFullAXTree");
+      return nodes
+        .filter((node) => node.role?.value === "columnheader")
+        .map((node) => node.name?.value);
+    });
+  expect(snapshot).toContain("Status");
+  // Chrome's own names: none takes in the grip, menu button or resize separator.
+  expect(
+    snapshot.filter((name) =>
+      /Reorder .+ column|column options|Resize .+ column/.test(name ?? ""),
+    ),
+  ).toEqual([]);
+});

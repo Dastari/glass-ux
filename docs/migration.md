@@ -3,6 +3,16 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.14 → 0.10.0
+
+No code changes are required.
+
+- The root element now carries `data-style="glass"` (or `"flat"`). With Flat, it also
+  reports `data-glass="solid"`, `data-background="plain"` and `data-motion="reduced"`
+  whatever the stored choices are.
+- The `DataTable` footer is a space step taller, so the selection bar can inset its
+  buttons. Selecting rows still leaves the footer in place.
+
 ## 0.9.13 → 0.9.14
 
 No code changes are required.

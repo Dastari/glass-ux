@@ -4,6 +4,24 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.10.0
+
+A Flat visual style, and a roomier DataTable selection bar.
+
+### Added
+
+- `Appearance.style` (`"glass" | "flat"`, default `"glass"`) and `VISUAL_STYLES`. Flat uses
+  opaque, undecorated surfaces with smaller corners, a plain canvas and still motion.
+  Palettes, modes, density, UI scale, radius scale and line weight still apply, and the
+  stored material, background and motion choices return with `style: "glass"`. Set it with
+  `configureAppearance({ defaults: { style: "flat" } })` or `useAppearance().update({ style })`.
+  The documentation header has a Flat / Glass switch.
+
+### Fixed
+
+- The `DataTable` selection bar was exactly as tall as its buttons, so they touched its
+  edges. They now sit inset within it, with matching corners.
+
 ## 0.9.14
 
 DataTable column headers are named by their label again.

@@ -1,0 +1,144 @@
+/* Flat uses the same palette and geometry roles as Glass. Keep state colours, focus,
+   chart fills and interaction positioning intact; remove only decorative materials.
+   Print and forced colours retain their dedicated presentation. */
+@media screen and (forced-colors: none) {
+  @layer base {
+    :root[data-style="flat"],
+    :root[data-style="flat"] :is([data-mode], [data-palette], [data-glass]) {
+      --canvas: var(--canvas-solid);
+      --glass-fill-chrome: var(--surface-1);
+      --glass-fill-panel: var(--surface-2);
+      --glass-fill-overlay: var(--surface-3);
+      --glass-fill-card: var(--surface-2);
+      --glass-fill-control: var(--surface-2);
+      --glass-fill-control-hover: var(--glass-control-solid-hover);
+      --glass-fill-inset: var(--glass-inset-solid);
+      --glass-edge: var(--line-strong);
+      --glass-rim: transparent;
+      --glass-rim-top: transparent;
+      --glass-rim-bottom: transparent;
+      --glass-lens: transparent;
+      --glass-lens-float: transparent;
+      --glass-grain: none;
+      --glass-sheen: none;
+      --sheen-solid: none;
+      --specular: transparent;
+      --specular-rim: transparent;
+      --specular-solid: transparent;
+      --specular-solid-rim: transparent;
+      --rim-light: transparent;
+      --rim-shade: transparent;
+      --shadow-1: 0 0 transparent;
+      --shadow-2: 0 0 transparent;
+      --shadow-3: 0 4px 12px -2px oklch(from var(--shadow-tint) l c h / 0.16);
+      --shadow-4: 0 8px 24px -4px oklch(from var(--shadow-tint) l c h / 0.2);
+      --shadow-accent: 0 0 transparent;
+      --shadow-success: 0 0 transparent;
+      --shadow-warning: 0 0 transparent;
+      --shadow-danger: 0 0 transparent;
+      --chart-sheen-mix: 0%;
+    }
+
+    :root[data-style="flat"] {
+      --radius-control: calc(var(--unit) * 1.5 * var(--radius-scale));
+      --radius-tile: calc(var(--unit) * 2 * var(--radius-scale));
+      --radius-surface: calc(var(--unit) * 2.5 * var(--radius-scale));
+      --radius-overlay: calc(var(--unit) * 2 * var(--radius-scale));
+      --radius-dialog: calc(var(--unit) * 3 * var(--radius-scale));
+      --radius-sheet: var(--radius-dialog);
+      --radius-check: calc(var(--unit) * 0.75 * var(--radius-scale));
+      --press-scale: 1;
+      --overlay-enter-scale: 1;
+      --overlay-enter-squash: 1;
+      --overlay-enter-shift: 0px;
+      --motion-scale: 0;
+    }
+  }
+
+  @layer components {
+    :root[data-style="flat"] :is(
+      .glass-chrome, .glass-panel, .glass-card, .glass-control, .glass-inset,
+      .glass-overlay, .glass-float, .fa-btn, .fa-control, .fa-check, .fa-radio,
+      .fa-segmented, .fa-segmented-indicator, .fa-slider-fill,
+      .fa-progress-track, .fa-progress-indicator, .fa-meter-track, .fa-meter-indicator
+    ) {
+      background-image: none;
+      box-shadow: none;
+    }
+
+    :root[data-style="flat"] :is(.glass-chrome, .glass-panel, .glass-detached)::before {
+      display: none;
+    }
+    :root[data-style="flat"] :is(.glass-chrome, .glass-panel, .glass-detached) {
+      background-clip: padding-box;
+    }
+    :root[data-style="flat"] :is(.glass-overlay, .glass-float) {
+      box-shadow: var(--shadow-3);
+    }
+    :root[data-style="flat"] .fa-btn {
+      --_image: none;
+      --_shadow: none;
+    }
+    :root[data-style="flat"] .fa-progress-indicator {
+      background-color: var(--accent);
+    }
+    :root[data-style="flat"] .fa-progress:is([data-tone="success"], [data-tone="accent"][data-complete]) .fa-progress-indicator {
+      background-color: var(--success);
+    }
+    :root[data-style="flat"] .fa-progress[data-tone="danger"] .fa-progress-indicator {
+      background-color: var(--danger);
+    }
+    :root[data-style="flat"] :is(.fa-segmented-indicator, .fa-segmented-trigger) {
+      background-image: none;
+      background-color: var(--_on-soft);
+      box-shadow: none;
+    }
+    :root[data-style="flat"] .fa-btn[data-variant="primary"] {
+      --_bg: var(--accent);
+      --_border: transparent;
+    }
+    :root[data-style="flat"] .fa-btn[data-variant="primary"]:hover:not([data-disabled]) {
+      --_bg: var(--accent-hover);
+    }
+    :root[data-style="flat"] .fa-btn[data-variant="primary"]:active:not([data-disabled]) {
+      --_bg: var(--accent-active);
+    }
+
+    /* Choice controls declare their own local material tokens. Flatten the bead and
+       well, retaining their tone and the switch thumb's checked-position transform. */
+    :root[data-style="flat"] :is(.fa-check, .fa-radio, .fa-switch, .fa-slider) {
+      --_on-fill: none;
+      --_on-glow: transparent;
+      --_bead: var(--surface-3);
+      --_bead-shadow: 0 0 transparent;
+      --_well-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+      box-shadow: none;
+    }
+    :root[data-style="flat"] :is(.fa-check, .fa-radio, .fa-switch)::before {
+      background-image: none;
+      box-shadow: none;
+    }
+    :root[data-style="flat"] .fa-switch:active:not([data-disabled], [data-readonly]) {
+      --_thumb-w: var(--_thumb);
+    }
+    :root[data-style="flat"] .fa-switch:active .fa-switch-thumb {
+      scale: 1;
+    }
+    :root[data-style="flat"] :is(.fa-slider-range, .fa-lit::after) {
+      filter: none;
+    }
+    :root[data-style="flat"] .fa-slider-thumb::before {
+      transform: none;
+    }
+    :root[data-style="flat"] .glass-card:is(a[href], button, [role="button"]):hover {
+      transform: none;
+    }
+    :root[data-style="flat"] .fa-control:is(:focus-within, [data-focused], [data-popup-open]) {
+      outline: var(--focus-ring-width) solid var(--accent-ring);
+      outline-offset: var(--focus-ring-offset);
+    }
+    :root[data-style="flat"] .fa-control[data-invalid]:focus-within {
+      outline-color: var(--danger-line);
+    }
+  }
+}

@@ -30,6 +30,7 @@ import {
   configureAppearance,
   type Appearance,
   type GlassRendering,
+  type VisualStyle,
 } from "glass-ux/appearance";
 import { ActionProvider } from "glass-ux/actions";
 import { PaletteProvider } from "glass-ux/command-palette";
@@ -110,7 +111,10 @@ const storedRendering = (): GlassRendering => {
     return "live";
   }
 };
-configureAppearance({ defaults: { palette: "ocean" }, glassRendering: storedRendering() });
+configureAppearance({
+  defaults: { palette: "ocean", style: import.meta.env.VITE_GLASS_UX_STYLE === "flat" ? "flat" : "glass" },
+  glassRendering: storedRendering(),
+});
 
 const renderingListeners = new Set<() => void>();
 function setGlassRendering(glassRendering: GlassRendering) {
@@ -205,15 +209,17 @@ function AppearanceChoices<V extends string>({
   value,
   options,
   onValueChange,
+  disabled = false,
 }: {
   label: string;
   value: V;
   options: Array<{ value: V; label: string; icon?: ReactNode }>;
   onValueChange: (value: V) => void;
+  disabled?: boolean;
 }) {
   const size = use(ChoiceSize);
   return (
-    <div className="docs-appearance-control">
+    <div className={disabled ? "docs-appearance-control docs-glass-only" : "docs-appearance-control"}>
       <span className="type-label">{label}</span>
       <div className="docs-appearance-options" role="group" aria-label={label}>
         {options.map((option) => (
@@ -223,6 +229,7 @@ function AppearanceChoices<V extends string>({
             size={size}
             icon={option.icon}
             aria-pressed={value === option.value}
+            disabled={disabled}
             onClick={() => onValueChange(option.value)}
           >
             {option.label}
@@ -267,6 +274,7 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
   const { appearance, update } = useAppearance();
   const rendering = useGlassRendering();
   const choiceSize = use(ChoiceSize);
+  const flat = appearance.style === "flat";
   if (expanded)
     return (
       <div
@@ -275,6 +283,12 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
         role="region"
         aria-label="Appearance controls"
       >
+        <AppearanceChoices<VisualStyle>
+          label="Visual style"
+          value={appearance.style ?? "glass"}
+          onValueChange={(style) => update({ style })}
+          options={[{ value: "flat", label: "Flat" }, { value: "glass", label: "Glass" }]}
+        />
         <AppearanceChoices<Appearance["mode"]>
           label="Mode"
           value={appearance.mode}
@@ -302,7 +316,8 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
         </div>
         <AppearanceChoices<Appearance["glass"]>
           label="Material"
-          value={appearance.glass}
+          value={flat ? "solid" : appearance.glass}
+          disabled={flat}
           onValueChange={(glass) => update({ glass })}
           options={[
             { value: "full", label: "Glass" },
@@ -313,12 +328,14 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
         <AppearanceChoices<GlassRendering>
           label="Blur"
           value={rendering}
+          disabled={flat}
           onValueChange={setGlassRendering}
           options={RENDERING_OPTIONS}
         />
         <AppearanceChoices<"full" | "reduced">
           label="Animations"
-          value={appearance.motion === "reduced" ? "reduced" : "full"}
+          value={flat || appearance.motion === "reduced" ? "reduced" : "full"}
+          disabled={flat}
           onValueChange={(motion) => update({ motion })}
           options={[
             { value: "full", label: "Animated" },
@@ -336,7 +353,8 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
         />
         <AppearanceChoices<NonNullable<Appearance["background"]>>
           label="Background"
-          value={appearance.background ?? "silk"}
+          value={flat ? "plain" : appearance.background ?? "silk"}
+          disabled={flat}
           onValueChange={(background) => update({ background })}
           options={BACKGROUNDS.map((value) => ({
             value,
@@ -381,9 +399,10 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <Segmented
         size="sm"
-        className="fa-fit-4"
+        className="fa-fit-4 docs-glass-only"
         aria-label="Material"
-        value={appearance.glass}
+        value={flat ? "solid" : appearance.glass}
+        disabled={flat}
         onValueChange={(glass) => update({ glass })}
         options={[
           { value: "full", label: "Glass" },
@@ -393,17 +412,19 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <Segmented
         size="sm"
-        className="fa-fit-1"
+        className="fa-fit-1 docs-glass-only"
         aria-label="Blur"
         value={rendering}
+        disabled={flat}
         onValueChange={setGlassRendering}
         options={RENDERING_OPTIONS}
       />
       <Segmented
         size="sm"
-        className="fa-fit-3"
+        className="fa-fit-3 docs-glass-only"
         aria-label="Animations"
-        value={appearance.motion === "reduced" ? "reduced" : "full"}
+        value={flat || appearance.motion === "reduced" ? "reduced" : "full"}
+        disabled={flat}
         onValueChange={(motion) => update({ motion })}
         options={[
           { value: "full", label: "Animated" },
@@ -423,9 +444,10 @@ function Toolbar({ expanded = false }: { expanded?: boolean }) {
       />
       <Select
         size="sm"
-        className="docs-background-select fa-fit-5"
+        className="docs-background-select fa-fit-5 docs-glass-only"
         aria-label="Background"
-        value={appearance.background ?? "silk"}
+        value={flat ? "plain" : appearance.background ?? "silk"}
+        disabled={flat}
         onValueChange={(background) => {
           if (background) update({ background });
         }}
@@ -469,6 +491,20 @@ function HeaderAppearance() {
         </Popover.Popup>
       </Popover.Root>
     </div>
+  );
+}
+
+function VisualStyleSwitch() {
+  const { appearance, update } = useAppearance();
+  return (
+    <Segmented<VisualStyle>
+      size="sm"
+      className="docs-style-switch"
+      aria-label="Visual style"
+      value={appearance.style ?? "glass"}
+      onValueChange={(style) => update({ style })}
+      options={[{ value: "flat", label: "Flat" }, { value: "glass", label: "Glass" }]}
+    />
   );
 }
 
@@ -683,7 +719,7 @@ function Layout() {
             <div className="gallery-shell docs-layout">
               {phone ? (
                 <header className="docs-mobile-header">
-                  <Link to="/" className="gallery-brand" onClick={activate}>
+                  <Link to="/" className="gallery-brand" aria-label="Glass UX" onClick={activate}>
                     <BrandMark mark="product" tones="palette" className="gallery-brand-mark" />
                     <span className="gallery-brand-name">Glass UX</span>
                   </Link>
@@ -714,6 +750,7 @@ function Layout() {
                       </span>
                     </Button>
                   </div>
+                  <VisualStyleSwitch />
                 </header>
               ) : (
                 <SectionDrawer.Root
@@ -739,6 +776,7 @@ function Layout() {
               >
                 {!phone ? (
                   <header className="gallery-header docs-header">
+                    <VisualStyleSwitch />
                     <RepositoryLink />
                     <HeaderAppearance />
                   </header>

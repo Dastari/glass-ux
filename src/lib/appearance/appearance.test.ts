@@ -14,6 +14,9 @@ function snapshot(root: HTMLElement) {
 }
 
 const cases: Array<Partial<Appearance> | null | string> = [
+  { style: "flat", glass: "full", background: "silk", motion: "full" },
+  { style: "flat", mode: "dark", palette: "rose", density: "compact" },
+  { style: "invalid" as never },
   null,
   "not json",
   {
@@ -126,5 +129,16 @@ describe("appearance boot script", () => {
     expect(boot.data).toMatchObject({ glassRendering: "baked" });
     configureAppearance({ glassRendering: "nope" as never });
     expect(snapshot(runApply(null)).data).not.toHaveProperty("glassRendering");
+  });
+
+  it("Flat applies opaque still materials and restores the saved choices on return to Glass", () => {
+    const saved = { glass: "reduced", motion: "full", background: "waves", palette: "moss" } as const;
+    const appearance = normalizeAppearance({ ...saved, style: "flat" });
+    expect(appearance).toMatchObject(saved);
+    const root = document.createElement("html");
+    applyAppearance(root, appearance, false);
+    expect(root.dataset).toMatchObject({ style: "flat", glass: "solid", motion: "reduced", background: "plain", palette: "moss" });
+    applyAppearance(root, { ...appearance, style: "glass" }, false);
+    expect(root.dataset).toMatchObject({ style: "glass", ...saved });
   });
 });

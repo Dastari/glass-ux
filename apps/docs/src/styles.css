@@ -6,6 +6,40 @@
 @source "../../../dist";
 @source "./";
 @layer components {
+  .docs-style-switch {
+    flex: none;
+  }
+  :root[data-style="flat"] .docs-glass-only {
+    display: none;
+  }
+  .docs-mobile-header:has(.docs-style-switch) {
+    flex-wrap: wrap;
+  }
+  .docs-mobile-header .docs-style-switch {
+    --_h: calc(var(--target-min) + var(--space-1));
+    order: 1;
+  }
+  .docs-mobile-header .gallery-brand-name {
+    display: none;
+  }
+  .docs-mobile-header .docs-mobile-actions {
+    order: 2;
+  }
+  :root[data-style="flat"] .docs-mobile-header {
+    padding-inline: var(--space-2);
+  }
+  :root[data-style="flat"] .docs-layout {
+    gap: 0;
+    padding: 0;
+  }
+  :root[data-style="flat"] .docs-sidebar {
+    border: 0;
+    border-inline-end: var(--divider);
+    border-radius: 0;
+  }
+  :root[data-style="flat"] .docs-header {
+    border-block-end: var(--divider);
+  }
   .docs-layout {
     display: grid;
     grid-template-columns: var(--sidebar-w) minmax(0, 1fr);

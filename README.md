@@ -95,6 +95,7 @@ already installed Glass UX skills. `--target claude` installs under `.claude/ski
 pnpm install
 pnpm build
 pnpm dev             # documentation site on http://127.0.0.1:4220
+pnpm dev:flat        # Flat comparison preview on http://127.0.0.1:4230 (also serves the LAN)
 pnpm check
 pnpm docs:build      # package, API reference and static documentation site
 pnpm test:e2e

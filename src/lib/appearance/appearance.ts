@@ -34,6 +34,8 @@ export const PALETTES: string[] = [
 export const DENSITIES = ["comfortable", "compact"] as const;
 /** Material transparency levels, from translucent glass (`full`) to opaque (`solid`); labels are in GLASS_LABELS. */
 export const GLASS_LEVELS = ["full", "reduced", "solid"] as const;
+/** Visual treatments: the original glass materials or opaque, undecorated flat surfaces. */
+export const VISUAL_STYLES = ["glass", "flat"] as const;
 /**
  * How glass materials blur what is behind them, chosen by the application for every surface:
  * `live` blurs with backdrop-filter every frame; `baked` shows panels and chrome on the page
@@ -96,6 +98,8 @@ export type Mode = (typeof MODES)[number];
 export type Palette = (typeof PALETTES)[number];
 export type Density = (typeof DENSITIES)[number];
 export type GlassLevel = (typeof GLASS_LEVELS)[number];
+/** The component treatment, independent of palette, mode and density. */
+export type VisualStyle = (typeof VISUAL_STYLES)[number];
 export type GlassRendering = (typeof GLASS_RENDERINGS)[number];
 export type MotionLevel = (typeof MOTION_LEVELS)[number];
 
@@ -110,6 +114,8 @@ export const FONT_IDS = {
 };
 
 export interface Appearance {
+  /** Component treatment. Flat uses opaque surfaces, a plain canvas and still motion; the stored glass, background and motion choices return when switching back. Default: glass. */
+  style?: VisualStyle;
   /** Active display or interaction mode. */
   mode: Mode;
   palette: Palette;
@@ -150,6 +156,7 @@ export interface Appearance {
 
 /** The library's built-in appearance, before project defaults, locks or stored preferences apply. */
 export const BASE_APPEARANCE: Appearance = {
+  style: "glass",
   mode: "system",
   palette: "graphite",
   density: "comfortable",
@@ -275,6 +282,7 @@ export function normalizeAppearance(input: unknown): Appearance {
   ) as Partial<Record<keyof Appearance, unknown>>;
   const d = { ...BASE_APPEARANCE, ...config.defaults };
   const value: Appearance = {
+    style: pick(raw.style, VISUAL_STYLES, d.style ?? "glass"),
     mode: pick(raw.mode, MODES, d.mode),
     palette: pick(raw.palette, PALETTES, d.palette),
     density: pick(raw.density, DENSITIES, d.density),
@@ -336,14 +344,17 @@ export function applyAppearance(
   appearance: Appearance,
   prefersDark: boolean,
 ) {
+  const flat = appearance.style === "flat";
+  root.dataset.style = flat ? "flat" : "glass";
   root.dataset.mode = resolveMode(appearance.mode, prefersDark);
   root.dataset.palette = appearance.palette;
   root.dataset.density = appearance.density;
-  root.dataset.glass = appearance.glass;
+  root.dataset.glass = flat ? "solid" : appearance.glass;
   if (config.glassRendering === "baked") root.dataset.glassRendering = "baked";
   else delete root.dataset.glassRendering;
-  root.dataset.background = appearance.background ?? "silk";
-  if (appearance.motion === "system") delete root.dataset.motion;
+  root.dataset.background = flat ? "plain" : appearance.background ?? "silk";
+  if (flat) root.dataset.motion = "reduced";
+  else if (appearance.motion === "system") delete root.dataset.motion;
   else root.dataset.motion = appearance.motion;
   root.dataset.fontSans = appearance.fontSans;
   root.dataset.fontDisplay = appearance.fontDisplay;
@@ -392,16 +403,17 @@ function o(v,a,f){return a.indexOf(v)>=0?v:f}
 function n(v,lo,hi,f){return typeof v==="number"&&isFinite(v)?Math.min(hi,Math.max(lo,v)):f}
 function x(v){if(typeof v!=="string")return null;var m=/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(v.trim());if(!m)return null;var h=m[1].toLowerCase();return "#"+(h.length===3?h.replace(/./g,function(c){return c+c}):h)}
 function u(v){if(typeof v!=="string")return null;v=v.trim();return v.length>0&&v.length<=${MAX_IMAGE_URL}&&${IMAGE_URL.toString()}.test(v)?v:null}
-var a={mode:o(s.mode,${j(MODES)},D.mode),palette:o(s.palette,${j(PALETTES)},D.palette),density:o(s.density,${j(DENSITIES)},D.density),glass:o(s.glass,${j(GLASS_LEVELS)},D.glass),motion:o(s.motion,${j(MOTION_LEVELS)},D.motion),background:o(s.background,${j(BACKGROUNDS)},D.background||"silk"),
+var a={style:o(s.style,${j(VISUAL_STYLES)},D.style||"glass"),mode:o(s.mode,${j(MODES)},D.mode),palette:o(s.palette,${j(PALETTES)},D.palette),density:o(s.density,${j(DENSITIES)},D.density),glass:o(s.glass,${j(GLASS_LEVELS)},D.glass),motion:o(s.motion,${j(MOTION_LEVELS)},D.motion),background:o(s.background,${j(BACKGROUNDS)},D.background||"silk"),
 radiusScale:n(s.radiusScale,0,1.5,D.radiusScale),borderWidth:n(s.borderWidth,0.5,2,D.borderWidth),uiScale:n(s.uiScale,0.875,1.25,D.uiScale),
 accentHue:s.accentHue==null?D.accentHue:n(s.accentHue,0,360,25),
 accentColor:s.accentColor===undefined?(D.accentColor||null):x(s.accentColor),accentColor2:s.accentColor2===undefined?(D.accentColor2||null):x(s.accentColor2),canvasTint:s.canvasTint===undefined?(D.canvasTint||null):x(s.canvasTint),backgroundImage:s.backgroundImage===undefined?(D.backgroundImage||null):u(s.backgroundImage),
 fontSans:o(s.fontSans,${j(FONT_IDS.sans)},D.fontSans),fontDisplay:o(s.fontDisplay,${j(FONT_IDS.display)},D.fontDisplay),fontMono:o(s.fontMono,${j(FONT_IDS.mono)},D.fontMono)};
 for(var k in L)a[k]=L[k];
 var m=a.mode;if(m==="system")m=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
-d.dataset.mode=m;d.dataset.palette=a.palette;d.dataset.density=a.density;d.dataset.glass=a.glass;${config.glassRendering === "baked" ? `d.dataset.glassRendering="baked";` : ""}
-d.dataset.background=a.background;
-if(a.motion!=="system")d.dataset.motion=a.motion;
+var F=a.style==="flat";d.dataset.style=F?"flat":"glass";
+d.dataset.mode=m;d.dataset.palette=a.palette;d.dataset.density=a.density;d.dataset.glass=F?"solid":a.glass;${config.glassRendering === "baked" ? `d.dataset.glassRendering="baked";` : ""}
+d.dataset.background=F?"plain":a.background;
+if(F)d.dataset.motion="reduced";else if(a.motion!=="system")d.dataset.motion=a.motion;
 d.dataset.fontSans=a.fontSans;d.dataset.fontDisplay=a.fontDisplay;d.dataset.fontMono=a.fontMono;
 if(a.radiusScale!==1)d.style.setProperty("--radius-scale",String(a.radiusScale));
 if(a.borderWidth!==1)d.style.setProperty("--border-width",a.borderWidth+"px");

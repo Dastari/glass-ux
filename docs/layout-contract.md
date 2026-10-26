@@ -46,6 +46,13 @@ export function ComponentDirectory() {
 
 ## CSS names and verification
 
+`configureAppearance({ defaults: { style: "flat" } })` selects opaque, undecorated
+surfaces with smaller corner roles and still motion. Palettes, light/dark modes, density,
+UI scale, radius scale and line weight continue to apply. Flat displays a plain canvas;
+the stored material, background and motion choices return with `style: "glass"`.
+Layout slots and insets are the same in both visual styles. Focus outlines, semantic
+status colours, selection and loading indicators remain visible.
+
 The canvas background is a persisted appearance preference, set with
 `configureAppearance({ defaults: { background: "grid" } })` or
 `useAppearance().update({ background: "grid" })`. `BACKGROUNDS` and `BACKGROUND_LABELS`

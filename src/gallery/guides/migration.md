@@ -3,6 +3,13 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.10.0 → 0.10.1
+
+No code changes are required.
+
+- `Markdown` in containers 34rem and wider uses 26px lines, so long answers and documents
+  are taller. Update visual snapshots of wide Markdown.
+
 ## 0.9.14 → 0.10.0
 
 No code changes are required.

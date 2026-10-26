@@ -4,6 +4,21 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.10.1
+
+Longer lines for long-form Markdown, and guide prose at a reading measure.
+
+### Changed
+
+- `Markdown` prose in wide containers reads at 15px on a 26px line (was 24px).
+- Documentation guides keep paragraphs, lists and quotes at the 72ch measure; code and
+  tables still use the full column.
+
+### Fixed
+
+- On phones the documentation's Flat / Glass choice is in the Appearance sheet. In the
+  header it took a second row and pushed the page down.
+
 ## 0.10.0
 
 A Flat visual style, and a roomier DataTable selection bar.

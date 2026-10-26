@@ -11,7 +11,7 @@ shared keyboard and accessibility conventions.
 Install the versioned package attached to a [GitHub release](https://github.com/Dastari/glass-ux/releases).
 
 ```sh
-pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.9.12/glass-ux-0.9.12.tgz
+pnpm add https://github.com/Dastari/glass-ux/releases/download/v0.9.13/glass-ux-0.9.13.tgz
 ```
 
 React 19 and React DOM 19 are peer dependencies. The tested integration uses Vite 8

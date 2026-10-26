@@ -4,7 +4,7 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## Unreleased
+## 0.9.13
 
 Accessible names for every option in a radio or checkbox group inside a Field, and Clear
 buttons that required pickers can leave out.

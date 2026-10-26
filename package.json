@@ -1,6 +1,6 @@
 {
   "name": "glass-ux",
-  "version": "0.9.13",
+  "version": "0.9.14",
   "description": "A typed React design system for glass interfaces, data applications and assistant experiences.",
   "type": "module",
   "license": "MIT",

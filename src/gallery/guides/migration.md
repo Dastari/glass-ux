@@ -3,6 +3,13 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.9.13 → 0.9.14
+
+No code changes are required.
+
+- A `DataTable` column header's accessible name is its label alone. Tests that matched the
+  longer name ("Reorder Person column …") should match the label.
+
 ## 0.9.12 → 0.9.13
 
 No code changes are required.

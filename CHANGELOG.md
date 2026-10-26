@@ -4,6 +4,17 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.9.14
+
+DataTable column headers are named by their label again.
+
+### Fixed
+
+- `DataTable` column headers took their accessible name from everything inside them, so a
+  "Person" header read "Reorder Person column Person Person column options 240". Each header
+  is now named by its label; the reorder grip, options button and resize separator keep
+  their own names.
+
 ## 0.9.13
 
 Accessible names for every option in a radio or checkbox group inside a Field, and Clear

@@ -4,7 +4,7 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## Unreleased
+## 0.9.12
 
 The interface in eleven more languages and right to left; Next.js App Router support; new
 components for colour, appearance, multi-step tasks, scheduling, boards, hierarchies and

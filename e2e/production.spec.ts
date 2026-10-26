@@ -192,7 +192,8 @@ test("published guides and Foundations share the aligned article and viewport sc
     const article = document.querySelector<HTMLElement>(
       ".gallery-guide-document",
     )!;
-    const prose = article.querySelector("p")!.getBoundingClientRect();
+    const paragraph = article.querySelector("p")!;
+    const prose = paragraph.getBoundingClientRect();
     const code = article.querySelector(".fa-ai-code")!.getBoundingClientRect();
     const table = article.querySelector("table")!.getBoundingClientRect();
     const scroller = document
@@ -201,6 +202,7 @@ test("published guides and Foundations share the aligned article and viewport sc
     return {
       article: article.getBoundingClientRect().width,
       prose: prose.width,
+      measure: parseFloat(getComputedStyle(paragraph).maxWidth),
       code: code.width,
       table: table.width,
       right: scroller.right,
@@ -210,7 +212,11 @@ test("published guides and Foundations share the aligned article and viewport sc
     };
   });
   expect(geometry.article).toBeLessThanOrEqual(1024);
-  expect(geometry.prose).toBeCloseTo(geometry.code, 0);
+  // Paragraphs stop at the measure; code and tables use the full column.
+  expect(geometry.prose).toBeCloseTo(
+    Math.min(geometry.code, geometry.measure),
+    0,
+  );
   expect(geometry.table).toBeCloseTo(geometry.code, 0);
   expect(geometry.right).toBeCloseTo(geometry.width, 0);
   expect(geometry.bottom).toBeCloseTo(geometry.height, 0);

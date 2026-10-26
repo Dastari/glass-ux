@@ -1,8 +1,8 @@
 # ImageLightbox
 
-A lightbox for result images: a dialog with the image on the canvas, previous / next,
-and zoom (fit, 150 %, 200 %, 300 %); the zoomed image scrolls inside the stage.
-← → move between images, + and − zoom, 0 fits.
+A lightbox for result images: the library's Lightbox (previous / next, swipe, zoom and
+pan, thumbnails) fed with the result's images. ← → move between images, + and − zoom,
+0 fits.
 
 `import { ImageLightbox } from "glass-ux/ai"`
 

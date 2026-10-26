@@ -1,19 +1,14 @@
-import { useDirection } from "../../lib/locale/direction.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { resultsMessages } from "./messages.js"
-import { useCallback, useEffect, useState, type CSSProperties } from "react"
-import { IconChevronLeft, IconChevronRight, IconFullscreen, IconImage, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
+import { useState, type CSSProperties } from "react"
+import { IconImage } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
-import { Button } from "../../ui/button/index.js"
-import { Dialog } from "../../ui/dialog/index.js"
-import { formatNumber } from "../format.js"
+import { Lightbox } from "../../ui/lightbox/index.js"
 import type { AiResult, ResultImage } from "../types.js"
 import { ResultFrame } from "./frame.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 
 type ImagesResult = Extract<AiResult, { type: "images" }>
-
-const ZOOMS = [1, 1.5, 2, 3] as const
 
 /** One image in its reserved aspect-ratio box: it never moves anything when it loads. */
 export function ImageTile({ image, onOpen, cover = false, className }: {
@@ -61,74 +56,20 @@ interface LightboxProps {
 }
 
 /**
- * A lightbox for result images: a dialog with the image on the canvas, previous / next,
- * and zoom (fit, 150 %, 200 %, 300 %); the zoomed image scrolls inside the stage.
- * ← → move between images, + and − zoom, 0 fits.
+ * A lightbox for result images: the library's Lightbox (previous / next, swipe, zoom and
+ * pan, thumbnails) fed with the result's images. ← → move between images, + and − zoom,
+ * 0 fits.
  */
-export function ImageLightbox(props: LightboxProps) {
-  if (!props.images[props.index]) return null
+export function ImageLightbox({ images, index, onIndexChange, open, onOpenChange }: LightboxProps) {
+  if (!images[index]) return null
   return (
-    <Dialog.Root open={props.open} onOpenChange={(next) => props.onOpenChange(next)}>
-      <Dialog.Popup size="xl" className="fa-ai-lightbox">
-        {/* A new image starts fitted: the content remounts per image. */}
-        <LightboxContent key={props.index} {...props} />
-      </Dialog.Popup>
-    </Dialog.Root>
-  )
-}
-
-function LightboxContent({ images, index, onIndexChange }: LightboxProps) {
-  const messages = useMessages(resultsMessages)
-
-  const locale = useLocale()
-  const direction = useDirection()
-  const [zoom, setZoom] = useState(0)
-  const image = images[index]!
-  const go = useCallback((delta: number) => onIndexChange((index + delta + images.length) % images.length), [index, images.length, onIndexChange])
-
-  useEffect(() => {
-    const onKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return
-      if (event.key === (direction === "rtl" ? "ArrowLeft" : "ArrowRight") && images.length > 1) go(1)
-      else if (event.key === (direction === "rtl" ? "ArrowRight" : "ArrowLeft") && images.length > 1) go(-1)
-      else if (event.key === "+" || event.key === "=") setZoom((value) => Math.min(ZOOMS.length - 1, value + 1))
-      else if (event.key === "-") setZoom((value) => Math.max(0, value - 1))
-      else if (event.key === "0") setZoom(0)
-      else return
-      event.preventDefault()
-    }
-    window.addEventListener("keydown", onKeyDown, true)
-    return () => window.removeEventListener("keydown", onKeyDown, true)
-  }, [go, images.length, direction])
-
-  const scale = ZOOMS[zoom] ?? 1
-  return (
-    <>
-      <Dialog.Header icon={<IconImage />} title={image.caption ?? image.alt} subtitle={messages.imageCaption({ index: index + 1, total: images.length, width: formatNumber(image.width, 0, locale), height: formatNumber(image.height, 0, locale) })} />
-      <Dialog.Body flush>
-        {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the stage scrolls when zoomed (R20.6) */}
-        <div className="fa-ai-lightbox-stage" data-zoomed={zoom > 0 ? "" : undefined} tabIndex={0} role="region" aria-label={image.alt}>
-          <img src={image.src} alt={image.alt} width={image.width} height={image.height} style={{ "--_scale": scale } as CSSProperties} draggable={false} />
-        </div>
-      </Dialog.Body>
-      <Dialog.Footer
-        start={
-          images.length > 1 ? (
-            <>
-              <Button variant="ghost" size="sm" icon={<IconChevronLeft />} aria-label={messages.previousImage} shortcut="left" onClick={() => go(-1)} />
-              <Button variant="ghost" size="sm" icon={<IconChevronRight />} aria-label={messages.nextImage} shortcut="right" onClick={() => go(1)} />
-            </>
-          ) : undefined
-        }
-      >
-        <Button variant="ghost" size="sm" icon={<IconZoomOut />} aria-label={messages.zoomOut} shortcut="-" disabledReason={zoom === 0 ? messages.alreadyFitted : undefined} onClick={() => setZoom((value) => Math.max(0, value - 1))} />
-        <span className="fa-ai-lightbox-zoom" data-numeric aria-live="polite">
-          {zoom === 0 ? messages.fit : `${Math.round(scale * 100)}%`}
-        </span>
-        <Button variant="ghost" size="sm" icon={<IconZoomIn />} aria-label={messages.zoomIn} shortcut="+" disabledReason={zoom === ZOOMS.length - 1 ? messages.largestZoom : undefined} onClick={() => setZoom((value) => Math.min(ZOOMS.length - 1, value + 1))} />
-        <Button variant="ghost" size="sm" icon={<IconFullscreen />} aria-label={messages.fitToWindow} shortcut="0" onClick={() => setZoom(0)} />
-      </Dialog.Footer>
-    </>
+    <Lightbox
+      images={images.map((image) => ({ id: image.id, src: image.src, alt: image.alt, width: image.width, height: image.height, caption: image.caption }))}
+      index={index}
+      onIndexChange={onIndexChange}
+      open={open}
+      onOpenChange={onOpenChange}
+    />
   )
 }
 

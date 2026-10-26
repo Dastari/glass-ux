@@ -35,7 +35,7 @@ const BUDGETS = [
   { entry: 'glass-ux/map', named: 'GeoMap', gzip: 75_000, forbid: ['maplibre-gl'] },
   { entry: 'glass-ux/ai/code-block', named: 'CodeBlock', gzip: 40_000, forbid: ['shiki', '@shikijs/core'] },
   // Interface messages and the resolver add about 1–2 KB gzip to these compositions.
-  { entry: 'glass-ux/ai/results', named: 'ResultBlock', gzip: 101_000, forbid: ['d3-scale', '@tanstack/form-core'] },
+  { entry: 'glass-ux/ai/results', named: 'ResultBlock', gzip: 103_000, /* the shared Lightbox replaced the results' own */ forbid: ['d3-scale', '@tanstack/form-core'] },
   { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 230_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki'] },
 ]
 

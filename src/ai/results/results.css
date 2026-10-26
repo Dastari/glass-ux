@@ -15,8 +15,7 @@
  *   --_tile-h    metric tile height
  */
 @layer components {
-  .fa-ai-result,
-  .fa-ai-lightbox {
+  .fa-ai-result {
     /* component tokens: the result tiers */
     --_plot-sm: 9rem;
     --_plot-lg: 13rem;
@@ -24,12 +23,6 @@
     --_tile-min: 11rem;
     --_image-min: 10rem;
     --_image-max-h: 22rem;
-    /* the lightbox stage: its height band and the width a zoom multiplies */
-    --_stage-min: min(70vh, 40rem);
-    --_stage-max: min(72vh, 48rem);
-    --_stage-img: min(70vh, 46rem);
-    --_zoom-base: 60rem;
-    --_zoom-label: 3.5rem;
   }
 
   .fa-ai-result-footer {
@@ -276,46 +269,6 @@
     line-height: var(--type-caption-line);
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-  .fa-ai-lightbox .fa-dialog-body {
-    display: flex;
-  }
-  .fa-ai-lightbox-stage {
-    display: grid;
-    flex: 1 1 auto;
-    place-items: center;
-    min-height: var(--_stage-min);
-    max-height: var(--_stage-max);
-    overflow: auto;
-    overscroll-behavior: contain;
-    background-color: var(--canvas);
-    outline: none;
-  }
-  .fa-ai-lightbox-stage:focus-visible {
-    outline: var(--focus-ring-width) solid var(--accent-ring);
-    outline-offset: calc(var(--focus-ring-width) * -1);
-  }
-  .fa-ai-lightbox-stage img {
-    display: block;
-    max-width: 100%;
-    max-height: var(--_stage-img);
-    width: auto;
-    height: auto;
-    border-radius: var(--radius-media);
-  }
-  .fa-ai-lightbox-stage[data-zoomed] {
-    place-items: start;
-  }
-  .fa-ai-lightbox-stage[data-zoomed] img {
-    max-width: none;
-    max-height: none;
-    width: calc(var(--_scale) * min(100%, var(--_zoom-base)));
-  }
-  .fa-ai-lightbox-zoom {
-    min-width: var(--_zoom-label);
-    color: var(--fg-muted);
-    font-size: var(--type-label-size);
-    text-align: center;
   }
 
   /* ── Files ─────────────────────────────────────────────────────────────── */

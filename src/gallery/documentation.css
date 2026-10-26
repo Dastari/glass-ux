@@ -227,13 +227,11 @@
 }
 
 @layer components {
+  /* Guide prose stops at the Markdown measure; code and tables use the full column. */
   .gallery-guide-document {
     container-type: inline-size;
     max-width: var(--gallery-document-measure);
   }
-  .gallery-guide-document
-    .fa-ai-md
-    :is(p, ul, ol, blockquote, h1, h2, h3, h4, h5, h6),
   .gallery-document-intro
     .gallery-document-description
     :is(p, ul, ol, blockquote),

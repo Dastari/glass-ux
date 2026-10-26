@@ -1,8 +1,8 @@
 /*
  * Markdown — assistant prose.
  *
- * Type      prose reads at the subtitle size on a 24px line in wide containers and at the
- *           body size on a 20px line in narrow ones (the docked pane). Headings scale down
+ * Type      prose reads at the subtitle size on a 26px line in wide containers and at the
+ *           body size on a 22px line in narrow ones (the docked pane). Headings scale down
  *           for chat: h1 title, h2 subtitle, h3–h6 body, all semibold.
  * Measure   paragraphs, lists and quotes stop at --measure (R5.6); in a conversation the
  *           reading column is the measure (R5.4), so they fill it. Code and tables are
@@ -27,7 +27,7 @@
   @container (width >= 34rem) {
     .fa-ai-md {
       --_size: var(--type-subtitle-size);
-      --_line: var(--space-6);
+      --_line: calc(var(--unit) * 6.5);
       --_gap: var(--space-4);
     }
   }

@@ -180,7 +180,7 @@ test("size previews stack by footprint and usage code has paragraph spacing", as
   expect(code!.y - paragraph!.y - paragraph!.height).toBeGreaterThan(0);
 });
 
-test("guides align prose, code and tables in one narrower column with viewport-edge scrolling @responsive", async ({
+test("guides align prose, code and tables on one edge, prose at the measure, with viewport-edge scrolling @responsive", async ({
   page,
 }, testInfo) => {
   await page.goto("/guides/agent-adoption");
@@ -211,15 +211,21 @@ test("guides align prose, code and tables in one narrower column with viewport-e
       code: box(code),
       table: box(table),
       scroller: box(scroller),
+      measure: parseFloat(getComputedStyle(prose).maxWidth),
       width: innerWidth,
       height: innerHeight,
     };
   });
   expect(geometry.article.width).toBeLessThanOrEqual(1024);
-  for (const element of [geometry.prose, geometry.code, geometry.table]) {
+  for (const element of [geometry.prose, geometry.code, geometry.table])
     expect(element.left).toBeCloseTo(geometry.markdown.left, 0);
+  for (const element of [geometry.code, geometry.table])
     expect(element.width).toBeCloseTo(geometry.markdown.width, 0);
-  }
+  // Paragraphs stop at --measure (72ch); a phone column is narrower than that.
+  expect(geometry.prose.width).toBeCloseTo(
+    Math.min(geometry.markdown.width, geometry.measure),
+    0,
+  );
   expect(geometry.scroller.right).toBeCloseTo(geometry.width, 0);
   expect(geometry.scroller.bottom).toBeCloseTo(geometry.height, 0);
   await expect(article.locator("pre[data-highlighted]").first()).toBeAttached();

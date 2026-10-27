@@ -290,3 +290,20 @@ test("the narrow timeline scrolls sticky rows away so every person can be reache
   });
   expect(hit).toBe(await last.getAttribute("aria-label"));
 });
+
+test("choosing an item in a job's menu does not select the row's days", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, "the wide planner");
+  const planner = await open(page);
+  await planner.getByRole("button", { name: "More for Pine removal" }).click();
+  await page.getByRole("menuitem", { name: "Remove" }).click();
+  await expect(status(page)).toHaveText("Removed Pine removal");
+  await expect(
+    planner.getByRole("button", { name: /^Pine removal/ }),
+  ).toHaveCount(0);
+  await expect(planner.locator(".fa-sch-tl-selection[data-show]")).toHaveCount(
+    0,
+  );
+});

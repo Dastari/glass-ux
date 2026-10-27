@@ -5,7 +5,7 @@ import { addDays, fromIsoDate, type IsoDate } from "../date-picker/calendar-date
 import { formatDay, formatHour, formatMinutesRange, useScheduler } from "./context.js"
 import { moveEventTo, resizeEventTo } from "./edit.js"
 import { EventButton } from "./event.js"
-import { trackPointer, type Point } from "./gesture.js"
+import { fromPortal, trackPointer, type Point } from "./gesture.js"
 import { barSegments, daySegments, type BarSegment, type DaySegment, type PlacedEvent } from "./layout.js"
 import { startOfWeek } from "./range.js"
 import { DAY_MINUTES, wallPosition, zonedInstant } from "./zone.js"
@@ -80,7 +80,7 @@ export function TimeGrid({ events, days, scrollToTime }: TimeGridProps) {
   }
 
   const selectTime = (dayIndex: number) => (event: PointerEvent<HTMLDivElement>) => {
-    if (!isSelectable(event) || (event.target as Element).closest(".fa-sch-ev")) return
+    if (!isSelectable(event) || fromPortal(event) || (event.target as Element).closest(".fa-sch-ev")) return
     bandSelection.current?.removeAttribute("data-show")
     const column = event.currentTarget
     const minuteAt = (point: Point) => clamp((point.y - column.getBoundingClientRect().top) * minutesPerPixel(), 0, DAY_MINUTES - 1)
@@ -106,7 +106,7 @@ export function TimeGrid({ events, days, scrollToTime }: TimeGridProps) {
   }
 
   const selectDays = (event: PointerEvent<HTMLDivElement>) => {
-    if (!isSelectable(event) || (event.target as Element).closest(".fa-sch-ev")) return
+    if (!isSelectable(event) || fromPortal(event) || (event.target as Element).closest(".fa-sch-ev")) return
     selection.current?.removeAttribute("data-show")
     const cells = [...(band.current?.querySelectorAll<HTMLElement>(".fa-sch-band-cell") ?? [])].map((cell) => cell.getBoundingClientRect())
     const dayIndex = indexAt(cells, event.clientX)

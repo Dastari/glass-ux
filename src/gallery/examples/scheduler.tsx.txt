@@ -16,8 +16,9 @@ import { Avatar } from "glass-ux/avatar";
 import { Badge } from "glass-ux/badge";
 import { Button } from "glass-ux/button";
 import { Input } from "glass-ux/input";
+import { Menu } from "glass-ux/menu";
 import { DragDropProvider, Draggable, DropZone, type DropEvent } from "glass-ux/drag-drop";
-import { IconClose, IconSearch, IconSend } from "glass-ux/icons";
+import { IconMoreHorizontal, IconSearch, IconSend } from "glass-ux/icons";
 import {
   PLANT_RESOURCES,
   WEEK_START,
@@ -369,13 +370,28 @@ function CrewPlanner({ narrow = false }: { narrow?: boolean }) {
                 }}
               />
             )}
-            <Button
-              size="xs"
-              variant="ghost"
-              icon={<IconClose />}
-              aria-label={`Remove ${job.title}`}
-              onClick={() => setJobs((current) => current.filter((item) => item.id !== job.id))}
-            />
+            <Menu.Root>
+              <Menu.Trigger
+                render={
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    icon={<IconMoreHorizontal />}
+                    aria-label={`More for ${job.title}`}
+                  />
+                }
+              />
+              <Menu.Popup align="end">
+                <Menu.Item
+                  onClick={() => {
+                    setJobs((current) => current.filter((item) => item.id !== job.id));
+                    setStatus(`Removed ${job.title}`);
+                  }}
+                >
+                  Remove
+                </Menu.Item>
+              </Menu.Popup>
+            </Menu.Root>
           </span>
         </span>
       )}

@@ -8,7 +8,7 @@ import { AgendaDay } from "./agenda-view.js"
 import { formatDay, formatHour, formatMinutes, toneAttribute, useScheduler } from "./context.js"
 import { moveEventTo } from "./edit.js"
 import { EventButton } from "./event.js"
-import { trackPointer } from "./gesture.js"
+import { fromPortal, trackPointer } from "./gesture.js"
 import { barSegments, fitBars, type BarSegment, type PlacedEvent } from "./layout.js"
 import { monthBounds } from "./range.js"
 import { zonedInstant } from "./zone.js"
@@ -108,7 +108,7 @@ export function MonthView({ events, days }: MonthViewProps) {
   }
 
   const selectDays = (index: number) => (event: PointerEvent<HTMLDivElement>) => {
-    if (compact || !selectable || event.button !== 0 || (event.target as Element).closest("button")) return
+    if (compact || !selectable || event.button !== 0 || fromPortal(event) || (event.target as Element).closest("button")) return
     const rects = cellRects()
     let range = { first: index, last: index }
     trackPointer(

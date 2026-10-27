@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react"
+import { createPortal } from "react-dom"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { Scheduler, type SchedulerProps } from "./scheduler.js"
 import type { SchedulerBlock, SchedulerEvent, SchedulerResource } from "./types.js"
@@ -115,6 +116,39 @@ describe("Scheduler timeline", () => {
     fireEvent.click(action)
     expect(send).toHaveBeenCalledWith("mow")
     expect(onEventClick).not.toHaveBeenCalled()
+  })
+
+  it("ignores pointer events from portals opened inside an event, such as a menu's items", () => {
+    const onSlotSelect = vi.fn()
+    const remove = vi.fn()
+    const { container } = timeline({
+      onSlotSelect,
+      renderEvent: (event) => (
+        <span>
+          {event.title}
+          {event.id === "mow"
+            ? createPortal(
+                <div role="menuitem" tabIndex={-1} onClick={remove}>
+                  Delete
+                </div>,
+                document.body,
+              )
+            : null}
+        </span>
+      ),
+    })
+    const item = screen.getByRole("menuitem", { name: "Delete" })
+    fireEvent.pointerDown(item, { button: 0, pointerId: 1, pointerType: "mouse", clientX: 10, clientY: 10 })
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 10, clientY: 10 })
+    fireEvent.click(item)
+    expect(remove).toHaveBeenCalledTimes(1)
+    expect(onSlotSelect).not.toHaveBeenCalled()
+    expect(container.querySelector(".fa-sch-tl-selection[data-show]")).toBeNull()
+    // The row itself still selects.
+    const lanes = container.querySelector<HTMLElement>('[data-row-index="1"] .fa-sch-tl-lanes')!
+    fireEvent.pointerDown(lanes, { button: 0, pointerId: 2, pointerType: "mouse", clientX: 10, clientY: 10 })
+    fireEvent.pointerUp(window, { pointerId: 2, clientX: 10, clientY: 10 })
+    expect(onSlotSelect).toHaveBeenCalledTimes(1)
   })
 
   it("chooses a row and days with the keyboard and selects them with the row's resource", () => {

@@ -9,7 +9,7 @@ import { DragDropProvider, useDraggable, useDragDropMonitor, useDropZone, useHas
 import type { DragEffect, DragInfo, DragItem, DropVerdict } from "../drag-drop/types.js"
 import { eventName, formatDay, formatDayShort, formatMinutes, formatMinutesRange, toneAttribute, useScheduler, type PendingChange } from "./context.js"
 import { editEvent, moveEventTo } from "./edit.js"
-import { trackPointer } from "./gesture.js"
+import { fromPortal, trackPointer } from "./gesture.js"
 import { laneSegments, type LaneSegment, type PlacedEvent } from "./layout.js"
 import { daysBetween, indexFrom } from "./range.js"
 import type { SchedulerBlock, SchedulerDropTarget, SchedulerResource } from "./types.js"
@@ -271,7 +271,7 @@ function TimelineBody({ events, days }: TimelineViewProps) {
   }
 
   const selectDays = (resource: SchedulerResource) => (event: PointerEvent<HTMLDivElement>) => {
-    if (!selectable || event.button !== 0 || (event.target as Element).closest(".fa-sch-ev, button, a, input, select, textarea")) return
+    if (!selectable || event.button !== 0 || fromPortal(event) || (event.target as Element).closest(".fa-sch-ev, button, a, input, select, textarea")) return
     const lanes = event.currentTarget
     const rtl = isRtl(lanes)
     const element = lanes.querySelector<HTMLElement>(":scope > .fa-sch-tl-selection")
@@ -591,7 +591,7 @@ const TimelineRow = memo(function TimelineRow({ resource, row, sticky, segments,
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const element = hover.current
     if (!element || !context.selectable || event.pointerType !== "mouse" || compact) return
-    if ((event.target as Element).closest(".fa-sch-ev") || document.documentElement.hasAttribute("data-dnd") || document.documentElement.hasAttribute("data-scheduler-gesture")) return element.removeAttribute("data-show")
+    if (fromPortal(event) || (event.target as Element).closest(".fa-sch-ev") || document.documentElement.hasAttribute("data-dnd") || document.documentElement.hasAttribute("data-scheduler-gesture")) return element.removeAttribute("data-show")
     element.style.setProperty("--_first", String(columnAt(event.currentTarget, event.clientX, days.length, isRtl(event.currentTarget)) + 1))
     element.setAttribute("data-show", "")
   }
@@ -785,6 +785,7 @@ function TimelineEvent({ segment, days, zonePrefix, grab }: TimelineEventProps) 
       data-custom={context.renderEvent ? "" : undefined}
       style={{ "--_first": segment.first + 1, "--_length": segment.length, "--_lane": segment.lane + 1 } as CSSProperties}
       onPointerDown={(event) => {
+        if (fromPortal(event)) return
         const lanes = card.current?.parentElement
         if (lanes) grab.current = { id: itemId, offset: columnAt(lanes, event.clientX, days.length, isRtl(lanes)) - segment.first }
       }}

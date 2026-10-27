@@ -29,6 +29,15 @@ export interface GestureOptions {
   scroller?: HTMLElement | null
 }
 
+/**
+ * The event came from a portal rendered inside the element (a menu, popover or dialog opened
+ * from an event's content): React bubbles it through the component tree although its DOM is
+ * elsewhere, so it is not a gesture on the element.
+ */
+export function fromPortal(event: { currentTarget: EventTarget; target: EventTarget }): boolean {
+  return !(event.currentTarget as Node).contains(event.target as Node)
+}
+
 const THRESHOLD = 4
 const TOUCH_SLOP = 8
 const HOLD_MS = 380

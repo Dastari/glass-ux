@@ -18,8 +18,9 @@ import { Avatar } from "../../ui/avatar/index.js";
 import { Badge } from "../../ui/badge/index.js";
 import { Button } from "../../ui/button/index.js";
 import { Input } from "../../ui/input/index.js";
+import { Menu } from "../../ui/menu/index.js";
 import { DragDropProvider, Draggable, DropZone, type DropEvent } from "../../ui/drag-drop/index.js";
-import { IconClose, IconSearch, IconSend } from "../../icons/generated/icons.js";
+import { IconMoreHorizontal, IconSearch, IconSend } from "../../icons/generated/icons.js";
 import {
   PLANT_RESOURCES,
   WEEK_START,
@@ -371,13 +372,28 @@ function CrewPlanner({ narrow = false }: { narrow?: boolean }) {
                 }}
               />
             )}
-            <Button
-              size="xs"
-              variant="ghost"
-              icon={<IconClose />}
-              aria-label={`Remove ${job.title}`}
-              onClick={() => setJobs((current) => current.filter((item) => item.id !== job.id))}
-            />
+            <Menu.Root>
+              <Menu.Trigger
+                render={
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    icon={<IconMoreHorizontal />}
+                    aria-label={`More for ${job.title}`}
+                  />
+                }
+              />
+              <Menu.Popup align="end">
+                <Menu.Item
+                  onClick={() => {
+                    setJobs((current) => current.filter((item) => item.id !== job.id));
+                    setStatus(`Removed ${job.title}`);
+                  }}
+                >
+                  Remove
+                </Menu.Item>
+              </Menu.Popup>
+            </Menu.Root>
           </span>
         </span>
       )}

@@ -6,7 +6,7 @@
  * taking the first row free across all of its days.
  */
 import { addDays, type IsoDate } from "../date-picker/calendar-date.js"
-import { daysBetween } from "./range.js"
+import { daysBetween, indexFrom } from "./range.js"
 import type { SchedulerEvent, SchedulerTone } from "./types.js"
 import { DAY_MINUTES, toDay, toEpoch, wallPosition } from "./zone.js"
 
@@ -207,4 +207,51 @@ export function fitBars<E extends SchedulerEvent>(bars: readonly BarSegment<E>[]
     else for (let day = bar.first; day < bar.first + bar.length; day++) hidden[day]!++
   }
   return { visible, hidden, shown }
+}
+
+/** An event in one timeline row: the columns it covers among the days shown, and its lane. */
+export interface LaneSegment<E extends SchedulerEvent = SchedulerEvent> {
+  placed: PlacedEvent<E>
+  /** Index of its first column among the days shown. */
+  first: number
+  /** Columns it covers. */
+  length: number
+  /** 0-based lane within the row. */
+  lane: number
+  /** It began before its first column / carries on after its last (earlier or later days, or hidden ones). */
+  continuesBefore: boolean
+  continuesAfter: boolean
+}
+
+/**
+ * The timeline lanes of one row. Every event, timed or all-day, covers the columns of the days
+ * it touches; `days` is ascending and may skip days (hidden weekdays). Events are packed into
+ * the lowest lane free across their columns, in order of first column, longer first, then start
+ * time, so a day's work reads in time order and the same events always lay out the same way.
+ */
+export function laneSegments<E extends SchedulerEvent>(events: readonly PlacedEvent<E>[], days: readonly IsoDate[]): { segments: LaneSegment<E>[]; lanes: number } {
+  const spans: Array<{ placed: PlacedEvent<E>; start: number; end: number }> = []
+  for (const placed of events) {
+    const start = indexFrom(days, placed.startDay)
+    const end = indexFrom(days, addDays(placed.endDay, 1))
+    if (end > start) spans.push({ placed, start, end })
+  }
+  const byId = new Map(spans.map((span) => [span.placed.id, span]))
+  const { rows, count } = packRows(
+    spans.map(({ placed, start, end }) => ({ id: placed.id, start, end })),
+    (a, b) => {
+      const pa = byId.get(a.id)!.placed
+      const pb = byId.get(b.id)!.placed
+      return a.start - b.start || b.end - b.start - (a.end - a.start) || pa.startMs - pb.startMs || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+    },
+  )
+  const segments = spans.map(({ placed, start, end }) => ({
+    placed,
+    first: start,
+    length: end - start,
+    lane: rows.get(placed.id)!,
+    continuesBefore: days[start]! > placed.startDay,
+    continuesAfter: days[end - 1]! < placed.endDay,
+  }))
+  return { segments, lanes: count }
 }

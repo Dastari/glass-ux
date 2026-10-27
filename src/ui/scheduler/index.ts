@@ -1,5 +1,6 @@
 export { Scheduler, type SchedulerProps } from "./scheduler.js"
 export { schedulerMessages, type SchedulerMessages } from "./messages.js"
-export { packColumns, packRows, type ColumnPlacement, type Interval } from "./layout.js"
-export { daysBetween, shiftDate, startOfWeek, visibleDays } from "./range.js"
+export { laneSegments, packColumns, packRows, type ColumnPlacement, type Interval, type LaneSegment } from "./layout.js"
+export { daysBetween, shiftDate, startOfWeek, timelineDays, visibleDays, withoutHidden } from "./range.js"
+export { SCHEDULER_EVENT_TYPE } from "./timeline-view.js"
 export type * from "./types.js"

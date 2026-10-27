@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { daysBetween, rangeTitle, shiftDate, startOfWeek, visibleDays } from "./range.js"
+import { daysBetween, indexFrom, rangeTitle, shiftDate, startOfWeek, timelineDays, visibleDays, withoutHidden } from "./range.js"
 import { wallPosition, zonedInstant } from "./zone.js"
 
 describe("date ranges", () => {
@@ -64,5 +64,28 @@ describe("zoned wall clock", () => {
   it("reads the wall clock in another zone than the browser's", () => {
     expect(wallPosition(Date.parse("2026-10-25T00:30:00Z"), "Europe/Berlin")).toEqual({ day: "2026-10-25", minutes: 150 })
     expect(wallPosition(Date.parse("2026-10-25T01:30:00Z"), "Europe/Berlin")).toEqual({ day: "2026-10-25", minutes: 150 })
+  })
+})
+
+describe("timeline days", () => {
+  it("leaves hidden weekdays out of a week, but never every day", () => {
+    expect(timelineDays("week", "2026-10-28", 1, false, false, [6, 7])).toEqual(["2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30"])
+    expect(withoutHidden(["2026-10-31", "2026-11-01"], [6, 7])).toEqual(["2026-10-31", "2026-11-01"])
+  })
+
+  it("shows the month, or three months when continuous, and one day when compact", () => {
+    const month = timelineDays("month", "2026-10-28", 1, false, false)
+    expect([month[0], month.at(-1), month.length]).toEqual(["2026-10-01", "2026-10-31", 31])
+    const rolling = timelineDays("month", "2026-10-28", 1, false, true)
+    expect([rolling[0], rolling.at(-1), rolling.length]).toEqual(["2026-09-01", "2026-11-30", 91])
+    expect(timelineDays("week", "2026-10-28", 1, true, false)).toEqual(["2026-10-28"])
+  })
+
+  it("finds the first day on or after a day in ascending days", () => {
+    const days = ["2026-10-26", "2026-10-27", "2026-10-30"]
+    expect(indexFrom(days, "2026-10-27")).toBe(1)
+    expect(indexFrom(days, "2026-10-28")).toBe(2)
+    expect(indexFrom(days, "2026-11-01")).toBe(3)
+    expect(indexFrom(days, "2026-10-01")).toBe(0)
   })
 })

@@ -60,3 +60,38 @@ export function rangeTitle(view: SchedulerView, date: IsoDate, days: readonly Is
   if (days.length > 1) return dateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).formatRange(fromIsoDate(days[0]!), fromIsoDate(days.at(-1)!))
   return dateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(fromIsoDate(days[0] ?? date))
 }
+
+/** `days` without the ISO weekdays in `hidden` (1 = Monday … 7 = Sunday); all of them when that would leave none. */
+export function withoutHidden(days: IsoDate[], hidden: readonly number[] | undefined): IsoDate[] {
+  if (!hidden?.length) return days
+  const kept = days.filter((day) => !hidden.includes(isoWeekday(day)))
+  return kept.length ? kept : days
+}
+
+/**
+ * The days the timeline shows around `date`: the day, the week, or the month. `continuous`
+ * months run from the first day of the month before to the last day of the month after, so
+ * the strip can scroll across a month's edges. Compact shows `date` alone. Hidden weekdays
+ * are left out (`date` itself always shows).
+ */
+export function timelineDays(view: SchedulerView, date: IsoDate, firstDay: number, compact: boolean, continuous: boolean, hidden?: readonly number[]): IsoDate[] {
+  if (compact || view === "day") return [date]
+  if (view === "agenda") return visibleDays(view, date, firstDay)
+  if (view === "week") return withoutHidden(dayRange(startOfWeek(date, firstDay), addDays(startOfWeek(date, firstDay), 6)), hidden)
+  const span = continuous ? 1 : 0
+  const first = monthBounds(addMonths(date, -span)).first
+  const last = monthBounds(addMonths(date, span)).last
+  return withoutHidden(dayRange(first, last), hidden)
+}
+
+/** The index of the first of `days` (ascending) on or after `day`, or `days.length`. */
+export function indexFrom(days: readonly IsoDate[], day: IsoDate): number {
+  let low = 0
+  let high = days.length
+  while (low < high) {
+    const middle = (low + high) >> 1
+    if (days[middle]! < day) low = middle + 1
+    else high = middle
+  }
+  return low
+}

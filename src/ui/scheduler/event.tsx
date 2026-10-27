@@ -34,7 +34,7 @@ export function EventButton({ placed, variant, editKeys, className, style, tabIn
   const editable = Boolean(editKeys) && context.canEdit(placed)
 
   const keyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    const edit = editable && !event.altKey && !event.metaKey && !event.ctrlKey ? keyEdit(event.key, event.shiftKey, editKeys!, placed, context.snapMinutes) : null
+    const edit = editable && !event.altKey && !event.metaKey && !event.ctrlKey && !(event.shiftKey && !context.canResize(placed)) ? keyEdit(event.key, event.shiftKey, editKeys!, placed, context.snapMinutes) : null
     if (!edit) return onKeyDown?.(event)
     event.preventDefault()
     event.stopPropagation()

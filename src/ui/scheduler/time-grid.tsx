@@ -97,7 +97,7 @@ export function TimeGrid({ events, days, scrollToTime }: TimeGridProps) {
         },
         end: () => {
           showSelection(dayIndex, range.start, range.end)
-          context.selectSlot({ start: new Date(zonedInstant(day, range.start, timeZone)), end: new Date(zonedInstant(day, range.end, timeZone)), allDay: false, input: "pointer" })
+          context.selectSlot({ start: new Date(zonedInstant(day, range.start, timeZone)), end: new Date(zonedInstant(day, range.end, timeZone)), allDay: false, input: "pointer" }, selection.current)
         },
         cancel: () => selection.current?.removeAttribute("data-show"),
       },
@@ -130,7 +130,7 @@ export function TimeGrid({ events, days, scrollToTime }: TimeGridProps) {
           show()
           const start = days[range.first]!
           const end = addDays(days[range.last]!, 1)
-          context.selectSlot({ start: new Date(zonedInstant(start, 0, timeZone)), end: new Date(zonedInstant(end, 0, timeZone)), allDay: true, days: { start, end }, input: "pointer" })
+          context.selectSlot({ start: new Date(zonedInstant(start, 0, timeZone)), end: new Date(zonedInstant(end, 0, timeZone)), allDay: true, days: { start, end }, input: "pointer" }, bandSelection.current)
         },
         cancel: () => bandSelection.current?.removeAttribute("data-show"),
       },
@@ -269,7 +269,7 @@ export function TimeGrid({ events, days, scrollToTime }: TimeGridProps) {
       event.preventDefault()
       const day = days[cursor.day]!
       showSelection(cursor.day, cursor.start, cursor.end)
-      context.selectSlot({ start: new Date(zonedInstant(day, cursor.start, timeZone)), end: new Date(zonedInstant(day, cursor.end, timeZone)), allDay: false, input: "keyboard" })
+      context.selectSlot({ start: new Date(zonedInstant(day, cursor.start, timeZone)), end: new Date(zonedInstant(day, cursor.end, timeZone)), allDay: false, input: "keyboard" }, selection.current)
       return
     }
     if (!next) return
@@ -330,7 +330,7 @@ export function TimeGrid({ events, days, scrollToTime }: TimeGridProps) {
                 data={{ "data-continues-before": bar.continuesBefore ? "" : undefined, "data-continues-after": bar.continuesAfter ? "" : undefined }}
               >
                 <span className="fa-sch-ev-title">{bar.placed.event.title}</span>
-                {context.canEdit(bar.placed) && !bar.continuesAfter ? <span className="fa-sch-resize" data-resize data-axis="x" aria-hidden /> : null}
+                {context.canResize(bar.placed) && !bar.continuesAfter ? <span className="fa-sch-resize" data-resize data-axis="x" aria-hidden /> : null}
               </EventButton>
             ))
           )}
@@ -382,7 +382,7 @@ export function TimeGrid({ events, days, scrollToTime }: TimeGridProps) {
                           <span className="fa-sch-ev-time" data-event-time>
                             {formatMinutesRange(segment.placed.startDay === day ? segment.placed.startMinutes : 0, segment.placed.endDay === day ? segment.placed.endMinutes : DAY_MINUTES, locale)}
                           </span>
-                          {context.canEdit(segment.placed) && !segment.continuesAfter ? <span className="fa-sch-resize" data-resize data-axis="y" aria-hidden /> : null}
+                          {context.canResize(segment.placed) && !segment.continuesAfter ? <span className="fa-sch-resize" data-resize data-axis="y" aria-hidden /> : null}
                         </EventButton>
                       )
                     })}

@@ -12,6 +12,8 @@ import { DAY_MINUTES, zonedInstant } from "./zone.js"
 /** What to do to an event. */
 export interface EventEdit {
   kind: "move" | "resize"
+  /** For a resize: the end to shift. Default the end. */
+  edge?: "start" | "end"
   /** Whole days to shift the start (move) or the end (resize). */
   days?: number
   /** Wall-clock minutes to shift the start (move) or the end (resize). */
@@ -26,6 +28,7 @@ const snapTo = (minutes: number, snap: number | undefined) => (snap ? Math.round
 export function editEvent(placed: PlacedEvent, edit: EventEdit, timeZone: string, input: PendingChange["input"]): PendingChange | null {
   const days = edit.days ?? 0
   const minutes = edit.minutes ?? 0
+  if (edit.kind === "resize" && edit.edge === "start") return resizeStart(placed, days, timeZone, input, edit.snap)
   if (placed.allDay) {
     if (!days) return null
     const length = daysBetween(placed.startDay, placed.endDay) + 1
@@ -74,4 +77,21 @@ export function resizeEventTo(placed: PlacedEvent, day: IsoDate, endMinutes: num
 
 function wholeDays(placed: PlacedEvent, kind: PendingChange["kind"], input: PendingChange["input"], start: IsoDate, end: IsoDate, timeZone: string): PendingChange {
   return { placed, kind, input, startMs: zonedInstant(start, 0, timeZone), endMs: zonedInstant(end, 0, timeZone), days: { start, end } }
+}
+
+/**
+ * Move an event's start by whole days, keeping its end: all-day events by calendar days,
+ * timed ones at the same wall-clock time. It never passes the end, so an all-day event keeps
+ * at least its last day and a timed one at least one snap.
+ */
+export function resizeStart(placed: PlacedEvent, days: number, timeZone: string, input: PendingChange["input"], snap = 15): PendingChange | null {
+  if (!days) return null
+  if (placed.allDay) {
+    const start = addDays(placed.startDay, days) > placed.endDay ? placed.endDay : addDays(placed.startDay, days)
+    if (start === placed.startDay) return null
+    return { ...wholeDays(placed, "resize", input, start, addDays(placed.endDay, 1), timeZone), edge: "start" }
+  }
+  const startMs = Math.min(placed.endMs - snap * 60_000, zonedInstant(addDays(placed.startDay, days), placed.startMinutes, timeZone))
+  if (startMs === placed.startMs) return null
+  return { placed, kind: "resize", edge: "start", input, startMs, endMs: placed.endMs }
 }

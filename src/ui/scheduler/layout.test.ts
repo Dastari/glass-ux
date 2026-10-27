@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { barSegments, daySegments, fitBars, packColumns, packRows, placeEvent } from "./layout.js"
+import { barSegments, daySegments, fitBars, laneSegments, packColumns, packRows, placeEvent } from "./layout.js"
 
 const at = (id: string, start: number, end: number) => ({ id, start, end })
 
@@ -113,5 +113,48 @@ describe("barSegments and fitBars", () => {
     expect(visible.map((bar) => bar.placed.id).toSorted()).toEqual(["long", "t1"])
     expect(hidden).toEqual([0, 2, 0, 0, 0, 0, 0])
     expect(fitBars(bars, 7, 4).hidden.every((count) => count === 0)).toBe(true)
+  })
+})
+
+describe("laneSegments", () => {
+  const zone = "Australia/Hobart"
+  const week = ["2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30"] // weekend hidden
+  const place = (event: Parameters<typeof placeEvent>[0]) => placeEvent(event, zone)!
+
+  it("packs overlapping days into lanes, longest first, and the rest in time order", () => {
+    const events = [
+      place({ id: "long", title: "Hedge line", start: "2026-10-26", end: "2026-10-29", allDay: true }),
+      place({ id: "late", title: "Late", start: "2026-10-27T13:00", end: "2026-10-27T14:00" }),
+      place({ id: "early", title: "Early", start: "2026-10-27T07:00", end: "2026-10-27T08:00" }),
+      place({ id: "fri", title: "Friday", start: "2026-10-30", allDay: true }),
+    ]
+    const { segments, lanes } = laneSegments(events, week)
+    const by = new Map(segments.map((segment) => [segment.placed.id, segment]))
+    expect(lanes).toBe(3)
+    expect(by.get("long")).toMatchObject({ first: 0, length: 3, lane: 0 })
+    expect(by.get("early")).toMatchObject({ first: 1, length: 1, lane: 1 })
+    expect(by.get("late")).toMatchObject({ first: 1, length: 1, lane: 2 })
+    expect(by.get("fri")).toMatchObject({ first: 4, length: 1, lane: 0 })
+  })
+
+  it("keeps an event's real days across hidden ones and marks the ends it is cut at", () => {
+    const events = [
+      // Friday to Monday over the hidden weekend: shown on Friday only, continuing after.
+      place({ id: "over", title: "Over the weekend", start: "2026-10-30", end: "2026-11-03", allDay: true }),
+      // Saturday alone: nothing to show.
+      place({ id: "sat", title: "Saturday", start: "2026-10-31", allDay: true }),
+      // From the week before.
+      place({ id: "before", title: "Before", start: "2026-10-22", end: "2026-10-27", allDay: true }),
+    ]
+    const { segments } = laneSegments(events, week)
+    const by = new Map(segments.map((segment) => [segment.placed.id, segment]))
+    expect(by.has("sat")).toBe(false)
+    expect(by.get("over")).toMatchObject({ first: 4, length: 1, continuesBefore: false, continuesAfter: true })
+    expect(by.get("before")).toMatchObject({ first: 0, length: 1, continuesBefore: true, continuesAfter: false })
+  })
+
+  it("places a timed event that crosses midnight on both of its days", () => {
+    const { segments } = laneSegments([place({ id: "night", title: "Night works", start: "2026-10-28T22:00", end: "2026-10-29T02:00" })], week)
+    expect(segments[0]).toMatchObject({ first: 2, length: 2 })
   })
 })

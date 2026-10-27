@@ -93,6 +93,8 @@ reserved and empty) or `"copy"`.
 ## Draggables and handles
 
 - **`effect="copy"`** leaves the source in place, for palettes.
+- **`liftKeys`** chooses the keys that lift it (default Space and Enter). Leave Enter out when
+  Enter on the handle also opens something, as Scheduler timeline events do.
 - **`disabled`** (a string says why) makes the item `aria-disabled` with the reason as its
   description.
 - **`preview`** replaces the default copy of the element with your own content. The default

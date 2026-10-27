@@ -3,13 +3,21 @@ import { dateTimeFormat } from "../../lib/locale/intl.js"
 import { fromIsoDate, type IsoDate } from "../date-picker/calendar-date.js"
 import type { PlacedEvent } from "./layout.js"
 import type { SchedulerMessages } from "./messages.js"
-import type { SchedulerSlot, SchedulerView } from "./types.js"
+import type { ReactNode } from "react"
+import type { DragEffect, DragInfo, DragItem, DropVerdict } from "../drag-drop/types.js"
+import type { SchedulerBlock, SchedulerDrop, SchedulerDropTarget, SchedulerEvent, SchedulerEventRenderInfo, SchedulerLayout, SchedulerResource, SchedulerResourceRenderInfo, SchedulerSlot, SchedulerView } from "./types.js"
 import { DAY_MINUTES } from "./zone.js"
 
 /** A change to commit: new instants (timed) or days (all-day, end exclusive). */
 export interface PendingChange {
   placed: PlacedEvent
   kind: "move" | "resize"
+  /** For a resize: the end that changed. Default the end. */
+  edge?: "start" | "end"
+  /** The resource it moves to (timeline). */
+  resourceId?: string
+  /** "copy": the event stays and the change describes a new one. */
+  effect?: DragEffect
   input: "pointer" | "keyboard"
   startMs: number
   endMs: number
@@ -33,9 +41,33 @@ export interface SchedulerContextValue {
   snapMinutes: number
   slotMinutes: number
   canEdit: (placed: PlacedEvent) => boolean
+  /** Its ends can be dragged and Shift-arrowed (`resizable`, within `editable`). */
+  canResize: (placed: PlacedEvent) => boolean
+  /** Whether dragging the event moves it or copies it. */
+  effectOf: (placed: PlacedEvent) => DragEffect
+  /** Why an event cannot be edited, when `editable` said so in words. */
+  lockReason: (placed: PlacedEvent) => string | null
   resourceTitle: (id: string | undefined) => string | undefined
   openEvent: (placed: PlacedEvent, element: HTMLElement) => void
-  selectSlot: (slot: SchedulerSlot) => void
+  selectSlot: (slot: SchedulerSlot, element?: HTMLElement | null) => void
+  layout: SchedulerLayout
+  views: readonly SchedulerView[]
+  /** Timeline rows, in order. */
+  resources: readonly SchedulerResource[]
+  /** The resource `delta` rows from `id` (sticky rows first), or undefined past either end. */
+  neighbourResource: (id: string | undefined, delta: number) => string | undefined
+  continuous: boolean
+  columnWidth?: string
+  resourceWidth?: string
+  renderEvent?: (event: SchedulerEvent, info: SchedulerEventRenderInfo) => ReactNode
+  renderResource?: (resource: SchedulerResource, info: SchedulerResourceRenderInfo) => ReactNode
+  resourceHeader?: ReactNode
+  /** Whether a row takes one of your DragDrop items. */
+  acceptsDrop: (item: DragItem) => boolean
+  validateDrop: (drag: DragInfo, resource: SchedulerResource, target: SchedulerDropTarget) => DropVerdict
+  /** The blocks of a resource, placed in the zone, with the block each came from. */
+  blocksOf: (resourceId: string) => ReadonlyArray<{ placed: PlacedEvent; block: SchedulerBlock }>
+  dropItem: (drop: SchedulerDrop) => void | boolean | Promise<unknown>
   commit: (change: PendingChange) => void
   announce: (message: string) => void
   setDate: (date: IsoDate) => void

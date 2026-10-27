@@ -48,6 +48,21 @@ export const schedulerMessages = defineMessages("scheduler", {
   weekDays: "Days of the week",
   /** Continues from an earlier day / into a later one. */
   continues: "continues",
+  /** The timeline's row headings column, when `resourceHeader` does not replace it. */
+  resources: "Resources",
+  /** The timeline with no rows to show. */
+  noResources: "Nothing to show",
+  /** The timeline's days and rows as one group, and how to choose a slot in it with the keyboard. */
+  timelineSlots: (range: string) => `Days, ${range}`,
+  timelineSlotsHint: "Arrow keys choose a row and a day, Shift and arrow keys extend it, Enter selects it",
+  /** How to edit a focused timeline event. */
+  timelineEditHint: "Arrow keys move it between days and rows, Shift and arrow keys change its end, Alt, Shift and arrow keys change its start, Space picks it up, Enter opens it",
+  /** A copy was made by dragging. */
+  copied: (title: string, when: string) => `${title} copied to ${when}`,
+  /** A move the keyboard or a resize could not make, and why. */
+  refused: (title: string, reason: string | null) => (reason ? `${title} cannot go there: ${reason}` : `${title} cannot go there`),
+  /** A row and a time together: "Andrew French, Tuesday 2 June". */
+  atResource: (resource: string, when: string) => `${resource}, ${when}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

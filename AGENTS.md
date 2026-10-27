@@ -108,6 +108,9 @@ decides when to publish. The local route:
 - Slider: a visible value bubble over an end thumb overhangs while shown (fixing it shifts
   the bubble inward at the ends, a visual change for the owner to approve).
 - Sparkline has no `gaps` option yet (LineChart has `gaps="bridge"`).
+- Scheduler timeline: no per-cell render slot and no resource window in `onRangeChange`;
+  DragDrop keyboard travel reaches only rendered (virtualised) rows, so keyboard moves between
+  far rows use the event's arrow keys. `grip.svg` differs from its authoring definition.
 - File context menus have no icon for "Copy path".
 - Native-speaker review: "chroma" in the Arabic and Hebrew colour picker messages, and
   "preview class" in Japanese, Korean, Arabic and Hebrew (`results.previewUnavailable`).

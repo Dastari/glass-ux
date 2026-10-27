@@ -20,6 +20,7 @@ import { flushSync } from "react-dom"
 import { feedbackHold, motionScale, tokenDuration } from "../../lib/motion.js"
 import { adoptTheme, makeShield, raise } from "./top-layer.js"
 import { arrange, gridColumns, insertionIndex, keyboardStep, type Box, type DropZoneSort, type Shift } from "./layout.js"
+
 import type {
   AnnouncedPlace,
   DragCancelEvent,
@@ -40,6 +41,8 @@ import type {
   DropZoneState,
   DropZoneStatus,
 } from "./types.js"
+
+const LIFT_KEYS: readonly string[] = [" ", "Enter"]
 
 /**
  * Reject a drop's promise with a DropError to show its message over the zone and announce it
@@ -1300,7 +1303,8 @@ export class DragDropManager {
     if (event.target !== record.handle || event.defaultPrevented) return
     const session = this.session
     if (!session) {
-      if ((event.key === " " || event.key === "Enter") && !record.options.disabled && !event.repeat) {
+      const lifts = record.options.liftKeys ?? LIFT_KEYS
+      if ((event.key === " " || event.key === "Enter") && lifts.includes(event.key) && !record.options.disabled && !event.repeat) {
         event.preventDefault()
         this.start(record, "keyboard", null)
       }

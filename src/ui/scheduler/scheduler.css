@@ -70,8 +70,19 @@
   .fa-sch-views {
     display: flex;
     flex: 1 1 0;
+    align-items: center;
     justify-content: flex-end;
+    gap: var(--gap-controls);
     min-width: 0;
+  }
+  /* Your header content: after the title, wrapping to its own line before it would crowd the buttons. */
+  .fa-sch-actions {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-controls);
+    margin-inline-start: auto;
   }
   /* Narrow: the title takes its own line above the controls. */
   @container scheduler (max-width: 34rem) {
@@ -921,6 +932,382 @@
   /* In a popover the list is narrow too. */
   .fa-popover .fa-sch-ev[data-variant="row"] {
     --_time-w: 7rem;
+  }
+
+  /* ── Timeline: a row per resource, a column per day ─────────────────────────── */
+  .fa-sch-tl {
+    /* component tokens */
+    --_res-w: calc(var(--unit) * 56);
+    --_col-min: calc(var(--unit) * 30);
+    --_row-min: calc(var(--unit) * 11);
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-tile);
+  }
+  .fa-sch-tl[data-view="day"] {
+    --_col-min: calc(var(--unit) * 40);
+  }
+  .fa-sch-tl[data-view="month"] {
+    --_col-min: calc(var(--unit) * 11);
+  }
+  .fa-sch-tl-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    outline: none;
+  }
+  .fa-sch-tl-scroll:focus-visible {
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+  /* Every row shares this width, so the day columns line up from the headings down. */
+  .fa-sch-tl-inner {
+    position: relative;
+    min-width: calc(var(--_res-w) + var(--_days) * var(--_col-min));
+  }
+  .fa-sch-tl-head {
+    position: sticky;
+    top: 0;
+    z-index: calc(var(--z-sticky) + 1);
+    background-color: var(--surface-2);
+    border-block-end: var(--border-width) solid var(--line);
+  }
+  .fa-sch-tl-headrow,
+  .fa-sch-tl-row {
+    display: grid;
+    grid-template-columns: var(--_res-w) minmax(0, 1fr);
+  }
+  .fa-sch-tl-corner,
+  .fa-sch-tl-resource {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: var(--z-sticky);
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    padding: var(--space-2) var(--space-3);
+    border-inline-end: var(--border-width) solid var(--line);
+    background-color: var(--surface-2);
+  }
+  .fa-sch-tl-corner {
+    align-items: end;
+  }
+  .fa-sch-tl-corner-label {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-semibold);
+  }
+  .fa-sch-tl-days {
+    display: grid;
+    grid-template-columns: repeat(var(--_days), minmax(0, 1fr));
+    min-width: 0;
+  }
+  .fa-sch-tl-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    grid-row: 1;
+    grid-column: var(--_first);
+    min-width: 0;
+    margin: 0;
+    padding: var(--space-1-5) var(--space-1);
+    overflow: hidden;
+    border: 0;
+    border-inline-start: var(--border-width) solid var(--line);
+    background: none;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+    outline: none;
+  }
+  .fa-sch-tl-day:first-child {
+    border-inline-start-color: transparent;
+  }
+  .fa-sch-tl-day[data-month-start] {
+    border-inline-start: var(--border-width-strong) solid var(--line-strong);
+  }
+  .fa-sch-tl-day[data-weekend] {
+    color: var(--fg-subtle);
+  }
+  .fa-sch-tl-day-number {
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-sch-tl-day[data-today] {
+    color: var(--accent-text);
+  }
+  .fa-sch-tl-day[data-today] .fa-sch-tl-day-number {
+    color: var(--accent-text);
+  }
+  button.fa-sch-tl-day {
+    cursor: pointer;
+  }
+  button.fa-sch-tl-day:hover {
+    background-color: var(--fill-hover);
+  }
+  button.fa-sch-tl-day:focus-visible {
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+
+  .fa-sch-tl-rows {
+    position: relative;
+  }
+  /* Day columns as one layer under every row: lines, weekends, today and month edges. */
+  .fa-sch-tl-stripes {
+    position: absolute;
+    inset-block: 0;
+    inset-inline: var(--_res-w) 0;
+    display: grid;
+    grid-template-columns: repeat(var(--_days), minmax(0, 1fr));
+    pointer-events: none;
+  }
+  .fa-sch-tl-stripe {
+    grid-row: 1;
+    grid-column: var(--_first);
+    border-inline-start: var(--border-width) solid var(--line);
+  }
+  .fa-sch-tl-stripe:first-child {
+    border-inline-start-color: transparent;
+  }
+  .fa-sch-tl-stripe[data-weekend] {
+    background-color: color-mix(in oklab, var(--fill-muted) 60%, transparent);
+  }
+  .fa-sch-tl-stripe[data-today] {
+    background-color: color-mix(in oklab, var(--accent-soft) 60%, transparent);
+  }
+  .fa-sch-tl-stripe[data-month-start] {
+    border-inline-start: var(--border-width-strong) solid var(--line-strong);
+  }
+  .fa-sch-tl-row {
+    position: relative;
+    border-block-end: var(--border-width) solid var(--line);
+  }
+  .fa-sch-tl-row[data-sticky] {
+    background-color: var(--surface-2);
+  }
+  .fa-sch-tl-row[data-sticky]:last-child {
+    border-block-end: 0;
+  }
+  .fa-sch-tl-resource-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .fa-sch-tl-resource-title {
+    overflow: hidden;
+    color: var(--fg);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sch-tl-resource-description {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sch-tl-lanes {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--_days), minmax(0, 1fr));
+    grid-auto-rows: auto;
+    align-content: start;
+    row-gap: var(--space-half);
+    min-width: 0;
+    min-height: var(--_row-min);
+    padding-block: var(--space-1);
+  }
+  .fa-scheduler[data-selectable] .fa-sch-tl-lanes {
+    cursor: cell;
+  }
+  .fa-sch-tl-pad {
+    pointer-events: none;
+  }
+
+  /* Events: the tinted card; its face is one button under your content. */
+  .fa-sch-ev[data-variant="lane"] {
+    z-index: 1;
+    grid-row: var(--_lane);
+    grid-column: var(--_drag-first, var(--_first)) / span var(--_drag-length, var(--_length));
+    align-items: center;
+    min-height: var(--_bar-h);
+    margin-inline: var(--_gap);
+    border-inline-start: var(--border-width-strong) solid var(--_tone);
+    background-color: var(--_fill);
+  }
+  .fa-sch-ev[data-variant="lane"]:hover {
+    background-color: color-mix(in oklab, var(--_tone) calc(var(--sch-tint, 15%) + 8%), var(--surface-2));
+  }
+  .fa-sch-ev[data-variant="lane"]:has(> .fa-sch-tl-hit:focus-visible) {
+    z-index: 3;
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-sch-ev[data-variant="lane"][data-continues-before] {
+    border-inline-start-color: transparent;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+  .fa-sch-ev[data-variant="lane"][data-continues-after] {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+  .fa-sch-tl-hit {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: inherit;
+    outline: none;
+  }
+  .fa-sch-tl-ev-body {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-width: 0;
+    padding-inline: var(--space-1-5);
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .fa-sch-tl-ev[data-custom] .fa-sch-tl-ev-body {
+    display: block;
+    padding-block: var(--space-1);
+  }
+  /* Your controls in the card take their own clicks; everything else passes to its face. */
+  .fa-sch-tl-ev-body :is(a, button, input, select, textarea, label, [role="button"], [data-interactive]) {
+    pointer-events: auto;
+  }
+  .fa-sch-tl-ev > .fa-sch-resize {
+    z-index: 2;
+  }
+  .fa-sch-tl-ev > .fa-sch-resize[data-edge="start"] {
+    inset-inline: 0 auto;
+  }
+  .fa-sch-ev[data-variant="lane"][data-skeleton] {
+    grid-column: var(--_first) / span var(--_length);
+  }
+
+  /* Overlays across a row's columns: blocks, hover, selection, drop target and cursor. */
+  :is(.fa-sch-tl-block, .fa-sch-tl-hover, .fa-sch-tl-selection, .fa-sch-tl-drop, .fa-sch-tl-cursor) {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc((var(--_first) - 1) / var(--_days) * 100%);
+    width: calc(var(--_length, 1) / var(--_days) * 100%);
+    pointer-events: none;
+  }
+  .fa-sch-tl-block {
+    --_tone: var(--fg-subtle);
+    z-index: 0;
+    display: flex;
+    align-items: end;
+    padding: var(--space-half) var(--space-1-5);
+    overflow: hidden;
+    background-color: color-mix(in oklab, var(--_tone) 12%, transparent);
+    background-image: repeating-linear-gradient(135deg, color-mix(in oklab, var(--_tone) 14%, transparent) 0 var(--border-width-strong), transparent var(--border-width-strong) var(--space-2));
+  }
+  .fa-sch-tl-block[data-tone="warning"] {
+    --_tone: var(--warning);
+  }
+  .fa-sch-tl-block[data-tone="danger"] {
+    --_tone: var(--danger);
+  }
+  .fa-sch-tl-block[data-tone="info"] {
+    --_tone: var(--info);
+  }
+  .fa-sch-tl-block[data-tone="success"] {
+    --_tone: var(--success);
+  }
+  .fa-sch-tl-block-title {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sch-tl-hover,
+  .fa-sch-tl-selection,
+  .fa-sch-tl-drop {
+    display: none;
+    margin: var(--_gap);
+    border-radius: var(--radius-item);
+  }
+  .fa-sch-tl-hover[data-show] {
+    display: grid;
+    place-items: center;
+    background-color: var(--fill-hover);
+    color: var(--fg-subtle);
+  }
+  .fa-sch-tl-hover[data-show]::after {
+    content: "+";
+    font-size: var(--type-subtitle-size);
+    line-height: 1;
+  }
+  .fa-sch-tl-selection[data-show] {
+    z-index: 2;
+    display: block;
+    border: var(--border-width) solid var(--accent-line);
+    background-color: var(--accent-soft);
+  }
+  .fa-sch-tl-drop[data-show] {
+    z-index: 2;
+    display: block;
+    border: var(--border-width-strong) dashed var(--accent-line);
+    background-color: color-mix(in oklab, var(--accent-soft) 70%, transparent);
+  }
+  .fa-sch-tl-lanes[data-drop-state="error"] > .fa-sch-tl-drop,
+  .fa-sch-tl-lanes[data-drop-state="disabled"] > .fa-sch-tl-drop {
+    border-color: var(--danger-line);
+    background-color: color-mix(in oklab, var(--danger) 10%, transparent);
+  }
+  .fa-sch-tl-cursor {
+    z-index: 3;
+    margin: var(--_gap);
+    border-radius: var(--radius-item);
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+
+  /* Narrow: one day, each resource's heading above its events. */
+  .fa-scheduler[data-compact] .fa-sch-tl {
+    --_res-w: 0px;
+    --_row-min: var(--control-h-sm);
+  }
+  .fa-scheduler[data-compact] .fa-sch-tl-inner {
+    min-width: 0;
+  }
+  .fa-scheduler[data-compact] :is(.fa-sch-tl-headrow, .fa-sch-tl-row) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fa-scheduler[data-compact] .fa-sch-tl-resource {
+    position: static;
+    padding-block: var(--space-2) 0;
+    border-inline-end: 0;
+    background: none;
+  }
+  .fa-scheduler[data-compact] .fa-sch-tl-day {
+    flex-direction: row;
+    gap: var(--space-1-5);
+    padding-block: var(--space-2);
   }
 
   html[data-scheduler-gesture] {

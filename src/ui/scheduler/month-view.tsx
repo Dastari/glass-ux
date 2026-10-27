@@ -66,7 +66,7 @@ export function MonthView({ events, days }: MonthViewProps) {
     const steps: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }
     if (event.key === "Enter" && selectable && !compact) {
       event.preventDefault()
-      context.selectSlot({ start: new Date(zonedInstant(focusDay, 0, timeZone)), end: new Date(zonedInstant(addDays(focusDay, 1), 0, timeZone)), allDay: true, days: { start: focusDay, end: addDays(focusDay, 1) }, input: "keyboard" })
+      context.selectSlot({ start: new Date(zonedInstant(focusDay, 0, timeZone)), end: new Date(zonedInstant(addDays(focusDay, 1), 0, timeZone)), allDay: true, days: { start: focusDay, end: addDays(focusDay, 1) }, input: "keyboard" }, target.closest<HTMLElement>(".fa-sch-cell"))
       return
     }
     const step = steps[event.key]
@@ -123,7 +123,7 @@ export function MonthView({ events, days }: MonthViewProps) {
           mark(range.first, range.last)
           const start = days[range.first]!
           const end = addDays(days[range.last]!, 1)
-          context.selectSlot({ start: new Date(zonedInstant(start, 0, timeZone)), end: new Date(zonedInstant(end, 0, timeZone)), allDay: true, days: { start, end }, input: "pointer" })
+          context.selectSlot({ start: new Date(zonedInstant(start, 0, timeZone)), end: new Date(zonedInstant(end, 0, timeZone)), allDay: true, days: { start, end }, input: "pointer" }, marked.current[0] ?? null)
         },
         cancel: () => mark(0, -1),
       },

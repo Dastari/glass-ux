@@ -84,4 +84,4 @@ For sign-in, providers, two-factor codes, password reset and account creation, s
 | ------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
 | [Drag and drop](drag-drop.md)   | `DragDropProvider`, `Draggable`, `DragHandle`, `DropZone` | Typed objects, sortable lists and grids, reactive zone states, keyboard and touch |
 | [Kanban](kanban.md)             | `Kanban`, `KanbanCard`                                | Columns of cards on drag and drop: limits that refuse with a reason, collapse, saves that fly back |
-| [Scheduler](scheduler.md)       | `Scheduler`                                           | Month, week, day and agenda; side-by-side overlaps, slot selection, drag and keyboard rescheduling, time zones |
+| [Scheduler](scheduler.md)       | `Scheduler`                                           | Month, week, day and agenda; a resource timeline with rolling months and drops from your lists; slot selection, drag and keyboard rescheduling, time zones |

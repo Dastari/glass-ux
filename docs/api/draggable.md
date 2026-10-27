@@ -20,6 +20,7 @@ sortable DropZone it is one of the zone's ordered items. While it is dragged it 
 | effect | `DragEffect \| undefined` | "copy", "move" | no | — | "copy" leaves the source in place. Default "move". |
 | id | `string` | See type | yes | — | Unique within the provider; also the item's id in every event. |
 | label | `string` | See type | yes | — | A short name for announcements and the handle's accessible name. |
+| liftKeys | `readonly (" " \| "Enter")[] \| undefined` | See type | no | — | Keys that lift the item from its handle. Default Space and Enter. Leave Enter out when the handle also opens something (an event that Enter opens), and say so in its description. |
 | onDragEnd | `((event: DragEndEvent<T>) => void) \| undefined` | See type | no | — | This item's drag ended, dropped or cancelled. |
 | onDragStart | `((event: DragStartEvent<T>) => void) \| undefined` | See type | no | — | This item was lifted. |
 | preview | `ReactNode` | See type | no | — | Content for the drag preview instead of a copy of the element. |

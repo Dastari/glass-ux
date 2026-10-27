@@ -34,6 +34,11 @@ interface ProviderContext {
 const DragDropContext = createContext<ProviderContext | null>(null)
 const ZoneIdContext = createContext<string | null>(null)
 
+/** Whether a DragDropProvider is above (internal: components that bring their own when there is none). */
+export function useHasDragDropProvider(): boolean {
+  return useContext(DragDropContext) !== null
+}
+
 function useProvider(name: string): ProviderContext {
   const context = useContext(DragDropContext)
   if (!context) throw new Error(`${name} must be inside a DragDropProvider.`)

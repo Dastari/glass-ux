@@ -175,6 +175,11 @@ export interface DraggableOptions<T = unknown> {
   disabled?: boolean | string
   /** "copy" leaves the source in place. Default "move". */
   effect?: DragEffect
+  /**
+   * Keys that lift the item from its handle. Default Space and Enter. Leave Enter out when the
+   * handle also opens something (an event that Enter opens), and say so in its description.
+   */
+  liftKeys?: readonly (" " | "Enter")[]
   /** Content for the drag preview instead of a copy of the element. */
   preview?: ReactNode
   /** This item was lifted. */

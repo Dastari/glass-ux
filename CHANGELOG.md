@@ -4,6 +4,16 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.11.1
+
+Cancel in entity settings can ask before discarding.
+
+### Added
+
+- `EntitySettingsDialog` `confirmOnCancel`: Cancel asks before discarding unsaved changes, as
+  Escape, the backdrop and the close button do, instead of reverting at once. The default is
+  unchanged.
+
 ## 0.11.0
 
 A resource timeline in the Scheduler, and icons for security and access.

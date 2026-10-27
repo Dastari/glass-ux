@@ -3,6 +3,11 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.11.0 → 0.11.1
+
+No code changes are required. Pass `confirmOnCancel` to `EntitySettingsDialog` where Cancel
+should ask before discarding unsaved changes.
+
 ## 0.10.1 → 0.11.0
 
 No code changes are required.

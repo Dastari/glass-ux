@@ -4,6 +4,21 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.11.2
+
+Scheduler and DragDrop fixes from timeline adoption.
+
+### Fixed
+
+- `Draggable` passes `liftKeys` through to `useDraggable`; the option was ignored on the
+  component.
+- Sticky timeline rows scroll with the others in the narrow layout, or when pinned they would
+  take more than 40% of the timeline's height, so they no longer cover the rows beneath.
+- Pointer events from portals opened inside an event, such as a menu's items, no longer start
+  day or time selection in the timeline, week or month.
+- `Scheduler` `actions` shrink and wrap within the header instead of running past its edge in
+  a narrow container.
+
 ## 0.11.1
 
 Cancel in entity settings can ask before discarding.

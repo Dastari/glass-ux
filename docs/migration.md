@@ -3,6 +3,13 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.11.1 → 0.11.2
+
+No code changes are required. Workarounds for these fixes can go: stopping pointer events
+around menus in `renderEvent`, width limits around `actions`, and `useDraggable` in place of
+`Draggable` for `liftKeys`. Sticky timeline rows now scroll away in narrow or crowded
+timelines.
+
 ## 0.11.0 → 0.11.1
 
 No code changes are required. Pass `confirmOnCancel` to `EntitySettingsDialog` where Cancel

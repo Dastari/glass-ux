@@ -75,13 +75,17 @@
     gap: var(--gap-controls);
     min-width: 0;
   }
-  /* Your header content: after the title, wrapping to its own line before it would crowd the buttons. */
+  /* Your header content: after the title. It takes its own line before it would crowd the
+     buttons, never grows past the header, and wraps its own controls within it. */
   .fa-sch-actions {
     display: flex;
-    flex: none;
+    flex: 0 1 auto;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
     gap: var(--gap-controls);
+    min-width: 0;
+    max-width: 100%;
     margin-inline-start: auto;
   }
   /* Narrow: the title takes its own line above the controls. */

@@ -307,3 +307,32 @@ test("choosing an item in a job's menu does not select the row's days", async ({
     0,
   );
 });
+
+test("header actions wrap within a narrow scheduler instead of running off its edge @responsive", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./components/scheduler");
+  const narrow = page
+    .getByRole("region", { name: "Crew planner", exact: true })
+    .last();
+  await narrow.scrollIntoViewIfNeeded();
+  // A host's busy header: three buttons and a wide filter beside the Weekends switch.
+  const overflow = await narrow.evaluate((scheduler) => {
+    const actions = scheduler.querySelector<HTMLElement>(".fa-sch-actions")!;
+    for (const width of ["7rem", "7rem", "7rem", "10rem"]) {
+      const control = document.createElement("span");
+      control.style.cssText = `display:inline-block;inline-size:${width};block-size:2rem;flex:none`;
+      actions.append(control);
+    }
+    const edge = scheduler
+      .querySelector<HTMLElement>(".fa-sch-head")!
+      .getBoundingClientRect();
+    return [...actions.children]
+      .map((child) => child.getBoundingClientRect())
+      .filter(
+        (box) => box.right > edge.right + 0.5 || box.left < edge.left - 0.5,
+      ).length;
+  });
+  expect(overflow).toBe(0);
+});

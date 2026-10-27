@@ -22,3 +22,10 @@ Enter and form submission cannot call save or verification while the reason is p
 This is separate from `loading`, which displays document skeletons. Omitting the reason
 preserves ordinary dirty, validation, verification and save behaviour. The host still
 enforces authorization and validation on its actual write operation.
+
+## Closing with unsaved changes
+
+Escape, the backdrop and the close button ask before discarding unsaved changes. Cancel is
+an explicit discard: it reverts the form and closes. Pass `confirmOnCancel` to have Cancel
+ask the same question first; Keep editing leaves the edits and the dialog open, and Discard
+changes reverts and closes. A clean form closes at once either way.

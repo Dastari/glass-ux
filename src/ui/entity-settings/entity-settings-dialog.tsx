@@ -69,6 +69,11 @@ export interface EntitySettingsDialogProps {
   open: boolean
   /** Called with the next open state: `false` on Cancel (after the form resets) or on dismissal, which first asks to discard unsaved changes. Pair with `open`. */
   onOpenChange: (open: boolean) => void
+  /**
+   * Cancel asks before discarding unsaved changes, as closing does, instead of reverting at
+   * once. Default false: Cancel is an explicit discard.
+   */
+  confirmOnCancel?: boolean
   /** The form every tab edits: one `useAppForm` with the entity's Zod schema. */
   form: EntitySettingsForm
   /** Tab definitions in display order. */
@@ -159,12 +164,14 @@ function focusFirstInvalidIn(panel: Element | null) {
  *   step-up first, then the save.
  * - A save refused because someone else saved first (SettingsConflictError) keeps the
  *   edits and says so beside Save, with Reload.
- * - Closing with unsaved changes asks first (R13.7). Cancel reverts and closes.
+ * - Closing with unsaved changes asks first (R13.7). Cancel reverts and closes, or with
+ *   `confirmOnCancel` asks first too.
  * - On phones it is a bottom sheet; the rail becomes chips, or a picker past six tabs.
  */
 export function EntitySettingsDialog({
   open,
   onOpenChange,
+  confirmOnCancel = false,
   form,
   tabs,
   tab,
@@ -381,6 +388,8 @@ export function EntitySettingsDialog({
           <Button
             type="button"
             onClick={() => {
+              // Through the guard: a dirty form asks first, and discarding resets it.
+              if (confirmOnCancel) return guard.rootProps.onOpenChange(false)
               form.reset()
               onOpenChange(false)
             }}

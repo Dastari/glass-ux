@@ -13,7 +13,8 @@ and Cancel / Save. One form spans every tab, so Save sends one document.
   step-up first, then the save.
 - A save refused because someone else saved first (SettingsConflictError) keeps the
   edits and says so beside Save, with Reload.
-- Closing with unsaved changes asks first (R13.7). Cancel reverts and closes.
+- Closing with unsaved changes asks first (R13.7). Cancel reverts and closes, or with
+  `confirmOnCancel` asks first too.
 - On phones it is a bottom sheet; the rail becomes chips, or a picker past six tabs.
 
 `import { EntitySettingsDialog } from "glass-ux/entity-settings"`
@@ -24,6 +25,7 @@ and Cancel / Save. One form spans every tab, so Save sends one document.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+| confirmOnCancel | `boolean \| undefined` | false, true | no | false | Cancel asks before discarding unsaved changes, as closing does, instead of reverting at once. Default false: Cancel is an explicit discard. |
 | defaultTab | `string \| undefined` | See type | no | — | Initially selected tab. |
 | entityName | `string \| undefined` | See type | no | — | Names the entity in the discard question: "Discard changes to NST-C106?". |
 | footerStart | `ReactNode` | See type | no | — | Tertiary footer actions on the left. |

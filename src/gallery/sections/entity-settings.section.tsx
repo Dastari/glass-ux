@@ -82,6 +82,7 @@ function RelaySettings({ open, onOpenChange, preview = false, loading = false, s
     <EntitySettingsDialog
       open={open}
       onOpenChange={onOpenChange}
+      confirmOnCancel
       preview={preview}
       loading={loading}
       saveDisabledReason={saveDisabledReason}

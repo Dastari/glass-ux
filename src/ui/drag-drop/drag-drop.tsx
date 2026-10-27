@@ -191,8 +191,8 @@ export interface DraggableProps<T = unknown> extends DraggableOptions<T>, Omit<C
  * sortable DropZone it is one of the zone's ordered items. While it is dragged it carries
  * `data-dnd-source` and its place stays reserved; `data-dnd-item` marks it for styling.
  */
-export function Draggable<T = unknown>({ id, type, data, label, disabled, effect, preview, onDragStart, onDragEnd, render, className, children, ...rest }: DraggableProps<T>) {
-  const draggable = useDraggable<T>({ id, type, data, label, disabled, effect, preview, onDragStart, onDragEnd })
+export function Draggable<T = unknown>({ id, type, data, label, disabled, effect, liftKeys, preview, onDragStart, onDragEnd, render, className, children, ...rest }: DraggableProps<T>) {
+  const draggable = useDraggable<T>({ id, type, data, label, disabled, effect, liftKeys, preview, onDragStart, onDragEnd })
   const context = useMemo<DraggableContextValue>(
     () => ({ handleRef: draggable.handleRef, handleProps: draggable.handleProps, label, disabled: Boolean(disabled) }),
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- handleProps is rebuilt each render from these

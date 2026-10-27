@@ -126,6 +126,25 @@ describe("keyboard drag and drop", () => {
     key(handle, "Escape")
   })
 
+  it("lifts only with the keys liftKeys names, and keeps the prop off the element", () => {
+    render(
+      <DragDropProvider>
+        <DropZone id="z" label="Zone">
+          <Draggable id="x" label="Report" liftKeys={[" "]}>
+            Report
+          </Draggable>
+        </DropZone>
+      </DragDropProvider>
+    )
+    const item = screen.getByRole("button", { name: "Report" })
+    expect(item).not.toHaveAttribute("liftkeys")
+    key(item, "Enter")
+    expect(item).not.toHaveAttribute("data-dnd-source")
+    key(item, " ")
+    expect(item).toHaveAttribute("data-dnd-source", "move")
+    key(item, "Escape")
+  })
+
   it("does not lift a disabled item and says why", () => {
     render(
       <DragDropProvider>

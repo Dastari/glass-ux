@@ -4,6 +4,31 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.11.0
+
+A resource timeline in the Scheduler, and icons for security and access.
+
+### Added
+
+- `Scheduler` `layout="timeline"`: day, week and month as a row per resource and a column per
+  day, with events as bars packed into lanes. Sticky rows (`resource.sticky`) for unassigned or
+  team-wide work; `renderResource`, `resourceHeader` and `renderEvent` (your buttons in a card
+  keep their own behaviour); `continuous` months that scroll across month edges and keep their
+  place; virtualised rows and columns. Events move between days and rows and resize from either
+  end, by pointer, touch and keyboard (up and down change the row). Rows are DragDrop zones:
+  `dropAccept` and `onDrop` take your own items, timeline events are items of type
+  `SCHEDULER_EVENT_TYPE`, and `validateDrop(drag, resource, target)` refuses with a reason using
+  the proposed day, interval and overlapping `blocks`. A narrow container shows one day.
+- `Scheduler` `blocks` (availability shading in the timeline), `eventEffect` (drag to copy),
+  `resizable`, `hiddenDays`, `onRangeChange` and `actions`. `editable` may return a string to
+  lock an event with a reason. `onSlotSelect` receives `{ element }` to anchor a popover to, and
+  timeline slots carry `resourceId`; changes carry `resourceId`, `edge` and `effect`.
+- DragDrop `liftKeys`, for handles whose Enter key opens something.
+- Icons: `camera-dome`, `camera-turret`, `camera-ptz`, `doorbell`, `nvr`, `siren`, `door`,
+  `door-open`, `gate`, `barrier`, `access-reader`, `access-card`, `nfc`, `keypad`, `qr-code`,
+  `face-scan`, `intercom`, `voicemail`, `vehicle` and `licence-plate`, under Security and access
+  in the icon gallery.
+
 ## 0.10.1
 
 Longer lines for long-form Markdown, and guide prose at a reading measure.

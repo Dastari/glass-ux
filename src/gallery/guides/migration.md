@@ -3,6 +3,14 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.10.1 → 0.11.0
+
+No code changes are required.
+
+- `onSlotSelect` gets a second argument (`{ element }`) and `editable` may return a string. A
+  callback typed with the old signatures still compiles.
+- The Scheduler header puts `actions` before the view switch; without `actions` it is unchanged.
+
 ## 0.10.0 → 0.10.1
 
 No code changes are required.

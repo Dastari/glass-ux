@@ -383844,7 +383844,8 @@
 						{
 							"fileName": "ui/scheduler/timeline-view.tsx",
 							"line": 19,
-							"character": 13
+							"character": 13,
+							"url": "https://github.com/dastari/glass-ux/blob/v0.11.0/src/ui/scheduler/timeline-view.tsx#L19"
 						}
 					],
 					"type": {

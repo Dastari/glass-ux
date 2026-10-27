@@ -26,6 +26,7 @@ const row = (planner: Locator, id: string) =>
 
 /** The centre of a day column (0 = Monday; weekends are hidden) in a resource's row. */
 async function cell(planner: Locator, id: string, column: number, days = 5) {
+  await row(planner, id).scrollIntoViewIfNeeded();
   const box = (await row(planner, id).boundingBox())!;
   return {
     x: box.x + ((column + 0.5) * box.width) / days,
@@ -58,13 +59,10 @@ test.describe("Scheduler timeline", () => {
     page,
   }) => {
     const planner = await open(page);
+    const target = await cell(planner, "dee", 2);
     const job = planner.getByRole("button", { name: /^Pine removal/ });
     const box = (await job.boundingBox())!;
-    await drag(
-      page,
-      { x: box.x + 20, y: box.y + box.height / 2 },
-      await cell(planner, "dee", 2),
-    );
+    await drag(page, { x: box.x + 20, y: box.y + box.height / 2 }, target);
     await expect(status(page)).toHaveText("Moved Pine removal");
     await expect(
       row(planner, "dee").getByRole("button", {
@@ -77,6 +75,7 @@ test.describe("Scheduler timeline", () => {
     page,
   }) => {
     const planner = await open(page);
+    const target = await cell(planner, "ari", 0);
     const item = page
       .getByRole("button", { name: "Replace bench slats" })
       .first();
@@ -84,7 +83,7 @@ test.describe("Scheduler timeline", () => {
     await drag(
       page,
       { x: box.x + box.width / 2, y: box.y + box.height / 2 },
-      await cell(planner, "ari", 0),
+      target,
     );
     await expect(status(page)).toHaveText("Planned Replace bench slats");
     await expect(
@@ -98,11 +97,11 @@ test.describe("Scheduler timeline", () => {
     page,
   }) => {
     const planner = await open(page);
+    const target = await cell(planner, "cal", 3);
     const job = planner.getByRole("button", { name: /^Excavator to depot/ });
     const box = (await job.boundingBox())!;
     await page.mouse.move(box.x + 20, box.y + box.height / 2);
     await page.mouse.down();
-    const target = await cell(planner, "cal", 3);
     for (let step = 1; step <= 14; step++)
       await page.mouse.move(
         box.x + 20 + ((target.x - box.x - 20) * step) / 14,
@@ -128,12 +127,13 @@ test.describe("Scheduler timeline", () => {
     const card = planner.locator(".fa-sch-tl-ev", {
       has: page.getByRole("button", { name: /^Hedge line, east gate/ }),
     });
+    const target = await cell(planner, "fay", 2);
     const edge = card.locator('[data-edge="end"]');
     const box = (await edge.boundingBox())!;
     await drag(
       page,
       { x: box.x + box.width / 2, y: box.y + box.height / 2 },
-      await cell(planner, "fay", 2),
+      target,
     );
     await expect(status(page)).toHaveText("Resized Hedge line, east gate");
     await expect(
@@ -145,12 +145,9 @@ test.describe("Scheduler timeline", () => {
 
   test("selects days in a row to add a job there", async ({ page }) => {
     const planner = await open(page);
-    await drag(
-      page,
-      await cell(planner, "gus", 0),
-      await cell(planner, "gus", 1),
-      6,
-    );
+    const from = await cell(planner, "gus", 0);
+    const to = await cell(planner, "gus", 1);
+    await drag(page, from, to, 6);
     await expect(status(page)).toHaveText("Added a job");
     await expect(
       row(planner, "gus").getByRole("button", { name: /^New job, Mon/ }),
@@ -254,4 +251,42 @@ test("a rolling month follows the scroll into the next month and keeps its place
   await expect.poll(leading).toBe(scrolledTo);
   const range = await page.getByTestId("availability-range").textContent();
   expect(range).toMatch(/Loaded \d{4}-\d{2}-01 – \d{4}-\d{2}-\d{2}/);
+});
+
+test("sticky rows stay pinned on a wide timeline while they leave room", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, "the wide planner");
+  const planner = await open(page);
+  await expect(planner.locator(".fa-sch-tl-pinned")).toHaveAttribute(
+    "data-pinned",
+    "",
+  );
+});
+
+test("the narrow timeline scrolls sticky rows away so every person can be reached @responsive", async ({
+  page,
+}) => {
+  await page.goto("./components/scheduler");
+  const narrow = page
+    .getByRole("region", { name: "Crew planner", exact: true })
+    .last();
+  await narrow.scrollIntoViewIfNeeded();
+  await expect(narrow.locator(".fa-sch-tl-pinned")).not.toHaveAttribute(
+    "data-pinned",
+    /.*/,
+  );
+  const last = narrow.locator(".fa-sch-tl-row").last();
+  await last.scrollIntoViewIfNeeded();
+  // What is under the last person's heading is that row, not a sticky row drawn over it.
+  const hit = await last.locator(".fa-sch-tl-resource").evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    const under = document.elementFromPoint(
+      box.left + box.width / 2,
+      box.top + box.height / 2,
+    );
+    return under?.closest(".fa-sch-tl-row")?.getAttribute("aria-label") ?? null;
+  });
+  expect(hit).toBe(await last.getAttribute("aria-label"));
 });

@@ -20,6 +20,8 @@ export const SCHEDULER_EVENT_TYPE = "scheduler-event"
 
 /** Above this many rows only the rows in view (and a few either side) are rendered. */
 const VIRTUAL_ROWS = 40
+/** The most of the timeline's height sticky rows may take and stay pinned. */
+const PINNED_SHARE = 0.4
 /** Day columns rendered either side of the view while a long timeline scrolls sideways. */
 const COLUMN_OVERSCAN = 7
 
@@ -74,8 +76,10 @@ function TimelineBody({ events, days }: TimelineViewProps) {
   const zonePrefix = useId()
   const scroller = useRef<HTMLDivElement>(null)
   const head = useRef<HTMLDivElement>(null)
+  const pinnedBlock = useRef<HTMLDivElement>(null)
   const { height: headHeight } = useElementSize(head)
-  const { width: viewportWidth } = useElementSize(scroller)
+  const { height: stickyHeight } = useElementSize(pinnedBlock)
+  const { width: viewportWidth, height: viewportHeight } = useElementSize(scroller)
 
   const rows = useMemo(() => [...resources.filter((resource) => resource.sticky), ...resources.filter((resource) => !resource.sticky)], [resources])
   const stickyCount = useMemo(() => resources.filter((resource) => resource.sticky).length, [resources])
@@ -160,8 +164,14 @@ function TimelineBody({ events, days }: TimelineViewProps) {
     updateWindow()
   }, [dayKey, date]) // oxlint-disable-line react-hooks/exhaustive-deps -- placed when the days or the date change, not on every measure
 
-  /* ── Rows: sticky ones in the header, the rest virtualised when there are many ──── */
+  /* ── Rows: sticky ones pinned under the day headings, the rest virtualised ─────── */
 
+  // Sticky rows stay pinned only while they leave most of the view to the others: never in
+  // the narrow form, and not when they would take more than PINNED_SHARE of the height, so
+  // every row can still be scrolled into the open, tapped and dropped on.
+  const pinned = !compact && stickyCount > 0 && viewportHeight > 0 && stickyHeight <= viewportHeight * PINNED_SHARE
+  const above = headHeight + stickyHeight
+  const covered = headHeight + (pinned ? stickyHeight : 0)
   const body = rows.slice(stickyCount)
   const virtual = body.length > VIRTUAL_ROWS
   const virtualizer = useVirtualizer({
@@ -169,13 +179,14 @@ function TimelineBody({ events, days }: TimelineViewProps) {
     getScrollElement: () => scroller.current,
     estimateSize: () => 56,
     overscan: 6,
-    scrollMargin: headHeight,
+    scrollMargin: above,
+    scrollPaddingStart: covered,
     getItemKey: (index) => body[index]?.id ?? index,
   })
   const items = virtual ? virtualizer.getVirtualItems() : []
   const rendered = virtual ? items.map((item) => ({ resource: body[item.index]!, index: item.index })) : body.map((resource, index) => ({ resource, index }))
-  const padStart = virtual && items.length ? items[0]!.start - headHeight : 0
-  const padEnd = virtual && items.length ? virtualizer.getTotalSize() - (items.at(-1)!.end - headHeight) : 0
+  const padStart = virtual && items.length ? items[0]!.start - above : 0
+  const padEnd = virtual && items.length ? virtualizer.getTotalSize() - (items.at(-1)!.end - above) : 0
 
   const scrollRowIntoView = (row: number) => {
     if (row < stickyCount) return
@@ -417,8 +428,25 @@ function TimelineBody({ events, days }: TimelineViewProps) {
   const cellsFor = (row: number) => (cursor?.row === row ? cursor : null)
   const hoveredFor = (resource: SchedulerResource) => (hovered?.zoneId === `${zonePrefix}:${resource.id}` ? hovered.column : null)
 
+  const stripes = (
+    <div className="fa-sch-tl-stripes" aria-hidden>
+      {columns.map(({ day, index }) => (
+        <span
+          key={day}
+          className="fa-sch-tl-stripe"
+          style={{ "--_first": index + 1 } as CSSProperties}
+          data-today={day === today ? "" : undefined}
+          data-weekend={isoWeekday(day) >= 6 ? "" : undefined}
+          data-month-start={isoParts(day)?.day === 1 && index > 0 ? "" : undefined}
+        />
+      ))}
+    </div>
+  )
+
   const style = {
     "--_days": days.length,
+    "--_head-h": `${headHeight}px`,
+    "--_covered": `${covered}px`,
     ...(context.columnWidth ? { "--_col-min": context.columnWidth } : {}),
     ...(context.resourceWidth ? { "--_res-w": context.resourceWidth } : {}),
   } as CSSProperties
@@ -469,23 +497,17 @@ function TimelineBody({ events, days }: TimelineViewProps) {
                 })}
               </div>
             </div>
-            {rows.slice(0, stickyCount).map((resource, row) => (
-              <TimelineRow key={resource.id} resource={resource} row={row} sticky segments={layouts.get(resource.id)!} cursor={cellsFor(row)} {...rowProps} zonePrefix={zonePrefix} hoveredColumn={hoveredFor(resource)} />
-            ))}
           </div>
-          <div className="fa-sch-tl-rows">
-            <div className="fa-sch-tl-stripes" aria-hidden>
-              {columns.map(({ day, index }) => (
-                <span
-                  key={day}
-                  className="fa-sch-tl-stripe"
-                  style={{ "--_first": index + 1 } as CSSProperties}
-                  data-today={day === today ? "" : undefined}
-                  data-weekend={isoWeekday(day) >= 6 ? "" : undefined}
-                  data-month-start={isoParts(day)?.day === 1 && index > 0 ? "" : undefined}
-                />
+          {stickyCount ? (
+            <div ref={pinnedBlock} className="fa-sch-tl-pinned" data-pinned={pinned ? "" : undefined}>
+              {stripes}
+              {rows.slice(0, stickyCount).map((resource, row) => (
+                <TimelineRow key={resource.id} resource={resource} row={row} sticky segments={layouts.get(resource.id)!} cursor={cellsFor(row)} {...rowProps} zonePrefix={zonePrefix} hoveredColumn={hoveredFor(resource)} />
               ))}
             </div>
+          ) : null}
+          <div className="fa-sch-tl-rows">
+            {stripes}
             {padStart > 0 ? <div className="fa-sch-tl-pad" style={{ blockSize: padStart }} /> : null}
             {rendered.map(({ resource, index }) => {
               const row = stickyCount + index

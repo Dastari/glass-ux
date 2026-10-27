@@ -1063,6 +1063,22 @@
   .fa-sch-tl-rows {
     position: relative;
   }
+  /* Sticky rows: pinned under the day headings while they leave room (data-pinned), else they
+     scroll with the rest. */
+  .fa-sch-tl-pinned {
+    position: relative;
+    z-index: var(--z-sticky);
+    background-color: var(--surface-2);
+    border-block-end: var(--border-width) solid var(--line);
+  }
+  .fa-sch-tl-pinned[data-pinned] {
+    position: sticky;
+    top: var(--_head-h);
+  }
+  /* Rows revealed by the keyboard or scrollIntoView land below whatever is pinned over them. */
+  .fa-sch-tl-row {
+    scroll-margin-block-start: var(--_covered);
+  }
   /* Day columns as one layer under every row: lines, weekends, today and month edges. */
   .fa-sch-tl-stripes {
     position: absolute;
@@ -1092,9 +1108,6 @@
   .fa-sch-tl-row {
     position: relative;
     border-block-end: var(--border-width) solid var(--line);
-  }
-  .fa-sch-tl-row[data-sticky] {
-    background-color: var(--surface-2);
   }
   .fa-sch-tl-row[data-sticky]:last-child {
     border-block-end: 0;

@@ -8,9 +8,11 @@ export interface CrewMember extends SchedulerResource {
 }
 
 export const UNASSIGNED = "unassigned"
+export const WHOLE_SITE = "site"
 
 export const CREW: CrewMember[] = [
   { id: UNASSIGNED, title: "Unassigned", description: "Dated work without a person", sticky: true },
+  { id: WHOLE_SITE, title: "Whole site", description: "Everyone", sticky: true },
   { id: "ari", title: "Ari Moss", role: "Supervisor" },
   { id: "bea", title: "Bea Lund", role: "Arborist" },
   { id: "cal", title: "Cal Ortiz", role: "Operator" },
@@ -43,6 +45,8 @@ export function crewJobs(): CrewJob[] {
     { id: "j10", title: "Pump station check", start: day(4), allDay: true, resourceId: "eli", tone: 1 },
     { id: "j11", title: "Weekly site walk", start: day(4), allDay: true, resourceId: "ari", tone: 3 },
     { id: "j12", title: "Leaf blowing, courts", start: day(1), allDay: true, resourceId: UNASSIGNED, tone: 2 },
+    { id: "j13", title: "Site induction", start: day(0), allDay: true, resourceId: WHOLE_SITE, tone: 3 },
+    { id: "j14", title: "Public holiday prep", start: day(1), allDay: true, resourceId: WHOLE_SITE, tone: 5 },
   ]
 }
 

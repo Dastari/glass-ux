@@ -134,9 +134,11 @@ import { SCHEDULER_EVENT_TYPE, Scheduler, type SchedulerEventChange } from "glas
 </DragDropProvider>
 ```
 
-- **Rows.** `resources` are the rows in order. `sticky` ones stay under the day headings while
-  the rest scroll: use one with your own id for dated work nobody is assigned to, and map
-  your "no resource" to it. `renderResource` draws a row's heading and `resourceHeader` the
+- **Rows.** `resources` are the rows in order. `sticky` ones come first and stay under the day
+  headings while the rest scroll: use one with your own id for dated work nobody is assigned
+  to, and map your "no resource" to it. They stay pinned only while together they take at
+  most 40% of the timeline's height; taller, and in the narrow form, they scroll with the
+  other rows, so a busy unassigned band never hides the people under it. `renderResource` draws a row's heading and `resourceHeader` the
   corner above them; filter `resources` yourself for search. More than 40 rows are virtualised.
 - **Columns.** Day, week (without `hiddenDays`) or month. `continuous` makes the month one
   strip from the month before to the month after: scrolling into another month makes it the

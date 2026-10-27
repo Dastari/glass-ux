@@ -48,7 +48,12 @@ export interface SchedulerResource {
   title: string
   /** A line under the title in the timeline's row heading. */
   description?: string
-  /** Timeline: keep the row above the others, under the day headings, while they scroll ("Unassigned", "Whole team"). */
+  /**
+   * Timeline: put the row first and keep it under the day headings while the others scroll
+   * ("Unassigned", "Whole team"). Sticky rows stay pinned only while together they take at most
+   * 40% of the timeline's height; taller, and in the narrow form, they scroll with the rest so
+   * every row can be reached.
+   */
   sticky?: boolean
 }
 

@@ -30,6 +30,9 @@ Six traits make the set read as one hand. A new icon has all six.
    - **cube:** `software`, `package`
    - **ground line:** `organisation`, `office`, `warehouse`, `store`, `school`, `hospital`,
      `factory`
+   - **dome:** `camera-dome`, `camera-ptz`, `siren`
+   - **contactless arcs:** `nfc`, `access-reader`, `access-card`
+   - **doorway:** `door`, `door-open`
 6. **Even mass.** Every glyph fills the keyline shape nearest to it, so a circle, a square
    and a monitor read as the same weight at 14px.
 
@@ -164,6 +167,12 @@ masking.
     an arched shed, `store` an awning, `school` a gabled hall with a clock, `hospital` a
     cross, `factory` a sawtooth roof and chimney. `partner` is a handshake and `supplier` a
     delivery truck; `package` stays the software package.
+- Cameras are told apart by housing: `camera` a bullet on its wall arm, `camera-dome` a
+  half dome under a ceiling cap, `camera-turret` a ball beneath its base and `camera-ptz` a
+  pendant dome over the pan arrow. `nvr` is the recorder, marked with the `record` ring.
+- `nfc` is the contactless mark (arcs opening to the reading side), never `wifi`. `gate` is
+  a pedestrian or driveway gate; `barrier` is the boom across a vehicle lane. `vehicle` is a
+  car; `supplier` stays the delivery truck.
 - Use the simplest metaphor that survives at 14px, with at most three ideas per icon.
 - Status icons: `success` (check in a circle), `warning` (triangle), `error` (× in a
   circle), `info`, `help`, `pending` (dashed ring) and `offline` (slashed circle). They

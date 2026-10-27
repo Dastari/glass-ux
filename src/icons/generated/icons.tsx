@@ -10,6 +10,19 @@
  */
 import { createIcon } from "../../ui/icon/index.js"
 
+export const IconAccessCard = /* @__PURE__ */ createIcon(
+  "access-card",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="2.5" y="5" width="19" height="14" rx="2.5" />
+      <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
+      <circle className="fa-icon-dot" cx="8.5" cy="12" r="1" />
+      <path d="M10.62 9.88A3 3 0 0 1 10.62 14.12" />
+      <path d="M12.74 7.76A6 6 0 0 1 12.74 16.24" />
+    </>
+  )
+)
+
 export const IconAccessPoint = /* @__PURE__ */ createIcon(
   "access-point",
   () => (
@@ -19,6 +32,19 @@ export const IconAccessPoint = /* @__PURE__ */ createIcon(
       <circle className="fa-icon-dot" cx="12" cy="15.75" r="1" />
       <path d="M9.53 9.28A3.5 3.5 0 0 1 14.47 9.28" />
       <path d="M7.05 6.8A7 7 0 0 1 16.95 6.8" />
+    </>
+  )
+)
+
+export const IconAccessReader = /* @__PURE__ */ createIcon(
+  "access-reader",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="5.5" y="2.5" width="13" height="19" rx="2.5" />
+      <rect x="5.5" y="2.5" width="13" height="19" rx="2.5" />
+      <path d="M10.62 7.88A3 3 0 0 1 10.62 12.12" />
+      <path d="M12.74 5.76A6 6 0 0 1 12.74 14.24" />
+      <circle className="fa-icon-dot" cx="12" cy="18" r="1" />
     </>
   )
 )
@@ -293,6 +319,19 @@ export const IconBackup = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconBarrier = /* @__PURE__ */ createIcon(
+  "barrier",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="3" y="8.5" width="6.5" height="12.5" rx="1.5" />
+      <rect x="3" y="8.5" width="6.5" height="12.5" rx="1.5" />
+      <circle className="fa-icon-dot" cx="6.25" cy="12" r="1" />
+      <path d="M9.5 10.5H20A1.5 1.5 0 0 1 20 13.5H9.5" />
+      <path d="M2 21H22" />
+    </>
+  )
+)
+
 export const IconBattery = /* @__PURE__ */ createIcon(
   "battery",
   () => (
@@ -405,6 +444,46 @@ export const IconCalendar = /* @__PURE__ */ createIcon(
       <path d="M8 3V7" />
       <path d="M16 3V7" />
       <circle className="fa-icon-dot" cx="8" cy="14.5" r="1.25" />
+    </>
+  )
+)
+
+export const IconCameraDome = /* @__PURE__ */ createIcon(
+  "camera-dome",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M20.5 9.5A8.5 8.5 0 0 1 3.5 9.5H20.5Z" />
+      <path d="M5.5 9.5V7.25A1 1 0 0 1 6.5 6.25H17.5A1 1 0 0 1 18.5 7.25V9.5" />
+      <path d="M20.5 9.5A8.5 8.5 0 0 1 3.5 9.5H20.5Z" />
+      <circle className="fa-icon-dot" cx="12" cy="13.5" r="1.5" />
+    </>
+  )
+)
+
+export const IconCameraPtz = /* @__PURE__ */ createIcon(
+  "camera-ptz",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M19 6.5A7 7 0 0 1 5 6.5H19Z" />
+      <path d="M12 2.5V6.5" />
+      <path d="M19 6.5A7 7 0 0 1 5 6.5H19Z" />
+      <circle className="fa-icon-dot" cx="12" cy="10" r="1.25" />
+      <path d="M4 18.5H20" />
+      <path d="M6.75 15.75L4 18.5L6.75 21.25" />
+      <path d="M17.25 15.75L20 18.5L17.25 21.25" />
+    </>
+  )
+)
+
+export const IconCameraTurret = /* @__PURE__ */ createIcon(
+  "camera-turret",
+  () => (
+    <>
+      <circle className="fa-icon-tint" cx="12" cy="13.75" r="6.75" />
+      <rect x="4.5" y="3.5" width="15" height="4.5" rx="1" />
+      <path d="M17.24 9.5A6.75 6.75 0 1 1 6.76 9.5" />
+      <circle cx="12" cy="14.25" r="3" />
+      <circle className="fa-icon-dot" cx="12" cy="14.25" r="1" />
     </>
   )
 )
@@ -822,6 +901,43 @@ export const IconDocker = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconDoorOpen = /* @__PURE__ */ createIcon(
+  "door-open",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M7.5 21V8.16A1 1 0 0 1 9.21 7.46L12.21 10.46A1 1 0 0 1 12.5 11.16V21H7.5Z" />
+      <path d="M4.5 21V5.25A2.5 2.5 0 0 1 7 2.75H17A2.5 2.5 0 0 1 19.5 5.25V21" />
+      <path d="M2.5 21H21.5" />
+      <path d="M7.5 21V8.16A1 1 0 0 1 9.21 7.46L12.21 10.46A1 1 0 0 1 12.5 11.16V21" />
+    </>
+  )
+)
+
+export const IconDoor = /* @__PURE__ */ createIcon(
+  "door",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M7.5 21V7.75A2 2 0 0 1 9.5 5.75H14.5A2 2 0 0 1 16.5 7.75V21H7.5Z" />
+      <path d="M4.5 21V5.25A2.5 2.5 0 0 1 7 2.75H17A2.5 2.5 0 0 1 19.5 5.25V21" />
+      <path d="M2.5 21H21.5" />
+      <path d="M7.5 21V7.75A2 2 0 0 1 9.5 5.75H14.5A2 2 0 0 1 16.5 7.75V21" />
+      <circle className="fa-icon-dot" cx="13.5" cy="13.5" r="1" />
+    </>
+  )
+)
+
+export const IconDoorbell = /* @__PURE__ */ createIcon(
+  "doorbell",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="6.5" y="2.5" width="11" height="19" rx="5.5" />
+      <rect x="6.5" y="2.5" width="11" height="19" rx="5.5" />
+      <circle className="fa-icon-dot" cx="12" cy="8" r="1.5" />
+      <circle cx="12" cy="16" r="2.5" />
+    </>
+  )
+)
+
 export const IconDownload = /* @__PURE__ */ createIcon(
   "download",
   () => (
@@ -959,6 +1075,21 @@ export const IconEyedropper = /* @__PURE__ */ createIcon(
       <path d="M15.54 4.58A2.75 2.75 0 0 1 19.42 4.58A2.75 2.75 0 0 1 19.42 8.46L18.54 9.35A2.75 2.75 0 0 1 14.65 9.35A2.75 2.75 0 0 1 14.65 5.46L15.54 4.58Z" />
       <path d="M10.59 7.05L16.95 13.41" />
       <path d="M11.12 10.41A0.5 0.5 0 0 1 11.82 10.41L13.59 12.18A0.5 0.5 0 0 1 13.59 12.88L8.38 18.1A0.5 0.5 0 0 1 8.17 18.22L5.64 18.98A0.5 0.5 0 0 1 5.02 18.36L5.78 15.83A0.5 0.5 0 0 1 5.9 15.62L11.12 10.41Z" />
+    </>
+  )
+)
+
+export const IconFaceScan = /* @__PURE__ */ createIcon(
+  "face-scan",
+  () => (
+    <>
+      <path d="M3.5 8V5.5A2 2 0 0 1 5.5 3.5H8" />
+      <path d="M16 3.5H18.5A2 2 0 0 1 20.5 5.5V8" />
+      <path d="M20.5 16V18.5A2 2 0 0 1 18.5 20.5H16" />
+      <path d="M8 20.5H5.5A2 2 0 0 1 3.5 18.5V16" />
+      <circle className="fa-icon-dot" cx="9.25" cy="10" r="1.15" />
+      <circle className="fa-icon-dot" cx="14.75" cy="10" r="1.15" />
+      <path d="M15.28 14.29A4 4 0 0 1 8.72 14.29" />
     </>
   )
 )
@@ -1462,6 +1593,22 @@ export const IconFullscreen = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconGate = /* @__PURE__ */ createIcon(
+  "gate",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M5.5 9.5A11.56 11.56 0 0 1 18.5 9.5V18H5.5V9.5Z" />
+      <rect x="2.5" y="4" width="3" height="17" rx="1" />
+      <rect x="18.5" y="4" width="3" height="17" rx="1" />
+      <path d="M5.5 9.5A11.56 11.56 0 0 1 18.5 9.5" />
+      <path d="M5.5 18H18.5" />
+      <path d="M9 18V7.9" />
+      <path d="M12 18V7.5" />
+      <path d="M15 18V7.9" />
+    </>
+  )
+)
+
 export const IconGauge = /* @__PURE__ */ createIcon(
   "gauge",
   () => (
@@ -1772,6 +1919,19 @@ export const IconIntel = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconIntercom = /* @__PURE__ */ createIcon(
+  "intercom",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="5" y="2.5" width="14" height="19" rx="2.5" />
+      <rect x="5" y="2.5" width="14" height="19" rx="2.5" />
+      <path d="M9 6.5H15" />
+      <path d="M9 9.5H15" />
+      <circle cx="12" cy="16" r="2.5" />
+    </>
+  )
+)
+
 export const IconItalic = /* @__PURE__ */ createIcon(
   "italic",
   () => <path d="M10 5h9M14 5l-4 14M5 19h9" />
@@ -1824,6 +1984,28 @@ export const IconKeyboard = /* @__PURE__ */ createIcon(
       <circle className="fa-icon-dot" cx="17.25" cy="9.25" r="1" />
       <circle className="fa-icon-dot" cx="17.25" cy="12.25" r="1" />
       <path d="M8.5 15.25H15.5" />
+    </>
+  )
+)
+
+export const IconKeypad = /* @__PURE__ */ createIcon(
+  "keypad",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="5" y="2.5" width="14" height="19" rx="2.5" />
+      <rect x="5" y="2.5" width="14" height="19" rx="2.5" />
+      <circle className="fa-icon-dot" cx="8.5" cy="6.5" r="1" />
+      <circle className="fa-icon-dot" cx="12" cy="6.5" r="1" />
+      <circle className="fa-icon-dot" cx="15.5" cy="6.5" r="1" />
+      <circle className="fa-icon-dot" cx="8.5" cy="10" r="1" />
+      <circle className="fa-icon-dot" cx="12" cy="10" r="1" />
+      <circle className="fa-icon-dot" cx="15.5" cy="10" r="1" />
+      <circle className="fa-icon-dot" cx="8.5" cy="13.5" r="1" />
+      <circle className="fa-icon-dot" cx="12" cy="13.5" r="1" />
+      <circle className="fa-icon-dot" cx="15.5" cy="13.5" r="1" />
+      <circle className="fa-icon-dot" cx="8.5" cy="17" r="1" />
+      <circle className="fa-icon-dot" cx="12" cy="17" r="1" />
+      <circle className="fa-icon-dot" cx="15.5" cy="17" r="1" />
     </>
   )
 )
@@ -1882,6 +2064,18 @@ export const IconLexmark = /* @__PURE__ */ createIcon(
       <rect x="3.5" y="3.5" width="17" height="17" />
       <path d="M12 8L16 12L12 16L8 12L12 8Z" />
       <path d="M3.5 3.5L12 8M20.5 20.5L12 16" />
+    </>
+  )
+)
+
+export const IconLicencePlate = /* @__PURE__ */ createIcon(
+  "licence-plate",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="2" y="7.5" width="20" height="9" rx="2" />
+      <rect x="2" y="7.5" width="20" height="9" rx="2" />
+      <path d="M5.5 12H10.5" />
+      <path d="M13.5 12H18.5" />
     </>
   )
 )
@@ -2255,6 +2449,17 @@ export const IconNewChat = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconNfc = /* @__PURE__ */ createIcon(
+  "nfc",
+  () => (
+    <>
+      <path d="M6.47 9.53A3.5 3.5 0 0 1 6.47 14.47" />
+      <path d="M8.95 7.05A7 7 0 0 1 8.95 16.95" />
+      <path d="M11.42 4.58A10.5 10.5 0 0 1 11.42 19.42" />
+    </>
+  )
+)
+
 export const IconNotion = /* @__PURE__ */ createIcon(
   "notion",
   () => (
@@ -2284,6 +2489,20 @@ export const IconNvidia = /* @__PURE__ */ createIcon(
       <path d="M12 7V3.5H21V20.5H12V17" />
       <path d="M3 12L7 8A7 7 0 0 1 17 12A7 7 0 0 1 7 16Z" />
       <path d="M12 9A3 3 0 1 0 12 15" />
+    </>
+  )
+)
+
+export const IconNvr = /* @__PURE__ */ createIcon(
+  "nvr",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="2.5" y="5.5" width="19" height="13" rx="2.5" />
+      <rect x="2.5" y="5.5" width="19" height="13" rx="2.5" />
+      <circle cx="8.5" cy="12" r="3" />
+      <circle className="fa-icon-dot" cx="8.5" cy="12" r="1" />
+      <path d="M14.5 10H18.5" />
+      <path d="M14.5 14H18.5" />
     </>
   )
 )
@@ -2635,6 +2854,24 @@ export const IconQnap = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconQrCode = /* @__PURE__ */ createIcon(
+  "qr-code",
+  () => (
+    <>
+      <rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.5" />
+      <rect x="14" y="3.5" width="6.5" height="6.5" rx="1.5" />
+      <rect x="3.5" y="14" width="6.5" height="6.5" rx="1.5" />
+      <circle className="fa-icon-dot" cx="6.75" cy="6.75" r="1.15" />
+      <circle className="fa-icon-dot" cx="17.25" cy="6.75" r="1.15" />
+      <circle className="fa-icon-dot" cx="6.75" cy="17.25" r="1.15" />
+      <circle className="fa-icon-dot" cx="15.25" cy="15.25" r="1.15" />
+      <circle className="fa-icon-dot" cx="19.25" cy="15.25" r="1.15" />
+      <circle className="fa-icon-dot" cx="15.25" cy="19.25" r="1.15" />
+      <circle className="fa-icon-dot" cx="19.25" cy="19.25" r="1.15" />
+    </>
+  )
+)
+
 export const IconRecord = /* @__PURE__ */ createIcon(
   "record",
   () => (
@@ -2926,6 +3163,20 @@ export const IconSignal = /* @__PURE__ */ createIcon(
       <path d="M9.5 19V12" />
       <path d="M14.5 19V8.5" />
       <path d="M19.5 19V5" />
+    </>
+  )
+)
+
+export const IconSiren = /* @__PURE__ */ createIcon(
+  "siren",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M6.5 16A5.5 5.5 0 0 1 17.5 16M6.5 16H17.5Z" />
+      <path d="M6.5 16A5.5 5.5 0 0 1 17.5 16M6.5 16H17.5Z" />
+      <rect x="4" y="16" width="16" height="4.5" rx="1" />
+      <path d="M12 3V6.5" />
+      <path d="M4.75 6.75L7 9" />
+      <path d="M19.25 6.75L17 9" />
     </>
   )
 )
@@ -3495,6 +3746,18 @@ export const IconUsers = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconVehicle = /* @__PURE__ */ createIcon(
+  "vehicle",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M4 15.5A1.5 1.5 0 0 1 2.5 14V11.91A1 1 0 0 1 2.79 11.21L4.21 9.79A1 1 0 0 1 4.91 9.5H6.59A1 1 0 0 0 7.29 9.21L10.21 6.29A1 1 0 0 1 10.91 6H14.59A1 1 0 0 1 15.29 6.29L18.21 9.21A1 1 0 0 0 18.91 9.5H19.09A1 1 0 0 1 19.79 9.79L21.21 11.21A1 1 0 0 1 21.5 11.91V14A1.5 1.5 0 0 1 20 15.5H4Z" />
+      <path d="M3.31 15.33A1.5 1.5 0 0 1 2.5 14V11.91A1 1 0 0 1 2.79 11.21L4.21 9.79A1 1 0 0 1 4.91 9.5H6.59A1 1 0 0 0 7.29 9.21L10.21 6.29A1 1 0 0 1 10.91 6H14.59A1 1 0 0 1 15.29 6.29L18.21 9.21A1 1 0 0 0 18.91 9.5H19.09A1 1 0 0 1 19.79 9.79L21.21 11.21A1 1 0 0 1 21.5 11.91V14A1.5 1.5 0 0 1 20.69 15.33M13.28 15.5H10.72" />
+      <circle cx="7" cy="16" r="2.25" />
+      <circle cx="17" cy="16" r="2.25" />
+    </>
+  )
+)
+
 export const IconVercel = /* @__PURE__ */ createIcon(
   "vercel",
   () => (
@@ -3520,6 +3783,17 @@ export const IconViewOnly = /* @__PURE__ */ createIcon(
       <path d="M8.5 20H15.5" />
       <path d="M7 10A5.67 5.67 0 0 1 17 10A5.67 5.67 0 0 1 7 10Z" />
       <circle className="fa-icon-dot" cx="12" cy="10" r="1.25" />
+    </>
+  )
+)
+
+export const IconVoicemail = /* @__PURE__ */ createIcon(
+  "voicemail",
+  () => (
+    <>
+      <circle cx="7" cy="12" r="3.75" />
+      <circle cx="17" cy="12" r="3.75" />
+      <path d="M7 15.75H17" />
     </>
   )
 )

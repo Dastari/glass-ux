@@ -1893,4 +1893,17 @@ export default defineMessagePack("ko", {
     loadFailed: "로드할 수 없습니다.",
     retry: "재시도",
   },
+  signaturePad: {
+    padRole: "서명 패드",
+    signHere: "여기에 서명",
+    signed: "서명됨",
+    notSigned: "서명 안 됨",
+    drawInstructions: "마우스, 펜 또는 손가락으로 그리세요. Delete 키는 서명을 지우고, Ctrl 또는 Command와 Z는 마지막 획을 실행 취소합니다.",
+    undo: "실행 취소",
+    clear: "지우기",
+    typeInstead: "대신 입력",
+    drawInstead: "대신 그리기",
+    typeYourName: "전체 이름을 입력하세요",
+    signatureRequired: "서명을 추가하세요",
+  },
 }) as CatalogueMessagePack

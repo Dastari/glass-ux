@@ -1,0 +1,100 @@
+/*
+ * SignaturePad.
+ *
+ *   surface    the field box (fa-control) at a fixed aspect ratio, so it never resizes; the
+ *              text-entry halo shows while it or its typed name has focus
+ *   line       a hairline signing line across the lower third; "Sign here" sits above its
+ *              start while the pad is empty
+ *   ink        filled stroke outlines in --fg, scaled with the box (SVG viewBox)
+ *   typed      the name in a script face, centred on the line
+ *   toolbar    Type/Draw instead · Undo · Clear, over the box's top inline-end corner;
+ *              buttons disable rather than disappear, so nothing moves while signing
+ *   read-only  the recessed well with no toolbar; disabled at --disabled-opacity
+ */
+@layer components {
+  .fa-signature {
+    --_line-at: 72%; /* the signing line, from the top of the box */
+    --_descent: 0.18em; /* tokens:allow the typed name's baseline sits on the line: a share of its own size */
+    --_script: "Segoe Script", "Snell Roundhand", "Apple Chancery", "Brush Script MT", "URW Chancery L", cursive;
+    position: relative;
+    width: 100%;
+    min-width: 0;
+  }
+  .fa-signature-surface {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--_ratio, 3 / 1);
+    padding: 0;
+    overflow: hidden;
+    container-type: inline-size;
+    cursor: crosshair;
+    touch-action: none;
+    user-select: none;
+    outline: none;
+  }
+  .fa-signature:is([data-readonly], [data-disabled], [data-mode="typed"]) .fa-signature-surface {
+    cursor: default;
+    touch-action: auto;
+  }
+  .fa-signature[data-mode="typed"]:not([data-readonly], [data-disabled]) .fa-signature-surface {
+    cursor: text;
+  }
+
+  .fa-signature-line {
+    position: absolute;
+    inset-inline: 6%;
+    inset-block-start: var(--_line-at);
+    height: var(--border-width);
+    background-color: var(--line-strong);
+    pointer-events: none;
+  }
+  .fa-signature-placeholder {
+    position: absolute;
+    inset-inline-start: 6%;
+    inset-block-end: calc(100% - var(--_line-at) + var(--space-1-5));
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    pointer-events: none;
+  }
+
+  /* Outranks the control recipe's icon sizing (.fa-control > svg). */
+  .fa-signature-surface > .fa-signature-ink {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: currentcolor;
+    color: var(--fg);
+    pointer-events: none;
+  }
+
+  .fa-signature-typed {
+    position: absolute;
+    inset-inline: 6%;
+    inset-block-end: calc(100% - var(--_line-at) - var(--_descent));
+    width: 88%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--fg);
+    font-family: var(--_script);
+    font-size: var(--_typed-size, 10cqi);
+    line-height: 1.2;
+    text-align: center;
+    outline: none;
+  }
+  .fa-signature-typed::placeholder {
+    color: var(--fg-subtle);
+    opacity: 1;
+  }
+
+  .fa-signature-toolbar {
+    position: absolute;
+    inset-block-start: var(--space-1);
+    inset-inline-end: var(--space-1);
+    display: flex;
+    align-items: center;
+    gap: var(--space-half);
+  }
+}

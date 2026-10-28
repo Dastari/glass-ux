@@ -1894,4 +1894,17 @@ export default defineMessagePack("ar", {
     loadFailed: "تعذر التحميل",
     retry: "إعادة المحاولة",
   },
+  signaturePad: {
+    padRole: "لوحة التوقيع",
+    signHere: "وقّع هنا",
+    signed: "تم التوقيع",
+    notSigned: "غير موقّع",
+    drawInstructions: "ارسم بالفأرة أو القلم أو إصبعك. يمسح Delete التوقيع، ويتراجع Ctrl أو Command مع Z عن آخر خط.",
+    undo: "تراجع",
+    clear: "مسح",
+    typeInstead: "الكتابة بدلاً من ذلك",
+    drawInstead: "الرسم بدلاً من ذلك",
+    typeYourName: "اكتب اسمك الكامل",
+    signatureRequired: "أضف توقيعك",
+  },
 }) as CatalogueMessagePack

@@ -23,6 +23,7 @@ const PAGES = [
   "map-view-toggle",
   "pin-map",
   "email-field",
+  "signature-pad",
   "login-flow",
   "select",
   "button",

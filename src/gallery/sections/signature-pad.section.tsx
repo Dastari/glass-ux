@@ -1,0 +1,178 @@
+import { useState } from "react"
+import { z } from "zod"
+import { IconDownload } from "../../icons/generated/icons.js"
+import { Button } from "../../ui/button/index.js"
+import { Field } from "../../ui/field/index.js"
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js"
+import {
+  SignaturePad,
+  signatureSchema,
+  signatureToPng,
+  signatureToSvg,
+  type DrawnSignature,
+  type SignatureStroke,
+  type SignatureValue,
+} from "../../ui/signature-pad/index.js"
+import { ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
+import { wait } from "./forms.fixtures.js"
+import { Usage } from "./inputs.kit.js"
+
+/** A stroke sampled from a curve over u = 0…1, quicker through the middle like a real hand. */
+function sample(curve: (u: number) => [number, number], count: number): SignatureStroke {
+  let t = 0
+  return Array.from({ length: count }, (_, index) => {
+    const u = index / (count - 1)
+    t += 6 + 10 * Math.cos(u * Math.PI) ** 2
+    const [x, y] = curve(u)
+    return { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, t: Math.round(t), p: 0.5 }
+  })
+}
+
+/** A fictional visitor's signature: a looped initial, a running surname and an underline. */
+const SIGNED: DrawnSignature = {
+  kind: "drawn",
+  width: 600,
+  height: 200,
+  strokes: [
+    sample((u) => [70 + 60 * u + 22 * Math.sin(u * Math.PI * 3), 140 - 85 * Math.sin(u * Math.PI) + 10 * Math.cos(u * Math.PI * 3)], 60),
+    sample((u) => {
+      // A running hand: uneven letter heights and spacing, a few loops, flattening at the end.
+      const phase = u * Math.PI * 6.5 + 0.8 * Math.sin(u * 11)
+      const height = (16 + 14 * Math.sin(u * 9 + 1) ** 2) * (1 - 0.45 * u)
+      return [140 + 300 * u + 10 * Math.sin(phase * 2), 130 - height * Math.abs(Math.sin(phase)) - 6 * u]
+    }, 160),
+    sample((u) => [95 + 400 * u, 156 + 7 * Math.sin(u * Math.PI) - 10 * u], 40),
+  ],
+}
+
+const TYPED: SignatureValue = { kind: "typed", text: "Noa Varga" }
+
+function SignInDemo() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { signature: null as SignatureValue | null },
+    validators: { onDynamic: z.object({ signature: signatureSchema({ required: true }) }) },
+    onSubmit: () => wait(600),
+  })
+  return (
+    <Form form={form} aria-label="Site entry" className="w-full" data-testid="signature-form">
+      <FormStack>
+        <form.AppField name="signature">{(field) => <field.SignatureField label="Signature" required />}</form.AppField>
+        <FormActions>
+          <form.SubmitButton>Sign in</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  )
+}
+
+function download(blob: Blob, name: string) {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = name
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+function ExportDemo() {
+  const [value, setValue] = useState<SignatureValue | null>(SIGNED)
+  return (
+    <FormStack>
+      <Field label="Signature">
+        <SignaturePad value={value} onValueChange={setValue} />
+      </Field>
+      <div className="flex flex-wrap gap-2">
+        <Button icon={<IconDownload />} disabled={!value} onClick={() => value && download(new Blob([signatureToSvg(value)], { type: "image/svg+xml" }), "signature.svg")}>
+          SVG
+        </Button>
+        <Button icon={<IconDownload />} disabled={!value} onClick={() => value && void signatureToPng(value, { width: 1200 }).then((blob) => download(blob, "signature.png"))}>
+          PNG
+        </Button>
+      </div>
+    </FormStack>
+  )
+}
+
+export default function SignaturePadSection() {
+  return (
+    <SectionPage>
+      <Specimen title="Sign in a form" description="Draw with a mouse, pen or finger, or choose Type instead. Undo removes the last stroke; with the pad focused, Delete clears it and Ctrl or Command with Z undoes.">
+        <SignInDemo />
+      </Specimen>
+
+      <Specimen title="States" layout="grid">
+        <FormStack>
+          <Field label="Empty">
+            <SignaturePad />
+          </Field>
+          <Field label="Signed">
+            <SignaturePad defaultValue={SIGNED} />
+          </Field>
+          <Field label="Typed">
+            <SignaturePad defaultValue={TYPED} />
+          </Field>
+        </FormStack>
+        <FormStack>
+          <Field label="Missing" error="Add your signature">
+            <SignaturePad invalid />
+          </Field>
+          <Field label="Read-only">
+            <SignaturePad defaultValue={SIGNED} readOnly />
+          </Field>
+          <Field label="Disabled">
+            <SignaturePad defaultValue={SIGNED} disabled />
+          </Field>
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="Export" description="signatureToSvg and signatureToPng render the stored strokes in black on a transparent background, at any width.">
+        <ExportDemo />
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop>
+        <Field label="Signature">
+          <SignaturePad defaultValue={SIGNED} />
+        </Field>
+      </Specimen>
+
+      <ContainerLab>
+        <div className="flex h-full items-center p-1">
+          <SignaturePad aria-label="Signature" defaultValue={SIGNED} />
+        </div>
+      </ContainerLab>
+
+      <Usage
+        code={`
+import { signatureSchema, signatureToSvg } from "glass-ux/signature-pad"
+
+const schema = z.object({ signature: signatureSchema({ required: true }) })
+
+<form.AppField name="signature">{(field) => <field.SignatureField label="Signature" required />}</form.AppField>
+
+// On save: keep the strokes, and an image for documents.
+const svg = signatureToSvg(values.signature)`}
+      />
+
+      <Rules
+        do={[
+          "Store the value as given; it redraws at any size and exports to SVG or PNG.",
+          "Record who signed, when and what they agreed to beside the signature.",
+          "Keep Type instead for people who cannot draw.",
+        ]}
+        dont={[
+          "Treat a drawing as proof of identity.",
+          "Save only a screenshot of the pad; it loses the strokes and prints in the theme's colours.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--glass-fill-control", "Pad surface"],
+          ["--line-strong", "Signing line"],
+          ["--fg", "Ink"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

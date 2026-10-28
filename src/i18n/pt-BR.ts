@@ -1893,4 +1893,17 @@ export default defineMessagePack("pt-BR", {
     loadFailed: "Não foi possível carregar",
     retry: "Tentar novamente",
   },
+  signaturePad: {
+    padRole: "área de assinatura",
+    signHere: "Assine aqui",
+    signed: "Assinado",
+    notSigned: "Não assinado",
+    drawInstructions: "Desenhe com o mouse, uma caneta ou o dedo. Delete limpa a assinatura, e Ctrl ou Command com Z desfaz o último traço.",
+    undo: "Desfazer",
+    clear: "Limpar",
+    typeInstead: "Digitar em vez disso",
+    drawInstead: "Desenhar em vez disso",
+    typeYourName: "Digite seu nome completo",
+    signatureRequired: "Adicione sua assinatura",
+  },
 }) as CatalogueMessagePack

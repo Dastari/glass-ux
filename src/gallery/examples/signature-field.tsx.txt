@@ -1,0 +1,39 @@
+import { z } from "zod";
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+import { signatureSchema, type SignatureValue } from "glass-ux/signature-pad";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+function SignInDemo() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { signature: null as SignatureValue | null },
+    validators: { onDynamic: z.object({ signature: signatureSchema({ required: true }) }) },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="Site entry" className="w-full" data-testid="signature-form">
+      <FormStack>
+        <form.AppField name="signature">
+          {(field) => <field.SignatureField label="Signature" required />}
+        </form.AppField>
+        <FormActions>
+          <form.SubmitButton>Sign in</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  );
+}
+
+export default function SignaturePadSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Sign in a form"
+        description="Draw with a mouse, pen or finger, or choose Type instead. Undo removes the last stroke; with the pad focused, Delete clears it and Ctrl or Command with Z undoes."
+      >
+        <SignInDemo />
+      </Specimen>
+    </SectionPage>
+  );
+}

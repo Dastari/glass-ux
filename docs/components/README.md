@@ -54,6 +54,7 @@ const form = useAppForm({ ...formBehaviour, defaultValues, validators: { onDynam
 | [Rich text](rich-text.md)                 | `RichTextField`                              | Markdown string                       | `richTextSchema`                          |
 | [Time zone](time-zone-select.md)          | `TimeZoneField`                              | IANA name, `string \| null`           | `timeZoneSchema`                          |
 | [Time and date-time](time-field.md)       | `TimeField`, `DateTimeField`                 | `"HH:mm"`, wall clock, `string \| null` | `timeSchema`, `dateTimeSchema`            |
+| [Signature](signature-pad.md)             | `SignatureField`                             | `SignatureValue \| null` (strokes or typed name) | `signatureSchema`                         |
 | [Copy button](copy-button.md)             | —                                            | —                                     | —                                         |
 | [Swatch picker](swatch-picker.md)         | — (bare control in a `SettingRow`)           | option value                          | —                                         |
 | [Slider](slider.md)                      | — (bare control inside a `Field`)           | number or number array                | —                                         |

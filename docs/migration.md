@@ -3,6 +3,10 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.11.5 → 0.11.6
+
+No code changes are required.
+
 ## 0.11.4 → 0.11.5
 
 No code changes are required. In narrow containers vertical tabs now show the horizontal tab

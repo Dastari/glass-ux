@@ -52,6 +52,7 @@ import { MultiSelect } from "../multi-select/index.js";
 import { NumberField, type NumberFieldProps } from "../number-field/index.js";
 import { OtpField } from "../otp-field/index.js";
 import { PasswordField } from "../password-field/index.js";
+import { SignatureField } from "../signature-pad/index.js";
 import { PercentField } from "../percent-field/index.js";
 import { MobileField, PhoneField } from "../phone-field/index.js";
 import { PortField } from "../port-field/index.js";
@@ -884,6 +885,7 @@ export const { useAppForm, withForm, withFieldGroup } = createFormHook({
     UrlField,
     PasswordField,
     OtpField,
+    SignatureField,
     CoordinatesField,
     IpField,
     MacAddressField,

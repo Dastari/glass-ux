@@ -1893,4 +1893,17 @@ export default defineMessagePack("zh-Hans", {
     loadFailed: "无法加载",
     retry: "重试",
   },
+  signaturePad: {
+    padRole: "签名板",
+    signHere: "在此签名",
+    signed: "已签名",
+    notSigned: "未签名",
+    drawInstructions: "使用鼠标、触控笔或手指书写。按 Delete 清除签名，按 Ctrl 或 Command 加 Z 撤消最后一笔。",
+    undo: "撤消",
+    clear: "清除",
+    typeInstead: "改为输入",
+    drawInstead: "改为手写",
+    typeYourName: "输入您的全名",
+    signatureRequired: "请添加您的签名",
+  },
 }) as CatalogueMessagePack

@@ -59,9 +59,9 @@ export type VerticalTabsLayout =
   | "rail"
   | "icons"
   | "tabs"
-  /** @deprecated Renders `tabs`. */
+  /** Deprecated: renders `tabs`. */
   | "chips"
-  /** @deprecated Renders `tabs`. */
+  /** Deprecated: renders `tabs`. */
   | "select"
 
 /** Below this container width (in rem) the rail gives way to a horizontal tab strip (R6.8). */

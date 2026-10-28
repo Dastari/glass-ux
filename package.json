@@ -170,6 +170,10 @@
       "types": "./dist/ui/otp-field/index.d.ts",
       "import": "./dist/ui/otp-field/index.js"
     },
+    "./signature-pad": {
+      "types": "./dist/ui/signature-pad/index.d.ts",
+      "import": "./dist/ui/signature-pad/index.js"
+    },
     "./switch": {
       "types": "./dist/ui/switch/index.d.ts",
       "import": "./dist/ui/switch/index.js"

@@ -1893,4 +1893,17 @@ export default defineMessagePack("he", {
     loadFailed: "לא ניתן היה לטעון",
     retry: "נסה שוב",
   },
+  signaturePad: {
+    padRole: "משטח חתימה",
+    signHere: "חתום כאן",
+    signed: "נחתם",
+    notSigned: "לא נחתם",
+    drawInstructions: "צייר בעכבר, בעט או באצבע. Delete מוחק את החתימה, ו-Ctrl או Command עם Z מבטל את הקו האחרון.",
+    undo: "בטל",
+    clear: "נקה",
+    typeInstead: "הקלד במקום",
+    drawInstead: "צייר במקום",
+    typeYourName: "הקלד את שמך המלא",
+    signatureRequired: "הוסף את חתימתך",
+  },
 }) as CatalogueMessagePack

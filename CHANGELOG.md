@@ -4,6 +4,24 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.11.6
+
+A signature pad.
+
+### Added
+
+- `glass-ux/signature-pad`: `SignaturePad` and the bound `SignatureField` (registered in
+  `useAppForm`), with `signatureSchema`. People sign with a mouse, pen or finger; strokes
+  respond to speed and pen pressure and are stored as points, so the value redraws at any size.
+  Type instead takes a typed name. Undo and Clear sit in the pad's toolbar; Delete and Ctrl or
+  Command with Z work with the pad focused. `signatureToSvg` and `signatureToPng` export the
+  value in black on a transparent background. Messages in every language pack.
+
+### Fixed
+
+- VerticalTabs: the deprecated `"chips"` and `"select"` layout values no longer raise a TypeDoc
+  warning.
+
 ## 0.11.5
 
 Vertical tabs become horizontal tabs in narrow containers.

@@ -1893,4 +1893,17 @@ export default defineMessagePack("it", {
     loadFailed: "Impossibile caricare",
     retry: "Riprova",
   },
+  signaturePad: {
+    padRole: "area firma",
+    signHere: "Firma qui",
+    signed: "Firmato",
+    notSigned: "Non firmato",
+    drawInstructions: "Disegna con il mouse, una penna o il dito. Canc cancella la firma, e Ctrl o Comando con Z annulla l'ultimo tratto.",
+    undo: "Annulla",
+    clear: "Cancella",
+    typeInstead: "Digita invece",
+    drawInstead: "Disegna invece",
+    typeYourName: "Digita il tuo nome completo",
+    signatureRequired: "Aggiungi la tua firma",
+  },
 }) as CatalogueMessagePack

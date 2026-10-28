@@ -1893,4 +1893,17 @@ export default defineMessagePack("ja", {
     loadFailed: "ロードできませんでした",
     retry: "再試行",
   },
+  signaturePad: {
+    padRole: "署名パッド",
+    signHere: "ここに署名",
+    signed: "署名済み",
+    notSigned: "未署名",
+    drawInstructions: "マウス、ペン、または指で書いてください。Delete キーで署名を消去し、Ctrl または Command と Z で最後の線を元に戻します。",
+    undo: "元に戻す",
+    clear: "クリア",
+    typeInstead: "入力で署名",
+    drawInstead: "手書きで署名",
+    typeYourName: "氏名を入力してください",
+    signatureRequired: "署名を追加してください",
+  },
 }) as CatalogueMessagePack

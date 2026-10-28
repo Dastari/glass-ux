@@ -1893,4 +1893,17 @@ export default defineMessagePack("de", {
     loadFailed: "Konnte nicht geladen werden",
     retry: "Erneut versuchen",
   },
+  signaturePad: {
+    padRole: "Unterschriftenfeld",
+    signHere: "Hier unterschreiben",
+    signed: "Unterschrieben",
+    notSigned: "Nicht unterschrieben",
+    drawInstructions: "Zeichnen Sie mit Maus, Stift oder Finger. Entf löscht die Unterschrift, Strg oder Befehl mit Z macht den letzten Strich rückgängig.",
+    undo: "Rückgängig machen",
+    clear: "Leeren",
+    typeInstead: "Stattdessen tippen",
+    drawInstead: "Stattdessen zeichnen",
+    typeYourName: "Geben Sie Ihren vollständigen Namen ein",
+    signatureRequired: "Fügen Sie Ihre Unterschrift hinzu",
+  },
 }) as CatalogueMessagePack

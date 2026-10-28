@@ -1893,4 +1893,17 @@ export default defineMessagePack("nl", {
     loadFailed: "Kan niet laden",
     retry: "Probeer het opnieuw",
   },
+  signaturePad: {
+    padRole: "handtekeningveld",
+    signHere: "Hier ondertekenen",
+    signed: "Ondertekend",
+    notSigned: "Niet ondertekend",
+    drawInstructions: "Teken met een muis, pen of vinger. Delete wist de handtekening en Ctrl of Command met Z maakt de laatste lijn ongedaan.",
+    undo: "Ongedaan maken",
+    clear: "Wissen",
+    typeInstead: "Liever typen",
+    drawInstead: "Liever tekenen",
+    typeYourName: "Typ uw volledige naam",
+    signatureRequired: "Voeg uw handtekening toe",
+  },
 }) as CatalogueMessagePack

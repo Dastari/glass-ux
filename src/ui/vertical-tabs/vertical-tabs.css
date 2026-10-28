@@ -6,9 +6,8 @@
  *         the same "you are here" mark as the sidebar and the tree. The rail scrolls. Once
  *         measured, the mark is one indicator that glides between rows (fa-glide, axis y);
  *         until then the current row paints it itself.
- * chips   below 36rem of container width: a horizontally scrolling strip of outlined chips
- *         above the content, with soft fades at scrolled edges.
- * select  below 36rem with more than six sections: a picker (menu) above the content.
+ * tabs    below 36rem of container width: the Tabs strip (tabs.css) above the content;
+ *         sections that do not fit move into its More menu, the current one always shown.
  * icons   chosen by the caller for a collapsed side nav: square rows with the icon centred,
  *         the label visually hidden (still the accessible name) and shown as a tooltip.
  */
@@ -16,8 +15,6 @@
   .fa-vtabs {
     --_rail-w: 13.5rem; /* rail width */
     --_bar-w: calc(var(--border-width) * 3); /* current-item bar */
-    --_fade: var(--space-6); /* chip strip edge fade */
-    --_picker-max: 20rem; /* the collapsed picker never stretches wider than this */
     min-width: 0;
     height: 100%;
   }
@@ -48,13 +45,10 @@
     inset-inline: 0;
     background-color: var(--accent-soft);
   }
-  .fa-vtabs[data-layout="chips"] .fa-vtabs-indicator {
-    display: none;
-  }
-  .fa-vtabs:not([data-layout="chips"]) .fa-vtabs-list:has(> .fa-vtabs-indicator:not([hidden])) .fa-vtab[data-active] {
+  .fa-vtabs-list:has(> .fa-vtabs-indicator:not([hidden])) .fa-vtab[data-active] {
     background-color: transparent;
   }
-  .fa-vtabs:not([data-layout="chips"]) .fa-vtabs-list:has(> .fa-vtabs-indicator:not([hidden])) .fa-vtab[data-active]:hover {
+  .fa-vtabs-list:has(> .fa-vtabs-indicator:not([hidden])) .fa-vtab[data-active]:hover {
     background-color: var(--fill-hover);
   }
   .fa-vtab {
@@ -89,8 +83,7 @@
   .fa-vtab-marker[data-marker="saved"] {
     background-color: var(--success);
   }
-  .fa-count ~ .fa-vtab-marker,
-  .fa-vtabs-picker > .fa-vtab-marker {
+  .fa-count ~ .fa-vtab-marker {
     margin-inline-start: 0;
   }
   .fa-vtab[data-active]::before {
@@ -144,80 +137,10 @@
     white-space: nowrap;
   }
 
-  /* ── Chips ──────────────────────────────────────────────────────────────── */
-  .fa-vtabs:is([data-layout="chips"], [data-layout="select"]) .fa-vtabs-root {
+  /* ── Tabs ───────────────────────────────────────────────────────────────── */
+  .fa-vtabs[data-layout="tabs"] .fa-vtabs-root {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
-    gap: var(--space-4);
-  }
-  .fa-vtabs[data-layout="chips"] .fa-vtabs-scroll {
-    --_fade-start: 0px;
-    --_fade-end: 0px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    scrollbar-gutter: auto;
-    -webkit-mask-image: linear-gradient(90deg, transparent, black var(--_fade-start), black calc(100% - var(--_fade-end)), transparent);
-    mask-image: linear-gradient(90deg, transparent, black var(--_fade-start), black calc(100% - var(--_fade-end)), transparent);
-  }
-  .fa-vtabs[data-layout="chips"] .fa-vtabs-scroll[data-scrolled-left] {
-    --_fade-start: var(--_fade);
-  }
-  .fa-vtabs[data-layout="chips"] .fa-vtabs-scroll[data-scrolled-right] {
-    --_fade-end: var(--_fade);
-  }
-  .fa-vtabs[data-layout="chips"] .fa-vtabs-list {
-    flex-direction: row;
-    gap: var(--space-2);
-    width: max-content;
-    padding: var(--focus-ring-width);
-  }
-  .fa-vtabs[data-layout="chips"] .fa-vtab {
-    flex: none;
-    min-height: var(--control-h-sm);
-    padding-inline: var(--space-3);
-    gap: var(--space-2);
-    border-radius: var(--radius-full);
-    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
-  }
-  .fa-vtabs[data-layout="chips"] .fa-vtab > .fa-icon {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
-    --_stroke: calc(var(--icon-stroke) * 1.14);
-  }
-  .fa-vtabs[data-layout="chips"] .fa-vtab[data-active] {
-    box-shadow: inset 0 0 0 var(--border-width) var(--accent-line);
-  }
-  .fa-vtabs[data-layout="chips"] .fa-vtab[data-active]::before {
-    display: none;
-  }
-  .fa-vtabs[data-layout="chips"] .fa-vtab > .fa-item-label {
-    overflow: visible;
-  }
-  @media (pointer: coarse) {
-    .fa-vtabs[data-layout="chips"] .fa-vtab {
-      min-height: var(--target-min);
-    }
-  }
-
-  /* ── Picker ─────────────────────────────────────────────────────────────── */
-  .fa-vtabs-picker {
-    width: 100%;
-    max-width: var(--_picker-max);
-    font: inherit;
-    font-size: var(--type-body-size);
-    text-align: start;
-  }
-  .fa-vtabs-picker-label {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .fa-vtabs-picker > .fa-vtabs-picker-chevron {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
-    color: var(--fg-subtle);
+    gap: var(--space-3);
   }
 }

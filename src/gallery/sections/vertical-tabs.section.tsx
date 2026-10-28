@@ -77,7 +77,7 @@ export default function VerticalTabsSection() {
         </div>
       </Specimen>
 
-      <Specimen title="Routes, narrow" description="The same route rail in a narrow container: a picker whose rows are links.">
+      <Specimen title="Routes, narrow" description="The same route rail in a narrow container: a tab strip whose tabs and More menu rows are links.">
         <div className="w-90 max-w-full">
           <RouteVerticalTabs items={ROUTED} aria-label="Agent settings sections (narrow)">
             <SectionOutlet />
@@ -96,7 +96,7 @@ export default function VerticalTabsSection() {
         </div>
       </Specimen>
 
-      <Specimen title="Narrow: chips" description="Under 36rem of container width, up to six sections become a scrolling chip strip above the content.">
+      <Specimen title="Narrow" description="Under 36rem of container width, the sections become a horizontal tab strip above the content.">
         <div className="w-90 max-w-full">
           <VerticalTabs.Root items={FOUR} defaultValue="updates" aria-label="Agent settings sections">
             <Panels items={FOUR} />
@@ -104,7 +104,7 @@ export default function VerticalTabsSection() {
         </div>
       </Specimen>
 
-      <Specimen title="Narrow: picker" description="More than six sections in a narrow container collapse to a picker that names the current section.">
+      <Specimen title="Narrow, seven sections" description="Sections that do not fit move into the strip's More menu; the current section always stays in the strip.">
         <div className="w-90 max-w-full">
           <VerticalTabs.Root items={AGENT} defaultValue="audit" aria-label="Agent settings sections">
             <Panels items={AGENT} />
@@ -131,7 +131,7 @@ export default function VerticalTabsSection() {
         </div>
       </Specimen>
 
-      <ContainerLab title="Container lab · four sections" description="Rail in the pane; chips everywhere narrower than 36rem.">
+      <ContainerLab title="Container lab · four sections" description="Rail in the pane; tabs everywhere narrower than 36rem.">
         {() => (
           <VerticalTabs.Root items={FOUR} defaultValue="general" aria-label="Agent settings sections">
             <Panels items={FOUR} />
@@ -139,7 +139,7 @@ export default function VerticalTabsSection() {
         )}
       </ContainerLab>
 
-      <ContainerLab title="Container lab · seven sections" description="Rail in the pane; a picker everywhere narrower than 36rem.">
+      <ContainerLab title="Container lab · seven sections" description="Rail in the pane; tabs with a More menu everywhere narrower than 36rem.">
         {() => (
           <VerticalTabs.Root items={AGENT} defaultValue="usage" aria-label="Agent settings sections">
             <Panels items={AGENT} />

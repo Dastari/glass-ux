@@ -68,6 +68,27 @@ function TabContent({ item }: { item: TabItem }) {
   )
 }
 
+function MenuRowContent({ item }: { item: TabItem }) {
+  return (
+    <>
+      {item.icon}
+      <span className="fa-item-label">{item.label}</span>
+      {item.count !== undefined ? <CountBadge value={item.count} className="fa-item-trail" /> : null}
+    </>
+  )
+}
+
+/** How a strip draws each tab's face and its More-menu row; VerticalTabs adds its markers. */
+interface StripFaces<T extends TabItem> {
+  /** The tab's face (also measured, so it must match what renders). */
+  content?: (item: T) => ReactNode
+  /** The item's row in the More menu. */
+  menuContent?: (item: T) => ReactNode
+}
+
+const defaultContent = (item: TabItem) => <TabContent item={item} />
+const defaultMenuContent = (item: TabItem) => <MenuRowContent item={item} />
+
 function MoreFace() {
   const messages = useMessages(tabsMessages)
 
@@ -115,13 +136,23 @@ function useTabOverflow(items: TabItem[], keep: number): Overflow {
 }
 
 /** The off-screen row the strip measures: every tab plus the More trigger at natural width. */
-function MeasureRow({ items, measureRef, activeIndex }: { items: TabItem[]; measureRef: RefObject<HTMLDivElement | null>; activeIndex: number }) {
+function MeasureRow<T extends TabItem>({
+  items,
+  measureRef,
+  activeIndex,
+  content,
+}: {
+  items: T[]
+  measureRef: RefObject<HTMLDivElement | null>
+  activeIndex: number
+  content: (item: T) => ReactNode
+}) {
   return (
     <div className="fa-tabs-measure" aria-hidden>
       <div className="fa-tabs-measure-row" ref={measureRef}>
         {items.map((item, index) => (
           <span key={item.value} className="fa-tab" data-active={index === activeIndex ? "" : undefined}>
-            <TabContent item={item} />
+            {content(item)}
           </span>
         ))}
         <span className="fa-tab fa-tabs-more">
@@ -188,14 +219,22 @@ export interface TabsListProps {
   className?: string
 }
 
+/** A tab strip inside a Base UI Tabs root, told its value and how to select. */
+export interface TabStripProps<T extends TabItem> extends StripFaces<T> {
+  items: T[]
+  value: string
+  select: (value: string) => void
+  "aria-label"?: string
+  className?: string
+}
+
 /**
- * The L2 tab strip. Tabs never wrap: whatever does not fit moves into a trailing "More"
- * menu, and the active tab is always swapped back in so it stays visible (R6.6).
+ * The strip behind `Tabs.List`, for other components that hold their own Base UI Tabs root
+ * (VerticalTabs in a narrow container). Not part of the package's public API.
  */
-function TabsList({ items, className, ...rest }: TabsListProps) {
+export function TabStrip<T extends TabItem>({ items, value, select, className, content = defaultContent, menuContent = defaultMenuContent, ...rest }: TabStripProps<T>) {
   const messages = useMessages(tabsMessages)
 
-  const { value, select } = useTabsContext()
   const activeIndex = items.findIndex((item) => item.value === value)
   const { barRef, measureRef, visible, hidden, solo } = useTabOverflow(items, activeIndex)
   const pendingFocus = useRef<string | null>(null)
@@ -213,7 +252,7 @@ function TabsList({ items, className, ...rest }: TabsListProps) {
         {items.map((item, index) =>
           visible.has(index) ? (
             <BaseTabs.Tab key={item.value} value={item.value} disabled={item.disabled} className="fa-tab" data-value={item.value}>
-              <TabContent item={item} />
+              {content(item)}
             </BaseTabs.Tab>
           ) : null
         )}
@@ -245,18 +284,25 @@ function TabsList({ items, className, ...rest }: TabsListProps) {
                     select(item.value)
                   }}
                 >
-                  {item.icon}
-                  <span className="fa-item-label">{item.label}</span>
-                  {item.count !== undefined ? <CountBadge value={item.count} className="fa-item-trail" /> : null}
+                  {menuContent(item)}
                 </Menu.Item>
               )
             })}
           </NavMenuPopup>
         </Menu.Root>
       ) : null}
-      <MeasureRow items={items} measureRef={measureRef} activeIndex={activeIndex} />
+      <MeasureRow items={items} measureRef={measureRef} activeIndex={activeIndex} content={content} />
     </div>
   )
+}
+
+/**
+ * The L2 tab strip. Tabs never wrap: whatever does not fit moves into a trailing "More"
+ * menu, and the active tab is always swapped back in so it stays visible (R6.6).
+ */
+function TabsList(props: TabsListProps) {
+  const { value, select } = useTabsContext()
+  return <TabStrip {...props} value={value} select={select} />
 }
 
 function TabsPanel({ className, ...rest }: ComponentProps<typeof BaseTabs.Panel> & { className?: string }) {
@@ -294,7 +340,20 @@ export interface TabNavProps<T extends TabItem> {
  * same "More" menu, whose rows are links too. Router-agnostic: `RouteTabs` adapts it to
  * TanStack Router.
  */
-export function TabNav<T extends TabItem>({ items, value, renderLink, className, ...rest }: TabNavProps<T>) {
+export function TabNav<T extends TabItem>(props: TabNavProps<T>) {
+  return <TabNavStrip {...props} />
+}
+
+/** `TabNav` with its faces drawn by the caller (VerticalTabNav's markers). Not part of the package's public API. */
+export function TabNavStrip<T extends TabItem>({
+  items,
+  value,
+  renderLink,
+  className,
+  content = defaultContent,
+  menuContent = defaultMenuContent,
+  ...rest
+}: TabNavProps<T> & StripFaces<T>) {
   const messages = useMessages(tabsMessages)
 
   const activeIndex = items.findIndex((item) => item.value === value)
@@ -323,7 +382,7 @@ export function TabNav<T extends TabItem>({ items, value, renderLink, className,
                   "aria-current": active ? "page" : undefined,
                   tabIndex: index === tabbable ? 0 : -1,
                   onKeyDown: (event) => rovingKeyDown(event, "horizontal"),
-                  children: <TabContent item={item} />,
+                  children: content(item),
                 })}
               </Fragment>
             )
@@ -346,16 +405,14 @@ export function TabNav<T extends TabItem>({ items, value, renderLink, className,
                     label={item.label}
                     render={renderLink(item, { className: "fa-item fa-menu-item", "data-value": item.value })}
                   >
-                    {item.icon}
-                    <span className="fa-item-label">{item.label}</span>
-                    {item.count !== undefined ? <CountBadge value={item.count} className="fa-item-trail" /> : null}
+                    {menuContent(item)}
                   </Menu.LinkItem>
                 )
               })}
             </NavMenuPopup>
           </Menu.Root>
         ) : null}
-        <MeasureRow items={items} measureRef={measureRef} activeIndex={activeIndex} />
+        <MeasureRow items={items} measureRef={measureRef} activeIndex={activeIndex} content={content} />
       </div>
     </nav>
   )

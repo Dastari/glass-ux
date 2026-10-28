@@ -5,5 +5,5 @@ export const meta: SectionMeta = {
   title: "Vertical tabs",
   group: "Components",
   order: 305,
-  summary: "L3 navigation: a section rail that becomes chips, or a picker past six sections, in narrow containers.",
+  summary: "L3 navigation: a section rail that becomes a horizontal tab strip in narrow containers.",
 }

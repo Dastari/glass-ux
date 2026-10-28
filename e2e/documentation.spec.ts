@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { openSection } from "./document-rail.js";
 import { mkdirSync } from "node:fs";
 mkdirSync(".handoff/glass-ux-extract/screenshots", { recursive: true });
 
@@ -26,10 +27,7 @@ for (const id of [
         .getByRole("navigation", { name: "On this page" })
         .getByRole("link", { name: "Examples", exact: true }),
     ).toBeVisible();
-    await page
-      .getByRole("navigation", { name: "On this page" })
-      .getByRole("link", { name: "API", exact: true })
-      .click();
+    await openSection(page, "API");
     await expect(page.locator(".gallery-api-table").first()).toBeVisible();
     await expect(page.locator("#api")).not.toContainText(
       "See the typed contract for this property.",
@@ -99,10 +97,7 @@ test("icons have one Foundations page", async ({ page }) => {
       .getByRole("navigation", { name: "Components" })
       .getByRole("link", { name: /^Icon[A-Z]/ }),
   ).toHaveCount(0);
-  await page
-    .getByRole("navigation", { name: "On this page" })
-    .getByRole("link", { name: "API", exact: true })
-    .click();
+  await openSection(page, "API");
   await expect(page.locator(".gallery-api-table").first()).toBeVisible();
 });
 test("the document keeps its sections, readable header and outside rail @responsive", async ({
@@ -130,10 +125,7 @@ test("the document keeps its sections, readable header and outside rail @respons
   await expect(page.locator(".gallery-document-rail")).toBeVisible();
   expect(await document.locator(".gallery-document-rail").count()).toBe(0);
   const before = await page.locator(".gallery-document-rail").boundingBox();
-  await page
-    .getByRole("navigation", { name: "On this page" })
-    .getByRole("link", { name: "API", exact: true })
-    .click();
+  await openSection(page, "API");
   await expect(page).toHaveURL(/#api$/);
   await expect(page.locator("#usage")).toBeAttached();
   await expect(page.locator("#examples")).toBeAttached();
@@ -141,10 +133,7 @@ test("the document keeps its sections, readable header and outside rail @respons
     const after = await page.locator(".gallery-document-rail").boundingBox();
     expect(Math.abs(after!.y - before!.y)).toBeLessThan(2);
   }
-  await page
-    .getByRole("navigation", { name: "On this page" })
-    .getByRole("link", { name: "Examples", exact: true })
-    .click();
+  await openSection(page, "Examples");
   await scroller.evaluate((element) => {
     element.scrollTop = 0;
   });

@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { openSection } from "./document-rail.js";
 
 for (const width of [320, 1440]) {
   test(`${width}px: shared documentation drawer keeps search and API links pinned @responsive`, async ({
@@ -210,10 +211,7 @@ for (const width of [320, 390, 1920]) {
         page.locator(".fa-rich-text-editable").first(),
       ).toBeAttached();
       await page.evaluate(() => document.fonts.ready);
-      await page
-        .getByRole("navigation", { name: "On this page" })
-        .getByRole("link", { name: "API", exact: true })
-        .click();
+      await openSection(page, "API");
       const scroll = page.locator("#api .gallery-api-scroll").first();
       await expect(scroll).toBeVisible();
       const names = scroll.locator("th[scope='row'] code");

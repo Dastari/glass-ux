@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { openSection, sectionNames } from "./document-rail.js";
 import { componentFamilies } from "../src/gallery/component-families.js";
 
 for (const [root, child] of [
@@ -38,14 +39,9 @@ for (const [root, child] of [
     );
     const target = page.locator(`#api-${child}`);
     await expect(target).toBeInViewport();
-    const rail = page.getByRole("navigation", {
-      name: "On this page",
-      exact: true,
-    });
+    const sections = await sectionNames(page);
     for (const component of family.components.slice(1)) {
-      await expect(
-        rail.getByRole("link", { name: component.name, exact: true }),
-      ).toBeAttached();
+      expect(sections).toContain(component.name);
       await expect(page.locator(`#api-${component.id}`)).toBeAttached();
       await expect(page.locator(`#usage-${component.id}`)).toBeAttached();
     }
@@ -131,14 +127,8 @@ test("a component family keeps its demos, rail and individual APIs together @res
   await expect(
     directory.getByRole("link", { name: "PanelHeader", exact: true }),
   ).toHaveCount(0);
-  const rail = page.getByRole("navigation", {
-    name: "On this page",
-    exact: true,
-  });
   for (const name of ["PanelHeader", "PanelBody", "PanelFooter"]) {
-    const link = rail.getByRole("link", { name, exact: true });
-    await expect(link).toBeAttached();
-    await link.click();
+    await openSection(page, name);
     await expect(page).toHaveURL(
       new RegExp(`#${name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase()}$`),
     );
@@ -148,7 +138,7 @@ test("a component family keeps its demos, rail and individual APIs together @res
         .getByRole("heading", { name, exact: true, level: 2 }),
     ).toBeVisible();
   }
-  await rail.getByRole("link", { name: "API", exact: true }).click();
+  await openSection(page, "API");
   const api = page.locator("#api");
   const index = api.getByRole("navigation", {
     name: "Individual APIs",

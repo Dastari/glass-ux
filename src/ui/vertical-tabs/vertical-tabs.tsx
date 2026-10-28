@@ -1,6 +1,5 @@
 import { useMessages } from "../../lib/i18n/index.js"
 import { verticalTabsMessages } from "./messages.js"
-import { Menu } from "@base-ui/react/menu"
 import { Tabs as BaseTabs } from "@base-ui/react/tabs"
 import {
   Fragment,
@@ -14,14 +13,13 @@ import {
   type ReactNode,
   type RefObject,
 } from "react"
-import { IconChevronsUpDown } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useGlide } from "../../lib/glide.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 import { CountBadge } from "../badge/index.js"
-import { NavMenuPopup } from "../tabs/nav-menu.js"
 import { rovingKeyDown } from "../tabs/roving.js"
+import { TabNavStrip, TabStrip } from "../tabs/tabs.js"
 import { Tooltip } from "../tooltip/index.js"
 import { remPx } from "../../lib/rem.js"
 
@@ -54,13 +52,24 @@ function Marker({ marker }: { marker?: VerticalTabMarker }) {
   )
 }
 
-/** rail · chips · select follow the container; `icons` is chosen by the caller (a collapsed
- *  side nav): square icon rows, the label kept as the accessible name and shown as a tooltip. */
-export type VerticalTabsLayout = "rail" | "icons" | "chips" | "select"
+/** rail · tabs follow the container; `icons` is chosen by the caller (a collapsed side nav):
+ *  square icon rows, the label kept as the accessible name and shown as a tooltip.
+ *  `chips` and `select` are older names for `tabs`. */
+export type VerticalTabsLayout =
+  | "rail"
+  | "icons"
+  | "tabs"
+  /** @deprecated Renders `tabs`. */
+  | "chips"
+  /** @deprecated Renders `tabs`. */
+  | "select"
 
-/** Below this container width (in rem) the rail gives way to chips or a picker (R6.8). */
+/** Below this container width (in rem) the rail gives way to a horizontal tab strip (R6.8). */
 export const VERTICAL_TABS_COLLAPSE_REM = 36
-/** More items than this become a picker instead of chips when collapsed. */
+/**
+ * The most sections the old chip strip showed before it became a picker. No longer used.
+ * @deprecated Narrow containers always show the tab strip; sections that do not fit move into its More menu.
+ */
 export const VERTICAL_TABS_MAX_CHIPS = 6
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
@@ -79,13 +88,16 @@ function remToPx(rem: number) {
   return rem * remPx()
 }
 
+type ResolvedLayout = "rail" | "icons" | "tabs"
+
 /** Pick the layout from the root's own width (a decision CSS cannot make: it changes the
- *  keyboard axis and swaps the list for a picker). */
-function useLayout(rootRef: RefObject<HTMLDivElement | null>, count: number, forced?: VerticalTabsLayout): VerticalTabsLayout {
+ *  keyboard axis and swaps the rail for a tab strip). */
+function useLayout(rootRef: RefObject<HTMLDivElement | null>, forced?: VerticalTabsLayout): ResolvedLayout {
   const size = useElementSize(rootRef)
+  if (forced === "chips" || forced === "select") return "tabs"
   if (forced) return forced
   const narrow = size.width > 0 && size.width < remToPx(VERTICAL_TABS_COLLAPSE_REM)
-  return narrow ? (count > VERTICAL_TABS_MAX_CHIPS ? "select" : "chips") : "rail"
+  return narrow ? "tabs" : "rail"
 }
 
 function ItemContent({ item }: { item: VerticalTabItem }) {
@@ -110,31 +122,32 @@ function MenuRowContent({ item }: { item: VerticalTabItem }) {
   )
 }
 
-function PickerFace({ item }: { item: VerticalTabItem | undefined }) {
+/** A section's face in the narrow tab strip: the Tabs face plus the marker. */
+function StripContent({ item }: { item: VerticalTabItem }) {
   return (
     <>
-      {item?.icon}
-      <span className="fa-vtabs-picker-label">{item?.label}</span>
-      <Marker marker={item?.marker} />
-      <IconChevronsUpDown className="fa-vtabs-picker-chevron" />
+      {item.icon}
+      <span className="fa-tab-label">{item.label}</span>
+      {item.count !== undefined ? <CountBadge value={item.count} /> : null}
+      <Marker marker={item.marker} />
     </>
   )
 }
 
+const stripContent = (item: VerticalTabItem) => <StripContent item={item} />
+const menuRowContent = (item: VerticalTabItem) => <MenuRowContent item={item} />
+
 /** The scrolling list wrapper: scroll-edge attributes and keeping the current row in view. */
 function ListScroller({
-  hidden,
   value,
   layout,
   children,
   as = "div",
   label,
 }: {
-  /** Keeps the item out of the visible layout. */
-  hidden: boolean
   value: string | null
   /** Layout or presentation mode. */
-  layout: VerticalTabsLayout
+  layout: ResolvedLayout
   children: ReactNode
   /** Semantic element rendered by the polymorphic component. */
   as?: "div" | "nav"
@@ -156,7 +169,6 @@ function ListScroller({
       className="fa-vtabs-scroll"
       aria-label={label}
       data-scroll-container
-      hidden={hidden}
       data-scrolled-top={edges.top ? "" : undefined}
       data-scrolled-bottom={edges.bottom ? "" : undefined}
       data-scrolled-left={edges.left ? "" : undefined}
@@ -173,7 +185,7 @@ export interface VerticalTabsRootProps extends Omit<ComponentProps<"div">, "defa
   items: VerticalTabItem[]
   value?: string
   defaultValue?: string
-  /** Called with the chosen section's `value` when the person selects a tab, chip or picker item. Pair with `value` to control it. */
+  /** Called with the chosen section's `value` when the person selects a section. Pair with `value` to control it. */
   onValueChange?: (value: string) => void
   /** Names the rail, e.g. "Agent settings sections". */
   "aria-label": string
@@ -184,12 +196,12 @@ export interface VerticalTabsRootProps extends Omit<ComponentProps<"div">, "defa
 /**
  * L3 sections held in component state — the lightweight exception (R6.2). For sections that
  * are places, use `RouteVerticalTabs`; it looks and behaves identically. Lays out against its
- * own width: a rail when there is room, a chip strip when narrow, a picker when narrow with
- * more than six sections. Children are `VerticalTabs.Panel`s.
+ * own width: a rail when there is room, and when narrow the horizontal `Tabs` strip above the
+ * content, whose sections that do not fit move into a More menu. Children are `VerticalTabs.Panel`s.
  */
 function VerticalTabsRoot({ items, value, defaultValue, onValueChange, layout: forced, className, children, "aria-label": label, ...rest }: VerticalTabsRootProps) {
   const rootRef = useRef<HTMLDivElement>(null)
-  const layout = useLayout(rootRef, items.length, forced)
+  const layout = useLayout(rootRef, forced)
   const [uncontrolled, setUncontrolled] = useState(defaultValue ?? items[0]?.value ?? "")
   const current = value ?? uncontrolled
   const select = useCallback(
@@ -199,8 +211,6 @@ function VerticalTabsRoot({ items, value, defaultValue, onValueChange, layout: f
     },
     [value, onValueChange]
   )
-  const activeItem = items.find((item) => item.value === current)
-
   return (
     <div {...rest} ref={rootRef} className={cx("fa-vtabs", className)} data-layout={layout}>
       <BaseTabs.Root
@@ -209,40 +219,24 @@ function VerticalTabsRoot({ items, value, defaultValue, onValueChange, layout: f
         orientation={layout === "rail" || layout === "icons" ? "vertical" : "horizontal"}
         className="fa-vtabs-root"
       >
-        {layout === "select" ? (
-          <Menu.Root>
-            <Menu.Trigger className="fa-control fa-vtabs-picker fa-pressable" aria-label={label} data-size="sm">
-              <PickerFace item={activeItem} />
-            </Menu.Trigger>
-            <NavMenuPopup align="start">
-              <Menu.RadioGroup value={current} onValueChange={(next) => select(String(next))}>
-                {items.map((item) => (
-                  <Menu.RadioItem
-                    key={item.value}
-                    value={item.value}
-                    disabled={item.disabled}
-                    className="fa-item fa-menu-item"
-                    data-selected={item.value === current ? "" : undefined}
-                  >
-                    <MenuRowContent item={item} />
-                  </Menu.RadioItem>
-                ))}
-              </Menu.RadioGroup>
-            </NavMenuPopup>
-          </Menu.Root>
-        ) : null}
-        <ListScroller hidden={layout === "select"} value={current} layout={layout}>
-          <BaseTabs.List className="fa-vtabs-list" aria-label={label}>
-            <BaseTabs.Indicator className="fa-vtabs-indicator fa-glide" data-axis="y" />
-            {items.map((item) => (
-              <Tooltip key={item.value} content={item.label} side="inline-end" enabled={layout === "icons"}>
-                <BaseTabs.Tab value={item.value} disabled={item.disabled} className="fa-item fa-vtab">
-                  <ItemContent item={item} />
-                </BaseTabs.Tab>
-              </Tooltip>
-            ))}
-          </BaseTabs.List>
-        </ListScroller>
+        {layout === "tabs" ? (
+          <div className="fa-tabs fa-vtabs-strip">
+            <TabStrip items={items} value={current} select={select} aria-label={label} content={stripContent} menuContent={menuRowContent} />
+          </div>
+        ) : (
+          <ListScroller value={current} layout={layout}>
+            <BaseTabs.List className="fa-vtabs-list" aria-label={label}>
+              <BaseTabs.Indicator className="fa-vtabs-indicator fa-glide" data-axis="y" />
+              {items.map((item) => (
+                <Tooltip key={item.value} content={item.label} side="inline-end" enabled={layout === "icons"}>
+                  <BaseTabs.Tab value={item.value} disabled={item.disabled} className="fa-item fa-vtab">
+                    <ItemContent item={item} />
+                  </BaseTabs.Tab>
+                </Tooltip>
+              ))}
+            </BaseTabs.List>
+          </ListScroller>
+        )}
         <div className="fa-vtabs-content" data-scroll-container>
           {children}
         </div>
@@ -257,7 +251,7 @@ function VerticalTabsPanel({ className, ...rest }: ComponentProps<typeof BaseTab
 
 /**
  * Sections held in component state: `Root` (the selected value, controlled or uncontrolled;
- * a rail, chip strip or picker depending on its own width) and `Panel`. For sections that
+ * a rail or a horizontal tab strip depending on its own width) and `Panel`. For sections that
  * are routes, use `RouteVerticalTabs`.
  */
 export const VerticalTabs = {
@@ -298,67 +292,59 @@ export interface VerticalTabNavProps<T extends VerticalTabItem> {
 }
 
 /**
- * Route navigation for sections, with an active location indicator and responsive rail, chip and picker layouts. Links in a `<nav>`, the
+ * Route navigation for sections, with an active location indicator and a responsive rail. Links in a `<nav>`, the
  * current one with `aria-current="page"`; one row is tabbable and the arrow keys (↑ ↓ in the
- * rail, ← → as chips), Home / End and Space behave as in `VerticalTabs`. Collapses to chips
- * or a picker whose rows are links. Router-agnostic: `RouteVerticalTabs` adapts it.
+ * rail, ← → as tabs), Home / End and Space behave as in `VerticalTabs`. In a narrow container
+ * it becomes `TabNav`'s horizontal strip, whose More menu rows are links. Router-agnostic:
+ * `RouteVerticalTabs` adapts it.
  */
 export function VerticalTabNav<T extends VerticalTabItem>({ items, value, renderLink, layout: forced, className, children, "aria-label": label }: VerticalTabNavProps<T>) {
   const rootRef = useRef<HTMLDivElement>(null)
-  const layout = useLayout(rootRef, items.length, forced)
+  const layout = useLayout(rootRef, forced)
   const activeIndex = items.findIndex((item) => item.value === value)
   const tabbable = activeIndex >= 0 ? activeIndex : 0
-  const orientation = layout === "chips" ? "horizontal" : "vertical"
   const indicatorRef = useRef<HTMLSpanElement>(null)
   const placed = useGlide(indicatorRef, "[data-active]", "y", [value, activeIndex, layout, items.length])
 
   return (
     <div ref={rootRef} className={cx("fa-vtabs", className)} data-layout={layout}>
       <div className="fa-vtabs-root">
-        {layout === "select" ? (
-          <Menu.Root>
-            <Menu.Trigger className="fa-control fa-vtabs-picker fa-pressable" aria-label={label} data-size="sm">
-              <PickerFace item={items[activeIndex]} />
-            </Menu.Trigger>
-            <NavMenuPopup align="start">
-              {items.map((item, index) => (
-                <Menu.LinkItem
-                  key={item.value}
-                  closeOnClick
-                  label={item.label}
-                  data-selected={index === activeIndex ? "" : undefined}
-                  render={renderLink(item, { className: "fa-item fa-menu-item", "data-value": item.value })}
-                >
-                  <MenuRowContent item={item} />
-                </Menu.LinkItem>
-              ))}
-            </NavMenuPopup>
-          </Menu.Root>
-        ) : null}
-        <ListScroller as="nav" label={label} hidden={layout === "select"} value={value} layout={layout}>
-          <div className="fa-vtabs-list" data-roving-group="">
-            <span ref={indicatorRef} className="fa-vtabs-indicator fa-glide" aria-hidden hidden={!placed || layout === "chips"} />
-            {items.map((item, index) => {
-              const active = index === activeIndex
-              return (
-                <Fragment key={item.value}>
-                  <Tooltip content={item.label} side="inline-end" enabled={layout === "icons"}>
-                    {renderLink(item, {
-                      className: "fa-item fa-vtab",
-                      "data-value": item.value,
-                      "data-active": active ? "" : undefined,
-                      "data-roving": "",
-                      "aria-current": active ? "page" : undefined,
-                      tabIndex: index === tabbable ? 0 : -1,
-                      onKeyDown: (event) => rovingKeyDown(event, orientation),
-                      children: <ItemContent item={item} />,
-                    })}
-                  </Tooltip>
-                </Fragment>
-              )
-            })}
-          </div>
-        </ListScroller>
+        {layout === "tabs" ? (
+          <TabNavStrip
+            items={items}
+            value={value}
+            renderLink={renderLink}
+            aria-label={label}
+            className="fa-vtabs-strip"
+            content={stripContent}
+            menuContent={menuRowContent}
+          />
+        ) : (
+          <ListScroller as="nav" label={label} value={value} layout={layout}>
+            <div className="fa-vtabs-list" data-roving-group="">
+              <span ref={indicatorRef} className="fa-vtabs-indicator fa-glide" aria-hidden hidden={!placed} />
+              {items.map((item, index) => {
+                const active = index === activeIndex
+                return (
+                  <Fragment key={item.value}>
+                    <Tooltip content={item.label} side="inline-end" enabled={layout === "icons"}>
+                      {renderLink(item, {
+                        className: "fa-item fa-vtab",
+                        "data-value": item.value,
+                        "data-active": active ? "" : undefined,
+                        "data-roving": "",
+                        "aria-current": active ? "page" : undefined,
+                        tabIndex: index === tabbable ? 0 : -1,
+                        onKeyDown: (event) => rovingKeyDown(event, "vertical"),
+                        children: <ItemContent item={item} />,
+                      })}
+                    </Tooltip>
+                  </Fragment>
+                )
+              })}
+            </div>
+          </ListScroller>
+        )}
         <div className="fa-vtabs-content" data-scroll-container>
           {children}
         </div>

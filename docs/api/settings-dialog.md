@@ -2,7 +2,7 @@
 
 The settings pattern (R13.2): header with icon tile, title and a data subtitle; an L3
 rail of sections beside a scrolling pane; a pinned footer. The rail is the shared
-VerticalTabs, so it becomes a chip strip (or a picker) when the dialog is narrow — on a
+VerticalTabs, so it becomes a horizontal tab strip when the dialog is narrow — on a
 phone sheet, in a small window. Its height is fixed so switching sections never
 resizes the dialog.
 

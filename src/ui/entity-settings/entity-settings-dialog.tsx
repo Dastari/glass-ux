@@ -424,7 +424,7 @@ export function EntitySettingsDialog({
   return (
     <Dialog.Root {...guard.rootProps}>
       {/* Focus starts on the open tab, not the Close button: its tooltip would take the first Esc. */}
-      <Dialog.Popup size={size} kind="settings" initialFocus={() => rootRef.current?.closest(".fa-dialog")?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"], .fa-vtabs-picker') ?? true}>
+      <Dialog.Popup size={size} kind="settings" initialFocus={() => rootRef.current?.closest(".fa-dialog")?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]') ?? true}>
         {body}
         {guard.confirm}
       </Dialog.Popup>

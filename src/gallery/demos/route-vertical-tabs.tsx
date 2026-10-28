@@ -75,7 +75,7 @@ export default function VerticalTabsSection() {
 
       <Specimen
         title="Routes, narrow"
-        description="The same route rail in a narrow container: a picker whose rows are links."
+        description="The same route rail in a narrow container: a tab strip whose tabs and More menu rows are links."
         specimenKey="vertical-tabs:default:1"
       >
         <div className="w-90 max-w-full">

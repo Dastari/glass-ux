@@ -16,4 +16,4 @@ chip and picker entry is a link.
 | children | `ReactNode` | See type | no | — | The section's content: normally the route's `<Outlet />`. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | items | `RouteTabItem[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
-| layout | `VerticalTabsLayout \| undefined` | "select", "rail", "icons", "chips" | no | — | Layout or presentation mode. |
+| layout | `VerticalTabsLayout \| undefined` | "select", "rail", "icons", "tabs", "chips" | no | — | Layout or presentation mode. |

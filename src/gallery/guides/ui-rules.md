@@ -198,8 +198,9 @@ follows a fine pointer and a glint on the rim nearest it.
 - **R6.5** A view does not repeat the breadcrumb's last crumb as its title.
 - **R6.6** Tabs that overflow move into a menu, and the active tab always stays visible.
 - **R6.7** On phones the Rail becomes the TabBar, a floating pill above the safe area.
-- **R6.8** Below the navigation's container threshold, section navigation gives way to chips,
-  a picker or the section drawer. Show a section drawer only when it holds real navigation.
+- **R6.8** Below the navigation's container threshold, a section rail becomes the horizontal
+  tab strip (its overflow in More, R6.6), and section navigation may give way to the section
+  drawer. Show a section drawer only when it holds real navigation.
 - **R6.9** A setting inherited from a broader level (workspace → organisation → entity) shows
   where it comes from and which level enforces it. History is not filtered by scope switches.
 - **R6.10** Routed tabs are places; local tabs and Segmented are presentation choices.

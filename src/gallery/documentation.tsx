@@ -388,7 +388,7 @@ export function ComponentDocumentation({ id }: { id: string }) {
       <aside className="gallery-document-rail">
         <VerticalTabNav
           aria-label="On this page"
-          layout={phone ? "chips" : "rail"}
+          layout={phone ? "tabs" : "rail"}
           items={documentSections}
           value={active}
           renderLink={(item, props) => (

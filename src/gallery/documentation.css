@@ -202,10 +202,6 @@
       z-index: var(--z-shell);
       background: var(--canvas);
     }
-    .gallery-document-rail .fa-vtabs[data-layout="chips"] .fa-vtabs-scroll {
-      padding-block: 0;
-      max-height: none;
-    }
   }
 }
 

@@ -4,6 +4,28 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.11.3
+
+Focus rings no longer cut off by the containers around them, and more security icons.
+
+### Added
+
+- `--focus-reach` (how far a focus ring or halo paints outside a control) and the
+  `fa-focus-room` class, which moves a clipping container's edge out by that much without
+  moving its content. Rule R11.10 and the layout contract describe their use in applications.
+- Icons: `camera-grid-1`, `camera-grid-4` and `camera-grid-9` (camera layouts), `user-check`,
+  `user-x`, `shield-check` and `shield-x`.
+
+### Fixed
+
+- Focus rings and the text-entry halo were clipped by the container around them: the settings
+  dialog's pane (`EntitySettingsDialog` and settings dialogs), disclosures, truncated titles
+  holding links (entity identity, result rows, assistant cards, field labels, the drill path,
+  map credits), the JSON tree, Kanban columns and the map's list view. These now leave the
+  ring its room.
+- DataTable cards, Scheduler events, JSON tree rows, a scrolling panel body and DataTable
+  column grips draw their focus ring inside, as rows do.
+
 ## 0.11.2
 
 Scheduler and DragDrop fixes from timeline adoption.

@@ -3,6 +3,14 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.11.2 → 0.11.3
+
+No code changes are required. A scrolling or `overflow: hidden` wrapper of your own that
+holds controls at its edge can add `fa-focus-room`, or `var(--focus-reach)` to its padding,
+so their focus rings are not cut off; remove any padding added to work around the settings
+dialog's pane. The settings dialog's pane, the Kanban board and the JSON tree keep their
+content where it was but extend 4px further under their scrollbars.
+
 ## 0.11.1 → 0.11.2
 
 No code changes are required. Workarounds for these fixes can go: stopping pointer events

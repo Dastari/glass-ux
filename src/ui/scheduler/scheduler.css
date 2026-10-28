@@ -175,10 +175,11 @@
     transition-duration: var(--duration-fast);
     transition-timing-function: var(--ease-standard);
   }
+  /* Events fill their column or row of a scrolling grid, so the ring sits inside them. */
   .fa-sch-ev:focus-visible {
     z-index: 3;
     outline: var(--focus-ring-width) solid var(--accent-ring);
-    outline-offset: var(--focus-ring-offset);
+    outline-offset: calc(var(--focus-ring-width) * -1);
   }
   .fa-sch-ev[data-editable] {
     cursor: grab;

@@ -323,8 +323,8 @@
     min-height: 0;
   }
   .fa-settings .fa-vtabs-content {
-    padding-inline-end: var(--space-4);
-    padding-bottom: var(--space-2);
+    padding-inline-end: calc(var(--space-4) + var(--focus-reach));
+    padding-bottom: calc(var(--space-2) + var(--focus-reach));
   }
 }
 

@@ -103,9 +103,13 @@
     background-color: var(--accent);
     animation: fa-grow var(--duration-glide) var(--ease-spring) backwards;
   }
+  /* The panel scrolls, so it clips: its edge sits --focus-reach outside the content
+     (fa-focus-room) and a control at the start or top keeps its whole ring. */
   .fa-vtabs-content {
     min-width: 0;
     min-height: 0;
+    padding: var(--focus-reach);
+    margin: calc(var(--focus-reach) * -1);
   }
   .fa-vtabs-panel {
     min-width: 0;

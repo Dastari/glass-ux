@@ -265,6 +265,13 @@ follows a fine pointer and a glint on the rim nearest it.
 - **R11.8** Selection follows the platform: checkboxes, Shift-click ranges, ⌘/Ctrl-click
   toggles.
 - **R11.9** Tones mean the same thing on buttons, badges, notices and status dots.
+- **R11.10** Nothing clips a focus ring. A container that clips (it scrolls or hides
+  overflow) keeps `--focus-reach` between its edge and the controls inside it: give it
+  `fa-focus-room`, add `var(--focus-reach)` to its own padding, or, where it clips only to
+  truncate text or round its corners, use `overflow: clip` with
+  `overflow-clip-margin: var(--focus-reach)`. A clipped flex or grid item then needs
+  `min-width: 0`, which `overflow: hidden` implied, and the margin must be a plain length
+  (Chromium drops `calc()` there). Rows and cards that span a scroller take an inset ring.
 
 ## R12 · Actions
 

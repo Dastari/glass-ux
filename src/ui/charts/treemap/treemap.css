@@ -85,7 +85,8 @@
     min-width: 0;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     list-style: none;
   }
   .fa-chart-path-item {

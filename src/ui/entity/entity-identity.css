@@ -228,7 +228,8 @@
   .fa-entity-name {
     display: block;
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -289,7 +290,8 @@
   }
   .fa-entity[data-tier="header"] .fa-entity-title:not(:where(.fa-entity[data-tier="header"] .fa-entity *)) {
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     font-size: var(--type-headline-size);
     line-height: var(--type-headline-line);
     font-weight: var(--type-headline-weight);
@@ -306,7 +308,9 @@
   }
   .fa-entity[data-tier="header"] .fa-entity-facts:not(:where(.fa-entity[data-tier="header"] .fa-entity *)) {
     max-width: 100%;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+    min-width: 0; /* overflow: clip keeps the content's minimum size */
     color: var(--fg-muted);
     font-size: var(--type-body-size);
     line-height: var(--type-body-line);
@@ -451,7 +455,8 @@
     --_line: var(--type-subtitle-line);
     flex: 0 1 auto;
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     color: var(--fg);
     font-size: var(--_size);
     line-height: var(--_line);
@@ -465,7 +470,8 @@
     --_line: var(--type-caption-line);
     display: block;
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     color: var(--fg-muted);
     font-size: var(--_size);
     line-height: var(--_line);
@@ -539,7 +545,8 @@
   .fa-entity[data-tier="row"] .fa-entity-title:not(:where(.fa-entity[data-tier="row"] .fa-entity *)),
   .fa-entity[data-tier="row"] .fa-entity-secondary:not(:where(.fa-entity[data-tier="row"] .fa-entity *)) {
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -628,7 +635,8 @@
   }
   .fa-entity[data-tier="chip"] .fa-entity-title:not(:where(.fa-entity[data-tier="chip"] .fa-entity *)) {
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     text-overflow: ellipsis;
     font-variant-numeric: tabular-nums;
   }

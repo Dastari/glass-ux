@@ -6,6 +6,9 @@
   .fa-ai-json {
     --_indent: var(--space-4);
     min-width: 0;
+    /* It scrolls sideways, so it leaves its buttons room for their rings (fa-focus-room). */
+    padding: var(--focus-reach);
+    margin: calc(var(--focus-reach) * -1);
     overflow-x: auto;
     font-family: var(--font-mono);
     font-size: var(--type-mono-size);
@@ -25,9 +28,10 @@
     white-space: nowrap;
     border-radius: var(--radius-line);
   }
+  /* A row spans the tree, so its ring sits inside it. */
   .fa-ai-json-row:focus-visible {
     outline: var(--focus-ring-width) solid var(--accent-ring);
-    outline-offset: var(--focus-ring-offset);
+    outline-offset: calc(var(--focus-ring-width) * -1);
   }
   .fa-ai-json-spacer {
     display: inline-grid;

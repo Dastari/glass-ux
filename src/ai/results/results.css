@@ -56,12 +56,15 @@
   }
   .fa-ai-result-row-title {
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     font-weight: var(--weight-medium);
   }
   .fa-ai-result-row-meta {
     grid-column: 1 / -1;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+    min-width: 0; /* overflow: clip keeps the content's minimum size */
     color: var(--fg-muted);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);

@@ -27,7 +27,8 @@
   }
   .fa-field-label {
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     text-overflow: ellipsis;
     white-space: nowrap;
   }

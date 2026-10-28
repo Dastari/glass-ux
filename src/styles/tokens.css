@@ -102,6 +102,11 @@
     --focus-ring-width: 2px;
     --focus-ring-offset: 2px;
     --focus-halo: 3px; /* text-entry focus halo */
+    /* How far a focus ring or halo paints outside its control (the ring's width plus its
+       offset, beyond the halo): the room a clipping container leaves between its edge and
+       the controls inside it. A plain length, because Chromium drops a calc() or max()
+       in overflow-clip-margin. */
+    --focus-reach: 4px;
     --divider: var(--border-width) solid var(--line);
 
     /* ── Typography ────────────────────────────────────────────────────────── */

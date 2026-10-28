@@ -171,16 +171,31 @@
     transition-delay: 0s, var(--_lag);
   }
 
+  /* ── Focus room ──────────────────────────────────────────────────────────── */
+  /* A container that clips (it scrolls, or hides overflow) cuts off the focus ring or
+     halo of a control flush with its edge. This moves the clip edge out by
+     --focus-reach on every side and takes the space back with a negative margin, so
+     the content stays where it was. On an element with its own padding, add
+     var(--focus-reach) to that padding instead. */
+  .fa-focus-room {
+    padding: var(--focus-reach);
+    margin: calc(var(--focus-reach) * -1);
+  }
+
   /* ── Collapse ────────────────────────────────────────────────────────────── */
   /* A disclosure panel opening and closing (Accordion, Disclosure, section drawer groups,
      reasoning and tool details). The one sanctioned height animation: the content below
      must move with the panel, which no transform can do. It runs once per toggle on
      Base UI's measured --collapsible-panel-height (a component may point --_collapse-h at
      another measure, as Accordion does) and the content fades with it. */
+  /* Clipped while its height animates, with room for the focus rings of the controls at
+     its edges (where overflow-clip-margin is supported). */
   .fa-collapse {
     --_collapse-h: var(--collapsible-panel-height);
+    min-height: 0; /* overflow: clip keeps the content's minimum size */
     height: var(--_collapse-h);
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     transition-property: height, opacity;
     transition-duration: var(--duration-base), var(--duration-fast);
     transition-timing-function: var(--ease-standard);

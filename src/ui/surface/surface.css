@@ -96,6 +96,10 @@
   .fa-panel[data-scroll] > .fa-panel-body {
     overflow-y: auto;
   }
+  /* Focusable when it scrolls (R20.6); it fills the panel, which clips, so the ring is inset. */
+  .fa-panel-body:focus-visible {
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
   /* Contain the wheel only along an axis that overflows (PanelBody publishes the edges), so
      a body whose content fits passes the wheel to the page around the panel. */
   .fa-panel[data-scroll] > .fa-panel-body:is([data-scrolled-top], [data-scrolled-bottom]) {

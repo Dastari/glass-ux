@@ -33,7 +33,11 @@
     align-items: stretch;
     gap: var(--gap-panels);
     min-height: 0;
-    padding-block-end: var(--space-2);
+    /* It scrolls, so it clips: room for the rings of the column headers' buttons
+       (fa-focus-room), with the columns where they were. */
+    margin: calc(var(--focus-reach) * -1);
+    padding: var(--focus-reach);
+    padding-block-end: calc(var(--space-2) + var(--focus-reach));
     overflow-x: auto;
     overscroll-behavior-x: contain;
   }

@@ -212,6 +212,9 @@
     align-items: center;
     gap: var(--space-3) var(--space-5);
     overflow-x: auto;
+    /* It scrolls, so it clips: room for the last column's focus rings (fa-focus-room). */
+    margin-inline-end: calc(var(--focus-reach) * -1);
+    padding-inline-end: var(--focus-reach);
     padding-bottom: var(--space-1);
   }
   .gallery-matrix-head,
@@ -332,7 +335,10 @@
   .gallery-lab-frame {
     position: relative;
     container-type: size;
-    overflow: hidden;
+    /* The frame is the container being demonstrated, so it clips what overflows it, but
+       leaves focus rings their room: they stay within the dashed outline. */
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     border-radius: var(--radius-thumb);
     outline: var(--border-width) dashed var(--line-strong);
     outline-offset: var(--space-1);

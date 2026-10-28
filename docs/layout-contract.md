@@ -24,6 +24,20 @@ focus do not move buttons or menus after the user has targeted them.
 Choose padding explicitly when placing content directly in a Surface. A search control owns
 its internal icon/text spacing; its surrounding pane owns the distance from the pane edge.
 
+Focus rings and the text-entry halo paint up to `--focus-reach` outside a control, so a
+container that clips cuts off a control flush with its edge (R11.10). Library panes,
+dialog bodies and disclosures leave that room. An application's own scrolling or
+`overflow: hidden` wrapper needs it too. Add `fa-focus-room`, which moves the clip edge out
+and takes the space back with a negative margin so nothing shifts, or add the reach to the
+wrapper's own padding.
+
+```css
+.job-list {
+  overflow-y: auto;
+  padding: calc(var(--space-3) + var(--focus-reach)); /* its own padding, plus the room */
+}
+```
+
 Do not put a group of panels inside another panel solely to draw a frame. A group heading,
 toolbar and its panels belong on the canvas. Repeated cards use the `card` material to avoid
 one backdrop-blur pass per item. Code blocks and surfaces being demonstrated retain their

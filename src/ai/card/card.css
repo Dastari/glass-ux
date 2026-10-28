@@ -104,7 +104,9 @@
     min-width: 0;
   }
   .fa-ai-card-title {
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+    min-width: 0; /* overflow: clip keeps the content's minimum size */
     color: var(--fg);
     font-size: var(--type-label-size);
     line-height: var(--type-label-line);

@@ -109,7 +109,8 @@
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
     white-space: nowrap;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     text-overflow: ellipsis;
   }
   .fa-pin-map-credit a {

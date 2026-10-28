@@ -915,9 +915,10 @@
     background-color: var(--accent-soft);
     border-color: var(--accent-line);
   }
+  /* A card spans the scrolling list, as a row does, so its ring sits inside it. */
   .fa-dt-card:focus-visible {
     outline: var(--focus-ring-width) solid var(--accent-ring);
-    outline-offset: var(--focus-ring-offset);
+    outline-offset: calc(var(--focus-ring-width) * -1);
   }
   /* A card: [check] title (subtitle beneath) · status · actions, then one wrapping line
      of label/value fields ending in the "+N" toggle. Empty grid tracks take no room: the
@@ -1523,6 +1524,9 @@
     .fa-dt-head-row:not(:hover, :focus-within) .fa-dt-column-grip {
       opacity: 0;
     }
+  }
+  .fa-dt-column-grip:focus-visible {
+    outline-offset: calc(var(--focus-ring-width) * -1);
   }
   .fa-dt-column-grip > svg {
     inline-size: var(--icon-sm);

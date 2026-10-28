@@ -110,7 +110,11 @@ test("@responsive a narrow board shows one column at a time with a switcher", as
   const board = page.getByRole("region", { name: "Narrow board", exact: true });
   await board.scrollIntoViewIfNeeded();
   const scroller = board.locator(".fa-kanban-scroller");
-  const width = (await scroller.boundingBox())!.width;
+  // The column fills the scroller's content box (its padding is the room for focus rings).
+  const width = await scroller.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return element.clientWidth - parseFloat(style.paddingInlineStart) - parseFloat(style.paddingInlineEnd);
+  });
   const column = (await board.locator("[data-kanban-column='new']").boundingBox())!;
   expect(Math.abs(column.width - width)).toBeLessThan(2);
   await board.getByRole("button", { name: "Next column" }).click();

@@ -112,6 +112,9 @@ decides when to publish. The local route:
   DragDrop keyboard travel reaches only rendered (virtualised) rows, so keyboard moves between
   far rows use the event's arrow keys. `grip.svg` differs from its authoring definition.
 - File context menus have no icon for "Copy path".
+- Focus room (R11.10, `e2e/focus-reach.spec.ts`): Safari ignores `overflow-clip-margin`, so
+  truncated titles and clipped frames still cut rings there; a shaded (bar-only) window cuts
+  its title-bar buttons' rings by 1px.
 - Native-speaker review: "chroma" in the Arabic and Hebrew colour picker messages, and
   "preview class" in Japanese, Korean, Arabic and Hebrew (`results.previewUnavailable`).
 - Next.js support is verified with webpack (`pnpm test:next`), not Turbopack; forced colours

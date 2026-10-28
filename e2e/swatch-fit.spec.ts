@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
-/** The header toolbar's controls in the order they give way (fa-fit-1 … fa-fit-4). */
-const FOLD_ORDER = ["Palette", "Density", "Animations", "Material"] as const;
+/** The header toolbar's controls in the order they give way (fa-fit-0 … fa-fit-4). */
+const FOLD_ORDER = ["Palette", "Blur", "Density", "Animations", "Material"] as const;
 
 interface ToolbarState {
   /** Each control's data-form, by its accessible name. */
@@ -100,16 +100,16 @@ test.describe("docs toolbar fit", () => {
       // The mode switch keeps its icons whenever the toolbar shows.
       if (state.shown) expect(state.forms.Mode).toBe("icons");
     }
-    expect(folded(seen[1920]!)).toEqual([false, false, false, false]);
-    // Twelve palettes: the palette folds to its menu first, and already at 1500px.
-    expect(folded(seen[1500]!)).toEqual([true, false, false, false]);
-    // The palette gives way before any segmented control.
-    expect(folded(seen[1280]!)).toEqual([true, false, false, false]);
-    expect(seen[1024]!.shown).toBe(true);
-    // Narrower, the segmented controls follow (how many depends on their chosen labels).
-    expect(folded(seen[1024]!).slice(0, 2)).toEqual([true, true]);
-    // Below every control folded, one Appearance button holds them.
-    for (const width of [900, 800, 768]) expect(seen[width]!.shown).toBe(false);
+    expect(folded(seen[1920]!)).toEqual([false, false, false, false, false]);
+    // Twelve palettes: the palette folds to its menu first, and alone at 1500px.
+    expect(folded(seen[1500]!)).toEqual([true, false, false, false, false]);
+    // The palette gives way before any segmented control; Blur is the first of those.
+    expect(folded(seen[1366]!)).toEqual([true, true, false, false, false]);
+    // Narrower, the other segmented controls follow (how many depends on their labels).
+    expect(seen[1280]!.shown).toBe(true);
+    expect(folded(seen[1280]!).slice(0, 2)).toEqual([true, true]);
+    // When even the folded controls would not fit, one Appearance button holds them.
+    for (const width of [1024, 900, 800, 768]) expect(seen[width]!.shown).toBe(false);
     const appearance = page
       .locator(".docs-header")
       .getByRole("button", { name: "Appearance", exact: true });
@@ -180,14 +180,15 @@ test.describe("docs toolbar fit", () => {
       expect(changes(shrinking, index), `${name} while shrinking`).toBeLessThanOrEqual(1);
       expect(changes(growing, index), `${name} while growing`).toBeLessThanOrEqual(1);
     }
-    expect(shrinking.at(-1)).toEqual([true, true, true, true]);
-    expect(growing.at(-1)).toEqual([false, false, false, false]);
+    expect(shrinking.at(-1)).toEqual([true, true, true, true, true]);
+    expect(growing.at(-1)).toEqual([false, false, false, false, false]);
   });
 
   test("the folded palette is a menu button that keeps its width and its keyboard path", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 1024, height: 800 });
+    // Wide enough for the toolbar, narrow enough that the palette has folded.
+    await page.setViewportSize({ width: 1366, height: 800 });
     await page.goto("components/swatch-picker/");
     const toolbar = page.getByRole("region", { name: "Appearance controls" });
     const group = toolbar.getByRole("group", { name: "Palette", exact: true });

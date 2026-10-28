@@ -122,6 +122,9 @@ export function shieldPath(top = 3, shoulder = 5.5, side = 11, foot = 20.75, hal
   return `${d(right)}${c1}${c2}${cont(d(left))}Z`
 }
 def("shield", () => [path(shieldPath(), "t"), path(shieldPath())])
+// Outcomes inside the shield: passed and failed.
+def("shield-check", () => [path(shieldPath(), "t"), path(shieldPath()), path("M8.75 11.75L11 14L15.25 9.75")])
+def("shield-x", () => [path(shieldPath(), "t"), path(shieldPath()), path("M9.75 9.5L14.25 14"), path("M14.25 9.5L9.75 14")])
 
 /** Four-point sparkle: concave sides are circular arcs through adjacent tips. */
 export function sparkle(cx, cy, R, k = 1.25) {

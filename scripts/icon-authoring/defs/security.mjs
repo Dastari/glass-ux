@@ -1,4 +1,4 @@
-// Physical security and access: cameras and their recorder, doors, gates and barriers, the
+// Physical security and access: cameras, their recorder and monitor layouts, doors, gates and barriers, the
 // credentials presented at them (cards, NFC, codes, faces, plates) and the intercoms that
 // answer them. Front or side views on the device keylines, tinted on the part that carries
 // the meaning. The contactless arcs are one shared part (`nfc`, `access-reader`,
@@ -71,6 +71,23 @@ def("nvr", () => [
   path("M14.5 10H18.5"),
   path("M14.5 14H18.5"),
 ])
+
+/** A monitor wall split into n × n camera tiles: the frame, tinted, with its dividers. */
+const cameraGrid = (n) => {
+  const [x, y, w, h] = [2.5, 4.5, 19, 15]
+  const cuts = Array.from({ length: n - 1 }, (_, i) => i + 1)
+  return [
+    rect(x, y, w, h, 2.5, "t"),
+    rect(x, y, w, h, 2.5),
+    ...cuts.map((i) => path(`M${fmt(x + (w * i) / n)} ${y}V${y + h}`)),
+    ...cuts.map((i) => path(`M${x} ${fmt(y + (h * i) / n)}H${x + w}`)),
+  ]
+}
+
+// Camera layouts: one, four and nine feeds on the monitor wall.
+def("camera-grid-1", () => cameraGrid(1))
+def("camera-grid-4", () => cameraGrid(2))
+def("camera-grid-9", () => cameraGrid(3))
 
 // Siren: a beacon dome on its base, with three rays.
 def("siren", () => {

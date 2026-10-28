@@ -29,6 +29,15 @@ def("user-plus", () => {
   const p = person(9.5, 7.75, 4, 2.5, 16.5, 20.5, 14.5)
   return [circle(9.5, 7.75, 4, "t"), circle(9.5, 7.75, 4), path(d([p.shoulders])), path("M19 7.75V13.25"), path("M16.25 10.5H21.75")]
 })
+// Outcomes beside the person, on the add modifier's footprint: admitted and refused.
+def("user-check", () => {
+  const p = person(9.5, 7.75, 4, 2.5, 16.5, 20.5, 14.5)
+  return [circle(9.5, 7.75, 4, "t"), circle(9.5, 7.75, 4), path(d([p.shoulders])), path("M15.75 10.75L18.25 13.25L21.75 9.25")]
+})
+def("user-x", () => {
+  const p = person(9.5, 7.75, 4, 2.5, 16.5, 20.5, 14.5)
+  return [circle(9.5, 7.75, 4, "t"), circle(9.5, 7.75, 4), path(d([p.shoulders])), path("M16.75 8.25L21.25 12.75"), path("M21.25 8.25L16.75 12.75")]
+})
 def("account", () => {
   const head = [12, 9.25]
   const hr = 3.25

@@ -460,6 +460,42 @@ export const IconCameraDome = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconCameraGrid1 = /* @__PURE__ */ createIcon(
+  "camera-grid-1",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+      <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+    </>
+  )
+)
+
+export const IconCameraGrid4 = /* @__PURE__ */ createIcon(
+  "camera-grid-4",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+      <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+      <path d="M12 4.5V19.5" />
+      <path d="M2.5 12H21.5" />
+    </>
+  )
+)
+
+export const IconCameraGrid9 = /* @__PURE__ */ createIcon(
+  "camera-grid-9",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+      <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+      <path d="M8.83 4.5V19.5" />
+      <path d="M15.17 4.5V19.5" />
+      <path d="M2.5 9.5H21.5" />
+      <path d="M2.5 14.5H21.5" />
+    </>
+  )
+)
+
 export const IconCameraPtz = /* @__PURE__ */ createIcon(
   "camera-ptz",
   () => (
@@ -3134,6 +3170,29 @@ export const IconSharp = /* @__PURE__ */ createIcon(
   () => <path d="M20 4H8.41A1 1 0 0 0 7.71 4.29L4.71 7.29A1 1 0 0 0 4.71 8.71L7.71 11.71A1 1 0 0 0 8.41 12H15.59A1 1 0 0 1 16.29 12.29L19.29 15.29A1 1 0 0 1 19.29 16.71L16.29 19.71A1 1 0 0 1 15.59 20H4" />
 )
 
+export const IconShieldCheck = /* @__PURE__ */ createIcon(
+  "shield-check",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M12 3L17.67 5.03A2 2 0 0 1 19 6.91V11C19 15.35 16.10 18.85 12 20.75C7.90 18.85 5 15.35 5 11V6.91A2 2 0 0 1 6.33 5.03L12 3Z" />
+      <path d="M12 3L17.67 5.03A2 2 0 0 1 19 6.91V11C19 15.35 16.10 18.85 12 20.75C7.90 18.85 5 15.35 5 11V6.91A2 2 0 0 1 6.33 5.03L12 3Z" />
+      <path d="M8.75 11.75L11 14L15.25 9.75" />
+    </>
+  )
+)
+
+export const IconShieldX = /* @__PURE__ */ createIcon(
+  "shield-x",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M12 3L17.67 5.03A2 2 0 0 1 19 6.91V11C19 15.35 16.10 18.85 12 20.75C7.90 18.85 5 15.35 5 11V6.91A2 2 0 0 1 6.33 5.03L12 3Z" />
+      <path d="M12 3L17.67 5.03A2 2 0 0 1 19 6.91V11C19 15.35 16.10 18.85 12 20.75C7.90 18.85 5 15.35 5 11V6.91A2 2 0 0 1 6.33 5.03L12 3Z" />
+      <path d="M9.75 9.5L14.25 14" />
+      <path d="M14.25 9.5L9.75 14" />
+    </>
+  )
+)
+
 export const IconShield = /* @__PURE__ */ createIcon(
   "shield",
   () => (
@@ -3710,6 +3769,18 @@ export const IconUsb = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconUserCheck = /* @__PURE__ */ createIcon(
+  "user-check",
+  () => (
+    <>
+      <circle className="fa-icon-tint" cx="9.5" cy="7.75" r="4" />
+      <circle cx="9.5" cy="7.75" r="4" />
+      <path d="M2.5 20.5A7.08 7.08 0 0 1 16.5 20.5" />
+      <path d="M15.75 10.75L18.25 13.25L21.75 9.25" />
+    </>
+  )
+)
+
 export const IconUserPlus = /* @__PURE__ */ createIcon(
   "user-plus",
   () => (
@@ -3719,6 +3790,19 @@ export const IconUserPlus = /* @__PURE__ */ createIcon(
       <path d="M2.5 20.5A7.08 7.08 0 0 1 16.5 20.5" />
       <path d="M19 7.75V13.25" />
       <path d="M16.25 10.5H21.75" />
+    </>
+  )
+)
+
+export const IconUserX = /* @__PURE__ */ createIcon(
+  "user-x",
+  () => (
+    <>
+      <circle className="fa-icon-tint" cx="9.5" cy="7.75" r="4" />
+      <circle cx="9.5" cy="7.75" r="4" />
+      <path d="M2.5 20.5A7.08 7.08 0 0 1 16.5 20.5" />
+      <path d="M16.75 8.25L21.25 12.75" />
+      <path d="M21.25 8.25L16.75 12.75" />
     </>
   )
 )

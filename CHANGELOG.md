@@ -4,6 +4,15 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.11.4
+
+No changes to the package.
+
+### Fixed
+
+- The documentation toolbar's fit tests follow its current controls (Blur, and the Flat /
+  Glass switch beside it), so the suite passes again.
+
 ## 0.11.3
 
 Focus rings no longer cut off by the containers around them, and more security icons.

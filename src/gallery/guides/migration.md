@@ -3,6 +3,10 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.11.3 → 0.11.4
+
+No code changes are required.
+
 ## 0.11.2 → 0.11.3
 
 No code changes are required. A scrolling or `overflow: hidden` wrapper of your own that

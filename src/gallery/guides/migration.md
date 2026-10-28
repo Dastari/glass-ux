@@ -3,6 +3,14 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.11.4 → 0.11.5
+
+No code changes are required. In narrow containers vertical tabs now show the horizontal tab
+strip with a More menu instead of chips or a picker; replace `layout="chips"` or
+`layout="select"` with `layout="tabs"`, and update tests or styles that targeted
+`.fa-vtabs-picker` or `[data-layout="chips"]`. A section past the strip's width is reached
+through More.
+
 ## 0.11.3 → 0.11.4
 
 No code changes are required.

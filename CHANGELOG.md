@@ -4,6 +4,21 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.11.5
+
+Vertical tabs become horizontal tabs in narrow containers.
+
+### Changed
+
+- `VerticalTabs`, `VerticalTabNav` and `RouteVerticalTabs` show the `Tabs` strip (underline,
+  More menu) above the content below 36rem of container width, in place of the chip strip
+  and, past six sections, the picker. Sections that do not fit move into More; the current
+  section always stays in the strip, and section markers and counts show in both. This
+  affects settings dialogs on phones and in small windows.
+- `layout` takes `"tabs"`; `"chips"` and `"select"` are deprecated and render `"tabs"`.
+  `VERTICAL_TABS_MAX_CHIPS` is deprecated and no longer used.
+- Rule R6.8: a section rail becomes the horizontal tab strip below its container threshold.
+
 ## 0.11.4
 
 No changes to the package.

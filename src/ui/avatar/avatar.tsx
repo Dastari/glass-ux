@@ -5,7 +5,7 @@ import { Avatar as BaseAvatar } from "@base-ui/react/avatar"
 import type { ComponentProps } from "react"
 import { cx } from "../../lib/cx.js"
 
-export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl"
+export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl"
 export type Presence = "online" | "away" | "busy" | "offline"
 
 /** Fallback tints: the eight identity colours (src/styles/identity.css), shared with organisations. */

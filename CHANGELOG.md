@@ -4,6 +4,31 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.11.7
+
+An editable avatar and a relationship canvas.
+
+### Added
+
+- `EditableAvatar` and `AvatarDialog` in `glass-ux/avatar`: people change their photo from an
+  edit button on the avatar, or by dropping a photo on it. The dialog takes a dropped, browsed
+  or pasted photo, checks it against `requirements` (types, bytes, minimum dimensions and the
+  application's own `validate`), and positions it in a round crop by drag, pinch, wheel, keys
+  or the zoom slider. `onSave` receives the cropped image, the original and the crop, with an
+  abort signal and a progress reporter; a failed save keeps the dialog open with its reason.
+  `onRemove` adds Remove photo. The avatar shows the result at once. `checkAvatarFile`,
+  `readImageSize`, `cropImage` and `describeAvatarRequirements` work without React. Messages
+  in every language pack.
+- Avatar size `2xl` (96px) for profile pages.
+- `glass-ux/relationship-canvas`: `RelationshipCanvas`, record cards joined row to row on a
+  pannable, zoomable dot grid, for schemas, class diagrams, API resource maps and workflows.
+  Edges run between rows on different cards or the same card, in cycles and in parallel. Cards
+  move by dragging their header or with Shift and the arrow keys, and Auto layout arranges
+  them; positions are reported through `onPositionsChange`. Selection draws a card's edges in
+  the accent. Messages in every language pack.
+- TopologyCanvas draws the same dot grid behind the map, panning and scaling with the camera
+  (`grid={false}` turns it off). The grid is the shared `fa-dot-grid` recipe.
+
 ## 0.11.6
 
 A signature pad.

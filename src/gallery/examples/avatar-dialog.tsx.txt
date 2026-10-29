@@ -1,0 +1,66 @@
+import { useState } from "react";
+import { IconImage } from "glass-ux/icons";
+import { Button } from "glass-ux/button";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { Avatar, AvatarDialog, type AvatarChange, type AvatarSaveContext } from "glass-ux/avatar";
+
+/** A pause that ends early, rejecting, when the dialog aborts the save. */
+function pause(ms: number, signal?: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener("abort", () => {
+      clearTimeout(timer);
+      reject(signal.reason);
+    });
+  });
+}
+
+/** A stand-in upload that reports progress in ten steps. */
+async function upload(_change: AvatarChange, { signal, setProgress }: AvatarSaveContext) {
+  for (let step = 1; step <= 10; step++) {
+    await pause(120, signal);
+    setProgress(step / 10);
+  }
+}
+
+function StandaloneDialog() {
+  const [src, setSrc] = useState<string | undefined>();
+  return (
+    <div className="flex items-center gap-3">
+      <Avatar name="Noa Finch" src={src} size="lg" />
+      <AvatarDialog
+        trigger={<Button icon={<IconImage />}>Change photo</Button>}
+        name="Noa Finch"
+        src={src}
+        requirements={{
+          accept: "image/png,image/jpeg",
+          maxSize: 2 * 1024 * 1024,
+          minWidth: 400,
+          minHeight: 400,
+          validate: (_file, { width, height }) =>
+            Math.max(width, height) > 3 * Math.min(width, height)
+              ? "Choose a photo closer to square."
+              : undefined,
+        }}
+        output={{ size: 256, type: "image/jpeg", quality: 0.85 }}
+        onSave={async (change, context) => {
+          await upload(change, context);
+          setSrc(URL.createObjectURL(change.blob));
+        }}
+      />
+    </div>
+  );
+}
+
+export default function AvatarSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Photo dialog"
+        description="AvatarDialog on its own, opened from a button. These requirements take PNG or JPEG up to 2 MB, at least 400 × 400 pixels and no wider than three to one; the result is a 256-pixel JPEG."
+      >
+        <StandaloneDialog />
+      </Specimen>
+    </SectionPage>
+  );
+}

@@ -1,0 +1,203 @@
+/*
+ * EditableAvatar and AvatarDialog.
+ *
+ *   editable   xl and 2xl carry a round edit button centred on the circle's edge at the top
+ *              corner (top-end by default); smaller avatars are the button themselves, with a
+ *              pencil over the face on hover and focus. A file dragged over it rings the face.
+ *   crop       a square frame (16rem at most) showing exactly the crop; the image is placed in
+ *              percentages of it. A round mask dims the corners the avatar will not show.
+ *   zoom       the slider between zoom-out and zoom-in glyphs, as wide as the frame
+ *   status     one caption line: the limits, replaced in place by a reason or the upload bar,
+ *              so nothing below it moves
+ */
+@layer components {
+  .fa-avatar-editable {
+    --_face: 2rem;
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    vertical-align: middle;
+  }
+  .fa-avatar-editable[data-size="xs"] {
+    --_face: 1.25rem;
+  }
+  .fa-avatar-editable[data-size="sm"] {
+    --_face: 1.5rem;
+  }
+  .fa-avatar-editable[data-size="lg"] {
+    --_face: 2.5rem;
+  }
+  .fa-avatar-editable[data-size="xl"] {
+    --_face: 3.5rem;
+  }
+  .fa-avatar-editable[data-size="2xl"] {
+    --_face: 6rem;
+  }
+  .fa-avatar-editable[data-dragging] .fa-avatar-face {
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--line),
+      0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+
+  /* The badge: its centre on the circle at 45°, (1 − cos 45°) / 2 of the face from each edge. */
+  .fa-avatar-editable > .fa-avatar-edit {
+    position: absolute;
+    inset-block-start: calc(var(--_face) * 0.146 - var(--_h) / 2);
+    inset-inline-end: calc(var(--_face) * 0.146 - var(--_h) / 2);
+  }
+  .fa-avatar-editable[data-placement="top-start"] > .fa-avatar-edit {
+    inset-inline-start: calc(var(--_face) * 0.146 - var(--_h) / 2);
+    inset-inline-end: auto;
+  }
+
+  /* The whole avatar as the button. */
+  .fa-btn.fa-avatar-edit-whole {
+    --_h: var(--_face);
+    position: relative;
+    width: var(--_face);
+    min-width: 0;
+    padding: 0;
+  }
+  .fa-avatar-edit-hint {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background-color: color-mix(in oklch, var(--surface-3) 72%, transparent);
+    color: var(--fg);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+    pointer-events: none;
+  }
+  .fa-avatar-edit-hint > .fa-icon {
+    width: calc(var(--_face) * 0.5);
+    height: calc(var(--_face) * 0.5);
+  }
+  .fa-avatar-edit-whole:is(:hover, :focus-visible) .fa-avatar-edit-hint,
+  .fa-avatar-editable[data-dragging] .fa-avatar-edit-hint {
+    opacity: 1;
+  }
+  .fa-avatar-edit-whole:is([disabled], [aria-disabled="true"]) .fa-avatar-edit-hint {
+    opacity: 0;
+  }
+
+  /* ── Dialog ─────────────────────────────────────────────────────────────── */
+  .fa-avatar-dialog {
+    --_frame: 16rem; /* tokens:allow the crop's largest side: a photo-sized square, not a spacing step */
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+  }
+  .fa-avatar-crop {
+    position: relative;
+    width: min(100%, var(--_frame));
+    aspect-ratio: 1;
+    container-type: inline-size;
+    border-radius: var(--radius-control);
+  }
+  .fa-avatar-crop[data-cropping] {
+    overflow: hidden;
+    background-color: var(--fill-muted);
+  }
+  .fa-avatar-crop:has(> .fa-avatar-crop-area:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-avatar-crop[data-dragging] {
+    outline: var(--focus-ring-width) dashed var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  /* The current photo or initials, as large as the crop circle. */
+  .fa-avatar-crop > .fa-avatar.fa-avatar-crop-current {
+    --_size: 100cqi;
+  }
+  .fa-avatar-crop-area {
+    position: absolute;
+    inset: 0;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    outline: none;
+  }
+  .fa-avatar-crop-area:active {
+    cursor: grabbing;
+  }
+  .fa-avatar-crop-area[aria-disabled="true"] {
+    cursor: default;
+  }
+  .fa-avatar-crop-image {
+    position: absolute;
+    max-width: none;
+    max-height: none;
+    pointer-events: none;
+    user-select: none;
+  }
+  .fa-avatar-crop-mask {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--line-strong),
+      0 0 0 100cqi color-mix(in oklch, var(--surface-3) 62%, transparent);
+    pointer-events: none;
+  }
+  .fa-avatar-crop-drop {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: var(--space-3);
+    border-radius: var(--radius-control);
+    background-color: color-mix(in oklch, var(--surface-3) 80%, transparent);
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .fa-avatar-zoom {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: min(100%, var(--_frame));
+    color: var(--fg-muted);
+  }
+  .fa-avatar-zoom > .fa-icon {
+    flex: none;
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-avatar-zoom > .fa-slider {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .fa-avatar-dialog > .fa-file-drop {
+    justify-self: stretch;
+  }
+  .fa-avatar-dialog-status {
+    display: grid;
+    align-items: center;
+    justify-self: stretch;
+    min-block-size: var(--type-caption-line);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-avatar-dialog-status > * {
+    grid-area: 1 / 1;
+    min-width: 0;
+    margin: 0;
+  }
+  .fa-avatar-dialog-hint {
+    color: var(--fg-muted);
+  }
+  .fa-avatar-dialog-message {
+    color: var(--danger-text);
+    font-weight: var(--weight-medium);
+  }
+  .fa-avatar-dialog-status:not([data-showing="hint"]) > .fa-avatar-dialog-hint,
+  .fa-avatar-dialog-status[data-showing="progress"] > .fa-avatar-dialog-message {
+    visibility: hidden;
+  }
+}

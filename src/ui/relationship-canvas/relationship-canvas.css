@@ -1,0 +1,291 @@
+/*
+ * RelationshipCanvas.
+ *
+ * A fill component (container-type: size): the parent gives it a definite height (R7.3).
+ * Framed by default — a hairline and the surface radius around the dot grid — or bare inside
+ * a Panel (`framed={false}`). The grid (fa-dot-grid) pans and scales with the camera.
+ *
+ *   card       a card surface at the tile radius and a fixed width: a header (icon in the
+ *              accent text colour, the title truncating, a neutral count badge) over its rows;
+ *              its height is computed from the row count, so edges meet rows exactly
+ *   row        a lead slot (a key in the warning text colour, or empty so names line up), the
+ *              name, and the detail (a type) in the monospace face
+ *   edge       a cubic curve in --line-strong with an arrowhead at the target; its label at
+ *              the middle in the overline size. The selected card's edges take the accent.
+ *   selected   a ring in the accent; keyboard focus adds the focus ring's offset
+ *   controls   zoom in, the zoom readout, zoom out, fit and Auto layout, floating at the top
+ *              right as TopologyCanvas's do; the readout keeps its width as it changes
+ *
+ * Component tokens (the probe hands the sizes to the geometry, so density and UI scale size
+ * the diagram):
+ *   --fa-relationship-card-w       a card's width
+ *   --fa-relationship-header-h     its header
+ *   --fa-relationship-row-h        one row
+ *   --fa-relationship-list-pad     above the first row and below the last
+ *   --fa-relationship-gap-x / -y   between the automatic layout's columns, between cards
+ *   --fa-relationship-fit-padding  room around the fitted diagram
+ *
+ * Tiers (container): under 20rem by 16rem only Fit stays (scroll and pinch still zoom); under
+ * 8rem tall only the diagram.
+ */
+@layer components {
+  .fa-relationship {
+    --fa-relationship-card-w: 16.5rem;
+    --fa-relationship-header-h: 2.75rem;
+    --fa-relationship-row-h: 1.75rem;
+    --fa-relationship-list-pad: var(--space-1);
+    --fa-relationship-gap-x: 7.5rem;
+    --fa-relationship-gap-y: var(--space-10);
+    --fa-relationship-fit-padding: var(--space-12);
+    --_controls: calc(var(--control-h-md) + var(--space-3));
+
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    isolation: isolate;
+    container-type: size;
+    border-radius: inherit;
+  }
+  .fa-relationship[data-framed] {
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-surface);
+  }
+  @container (width < 30rem) or (height < 22rem) {
+    .fa-relationship {
+      --fa-relationship-fit-padding: var(--space-4);
+    }
+  }
+
+  /* Read by the canvas: each property carries one metric (relationship-canvas.tsx readProbe). */
+  .fa-relationship-probe {
+    position: absolute;
+    visibility: hidden;
+    pointer-events: none;
+    box-sizing: content-box;
+    width: var(--fa-relationship-card-w);
+    height: var(--fa-relationship-header-h);
+    margin: var(--fa-relationship-gap-y) var(--_controls) 0 var(--fa-relationship-gap-x); /* logical:allow probe metrics are read by side */
+    padding: var(--fa-relationship-row-h) 0 var(--fa-relationship-list-pad) var(--fa-relationship-fit-padding); /* logical:allow probe metrics are read by side */
+    transition-duration: var(--duration-slow);
+  }
+
+  /* ── The stage and the world ─────────────────────────────────────────────── */
+  .fa-relationship-stage {
+    position: absolute;
+    inset: 0;
+    overflow: clip; /* never scrolled: focusing a card pans the camera instead */
+    touch-action: none;
+    cursor: grab;
+  }
+  .fa-relationship[data-moving] .fa-relationship-stage {
+    cursor: grabbing;
+    user-select: none;
+  }
+  .fa-relationship-world {
+    position: absolute;
+    top: 0;
+    left: 0; /* logical:allow the diagram's world space is physical */
+    transform-origin: 0 0;
+    outline: none;
+  }
+  .fa-relationship[data-moving] .fa-relationship-world {
+    will-change: transform;
+  }
+
+  /* ── Edges ──────────────────────────────────────────────────────────────── */
+  .fa-relationship-edges {
+    position: absolute;
+    top: 0;
+    left: 0; /* logical:allow the diagram's world space is physical */
+    overflow: visible;
+    pointer-events: none;
+  }
+  .fa-relationship-edge > path {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-width: var(--border-width-strong);
+  }
+  .fa-relationship-edge > text {
+    fill: var(--fg-muted);
+    font-size: var(--type-overline-size);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-relationship-edge[data-active] > path {
+    stroke: var(--accent);
+    stroke-width: calc(var(--border-width) * 2);
+  }
+  .fa-relationship-edge[data-active] > text {
+    fill: var(--accent-text);
+  }
+  .fa-relationship-arrow {
+    fill: var(--line-strong);
+  }
+  .fa-relationship-arrow[data-active] {
+    fill: var(--accent);
+  }
+
+  /* ── Cards ──────────────────────────────────────────────────────────────── */
+  .fa-relationship-card {
+    position: absolute;
+    top: 0;
+    left: 0; /* logical:allow the diagram's world space is physical */
+    display: flex;
+    flex-direction: column;
+    width: var(--fa-relationship-card-w);
+    overflow: hidden;
+    cursor: default;
+    outline: none;
+  }
+  .fa-relationship-card[data-selected] {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+  }
+  .fa-relationship-card:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-relationship-card-header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--fa-relationship-header-h);
+    padding-inline: var(--space-3);
+    border-block-end: var(--border-width) solid var(--line);
+    color: var(--fg);
+    font-weight: var(--weight-semibold);
+  }
+  .fa-relationship-card-header[data-card-handle] {
+    cursor: grab;
+  }
+  .fa-relationship[data-moving="card"] .fa-relationship-card-header[data-card-handle] {
+    cursor: grabbing;
+  }
+  .fa-relationship-card-icon {
+    display: inline-flex;
+    flex: none;
+    color: var(--accent-text);
+  }
+  .fa-relationship-card-icon > :is(svg, .fa-icon) {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  .fa-relationship-card-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-relationship-rows {
+    padding-block: var(--fa-relationship-list-pad);
+  }
+  .fa-relationship-row {
+    display: grid;
+    grid-template-columns: var(--icon-sm) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--fa-relationship-row-h);
+    padding-inline: var(--space-3);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-relationship-row-lead {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg-muted);
+  }
+  .fa-relationship-row-lead > :is(svg, .fa-icon) {
+    width: calc(var(--icon-sm) * 0.75);
+    height: calc(var(--icon-sm) * 0.75);
+  }
+  .fa-relationship-row-lead[data-tone="accent"] {
+    color: var(--accent-text);
+  }
+  .fa-relationship-row-lead[data-tone="success"] {
+    color: var(--success-text);
+  }
+  .fa-relationship-row-lead[data-tone="warning"] {
+    color: var(--warning-text);
+  }
+  .fa-relationship-row-lead[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .fa-relationship-row-label {
+    overflow: hidden;
+    color: var(--fg);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-relationship-row-detail {
+    color: var(--fg-muted);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+  /* Far out the text is unreadable: edge labels go, and the cards carry the diagram. */
+  .fa-relationship[data-zoom="far"] .fa-relationship-edge > text {
+    visibility: hidden;
+  }
+
+  /* ── Controls ───────────────────────────────────────────────────────────── */
+  .fa-relationship-controls {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3); /* logical:allow matches TopologyCanvas: controls over a physical map */
+    z-index: var(--z-raised);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .fa-relationship-zoom {
+    min-width: 3.5em; /* tokens:allow the readout keeps the width of "100%" in its own type as it changes */
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+  @container (width < 20rem) or (height < 16rem) {
+    .fa-relationship-controls :is([data-relationship-control="zoom-in"], [data-relationship-control="zoom-out"], [data-relationship-control="auto-layout"], .fa-relationship-zoom) {
+      display: none;
+    }
+    .fa-relationship-controls {
+      top: var(--space-2);
+      right: var(--space-2); /* logical:allow matches TopologyCanvas: controls over a physical map */
+    }
+  }
+  @container (height < 8rem) {
+    .fa-relationship-controls {
+      display: none;
+    }
+  }
+
+  /* ── Loading and empty ──────────────────────────────────────────────────── */
+  .fa-relationship-empty {
+    position: absolute;
+    inset: 0;
+  }
+  .fa-relationship-skeleton {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-12);
+    padding: var(--fa-relationship-fit-padding);
+    overflow: hidden;
+  }
+  .fa-relationship-skeleton-card.fa-skel {
+    flex: none;
+    width: var(--fa-relationship-card-w);
+    height: calc(var(--fa-relationship-header-h) + var(--_rows) * var(--fa-relationship-row-h) + var(--fa-relationship-list-pad) * 2);
+  }
+  @container (width < 40rem) {
+    .fa-relationship-skeleton-card.fa-skel:nth-child(n + 2) {
+      display: none;
+    }
+  }
+}

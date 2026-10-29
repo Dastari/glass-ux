@@ -10,7 +10,7 @@ export default function AvatarSection() {
       <Specimen
         title="Loading"
         description="The skeleton is the same circle."
-        specimenKey="avatar:default:4"
+        specimenKey="avatar:default:6"
       >
         <Example label="Skeleton · loaded">
           <AvatarSkeleton size="lg" />

@@ -24,6 +24,8 @@ const PAGES = [
   "pin-map",
   "email-field",
   "signature-pad",
+  "avatar",
+  "relationship-canvas",
   "login-flow",
   "select",
   "button",

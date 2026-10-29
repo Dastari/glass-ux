@@ -31,6 +31,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { IconFullscreen, IconLayers, IconList, IconNetwork, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { resolveActions, type ActionSet } from "../../lib/actions/actions.js"
 import { cx } from "../../lib/cx.js"
+import { paintDotGrid } from "../../lib/dot-grid.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { observeElementSize } from "../../lib/resize-observer.js"
 import { useSelectedId, type SelectionChangeDetails } from "../../lib/use-selected-id.js"
@@ -102,6 +103,8 @@ export interface TopologyCanvasProps<T> {
   list?: ReactNode
   /** Show the minimap where there is room (the user can turn it off). Default true. */
   minimap?: boolean
+  /** Draw the dot grid behind the map; it pans and scales with the camera. Default true. */
+  grid?: boolean
   /** One line for an empty map (R2.5). */
   emptyText?: ReactNode
   /**
@@ -275,6 +278,7 @@ export function TopologyCanvas<T>({
   onViewChange,
   list,
   minimap = true,
+  grid = true,
   emptyText: emptyTextProp,
   insets,
   className,
@@ -356,6 +360,7 @@ export function TopologyCanvas<T>({
       const { x, y, k } = camera.current
       const world = worldRef.current
       if (world) world.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${k})`
+      paintDotGrid(stageRef.current, camera.current)
       // What shows: the stage less the chrome floating over it.
       const inset = open.current
       const { width, height } = stageSize.current
@@ -809,7 +814,7 @@ export function TopologyCanvas<T>({
       {/* oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- the pointer surface: the listbox inside carries every key */}
       <div
         ref={stageRef}
-        className="fa-topology-stage"
+        className={cx("fa-topology-stage", grid && "fa-dot-grid")}
         // A viewport: what is out of view pans in, never clips (R7.4).
         data-scroll-container=""
         inert={view === "list" || undefined}

@@ -3,6 +3,12 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.11.6 → 0.11.7
+
+No code changes are required. `AvatarSize` gains `"2xl"`; code that switches over every size
+needs a case for it. TopologyCanvas now draws a dot grid behind the map; pass `grid={false}`
+to keep the previous plain backdrop.
+
 ## 0.11.5 → 0.11.6
 
 No code changes are required.

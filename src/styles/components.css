@@ -11,6 +11,7 @@
 @import "../ui/alert-dialog/alert-dialog.css";
 @import "../ui/appearance-settings/appearance-settings.css";
 @import "../ui/aspect-ratio/aspect-ratio.css";
+@import "../ui/avatar/avatar-editor.css";
 @import "../ui/avatar/avatar.css";
 @import "../ui/badge/badge.css";
 @import "../ui/brand/brand.css";
@@ -77,6 +78,7 @@
 @import "../ui/progress/progress.css";
 @import "../ui/radio/radio.css";
 @import "../ui/reference-input/reference-input.css";
+@import "../ui/relationship-canvas/relationship-canvas.css";
 @import "../ui/rich-text/rich-text.css";
 @import "../ui/scheduler/scheduler.css";
 @import "../ui/scroll-area/scroll-area.css";

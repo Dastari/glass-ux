@@ -37,7 +37,7 @@ export default function AvatarSection() {
         title="Over imagery"
         description="Initials use opaque palette colours; portrait groups keep a surface ring over imagery."
         backdrop
-        specimenKey="avatar:default:5"
+        specimenKey="avatar:default:7"
       >
         <Example label="Initials without an image">
           <Avatar name="Avery Quinn" size="xl" presence="online" />
@@ -49,7 +49,7 @@ export default function AvatarSection() {
 
       <ContainerLab
         description="Avatars keep their size; a group never wraps."
-        specimenKey="avatar:default:6"
+        specimenKey="avatar:default:8"
       >
         {() => (
           <div className="flex items-center gap-3 p-2">

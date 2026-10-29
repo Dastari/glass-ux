@@ -14,7 +14,7 @@ the palette, so a missing photo still identifies someone at a glance.
 | decorative | `boolean \| undefined` | false, true | no | false | Hide from assistive tech when a visible name sits beside it. |
 | name | `string` | See type | yes | — | The person's (or account's) name: drives the initials, tint and accessible name. |
 | presence | `Presence \| undefined` | "online", "away", "busy", "offline" | no | — | The person’s live availability, drawn as a presence indicator. |
-| size | `AvatarSize \| undefined` | "xs", "sm", "md", "lg", "xl" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
+| size | `AvatarSize \| undefined` | "xs", "sm", "md", "lg", "xl", "2xl" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | src | `string \| undefined` | See type | no | — | Image URL; the component uses its fallback when it is absent or fails. |
 
 Inherited properties:

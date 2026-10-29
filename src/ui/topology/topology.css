@@ -3,8 +3,8 @@
  *
  * A fill component (container-type: size): the parent gives it a definite height (R7.3). It
  * has no material of its own: it sits in a Panel, or full bleed on the Glass UX canvas behind
- * floating page chrome like the dashboard's map (src/shell/bleed.tsx), with no backdrop of its
- * own (no dot grid: the map's canvas shows the ambient fields, and so does this). Nodes are
+ * floating page chrome like the dashboard's map (src/shell/bleed.tsx). Its only backdrop is
+ * the shared dot grid (fa-dot-grid, `grid`), which pans and scales with the camera. Nodes are
  * the caller's tiles, cluster blocks are inset wells, links are hairlines in the line colour
  * and the selected node's way up to the root is drawn in the accent (selection, R3.8). Full
  * bleed, the controls and the minimap float over it in the imagery context (R4.7), as the

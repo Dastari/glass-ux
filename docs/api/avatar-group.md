@@ -12,7 +12,7 @@ Overlapping faces for "who is here" (watchers, active sessions).
 | --- | --- | --- | --- | --- | --- |
 | max | `number \| undefined` | See type | no | 4 | Show at most this many faces, then "+N". |
 | people | `{ name: string; src?: string; }[]` | See type | yes | — | The people rendered in the avatar group, in display order. |
-| size | `AvatarSize \| undefined` | "xs", "sm", "md", "lg", "xl" | no | "sm" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
+| size | `AvatarSize \| undefined` | "xs", "sm", "md", "lg", "xl", "2xl" | no | "sm" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 
 Inherited properties:
 

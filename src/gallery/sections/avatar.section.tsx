@@ -1,8 +1,103 @@
+import { useState } from "react"
+import { IconImage } from "../../icons/generated/icons.js"
+import { Button } from "../../ui/button/index.js"
 import { ContainerLab, Example, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
-import { Avatar, AvatarGroup, AvatarSkeleton, type AvatarSize } from "../../ui/avatar/index.js"
+import {
+  Avatar,
+  AvatarDialog,
+  AvatarGroup,
+  AvatarSkeleton,
+  EditableAvatar,
+  type AvatarChange,
+  type AvatarSaveContext,
+  type AvatarSize,
+} from "../../ui/avatar/index.js"
 import { PORTRAITS } from "../fixtures/organisations.js"
+import { Usage } from "./inputs.kit.js"
 
-const SIZES: AvatarSize[] = ["xs", "sm", "md", "lg", "xl"]
+const SIZES: AvatarSize[] = ["xs", "sm", "md", "lg", "xl", "2xl"]
+
+/** A pause that ends early, rejecting, when the dialog aborts the save. */
+function pause(ms: number, signal?: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(resolve, ms)
+    signal?.addEventListener("abort", () => {
+      clearTimeout(timer)
+      reject(signal.reason)
+    })
+  })
+}
+
+/** A stand-in upload that reports progress in ten steps. */
+async function upload(_change: AvatarChange, { signal, setProgress }: AvatarSaveContext) {
+  for (let step = 1; step <= 10; step++) {
+    await pause(120, signal)
+    setProgress(step / 10)
+  }
+}
+
+const PROFILE_REQUIREMENTS = { maxSize: 5 * 1024 * 1024, minWidth: 256, minHeight: 256 }
+
+/** A profile photo the visitor can change: the saved blob becomes the new src. */
+function ProfilePhoto() {
+  const [src, setSrc] = useState<string | undefined>(PORTRAITS[1])
+  return (
+    <EditableAvatar
+      name="Avery Quinn"
+      src={src}
+      presence="online"
+      requirements={PROFILE_REQUIREMENTS}
+      onSave={async (change, context) => {
+        await upload(change, context)
+        setSrc(URL.createObjectURL(change.blob))
+      }}
+      onRemove={async () => {
+        await pause(400)
+        setSrc(undefined)
+      }}
+      data-testid="profile-photo"
+    />
+  )
+}
+
+function FailingSave() {
+  return (
+    <EditableAvatar
+      name="Ellis Park"
+      src={PORTRAITS[3]}
+      onSave={async (_change, { signal }) => {
+        await pause(700, signal)
+        throw new Error("The photo service is unavailable. Try again in a few minutes.")
+      }}
+    />
+  )
+}
+
+function StandaloneDialog() {
+  const [src, setSrc] = useState<string | undefined>()
+  return (
+    <div className="flex items-center gap-3">
+      <Avatar name="Noa Finch" src={src} size="lg" />
+      <AvatarDialog
+        trigger={<Button icon={<IconImage />}>Change photo</Button>}
+        name="Noa Finch"
+        src={src}
+        requirements={{
+          accept: "image/png,image/jpeg",
+          maxSize: 2 * 1024 * 1024,
+          minWidth: 400,
+          minHeight: 400,
+          validate: (_file, { width, height }) => (Math.max(width, height) > 3 * Math.min(width, height) ? "Choose a photo closer to square." : undefined),
+        }}
+        output={{ size: 256, type: "image/jpeg", quality: 0.85 }}
+        onSave={async (change, context) => {
+          await upload(change, context)
+          setSrc(URL.createObjectURL(change.blob))
+        }}
+      />
+    </div>
+  )
+}
 const PEOPLE = [
   { name: "Avery Quinn", src: PORTRAITS[1] },
   { name: "Mira Rowan", src: PORTRAITS[0] },
@@ -16,7 +111,7 @@ const PEOPLE = [
 export default function AvatarSection() {
   return (
     <SectionPage>
-      <Specimen title="Sizes" description="xs 20 · sm 24 · md 32 · lg 40 · xl 56. Sample portraits at each size; the final avatar shows initials when no image is supplied.">
+      <Specimen title="Sizes" description="xs 20 · sm 24 · md 32 · lg 40 · xl 56 · 2xl 96 for profile pages. Sample portraits at each size; the final avatar shows initials when no image is supplied.">
         {SIZES.map((size) => (
           <Example key={size} label={size}>
             <Avatar name="Avery Quinn" src={PORTRAITS[1]} size={size} />
@@ -54,6 +149,28 @@ export default function AvatarSection() {
         </Example>
       </Specimen>
 
+      <Specimen
+        title="Editable"
+        description="The edit button opens the photo dialog: drop, browse for or paste a photo, then drag, pinch, scroll or use the arrow keys to position it. Dropping a photo on the avatar opens the dialog with it. The saved photo shows at once."
+      >
+        <Example label="2xl · upload with progress">
+          <ProfilePhoto />
+        </Example>
+        <Example label="xl · edit button top-start">
+          <EditableAvatar name="Mira Rowan" src={PORTRAITS[0]} size="xl" editPlacement="top-start" onSave={upload} />
+        </Example>
+        <Example label="md · the avatar is the button">
+          <EditableAvatar name="Rory Lake" size="md" onSave={upload} />
+        </Example>
+        <Example label="Save fails">
+          <FailingSave />
+        </Example>
+      </Specimen>
+
+      <Specimen title="Photo dialog" description="AvatarDialog on its own, opened from a button. These requirements take PNG or JPEG up to 2 MB, at least 400 × 400 pixels and no wider than three to one; the result is a 256-pixel JPEG.">
+        <StandaloneDialog />
+      </Specimen>
+
       <Specimen title="Loading" description="The skeleton is the same circle.">
         <Example label="Skeleton · loaded">
           <AvatarSkeleton size="lg" />
@@ -82,9 +199,27 @@ export default function AvatarSection() {
         )}
       </ContainerLab>
 
+      <Usage
+        code={`
+import { EditableAvatar } from "glass-ux/avatar"
+
+<EditableAvatar
+  name={user.name}
+  src={user.photoUrl}
+  requirements={{ maxSize: 5 * 1024 * 1024, minWidth: 256, minHeight: 256 }}
+  onSave={async ({ blob }, { signal, setProgress }) => {
+    const { url } = await uploadPhoto(blob, { signal, onProgress: setProgress })
+    setUser({ ...user, photoUrl: url })
+  }}
+  onRemove={() => removePhoto()}
+/>`}
+      />
+
       <Rules
         do={[
           "Pass the person's display name; initials, tint and the accessible name follow.",
+          "Let people change their own photo where they see it, with EditableAvatar.",
+          "Throw an Error with a message written for the person when a save fails.",
           "Mark an avatar decorative when the name is printed beside it.",
           "Use presence only where it is live (chat, sessions).",
         ]}
@@ -92,6 +227,7 @@ export default function AvatarSection() {
           "Pick a tint by hand or use a status colour for a person.",
           "Use an avatar for an endpoint or organisation; those have icons.",
           "Show more than five faces in a group.",
+          "Make avatars editable in lists and tables; edit from the profile.",
         ]}
       />
 

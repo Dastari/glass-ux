@@ -16,6 +16,8 @@
  *                  materialises out of its anchor on a spring
  *   fa-control     any box you type or pick into: input, textarea, select trigger, date
  *   fa-tile-icon   the soft square behind an icon in tiles, list rows and dialogs
+ *   fa-dot-grid    a pannable canvas's dot grid, moving with its camera (TopologyCanvas,
+ *                  RelationshipCanvas; src/lib/dot-grid.ts)
  *   fa-label / fa-hint / fa-overline   text roles around controls
  *
  * Components compose recipes; they do not re-implement hover, focus, highlight, selected,
@@ -180,6 +182,27 @@
   .fa-focus-room {
     padding: var(--focus-reach);
     margin: calc(var(--focus-reach) * -1);
+  }
+
+  /* ── Dot grid ────────────────────────────────────────────────────────────── */
+  /* The backdrop of a pannable canvas: a dot every --dot-grid-step of world space. The canvas
+     writes its camera as --dot-grid-x / -y (the world origin in the element's pixels) and
+     --dot-grid-scale (the zoom) with paintDotGrid, so the dots pan and scale with the content
+     and the space feels physical. Far out they fade, before they turn into a haze. The
+     element must be positioned (the dots are its ::before). */
+  .fa-dot-grid {
+    --dot-grid-step: var(--space-5);
+    --dot-grid-dot: var(--border-width);
+  }
+  .fa-dot-grid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, var(--line) var(--dot-grid-dot), transparent calc(var(--dot-grid-dot) * 1.2));
+    background-size: calc(var(--dot-grid-step) * var(--dot-grid-scale, 1)) calc(var(--dot-grid-step) * var(--dot-grid-scale, 1));
+    background-position: var(--dot-grid-x, 0px) var(--dot-grid-y, 0px); /* logical:allow the camera's world origin is physical */
+    opacity: clamp(0, (var(--dot-grid-scale, 1) - 0.3) * 5, 1);
   }
 
   /* ── Collapse ────────────────────────────────────────────────────────────── */

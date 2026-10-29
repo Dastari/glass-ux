@@ -11,7 +11,10 @@ focus the existing window instead of opening duplicates. Keep credentials and li
 objects out of persisted descriptors.
 
 Mount the workspace inside a bounded shell. Tiled, floating and maximised layouts use the
-same entries. Window frames expose status, activity, progress and standard controls;
+same entries. Tiled windows sit in columns beside the routed primary view; on a page that is
+entirely windows (a dashboard), `reservePrimary={false}` lets them fill the stage and shows the
+primary view only once none is tiled. `tileOrder` lists window ids in their preferred order
+from the start of the stage, so a window closed and reopened returns to its place. Window frames expose status, activity, progress and standard controls;
 applications render their task, editor or conversation inside those frames. A close guard
 can ask the user to resolve unsaved work before the entry closes.
 

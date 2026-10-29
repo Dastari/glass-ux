@@ -1562,6 +1562,13 @@ export default defineMessagePack("it", {
     minimapVisible: "Minimappa: visualizzata mentre parte della mappa non è visibile",
     minimapOff: "Minimappa: disattivata",
   },
+  levelGauge: {
+    notRated: "Non valutato",
+    previously: "In precedenza",
+    named: ({ label, value }) => `${label}: ${value}`,
+    withPrevious: ({ label, value, previousLabel, previous }) => `${label}: ${value} (${previousLabel}: ${previous})`,
+    previousLine: ({ previousLabel, previous }) => `${previousLabel}: ${previous}`,
+  },
   relationshipCanvas: {
     loading: "Caricamento del diagramma",
     diagramLoading: "Il diagramma è in caricamento",

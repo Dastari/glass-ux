@@ -1562,6 +1562,13 @@ export default defineMessagePack("ja", {
     minimapVisible: "ミニマップ: マップの一部が表示されていないときに表示されます。",
     minimapOff: "ミニマップ: オフ",
   },
+  levelGauge: {
+    notRated: "未評価",
+    previously: "以前",
+    named: ({ label, value }) => `${label}：${value}`,
+    withPrevious: ({ label, value, previousLabel, previous }) => `${label}：${value}（${previousLabel}：${previous}）`,
+    previousLine: ({ previousLabel, previous }) => `${previousLabel}：${previous}`,
+  },
   relationshipCanvas: {
     loading: "図を読み込み中",
     diagramLoading: "図を読み込んでいます",

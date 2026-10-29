@@ -1562,6 +1562,13 @@ export default defineMessagePack("he", {
     minimapVisible: "מפה מינית: מוצגת כאשר חלק מהמפה אינו מוצג",
     minimapOff: "מפה מינית: כבויה",
   },
+  levelGauge: {
+    notRated: "לא דורג",
+    previously: "קודם",
+    named: ({ label, value }) => `${label}: ${value}`,
+    withPrevious: ({ label, value, previousLabel, previous }) => `${label}: ${value} (${previousLabel}: ${previous})`,
+    previousLine: ({ previousLabel, previous }) => `${previousLabel}: ${previous}`,
+  },
   relationshipCanvas: {
     loading: "טוען את התרשים",
     diagramLoading: "התרשים נטען",

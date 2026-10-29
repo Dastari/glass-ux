@@ -2,7 +2,8 @@
 
 Progress through a multi-step task: numbered markers joined by a line, a check on finished
 steps and a mark on steps that need attention. It shows progress; the content and the
-Back and Next buttons belong to the page or a Wizard.
+Back and Next buttons belong to the page or a Wizard. With `sections` it is the section
+navigation of one long page, following the section in view.
 
 `import { Stepper } from "glass-ux/stepper"`
 
@@ -20,5 +21,7 @@ Back and Next buttons belong to the page or a Wizard.
 | navigation | `StepperNavigation \| undefined` | "none", "any", "visited" | no | "none" | Which steps can be chosen (StepperNavigation). Default none. |
 | onValueChange | `((id: string) => void) \| undefined` | See type | no | — | Called with a step's id when the person chooses it (see `navigation`). |
 | orientation | `"horizontal" \| "vertical" \| undefined` | "horizontal", "vertical" | no | "horizontal" | `horizontal` (default) lays the steps along a line, and below a container width shows "Step 2 of 5" with the current step's name and a progress bar instead; `vertical` stacks them, for a side rail or a step-by-step page. |
+| scrollContainer | `RefObject<HTMLElement \| null> \| undefined` | See type | no | — | The element that scrolls the sections. Default: the first section's nearest scrolling ancestor. |
+| sections | `Readonly<Record<string, RefObject<HTMLElement \| null>>> \| undefined` | See type | no | — | Section navigation for one long scrolling page: each step's section element. The Stepper reports the section in view through `onValueChange` as the page scrolls (the section at the top third, or the last one when scrolled to the end), and choosing a step scrolls its section into view, smoothly unless motion is reduced. Use with `navigation="any"`. |
 | steps | `StepItem[]` | See type | yes | — | The steps, in order. |
-| value | `string` | See type | yes | — | The current step's id. |
+| value | `string` | See type | yes | — | The step the person is on (or, with `sections`, the one in view): `aria-current="step"` and the current highlight. |

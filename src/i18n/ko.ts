@@ -1562,6 +1562,13 @@ export default defineMessagePack("ko", {
     minimapVisible: "미니맵: 지도의 일부가 보이지 않는 동안 표시됩니다.",
     minimapOff: "미니맵: 꺼짐",
   },
+  levelGauge: {
+    notRated: "평가 안 됨",
+    previously: "이전",
+    named: ({ label, value }) => `${label}: ${value}`,
+    withPrevious: ({ label, value, previousLabel, previous }) => `${label}: ${value} (${previousLabel}: ${previous})`,
+    previousLine: ({ previousLabel, previous }) => `${previousLabel}: ${previous}`,
+  },
   relationshipCanvas: {
     loading: "다이어그램 불러오는 중",
     diagramLoading: "다이어그램을 불러오는 중입니다",

@@ -57,6 +57,7 @@ const familyRoots: Record<string, string> = {
   radio: "radio",
   "rich-text": "rich-text-field",
   "setting-row": "setting-row",
+  "level-gauge": "level-gauge",
   "relationship-canvas": "relationship-canvas",
   "signature-pad": "signature-pad",
   sparkline: "sparkline",

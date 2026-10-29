@@ -250,4 +250,20 @@
   :is(.fa-chart-threshold-label, .fa-chart-marker-label, .fa-chart-band-label, .fa-chart-ring-label) {
     text-shadow: none;
   }
+
+  /* LevelGauge: fill against edge carries filled, striped (risen) and traced (lowered). */
+  .fa-level-gauge-segment {
+    forced-color-adjust: none;
+    border: var(--border-width) solid CanvasText;
+    background: Canvas;
+  }
+  .fa-level-gauge-segment[data-state="filled"] {
+    background: CanvasText;
+  }
+  .fa-level-gauge-segment[data-state="risen"] {
+    background: repeating-linear-gradient(135deg, CanvasText 0 calc(var(--border-width) * 2), Canvas calc(var(--border-width) * 2) calc(var(--border-width) * 4));
+  }
+  .fa-level-gauge-segment[data-state="traced"] {
+    border-style: dashed;
+  }
 }

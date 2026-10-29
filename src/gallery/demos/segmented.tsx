@@ -131,6 +131,14 @@ export default function SegmentedSection() {
             aria-label="Remote control (disabled)"
           />
         </Example>
+        <Example label="Read-only (a recorded answer)">
+          <Segmented
+            options={ENABLED}
+            value="enabled"
+            readOnly
+            aria-label="Remote control (recorded)"
+          />
+        </Example>
         <Example label="In a field, invalid">
           <div className="w-full max-w-xs">
             <Field

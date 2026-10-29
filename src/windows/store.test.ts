@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { assignTiles, edgeSnapTarget, fracToRect, maxTileColumns, normaliseSplits, SNAP_ZONES } from "./geometry.js"
+import { assignTiles, orderTiles, edgeSnapTarget, fracToRect, maxTileColumns, normaliseSplits, SNAP_ZONES } from "./geometry.js"
 import { registerWindowKind } from "./registry.js"
 import { createWindowManager, parseWindows } from "./store.js"
 import { PRIMARY_WINDOW_ID } from "./types.js"
@@ -50,6 +50,27 @@ describe("geometry", () => {
     expect(three.columns).toBe(3)
     expect([...three.slots.values()].map((slot) => slot.column)).toEqual([1, 1, 2])
     expect(assignTiles(["a", "b"], 1).columns).toBe(1)
+  })
+
+  it("lets tiles fill the stage when no column is reserved for the primary window", () => {
+    const two = assignTiles(["camera", "log"], 3, false)
+    expect(two.columns).toBe(2)
+    expect([...two.slots.entries()]).toEqual([
+      ["camera", { column: 0, row: 0, rows: 1 }],
+      ["log", { column: 1, row: 0, rows: 1 }],
+    ])
+    const stacked = assignTiles(["camera", "log"], 1, false)
+    expect(stacked.columns).toBe(1)
+    expect([...stacked.slots.values()]).toEqual([
+      { column: 0, row: 0, rows: 2 },
+      { column: 0, row: 1, rows: 2 },
+    ])
+    expect(assignTiles([], 3, false)).toEqual({ columns: 1, slots: new Map() })
+  })
+
+  it("orders tiles by preference, then as they were opened", () => {
+    expect(orderTiles(["log", "notes", "camera"], ["camera", "log"])).toEqual(["camera", "log", "notes"])
+    expect(orderTiles(["b", "a"], undefined)).toEqual(["b", "a"])
   })
 
   it("limits columns by viewport and by the minimum column width", () => {

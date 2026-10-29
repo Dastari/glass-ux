@@ -29,6 +29,7 @@ onValueChange and the group's accessible name are the same in every form.
 | onBlur | `((event: FocusEvent<HTMLDivElement>) => void) \| undefined` | See type | no | — | Called with the focus event when focus leaves the whole control, not when it moves between segments. For form libraries' touched state. |
 | onValueChange | `((value: V) => void) \| undefined` | See type | no | — | Called with the chosen option's `value` when the person picks a segment (or a menu item in the collapsed form); pressing the current segment does not deselect it. Pair with `value` to control it. |
 | options | `SegmentedOption<V>[]` | See type | yes | — | The available choices, including their values and visible labels. |
+| readOnly | `boolean \| undefined` | false, true | no | false | Shows a recorded answer: full contrast, the chosen option marked, one tab stop that announces the value as read-only (a radio group with `aria-readonly`). Pointer and keyboard change nothing and there is no hover or press feedback, in every form. |
 | size | `SegmentedSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | The chosen segment's tint. Status tones only when the modes are statuses (R3.3). |
 | value | `V \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |

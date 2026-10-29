@@ -170,6 +170,10 @@
       "types": "./dist/ui/otp-field/index.d.ts",
       "import": "./dist/ui/otp-field/index.js"
     },
+    "./level-gauge": {
+      "types": "./dist/ui/level-gauge/index.d.ts",
+      "import": "./dist/ui/level-gauge/index.js"
+    },
     "./relationship-canvas": {
       "types": "./dist/ui/relationship-canvas/index.d.ts",
       "import": "./dist/ui/relationship-canvas/index.js"

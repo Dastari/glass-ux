@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { Stepper, type StepItem } from "glass-ux/stepper";
+import { useMemo, useRef, useState, type ReactNode } from "react";
+import { Field } from "glass-ux/field";
+import { Input } from "glass-ux/input";
+import { Stepper, type StepItem, type StepStatus } from "glass-ux/stepper";
+import { Switch } from "glass-ux/switch";
+import { SettingRow } from "glass-ux/setting-row";
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 
 const ONBOARDING: StepItem[] = [
@@ -8,6 +12,118 @@ const ONBOARDING: StepItem[] = [
   { id: "alerts", label: "Alerts", optional: true },
   { id: "review", label: "Review" },
 ];
+const CHECK_IN = [
+  { id: "visitor", label: "Visitor" },
+  { id: "screening", label: "Screening" },
+  { id: "agreement", label: "Agreement" },
+] as const;
+
+/** One long check-in form: the stepper follows the section in view, and ticks each section once its fields are filled, in any order. */
+function SectionNavDemo() {
+  const scroller = useRef<HTMLDivElement>(null);
+  const refs = {
+    visitor: useRef<HTMLElement>(null),
+    screening: useRef<HTMLElement>(null),
+    agreement: useRef<HTMLElement>(null),
+  };
+  const [inView, setInView] = useState("visitor");
+  const [values, setValues] = useState({
+    name: "",
+    company: "",
+    travelled: "",
+    animals: "",
+    agreed: false,
+  });
+  const done: Record<string, boolean> = {
+    visitor: Boolean(values.name.trim() && values.company.trim()),
+    screening: Boolean(values.travelled.trim() && values.animals.trim()),
+    agreement: values.agreed,
+  };
+  const steps = useMemo<StepItem[]>(
+    () =>
+      CHECK_IN.map((step) => ({
+        ...step,
+        status: (done[step.id] ? "complete" : "upcoming") satisfies StepStatus,
+      })),
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- done is derived from values
+    [values],
+  );
+  const set = (key: keyof typeof values) => (value: unknown) =>
+    setValues((current) => ({ ...current, [key]: value }));
+  const section = (id: keyof typeof refs, title: string, body: ReactNode) => (
+    <section
+      ref={refs[id]}
+      aria-label={title}
+      className="grid min-h-80 content-start gap-4 border-b border-line pb-8 last:min-h-60 last:border-b-0"
+    >
+      <h3 className="type-title">{title}</h3>
+      {body}
+    </section>
+  );
+  return (
+    <div className="flex w-full gap-6">
+      <div className="w-44 shrink-0">
+        <Stepper
+          steps={steps}
+          value={inView}
+          onValueChange={setInView}
+          navigation="any"
+          orientation="vertical"
+          sections={refs}
+          scrollContainer={scroller}
+          aria-label="Check-in sections"
+        />
+      </div>
+      <div
+        ref={scroller}
+        className="h-100 min-w-0 flex-1 overflow-y-auto pe-2"
+        data-testid="check-in-form"
+      >
+        {section(
+          "visitor",
+          "Visitor",
+          <>
+            <Field label="Name">
+              <Input value={values.name} onValueChange={(value) => set("name")(String(value))} />
+            </Field>
+            <Field label="Company">
+              <Input
+                value={values.company}
+                onValueChange={(value) => set("company")(String(value))}
+              />
+            </Field>
+          </>,
+        )}
+        {section(
+          "screening",
+          "Screening",
+          <>
+            <Field label="Countries visited in the last 30 days">
+              <Input
+                value={values.travelled}
+                onValueChange={(value) => set("travelled")(String(value))}
+              />
+            </Field>
+            <Field label="Contact with livestock this week">
+              <Input
+                value={values.animals}
+                onValueChange={(value) => set("animals")(String(value))}
+              />
+            </Field>
+          </>,
+        )}
+        {section(
+          "agreement",
+          "Agreement",
+          <SettingRow
+            label="I have read the site rules"
+            control={<Switch checked={values.agreed} onCheckedChange={set("agreed")} />}
+          />,
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function StepperSection() {
   const [step, setStep] = useState("agent");
@@ -41,6 +157,15 @@ export default function StepperSection() {
             value="test"
           />
         </div>
+      </Specimen>
+
+      <Specimen
+        title="Section navigation"
+        description="One long form with the stepper beside it: scrolling moves the highlight to the section in view, choosing a step scrolls to it, and each section shows its tick once filled, in any order. The section in view keeps its highlight when it is complete."
+        layout="stack"
+        wide
+      >
+        <SectionNavDemo />
       </Specimen>
     </SectionPage>
   );

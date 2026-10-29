@@ -4,6 +4,8 @@
  *   marker     a numbered bead: outlined while upcoming, accent while current (with a soft
  *              ring), accent-soft with a check when complete, danger-soft with "!" on error,
  *              dashed when skipped
+ *   current    the step at `value` (data-current) keeps a soft ring round its marker whatever
+ *              its status; a complete current step is a solid accent bead with its check
  *   connector  a hairline between steps, accent once the step before it is complete
  *   compact    horizontal steppers too narrow for every label show "Step 2 of 5", the current
  *              step's name and a bar; the list stays for screen readers, visually hidden
@@ -118,6 +120,18 @@
   .fa-stepper-step[data-status="skipped"] .fa-stepper-marker {
     border-style: dashed;
   }
+  /* Where the person is, whatever the step's status: the ring, and a solid bead when complete. */
+  .fa-stepper-step[data-current] .fa-stepper-marker {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--accent-soft);
+  }
+  .fa-stepper-step[data-current][data-status="complete"] .fa-stepper-marker {
+    border-color: transparent;
+    background: var(--accent);
+    color: var(--accent-fg);
+  }
+  .fa-stepper-step[data-current][data-status="error"] .fa-stepper-marker {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--danger-soft);
+  }
 
   .fa-stepper-text {
     display: flex;
@@ -133,7 +147,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .fa-stepper-step:is([data-status="current"], [data-status="complete"]) .fa-stepper-label {
+  .fa-stepper-step:is([data-status="current"], [data-status="complete"], [data-current]) .fa-stepper-label {
     color: var(--fg);
   }
   .fa-stepper-step[data-status="error"] .fa-stepper-label {

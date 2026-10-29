@@ -1562,6 +1562,13 @@ export default defineMessagePack("zh-Hans", {
     minimapVisible: "小地图：当部分地图在视野之外时显示",
     minimapOff: "小地图：关闭",
   },
+  levelGauge: {
+    notRated: "未评级",
+    previously: "之前",
+    named: ({ label, value }) => `${label}：${value}`,
+    withPrevious: ({ label, value, previousLabel, previous }) => `${label}：${value}（${previousLabel}：${previous}）`,
+    previousLine: ({ previousLabel, previous }) => `${previousLabel}：${previous}`,
+  },
   relationshipCanvas: {
     loading: "正在加载图表",
     diagramLoading: "图表正在加载",

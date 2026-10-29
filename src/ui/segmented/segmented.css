@@ -15,6 +15,8 @@
  *   menu    the track holds one trigger drawn as the chosen pill, the chosen option's icon
  *           and label and a chevron ("RMM ▾"); the options are in a menu with a check
  * data-scroll: collapse="none" — the segments scroll sideways inside the track instead.
+ * data-readonly: a recorded answer — full contrast, the chosen pill, no hover, press or
+ * pointer cursor (the segments are a read-only radio group, not buttons).
  */
 @layer components {
   .fa-segmented {
@@ -131,6 +133,13 @@
   .fa-segmented-item[data-disabled] {
     opacity: var(--disabled-opacity);
     cursor: not-allowed;
+  }
+  .fa-segmented[data-readonly] > :is(.fa-segmented-item, .fa-segmented-trigger) {
+    cursor: default;
+  }
+  .fa-segmented[data-readonly] > .fa-segmented-item:is(:hover, :active):not([data-pressed]) {
+    background-color: transparent;
+    color: var(--fg-muted);
   }
   /* A disabled group fades once, not once per segment. */
   .fa-segmented[data-disabled] > .fa-segmented-item[data-disabled] {

@@ -1562,6 +1562,13 @@ export default defineMessagePack("fr", {
     minimapVisible: "Mini-carte : affichée alors qu'une partie de la carte est hors de vue",
     minimapOff: "Mini-carte : désactivée",
   },
+  levelGauge: {
+    notRated: "Non évalué",
+    previously: "Auparavant",
+    named: ({ label, value }) => `${label} : ${value}`,
+    withPrevious: ({ label, value, previousLabel, previous }) => `${label} : ${value} (${previousLabel} : ${previous})`,
+    previousLine: ({ previousLabel, previous }) => `${previousLabel} : ${previous}`,
+  },
   relationshipCanvas: {
     loading: "Chargement du diagramme",
     diagramLoading: "Le diagramme est en cours de chargement",

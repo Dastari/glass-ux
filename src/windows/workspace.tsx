@@ -37,7 +37,7 @@ import { PHONE_QUERY, useMediaQuery } from "../lib/use-media-query.js";
 import { Button } from "../ui/button/index.js";
 import { createDragStore, type DragStore } from "./drag.js";
 import { Dock, WindowSwitcher } from "./dock.js";
-import { SNAP_LAYOUTS, SNAP_ZONES, assignTiles, clamp, fracVars, maxTileColumns, type FracRect } from "./geometry.js";
+import { SNAP_LAYOUTS, SNAP_ZONES, assignTiles, clamp, fracVars, maxTileColumns, orderTiles, type FracRect } from "./geometry.js";
 import {
   ManagedWindow,
   WorkspaceLinkContext,
@@ -68,6 +68,18 @@ export interface WorkspaceProps {
   primaryLabel: string;
   /** Show the dock of open windows (default true). */
   dock?: boolean;
+  /**
+   * Keep a column for the primary view beside tiled windows (default true). When false, tiled
+   * windows fill the stage and the primary view shows only while none is tiled: for a page
+   * that is entirely windows, such as a dashboard. Phone sheets are unchanged.
+   */
+  reservePrimary?: boolean;
+  /**
+   * Preferred order of tiled windows by id, from the start of the stage; unlisted windows
+   * follow in the order they were opened. A window closed and reopened returns to its place.
+   * Floating windows and the dock are unaffected.
+   */
+  tileOrder?: readonly string[];
   /**
    * The tenant scope the user is in and how to draw one (R14.4). Windows from another scope
    * show its chip in their app bar, and the dock groups windows by scope. Omit for a
@@ -172,6 +184,8 @@ export function Workspace({
   primary,
   primaryLabel,
   dock = true,
+  reservePrimary = true,
+  tileOrder,
   scopes,
   className,
 }: WorkspaceProps) {
@@ -203,9 +217,12 @@ export function Workspace({
   useWindowShortcuts(manager);
 
   const visible = windows.filter((entry) => !entry.poppedOut);
-  const tiledIds = visible
-    .filter((entry) => entry.layout === "tiled" && !entry.minimised)
-    .map((entry) => entry.id);
+  const tiledIds = orderTiles(
+    visible
+      .filter((entry) => entry.layout === "tiled" && !entry.minimised)
+      .map((entry) => entry.id),
+    tileOrder,
+  );
   const maxColumns =
     sheet || size.width === 0
       ? 1
@@ -215,7 +232,11 @@ export function Workspace({
           MIN_COLUMN_REM * metrics.rem,
           metrics.gap,
         );
-  const { columns, slots } = assignTiles(tiledIds, maxColumns);
+  // Phones keep the primary view and its sheet navigation as they are.
+  const reserve = reservePrimary || sheet;
+  const { columns, slots } = assignTiles(tiledIds, maxColumns, reserve);
+  // Without a reserved column the tiles cover the stage; the primary view is the fallback.
+  const primaryCovered = !reserve && slots.size > 0;
   const dividers =
     columns >= 2 ? (splits[String(columns) as "2" | "3"] ?? []) : [];
 
@@ -273,7 +294,7 @@ export function Workspace({
   }, [sheetFront]);
 
   const primaryVars =
-    columns >= 2 ? columnVars(0, columns, 0, 1) : fracVars(FULL);
+    columns >= 2 && reserve ? columnVars(0, columns, 0, 1) : fracVars(FULL);
 
   return (
     <WindowScopeProvider value={scopes}>
@@ -296,7 +317,7 @@ export function Workspace({
               label={primaryLabel}
               focused={focusedId === PRIMARY_WINDOW_ID}
               vars={primaryVars}
-              hidden={Boolean(sheetFront)}
+              hidden={Boolean(sheetFront) || primaryCovered}
               onFocus={() => manager.focus(PRIMARY_WINDOW_ID)}
             >
               {primary}

@@ -1,3 +1,4 @@
+import { PHONE_QUERY } from "../../ui/dialog/index.js"
 import { useState, type CSSProperties, type ReactNode } from "react"
 import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import {
@@ -7,6 +8,8 @@ import {
   IconCopy,
   IconRefresh,
   IconRemoteControl,
+  IconCamera,
+  IconList,
   IconTrash,
   IconTaskManager,
   IconTerminal,
@@ -171,6 +174,26 @@ registerWindowKind<SampleParams>({
   title: () => "Terminal",
   subtitle: (params) => params.endpoint,
   icon: IconTerminal,
+  size: { w: 420, h: 260 },
+  minSize: { w: 280, h: 180 },
+  load: async () => ({ default: TerminalBody }),
+})
+
+// The all-windows dashboard's kinds: a gate camera and its log, with their own ids.
+registerWindowKind<SampleParams>({
+  kind: "gallery.camera",
+  title: () => "Gate camera",
+  subtitle: (params) => params.endpoint,
+  icon: IconCamera,
+  size: { w: 480, h: 320 },
+  minSize: { w: 280, h: 200 },
+  load: async () => ({ default: ScreenBody }),
+})
+registerWindowKind<SampleParams>({
+  kind: "gallery.gate-log",
+  title: () => "Gate log",
+  subtitle: (params) => params.endpoint,
+  icon: IconList,
   size: { w: 420, h: 260 },
   minSize: { w: 280, h: 180 },
   load: async () => ({ default: TerminalBody }),
@@ -395,6 +418,48 @@ function MiniWorkspace() {
   )
 }
 
+/** A page that is all windows: two tiles fill the stage in a set order; the page shows when both are closed. */
+const DASHBOARD_ORDER = ["dashboard-camera", "dashboard-log"]
+
+function DashboardWorkspace() {
+  const [manager] = useState(() => {
+    const store = createWindowManager({ storageKey: null, channelName: null, defaultLayout: () => "tiled" })
+    // On a phone open windows are sheets over the whole page, so the demo starts closed there.
+    if (typeof window !== "undefined" && window.matchMedia(PHONE_QUERY).matches) return store
+    // Opened log first; tileOrder still puts the camera on the left.
+    store.open({ id: "dashboard-log", kind: "gallery.gate-log", params: { endpoint: "North gate" } })
+    store.open({ id: "dashboard-camera", kind: "gallery.camera", params: { endpoint: "North gate" } })
+    return store
+  })
+  const reopen = () => {
+    manager.open({ id: "dashboard-log", kind: "gallery.gate-log", params: { endpoint: "North gate" } })
+    manager.open({ id: "dashboard-camera", kind: "gallery.camera", params: { endpoint: "North gate" } })
+  }
+  return (
+    <WindowManagerProvider manager={manager}>
+      <div className="gallery-wm-mini" data-testid="dashboard-workspace">
+        <Workspace
+          reservePrimary={false}
+          tileOrder={DASHBOARD_ORDER}
+          primaryLabel="Front desk"
+          primary={
+            <WindowFrame.Body>
+              <Panel>
+                <PanelBody>
+                  <p className="fa-hint">The camera and log windows are closed.</p>
+                  <Button icon={<IconRemoteControl />} onClick={reopen}>
+                    Reopen windows
+                  </Button>
+                </PanelBody>
+              </Panel>
+            </WindowFrame.Body>
+          }
+        />
+      </div>
+    </WindowManagerProvider>
+  )
+}
+
 /** A dock with real entries: one focused, one minimised, one popped out. */
 function DockSpecimen() {
   const [manager] = useState(() => {
@@ -509,6 +574,16 @@ export default function WindowsSection() {
 
       <Specimen title="Workspace" description="A working workspace with its own manager (not saved). Open windows, drag them to the edges or the snap bar, resize, minimise and restore from the dock." wide layout="bare" backdrop>
         <MiniWorkspace />
+      </Specimen>
+
+      <Specimen
+        title="All windows"
+        description="reservePrimary={false}: tiled windows fill the stage, with a shared divider between them, and the page shows only once they are all closed. tileOrder keeps the camera on the left however the windows were opened or reopened."
+        wide
+        layout="bare"
+        backdrop
+      >
+        <DashboardWorkspace />
       </Specimen>
 
       <Specimen title="Keyboard" description="Shortcuts act on the focused window. Bodies that own the keyboard (remote screens, terminals) opt out with data-keyboard-capture." wide layout="bare">

@@ -6,7 +6,8 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ## 0.11.7
 
-An editable avatar and a relationship canvas.
+An editable avatar, a relationship canvas, a level gauge, and fixes requested by a consuming
+application.
 
 ### Added
 
@@ -26,8 +27,27 @@ An editable avatar and a relationship canvas.
   move by dragging their header or with Shift and the arrow keys, and Auto layout arranges
   them; positions are reported through `onPositionsChange`. Selection draws a card's edges in
   the accent. Messages in every language pack.
+- `glass-ux/level-gauge`: `LevelGauge`, a small ordered scale such as Low, Moderate and High.
+  Segments fill to the level in its status tone, and an earlier level stays in view: traced
+  when the level came down, striped when it rose. `sm` for table cells and footers, `md` with
+  the scale's names for forms; `onPress` makes it a button. Messages in every language pack.
+- Stepper `sections` and `scrollContainer`: section navigation for one long scrolling form. The
+  Stepper follows the section in view and scrolls to a chosen one, smoothly unless motion is
+  reduced.
+- Segmented `readOnly`: a recorded answer at full contrast, as a read-only radio group with one
+  tab stop; pointer and keys change nothing, in every form.
+- Workspace `reservePrimary` and `tileOrder`: tiled windows can fill the stage on a page that is
+  all windows, with the primary view as the fallback, and keep a preferred order.
+  `assignTiles` takes the matching `reservePrimary` argument, and `orderTiles` is exported.
 - TopologyCanvas draws the same dot grid behind the map, panning and scaling with the camera
   (`grid={false}` turns it off). The grid is the shared `fa-dot-grid` recipe.
+
+### Changed
+
+- Stepper: the step at `value` is the current step whatever its `status`. It always has
+  `aria-current="step"` and the current highlight, and a step with `status: "complete"` there
+  shows its check with the highlight. `status` now sets only the marker. Without statuses,
+  nothing changes.
 
 ## 0.11.6
 

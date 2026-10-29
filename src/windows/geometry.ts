@@ -134,7 +134,7 @@ export function maxTileColumns(viewportWidth: number, workspaceWidth: number, mi
 }
 
 export interface TileSlot {
-  /** 1-based column (0 is the primary window). */
+  /** The column, from 0 at the start; column 0 is the primary window's unless it is not reserved. */
   column: number
   row: number
   /** Records or matrix rows in display order. */
@@ -145,21 +145,35 @@ export interface TileSlot {
  * Assign tiled windows to columns beside the primary window. Only as many columns as
  * there are windows are used, so one tiled window gives a two-column split even on an
  * ultra-wide screen. Returns the column count actually used (primary included).
+ *
+ * With `reservePrimary` false no column is kept for the primary window: the tiles fill every
+ * column from 0, and one column stacks them all.
  */
-export function assignTiles(ids: readonly string[], maxColumns: number) {
-  const columns = Math.min(Math.max(1, maxColumns), 1 + ids.length)
+export function assignTiles(ids: readonly string[], maxColumns: number, reservePrimary = true) {
+  const reserved = reservePrimary ? 1 : 0
+  const columns = Math.min(Math.max(1, maxColumns), Math.max(1, reserved + ids.length))
   const slots = new Map<string, TileSlot>()
-  if (columns < 2) return { columns: 1, slots }
-  const tileColumns = columns - 1
+  const tileColumns = columns - reserved
+  if (tileColumns < 1 || ids.length === 0) return { columns: reservePrimary ? 1 : columns, slots }
   const byColumn: string[][] = Array.from({ length: tileColumns }, () => [])
   ids.forEach((id, index) => {
     const column = Math.min(tileColumns - 1, Math.floor((index * tileColumns) / ids.length))
     byColumn[column]?.push(id)
   })
   byColumn.forEach((members, column) => {
-    members.forEach((id, row) => slots.set(id, { column: column + 1, row, rows: members.length }))
+    members.forEach((id, row) => slots.set(id, { column: column + reserved, row, rows: members.length }))
   })
   return { columns, slots }
+}
+
+/** Ids in a preferred order: those listed in `order` first, in its order; the rest after, as they came. */
+export function orderTiles(ids: readonly string[], order: readonly string[] | undefined): string[] {
+  if (!order?.length) return [...ids]
+  const rank = new Map(order.map((id, index) => [id, index] as const))
+  return ids
+    .map((id, index) => ({ id, index, rank: rank.get(id) ?? Number.POSITIVE_INFINITY }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map((item) => item.id)
 }
 
 export const DEFAULT_SPLITS: Readonly<Record<"2" | "3", readonly number[]>> = {

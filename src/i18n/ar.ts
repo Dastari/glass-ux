@@ -1563,6 +1563,13 @@ export default defineMessagePack("ar", {
     minimapVisible: "الخريطة المصغرة: تظهر عندما يكون جزء من الخريطة خارج نطاق الرؤية",
     minimapOff: "الخريطة المصغرة: متوقفة",
   },
+  levelGauge: {
+    notRated: "غير مصنّف",
+    previously: "سابقًا",
+    named: ({ label, value }) => `${label}: ${value}`,
+    withPrevious: ({ label, value, previousLabel, previous }) => `${label}: ${value} (${previousLabel}: ${previous})`,
+    previousLine: ({ previousLabel, previous }) => `${previousLabel}: ${previous}`,
+  },
   relationshipCanvas: {
     loading: "جارٍ تحميل المخطط",
     diagramLoading: "المخطط قيد التحميل",

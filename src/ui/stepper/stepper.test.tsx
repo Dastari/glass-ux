@@ -25,6 +25,33 @@ describe("Stepper", () => {
     expect(change).toHaveBeenCalledWith("a")
     expect(screen.queryByRole("button", { name: /Charlie/ })).toBeNull()
   })
+
+  it("keeps the current step's highlight when its status says complete, in any order", () => {
+    render(
+      <Stepper
+        steps={[
+          { id: "a", label: "Alpha", status: "upcoming" },
+          { id: "b", label: "Bravo", status: "complete" },
+          { id: "c", label: "Charlie", status: "complete" },
+        ]}
+        value="b"
+      />,
+    )
+    const bravo = screen.getByText("Bravo", { selector: ".fa-stepper-label" }).closest("li")!
+    expect(bravo.getAttribute("aria-current")).toBe("step")
+    expect(bravo.getAttribute("data-status")).toBe("complete")
+    expect(bravo.hasAttribute("data-current")).toBe(true)
+    expect(bravo.querySelector(".fa-stepper-text")!.textContent).toBe("Bravo, complete, current")
+    const charlie = screen.getByText("Charlie", { selector: ".fa-stepper-label" }).closest("li")!
+    expect(charlie.getAttribute("aria-current")).toBeNull()
+    expect(charlie.querySelector(".fa-stepper-text")!.textContent).toBe("Charlie, complete")
+    expect(screen.getByText("Step 2 of 3")).toBeTruthy()
+  })
+
+  it("marks no step current when the value names none", () => {
+    render(<Stepper steps={STEPS} value="missing" />)
+    expect(document.querySelector("[aria-current]")).toBeNull()
+  })
 })
 
 describe("Wizard", () => {

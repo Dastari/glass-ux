@@ -1562,6 +1562,13 @@ export default defineMessagePack("nl", {
     minimapVisible: "Minimap: weergegeven terwijl een deel van de kaart buiten beeld is",
     minimapOff: "Minimap: uit",
   },
+  levelGauge: {
+    notRated: "Niet beoordeeld",
+    previously: "Eerder",
+    named: ({ label, value }) => `${label}: ${value}`,
+    withPrevious: ({ label, value, previousLabel, previous }) => `${label}: ${value} (${previousLabel}: ${previous})`,
+    previousLine: ({ previousLabel, previous }) => `${previousLabel}: ${previous}`,
+  },
   relationshipCanvas: {
     loading: "Diagram laden",
     diagramLoading: "Het diagram wordt geladen",

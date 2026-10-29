@@ -1,0 +1,186 @@
+/*
+ * LevelGauge — a small ordered scale (Low · Moderate · High).
+ *
+ *   segments  one per level; filled to the level in its tone, empty ones a muted well with a
+ *             hairline. Down from an earlier, higher level the segments are traced (a dashed
+ *             edge in the earlier level's tone, no fill); up from an earlier, lower level the
+ *             gained segments are striped. Fill against edge keeps them apart without colour.
+ *   value     the level's name in its tone's text colour; "Not rated" muted, in the same space
+ *   sm        segments and the name in one line: table cells, footers
+ *   md        the label and the name, a note (and the earlier level), full-width segments and
+ *             the scale's names beneath, the current one in full colour; up to 24rem wide
+ *   pressable with onPress the gauge is a button; its hover fill reaches past it without
+ *             changing its size
+ */
+@layer components {
+  .fa-level-gauge {
+    --_seg-w: var(--space-4);
+    --_seg-h: var(--space-1-5);
+    --_gap: var(--space-half);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-align: start;
+    vertical-align: middle;
+  }
+  .fa-level-gauge[data-size="md"] {
+    --_seg-h: var(--space-2);
+    display: grid;
+    gap: var(--space-1-5);
+    width: 100%;
+    max-width: 24rem; /* tokens:allow the md gauge stops widening at a readable scale */
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+
+  /* Pressable: the hover fill reaches a little past the gauge without changing its size. */
+  .fa-level-gauge[data-pressable] {
+    cursor: pointer;
+  }
+  .fa-level-gauge[data-pressable]::before {
+    content: "";
+    position: absolute;
+    inset: calc(var(--space-1) * -1);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .fa-level-gauge[data-pressable]:hover::before {
+    background-color: var(--fill-hover);
+  }
+  .fa-level-gauge[data-pressable]:focus-visible {
+    outline-offset: var(--space-1);
+  }
+
+  /* ── Tones ──────────────────────────────────────────────────────────────── */
+  .fa-level-gauge [data-tone] {
+    --_tone: var(--fg-subtle);
+    --_tone-text: var(--fg);
+  }
+  .fa-level-gauge [data-tone="info"] {
+    --_tone: var(--info);
+    --_tone-text: var(--info-text);
+  }
+  .fa-level-gauge [data-tone="success"] {
+    --_tone: var(--success);
+    --_tone-text: var(--success-text);
+  }
+  .fa-level-gauge [data-tone="warning"] {
+    --_tone: var(--warning);
+    --_tone-text: var(--warning-text);
+  }
+  .fa-level-gauge [data-tone="danger"] {
+    --_tone: var(--danger);
+    --_tone-text: var(--danger-text);
+  }
+
+  /* ── Segments ───────────────────────────────────────────────────────────── */
+  .fa-level-gauge-segments {
+    display: inline-flex;
+    flex: none;
+    gap: var(--_gap);
+  }
+  .fa-level-gauge[data-size="md"] .fa-level-gauge-segments {
+    display: flex;
+  }
+  .fa-level-gauge-segment {
+    box-sizing: border-box;
+    flex: none;
+    width: var(--_seg-w);
+    height: var(--_seg-h);
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-full);
+    background-color: var(--fill-muted);
+  }
+  .fa-level-gauge[data-size="md"] .fa-level-gauge-segment {
+    flex: 1 1 0;
+    width: auto;
+  }
+  .fa-level-gauge-segment[data-state="filled"] {
+    border-color: var(--_tone);
+    background-color: var(--_tone);
+  }
+  .fa-level-gauge-segment[data-state="risen"] {
+    border-color: var(--_tone);
+    background-color: transparent;
+    background-image: repeating-linear-gradient(
+      135deg,
+      var(--_tone) 0 calc(var(--border-width) * 2),
+      color-mix(in oklab, var(--_tone) 35%, transparent) calc(var(--border-width) * 2) calc(var(--border-width) * 4)
+    );
+  }
+  .fa-level-gauge-segment[data-state="traced"] {
+    border-style: dashed;
+    border-color: var(--_tone);
+    background-color: transparent;
+  }
+
+  /* ── Text ───────────────────────────────────────────────────────────────── */
+  .fa-level-gauge-value {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--_tone-text, var(--fg));
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-level-gauge-value[data-unrated] {
+    color: var(--fg-muted);
+    font-weight: var(--weight-regular);
+  }
+  .fa-level-gauge-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-level-gauge-label {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-level-gauge[data-size="md"] .fa-level-gauge-value {
+    font-weight: var(--weight-semibold);
+  }
+  .fa-level-gauge-note {
+    display: flex;
+    flex-direction: column;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-level-gauge-scale {
+    display: grid;
+    grid-template-columns: repeat(var(--_levels), minmax(0, 1fr));
+    gap: var(--_gap);
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-align: center;
+  }
+  .fa-level-gauge-scale > * {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-level-gauge-scale > [data-current] {
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+  }
+}

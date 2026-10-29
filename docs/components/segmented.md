@@ -72,6 +72,10 @@ way first): a row that lets its children overflow never squeezes them, so nothin
 - **Touch.** The menu button keeps a `--target-min` touch target on coarse pointers without
   growing the track.
 - **Tones.** `tone` tints the chosen pill, and the menu button with it.
+- **Read-only.** `readOnly` shows a recorded answer at full contrast: the group becomes a
+  read-only radio group (`aria-readonly`) whose chosen option is the one tab stop, and clicks,
+  arrow keys and hover do nothing. In the menu form it shows the chosen option alone, with no
+  menu. `disabled` is for answers that do not apply.
 
 **Parts:** `Segmented`, `SegmentedCollapseContext`, `fitSegmented`, `nextSegmentedForm`,
 `SegmentedOption`, `SegmentedForm`, `SegmentedCollapse`.

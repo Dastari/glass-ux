@@ -5,6 +5,7 @@ export {
   SNAP_ZONES,
   SNAP_ZONE_LABELS,
   assignTiles,
+  orderTiles,
   edgeSnapTarget,
   fracToRect,
   fracVars,

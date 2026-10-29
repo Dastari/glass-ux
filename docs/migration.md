@@ -9,6 +9,11 @@ No code changes are required. `AvatarSize` gains `"2xl"`; code that switches ove
 needs a case for it. TopologyCanvas now draws a dot grid behind the map; pass `grid={false}`
 to keep the previous plain backdrop.
 
+Stepper: `aria-current="step"` and the current highlight now follow `value`, not a step's
+`status: "current"`. If you set `status: "current"` on a step other than `value`, set `value`
+to that step instead. A step with an explicit `status` at `value` keeps its marker (a check
+for `complete`) and gains the highlight.
+
 ## 0.11.5 → 0.11.6
 
 No code changes are required.

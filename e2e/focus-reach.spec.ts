@@ -26,6 +26,7 @@ const PAGES = [
   "signature-pad",
   "avatar",
   "relationship-canvas",
+  "level-gauge",
   "login-flow",
   "select",
   "button",

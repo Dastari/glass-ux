@@ -84,6 +84,9 @@ export default function SegmentedSection() {
         <Example label="Disabled">
           <Segmented options={ENABLED} defaultValue="disabled" disabled aria-label="Remote control (disabled)" />
         </Example>
+        <Example label="Read-only (a recorded answer)">
+          <Segmented options={ENABLED} value="enabled" readOnly aria-label="Remote control (recorded)" />
+        </Example>
         <Example label="In a field, invalid">
           <div className="w-full max-w-xs">
             <Field label="Remote control" nativeLabel={false} error="Choose whether technicians can take control">

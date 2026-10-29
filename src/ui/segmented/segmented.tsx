@@ -54,6 +54,12 @@ export interface SegmentedProps<V extends string = string> {
   /** What happens when the options do not fit. Default: the host's SegmentedCollapseContext, else "auto". */
   collapse?: SegmentedCollapse
   disabled?: boolean
+  /**
+   * Shows a recorded answer: full contrast, the chosen option marked, one tab stop that
+   * announces the value as read-only (a radio group with `aria-readonly`). Pointer and
+   * keyboard change nothing and there is no hover or press feedback, in every form.
+   */
+  readOnly?: boolean
   /** Invalid outside a Field. */
   invalid?: boolean
   /** The chosen segment's tint. Status tones only when the modes are statuses (R3.3). */
@@ -128,6 +134,7 @@ export function Segmented<V extends string = string>({
   block = false,
   collapse: collapseProp,
   disabled,
+  readOnly = false,
   invalid,
   tone,
   onBlur,
@@ -199,6 +206,64 @@ export function Segmented<V extends string = string>({
       </span>
     </span>
   ) : null
+
+  if (readOnly) {
+    // A read-only radio group: the chosen option is the one tab stop; nothing responds to
+    // pointer or keys, so the answer reads as recorded rather than unavailable.
+    const groupLabel = aria["aria-label"]
+    const labelledBy = aria["aria-labelledby"] ?? (groupLabel ? undefined : row?.labelId)
+    const chosen = options.find((option) => option.value === current)
+    const stop = chosen ?? options[0]
+    return (
+      <div
+        ref={rootRef}
+        role="radiogroup"
+        aria-readonly="true"
+        aria-disabled={disabled || undefined}
+        aria-label={groupLabel}
+        aria-labelledby={labelledBy}
+        aria-describedby={row?.descriptionId}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) onBlur?.(event)
+        }}
+        className={cx("fa-segmented", className)}
+        {...shared}
+        data-readonly=""
+        data-disabled={disabled ? "" : undefined}
+        data-block={block ? "" : undefined}
+        data-compact={compact ? "" : undefined}
+        data-ready={form === "menu" || ready ? "" : undefined}
+      >
+        {form === "menu" ? (
+          <span role="radio" aria-checked={Boolean(chosen)} tabIndex={disabled ? undefined : 0} className="fa-segmented-trigger">
+            {chosen?.icon}
+            <span className="fa-segmented-label">{chosen?.label}</span>
+          </span>
+        ) : (
+          <>
+            <span ref={indicatorRef} className="fa-segmented-indicator fa-glide" aria-hidden hidden={!ready} />
+            {options.map((option) => (
+              <span
+                key={option.value}
+                role="radio"
+                aria-checked={option.value === current}
+                aria-label={compact ? option.label : undefined}
+                title={compact ? option.label : undefined}
+                tabIndex={option === stop && !disabled ? 0 : undefined}
+                className="fa-segmented-item"
+                data-pressed={option.value === current ? "" : undefined}
+                data-disabled={option.disabled ? "" : undefined}
+              >
+                {option.icon}
+                {compact ? null : <span className="fa-segmented-label">{option.label}</span>}
+              </span>
+            ))}
+          </>
+        )}
+        {measureRow}
+      </div>
+    )
+  }
 
   if (form === "menu") {
     const chosen = options.find((option) => option.value === current) ?? options[0]

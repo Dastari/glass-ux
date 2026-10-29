@@ -182,6 +182,7 @@
 - [Kanban](kanban.md) — `glass-ux/kanban`
 - [KanbanCard](kanban-card.md) — `glass-ux/kanban`
 - [Kbd](kbd.md) — `glass-ux/kbd`
+- [LevelGauge](level-gauge.md) — `glass-ux/level-gauge`
 - [Lightbox](lightbox.md) — `glass-ux/lightbox`
 - [LineChart](line-chart.md) — `glass-ux/charts`
 - [Link](link.md) — `glass-ux/link`

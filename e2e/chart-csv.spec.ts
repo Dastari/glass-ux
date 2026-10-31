@@ -80,3 +80,19 @@ test("the head's tools keep their place from loading to loaded, and explain the 
   const ready = await Promise.all(await place());
   expect(ready).toEqual(loading);
 });
+
+test("a ChartTable outside a chart stays inside its own container", async ({ page }) => {
+  await page.goto("/components/chart-frame");
+  const scroll = page.locator(".fa-chart-table-scroll").first();
+  await expect(scroll).toBeVisible();
+  const [own, parent] = await scroll.evaluate((element) =>
+    [element, element.parentElement!].map((node) => {
+      const box = node.getBoundingClientRect();
+      return { top: box.top, bottom: box.bottom, left: box.left, right: box.right };
+    }),
+  );
+  expect(own!.top).toBeGreaterThanOrEqual(parent!.top - 1);
+  expect(own!.bottom).toBeLessThanOrEqual(parent!.bottom + 1);
+  expect(own!.left).toBeGreaterThanOrEqual(parent!.left - 1);
+  expect(own!.right).toBeLessThanOrEqual(parent!.right + 1);
+});

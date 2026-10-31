@@ -4,6 +4,14 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Fixed
+
+- A visible `ChartTable` outside a chart stays in its own container: it scrolls within its
+  parent's height instead of filling the nearest positioned ancestor, where it covered the
+  page title. Inside a chart it still replaces the plot in the plot's box.
+
 ## 0.12.0
 
 Stylesheets for only the components an application uses, smaller bundles, text that follows

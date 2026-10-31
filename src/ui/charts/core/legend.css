@@ -198,12 +198,19 @@
   }
 
   /* ── Table view ────────────────────────────────────────────────────────── */
+  /* On its own the table is a block that scrolls within its parent's height; in a chart it
+     replaces the plot and fills the plot's box. */
   .fa-chart-table-scroll {
-    position: absolute;
-    inset: 0;
+    position: relative;
+    max-block-size: 100%;
     overflow: auto;
     /* Wheel containment comes from [data-scroll-container]: only along an overflowing axis. */
     border-radius: var(--radius-mark);
+  }
+  .fa-chart-plot > .fa-chart-table-scroll {
+    position: absolute;
+    inset: 0;
+    max-block-size: none;
   }
   .fa-chart-table {
     width: 100%;

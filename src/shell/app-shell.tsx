@@ -68,7 +68,7 @@ export interface ShellContextValue {
   setInspectorOpen: (open: boolean) => void
 }
 
-const ShellContext = createContext<ShellContextValue | null>(null)
+const ShellContext = /* @__PURE__ */ createContext<ShellContextValue | null>(null)
 
 /** Returns the enclosing `AppShell`'s layout state: breakpoints, drawer and inspector state with their setters. Throws when used outside `AppShell`. */
 export function useShell(): ShellContextValue {
@@ -94,7 +94,7 @@ export interface ShellFocusTargets {
   registerDrawerReturn: (element: HTMLElement) => () => void
 }
 
-export const ShellFocusContext = createContext<ShellFocusTargets | null>(null)
+export const ShellFocusContext = /* @__PURE__ */ createContext<ShellFocusTargets | null>(null)
 
 /** Focuses the element if it can take focus (connected, not inert or hidden); reports success. */
 const tryFocus = (element: HTMLElement | null | undefined) => {
@@ -104,7 +104,7 @@ const tryFocus = (element: HTMLElement | null | undefined) => {
 }
 
 /** Where a SectionDrawer renders: docked in the shell, or in the slide-over sheet. */
-export const DrawerPlacement = createContext<"pane" | "sheet">("pane")
+export const DrawerPlacement = /* @__PURE__ */ createContext<"pane" | "sheet">("pane")
 
 export interface AppShellProps {
   /** Top-left corner, above the rail: the product mark (ShellBrand). */

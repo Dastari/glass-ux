@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router"
-import { useMemo, useState, type ReactNode } from "react"
+import { useEffect, useMemo, useState, type ReactNode } from "react"
 import { sections } from "../registry.js"
 import { Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { IconColumns, IconEndpoint, IconGrid, IconLayers, IconMoon, IconPlus, IconSearch, IconSun } from "../../icons/generated/icons.js"
@@ -7,7 +7,7 @@ import { useAppearance } from "../../lib/appearance/index.js"
 import { ActionProvider, usePaletteActions } from "../../ui/actions/index.js"
 import { Button } from "../../ui/button/index.js"
 import { CommandPanel, DEFAULT_PALETTE_GROUP_ORDER, PaletteProvider, useCommandPalette, usePaletteCommands, useRegisteredCommands, type PaletteCommand } from "../../ui/command-palette/index.js"
-import { Kbd } from "../../ui/kbd/index.js"
+import { Kbd, configureShortcuts } from "../../ui/kbd/index.js"
 import { Switch } from "../../ui/switch/index.js"
 import { toast } from "../../ui/toast/index.js"
 import { ENDPOINTS, endpointActions } from "./overlays.fixtures.js"
@@ -55,6 +55,7 @@ function DemoCommands({ selected, onSelect, loading }: { selected: string; onSel
         group: "Actions",
         icon: appearance.mode === "dark" ? <IconSun /> : <IconMoon />,
         keywords: ["theme", "appearance"],
+        shortcut: "t",
         run: () => update({ mode: appearance.mode === "dark" ? "light" : "dark" }),
       },
     ],
@@ -91,6 +92,12 @@ function InlinePanel({ query, loading: forceLoading }: { query?: string; loading
 export default function CommandPaletteSection() {
   const [selected, setSelected] = useState("nst-c106")
   const [loading, setLoading] = useState(false)
+  // The application-wide switch for bare-key shortcuts (WCAG 2.1.4); on again when the page unmounts.
+  const [characterKeys, setCharacterKeys] = useState(true)
+  useEffect(() => {
+    configureShortcuts({ characterKeys })
+    return () => configureShortcuts({ characterKeys: true })
+  }, [characterKeys])
   const current = ENDPOINTS.find((item) => item.id === selected) ?? ENDPOINTS[0]!
   return (
     <ActionProvider>
@@ -118,6 +125,10 @@ export default function CommandPaletteSection() {
           <Specimen title="Anatomy" description="Search row, grouped results — icon, label with matched letters, data, shortcut — and keyboard hints. The frame keeps one height while results change." wide>
             <InlinePanel />
             <InlinePanel query="pow re" />
+            <Example label="Application setting: T switches the theme">
+              <Switch checked={characterKeys} onCheckedChange={setCharacterKeys} label="Bare-key shortcuts" />
+            </Example>
+
           </Specimen>
 
           <Specimen title="Empty and loading" description="No match states the query in one line. A source still fetching shows rows of skeleton in the shape of results.">
@@ -131,6 +142,7 @@ export default function CommandPaletteSection() {
               "Register a selected item's actions with usePaletteActions — the same definition as its menus.",
               "Show data after the label (hostname, organisation, parent menu), not a description.",
               "Give frequent commands a shortcut; the palette shows it and binds it while registered.",
+              "Let people turn bare-key shortcuts off with configureShortcuts({ characterKeys: false }) (WCAG 2.1.4); modifier shortcuts stay.",
             ]}
             dont={[
               "Hand-build palette entries for an entity's actions.",

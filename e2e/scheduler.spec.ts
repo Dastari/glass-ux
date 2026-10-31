@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 async function open(page: Page, appearance: Record<string, string> = {}) {
@@ -230,4 +231,19 @@ test("loading keeps the header and grid in place", async ({ page }) => {
   const after = (await loading.locator(".fa-sch-scroll").boundingBox())!;
   expect(after.x).toBe(grid!.x);
   expect(after.width).toBe(grid!.width);
+});
+
+test("the scheduler passes axe in the week, month and agenda views and the view buttons work by keyboard", async ({ page }) => {
+  const scheduler = await open(page);
+  for (const view of ["Week", "Month", "Agenda"]) {
+    if (view !== "Week") await scheduler.getByRole("button", { name: view, exact: true }).click();
+    await expect(scheduler.getByRole("button", { name: view, exact: true })).toHaveAttribute("aria-pressed", "true");
+  const result = await new AxeBuilder({ page }).include("[aria-label='Maintenance schedule']").analyze();
+  expect(result.violations.map((v) => ({ id: v.id, targets: v.nodes.map((n) => n.target) }))).toEqual([]);
+  }
+  await scheduler.getByRole("button", { name: "Week", exact: true }).focus();
+  await page.keyboard.press("Enter");
+  await expect(scheduler.locator(".fa-sch-col")).toHaveCount(7);
+  await page.keyboard.press("Tab");
+  await expect(page.locator(":focus")).toBeVisible();
 });

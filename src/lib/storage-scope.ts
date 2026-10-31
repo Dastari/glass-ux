@@ -5,7 +5,7 @@
  */
 import { createContext, useContext } from "react"
 
-export const StorageScopeContext = createContext<string | null>(null)
+export const StorageScopeContext = /* @__PURE__ */ createContext<string | null>(null)
 
 /** The nearest storage namespace ("window:<kind>" inside a window body), or null. */
 export const useStorageScope = () => useContext(StorageScopeContext)

@@ -22,7 +22,7 @@ import { Segmented } from "../segmented/index.js";
 import { richTextViews } from "./view-options.js";
 import { BlockStyleLabel } from "./block-style.js";
 
-const Editor = lazy(() => import("./rich-text-editor.js"));
+const Editor = /* @__PURE__ */ lazy(() => import("./rich-text-editor.js"));
 
 /** The rendered editor or the Markdown source of the same document. */
 export type RichTextView = "visual" | "markdown";

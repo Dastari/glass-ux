@@ -869,7 +869,7 @@ function EntityPreviewBody<T>(props: EntityIdentityProps<T>) {
 }
 
 /** Present a host-defined entity with its glyph or avatar, readable name and supporting metadata. */
-export const EntityIdentity = Object.assign(EntityIdentityRoot, {
+export const EntityIdentity = /* @__PURE__ */ Object.assign(EntityIdentityRoot, {
   Skeleton: EntityIdentitySkeleton,
   PreviewBody: EntityPreviewBody,
   Glyph: EntityGlyph,

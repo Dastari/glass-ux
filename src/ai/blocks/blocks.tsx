@@ -30,7 +30,7 @@ function blockKey(block: AiBlock, index: number) {
  * diffs, logs and metrics break out wider (data-breakout). The streaming caret follows the
  * last prose block of a streaming message.
  */
-export const MessageBlocks = memo(function MessageBlocks({ message }: {
+export const MessageBlocks = /* @__PURE__ */ memo(function MessageBlocks({ message }: {
   /** The assistant message whose `blocks` render in order; a `streaming` state puts the caret after its last prose block. */
   message: AiMessage
 }) {

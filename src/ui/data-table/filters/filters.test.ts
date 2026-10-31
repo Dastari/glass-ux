@@ -140,6 +140,9 @@ describe("summaries", () => {
     expect(summarize(site, "Site", { op: "in", values: ["Mossbridge", "Swansea"] })).toBe("Site: Mossbridge, Swansea")
     expect(summarize(site, "Site", { op: "in", values: ["a", "b", "c", "d"] })).toBe("Site: a, b +2")
     expect(summarize(site, "Site", { op: "notIn", values: ["Swansea"] })).toBe("Site: not Swansea")
+    // The joiner and the count follow the locale; en is unchanged.
+    expect(summarize(site, "Site", { op: "in", values: ["a", "b"] }, undefined, "ar-EG")).toBe(`Site: ${new Intl.ListFormat("ar-EG", { type: "unit", style: "short" }).format(["a", "b"])}`)
+    expect(summarize(site, "Site", { op: "in", values: ["a", "b", "c", "d"] }, undefined, "ar-EG")).toContain("+٢")
     expect(summarize(memory, "Memory", { op: "gt", value: 50 })).toBe("Memory > 50%")
     expect(summarize(memory, "Memory", { op: "between", min: 20, max: 80.5 })).toBe("Memory 20–80.5%")
     expect(summarize(seen, "Last seen", { op: "recent", days: 7 })).toBe("Last seen: last 7 days")
@@ -151,6 +154,10 @@ describe("summaries", () => {
     expect(summarize(online, "Status", { op: "eq", value: true })).toBe("Online")
     expect(summarize(org, "Organisation", { op: "eq", value: ORG })).toBe("Organisation is Northstar Studio")
     expect(summarize(tier, "Tier", { op: "in", values: ["1"] }, new Map([["1", "Gold"]]))).toBe("Tier: Gold")
+  })
+  it("lowercases a preset in English only, so a language pack can phrase it as it likes", () => {
+    expect(summarize(seen, "Last seen", { op: "last24h" })).toBe("Last seen: last 24 hours")
+    expect(summarize(seen, "Last seen", { op: "future" })).toBe("Last seen: in the future")
   })
   it("names presets", () => {
     expect(presetLabel({ op: "last24h" })).toBe("Last 24 hours")

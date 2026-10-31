@@ -4,8 +4,8 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for jsonTree. */
 export const jsonTreeMessages = defineMessages("jsonTree", {
-  collapse: "Collapse",
-  expand: "Expand",
+  collapseNode: (name: string | number) => `Collapse ${name}`,
+  expandNode: (name: string | number) => `Expand ${name}`,
   root: "root",
   showMoreOf: (name: string | number) => `Show more of ${name}`,
   itemCount: (count: number, locale = "en-US") => plural(locale, count, { one: `${numberFormat(locale).format(count)} item`, other: `${numberFormat(locale).format(count)} items` }),

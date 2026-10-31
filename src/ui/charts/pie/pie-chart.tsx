@@ -124,7 +124,7 @@ interface PiePlotProps {
   label: string
 }
 
-const PiePlot = memo(function PiePlot({ box, slices, total, store, donut, centre, totalLabel, fmt, label }: PiePlotProps) {
+const PiePlot = /* @__PURE__ */ memo(function PiePlot({ box, slices, total, store, donut, centre, totalLabel, fmt, label }: PiePlotProps) {
   const messages = useMessages(pieMessages, { locale: fmt.locale })
 
   const plotRef = useRef<HTMLDivElement>(null)

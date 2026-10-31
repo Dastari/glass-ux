@@ -134,7 +134,7 @@ function HeaderButton<T>({ action, targets, label }: HeaderButtonProps<T>) {
           <Menu.Root>
             <Menu.Trigger
               disabled={disabled}
-              render={<Button variant={variant} icon={<IconChevronDown />} aria-label={messages.moreOptions(action.label.toLowerCase())} />}
+              render={<Button variant={variant} icon={<IconChevronDown />} aria-label={messages.moreOptions(action.label)} />}
             />
             {menu}
           </Menu.Root>

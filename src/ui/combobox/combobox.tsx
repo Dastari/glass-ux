@@ -11,7 +11,7 @@ import { Button } from "../button/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import type { SelectSize } from "../select/index.js"
 import { OptionMore, OptionRow, OptionStatus, groupOptions, hasSecondLine, statusAnnouncement } from "./option-row.js"
-import { matches, useOptionSearch, type OptionItem, type OptionSearch, type OptionSource } from "./source.js"
+import { matchesOption, useOptionSearch, type OptionItem, type OptionSearch, type OptionSource } from "./source.js"
 import { popupContainer } from "../../lib/popup-container.js"
 
 export type ComboboxOption<V extends string = string> = OptionItem<V>
@@ -20,7 +20,7 @@ export type ComboboxOption<V extends string = string> = OptionItem<V>
 export const noMatches = (query: string) => (query.trim() ? getComboboxMessages().noMatchesFor(query.trim()) : getComboboxMessages().noOptions)
 
 /** Static filtering: label and description, ignoring case and diacritics. */
-export const optionFilter = (item: OptionItem, query: string) => matches(`${item.label} ${item.description ?? ""}`, query)
+export const optionFilter = (item: OptionItem, query: string, locale?: string) => matchesOption(item, query, locale)
 
 /**
  * Items for a list control from static `options` or an async `source`, plus a memory of
@@ -228,6 +228,7 @@ export function Combobox<V extends string = string>({
   ...aria
 }: ComboboxProps<V>) {
   const messages = useMessages(comboboxMessages)
+  const optionLocale = useLocale()
 
   const [query, setQuery] = useState("")
   const [inner, setInner] = useState<V | null>(defaultValue ?? null)
@@ -245,7 +246,7 @@ export function Combobox<V extends string = string>({
         onValueChange?.(chosen)
       }}
       onInputValueChange={(next) => setQuery(next)}
-      filter={source ? null : (item: OptionItem<V>, q: string) => optionFilter(item, q)}
+      filter={source ? null : (item: OptionItem<V>, q: string) => optionFilter(item, q, optionLocale)}
       itemToStringLabel={(itemValue: V) => data.labelOf(itemValue)}
       autoHighlight
       disabled={disabled}

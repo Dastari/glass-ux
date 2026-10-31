@@ -80,7 +80,7 @@ const NOOP: EntityResolver = {
   openWindow: (ref) => console.info(`[ai] openWindow ${ref.kind}/${ref.id}`),
 }
 
-const ResolverContext = createContext<EntityResolver>(NOOP)
+const ResolverContext = /* @__PURE__ */ createContext<EntityResolver>(NOOP)
 
 /** Connect entity kinds, names, destinations, previews, search and actions to host-defined adapters. */
 export function EntityResolverProvider({ resolver, children }: {

@@ -62,13 +62,13 @@ function useRegions() {
   return { home, regions }
 }
 
-function LiveMap({ id, config = DEMO_MAP_CONFIG, points = POINTS, className = "gallery-map-frame" }: { id: string; config?: MapConfig; points?: typeof POINTS; className?: string }) {
+function LiveMap({ id, label = "Sites", config = DEMO_MAP_CONFIG, points = POINTS, className = "gallery-map-frame" }: { id: string; label?: string; config?: MapConfig; points?: typeof POINTS; className?: string }) {
   const { home, regions } = useRegions()
   const [selected, setSelected] = useState<string | null>(null)
   return (
     <div className={className} data-testid={id}>
       <GeoMap
-        label="Sites"
+        label={label}
         config={config}
         home={home}
         regions={regions}
@@ -97,7 +97,7 @@ function ListViewExample() {
   return (
     <div className="gallery-map-frame" data-size="list" data-testid="map-list-example">
       <GeoMap
-        label="Sites"
+        label="Sites, list view"
         config={OUTLINE_ONLY}
         home={home}
         regions={regions}
@@ -136,7 +136,7 @@ export default function MapSection() {
       </OnCanvas>
 
       <Specimen title="Attribution in narrow maps" description="The required minimal credit stays readable in narrow containers and at larger UI scales. The information control retains the complete source and licence links." layout="bare">
-        <LiveMap id="map-attribution" config={ATTRIBUTION_CONFIG} />
+        <LiveMap id="map-attribution" label="Sites, attribution" config={ATTRIBUTION_CONFIG} />
       </Specimen>
 
       <Specimen
@@ -148,12 +148,12 @@ export default function MapSection() {
         <div className="gallery-map-islands">
         <Example label="Light">
           <div data-mode="light" className="canvas-ambient gallery-map-island">
-            <LiveMap id="map-light" className="gallery-map-frame" />
+            <LiveMap id="map-light" label="Sites, light" className="gallery-map-frame" />
           </div>
         </Example>
         <Example label="Dark · ocean">
           <div data-mode="dark" data-palette="ocean" className="canvas-ambient gallery-map-island">
-            <LiveMap id="map-dark" className="gallery-map-frame" />
+            <LiveMap id="map-dark" label="Sites, dark" className="gallery-map-frame" />
           </div>
         </Example>
         </div>

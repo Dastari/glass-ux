@@ -1,4 +1,5 @@
 import { getAsksMessages } from "./messages.js"
+import { dateTimeFormat } from "../../lib/locale/intl.js"
 import { isWallClock, resolveWallClock } from "../../ui/date-picker/zoned-time.js";
 
 /**
@@ -12,7 +13,7 @@ export function resolveDateTime(
   messages: ReturnType<typeof getAsksMessages> = getAsksMessages(),
 ): { time: number; error?: never } | { time?: never; error: string } {
   try {
-    new Intl.DateTimeFormat("en-CA", { timeZone: timezone });
+    dateTimeFormat("en-CA", { timeZone: timezone });
   } catch {
     return { error: messages.theSuppliedTimeZoneIsInvalid };
   }
@@ -46,7 +47,7 @@ export function dateInTimezone(
 ): string | undefined {
   try {
     const parts = Object.fromEntries(
-      new Intl.DateTimeFormat("en-CA", {
+      dateTimeFormat("en-CA", {
         timeZone: timezone,
         year: "numeric",
         month: "2-digit",

@@ -53,7 +53,7 @@ export interface WorkspaceLink {
   sheetLeading?: ReactNode
 }
 
-export const WorkspaceLinkContext = createContext<WorkspaceLink | null>(null)
+export const WorkspaceLinkContext = /* @__PURE__ */ createContext<WorkspaceLink | null>(null)
 
 /** Elements inside an app bar that must not start a drag. */
 const NO_DRAG = "button, a, input, textarea, select, [role='button'], [role='menuitem'], [data-window-no-drag]"
@@ -472,7 +472,7 @@ function sameWindowProps(a: ManagedWindowProps, b: ManagedWindowProps) {
  * window only re-renders when its own entry, focus or geometry changes; its body only
  * when { id, kind, params } change.
  */
-export const ManagedWindow = memo(function ManagedWindow({ entry, focused, geometry, vars, hidden }: ManagedWindowProps) {
+export const ManagedWindow = /* @__PURE__ */ memo(function ManagedWindow({ entry, focused, geometry, vars, hidden }: ManagedWindowProps) {
   const messages = useMessages(windowsMessages)
 
   const manager = useWindowManager()

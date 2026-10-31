@@ -4,6 +4,7 @@ import {
   detectPlatform,
   matchesShortcut,
   parseShortcut,
+  shortcutAllowed,
 } from "../ui/kbd/shortcut.js";
 
 /** Keyboard listener settings. */
@@ -38,7 +39,10 @@ function ariaHotkey(shortcut: string, platform: "mac" | "other") {
 /**
  * Listen for one or more shortcuts and return their space-separated aria-keyshortcuts value.
  * Mod means Command on Apple platforms and Control elsewhere. Composition and already
- * handled events are ignored. The listener is removed on unmount or when disabled.
+ * handled events are ignored. The listener is removed on unmount or when disabled. A
+ * single-character shortcut (no Ctrl, Alt or Command) on the document stops running when the
+ * application calls `configureShortcuts({ characterKeys: false })`; give it a `scope` to keep it
+ * for as long as that element has focus (WCAG 2.1.4).
  * @example
  * const keys = useHotkeys("mod+k", () => setOpen(true));
  * // <button aria-keyshortcuts={keys}>Search</button>
@@ -86,7 +90,13 @@ export function useHotkeys(
       if (
         !signature
           .split("\n")
-          .some((shortcut) => matchesShortcut(key, shortcut, platform))
+          .some(
+            (shortcut) =>
+              // A document-wide single-character shortcut obeys configureShortcuts (WCAG 2.1.4);
+              // one scoped to an element is active only while that element has focus.
+              (scope !== "document" || shortcutAllowed(shortcut)) &&
+              matchesShortcut(key, shortcut, platform),
+          )
       )
         return;
       if (preventDefault) key.preventDefault();

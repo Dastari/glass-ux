@@ -14,8 +14,11 @@ export interface ResultFrameProps {
   icon: ReactNode
   /** Data line after the source: "8 of 1,284", "3 images". */
   meta?: string
-  /** Text for the copy action; omit to hide it. */
-  copyText?: string
+  /**
+   * Text for the copy action; omit to hide it. Pass a function to build the text only when
+   * it is copied (and omit it, rather than return "", when there is nothing to copy).
+   */
+  copyText?: string | (() => string)
   /** CSV for export; omit to hide it. */
   csv?: string
   /** Content after the body, normally supporting actions. */

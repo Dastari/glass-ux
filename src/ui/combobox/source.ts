@@ -7,6 +7,8 @@
  *   useOptionSearch(source, query) → { items, status, … } — only the latest query renders
  */
 import { useEffect, useState, type ReactNode } from "react"
+import { foldText } from "../../lib/fold.js"
+import { getLocale } from "../../lib/locale/locale.js"
 
 export interface OptionItem<V extends string = string> {
   value: V
@@ -151,36 +153,62 @@ export function useOptionSearch<V extends string>(source: OptionSource<V> | unde
 
 // ── Matching ─────────────────────────────────────────────────────────────────
 
-const fold = (text: string) => text.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()
+let lastQuery: { query: string; locale: string; words: string[] } | undefined
 
-/** Case- and diacritic-insensitive match: does `text` contain every word of `query`? */
-export function matches(text: string, query: string) {
-  const haystack = fold(text)
-  return fold(query)
-    .split(/\s+/)
-    .filter(Boolean)
-    .every((word) => haystack.includes(word))
+/** The folded words of a query. The last query is remembered, so filtering a list folds it once, not once per option. */
+function queryWords(query: string, locale: string): string[] {
+  if (lastQuery?.query !== query || lastQuery.locale !== locale) {
+    lastQuery = { query, locale, words: foldText(query, locale).split(/\s+/).filter(Boolean) }
+  }
+  return lastQuery.words
+}
+
+/** Case- and accent-insensitive match, case in `locale` (default `getLocale()`): does `text` contain every word of `query`? */
+export function matches(text: string, query: string, locale = getLocale()) {
+  const haystack = foldText(text, locale)
+  return queryWords(query, locale).every((word) => haystack.includes(word))
+}
+
+const foldedOptions = new WeakMap<object, { locale: string; label: string; description: string | undefined; text: string }>()
+
+/** An option's label and description folded for searching, remembered per option while it and the locale are unchanged. */
+function optionText(option: OptionItem, locale: string): string {
+  const known = foldedOptions.get(option)
+  if (known && known.locale === locale && known.label === option.label && known.description === option.description) return known.text
+  const text = foldText(`${option.label} ${option.description ?? ""}`, locale)
+  foldedOptions.set(option, { locale, label: option.label, description: option.description, text })
+  return text
+}
+
+/** Does an option's label or description contain every word of `query` (accents and case ignored, case in `locale`)? */
+export function matchesOption(option: OptionItem, query: string, locale = getLocale()): boolean {
+  const text = optionText(option, locale)
+  return queryWords(query, locale).every((word) => text.includes(word))
 }
 
 /** A static list filtered like a source would: label or description contain the query. */
-export function filterOptions<V extends string>(options: Array<OptionItem<V>>, query: string) {
+export function filterOptions<V extends string>(options: Array<OptionItem<V>>, query: string, locale = getLocale()) {
   const q = query.trim()
   if (!q) return options
-  return options.filter((option) => matches(`${option.label} ${option.description ?? ""}`, q))
+  const words = queryWords(q, locale)
+  return options.filter((option) => {
+    const text = optionText(option, locale)
+    return words.every((word) => text.includes(word))
+  })
 }
 
 /**
  * [start, end) ranges of `text` matched by the words of `query`, ignoring case and
  * diacritics, merged and in order.
  */
-export function matchRanges(text: string, query: string): Array<[number, number]> {
-  const words = fold(query).split(/\s+/).filter(Boolean)
+export function matchRanges(text: string, query: string, locale = getLocale()): Array<[number, number]> {
+  const words = queryWords(query, locale)
   if (words.length === 0) return []
   // Fold character by character, remembering where each folded char came from.
   let folded = ""
   const origin: number[] = []
   for (let index = 0; index < text.length; index++) {
-    const piece = fold(text[index] ?? "")
+    const piece = foldText(text[index] ?? "", locale)
     folded += piece
     for (let i = 0; i < piece.length; i++) origin.push(index)
   }

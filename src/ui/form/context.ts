@@ -14,7 +14,7 @@ import { firstError } from "./validation.js";
  * field and form; `useFieldContext` and `useFormContext` read them inside a field or form component.
  */
 export const { fieldContext, formContext, useFieldContext, useFormContext } =
-  createFormHookContexts();
+  /* @__PURE__ */ createFormHookContexts();
 
 /** Field chrome every bound field accepts (label, hint, optional…). */
 export type FieldChrome = Pick<

@@ -32,6 +32,14 @@ Components format with the page's `<html lang>`, or with `configureLocale()` fro
 `lang` or a configured locale formats as `en-US`. Wrap a region in `LocaleProvider` when it
 must format differently, such as a customer's invoice.
 
+Single-character keyboard shortcuts (the rail's "g e" sequences, a palette command whose
+shortcut is a bare `c` or `?`, a document-wide `useHotkeys("g")`) run from anywhere on the
+page. To let people turn them off (WCAG 2.1.4), call `configureShortcuts({ characterKeys:
+false })` from `glass-ux/kbd`, for instance from a preference in your settings page; the
+default keeps them on. Their key hints leave the tooltips, menus and palette while off.
+Shortcuts with Ctrl, Alt or Command, and keys that act only inside the widget that has
+focus, are not affected.
+
 When replacing local components, remove their duplicate implementation after the packaged
 version passes the application's checks. Keep application-specific components and compose
 them from Glass UX. A release dependency and lockfile should identify the exact archive used.

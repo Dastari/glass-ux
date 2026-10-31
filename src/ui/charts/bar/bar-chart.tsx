@@ -17,6 +17,7 @@ import { ChartTooltip, TooltipBody, type TooltipRow } from "../core/tooltip.js"
 import { LiveRegion } from "../line/line-chart.js"
 import { resolveBands, type ReferenceBand, type Threshold } from "../core/reference.js"
 import { ReferenceLabels, ReferenceMarks, useReferenceNotes } from "../core/reference-layer.js"
+import { listFormat } from "../../../lib/locale/intl.js"
 
 export interface BarSeries {
   key: string
@@ -252,7 +253,7 @@ interface Mark {
 
 const GAP = 2
 
-const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacked, horizontal, labels, fmt, label, edges, formatEdge, thresholds, bands }: BarPlotProps) {
+const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, categories, stacked, horizontal, labels, fmt, label, edges, formatEdge, thresholds, bands }: BarPlotProps) {
   const messages = useMessages(barMessages)
 
   const id = useId()
@@ -358,7 +359,7 @@ const BarPlot = memo(function BarPlot({ box, prepared, store, categories, stacke
     return { x: x0 + band * (index + 0.5), y: py(top) }
   }
   const categoryText = (index: number) => (edges ? edgeLabel(edges, index, formatEdge) : (categories[index] ?? ""))
-  const valueText = (index: number) => `${categoryText(index)} · ${new Intl.ListFormat(fmt.locale, { type: "unit" }).format(visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`))}`
+  const valueText = (index: number) => `${categoryText(index)} · ${listFormat(fmt.locale, { type: "unit" }).format(visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`))}`
   const sum = useMemo(() => totals.reduce((a, b) => a + b, 0), [totals])
   const reference = useMemo(() => {
     if (geo.kind !== "columns" || micro || (!thresholds?.length && !bands?.length)) return null

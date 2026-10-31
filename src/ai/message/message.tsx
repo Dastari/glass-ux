@@ -128,7 +128,7 @@ export interface UserMessageProps extends Omit<
  * A prompt: a compact glass-control bubble on the right, attachments above it, and edit
  * and copy below on hover or focus (always on touch).
  */
-export const UserMessage = memo(function UserMessage({
+export const UserMessage = /* @__PURE__ */ memo(function UserMessage({
   message,
   editable = false,
   className,
@@ -231,7 +231,7 @@ export interface AssistantMessageProps extends Omit<
  * and retention show in place as the message's last block. Copy, regenerate, feedback and
  * "Open in window" sit below with the time and model.
  */
-export const AssistantMessage = memo(function AssistantMessage({
+export const AssistantMessage = /* @__PURE__ */ memo(function AssistantMessage({
   message,
   activity,
   latest = false,

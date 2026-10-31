@@ -135,6 +135,16 @@
   .fa-chip[data-invalid] .fa-chip-remove {
     --_fg: var(--danger-text);
   }
+  /* The button is drawn smaller than 24 CSS px (20 · 16 · 14 · 12 with the box size and
+     density). Its hit area is not (WCAG 2.5.8): an invisible centred box brings every
+     pointer's target up to 24 px without changing the chip's size or layout. It stays
+     inside the chip's own end padding and the gap to the next chip, so two removal
+     targets never overlap. */
+  .fa-chip .fa-chip-remove::before {
+    content: "";
+    position: absolute;
+    inset: min(0px, calc((var(--_h) - var(--target-aa)) / 2 - var(--border-width)));
+  }
   .fa-chip-remove-space {
     flex: none;
     width: calc(var(--_action) - var(--space-1));

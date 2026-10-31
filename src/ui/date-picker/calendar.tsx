@@ -4,6 +4,7 @@ import { datePickerMessages } from "./messages.js"
 import { useMemo, useRef, useState, type KeyboardEvent } from "react"
 import { IconChevronLeft, IconChevronRight } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { dateTimeFormat } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { Button } from "../button/index.js"
 import {
@@ -94,10 +95,10 @@ export function Calendar(props: CalendarProps) {
   const start = gridStart(parts.year, parts.month, firstDay)
   const days = Array.from({ length: WEEKS * 7 }, (_, index) => addDays(start, index))
 
-  const title = new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(fromIsoDate(month))
-  const weekdayShort = new Intl.DateTimeFormat(locale, { weekday: "short" })
-  const weekdayLong = new Intl.DateTimeFormat(locale, { weekday: "long" })
-  const dayLabel = new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  const title = dateTimeFormat(locale, { month: "long", year: "numeric" }).format(fromIsoDate(month))
+  const weekdayShort = dateTimeFormat(locale, { weekday: "short" })
+  const weekdayLong = dateTimeFormat(locale, { weekday: "long" })
+  const dayLabel = dateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const weekdays = days.slice(0, 7)
 
   const disabled = (iso: IsoDate) => Boolean((min && iso < min) || (max && iso > max))

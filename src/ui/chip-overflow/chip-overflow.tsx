@@ -1,4 +1,6 @@
 import { useMessages } from "../../lib/i18n/index.js"
+import { foldText } from "../../lib/fold.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { chipOverflowMessages } from "./messages.js"
 import { useState, type ReactNode } from "react";
 import { Button } from "../button/index.js";
@@ -18,14 +20,14 @@ export interface ChipOverflowProps {
 /** A compact chip collection with a searchable +N overflow popover. */
 export function ChipOverflow({ items, limit = 2, label }: ChipOverflowProps) {
   const messages = useMessages(chipOverflowMessages)
+  const locale = useLocale()
 
   const [query, setQuery] = useState("");
   const visible = Number.isFinite(limit)
     ? Math.max(0, Math.floor(limit))
     : items.length;
-  const found = items.filter((item) =>
-    item.label.toLowerCase().includes(query.trim().toLowerCase()),
-  );
+  const needle = foldText(query.trim(), locale);
+  const found = items.filter((item) => foldText(item.label, locale).includes(needle));
   return (
     <span className="fa-chip-overflow">
       {items.slice(0, visible).map((item) => (

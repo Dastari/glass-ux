@@ -43,8 +43,18 @@ function Board() {
   `pending`). A rejection flies the card back to where it was, shows the column in error and
   announces the reason: reject with an `Error` whose message says why ("Only tickets in
   progress can be resolved").
+- **Move menu:** every card has a "Move" button (hover, focus, always on touch screens) that
+  opens "Move to <column>" rows and Move up / Move down, for people who cannot drag (WCAG
+  2.5.7). It takes the same path as a drop: `onCardsChange`, `onCardMove` with `input: "menu"`,
+  a rejected save puts the card back and shows why, and the new place is announced. A full
+  column's row is disabled with its limit as the reason. The button sits in the card's top
+  corner: `KanbanCard` keeps its title and meta lines clear of it, so do the same in a custom
+  `renderCard`. `moveMenu={false}` removes it when the
+  host has its own way to move cards.
 - `moveCard(cards, cardId, { columnId, index })`, `cardsIn` and `placeOf` apply the same moves
-  to your data elsewhere, for a "Move to" menu (R11.2: dragging must not be the only way).
+  to your data elsewhere, for your own "Move to" control.
+- Each card is a list item holding a named `group` that carries the drag handle semantics, so
+  the lane stays a list and the buttons a card renders do not sit inside a button.
 
 ## Limits, collapse and adding
 

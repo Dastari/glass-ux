@@ -1,4 +1,6 @@
 import { cx } from "../../lib/cx.js";
+import { formatPercent } from "../../lib/locale/intl.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 import { Meter, type MeterProps } from "../meter/index.js";
 import { Tooltip } from "../tooltip/index.js";
 export interface MeterCellProps extends Omit<MeterProps, "layout" | "label"> {
@@ -16,12 +18,13 @@ export function MeterCell({
   className,
   ...props
 }: MeterCellProps) {
+  const locale = useLocale();
   return (
     <Tooltip
       content={
         description ??
         props.valueText ??
-        `${Math.round(props.max && props.max > 0 ? (props.value / props.max) * 100 : props.value)}%`
+        formatPercent(locale, Math.round(props.max && props.max > 0 ? (props.value / props.max) * 100 : props.value))
       }
     >
       <span className={cx("fa-meter-cell", className)}>

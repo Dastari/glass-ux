@@ -24,6 +24,7 @@ export const mapMessages = defineMessages("map", {
   close: "Close",
   more: (count: number) => `${count} more`,
   theMapCouldNotLoad: "The map could not load.",
+  mapLoadFailedAt: (coordinates: string) => `The map could not load. ${coordinates}`,
   pinAtDragItOrUseThe: (coordinates: string) => `Pin at ${coordinates}. Drag it or use the arrow keys to move it.`,
   pinAt: (coordinates: string) => `Pin at ${coordinates}`,
   site: 'site',

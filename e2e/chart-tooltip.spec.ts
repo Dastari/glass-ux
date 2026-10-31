@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const appearance = (page: Page, uiScale = 1) =>
@@ -173,3 +174,32 @@ for (const id of HOVERABLE) {
     expect(text.replace(/\s/g, "")).toContain(value.replace(/\s/g, ""));
   });
 }
+
+test("a hover readout closes with Escape without moving the pointer, and the chart passes axe", async ({ page }) => {
+  await appearance(page);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("./components/area-chart");
+  const pane = page.getByTestId("chart-area-chart-single");
+  await pane.scrollIntoViewIfNeeded();
+  const slider = pane.locator(".fa-chart").getByRole("slider");
+  const plot = (await slider.boundingBox())!;
+  await page.mouse.move(plot.x + plot.width * 0.5, plot.y + plot.height * 0.5);
+  await placedTip(page);
+  // Focus is not in the chart: Escape still dismisses what the pointer opened.
+  await expect(slider).not.toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("body > .fa-chart-tip[data-placed]")).toHaveCount(0);
+  // Moving again brings it back.
+  await page.mouse.move(plot.x + plot.width * 0.6, plot.y + plot.height * 0.5);
+  await placedTip(page);
+
+  // Keyboard: the slider steps through the data and Escape clears the readout.
+  await slider.focus();
+  const first = await slider.getAttribute("aria-valuetext");
+  await page.keyboard.press("ArrowLeft");
+  await expect(slider).not.toHaveAttribute("aria-valuetext", first!);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("body > .fa-chart-tip[data-placed]")).toHaveCount(0);
+  const result = await new AxeBuilder({ page }).include("#examples").analyze();
+  expect(result.violations.map((v) => ({ id: v.id, targets: v.nodes.map((n) => n.target) }))).toEqual([]);
+});

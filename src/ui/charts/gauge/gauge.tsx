@@ -90,7 +90,7 @@ interface GaugePlotProps {
   thresholds: number[]
 }
 
-const GaugePlot = memo(function GaugePlot({ box, ratio, tone, value, caption, min, max, thresholds }: GaugePlotProps) {
+const GaugePlot = /* @__PURE__ */ memo(function GaugePlot({ box, ratio, tone, value, caption, min, max, thresholds }: GaugePlotProps) {
   const { width, height, tier, rem } = box
   if (tier === "micro") {
     const thick = Math.min(0.375 * rem, height)
@@ -227,7 +227,7 @@ export function RadialBar(props: RadialBarProps) {
   )
 }
 
-const RadialPlot = memo(function RadialPlot({ box, items, fmt }: { box: PlotBox; items: Array<RadialBarItem & { ratio: number; slot: number }>; fmt: LocalizedFormat }) {
+const RadialPlot = /* @__PURE__ */ memo(function RadialPlot({ box, items, fmt }: { box: PlotBox; items: Array<RadialBarItem & { ratio: number; slot: number }>; fmt: LocalizedFormat }) {
   const { width, height, tier, rem } = box
   if (tier === "micro") {
     const thick = Math.max(2, Math.min(0.25 * rem, (height - (items.length - 1) * 3) / items.length))

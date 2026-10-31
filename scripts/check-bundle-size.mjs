@@ -28,15 +28,21 @@ const BUDGETS = [
   // Includes the shared Base UI direction context and script-aware localeDirection fallback.
   { entry: 'glass-ux/locale', gzip: 1_300 },
   { entry: 'glass-ux/button', named: 'Button', gzip: 34_000 },
-  { entry: 'glass-ux/input', named: 'Input', gzip: 43_000 },
+  { entry: 'glass-ux/input', named: 'Input', gzip: 40_000 },
   { entry: 'glass-ux/form', named: 'FormStack', gzip: 1_000, forbid: ['@tanstack/form-core', '@tanstack/react-form'] },
   { entry: 'glass-ux/phone-field', named: 'PhoneField', gzip: 75_000, forbid: ['libphonenumber-js'] },
   { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text'] },
   { entry: 'glass-ux/map', named: 'GeoMap', gzip: 75_000, forbid: ['maplibre-gl'] },
   { entry: 'glass-ux/ai/code-block', named: 'CodeBlock', gzip: 40_000, forbid: ['shiki', '@shikijs/core'] },
+  // Unused wrapper calls (`Object.assign`, `memo`, ...) carry /* @__PURE__ */ (pnpm pure:check), so
+  // importing one export does not pull the module's other components and their imports.
+  { entry: 'glass-ux/entity', named: 'EntityIdentitySkeleton', gzip: 3_000, forbid: ['@base-ui/react'] },
+  { entry: 'glass-ux/ai/message', named: 'UserMessage', gzip: 79_000, forbid: ['react-markdown', 'd3-scale', '@tanstack/form-core', 'shiki'] },
   // Interface messages and the resolver add about 1–2 KB gzip to these compositions.
   { entry: 'glass-ux/ai/results', named: 'ResultBlock', gzip: 103_000, /* the shared Lightbox replaced the results' own */ forbid: ['d3-scale', '@tanstack/form-core'] },
-  { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 230_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki'] },
+  // 230_000 → 232_000: the shared Lightbox now announces the picture it moves to (a live region and a message),
+  // and the keyboard-shortcut policy (`configureShortcuts`) sits in the Kbd module every button tooltip uses.
+  { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 232_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki'] },
 ]
 
 /** Packages large enough to be worth reporting when an entry pulls them in. */
@@ -123,7 +129,7 @@ async function measure(spec, named) {
 
 function publicEntries() {
   return Object.entries(pkg.exports)
-    .filter(([key, value]) => !key.includes('*') && typeof value === 'object' && value.import?.endsWith('.js') && key !== './vite' && key !== './gallery')
+    .filter(([key, value]) => !key.includes('*') && typeof value === 'object' && value.import?.endsWith('.js') && key !== './vite' && key !== './gallery' && !key.startsWith('./testing'))
     .map(([key]) => (key === '.' ? 'glass-ux' : `glass-ux/${key.slice(2)}`))
 }
 

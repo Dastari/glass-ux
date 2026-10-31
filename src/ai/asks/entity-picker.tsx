@@ -12,6 +12,7 @@ import { EntityGlyph, useEntityResolver } from "../entity-chip/index.js";
 import type { AiAsk, EntityRef } from "../types.js";
 import { useAskAnswer } from "./choice.js";
 import { AskLayout, AskShell } from "./frame.js";
+import { listFormat } from "../../lib/locale/intl.js"
 
 type Ask = Extract<AiAsk, { type: "entity" }>;
 
@@ -168,7 +169,7 @@ export function EntityPickerAsk({ ask }: {
           <span className="fa-ai-ask-count" data-numeric aria-live="polite">
             {picked.length
               ? messages.selectedCount(picked.length)
-              : ask.multiple ? messages.chooseEntities(spec.plural.toLowerCase()) : messages.chooseOneEntity(spec.noun.toLowerCase())}
+              : ask.multiple ? messages.chooseEntities(spec.plural) : messages.chooseOneEntity(spec.noun)}
           </span>
         }
         footer={
@@ -187,9 +188,9 @@ export function EntityPickerAsk({ ask }: {
                 {
                   type: "entities",
                   ids: picked.map((entity) => entity.id),
-                  label: new Intl.ListFormat(locale, { type: "unit" }).format(labels),
+                  label: listFormat(locale, { type: "unit" }).format(labels),
                 },
-                messages.chosenEntities(new Intl.ListFormat(locale, { type: "unit" }).format(labels)),
+                messages.chosenEntities(listFormat(locale, { type: "unit" }).format(labels)),
               )
             }
           >
@@ -199,22 +200,22 @@ export function EntityPickerAsk({ ask }: {
       >
         {ask.multiple ? (
           <MultiSelect
-            aria-label={messages.search(spec.plural.toLowerCase())}
+            aria-label={messages.search(spec.plural)}
             options={options}
             source={source}
             value={picked.map(key)}
             onValueChange={choose}
             wrap
-            placeholder={messages.find(spec.plural.toLowerCase())}
+            placeholder={messages.find(spec.plural)}
           />
         ) : (
           <Combobox
-            aria-label={messages.search(spec.plural.toLowerCase())}
+            aria-label={messages.search(spec.plural)}
             options={options}
             source={source}
             value={picked[0] ? key(picked[0]) : null}
             onValueChange={(value) => choose(value ? [value] : [])}
-            placeholder={messages.find(spec.noun.toLowerCase())}
+            placeholder={messages.find(spec.noun)}
           />
         )}
       </AskLayout>

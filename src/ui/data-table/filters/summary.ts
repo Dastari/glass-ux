@@ -14,6 +14,7 @@ import {
   formatDateLong,
   formatDateRange,
 } from "../../date-picker/calendar-date.js";
+import { listFormat, numberFormat } from "../../../lib/locale/intl.js";
 import { getLocale } from "../../../lib/locale/locale.js";
 import { formatAbsolute, formatWithUnit } from "../format.js";
 import { isInstantText } from "./semantics.js";
@@ -140,10 +141,13 @@ export function presetLabel(
 function list(
   values: readonly string[],
   labelOf: (value: string) => string = (value) => value,
+  locale = getLocale(),
 ) {
-  const shown = values.slice(0, LIST_SHOWN).map(labelOf).join(", ");
+  const shown = listFormat(locale, { type: "unit", style: "short" }).format(
+    values.slice(0, LIST_SHOWN).map(labelOf),
+  );
   return values.length > LIST_SHOWN
-    ? `${shown} +${values.length - LIST_SHOWN}`
+    ? `${shown} +${numberFormat(locale).format(values.length - LIST_SHOWN)}`
     : shown;
 }
 
@@ -151,6 +155,7 @@ function textSummary(
   label: string,
   value: TextFilterValue | UuidFilterValue,
   labelOf: ((value: string) => string) | undefined,
+  locale: string,
   m: DataTableMessages,
 ) {
   const name = labelOf ?? ((text: string) => text);
@@ -166,9 +171,9 @@ function textSummary(
     case "ne":
       return m.summaryIsNot(label, name(value.value));
     case "in":
-      return `${label}: ${list(value.values, name)}`;
+      return `${label}: ${list(value.values, name, locale)}`;
     case "notIn":
-      return m.summaryNotIn(label, list(value.values, name));
+      return m.summaryNotIn(label, list(value.values, name, locale));
     case "isEmpty":
       return m.summaryEmpty(label);
     case "isNotEmpty":
@@ -242,7 +247,7 @@ function dateSummary(
         ? `${label}: ${formatPoint(value.start, locale)} – ${formatPoint(value.end, locale)}`
         : `${label}: ${formatDateRange(value.start, value.end, locale)}`;
     default:
-      return `${label}: ${presetLabel(value, m).toLowerCase()}`;
+      return m.summaryPreset(label, presetLabel(value, m));
   }
 }
 
@@ -266,13 +271,14 @@ function optionsSummary(
   label: string,
   value: OptionsFilterValue,
   labelOf: (value: string) => string,
+  locale: string,
   m: DataTableMessages,
 ) {
   switch (value.op) {
     case "in":
-      return `${label}: ${list(value.values, labelOf)}`;
+      return `${label}: ${list(value.values, labelOf, locale)}`;
     case "notIn":
-      return m.summaryNotIn(label, list(value.values, labelOf));
+      return m.summaryNotIn(label, list(value.values, labelOf, locale));
     case "isEmpty":
       return m.summaryEmpty(label);
     case "isNotEmpty":
@@ -304,7 +310,7 @@ export function summarize(
 ): string {
   switch (spec.kind) {
     case "text":
-      return textSummary(label, value as TextFilterValue, undefined, m);
+      return textSummary(label, value as TextFilterValue, undefined, locale, m);
     case "number":
       return numberSummary(label, value as NumberFilterValue, spec, locale, m);
     case "date":
@@ -316,6 +322,7 @@ export function summarize(
         label,
         value as OptionsFilterValue,
         (entry) => optionLabel(spec, entry, loaded),
+        locale,
         m,
       );
     case "uuid":
@@ -323,6 +330,7 @@ export function summarize(
         label,
         value as UuidFilterValue,
         (entry) => optionLabel(spec, entry, loaded),
+        locale,
         m,
       );
     case "custom":

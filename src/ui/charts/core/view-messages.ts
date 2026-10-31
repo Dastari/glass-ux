@@ -1,4 +1,5 @@
 import { defineMessages } from "../../../lib/i18n/catalog.js"
+import { listFormat } from "../../../lib/locale/intl.js"
 
 /**
  * The English wording of chart references (thresholds, bands, markers), x zoom and the
@@ -38,7 +39,7 @@ declare module "../../../lib/i18n/catalog.js" {
 /** Join a list with the locale's "and". */
 export function joinList(items: readonly string[], locale: string): string {
   try {
-    return new Intl.ListFormat(locale, { type: "conjunction" }).format(items)
+    return listFormat(locale, { type: "conjunction" }).format(items)
   } catch {
     return items.join(", ")
   }

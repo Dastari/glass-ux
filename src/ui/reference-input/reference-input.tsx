@@ -525,7 +525,7 @@ export function ReferenceInput<R extends string = string>({
                   {messages.limitNote(max, locale)} </div>
               ) : null}
               <BaseCombobox.Empty className="fa-combobox-empty-slot">
-                {quiet ? null : <div className="fa-combobox-empty">{query ? messages.noFor(kind ? kindName.toLowerCase() : messages.matches, query) : messages.typeANameToSearch}</div>}
+                {quiet ? null : <div className="fa-combobox-empty">{query ? (kind ? messages.noFor(kindName, query) : messages.noMatchesFor(query)) : messages.typeANameToSearch}</div>}
               </BaseCombobox.Empty>
               <BaseCombobox.List className="fa-select-list">
                 {grouped

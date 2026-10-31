@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Locator } from "@playwright/test";
 
 /*
@@ -64,11 +65,11 @@ test("a narrow split shows the folders over the values from its rail", async ({ 
   await split.scrollIntoViewIfNeeded();
   await expect(split.locator('[data-pane="start"]')).toBeHidden();
   await expect(split.getByRole("separator")).toHaveCount(0);
-  const show = split.getByRole("button", { name: "Show Folders" });
+  const show = split.getByRole("button", { name: "Show Sections" });
   await expect(show).toHaveAttribute("aria-expanded", "false");
   await show.click();
   await expect(split.locator('[data-pane="start"]')).toBeVisible();
-  await expect(split.getByRole("button", { name: "Hide Folders" })).toHaveAttribute("aria-expanded", "true");
+  await expect(split.getByRole("button", { name: "Hide Sections" })).toHaveAttribute("aria-expanded", "true");
   await split.getByRole("tree", { name: "Folders" }).focus();
   await page.keyboard.press("Escape");
   await expect(split.locator('[data-pane="start"]')).toBeHidden();
@@ -84,4 +85,17 @@ test("a vertical split moves with the up and down arrows", async ({ page }) => {
   await separator.focus();
   await page.keyboard.press("ArrowDown");
   expect(await height()).toBeGreaterThan(before);
+});
+
+test("the split panes pass axe and the divider is a focusable separator with its value", async ({ page }) => {
+  await page.getByTestId("split-explorer").scrollIntoViewIfNeeded();
+  const result = await new AxeBuilder({ page }).include("#examples").analyze();
+  expect(result.violations.map((v) => ({ id: v.id, targets: v.nodes.map((n) => n.target) }))).toEqual([]);
+  const separator = page.getByTestId("split-explorer").getByRole("separator", { name: "Resize Folders" });
+  await separator.focus();
+  await expect(separator).toBeFocused();
+  await expect(separator).toHaveAttribute("aria-valuenow", /^\d+$/);
+  const before = await separator.getAttribute("aria-valuenow");
+  await page.keyboard.press("ArrowRight");
+  await expect(separator).not.toHaveAttribute("aria-valuenow", before!);
 });

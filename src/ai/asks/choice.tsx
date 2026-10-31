@@ -18,6 +18,7 @@ import { useConversationHandlers, type AskAnswer } from "../handlers.js";
 import type { AiAsk, ChoiceOption } from "../types.js";
 import { useAskDockApi, useAskResolution } from "./dock-state.js";
 import { AskLayout, AskRecord, AskShell, RESOLVE_HOLD_MS } from "./frame.js";
+import { listFormat } from "../../lib/locale/intl.js"
 
 type Ask<T extends AiAsk["type"]> = Extract<AiAsk, { type: T }>;
 
@@ -182,8 +183,8 @@ export function MultiChoiceAsk({ ask }: {
             successLabel={messages.sent}
             onAction={() =>
               submit(
-                { type: "choices", values, label: new Intl.ListFormat(locale, { type: "unit" }).format(labels) },
-                messages.selectedSummary(labels.length === all.length ? messages.all(all.length) : new Intl.ListFormat(locale, { type: "unit" }).format(labels)),
+                { type: "choices", values, label: listFormat(locale, { type: "unit" }).format(labels) },
+                messages.selectedSummary(labels.length === all.length ? messages.all(all.length) : listFormat(locale, { type: "unit" }).format(labels)),
               )
             }
           >

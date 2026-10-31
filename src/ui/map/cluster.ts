@@ -4,6 +4,8 @@
  * cluster knows how many healthy, warning, danger and unknown points it holds without
  * fetching its leaves. The marker draws those counts as a segmented ring.
  */
+import { listFormat, numberFormat } from "../../lib/locale/intl.js"
+import { getLocale } from "../../lib/locale/locale.js"
 
 /** Worst first: the order a ring draws its segments and the order "worst" is read in. */
 export const MAP_STATUSES = ["danger", "warning", "healthy", "unknown"] as const
@@ -115,9 +117,10 @@ export function ringSegments(counts: StatusCounts, r: number, gap = 10, minSweep
   })
 }
 
-/** "3 warning, 1 danger, 12 healthy": the accessible summary of a cluster's ring. */
-export function describeCounts(counts: StatusCounts, labels: Readonly<Record<MapStatus, string>>): string {
-  return MAP_STATUSES.filter((status) => counts[status] > 0)
-    .map((status) => `${counts[status]} ${labels[status]}`)
-    .join(", ")
+/** "3 warning, 1 danger, 12 healthy": the accessible summary of a cluster's ring, with counts written and joined as `locale` (default `getLocale()`) does ("1,200 healthy"). */
+export function describeCounts(counts: StatusCounts, labels: Readonly<Record<MapStatus, string>>, locale = getLocale()): string {
+  const number = numberFormat(locale)
+  return listFormat(locale, { type: "unit", style: "short" }).format(
+    MAP_STATUSES.filter((status) => counts[status] > 0).map((status) => `${number.format(counts[status])} ${labels[status]}`),
+  )
 }

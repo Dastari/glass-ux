@@ -1,4 +1,4 @@
-import { useRef, type KeyboardEvent, type PointerEvent } from "react"
+import { useEffect, useRef, type KeyboardEvent, type PointerEvent } from "react"
 import { useStoreValue, type HoverStore } from "./hover.js"
 
 export interface HitLayerProps {
@@ -66,12 +66,28 @@ export function linearNav(index: number, key: string, count: number): number {
  * The pointer and keyboard surface over a plot. It writes the position to the hover store;
  * the marks never re-render. It is one tab stop exposed as a slider over the data positions
  * (R11.5: arrows move within it), so a keyboard or screen-reader user gets the same readout
- * as the pointer, and Escape clears it.
+ * as the pointer, and Escape clears it. A readout opened by the pointer also closes on Escape
+ * wherever focus is, without moving the pointer (WCAG 1.4.13), and the key is not passed on
+ * to a dialog around the chart.
  */
 export function HitLayer({ store, count, locate, anchor, snap = false, nav, onActivate, onEscape, label, valueText, initial, cursor = "crosshair", bounds, onKey, keyShortcuts }: HitLayerProps) {
   const ref = useRef<HTMLDivElement>(null)
   const hover = useStoreValue(store)
   const index = hover?.index ?? null
+  const hoverOpen = hover?.via === "pointer"
+  useEffect(() => {
+    if (!hoverOpen) return
+    const dismiss = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return
+      // The focused chart handles Escape itself (back up a level, clear the cursor).
+      if (ref.current && ref.current.contains(document.activeElement)) return
+      if (store.get()?.via !== "pointer") return
+      event.stopPropagation()
+      store.set(null)
+    }
+    document.addEventListener("keydown", dismiss, true)
+    return () => document.removeEventListener("keydown", dismiss, true)
+  }, [hoverOpen, store])
   /** At rest the slider still has a value (ARIA requires one): where the keyboard would start. */
   const resting = Math.min(Math.max(0, count - 1), initial ?? Math.max(0, count - 1))
 

@@ -9,6 +9,7 @@ import {
 import { fileURLToPath } from "node:url";
 import { resolve, join } from "node:path";
 import { checkThemeVariables } from "./check-layout.mjs";
+import { runStyles } from "./styles.mjs";
 
 const source = fileURLToPath(new URL("../skills/", import.meta.url));
 const names = readdirSync(source).filter((name) =>
@@ -26,9 +27,17 @@ if (command === "check-layout") {
   }
   process.exit(0);
 }
+if (command === "styles") {
+  try {
+    process.exit(runStyles([action, ...args].filter(Boolean)));
+  } catch (error) {
+    console.error(error.message);
+    process.exit(1);
+  }
+}
 if (command !== "skills" || !["list", "install"].includes(action)) {
   console.log(
-    "glass-ux skills list\nglass-ux skills install --target agents|codex|claude [--update]\nglass-ux check-layout <stylesheet files or directories>",
+    "glass-ux skills list\nglass-ux skills install --target agents|codex|claude [--update]\nglass-ux check-layout <stylesheet files or directories>\nglass-ux styles [entries...] [--scan <folder>] [--out <file>] [--check]",
   );
   process.exit(command ? 1 : 0);
 }

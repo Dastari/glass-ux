@@ -21,6 +21,7 @@ import {
 } from "../combobox/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import type { SelectSize } from "../select/index.js"
+import { listFormat } from "../../lib/locale/intl.js"
 
 export interface MultiSelectProps<V extends string = string> {
   /** A static list, filtered as you type. */
@@ -161,7 +162,7 @@ export function MultiSelect<V extends string = string>({
       value={current}
       onValueChange={(next) => commit(next as V[])}
       onInputValueChange={(next) => setQuery(next)}
-      filter={source ? null : (item: OptionItem<V>, q: string) => optionFilter(item, q)}
+      filter={source ? null : (item: OptionItem<V>, q: string) => optionFilter(item, q, locale)}
       itemToStringLabel={(itemValue: V) => data.labelOf(itemValue)}
       autoHighlight
       disabled={disabled}
@@ -205,12 +206,12 @@ export function MultiSelect<V extends string = string>({
             <OptionChip key={key} label={data.labelOf(key)} icon={data.itemOf(key)?.icon} readOnly={readOnly} />
           ))}
           {hidden.length > 0 ? (
-            <span className="fa-chip" data-overflow="" title={new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf))}>
+            <span className="fa-chip" data-overflow="" title={listFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf))}>
               <span className="fa-chip-label" aria-hidden>
                 +{hidden.length}
               </span>
               <span className="sr-only">
-                {messages.more(hidden.length, new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf)))}
+                {messages.more(hidden.length, listFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf)))}
               </span>
             </span>
           ) : null}

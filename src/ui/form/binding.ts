@@ -17,6 +17,6 @@ export interface FieldBinding<T> {
 }
 
 /** Internal adapter binding; the core has no dependency on an optional form runtime. */
-export const FieldBindingContext = createContext<FieldBinding<unknown> | null>(
+export const FieldBindingContext = /* @__PURE__ */ createContext<FieldBinding<unknown> | null>(
   null,
 );

@@ -38,12 +38,13 @@ export function ResultLog({ result }: {
   const collapsible = result.lines.length > TAIL + 2
   const lines = collapsible && !expanded ? result.lines.slice(-TAIL) : result.lines
   const errors = result.lines.filter((line) => line.level === "error").length
+  const levelWords = getLEVEL_WORDS(messages)
   return (
     <ResultFrame
       result={result}
       icon={<IconTerminal />}
       meta={[messages.lineCount(result.lines.length, locale), errors ? messages.errorCount(errors, locale) : ""].filter(Boolean).join(" · ")}
-      copyText={result.lines.map((line) => [line.time, getLEVEL_WORDS(messages)[line.level].toUpperCase(), line.text].filter(Boolean).join("  ")).join("\n")}
+      copyText={result.lines.length ? () => result.lines.map((line) => [line.time, levelWords[line.level].toUpperCase(), line.text].filter(Boolean).join("  ")).join("\n") : undefined}
       flush
     >
       {collapsible ? (
@@ -62,7 +63,7 @@ export function ResultLog({ result }: {
                 {line.time}
               </time>
             ) : null}
-            <span className="fa-ai-log-level">{getLEVEL_WORDS(messages)[line.level]}</span>
+            <span className="fa-ai-log-level">{levelWords[line.level]}</span>
             <span className="fa-ai-log-text">{line.text}</span>
           </li>
         ))}

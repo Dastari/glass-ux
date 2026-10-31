@@ -110,7 +110,7 @@ export default function KanbanSection() {
     <SectionPage>
       <Specimen
         title="Service board"
-        description="Drag a card to another column, or within one to reorder it. In progress has a limit of three, so it refuses cards while full and says why. Keyboard: Space lifts a card, arrows move it within and across columns, Space drops, Escape cancels."
+        description="Drag a card to another column, or within one to reorder it. In progress has a limit of three, so it refuses cards while full and says why. Keyboard: Space lifts a card, arrows move it within and across columns, Space drops, Escape cancels. The button on each card opens a Move menu for pointers that cannot drag."
         layout="stack"
         wide
       >
@@ -141,7 +141,7 @@ export default function KanbanSection() {
         do={[
           "Keep cards in state and apply onCardsChange; save in onCardMove and reject to undo.",
           "Give every card a short title: it names the card to screen readers as it moves.",
-          "Offer a menu action to move a card as well as dragging.",
+          "Keep the Move menu (moveMenu) unless you offer another way to move a card without dragging.",
           "Put buttons and links for a card inside renderCard; they keep their own behaviour.",
         ]}
         dont={["Do not wrap the board or its columns in panels: headings sit on the canvas and cards are tiles.", "Do not use status tones for column dots unless the column is a state."]}

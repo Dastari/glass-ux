@@ -284,7 +284,7 @@
     position: absolute;
     inset: 0;
     background-image: linear-gradient(
-      100deg,
+      var(--_sweep-angle, 100deg),
       transparent 20%,
       var(--shimmer-shine, var(--skel-shine)) 50%,
       transparent 80%
@@ -293,6 +293,12 @@
     pointer-events: none;
     /* perf:infinite only while a placeholder shows */
     animation: fa-sweep var(--duration-shimmer) ease-in-out infinite;
+  }
+  /* Right-to-left: the band enters from the inline start (the right) and leans the other way. */
+  .fa-shimmer:dir(rtl)::after {
+    --_sweep-dir: -1;
+    --_sweep-angle: 260deg;
+    transform: translateX(100%);
   }
   :root[data-motion="reduced"] .fa-shimmer::after {
     animation: none;

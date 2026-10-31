@@ -68,6 +68,8 @@ for (const glass of materials)
             if (el.closest(".fa-dnd-ghost, [data-audit-ignore]")) continue;
             const r = el.getBoundingClientRect();
             if (r.width < 12 || r.height < 12) continue;
+            // Fully transparent layers (a hover scrim at rest) show nothing, canvas included.
+            if (getComputedStyle(el).opacity === "0") continue;
             for (const pseudo of [null, "::before", "::after"] as const) {
               const cs = getComputedStyle(el, pseudo);
               if (pseudo && cs.content === "none") continue;

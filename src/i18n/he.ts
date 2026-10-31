@@ -1,6 +1,6 @@
 import type { CatalogueMessagePack } from "./catalogue.js"
 import { defineMessagePack, plural } from "../lib/i18n/index.js"
-import { numberFormat } from "../lib/locale/intl.js"
+import { listFormat, numberFormat, relativeTimeFormat } from "../lib/locale/intl.js"
 
 type CountForms = Partial<Record<Intl.LDMLPluralRule, string>> & { other: string }
 const counted = (forms: CountForms) => (count: number, locale = "he") => {
@@ -68,12 +68,12 @@ export default defineMessagePack("he", {
     justNow: "הרגע",
     yesterday: "אתמול",
     lessThanMinute: "בעוד פחות מדקה",
-    minutesAhead: (n) => new Intl.RelativeTimeFormat("he", { style: "short", numeric: "always" }).format(n, "minute"),
-    hoursAhead: (n) => new Intl.RelativeTimeFormat("he", { style: "short", numeric: "always" }).format(n, "hour"),
-    daysAhead: (n) => new Intl.RelativeTimeFormat("he", { style: "short", numeric: "always" }).format(n, "day"),
-    minutesAgo: (n) => new Intl.RelativeTimeFormat("he", { style: "short", numeric: "always" }).format(-n, "minute"),
-    hoursAgo: (n) => new Intl.RelativeTimeFormat("he", { style: "short", numeric: "always" }).format(-n, "hour"),
-    daysAgo: (n) => new Intl.RelativeTimeFormat("he", { style: "short", numeric: "always" }).format(-n, "day"),
+    minutesAhead: (n) => relativeTimeFormat("he", { style: "short", numeric: "always" }).format(n, "minute"),
+    hoursAhead: (n) => relativeTimeFormat("he", { style: "short", numeric: "always" }).format(n, "hour"),
+    daysAhead: (n) => relativeTimeFormat("he", { style: "short", numeric: "always" }).format(n, "day"),
+    minutesAgo: (n) => relativeTimeFormat("he", { style: "short", numeric: "always" }).format(-n, "minute"),
+    hoursAgo: (n) => relativeTimeFormat("he", { style: "short", numeric: "always" }).format(-n, "hour"),
+    daysAgo: (n) => relativeTimeFormat("he", { style: "short", numeric: "always" }).format(-n, "day"),
     draggable: "ניתן לגרירה",
     filtered: (label) => `${label}, מסונן`,
     rowNotMoved: (label) => `${label} לא הוזז`,
@@ -166,6 +166,7 @@ export default defineMessagePack("he", {
     didNotLoad: (label) => `לא ניתן לטעון את ${label}.`,
     selectedCount: (count) => `${count} נבחר`,
     dateCondition: (label, condition) => `${label} ${condition}`,
+    groupSummary: ({ label, count }) => `${label}, ${count}`,
     updated: (relative) => `עודכן: ${relative}`,
     today: "היום",
     lastDay: "24 השעות האחרונות",
@@ -239,6 +240,8 @@ export default defineMessagePack("he", {
     moveEnd: "הזזה לסוף",
     columnMoved: ({ label, position, count }) => `העמודה ${label} הוזזה למיקום ${position} מתוך ${count}`,
     reorderColumn: (label) => `שינוי סדר העמודה ${label}`,
+    resultsFound: (count) => `תוצאות: ${count}`,
+    summaryPreset: (label, preset) => `${label}: ${preset}`,
   },
   asks: {
     revoking: "מבטל...",
@@ -435,6 +438,7 @@ export default defineMessagePack("he", {
     resultPending: "התוצאה מופיעה כאשר הכלי מסיים.",
     resultUnavailable: "אין תוצאה זמינה לדפדפן זה.",
     copy: (label) => `העתק ${label}`,
+    rowLabel: ({ label, status }) => `${label}, ${status}`,
     truncatedNotice: "התוכן קוצר ל־64 KB בתצוגה זו.",
     toolRunning: "כלי פועל",
     runningOf: (running, total) => `${running} מתוך ${total} בביצוע`,
@@ -453,9 +457,9 @@ export default defineMessagePack("he", {
     inProgress: "בתהליך",
   },
   jsonTree: {
-    collapse: "צמצום",
-    expand: "הרחבה",
     root: "שורש",
+    collapseNode: (name) => `צמצם את ${name}`,
+    expandNode: (name) => `הרחב את ${name}`,
     showMoreOf: (name) => `הצג עוד מ-${name}`,
     itemCount: counted({"one": "{n} פריט", "other": "{n} פריטים", "two": "{n} פריטים"}),
     keyCount: counted({"one": "{n} מפתח", "other": "{n} מפתחות", "two": "{n} מפתחות"}),
@@ -531,6 +535,7 @@ export default defineMessagePack("he", {
     series: "סדרה",
     added: "נוסף",
     removed: "הוסר",
+    diffSummary: ({ title, added, removed, locale = "he" }) => `${title}: ${counted({ one: "שורה אחת נוספה", two: "שתי שורות נוספו", other: "{n} שורות נוספו" })(added, locale)}, ${counted({ one: "שורה אחת הוסרה", two: "שתי שורות הוסרו", other: "{n} שורות הוסרו" })(removed, locale)}`,
     resultPosition: (count, total) => `${count} מתוך ${total}`,
     file: "קובץ",
     download: (name) => `הורד את ${name}`,
@@ -987,6 +992,7 @@ export default defineMessagePack("he", {
     close: "סגור",
     more: (count) => `${count} נוספים`,
     theMapCouldNotLoad: "המפה לא הצליחה לטעון.",
+    mapLoadFailedAt: (coordinates) => `המפה לא הצליחה לטעון. ${coordinates}`,
     pinAtDragItOrUseThe: (coordinates) => `הצמד ב-${coordinates}. גרור אותו או השתמש במקשי החצים כדי להזיז אותו.`,
     pinAt: (coordinates) => `הצמד ב-${coordinates}`,
     site: "אתר",
@@ -1348,6 +1354,12 @@ export default defineMessagePack("he", {
     invalidDuration: "הזן משך, כגון 1h 30m",
     durationExamples: "הזן משך כמו 1h 30m, 90m או 1:30",
     example: "1h 30m",
+    weekWords: "שבוע שבועות",
+    dayWords: "יום ימים",
+    hourWords: "שעה שעות שע",
+    minuteWords: "דקה דקות דק",
+    secondWords: "שנייה שניות שנ",
+    joiningWords: "ו",
   },
   emailField: {
     didYouMean: (address) => `האם התכוונת ל-${address}?`,
@@ -1561,6 +1573,7 @@ export default defineMessagePack("he", {
     minimap: "מפה מינית",
     minimapVisible: "מפה מינית: מוצגת כאשר חלק מהמפה אינו מוצג",
     minimapOff: "מפה מינית: כבויה",
+    clusterSummary: ({ label, count, locale = "he" }) => `${label}, ${numberFormat(locale).format(count)}`,
   },
   levelGauge: {
     notRated: "לא דורג",
@@ -1683,17 +1696,16 @@ export default defineMessagePack("he", {
     kind: "סוג",
     all: "הכל",
     showing: (kind) => `מציג את ${kind}.`,
-    noFor: (kind, query) => `אין ${kind} עבור "${query}"`,
+    noFor: (kind, query) => `אין תוצאות עבור “${query}” (${kind})`,
+    noMatchesFor: (query) => `אין התאמות עבור “${query}”`,
     typeANameToSearch: "הקלד שם לחיפוש",
     limit: (count, locale = "he") => plural(locale, count, { one: `עד ${numberFormat(locale).format(count)} קישור`, other: `עד ${numberFormat(locale).format(count)} קישורים` }),
-    matches: "התאמות",
     limitNote: (count, locale = "he") => plural(locale, count, { one: `עד ${count} קישור - הסר אחד כדי לקשר אחר`, other: `עד ${count} קישורים - הסר אחד כדי לקשר אחר` }),
       linkCount: (count, locale = "he") => plural(locale, count, { one: `${count} קישור`, other: `${count} קישורים` }),
 },
   splitPane: {
-    hide: "הסתר",
-    show: "הצג",
     showPane: (label) => `הצג את ${label}`,
+    hidePane: (label) => `הסתר את ${label}`,
     resize: (label) => `שנה גודל ${label}`,
   },
   tree: {
@@ -1854,6 +1866,12 @@ export default defineMessagePack("he", {
     lastColumn: "זו העמודה האחרונה",
     moveFailed: (title) => `לא ניתן להזיז אל ${title}`,
     loading: "טעינת כרטיסים",
+    moveCard: (label) => `העברת ${label}`,
+    moveToColumn: (title) => `העברה אל ${title}`,
+    moveUp: "העברה למעלה",
+    moveDown: "העברה למטה",
+    movedTo: ({ label, column, position, count }) => `${label} הועבר אל ${column}, מיקום ${position} מתוך ${count}.`,
+    moveNotSaved: (label) => `${label} לא הועבר`,
   },
   lightbox: {
     previous: "תמונה קודמת",
@@ -1867,6 +1885,7 @@ export default defineMessagePack("he", {
     position: (index, total) => `${index} מתוך ${total}`,
     thumbnails: "תמונות",
     show: (alt) => `הצג את ${alt}`,
+    shown: ({ index, total, alt }) => `תמונה ${index} מתוך ${total}: ${alt}`,
   },
   scheduler: {
     views: "תצוגה",
@@ -1882,7 +1901,7 @@ export default defineMessagePack("he", {
     moreLabel: (count, day) => plural("he", count, { one: `עוד ${count} אירוע ב־${day}`, other: `עוד ${count} אירועים ב־${day}` }),
     dayLabel: (day, count) => count ? plural("he", count, { one: `${day}, ${count} אירוע`, other: `${day}, ${count} אירועים` }) : day,
     timeRange: (start, end) => `מ־${start} עד ${end}`,
-    eventLabel: ({ title, when, resource }) => new Intl.ListFormat("he", { type: "unit" }).format([title, when, resource].filter((part): part is string => Boolean(part))),
+    eventLabel: ({ title, when, resource }) => listFormat("he", { type: "unit" }).format([title, when, resource].filter((part): part is string => Boolean(part))),
     editHint: "חצים להזזה, Shift וחצים לשינוי הסיום, Enter לפתיחה",
     slots: (day) => `שעות, ${day}`,
     slotsHint: "חצים לבחירת שעה, Shift וחצים להרחבה, Enter לבחירה",
@@ -1905,6 +1924,7 @@ export default defineMessagePack("he", {
     copied: (title, when) => `${title} הועתק אל ${when}`,
     refused: (title, reason) => (reason ? `אי אפשר להעביר את ${title} לשם: ${reason}` : `אי אפשר להעביר את ${title} לשם`),
     atResource: (resource, when) => `${resource}, ${when}`,
+    allDayOn: (when) => `${when}, כל היום`,
   },
   spinner: {
     loading: "טעינה",
@@ -1959,5 +1979,9 @@ export default defineMessagePack("he", {
     drawInstead: "צייר במקום",
     typeYourName: "הקלד את שמך המלא",
     signatureRequired: "הוסף את חתימתך",
+  },
+  byteUnits: {
+    byte: "B",
+    prefixedUnit: ({ prefix, binary }) => `${prefix}${binary ? "iB" : "B"}`,
   },
 }) as CatalogueMessagePack

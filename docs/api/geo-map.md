@@ -22,7 +22,7 @@ list view in the same box. It shows the region silhouette while loading.
 | label | `string` | See type | yes | — | Accessible name of the map: "Sites, All organisations". |
 | list | `ReactNode` | See type | no | — | The list view: the caller's table, with a ViewToggle in its toolbar. |
 | loading | `boolean \| undefined` | false, true | no | false | The points are still loading: the silhouette stays, markers wait. |
-| noun | `MapNoun \| undefined` | See type | no | — | Singular and plural names used in counts and accessible labels. |
+| noun | `MapNoun \| undefined` | See type | no | — | Names for the points by plural category of the locale (`{ one, other }` suffices for English), used in counts and accessible labels. |
 | onSelectedIdChange | `((id: string \| null, details: SelectionChangeDetails<MapPoint<T>>) => void) \| undefined` | See type | no | — | Called with the id of the point whose popup the person pins (a click, Enter or Space on its marker, or choosing it from a cluster popup or the off-screen list), and details whose `item` is the point. Hover and focus previews, and pinning the point already selected, do not call it. |
 | onViewChange | `((view: "map" \| "list") => void) \| undefined` | See type | no | — | Called with the view the person asks for ("list" or "map") from the view toggle, or "list" from the failure notice when the map cannot start. The toggle shows only when this is set. Pair with `view`. |
 | points | `readonly MapPoint<T>[]` | See type | yes | — | Geographical or chart points. |

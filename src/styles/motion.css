@@ -47,12 +47,13 @@
       background-position: 60vw 0;
     }
   }
+  /* The band travels with the reading direction: --_sweep-dir is -1 in right-to-left. */
   @keyframes fa-sweep {
     from {
-      transform: translateX(-100%);
+      transform: translateX(calc(-100% * var(--_sweep-dir, 1)));
     }
     to {
-      transform: translateX(100%);
+      transform: translateX(calc(100% * var(--_sweep-dir, 1)));
     }
   }
   @keyframes fa-spin {

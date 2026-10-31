@@ -36,7 +36,7 @@ const DANGER_TIMEOUT_MS = 8000
  * The global toast manager. `toast()` works anywhere — event handlers, loaders, plain
  * functions outside React — and renders in the single <Toaster /> viewport.
  */
-export const toastManager = BaseToast.createToastManager()
+export const toastManager = /* @__PURE__ */ BaseToast.createToastManager()
 
 function add({ tone = "info", action, timeout, locale, ...rest }: ToastOptions) {
   return toastManager.add({
@@ -53,7 +53,7 @@ function add({ tone = "info", action, timeout, locale, ...rest }: ToastOptions) 
 type ToneShortcut = (title: string, options?: Omit<ToastOptions, "title" | "tone">) => string
 
 /** Show a toast. Returns its id. */
-export const toast = Object.assign(add, {
+export const toast = /* @__PURE__ */ Object.assign(add, {
   success: ((title, options) => add({ ...options, title, tone: "success" })) as ToneShortcut,
   info: ((title, options) => add({ ...options, title, tone: "info" })) as ToneShortcut,
   warning: ((title, options) => add({ ...options, title, tone: "warning" })) as ToneShortcut,

@@ -13,7 +13,7 @@ in the same order: copy, export CSV, open in window.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
-| copyText | `string \| undefined` | See type | no | — | Text for the copy action; omit to hide it. |
+| copyText | `string \| (() => string) \| undefined` | See type | no | — | Text for the copy action; omit to hide it. Pass a function to build the text only when it is copied (and omit it, rather than return "", when there is nothing to copy). |
 | csv | `string \| undefined` | See type | no | — | CSV for export; omit to hide it. |
 | flush | `boolean \| undefined` | false, true | no | false | Remove the body inset (tables, images). |
 | footer | `ReactNode` | See type | no | — | Content after the body, normally supporting actions. |

@@ -35,6 +35,7 @@ import { ToneDot } from "../../ui/tone-dot/index.js";
 import { Tooltip } from "../../ui/tooltip/index.js";
 import { useNow } from "../format.js";
 import type { AiProject, AiSession } from "../types.js";
+import { listFormat } from "../../lib/locale/intl.js"
 
 const DAY = 86_400_000;
 
@@ -385,7 +386,7 @@ export function SessionNav({
             selected={active}
             className="fa-ai-session-row"
             aria-current={active ? "page" : undefined}
-            aria-label={(session.unread ? messages.unreadLabel : (label: string) => label)(new Intl.ListFormat(locale, { type: "unit" }).format([session.title, session.organisation !== undefined ? session.organisation ? session.organisation.label : messages.allScopes : "", status?.toLowerCase() ?? ""].filter(Boolean)))}
+            aria-label={(session.unread ? messages.unreadLabel : (label: string) => label)(listFormat(locale, { type: "unit" }).format([session.title, session.organisation !== undefined ? session.organisation ? session.organisation.label : messages.allScopes : "", status?.toLowerCase() ?? ""].filter(Boolean)))}
             data-unread={session.unread ? "" : undefined}
             onClick={(event) =>
               select(session.id, {

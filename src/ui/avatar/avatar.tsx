@@ -4,6 +4,7 @@ import { avatarMessages } from "./messages.js"
 import { Avatar as BaseAvatar } from "@base-ui/react/avatar"
 import type { ComponentProps } from "react"
 import { cx } from "../../lib/cx.js"
+import { listFormat } from "../../lib/locale/intl.js"
 
 export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl"
 export type Presence = "online" | "away" | "busy" | "offline"
@@ -106,8 +107,8 @@ export function AvatarGroup({ people, max = 4, size = "sm", className, ...rest }
           className="fa-avatar fa-avatar-more"
           data-size={size}
           role="img"
-          aria-label={messages.more(others.length, new Intl.ListFormat(locale, { type: "unit" }).format(others.map((person) => person.name)))}
-          title={new Intl.ListFormat(locale, { type: "unit" }).format(others.map((person) => person.name))}
+          aria-label={messages.more(others.length, listFormat(locale, { type: "unit" }).format(others.map((person) => person.name)))}
+          title={listFormat(locale, { type: "unit" }).format(others.map((person) => person.name))}
         >
           <span className="fa-avatar-face" data-tint="neutral">
             <span className="fa-avatar-initials">+{others.length}</span>

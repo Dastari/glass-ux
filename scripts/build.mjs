@@ -10,6 +10,7 @@ import {
 import { join } from "node:path";
 import { bucketCss } from "./css-buckets.mjs";
 import { libraryTransformer } from "./client-boundaries.mjs";
+import { writeStyleManifest } from "./style-manifest.mjs";
 // Inputs for the repository's documentation scripts only; nothing imports them at runtime.
 // Stylesheets ship with selector lists split so Chromium can bucket them (css-buckets.mjs).
 const SCRIPT_ONLY = new Set([
@@ -60,3 +61,7 @@ function assets(dir) {
   }
 }
 assets("src");
+const styles = writeStyleManifest(process.cwd());
+console.log(
+  `build: style manifest for ${Object.keys(styles.entries).length} entries over ${styles.components.length} component stylesheets`,
+);

@@ -367,6 +367,7 @@ export function AttachmentChip({
   onRemove?: () => void;
 }) {
   const messages = useMessages(composerMessages)
+  const locale = useLocale()
 
   const uploading =
     attachment.state === "uploading" || attachment.state === "scanning";
@@ -398,7 +399,7 @@ export function AttachmentChip({
               ? messages.scanning
               : uploading
                 ? messages.uploading(Math.round((attachment.progress ?? 0) * 100))
-                : formatBytes(attachment.size)}
+                : formatBytes(attachment.size, locale)}
         </span>
       </span>
       {uploading ? (

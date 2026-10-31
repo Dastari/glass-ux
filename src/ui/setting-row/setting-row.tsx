@@ -16,7 +16,7 @@ export interface SettingRowContextValue {
  * Lets a control that Base UI Field cannot label (Segmented, a ButtonGroup) find its row's
  * label and description. Field-aware controls (Switch, Select, NumberField) need nothing.
  */
-export const SettingRowContext = createContext<SettingRowContextValue | null>(null)
+export const SettingRowContext = /* @__PURE__ */ createContext<SettingRowContextValue | null>(null)
 /** The enclosing SettingRow's label and description ids, or null outside one. */
 export const useSettingRow = () => useContext(SettingRowContext)
 

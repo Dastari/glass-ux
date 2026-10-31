@@ -116,6 +116,34 @@ The `@source` paths are relative to that stylesheet. Import it once from your ap
 entry. Components use shared semantic tokens; use `className` for outer layout and the
 component's props for variants. Fonts are bundled assets with relative URLs.
 
+### Load only the styles you use
+
+`glass-ux/styles.css` carries every component's rules. An application that imports a few
+entries can generate a stylesheet with only the component styles those entries need, and import
+that file in place of `glass-ux/styles.css`:
+
+```sh
+pnpm exec glass-ux styles --scan src --out src/glass-ux.css
+```
+
+```css
+@import "./glass-ux.css";
+```
+
+`--scan` reads the `glass-ux/<entry>` imports in `.ts`, `.tsx`, `.js`, `.jsx` and `.mjs` files
+(skipping `node_modules` and build output, and repeatable for several folders). Entries can also
+be named: `glass-ux styles button data-table`. The file holds the same rules in the same order as
+`styles.css`: the foundation (layer order, tokens, themes, materials, base and recipes), then the
+needed component stylesheets in the library's own order, then the flat, print and forced-colour
+rules, which stay whole. Keep the `@source` lines as they are; Tailwind scans the same files.
+
+An entry needs the stylesheets of the components it imports, of the shared classes it renders
+(`Select` renders the field box and `Button` its icon), and of what those read. The lists ship in
+`dist/styles/manifest.json`. Markup of your own that uses a library class such as `fa-btn`
+without importing the component that renders it loads that style only if you name its entry.
+Commit the generated file and run `glass-ux styles --scan src --out src/glass-ux.css --check`
+in CI: it exits 1 when an import was added or removed since the file was written.
+
 ## Set up the root
 
 ```tsx
@@ -219,9 +247,29 @@ registerMessagePack(defineMessagePack("fi", {
 }));
 ```
 
+To load a language only when it is needed, pass `loadMessagePack` a map of tag to import. It
+matches the locale as `messagePackFor` does (`de` serves `de-AT`), registers the pack and
+resolves with it, or with `undefined` when no entry fits:
+
+```tsx
+import { loadMessagePack } from "glass-ux/i18n";
+
+const packs = {
+  de: () => import("glass-ux/i18n/de"),
+  "pt-BR": () => import("glass-ux/i18n/pt-BR"),
+};
+
+await loadMessagePack(locale, packs); // before the first render or hydration
+```
+
+Components show English until the pack is registered, so await it before rendering or
+hydrating. A server render must register the same pack (`registerMessagePack`), or the
+client hydrates different text. A failed import rejects and leaves English in place.
+
 Packs ship for `de`, `fr`, `es`, `it`, `pt-BR`, `nl`, `ja`, `zh-Hans`, `ko`, `ar` and `he`.
 An exact tag wins; a language pack also serves regional tags (`de` serves `de-AT`).
-`zh-Hans` and `pt-BR` need their matching tag. English is the fallback.
+`zh-CN` and `zh-SG` use `zh-Hans`, and a bare `pt` uses `pt-BR`; `zh-TW` and `pt-PT` stay English
+until you register a matching pack. English is the fallback.
 Wording resolves from English, the registered pack, `configureMessages`, nested
 `MessagesProvider` overrides, then a component's existing `labels` prop. Use configuration
 for product wording and providers for one region. Explicit text props such as `placeholder`

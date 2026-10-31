@@ -183,6 +183,15 @@ describe("topology layout", () => {
     expect(formatLinkSpeed(2500)).toBe("2.5 Gbps")
     expect(speedRange([1000, 1000])).toBe("1 Gbps")
     expect(speedRange([])).toBeUndefined()
+    expect(formatLinkSpeed(1040)).toBe("1.0\u2009Gbps")
+    expect(formatLinkSpeed(1150)).toBe("1.1\u2009Gbps")
+    expect(speedRange([100, 2500])).toBe("100\u2009Mbps–2.5\u2009Gbps")
+  })
+
+  it("writes the number in the locale and keeps the unit", () => {
+    expect(formatLinkSpeed(2500, "de")).toBe("2,5\u2009Gbps")
+    expect(formatLinkSpeed(100, "ar-EG")).toBe("١٠٠\u2009Mbps")
+    expect(speedRange([100, 2500], "de")).toBe("100\u2009Mbps–2,5\u2009Gbps")
   })
 })
 

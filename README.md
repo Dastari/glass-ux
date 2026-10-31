@@ -43,6 +43,10 @@ branding. With Tailwind 4, include the package in source discovery:
 @source "../node_modules/glass-ux/dist";
 ```
 
+`glass-ux/styles.css` holds every component's rules. To load only those of the entries an
+application imports, generate a stylesheet with `pnpm exec glass-ux styles --scan src --out
+src/glass-ux.css` and import it instead ([Add styles](docs/getting-started.md#add-styles)).
+
 Supply `TooltipProvider`, `ActionProvider`, `PaletteProvider` and `AppearanceProvider` at
 the application root when using their respective components. See the component API for
 their props and controlled/uncontrolled state contracts.

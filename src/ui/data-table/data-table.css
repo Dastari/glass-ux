@@ -860,6 +860,10 @@
     /* perf:infinite only while refetching */
     animation: fa-shimmer var(--duration-shimmer) ease-in-out infinite;
   }
+  /* Right-to-left: the line sweeps from the inline start. */
+  .fa-dt:dir(rtl)[data-refetching] .fa-dt-progress {
+    animation-direction: reverse;
+  }
   /* Reduced motion: a steady line instead of a sweep. */
   :root[data-motion="reduced"] .fa-dt[data-refetching] .fa-dt-progress {
     background-size: 100% 100%;

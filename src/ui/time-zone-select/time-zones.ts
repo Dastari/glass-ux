@@ -3,6 +3,7 @@
  * abbreviation now — so "Australia/Hobart" shows "UTC+11:00 · AEDT" in summer and
  * "UTC+10:00 · AEST" in winter. No table to keep up to date.
  */
+import { dateTimeFormat } from "../../lib/locale/intl.js"
 import { getLocale } from "../../lib/locale/locale.js"
 
 export interface TimeZoneInfo {
@@ -43,7 +44,7 @@ export function formatOffset(minutes: number): string {
 export function offsetMinutes(id: string, at: Date = new Date()): number {
   try {
     // A fixed locale, so the offset text has the "GMT+11:00" shape parsed below; never shown.
-    const part = new Intl.DateTimeFormat("en-US", { timeZone: id, timeZoneName: "longOffset" })
+    const part = dateTimeFormat("en-US", { timeZone: id, timeZoneName: "longOffset" })
       .formatToParts(at)
       .find((entry) => entry.type === "timeZoneName")?.value
     const match = /GMT([+-−])(\d{1,2})(?::(\d{2}))?/.exec(part ?? "")
@@ -57,7 +58,7 @@ export function offsetMinutes(id: string, at: Date = new Date()): number {
 
 function abbreviationOf(id: string, at: Date, locale: string): string | undefined {
   try {
-    const name = new Intl.DateTimeFormat(locale, { timeZone: id, timeZoneName: "short" })
+    const name = dateTimeFormat(locale, { timeZone: id, timeZoneName: "short" })
       .formatToParts(at)
       .find((entry) => entry.type === "timeZoneName")?.value
     // "GMT+11" is the fallback when the locale has no name; it says nothing the offset does not.
@@ -93,7 +94,7 @@ export function localTimeZone(): string {
 export function isTimeZone(id: string): boolean {
   try {
     // Validation only: any locale accepts the same zones.
-    return new Intl.DateTimeFormat("en-US", { timeZone: id }).resolvedOptions().timeZone !== ""
+    return dateTimeFormat("en-US", { timeZone: id }).resolvedOptions().timeZone !== ""
   } catch {
     return false
   }

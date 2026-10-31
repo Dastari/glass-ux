@@ -34,21 +34,21 @@ export type DialogChangeDetails =
   BaseDialog.Root.ChangeEventDetails | Drawer.Root.ChangeEventDetails
 
 /** Whether parts render as a centred dialog or a phone bottom sheet. */
-const ModeContext = createContext<DialogMode>("dialog")
+const ModeContext = /* @__PURE__ */ createContext<DialogMode>("dialog")
 /** How many dialogs enclose this one (R13.3: at most two). */
-const DepthContext = createContext(0)
+const DepthContext = /* @__PURE__ */ createContext(0)
 
 interface FrameValue {
   setEdges: (top: boolean, bottom: boolean) => void
 }
 /** Lets the scrolling Body tell its frame when content runs under the header or footer. */
-const FrameContext = createContext<FrameValue | null>(null)
+const FrameContext = /* @__PURE__ */ createContext<FrameValue | null>(null)
 
 /**
  * Set inside Dialog.Preview: parts render as plain markup (no dialog behaviour, no focus
  * guards, no dialog role) with the same classes, so specimens look identical.
  */
-const PreviewContext = createContext<{ titleId: string; descriptionId: string } | null>(null)
+const PreviewContext = /* @__PURE__ */ createContext<{ titleId: string; descriptionId: string } | null>(null)
 
 type PartProps = { className?: string; children?: ReactNode }
 

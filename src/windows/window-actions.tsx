@@ -100,7 +100,7 @@ interface OverflowContextValue {
   store: InfoStore;
 }
 
-const OverflowContext = createContext<OverflowContextValue | null>(null);
+const OverflowContext = /* @__PURE__ */ createContext<OverflowContextValue | null>(null);
 
 /**
  * One window action with a priority (see the module comment). Outside `Window.Actions` or a
@@ -228,8 +228,29 @@ export function ActionsOverflow({ children }: { children: ReactNode }) {
     else setFolded(next);
   };
 
-  // After every render, as the actions change: layout is done, nothing is forced mid-commit.
-  useIsomorphicLayoutEffect(() => update(false));
+  // When the actions change (their order, labels, priorities, or whether More is showing):
+  // layout is done, nothing is forced mid-commit. Size changes of the bar and its contents
+  // arrive through the observers below, so a render that changes none of these measures nothing.
+  const measured = useRef<string | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    const container = marker.current?.parentElement;
+    if (!container) {
+      measured.current = null;
+      return;
+    }
+    const signature = [
+      folded.size > 0,
+      ...Array.from(container.children, (child) => {
+        const id = (child as HTMLElement).dataset?.action;
+        if (id === undefined) return "";
+        const info = store.map.get(id);
+        return `${id}:${info?.priority}:${info?.label}`;
+      }),
+    ].join("\n");
+    if (signature === measured.current) return;
+    measured.current = signature;
+    update(false);
+  });
 
   // When the bar or an action changes size.
   useIsomorphicLayoutEffect(() => {
@@ -238,15 +259,23 @@ export function ActionsOverflow({ children }: { children: ReactNode }) {
     if (!container || !bar || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(() => update(true));
     observer.observe(bar);
+    // The actions and the rest of the bar (scope, controls) take room from each other.
     const watch = () => {
       for (const child of container.children) observer.observe(child);
+      for (const child of bar.children) observer.observe(child);
     };
     watch();
     const added = new MutationObserver(watch);
     added.observe(container, { childList: true });
+    added.observe(bar, { childList: true });
+    // The title's text changes how much room it keeps without resizing its box.
+    const heading = bar.querySelector(".fa-window-heading");
+    const retitled = new MutationObserver(() => update(true));
+    if (heading) retitled.observe(heading, { childList: true, characterData: true, subtree: true });
     return () => {
       observer.disconnect();
       added.disconnect();
+      retitled.disconnect();
     };
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- update reads refs only
   }, [empty]);

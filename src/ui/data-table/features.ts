@@ -65,7 +65,7 @@ export interface DataColumnMeta {
  * pagination are server-side (`manualSorting`, `manualFiltering`, `manualPagination`);
  * visibility, sizing and pinning are driven by the container (R16.2) and the column menu.
  */
-export const dataTableFeatures = tableFeatures({
+export const dataTableFeatures = /* @__PURE__ */ tableFeatures({
   columnFilteringFeature,
   rowSortingFeature,
   rowPaginationFeature,
@@ -73,7 +73,7 @@ export const dataTableFeatures = tableFeatures({
   columnVisibilityFeature,
   columnSizingFeature,
   columnPinningFeature,
-  columnMeta: metaHelper<DataColumnMeta>(),
+  columnMeta: /* @__PURE__ */ metaHelper<DataColumnMeta>(),
 });
 
 export type DataTableFeatures = typeof dataTableFeatures;

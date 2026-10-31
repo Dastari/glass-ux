@@ -10,7 +10,7 @@ export type SheetSide = "left" | "right" | "bottom" | "start" | "end"
 type PhysicalSide = Exclude<SheetSide, "start" | "end">
 const SWIPE: Record<PhysicalSide, "left" | "right" | "down"> = { left: "left", right: "right", bottom: "down" }
 
-const SideContext = createContext<PhysicalSide>("right")
+const SideContext = /* @__PURE__ */ createContext<PhysicalSide>("right")
 
 export interface SheetRootProps {
   open?: boolean

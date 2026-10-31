@@ -319,7 +319,7 @@ export function layoutTopology<T>(
       to: node.id,
       path: rounded([[x1, y1], [x1, midY], [x2, midY], [x2, node.y]], m.radius),
       kind: link?.kind ?? "unknown",
-      label: link?.speedMbps ? formatLinkSpeed(link.speedMbps) : undefined,
+      label: link?.speedMbps ? formatLinkSpeed(link.speedMbps, options.locale) : undefined,
       labelX: x2,
       labelY: midY + (node.y - midY) / 2,
     })
@@ -351,7 +351,7 @@ export function layoutTopology<T>(
         to: block.id,
         path: rounded(points, m.radius),
         kind: commonKind(links),
-        label: speedRange(speeds),
+        label: speedRange(speeds, options.locale),
         labelX: x2,
         labelY: busY + (block.y - busY) / 2,
       })

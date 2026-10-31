@@ -42,11 +42,11 @@ export interface AskDockState {
   focusRequest: { id: string; count: number } | null
 }
 
-const ApiContext = createContext<DockApi | null>(null)
-const StateContext = createContext<AskDockState | null>(null)
+const ApiContext = /* @__PURE__ */ createContext<DockApi | null>(null)
+const StateContext = /* @__PURE__ */ createContext<AskDockState | null>(null)
 
 /** Where an ask renders: in the transcript (or on its own), or as the dock's copy. */
-export const AskPlacementContext = createContext<"inline" | "dock">("inline")
+export const AskPlacementContext = /* @__PURE__ */ createContext<"inline" | "dock">("inline")
 
 /** Still waiting for the person: an approval in `pending`, any other ask not answered. */
 export function isAskPending(ask: AiAsk) {

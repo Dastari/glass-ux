@@ -40,11 +40,11 @@ export function addressSchema(options: AddressSchemaOptions = {}) {
       if (!started && !options.required) return
       const convention = addressConvention(value.country.code, getAddressFieldMessages(options.locale))
       if (!value.line1.trim()) context.addIssue({ code: "custom", path: ["line1"], message: getAddressFieldMessages(options.locale).enterTheStreetAddressOrAPoBox })
-      if (!value.locality.trim()) context.addIssue({ code: "custom", path: ["locality"], message: getAddressFieldMessages(options.locale).enterThe(convention.locality.toLowerCase()) })
+      if (!value.locality.trim()) context.addIssue({ code: "custom", path: ["locality"], message: getAddressFieldMessages(options.locale).enterThe(convention.locality) })
       if (!value.country.code) context.addIssue({ code: "custom", path: ["country"], message: getAddressFieldMessages(options.locale).chooseACountry })
       if (value.postcode.trim() && !isPostcode(value.country.code, value.postcode)) {
         const example = convention.postcodeExample
-        context.addIssue({ code: "custom", path: ["postcode"], message: getAddressFieldMessages(options.locale).checkThe(convention.postcode.toLowerCase(), example) })
+        context.addIssue({ code: "custom", path: ["postcode"], message: getAddressFieldMessages(options.locale).checkThe(convention.postcode, example) })
       }
       if (options.requireLocation && !value.location) context.addIssue({ code: "custom", path: ["line1"], message: getAddressFieldMessages(options.locale).addressRequired })
     })

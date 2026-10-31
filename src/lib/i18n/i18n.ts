@@ -25,11 +25,62 @@ export function registerMessagePack(...list: MessagePack[]): void {
   notify()
 }
 
-/** The registered pack for a locale: an exact match, then the language alone ("de-AT" → "de"), else none. */
+/** The first hit among a locale's candidate tags, best match first: the tag itself; the language with its likely script; a bare language's likely region; the language alone. */
+function bestMatch<T>(tag: string, find: (candidate: string) => T | undefined): T | undefined {
+  const exact = find(tag)
+  if (exact) return exact
+  const { language, script, region } = new Intl.Locale(tag).maximize()
+  return (script ? find(`${language}-${script}`) : undefined) ?? (region && tag === language ? find(`${language}-${region}`) : undefined) ?? find(language)
+}
+
+/**
+ * The registered pack for a locale: an exact match; the language with its likely script
+ * ("zh-CN" → "zh-Hans", while "zh-TW" needs a "zh-Hant" pack); a bare language's likely region
+ * ("pt" → "pt-BR"); then the language alone ("de-AT" → "de"); else none.
+ */
 export function messagePackFor(locale: string): MessagePack | undefined {
   const tag = canonicalLocale(locale)
   if (!tag) return undefined
-  return packs.get(tag) ?? packs.get(tag.split("-")[0]!)
+  return bestMatch(tag, (candidate) => packs.get(candidate))
+}
+
+/** Loads one language pack: `() => import("glass-ux/i18n/de")`. */
+export type MessagePackLoader = () => Promise<{ default: MessagePack }>
+
+/**
+ * Load and register the pack for `locale` from a map of language tag to loader, so a
+ * bundler splits each language into its own chunk and only the one in use is fetched:
+ *
+ * ```ts
+ * const packs = { de: () => import("glass-ux/i18n/de"), "pt-BR": () => import("glass-ux/i18n/pt-BR") }
+ * await loadMessagePack(locale, packs)
+ * ```
+ *
+ * The tag is matched as `messagePackFor` matches (exact, likely script, likely region,
+ * language), so a "de" loader serves "de-AT". Resolves with the pack, or `undefined` when no
+ * loader fits (English stays). A pack already registered under the matching key is returned
+ * without loading again. A failing loader rejects and registers nothing. Components show
+ * English until the pack arrives: await this before the first render or hydration, and
+ * register the same pack on the server.
+ */
+export async function loadMessagePack(locale: string, loaders: Readonly<Record<string, MessagePackLoader>>): Promise<MessagePack | undefined> {
+  const tag = canonicalLocale(locale)
+  if (!tag) return undefined
+  const byTag = new Map<string, MessagePackLoader>()
+  for (const [key, load] of Object.entries(loaders)) {
+    const known = canonicalLocale(key)
+    if (known) byTag.set(known, load)
+  }
+  const match = bestMatch(tag, (candidate) => {
+    const load = byTag.get(candidate)
+    return load ? { key: candidate, load } : undefined
+  })
+  if (!match) return undefined
+  const registered = packs.get(match.key)
+  if (registered) return registered
+  const { default: pack } = await match.load()
+  registerMessagePack(pack)
+  return pack
 }
 
 /**

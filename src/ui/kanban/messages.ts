@@ -25,6 +25,16 @@ export const kanbanMessages = defineMessages("kanban", {
   /** A move the host refused, when it gave no reason. */
   moveFailed: (title: string) => `Could not move to ${title}`,
   loading: "Loading cards",
+  /** The button on a card, and its menu's name, that moves the card without dragging: "Move Printer offline". */
+  moveCard: (label: string) => `Move ${label}`,
+  /** A menu row that moves the card to the end of another column. */
+  moveToColumn: (title: string) => `Move to ${title}`,
+  moveUp: "Move up",
+  moveDown: "Move down",
+  /** What a menu move announces once done: "Moved Printer offline to Triage, position 2 of 3." */
+  movedTo: ({ label, column, position, count }: { label: string; column: string; position: number; count: number }) => `Moved ${label} to ${column}, position ${position} of ${count}.`,
+  /** The title of the notice when a menu move was not saved. */
+  moveNotSaved: (label: string) => `${label} was not moved`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

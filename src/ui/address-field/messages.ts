@@ -30,9 +30,11 @@ export const addressFieldMessages = defineMessages("addressField", {
   localityTooLong: "Use 80 characters or fewer",
   postcodeTooLong: "Use 12 characters or fewer",
   enterTheStreetAddressOrAPoBox: "Enter the street address, or a PO Box",
-  enterThe: (field: string) => `Enter the ${field}`,
+  /** `field` is the country's label for it as written ("Suburb or town"): lowercase it where the language needs to. */
+  enterThe: (field: string) => `Enter the ${field.toLocaleLowerCase("en")}`,
   chooseACountry: "Choose a country",
-  checkThe: (field: string, example: string | undefined) => `Check the ${field}${example ? `, such as ${example}` : ""}`,
+  /** `field` is the country's label for it as written ("Postcode"): lowercase it where the language needs to. */
+  checkThe: (field: string, example: string | undefined) => `Check the ${field.toLocaleLowerCase("en")}${example ? `, such as ${example}` : ""}`,
   addressRequired: "Choose the address from the suggestions, or place the pin",
   addressSuburbOrTown: "Suburb or town",
   addressStateOrTerritory: "State or territory",

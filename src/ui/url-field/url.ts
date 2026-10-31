@@ -1,5 +1,6 @@
 import { getLocale } from "../../lib/locale/locale.js"
 import { getUrlFieldMessages } from "./messages.js"
+import { listFormat } from "../../lib/locale/intl.js"
 /**
  * Web addresses: add the scheme people leave off, refuse schemes that are not links
  * (javascript:, data:), and write the URL the way the platform parser does (lower-case scheme
@@ -40,7 +41,7 @@ export function parseUrl(text: string, options: UrlOptions = {}): UrlResult {
   }
   const given = (SCHEME.exec(source)?.[1] ?? "").toLowerCase()
   if (!schemes.includes(given)) {
-    return { ok: false, error: schemes.length === 1 ? getUrlFieldMessages(options.locale).startTheAddressWith(schemes[0]) : getUrlFieldMessages(options.locale).useAnAddressThatStartsWith(new Intl.ListFormat(options.locale ?? getLocale(), { type: "disjunction" }).format(schemes.map((entry) => `${entry}://`))) }
+    return { ok: false, error: schemes.length === 1 ? getUrlFieldMessages(options.locale).startTheAddressWith(schemes[0]) : getUrlFieldMessages(options.locale).useAnAddressThatStartsWith(listFormat(options.locale ?? getLocale(), { type: "disjunction" }).format(schemes.map((entry) => `${entry}://`))) }
   }
   let url: URL
   try {

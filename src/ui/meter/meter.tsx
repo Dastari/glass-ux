@@ -1,6 +1,8 @@
 import { Meter as BaseMeter } from "@base-ui/react/meter"
 import type { CSSProperties, ReactNode } from "react"
 import { cx } from "../../lib/cx.js"
+import { formatPercent } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Skeleton } from "../skeleton/index.js"
 
 export type MeterLevel = "normal" | "warning" | "danger"
@@ -54,9 +56,10 @@ export function Meter({
   className,
   "aria-label": ariaLabel,
 }: MeterProps) {
+  const locale = useLocale()
   const ratio = max > 0 ? Math.min(1, Math.max(0, value / max)) : 0
   const level = meterLevel(ratio, warningAt, dangerAt)
-  const reading = valueText ?? `${Math.round(ratio * 100)}%`
+  const reading = valueText ?? formatPercent(locale, Math.round(ratio * 100))
   return (
     <BaseMeter.Root
       value={value}

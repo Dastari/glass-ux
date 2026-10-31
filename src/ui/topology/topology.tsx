@@ -234,7 +234,7 @@ interface NodeViewProps {
   renderNode: (node: any) => ReactNode
 }
 
-const NodeView = memo(function NodeView({ node, box, origin, selected, tabbable, name, renderNode }: NodeViewProps) {
+const NodeView = /* @__PURE__ */ memo(function NodeView({ node, box, origin, selected, tabbable, name, renderNode }: NodeViewProps) {
   return (
     <div
       role="option"
@@ -773,7 +773,7 @@ export function TopologyCanvas<T>({
         <div
           key={cluster.id}
           role="group"
-          aria-label={`${cluster.label}, ${cluster.members.length}`}
+          aria-label={messages.clusterSummary({ label: cluster.label, count: cluster.members.length, locale })}
           className="fa-topology-cluster"
           data-active={activePath.has(cluster.id) ? "" : undefined}
           style={{ transform: `translate(${cluster.x}px, ${cluster.y}px)`, width: cluster.width, height: cluster.height }}

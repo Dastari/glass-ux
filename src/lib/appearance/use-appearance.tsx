@@ -8,6 +8,7 @@ import {
   resolveMode,
   type Appearance,
 } from "./appearance.js"
+import { mediaList } from "../use-media-query.js"
 import { installShimmerSync } from "../motion.js"
 import { installPointerLight } from "./optics.js"
 import { installBakedFrost } from "./frost.js"
@@ -19,7 +20,7 @@ interface AppearanceContextValue {
   resolvedMode: "light" | "dark"
 }
 
-const AppearanceContext = createContext<AppearanceContextValue | null>(null)
+const AppearanceContext = /* @__PURE__ */ createContext<AppearanceContextValue | null>(null)
 
 /* ── Stored preferences: a tiny external store over localStorage ─────────────── */
 const listeners = new Set<() => void>()
@@ -91,7 +92,7 @@ function writeAppearance(next: Appearance | null) {
 /* ── OS colour scheme ─────────────────────────────────────────────────────────── */
 const DARK_QUERY = "(prefers-color-scheme: dark)"
 function subscribeScheme(notify: () => void) {
-  const query = matchMedia(DARK_QUERY)
+  const query = mediaList(DARK_QUERY)
   query.addEventListener("change", notify)
   return () => query.removeEventListener("change", notify)
 }
@@ -101,7 +102,7 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
   const appearance = useSyncExternalStore(subscribeAppearance, readAppearance, serverAppearance)
   const prefersDark = useSyncExternalStore(
     subscribeScheme,
-    () => matchMedia(DARK_QUERY).matches,
+    () => mediaList(DARK_QUERY).matches,
     () => false
   )
 

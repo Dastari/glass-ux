@@ -2,11 +2,12 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type Poin
 import { IconChevronLeft, IconChevronRight, IconFullscreen, IconImage, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { useMessages } from "../../lib/i18n/use-messages.js"
 import { isRtl, readingKey } from "../../lib/direction.js"
-import { numberFormat } from "../../lib/locale/intl.js"
+import { formatPercent, numberFormat } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { Button } from "../button/index.js"
 import { Dialog } from "../dialog/index.js"
+import { VisuallyHidden } from "../visually-hidden/index.js"
 import { lightboxMessages } from "./messages.js"
 
 /** One picture in a lightbox. */
@@ -52,7 +53,10 @@ export interface LightboxProps {
 /**
  * Pictures at full size in a dialog: previous and next (← →, or a swipe on touch), zoom
  * (+ − and 0 to fit) where a zoomed picture pans by dragging or scrolling, an optional strip
- * of thumbnails and actions for the current picture. Each picture starts fitted.
+ * of thumbnails and actions for the current picture. Each picture starts fitted. While a
+ * picture is zoomed and the stage has focus, the arrow keys scroll it instead of changing
+ * picture; the Previous and Next buttons and the thumbnails still do. A change of picture is
+ * announced politely ("Image 3 of 8: alt").
  */
 export function Lightbox({
   images,
@@ -71,6 +75,20 @@ export function Lightbox({
   const [index, setIndex] = useControllable(indexProp, defaultIndex, onIndexChange)
   const [open, setOpen] = useControllable(openProp, defaultOpen, onOpenChange)
   const image = images[index]
+  const t = useMessages(lightboxMessages, { labels, locale })
+  const [announcement, setAnnouncement] = useState("")
+  const shown = useRef(index)
+  useEffect(() => {
+    if (!open || !image) {
+      shown.current = index
+      setAnnouncement("")
+      return
+    }
+    if (shown.current === index) return
+    shown.current = index
+    setAnnouncement(t.shown({ index: index + 1, total: images.length, alt: image.alt }))
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- announce on a change of picture only
+  }, [index, open])
   return (
     <Dialog.Root open={open && Boolean(image)} onOpenChange={(next) => setOpen(next)}>
       <Dialog.Popup size="xl" className="fa-lightbox">
@@ -88,6 +106,9 @@ export function Lightbox({
             labels={labels}
           />
         ) : null}
+        <VisuallyHidden aria-live="polite" aria-atomic="true">
+          {announcement}
+        </VisuallyHidden>
       </Dialog.Popup>
     </Dialog.Root>
   )
@@ -120,6 +141,9 @@ function LightboxContent({
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return
       const target = event.target
       if (target instanceof Element && target.closest("input, textarea, [contenteditable='true']")) return
+      // A zoomed picture that overflows sideways is scrolled with ← →, from the stage or inside it.
+      const box = stage.current
+      if (zoom > 0 && box && target instanceof Node && box.contains(target) && box.scrollWidth > box.clientWidth && (event.key === "ArrowLeft" || event.key === "ArrowRight")) return
       // In a right-to-left page → goes back, as the chevrons point.
       const key = stage.current ? readingKey(event.key, stage.current) : event.key
       if (key === "ArrowRight" && many) go(1)
@@ -225,7 +249,7 @@ function LightboxContent({
       >
         <Button variant="ghost" size="sm" icon={<IconZoomOut />} aria-label={t.zoomOut} shortcut="-" disabledReason={zoom === 0 ? t.alreadyFitted : undefined} onClick={() => zoomBy(-1)} />
         <span className="fa-lightbox-zoom" data-numeric aria-live="polite">
-          {zoom === 0 ? t.fitted : `${Math.round(scale * 100)}%`}
+          {zoom === 0 ? t.fitted : formatPercent(locale, Math.round(scale * 100))}
         </span>
         <Button variant="ghost" size="sm" icon={<IconZoomIn />} aria-label={t.zoomIn} shortcut="+" disabledReason={zoom === zooms.length - 1 ? t.largest : undefined} onClick={() => zoomBy(1)} />
         <Button variant="ghost" size="sm" icon={<IconFullscreen />} aria-label={t.fit} shortcut="0" onClick={() => setZoom(0)} />

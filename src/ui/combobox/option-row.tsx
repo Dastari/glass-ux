@@ -20,7 +20,8 @@ export function Highlight({ text, query }: {
   /** The search text whose matches are marked; blank marks nothing. */
   query: string
 }) {
-  const ranges = query.trim() ? matchRanges(text, query) : []
+  const locale = useLocale()
+  const ranges = query.trim() ? matchRanges(text, query, locale) : []
   if (ranges.length === 0) return <>{text}</>
   const parts: ReactNode[] = []
   let at = 0

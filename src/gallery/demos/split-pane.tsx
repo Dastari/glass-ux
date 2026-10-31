@@ -60,17 +60,21 @@ function Values({ folder }: { folder: string }) {
 function Explorer({
   storageKey = null,
   height = "h-80",
+  startLabel = "Folders",
+  endLabel = "Values",
 }: {
   storageKey?: string | null;
   height?: string;
+  startLabel?: string;
+  endLabel?: string;
 }) {
   const [folder, setFolder] = useState("studio");
   const expanded = useMemo(() => FOLDERS.map((node) => node.id), []);
   return (
     <div className={`${height} w-full rounded-tile bg-fill-muted`}>
       <SplitPane
-        startLabel="Folders"
-        endLabel="Values"
+        startLabel={startLabel}
+        endLabel={endLabel}
         {...EXPLORER_LIMITS}
         storageKey={storageKey}
         start={
@@ -143,7 +147,7 @@ export default function SplitPaneSection() {
         specimenKey="split-pane:default:2"
       >
         <div className="w-96 max-w-full" data-testid="split-narrow">
-          <Explorer />
+          <Explorer startLabel="Sections" endLabel="Details" />
         </div>
       </Specimen>
     </SectionPage>

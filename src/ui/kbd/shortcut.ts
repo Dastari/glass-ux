@@ -126,6 +126,68 @@ export function ariaShortcut(shortcut: string, platform: Platform): string {
   return names.join("+")
 }
 
+/* ── Single-character shortcuts (WCAG 2.1.4) ───────────────────────────────────────── */
+
+let characterKeys = true
+const characterListeners = new Set<() => void>()
+
+/** Application-wide shortcut settings for {@link configureShortcuts}. */
+export interface ShortcutConfig {
+  /**
+   * Whether shortcuts made of a single character key, with no Ctrl, Alt or Command
+   * modifier ("g e" in the rail, a command whose shortcut is "c" or "?"), run from anywhere
+   * on the page. Default true. Set false to switch them off for the whole application
+   * (WCAG 2.1.4 Character Key Shortcuts), for example behind a user preference. Their key
+   * hints disappear from tooltips, menus and the palette too. Shortcuts with a modifier,
+   * and keys handled inside the widget that has focus (arrows in a list, `/` inside a
+   * table), are not affected.
+   */
+  characterKeys?: boolean
+}
+
+/**
+ * Set the application's keyboard shortcut policy. Call it at start-up or when the person
+ * changes the preference; mounted components follow the change. Omitted fields keep their
+ * current value.
+ *
+ * @example
+ * configureShortcuts({ characterKeys: false })
+ */
+export function configureShortcuts(config: ShortcutConfig): void {
+  const next = config.characterKeys ?? characterKeys
+  if (next === characterKeys) return
+  characterKeys = next
+  for (const notify of characterListeners) notify()
+}
+
+/** Whether single-character shortcuts are on (the default) or switched off by `configureShortcuts`. */
+export function characterShortcutsEnabled(): boolean {
+  return characterKeys
+}
+
+/** Subscribe to changes of `configureShortcuts` (for `useSyncExternalStore`). */
+export function subscribeShortcutConfig(listener: () => void): () => void {
+  characterListeners.add(listener)
+  return () => characterListeners.delete(listener)
+}
+
+/**
+ * Whether a shortcut is a single character key: its first step has no Ctrl, Alt or
+ * Command modifier and its key is one character ("c", "?", "shift+/", "g e"). Function
+ * keys, Escape, Enter, arrows and chords with a modifier are not.
+ */
+export function isCharacterShortcut(shortcut: string): boolean {
+  const first = shortcut.trim().split(/\s+/)[0] ?? ""
+  const { modifiers, key } = parseShortcut(first)
+  if (modifiers.has("ctrl") || modifiers.has("alt") || modifiers.has("meta") || modifiers.has("mod")) return false
+  return [...key].length === 1
+}
+
+/** Whether a shortcut may run now: modifier and non-character shortcuts always, character shortcuts unless switched off. */
+export function shortcutAllowed(shortcut: string): boolean {
+  return characterKeys || !isCharacterShortcut(shortcut)
+}
+
 const EVENT_KEY: Record<string, string> = { escape: "esc", " ": "space" }
 
 /** Whether a keyboard event is this shortcut on this platform. */

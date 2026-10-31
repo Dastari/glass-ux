@@ -83,7 +83,7 @@ export interface WindowContentHostProps {
 }
 
 /** Loads and renders a window's body. Shows a skeleton in the body's box while loading. */
-export const WindowContentHost = memo(
+export const WindowContentHost = /* @__PURE__ */ memo(
   function WindowContentHost({ id, kind, params }: WindowContentHostProps) {
   const messages = useMessages(windowsMessages)
 

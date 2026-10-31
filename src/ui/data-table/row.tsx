@@ -326,7 +326,7 @@ function rowPropsEqual<T extends RowData>(
 
 /** A body row. Memoised on data identity, so hovering, selecting or live-updating one row
  *  never re-renders the others. */
-export const DataRow = memo(DataRowView, rowPropsEqual) as <T extends RowData>(
+export const DataRow = /* @__PURE__ */ memo(DataRowView, rowPropsEqual) as <T extends RowData>(
   props: DataRowProps<T>,
 ) => ReactElement;
 

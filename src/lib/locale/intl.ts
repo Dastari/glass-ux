@@ -6,6 +6,9 @@
 const numbers = new Map<string, Intl.NumberFormat>()
 const dates = new Map<string, Intl.DateTimeFormat>()
 const collators = new Map<string, Intl.Collator>()
+const relatives = new Map<string, Intl.RelativeTimeFormat>()
+const lists = new Map<string, Intl.ListFormat>()
+const plurals = new Map<string, Intl.PluralRules>()
 
 const keyOf = (locale: string, options: object | undefined) => (options ? `${locale}|${JSON.stringify(options)}` : locale)
 
@@ -60,4 +63,45 @@ export function collator(locale: string, options?: Intl.CollatorOptions): Intl.C
   let compare = collators.get(key)
   if (!compare) collators.set(key, (compare = new Intl.Collator(locale, options)))
   return compare
+}
+
+/** A cached `Intl.RelativeTimeFormat` for `locale` and `options`; no locale means the runtime default. */
+export function relativeTimeFormat(locale: string | undefined, options?: Intl.RelativeTimeFormatOptions): Intl.RelativeTimeFormat {
+  const key = keyOf(locale ?? "", options)
+  let format = relatives.get(key)
+  if (!format) relatives.set(key, (format = new Intl.RelativeTimeFormat(locale, options)))
+  return format
+}
+
+/** A cached `Intl.ListFormat` for `locale` and `options`; no locale means the runtime default. */
+export function listFormat(locale: string | undefined, options?: Intl.ListFormatOptions): Intl.ListFormat {
+  const key = keyOf(locale ?? "", options)
+  let format = lists.get(key)
+  if (!format) lists.set(key, (format = new Intl.ListFormat(locale, options)))
+  return format
+}
+
+/** A cached `Intl.PluralRules` for `locale` and `options`; no locale means the runtime default. */
+export function pluralRules(locale: string | undefined, options?: Intl.PluralRulesOptions): Intl.PluralRules {
+  const key = keyOf(locale ?? "", options)
+  let rules = plurals.get(key)
+  if (!rules) plurals.set(key, (rules = new Intl.PluralRules(locale, options)))
+  return rules
+}
+
+/**
+ * `percent` (0–100, not a fraction) written as the locale writes percentages: "50%" in en,
+ * "50 %" in de, "٪٥٠" in ar-EG. `fractionDigits` is the most digits kept (a number), or the
+ * exact range when given as options. Rounding matches `Intl` for a plain number, so 4.35 at
+ * one digit stays "4.4%" in en.
+ */
+export function formatPercent(
+  locale: string,
+  percent: number,
+  fractionDigits: number | Pick<Intl.NumberFormatOptions, "minimumFractionDigits" | "maximumFractionDigits"> = 0,
+): string {
+  const options = typeof fractionDigits === "number" ? { maximumFractionDigits: fractionDigits } : fractionDigits
+  // Dividing by 100 can leave binary noise (0.35 / 100) that tips a half-way value the
+  // wrong way; twelve significant digits drop it without losing any real precision.
+  return numberFormat(locale, { style: "percent", ...options }).format(Number((percent / 100).toPrecision(12)))
 }

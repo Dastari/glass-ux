@@ -42,7 +42,7 @@ error states that keep the table's box, and opt-in row reordering by drag or key
 | live | `boolean \| undefined` | false, true | no | false | Live data: flash changed cells and hold new rows behind an "N new" pill. |
 | loading | `boolean \| undefined` | false, true | no | false | First load: skeleton rows in the final shape. |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for this table's numbers, dates, counts and local sorting. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
-| noun | `DataTableNoun \| undefined` | See type | no | — | Noun for counts in the status bar ("1,284 endpoints"). |
+| noun | `DataTableNoun \| undefined` | See type | no | — | Noun for counts in the status bar ("1,284 endpoints"), with a form per plural category of the locale (`{ one, other }` suffices for English). |
 | onAction | `((action: ResolvedAction<T>, targets: readonly T[], surface: ActionSurface) => void) \| undefined` | See type | no | — | Run actions yourself. By default every surface uses the shared runner: confirm in an AlertDialog, run, then report with a toast (R12.4, R12.5). With `onAction`, the confirmation and the feedback are the caller's. |
 | onCellEdit | `((change: DataTableCellEdit<T, unknown>) => void \| Promise<void>) \| undefined` | See type | no | — | Persist validated edits. A rejection restores the previous value and announces its message. |
 | onColumnOrderChange | `((order: string[]) => void) \| undefined` | See type | no | — | Called after a drag or menu move; pair with columnOrder to control it. |

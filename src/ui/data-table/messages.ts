@@ -104,6 +104,8 @@ const defaults = {
   betweenField: (label: string) => `${label} between`,
   filterColumn: (label: string) => `Filter ${label}`,
   searchRows: (noun: string) => `Search ${noun}`,
+  /** Announced a moment after a search or filter changes: "Results: 12 orders". */
+  resultsFound: (count: string) => `Results: ${count}`,
   noMatches: (query: string) => `No matches for "${query}"`,
   filterBy: (label: string) => `Filter by ${label}`,
   editFilter: (summary: string) => `Edit filter: ${summary}`,
@@ -124,8 +126,9 @@ const defaults = {
   newRows: (count: number) => `${count} new`,
   didNotLoad: (label: string) => `${label} did not load.`,
   selectedCount: (count: string) => `${count} selected`,
+  groupSummary: ({ label, count }: { label: string; count: string }) => `${label}, ${count}`,
   dateCondition: (label: string, condition: string) =>
-    `${label} ${condition.toLowerCase()}`,
+    `${label} ${condition.toLocaleLowerCase("en")}`,
   updated: (relative: string) => `Updated ${relative}`,
   today: "Today",
   lastDay: "Last 24 hours",
@@ -162,6 +165,9 @@ const defaults = {
     `${label} starts with "${value}"`,
   summaryEndsWith: (label: string, value: string) =>
     `${label} ends with "${value}"`,
+  /** A date preset as a filter summary: "Created: last 24 hours". `preset` arrives as written ("Last 24 hours"). */
+  summaryPreset: (label: string, preset: string) =>
+    `${label}: ${preset.toLocaleLowerCase("en")}`,
   summaryIs: (label: string, value: string) => `${label} is ${value}`,
   summaryIsNot: (label: string, value: string) => `${label} is not ${value}`,
   summaryNotIn: (label: string, value: string) => `${label}: not ${value}`,

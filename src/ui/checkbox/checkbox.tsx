@@ -54,7 +54,7 @@ export function Checkbox({ label, description, className, disabled, id, ...rest 
   return (
     <FieldOptionItem>
       <ChoiceRow controlId={controlId} label={label} description={description} disabled={disabled} className={className}>
-        <CheckboxBox {...rest} id={controlId} aria-describedby={description ? descriptionId(controlId) : undefined} disabled={disabled} />
+        <CheckboxBox {...rest} id={controlId} aria-describedby={cx(rest["aria-describedby"], description && descriptionId(controlId)) || undefined} disabled={disabled} />
       </ChoiceRow>
     </FieldOptionItem>
   )

@@ -4,7 +4,7 @@
  * browser's Image and canvas only, no React, so an application can call them in its own flows.
  */
 import { formatBytes, matchesAccept } from "../file-drop/files.js"
-import { numberFormat } from "../../lib/locale/intl.js"
+import { listFormat, numberFormat } from "../../lib/locale/intl.js"
 import { getLocale } from "../../lib/locale/locale.js"
 import { getAvatarEditorMessages } from "./messages.js"
 
@@ -117,7 +117,7 @@ export function describeFormats(accept: string = AVATAR_ACCEPT, locale = getLoca
     const key = token.startsWith(".") ? token.slice(1) : (token.split("/")[1] ?? token)
     names.add(FORMAT_NAMES[key] ?? key.toUpperCase())
   }
-  return new Intl.ListFormat(locale, { type: "disjunction" }).format([...names])
+  return listFormat(locale, { type: "disjunction" }).format([...names])
 }
 
 /** The limits line under the drop zone: "PNG, JPEG or WebP · Max 5 MB · At least 256 × 256 px". */

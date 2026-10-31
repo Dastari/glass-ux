@@ -16,6 +16,8 @@ import {
 } from "../../lib/appearance/index.js"
 import { cx } from "../../lib/cx.js"
 import { useMessages } from "../../lib/i18n/use-messages.js"
+import { formatPercent } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { Button } from "../button/index.js"
 import { ColorField } from "../color-picker/index.js"
 import { FormGroup, FormStack } from "../form/index.js"
@@ -78,6 +80,7 @@ export function AppearanceSettings({
   className,
 }: AppearanceSettingsProps) {
   const t = useMessages(appearanceSettingsMessages, { labels })
+  const locale = useLocale()
   const { appearance, update, reset: resetAll } = useAppearance()
   const paletteNames: Readonly<Record<string, string>> = {
     ocean: t.paletteOcean,
@@ -280,7 +283,7 @@ export function AppearanceSettings({
                 step={0.125}
                 marks
                 value={appearance.uiScale}
-                format={(value) => `${Math.round(value * 100)}%`}
+                format={(value) => formatPercent(locale, Math.round(value * 100))}
                 onValueChange={(value) => update({ uiScale: value as number })}
               />
             }
@@ -304,7 +307,7 @@ export function AppearanceSettings({
                 step={0.25}
                 marks
                 value={appearance.radiusScale}
-                format={(value) => `${Math.round(value * 100)}%`}
+                format={(value) => formatPercent(locale, Math.round(value * 100))}
                 onValueChange={(value) => update({ radiusScale: value as number })}
               />
             }

@@ -17,11 +17,12 @@ import { SettingRow } from "../../ui/setting-row/index.js";
 import { Switch } from "../../ui/switch/index.js";
 import { CodeBlock } from "../code-block/index.js";
 import { EntityChip } from "../entity-chip/index.js";
-import { formatCountdown, useNow } from "../format.js";
+import { formatCountdown } from "../format.js";
 import { useConversationHandlers } from "../handlers.js";
 import type { AiApproval, ApprovalState } from "../types.js";
 import { useAskDockApi, useAskResolution } from "./dock-state.js";
 import { AskLayout, AskRecord, AskShell, RESOLVE_HOLD_MS } from "./frame.js";
+import { listFormat } from "../../lib/locale/intl.js"
 
 type Approval = AiApproval;
 
@@ -40,7 +41,7 @@ const RECORD_STATUS = {
 } as const satisfies Record<ApprovalState, string>;
 
 function targetsText(ask: Approval, locale: string) {
-  return new Intl.ListFormat(locale, { type: "unit" }).format(ask.targets.map((target) => target.label));
+  return listFormat(locale, { type: "unit" }).format(ask.targets.map((target) => target.label));
 }
 
 export interface ApprovalRecordProps {
@@ -80,7 +81,7 @@ export function ApprovalRecord({ ask, onRevoke }: ApprovalRecordProps) {
       {messageContent(messages.approvalRecord({ state: ask.state, action: "{action}", targets: "{targets}", outcome: ask.outcome ? "{outcome}" : undefined }), {
         action: ask.action,
         outcome: <span className="fa-ai-ask-record-outcome">{ask.outcome}</span>,
-        targets: new Intl.ListFormat(locale, { type: "unit" }).formatToParts(ask.targets.map((_, index) => String(index))).map((part, index) => part.type === "element" ? <EntityChip key={index} entity={ask.targets[Number(part.value)]!} size="sm" /> : part.value),
+        targets: listFormat(locale, { type: "unit" }).formatToParts(ask.targets.map((_, index) => String(index))).map((part, index) => part.type === "element" ? <EntityChip key={index} entity={ask.targets[Number(part.value)]!} size="sm" /> : part.value),
       })}
     </AskRecord>
   );
@@ -89,7 +90,20 @@ export function ApprovalRecord({ ask, onRevoke }: ApprovalRecordProps) {
 function Expiry({ at, onExpire }: { at: number; onExpire: () => void }) {
   const messages = useMessages(asksMessages)
 
-  const now = useNow(true, 1000);
+  const [now, setNow] = useState(() => Date.now());
+  // Ticks each second until `at` passes; the expired text is static, so the timer then stops.
+  useEffect(() => {
+    const current = Date.now();
+    // A new deadline after a stopped timer starts from the real time, not the last tick.
+    setNow((previous) => (current - previous > 1000 ? current : previous));
+    if (current >= at) return;
+    const timer = setInterval(() => {
+      const time = Date.now();
+      setNow(time);
+      if (time >= at) clearInterval(timer);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [at]);
   const left = at - now;
   useEffect(() => {
     if (left <= 0) onExpire();

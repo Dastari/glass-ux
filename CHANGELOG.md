@@ -4,6 +4,74 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Added
+
+- Kanban Move menu: every card has a button (on hover and focus, always on touch screens) that
+  moves it to another column or up and down in its column, as an alternative to dragging
+  (WCAG 2.5.7). It takes the path a drop takes (`onCardsChange`, `onCardMove` with `input:
+  "menu"`, a rejected save puts the card back) and the new place is announced. `moveMenu={false}`
+  removes it.
+- `configureShortcuts({ characterKeys: false })` in `glass-ux/kbd` switches off single-character
+  shortcuts for the application (the rail's "g e" sequences, palette commands and `useHotkeys`
+  shortcuts on the document without Ctrl, Alt or Command), and their key hints, as WCAG 2.1.4
+  asks. `useCharacterShortcuts`, `isCharacterShortcut` and `shortcutAllowed` read it. On by default.
+- DataTable announces the result count, or the empty state, 500 ms after a person's last search
+  or filter change, once the rows have settled. Lightbox announces "Image 3 of 8: alt" when the
+  picture changes.
+
+- Load only the styles an application uses: `glass-ux styles --scan src --out src/glass-ux.css`
+  writes the foundation, the stylesheets of the components the sources import (with the ones
+  they rely on) and the adaptations, in the full stylesheet's order. `--check` fails when the
+  file is stale. The build ships `dist/styles/manifest.json`, `styles/foundation.css` and
+  `styles/adaptations.css`; `glass-ux/styles.css` is unchanged.
+- `loadMessagePack(locale, loaders)` in `glass-ux/i18n` registers the one language pack a
+  locale needs from dynamic imports, so a language switcher need not bundle every pack.
+- `zh-CN`, `zh-SG` and a bare `zh` use the `zh-Hans` pack, and a bare `pt` uses `pt-BR`.
+
+### Changed
+
+- Smaller bundles: module-level `Object.assign`, `memo`, `createContext` and `lazy` wrappers are
+  marked pure, so an unused part no longer pulls its component in (`EntityIdentitySkeleton`
+  alone: 69 KB → 2.6 KB gzip; `UserMessage`: 225 KB → 70 KB; `Select`: 58 KB → 49 KB).
+  `pnpm pure:check` guards it.
+- Formatters are cached: plural rules, relative-time and list formats are no longer built per
+  call, `TimeZoneSelect` no longer builds two formatters per zone on every mount, and Calendar
+  no longer builds four per render. Toolbar and window actions measure when their items or
+  sizes change rather than after every render; the rich-text toolbar no longer re-renders on
+  every keystroke; tool-activity and approval timers stop ticking when their text cannot change.
+- Percentages, link speeds, list separators and `+N` counts follow the locale ("50 %" in
+  German, "،" in Arabic); English output is unchanged. The scheduler's weekend and the
+  calendar's first day follow the locale's week (Friday and Saturday in Saudi Arabia).
+- Search in DataTable, chip overflow, combobox and the command palette ignores accents
+  ("Muller" finds "Müller") and lower-cases by locale.
+
+### Fixed
+
+- Kanban cards are list items again: the drag handle is a named group inside each item, so the
+  lane keeps its list and the buttons a card renders no longer sit inside a button. A column's
+  count is read from text, not from an `aria-label` on a span.
+- Lightbox: ← → scroll a zoomed picture that overflows while the stage has focus, instead of
+  changing picture.
+- DataTable's reorder announcements are polite, as DragDrop's are.
+- Charts: a readout opened by the pointer closes with Escape wherever focus is.
+- Chip remove buttons keep a 24 x 24 CSS px hit area for every pointer (WCAG 2.5.8) without
+  changing their size.
+- Arrow keys follow the reading direction in Cascader, TreeSelect and the scheduler's event
+  and time grids; Pagination's first and last icons mirror in right-to-left text; skeleton
+  shimmer sweeps with the reading direction.
+- Checkbox, Radio and Switch keep a caller's `aria-describedby` alongside their description;
+  LevelGauge's note is read by screen readers.
+- Live regions no longer re-announce ticking timers: the assistant status strip announces the
+  connection state, and tool activity and ask records keep their elapsed and relative times
+  out of the announcement.
+- The byte-size field reads numbers written in the locale's own digits (Arabic-Indic in
+  `ar-EG`).
+- Scheduler, address field and filter summaries pass application text to messages as written
+  (see the migration guide), so a language can phrase and capitalise it its own way; map
+  cluster counts are written with the locale's digits.
+
 ## 0.11.7
 
 An editable avatar, a relationship canvas, a level gauge, and fixes requested by a consuming

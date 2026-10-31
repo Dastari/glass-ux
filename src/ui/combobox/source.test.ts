@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
-import { filterOptions, matchRanges, matches } from "./source.js"
+import { describe, expect, it, vi } from "vitest"
+import { filterOptions, matchRanges, matches, matchesOption } from "./source.js"
 import { splitValues } from "../tag-input/tag-input.js"
 
 describe("matching", () => {
@@ -25,6 +25,37 @@ describe("matching", () => {
     ]
     expect(filterOptions(options, "front").map((option) => option.value)).toEqual(["b"])
     expect(filterOptions(options, " ")).toHaveLength(2)
+  })
+})
+
+describe("folded matching", () => {
+  it("finds an accented option from the plain spelling, and the reverse", () => {
+    const options = [
+      { value: "a", label: "Müller" },
+      { value: "b", label: "Moller" },
+    ]
+    expect(filterOptions(options, "Muller").map((option) => option.value)).toEqual(["a"])
+    expect(filterOptions([{ value: "c", label: "Muller" }], "müller")).toHaveLength(1)
+    expect(matchesOption(options[0]!, "MÜLLER")).toBe(true)
+  })
+  it("lower-cases by the locale", () => {
+    expect(matches("Isparta", "ISPARTA", "tr")).toBe(true)
+    expect(matches("İsparta", "ISPARTA", "tr")).toBe(false)
+    expect(matches("İsparta", "ISPARTA", "en")).toBe(true)
+  })
+  it("folds each option once while its text and the locale are unchanged", () => {
+    const option = { value: "a", label: "Café" }
+    const lower = vi.spyOn(String.prototype, "toLocaleLowerCase")
+    try {
+      for (let i = 0; i < 5; i++) expect(matchesOption(option, "cafe", "fr")).toBe(true)
+      // The query is folded once (and remembered); the option once.
+      expect(lower.mock.calls.length).toBeLessThanOrEqual(2)
+      option.label = "Thé"
+      expect(matchesOption(option, "cafe", "fr")).toBe(false)
+      expect(matchesOption(option, "the", "fr")).toBe(true)
+    } finally {
+      lower.mockRestore()
+    }
   })
 })
 

@@ -59,7 +59,7 @@ export interface CrumbLinkRenderProps {
 /** Render a target that has `link` as a router link; return null to fall back to href / onSelect. */
 export type RenderCrumbLink = (target: CrumbTarget, props: CrumbLinkRenderProps) => ReactElement | null
 
-const RenderLinkContext = createContext<RenderCrumbLink | undefined>(undefined)
+const RenderLinkContext = /* @__PURE__ */ createContext<RenderCrumbLink | undefined>(undefined)
 
 export interface CrumbSibling extends CrumbTarget {
   /** Trailing data in the switcher, e.g. the signed-in user or a status. */
@@ -129,7 +129,7 @@ export interface BreadcrumbFold {
 }
 
 /** Context through which a host folds itself into the breadcrumb; defaults to `{ folded: false }`. Provide it with a `BreadcrumbFold` value. */
-export const BreadcrumbFoldContext = createContext<BreadcrumbFold>({ folded: false })
+export const BreadcrumbFoldContext = /* @__PURE__ */ createContext<BreadcrumbFold>({ folded: false })
 
 export interface BreadcrumbProps {
   /** Root first, current place last. Feed it from the router's matches. */

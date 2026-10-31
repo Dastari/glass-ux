@@ -2,9 +2,9 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type FocusEvent, type KeyboardEvent, type PointerEvent, type ReactNode } from "react"
 import { flushSync } from "react-dom"
 import { isRtl, readingKey } from "../../lib/direction.js"
-import { dateTimeFormat } from "../../lib/locale/intl.js"
+import { dateTimeFormat, listFormat } from "../../lib/locale/intl.js"
 import { useElementSize } from "../../lib/use-element-size.js"
-import { addDays, fromIsoDate, isoParts, isoWeekday, type IsoDate } from "../date-picker/calendar-date.js"
+import { addDays, fromIsoDate, isoParts, isWeekend, type IsoDate } from "../date-picker/calendar-date.js"
 import { DragDropProvider, useDraggable, useDragDropMonitor, useDropZone, useHasDragDropProvider } from "../drag-drop/drag-drop.js"
 import type { DragEffect, DragInfo, DragItem, DropVerdict } from "../drag-drop/types.js"
 import { eventName, formatDay, formatDayShort, formatMinutes, formatMinutesRange, toneAttribute, useScheduler, type PendingChange } from "./context.js"
@@ -204,7 +204,7 @@ function TimelineBody({ events, days }: TimelineViewProps) {
     const when = first === last ? formatDay(first, locale) : t.timeRange(formatDayShort(first, locale), formatDayShort(last, locale))
     const resource = rows[next.row]
     const blocked = resource ? overlapping(context.blocksOf(resource.id), zonedInstant(first, 0, timeZone), zonedInstant(addDays(last, 1), 0, timeZone)) : []
-    return [t.atResource(resource?.title ?? "", when), ...blocked.map((block) => block.title).filter(Boolean)].join(", ")
+    return listFormat(locale, { type: "unit", style: "short" }).format([t.atResource(resource?.title ?? "", when), ...blocked.map((block) => block.title).filter((title): title is string => Boolean(title))])
   }
   const placeCursor = (next: Cursor) => {
     setCursor(next)
@@ -436,7 +436,7 @@ function TimelineBody({ events, days }: TimelineViewProps) {
           className="fa-sch-tl-stripe"
           style={{ "--_first": index + 1 } as CSSProperties}
           data-today={day === today ? "" : undefined}
-          data-weekend={isoWeekday(day) >= 6 ? "" : undefined}
+          data-weekend={isWeekend(day, locale) ? "" : undefined}
           data-month-start={isoParts(day)?.day === 1 && index > 0 ? "" : undefined}
         />
       ))}
@@ -486,7 +486,7 @@ function TimelineBody({ events, days }: TimelineViewProps) {
                       className="fa-sch-tl-day"
                       style={{ "--_first": index + 1 } as CSSProperties}
                       data-today={day === today ? "" : undefined}
-                      data-weekend={isoWeekday(day) >= 6 ? "" : undefined}
+                      data-weekend={isWeekend(day, locale) ? "" : undefined}
                       data-month-start={parts?.day === 1 && index > 0 ? "" : undefined}
                       aria-current={day === today ? "date" : undefined}
                     >
@@ -577,7 +577,7 @@ interface TimelineRowProps {
   grab: { current: { id: string; offset: number } | null }
 }
 
-const TimelineRow = memo(function TimelineRow({ resource, row, sticky, segments, days, span, compact, loading, cursor, zonePrefix, measure, virtualIndex, selectDays, zoneFor, grab }: TimelineRowProps) {
+const TimelineRow = /* @__PURE__ */ memo(function TimelineRow({ resource, row, sticky, segments, days, span, compact, loading, cursor, zonePrefix, measure, virtualIndex, selectDays, zoneFor, grab }: TimelineRowProps) {
   const context = useScheduler()
   const zone = useDropZone(zoneFor(resource), { trackState: false })
   const hover = useRef<HTMLSpanElement>(null)

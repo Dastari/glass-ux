@@ -29,7 +29,7 @@ export interface ActionServices {
   confirm: (options: ConfirmOptions) => Promise<boolean>;
 }
 
-const ServicesContext = createContext<ActionServices | null>(null);
+const ServicesContext = /* @__PURE__ */ createContext<ActionServices | null>(null);
 
 /** Until the window manager exists, opening a window is logged so the call is visible. */
 const logWindow: ActionContext["openWindow"] = (kind, params) => {

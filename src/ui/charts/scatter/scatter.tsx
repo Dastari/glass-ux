@@ -130,7 +130,7 @@ export function ScatterChart(props: ScatterChartProps) {
   )
 }
 
-const ScatterPlot = memo(function ScatterPlot({
+const ScatterPlot = /* @__PURE__ */ memo(function ScatterPlot({
   box,
   visible,
   slots,

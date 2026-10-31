@@ -9,7 +9,7 @@ import { EntityGlyph, useEntityResolver } from "../entity-chip/index.js";
 import { hostOf, safeExternalHref } from "../entities.js";
 import type { AiSource } from "../types.js";
 
-const SourcesContext = createContext<AiSource[]>([]);
+const SourcesContext = /* @__PURE__ */ createContext<AiSource[]>([]);
 
 /** Make a message's sources available to the citation markers in its text. */
 export function SourcesProvider({

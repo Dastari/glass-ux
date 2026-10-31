@@ -160,13 +160,17 @@ export function EditorToolbar({
       selection.current = next.clone();
       const anchor = next.anchor.getNode();
       const parent = anchor.getParent();
-      setMarks({
-        bold: next.hasFormat("bold"),
-        italic: next.hasFormat("italic"),
-        code: next.hasFormat("code"),
-        strikethrough: next.hasFormat("strikethrough"),
-        link: $isLinkNode(anchor) || $isLinkNode(parent),
-      });
+      const bold = next.hasFormat("bold");
+      const italic = next.hasFormat("italic");
+      const code = next.hasFormat("code");
+      const strikethrough = next.hasFormat("strikethrough");
+      const link = $isLinkNode(anchor) || $isLinkNode(parent);
+      // Unchanged flags keep the same state object, so a keystroke does not re-render the toolbar.
+      setMarks((prev) =>
+        prev.bold === bold && prev.italic === italic && prev.code === code && prev.strikethrough === strikethrough && prev.link === link
+          ? prev
+          : { bold, italic, code, strikethrough, link },
+      );
       let top = anchor;
       let foundList: string | null = null;
       while (top.getParent() && top.getParent()?.getType() !== "root") {

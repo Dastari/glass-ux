@@ -92,7 +92,7 @@ export interface FlowValue {
   descriptionId: string
 }
 
-export const FlowContext = createContext<FlowValue | null>(null)
+export const FlowContext = /* @__PURE__ */ createContext<FlowValue | null>(null)
 
 export function useFlow() {
   const flow = useContext(FlowContext)

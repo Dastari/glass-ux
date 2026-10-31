@@ -124,7 +124,8 @@ export function AskRecord({
       {glyph ?? <StatusGlyph status={status} />}
       <span className="fa-ai-ask-record-text">{children}</span>
       {actor || by || at !== undefined ? (
-        <span className="fa-ai-ask-record-meta">
+        // The relative time keeps ticking; it is not re-announced as part of the status.
+        <span className="fa-ai-ask-record-meta" aria-live="off">
           {actor ? (
             <EntityChip entity={actor} size="sm" />
           ) : by ? (

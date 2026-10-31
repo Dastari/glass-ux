@@ -5,7 +5,8 @@ import { resolveDataTableCellMessages } from "./messages.js";
  * Each helper takes an optional `locale`; without one it uses `getLocale()` (the configured
  * locale, then `<html lang>`, then en-US). Components pass `useLocale()`.
  */
-import { dateTimeFormat, numberFormat } from "../../lib/locale/intl.js";
+import { dateTimeFormat, formatPercent, numberFormat } from "../../lib/locale/intl.js";
+import { plural } from "../../lib/i18n/catalog.js";
 import { getLocale } from "../../lib/locale/locale.js";
 
 /** U+2009 THIN SPACE, between a number and its unit (`7.8 GB`). */
@@ -37,7 +38,9 @@ export function formatWithUnit(
 ) {
   const number = formatNumber(value, fractionDigits, locale);
   if (!unit) return number;
-  return unit === "%" ? `${number}%` : `${number}${THIN_SPACE}${unit}`;
+  return unit === "%"
+    ? formatPercent(locale, value, fractionDigits === 0 ? { maximumFractionDigits: 0 } : { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits })
+    : `${number}${THIN_SPACE}${unit}`;
 }
 
 const MINUTE = 60_000;
@@ -109,11 +112,14 @@ export function formatAbsolute(
     : dateTimeFormat(locale, ABSOLUTE).format(new Date(time));
 }
 
-/** "1,284 endpoints" / "1 endpoint". */
+/**
+ * "1,284 endpoints" / "1 endpoint": the count in `locale`, then the noun form that locale's
+ * plural rules choose for it (`one`, `few`, `many`, ... with `other` as the fallback).
+ */
 export function formatCount(
   count: number,
-  noun: { one: string; other: string },
+  noun: Partial<Record<Intl.LDMLPluralRule, string>> & { other: string },
   locale = getLocale(),
 ) {
-  return `${formatNumber(count, 0, locale)} ${count === 1 ? noun.one : noun.other}`;
+  return `${formatNumber(count, 0, locale)} ${plural(locale, count, noun)}`;
 }

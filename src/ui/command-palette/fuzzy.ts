@@ -3,6 +3,7 @@
  * as a subsequence of the text; contiguous runs, word starts and early positions score
  * higher. Returns the matched character indices so the label can highlight them.
  */
+import { foldText } from "../../lib/fold.js"
 
 export interface FuzzyMatch {
   score: number
@@ -16,7 +17,6 @@ const isBoundary = (text: string, index: number) => {
   return /[\s\-_./\\:(]/.test(before) || (before === before.toLowerCase() && here !== here.toLowerCase())
 }
 
-const fold = (value: string) => value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
 
 function matchTerm(term: string, text: string, folded: string): FuzzyMatch | null {
   if (!term) return { score: 0, indices: [] }
@@ -60,11 +60,11 @@ function matchTerm(term: string, text: string, folded: string): FuzzyMatch | nul
   return { score, indices }
 }
 
-/** Score `text` against a whitespace-separated query. `null` when any term does not match. */
-export function fuzzyMatch(query: string, text: string): FuzzyMatch | null {
-  const terms = fold(query).split(/\s+/).filter(Boolean)
+/** Score `text` against a whitespace-separated query, ignoring case (in `locale`) and accents. `null` when any term does not match. */
+export function fuzzyMatch(query: string, text: string, locale?: string): FuzzyMatch | null {
+  const terms = foldText(query, locale).split(/\s+/).filter(Boolean)
   if (!terms.length) return { score: 0, indices: [] }
-  const folded = fold(text)
+  const folded = foldText(text, locale)
   let score = 0
   const indices = new Set<number>()
   for (const term of terms) {
@@ -80,11 +80,11 @@ export function fuzzyMatch(query: string, text: string): FuzzyMatch | null {
  * Score a record with several fields. Each term may match any field; the label counts
  * most. Returns the label's indices for highlighting.
  */
-export function fuzzyMatchFields(query: string, label: string, others: readonly string[]): FuzzyMatch | null {
-  const terms = fold(query).split(/\s+/).filter(Boolean)
+export function fuzzyMatchFields(query: string, label: string, others: readonly string[], locale?: string): FuzzyMatch | null {
+  const terms = foldText(query, locale).split(/\s+/).filter(Boolean)
   if (!terms.length) return { score: 0, indices: [] }
-  const foldedLabel = fold(label)
-  const foldedOthers = others.map(fold)
+  const foldedLabel = foldText(label, locale)
+  const foldedOthers = others.map((text) => foldText(text, locale))
   let score = 0
   const indices = new Set<number>()
   for (const term of terms) {

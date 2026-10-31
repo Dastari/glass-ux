@@ -44,7 +44,7 @@ interface LogApi {
   pinned: boolean
 }
 
-const LogContext = createContext<LogApi | null>(null)
+const LogContext = /* @__PURE__ */ createContext<LogApi | null>(null)
 
 /** Scroll the conversation from anywhere inside it (composer send, turn navigator). */
 export function useConversationLog() {

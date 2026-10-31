@@ -5,8 +5,9 @@
  * moments. Every helper takes an optional locale (in `LocalizedFormat.locale` or as the last
  * argument); without one it uses `getLocale()`. Charts pass their `useLocale()` result.
  */
-import { dateTimeFormat, numberFormat } from "../../../lib/locale/intl.js"
+import { dateTimeFormat, formatPercent, numberFormat, relativeTimeFormat } from "../../../lib/locale/intl.js"
 import { getLocale } from "../../../lib/locale/locale.js"
+import { formatByteSize } from "../../byte-size-field/units.js"
 import { formatMetric } from "../../metric/index.js"
 
 /**
@@ -48,20 +49,10 @@ export function formatCompact(value: number, { unit, locale = getLocale() }: Loc
   return unit ? formatMetric(0, unitFor(unit, value), () => text, locale) : text
 }
 
-const BYTE_UNITS = ["B", "KB", "MB", "GB", "TB", "PB"] as const
-
-/** Bytes the way Windows reports them (binary multiples): 1.8 GB, 640 MB, 12 KB, with the number in `locale`. */
+/** Bytes the way Windows reports them (binary multiples): 1.8 GB, 640 MB, 12 KB, with the number and symbol in `locale`. */
 export function formatBytes(bytes: number, locale = getLocale()): string {
   if (!Number.isFinite(bytes)) return "—"
-  let value = Math.abs(bytes)
-  let unit = 0
-  while (value >= 1024 && unit < BYTE_UNITS.length - 1) {
-    value /= 1024
-    unit++
-  }
-  const digits = value >= 100 || unit === 0 ? 0 : 1
-  const text = numberFormat(locale, { maximumFractionDigits: digits, minimumFractionDigits: 0 }).format(value)
-  return `${bytes < 0 ? "−" : ""}${text}${THIN_SPACE}${BYTE_UNITS[unit]}`
+  return formatByteSize(bytes, { locale, base: "binary", symbols: "windows" })
 }
 
 /** A ValueFormat for byte quantities, in the chart's locale. */
@@ -131,7 +122,7 @@ export const formatDate = (date: Date, locale = getLocale()) => dateTimeFormat(l
 /** Relative time for recent moments (R2.7): "now", "2 min ago", "3 h ago", "2 days ago". */
 export function formatRelative(date: Date, now: Date, locale = getLocale()): string {
   const delta = date.getTime() - now.getTime()
-  const format = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" })
+  const format = relativeTimeFormat(locale, { numeric: "auto", style: "short" })
   const absolute = Math.abs(delta)
   return absolute < 45_000 ? format.format(0, "second") : absolute < HOUR ? format.format(Math.round(delta / 60_000), "minute") : absolute < DAY ? format.format(Math.round(delta / HOUR), "hour") : format.format(Math.round(delta / DAY), "day")
 }
@@ -140,8 +131,8 @@ export function formatRelative(date: Date, now: Date, locale = getLocale()): str
 export function formatShare(part: number, whole: number, locale = getLocale()): string {
   if (whole <= 0) return "—"
   const share = (part / whole) * 100
-  if (share > 0 && share < 0.1) return "<0.1%"
-  return `${numberFormat(locale, { maximumFractionDigits: share < 10 ? 1 : 0 }).format(share)}%`
+  if (share > 0 && share < 0.1) return `<${formatPercent(locale, 0.1, 1)}`
+  return formatPercent(locale, share, share < 10 ? 1 : 0)
 }
 
 /**

@@ -16,8 +16,8 @@ export interface SearchFieldRef<T> {
 // oxlint-disable-next-line typescript/no-explicit-any -- any row type by default: tables pass their own
 export interface DataTableSearch<T extends RowData = any> {
   /**
-   * The identifying fields the query matches, each with a case-insensitive `Contains`, any
-   * one of them enough. A string is a column id: its filter's `field` is the server field and
+   * The identifying fields the query matches, each with a `Contains` that ignores case (and,
+   * for local rows, accents), any one of them enough. A string is a column id: its filter's `field` is the server field and
    * its accessor the local value. Columns the current column set does not have (a view
    * without that column) are skipped. `{ field, value }` adds a field that is not a column.
    */

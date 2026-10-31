@@ -5,6 +5,7 @@ import { Field as BaseField } from "@base-ui/react/field"
 import { useLayoutEffect, useRef, useState, type ComponentProps, type DragEvent, type ReactNode } from "react"
 import { IconClose, IconFile, IconUpload } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { formatPercent } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { Button } from "../button/index.js"
 import { Progress } from "../progress/index.js"
@@ -216,7 +217,7 @@ export function FileRow({ name, size, status = "done", progress, error, onRemove
     status === "uploading"
       ? progress === null || progress === undefined
         ? messages.uploading
-        : `${Math.round(progress)}%`
+        : formatPercent(locale, Math.round(progress))
       : status === "queued"
         ? messages.waiting
         : status === "done"

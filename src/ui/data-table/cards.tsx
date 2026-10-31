@@ -219,7 +219,7 @@ function CardView<T extends RowData>({
   return controller.wrap(rowId, element);
 }
 
-export const DataCard = memo(
+export const DataCard = /* @__PURE__ */ memo(
   CardView,
   (a, b) =>
     a.original === b.original &&

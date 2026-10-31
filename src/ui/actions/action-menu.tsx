@@ -4,6 +4,7 @@ import { Fragment, useLayoutEffect, useRef, useState, type ReactElement } from "
 import { IconMoreHorizontal } from "../../icons/generated/icons.js"
 import { resolveActions, type ActionSet, type ActionSurface, type ResolvedAction, type ResolvedGroup } from "../../lib/actions/actions.js"
 import { Button, type ButtonSize } from "../button/index.js"
+import { isCharacterShortcut, useCharacterShortcuts } from "../kbd/index.js"
 import { Menu, MenuPreview } from "../menu/index.js"
 import { useActionRunner } from "./action-provider.js"
 
@@ -47,8 +48,12 @@ interface RowProps<T> {
   onRun: ActionRunHandler<T> | undefined
 }
 
+/** The shortcut to show: a single-character one is hidden while the application has switched those off. */
+const shown = (shortcut: string | undefined, characterKeys: boolean) => (shortcut && (characterKeys || !isCharacterShortcut(shortcut)) ? shortcut : undefined)
+
 function ActionItem<T>({ action, targets, surface, onRun }: RowProps<T>) {
   const { start } = useActionRunner()
+  const characterKeys = useCharacterShortcuts()
   if (action.children.length) {
     return (
       <Menu.Submenu
@@ -64,7 +69,7 @@ function ActionItem<T>({ action, targets, surface, onRun }: RowProps<T>) {
   return (
     <Menu.Item
       icon={actionIcon(action)}
-      shortcut={action.definition.shortcut}
+      shortcut={shown(action.definition.shortcut, characterKeys)}
       tone={toneOf(action)}
       disabledReason={action.disabledReason}
       onClick={() => afterClose(() => (onRun ? onRun(action, targets, surface) : void start(action, targets, surface)))}
@@ -164,6 +169,7 @@ export function ActionMenuPreview<T>({
   highlight?: string
 }) {
   const messages = useMessages(actionsMessages)
+  const characterKeys = useCharacterShortcuts()
 
   const groups = resolveActions(set, targets, "menu")
   const open = groups.flatMap((group) => group.actions).find((action) => action.id === openSubmenu)
@@ -181,7 +187,7 @@ export function ActionMenuPreview<T>({
     <MenuPreview.Item
       key={action.id}
       icon={actionIcon(action)}
-      shortcut={action.definition.shortcut}
+      shortcut={shown(action.definition.shortcut, characterKeys)}
       tone={toneOf(action)}
       disabledReason={action.disabledReason}
       submenu={action.children.length > 0}

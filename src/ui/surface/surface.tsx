@@ -91,7 +91,7 @@ export function Panel({ scroll = false, glass, className, ...rest }: PanelProps)
 }
 
 /** Whether the enclosing Panel scrolls its body. */
-const PanelScroll = createContext(false);
+const PanelScroll = /* @__PURE__ */ createContext(false);
 const NO_ELEMENT: RefObject<HTMLElement | null> = { current: null };
 
 export interface PanelHeaderProps extends Omit<

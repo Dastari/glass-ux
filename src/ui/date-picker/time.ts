@@ -5,6 +5,7 @@
  * Without a `locale` option, helpers use `getLocale()`: `configureLocale()`, then `<html lang>`,
  * then en-US.
  */
+import { dateTimeFormat } from "../../lib/locale/intl.js"
 import { getLocale } from "../../lib/locale/locale.js"
 
 /** `HH:mm`, or `HH:mm:ss` when seconds are on: 24-hour and zero-padded ("09:30", "21:05:30"). */
@@ -59,7 +60,7 @@ export const compareTime = (a: TimeValue, b: TimeValue) => Math.sign(timeToSecon
 /** The locale's clock: 12 for en-AU and en-US, 24 for en-GB and de. */
 export function hourCycleOf(locale = getLocale()): HourCycle {
   try {
-    const cycle = new Intl.DateTimeFormat(locale, { hour: "numeric" }).resolvedOptions().hourCycle
+    const cycle = dateTimeFormat(locale, { hour: "numeric" }).resolvedOptions().hourCycle
     return cycle === "h11" || cycle === "h12" ? 12 : 24
   } catch {
     return 12

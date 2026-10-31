@@ -7,6 +7,7 @@ export const resultsMessages = defineMessages("results", {
   series: "Series",
   added: "Added",
   removed: "Removed",
+  diffSummary: ({ title, added, removed, locale = "en-US" }: { title: string; added: number; removed: number; locale?: string }) => `${title}: ${numberFormat(locale).format(added)} added, ${numberFormat(locale).format(removed)} removed`,
   resultPosition: (count: string, total: string) => `${count} of ${total}`,
   file: "File",
   download: (name: string) => `Download ${name}`,

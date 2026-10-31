@@ -3,6 +3,39 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## Unreleased
+
+Message overrides (`configureMessages`, `MessagesProvider`, language packs) are the only
+code that may need edits.
+
+- Removed messages, replaced by whole sentences that take the object: `splitPane.hide` and
+  `splitPane.show` (use `hidePane` and `showPane`), `jsonTree.collapse` and `jsonTree.expand`
+  (use `collapseNode` and `expandNode`), `referenceInput.matches` (use `noMatchesFor`).
+  `noFor` now ends with the noun in parentheses in packs; the English text is unchanged.
+- Application text is passed to messages as written, not lower-cased: `actions.moreOptions`,
+  `referenceInput.noFor`, `toolActivity.copy`, `metric.minimumAverageMaximum` (`range`) and
+  `dataTable.dateCondition`. The English defaults lower-case it themselves, so English output is
+  the same; an override that expected lower case must lower-case it. New messages: `toolActivity.rowLabel`,
+  `results.diffSummary`, `dataTable.groupSummary`, `map.mapLoadFailedAt`, `topology.clusterSummary`,
+  the `byteUnits` namespace and the `durationField` word lists.
+- `DataTableNoun`, `MapNoun` and a table result's `noun` accept a form per plural category
+  (`one`, `few`, `many`, ...) besides `other`; `{ one, other }` keeps working. Counts choose
+  the form with the locale's plural rules, so `formatCount` now follows them in every language.
+- More text is passed on as written: `addressField.enterThe` and `checkThe` receive the
+  country's field name ("Postcode"), `dataTable.summaryPreset` the date preset ("Last 24
+  hours"), and the all-day event name uses the new `scheduler.allDayOn` sentence. English
+  output is the same; a pack or override that expected lower case lower-cases it itself. New
+  messages: `kanban` (`moveCard`, `moveToColumn`, `moveUp`, `moveDown`, `movedTo`,
+  `moveNotSaved`), `dataTable.resultsFound`, `lightbox.shown`, `scheduler.allDayOn`.
+- `KanbanMove.input` can be `"menu"` (the new Move menu) as well as `"pointer"` and
+  `"keyboard"`; a `switch` over it needs a case. Kanban cards are list items with a named
+  `group` inside (not `role="button"` on the item): tests that found a card with
+  `getByRole("button")` use `getByRole("group")`.
+- Byte sizes use the language's unit symbols ("1,5 Go" in French; English is unchanged), and
+  `parseBytes` reads them and the locale's own digits. `formatDuration` writes non-English
+  locales with `Intl.DurationFormat` where the runtime has it, and `parseDuration` takes a
+  `locale` and reads that language's unit words; English output and input are unchanged.
+
 ## 0.11.6 → 0.11.7
 
 No code changes are required. `AvatarSize` gains `"2xl"`; code that switches over every size

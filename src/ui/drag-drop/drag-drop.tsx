@@ -31,8 +31,8 @@ interface ProviderContext {
   instructionsId: string
 }
 
-const DragDropContext = createContext<ProviderContext | null>(null)
-const ZoneIdContext = createContext<string | null>(null)
+const DragDropContext = /* @__PURE__ */ createContext<ProviderContext | null>(null)
+const ZoneIdContext = /* @__PURE__ */ createContext<string | null>(null)
 
 /** Whether a DragDropProvider is above (internal: components that bring their own when there is none). */
 export function useHasDragDropProvider(): boolean {
@@ -168,7 +168,7 @@ interface DraggableContextValue {
   disabled: boolean
 }
 
-const DraggableContext = createContext<DraggableContextValue | null>(null)
+const DraggableContext = /* @__PURE__ */ createContext<DraggableContextValue | null>(null)
 
 /** What a Draggable's render function receives. */
 export interface DraggableState {

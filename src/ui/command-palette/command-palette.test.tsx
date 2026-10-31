@@ -10,6 +10,7 @@ import {
   vi,
 } from "vitest";
 import { Button } from "../button/index.js";
+import { configureShortcuts } from "../kbd/index.js";
 import { TooltipProvider } from "../tooltip/index.js";
 import {
   CommandPanel,
@@ -120,6 +121,42 @@ describe("global command palette shortcut", () => {
       screen.queryByRole("dialog", { name: "Command palette" }),
     ).toBeNull();
     expect(run).not.toHaveBeenCalled();
+  });
+});
+
+describe("single-character command shortcuts", () => {
+  function Plain({ run, modified }: { run: () => void; modified: () => void }) {
+    usePaletteCommands([
+      { id: "new", label: "New ticket", group: "Actions", shortcut: "c", run },
+      { id: "save", label: "Save", group: "Actions", shortcut: "mod+s", run: modified },
+    ]);
+    return null;
+  }
+  const host = (run: () => void, modified: () => void) => (
+    <TooltipProvider>
+      <PaletteProvider>
+        <Plain run={run} modified={modified} />
+        <button type="button">Page</button>
+      </PaletteProvider>
+    </TooltipProvider>
+  );
+  afterEach(() => configureShortcuts({ characterKeys: true }));
+
+  it("run by default and stop when the application switches them off, leaving modifier shortcuts", () => {
+    const run = vi.fn();
+    const modified = vi.fn();
+    render(host(run, modified));
+    const page = screen.getByRole("button", { name: "Page" });
+    fireEvent.keyDown(page, { key: "c" });
+    expect(run).toHaveBeenCalledTimes(1);
+    configureShortcuts({ characterKeys: false });
+    fireEvent.keyDown(page, { key: "c" });
+    expect(run).toHaveBeenCalledTimes(1);
+    fireEvent.keyDown(page, { key: "s", ctrlKey: true });
+    expect(modified).toHaveBeenCalledTimes(1);
+    configureShortcuts({ characterKeys: true });
+    fireEvent.keyDown(page, { key: "c" });
+    expect(run).toHaveBeenCalledTimes(2);
   });
 });
 

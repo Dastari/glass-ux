@@ -3,7 +3,7 @@ import { useLocale } from "../locale/use-locale.js"
 import type { MessageDescriptor, MessageOverrides, MessageSet } from "./catalog.js"
 import { messagesVersion, resolveMessages, subscribeMessages } from "./i18n.js"
 
-const MessagesContext = createContext<MessageOverrides>({})
+const MessagesContext = /* @__PURE__ */ createContext<MessageOverrides>({})
 
 /** Props for MessagesProvider. */
 export interface MessagesProviderProps {

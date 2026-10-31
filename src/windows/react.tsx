@@ -24,7 +24,7 @@ import {
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect
 
-const ManagerContext = createContext<WindowManager | null>(null)
+const ManagerContext = /* @__PURE__ */ createContext<WindowManager | null>(null)
 
 /**
  * Provide a window manager to the tree and connect it (load the persisted layout, join
@@ -103,7 +103,7 @@ export interface WindowContextValue {
 }
 
 /** The window a body renders in: its id, kind, params, app-bar and status-bar portal slots and host. Provided by the workspace, pop-out and specimen frames; read it with `useWindow`. */
-export const WindowContext = createContext<WindowContextValue | null>(null)
+export const WindowContext = /* @__PURE__ */ createContext<WindowContextValue | null>(null)
 
 /** The window this component renders in. Throws outside a window body. */
 export function useWindow(): WindowContextValue {

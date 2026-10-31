@@ -16,6 +16,8 @@ export const schedulerMessages = defineMessages("scheduler", {
   previous: (view: SchedulerView) => `Previous ${STEP[view]}`,
   next: (view: SchedulerView) => `Next ${STEP[view]}`,
   allDay: "All day",
+  /** An all-day event's date in words: "Tuesday 27 October, all day". */
+  allDayOn: (when: string) => `${when}, all day`,
   /** The overflow button in a month cell. */
   more: (count: number) => `+${count} more`,
   /** Its accessible name. */

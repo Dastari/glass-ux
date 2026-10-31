@@ -80,7 +80,7 @@ describe("format", () => {
     expect(formatValue(1284, { locale: "de-DE" })).toBe("1.284")
     expect(formatTick(2.5, 2.5, { locale: "de-DE" })).toBe("2,5")
     expect(formatBytes(1843 * 1024 * 1024, "de-DE")).toBe("1,8\u2009GB")
-    expect(formatShare(8, 137, "de-DE")).toBe("5,8%")
+    expect(formatShare(8, 137, "de-DE")).toBe("5,8\u00a0%")
     const at = (h: number, d = 13) => new Date(2026, 9, d, h, 0)
     expect(formatTimeTicks([at(20), at(22), at(0, 14), at(2, 14)], "en-US")).toEqual(["20:00", "22:00", "Oct 14", "02:00"])
     expect(formatValue(1.5, { format: (value, locale) => `${value}@${locale}`, locale: "fr-FR" })).toBe("1.5@fr-FR")

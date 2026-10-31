@@ -1,10 +1,12 @@
 /**
  * The search's fields, resolved against a column set, and local matching for fully loaded
- * lists with the server's semantics: a case-insensitive `Contains` on any field, and an empty
+ * lists with the server's semantics: a case- and accent-insensitive `Contains` on any field (case in the interface locale), and an empty
  * value (null, undefined) never matches. Server adapters test their translation against it
  * (`src/adapters/graphql-orm/parity.test.ts`).
  */
 import type { RowData } from "@tanstack/react-table"
+import { foldText } from "../../../lib/fold.js"
+import { getLocale } from "../../../lib/locale/locale.js"
 import type { DataTableColumn } from "../columns.js"
 import { asFilterColumns } from "../filters/columns.js"
 import type { FilterColumn } from "../filters/types.js"
@@ -45,22 +47,22 @@ function text(value: unknown): string | null {
 }
 
 /** A matcher for one query, resolved once for a whole list. */
-function matcher<T extends RowData>(query: unknown, spec: DataTableSearch<T>, columns: Columns): ((row: T) => boolean) | null {
+function matcher<T extends RowData>(query: unknown, spec: DataTableSearch<T>, columns: Columns, locale: string): ((row: T) => boolean) | null {
   const needle = normalizeSearch(query)
   if (!needle) return null
   if (spec.matches) return (row) => spec.matches!(row, needle)
-  const lower = needle.toLowerCase()
+  const folded = foldText(needle, locale)
   const fields = searchFields(spec, columns).flatMap((entry) => (entry.getValue ? [entry.getValue] : []))
   return (row) =>
     fields.some((read) => {
       const value = text(read(row))
-      return value !== null && value.toLowerCase().includes(lower)
+      return value !== null && foldText(value, locale).includes(folded)
     })
 }
 
-/** Does a row match the query? An empty query matches every row. */
-export function matchesSearch<T extends RowData>(row: T, query: unknown, spec: DataTableSearch<T>, columns: Columns = []): boolean {
-  const match = matcher(query, spec, columns)
+/** Does a row match the query, ignoring case and accents in `locale` (default `getLocale()`)? An empty query matches every row. */
+export function matchesSearch<T extends RowData>(row: T, query: unknown, spec: DataTableSearch<T>, columns: Columns = [], locale = getLocale()): boolean {
+  const match = matcher(query, spec, columns, locale)
   return match ? match(row) : true
 }
 
@@ -68,7 +70,7 @@ export function matchesSearch<T extends RowData>(row: T, query: unknown, spec: D
  * Search a fully loaded, never-paged list in the browser, as the server would. Combine it
  * with `filterRows` (both must hold). Never use it on one page of a paged result.
  */
-export function searchRows<T extends RowData>(rows: readonly T[], query: unknown, spec: DataTableSearch<T> | undefined, columns: Columns = []): T[] {
-  const match = spec ? matcher(query, spec, columns) : null
+export function searchRows<T extends RowData>(rows: readonly T[], query: unknown, spec: DataTableSearch<T> | undefined, columns: Columns = [], locale = getLocale()): T[] {
+  const match = spec ? matcher(query, spec, columns, locale) : null
   return match ? rows.filter(match) : rows.slice()
 }

@@ -170,7 +170,7 @@ interface TabsContextValue {
   select: (value: string) => void
 }
 
-const TabsContext = createContext<TabsContextValue | null>(null)
+const TabsContext = /* @__PURE__ */ createContext<TabsContextValue | null>(null)
 
 function useTabsContext() {
   const context = use(TabsContext)

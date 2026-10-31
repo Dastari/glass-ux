@@ -98,7 +98,7 @@ interface Tile {
   d: string
 }
 
-const TreemapPlot = memo(function TreemapPlot({ box, focus, root, colour, store, fmt, label, onDrill, onUp }: TreemapPlotProps) {
+const TreemapPlot = /* @__PURE__ */ memo(function TreemapPlot({ box, focus, root, colour, store, fmt, label, onDrill, onUp }: TreemapPlotProps) {
   const messages = useMessages(treemapMessages)
 
   const plotRef = useRef<HTMLDivElement>(null)

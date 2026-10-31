@@ -16,6 +16,7 @@ import {
 } from "react"
 import { IconCheck, IconChevronLeft, IconChevronRight, IconError } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { readingKey } from "../../lib/direction.js"
 import { useMessages } from "../../lib/i18n/use-messages.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { popupContainer } from "../../lib/popup-container.js"
@@ -37,6 +38,7 @@ import { PickerTrigger } from "../tree-select/picker-trigger.js"
 import { TruncatedText } from "../truncated-text/index.js"
 import { cascaderMessages } from "./messages.js"
 import { columnsFor, fitPath, keyPath, opens, pathKey, resolvePath, searchPaths, toCheckNodes, type CascaderMatch, type CascaderOption } from "./paths.js"
+import { listFormat } from "../../lib/locale/intl.js"
 
 /** Props shared by single and multiple Cascader. */
 export interface CascaderCommonProps {
@@ -340,7 +342,7 @@ export function Cascader(props: CascaderProps) {
     const step = (from: number, by: number) => {
       for (let at = from + by; at >= 0 && at < items.length; at += by) if (!items[at]!.disabled) return move(at)
     }
-    switch (event.key) {
+    switch (readingKey(event.key, event.currentTarget)) {
       case "ArrowDown":
         step(currentIndex, 1)
         break
@@ -410,11 +412,11 @@ export function Cascader(props: CascaderProps) {
           </span>
         ))}
         {keys.length > visible ? (
-          <span className="fa-chip" data-overflow="" title={new Intl.ListFormat(locale, { type: "unit" }).format(chipPaths.slice(visible).map(fullPath))}>
+          <span className="fa-chip" data-overflow="" title={listFormat(locale, { type: "unit" }).format(chipPaths.slice(visible).map(fullPath))}>
             <span className="fa-chip-label" aria-hidden>
               +{keys.length - visible}
             </span>
-            <span className="sr-only">{t.more(keys.length - visible, new Intl.ListFormat(locale, { type: "unit" }).format(chipPaths.slice(visible).map(fullPath)))}</span>
+            <span className="sr-only">{t.more(keys.length - visible, listFormat(locale, { type: "unit" }).format(chipPaths.slice(visible).map(fullPath)))}</span>
           </span>
         ) : null}
       </span>

@@ -8,7 +8,7 @@ import { ResultFrame } from "./frame.js";
 type ChartResult = Extract<AiResult, { type: "chart" }>;
 // The chart family (d3 scales and formatters) loads with the first chart result; the frame and
 // its actions render at once and the plot box keeps its reserved height while it loads.
-const ChartPlot = lazy(() => import("./chart-plot.js"));
+const ChartPlot = /* @__PURE__ */ lazy(() => import("./chart-plot.js"));
 /** Assistant result adapted into the shared chart family, with stable series and keyboard/table access. */
 export function ResultChart({ result }: {
   /** The chart result: `chart` (line or bar), x-axis `labels`, `series`, optional `unit` and `domain`; copy and CSV export use the same values. */

@@ -12,6 +12,7 @@ import { NumericCell } from "../../ui/data-table/cells/numeric.js";
 import { RelativeTime } from "../../ui/data-table/cells/relative-time.js";
 import { EntityChip } from "../entity-chip/index.js";
 import { formatNumber } from "../format.js";
+import { formatCount } from "../../ui/data-table/format.js";
 import { useConversationHandlers } from "../handlers.js";
 import { TableScroll } from "../table/index.js";
 import type {
@@ -123,14 +124,14 @@ export function ResultTable({ result }: {
   const meta =
     result.total > rows.length
       ? messages.resultPosition(formatNumber(rows.length, 0, locale), formatNumber(result.total, 0, locale))
-      : `${formatNumber(result.total, 0, locale)} ${result.total === 1 ? noun.one : noun.other}`;
+      : formatCount(result.total, noun, locale);
   const [titleColumn, ...restColumns] = result.columns;
   return (
     <ResultFrame
       result={result}
       icon={<IconGrid />}
       meta={meta}
-      copyText={toText(result)}
+      copyText={result.columns.length || result.rows.length ? () => toText(result) : undefined}
       csv={toCsv(result)}
       flush
       footer={

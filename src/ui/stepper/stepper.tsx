@@ -2,6 +2,8 @@ import { useEffect, useRef, type CSSProperties, type ReactNode, type RefObject }
 import { IconCheck } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useMessages } from "../../lib/i18n/use-messages.js"
+import { listFormat } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { prefersReducedMotion } from "../../lib/motion.js"
 import { stepperMessages } from "./messages.js"
 
@@ -183,6 +185,7 @@ export function Stepper({
   "aria-label": ariaLabel,
 }: StepperProps) {
   const t = useMessages(stepperMessages, { labels, locale })
+  const language = useLocale(locale)
   const scrollTo = useSections(steps, sections, scrollContainer, value, onValueChange)
   const statuses = stepStatuses(steps, value)
   const found = steps.findIndex((step) => step.id === value)
@@ -213,7 +216,7 @@ export function Stepper({
           const isCurrent = index === found
           const canGo = reachable(index)
           // The marker's state, then whether this is the current step: "complete, current".
-          const spoken = [statusText[status], isCurrent ? t.current : undefined].filter(Boolean).join(", ")
+          const spoken = listFormat(language, { type: "unit", style: "short" }).format([statusText[status], isCurrent ? t.current : undefined].filter((part): part is string => Boolean(part)))
           const marker = (
             <span className="fa-stepper-marker" aria-hidden>
               {status === "complete" ? <IconCheck size="sm" /> : status === "error" ? "!" : index + 1}

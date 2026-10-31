@@ -3,7 +3,9 @@
 The pointer and keyboard surface over a plot. It writes the position to the hover store;
 the marks never re-render. It is one tab stop exposed as a slider over the data positions
 (R11.5: arrows move within it), so a keyboard or screen-reader user gets the same readout
-as the pointer, and Escape clears it.
+as the pointer, and Escape clears it. A readout opened by the pointer also closes on Escape
+wherever focus is, without moving the pointer (WCAG 1.4.13), and the key is not passed on
+to a dialog around the chart.
 
 `import { HitLayer } from "glass-ux/charts"`
 

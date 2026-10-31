@@ -1,3 +1,4 @@
+import { pluralRules } from "../locale/intl.js"
 /**
  * Translatable messages: every word a component shows that the application does not pass in.
  *
@@ -79,6 +80,6 @@ export function defineMessagePack(locale: string, messages: MessageOverrides): M
  * Forms not given fall back to `other`.
  */
 export function plural(locale: string, count: number, forms: Partial<Record<Intl.LDMLPluralRule, string>> & { other: string }): string {
-  const rule = new Intl.PluralRules(locale).select(count)
+  const rule = pluralRules(locale).select(count)
   return forms[rule] ?? forms.other
 }

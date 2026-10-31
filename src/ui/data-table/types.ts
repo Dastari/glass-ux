@@ -89,8 +89,13 @@ export interface DataTableInfinite {
   error?: ReactNode;
 }
 
-export interface DataTableNoun {
-  one: string;
+/**
+ * The names a table gives its rows, by plural category of the locale (`one`, `few`, `many`,
+ * ...). Only `other` is required, and `{ one, other }` is enough for English. Counts pick the
+ * form with the locale's plural rules; sentences such as "No rows match" use `other`.
+ */
+export interface DataTableNoun extends Partial<Record<Intl.LDMLPluralRule, string>> {
+  /** The form for every count without a form of its own. */
   other: string;
 }
 
@@ -259,7 +264,7 @@ export interface DataTableProps<T extends RowData> {
   live?: boolean;
   /** When the data was last refreshed (status bar: "Updated 2 min ago"). */
   updatedAt?: Date | number;
-  /** Noun for counts in the status bar ("1,284 endpoints"). */
+  /** Noun for counts in the status bar ("1,284 endpoints"), with a form per plural category of the locale (`{ one, other }` suffices for English). */
   noun?: DataTableNoun;
   /**
    * The toolbar search (R16.8): a field at the start of the toolbar, beside Filters, that

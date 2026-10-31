@@ -35,6 +35,7 @@ export function FileRowItem({ file }: {
   file: ResultFile
 }) {
   const messages = useMessages(resultsMessages)
+  const locale = useLocale()
 
   return (
     <li className="fa-ai-file">
@@ -46,7 +47,7 @@ export function FileRowItem({ file }: {
           {file.name}
         </TruncatedText>
         <span className="fa-ai-file-meta" data-numeric>
-          {fileType(file.name, messages)} · {formatBytes(file.size)}
+          {fileType(file.name, messages)} · {formatBytes(file.size, locale)}
         </span>
       </span>
       <Button

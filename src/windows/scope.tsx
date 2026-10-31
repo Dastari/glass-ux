@@ -43,7 +43,7 @@ export interface WindowScopes {
   describe: (scope: string) => WindowScopeInfo | undefined
 }
 
-const WindowScopeContext = createContext<WindowScopes | null>(null)
+const WindowScopeContext = /* @__PURE__ */ createContext<WindowScopes | null>(null)
 
 /** Supplies the current scope and how to draw a scope to the window layer's scope chips and dock groups. A null or undefined `value` turns scope labelling off. */
 export function WindowScopeProvider({ value, children }: { value: WindowScopes | null | undefined; children: ReactNode }) {

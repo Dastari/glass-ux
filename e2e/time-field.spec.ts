@@ -120,10 +120,14 @@ test("the time list is windowed and scrolls the chosen time into view", async ({
   await expect(list).toBeHidden();
 });
 
+const DEMO_TODAY = new Date("2026-10-15T09:00:00+11:00");
+
 test("DateTimeField reads as one field and its popup sits beside the calendar", async ({
   page,
 }) => {
   await settle(page);
+  // The steps pick dates in late October 2026; the form refuses past dates.
+  await page.clock.setFixedTime(DEMO_TODAY);
   await page.goto("/components/date-field");
   const form = page.getByTestId("date-time-form");
   const group = form.getByRole("group", { name: "Maintenance starts" });
@@ -172,6 +176,8 @@ test("DateTimeField fits a 320px phone and stacks its popup @responsive", async 
   page,
 }) => {
   await settle(page);
+  // The steps pick dates in late October 2026; the form refuses past dates.
+  await page.clock.setFixedTime(DEMO_TODAY);
   await page.setViewportSize({ width: 320, height: 720 });
   await page.goto("/components/date-field");
   const form = page.getByTestId("date-time-form");

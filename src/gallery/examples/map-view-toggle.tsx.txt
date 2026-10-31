@@ -95,7 +95,7 @@ function ListViewExample() {
   return (
     <div className="gallery-map-frame" data-size="list" data-testid="map-list-example">
       <GeoMap
-        label="Sites"
+        label="Sites, list view"
         config={OUTLINE_ONLY}
         home={home}
         regions={regions}

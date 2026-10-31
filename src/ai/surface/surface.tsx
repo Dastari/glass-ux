@@ -11,7 +11,7 @@ import { createContext, useContext, type ReactNode } from "react"
  */
 export type AiSurface = "canvas" | "panel" | "float"
 
-const SurfaceContext = createContext<AiSurface>("panel")
+const SurfaceContext = /* @__PURE__ */ createContext<AiSurface>("panel")
 
 /** Choose the surrounding canvas, panel or floating surface so assistant cards use the appropriate material. */
 export function AiSurfaceProvider({ surface, children }: {

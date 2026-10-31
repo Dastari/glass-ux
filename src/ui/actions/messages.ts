@@ -4,7 +4,7 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for actions. */
 export const actionsMessages = defineMessages("actions", {
   actionLabel: (action: string, target: string) => `${action} for ${target}`,
-  moreOptions: (action: string) => `More ${action} options`,
+  moreOptions: (action: string) => `More ${action.toLocaleLowerCase("en")} options`,
   moreActionsFor: (target: string) => `More actions for ${target}`,
   moreActions: "More actions",
   actionsFor: (target: string) => `Actions for ${target}`,

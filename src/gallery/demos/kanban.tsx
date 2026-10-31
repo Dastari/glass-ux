@@ -225,7 +225,7 @@ export default function KanbanSection() {
     <SectionPage>
       <Specimen
         title="Service board"
-        description="Drag a card to another column, or within one to reorder it. In progress has a limit of three, so it refuses cards while full and says why. Keyboard: Space lifts a card, arrows move it within and across columns, Space drops, Escape cancels."
+        description="Drag a card to another column, or within one to reorder it. In progress has a limit of three, so it refuses cards while full and says why. Keyboard: Space lifts a card, arrows move it within and across columns, Space drops, Escape cancels. The button on each card opens a Move menu for pointers that cannot drag."
         layout="stack"
         wide
         specimenKey="kanban:default:0"

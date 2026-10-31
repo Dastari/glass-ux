@@ -41,7 +41,7 @@ import { IconFullscreen, IconGrid, IconTable, IconZoomIn, IconZoomOut } from "..
 import { cx } from "../../lib/cx.js"
 import { paintDotGrid } from "../../lib/dot-grid.js"
 import { useMessages } from "../../lib/i18n/index.js"
-import { numberFormat } from "../../lib/locale/intl.js"
+import { listFormat, numberFormat } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { observeElementSize } from "../../lib/resize-observer.js"
 import { useSelectedId, type SelectionChangeDetails } from "../../lib/use-selected-id.js"
@@ -162,7 +162,7 @@ interface CardViewProps {
   movable: boolean
 }
 
-const CardView = memo(function CardView({ card, at, height, selected, tabbable, name, description, movable }: CardViewProps) {
+const CardView = /* @__PURE__ */ memo(function CardView({ card, at, height, selected, tabbable, name, description, movable }: CardViewProps) {
   return (
     <Surface
       material="card"
@@ -693,7 +693,7 @@ export function RelationshipCanvas<T = unknown>({
 
   const names = useMemo(() => new Map((cards ?? []).map((card) => [card.id, describeCard?.(card) ?? card.title] as const)), [cards, describeCard])
   const descriptions = useMemo(() => {
-    const list = (items: string[]) => new Intl.ListFormat(locale, { type: "unit" }).format(items)
+    const list = (items: string[]) => listFormat(locale, { type: "unit" }).format(items)
     const titles = new Map((cards ?? []).map((card) => [card.id, card.title] as const))
     const result = new Map<string, string>()
     for (const card of cards ?? []) {

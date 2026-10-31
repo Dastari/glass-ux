@@ -24,6 +24,7 @@ export function localPage<T extends RowData>(
     state.search,
     search,
     columns,
+    locale,
   );
   // Resolve columns and nested paths once, rather than for both values in every comparison.
   const sorters = state.sorting.map((sort) => {

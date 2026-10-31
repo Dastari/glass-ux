@@ -49,7 +49,7 @@ const DEFAULTS: ConversationHandlers = {
   openResultWindow: (result) => console.info(`[ai] open ${result.type} result "${result.title}" in a window`),
 }
 
-const HandlersContext = createContext<ConversationHandlers>(DEFAULTS)
+const HandlersContext = /* @__PURE__ */ createContext<ConversationHandlers>(DEFAULTS)
 
 /** Connect assistant interaction events to host callbacks for answers, approvals, retries, feedback and opening results. */
 export function ConversationHandlersProvider({ handlers, children }: {

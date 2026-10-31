@@ -3,8 +3,7 @@ import { getLocale } from "../../lib/locale/locale.js"
 
 /** English defaults for splitPane. */
 export const splitPaneMessages = defineMessages("splitPane", {
-  hide: "Hide",
-  show: "Show",
+  hidePane: (label: string) => `Hide ${label}`,
   showPane: (label: string) => `Show ${label}`,
   resize: (label: string) => `Resize ${label}`,
 })

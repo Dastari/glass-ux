@@ -52,9 +52,10 @@ import {
   type GeoPoint,
 } from "./address.js"
 import { createServerGeocoder, localiseGeocoderAttribution, type AddressSuggestion, type GeocoderAdapter, type GeocoderBias } from "./geocoder.js"
+import { listFormat } from "../../lib/locale/intl.js"
 
 // The map (and MapLibre) load only when an address field shows one.
-const PinMap = lazy(() => import("../map/pin-map.js").then((module) => ({ default: module.PinMap })))
+const PinMap = /* @__PURE__ */ lazy(() => import("../map/pin-map.js").then((module) => ({ default: module.PinMap })))
 
 /** The default geocoder: Glass UX's server route (Photon behind it). One per page. */
 let defaultGeocoder: GeocoderAdapter | null = null
@@ -195,7 +196,7 @@ export function AddressEditor({
           (result): OptionItem<string> => ({
             value: result.id,
             label: result.label,
-            description: new Intl.ListFormat(locale, { type: "unit" }).format([result.description, result.value.country.code && result.value.country.code !== homeCountry ? result.value.country.name : ""].filter(Boolean)),
+            description: listFormat(locale, { type: "unit" }).format([result.description, result.value.country.code && result.value.country.code !== homeCountry ? result.value.country.name : ""].filter(Boolean)),
             icon: result.kind === "place" ? <IconHome /> : <IconMapPin />,
             meta: result.kind === "street" ? messages.street : undefined,
           })

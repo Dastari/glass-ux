@@ -5,11 +5,10 @@
  * (`configureLocale()`, then `<html lang>`, then en-US). Components pass `useLocale()`.
  */
 import { useEffect, useState } from "react";
-import { dateTimeFormat } from "../lib/locale/intl.js";
+import { dateTimeFormat, numberFormat, relativeTimeFormat } from "../lib/locale/intl.js";
 import { getLocale } from "../lib/locale/locale.js";
 import {
   formatAbsolute as sharedAbsolute,
-  formatCount,
   formatNumber as sharedNumber,
 } from "../ui/data-table/format.js";
 
@@ -25,7 +24,7 @@ export function formatNumber(value: number, fractionDigits = 0, locale = getLoca
 export function formatRelative(time: number, now: number, locale = getLocale()) {
   const delta = time - now
   if (!Number.isFinite(delta)) return "—"
-  const format = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" })
+  const format = relativeTimeFormat(locale, { numeric: "auto", style: "short" })
   const absolute = Math.abs(delta)
   if (absolute < 60_000) return format.format(0, "second")
   if (absolute < 3_600_000) return format.format(Math.trunc(delta / 60_000), "minute")
@@ -49,7 +48,7 @@ export function formatClock(time: number, locale = getLocale()) {
 /** "0.4 s", "2.3 s", "48 s", "1 min 4 s"; the decimal mark is `locale`'s. */
 export function formatElapsed(ms: number, locale = getLocale()) {
   const unit = (value: number, name: "second" | "minute", decimals = 0) => {
-    const suffix = new Intl.NumberFormat(locale, { style: "unit", unit: name, unitDisplay: "narrow" }).formatToParts(value).find((part) => part.type === "unit")?.value ?? ""
+    const suffix = numberFormat(locale, { style: "unit", unit: name, unitDisplay: "narrow" }).formatToParts(value).find((part) => part.type === "unit")?.value ?? ""
     return `${formatNumber(value, decimals, locale)}${THIN_SPACE}${suffix}`
   }
   if (ms < 10_000) return unit(ms / 1000, "second", 1)
@@ -62,7 +61,7 @@ export function formatElapsed(ms: number, locale = getLocale()) {
 /** A future time in the resolved locale. */
 export function formatIn(time: number, now: number, locale = getLocale()) {
   const delta = time - now
-  const format = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" })
+  const format = relativeTimeFormat(locale, { numeric: "auto", style: "short" })
   if (delta <= 60_000) return format.format(1, "minute")
   if (delta < 3_600_000) return format.format(Math.round(delta / 60_000), "minute")
   if (delta < 86_400_000) return format.format(Math.round(delta / 3_600_000), "hour")
@@ -86,9 +85,4 @@ export function useNow(active = true, interval = 1000) {
     return () => clearInterval(timer);
   }, [active, interval]);
   return now;
-}
-
-/** "1 tool", "4 tools"; the count is written in `locale`. */
-export function plural(count: number, one: string, other = `${one}s`, locale = getLocale()) {
-  return formatCount(count, { one, other }, locale);
 }

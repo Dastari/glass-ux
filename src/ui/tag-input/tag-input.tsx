@@ -29,6 +29,7 @@ import {
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import { useChipFit } from "../multi-select/index.js"
 import type { SelectSize } from "../select/index.js"
+import { listFormat } from "../../lib/locale/intl.js"
 
 /** Characters that commit the typed text as a chip, and that split pasted text. */
 const SEPARATORS = /[,;\n\r\t]+/
@@ -142,7 +143,7 @@ export function TagInput({
   // ── Options: suggestions (static or searched) plus “Create "x"” ─────────────
   const data = useOptionData(suggestions, source, query, [])
   const typed = tidy(query)
-  const offered = source ? data.items : data.items.filter((item) => optionFilter(item, query))
+  const offered = source ? data.items : data.items.filter((item) => optionFilter(item, query, locale))
   const exact = offered.some((item) => same(item.value, typed) || same(item.label, typed))
   const hasList = Boolean(suggestions?.length || source)
   const createRow: OptionItem | null =
@@ -348,12 +349,12 @@ export function TagInput({
             )
           )}
           {hidden.length > 0 ? (
-            <span className="fa-chip" data-overflow="" title={new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf))}>
+            <span className="fa-chip" data-overflow="" title={listFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf))}>
               <span className="fa-chip-label" aria-hidden>
                 +{hidden.length}
               </span>
               <span className="sr-only">
-                {messages.more(hidden.length, new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf)))}
+                {messages.more(hidden.length, listFormat(locale, { type: "unit" }).format(hidden.map(data.labelOf)))}
               </span>
             </span>
           ) : null}

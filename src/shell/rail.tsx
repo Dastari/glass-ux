@@ -5,7 +5,9 @@
  * VS Code activity-bar model). On phones the rail is replaced by the TabBar.
  *
  * Shortcuts are two-key sequences ("g e": press G, then E) so they never collide with the
- * browser's own Ctrl/Alt bindings or with text entry.
+ * browser's own Ctrl/Alt bindings or with text entry. They are single-character shortcuts
+ * (WCAG 2.1.4): `configureShortcuts({ characterKeys: false })` switches them off, and their
+ * hints leave the tooltips.
  */
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
@@ -22,13 +24,13 @@ import {
 } from "react"
 import { cx } from "../lib/cx.js"
 import { BrandMark } from "../ui/brand/index.js"
-import { Kbd } from "../ui/kbd/index.js"
+import { Kbd, characterShortcutsEnabled, useCharacterShortcuts } from "../ui/kbd/index.js"
 import { Tooltip } from "../ui/tooltip/index.js"
 import { ShellFocusContext, useOptionalShell } from "./app-shell.js"
 
 /** A sequence's target: the element to click (a rail item), or a command. */
 type ShortcutRegistry = Map<string, () => Pick<HTMLElement, "click"> | null>
-const RailShortcuts = createContext<ShortcutRegistry | null>(null)
+const RailShortcuts = /* @__PURE__ */ createContext<ShortcutRegistry | null>(null)
 
 const SEQUENCE_TIMEOUT = 1200
 
@@ -44,6 +46,10 @@ function useSequenceShortcuts(registry: ShortcutRegistry) {
     let timer: ReturnType<typeof setTimeout> | undefined
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey || event.ctrlKey || event.altKey || event.defaultPrevented || isEditable(event.target)) return
+      if (!characterShortcutsEnabled()) {
+        pending = null
+        return
+      }
       const key = event.key.toLowerCase()
       if (pending) {
         const sequence = `${pending} ${key}`
@@ -126,6 +132,7 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
   const registry = useContext(RailShortcuts)
   const focusTargets = useContext(ShellFocusContext)
   const ref = useRef<HTMLElement>(null)
+  const sequences = useCharacterShortcuts()
 
   // The current section's item reopens its drawer, so collapsing the drawer from inside
   // returns focus here (AppShell).
@@ -136,13 +143,13 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
   }, [active, focusTargets])
 
   useEffect(() => {
-    if (!shortcut || !registry) return
+    if (!shortcut || !registry || !sequences) return
     const key = shortcut.toLowerCase()
     registry.set(key, () => ref.current)
     return () => {
       if (registry.get(key)) registry.delete(key)
     }
-  }, [registry, shortcut])
+  }, [registry, shortcut, sequences])
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (disabledReason) {
@@ -191,7 +198,7 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
         content={
           <span className="fa-shell-tip">
             <span>{disabledReason ?? label}</span>
-            {shortcut && !disabledReason ? <ShortcutKeys shortcut={shortcut} /> : null}
+            {shortcut && sequences && !disabledReason ? <ShortcutKeys shortcut={shortcut} /> : null}
           </span>
         }
       >

@@ -119,7 +119,7 @@ export function FormAsk({ ask }: {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const errorOf = (field: FormField) =>
     field.required && !values[field.name]?.trim()
-      ? messages.enter(field.label.toLowerCase())
+      ? messages.enter(field.label)
       : undefined;
   const missing = ask.fields.filter((field) => errorOf(field));
 

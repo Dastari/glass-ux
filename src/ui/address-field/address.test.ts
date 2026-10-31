@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { emptyAddress, formatAddress, isEmptyAddress, isPostcode, resolveRegion, type AddressValue } from "./address.js"
+import { addressSchema } from "./schema.js"
 import { houseNumberOf, photonToSuggestion, photonToSuggestions, type PhotonFeature } from "./geocoder.js"
 
 const feature = (properties: PhotonFeature["properties"], coordinates: [number, number]): PhotonFeature => ({
@@ -103,5 +104,18 @@ describe("addresses", () => {
   it("knows an empty address", () => {
     expect(isEmptyAddress(emptyAddress({ code: "AU", name: "Australia" }))).toBe(true)
     expect(isEmptyAddress(hobart)).toBe(false)
+  })
+})
+
+describe("address schema messages", () => {
+  const issues = (country: string, patch: Partial<AddressValue>) => {
+    const value: AddressValue = { ...emptyAddress(), line1: "1 Example Lane", country: { code: country, name: country }, ...patch }
+    const result = addressSchema({ required: true }).safeParse(value)
+    return result.success ? [] : result.error.issues.map((issue) => issue.message)
+  }
+  it("name the locality and postcode in lower case in English", () => {
+    expect(issues("AU", { postcode: "1" })).toContain("Enter the suburb or town")
+    expect(issues("AU", { locality: "Hobart", postcode: "1" })).toContain("Check the postcode, such as 7000")
+    expect(issues("US", { locality: "Austin", postcode: "1" })).toContain("Check the zip code, such as 94103")
   })
 })

@@ -1,5 +1,6 @@
 import { getLocale } from "../../lib/locale/locale.js"
 import { getHostnameFieldMessages } from "./messages.js"
+import { listFormat } from "../../lib/locale/intl.js"
 /**
  * Host names and domain names (RFC 1123 labels): validate and normalise what people type or
  * paste. A pasted URL ("https://northstar.example/about") gives its host. Unicode domains are
@@ -47,7 +48,7 @@ export function toAscii(host: string): string | null {
 }
 
 function check(text: string, options: HostnameOptions, what: "host" | "domain"): HostnameResult {
-  const example = new Intl.ListFormat(options.locale ?? getLocale(), { type: "disjunction" }).format(what === "domain" ? ["northstar.example"] : options.fqdn ? ["printer.northstar.local"] : ["NST-C106", "printer.northstar.local"])
+  const example = listFormat(options.locale ?? getLocale(), { type: "disjunction" }).format(what === "domain" ? ["northstar.example"] : options.fqdn ? ["printer.northstar.local"] : ["NST-C106", "printer.northstar.local"])
   const host = hostOf(text)
   if (!host) return { ok: false, error: getHostnameFieldMessages(options.locale).enter(what) }
   let ascii = toAscii(host)

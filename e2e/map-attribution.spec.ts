@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 test("scaled attribution stays inside a narrow map and retains full source links @responsive", async ({
@@ -59,4 +60,19 @@ test("scaled attribution stays inside a narrow map and retains full source links
   await page.screenshot({
     path: info.outputPath("map-attribution-scaled.png"),
   });
+});
+
+test("the map examples pass axe and the view switch works by keyboard", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("glass-ux.appearance.v1", JSON.stringify({ mode: "light", motion: "reduced" })));
+  await page.goto("components/geo-map");
+  await expect(page.locator("#examples .fa-map").first()).toBeAttached();
+  // The container lab repeats one labelled map in many frames; every other example is scanned.
+  const result = await new AxeBuilder({ page }).include("#examples").exclude(".gallery-lab").analyze();
+  expect(result.violations.map((v) => ({ id: v.id, targets: v.nodes.map((n) => n.target) }))).toEqual([]);
+  const toggle = page.locator("#examples").getByRole("button", { name: "View as list" }).first();
+  if (await toggle.count()) {
+    await toggle.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator("#examples").getByRole("button", { name: "View as map" }).first()).toBeVisible();
+  }
 });

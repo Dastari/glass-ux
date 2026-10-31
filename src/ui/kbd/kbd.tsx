@@ -2,7 +2,7 @@ import { useMessages } from "../../lib/i18n/index.js"
 import { kbdMessages } from "./messages.js"
 import { useSyncExternalStore, type ComponentProps } from "react"
 import { cx } from "../../lib/cx.js"
-import { ariaShortcut, detectPlatform, formatShortcut, shortcutKeys, type Platform } from "./shortcut.js"
+import { ariaShortcut, characterShortcutsEnabled, detectPlatform, formatShortcut, shortcutKeys, subscribeShortcutConfig, type Platform } from "./shortcut.js"
 
 const noop = () => () => {}
 
@@ -12,6 +12,14 @@ const noop = () => () => {}
  */
 export function usePlatform(): Platform {
   return useSyncExternalStore(noop, detectPlatform, () => "other" as const)
+}
+
+/**
+ * Whether single-character shortcuts are on (see `configureShortcuts`). Components that show
+ * or register such a shortcut read it, so a switched-off shortcut neither runs nor is shown.
+ */
+export function useCharacterShortcuts(): boolean {
+  return useSyncExternalStore(subscribeShortcutConfig, characterShortcutsEnabled, () => true)
 }
 
 export interface KbdProps extends Omit<ComponentProps<"kbd">, "children"> {

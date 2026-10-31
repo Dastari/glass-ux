@@ -99,7 +99,7 @@ export function Autocomplete<V extends string = string>({
   const text = value ?? inner
   const search = useOptionSearch(source, text)
   const staticItems = options ?? []
-  const items = source ? search.items : staticItems.filter((item) => optionFilter(item, text))
+  const items = source ? search.items : staticItems.filter((item) => optionFilter(item, text, optionLocale))
   const status = source ? search.status : "idle"
   const twoLine = hasSecondLine(items)
   const groups = groupOptions(items)

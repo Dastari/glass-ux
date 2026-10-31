@@ -36,6 +36,20 @@ describe("searchFields", () => {
 })
 
 describe("local search", () => {
+  it("ignores accents, as the palette does", () => {
+    const people: Device[] = [{ id: "1", name: "Müller", serial: null, code: "A" }, { id: "2", name: "Mueller", serial: null, code: "B" }]
+    const names: DataTableSearch<Device> = { fields: [{ field: "Name", value: (row) => row.name }] }
+    expect(searchRows(people, "Muller", names).map((row) => row.id)).toEqual(["1"])
+    expect(searchRows(people, "müLLer", names).map((row) => row.id)).toEqual(["1"])
+    expect(matchesSearch(people[0]!, "MULLER", names, [], "de")).toBe(true)
+  })
+  it("lower-cases by the locale", () => {
+    const places: Device[] = [{ id: "1", name: "Isparta", serial: null, code: "A" }, { id: "2", name: "İsparta", serial: null, code: "B" }]
+    const names: DataTableSearch<Device> = { fields: [{ field: "Name", value: (row) => row.name }] }
+    // Turkish keeps dotted and dotless I apart; other locales do not.
+    expect(searchRows(places, "ISPARTA", names, [], "tr").map((row) => row.id)).toEqual(["1"])
+    expect(searchRows(places, "ISPARTA", names, [], "en").map((row) => row.id)).toEqual(["1", "2"])
+  })
   it("matches any field, ignoring case, and never an empty value", () => {
     expect(searchRows(rows, "orb", spec, columns).map((row) => row.id)).toEqual(["2", "3"])
     expect(searchRows(rows, "GWV", spec, columns).map((row) => row.id)).toEqual(["1"])

@@ -1,3 +1,4 @@
+import { numberFormat } from "../../lib/locale/intl.js"
 import { defineMessages, resolveMessages } from "../../lib/i18n/index.js"
 import { getLocale } from "../../lib/locale/locale.js"
 
@@ -17,6 +18,7 @@ export const topologyMessages = defineMessages("topology", {
   minimap: "Minimap",
   minimapVisible: "Minimap: shown while part of the map is out of view",
   minimapOff: "Minimap: off",
+  clusterSummary: ({ label, count, locale = "en-US" }: { label: string; count: number; locale?: string }) => `${label}, ${numberFormat(locale).format(count)}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

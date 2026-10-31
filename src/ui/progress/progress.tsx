@@ -1,4 +1,6 @@
 import { useMessages } from "../../lib/i18n/index.js"
+import { formatPercent } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { progressMessages } from "./messages.js"
 import { Progress as BaseProgress } from "@base-ui/react/progress"
 import { useId, type ReactNode } from "react"
@@ -48,6 +50,7 @@ export function Progress({
   "aria-label": ariaLabel,
 }: ProgressProps) {
   const messages = useMessages(progressMessages)
+  const locale = useLocale()
 
   const metaId = useId()
   const pct = value === null ? null : percent(value, max)
@@ -67,14 +70,14 @@ export function Progress({
         className="fa-progress-bar"
         aria-label={label ? undefined : ariaLabel}
         aria-describedby={meta ? metaId : undefined}
-        getAriaValueText={(_, current) => (current === null ? messages.inProgress : `${percent(current, max)}%`)}
+        getAriaValueText={(_, current) => (current === null ? messages.inProgress : formatPercent(locale, percent(current, max)))}
       >
         {label || showValue ? (
           <div className="fa-progress-head">
             {label ? <BaseProgress.Label className="fa-progress-label">{label}</BaseProgress.Label> : <span />}
             {showValue && pct !== null ? (
               <span className="fa-progress-value" data-numeric>
-                {pct}%
+                {formatPercent(locale, pct)}
               </span>
             ) : null}
           </div>
@@ -147,6 +150,7 @@ const RING_R = 15.5 // on a 36-unit box, leaving room for the stroke
 /** A compact circular progress for inline and icon-sized spots. `lg` prints the percentage. */
 export function ProgressRing({ value, max = 100, size = "md", tone = "accent", className, ...rest }: ProgressRingProps) {
   const messages = useMessages(progressMessages)
+  const locale = useLocale()
 
   const pct = value === null ? null : percent(value, max)
   return (
@@ -157,7 +161,7 @@ export function ProgressRing({ value, max = 100, size = "md", tone = "accent", c
       className={cx("fa-ring", className)}
       data-size={size}
       data-tone={tone}
-      getAriaValueText={(_, current) => (current === null ? messages.inProgress : `${percent(current, max)}%`)}
+      getAriaValueText={(_, current) => (current === null ? messages.inProgress : formatPercent(locale, percent(current, max)))}
     >
       <svg viewBox="0 0 36 36" className="fa-ring-svg" aria-hidden>
         <circle className="fa-ring-track" cx="18" cy="18" r={RING_R} pathLength={100} />
@@ -172,7 +176,7 @@ export function ProgressRing({ value, max = 100, size = "md", tone = "accent", c
       </svg>
       {size === "lg" && pct !== null ? (
         <span className="fa-ring-value" data-numeric>
-          {pct}%
+          {formatPercent(locale, pct)}
         </span>
       ) : null}
     </BaseProgress.Root>

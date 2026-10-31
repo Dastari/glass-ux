@@ -45,6 +45,25 @@ material itself, and `pnpm css-perf:check` asks every other one for a `perf:infi
 saying when it runs. `AppShell` names its routed view for view transitions only while one
 runs: a named element is a backdrop root, so its panels would blur nothing but the view.
 
+## Component styles on demand
+
+`glass-ux/styles.css` loads every component's rules, whichever components the application
+imports. `glass-ux styles --scan src --out src/glass-ux.css` writes a stylesheet with the
+foundation, the component stylesheets those imports need and the flat, print and forced-colour
+rules, in the order `styles.css` uses ([Add styles](getting-started.md#load-only-the-styles-you-use)).
+Built with Vite 8 and Tailwind 4, with no utility classes, the application stylesheet measured:
+
+| Application | CSS | Gzip |
+| --- | --- | --- |
+| `glass-ux/styles.css` | 774 KB | 118 KB |
+| No components: foundation and adaptations only | 262 KB | 42 KB |
+| Button, Input, Dialog, Select, Tooltip (21 of 142 component stylesheets) | 328 KB | 52 KB |
+| DataTable and charts (57 of 142) | 507 KB | 78 KB |
+
+The foundation (tokens, themes, materials, fonts, recipes) and the adaptations always load. The
+manifest in `dist/styles/manifest.json` lists each entry's stylesheets. The saving is bytes to
+transfer and parse; rendering of the components in use is unchanged.
+
 ## Baked frost
 
 With `configureAppearance({ glassRendering: "baked" })`, panel and chrome layers on the page
@@ -126,6 +145,11 @@ When authoring components, run `pnpm css-perf:check` and `pnpm tokens:check`. Av
 `:has()` selectors and universal sibling selectors. Use stable row IDs and preserve data
 identity across updates. The library's tests cover table layout and filter semantics;
 application tests must cover the fetched data and actual container sizes.
+
+Module-scope `Object.assign`, `memo`, `forwardRef`, `lazy` and `createContext` calls take
+`/* @__PURE__ */`; without it a bundler keeps the call, and everything it imports, even when the
+export is unused. `pnpm pure:check` lists missing annotations and `node scripts/check-pure.mjs
+--fix` adds them. `pnpm size:check` holds the resulting bundle budgets.
 
 The repository checks build the documentation separately from the package and inspect
 representative component pages in desktop and phone viewports. For performance budgets,

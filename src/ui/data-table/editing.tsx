@@ -25,7 +25,7 @@ import type { DataColumnMeta } from "./features.js";
 import { CellEditStore } from "./edit-state.js";
 import { useDataTableMessages } from "./use-messages.js";
 
-export const EditingContext = createContext<{
+export const EditingContext = /* @__PURE__ */ createContext<{
   store?: CellEditStore;
   navigate?: (rowId: string, columnId: string, delta: -1 | 1) => boolean;
   save?: (change: DataTableCellEdit<any>) => void | Promise<void>;

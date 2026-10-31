@@ -359,3 +359,20 @@ describe("marker keyboard", () => {
     expect(nextMarker(points, 3, "End")).toBe(1)
   })
 })
+
+describe("describeCounts in a locale", () => {
+  it("joins with the locale's list separator", () => {
+    const labels = { danger: "d", warning: "w", healthy: "h", unknown: "u" }
+    const counts = { danger: 1, warning: 2, healthy: 3, unknown: 0 }
+    expect(describeCounts(counts, labels, "en")).toBe("1 d, 2 w, 3 h")
+    expect(describeCounts(counts, labels, "ar")).toContain("،")
+  })
+
+  it("writes the counts as the locale does", () => {
+    const labels = { danger: "d", warning: "w", healthy: "h", unknown: "u" }
+    expect(describeCounts({ danger: 0, warning: 0, healthy: 1234, unknown: 0 }, labels, "en")).toBe("1,234 h")
+    expect(describeCounts({ danger: 0, warning: 0, healthy: 1234, unknown: 0 }, labels, "de")).toBe("1.234 h")
+    expect(describeCounts({ danger: 0, warning: 0, healthy: 12, unknown: 0 }, labels, "ar-EG")).toBe("١٢ h")
+  })
+})
+

@@ -215,6 +215,9 @@ function isInteractive(target: EventTarget | null, row: Element) {
   return Boolean(control && row.contains(control) && control !== row);
 }
 
+/** Quiet time after the last search or filter change before the result count is announced. */
+const RESULTS_ANNOUNCE_DELAY = 500;
+
 function globalDensity(): DataTableDensity {
   if (typeof document === "undefined") return "comfortable";
   return document.documentElement.getAttribute("data-density") === "compact"
@@ -405,15 +408,30 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const onStateChangeRef = useRef(props.onStateChange);
   onStateChangeRef.current = props.onStateChange;
 
+  // A person's search or filter change asks for the result count to be announced once the
+  // typing has paused and the rows have settled (WCAG 4.1.3). Initial load, paging, sorting
+  // and live data updates never come through here.
+  const resultsDue = useRef(false);
+  const resultsTimer = useRef(0);
+  const [resultsTick, setResultsTick] = useState(0);
   const emit = useCallback(
     (change: DataTableStateChange, patch: Partial<DataTableState>) => {
       const next = { ...latestState.current, ...patch };
       latestState.current = next;
       setInner((current) => ({ ...current, ...patch }));
       onStateChangeRef.current?.(next, change);
+      if (change === "search" || change === "filters") {
+        window.clearTimeout(resultsTimer.current);
+        resultsDue.current = false;
+        resultsTimer.current = window.setTimeout(() => {
+          resultsDue.current = true;
+          setResultsTick((tick) => tick + 1);
+        }, RESULTS_ANNOUNCE_DELAY);
+      }
     },
     [],
   );
+  useEffect(() => () => window.clearTimeout(resultsTimer.current), []);
 
   const setSorting = useCallback(
     (updater: Updater<DataTableState["sorting"]>) => {
@@ -2116,6 +2134,27 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const totalRows = grouping
     ? undefined
     : (rowCount ?? (cursor || loadMore.active ? undefined : data.length));
+  const countLabelText = loadMore.active
+    ? rowCount !== undefined
+      ? m.loadedOf(
+          formatNumber(data.length, 0, locale),
+          formatCount(rowCount, noun, locale),
+        )
+      : m.loaded(formatCount(data.length, noun, locale))
+    : formatCount(grouping ? groupTotal : (rowCount ?? data.length), noun, locale);
+  // After a person's search or filter change has paused: say what is left, once the rows
+  // have settled (a host that fetches may still be loading when the pause ends).
+  useEffect(() => {
+    if (!resultsDue.current || loading || error) return;
+    resultsDue.current = false;
+    const query = searching ? searchQuery : "";
+    announceCell(
+      data.length === 0 && (query || filters.length)
+        ? String(emptyText(noun, query, filters.length, "", m))
+        : m.resultsFound(countLabelText),
+    );
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- it runs when the pause ends or the rows settle, not on every render
+  }, [resultsTick, loading, error, data.length, countLabelText]);
   const showTail = loadMore.active && !showSkeleton && !showError && !showEmpty;
   const colCount =
     visibleColumns.length + (selectable ? 2 : 1) + (reorderable ? 1 : 0);
@@ -2697,20 +2736,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                 updatedAt={updatedAt}
                 status={status}
                 label={label}
-                countLabel={
-                  loadMore.active
-                    ? rowCount !== undefined
-                      ? m.loadedOf(
-                          formatNumber(data.length, 0, locale),
-                          formatCount(rowCount, noun, locale),
-                        )
-                      : m.loaded(formatCount(data.length, noun, locale))
-                    : formatCount(
-                        grouping ? groupTotal : (rowCount ?? data.length),
-                        noun,
-                        locale,
-                      )
-                }
+                countLabel={countLabelText}
                 counted={Boolean(grouping) || Boolean(infinite)}
                 bulk={{
                   count: selected,
@@ -2753,7 +2779,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                   <div
                     ref={announcerRef}
                     className="fa-dt-announcer"
-                    aria-live="assertive"
+                    aria-live="polite"
                     aria-atomic="true"
                   />
                   <TooltipPrimitive.Root

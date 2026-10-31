@@ -5,6 +5,8 @@ import { getFileDropMessages } from "./messages.js"
  * written in a BCP 47 locale, by default `getLocale()`.
  */
 import { getLocale } from "../../lib/locale/locale.js"
+import { formatByteSize } from "../byte-size-field/units.js"
+import { listFormat } from "../../lib/locale/intl.js"
 
 export type FileRejectionReason = "type" | "size" | "count"
 
@@ -29,21 +31,9 @@ export interface FileLimits {
   locale?: string
 }
 
-const UNITS = ["B", "KB", "MB", "GB", "TB"] as const
-const THIN_SPACE = " "
-
-/** "812 KB", "24.6 MB", "500 MB" — binary units, as Windows shows them (R2.7 thin space). */
+/** "812 KB", "24.6 MB", "500 MB": binary multiples with the symbols Windows shows (R2.7 thin space), the symbol and number in `locale` ("812 Ko" in fr). */
 export function formatBytes(bytes: number, locale = getLocale()): string {
-  if (!Number.isFinite(bytes) || bytes < 0) return `0${THIN_SPACE}B`
-  let value = bytes
-  let unit = 0
-  while (value >= 1024 && unit < UNITS.length - 1) {
-    value /= 1024
-    unit += 1
-  }
-  const digits = unit === 0 || value >= 100 ? 0 : 1
-  const text = value.toLocaleString(locale, { maximumFractionDigits: digits, minimumFractionDigits: 0 })
-  return `${text}${THIN_SPACE}${UNITS[unit]}`
+  return formatByteSize(Number.isFinite(bytes) && bytes >= 0 ? bytes : 0, { locale, base: "binary", symbols: "windows", largestUnit: 4 })
 }
 
 const acceptTokens = (accept: string | undefined) =>
@@ -69,7 +59,7 @@ export function matchesAccept(file: Pick<File, "name" | "type">, accept: string 
 export function describeAccept(accept: string | undefined, locale = getLocale(), messages: ReturnType<typeof getFileDropMessages> = getFileDropMessages(locale)): string {
   const tokens = acceptTokens(accept).map((token) => (token.endsWith("/*") ? messages.files(token.slice(0, -2)) : token))
   if (tokens.length <= 1) return tokens[0] ?? ""
-  return new Intl.ListFormat(locale, { type: "disjunction" }).format(tokens)
+  return listFormat(locale, { type: "disjunction" }).format(tokens)
 }
 
 /** Split files into the ones that fit the limits and the ones that do not, with reasons. */

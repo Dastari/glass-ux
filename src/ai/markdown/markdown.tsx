@@ -274,7 +274,7 @@ const rehypePlugins = [rehypeSanitize];
 const streamingRehypePlugins = [rehypeSanitize, rehypeCaret as never];
 
 /** One independently parsed run of top-level blocks; unchanged runs skip re-parsing. */
-const MarkdownSegment = memo(function MarkdownSegment({
+const MarkdownSegment = /* @__PURE__ */ memo(function MarkdownSegment({
   text,
   caret,
   wrapTableCells,
@@ -408,7 +408,7 @@ function hasCaretText(segment: string) {
  * Prose holds the reading measure (in a conversation, the reading column); code and tables
  * are wide blocks that break out wider than the text.
  */
-export const Markdown = memo(function Markdown({
+export const Markdown = /* @__PURE__ */ memo(function Markdown({
   text,
   streaming = false,
   wrapTableCells = false,

@@ -57,7 +57,7 @@ export function Switch({ label, description, className, disabled, id, ...rest }:
   const controlId = id ?? autoId
   return (
     <ChoiceRow controlId={controlId} label={label} description={description} disabled={disabled} className={className}>
-      <SwitchTrack {...rest} id={controlId} aria-describedby={description ? descriptionId(controlId) : undefined} disabled={disabled} />
+      <SwitchTrack {...rest} id={controlId} aria-describedby={cx(rest["aria-describedby"], description && descriptionId(controlId)) || undefined} disabled={disabled} />
     </ChoiceRow>
   )
 }

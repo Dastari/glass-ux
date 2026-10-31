@@ -283,8 +283,8 @@ export type AiResult =
       /** Records or matrix rows in display order. */
       rows: ResultRow[];
       total: number;
-      /** Singular and plural names used in counts and accessible labels. */
-      noun?: { one: string; other: string };
+      /** Names for rows by plural category of the locale (`one`, `few`, ...); `{ one, other }` suffices for English. Counts and accessible labels pick the form. */
+      noun?: Partial<Record<Intl.LDMLPluralRule, string>> & { other: string };
     })
   | (ResultBase & { type: "metrics"; metrics: ResultMetricItem[] })
   | (ResultBase & {

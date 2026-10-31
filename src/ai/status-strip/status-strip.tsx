@@ -1,4 +1,4 @@
-import { numberFormat } from "../../lib/locale/intl.js"
+import { formatPercent, numberFormat } from "../../lib/locale/intl.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { statusStripMessages } from "./messages.js"
 import { IconCloudOff, IconRefresh } from "../../icons/generated/icons.js";
@@ -54,13 +54,25 @@ export function AiStatusStrip({
     : null;
   const secondUnit = numberFormat(locale, { style: "unit", unit: "second", unitDisplay: "narrow" }).formatToParts(1).find((part) => part.type === "unit")?.value ?? ""
   const used = budget ? percent(budget) : null;
+  const stateText = (time: string | undefined) =>
+    stream === "connected"
+      ? messages.live
+      : stream === "reconnecting"
+        ? messages.reconnectStatus({ attempt, time })
+        : stream === "reset"
+          ? messages.reloaded
+          : messages.offlineHistoryStaysReadable;
   return (
     <div
       className={cx("fa-ai-status", className)}
-      role="status"
       data-stream={stream}
     >
+      {/* The state alone is announced; the visible line also counts down to the next attempt. */}
+      <span className="sr-only" role="status">
+        {stateText(undefined)}
+      </span>
       <span
+        aria-hidden
         className="fa-ai-status-item"
         data-tone={
           stream === "connected"
@@ -79,13 +91,7 @@ export function AiStatusStrip({
             aria-hidden
           />
         )}
-        {stream === "connected"
-          ? messages.live
-          : stream === "reconnecting"
-            ? messages.reconnectStatus({ attempt, time: seconds !== null ? `${formatNumber(seconds, 0, locale)} ${secondUnit}` : undefined })
-            : stream === "reset"
-              ? messages.reloaded
-              : messages.offlineHistoryStaysReadable}
+        {stateText(seconds !== null ? `${formatNumber(seconds, 0, locale)} ${secondUnit}` : undefined)}
       </span>
       {stream !== "connected" && onRetry ? (
         <Button
@@ -108,7 +114,7 @@ export function AiStatusStrip({
                 used >= 100 ? "danger" : used >= 80 ? "warning" : undefined
               }
             >
-              {budget.label} <span data-numeric>{used}%</span>
+              {budget.label} <span data-numeric>{formatPercent(locale, used)}</span>
             </span>
           </Tooltip>
         ) : null}

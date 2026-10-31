@@ -365,7 +365,7 @@ function HeaderView({
   );
 }
 
-export const DataTableHeader = memo(HeaderView);
+export const DataTableHeader = /* @__PURE__ */ memo(HeaderView);
 
 /** One column menu for the whole header (sort, filter, pin, fit, reset, hide): the shared Menu. */
 export function ColumnMenu({

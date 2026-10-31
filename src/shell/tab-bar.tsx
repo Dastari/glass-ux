@@ -25,7 +25,7 @@ import { Tooltip } from "../ui/tooltip/index.js";
 import { Sheet } from "../ui/sheet/index.js";
 import { SHELL_QUERIES } from "./queries.js";
 
-const CloseMore = createContext<(() => void) | null>(null);
+const CloseMore = /* @__PURE__ */ createContext<(() => void) | null>(null);
 
 /**
  * Condense on scroll down (past a small threshold), expand on scroll up. Listens only where

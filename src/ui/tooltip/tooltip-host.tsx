@@ -45,7 +45,7 @@ export interface TooltipHostApi {
   close: (key: string) => void
 }
 
-export const TooltipHostContext = createContext<TooltipHostApi | null>(null)
+export const TooltipHostContext = /* @__PURE__ */ createContext<TooltipHostApi | null>(null)
 
 /** The trigger attribute a Tooltip under a host carries: its registry key. */
 export const TOOLTIP_KEY = "data-fa-tooltip"

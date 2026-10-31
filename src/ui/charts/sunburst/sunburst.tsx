@@ -96,7 +96,7 @@ interface SunburstPlotProps {
 
 const TAU = Math.PI * 2
 
-const SunburstPlot = memo(function SunburstPlot({ box, focus, colour, store, fmt, label, rings: ringCount, onDrill, onUp }: SunburstPlotProps) {
+const SunburstPlot = /* @__PURE__ */ memo(function SunburstPlot({ box, focus, colour, store, fmt, label, rings: ringCount, onDrill, onUp }: SunburstPlotProps) {
   const messages = useMessages(sunburstMessages)
 
   const plotRef = useRef<HTMLDivElement>(null)

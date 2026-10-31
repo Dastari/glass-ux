@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react"
 import { flushSync } from "react-dom"
-import { IconChevronLeft, IconChevronRight, IconPlus } from "../../icons/generated/icons.js"
+import { IconArrowDown, IconArrowUp, IconChevronLeft, IconChevronRight, IconMoreVertical, IconPlus } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useMessages } from "../../lib/i18n/use-messages.js"
 import { motionScale, prefersReducedMotion, tokenDuration } from "../../lib/motion.js"
@@ -8,10 +8,13 @@ import { useRemPx } from "../../lib/rem.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { Button } from "../button/index.js"
-import { DragDropProvider, Draggable, DropError, DropZone, type DropEvent } from "../drag-drop/index.js"
+import { DragDropProvider, DropError, DropZone, useDraggable, type DropEvent } from "../drag-drop/index.js"
+import { Menu } from "../menu/index.js"
 import { Segmented } from "../segmented/index.js"
 import { Surface } from "../surface/index.js"
+import { toast } from "../toast/index.js"
 import { ToneDot } from "../tone-dot/index.js"
+import { VisuallyHidden } from "../visually-hidden/index.js"
 import type { BadgeTone } from "../badge/index.js"
 import { kanbanMessages, type KanbanMessages } from "./messages.js"
 import { cardsIn, moveCard, placeOf, type KanbanCardData } from "./move.js"
@@ -52,8 +55,8 @@ export interface KanbanMove<C extends KanbanCardData = KanbanItem> {
   fromIndex: number
   /** Its index in `to` after the move. */
   index: number
-  /** How it was moved. */
-  input: "pointer" | "keyboard"
+  /** How it was moved: dragged, lifted with the keyboard or chosen from the card's Move menu. */
+  input: "pointer" | "keyboard" | "menu"
 }
 
 /** Props for {@link Kanban}. */
@@ -75,6 +78,16 @@ export interface KanbanProps<C extends KanbanCardData = KanbanItem> {
   renderCard?: (card: C, state: { dragging: boolean }) => ReactNode
   /** The card's name for announcements and its accessible name. Default `card.title`, else its id. */
   cardLabel?: (card: C) => string
+  /**
+   * A "Move" menu on each card (columns, and up or down within the column) as an alternative
+   * to dragging, for people who cannot drag (WCAG 2.5.7). It moves the card the way a drop
+   * does: `onCardsChange`, `onCardMove` (with `input: "menu"`), a rejected save puts the card
+   * back, and the move is announced. The button sits in the card's top corner and shows on
+   * hover and focus, and always on touch screens; `KanbanCard` keeps its title and meta clear
+   * of it, so keep the first lines of your own `renderCard` content clear too. Default true;
+   * set false only when the host offers its own way to move cards.
+   */
+  moveMenu?: boolean
   /** Adds an "Add card" button under each column; called with the column's id. */
   onAddCard?: (columnId: string) => void
   /** Content under each column instead of the "Add card" button: an inline form, a menu. */
@@ -120,6 +133,7 @@ export function Kanban<C extends KanbanCardData = KanbanItem>({
   onCardMove,
   renderCard,
   cardLabel,
+  moveMenu = true,
   onAddCard,
   renderAddCard,
   collapsedColumns,
@@ -165,25 +179,57 @@ export function Kanban<C extends KanbanCardData = KanbanItem>({
     [setCards],
   )
 
+  /** Apply a move to the list and tell the host; the same path for drops and the Move menu. */
+  const commit = useCallback(
+    (card: C, column: KanbanColumn, index: number, input: KanbanMove["input"]): void | Promise<unknown> => {
+      const from = placeOf(latest.current, card.id)
+      if (!from) return
+      setCards(moveCard(latest.current, card.id, { columnId: column.id, index }))
+      const result = onCardMove?.({ cardId: card.id, card, from: from.columnId, to: column.id, fromIndex: from.index, index, input })
+      if (!result || typeof (result as Promise<unknown>).then !== "function") return
+      return (result as Promise<unknown>).catch((error: unknown) => {
+        restore(card.id, from)
+        throw new DropError(error instanceof Error && error.message ? error.message : t.moveFailed(column.title))
+      })
+    },
+    [onCardMove, restore, setCards, t],
+  )
+
   const drop = useCallback(
     (column: KanbanColumn) =>
       (event: DropEvent<C>): void | Promise<unknown> => {
         const card = event.item.data
-        const current = latest.current
-        const from = placeOf(current, card.id)
-        if (!from) return
-        const others = cardsIn(current, column.id).filter((entry) => entry.id !== card.id)
-        const index = event.target.index ?? others.length
-        setCards(moveCard(current, card.id, { columnId: column.id, index }))
-        const result = onCardMove?.({ cardId: card.id, card, from: from.columnId, to: column.id, fromIndex: from.index, index, input: event.input })
-        if (!result || typeof (result as Promise<unknown>).then !== "function") return
-        return (result as Promise<unknown>).catch((error: unknown) => {
-          restore(card.id, from)
-          throw new DropError(error instanceof Error && error.message ? error.message : t.moveFailed(column.title))
-        })
+        const others = cardsIn(latest.current, column.id).filter((entry) => entry.id !== card.id)
+        return commit(card, column, event.target.index ?? others.length, event.input)
       },
-    [onCardMove, restore, setCards, t],
+    [commit],
   )
+
+  // The Move menu: the same move, announced here because no drag is running.
+  const [announcement, setAnnouncement] = useState("")
+  const refocus = useRef<string | null>(null)
+  const focusCard = useCallback((cardId: string) => root.current?.querySelector<HTMLElement>(`[data-kanban-card="${CSS.escape(cardId)}"] > [data-dnd-handle]`) ?? null, [])
+  const moveFromMenu = useCallback(
+    (card: C, column: KanbanColumn, index: number) => {
+      const others = cardsIn(latest.current, column.id).filter((entry) => entry.id !== card.id)
+      const position = Math.min(Math.max(index, 0), others.length)
+      refocus.current = card.id
+      setAnnouncement(t.movedTo({ label: label(card), column: column.title, position: position + 1, count: others.length + 1 }))
+      const result = commit(card, column, position, "menu")
+      result?.catch((error: unknown) => {
+        const reason = error instanceof Error ? error.message : t.moveFailed(column.title)
+        setAnnouncement(reason)
+        toast.danger(t.moveNotSaved(label(card)), { description: reason })
+      })
+    },
+    [commit, label, t],
+  )
+  useEffect(() => {
+    const id = refocus.current
+    if (!id) return
+    refocus.current = null
+    focusCard(id)?.focus({ preventScroll: false })
+  }, [cards, focusCard])
 
   const toggle = (columnId: string) => setCollapsed((current) => (current.includes(columnId) ? current.filter((id) => id !== columnId) : [...current, columnId]))
 
@@ -242,8 +288,9 @@ export function Kanban<C extends KanbanCardData = KanbanItem>({
             const full = column.limit !== undefined && list.length >= column.limit
             const titleId = `${zoneId(column.id)}:title`
             const count = (
-              <span className="fa-kanban-count" data-full={full && !loading ? "" : undefined} data-numeric aria-label={t.countLabel(list.length, column.limit)} data-loading={loading ? "" : undefined}>
-                {t.count(list.length, column.limit)}
+              <span className="fa-kanban-count" data-full={full && !loading ? "" : undefined} data-numeric data-loading={loading ? "" : undefined}>
+                <span aria-hidden>{t.count(list.length, column.limit)}</span>
+                <VisuallyHidden>{t.countLabel(list.length, column.limit)}</VisuallyHidden>
               </span>
             )
             const validate = (drag: { source: { zoneId: string | null } }) =>
@@ -294,18 +341,17 @@ export function Kanban<C extends KanbanCardData = KanbanItem>({
                     {loading
                       ? [0, 1, 2].map((index) => <li key={index} className="fa-skel fa-shimmer fa-kanban-card fa-kanban-skeleton" aria-hidden />)
                       : list.map((card) => (
-                          <Draggable<C>
+                          <KanbanCardTile<C>
                             key={card.id}
-                            id={card.id}
-                            type={CARD_TYPE}
-                            data={card}
+                            card={card}
                             label={label(card)}
-                            render={<Surface as="li" material="card" radius="tile" padding="tile" />}
-                            className="fa-kanban-card"
-                            data-kanban-card={card.id}
-                          >
-                            {({ dragging }) => (renderCard ? renderCard(card, { dragging }) : <KanbanCard title={label(card)} meta={(card as Partial<KanbanItem>).meta} />)}
-                          </Draggable>
+                            columns={columns}
+                            cards={cards}
+                            movable={moveMenu}
+                            t={t}
+                            onMove={moveFromMenu}
+                            content={(dragging) => (renderCard ? renderCard(card, { dragging }) : <KanbanCard title={label(card)} meta={(card as Partial<KanbanItem>).meta} />)}
+                          />
                         ))}
                   </DropZone>
                   {!loading && list.length === 0 ? (
@@ -327,8 +373,85 @@ export function Kanban<C extends KanbanCardData = KanbanItem>({
             )
           })}
         </div>
+        <VisuallyHidden aria-live="polite" aria-atomic="true">
+          {announcement}
+        </VisuallyHidden>
       </div>
     </DragDropProvider>
+  )
+}
+
+interface KanbanCardTileProps<C extends KanbanCardData> {
+  card: C
+  label: string
+  columns: readonly KanbanColumn[]
+  cards: readonly C[]
+  movable: boolean
+  t: KanbanMessages
+  onMove: (card: C, column: KanbanColumn, index: number) => void
+  content: (dragging: boolean) => ReactNode
+}
+
+/**
+ * One card: a list item holding the drag handle (the card's content, a named group the
+ * keyboard lifts) and, beside it, the Move menu. The handle is not the list item, so the
+ * list keeps its items and the buttons a card renders do not sit inside a button.
+ */
+function KanbanCardTile<C extends KanbanCardData>({ card, label, columns, cards, movable, t, onMove, content }: KanbanCardTileProps<C>) {
+  const draggable = useDraggable<C>({ id: card.id, type: CARD_TYPE, data: card, label })
+  const column = columns.find((entry) => entry.id === card.columnId)
+  const siblings = cardsIn(cards, card.columnId)
+  const at = siblings.findIndex((entry) => entry.id === card.id)
+  return (
+    <Surface
+      as="li"
+      material="card"
+      radius="tile"
+      padding="none"
+      ref={draggable.ref}
+      className="fa-dnd-item fa-kanban-card"
+      data-dnd-item=""
+      data-dragging={draggable.dragging ? "" : undefined}
+      data-kanban-card={card.id}
+      data-movable={movable ? "" : undefined}
+    >
+      <div {...draggable.handleProps} ref={draggable.handleRef} role="group" aria-label={label} className="fa-kanban-card-handle">
+        {content(draggable.dragging)}
+      </div>
+      {movable && column ? (
+        <Menu.Root>
+          <Menu.Trigger render={<Button className="fa-kanban-card-move" size="xs" variant="ghost" icon={<IconMoreVertical />} aria-label={t.moveCard(label)} />} />
+          <Menu.Popup align="end" aria-label={t.moveCard(label)} finalFocus={() => document.querySelector<HTMLElement>(`[data-kanban-card="${CSS.escape(card.id)}"] > [data-dnd-handle]`) ?? true}>
+            <Menu.Group>
+              {columns
+                .filter((target) => target.id !== column.id)
+                .map((target) => {
+                  const full = target.limit !== undefined && cardsIn(cards, target.id).length >= target.limit
+                  return (
+                    <Menu.Item key={target.id} disabledReason={full ? t.full(target.title, target.limit as number) : undefined} onClick={() => onMove(card, target, Number.MAX_SAFE_INTEGER)}>
+                      {t.moveToColumn(target.title)}
+                    </Menu.Item>
+                  )
+                })}
+            </Menu.Group>
+            {siblings.length > 1 ? (
+              <Menu.Group>
+                {at > 0 ? (
+                  <Menu.Item icon={<IconArrowUp />} onClick={() => onMove(card, column, at - 1)}>
+                    {t.moveUp}
+                  </Menu.Item>
+                ) : null}
+                {at < siblings.length - 1 ? (
+                  <Menu.Item icon={<IconArrowDown />} onClick={() => onMove(card, column, at + 1)}>
+                    {t.moveDown}
+                  </Menu.Item>
+                ) : null}
+              </Menu.Group>
+            ) : null}
+          </Menu.Popup>
+        </Menu.Root>
+      ) : null}
+    </Surface>
   )
 }
 

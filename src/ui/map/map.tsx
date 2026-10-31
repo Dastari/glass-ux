@@ -1,4 +1,4 @@
-import { useMessages } from "../../lib/i18n/index.js"
+import { plural, useMessages } from "../../lib/i18n/index.js"
 import { mapMessages } from "./messages.js"
 /**
  * GeoMap — points with a status anywhere in the world, clustered, over a token-themed vector
@@ -27,7 +27,7 @@ import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useSta
 import { createPortal } from "react-dom"
 import { IconClose, IconGlobe, IconHome, IconInfo, IconList, IconMapPin, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
-import { collator, numberFormat } from "../../lib/locale/intl.js"
+import { collator, listFormat, numberFormat } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { observeElementSize } from "../../lib/resize-observer.js"
 import { useSelectedId, type SelectionChangeDetails } from "../../lib/use-selected-id.js"
@@ -72,8 +72,13 @@ function getDEFAULT_STATUS_LABELS(messages: typeof mapMessages.defaults): Readon
 export const DEFAULT_STATUS_LABELS: Readonly<Record<MapStatus, string>> = getDEFAULT_STATUS_LABELS(mapMessages.defaults)
 
 
-export interface MapNoun {
-  one: string
+/**
+ * The names the map gives its points, by plural category of the locale (`one`, `few`,
+ * `many`, ...). Only `other` is required, and `{ one, other }` is enough for English.
+ * Counts pick the form with the locale's plural rules.
+ */
+export interface MapNoun extends Partial<Record<Intl.LDMLPluralRule, string>> {
+  /** The form for every count without a form of its own. */
   other: string
 }
 
@@ -129,7 +134,7 @@ export interface GeoMapProps<T> {
   pulses?: Readonly<Record<string, number>>
   /** Display and accessible labels for the supported statuses. */
   statusLabels?: Readonly<Record<MapStatus, string>>
-  /** Singular and plural names used in counts and accessible labels. */
+  /** Names for the points by plural category of the locale (`{ one, other }` suffices for English), used in counts and accessible labels. */
   noun?: MapNoun
   /** "map" (default) or "list": the list replaces the map in the same box. */
   view?: "map" | "list"
@@ -422,6 +427,7 @@ export function GeoMap<T>({
 
   const locale = useLocale()
   const number = numberFormat(locale)
+  const nounOf = (count: number) => plural(locale, count, noun)
   const rootRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -865,7 +871,7 @@ export function GeoMap<T>({
     select(point.id, { reason: "item-press", event, item: point })
   }, [select])
 
-  const resetLabel = frame === "points" && pointsBox ? messages.showAll(number.format(points.length), points.length === 1 ? noun.one : noun.other) : home ? messages.resetTo(home.properties.name) : messages.resetView
+  const resetLabel = frame === "points" && pointsBox ? messages.showAll(number.format(points.length), nounOf(points.length)) : home ? messages.resetTo(home.properties.name) : messages.resetView
 
   /* Markers as portals into MapLibre's marker elements. */
   const markerNodes = markers.map((slot) => {
@@ -873,7 +879,7 @@ export function GeoMap<T>({
       const point = byId.get(slot.id)
       if (!point) return null
       const status = point.status
-      const text = new Intl.ListFormat(locale, { type: "unit" }).format([point.label, point.description, statusLabels[status]].filter((part): part is string => Boolean(part)))
+      const text = listFormat(locale, { type: "unit" }).format([point.label, point.description, statusLabels[status]].filter((part): part is string => Boolean(part)))
       return createPortal(
         <MarkerButton
           slot={slot}
@@ -901,7 +907,7 @@ export function GeoMap<T>({
     return createPortal(
       <MarkerButton
         slot={slot}
-        label={`${number.format(slot.size)} ${noun.other}: ${describeCounts(slot.counts, statusLabels)}`}
+        label={`${number.format(slot.size)} ${nounOf(slot.size)}: ${describeCounts(slot.counts, statusLabels, locale)}`}
         status={worstOf(slot.counts)}
         counts={slot.counts}
         selected={selected}
@@ -936,7 +942,7 @@ export function GeoMap<T>({
       if (slot) {
         const sorted = members.toSorted((a, b) => MAP_STATUSES.indexOf(a.status) - MAP_STATUSES.indexOf(b.status) || collator(locale).compare(a.label, b.label))
         const cluster: MapCluster<T> = { id: Number(slot.id), lng: slot.lng, lat: slot.lat, points: sorted }
-        popupLabel = `${number.format(slot.size)} ${noun.other}`
+        popupLabel = `${number.format(slot.size)} ${nounOf(slot.size)}`
         popupContent = renderClusterPopup ? (
           renderClusterPopup(cluster, {
             ...context,
@@ -990,7 +996,7 @@ export function GeoMap<T>({
       aria-busy={phase !== "ready" && !failed ? true : undefined}
     >
       <p id={hintId} className="sr-only">
-        {messages.markerInstructions({ count: number.format(points.length), noun: points.length === 1 ? noun.one : noun.other, status: points.length ? describeCounts(counts, statusLabels) : "" })}
+        {messages.markerInstructions({ count: number.format(points.length), noun: nounOf(points.length), status: points.length ? describeCounts(counts, statusLabels, locale) : "" })}
       </p>
       <div ref={stageRef} className="fa-map-stage" inert={view === "list" ? true : undefined}>
         <MapSilhouette region={home} box={frameBox} />
@@ -1017,13 +1023,13 @@ export function GeoMap<T>({
                 <Menu.Trigger
                   render={
                     <Button variant="secondary" size="sm" icon={<IconGlobe />} data-map-control="outside">
-                      {messages.outsideThisView(number.format(outside.length), outside.length === 1 ? noun.one : noun.other)}
+                      {messages.outsideThisView(number.format(outside.length), nounOf(outside.length))}
                     </Button>
                   }
                 />
                 <Menu.Popup side="bottom" align="start">
                   <Menu.Item icon={<IconGlobe />} onClick={() => pointsBox && fitTo(pointsBox)}>
-                    {messages.showAll(number.format(points.length), noun.other)}
+                    {messages.showAll(number.format(points.length), nounOf(points.length))}
                   </Menu.Item>
                   <Menu.Separator />
                   {outside.slice(0, 12).map((point) => (
@@ -1097,7 +1103,7 @@ interface DefaultClusterPopupProps<T> {
   counts: StatusCounts
   /** Display and accessibility labels supplied by the application. */
   labels: Readonly<Record<MapStatus, string>>
-  /** Singular and plural names used in counts and accessible labels. */
+  /** Names for the points by plural category of the locale, used in counts and accessible labels. */
   noun: MapNoun
   /** Called with no arguments when the person presses Zoom in; the map zooms until the cluster splits. */
   onZoom: () => void
@@ -1109,10 +1115,11 @@ interface DefaultClusterPopupProps<T> {
 export function DefaultClusterPopup<T>({ cluster, size, counts, labels, noun, onZoom, onOpen }: DefaultClusterPopupProps<T>) {
   const messages = useMessages(mapMessages)
 
-  const number = numberFormat(useLocale())
+  const locale = useLocale()
+  const number = numberFormat(locale)
   return (
     <div className="fa-map-cluster-popup">
-      <p className="fa-map-popup-title">{`${number.format(size)} ${noun.other}`}</p>
+      <p className="fa-map-popup-title">{`${number.format(size)} ${plural(locale, size, noun)}`}</p>
       <MapStatusSummary counts={counts} labels={labels} />
       <ul className="fa-map-cluster-list">
         {cluster.points.slice(0, 8).map((point) => (

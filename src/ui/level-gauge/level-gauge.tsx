@@ -1,5 +1,5 @@
 import { Button as BaseButton } from "@base-ui/react/button"
-import type { CSSProperties, ReactNode } from "react"
+import { useId, type CSSProperties, type ReactNode } from "react"
 import { cx } from "../../lib/cx.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { levelGaugeMessages } from "./messages.js"
@@ -69,6 +69,7 @@ export function LevelGauge<V extends string = string>({
   className,
 }: LevelGaugeProps<V>) {
   const messages = useMessages(levelGaugeMessages)
+  const noteId = useId()
   const at = levels.findIndex((level) => level.value === value)
   const before = previous == null ? -1 : levels.findIndex((level) => level.value === previous)
   const level = at >= 0 ? levels[at] : undefined
@@ -104,9 +105,9 @@ export function LevelGauge<V extends string = string>({
           {reading}
         </span>
         {note || earlier ? (
-          <span className="fa-level-gauge-note" aria-hidden>
-            {earlier ? <span>{messages.previousLine({ previousLabel: priorName, previous: earlier.label })}</span> : null}
-            {note ? <span>{note}</span> : null}
+          <span className="fa-level-gauge-note">
+            {earlier ? <span aria-hidden>{messages.previousLine({ previousLabel: priorName, previous: earlier.label })}</span> : null}
+            {note ? <span id={noteId}>{note}</span> : null}
           </span>
         ) : null}
         {segments}
@@ -132,7 +133,7 @@ export function LevelGauge<V extends string = string>({
   }
   if (onPress)
     return (
-      <BaseButton {...shared} className={cx(shared.className, "fa-pressable")} data-pressable="" aria-label={name} onClick={onPress}>
+      <BaseButton {...shared} className={cx(shared.className, "fa-pressable")} data-pressable="" aria-label={name} aria-describedby={size === "md" && note ? noteId : undefined} onClick={onPress}>
         {body}
       </BaseButton>
     )

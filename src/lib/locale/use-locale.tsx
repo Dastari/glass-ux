@@ -1,7 +1,7 @@
 import { createContext, useContext, useSyncExternalStore, type ReactNode } from "react"
 import { canonicalLocale, getLocale, serverLocale, subscribeLocale } from "./locale.js"
 
-const LocaleContext = createContext<string | undefined>(undefined)
+const LocaleContext = /* @__PURE__ */ createContext<string | undefined>(undefined)
 
 /** Props for LocaleProvider. */
 export interface LocaleProviderProps {

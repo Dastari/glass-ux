@@ -35,6 +35,11 @@ Install a versioned GitHub release archive, retain the package-manager lockfile,
 shared CSS, use the documented Tailwind 4 build pipeline, and include the package in Tailwind source discovery. For Vite, install the glassUx() plugin before verifying the first screen. Fonts
 and images ship with the package; do not recreate absolute `/fonts` assumptions.
 
+To ship only the styles of the components in use, replace `@import "glass-ux/styles.css"` with
+the file `pnpm exec glass-ux styles --scan src --out src/glass-ux.css` writes, commit it, and run
+the same command with `--check` in CI. Keep the `@source` lines. Name an entry on the command line
+when markup uses its classes without importing it. See "Add styles" in `docs/getting-started.md`.
+
 Use public entries such as `glass-ux/button`, `glass-ux/form`, `glass-ux/data-table`,
 `glass-ux/ai` and `glass-ux/appearance`. Do not copy the implementation into the project.
 Supply the documented providers for the features in use, and register application-owned

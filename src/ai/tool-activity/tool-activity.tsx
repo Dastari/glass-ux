@@ -23,7 +23,7 @@ import { Progress } from "../../ui/progress/index.js";
 import { Skeleton } from "../../ui/skeleton/index.js";
 import { AiCard } from "../card/index.js";
 import { EntityChip } from "../entity-chip/index.js";
-import { formatElapsed, useNow } from "../format.js";
+import { formatElapsed } from "../format.js";
 import { useConversationHandlers } from "../handlers.js";
 import { JsonTree } from "../json-tree/index.js";
 import type { AiProviderStatus, AiToolCall, ToolStatus } from "../types.js";
@@ -67,15 +67,42 @@ export function StatusGlyph({
   );
 }
 
-/** Elapsed time that ticks while the work runs (tabular, so it never changes width). */
-function Elapsed({ ms, running }: { ms?: number; running: boolean }) {
+/**
+ * Milliseconds until a running timer's text next changes. Under 10 s it shows tenths and
+ * ticks every 100 ms; from then on it shows whole seconds, rounded, so it changes only at
+ * each half second of elapsed time.
+ */
+function elapsedTickDelay(value: number) {
+  if (value < 10_000) return 100
+  const next = (Math.floor((value - 500) / 1000) + 1) * 1000 + 500
+  return Math.max(1, next - value)
+}
+
+/**
+ * Elapsed time that ticks while the work runs (tabular, so it never changes width).
+ * `hidden` keeps a ticking value out of a live region so it is not announced every second.
+ */
+function Elapsed({ ms, running, hidden }: { ms?: number; running: boolean; hidden?: boolean }) {
   const [started] = useState(() => Date.now() - (ms ?? 0));
-  const now = useNow(running, 100);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!running) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = (current: number) => {
+      timer = setTimeout(() => {
+        const time = Date.now();
+        setNow(time);
+        schedule(time);
+      }, elapsedTickDelay(current - started));
+    };
+    schedule(Date.now());
+    return () => clearTimeout(timer);
+  }, [running, started]);
   const locale = useLocale();
   const value = running ? now - started : ms;
   if (value === undefined) return null;
   return (
-    <span className="fa-ai-tool-elapsed" data-numeric>
+    <span className="fa-ai-tool-elapsed" data-numeric aria-hidden={hidden || undefined}>
       {formatElapsed(value, locale)}
     </span>
   );
@@ -215,7 +242,7 @@ function ToolJson({
     <div className="fa-ai-tool-json">
       <div className="fa-ai-tool-json-head">
         <span className="fa-overline">{label}</span>
-        <CopyButton value={text} label={messages.copy(label.toLowerCase())} />
+        <CopyButton value={text} label={messages.copy(label)} />
       </div>
       <JsonTree
         value={value}
@@ -268,7 +295,7 @@ export function ToolCallRow({
     >
       <Collapsible.Trigger
         className="fa-ai-tool-row"
-        aria-label={`${label}, ${getSTATUS_WORDS(messages)[call.status].toLowerCase()}`}
+        aria-label={messages.rowLabel({ label, status: getSTATUS_WORDS(messages)[call.status] })}
       >
         <StatusGlyph status={call.status} />
         <span className="fa-ai-tool-text">
@@ -468,7 +495,7 @@ export function ProviderActivity({
         {status.model ? (
           <span className="fa-ai-tool-model">{status.model}</span>
         ) : null}
-        <Elapsed running />
+        <Elapsed running hidden />
       </div>
     </div>
   );

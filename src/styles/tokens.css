@@ -190,6 +190,7 @@
     --switch-w: 2.375rem;
     --switch-h: 1.375rem;
     --target-min: 2.75rem; /* minimum touch target on coarse pointers */
+    --target-aa: 24px; /* WCAG 2.5.8 minimum target for every pointer, in CSS px (does not follow the UI scale) */
 
     /* ── Shell ─────────────────────────────────────────────────────────────── */
     --sidebar-w: 16.5rem;

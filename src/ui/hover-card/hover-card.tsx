@@ -69,7 +69,7 @@ function HoverCardRoot({ content, children, size, side, align, delay = HOVER_CAR
 }
 
 /** A hover card: `content` and a trigger child, or the parts `Root`, `Trigger` and `Popup` from Base UI's preview card. */
-export const HoverCard = Object.assign(HoverCardRoot, {
+export const HoverCard = /* @__PURE__ */ Object.assign(HoverCardRoot, {
   Root: BasePreviewCard.Root,
   Trigger: BasePreviewCard.Trigger,
   Popup: HoverCardPopup,

@@ -14,7 +14,7 @@ import { toast } from "../toast/index.js"
 import { formatCoordinates, formatDms, parseCoordinates, type LatLng } from "./coordinates.js"
 
 // The map (and MapLibre) load only when the picker opens.
-const PinMap = lazy(() => import("../map/pin-map.js").then((module) => ({ default: module.PinMap })))
+const PinMap = /* @__PURE__ */ lazy(() => import("../map/pin-map.js").then((module) => ({ default: module.PinMap })))
 
 /** What the control holds while its text cannot be read: NaN, or the out-of-range numbers it read. */
 export const UNREADABLE: LatLng = { lat: Number.NaN, lng: Number.NaN }

@@ -10,6 +10,15 @@ export const durationFieldMessages = defineMessages("durationField", {
   invalidDuration: "Enter a duration, such as 1h 30m",
   durationExamples: "Enter a duration such as 1h 30m, 90m or 1:30",
   example: "1h 30m",
+  // Words people type for each unit, lower case and separated by spaces. They are read in addition to
+  // English and to the words the runtime writes for the locale, so a pack lists only usual extras.
+  weekWords: "w wk wks week weeks",
+  dayWords: "d day days",
+  hourWords: "h hr hrs hour hours",
+  minuteWords: "m min mins minute minutes",
+  secondWords: "s sec secs second seconds",
+  // Words that may join the parts of a spelled-out duration ("1 hour and 15 minutes").
+  joiningWords: "and",
 })
 
 declare module "../../lib/i18n/catalog.js" {

@@ -48,7 +48,7 @@ export function Radio<V extends string = string>({ label, description, className
   return (
     <FieldOptionItem>
       <ChoiceRow controlId={controlId} label={label} description={description} disabled={disabled} className={className}>
-        <RadioCircle {...rest} id={controlId} aria-describedby={description ? descriptionId(controlId) : undefined} disabled={disabled} />
+        <RadioCircle {...rest} id={controlId} aria-describedby={cx(rest["aria-describedby"], description && descriptionId(controlId)) || undefined} disabled={disabled} />
       </ChoiceRow>
     </FieldOptionItem>
   )

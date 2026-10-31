@@ -396,7 +396,7 @@ export function ChoiceRow({
 }
 
 /** Whether a component is inside a Field (ours or its Root part): Base UI's Field items need one. */
-const InFieldContext = createContext(false);
+const InFieldContext = /* @__PURE__ */ createContext(false);
 
 /** The Root part for custom layouts; it also tells options inside that they are in a Field. */
 function FieldRootPart(props: ComponentProps<typeof BaseField.Root>) {
@@ -418,7 +418,7 @@ export function FieldOptionItem({ children }: { children: ReactNode }) {
 }
 
 /** Field namespace: `<Field label …>` plus the parts for custom layouts. */
-export const Field = Object.assign(FieldBase, {
+export const Field = /* @__PURE__ */ Object.assign(FieldBase, {
   Root: FieldRootPart,
   Label: BaseField.Label,
   Description: BaseField.Description,

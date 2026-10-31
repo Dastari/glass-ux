@@ -72,6 +72,8 @@
     white-space: nowrap;
   }
   .fa-kanban-count {
+    /* Holds its visually hidden name, which would otherwise escape the board's scroller. */
+    position: relative;
     flex: none;
     min-width: var(--control-h-xs);
     padding-inline: var(--space-1-5);
@@ -133,6 +135,46 @@
   .fa-kanban-card {
     flex: none;
     min-width: 0;
+  }
+  /* The handle is the card's content and the keyboard lift (a named group), inside the list
+     item; the card's padding is the handle's, so the ring and the grab cover the whole tile. */
+  .fa-kanban-card-handle {
+    display: block;
+    min-width: 0;
+    padding: var(--inset-tile);
+    border-radius: var(--radius-tile);
+    outline: none;
+  }
+  .fa-kanban-card-handle:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  /* The Move menu button sits in the top corner; KanbanCard's title and meta lines keep clear
+     of it (the foot does not), so showing it moves nothing. It shows on hover and focus, and
+     always where there is no hover. */
+  .fa-kanban-card[data-movable] .fa-kanban-card-title,
+  .fa-kanban-card[data-movable] .fa-kanban-card-meta {
+    padding-inline-end: var(--control-h-xs);
+  }
+  .fa-kanban-card > .fa-kanban-card-move {
+    position: absolute;
+    inset-block-start: var(--space-1);
+    inset-inline-end: var(--space-1);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-kanban-card:hover > .fa-kanban-card-move,
+  .fa-kanban-card:focus-within > .fa-kanban-card-move,
+  .fa-kanban-card > .fa-kanban-card-move[data-popup-open] {
+    opacity: 1;
+  }
+  .fa-kanban-card[data-dragging] > .fa-kanban-card-move {
+    visibility: hidden;
+  }
+  @media (hover: none) {
+    .fa-kanban-card > .fa-kanban-card-move {
+      opacity: 1;
+    }
   }
   .fa-kanban-skeleton {
     height: calc(var(--type-label-line) + var(--type-caption-line) + var(--space-1) + var(--inset-tile) * 2);

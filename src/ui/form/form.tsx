@@ -772,7 +772,7 @@ interface FormStatus {
   /** Current operation or connection status. */
   status: ButtonStatus;
 }
-const FormStatusContext = createContext<FormStatus>({ status: "idle" });
+const FormStatusContext = /* @__PURE__ */ createContext<FormStatus>({ status: "idle" });
 
 export interface SubmitButtonProps extends Omit<
   ButtonProps,
@@ -859,7 +859,7 @@ function CancelButton({
  * every bound field (TextField, AddressField…) and whose `AppForm` offers SubmitButton and
  * CancelButton; `withForm` and `withFieldGroup` build form sections that receive such a form.
  */
-export const { useAppForm, withForm, withFieldGroup } = createFormHook({
+export const { useAppForm, withForm, withFieldGroup } = /* @__PURE__ */ createFormHook({
   fieldContext,
   formContext,
   fieldComponents: {

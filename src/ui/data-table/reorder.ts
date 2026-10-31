@@ -135,7 +135,7 @@ export function reorderUnavailable(
   return null;
 }
 
-/* ── Announcements (one assertive live region per table) ──────────────────────────── */
+/* ── Announcements (one polite live region per table) ──────────────────────────── */
 
 /** "3 of 12", or "3 of 8 in Phones" within a group. */
 export function positionText(position: number, count: number, group?: string) {

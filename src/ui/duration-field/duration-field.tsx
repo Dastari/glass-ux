@@ -30,12 +30,13 @@ export interface DurationInputProps extends Omit<InputProps, "value" | "defaultV
 export function DurationInput({ value, defaultValue = null, onValueChange, units = ["d", "h", "m"], defaultUnit = "m", placeholder: placeholderProp, icon, onBlur, width = "short", ...rest }: DurationInputProps) {
  const messages = useMessages(durationFieldMessages)
  const placeholder = placeholderProp ?? messages.example
+  const locale = useLocale()
   const text = useParsedText<number | null>({
     value,
     defaultValue,
     onValueChange,
-    parse: (next) => (next.trim() ? (parseDuration(next, { defaultUnit }) ?? Number.NaN) : null),
-    format: (seconds) => (seconds === null || Number.isNaN(seconds) ? "" : formatDuration(seconds, { units })),
+    parse: (next) => (next.trim() ? (parseDuration(next, { defaultUnit, locale }) ?? Number.NaN) : null),
+    format: (seconds) => (seconds === null || Number.isNaN(seconds) ? "" : formatDuration(seconds, { units, locale })),
     same: sameNumber,
   })
   return (

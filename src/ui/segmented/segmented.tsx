@@ -80,7 +80,7 @@ export interface SegmentedProps<V extends string = string> {
  * top bar folds its module switch to the menu on a phone. A `collapse` prop on the control
  * wins.
  */
-export const SegmentedCollapseContext = createContext<SegmentedCollapse | undefined>(undefined)
+export const SegmentedCollapseContext = /* @__PURE__ */ createContext<SegmentedCollapse | undefined>(undefined)
 
 export interface SegmentedFit {
   /** The width the container offers. */

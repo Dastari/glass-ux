@@ -76,7 +76,7 @@ export interface SchedulerContextValue {
   swallowClick: () => void
 }
 
-export const SchedulerContext = createContext<SchedulerContextValue | null>(null)
+export const SchedulerContext = /* @__PURE__ */ createContext<SchedulerContextValue | null>(null)
 
 export function useScheduler(): SchedulerContextValue {
   const context = useContext(SchedulerContext)
@@ -121,7 +121,7 @@ export function formatDayShort(day: IsoDate, locale: string): string {
 export function describeWhen(range: { allDay: boolean; startDay: IsoDate; endDay: IsoDate; startMinutes: number; endMinutes: number }, locale: string, t: SchedulerMessages): string {
   if (range.allDay) {
     const days = range.startDay === range.endDay ? formatDay(range.startDay, locale) : t.timeRange(formatDayShort(range.startDay, locale), formatDayShort(range.endDay, locale))
-    return `${days}, ${t.allDay.toLowerCase()}`
+    return t.allDayOn(days)
   }
   if (range.startDay === range.endDay) return `${formatDay(range.startDay, locale)}, ${t.timeRange(formatMinutes(range.startMinutes, locale), formatMinutes(range.endMinutes, locale))}`
   return t.timeRange(`${formatDayShort(range.startDay, locale)} ${formatMinutes(range.startMinutes, locale)}`, `${formatDayShort(range.endDay, locale)} ${formatMinutes(range.endMinutes, locale)}`)

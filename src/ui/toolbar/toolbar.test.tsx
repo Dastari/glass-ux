@@ -34,4 +34,24 @@ describe("Toolbar", () => {
     const { container } = render(<Demo onSort={() => {}} />)
     expect(container.querySelector(".fa-toolbar-more")!.hasAttribute("data-idle")).toBe(true)
   })
+
+  it("measures when its items change, not on every render", () => {
+    const spy = vi.spyOn(window, "getComputedStyle")
+    const measures = () => spy.mock.calls.filter(([element]) => element.classList.contains("fa-toolbar")).length
+    const view = (labels: string[]) => (
+      <Toolbar aria-label="Report view">
+        {labels.map((label) => (
+          <Toolbar.Button key={label} label={label} />
+        ))}
+      </Toolbar>
+    )
+    const { rerender } = render(view(["Filters", "Sort"]))
+    const mounted = measures()
+    expect(mounted).toBeGreaterThan(0)
+    rerender(view(["Filters", "Sort"]))
+    expect(measures()).toBe(mounted)
+    rerender(view(["Filters", "Sort", "Group"]))
+    expect(measures()).toBeGreaterThan(mounted)
+    spy.mockRestore()
+  })
 })

@@ -45,6 +45,7 @@ function GroupHeaderView({
 }: Placement & { item: HeaderItem }) {
   const { group, collapsed } = item;
   const locale = useLocale();
+  const messages = useDataTableMessages();
   const tabIndex = active ? 0 : -1;
   return (
     <div
@@ -65,7 +66,7 @@ function GroupHeaderView({
           type="button"
           className="fa-dt-group-toggle"
           aria-expanded={!collapsed}
-          aria-label={`${group.label}, ${formatCount(group.count, noun, locale)}`}
+          aria-label={messages.groupSummary({ label: group.label, count: formatCount(group.count, noun, locale) })}
           tabIndex={tabIndex}
           data-dt-interactive=""
           onClick={(event) => controller.toggleGroup(group.id, event.altKey)}
@@ -91,7 +92,7 @@ function GroupHeaderView({
   );
 }
 
-export const GroupHeaderRow = memo(GroupHeaderView) as (
+export const GroupHeaderRow = /* @__PURE__ */ memo(GroupHeaderView) as (
   props: Placement & { item: HeaderItem },
 ) => ReactElement;
 
@@ -143,7 +144,7 @@ function GroupMoreView({
   );
 }
 
-export const GroupMoreRow = memo(GroupMoreView) as (
+export const GroupMoreRow = /* @__PURE__ */ memo(GroupMoreView) as (
   props: Placement & { item: MoreItem },
 ) => ReactElement;
 

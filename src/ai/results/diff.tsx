@@ -1,4 +1,5 @@
 import { useMessages } from "../../lib/i18n/index.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { resultsMessages } from "./messages.js"
 import { IconColumns } from "../../icons/generated/icons.js"
 import { EntityChip } from "../entity-chip/index.js"
@@ -19,6 +20,7 @@ export function ResultDiff({ result }: {
   result: DiffResult
 }) {
   const messages = useMessages(resultsMessages)
+  const locale = useLocale()
 
   const added = result.lines.filter((line) => line.type === "add").length
   const removed = result.lines.filter((line) => line.type === "remove").length
@@ -32,7 +34,7 @@ export function ResultDiff({ result }: {
       result={result}
       icon={<IconColumns />}
       meta={`+${added} −${removed}`}
-      copyText={result.lines.map((line) => `${line.type === "add" ? "+" : line.type === "remove" ? "-" : " "} ${line.text}`).join("\n")}
+      copyText={result.lines.length ? () => result.lines.map((line) => `${line.type === "add" ? "+" : line.type === "remove" ? "-" : " "} ${line.text}`).join("\n") : undefined}
       flush
     >
       {result.target ? (
@@ -43,7 +45,7 @@ export function ResultDiff({ result }: {
       <div
         className="fa-ai-diff"
         role="region"
-        aria-label={`${result.title}: ${added} added, ${removed} removed`}
+        aria-label={messages.diffSummary({ title: result.title, added, removed, locale })}
         // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- long lines scroll sideways (R20.6)
         tabIndex={0}
       >

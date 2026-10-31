@@ -24,6 +24,7 @@ import { ChartTooltip, TooltipBody, type TooltipRow } from "../core/tooltip.js"
 import { chartViewMessages } from "../core/view-messages.js"
 import { useZoomGestures, previewMatrix } from "../core/zoom-gestures.js"
 import { insideIndices, panWindow, revealIndex, useXWindow, windowIndices, zoomWindow, type XDomain, type XWindow } from "../core/zoom.js"
+import { listFormat } from "../../../lib/locale/intl.js"
 
 export type { Marker, ReferenceBand, Threshold } from "../core/reference.js"
 
@@ -550,7 +551,7 @@ interface DrawnSeries {
 
 const ZOOM_SHORTCUTS = "+ - 0 Shift+ArrowLeft Shift+ArrowRight"
 
-const LinePlot = memo(function LinePlot({
+const LinePlot = /* @__PURE__ */ memo(function LinePlot({
   box,
   prepared,
   store,
@@ -802,7 +803,7 @@ const LinePlot = memo(function LinePlot({
     return selection.low === selection.high ? nearestIndex(xs, selection.low) === index : at >= selection.low && at <= selection.high
   }
   const valueText = (index: number) =>
-    (isSelected(index) ? messages.selectionLabel : (label: string) => label)(`${xText(index)} · ${new Intl.ListFormat(fmt.locale, { type: "unit" }).format(visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`))}`)
+    (isSelected(index) ? messages.selectionLabel : (label: string) => label)(`${xText(index)} · ${listFormat(fmt.locale, { type: "unit" }).format(visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`))}`)
 
   // A committed zoom, pan or reset is announced politely (the region stays mounted, R20.9).
   const [announcement, setAnnouncement] = useState("")

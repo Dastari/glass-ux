@@ -18,6 +18,7 @@ import {
 } from "react"
 import { IconChevronRight, IconError, IconFolder } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { readingKey } from "../../lib/direction.js"
 import { useMessages } from "../../lib/i18n/use-messages.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { popupContainer } from "../../lib/popup-container.js"
@@ -40,6 +41,7 @@ import { checkDisabled, checkStates, indexChecks, setAllChecks, toggleCheck, typ
 import { CheckMark } from "./check-mark.js"
 import { PickerTrigger } from "./picker-trigger.js"
 import { treeSelectMessages } from "./messages.js"
+import { listFormat } from "../../lib/locale/intl.js"
 
 /** Props shared by single and multiple TreeSelect. */
 export interface TreeSelectCommonProps {
@@ -274,11 +276,11 @@ export function TreeSelect(props: TreeSelectProps) {
           </span>
         ))}
         {hidden.length > 0 ? (
-          <span className="fa-chip" data-overflow="" title={new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(labelOf))}>
+          <span className="fa-chip" data-overflow="" title={listFormat(locale, { type: "unit" }).format(hidden.map(labelOf))}>
             <span className="fa-chip-label" aria-hidden>
               +{hidden.length}
             </span>
-            <span className="sr-only">{t.more(hidden.length, new Intl.ListFormat(locale, { type: "unit" }).format(hidden.map(labelOf)))}</span>
+            <span className="sr-only">{t.more(hidden.length, listFormat(locale, { type: "unit" }).format(hidden.map(labelOf)))}</span>
           </span>
         ) : null}
       </span>
@@ -586,7 +588,7 @@ function TreeSelectList({
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const row = rows[focusedIndex]
     if (!row) return
-    switch (event.key) {
+    switch (readingKey(event.key, event.currentTarget)) {
       case "ArrowDown":
         moveTo(Math.min(rows.length - 1, focusedIndex + 1))
         break

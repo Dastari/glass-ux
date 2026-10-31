@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 async function open(page: Page, appearance: Record<string, string> = {}) {
@@ -329,4 +330,22 @@ test("a zone that scrolls its own content auto-scrolls, and the wheel chains out
   await expect.poll(() => scroller.evaluate((element) => element.scrollTop)).toBeGreaterThan(before);
   await page.keyboard.press("Escape");
   await page.mouse.up();
+});
+
+test("the drag and drop demos pass axe and a handle is reachable and operable by keyboard", async ({ page }) => {
+  const board = await open(page);
+  // Known: a Draggable rendered as <li> carries role="button" (the whole item is the handle), so
+  // axe reports "aria-allowed-role" and, for its <ul>, "list". Kanban avoids both with a handle
+  // inside the list item; every other rule must pass.
+  const result = await new AxeBuilder({ page }).include("#examples").disableRules(["aria-allowed-role", "list"]).analyze();
+  expect(result.violations.map((v) => ({ id: v.id, targets: v.nodes.map((n) => n.target) }))).toEqual([]);
+  const handle = board.locator("[data-dnd-handle]").first();
+  await handle.focus();
+  await expect(handle).toBeFocused();
+  await expect(handle).toHaveAttribute("aria-roledescription", "draggable");
+  await page.keyboard.press("Space");
+  await expect(board.locator("[data-dnd-source]")).toHaveCount(1);
+  await page.keyboard.press("Escape");
+  await expect(board.locator("[data-dnd-source]")).toHaveCount(0);
+  await expect(handle).toBeFocused();
 });

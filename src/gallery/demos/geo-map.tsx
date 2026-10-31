@@ -76,11 +76,13 @@ function useRegions() {
 
 function LiveMap({
   id,
+  label = "Sites",
   config = DEMO_MAP_CONFIG,
   points = POINTS,
   className = "gallery-map-frame",
 }: {
   id: string;
+  label?: string;
   config?: MapConfig;
   points?: typeof POINTS;
   className?: string;
@@ -90,7 +92,7 @@ function LiveMap({
   return (
     <div className={className} data-testid={id}>
       <GeoMap
-        label="Sites"
+        label={label}
         config={config}
         home={home}
         regions={regions}
@@ -136,7 +138,7 @@ function ListViewExample() {
   return (
     <div className="gallery-map-frame" data-size="list" data-testid="map-list-example">
       <GeoMap
-        label="Sites"
+        label="Sites, list view"
         config={OUTLINE_ONLY}
         home={home}
         regions={regions}
@@ -181,7 +183,7 @@ export default function MapSection() {
         layout="bare"
         specimenKey="map:default:1"
       >
-        <LiveMap id="map-attribution" config={ATTRIBUTION_CONFIG} />
+        <LiveMap id="map-attribution" label="Sites, attribution" config={ATTRIBUTION_CONFIG} />
       </Specimen>
 
       <Specimen
@@ -194,7 +196,7 @@ export default function MapSection() {
         <div className="gallery-map-islands">
           <Example label="Light">
             <div data-mode="light" className="canvas-ambient gallery-map-island">
-              <LiveMap id="map-light" className="gallery-map-frame" />
+              <LiveMap id="map-light" label="Sites, light" className="gallery-map-frame" />
             </div>
           </Example>
           <Example label="Dark · ocean">
@@ -203,7 +205,7 @@ export default function MapSection() {
               data-palette="ocean"
               className="canvas-ambient gallery-map-island"
             >
-              <LiveMap id="map-dark" className="gallery-map-frame" />
+              <LiveMap id="map-dark" label="Sites, dark" className="gallery-map-frame" />
             </div>
           </Example>
         </div>

@@ -81,16 +81,70 @@ export function isoWeekday(iso: IsoDate) {
   return day === 0 ? 7 : day
 }
 
+/** A locale's week: its first day and weekend days, numbered 1 = Monday … 7 = Sunday. */
+export interface WeekInfo {
+  firstDay: number
+  weekend: readonly number[]
+}
+
+// CLDR week data by region, for engines without Intl.Locale week info. Anything not listed
+// starts on Monday and ends the week with Saturday and Sunday.
+const FIRST_DAY_REGIONS: Readonly<Record<number, string>> = {
+  5: "MV",
+  6: "AF BH DJ DZ EG IQ IR JO KW LY OM QA SD SY",
+  7: "AG AS BD BR BS BT BW BZ CA CO DM DO ET GT GU HK HN ID IL IN IS JM JP KE KH KR LA MH MM MO MT MX MZ NI NP PA PE PH PK PR PT PY SA SG SV TH TT TW UM US VE VI WS YE ZA ZW",
+}
+const WEEKEND_REGIONS: Readonly<Record<string, readonly number[]>> = {
+  IR: [5],
+  AF: [4, 5],
+  IN: [7],
+  UG: [7],
+  ...Object.fromEntries("BH DZ EG IL IQ JO KW LY OM QA SA SD SY YE".split(" ").map((region) => [region, [5, 6] as const])),
+}
+
+/** The week CLDR gives `locale`'s region (found by maximising a bare language such as "en" or "ar"); Monday and Saturday–Sunday for an unknown one. */
+export function fallbackWeekInfo(locale: string): WeekInfo {
+  let region: string | undefined
+  try {
+    region = new Intl.Locale(locale).maximize().region
+  } catch {
+    // An invalid tag has no region: the default week.
+  }
+  const first = region ? Object.entries(FIRST_DAY_REGIONS).find(([, regions]) => regions.split(" ").includes(region)) : undefined
+  return { firstDay: first ? Number(first[0]) : 1, weekend: (region && WEEKEND_REGIONS[region]) || [6, 7] }
+}
+
+const weeks = new Map<string, WeekInfo>()
+
+/**
+ * The locale's first day of the week and weekend days (1 = Monday … 7 = Sunday), from
+ * `Intl.Locale` where the engine has week info and from CLDR region data otherwise. Cached
+ * per tag.
+ */
+export function weekInfo(locale: string = getLocale()): WeekInfo {
+  let known = weeks.get(locale)
+  if (!known) {
+    known = fallbackWeekInfo(locale)
+    try {
+      const info = new Intl.Locale(locale) as Intl.Locale & { getWeekInfo?: () => Partial<WeekInfo>; weekInfo?: Partial<WeekInfo> }
+      const week = info.getWeekInfo?.() ?? info.weekInfo
+      if (week?.firstDay) known = { firstDay: week.firstDay, weekend: Array.isArray(week.weekend) && week.weekend.length ? week.weekend : known.weekend }
+    } catch {
+      // An invalid tag keeps the fallback.
+    }
+    weeks.set(locale, known)
+  }
+  return known
+}
+
 /** The locale's first day of the week (1 = Monday … 7 = Sunday). */
 export function firstDayOfWeek(locale: string = getLocale()): number {
-  try {
-    const info = new Intl.Locale(locale) as Intl.Locale & { getWeekInfo?: () => { firstDay: number }; weekInfo?: { firstDay: number } }
-    const week = info.getWeekInfo?.() ?? info.weekInfo
-    if (week?.firstDay) return week.firstDay
-  } catch {
-    // Fall through to the regional default.
-  }
-  return /-(US|CA|JP|IL|BR|MX|PH|KR|TW|HK|IN)\b/i.test(locale) ? 7 : 1
+  return weekInfo(locale).firstDay
+}
+
+/** Whether `iso` falls on one of the locale's weekend days: Friday–Saturday in ar-SA, Saturday–Sunday in en. */
+export function isWeekend(iso: IsoDate, locale: string = getLocale()): boolean {
+  return weekInfo(locale).weekend.includes(isoWeekday(iso))
 }
 
 /** The first day shown in a month grid that starts on `firstDay`. */

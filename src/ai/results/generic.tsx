@@ -18,6 +18,7 @@ import type {
 import { ResultFrame } from "./frame.js";
 import { useLocale } from "../../lib/locale/use-locale.js";
 import { getLocale } from "../../lib/locale/locale.js";
+import { formatPercent } from "../../lib/locale/intl.js";
 
 /**
  * Data classification, lowest to highest. A tool's browser
@@ -111,7 +112,7 @@ function scalarText(value: unknown, unit: string | undefined, locale: string): s
     const text = formatNumber(value, Number.isInteger(value) ? 0 : 1, locale);
     return unit
       ? unit === "%"
-        ? `${text}%`
+        ? formatPercent(locale, value, Number.isInteger(value) ? 0 : { minimumFractionDigits: 1, maximumFractionDigits: 1 })
         : `${text}${THIN_SPACE}${unit}`
       : text;
   }
@@ -456,7 +457,7 @@ export function ResultJson({ result }: {
     <ResultFrame
       result={result}
       icon={<IconCode />}
-      copyText={JSON.stringify(result.value, null, 2)}
+      copyText={result.value === undefined ? undefined : () => JSON.stringify(result.value, null, 2)}
     >
       <JsonTree
         value={result.value}

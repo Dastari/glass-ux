@@ -184,7 +184,7 @@ export function PinMap({ config, value, onValueChange, label, zoom = 16, fallbac
           <IconMapPin />
         </div>
       ) : null}
-      {phase === "failed" ? <p className="fa-pin-map-note">{messages.theMapCouldNotLoad} {value ? describe(value) : null}</p> : null}
+      {phase === "failed" ? <p className="fa-pin-map-note">{value ? messages.mapLoadFailedAt(describe(value)) : messages.theMapCouldNotLoad}</p> : null}
       {engine && value
         ? createPortal(
             <button

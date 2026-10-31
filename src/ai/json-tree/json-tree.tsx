@@ -116,7 +116,7 @@ function Node({
         className="fa-ai-json-toggle"
         tabIndex={-1}
         tooltip={false}
-        aria-label={`${open ? messages.collapse : messages.expand} ${name ?? messages.root}`}
+        aria-label={open ? messages.collapseNode(name ?? messages.root) : messages.expandNode(name ?? messages.root)}
         onClick={() => {
           rowRef.current?.focus();
           setOpen((current) => !current);

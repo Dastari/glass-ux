@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type FocusEvent, type KeyboardEvent, type PointerEvent } from "react"
 import { flushSync } from "react-dom"
+import { readingKey } from "../../lib/direction.js"
 import { dateTimeFormat } from "../../lib/locale/intl.js"
 import { addDays, fromIsoDate, type IsoDate } from "../date-picker/calendar-date.js"
 import { formatDay, formatHour, formatMinutesRange, useScheduler } from "./context.js"
@@ -264,7 +265,7 @@ export function TimeGrid({ events, days, scrollToTime }: TimeGridProps) {
     let next: Cursor | null = null
     if (event.key === "ArrowDown") next = event.shiftKey ? { ...cursor, end: Math.min(DAY_MINUTES, cursor.end + slot) } : { ...cursor, start: Math.min(DAY_MINUTES - slot, cursor.start + slot), end: Math.min(DAY_MINUTES - slot, cursor.start + slot) + slot }
     else if (event.key === "ArrowUp") next = event.shiftKey ? { ...cursor, end: Math.max(cursor.start + slot, cursor.end - slot) } : { ...cursor, start: Math.max(0, cursor.start - slot), end: Math.max(0, cursor.start - slot) + slot }
-    else if (event.key === "ArrowLeft" || event.key === "ArrowRight") next = { ...cursor, day: clamp(cursor.day + (event.key === "ArrowLeft" ? -1 : 1), 0, days.length - 1) }
+    else if (event.key === "ArrowLeft" || event.key === "ArrowRight") next = { ...cursor, day: clamp(cursor.day + (readingKey(event.key, event.currentTarget) === "ArrowLeft" ? -1 : 1), 0, days.length - 1) }
     else if (event.key === "Enter" || event.key === " ") {
       event.preventDefault()
       const day = days[cursor.day]!

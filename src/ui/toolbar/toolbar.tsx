@@ -3,7 +3,6 @@ import {
   Children,
   createContext,
   isValidElement,
-  useCallback,
   useContext,
   useLayoutEffect,
   useRef,
@@ -14,6 +13,7 @@ import {
 import { IconMoreHorizontal } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useMessages } from "../../lib/i18n/use-messages.js"
+import { observeElementSizes } from "../../lib/resize-observer.js"
 import { Button, type ButtonProps } from "../button/index.js"
 import { Menu } from "../menu/index.js"
 import { toolbarMessages } from "./messages.js"
@@ -31,8 +31,8 @@ export type ToolbarPriority = "low" | "high" | "always"
 export type ToolbarSize = "sm" | "md"
 
 /** Inside the More menu, items render as menu items instead of buttons. */
-const MenuMode = createContext(false)
-const SizeContext = createContext<ToolbarSize>("sm")
+const MenuMode = /* @__PURE__ */ createContext(false)
+const SizeContext = /* @__PURE__ */ createContext<ToolbarSize>("sm")
 
 export interface ToolbarProps {
   /** Names the toolbar for assistive technology ("Formatting"). Required: toolbars are landmarks of controls. */
@@ -85,7 +85,7 @@ function ToolbarRoot({ "aria-label": label, size = "sm", overflow = true, disabl
   const widths = useRef(new Map<string, number>())
   const [folded, setFolded] = useState<ReadonlySet<string>>(() => new Set())
 
-  const measure = useCallback(() => {
+  const measure = () => {
     const box = root.current
     if (!box) return
     for (const node of box.querySelectorAll<HTMLElement>(":scope > [data-toolbar-unit]")) {
@@ -121,16 +121,27 @@ function ToolbarRoot({ "aria-label": label, size = "sm", overflow = true, disabl
       if (!before || !after || next.has(before.key) || next.has(after.key)) next.add(unit.key)
     })
     setFolded((prev) => (prev.size === next.size && [...next].every((key) => prev.has(key)) ? prev : next))
-  }, [overflow, units])
-
-  useIsomorphicLayoutEffect(measure)
+  }
+  // Rendering makes a new `units` array every time, so measurement follows a signature of what
+  // it depends on instead, and always runs the latest closure.
+  const latestMeasure = useRef(measure)
   useIsomorphicLayoutEffect(() => {
+    latestMeasure.current = measure
+  })
+  const signature = `${overflow}|${size}|${units.map((unit) => `${unit.key}:${unit.priority}`).join("|")}`
+
+  // Measure when the units or their settings change; later size changes of the row, a unit
+  // (a label or icon changing its width) or the More button arrive through the observer.
+  useIsomorphicLayoutEffect(() => {
+    latestMeasure.current()
     const box = root.current
-    if (!box || typeof ResizeObserver === "undefined") return
-    const observer = new ResizeObserver(() => measure())
+    if (!box) return
+    const observer = observeElementSizes(() => latestMeasure.current())
     observer.observe(box)
+    for (const node of box.querySelectorAll(":scope > [data-toolbar-unit]")) observer.observe(node)
+    if (more.current) observer.observe(more.current)
     return () => observer.disconnect()
-  }, [measure])
+  }, [signature])
 
   const foldedUnits = units.filter((unit) => folded.has(unit.key) && unit.priority !== "separator")
   return (
@@ -290,7 +301,7 @@ function ToolbarSpacer() {
  * A toolbar: `Root`, `Button` (with toggles), `Group`, `Item` (any control), `Separator`
  * and `Spacer`, plus Base UI's `Input` and `Link` for text fields and links in the row.
  */
-export const Toolbar = Object.assign(ToolbarRoot, {
+export const Toolbar = /* @__PURE__ */ Object.assign(ToolbarRoot, {
   Root: ToolbarRoot,
   Button: ToolbarButton,
   Group: ToolbarGroup,

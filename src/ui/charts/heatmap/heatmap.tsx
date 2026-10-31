@@ -127,7 +127,7 @@ interface HeatmapPlotProps {
   label: string
 }
 
-const HeatmapPlot = memo(function HeatmapPlot({ box, rows, columns, values, totals, range, steps, store, fmt, columnText, label }: HeatmapPlotProps) {
+const HeatmapPlot = /* @__PURE__ */ memo(function HeatmapPlot({ box, rows, columns, values, totals, range, steps, store, fmt, columnText, label }: HeatmapPlotProps) {
   const messages = useMessages(heatmapMessages)
 
   const plotRef = useRef<HTMLDivElement>(null)

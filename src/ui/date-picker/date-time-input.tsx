@@ -16,6 +16,7 @@ import { formatTimeText, isTimeValue, parseTimeText, timePlaceholder, type HourC
 import { listTimes, localNow, startTime, timeKeyStep, usePartSelection } from "./time-input.js"
 import { TimeList } from "./time-list.js"
 import { instantToWallClock, isWallClock, joinWallClock, resolveWallClock, splitWallClock, zoneOffsetMinutes, type WallClock } from "./zoned-time.js"
+import { listFormat } from "../../lib/locale/intl.js"
 
 /** Whether a wall-clock value is outside [min, max] (same-length strings compare in order). */
 export const wallClockOutOfRange = (value: WallClock, min?: WallClock, max?: WallClock) => {
@@ -52,7 +53,7 @@ export function zoneLabel(timeZone: string, at: number, locale: string): { short
     const short = info.abbreviation ?? describeTimeZone(timeZone, { at: new Date(at), locale: "en-US" }).abbreviation ?? info.offset
     return {
       short,
-      long: new Intl.ListFormat(locale, { type: "unit" }).format([timeZone.replace(/_/g, " "), short === info.offset ? undefined : short, info.offset].filter((part): part is string => Boolean(part))),
+      long: listFormat(locale, { type: "unit" }).format([timeZone.replace(/_/g, " "), short === info.offset ? undefined : short, info.offset].filter((part): part is string => Boolean(part))),
     }
   } catch {
     return null

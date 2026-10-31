@@ -16,8 +16,9 @@ import {
 } from "react"
 import { IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { DialogSurface, useDialogScrollEdges } from "../dialog/index.js"
-import { Kbd, matchesShortcut, usePlatform } from "../kbd/index.js"
+import { Kbd, isCharacterShortcut, matchesShortcut, shortcutAllowed, useCharacterShortcuts, usePlatform } from "../kbd/index.js"
 import { Skeleton } from "../skeleton/index.js"
 import { useSingleton } from "../toast/index.js"
 import { fuzzyMatchFields, highlightRuns } from "./fuzzy.js"
@@ -114,7 +115,7 @@ interface PaletteContextValue {
   toggle: () => void
 }
 
-const PaletteContext = createContext<PaletteContextValue | null>(null)
+const PaletteContext = /* @__PURE__ */ createContext<PaletteContextValue | null>(null)
 
 export interface PaletteProviderProps {
   children: ReactNode
@@ -124,7 +125,8 @@ export interface PaletteProviderProps {
 
 /**
  * Hosts the command palette: a registry of commands contributed by whatever is mounted,
- * ⌘K / Ctrl+K from anywhere to open it, and the registered commands' own shortcuts.
+ * ⌘K / Ctrl+K from anywhere to open it, and the registered commands' own shortcuts (a
+ * single-character shortcut can be switched off for the application with `configureShortcuts`).
  * The palette shortcut also works while a focusable disabled button has focus, without
  * activating that button.
  * Mount once near the root; nested providers defer to the outer one.
@@ -173,6 +175,8 @@ function PaletteHost({ children, groupOrder }: Required<PaletteProviderProps>) {
       for (const command of store.getSnapshot()) {
         if (!command.shortcut || command.disabledReason) continue
         if (editable && !/(mod|ctrl|alt|meta)\+/i.test(command.shortcut)) continue
+        // WCAG 2.1.4: the application can switch single-character shortcuts off (configureShortcuts).
+        if (!shortcutAllowed(command.shortcut)) continue
         if (matchesShortcut(event, command.shortcut, platform)) {
           event.preventDefault()
           void command.run()
@@ -278,7 +282,7 @@ function rememberRecent(id: string) {
 
 /* ── Results ────────────────────────────────────────────────────────────────── */
 
-function rankGroups(commands: readonly PaletteCommand[], query: string, recent: readonly string[], order: readonly string[]): GroupEntry[] {
+function rankGroups(commands: readonly PaletteCommand[], query: string, recent: readonly string[], order: readonly string[], locale: string): GroupEntry[] {
   const trimmed = query.trim()
   const groups = new Map<string, Entry[]>()
   const push = (group: string, entry: Entry) => {
@@ -299,7 +303,7 @@ function rankGroups(commands: readonly PaletteCommand[], query: string, recent: 
     }
   } else {
     for (const command of commands) {
-      const match = fuzzyMatchFields(trimmed, command.label, [...(command.keywords ?? []), command.detail ?? "", command.group])
+      const match = fuzzyMatchFields(trimmed, command.label, [...(command.keywords ?? []), command.detail ?? "", command.group], locale)
       if (match) push(command.group, { key: command.id, group: command.group, command, indices: match.indices, score: match.score })
     }
   }
@@ -355,13 +359,15 @@ export interface CommandPanelProps {
  */
 export function CommandPanel({ commands, onRun, loading = false, groupOrder = DEFAULT_ORDER, defaultQuery = "", className }: CommandPanelProps) {
   const messages = useMessages(commandPaletteMessages)
+  const characterKeys = useCharacterShortcuts()
+  const locale = useLocale()
 
   const [query, setQuery] = useState(defaultQuery)
   // The server (and hydration) render without recents; the client reads them after.
   const recent = useSyncExternalStore(subscribeRecent, readRecent, () => NO_RECENT)
   const listRef = useRef<HTMLDivElement>(null)
   const edges = useDialogScrollEdges(listRef)
-  const groups = useMemo(() => rankGroups(commands, query, recent, groupOrder), [commands, query, recent, groupOrder])
+  const groups = useMemo(() => rankGroups(commands, query, recent, groupOrder, locale), [commands, query, recent, groupOrder, locale])
   const hintsId = useId()
 
   return (
@@ -432,7 +438,7 @@ export function CommandPanel({ commands, onRun, loading = false, groupOrder = DE
                             <span className="fa-palette-detail">{command.disabledReason ?? command.detail}</span>
                           ) : null}
                         </span>
-                        {command.shortcut ? <Kbd keys={command.shortcut} variant="text" className="fa-item-trail" /> : null}
+                        {command.shortcut && (characterKeys || !isCharacterShortcut(command.shortcut)) ? <Kbd keys={command.shortcut} variant="text" className="fa-item-trail" /> : null}
                       </Autocomplete.Item>
                     )
                   }}

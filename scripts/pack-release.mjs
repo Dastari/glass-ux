@@ -30,7 +30,10 @@ const out = outIndex === -1 ? join(root, ".handoff") : resolve(args[outIndex + 1
  */
 // 0.9.12 measured 9.05 MB unpacked and 2.93 MB compressed (eleven language packs and some thirty
 // new components); the limits leave about 10% headroom so growth is a decision, not drift.
-const BUDGET = { unpacked: 10_000_000, archive: 3_200_000 }
+// 0.13.0 measured 10.1 MB unpacked and 3.2 MB compressed after the on-screen keyboard
+// (0.18 MB), Sidebar (0.14 MB), Sheet snap points, redrawn brand icons and their messages in
+// eleven packs: new components, not drift. Raised by about 10% again, readable ESM unchanged.
+const BUDGET = { unpacked: 11_000_000, archive: 3_500_000 }
 
 /** Paths relative to the package root that the release leaves out. */
 const excluded = (path) =>

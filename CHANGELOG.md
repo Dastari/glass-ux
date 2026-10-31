@@ -4,7 +4,10 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## Unreleased
+## 0.13.0
+
+A standalone Sidebar that AppShell's section drawer is now built on, Sheet snap points and
+nesting, and brand icons redrawn against current logos.
 
 ### Added
 

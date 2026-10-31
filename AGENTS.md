@@ -145,6 +145,9 @@ decides when to publish. The local route:
   - Selective-style closures are wider than needed where a class has several defining sheets
     (Select loads tree-select.css).
   - `glass-ux styles --scan` counts type-only imports.
+- A `start`/`end` Sheet opened after a page-level direction change inside the page keeps the
+  earlier direction in production builds, but not in the dev server (`e2e/rtl.spec.ts:84`
+  against `vite preview`; already present in 0.12.1).
 
 For adoption into a consuming application, read docs/getting-started.md and docs/integration.md.
 Bundled skills under skills/ cover adoption, component choice, forms, data views, assistant UI

@@ -3,6 +3,19 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.12.1 → 0.13.0
+
+No code changes are required; AppShell, SectionDrawer and Sheet keep their props and exports.
+Behaviour to review:
+
+- SectionDrawer groups have `role="group"` and keep collapsed rows in the page (hidden), so
+  tests that counted rendered rows may count hidden ones. Items and group titles gain wrapper
+  elements; class names on existing elements are unchanged, and the header subtitle is a
+  `div` instead of a `p`. In a host without a CSS reset, group titles take the page font.
+- ⌘B / Ctrl B does not toggle the drawer while typing in rich text, and "/" follows
+  `configureShortcuts`.
+- Brand icons keep their names but have new artwork; check screens that pair them with logos.
+
 ## 0.12.0 → 0.12.1
 
 No code changes are required. The new `glass-ux/on-screen-keyboard` entry adds components

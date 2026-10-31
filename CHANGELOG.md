@@ -4,7 +4,10 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## Unreleased
+## 0.12.0
+
+Stylesheets for only the components an application uses, smaller bundles, text that follows
+each locale's rules, and accessibility fixes from an audit of every component family.
 
 ### Added
 

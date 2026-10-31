@@ -3,7 +3,7 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
-## Unreleased
+## 0.11.7 → 0.12.0
 
 Message overrides (`configureMessages`, `MessagesProvider`, language packs) are the only
 code that may need edits.
@@ -22,8 +22,10 @@ code that may need edits.
   (`one`, `few`, `many`, ...) besides `other`; `{ one, other }` keeps working. Counts choose
   the form with the locale's plural rules, so `formatCount` now follows them in every language.
 - More text is passed on as written: `addressField.enterThe` and `checkThe` receive the
-  country's field name ("Postcode"), `dataTable.summaryPreset` the date preset ("Last 24
-  hours"), and the all-day event name uses the new `scheduler.allDayOn` sentence. English
+  country's field name ("Postcode"); `asks.chooseEntities`, `chooseOneEntity`, `search`,
+  `find` and `enter` the application's noun or label; `dataTable.summaryPreset` the date
+  preset ("Last 24 hours"); and the all-day event name uses the new `scheduler.allDayOn`
+  sentence. English
   output is the same; a pack or override that expected lower case lower-cases it itself. New
   messages: `kanban` (`moveCard`, `moveToColumn`, `moveUp`, `moveDown`, `movedTo`,
   `moveNotSaved`), `dataTable.resultsFound`, `lightbox.shown`, `scheduler.allDayOn`.

@@ -3,7 +3,7 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
-## Unreleased
+## 0.11.7 → 0.12.0
 
 Message overrides (`configureMessages`, `MessagesProvider`, language packs) are the only
 code that may need edits.

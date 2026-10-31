@@ -7,6 +7,8 @@ const baseURL = `http://127.0.0.1:${port}`;
 export default defineConfig({
   testDir: "./e2e",
   testIgnore: "production.spec.ts",
+  // Loads the heaviest pages once so the first tests do not wait on the dev server compiling them.
+  globalSetup: "./e2e/warm-up.ts",
   fullyParallel: true,
   workers: 2,
   timeout: 45000,

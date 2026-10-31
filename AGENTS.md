@@ -148,6 +148,9 @@ decides when to publish. The local route:
 - A `start`/`end` Sheet opened after a page-level direction change inside the page keeps the
   earlier direction in production builds, but not in the dev server (`e2e/rtl.spec.ts:84`
   against `vite preview`; already present in 0.12.1).
+- The DataTable demo can drop a search typed before its first load finishes (seen on slow CI
+  runners: the announcement read the unfiltered count). Check whether URL-state restore
+  overwrites an early query; `e2e/data-table-announce.spec.ts` now waits for the first load.
 
 For adoption into a consuming application, read docs/getting-started.md and docs/integration.md.
 Bundled skills under skills/ cover adoption, component choice, forms, data views, assistant UI

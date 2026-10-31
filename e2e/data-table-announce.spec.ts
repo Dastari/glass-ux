@@ -7,7 +7,9 @@ test("searching a table announces the result count once typing has paused, and t
   await expect(search).toBeVisible({ timeout: 30_000 });
   // The table's polite live region follows its root element.
   const live = search.locator("xpath=ancestor::div[contains(concat(' ', normalize-space(@class), ' '), ' fa-dt ')][1]/following-sibling::div[contains(@class, 'fa-dt-announcer')][last()]");
-  // Nothing is said for the table's first load.
+  // Nothing is said for the table's first load. Type once it has finished, as a person would:
+  // the mock server answers in 300–700 ms, and a slow runner reaches the field before that.
+  await expect(page.locator(".fa-dt").first().getByRole("row").nth(1)).toBeVisible({ timeout: 30_000 });
   await expect(live).toHaveText("");
 
   await search.click();

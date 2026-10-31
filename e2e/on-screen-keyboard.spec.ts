@@ -122,8 +122,8 @@ test("typing into an input keeps focus and the caret, deletes a grapheme and fol
   expect((await state()).value).toBe("Qw")
 
   // Two quick presses are Caps Lock: the key changes its name until it is pressed again.
-  await shift.click()
-  await shift.click()
+  // One double click keeps both presses inside the window on a slow runner.
+  await shift.dblclick()
   const lock = key(keys, "Caps Lock")
   await expect(lock).toHaveAttribute("aria-pressed", "true")
   await key(keys, "E").click()

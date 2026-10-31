@@ -398,6 +398,10 @@ export default defineMessagePack("ko", {
     discardChanges: "변경사항 폐기",
     keepEditing: "계속 편집",
   },
+  sheet: {
+    heightControl: "시트 높이",
+    heightStep: (position, count) => `높이 ${count}단계 중 ${position}단계`,
+  },
   commandPalette: {
     recent: "최근",
     actions: "액션",
@@ -2023,16 +2027,15 @@ export default defineMessagePack("ko", {
     keyboardPanel: "화상 키보드",
   },
   sidebar: {
-    // English placeholders until translated.
-    toggleSidebar: "Toggle sidebar",
-    expandSidebar: "Expand sidebar",
-    collapseSidebar: "Collapse sidebar",
-    closeSidebar: "Close sidebar",
-    resizeSidebar: "Resize sidebar",
-    moreActions: "More actions",
-    expandGroup: ({ group }) => `Expand ${group}`,
-    collapseGroup: ({ group }) => `Collapse ${group}`,
-    filterPlaceholder: "Filter",
-    filterNavigation: "Filter navigation",
+    toggleSidebar: "사이드바 전환",
+    expandSidebar: "사이드바 펼치기",
+    collapseSidebar: "사이드바 접기",
+    closeSidebar: "사이드바 닫기",
+    resizeSidebar: "사이드바 크기 조정",
+    moreActions: "추가 작업",
+    expandGroup: ({ group }) => `${group} 펼치기`,
+    collapseGroup: ({ group }) => `${group} 접기`,
+    filterPlaceholder: "필터",
+    filterNavigation: "내비게이션 필터링",
   },
 }) as CatalogueMessagePack

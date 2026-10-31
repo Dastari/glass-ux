@@ -15,6 +15,7 @@ export {
   type DialogRootProps,
   type DialogSize,
   type DialogTone,
+  type SideSurfaceOptions,
 } from "./dialog.js"
 export { SettingsDialog, SettingsSections, type SettingsDialogProps, type SettingsSection } from "./settings-dialog.js"
 export { useDialogGuard, type DialogGuardOptions } from "./use-dialog-guard.js"

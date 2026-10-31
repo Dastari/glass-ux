@@ -15,6 +15,7 @@ import {
   type ComponentProps,
   type ReactElement,
   type ReactNode,
+  type Ref,
   type RefObject,
 } from "react"
 import { IconClose } from "../../icons/generated/icons.js"
@@ -163,6 +164,25 @@ interface SurfaceProps extends DialogPopupProps {
   mode: DialogMode
   /** `side` mode only: the edge the panel slides in from (Sheet's `side`). */
   edge?: "left" | "right" | "bottom"
+  /** `side` mode only: Sheet's scrim, handle and state attributes. */
+  sheet?: SideSurfaceOptions
+}
+
+/**
+ * What Sheet adds to a `side` surface. Internal.
+ * @internal
+ */
+export interface SideSurfaceOptions {
+  /** Render the scrim (false for a non-modal or nested sheet). */
+  scrim: boolean
+  /** Replaces the bottom sheet's decorative grab handle. */
+  handle?: ReactNode
+  /** Data attributes for the viewport. */
+  viewport?: Record<`data-${string}`, string | undefined>
+  /** Data attributes, style and handlers for the popup. */
+  popup?: Omit<ComponentProps<"div">, "children" | "className" | "ref"> & Record<`data-${string}`, string | undefined>
+  /** Ref to the popup element. */
+  popupRef?: Ref<HTMLDivElement>
 }
 
 const TABBABLE = 'a[href], button, input, select, textarea, summary, [tabindex], [contenteditable="true"]'
@@ -190,6 +210,7 @@ function initialDialogFocus(popup: HTMLElement | null, interaction: string) {
 export function DialogSurface({
   mode,
   edge = "right",
+  sheet,
   kind = "dialog",
   size = "md",
   className,
@@ -220,16 +241,18 @@ export function DialogSurface({
     return (
       <ModeContext value="side">
         <Drawer.Portal render={<DirectionPortal />} container={popupContainer()}>
-          <Drawer.Backdrop className="glass-scrim fa-scrim" />
-          <Drawer.Viewport className="fa-dialog-side-viewport" data-edge={edge}>
+          {sheet?.scrim === false ? null : <Drawer.Backdrop className="glass-scrim fa-scrim" />}
+          <Drawer.Viewport {...sheet?.viewport} className="fa-dialog-side-viewport" data-edge={edge}>
             <Drawer.Popup
+              {...sheet?.popup}
               {...rest}
               {...data}
+              ref={sheet?.popupRef}
               initialFocus={initialFocus}
               data-edge={edge}
               className={cx("glass-overlay fa-dialog", className)}
             >
-              {edge === "bottom" ? <span className="fa-dialog-handle" aria-hidden /> : null}
+              {edge === "bottom" ? (sheet?.handle ?? <span className="fa-dialog-handle" aria-hidden />) : null}
               <Drawer.Content className="fa-dialog-content">{content}</Drawer.Content>
             </Drawer.Popup>
           </Drawer.Viewport>

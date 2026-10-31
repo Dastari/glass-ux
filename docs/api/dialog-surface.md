@@ -19,4 +19,5 @@ Sheet, the command palette). Internal; consumers use Dialog.Popup.
 | initialFocus | `boolean \| RefObject<HTMLElement \| null> \| ((openType: import("@base-ui/utils/useEnhancedClickHandler").InteractionType) => boolean \| HTMLElement \| null \| void) \| undefined` | See type | no | — | The element or behaviour to focus when the overlay opens. By default a keyboard open focuses the first control outside the header close button (or the popup), and a touch open focuses the popup. |
 | kind | `DialogKind \| undefined` | "dialog", "palette", "alert", "side", "settings" | no | "dialog" | `settings` fixes the height so switching sections never resizes the dialog. |
 | mode | `DialogMode` | "dialog", "side", "sheet" | yes | — | Active display or interaction mode. |
+| sheet | `SideSurfaceOptions \| undefined` | See type | no | — | `side` mode only: Sheet's scrim, handle and state attributes. |
 | size | `DialogSize \| undefined` | "full", "sm", "md", "lg", "xl" | no | "md" | sm 400 · md 560 · lg 760 · xl 1040 · full. Ignored by phone sheets (full width). |

@@ -398,6 +398,10 @@ export default defineMessagePack("ja", {
     discardChanges: "変更を破棄",
     keepEditing: "編集を続ける",
   },
+  sheet: {
+    heightControl: "シートの高さ",
+    heightStep: (position, count) => `高さ ${position}/${count}`,
+  },
   commandPalette: {
     recent: "最近",
     actions: "アクション",
@@ -2023,16 +2027,15 @@ export default defineMessagePack("ja", {
     keyboardPanel: "スクリーンキーボード",
   },
   sidebar: {
-    // English placeholders until translated.
-    toggleSidebar: "Toggle sidebar",
-    expandSidebar: "Expand sidebar",
-    collapseSidebar: "Collapse sidebar",
-    closeSidebar: "Close sidebar",
-    resizeSidebar: "Resize sidebar",
-    moreActions: "More actions",
-    expandGroup: ({ group }) => `Expand ${group}`,
-    collapseGroup: ({ group }) => `Collapse ${group}`,
-    filterPlaceholder: "Filter",
-    filterNavigation: "Filter navigation",
+    toggleSidebar: "サイドバーを切り替え",
+    expandSidebar: "サイドバーを展開",
+    collapseSidebar: "サイドバーを折りたたむ",
+    closeSidebar: "サイドバーを閉じる",
+    resizeSidebar: "サイドバーのサイズ変更",
+    moreActions: "その他の操作",
+    expandGroup: ({ group }) => `${group}を展開`,
+    collapseGroup: ({ group }) => `${group}を折りたたむ`,
+    filterPlaceholder: "絞り込み",
+    filterNavigation: "ナビゲーションを絞り込む",
   },
 }) as CatalogueMessagePack

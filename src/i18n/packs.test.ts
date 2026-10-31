@@ -53,6 +53,7 @@ describe("shipped language packs", () => {
       ["desktop", "sessionOnEnded", ["cedar-sample"]],
       ["message", "turn", [17]],
       ["toolActivity", "runningOf", [17, "23"]],
+      ["sheet", "heightStep", ["2", "3"]],
     ]
     const namespaces = pack.messages as Record<string, MessageSet>
     for (const [namespace, key, args] of samples) {

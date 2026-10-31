@@ -398,6 +398,10 @@ export default defineMessagePack("he", {
     discardChanges: "בטל שינויים",
     keepEditing: "המשך לערוך",
   },
+  sheet: {
+    heightControl: "גובה החלונית",
+    heightStep: (position, count) => `גובה ${position} מתוך ${count}`,
+  },
   commandPalette: {
     recent: "לאחרונה",
     actions: "פעולות",
@@ -2023,16 +2027,15 @@ export default defineMessagePack("he", {
     keyboardPanel: "מקלדת על המסך",
   },
   sidebar: {
-    // English placeholders until translated.
-    toggleSidebar: "Toggle sidebar",
-    expandSidebar: "Expand sidebar",
-    collapseSidebar: "Collapse sidebar",
-    closeSidebar: "Close sidebar",
-    resizeSidebar: "Resize sidebar",
-    moreActions: "More actions",
-    expandGroup: ({ group }) => `Expand ${group}`,
-    collapseGroup: ({ group }) => `Collapse ${group}`,
-    filterPlaceholder: "Filter",
-    filterNavigation: "Filter navigation",
+    toggleSidebar: "החלפת מצב סרגל הצד",
+    expandSidebar: "הרחבת סרגל הצד",
+    collapseSidebar: "כיווץ סרגל הצד",
+    closeSidebar: "סגירת סרגל הצד",
+    resizeSidebar: "שינוי גודל סרגל הצד",
+    moreActions: "פעולות נוספות",
+    expandGroup: ({ group }) => `הרחבת ${group}`,
+    collapseGroup: ({ group }) => `כיווץ ${group}`,
+    filterPlaceholder: "סינון",
+    filterNavigation: "סינון הניווט",
   },
 }) as CatalogueMessagePack

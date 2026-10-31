@@ -348,8 +348,18 @@
  * and a bottom sheet spans the phone. Each follows the finger while swiped toward its
  * edge, and only the edges it touches take the safe-area insets (R5.7).
  *
+ * Snap points (bottom): the sheet takes the viewport's height and rests translated down
+ * by Base UI's --drawer-snap-point-offset; padding of the same amount keeps the body and
+ * footer within the visible part. Below the highest point the body does not scroll, so a
+ * drag on it moves the sheet. The grab handle is then a slider (.fa-sheet-handle).
+ * Non-modal (data-modal="false" on the viewport): no scrim; the viewport lets the page
+ * take pointer input around the pane.
+ * Nested: a sheet opened from a sheet stacks on it without a second scrim; the parent
+ * recedes (lift, scale, dim) and follows the child's swipe back as it is dismissed.
+ *
  * Component tokens
- *   --_out   how far a side sheet travels to leave the screen
+ *   --_out      how far a side sheet travels to leave the screen
+ *   --_recede   0–1, how far a parent has receded behind the sheet it opened
  */
 @layer components {
   .fa-dialog-side-viewport {
@@ -388,8 +398,18 @@
     max-height: 100%;
     border-bottom-width: 0;
     border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
-    transform: translateY(var(--drawer-swipe-movement-y, 0px));
-    transition: transform var(--duration-slow) var(--ease-enter);
+    transform: translateY(calc(var(--drawer-snap-point-offset, 0px) + var(--drawer-swipe-movement-y, 0px)));
+    transition-property: transform, height;
+    transition-duration: var(--duration-slow);
+    transition-timing-function: var(--ease-enter);
+  }
+  .fa-dialog[data-edge="bottom"][data-snap-points] {
+    height: 100%;
+    padding-bottom: max(0px, calc(var(--drawer-snap-point-offset, 0px) + var(--drawer-swipe-movement-y, 0px)));
+    transition-property: transform, padding-bottom;
+  }
+  .fa-dialog[data-snap-points]:not([data-snap-top]) .fa-dialog-body {
+    overflow-y: hidden;
   }
   .fa-dialog[data-edge][data-size="sm"] {
     --_w: 22.5rem;
@@ -414,25 +434,102 @@
   }
   .fa-dialog[data-edge="bottom"]:is([data-starting-style], [data-ending-style]) {
     opacity: 1;
+    padding-bottom: 0;
     transform: translateY(100%);
   }
   .fa-dialog[data-edge][data-ending-style] {
     transition-duration: calc(var(--drawer-swipe-strength, 1) * var(--duration-slow));
     transition-timing-function: var(--ease-exit);
   }
-  .fa-dialog[data-edge][data-swiping] {
+  .fa-dialog[data-edge]:is([data-swiping], [data-nested-drawer-swiping]),
+  .fa-dialog[data-edge][data-nested-drawer-swiping]::after {
     transition-duration: 0s;
     user-select: none;
   }
 
+  /* A parent recedes while a sheet it opened is in front, and comes back as that sheet is
+     swiped away (Base UI sets the child's swipe progress on the parent). */
+  .fa-dialog[data-edge]:is([data-nested-drawer-open], [data-nested-dialog-open]) {
+    --_recede: calc(1 - clamp(0, var(--drawer-swipe-progress, 0), 1));
+  }
+  .fa-dialog[data-edge][data-nested-drawer-open]::after {
+    opacity: var(--_recede, 1);
+  }
   .fa-dialog[data-edge="right"]:is([data-nested-drawer-open], [data-nested-dialog-open]) {
-    transform: translateX(calc(var(--space-4) * -1)) scale(0.97);
+    transform: translateX(calc(var(--space-4) * -1 * var(--_recede))) scale(calc(1 - 0.03 * var(--_recede)));
   }
   .fa-dialog[data-edge="left"]:is([data-nested-drawer-open], [data-nested-dialog-open]) {
-    transform: translateX(var(--space-4)) scale(0.97);
+    transform: translateX(calc(var(--space-4) * var(--_recede))) scale(calc(1 - 0.03 * var(--_recede)));
+  }
+  /* A bottom parent is at least as tall as the sheet in front (Base UI measures both), then
+     shrinks toward its top edge and lifts, so its top shows above that sheet. One resting at
+     a snap point rises far enough to clear it. */
+  .fa-dialog[data-edge="bottom"]:not([data-snap-points]) {
+    height: var(--drawer-height, auto);
+    interpolate-size: allow-keywords;
+  }
+  .fa-dialog[data-edge="bottom"]:not([data-snap-points])[data-nested-drawer-open] {
+    height: max(var(--drawer-height, 0px), var(--drawer-frontmost-height, 0px));
   }
   .fa-dialog[data-edge="bottom"]:is([data-nested-drawer-open], [data-nested-dialog-open]) {
-    transform: translateY(calc(var(--space-3) * -1)) scale(0.95);
+    transform-origin: 50% 0;
+    transform: translateY(
+        calc(
+          min(var(--drawer-snap-point-offset, 0px), calc(100% - var(--drawer-frontmost-height, 0px))) - var(--space-3) *
+            var(--_recede)
+        )
+      )
+      scale(calc(1 - 0.05 * var(--_recede)));
+  }
+
+  /* ── Snap point handle ── a vertical slider over the snap points ─────── */
+  .fa-sheet-handle {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-self: center;
+    padding: var(--space-2) var(--space-5);
+    margin-bottom: calc(var(--space-2) * -1);
+    border-radius: var(--radius-full);
+    outline: none;
+    cursor: grab;
+    touch-action: none;
+  }
+  /* At least the 24px target (WCAG 2.5.8), however small the UI scale. */
+  .fa-sheet-handle::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 50%;
+    min-height: var(--target-aa);
+    height: 100%;
+    translate: 0 -50%;
+  }
+  .fa-sheet-handle > .fa-dialog-handle {
+    margin: 0;
+    transition-property: background-color, width;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-sheet-handle:hover > .fa-dialog-handle {
+    background-color: var(--fg-subtle);
+  }
+  .fa-sheet-handle:focus-visible > .fa-dialog-handle {
+    --_hw: 3rem;
+    background-color: var(--accent);
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-dialog[data-swiping] .fa-sheet-handle {
+    cursor: grabbing;
+  }
+
+  /* ── Non-modal ── the page around the pane keeps its pointer input ───── */
+  .fa-dialog-side-viewport[data-modal="false"] {
+    pointer-events: none;
+  }
+  .fa-dialog-side-viewport[data-modal="false"] > .fa-dialog {
+    pointer-events: auto;
   }
 
   /* A bottom sheet keeps its last row and its footer above the home indicator. */

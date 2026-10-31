@@ -398,6 +398,10 @@ export default defineMessagePack("nl", {
     discardChanges: "Wijzigingen verwerpen",
     keepEditing: "Verder bewerken",
   },
+  sheet: {
+    heightControl: "Hoogte van het paneel",
+    heightStep: (position, count) => `Hoogte ${position} van ${count}`,
+  },
   commandPalette: {
     recent: "Recent",
     actions: "Acties",
@@ -2023,16 +2027,15 @@ export default defineMessagePack("nl", {
     keyboardPanel: "Schermtoetsenbord",
   },
   sidebar: {
-    // English placeholders until translated.
-    toggleSidebar: "Toggle sidebar",
-    expandSidebar: "Expand sidebar",
-    collapseSidebar: "Collapse sidebar",
-    closeSidebar: "Close sidebar",
-    resizeSidebar: "Resize sidebar",
-    moreActions: "More actions",
-    expandGroup: ({ group }) => `Expand ${group}`,
-    collapseGroup: ({ group }) => `Collapse ${group}`,
-    filterPlaceholder: "Filter",
-    filterNavigation: "Filter navigation",
+    toggleSidebar: "Zijbalk tonen of verbergen",
+    expandSidebar: "Zijbalk uitvouwen",
+    collapseSidebar: "Zijbalk samenvouwen",
+    closeSidebar: "Zijbalk sluiten",
+    resizeSidebar: "Formaat van zijbalk wijzigen",
+    moreActions: "Meer acties",
+    expandGroup: ({ group }) => `${group} uitvouwen`,
+    collapseGroup: ({ group }) => `${group} samenvouwen`,
+    filterPlaceholder: "Filteren",
+    filterNavigation: "Navigatie filteren",
   },
 }) as CatalogueMessagePack

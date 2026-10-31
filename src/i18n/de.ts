@@ -398,6 +398,10 @@ export default defineMessagePack("de", {
     discardChanges: "Änderungen verwerfen",
     keepEditing: "Weiter bearbeiten",
   },
+  sheet: {
+    heightControl: "Höhe des Bereichs",
+    heightStep: (position, count) => `Höhe ${position} von ${count}`,
+  },
   commandPalette: {
     recent: "Neu",
     actions: "Aktionen",
@@ -2023,16 +2027,15 @@ export default defineMessagePack("de", {
     keyboardPanel: "Bildschirmtastatur",
   },
   sidebar: {
-    // English placeholders until translated.
-    toggleSidebar: "Toggle sidebar",
-    expandSidebar: "Expand sidebar",
-    collapseSidebar: "Collapse sidebar",
-    closeSidebar: "Close sidebar",
-    resizeSidebar: "Resize sidebar",
-    moreActions: "More actions",
-    expandGroup: ({ group }) => `Expand ${group}`,
-    collapseGroup: ({ group }) => `Collapse ${group}`,
-    filterPlaceholder: "Filter",
-    filterNavigation: "Filter navigation",
+    toggleSidebar: "Seitenleiste umschalten",
+    expandSidebar: "Seitenleiste ausklappen",
+    collapseSidebar: "Seitenleiste einklappen",
+    closeSidebar: "Seitenleiste schließen",
+    resizeSidebar: "Größe der Seitenleiste ändern",
+    moreActions: "Weitere Aktionen",
+    expandGroup: ({ group }) => `${group} ausklappen`,
+    collapseGroup: ({ group }) => `${group} einklappen`,
+    filterPlaceholder: "Filtern",
+    filterNavigation: "Navigation filtern",
   },
 }) as CatalogueMessagePack

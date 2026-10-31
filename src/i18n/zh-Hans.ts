@@ -398,6 +398,10 @@ export default defineMessagePack("zh-Hans", {
     discardChanges: "放弃更改",
     keepEditing: "继续编辑",
   },
+  sheet: {
+    heightControl: "面板高度",
+    heightStep: (position, count) => `高度：第 ${position} 档，共 ${count} 档`,
+  },
   commandPalette: {
     recent: "最近",
     actions: "行动",
@@ -2023,16 +2027,15 @@ export default defineMessagePack("zh-Hans", {
     keyboardPanel: "屏幕键盘",
   },
   sidebar: {
-    // English placeholders until translated.
-    toggleSidebar: "Toggle sidebar",
-    expandSidebar: "Expand sidebar",
-    collapseSidebar: "Collapse sidebar",
-    closeSidebar: "Close sidebar",
-    resizeSidebar: "Resize sidebar",
-    moreActions: "More actions",
-    expandGroup: ({ group }) => `Expand ${group}`,
-    collapseGroup: ({ group }) => `Collapse ${group}`,
-    filterPlaceholder: "Filter",
-    filterNavigation: "Filter navigation",
+    toggleSidebar: "切换侧边栏",
+    expandSidebar: "展开侧边栏",
+    collapseSidebar: "折叠侧边栏",
+    closeSidebar: "关闭侧边栏",
+    resizeSidebar: "调整侧边栏大小",
+    moreActions: "更多操作",
+    expandGroup: ({ group }) => `展开${group}`,
+    collapseGroup: ({ group }) => `折叠${group}`,
+    filterPlaceholder: "筛选",
+    filterNavigation: "筛选导航",
   },
 }) as CatalogueMessagePack

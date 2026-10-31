@@ -398,6 +398,10 @@ export default defineMessagePack("ar", {
     discardChanges: "تجاهل التغييرات",
     keepEditing: "استمر في التحرير",
   },
+  sheet: {
+    heightControl: "ارتفاع اللوحة",
+    heightStep: (position, count) => `الارتفاع ${position} من ${count}`,
+  },
   commandPalette: {
     recent: "الأخيرة",
     actions: "الإجراءات",
@@ -2024,16 +2028,15 @@ export default defineMessagePack("ar", {
     keyboardPanel: "لوحة المفاتيح على الشاشة",
   },
   sidebar: {
-    // English placeholders until translated.
-    toggleSidebar: "Toggle sidebar",
-    expandSidebar: "Expand sidebar",
-    collapseSidebar: "Collapse sidebar",
-    closeSidebar: "Close sidebar",
-    resizeSidebar: "Resize sidebar",
-    moreActions: "More actions",
-    expandGroup: ({ group }) => `Expand ${group}`,
-    collapseGroup: ({ group }) => `Collapse ${group}`,
-    filterPlaceholder: "Filter",
-    filterNavigation: "Filter navigation",
+    toggleSidebar: "تبديل الشريط الجانبي",
+    expandSidebar: "توسيع الشريط الجانبي",
+    collapseSidebar: "طي الشريط الجانبي",
+    closeSidebar: "إغلاق الشريط الجانبي",
+    resizeSidebar: "تغيير حجم الشريط الجانبي",
+    moreActions: "إجراءات إضافية",
+    expandGroup: ({ group }) => `توسيع ${group}`,
+    collapseGroup: ({ group }) => `طي ${group}`,
+    filterPlaceholder: "تصفية",
+    filterNavigation: "تصفية التنقل",
   },
 }) as CatalogueMessagePack

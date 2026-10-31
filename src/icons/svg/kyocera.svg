@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <path class="t" d="M3.5 3.5L12 12L3.5 20.5V3.5Z"/>
-  <path d="M3.5 3.5L12 12L3.5 20.5V3.5Z"/>
-  <path d="M20.5 3.5L12 12L20.5 20.5V15L17.5 12L20.5 9V3.5Z"/>
+  <path class="t" d="M10 3.5L17 12L10 20.5V3.5ZM3.5 3.5H10L3.5 10V3.5ZM3.5 20.5V14L10 20.5H3.5Z"/>
+  <path d="M3.5 10V3.5H20.5V8.5L17 12L20.5 15.5V20.5H3.5V14"/>
+  <path d="M3.5 10L10 3.5V20.5L3.5 14"/>
+  <path d="M10 3.5L17 12L10 20.5"/>
 </svg>

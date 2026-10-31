@@ -36,6 +36,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconArrowUpRight** — Arrow Up Right icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconArrowUp** — Arrow Up icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconAruba** — Aruba icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconAsusRog** — Asus Rog icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconAsus** — Asus icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconAttach** — Attach icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconAudiocodes** — Audiocodes icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.

@@ -31,9 +31,12 @@ set. No external logo SVGs or icon packages are bundled. Identity references inc
 [X Brand Toolkit](https://about.x.com/en/who-we-are/brand-toolkit), and
 [GitHub Brand Toolkit](https://brand.github.com/foundations/logo).
 
-Device manufacturer identifiers use original geometric symbols and monograms in
-`scripts/icon-authoring/defs/device-computers-network.mjs` and
-`scripts/icon-authoring/defs/device-printers-voip.mjs`. References include manufacturers'
-own sites, such as [Dell](https://www.dell.com/), [HP](https://www.hp.com/),
-[Cisco](https://www.cisco.com/), [Ubiquiti](https://ui.com/),
-[Yealink](https://www.yealink.com/) and [Kyocera](https://global.kyocera.com/).
+Device manufacturer identifiers are original geometric drawings in
+`scripts/icon-authoring/defs/device-computers-network.mjs`,
+`scripts/icon-authoring/defs/device-network.mjs` and
+`scripts/icon-authoring/defs/device-printers-voip.mjs`: the brand's current symbol, or the
+initial of its wordmark where it has no symbol. They were checked side by side against each
+manufacturer's current logo, as shown on its own site and in its Wikipedia infobox, such as
+[Dell](https://www.dell.com/), [HP](https://www.hp.com/), [Cisco](https://www.cisco.com/),
+[Ubiquiti](https://ui.com/), [Yealink](https://www.yealink.com/) and
+[Kyocera](https://global.kyocera.com/).

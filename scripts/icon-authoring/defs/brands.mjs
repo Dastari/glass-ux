@@ -1,10 +1,29 @@
-import { angleOf, arc, circle, cut, d, dotEl, intersect, line, nearPrims, path, pl, poly, rect, rot, tinted } from "../lib.mjs"
+import { angleOf, arc, circle, cut, d, dotEl, ellipse, intersect, line, move, nearPrims, path, pl, poly, rect, rot, tinted, V } from "../lib.mjs"
 
 // Original, monochrome adaptations for identifying external services. These use the
 // shared grid and circular geometry rather than importing third-party SVG artwork.
 export const icons = {}
 const def = (name, fn) => (icons[name] = fn)
 const outline = (points, radius = 0.75) => d(poly(points, radius), true)
+/** The straight run from circle 1 to circle 2 (s = 1 travels clockwise, -1 counter-clockwise). */
+const tangent = (c1, r1, s1, c2, r2, s2) => {
+  const D = V.sub(c2, c1)
+  const phi = Math.atan2(D[1], D[0])
+  const beta = Math.acos((r1 * s1 - r2 * s2) / V.len(D))
+  for (const b of [beta, -beta]) {
+    const n = [Math.cos(phi + b), Math.sin(phi + b)]
+    if (V.dot(D, [-n[1], n[0]]) <= 0) continue
+    const p = V.add(c1, V.mul(n, r1 * s1))
+    const q = V.add(c2, V.mul(n, r2 * s2))
+    return { p, q, a: angleOf(c1, p), b: angleOf(c2, q) }
+  }
+}
+/** An arc from angle a0 to a1, unwrapped to run clockwise (s = 1) or counter-clockwise (s = -1). */
+const sweep = (c, r, a0, a1, s) => {
+  while (s > 0 && a1 < a0) a1 += 360
+  while (s < 0 && a1 > a0) a1 -= 360
+  return arc(c, r, a0, a1)
+}
 
 def("google", () => [
   path(d([arc([12, 12], 8.5, 45, -270)])),
@@ -12,8 +31,9 @@ def("google", () => [
 ])
 
 def("microsoft", () => [
-  rect(14, 3.5, 6.5, 6.5, 1.5, "t"),
-  ...[[3.5, 3.5], [14, 3.5], [3.5, 14], [14, 14]].map(([x, y]) => rect(x, y, 6.5, 6.5, 1.5)),
+  // Four square-cornered tiles with the logo's tight gutter.
+  rect(13.5, 3.5, 7, 7, 0, "t"),
+  ...[[3.5, 3.5], [13.5, 3.5], [3.5, 13.5], [13.5, 13.5]].map(([x, y]) => rect(x, y, 7, 7)),
 ])
 
 def("apple", () => {
@@ -34,9 +54,21 @@ def("amazon", () => {
   ]
 })
 
-def("meta", () => [
-  path("M12 13.5L8.5 7.25A3 3 0 0 0 3.5 8.5A10 10 0 0 0 2.5 13A3.5 3.5 0 0 0 9 15L15 7.25A3 3 0 0 1 20 8.5A10 10 0 0 1 21 13A3.5 3.5 0 0 1 14.5 15L12 10.5"),
-])
+def("meta", () => {
+  // Meta's loop is not a symmetric infinity: the left loop is narrow, leaning on a long
+  // curved outer side to a tight crown; the right loop is broad, with a near-vertical side.
+  const side = [11.5, 13.5], lt = [8.42, 9.25], lb = [5.75, 15.2], rt = [16, 10.75], rb = [18.5, 15.2]
+  const down = tangent(lt, 2.75, 1, rb, 2, -1)
+  const up = tangent(rt, 4.5, -1, lb, 2, 1)
+  const at = (c) => angleOf(side, c)
+  return [path(d(move([
+    line(down.p, down.q),
+    sweep(rb, 2, down.b, 90, -1), line([20.5, 15.2], [20.5, 10.75]),
+    sweep(rt, 4.5, 90, up.a, -1), line(up.p, up.q),
+    sweep(lb, 2, up.b, at(lb), 1), sweep(side, 8, at(lb), at(lt), 1),
+    sweep(lt, 2.75, at(lt), down.a, 1),
+  ], 0, 0.25), true))]
+})
 
 def("facebook", () => [
   // The circular badge: the f's stem runs down to meet the rim, as in the app icon.
@@ -78,19 +110,30 @@ def("tiktok", () => [
   path("M14 3.5V15.5A4.5 4.5 0 1 1 9.5 11H10.5M14 3.5A6.5 6.5 0 0 0 20.5 10"),
 ])
 
-def("reddit", () => [
-  path("M12 8L14 3.5H18.5"),
-  circle(20, 3.5, 1.5),
-  path("M20 14A8 6 0 1 1 4 14A8 6 0 1 1 20 14Z", "t"),
-  path("M20 14A8 6 0 1 1 4 14A8 6 0 1 1 20 14Z"),
-  dotEl(8.5, 12.5),
-  dotEl(15.5, 12.5),
-  path("M9 16.5A5 5 0 0 0 15 16.5"),
-])
+def("reddit", () => {
+  // Snoo: the wide head with a round ear on each upper side, and the antenna bending out
+  // to its ball.
+  const head = "M20 14A8 6 0 1 1 4 14A8 6 0 1 1 20 14Z"
+  return [
+    path("M12 8L14 3.5H18.5"),
+    circle(20, 3.5, 1.5),
+    path(head, "t"), path(head),
+    dotEl(4.25, 9, 1.5),
+    dotEl(19.75, 9, 1.5),
+    dotEl(8.5, 12.5),
+    dotEl(15.5, 12.5),
+    path("M9 16.5A5 5 0 0 0 15 16.5"),
+  ]
+})
 
 def("discord", () => {
-  const body = outline([[7, 5.5], [17, 5.5], [21.25, 17.5], [17.5, 19.5], [15.5, 17], [8.5, 17], [6.5, 19.5], [2.75, 17.5]], 1)
-  return [path(body, "t"), path(body), dotEl(8.5, 12, 1.5), dotEl(15.5, 12, 1.5)]
+  // Clyde: the brow steps down between two raised corners, the cheeks bow out to two
+  // lobes, and the chin between them sags in a shallow smile. Oval eyes.
+  const body = outline([
+    [6, 6.5], [9.5, 5.25], [10.25, 6.5], [13.75, 6.5], [14.5, 5.25], [18, 6.5], [20.1, 10.75],
+    [21, 16], [16.5, 19.25], [15.5, 17], [12, 17.75], [8.5, 17], [7.5, 19.25], [3, 16], [3.9, 10.75],
+  ], [2, 0.5, 0.5, 0.5, 0.5, 2, 8, 2, 1, 0.5, 8, 0.5, 1, 2, 8])
+  return [path(body, "t"), path(body), ellipse(9.25, 12.5, 1.4, 1.65, "d"), ellipse(14.75, 12.5, 1.4, 1.65, "d")]
 })
 
 def("telegram", () => {
@@ -115,13 +158,32 @@ def("pinterest", () => [
 ])
 
 def("snapchat", () => {
-  const ghost = "M7 11V7.5A5 5 0 0 1 17 7.5V11L20.5 12.5L17.5 15.5L21 17L17 18.5L15 21L12 19.5L9 21L7 18.5L3 17L6.5 15.5L3.5 12.5Z"
+  // The ghost: a round head, small arms flaring from its sides, a skirt sweeping out to
+  // the hem corners and a gently wavy hem.
+  const half = [[17.25, 4.25], [17.25, 10], [20, 11.5], [16.75, 12.75], [18, 15], [21, 16.75], [18, 18], [17.5, 18.75]]
+  const radii = [5.25, 0.5, 1, 0.5, 3, 0.75, 0.5, 0.5]
+  const points = [...half, [12, 20], ...half.slice().reverse().map(([x, y]) => [24 - x, y])]
+  const ghost = outline(points, [...radii, 6, ...radii.slice().reverse()])
   return [path(ghost, "t"), path(ghost)]
 })
 
-def("threads", () => [
-  path("M18.5 7A8.5 8.5 0 0 0 3.5 12A8.5 8.5 0 0 0 20.5 12A5.5 5.5 0 0 0 11.5 9A3 3 0 1 0 16.5 11.5V9A4.5 4.5 0 0 0 9 6.5"),
-])
+def("threads", () => {
+  // The outer stroke runs from the top right round a tall loop and curls over the bump into
+  // the bowl's bar. The inner hook drops its stem onto that bar.
+  const top = [12, 11.1], bottom = [12, 12.9], bump = [17.08, 15.25], r = 8.1
+  const loop = [
+    arc(top, r, 55, -90),
+    line([3.9, 11.1], [3.9, 12.9]),
+    arc(bottom, r, 270, 114.8),
+    arc(bump, 2.5, 114.8, 0),
+    line([17.08, 12.75], [10, 12.75]),
+    arc([10, 15.38], 2.63, 0, -180),
+    line([10, 18], [12, 18]),
+    arc([12, 14.25], 3.75, 180, 125),
+  ]
+  const hook = [arc([12.5, 10], 3, 300, 450), line([15.5, 10], [15.5, 12.75])]
+  return [path(d(move(loop, 0.25, 0))), path(d(move(hook, 0.25, 0)))]
+})
 
 def("twitch", () => {
   const body = outline([[4, 3.5], [21, 3.5], [21, 15], [15.5, 20.5], [11, 20.5], [7.5, 22.5], [7.5, 18.5], [4, 18.5]], 0)
@@ -139,8 +201,12 @@ def("github", () => {
 })
 
 def("gitlab", () => {
-  const fox = outline([[3, 10], [5.25, 3.5], [8, 9], [16, 9], [18.75, 3.5], [21, 10], [18.5, 17], [12, 21], [5.5, 17]], 0.75)
-  return [path("M8 9H16L12 21Z", "t"), path(fox), path("M8 9L12 21L16 9M3.5 11L12 21L20.5 11")]
+  // The 2022 tanuki: rounded ears, a flat brow between them, cheeks that round off into
+  // straight jaws meeting at the chin. No facet lines.
+  const fox = outline([
+    [2.5, 9.5], [6, 2.25], [8.5, 8], [15.5, 8], [18, 2.25], [21.5, 9.5], [20, 15.25], [12, 20.5], [4, 15.25],
+  ], [1, 1, 0.75, 0.75, 1, 1, 3, 1.25, 3])
+  return [path(fox, "t"), path(fox)]
 })
 
 def("bitbucket", () => {
@@ -160,19 +226,25 @@ def("figma", () => {
   return [path("M12 9H8.5A3 3 0 0 0 8.5 15H12Z", "t"), path(body), path("M8.5 9H15.5M8.5 15H12M12 3V15")]
 })
 
-def("notion", () => [
-  rect(3.5, 3.5, 17, 17, 2.5, "t"), rect(3.5, 3.5, 17, 17, 2.5),
-  path("M8 16V8L16 16V8"),
-])
+def("notion", () => {
+  // The block seen from the upper left: a top and a side face (tinted) behind the front
+  // face, which carries a serif N.
+  const A = [3.5, 5.25], B = [16.25, 3.5], C = [20.5, 6.25], D = [20.5, 20.5], E = [7, 20.5], F = [3.5, 17.5], G = [7, 8]
+  const faces = outline([A, B, C, G, E, F], [1, 1, 1, 0, 1, 1])
+  return [
+    path(faces, "t"),
+    path(outline([A, B, C, D, E, F], 1)),
+    // The front face's edges stop inside the rounded outline corners they run into.
+    path(d(pl([[7, 19.75], G, V.add(G, V.mul(V.sub(C, G), 0.94))]))),
+    path("M10 10.5H12.25L16.75 17.5V10.5M15.25 10.5H18M11 10.5V17.5M9.75 17.5H12.25"),
+  ]
+})
 
 def("dropbox", () => {
-  const diamonds = [
-    [[3, 7], [7.5, 4], [12, 7], [7.5, 10]],
-    [[12, 7], [16.5, 4], [21, 7], [16.5, 10]],
-    [[3, 13], [7.5, 10], [12, 13], [7.5, 16]],
-    [[12, 13], [16.5, 10], [21, 13], [16.5, 16]],
-  ].map((points) => outline(points, 0))
-  return [path(diamonds[0], "t"), ...diamonds.map((shape) => path(shape)), path("M7.5 19L12 22L16.5 19")]
+  // Four diamonds in two rows, and a fifth tucked into the notch below them.
+  const diamond = (x, y) => outline([[x - 4.5, y], [x, y - 2.75], [x + 4.5, y], [x, y + 2.75]], 0)
+  const diamonds = [[7.5, 6], [16.5, 6], [7.5, 11.5], [16.5, 11.5], [12, 17.75]].map(([x, y]) => diamond(x, y))
+  return [path(diamonds[0], "t"), ...diamonds.map((shape) => path(shape))]
 })
 
 def("zoom", () => [

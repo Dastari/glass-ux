@@ -4,7 +4,24 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## 0.12.1
+## Unreleased
+
+### Added
+
+- Icon `asus-rog` (`IconAsusRog`), the ASUS Republic of Gamers eye, filed under Device
+  manufacturers and found by "ROG" and "Republic of Gamers".
+
+### Changed
+
+- Brand icons redrawn after a check against each brand's current logo. Brands with a symbol
+  now show it: Poly's p, Grandstream's fin, MikroTik's cube, Palo Alto's bars, Vertiv's disc,
+  WatchGuard's ring, Mitel's knot, Jabra's hand, Ruckus's dog, the new Xerox and ASUS marks,
+  and truer Huawei, Philips, Yamaha, Zebra, Lexmark, Kyocera, Crestron and Alcatel-Lucent
+  symbols. HPE and Intel follow their 2025 and 2023 logos, and Logitech its corporate rather
+  than gaming identity. Wordmark-only brands use their wordmark's own initial (Canon's C,
+  Sony's slab-serif S) instead of a generic letter, so brands that share an initial can be told
+  apart. Threads, Discord, Meta, Notion and GitLab are redrawn; Dropbox, Snapchat, Microsoft
+  and Reddit are corrected. Icon names are unchanged.
 
 On-screen keyboards for kiosks, TVs and touch screens, and a fix for a standalone chart table.
 

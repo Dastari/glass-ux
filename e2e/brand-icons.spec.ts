@@ -28,7 +28,7 @@ for (const width of [320, 1440]) {
         name: "Device manufacturers",
         exact: true,
       });
-      await expect(group.locator("[data-icon-tile]")).toHaveCount(72);
+      await expect(group.locator("[data-icon-tile]")).toHaveCount(73);
       for (const [size, pixels] of [
         ["xs", 14],
         ["sm", 16],

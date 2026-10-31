@@ -1,7 +1,7 @@
 /** Catalogue search categories; a manufacturer can appear in several device classes. */
 const DEVICE_CATEGORIES: Array<[keywords: string, names: string[]]> = [
   ["computer laptop desktop workstation server motherboard processor gpu", [
-    "acer", "amd", "asus", "dell", "fujitsu", "gigabyte", "hp", "hpe", "intel", "lenovo", "msi", "nvidia", "panasonic", "samsung", "supermicro",
+    "acer", "amd", "asus", "asus-rog", "dell", "fujitsu", "gigabyte", "hp", "hpe", "intel", "lenovo", "msi", "nvidia", "panasonic", "samsung", "supermicro",
   ]],
   ["voip phone telephone handset communications pbx sip", [
     "alcatel-lucent", "audiocodes", "avaya", "fanvil", "gigaset", "grandstream", "mitel", "poly", "snom", "yealink", "cisco", "panasonic",
@@ -39,6 +39,7 @@ for (const [name, aliases] of [
   ["palo-alto", "palo alto networks"], ["western-digital", "wd wdc"],
   ["poly", "polycom plantronics"], ["axis", "axis communications"],
   ["apc", "american power conversion"], ["aruba", "aruba instant on"],
+  ["asus-rog", "rog republic of gamers gaming"],
 ] as const) {
   DEVICE_BRAND_KEYWORDS.set(name, `${DEVICE_BRAND_KEYWORDS.get(name) ?? ""} ${aliases}`)
 }

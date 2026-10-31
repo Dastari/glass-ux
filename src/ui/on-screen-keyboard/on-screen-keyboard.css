@@ -1,0 +1,386 @@
+/*
+ * OnScreenKeyboard — keys on a proportional grid.
+ *
+ *   grid       one CSS grid for every row: columns are quarter key units (--_cols), rows are
+ *              fixed (--_rows, the tallest layer of the shown layout), so a layer or Shift
+ *              change swaps labels in place and nothing moves; switching layout may resize
+ *   key        the whole cell is the button, gap included: no dead zones between keys; the
+ *              visible keycap (.fa-osk-cap) is inset by half the gap
+ *   roles      char      a key that types: the lit control fill
+ *              function  Shift, Backspace, layer, globe, hide: a recessed fill, muted ink
+ *              accent    Enter as Search, Go, Done, Next or Send: the accent fill
+ *   variants   keys      keycaps with gaps (typing layouts)
+ *              grid      flat tiles (the alphabet grid, number pads)
+ *   sizes      sm 32 · md 40 · lg (10-foot / TV) 72, with a ring visible across a room
+ *
+ * The keyboard brings no surface or padding of its own: put it in a Surface, Panel or the
+ * keyboard drawer, which supply the material and the insets. Narrow containers compact the
+ * gaps and labels (container queries); coarse pointers show a preview of the pressed key.
+ */
+@layer components {
+  .fa-osk {
+    --_cols: 40;
+    --_rows: 4;
+    position: relative;
+    min-width: 0;
+    container-type: inline-size;
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Component tokens live on the grid and the alternates strip, so the keyboard's own
+     container queries can change them. */
+  .fa-osk :is(.fa-osk-grid, .fa-osk-alternates) {
+    --_key-h: var(--control-h-md);
+    --_gap: var(--space-1-5);
+    --_r: var(--radius-control);
+    --_font: var(--type-subtitle-size);
+    --_text: var(--type-label-size);
+    --_icon: var(--icon-md);
+    --_ring: var(--focus-ring-width);
+  }
+  .fa-osk[data-size="sm"] :is(.fa-osk-grid, .fa-osk-alternates) {
+    --_key-h: var(--control-h-sm);
+    --_gap: var(--space-1);
+    --_r: var(--radius-compact);
+    --_font: var(--type-body-size);
+    --_text: var(--type-caption-size);
+    --_icon: var(--icon-sm);
+  }
+  .fa-osk[data-size="lg"] :is(.fa-osk-grid, .fa-osk-alternates) {
+    --_key-h: calc(var(--control-h-lg) * 1.5);
+    --_gap: var(--space-2);
+    --_font: var(--type-headline-size);
+    --_text: var(--type-subtitle-size);
+    --_icon: var(--icon-xl);
+    --_ring: calc(var(--focus-ring-width) * 2);
+  }
+  .fa-osk[data-variant="grid"] :is(.fa-osk-grid, .fa-osk-alternates) {
+    --_r: var(--radius-item);
+  }
+
+  .fa-osk-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--_cols), minmax(0, 1fr));
+    grid-template-rows: repeat(var(--_rows), calc(var(--_key-h) + var(--_gap)));
+    /* Cells carry half the gap on each side; the caps line up with the container's edges. */
+    margin: calc(var(--_gap) / -2);
+  }
+
+  .fa-osk-key,
+  .fa-osk-gap {
+    min-width: 0;
+  }
+  .fa-osk-key {
+    position: relative;
+    display: flex;
+    margin: 0;
+    padding: calc(var(--_gap) / 2);
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    outline: none;
+  }
+  .fa-osk-key:disabled {
+    cursor: default;
+  }
+  .fa-osk-key:focus-visible {
+    z-index: 1;
+    outline: none;
+  }
+
+  .fa-osk-cap {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: var(--_r);
+    background-color: var(--glass-fill-control);
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--glass-edge),
+      inset 0 var(--border-width) 0 var(--glass-rim-top),
+      0 var(--border-width) 0 oklch(from var(--shadow-tint) l c h / 0.16);
+    font-size: var(--_font);
+    line-height: 1.15;
+    font-weight: var(--weight-regular);
+    white-space: nowrap;
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard),
+      scale var(--duration-fast) var(--ease-standard);
+  }
+  .fa-osk-cap .fa-icon {
+    width: var(--_icon);
+    height: var(--_icon);
+  }
+  .fa-osk-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-osk-text {
+    max-width: 100%;
+    padding-inline: var(--space-1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: var(--_text);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--type-label-tracking);
+  }
+  .fa-osk-hint {
+    font-size: var(--type-overline-size);
+    line-height: var(--type-overline-line);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--type-overline-tracking);
+    color: var(--fg-muted);
+  }
+  .fa-osk-space-label {
+    max-width: 100%;
+    padding-inline: var(--space-2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: var(--_text);
+    color: var(--fg-subtle);
+  }
+  /* ␣ drawn as a bracket, so it does not depend on the font. */
+  .fa-osk-space-glyph {
+    width: calc(var(--_icon) * 1.4);
+    height: calc(var(--_icon) * 0.35);
+    border: var(--border-width-strong) solid currentColor;
+    border-block-start: 0;
+    border-end-start-radius: var(--radius-line);
+    border-end-end-radius: var(--radius-line);
+  }
+  /* Press and hold offers alternates. */
+  .fa-osk-mark {
+    position: absolute;
+    /* Clear of the cap's rounded corner at every radius setting. */
+    inset-block-start: max(var(--space-1), calc(var(--_r) * 0.45));
+    inset-inline-end: max(var(--space-1), calc(var(--_r) * 0.45));
+    width: calc(var(--space-1) * 0.75);
+    height: calc(var(--space-1) * 0.75);
+    border-radius: var(--radius-full);
+    background-color: currentColor;
+    opacity: 0.22;
+  }
+  .fa-osk[data-size="sm"] .fa-osk-mark {
+    inset-block-start: max(var(--space-half), calc(var(--_r) * 0.45));
+    inset-inline-end: max(var(--space-half), calc(var(--_r) * 0.45));
+    width: var(--space-half);
+    height: var(--space-half);
+  }
+
+  /* ── Roles ─────────────────────────────────────────────────────────────── */
+  .fa-osk-key[data-role="function"] > .fa-osk-cap {
+    /* Darker than the character keys in light and dark: the control fill shaded. */
+    background-color: color-mix(in oklab, var(--glass-fill-control), var(--shadow-tint) 14%);
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--glass-edge),
+      0 var(--border-width) 0 oklch(from var(--shadow-tint) l c h / 0.12);
+    color: var(--fg-muted);
+  }
+  .fa-osk-key[data-role="accent"] > .fa-osk-cap {
+    background-color: var(--accent);
+    background-image: var(--sheen-solid);
+    box-shadow:
+      inset 0 0 0 var(--border-width) oklch(from var(--accent) calc(l - 0.07) c h),
+      inset 0 var(--border-width) 0 var(--rim-light);
+    color: var(--accent-fg);
+  }
+  /* Shift on: the arrow fills; Caps Lock: the lock bar too, in the accent. */
+  .fa-osk-key[data-action="shift"]:is([data-state="once"], [data-state="lock"]) > .fa-osk-cap {
+    background-color: var(--glass-fill-control);
+    color: var(--fg);
+  }
+  .fa-osk-key[data-action="shift"]:is([data-state="once"], [data-state="lock"]) .fa-icon-tint {
+    opacity: 1;
+  }
+  .fa-osk-key[data-action="shift"][data-state="lock"] > .fa-osk-cap {
+    color: var(--accent-text);
+  }
+
+  /* ── States ────────────────────────────────────────────────────────────── */
+  @media (hover: hover) {
+    .fa-osk-key:hover:not(:disabled) > .fa-osk-cap {
+      background-color: var(--glass-fill-control-hover);
+    }
+    .fa-osk-key[data-role="function"]:hover:not(:disabled) > .fa-osk-cap {
+      background-color: color-mix(in oklab, var(--glass-fill-control), var(--shadow-tint) 20%);
+      color: var(--fg);
+    }
+    .fa-osk-key[data-role="accent"]:hover:not(:disabled) > .fa-osk-cap {
+      background-color: var(--accent-hover);
+    }
+  }
+  .fa-osk-key[data-pressed] > .fa-osk-cap {
+    background-color: var(--fill-press);
+    scale: var(--press-scale);
+  }
+  .fa-osk-key[data-role="function"][data-pressed] > .fa-osk-cap {
+    background-color: var(--glass-fill-control);
+    color: var(--fg);
+  }
+  .fa-osk-key[data-role="accent"][data-pressed] > .fa-osk-cap {
+    background-color: var(--accent-active);
+  }
+  .fa-osk-key:focus-visible > .fa-osk-cap {
+    outline: var(--_ring) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-osk[data-disabled] .fa-osk-grid {
+    opacity: var(--disabled-opacity);
+  }
+
+  /* ── Grid variant: flat tiles ──────────────────────────────────────────── */
+  .fa-osk[data-variant="grid"] .fa-osk-cap {
+    background-color: var(--fill-muted);
+    background-image: none;
+    box-shadow: none;
+  }
+  .fa-osk[data-variant="grid"] .fa-osk-key[data-role="function"] > .fa-osk-cap {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+  }
+  .fa-osk[data-variant="grid"] .fa-osk-key[data-role="accent"] > .fa-osk-cap {
+    background-color: var(--accent);
+    background-image: var(--sheen-solid);
+  }
+  @media (hover: hover) {
+    .fa-osk[data-variant="grid"] .fa-osk-key:hover:not(:disabled) > .fa-osk-cap {
+      background-color: var(--fill-press);
+    }
+  }
+  /* A focused tile fills with the accent: the remote's position reads across a room. */
+  .fa-osk[data-variant="grid"] .fa-osk-key:focus-visible > .fa-osk-cap {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+    outline-color: var(--accent-ring);
+  }
+
+  /* ── TV: a focused key lifts as well as ringing ────────────────────────── */
+  .fa-osk[data-size="lg"] .fa-osk-key:focus-visible > .fa-osk-cap {
+    scale: 1.06;
+    box-shadow: var(--shadow-2);
+  }
+  .fa-osk[data-size="lg"][data-variant="keys"] .fa-osk-key:focus-visible > .fa-osk-cap {
+    background-color: var(--accent-soft-hover);
+    color: var(--accent-text);
+  }
+
+  /* ── Alternates (press and hold) ───────────────────────────────────────── */
+  .fa-osk-alternates {
+    position: absolute;
+    z-index: var(--z-raised);
+    display: flex;
+    gap: var(--space-half);
+    padding: var(--space-1);
+    margin-block-start: calc(var(--space-1) * -1);
+    border-radius: calc(var(--_r) + var(--space-1));
+    background-color: var(--glass-control-solid);
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--glass-edge),
+      var(--shadow-3);
+    animation: fa-osk-pop var(--duration-fast) var(--ease-enter);
+  }
+  .fa-osk-alternate {
+    display: grid;
+    place-items: center;
+    min-width: var(--_key-h);
+    height: var(--_key-h);
+    padding-inline: var(--space-1-5);
+    border-radius: var(--_r);
+    font-size: var(--_font);
+    line-height: 1;
+    cursor: pointer;
+    outline: none;
+  }
+  .fa-osk-alternate[data-active] {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+  .fa-osk-alternate:focus-visible {
+    outline: var(--_ring) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  @keyframes fa-osk-pop {
+    from {
+      opacity: 0;
+      translate: 0 var(--space-1);
+    }
+  }
+
+  /* ── Touch: a preview of the pressed key above the finger ──────────────── */
+  @media (pointer: coarse) {
+    .fa-osk-key[data-preview][data-pressed]::after {
+      content: attr(data-preview);
+      position: absolute;
+      z-index: var(--z-raised);
+      inset-inline: calc(var(--_gap) / 2 - var(--space-1-5));
+      inset-block-end: calc(100% - var(--_gap) / 2 + var(--space-1));
+      display: grid;
+      place-items: center;
+      height: calc(var(--_key-h) * 1.15);
+      border-radius: var(--_r);
+      background-color: var(--glass-control-solid);
+      box-shadow:
+        inset 0 0 0 var(--border-width) var(--glass-edge),
+        var(--shadow-3);
+      font-size: calc(var(--_font) * 1.5);
+      line-height: 1;
+      pointer-events: none;
+    }
+  }
+
+  /* ── Narrow containers: tighter gaps, smaller labels ───────────────────── */
+  @container (inline-size < 30rem) {
+    .fa-osk:not([data-size="lg"]) :is(.fa-osk-grid, .fa-osk-alternates) {
+      --_gap: var(--space-1);
+      --_font: var(--type-body-size);
+      --_text: var(--type-caption-size);
+      --_icon: var(--icon-sm);
+    }
+  }
+  @container (inline-size < 20rem) {
+    .fa-osk:not([data-size="lg"]) :is(.fa-osk-grid, .fa-osk-alternates) {
+      --_gap: var(--space-half);
+      --_r: var(--radius-compact);
+      --_text: var(--type-overline-size);
+    }
+    .fa-osk:not([data-size="lg"]) .fa-osk-space-label,
+    .fa-osk:not([data-size="lg"]) .fa-osk-mark {
+      display: none;
+    }
+    .fa-osk:not([data-size="lg"]) .fa-osk-text {
+      padding-inline: 0;
+      letter-spacing: 0;
+      text-overflow: clip;
+    }
+  }
+
+  /* Still motion: nothing scales or slides; colour changes stay. */
+  :root[data-motion="reduced"] :is(.fa-osk-key[data-pressed], .fa-osk[data-size="lg"] .fa-osk-key:focus-visible) > .fa-osk-cap {
+    scale: none;
+  }
+  :root[data-motion="reduced"] .fa-osk-alternates {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) :is(.fa-osk-key[data-pressed], .fa-osk[data-size="lg"] .fa-osk-key:focus-visible) > .fa-osk-cap {
+      scale: none;
+    }
+    :root:not([data-motion="full"]) .fa-osk-alternates {
+      animation: none;
+    }
+  }
+}

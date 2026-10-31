@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <rect class="t" x="2.5" y="2.25" width="19" height="13" rx="2.5"/>
+  <rect x="2.5" y="2.25" width="19" height="13" rx="2.5"/>
+  <circle class="d" cx="6.75" cy="6" r="1"/>
+  <circle class="d" cx="6.75" cy="9" r="1"/>
+  <circle class="d" cx="10.25" cy="6" r="1"/>
+  <circle class="d" cx="10.25" cy="9" r="1"/>
+  <circle class="d" cx="13.75" cy="6" r="1"/>
+  <circle class="d" cx="13.75" cy="9" r="1"/>
+  <circle class="d" cx="17.25" cy="6" r="1"/>
+  <circle class="d" cx="17.25" cy="9" r="1"/>
+  <path d="M8.5 12H15.5"/>
+  <path d="M8.5 18.25L12 21.75L15.5 18.25"/>
+</svg>

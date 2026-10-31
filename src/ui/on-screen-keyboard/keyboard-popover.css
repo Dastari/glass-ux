@@ -1,0 +1,47 @@
+/*
+ * KeyboardPopover — the keyboard floating by its target: glass-overlay + fa-popup like every
+ * floating surface, so it materialises out of the target and its shadow sits on the
+ * positioner. The keys need their full width and the alternates strip rises above the top
+ * row, so the popup neither scrolls nor clips.
+ *
+ * Component tokens
+ *   --_w    the popup's width: sm 22rem · md 32rem · lg (TV) 52rem, never wider than the viewport
+ *   --_aw   the optional arrow's base and --_ah its height (Tooltip's)
+ */
+@layer components {
+  .fa-osk-popover-positioner {
+    z-index: var(--z-popover);
+  }
+  .fa-osk-popover {
+    --_w: 32rem;
+    --_aw: 0.875rem;
+    --_ah: 0.4375rem;
+    width: min(var(--_w), calc(100vw - var(--space-4) * 2));
+    min-width: 0;
+    max-width: none;
+    max-height: none;
+    padding: var(--space-2);
+    overflow: visible;
+  }
+  .fa-osk-popover[data-size="sm"] {
+    --_w: 22rem;
+  }
+  .fa-osk-popover[data-size="lg"] {
+    --_w: 52rem;
+    padding: var(--space-4);
+  }
+
+  .fa-osk-popover-arrow {
+    width: var(--_aw);
+    height: var(--_ah);
+    background-color: var(--glass-fill-overlay);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+  }
+  .fa-osk-popover-arrow[data-side="top"] {
+    inset-block-end: calc(var(--_ah) * -1);
+  }
+  .fa-osk-popover-arrow[data-side="bottom"] {
+    inset-block-start: calc(var(--_ah) * -1);
+    rotate: 180deg;
+  }
+}

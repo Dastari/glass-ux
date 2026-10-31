@@ -1,0 +1,85 @@
+/*
+ * KeyboardDrawer — the keyboard docked to the bottom edge, non-modal (no scrim).
+ *
+ *   dock     fixed to the viewport's bottom edge (or absolute in a `container`), as wide as
+ *            it; lets pointers through around the panel
+ *   panel    glass-overlay with the sheet's top corners, flush with the bottom edge; full
+ *            width up to --_max, centred. Its insets clear the safe area on the edges it
+ *            touches (bottom, and the sides at full width); in a container there is none
+ *   motion   slides up on --ease-enter and down on --ease-exit (--duration-slow); Still and
+ *            reduced motion scale the durations to zero, so it appears in place
+ *
+ * Component tokens
+ *   --_max   the widest the panel grows: sm 36rem · md 44rem · lg (TV) 80rem; a grid layout
+ *            (a number pad, the alphabet) at most 30rem, or 48rem at lg
+ *   --_pad   the panel's inset around the keys
+ */
+@layer components {
+  .fa-osk-drawer-dock {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--z-popover);
+    display: flex;
+    justify-content: center;
+    container: osk-drawer / inline-size;
+    pointer-events: none;
+  }
+  .fa-osk-drawer-dock[data-docked="container"] {
+    position: absolute;
+  }
+
+  .fa-osk-drawer {
+    --_max: 44rem;
+    --_pad: var(--space-3);
+    width: 100%;
+    max-inline-size: var(--_max);
+    box-sizing: border-box;
+    padding: var(--_pad) max(var(--_pad), var(--safe-right)) max(var(--_pad), calc(var(--safe-bottom) + var(--space-2))) max(var(--_pad), var(--safe-left)); /* logical:allow safe areas are measured physical viewport edges */
+    border-block-end-width: 0;
+    border-start-start-radius: var(--radius-sheet);
+    border-start-end-radius: var(--radius-sheet);
+    pointer-events: auto;
+    transform: translateY(0);
+    transition: transform var(--duration-slow) var(--ease-enter);
+  }
+  .fa-osk-drawer[data-size="sm"] {
+    --_max: 36rem;
+    --_pad: var(--space-2);
+  }
+  .fa-osk-drawer[data-size="lg"] {
+    --_max: 80rem;
+    --_pad: var(--space-5);
+  }
+  /* Number pads and the alphabet grid are only a few columns wide: keep the tiles square-ish. */
+  .fa-osk-drawer:has(> .fa-osk[data-variant="grid"]) {
+    --_max: 30rem;
+  }
+  .fa-osk-drawer[data-size="lg"]:has(> .fa-osk[data-variant="grid"]) {
+    --_max: 48rem;
+  }
+  .fa-osk-drawer-dock[data-docked="container"] > .fa-osk-drawer {
+    padding: var(--_pad);
+  }
+  .fa-osk-drawer:is([data-starting-style], [data-ending-style]) {
+    transform: translateY(calc(100% + var(--space-4)));
+  }
+  .fa-osk-drawer[data-ending-style] {
+    transition-timing-function: var(--ease-exit);
+  }
+
+  /* Narrow (a phone, a narrow window): tighter insets, so the keys keep their width. */
+  @container osk-drawer (inline-size < 30rem) {
+    .fa-osk-drawer:not([data-size="lg"]) {
+      --_pad: var(--space-1-5);
+    }
+  }
+  /* Full width: the panel meets the side edges, so its top corners square off less. */
+  @container osk-drawer (inline-size < 48rem) {
+    .fa-osk-drawer:not([data-size="lg"]) {
+      border-start-start-radius: var(--radius-overlay);
+      border-start-end-radius: var(--radius-overlay);
+      border-inline-width: 0;
+    }
+  }
+}

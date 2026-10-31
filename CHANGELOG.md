@@ -6,6 +6,31 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ## Unreleased
 
+### Added
+
+- `glass-ux/on-screen-keyboard`: `OnScreenKeyboard` for kiosks, TVs and touch screens where the
+  native keyboard is missing or unsuitable. It edits its own value or drives an input, textarea
+  or contenteditable without taking its focus, so React-controlled inputs update as if typed.
+  - Layouts: an alphabet grid for search screens; QWERTY, QWERTZ, AZERTY, Spanish, Portuguese,
+    Italian, Nordic, Russian, Greek, Arabic and Hebrew (physical positions in right-to-left
+    pages); kana with voiced marks and small kana; Hangul, which joins jamo into syllables; and
+    number, decimal, PIN, phone, email and URL pads. `layoutForLocale` and `alphabetLayout`
+    choose by locale, and `defineKeyboardLayout` adds an application's own.
+  - Typing: Shift, Caps Lock and symbol layers swap in place; press-and-hold (or a held Enter)
+    offers accented alternates; Backspace removes a whole grapheme; Enter takes the target's
+    `enterKeyHint` (Search, Go, Done, Next, Send).
+  - Navigation: arrow keys move between keys by position, for remotes and D-pads, and
+    `onNavigateOut` hands focus to the rest of the screen at an edge.
+  - Sizes `sm`, `md` and `lg` (ten-foot screens), `keys` and `grid` variants.
+  - Containers: `KeyboardDrawer` docks non-modally at the bottom and sets
+    `--keyboard-inset-height`; `KeyboardPopover` floats beside its input.
+    `OnScreenKeyboardProvider`, `KeyboardTarget`, `useOnScreenKeyboard` and `KeyboardToggle`
+    link the library's inputs (or any input) without changing them, open on focus or on
+    demand, choose a pad from `inputmode` or `type`, and keep the native keyboard closed on
+    touch screens (`inputmode="none"`, restored afterwards).
+  - Messages in every language pack. Icons `backspace`, `shift`, `caps-lock`, `return` and
+    `keyboard-hide`.
+
 ### Fixed
 
 - A visible `ChartTable` outside a chart stays in its own container: it scrolls within its

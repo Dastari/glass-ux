@@ -386,6 +386,10 @@
       "types": "./dist/ui/segmented/index.d.ts",
       "import": "./dist/ui/segmented/index.js"
     },
+    "./on-screen-keyboard": {
+      "types": "./dist/ui/on-screen-keyboard/index.d.ts",
+      "import": "./dist/ui/on-screen-keyboard/index.js"
+    },
     "./swatch-picker": {
       "types": "./dist/ui/swatch-picker/index.d.ts",
       "import": "./dist/ui/swatch-picker/index.js"

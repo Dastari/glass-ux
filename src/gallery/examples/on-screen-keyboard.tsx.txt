@@ -1,0 +1,487 @@
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
+import { IconPlay } from "glass-ux/icons";
+import { DirectionProvider } from "glass-ux/locale";
+import { Field } from "glass-ux/field";
+import { Input } from "glass-ux/input";
+import {
+  OnScreenKeyboard,
+  keyboardLayouts,
+  type BuiltInLayoutId,
+  type NavigationDirection,
+} from "glass-ux/on-screen-keyboard";
+import { Select } from "glass-ux/select";
+import { Surface } from "glass-ux/surface";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+interface Programme {
+  id: string;
+  name: string;
+  genre: string;
+  /** Two palette chart colours (1–8) for the tile's artwork. */
+  tones: readonly [number, number];
+}
+
+/** Fictional programmes: invented names, abstract artwork in the palette's chart colours. */
+const PROGRAMMES: Programme[] = [
+  { id: "harbour-lights", name: "Harbour Lights", genre: "Drama", tones: [1, 3] },
+  { id: "lantern-keepers", name: "The Lantern Keepers", genre: "Mystery", tones: [4, 2] },
+  { id: "saltglass", name: "Saltglass", genre: "Documentary", tones: [2, 6] },
+  { id: "orchard-line", name: "Orchard Line", genre: "Comedy", tones: [5, 1] },
+  { id: "paper-comets", name: "Paper Comets", genre: "Animation", tones: [3, 7] },
+  { id: "ninefold", name: "Ninefold", genre: "Thriller", tones: [8, 4] },
+  { id: "marrow-bay", name: "Marrow Bay", genre: "Drama", tones: [6, 2] },
+  { id: "quill-and-ember", name: "Quill and Ember", genre: "Fantasy", tones: [7, 5] },
+  { id: "low-tide-radio", name: "Low Tide Radio", genre: "Comedy", tones: [1, 8] },
+  { id: "copper-hollow", name: "Copper Hollow", genre: "Western", tones: [5, 3] },
+  { id: "winter-atlas", name: "Winter Atlas", genre: "Documentary", tones: [2, 4] },
+  { id: "signal-garden", name: "Signal Garden", genre: "Science fiction", tones: [6, 8] },
+  { id: "hollis-street", name: "Hollis Street", genre: "Drama", tones: [3, 1] },
+  { id: "tidewater", name: "Tidewater", genre: "Mystery", tones: [4, 6] },
+  { id: "second-kettle", name: "Second Kettle", genre: "Cooking", tones: [7, 2] },
+  { id: "moth-and-lamp", name: "Moth and Lamp", genre: "Animation", tones: [8, 5] },
+  { id: "fieldwork", name: "Fieldwork", genre: "Documentary", tones: [1, 5] },
+  { id: "halfmoon-ferry", name: "Halfmoon Ferry", genre: "Comedy", tones: [6, 3] },
+];
+const POPULAR_SEARCHES = ["Drama", "Comedy", "Documentary", "Animation"];
+const RESULT_SLOTS = 9;
+const SUGGESTION_SLOTS = 4;
+/** Whether the lower-case query starts at a word in the text; it may run across words. */
+const startsWord = (text: string, query: string) =>
+  ` ${text.toLocaleLowerCase("en")}`.includes(` ${query}`);
+
+function search(query: string) {
+  const q = query.trim().toLocaleLowerCase("en");
+  if (!q) return { results: PROGRAMMES.slice(0, RESULT_SLOTS), suggestions: POPULAR_SEARCHES };
+  const results = PROGRAMMES.filter(
+    (item) => startsWord(item.name, q) || startsWord(item.genre, q),
+  );
+  const terms = [
+    ...new Set([...PROGRAMMES.map((item) => item.genre), ...PROGRAMMES.map((item) => item.name)]),
+  ];
+  return {
+    results: results.slice(0, RESULT_SLOTS),
+    suggestions: terms.filter((term) => startsWord(term, q)).slice(0, SUGGESTION_SLOTS),
+  };
+}
+
+/**
+ * A 16:9 screen laid out at television size and scaled to fit its column, so the 10-foot
+ * proportions (key size, type, spacing) are the same on a phone and a desktop.
+ */
+function TvScreen({ label, children }: { label: string; children: ReactNode }) {
+  const frame = useRef<HTMLDivElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  useLayoutEffect(() => {
+    const outer = frame.current;
+    const inner = stage.current;
+    if (!outer || !inner) return;
+    const fit = () => setScale(outer.clientWidth / Math.max(1, inner.offsetWidth));
+    fit();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(fit);
+    observer.observe(outer);
+    observer.observe(inner);
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <Surface
+      ref={frame}
+      material="panel"
+      radius="surface"
+      role="region"
+      aria-label={label}
+      className="gallery-osk-tv"
+      style={{ "--gallery-tv-scale": scale } as CSSProperties}
+    >
+      <div ref={stage} className="gallery-osk-tv-stage">
+        {children}
+      </div>
+    </Surface>
+  );
+}
+
+function TvSearch() {
+  const [query, setQuery] = useState("");
+  const [tile, setTile] = useState(0);
+  const [playing, setPlaying] = useState<string | null>(null);
+  const keys = useRef<HTMLDivElement>(null);
+  const grid = useRef<HTMLDivElement>(null);
+  const list = useRef<HTMLUListElement>(null);
+  const queryId = useId();
+  const { results, suggestions } = search(query);
+  const current = Math.min(tile, Math.max(0, results.length - 1));
+  const rtl = () => !!keys.current && getComputedStyle(keys.current).direction === "rtl";
+  const focusKeys = () =>
+    keys.current?.querySelector<HTMLElement>('[data-osk-key][tabindex="0"]')?.focus();
+  const focusTile = (index: number) => {
+    setTile(index);
+    grid.current?.querySelectorAll<HTMLElement>("[data-tile]")[index]?.focus();
+  };
+  const focusSuggestion = (index: number) =>
+    list.current?.querySelectorAll<HTMLElement>("button")[index]?.focus();
+  // The remote's arrows leave the keys at an edge: towards the results, or down to the suggestions.
+  const leaveKeys = (direction: NavigationDirection) => {
+    if (direction === (rtl() ? "left" : "right") && results.length) focusTile(current);
+    else if (direction === "down" && suggestions.length) focusSuggestion(0);
+  };
+  const onTileKey = (event: KeyboardEvent, index: number) => {
+    const forward = rtl() ? "ArrowLeft" : "ArrowRight";
+    const back = rtl() ? "ArrowRight" : "ArrowLeft";
+    const column = index % 3;
+    let next: number | null = null;
+    if (event.key === forward && column < 2) next = index + 1;
+    else if (event.key === back) {
+      if (column === 0) {
+        event.preventDefault();
+        focusKeys();
+        return;
+      }
+      next = index - 1;
+    } else if (event.key === "ArrowDown") next = index + 3;
+    else if (event.key === "ArrowUp") next = index - 3;
+    else return;
+    event.preventDefault();
+    if (next >= 0 && next < results.length) focusTile(next);
+  };
+  const onSuggestionKey = (event: KeyboardEvent, index: number) => {
+    const forward = rtl() ? "ArrowLeft" : "ArrowRight";
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (index === 0) focusKeys();
+      else focusSuggestion(index - 1);
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (index + 1 < suggestions.length) focusSuggestion(index + 1);
+    } else if (event.key === forward && results.length) {
+      event.preventDefault();
+      focusTile(current);
+    }
+  };
+  return (
+    <TvScreen label="Television screen">
+      <div className="gallery-osk-tv-keys">
+        <OnScreenKeyboard
+          ref={keys}
+          layout="alphabet"
+          size="lg"
+          value={query}
+          onValueChange={setQuery}
+          onNavigateOut={leaveKeys}
+          aria-describedby={queryId}
+        />
+        <ul ref={list} className="gallery-osk-tv-suggestions" aria-label="Suggestions">
+          {suggestions.map((term, index) => (
+            <li key={term}>
+              <button
+                type="button"
+                className="gallery-osk-tv-suggestion"
+                onClick={() => setQuery(term)}
+                onKeyDown={(event) => onSuggestionKey(event, index)}
+              >
+                {term}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="gallery-osk-tv-main">
+        <div className="gallery-osk-tv-query">
+          <p id={queryId} className="gallery-osk-tv-query-text" data-empty={query ? undefined : ""}>
+            {query || "Search"}
+          </p>
+          <p className="gallery-osk-tv-query-label">
+            {query.trim() ? "Top results" : "Popular now"}
+          </p>
+        </div>
+        <div ref={grid} className="gallery-osk-tv-results" role="group" aria-label="Results">
+          {results.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              data-tile=""
+              className="gallery-osk-tv-tile"
+              tabIndex={index === current ? 0 : -1}
+              aria-pressed={playing === item.id}
+              style={
+                {
+                  "--tile-a": `var(--chart-${item.tones[0]})`,
+                  "--tile-b": `var(--chart-${item.tones[1]})`,
+                } as CSSProperties
+              }
+              onFocus={() => setTile(index)}
+              onClick={() => setPlaying((previous) => (previous === item.id ? null : item.id))}
+              onKeyDown={(event) => onTileKey(event, index)}
+            >
+              <span className="gallery-osk-tv-art" aria-hidden>
+                <span className="gallery-osk-tv-play">
+                  <IconPlay />
+                </span>
+              </span>
+              <span className="gallery-osk-tv-name">{item.name}</span>
+              <span className="gallery-osk-tv-genre">{item.genre}</span>
+            </button>
+          ))}
+          {results.length ? null : <p className="gallery-osk-tv-empty">No titles match</p>}
+        </div>
+      </div>
+    </TvScreen>
+  );
+}
+
+function TypingDemo() {
+  const field = useRef<HTMLInputElement>(null);
+  const [text, setText] = useState("");
+  const [sent, setSent] = useState<string | null>(null);
+  return (
+    <Surface material="panel" padding="panel" className="gallery-osk-pad" data-width="typing">
+      <Field label="Message" hint={sent ? `Sent: ${sent}` : "Enter sends the message."}>
+        <Input
+          ref={field}
+          value={text}
+          onValueChange={setText}
+          enterKeyHint="send"
+          autoComplete="off"
+        />
+      </Field>
+      <OnScreenKeyboard
+        layout="qwerty"
+        target={field}
+        onEnter={(details) => {
+          details.preventDefault();
+          if (!text.trim()) return;
+          setSent(text.trim());
+          setText("");
+        }}
+      />
+    </Surface>
+  );
+}
+
+const LANGUAGES: BuiltInLayoutId[] = [
+  "qwertz",
+  "azerty",
+  "spanish",
+  "nordic",
+  "russian",
+  "greek",
+  "arabic",
+  "hebrew",
+  "kana",
+  "hangul",
+];
+const RIGHT_TO_LEFT = new Set<string>(["arabic", "hebrew"]);
+const LANGUAGE_OPTIONS = LANGUAGES.map((id) => ({ value: id, label: keyboardLayouts[id].label }));
+
+function LanguagesDemo() {
+  const field = useRef<HTMLInputElement>(null);
+  const [layout, setLayout] = useState<BuiltInLayoutId>("qwertz");
+  const [text, setText] = useState("");
+  const direction = RIGHT_TO_LEFT.has(layout) ? "rtl" : "ltr";
+  return (
+    <div className="gallery-osk-pad" data-width="typing">
+      <div className="gallery-osk-toolbar">
+        <Field label="Layout">
+          <Select
+            options={LANGUAGE_OPTIONS}
+            value={layout}
+            onValueChange={(next) => next && setLayout(next)}
+            width="medium"
+          />
+        </Field>
+      </div>
+      <DirectionProvider direction={direction}>
+        <Surface
+          material="panel"
+          padding="panel"
+          className="gallery-osk-pad"
+          dir={direction}
+          lang={keyboardLayouts[layout].locale}
+        >
+          <Input
+            ref={field}
+            aria-label="Text"
+            value={text}
+            onValueChange={setText}
+            dir="auto"
+            autoComplete="off"
+          />
+          <OnScreenKeyboard
+            layout={layout}
+            layouts={LANGUAGES}
+            onLayoutChange={(next) => setLayout(next.id as BuiltInLayoutId)}
+            target={field}
+          />
+        </Surface>
+      </DirectionProvider>
+    </div>
+  );
+}
+
+const PIN_LENGTH = 4;
+const DEMO_PIN = "2580";
+
+function PinDemo() {
+  const [pin, setPin] = useState("");
+  const [state, setState] = useState<"entry" | "error" | "success">("entry");
+  const digits = Array.from({ length: PIN_LENGTH }, (_, index) => index < pin.length);
+  return (
+    <Surface material="panel" padding="panel" className="gallery-osk-pad" data-width="number">
+      <div
+        className="gallery-osk-pin"
+        data-state={state}
+        role="img"
+        aria-label={`PIN, ${pin.length} of ${PIN_LENGTH} digits entered`}
+      >
+        {digits.map((filled, index) => (
+          <span key={index} className="gallery-osk-pin-dot" data-filled={filled ? "" : undefined} />
+        ))}
+      </div>
+      <p
+        className="gallery-osk-status"
+        data-tone={state === "error" ? "danger" : state === "success" ? "success" : undefined}
+        aria-live="polite"
+      >
+        {state === "error"
+          ? "Incorrect PIN"
+          : state === "success"
+            ? "Unlocked"
+            : `Enter ${DEMO_PIN} to unlock`}
+      </p>
+      <OnScreenKeyboard
+        layout="pin"
+        value={pin}
+        aria-label="PIN pad"
+        onValueChange={(next) => {
+          // A new digit after a result starts again.
+          const fresh = state === "entry" ? next : next.slice(pin.length);
+          const value = fresh.replace(/\D/g, "").slice(0, PIN_LENGTH);
+          setPin(value);
+          setState(value.length < PIN_LENGTH ? "entry" : value === DEMO_PIN ? "success" : "error");
+        }}
+      />
+    </Surface>
+  );
+}
+
+function DialPadDemo() {
+  const [number, setNumber] = useState("");
+  const [calling, setCalling] = useState<string | null>(null);
+  return (
+    <Surface material="panel" padding="panel" className="gallery-osk-pad" data-width="number">
+      <output
+        className="gallery-osk-dialled"
+        data-empty={number ? undefined : ""}
+        aria-label="Number"
+      >
+        {number || "Number"}
+      </output>
+      <p className="gallery-osk-status" aria-live="polite">
+        {calling ? `Calling ${calling}` : " "}
+      </p>
+      <OnScreenKeyboard
+        layout="phone"
+        enterKind="go"
+        value={number}
+        aria-label="Dial pad"
+        onValueChange={(next) => {
+          setNumber(next);
+          setCalling(null);
+        }}
+        onEnter={() => number && setCalling(number)}
+      />
+    </Surface>
+  );
+}
+
+function CompactDemo() {
+  const field = useRef<HTMLInputElement>(null);
+  return (
+    <Surface
+      material="panel"
+      padding="tile"
+      radius="tile"
+      className="gallery-osk-pad"
+      data-width="narrow"
+    >
+      <Input ref={field} aria-label="Reply" placeholder="Reply" size="sm" autoComplete="off" />
+      <OnScreenKeyboard layout="qwerty" size="sm" target={field} />
+    </Surface>
+  );
+}
+
+export default function OnScreenKeyboardSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="TV search"
+        description="The alphabet grid at size lg, scaled from a television screen. At an edge the arrow keys leave the keys: right to the results, down to the suggestions; left from the first column of results returns to the last key."
+        layout="stack"
+        wide
+      >
+        <TvSearch />
+      </Specimen>
+
+      <Specimen
+        title="Typing into an input"
+        description="With target, keys type at the input's caret and the input keeps focus. The Enter key follows the input's enterkeyhint."
+      >
+        <TypingDemo />
+      </Specimen>
+
+      <Specimen
+        title="Languages"
+        description="The globe key cycles the layouts given in layouts. Arabic and Hebrew keep their physical left-to-right key positions inside a right-to-left region."
+      >
+        <LanguagesDemo />
+      </Specimen>
+
+      <Specimen
+        title="PIN and phone"
+        description="Number pads own their value when there is no target. The PIN display is the application's."
+      >
+        <div className="gallery-osk-pads">
+          <PinDemo />
+          <DialPadDemo />
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="Compact"
+        description="Size sm in a narrow panel; container queries tighten the gaps and labels."
+      >
+        <CompactDemo />
+      </Specimen>
+
+      <Specimen title="Sizes" description="sm, md and lg (TV) on the number pad.">
+        <div className="gallery-osk-pads">
+          {(["sm", "md", "lg"] as const).map((size) => (
+            <Surface
+              key={size}
+              material="panel"
+              padding="panel"
+              className="gallery-osk-pad"
+              data-width={size}
+            >
+              <OnScreenKeyboard layout="numeric" size={size} aria-label={`Number pad, ${size}`} />
+            </Surface>
+          ))}
+        </div>
+      </Specimen>
+
+      <Specimen title="Disabled">
+        <Surface material="panel" padding="panel" className="gallery-osk-pad" data-width="typing">
+          <OnScreenKeyboard layout="qwerty" disabled />
+        </Surface>
+      </Specimen>
+    </SectionPage>
+  );
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { collator, dateTimeFormat, formatPercent, listFormat, numberFormat, pluralRules, relativeTimeFormat } from "./intl.js"
+import { collator, dateTimeFormat, formatPercent, listFormat, numberFormat, pluralRules, relativeTimeFormat, segmenter } from "./intl.js"
 
 describe("cached Intl formatters", () => {
   it("returns the same instance for the same locale and options", () => {
@@ -62,3 +62,11 @@ describe("formatPercent", () => {
   })
 })
 
+describe("segmenter", () => {
+  it("caches grapheme segmenters by locale and options", () => {
+    expect(segmenter("en")).toBe(segmenter("en"))
+    expect(segmenter("en")).not.toBe(segmenter("en", { granularity: "word" }))
+    const graphemes = [...(segmenter("en")?.segment("e\u0301👩‍👩‍👧") ?? [])].map((part) => part.segment)
+    expect(graphemes).toEqual(["e\u0301", "👩‍👩‍👧"])
+  })
+})

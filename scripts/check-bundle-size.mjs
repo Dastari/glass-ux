@@ -30,6 +30,12 @@ const BUDGETS = [
   { entry: 'glass-ux/button', named: 'Button', gzip: 34_000 },
   { entry: 'glass-ux/input', named: 'Input', gzip: 40_000 },
   { entry: 'glass-ux/form', named: 'FormStack', gzip: 1_000, forbid: ['@tanstack/form-core', '@tanstack/react-form'] },
+  // Measured 16.4 KB: the component, every built-in layout's data (built on first use), and the editing,
+  // Hangul/kana and navigation engines. Base UI stays out: the keys are plain buttons.
+  { entry: 'glass-ux/on-screen-keyboard', named: 'OnScreenKeyboard', gzip: 18_000, forbid: ['@base-ui/react'] },
+  // Measured 18.5 KB: the keyboard plus the drawer's presence, inset and portal code. Of Base UI only the
+  // direction context (0.4 KB); the popover, Button and the provider's linking stay in their own modules.
+  { entry: 'glass-ux/on-screen-keyboard', named: 'KeyboardDrawer', gzip: 20_500, forbid: ['@tanstack/react-form', 'd3-scale', 'shiki', 'zod'] },
   { entry: 'glass-ux/phone-field', named: 'PhoneField', gzip: 75_000, forbid: ['libphonenumber-js'] },
   { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text'] },
   { entry: 'glass-ux/map', named: 'GeoMap', gzip: 75_000, forbid: ['maplibre-gl'] },

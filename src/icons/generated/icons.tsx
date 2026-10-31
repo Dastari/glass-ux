@@ -307,6 +307,18 @@ export const IconAxis = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconBackspace = /* @__PURE__ */ createIcon(
+  "backspace",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M3.21 12.71A1 1 0 0 1 3.21 11.29L8.49 6.01A1.75 1.75 0 0 1 9.72 5.5H19A2.5 2.5 0 0 1 21.5 8V16A2.5 2.5 0 0 1 19 18.5H9.72A1.75 1.75 0 0 1 8.49 17.99L3.21 12.71Z" />
+      <path d="M3.21 12.71A1 1 0 0 1 3.21 11.29L8.49 6.01A1.75 1.75 0 0 1 9.72 5.5H19A2.5 2.5 0 0 1 21.5 8V16A2.5 2.5 0 0 1 19 18.5H9.72A1.75 1.75 0 0 1 8.49 17.99L3.21 12.71Z" />
+      <path d="M12.5 9.5L17.5 14.5" />
+      <path d="M17.5 9.5L12.5 14.5" />
+    </>
+  )
+)
+
 export const IconBackup = /* @__PURE__ */ createIcon(
   "backup",
   () => (
@@ -543,6 +555,17 @@ export const IconCanon = /* @__PURE__ */ createIcon(
     <>
       <path className="fa-icon-tint" d="M19 6A8.5 8.5 0 1 0 19 18L16.5 15.5A5 5 0 1 1 16.5 8.5L19 10Z" />
       <path d="M19 6A8.5 8.5 0 1 0 19 18L16.5 15.5A5 5 0 1 1 16.5 8.5L19 10Z" />
+    </>
+  )
+)
+
+export const IconCapsLock = /* @__PURE__ */ createIcon(
+  "caps-lock",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M11.12 4.88A1.25 1.25 0 0 1 12.88 4.88L18.72 10.72A0.75 0.75 0 0 1 18.19 12H16A0.75 0.75 0 0 0 15.25 12.75V15A1 1 0 0 1 14.25 16H9.75A1 1 0 0 1 8.75 15V12.75A0.75 0.75 0 0 0 8 12H5.81A0.75 0.75 0 0 1 5.28 10.72L11.12 4.88Z" />
+      <path d="M11.12 4.88A1.25 1.25 0 0 1 12.88 4.88L18.72 10.72A0.75 0.75 0 0 1 18.19 12H16A0.75 0.75 0 0 0 15.25 12.75V15A1 1 0 0 1 14.25 16H9.75A1 1 0 0 1 8.75 15V12.75A0.75 0.75 0 0 0 8 12H5.81A0.75 0.75 0 0 1 5.28 10.72L11.12 4.88Z" />
+      <path d="M8.75 20H15.25" />
     </>
   )
 )
@@ -2005,6 +2028,26 @@ export const IconKey = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconKeyboardHide = /* @__PURE__ */ createIcon(
+  "keyboard-hide",
+  () => (
+    <>
+      <rect className="fa-icon-tint" x="2.5" y="2.25" width="19" height="13" rx="2.5" />
+      <rect x="2.5" y="2.25" width="19" height="13" rx="2.5" />
+      <circle className="fa-icon-dot" cx="6.75" cy="6" r="1" />
+      <circle className="fa-icon-dot" cx="6.75" cy="9" r="1" />
+      <circle className="fa-icon-dot" cx="10.25" cy="6" r="1" />
+      <circle className="fa-icon-dot" cx="10.25" cy="9" r="1" />
+      <circle className="fa-icon-dot" cx="13.75" cy="6" r="1" />
+      <circle className="fa-icon-dot" cx="13.75" cy="9" r="1" />
+      <circle className="fa-icon-dot" cx="17.25" cy="6" r="1" />
+      <circle className="fa-icon-dot" cx="17.25" cy="9" r="1" />
+      <path d="M8.5 12H15.5" />
+      <path d="M8.5 18.25L12 21.75L15.5 18.25" />
+    </>
+  )
+)
+
 export const IconKeyboard = /* @__PURE__ */ createIcon(
   "keyboard",
   () => (
@@ -3006,6 +3049,16 @@ export const IconRestore = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconReturn = /* @__PURE__ */ createIcon(
+  "return",
+  () => (
+    <>
+      <path d="M19.5 4.5V11A4 4 0 0 1 15.5 15H4.5" />
+      <path d="M9 10.5L4.5 15L9 19.5" />
+    </>
+  )
+)
+
 export const IconRicoh = /* @__PURE__ */ createIcon(
   "ricoh",
   () => <path d="M5.5 20.5V3.5H13A5 5 0 0 1 13 13.5H5.5M12 13.5L19.5 20.5" />
@@ -3199,6 +3252,16 @@ export const IconShield = /* @__PURE__ */ createIcon(
     <>
       <path className="fa-icon-tint" d="M12 3L17.67 5.03A2 2 0 0 1 19 6.91V11C19 15.35 16.10 18.85 12 20.75C7.90 18.85 5 15.35 5 11V6.91A2 2 0 0 1 6.33 5.03L12 3Z" />
       <path d="M12 3L17.67 5.03A2 2 0 0 1 19 6.91V11C19 15.35 16.10 18.85 12 20.75C7.90 18.85 5 15.35 5 11V6.91A2 2 0 0 1 6.33 5.03L12 3Z" />
+    </>
+  )
+)
+
+export const IconShift = /* @__PURE__ */ createIcon(
+  "shift",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M11.12 4.88A1.25 1.25 0 0 1 12.88 4.88L18.72 10.72A0.75 0.75 0 0 1 18.19 12H16A0.75 0.75 0 0 0 15.25 12.75V18.5A1.5 1.5 0 0 1 13.75 20H10.25A1.5 1.5 0 0 1 8.75 18.5V12.75A0.75 0.75 0 0 0 8 12H5.81A0.75 0.75 0 0 1 5.28 10.72L11.12 4.88Z" />
+      <path d="M11.12 4.88A1.25 1.25 0 0 1 12.88 4.88L18.72 10.72A0.75 0.75 0 0 1 18.19 12H16A0.75 0.75 0 0 0 15.25 12.75V18.5A1.5 1.5 0 0 1 13.75 20H10.25A1.5 1.5 0 0 1 8.75 18.5V12.75A0.75 0.75 0 0 0 8 12H5.81A0.75 0.75 0 0 1 5.28 10.72L11.12 4.88Z" />
     </>
   )
 )

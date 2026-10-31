@@ -45,6 +45,8 @@ describe("component documentation families", () => {
     ["redacted", "result-frame"],
     ["ask-record", "ask-card"],
     ["ask-shell", "ask-card"],
+    ["keyboard-drawer", "on-screen-keyboard"],
+    ["keyboard-toggle", "on-screen-keyboard"],
   ])("documents %s with %s", (id, parent) => {
     expect(findComponentFamily(id)?.id).toBe(parent);
     expect(componentDestination(id)).toEqual(

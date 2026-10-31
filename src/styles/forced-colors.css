@@ -110,6 +110,35 @@
     color: HighlightText;
   }
 
+  /* ── On-screen keyboard: every keycap keeps its border ─────────────────── */
+  .fa-osk-cap,
+  .fa-osk-alternates {
+    outline: var(--border-width) solid ButtonText;
+    outline-offset: calc(var(--border-width) * -1);
+  }
+  .fa-osk-key:focus-visible {
+    outline: none;
+  }
+  .fa-osk-key:focus-visible > .fa-osk-cap,
+  .fa-osk-alternate:focus-visible {
+    outline: var(--focus-ring-width) solid Highlight;
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-osk-key:is([data-pressed], [aria-pressed="true"]) > .fa-osk-cap,
+  .fa-osk-alternate[data-active] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .fa-osk-mark {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+  .fa-osk-key:disabled > .fa-osk-cap {
+    color: GrayText;
+    outline-color: GrayText;
+  }
+
   /* ── Switch, Checkbox, Radio ──────────────────────────────────────────── */
   .fa-switch {
     forced-color-adjust: none;

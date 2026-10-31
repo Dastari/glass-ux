@@ -70,6 +70,10 @@
 @import "../ui/multi-select/multi-select.css";
 @import "../ui/notice/notice.css";
 @import "../ui/number-field/number-field.css";
+@import "../ui/on-screen-keyboard/keyboard-drawer.css";
+@import "../ui/on-screen-keyboard/keyboard-popover.css";
+@import "../ui/on-screen-keyboard/keyboard-toggle.css";
+@import "../ui/on-screen-keyboard/on-screen-keyboard.css";
 @import "../ui/otp-field/otp-field.css";
 @import "../ui/pagination/pagination.css";
 @import "../ui/password-field/password-field.css";

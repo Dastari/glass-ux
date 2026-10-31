@@ -9,6 +9,7 @@ const collators = new Map<string, Intl.Collator>()
 const relatives = new Map<string, Intl.RelativeTimeFormat>()
 const lists = new Map<string, Intl.ListFormat>()
 const plurals = new Map<string, Intl.PluralRules>()
+const segmenters = new Map<string, Intl.Segmenter>()
 
 const keyOf = (locale: string, options: object | undefined) => (options ? `${locale}|${JSON.stringify(options)}` : locale)
 
@@ -87,6 +88,19 @@ export function pluralRules(locale: string | undefined, options?: Intl.PluralRul
   let rules = plurals.get(key)
   if (!rules) plurals.set(key, (rules = new Intl.PluralRules(locale, options)))
   return rules
+}
+
+/**
+ * A cached `Intl.Segmenter` for `locale` and `options` (graphemes by default); no locale means
+ * the runtime default. Null where the runtime has no `Intl.Segmenter`, so callers fall back to
+ * code points.
+ */
+export function segmenter(locale: string | undefined, options?: Intl.SegmenterOptions): Intl.Segmenter | null {
+  if (typeof Intl.Segmenter !== "function") return null
+  const key = keyOf(locale ?? "", options)
+  let segments = segmenters.get(key)
+  if (!segments) segmenters.set(key, (segments = new Intl.Segmenter(locale, options)))
+  return segments
 }
 
 /**

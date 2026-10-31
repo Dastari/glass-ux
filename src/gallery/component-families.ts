@@ -48,6 +48,7 @@ const familyRoots: Record<string, string> = {
   meter: "meter",
   metric: "metric",
   "money-field": "money-field",
+  "on-screen-keyboard": "on-screen-keyboard",
   "otp-field": "otp-field",
   "password-field": "password-field",
   "percent-field": "percent-field",

@@ -85,12 +85,34 @@ def("disk", () => [
   dotEl(17.5, 15.75, 1.1),
   path("M6 15.75H10"),
 ])
-def("keyboard", () => [
-  rect(2.5, 5.5, 19, 13, 2.5, "t"),
-  rect(2.5, 5.5, 19, 13, 2.5),
-  ...[6.75, 10.25, 13.75, 17.25].flatMap((x) => [dotEl(x, 9.25, 1), dotEl(x, 12.25, 1)]),
-  path("M8.5 15.25H15.5"),
-])
+// The keyboard: a landscape case, two rows of key dots and the space bar. `keyboard-hide`
+// reuses it, raised to make room for its chevron.
+const keyboardParts = (dy = 0) => [
+  rect(2.5, 5.5 + dy, 19, 13, 2.5, "t"),
+  rect(2.5, 5.5 + dy, 19, 13, 2.5),
+  ...[6.75, 10.25, 13.75, 17.25].flatMap((x) => [dotEl(x, 9.25 + dy, 1), dotEl(x, 12.25 + dy, 1)]),
+  path(`M8.5 ${15.25 + dy}H15.5`),
+]
+def("keyboard", () => keyboardParts())
+def("keyboard-hide", () => [...keyboardParts(-3.25), path("M8.5 18.25L12 21.75L15.5 18.25")])
+
+// ── keyboard keys ─────────────────────────────────────────────────────────────
+// The key caps of an on-screen keyboard. Shift and Caps Lock share one arrow head; Caps Lock
+// cuts its stem short above the lock bar.
+def("backspace", () => {
+  // a key that points back: a 45° tip on the leading side, an × inside the body
+  const key = poly([[2.5, 12], [9, 5.5], [21.5, 5.5], [21.5, 18.5], [9, 18.5]], [1, 1.75, 2.5, 2.5, 1.75])
+  return [...tinted(key), path("M12.5 9.5L17.5 14.5"), path("M17.5 9.5L12.5 14.5")]
+})
+const shiftArrow = (bottom, radius) =>
+  poly(
+    [[12, 4], [20, 12], [15.25, 12], [15.25, bottom], [8.75, bottom], [8.75, 12], [4, 12]],
+    [1.25, 0.75, 0.75, radius, radius, 0.75, 0.75],
+  )
+def("shift", () => tinted(shiftArrow(20, 1.5)))
+def("caps-lock", () => [...tinted(shiftArrow(16, 1)), path("M8.75 20H15.25")])
+// Return: the ⏎ of the enter key, a line down and back to an arrowhead on the leading side.
+def("return", () => [path("M19.5 4.5V11A4 4 0 0 1 15.5 15H4.5"), path("M9 10.5L4.5 15L9 19.5")])
 def("printer", () => [
   rect(7, 13.5, 10, 7, 2, "t"),
   path("M7 17H5A2 2 0 0 1 3 15V10.5A2 2 0 0 1 5 8.5H19A2 2 0 0 1 21 10.5V15A2 2 0 0 1 19 17H17"),

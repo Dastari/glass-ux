@@ -1,0 +1,64 @@
+import { useRef, useState } from "react";
+import { IconKeyboard } from "glass-ux/icons";
+import { Button } from "glass-ux/button";
+import { Field } from "glass-ux/field";
+import { KeyboardDrawer } from "glass-ux/on-screen-keyboard";
+import { Surface } from "glass-ux/surface";
+import { Textarea } from "glass-ux/textarea";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+function DrawerDemo() {
+  const frame = useRef<HTMLDivElement>(null);
+  const notes = useRef<HTMLTextAreaElement>(null);
+  const [open, setOpen] = useState(false);
+  return (
+    <Surface
+      ref={frame}
+      material="panel"
+      radius="surface"
+      className="gallery-osk-frame"
+      data-size="short"
+    >
+      <div className="gallery-osk-frame-scroll" data-scroll-container="">
+        <div className="gallery-osk-frame-form">
+          <Field label="Delivery note">
+            <Textarea ref={notes} minRows={3} />
+          </Field>
+          <div className="gallery-osk-toolbar">
+            <Button
+              icon={<IconKeyboard />}
+              aria-pressed={open}
+              onPointerDown={(event) => event.preventDefault()}
+              onClick={() => {
+                setOpen((previous) => !previous);
+                notes.current?.focus();
+              }}
+            >
+              Keyboard
+            </Button>
+          </div>
+        </div>
+      </div>
+      <KeyboardDrawer
+        open={open}
+        onOpenChange={setOpen}
+        target={notes}
+        container={frame}
+        layout="qwerty"
+      />
+    </Surface>
+  );
+}
+
+export default function OnScreenKeyboardSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Drawer"
+        description="KeyboardDrawer controlled by the application, docked to this frame. Escape and the hide key close it."
+      >
+        <DrawerDemo />
+      </Specimen>
+    </SectionPage>
+  );
+}

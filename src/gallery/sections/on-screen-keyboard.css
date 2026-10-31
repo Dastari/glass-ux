@@ -1,0 +1,337 @@
+/*
+ * On-screen keyboard specimens.
+ *
+ *   tv       a 16:9 screen laid out at television size (96 × 54rem) and scaled to the
+ *            column, so the 10-foot proportions hold on every width
+ *   pad      the keyboards sit in Surfaces that supply their insets; fixed widths here
+ *            stand in for a kiosk, a phone sheet or a narrow side panel
+ *   frame    kiosk and drawer frames: the drawer docks to their bottom edge (container)
+ */
+@layer components {
+  /* ── TV search ─────────────────────────────────────────────────────────── */
+  .gallery-osk-tv {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .gallery-osk-tv-stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: 30rem minmax(0, 1fr);
+    gap: 4rem;
+    box-sizing: border-box;
+    width: 96rem;
+    height: 54rem;
+    padding: 3.5rem 4rem;
+    transform: scale(var(--gallery-tv-scale, 1));
+    transform-origin: 0 0;
+  }
+  .gallery-osk-tv-keys {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 0;
+  }
+  .gallery-osk-tv-suggestions {
+    display: grid;
+    grid-template-rows: repeat(4, 3.25rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .gallery-osk-tv-suggestion {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding-inline: var(--space-4);
+    border: 0;
+    border-radius: var(--radius-item);
+    background: none;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: 1.5rem;
+    text-align: start;
+    cursor: pointer;
+    outline: none;
+  }
+  .gallery-osk-tv-suggestion:focus-visible {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+    outline: calc(var(--focus-ring-width) * 2) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .gallery-osk-tv-main {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 2rem;
+    min-width: 0;
+  }
+  .gallery-osk-tv-query {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .gallery-osk-tv-query-text {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 4.5rem;
+    overflow: hidden;
+    font-size: 3.5rem;
+    line-height: 1.2;
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--type-display-tracking);
+    white-space: nowrap;
+  }
+  .gallery-osk-tv-query-text[data-empty] {
+    color: var(--fg-subtle);
+  }
+  /* The caret: drawn, not blinking (a static mark in every motion setting). */
+  .gallery-osk-tv-query-text::after {
+    content: "";
+    flex: none;
+    width: 0.25rem;
+    height: 3.5rem;
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+  }
+  .gallery-osk-tv-query-text[data-empty]::after {
+    order: -1;
+  }
+  .gallery-osk-tv-query-label {
+    color: var(--fg-muted);
+    font-size: 1.375rem;
+  }
+  .gallery-osk-tv-results {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 1.75rem 1.5rem;
+    min-height: 0;
+  }
+  .gallery-osk-tv-tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    outline: none;
+  }
+  .gallery-osk-tv-art {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: var(--radius-tile);
+    background-color: var(--tile-a);
+    /* An abstract landscape: a low sun, a hill in the second tone, light from the top. */
+    background-image:
+      radial-gradient(circle at 70% 34%, oklch(from var(--tile-b) calc(l + 0.22) c h) 0 9%, transparent 9.5%),
+      radial-gradient(120% 100% at 85% 130%, var(--tile-b) 0 75%, transparent 75.5%),
+      radial-gradient(90% 80% at 10% 135%, oklch(from var(--tile-b) calc(l - 0.12) c h) 0 72%, transparent 72.5%),
+      linear-gradient(170deg, oklch(from var(--tile-a) calc(l + 0.14) c h), oklch(from var(--tile-a) calc(l - 0.16) c h));
+    box-shadow: inset 0 0 0 var(--border-width) var(--glass-edge);
+    transition:
+      scale var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .gallery-osk-tv-tile[aria-pressed="true"] .gallery-osk-tv-art::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: oklch(from var(--shadow-tint) l c h / 0.35);
+  }
+  .gallery-osk-tv-play {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    display: none;
+    place-items: center;
+    color: var(--accent-fg);
+  }
+  .gallery-osk-tv-play .fa-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  .gallery-osk-tv-tile[aria-pressed="true"] .gallery-osk-tv-play {
+    display: grid;
+  }
+  .gallery-osk-tv-tile:focus-visible .gallery-osk-tv-art {
+    scale: 1.05;
+    box-shadow:
+      0 0 0 calc(var(--focus-ring-width) * 2) var(--accent-ring),
+      var(--shadow-3);
+  }
+  .gallery-osk-tv-name {
+    overflow: hidden;
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-line);
+    font-weight: var(--weight-semibold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .gallery-osk-tv-genre {
+    margin-block-start: calc(var(--space-2) * -1);
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+  }
+  .gallery-osk-tv-empty {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--fg-muted);
+    font-size: var(--type-title-size);
+  }
+  :root[data-motion="reduced"] .gallery-osk-tv-tile:focus-visible .gallery-osk-tv-art {
+    scale: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion="full"]) .gallery-osk-tv-tile:focus-visible .gallery-osk-tv-art {
+      scale: none;
+    }
+  }
+
+  /* ── Pads: a keyboard in a Surface of a set width ─────────────────────── */
+  .gallery-osk-pad {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    min-width: 0;
+  }
+  .gallery-osk-pad[data-width="typing"] {
+    max-width: 44rem;
+  }
+  .gallery-osk-pad[data-width="number"] {
+    max-width: 19rem;
+  }
+  .gallery-osk-pad[data-width="narrow"] {
+    max-width: 21rem;
+  }
+  .gallery-osk-pad[data-width="sm"] {
+    max-width: 13rem;
+  }
+  .gallery-osk-pad[data-width="md"] {
+    max-width: 16rem;
+  }
+  .gallery-osk-pad[data-width="lg"] {
+    max-width: 22rem;
+  }
+  .gallery-osk-pads {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-5);
+    width: 100%;
+  }
+  .gallery-osk-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-3);
+  }
+
+  /* PIN: one dot per digit, filled as digits arrive; the status line keeps its height. */
+  .gallery-osk-pin {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-4);
+    padding-block: var(--space-2);
+  }
+  .gallery-osk-pin-dot {
+    width: var(--space-3);
+    height: var(--space-3);
+    border-radius: var(--radius-full);
+    box-shadow: inset 0 0 0 var(--border-width-strong) var(--fg-subtle);
+  }
+  .gallery-osk-pin-dot[data-filled] {
+    background-color: var(--fg);
+    box-shadow: none;
+  }
+  .gallery-osk-pin[data-state="error"] .gallery-osk-pin-dot[data-filled] {
+    background-color: var(--danger);
+  }
+  .gallery-osk-pin[data-state="success"] .gallery-osk-pin-dot[data-filled] {
+    background-color: var(--success);
+  }
+  .gallery-osk-status {
+    min-height: var(--type-body-line);
+    color: var(--fg-muted);
+    text-align: center;
+  }
+  .gallery-osk-status[data-align="start"] {
+    overflow: hidden;
+    text-align: start;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .gallery-osk-status[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .gallery-osk-status[data-tone="success"] {
+    color: var(--success-text);
+  }
+  .gallery-osk-dialled {
+    min-height: calc(var(--type-headline-line) + var(--space-2));
+    overflow: hidden;
+    font-size: var(--type-headline-size);
+    line-height: var(--type-headline-line);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .gallery-osk-dialled[data-empty] {
+    color: var(--fg-subtle);
+  }
+
+  /* ── Frames: the drawer docks to their bottom edge ─────────────────────── */
+  .gallery-osk-frame {
+    position: relative;
+    width: 100%;
+    max-width: 48rem;
+    height: 34rem;
+    overflow: hidden;
+  }
+  .gallery-osk-frame[data-size="short"] {
+    height: 26rem;
+  }
+  .gallery-osk-frame-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    padding: var(--inset-panel);
+    /* The drawer's height while it is open, so the last field can scroll above it. */
+    padding-block-end: calc(var(--inset-panel) + var(--keyboard-inset-height, 0px));
+  }
+  .gallery-osk-frame-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .gallery-osk-frame-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    max-width: 26rem;
+  }
+}

@@ -1,0 +1,15 @@
+/*
+ * KeyboardToggle — a ghost icon Button; while the keyboard is open it is pressed and takes
+ * the accent's soft fill, as a toolbar toggle does.
+ */
+@layer components {
+  .fa-osk-toggle[aria-pressed="true"] {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  @media (hover: hover) {
+    .fa-osk-toggle[aria-pressed="true"]:hover {
+      background: var(--accent-soft-hover);
+    }
+  }
+}

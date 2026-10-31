@@ -57,9 +57,18 @@ the budget is a deliberate decision with its reason in `scripts/pack-release.mjs
 - Generated sources have their own authoring scripts: icons in `scripts/icon-authoring`
   (`pnpm icons`, rules in docs/icon-spec.md) and canvas artwork in `scripts/build-canvas.mjs`
   (alpha masks painted in palette roles). Never hand-edit their output.
+- Component stylesheets sit beside their components; `pnpm build` writes
+  `dist/styles/manifest.json` for `glass-ux styles` (selective stylesheets). The manifest
+  finds styles through imports, `fa-*` class names in strings and shared custom properties,
+  not through attribute- or element-only selectors (see `scripts/style-manifest.mjs`).
+- Module-level `Object.assign`, `memo`, `createContext` and `lazy` wrappers carry
+  `/* @__PURE__ */` (`pnpm pure:check`), or an unused part keeps its whole component in a bundle.
 - The owner judges visual changes in a browser. Serve the built fixtures or docs on the LAN
   (`--host 0.0.0.0`) with an index page and keys or toggles to compare variants; built pages
   need relative or correct base asset paths, or fonts and artwork silently go missing.
+  Compare isolated demos in fixed states (frozen clock, seeded randomness, same scroll
+  position): whole docs-page diffs mislead, because scroll-spy, anchors, load timing and
+  changed prose move everything.
 
 ## Words and direction
 
@@ -71,6 +80,11 @@ the budget is a deliberate decision with its reason in `scripts/pack-release.mjs
 - A new or changed message needs every language pack in `src/i18n/` updated; the pack
   coverage test fails otherwise. Translate as a native UI editor would, with each language's
   usual register and consistent terms.
+- Numbers, percentages, lists, plurals, byte sizes, durations and weeks go through the cached
+  helpers in `src/lib/locale/intl.ts` and their neighbours, never `new Intl.*` in render.
+  Application text reaches a message as written (the message decides case), and count APIs
+  take plural forms. `src/i18n/source.test.ts` guards the common slips; the `glass-ux-author`
+  skill lists the helpers.
 - Library CSS uses logical properties (`pnpm logical:check`). Physical geometry that must not
   mirror (chart x axes, the colour picker's axes) carries `/* logical:allow <reason> */`.
   In-house keyboard and pointer code follows the reading direction (`readingKey`, `isRtl`).
@@ -119,6 +133,18 @@ decides when to publish. The local route:
   "preview class" in Japanese, Korean, Arabic and Hebrew (`results.previewUnavailable`).
 - Next.js support is verified with webpack (`pnpm test:next`), not Turbopack; forced colours
   only with Chromium's emulation, not Windows High Contrast itself.
+
+- From the 0.12.0 audit:
+  - Draggable rendered as an `li` keeps `role="button"` (axe `aria-allowed-role`/`list` on the
+    drag-drop demos); fixing it changes consumers' role queries.
+  - About 90 messages still insert a raw `count` without digit grouping.
+  - money-field doesn't parse native digits.
+  - Toasts with an action still close after 5 s.
+  - Topology wraps `renderNode` controls inside an option.
+  - Compact wrapped chip rows let neighbouring 24px hit areas share 2–4px.
+  - Selective-style closures are wider than needed where a class has several defining sheets
+    (Select loads tree-select.css).
+  - `glass-ux styles --scan` counts type-only imports.
 
 For adoption into a consuming application, read docs/getting-started.md and docs/integration.md.
 Bundled skills under skills/ cover adoption, component choice, forms, data views, assistant UI

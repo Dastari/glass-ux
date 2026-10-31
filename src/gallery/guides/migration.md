@@ -3,6 +3,11 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.12.0 → 0.12.1
+
+No code changes are required. The new `glass-ux/on-screen-keyboard` entry adds components
+and messages; applications that override messages can add the `onScreenKeyboard` namespace.
+
 ## 0.11.7 → 0.12.0
 
 Message overrides (`configureMessages`, `MessagesProvider`, language packs) are the only

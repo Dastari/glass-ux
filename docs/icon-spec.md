@@ -217,11 +217,19 @@ Generated imports follow the existing casing rule: `IconGithub`, `IconLinkedin`,
 modes, every size, and with tint disabled. Put an accessible service name on icon-only
 links; decorative icons beside a visible service name remain unlabelled.
 
-Device manufacturers are authored in `device-computers-network.mjs` and
-`device-printers-voip.mjs` in the same directory and filed under **Device manufacturers**.
+Device manufacturers are authored in `device-computers-network.mjs`, `device-network.mjs`
+and `device-printers-voip.mjs` in the same directory and filed under **Device manufacturers**.
 Search also accepts device classes such as `VoIP`, `printer`, `network`, `NAS` and `UPS`,
-and common aliases such as `Polycom` and `WD`. Use a simplified geometric monogram when
-a wordmark has no standalone symbol; avoid squeezing a full word into the icon frame.
+and common aliases such as `Polycom` and `WD`.
+
+Draw the brand's current symbol when it has one (Bosch's armature, Yamaha's tuning forks).
+When the brand is only a wordmark, the icon is the wordmark's own initial: trace that
+letter's weight, case, contrast, serifs, slant and terminals from the current logo (Canon's
+C, Sony's slab-serif S), never a generic letter. Heavy or high-contrast letters are drawn
+as a tinted outline, as `canon` is, rather than a single stroke. Two brands with the same
+initial must still be told apart at 14px. Avoid squeezing a full word into the icon frame.
+Check each identifier side by side with the current logo, and replace it when the brand
+changes its identity. Sub-brands with their own mark get their own icon (`asus-rog`).
 Manufacturer names with several words use hyphens (`tp-link`, `western-digital`), yielding
 `IconTpLink` and `IconWesternDigital`. These identifiers describe the manufacturer;
 keep a generic device icon available when the manufacturer is unknown.

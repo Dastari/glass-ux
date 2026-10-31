@@ -28,6 +28,7 @@ export const iconRegistry = [
   { name: "arrow-up-right", Icon: icons.IconArrowUpRight },
   { name: "arrow-up", Icon: icons.IconArrowUp },
   { name: "aruba", Icon: icons.IconAruba },
+  { name: "asus-rog", Icon: icons.IconAsusRog },
   { name: "asus", Icon: icons.IconAsus },
   { name: "attach", Icon: icons.IconAttach },
   { name: "audiocodes", Icon: icons.IconAudiocodes },

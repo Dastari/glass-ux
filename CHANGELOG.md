@@ -4,6 +4,50 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Added
+
+- `glass-ux/sidebar`: a standalone `Sidebar` for any application layout. `SidebarProvider`
+  holds its state; `Sidebar` takes `side` (start or end), `variant` (`sidebar`, `floating`,
+  `inset`), `collapsible` (`offcanvas`, `icon`, `none`) and `resizable` with width limits.
+  - Parts: `Header`, `Search` ("/" and ⌘F/Ctrl F, arrow keys walk the results), `Content`
+    (scroll edges; `fill` for a tree), `Group` with collapse that persists, `GroupLabel`,
+    `GroupAction`, `Menu`, `MenuItem`, `MenuButton` (`active`, `detail`, `count`, `face`,
+    `tooltip`), `MenuAction`, `MenuBadge`, `MenuSub`, `MenuSubButton`, `Match`,
+    `MenuSkeleton`, `Separator`, `Footer` and `Rail`; `SidebarInset`, `SidebarTrigger` and
+    `useSidebar`.
+  - ⌘B / Ctrl B toggles it (not while typing in rich text). In icon mode labels become
+    tooltips, counts move to the icon's corner and sub-menus open as flyouts.
+  - `storageKey` keeps the open state, width and groups, applied before the first paint
+    (`sidebarBootScript` for server-rendered pages and CSP hashes). Phones get a sheet.
+  - The phone sheet and the icon flyouts load only when needed. Messages in every language
+    pack.
+- Sheet snap points for bottom sheets: `snapPoints`, `snapPoint`, `defaultSnapPoint`,
+  `onSnapPointChange`, `snapPointLabels` and `snapToSequentialPoints`. Drag between heights,
+  or use the grab handle as a slider (arrow keys, Home, End). `modal={false}` leaves the page
+  usable with no scrim. A sheet opened from a sheet stacks, with the one behind receding.
+  `Sheet.Popup` takes `initialFocus` and `finalFocus`.
+- Icon `asus-rog` (`IconAsusRog`), the ASUS Republic of Gamers eye, filed under Device
+  manufacturers and found by "ROG" and "Republic of Gamers".
+
+### Changed
+
+- AppShell's section drawer is built on `Sidebar`. Props, exports, the stored preferences and
+  the look are unchanged. Groups now have `role="group"` and keep collapsed rows in the page
+  (hidden). The drawer handle also takes Shift with the arrow keys, Home and End. ⌘B / Ctrl B
+  no longer toggles the drawer while typing in rich text, and "/" follows
+  `configureShortcuts`.
+- Brand icons redrawn after a check against each brand's current logo. Brands with a symbol
+  now show it: Poly's p, Grandstream's fin, MikroTik's cube, Palo Alto's bars, Vertiv's disc,
+  WatchGuard's ring, Mitel's knot, Jabra's hand, Ruckus's dog, the new Xerox and ASUS marks,
+  and truer Huawei, Philips, Yamaha, Zebra, Lexmark, Kyocera, Crestron and Alcatel-Lucent
+  symbols. HPE and Intel follow their 2025 and 2023 logos, and Logitech its corporate rather
+  than gaming identity. Wordmark-only brands use their wordmark's own initial (Canon's C,
+  Sony's slab-serif S) instead of a generic letter, so brands that share an initial can be told
+  apart. Threads, Discord, Meta, Notion and GitLab are redrawn; Dropbox, Snapchat, Microsoft
+  and Reddit are corrected. Icon names are unchanged.
+
 ## 0.12.1
 
 On-screen keyboards for kiosks, TVs and touch screens, and a fix for a standalone chart table.

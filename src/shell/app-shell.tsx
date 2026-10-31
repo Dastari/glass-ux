@@ -1,4 +1,4 @@
-import { isRtl, readingKey } from "../lib/direction.js"
+import { isRtl } from "../lib/direction.js"
 import { useMessages } from "../lib/i18n/index.js"
 import { shellMessages } from "./messages.js"
 /**
@@ -18,7 +18,10 @@ import { shellMessages } from "./messages.js"
  * Only real content sits in glass: the drawer, the inspector and secondary windows.
  * Chrome (brand, rail, top bar) and the page header sit directly on the ambient canvas.
  * Layout is CSS from viewport queries and <html> preference attributes (shell-state.ts),
- * so the first paint is right; React only drives behaviour.
+ * so the first paint is right; React only drives behaviour. The section drawer's state
+ * (docked open or collapsed, the slide-over sheet, the shortcut and focus return) is
+ * Sidebar's (useSidebarState), kept in the shell preferences; its handle drags with
+ * Sidebar's pane drag; its sheet is Sidebar's.
  */
 import {
   createContext,
@@ -34,8 +37,11 @@ import {
   type RefObject,
 } from "react"
 import { cx } from "../lib/cx.js"
-import { matchesShortcut, usePlatform } from "../ui/kbd/index.js"
-import { Sheet } from "../ui/sheet/index.js"
+import { focusFirst } from "../lib/focus.js"
+import type { SidebarInternal } from "../ui/sidebar/context.js"
+import { resizeKeyWidth, startPaneDrag, themeSidebarRem } from "../ui/sidebar/resize.js"
+import { useSidebarState } from "../ui/sidebar/sidebar-provider.js"
+import { SidebarSheet } from "../ui/sidebar/sidebar-sheet.js"
 import { TooltipProvider } from "../ui/tooltip/index.js"
 import {
   DRAWER_MAX_REM,
@@ -48,7 +54,6 @@ import {
 } from "./shell-state.js"
 import { useMediaQuery } from "../lib/use-media-query.js"
 import { SHELL_QUERIES } from "./queries.js"
-import { remPx } from "../lib/rem.js"
 
 export interface ShellContextValue {
   phone: boolean
@@ -96,15 +101,14 @@ export interface ShellFocusTargets {
 
 export const ShellFocusContext = /* @__PURE__ */ createContext<ShellFocusTargets | null>(null)
 
-/** Focuses the element if it can take focus (connected, not inert or hidden); reports success. */
-const tryFocus = (element: HTMLElement | null | undefined) => {
-  if (!element?.isConnected || element.closest("[inert], [hidden]")) return false
-  element.focus()
-  return document.activeElement === element
-}
-
 /** Where a SectionDrawer renders: docked in the shell, or in the slide-over sheet. */
 export const DrawerPlacement = /* @__PURE__ */ createContext<"pane" | "sheet">("pane")
+
+/** Internal: the section drawer's Sidebar state, which SectionDrawer's parts (Sidebar's) read. */
+export const ShellSidebarContext = /* @__PURE__ */ createContext<SidebarInternal | null>(null)
+
+/** The drawer docks at desktop width; below it, it is Sidebar's sheet. */
+const DRAWER_SHEET_QUERY = "(width < 64rem)"
 
 export interface AppShellProps {
   /** Top-left corner, above the rail: the product mark (ShellBrand). */
@@ -155,11 +159,18 @@ export function AppShell({
 }: AppShellProps) {
   const prefs = useShellPrefs()
   const phone = useMediaQuery(SHELL_QUERIES.phone)
-  const desktop = useMediaQuery(SHELL_QUERIES.desktop, true)
   const docked = useMediaQuery(SHELL_QUERIES.dockedInspector, true)
   const wide = useMediaQuery(SHELL_QUERIES.wide, true)
-  const platform = usePlatform()
-  const [sheetOpen, setSheetOpen] = useState(false)
+  const hasDrawer = Boolean(drawer)
+  // The drawer's state: docked open or collapsed (the shell preference), the sheet below
+  // desktop width, and the one keyboard shortcut.
+  const sidebar = useSidebarState({
+    open: prefs.drawer === "open",
+    onOpenChange: (open) => updateShellPrefs({ drawer: open ? "open" : "closed" }),
+    shortcut: hasDrawer ? drawerShortcut : false,
+    mobileQuery: DRAWER_SHEET_QUERY,
+  })
+  const desktop = !sidebar.isMobile
   const [overlayInspector, setOverlayInspector] = useState(false)
   const shellRef = useRef<HTMLDivElement>(null)
   const drawerSlotRef = useRef<HTMLDivElement>(null)
@@ -167,16 +178,19 @@ export function AppShell({
   const contentRef = useRef<HTMLElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
   const inspectorReturn = useRef<HTMLElement | null>(null)
-  const drawerReturn = useRef<HTMLElement | null>(null)
-  const focusTargets = useMemo<ShellFocusTargets>(() => {
-    const register = (slot: { current: HTMLElement | null }) => (element: HTMLElement) => {
-      slot.current = element
-      return () => {
-        if (slot.current === element) slot.current = null
-      }
-    }
-    return { registerInspectorReturn: register(inspectorReturn), registerDrawerReturn: register(drawerReturn) }
-  }, [])
+  const { registerReturn: registerDrawerReturn, returns: drawerReturns, beforeCollapse } = sidebar
+  const focusTargets = useMemo<ShellFocusTargets>(
+    () => ({
+      registerInspectorReturn: (element: HTMLElement) => {
+        inspectorReturn.current = element
+        return () => {
+          if (inspectorReturn.current === element) inspectorReturn.current = null
+        }
+      },
+      registerDrawerReturn,
+    }),
+    [registerDrawerReturn]
+  )
   /**
    * Before a docked slot turns inert, move focus out of it to the control that reopens it,
    * or to the workspace, so keyboard and screen-reader users are not dropped on the body.
@@ -184,11 +198,7 @@ export function AppShell({
   const returnFocusFrom = useCallback((slot: HTMLElement | null, ...targets: (HTMLElement | null)[]) => {
     const active = typeof document === "undefined" ? null : document.activeElement
     if (!slot || !active || !slot.contains(active)) return
-    if (targets.some(tryFocus)) return
-    const content = contentRef.current
-    if (!content) return
-    if (!content.hasAttribute("tabindex")) content.tabIndex = -1
-    content.focus()
+    focusFirst(targets, contentRef.current)
   }, [])
 
   // Mirror stored preferences onto <html> (the boot script did this before first paint;
@@ -197,35 +207,26 @@ export function AppShell({
   // <html data-shell> while a shell is mounted: the root opts out of view transitions (R6.3).
   // An attribute, not :root:has(.fa-shell), which Chromium re-checks on every DOM insertion.
   useEffect(() => markShellMounted(document.documentElement), [])
-  // Reaching desktop width docks the drawer: the sheet closes (adjusting state during
-  // render, as React recommends, rather than in an effect).
-  const [wasDesktop, setWasDesktop] = useState(desktop)
-  if (wasDesktop !== desktop) {
-    setWasDesktop(desktop)
-    if (desktop) setSheetOpen(false)
-  }
 
-  const hasDrawer = Boolean(drawer)
-  const drawerOpen = desktop ? prefs.drawer === "open" : sheetOpen
-  const returnFromDrawer = useCallback(
-    () => returnFocusFrom(drawerSlotRef.current, drawerReturn.current, handleRef.current),
-    [returnFocusFrom]
-  )
+  // Collapsing the docked drawer first moves focus out of it: to the control that reopens it
+  // (the current rail item, most recent first), the handle, or the workspace. The sheet
+  // closes back to the dialog's own return target. (Leaving the tablet width closes the
+  // sheet: Sidebar's state does that.)
+  useEffect(() => {
+    beforeCollapse.current = () =>
+      returnFocusFrom(drawerSlotRef.current, ...[...drawerReturns].reverse(), handleRef.current)
+    return () => {
+      beforeCollapse.current = null
+    }
+  }, [beforeCollapse, drawerReturns, returnFocusFrom])
+
+  const drawerOpen = desktop ? prefs.drawer === "open" : sidebar.openMobile
+  const { change, changeMobile, toggleWith } = sidebar
   const setDrawerOpen = useCallback(
-    (open: boolean) => {
-      if (desktop) {
-        if (!open) returnFromDrawer()
-        updateShellPrefs({ drawer: open ? "open" : "closed" })
-      } else setSheetOpen(open)
-    },
-    [desktop, returnFromDrawer]
+    (open: boolean) => (desktop ? change(open, "api") : changeMobile(open, "api")),
+    [desktop, change, changeMobile]
   )
-  const toggleDrawer = useCallback(() => {
-    if (desktop) {
-      if (readShellPrefs().drawer === "open") returnFromDrawer()
-      updateShellPrefs((current) => ({ drawer: current.drawer === "open" ? "closed" : "open" }))
-    } else setSheetOpen((open) => !open)
-  }, [desktop, returnFromDrawer])
+  const toggleDrawer = useCallback(() => toggleWith("api"), [toggleWith])
 
   const inspectorAvailable = Boolean(inspector)
   const inspectorOpen = docked ? (prefs.inspector === null ? wide : prefs.inspector === "open") : overlayInspector
@@ -238,17 +239,6 @@ export function AppShell({
     },
     [docked, returnFocusFrom]
   )
-
-  useEffect(() => {
-    if (!hasDrawer) return
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (!matchesShortcut(event, drawerShortcut, platform)) return
-      event.preventDefault()
-      toggleDrawer()
-    }
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
-  }, [hasDrawer, drawerShortcut, platform, toggleDrawer])
 
   const value = useMemo<ShellContextValue>(
     () => ({
@@ -269,6 +259,7 @@ export function AppShell({
 
   return (
     <ShellContext.Provider value={value}>
+      <ShellSidebarContext.Provider value={sidebar}>
       <ShellFocusContext.Provider value={focusTargets}>
       <TooltipProvider>
         <div
@@ -299,21 +290,21 @@ export function AppShell({
           {tabBar ? <div className="fa-shell-slot-tabbar">{tabBar}</div> : null}
         </div>
         {hasDrawer ? (
-          <Sheet.Root side="start" open={sheetOpen && !desktop} onOpenChange={(open) => setSheetOpen(open)}>
-            <Sheet.Popup size="sm">
-              <DrawerPlacement.Provider value="sheet">{drawer}</DrawerPlacement.Provider>
-            </Sheet.Popup>
-          </Sheet.Root>
+          <SidebarSheet side="start" open={sidebar.openMobile && !desktop} onOpenChange={(open, event) => changeMobile(open, "dismiss", event)}>
+            <DrawerPlacement.Provider value="sheet">{drawer}</DrawerPlacement.Provider>
+          </SidebarSheet>
         ) : null}
       </TooltipProvider>
       </ShellFocusContext.Provider>
+      </ShellSidebarContext.Provider>
     </ShellContext.Provider>
   )
 }
 
 /**
  * The drawer's inner edge. Drag to resize (14–28rem); drag below the minimum and it snaps
- * closed; drag out from the rail to open. Double-click or Enter toggles; arrow keys resize.
+ * closed; drag out from the rail to open. Double-click or Enter toggles; arrow keys resize
+ * (Shift for bigger steps, Home and End to the limits), as Sidebar's Rail does.
  * While dragging only a custom property on the shell changes, so nothing re-renders.
  */
 function DrawerHandle({
@@ -337,59 +328,30 @@ function DrawerHandle({
     const shell = shellRef.current
     if (event.button !== 0 || !shell) return
     event.preventDefault()
-    const handle = event.currentTarget
     const pane = shell.querySelector<HTMLElement>(".fa-shell-drawer")
-    const rem = remPx()
-    const min = DRAWER_MIN_REM * rem
-    const max = DRAWER_MAX_REM * rem
-    const startX = event.clientX
-    const sign = isRtl(shell) ? -1 : 1
-    const startWidth = open && pane ? pane.getBoundingClientRect().width : 0
-    let width = open ? startWidth : min
-    let collapsed = !open
-    let moved = false
-    handle.setPointerCapture(event.pointerId)
     setDragging(true)
-    shell.dataset.resizing = ""
-
-    const setCollapsed = (next: boolean) => {
-      if (next === collapsed) return
-      collapsed = next
-      // Crossing the threshold animates: let the grid transition run for this change.
-      delete shell.dataset.resizing
-      if (next) shell.dataset.drawerPreview = "closed"
-      else shell.dataset.drawerPreview = "open"
-      window.setTimeout(() => {
-        if (handle.hasPointerCapture(event.pointerId)) shell.dataset.resizing = ""
-      }, 200)
-    }
-
-    const move = (moveEvent: PointerEvent) => {
-      const raw = startWidth + (moveEvent.clientX - startX) * sign
-      if (Math.abs(moveEvent.clientX - startX) > 2) moved = true
-      if (raw < min * 0.6) {
-        setCollapsed(true)
-        return
-      }
-      setCollapsed(false)
-      width = Math.min(max, Math.max(min, raw))
-      shell.style.setProperty("--shell-drawer", `${(width / rem).toFixed(3)}rem`)
-    }
-    const up = () => {
-      handle.removeEventListener("pointermove", move)
-      handle.removeEventListener("pointerup", up)
-      handle.removeEventListener("pointercancel", up)
-      setDragging(false)
-      delete shell.dataset.resizing
-      delete shell.dataset.drawerPreview
-      shell.style.removeProperty("--shell-drawer")
-      if (!moved) return
-      if (collapsed) updateShellPrefs({ drawer: "closed" })
-      else updateShellPrefs({ drawer: "open", drawerWidth: width / rem })
-    }
-    handle.addEventListener("pointermove", move)
-    handle.addEventListener("pointerup", up)
-    handle.addEventListener("pointercancel", up)
+    // Sidebar's pane drag, on the shell: it writes --shell-drawer and data-resizing there, and
+    // previews a collapse (or a drag out from the rail) with data-drawer-preview.
+    startPaneDrag({
+      element: shell,
+      property: "--shell-drawer",
+      preview: (collapsed) => {
+        if (collapsed === null) delete shell.dataset.drawerPreview
+        else shell.dataset.drawerPreview = collapsed ? "closed" : "open"
+      },
+      handle: event.currentTarget,
+      event: event.nativeEvent,
+      sign: isRtl(shell) ? -1 : 1,
+      open,
+      startWidth: open && pane ? pane.getBoundingClientRect().width : 0,
+      min: DRAWER_MIN_REM,
+      max: DRAWER_MAX_REM,
+      onPress: () => setDragging(false),
+      onCommit: (width, nextOpen) => {
+        setDragging(false)
+        updateShellPrefs(nextOpen ? { drawer: "open", drawerWidth: width ?? null } : { drawer: "closed" })
+      },
+    })
   }
 
   const onKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -398,16 +360,15 @@ function DrawerHandle({
       onToggle()
       return
     }
-    const key = readingKey(event.key, event.currentTarget)
-    const delta = key === "ArrowLeft" ? -1 : key === "ArrowRight" ? 1 : 0
-    if (!delta) return
+    const current = readShellPrefs().drawerWidth ?? themeSidebarRem()
+    const next = resizeKeyWidth(event, { current, min: DRAWER_MIN_REM, max: DRAWER_MAX_REM, side: "start" })
+    if (next === null) return
     event.preventDefault()
-    const current = readShellPrefs().drawerWidth ?? defaultDrawerRem()
     if (!open) updateShellPrefs({ drawer: "open" })
-    else updateShellPrefs({ drawerWidth: current + delta })
+    else updateShellPrefs({ drawerWidth: next })
   }
 
-  const widthRem = prefs.drawerWidth ?? defaultDrawerRem()
+  const widthRem = prefs.drawerWidth ?? themeSidebarRem()
   return (
     <div
       ref={ref}
@@ -429,10 +390,3 @@ function DrawerHandle({
   )
 }
 
-/** The default drawer width (--sidebar-w) in rem. */
-function defaultDrawerRem() {
-  if (typeof document === "undefined") return 16.5
-  const probe = getComputedStyle(document.documentElement).getPropertyValue("--sidebar-w").trim()
-  const value = Number.parseFloat(probe)
-  return probe.endsWith("rem") && Number.isFinite(value) ? value : 16.5
-}

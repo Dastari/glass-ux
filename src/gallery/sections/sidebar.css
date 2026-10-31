@@ -1,0 +1,94 @@
+/*
+ * Sidebar specimens. Each application is held in a frame of its own (a stand-in for the
+ * viewport) so its sidebar docks to the frame and never to the documentation's chrome.
+ *
+ *   frame   a bounded application: the provider fills it; tall, short and phone sizes
+ *   bar     the content's top row: the trigger and the breadcrumb, on the canvas
+ *   page    the content below it
+ */
+@layer components {
+  .gallery-sidebar-frame {
+    position: relative;
+    display: flex;
+    inline-size: 100%;
+    block-size: 26rem;
+    overflow: hidden;
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-surface);
+  }
+  .gallery-sidebar-frame[data-size="tall"] {
+    block-size: 36rem;
+  }
+  .gallery-sidebar-frame[data-size="short"] {
+    block-size: 20rem;
+  }
+  .gallery-sidebar-frame[data-size="phone"] {
+    max-inline-size: 24.375rem;
+    block-size: 30rem;
+  }
+  .gallery-sidebar-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    inline-size: 100%;
+  }
+  .gallery-sidebar-bar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2);
+    min-inline-size: 0;
+    padding: var(--space-3) var(--space-4) var(--space-2) var(--space-3);
+  }
+  .gallery-sidebar-page {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    padding: var(--space-2) var(--space-4) var(--space-4);
+    overflow: auto;
+  }
+  /* Facts line up with the header's title. */
+  .gallery-sidebar-facts {
+    padding-inline: calc(var(--space-3) + (var(--item-h) - var(--icon-md)) / 2);
+  }
+  .gallery-sidebar-rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .gallery-sidebar-rows > li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-block-size: var(--item-h);
+    padding-inline: var(--space-2-5);
+    border-radius: var(--radius-item);
+    background-color: var(--fill-muted);
+  }
+  .gallery-sidebar-rows > li > .fa-item {
+    flex: 1 1 auto;
+    margin-inline: calc(var(--space-2-5) * -1);
+    border: 0;
+    background-color: transparent;
+    font: inherit;
+    text-align: start;
+  }
+  .gallery-sidebar-rows > li > span:nth-child(2) {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* An entity's face in a row: its avatar and name. */
+  .gallery-sidebar-face {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-inline-size: 0;
+  }
+}

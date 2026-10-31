@@ -1,6 +1,5 @@
 import { useMessages } from "../lib/i18n/index.js"
 import { shellMessages } from "./messages.js"
-import { Highlight } from "../ui/combobox/index.js";
 /**
  * SectionDrawer — the current section's navigation and lists (Assistant conversations,
  * the organisation and endpoint tree, ticket views), in a glass pane beside the rail.
@@ -10,40 +9,88 @@ import { Highlight } from "../ui/combobox/index.js";
  *   Body    scrolls; the header edge appears while content passes beneath it (R5.8)
  *   Footer  pinned items (section settings)
  *
- * The AppShell docks it (resizable, collapsible to the rail) on desktops and shows it as
- * a slide-over sheet on tablets and phones. Width, open state and collapsed groups
- * persist (shell-state.ts).
+ * The parts are Sidebar's (glass-ux/sidebar), under the drawer's own class names and
+ * geometry: Search is Sidebar.Search, Body is Sidebar.Content, Item is Sidebar.MenuButton in
+ * a Sidebar.MenuItem, Group is a collapsible Sidebar.Group, Match is Sidebar.Match. The
+ * AppShell docks the drawer (resizable, collapsible to the rail) on desktops and shows it as
+ * a slide-over sheet on tablets and phones, driving it with Sidebar's state. Width, open
+ * state and collapsed groups persist (shell-state.ts).
  */
-import { Collapsible } from "@base-ui/react/collapsible";
-import { mergeProps } from "@base-ui/react/merge-props";
-import { useRender } from "@base-ui/react/use-render";
 import {
   useCallback,
   useContext,
-  useEffect,
-  useRef,
+  createContext,
   type ComponentProps,
-  type KeyboardEvent,
-  type MouseEvent,
   type ReactElement,
   type ReactNode,
 } from "react";
-import { IconChevronDown, IconSidebar } from "../icons/generated/icons.js";
+import { IconSidebar } from "../icons/generated/icons.js";
 import { cx } from "../lib/cx.js";
-import { numberFormat } from "../lib/locale/intl.js";
-import { useLocale } from "../lib/locale/use-locale.js";
-import { useScrollEdges } from "../lib/use-scroll-edges.js";
-import { CountBadge } from "../ui/badge/index.js";
 import { Button } from "../ui/button/index.js";
-import { SearchField } from "../ui/input/index.js";
-import {
-  matchesShortcut,
-  useAriaShortcut,
-  usePlatform,
-} from "../ui/kbd/index.js";
+import { useAriaShortcut } from "../ui/kbd/index.js";
 import { Sheet } from "../ui/sheet/index.js";
-import { DrawerPlacement, useOptionalShell } from "./app-shell.js";
+import { Sidebar } from "../ui/sidebar/sidebar.js";
+import {
+  SidebarConfig,
+  SidebarContext,
+  SidebarIconMode,
+  SidebarPartClasses,
+  SidebarPlacement,
+  detachedSidebar,
+  type SidebarConfigValue,
+  type SidebarInternal,
+  type SidebarPartClassNames,
+} from "../ui/sidebar/context.js";
+import { DrawerPlacement, ShellSidebarContext, useOptionalShell } from "./app-shell.js";
 import { updateShellPrefs, useShellPrefs } from "./shell-state.js";
+
+/** The drawer's names for the inner parts of Sidebar's parts (its styling hooks). */
+const DRAWER_CLASSES: SidebarPartClassNames = {
+  groupTrigger: "fa-shell-drawer-group-trigger",
+  chevron: "fa-shell-drawer-chevron",
+  text: "fa-shell-drawer-text",
+  label: "fa-item-label",
+  detail: "fa-shell-drawer-detail",
+  face: "fa-shell-drawer-face",
+  mark: "fa-shell-drawer-mark",
+  titleBlock: "fa-shell-drawer-heading",
+  subtitle: "fa-shell-drawer-subtitle",
+};
+
+const noRef = { current: null };
+
+/** One detached Sidebar state for every drawer that stands alone (made on first use). */
+let detached: SidebarInternal | null = null;
+
+/** The placement the parts below were scoped for, or null outside a drawer. */
+const DrawerScope = /* @__PURE__ */ createContext<"pane" | "sheet" | null>(null);
+
+/**
+ * Gives Sidebar's parts what they read from a Sidebar: the shell's drawer state (or a
+ * detached one when the drawer stands alone, as in a host's own layout or dialog), the
+ * placement, and the drawer's class names. Root provides it once; a part used without Root
+ * (a host's dialog under DrawerPlacement "sheet") provides its own.
+ */
+function Scope({ label = "", children }: { label?: string | undefined; children: ReactNode }) {
+  const scoped = useContext(DrawerScope);
+  const placement = useContext(DrawerPlacement);
+  const shellSidebar = useContext(ShellSidebarContext);
+  if (scoped === placement) return <>{children}</>;
+  const config: SidebarConfigValue = { side: "start", collapsible: "offcanvas", resizable: false, min: 14, max: 28, rootRef: noRef, paneRef: noRef, label };
+  return (
+    <DrawerScope.Provider value={placement}>
+      <SidebarContext.Provider value={shellSidebar ?? (detached ??= detachedSidebar())}>
+        <SidebarPlacement.Provider value={placement}>
+          <SidebarIconMode.Provider value={false}>
+            <SidebarConfig.Provider value={config}>
+              <SidebarPartClasses.Provider value={DRAWER_CLASSES}>{children}</SidebarPartClasses.Provider>
+            </SidebarConfig.Provider>
+          </SidebarIconMode.Provider>
+        </SidebarPlacement.Provider>
+      </SidebarContext.Provider>
+    </DrawerScope.Provider>
+  );
+}
 
 export interface SectionDrawerProps extends ComponentProps<"nav"> {
   /** Accessible name: "Assistant navigation". */
@@ -53,15 +100,18 @@ export interface SectionDrawerProps extends ComponentProps<"nav"> {
 function Root({ className, children, ...rest }: SectionDrawerProps) {
   const placement = useContext(DrawerPlacement);
   // In a sheet the Sheet is the surface (and is labelled by the shell): parts map onto it.
-  if (placement === "sheet") return <>{children}</>;
+  if (placement === "sheet") return <Scope label={rest["aria-label"]}>{children}</Scope>;
   return (
-    <nav
-      {...rest}
-      className={cx("glass-panel fa-shell-drawer", className)}
-      data-placement={placement}
-    >
-      {children}
-    </nav>
+    <Scope label={rest["aria-label"]}>
+      <nav
+        {...rest}
+        className={cx("glass-panel fa-shell-drawer", className)}
+        data-placement={placement}
+        data-sidebar-surface=""
+      >
+        {children}
+      </nav>
+    </Scope>
   );
 }
 
@@ -106,30 +156,29 @@ function Header({
       </Sheet.Header>
     );
   }
+  const collapse = shell ? (
+    <Button
+      variant="ghost"
+      size="sm"
+      icon={<IconSidebar />}
+      aria-label={messages.collapseSectionNavigation}
+      shortcut={shell.drawerShortcut}
+      aria-keyshortcuts={drawerKeys}
+      onClick={() => shell.setDrawerOpen(false)}
+    />
+  ) : null;
   return (
-    <header {...rest} className={cx("fa-shell-drawer-header", className)}>
-      {icon ? <span className="fa-shell-drawer-mark">{icon}</span> : null}
-      {subtitle ? (
-        <div className="fa-shell-drawer-heading">
-          <h2 className="fa-shell-drawer-title">{title}</h2>
-          <p className="fa-shell-drawer-subtitle">{subtitle}</p>
-        </div>
-      ) : (
-        <h2 className="fa-shell-drawer-title">{title}</h2>
-      )}
-      {actions}
-      {shell ? (
-        <Button
-          variant="ghost"
-          size="sm"
-          icon={<IconSidebar />}
-          aria-label={messages.collapseSectionNavigation}
-          shortcut={shell.drawerShortcut}
-          aria-keyshortcuts={drawerKeys}
-          onClick={() => shell.setDrawerOpen(false)}
-        />
-      ) : null}
-    </header>
+    <Scope>
+      <Sidebar.Header
+        {...(rest as ComponentProps<"div">)}
+        className={cx("fa-shell-drawer-header", className)}
+        icon={icon}
+        title={<h2 className="fa-shell-drawer-title">{title}</h2>}
+        subtitle={subtitle}
+        toggle={false}
+        actions={actions || collapse ? <>{actions}{collapse}</> : undefined}
+      />
+    </Scope>
   );
 }
 
@@ -141,20 +190,6 @@ export interface SectionDrawerSearchProps {
   noun: string;
   placeholder?: string;
 }
-
-/** The drawer's surface: the docked pane, or the sheet it becomes on tablets and phones. */
-const SURFACE = ".fa-shell-drawer, .fa-dialog";
-/** Rows the keyboard walks from the search field: list items, then a Tree's rows. */
-const ROWS =
-  ".fa-shell-drawer-body :is(.fa-shell-drawer-item, [role='treeitem'])";
-const SHORTCUTS = ["/", "mod+f"];
-
-const editable = (element: Element) =>
-  Boolean(element.closest("input, textarea, select, [contenteditable='true']"));
-/** A Tree's first row (level 1, first in its set): ↑ from it leaves the tree. */
-const firstTreeRow = (element: Element) =>
-  element.getAttribute("aria-level") === "1" &&
-  element.getAttribute("aria-posinset") === "1";
 
 /**
  * The list's filter, between the header and the body: it stays put while the list scrolls.
@@ -173,139 +208,16 @@ function Search({
   placeholder,
 }: SectionDrawerSearchProps) {
   const messages = useMessages(shellMessages)
-
-  const placement = useContext(DrawerPlacement);
-  const platform = usePlatform();
-  const slash = useAriaShortcut("/");
-  const find = useAriaShortcut("mod+f");
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  /** Where focus was before it came to the field: Esc on an empty field goes back. */
-  const returnTo = useRef<HTMLElement | null>(null);
-
-  const surface = () => wrapRef.current?.closest<HTMLElement>(SURFACE) ?? null;
-  const rows = () => [
-    ...(surface()?.querySelectorAll<HTMLElement>(ROWS) ?? []),
-  ];
-  const focusField = () => {
-    inputRef.current?.focus();
-    inputRef.current?.select();
-  };
-
-  useEffect(() => {
-    const root = wrapRef.current?.closest<HTMLElement>(SURFACE);
-    if (!root) return;
-    // Capture, so it runs before a Tree's own keys (its typeahead would take "/").
-    const onKeyDown = (event: globalThis.KeyboardEvent) => {
-      const target = event.target;
-      if (
-        !(target instanceof HTMLElement) ||
-        target === inputRef.current ||
-        event.defaultPrevented
-      )
-        return;
-      const shortcut = SHORTCUTS.find((keys) =>
-        matchesShortcut(event, keys, platform),
-      );
-      if (shortcut && (shortcut !== "/" || !editable(target))) {
-        event.preventDefault();
-        event.stopPropagation();
-        focusField();
-        return;
-      }
-      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
-        return;
-      const tree = target.getAttribute("role") === "treeitem";
-      // Inside a Tree only ↑ from its first row is ours; the Tree moves on its own.
-      if (tree && !(event.key === "ArrowUp" && firstTreeRow(target))) return;
-      if (!tree && !target.matches(".fa-shell-drawer-item")) return;
-      const all = rows().filter(
-        (row) =>
-          row.getAttribute("role") !== "treeitem" ||
-          row === target ||
-          firstTreeRow(row),
-      );
-      const index = all.indexOf(target);
-      if (index < 0) return;
-      event.preventDefault();
-      event.stopPropagation();
-      if (event.key === "ArrowUp")
-        (index === 0 ? inputRef.current : all[index - 1])?.focus();
-      else all[index + 1]?.focus();
-    };
-    root.addEventListener("keydown", onKeyDown, true);
-    return () => root.removeEventListener("keydown", onKeyDown, true);
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- the helpers read refs only
-  }, [platform]);
-
-  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "ArrowDown" && !event.altKey) {
-      const first = rows()[0];
-      if (!first) return;
-      event.preventDefault();
-      first.focus();
-      return;
-    }
-    // A filled field clears itself (SearchField); an empty one hands focus back.
-    if (event.key !== "Escape" || event.currentTarget.value !== "") return;
-    const root = surface();
-    const back = returnTo.current;
-    const target =
-      back?.isConnected && root?.contains(back)
-        ? back
-        : (root?.querySelector<HTMLElement>(
-            ".fa-shell-drawer-body :is([aria-current='page'], [aria-selected='true'], [role='treeitem'][tabindex='0'])",
-          ) ?? rows()[0]);
-    if (!target) return;
-    event.preventDefault();
-    event.stopPropagation();
-    returnTo.current = null;
-    target.focus();
-  };
-
-  const change = (next: string) => {
-    onValueChange(next);
-    // A new query starts at the top of the list.
-    const root = surface();
-    root
-      ?.querySelector<HTMLElement>(
-        ".fa-shell-drawer-body[data-scroll-container]",
-      )
-      ?.scrollTo({ top: 0 });
-    root
-      ?.querySelector<HTMLElement>(".fa-shell-drawer-body")
-      ?.closest<HTMLElement>(".fa-dialog-body")
-      ?.scrollTo({ top: 0 });
-  };
-
   return (
-    <div
-      ref={wrapRef}
-      className="fa-shell-drawer-search"
-      data-placement={placement}
-    >
-      <SearchField
-        ref={inputRef}
-        size="sm"
+    <Scope>
+      <Sidebar.Search
+        className="fa-shell-drawer-search"
         value={value}
-        onValueChange={change}
-        placeholder={placeholder ?? messages.search(noun)}
+        onValueChange={onValueChange}
         aria-label={messages.search(noun)}
-        shortcut="/"
-        aria-keyshortcuts={[slash, find].filter(Boolean).join(" ")}
-        onKeyDown={onKeyDown}
-        onFocus={(event) => {
-          const from = event.relatedTarget;
-          returnTo.current =
-            from instanceof HTMLElement &&
-            surface()?.contains(from) &&
-            !wrapRef.current?.contains(from)
-              ? from
-              : null;
-        }}
+        placeholder={placeholder ?? messages.search(noun)}
       />
-    </div>
+    </Scope>
   );
 }
 
@@ -318,7 +230,7 @@ export interface SectionDrawerMatchProps {
 
 /** A row's text with the search highlighted, as a Tree highlights its rows. */
 function Match({ text, query }: SectionDrawerMatchProps) {
-  return <Highlight text={text} query={query} />;
+  return <Sidebar.Match text={text} query={query} />;
 }
 
 export interface SectionDrawerBodyProps extends ComponentProps<"div"> {
@@ -336,10 +248,8 @@ function Body({
   ...rest
 }: SectionDrawerBodyProps) {
   const placement = useContext(DrawerPlacement);
-  const ref = useRef<HTMLDivElement>(null);
-  // The drawer root mirrors the edges, so its header, search and footer select on it.
-  const edges = useScrollEdges(ref, { root: ".fa-shell-drawer" });
   if (placement === "sheet") {
+    // The sheet's body scrolls; the drawer's body only lays the content out inside it.
     return (
       <Sheet.Body>
         <div
@@ -347,6 +257,7 @@ function Body({
           className={cx("fa-shell-drawer-body", className)}
           data-placement="sheet"
           data-fill={fill ? "" : undefined}
+          data-sidebar-content=""
         >
           {children}
         </div>
@@ -354,17 +265,11 @@ function Body({
     );
   }
   return (
-    <div
-      ref={ref}
-      {...rest}
-      className={cx("fa-shell-drawer-body", className)}
-      data-fill={fill ? "" : undefined}
-      data-scroll-container={fill ? undefined : ""}
-      data-scrolled-top={edges.top ? "" : undefined}
-      data-scrolled-bottom={edges.bottom ? "" : undefined}
-    >
-      {children}
-    </div>
+    <Scope>
+      <Sidebar.Content {...rest} fill={fill} className={cx("fa-shell-drawer-body", className)}>
+        {children}
+      </Sidebar.Content>
+    </Scope>
   );
 }
 
@@ -373,17 +278,17 @@ function Body({
  * closes the slide-over sheet on tablets and phones, and does nothing where it is docked.
  */
 export function useDrawerDismiss() {
-  const shell = useOptionalShell();
+  const sidebar = useContext(ShellSidebarContext);
   const placement = useContext(DrawerPlacement);
   return useCallback(() => {
-    if (placement === "sheet") shell?.setDrawerOpen(false);
-  }, [placement, shell]);
+    if (placement === "sheet") sidebar?.changeMobile(false, "navigation");
+  }, [placement, sidebar]);
 }
 
 function Footer({ className, ...rest }: ComponentProps<"div">) {
   const placement = useContext(DrawerPlacement);
   const footer = (
-    <div
+    <Sidebar.Footer
       {...rest}
       className={cx("fa-shell-drawer-footer", className)}
       data-placement={placement}
@@ -394,7 +299,7 @@ function Footer({ className, ...rest }: ComponentProps<"div">) {
 
 /** A list of items. */
 function List({ className, ...rest }: ComponentProps<"ul">) {
-  return <ul {...rest} className={cx("fa-shell-drawer-list", className)} />;
+  return <Sidebar.Menu {...rest} className={cx("fa-shell-drawer-list", className)} />;
 }
 
 export interface SectionDrawerItemProps extends Omit<
@@ -428,56 +333,27 @@ function Item({
   render,
   face,
   className,
-  onClick,
   ...rest
 }: SectionDrawerItemProps) {
-  const shell = useOptionalShell();
-  const placement = useContext(DrawerPlacement);
-  const locale = useLocale();
-  const element = useRender({
-    defaultTagName: "button",
-    render,
-    props: mergeProps<"a">(
-      {
-        className: cx("fa-item fa-shell-drawer-item", className),
-        "aria-current": active ? "page" : undefined,
-        onClick: (event: MouseEvent<HTMLAnchorElement>) => {
-          onClick?.(event);
-          // Choosing a destination in the slide-over sheet dismisses it.
-          if (placement === "sheet" && !event.defaultPrevented)
-            shell?.setDrawerOpen(false);
-        },
-        children: (
-          <>
-            {face ? (
-              <span className="fa-shell-drawer-face">{face}</span>
-            ) : (
-              <>
-                {icon}
-                <span className="fa-shell-drawer-text">
-                  <span className="fa-item-label">{label}</span>
-                  {detail ? (
-                    <span className="fa-shell-drawer-detail">{detail}</span>
-                  ) : null}
-                </span>
-              </>
-            )}
-            {count !== undefined ? (
-              <span className="fa-item-trail">
-                {numberFormat(locale).format(count)}
-              </span>
-            ) : null}
-          </>
-        ),
-      },
-      {
-        ...rest,
-        "data-active": active ? "" : undefined,
-        "data-detail": detail || face ? "" : undefined,
-      } as ComponentProps<"a">,
-    ),
-  });
-  return <li className="fa-shell-drawer-entry">{element}</li>;
+  // A button unless rendered as a router link (`href` alone keeps it a button, as before).
+  return (
+    <Scope>
+      <Sidebar.MenuItem className="fa-shell-drawer-entry">
+        <Sidebar.MenuButton
+          {...(rest as Omit<ComponentProps<"button">, "children">)}
+          render={render ?? <button />}
+          icon={icon}
+          detail={detail}
+          face={face}
+          count={count}
+          active={active}
+          className={cx("fa-shell-drawer-item", className)}
+        >
+          {label}
+        </Sidebar.MenuButton>
+      </Sidebar.MenuItem>
+    </Scope>
+  );
 }
 
 export interface SectionDrawerGroupProps {
@@ -502,30 +378,29 @@ function Group({
   const prefs = useShellPrefs();
   const open = !prefs.collapsed[id];
   return (
-    <Collapsible.Root
-      className="fa-shell-drawer-group"
-      open={open}
-      onOpenChange={(next) =>
-        updateShellPrefs((current) => {
-          const collapsed = { ...current.collapsed };
-          if (next) delete collapsed[id];
-          else collapsed[id] = true;
-          return { collapsed };
-        })
-      }
-    >
-      <div className="fa-shell-drawer-group-head">
-        <Collapsible.Trigger className="fa-shell-drawer-group-trigger fa-pressable">
-          <span className="fa-overline">{title}</span>
-          {count !== undefined ? <CountBadge value={count} /> : null}
-          <IconChevronDown className="fa-shell-drawer-chevron" />
-        </Collapsible.Trigger>
-        {actions}
-      </div>
-      <Collapsible.Panel className="fa-collapse fa-shell-drawer-group-panel">
-        {children}
-      </Collapsible.Panel>
-    </Collapsible.Root>
+    <Scope>
+      <Sidebar.Group
+        collapsible
+        className="fa-shell-drawer-group"
+        open={open}
+        onOpenChange={(next) =>
+          updateShellPrefs((current) => {
+            const collapsed = { ...current.collapsed };
+            if (next) delete collapsed[id];
+            else collapsed[id] = true;
+            return { collapsed };
+          })
+        }
+      >
+        <div className="fa-shell-drawer-group-head">
+          <Sidebar.GroupLabel count={count}>{title}</Sidebar.GroupLabel>
+          {actions}
+        </div>
+        <Sidebar.GroupContent className="fa-shell-drawer-group-panel">
+          {children}
+        </Sidebar.GroupContent>
+      </Sidebar.Group>
+    </Scope>
   );
 }
 

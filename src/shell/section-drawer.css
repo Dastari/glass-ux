@@ -3,8 +3,21 @@
  * slides over as a sheet). Its width comes from the shell (--_drawer) and does not change
  * while the shell collapses it, so the content never reflows mid-animation; the shell
  * clips it instead. Rows are fa-item.
+ *
+ * The parts are Sidebar's (sidebar.css) under the drawer's class names. The drawer keeps its
+ * own geometry: it gives Sidebar's parts their tokens (a 10px row inset rather than the icon
+ * strip's square), and its own rules, which load after sidebar.css at the same specificity
+ * (components.css order, which selective styles keep), restate what differs. A host's rule
+ * on a drawer class still overrides it as before.
  */
 @layer components {
+  :is(.fa-shell-drawer, .fa-shell-drawer-header, .fa-shell-drawer-search, .fa-shell-drawer-body, .fa-shell-drawer-footer, .fa-shell-drawer-list) {
+    --_pad: var(--space-3);
+    --_icon: var(--icon-md);
+    --_square: calc(var(--icon-md) + var(--space-2-5) * 2);
+    --_btn-pad: var(--space-2-5);
+    --_mark: var(--control-h-sm);
+  }
   .fa-shell-drawer {
     display: flex;
     flex: none;
@@ -25,9 +38,17 @@
     flex: none;
     align-items: center;
     gap: var(--space-2-5);
+    min-block-size: 0;
     padding-block: var(--space-4) var(--space-3);
     padding-inline: var(--space-4) var(--space-3);
     transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-shell-drawer-header[data-has-mark] {
+    padding-inline-start: var(--space-4);
+  }
+  /* The actions and the collapse button sit in the header's own row. */
+  .fa-shell-drawer-header > .fa-sidebar-header-actions {
+    display: contents;
   }
   /* With a search, the scroll edge sits under the field instead (it stays put). */
   .fa-shell-drawer[data-scrolled-top]:not(:has(.fa-shell-drawer-search)) .fa-shell-drawer-header {
@@ -100,6 +121,10 @@
     min-height: 0;
     padding: var(--space-1) var(--space-3) var(--space-3);
   }
+  /* A docked body scrolls on both axes as a scroll container does (Sidebar's clips sideways). */
+  .fa-shell-drawer-body:where([data-scroll-container]) {
+    overflow-x: auto;
+  }
   /* Sheet body/footer slots own the inset; their inner drawer parts add none. */
   .fa-shell-drawer-body[data-placement="sheet"],
   .fa-shell-drawer-footer[data-placement="sheet"] {
@@ -123,6 +148,7 @@
     display: flex;
     flex: none;
     flex-direction: column;
+    gap: 0;
     padding: var(--space-2) var(--space-3) var(--space-3);
     transition: box-shadow var(--duration-fast) var(--ease-standard);
   }
@@ -140,6 +166,7 @@
   }
   .fa-shell-drawer-entry {
     display: flex;
+    flex-direction: row;
     min-width: 0;
   }
   .fa-shell-drawer-item {
@@ -188,6 +215,12 @@
     align-items: center;
     gap: var(--space-1);
   }
+  /* Sidebar's label box around the trigger: it fills the head and takes the trigger's height. */
+  .fa-shell-drawer-group-head > .fa-sidebar-group-label {
+    flex: 1 1 auto;
+    block-size: auto;
+    color: inherit;
+  }
   .fa-shell-drawer-group-trigger {
     display: flex;
     flex: 1 1 auto;
@@ -210,6 +243,10 @@
   }
   .fa-shell-drawer-group-trigger:hover {
     background-color: var(--fill-hover);
+    color: inherit;
+  }
+  .fa-shell-drawer-group-trigger:focus-visible {
+    outline-offset: var(--focus-ring-offset);
   }
   .fa-shell-drawer-chevron {
     flex: none;

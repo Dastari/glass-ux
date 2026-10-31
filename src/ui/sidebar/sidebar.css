@@ -1,0 +1,762 @@
+/*
+ * Sidebar — a docked pane beside the content (SidebarInset), in one flex row
+ * (.fa-sidebar-provider). Layout comes from data attributes on .fa-sidebar, which the boot
+ * script sets before the first paint, so React only drives behaviour.
+ *
+ *   .fa-sidebar          the track the pane occupies in the row (width + margins)
+ *   .fa-sidebar-pane     the material, absolutely placed in the track; it slides (offcanvas)
+ *                        or narrows (icon) over the content
+ *   .fa-sidebar-nav      the landmark; clips the parts while the pane narrows
+ *   .fa-sidebar-inner    the parts, at the expanded width until the pane settles, so nothing
+ *                        reflows mid-motion
+ *
+ * The content beside never animates (AppShell's technique): the track commits once, at once
+ * when collapsing (the pane then leaves over the widened content) and after the motion when
+ * expanding (the pane arrives over the content first). The pane's own width is the one
+ * travelling layout, contained in the pane. Under Still every duration is 0.
+ *
+ * Component tokens
+ *   --_pad       the inline inset of the parts from the pane's edge
+ *   --_square    an icon-mode button: the md row height, square
+ *   --_icon      a navigation icon
+ *   --_mark      the header mark's box
+ *   --_strip     the icon-mode pane width
+ *   --_w         the expanded width: the dragged --fa-sidebar-width, else the width prop
+ *                (--fa-sidebar-default), else the theme's --sidebar-w; clamped when resizable
+ *   --_margin    the gap around a floating pane
+ *   --_pane      the pane's width now; --_track the track's
+ *   --_inner     the parts' width (commits after the pane when collapsing to icons)
+ *   --_rail      the rail's hit width
+ */
+@layer components {
+  .fa-sidebar-provider {
+    display: flex;
+    inline-size: 100%;
+    block-size: 100%;
+    min-inline-size: 0;
+    min-block-size: 0;
+    overflow-x: clip;
+  }
+
+  :is(.fa-sidebar, .fa-sidebar-sheet) {
+    --_pad: var(--space-3);
+    --_square: var(--item-h);
+    --_icon: var(--icon-md);
+    --_mark: var(--control-h-sm);
+    --_btn-pad: calc((var(--_square) - var(--_icon)) / 2);
+  }
+
+  .fa-sidebar {
+    --_inline-sign: 1;
+    --_min: var(--fa-sidebar-min, 14rem);
+    --_max: var(--fa-sidebar-max, 28rem);
+    --_w: var(--fa-sidebar-default, var(--sidebar-w));
+    --_strip: calc(var(--_square) + var(--_pad) * 2 + var(--border-width) * 2);
+    --_margin: 0px;
+    --_rail: var(--space-3);
+    --_pane: var(--_w);
+    --_inner: calc(var(--_w) - var(--border-width) * 2);
+    --_track: calc(var(--_pane) + var(--_margin) * 2);
+    --_radius: 0px;
+    position: relative;
+    z-index: var(--z-raised);
+    flex: none;
+    inline-size: var(--_track);
+    min-block-size: 0;
+  }
+  .fa-sidebar[data-resizable] {
+    --_w: clamp(var(--_min), var(--fa-sidebar-width, var(--fa-sidebar-default, var(--sidebar-w))), var(--_max));
+  }
+  .fa-sidebar[data-variant="floating"] {
+    --_margin: var(--gap-panels);
+    --_radius: var(--radius-surface);
+  }
+  .fa-sidebar[data-collapsible="offcanvas"][data-state="collapsed"] {
+    --_track: 0px;
+  }
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] {
+    --_pane: var(--_strip);
+    --_inner: calc(var(--_strip) - var(--border-width) * 2);
+  }
+  .fa-sidebar[data-mobile] {
+    display: none;
+  }
+
+  /* The pane. `.fa-sidebar >` outranks the material's own position rule. */
+  .fa-sidebar > .fa-sidebar-pane {
+    position: absolute;
+    inset-block: var(--_margin);
+    inset-inline-start: var(--_margin);
+    display: flex;
+    inline-size: var(--_pane);
+    border-radius: var(--_radius);
+  }
+  .fa-sidebar[data-side="end"] > .fa-sidebar-pane {
+    inset-inline: auto var(--_margin);
+  }
+  /* The inset variant's sidebar sits on the canvas: no material, the same geometry. */
+  .fa-sidebar[data-variant="inset"] > .fa-sidebar-pane {
+    --overlay-underlay: var(--canvas);
+    border: var(--border-width) solid transparent;
+  }
+  .fa-sidebar[data-collapsible="offcanvas"][data-state="collapsed"] > .fa-sidebar-pane {
+    visibility: hidden;
+    transform: translateX(calc((-100% - var(--_margin)) * var(--_inline-sign)));
+  }
+  .fa-sidebar[data-side="end"][data-collapsible="offcanvas"][data-state="collapsed"] > .fa-sidebar-pane {
+    transform: translateX(calc((100% + var(--_margin)) * var(--_inline-sign)));
+  }
+
+  /* Motion: one frame after the first paint (data-ready), never while dragging. */
+  .fa-sidebar[data-ready]:not([data-resizing]) {
+    transition: inline-size 0s linear var(--duration-base);
+  }
+  .fa-sidebar[data-ready]:not([data-resizing]) > .fa-sidebar-pane {
+    transition:
+      inline-size var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-enter),
+      visibility 0s linear 0s;
+  }
+  .fa-sidebar[data-ready]:not([data-resizing])[data-state="collapsed"] {
+    transition-delay: 0s;
+  }
+  .fa-sidebar[data-ready]:not([data-resizing])[data-state="collapsed"] > .fa-sidebar-pane {
+    transition:
+      inline-size var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-exit),
+      visibility 0s linear var(--duration-base);
+  }
+  .fa-sidebar[data-resizing] {
+    user-select: none;
+  }
+
+  .fa-sidebar-nav {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    min-inline-size: 0;
+    overflow: clip;
+    border-radius: inherit;
+  }
+  .fa-sidebar-inner {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    inline-size: var(--_inner);
+    min-block-size: 0;
+  }
+  .fa-sidebar[data-ready]:not([data-resizing])[data-state="collapsed"] .fa-sidebar-inner {
+    transition: inline-size 0s linear var(--duration-base);
+  }
+
+  /* ── Phone sheet ───────────────────────────────────────────────────────── */
+  .fa-sidebar-sheet .fa-sidebar-nav {
+    position: relative;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-block-size: 0;
+  }
+  .fa-sidebar-sheet .fa-sidebar-inner {
+    flex: 1 1 auto;
+    inline-size: 100%;
+  }
+
+  /* ── Header ────────────────────────────────────────────────────────────── */
+  .fa-sidebar-header {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-2);
+    min-inline-size: 0;
+    min-block-size: calc(var(--_mark) + var(--space-3) * 2);
+    padding-block: var(--space-3);
+    padding-inline: calc(var(--_pad) + var(--_btn-pad)) var(--_pad);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-sidebar-header[data-has-mark] {
+    padding-inline-start: calc(var(--_pad) + (var(--_square) - var(--_mark)) / 2);
+  }
+  .fa-sidebar-nav[data-scrolled-top]:not(:has(.fa-sidebar-search)) .fa-sidebar-header,
+  .fa-sidebar-nav[data-scrolled-top] .fa-sidebar-search {
+    box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
+  }
+  .fa-sidebar-mark {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--_mark);
+    block-size: var(--_mark);
+    color: var(--accent-text);
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-sidebar-mark > :is(img, svg) {
+    inline-size: var(--icon-xl);
+    block-size: var(--icon-xl);
+  }
+  .fa-sidebar-title-block {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-inline-size: 0;
+  }
+  .fa-sidebar-title {
+    overflow: hidden;
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    font-weight: var(--type-subtitle-weight);
+    letter-spacing: var(--type-subtitle-tracking);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sidebar-subtitle {
+    overflow: hidden;
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sidebar-header-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .fa-sidebar-header-toggle {
+    flex: none;
+    margin-inline-start: auto;
+  }
+  .fa-sidebar-title-block + .fa-sidebar-header-toggle,
+  .fa-sidebar-header-actions + .fa-sidebar-header-toggle {
+    margin-inline-start: 0;
+  }
+  /* The icon shows the panel at the sidebar's own edge. */
+  .fa-sidebar-header-toggle[data-side="end"] > svg,
+  .fa-sidebar-trigger[data-side="end"] > svg {
+    scale: -1 1;
+  }
+
+  /* ── Search ────────────────────────────────────────────────────────────── */
+  .fa-sidebar-search {
+    position: relative;
+    flex: none;
+    min-inline-size: 0;
+    padding: 0 var(--_pad) var(--space-2);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-sidebar-search-button {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: var(--_pad);
+    justify-content: center;
+    inline-size: var(--_square);
+    min-block-size: 0;
+    block-size: var(--control-h-sm);
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    font: inherit;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* ── Content ───────────────────────────────────────────────────────────── */
+  .fa-sidebar-content {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-block-size: 0;
+    padding: var(--space-1) var(--_pad) var(--space-3);
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  /* fill: the content does not scroll; its last child takes the rest and scrolls itself. */
+  .fa-sidebar-content[data-fill] {
+    overflow: hidden;
+  }
+  .fa-sidebar-content[data-fill] > :last-child {
+    flex: 1 1 0;
+    min-block-size: 0;
+  }
+  .fa-sidebar-footer {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-inline-size: 0;
+    padding: var(--space-2) var(--_pad) var(--space-3);
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  .fa-sidebar-nav[data-scrolled-bottom] .fa-sidebar-footer {
+    box-shadow: inset 0 var(--border-width) 0 var(--line);
+  }
+  .fa-sidebar-separator {
+    flex: none;
+    block-size: var(--border-width);
+    margin-block: var(--space-1);
+    margin-inline: var(--_btn-pad);
+    border: 0;
+    background-color: var(--line);
+  }
+  .fa-sidebar-footer > .fa-sidebar-separator {
+    margin-block: var(--space-1-5);
+  }
+
+  /* ── Groups ────────────────────────────────────────────────────────────── */
+  .fa-sidebar-group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-inline-size: 0;
+  }
+  .fa-sidebar-group-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-inline-size: 0;
+    block-size: var(--control-h-sm);
+    padding-inline: var(--_btn-pad);
+    color: var(--fg-subtle);
+  }
+  .fa-sidebar-group:has(> .fa-sidebar-group-action) > .fa-sidebar-group-label {
+    padding-inline-end: calc(var(--control-h-xs) + var(--space-2));
+  }
+  .fa-sidebar-group-label[data-collapsible] {
+    padding-inline: 0;
+  }
+  .fa-sidebar-group-text {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sidebar-group-trigger {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-2);
+    min-inline-size: 0;
+    block-size: 100%;
+    padding-inline: var(--_btn-pad) var(--space-2);
+    border: 0;
+    border-radius: var(--radius-item);
+    background-color: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+  }
+  .fa-sidebar-group-trigger:hover {
+    background-color: var(--fill-hover);
+    color: var(--fg-muted);
+  }
+  .fa-sidebar-group-trigger:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-sidebar-group-action {
+    position: absolute;
+    inset-block-start: calc((var(--control-h-sm) - var(--control-h-xs)) / 2);
+    inset-inline-end: var(--space-1);
+  }
+  .fa-sidebar-chevron {
+    flex: none;
+    inline-size: var(--icon-sm);
+    block-size: var(--icon-sm);
+    margin-inline-start: auto;
+    color: var(--fg-subtle);
+    transform: rotate(-90deg);
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+  :is(.fa-sidebar-group-trigger[data-panel-open], [aria-expanded="true"]) > .fa-sidebar-chevron,
+  [aria-expanded="true"] > svg > .fa-sidebar-chevron,
+  .fa-sidebar-menu-sub-toggle[aria-expanded="true"] .fa-sidebar-chevron {
+    transform: none;
+  }
+
+  /* ── Menu ──────────────────────────────────────────────────────────────── */
+  .fa-sidebar-menu,
+  .fa-sidebar-menu-sub {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-sidebar-menu-item {
+    --_row: var(--item-h);
+    --_badge-h: calc(var(--control-h-xs) - var(--space-1));
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+  }
+  .fa-sidebar-menu-item[data-size="sm"] {
+    --_row: var(--control-h-sm);
+  }
+  .fa-sidebar-menu-item[data-size="lg"] {
+    --_row: var(--control-h-lg);
+  }
+  .fa-sidebar-menu-button {
+    --_icon-box: var(--_icon);
+    flex: none;
+    inline-size: 100%;
+    min-inline-size: 0;
+    min-block-size: var(--_row);
+    padding-inline: calc((var(--_square) - var(--_icon-box)) / 2) var(--_trail, var(--space-2-5));
+    border: 0;
+    background-color: transparent;
+    font: inherit;
+    font-size: var(--type-body-size);
+    text-align: start;
+    text-decoration: none;
+  }
+  .fa-sidebar-menu-button[data-size="lg"] {
+    --_icon-box: var(--control-h-sm);
+  }
+  .fa-sidebar-menu-item:has(> .fa-sidebar-menu-badge) > .fa-sidebar-menu-button {
+    --_trail: calc(var(--space-10) + var(--space-1));
+  }
+  .fa-sidebar-menu-item:has(> :is(.fa-sidebar-menu-action, .fa-sidebar-menu-sub-toggle)) > .fa-sidebar-menu-button {
+    --_trail: calc(var(--control-h-xs) + var(--space-3));
+  }
+  .fa-sidebar-menu-item:has(> :is(.fa-sidebar-menu-action, .fa-sidebar-menu-sub-toggle):not([data-show-on-hover])):has(> .fa-sidebar-menu-badge)
+    > .fa-sidebar-menu-button {
+    --_trail: calc(var(--control-h-xs) + var(--space-12) + var(--space-1));
+  }
+  .fa-sidebar-menu-button[data-disabled] {
+    cursor: not-allowed;
+    opacity: var(--disabled-opacity);
+  }
+  .fa-sidebar-menu-button[data-disabled]:hover {
+    background-color: transparent;
+  }
+  .fa-sidebar-menu-icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--_icon-box);
+    block-size: var(--_icon-box);
+    color: var(--fg-muted);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-sidebar-menu-icon > svg {
+    inline-size: var(--_icon);
+    block-size: var(--_icon);
+  }
+  .fa-sidebar-menu-button:is(:hover, [data-popup-open]):not([data-disabled]) .fa-sidebar-menu-icon {
+    color: var(--fg);
+  }
+  .fa-sidebar-menu-button:is([data-active], [aria-current="page"]) .fa-sidebar-menu-icon {
+    color: var(--accent-text);
+  }
+  .fa-sidebar-menu-label {
+    display: block;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: opacity var(--duration-fast) var(--ease-standard) var(--duration-instant);
+  }
+  /* Lines of an lg row (a name and a detail); a filter's marks stay inline. */
+  .fa-sidebar-menu-label > :not(mark) {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* A label with a detail line under it. */
+  .fa-sidebar-menu-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-inline-size: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard) var(--duration-instant);
+  }
+  .fa-sidebar-menu-detail {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-sidebar-menu-button[data-detail] {
+    padding-block: var(--space-1-5);
+  }
+  /* An entity identity drawn as the row (MenuButton face). */
+  .fa-sidebar-menu-face {
+    display: flex;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+  /* A quiet count inside the button (the fa-item-trail recipe). */
+  .fa-sidebar-menu-count {
+    transition: opacity var(--duration-fast) var(--ease-standard) var(--duration-instant);
+  }
+  .fa-sidebar-menu-button[data-size="lg"] .fa-sidebar-menu-label > :first-child {
+    font-weight: var(--weight-medium);
+  }
+  .fa-sidebar-menu-button[data-size="lg"] .fa-sidebar-menu-label > :nth-child(2) {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-sidebar-menu-button > .fa-sidebar-chevron {
+    margin-inline-end: calc(var(--space-1) * -1);
+  }
+
+  .fa-sidebar-menu-badge {
+    position: absolute;
+    inset-block-start: calc((var(--_row) - var(--_badge-h)) / 2);
+    inset-inline-end: var(--space-2);
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-sidebar-menu-item:has(> :is(.fa-sidebar-menu-action, .fa-sidebar-menu-sub-toggle):not([data-show-on-hover])) > .fa-sidebar-menu-badge {
+    inset-inline-end: calc(var(--space-1-5) + var(--control-h-xs) + var(--space-1));
+  }
+  /* Buttons: their opacity eases with the pressable recipe's transitions. */
+  .fa-sidebar-menu-action,
+  .fa-sidebar-menu-sub-toggle {
+    position: absolute;
+    inset-block-start: calc((var(--_row) - var(--control-h-xs)) / 2);
+    inset-inline-end: var(--space-1-5);
+  }
+  /* Row actions appear on hover and focus, and always on touch (R11.7). */
+  .fa-sidebar-menu-action[data-show-on-hover]:not([data-popup-open]) {
+    opacity: 0;
+  }
+  .fa-sidebar-menu-item:is(:hover, :focus-within) > .fa-sidebar-menu-action[data-show-on-hover] {
+    opacity: 1;
+  }
+  .fa-sidebar-menu-item:is(:hover, :focus-within):has(> .fa-sidebar-menu-action[data-show-on-hover]) > .fa-sidebar-menu-badge,
+  .fa-sidebar-menu-item:has(> .fa-sidebar-menu-action[data-popup-open]) > .fa-sidebar-menu-badge {
+    opacity: 0;
+  }
+  @media (hover: none) {
+    .fa-sidebar-menu-action[data-show-on-hover]:not([data-popup-open]) {
+      opacity: 1;
+    }
+    .fa-sidebar-menu-item:has(> .fa-sidebar-menu-action[data-show-on-hover]) > .fa-sidebar-menu-badge {
+      inset-inline-end: calc(var(--space-1-5) + var(--control-h-xs) + var(--space-1));
+    }
+  }
+
+  /* Nested pages: a guide line under the parent's icon, the rows indented beside it. */
+  .fa-sidebar-menu-sub-panel {
+    min-inline-size: 0;
+  }
+  .fa-sidebar-menu-sub {
+    margin-inline-start: calc(var(--_square) / 2);
+    padding-block: var(--space-half);
+    padding-inline-start: calc(var(--_btn-pad) - var(--border-width));
+    border-inline-start: var(--border-width) solid var(--line);
+  }
+  .fa-sidebar-menu-sub-item {
+    display: flex;
+    min-inline-size: 0;
+  }
+  .fa-sidebar-menu-sub-button {
+    flex: 1 1 auto;
+    inline-size: 100%;
+    min-inline-size: 0;
+    min-block-size: calc(var(--item-h) - var(--space-1));
+    border: 0;
+    background-color: transparent;
+    color: var(--fg-muted);
+    font: inherit;
+    font-size: var(--type-body-size);
+    text-align: start;
+    text-decoration: none;
+  }
+  .fa-sidebar-menu-sub-button[data-size="sm"] {
+    min-block-size: var(--control-h-xs);
+    font-size: var(--type-caption-size);
+  }
+  .fa-sidebar-menu-sub-button:hover {
+    color: var(--fg);
+  }
+
+  /* Loading rows: the button's box, icon and label (R9.3). */
+  .fa-sidebar-menu-skeleton {
+    --_icon-box: var(--_icon);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-block-size: var(--_row);
+    padding-inline: calc((var(--_square) - var(--_icon-box)) / 2) var(--space-2-5);
+  }
+  .fa-sidebar-menu-skeleton[data-size="lg"] {
+    --_icon-box: var(--control-h-sm);
+  }
+  .fa-sidebar-skeleton-icon {
+    inline-size: var(--_icon-box);
+    block-size: var(--_icon-box);
+  }
+
+  /* ── Icon mode ─────────────────────────────────────────────────────────── */
+  /* The parts that leave fade out while the pane narrows; those that take focus also leave
+     the tab order once faded. Labels only fade: they remain the buttons' names. Hidden
+     group labels keep their height, so items never move vertically. */
+  :is(.fa-sidebar-title-block, .fa-sidebar-header-actions, .fa-sidebar-search-field, .fa-sidebar-group-label) {
+    transition: opacity var(--duration-fast) var(--ease-standard) var(--duration-instant), visibility 0s linear 0s;
+  }
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"]
+    :is(.fa-sidebar-title-block, .fa-sidebar-header-actions, .fa-sidebar-search-field, .fa-sidebar-group-label) {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--duration-fast) var(--ease-standard), visibility 0s linear var(--duration-fast);
+  }
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] :is(.fa-sidebar-group-action, .fa-sidebar-menu-sub-toggle, .fa-sidebar-menu-action) {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] :is(.fa-sidebar-menu-label, .fa-sidebar-menu-text, .fa-sidebar-menu-count, .fa-sidebar-chevron) {
+    opacity: 0;
+    transition-delay: 0s;
+  }
+  /* The square: icon centred, no room kept for a label, count or chevron. */
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] .fa-sidebar-menu-button {
+    --_trail: calc((var(--_square) - var(--_icon-box)) / 2);
+    gap: 0;
+    overflow: hidden;
+  }
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] .fa-sidebar-search-button {
+    opacity: 1;
+    visibility: visible;
+  }
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] .fa-sidebar-content {
+    scrollbar-width: none;
+  }
+  /* Before hydration settles, a remembered icon strip never shows the disclosed sub-menus. */
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"]:not([data-ready]) .fa-sidebar-menu-sub-panel {
+    display: none;
+  }
+  /* Counts move onto the icon's corner (CountBadge overlay). */
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] .fa-sidebar-menu-badge {
+    inset-block-start: var(--space-half);
+    inset-inline: calc(var(--_square) / 2 + var(--space-1)) auto;
+  }
+  /* The header's toggle sits over the mark, shown on hover and focus. */
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] .fa-sidebar-header-toggle {
+    position: absolute;
+    inset-block-start: calc((100% - var(--control-h-sm)) / 2);
+    inset-inline-start: calc(var(--_pad) + (var(--_square) - var(--control-h-sm)) / 2);
+    margin: 0;
+  }
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] .fa-sidebar-header[data-has-mark] .fa-sidebar-header-toggle {
+    opacity: 0;
+  }
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] .fa-sidebar-header[data-has-mark]:is(:hover, :has(:focus-visible)) .fa-sidebar-header-toggle {
+    opacity: 1;
+  }
+  .fa-sidebar[data-collapsible="icon"][data-state="collapsed"] .fa-sidebar-header[data-has-mark]:is(:hover, :has(:focus-visible)) .fa-sidebar-mark {
+    opacity: 0;
+  }
+
+  /* ── Rail ──────────────────────────────────────────────────────────────── */
+  .fa-sidebar-rail {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: calc(var(--_margin) - var(--_rail) / 2);
+    z-index: var(--z-raised);
+    display: grid;
+    place-items: center;
+    inline-size: var(--_rail);
+    cursor: pointer;
+    touch-action: none;
+    outline: none;
+  }
+  .fa-sidebar-rail[data-side="end"] {
+    inset-inline: calc(var(--_margin) - var(--_rail) / 2) auto;
+  }
+  .fa-sidebar-rail[data-resizable] {
+    cursor: col-resize;
+  }
+  .fa-sidebar[data-collapsible="offcanvas"][data-state="collapsed"] > .fa-sidebar-rail {
+    inset-inline-end: calc(var(--_rail) * -1);
+  }
+  .fa-sidebar[data-collapsible="offcanvas"][data-state="collapsed"] > .fa-sidebar-rail[data-side="end"] {
+    inset-inline: calc(var(--_rail) * -1) auto;
+  }
+  .fa-sidebar-rail::after {
+    content: "";
+    inline-size: var(--border-width);
+    block-size: 100%;
+    background-color: var(--line-strong);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-sidebar-rail[data-resizable]::after {
+    display: none;
+  }
+  .fa-sidebar-rail:hover::after {
+    opacity: 1;
+  }
+  .fa-sidebar-rail-grip {
+    --_grip-h: var(--space-10);
+    inline-size: var(--space-1);
+    block-size: var(--_grip-h);
+    border-radius: var(--radius-full);
+    background-color: var(--line-strong);
+    opacity: 0;
+    transition-property: opacity, background-color, block-size;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-sidebar-rail:hover .fa-sidebar-rail-grip {
+    opacity: 1;
+  }
+  .fa-sidebar-rail:is([data-active], :focus-visible) .fa-sidebar-rail-grip {
+    --_grip-h: var(--space-16);
+    opacity: 1;
+    background-color: var(--accent);
+  }
+  .fa-sidebar-rail:focus-visible .fa-sidebar-rail-grip {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* ── Inset ─────────────────────────────────────────────────────────────── */
+  .fa-sidebar-inset {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+  /* A second sidebar's provider inside the first one's inset fills it. */
+  .fa-sidebar-inset > .fa-sidebar-provider {
+    flex: 1 1 auto;
+    block-size: auto;
+  }
+  .fa-sidebar-inset[data-raised] {
+    margin: var(--gap-panels);
+    border-radius: var(--radius-surface);
+  }
+  .fa-sidebar[data-variant="inset"]:not([data-mobile]) ~ .fa-sidebar-inset[data-raised] {
+    margin-inline-start: 0;
+  }
+  .fa-sidebar-inset[data-raised]:has(~ .fa-sidebar[data-variant="inset"]:not([data-mobile])) {
+    margin-inline-end: 0;
+  }
+  .fa-sidebar[data-variant="inset"][data-collapsible="offcanvas"][data-state="collapsed"] ~ .fa-sidebar-inset[data-raised] {
+    margin-inline-start: var(--gap-panels);
+  }
+}
+
+@layer components {
+  .fa-sidebar:dir(rtl) { --_inline-sign: -1; }
+  .fa-sidebar-group-trigger:not([data-panel-open]) .fa-sidebar-chevron:dir(rtl),
+  [aria-expanded="false"] > .fa-sidebar-chevron:dir(rtl),
+  .fa-sidebar-menu-sub-toggle[aria-expanded="false"] .fa-sidebar-chevron:dir(rtl) { transform: rotate(90deg); }
+}

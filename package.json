@@ -386,6 +386,10 @@
       "types": "./dist/ui/segmented/index.d.ts",
       "import": "./dist/ui/segmented/index.js"
     },
+    "./sidebar": {
+      "types": "./dist/ui/sidebar/index.d.ts",
+      "import": "./dist/ui/sidebar/index.js"
+    },
     "./on-screen-keyboard": {
       "types": "./dist/ui/on-screen-keyboard/index.d.ts",
       "import": "./dist/ui/on-screen-keyboard/index.js"

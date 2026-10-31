@@ -5,7 +5,7 @@
  *                 no fill tint, rims, lens, sheen, grain or shadow
  *   canvas        white, without its artwork or picture
  *   text          near black; muted and subtle text step darker; the accent's text is dark
- *   chrome        the rail, top bar, tab bar, section drawer, inspector, window dock, toasts,
+ *   chrome        the rail, top bar, tab bar, section drawer, sidebar, inspector, window dock, toasts,
  *                 tooltips and scroll-edge hairlines are left out; mark anything that should
  *                 print anyway with data-print="keep", and anything else to leave out with
  *                 data-print="hide"
@@ -151,6 +151,9 @@
       .fa-tabbar,
       .fa-shell-drawer,
       .fa-shell-inspector,
+      .fa-sidebar,
+      .fa-sidebar-rail,
+      .fa-sidebar-trigger,
       .fa-wm-dock,
       .fa-toast-viewport,
       .fa-tooltip-positioner,
@@ -189,6 +192,15 @@
   .fa-shell-slot-work {
     display: block;
     padding: 0;
+  }
+  .fa-sidebar-provider {
+    display: block;
+    block-size: auto;
+    overflow: visible;
+  }
+  .fa-sidebar-inset {
+    display: block;
+    margin: 0;
   }
   :is(.fa-panel[data-scroll], .fa-panel[data-scroll] > .fa-panel-body, .fa-scroll, .fa-scroll-viewport),
   [data-scroll-container]:not(.fa-chart *) {

@@ -60,6 +60,7 @@ const familyRoots: Record<string, string> = {
   "setting-row": "setting-row",
   "level-gauge": "level-gauge",
   "relationship-canvas": "relationship-canvas",
+  sidebar: "sidebar",
   "signature-pad": "signature-pad",
   sparkline: "sparkline",
   tabs: "tabs",

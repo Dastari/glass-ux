@@ -33,6 +33,13 @@ Use `TruncatedText` where a full identifier must remain reachable, and the compo
 skeleton where data is loading. Give screens, video and images of a known shape an
 `AspectRatio` so they keep their space before they load.
 
+For an application's own frame (a navigation pane beside the content, outside AppShell), use
+`Sidebar` (glass-ux/sidebar) in a `SidebarProvider` with a `SidebarInset`: it collapses to an
+icon strip or off canvas, remembers its state and width without a flash, toggles with ⌘B or
+Ctrl+B and becomes a sheet on phones (`docs/components/sidebar.md`). Rows take a `detail`
+line, a quiet `count` or an entity `face`; `Sidebar.Match` marks a filter's matches, and
+`Sidebar.Content fill` hands the height to a Tree that scrolls itself.
+
 For a tree beside a table or a list above its details, use `SplitPane` (glass-ux/split-pane)
 rather than a hand-built divider: it is keyboard operable, clamps each pane, remembers its
 size per window kind and hides a pane behind a button when narrow. An explorer tree uses

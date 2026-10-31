@@ -8,9 +8,11 @@
  *   --shell-drawer: <n>rem            the drawer width the user dragged to
  *
  * CSS lays the shell out from those, and a blocking boot script applies them before the
- * first paint, so a collapsed drawer never flashes open on load.
+ * first paint, so a collapsed drawer never flashes open on load. Storage, caching and
+ * cross-tab updates are the shared local store's (lib/local-store.ts), as Sidebar's are.
  */
 import { useSyncExternalStore } from "react"
+import { readStored, subscribeStored, writeStored } from "../lib/local-store.js"
 
 export interface ShellPrefs {
   drawer: "open" | "closed"
@@ -47,39 +49,8 @@ export function normaliseShellPrefs(input: unknown): ShellPrefs {
   }
 }
 
-const listeners = new Set<() => void>()
-let cachedRaw: string | null | undefined
-let cached = DEFAULT_SHELL_PREFS
-
-function read(): ShellPrefs {
-  let raw: string | null = null
-  try {
-    raw = localStorage.getItem(SHELL_STORAGE_KEY)
-  } catch {
-    raw = null
-  }
-  if (raw !== cachedRaw) {
-    cachedRaw = raw
-    try {
-      cached = normaliseShellPrefs(JSON.parse(raw ?? "null"))
-    } catch {
-      cached = DEFAULT_SHELL_PREFS
-    }
-  }
-  return cached
-}
-
-function subscribe(notify: () => void) {
-  listeners.add(notify)
-  const onStorage = (event: StorageEvent) => {
-    if (event.key === SHELL_STORAGE_KEY) notify()
-  }
-  window.addEventListener("storage", onStorage)
-  return () => {
-    listeners.delete(notify)
-    window.removeEventListener("storage", onStorage)
-  }
-}
+const read = (): ShellPrefs => readStored(SHELL_STORAGE_KEY, normaliseShellPrefs)
+const subscribe = (notify: () => void) => subscribeStored(SHELL_STORAGE_KEY, notify)
 
 /** Apply preferences to <html>. Pure DOM; mirrors shellBootScript exactly. */
 export function applyShellAttributes(root: HTMLElement, prefs: ShellPrefs) {
@@ -99,13 +70,9 @@ export function applyShellAttributes(root: HTMLElement, prefs: ShellPrefs) {
 export function updateShellPrefs(patch: Partial<ShellPrefs> | ((current: ShellPrefs) => Partial<ShellPrefs>)) {
   const current = read()
   const next = normaliseShellPrefs({ ...current, ...(typeof patch === "function" ? patch(current) : patch) })
-  try {
-    localStorage.setItem(SHELL_STORAGE_KEY, JSON.stringify(next))
-  } catch {
-    // Preferences are best effort.
-  }
+  // The attributes first, so the layout is already right when subscribers re-render.
   applyShellAttributes(document.documentElement, next)
-  for (const notify of listeners) notify()
+  writeStored(SHELL_STORAGE_KEY, next)
 }
 
 export function readShellPrefs() {

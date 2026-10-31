@@ -2022,4 +2022,17 @@ export default defineMessagePack("he", {
     keyboardToggle: "מקלדת על המסך",
     keyboardPanel: "מקלדת על המסך",
   },
+  sidebar: {
+    // English placeholders until translated.
+    toggleSidebar: "Toggle sidebar",
+    expandSidebar: "Expand sidebar",
+    collapseSidebar: "Collapse sidebar",
+    closeSidebar: "Close sidebar",
+    resizeSidebar: "Resize sidebar",
+    moreActions: "More actions",
+    expandGroup: ({ group }) => `Expand ${group}`,
+    collapseGroup: ({ group }) => `Collapse ${group}`,
+    filterPlaceholder: "Filter",
+    filterNavigation: "Filter navigation",
+  },
 }) as CatalogueMessagePack

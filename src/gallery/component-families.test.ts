@@ -47,6 +47,9 @@ describe("component documentation families", () => {
     ["ask-shell", "ask-card"],
     ["keyboard-drawer", "on-screen-keyboard"],
     ["keyboard-toggle", "on-screen-keyboard"],
+    ["sidebar-provider", "sidebar"],
+    ["sidebar-trigger", "sidebar"],
+    ["sidebar-inset", "sidebar"],
   ])("documents %s with %s", (id, parent) => {
     expect(findComponentFamily(id)?.id).toBe(parent);
     expect(componentDestination(id)).toEqual(

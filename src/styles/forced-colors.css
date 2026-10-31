@@ -295,4 +295,19 @@
   .fa-level-gauge-segment[data-state="traced"] {
     border-style: dashed;
   }
+
+  /* Sidebar: the rail's grip and the sub-menu guide keep a system colour; the grip of a
+     focused or dragged rail is Highlight. */
+  .fa-sidebar-rail-grip,
+  .fa-sidebar-rail::after {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+  .fa-sidebar-rail:is([data-active], :focus-visible) .fa-sidebar-rail-grip {
+    background: Highlight;
+  }
+  .fa-sidebar-menu-sub,
+  .fa-sidebar-separator {
+    border-color: CanvasText;
+  }
 }

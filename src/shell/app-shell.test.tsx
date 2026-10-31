@@ -115,3 +115,75 @@ describe("a collapsed docked inspector", () => {
     }
   });
 });
+
+describe("the section drawer on Sidebar's state", () => {
+  const stored = () => localStorage.getItem(SHELL_STORAGE_KEY);
+
+  it("toggles with one Ctrl+B listener, kept in the shell preferences, but not in rich text", () => {
+    render(
+      <>
+        <Shell />
+        <div contentEditable suppressContentEditableWarning data-testid="editor">
+          Text
+        </div>
+      </>,
+    );
+    fireEvent.keyDown(window, { key: "b", ctrlKey: true });
+    expect(stored()).toBe(JSON.stringify({ drawer: "closed", drawerWidth: null, inspector: null, collapsed: {} }));
+    expect(document.documentElement.dataset.shellDrawer).toBe("closed");
+    expect(document.querySelector(".fa-shell-slot-drawer")).toHaveAttribute("inert");
+    fireEvent.keyDown(screen.getByTestId("editor"), { key: "b", ctrlKey: true });
+    expect(document.querySelector(".fa-shell-slot-drawer")).toHaveAttribute("inert");
+    fireEvent.keyDown(document.body, { key: "b", ctrlKey: true });
+    expect(document.querySelector(".fa-shell-slot-drawer")).not.toHaveAttribute("inert");
+    expect(document.documentElement.dataset.shellDrawer).toBeUndefined();
+  });
+
+  it("resizes from the handle's keys within 14–28rem, and Enter collapses", () => {
+    render(<Shell />);
+    const handle = screen.getByRole("separator", { name: "Resize section navigation" });
+    fireEvent.keyDown(handle, { key: "ArrowRight" });
+    expect(JSON.parse(stored()!).drawerWidth).toBe(17.5);
+    fireEvent.keyDown(handle, { key: "ArrowLeft", shiftKey: true });
+    expect(JSON.parse(stored()!).drawerWidth).toBe(14);
+    fireEvent.keyDown(handle, { key: "End" });
+    expect(JSON.parse(stored()!).drawerWidth).toBe(28);
+    expect(handle).toHaveAttribute("aria-valuenow", "28");
+    expect(document.documentElement.style.getPropertyValue("--shell-drawer")).toBe("28rem");
+    fireEvent.keyDown(handle, { key: "Enter" });
+    expect(JSON.parse(stored()!)).toMatchObject({ drawer: "closed", drawerWidth: 28 });
+    expect(handle).toHaveAttribute("aria-valuenow", "0");
+  });
+
+  it("remembers a collapsed group under its id in the shell preferences", () => {
+    render(
+      <AppShell
+        brand={null}
+        rail={null}
+        topBar={null}
+        drawer={
+          <SectionDrawer.Root aria-label="Project navigation">
+            <SectionDrawer.Body>
+              <SectionDrawer.Group id="projects.recent" title="Recent" count={2}>
+                <SectionDrawer.List>
+                  <SectionDrawer.Item label="Atlas" count={1204} detail="Avery Chen" />
+                </SectionDrawer.List>
+              </SectionDrawer.Group>
+            </SectionDrawer.Body>
+          </SectionDrawer.Root>
+        }
+      >
+        <p>Workspace</p>
+      </AppShell>,
+    );
+    const item = screen.getByRole("button", { name: /Atlas/ });
+    // The count is part of the row's name, in locale digits; the detail sits under the label.
+    expect(item).toHaveTextContent("AtlasAvery Chen1,204");
+    expect(item).toHaveAttribute("data-detail");
+    const trigger = screen.getByRole("button", { name: /^Recent/ });
+    expect(screen.getByRole("group", { name: /^Recent/ })).toContainElement(item);
+    fireEvent.click(trigger);
+    expect(JSON.parse(stored()!).collapsed).toEqual({ "projects.recent": true });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+});

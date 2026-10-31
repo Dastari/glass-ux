@@ -154,7 +154,7 @@ follows a fine pointer and a glint on the rim nearest it.
   turns every material into a white surface with a hairline border, removes blur, canvas
   artwork and shadows, sets text near black with dark accent text, and lets the shell, panels
   and scroll containers grow so every page prints. It leaves out the rail, top bar, tab bar,
-  section drawer, inspector, window dock, toasts, tooltips and scroll-edge hairlines; mark
+  section drawer, sidebar, inspector, window dock, toasts, tooltips and scroll-edge hairlines; mark
   chrome that must print with `data-print="keep"` and anything else to leave out with
   `data-print="hide"`. Charts print in colour with their legends; charts, cards, tiles,
   setting rows and table rows avoid page breaks; a DataTable prints every loaded row (rows

@@ -30,6 +30,27 @@ const BUDGETS = [
   { entry: 'glass-ux/button', named: 'Button', gzip: 34_000 },
   { entry: 'glass-ux/input', named: 'Input', gzip: 40_000 },
   { entry: 'glass-ux/form', named: 'FormStack', gzip: 1_000, forbid: ['@tanstack/form-core', '@tanstack/react-form'] },
+  // Measured 51.3 KB: the parts plus Base UI's Collapsible, Tooltip and the filter's Field. The phone sheet
+  // (Base UI Drawer and the dialog surface) loads when the phone layout first applies, and the icon strip's
+  // flyout menus (Base UI Menu) once an icon-mode sidebar with sub-menus mounts: 80.8 KB when both were eager.
+  {
+    entry: 'glass-ux/sidebar',
+    named: 'Sidebar',
+    gzip: 57_500,
+    forbid: [
+      'dist/ui/sidebar/sidebar-sheet.js',
+      'dist/ui/sheet/sheet.js',
+      'dist/ui/dialog/dialog.js',
+      'dist/ui/sidebar/sidebar-flyout.js',
+      'dist/ui/menu/menu.js',
+      '@tanstack/react-form',
+      'd3-scale',
+      'shiki',
+      'zod',
+    ],
+  },
+  // Measured 14.4 KB: state, persistence, the shortcut and the tooltip provider; the parts stay out.
+  { entry: 'glass-ux/sidebar', named: 'SidebarProvider', gzip: 16_000, forbid: ['@tanstack/react-form', 'd3-scale'] },
   // Measured 16.4 KB: the component, every built-in layout's data (built on first use), and the editing,
   // Hangul/kana and navigation engines. Base UI stays out: the keys are plain buttons.
   { entry: 'glass-ux/on-screen-keyboard', named: 'OnScreenKeyboard', gzip: 18_000, forbid: ['@base-ui/react'] },

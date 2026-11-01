@@ -54,6 +54,13 @@ has upgrade steps in the [migration guide](docs/migration.md).
   `isRtl`, `useScrollEdges`, `usePrinting`, `useSelectedId` with its change types, `tryFocus`, `focusFirst`,
   `isTextEntryTarget` and `isRichTextTarget`. CopyButton writes through the same clipboard function.
 
+- Shared code colours: the syntax roles are now `--code-keyword`, `--code-string`, `--code-string-expression`,
+  `--code-constant`, `--code-function`, `--code-parameter`, `--code-punctuation`, `--code-comment` and
+  `--code-link`, plus `--code-foreground` and `--code-background`, available on the page and re-declared on
+  palette and mode islands, so anything showing code matches. New `--code-type` role for types. `.fa-ai-code`
+  maps the Shiki theme's `--fa-code-*` names to them, so code blocks render the same colours as before in
+  every palette and mode, and overriding a `--fa-code-token-*` on a code block still works.
+
 ### Fixed
 
 - ColorPicker: the hue and opacity beads no longer hang past the picker's edge at the ends of their tracks

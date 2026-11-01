@@ -1,29 +1,29 @@
 /*
  * CodeBlock — fenced code in an AiCard well, highlighted lazily with Shiki.
  *
- * The syntax colours are component tokens derived from the accent so every palette gets a
- * harmonious set at the accent text's lightness (AA on glass in both modes): keywords take
- * the accent, strings and numbers the accent turned round the hue circle, comments the
- * subtle foreground. No italics or weights, so highlighted text keeps the plain text's
- * exact advance and nothing shifts when the colours arrive.
+ * The syntax colours are the shared --code-* roles (src/styles/code.css), derived from the
+ * accent so every palette gets a harmonious set at the accent text's lightness (AA on glass
+ * in both modes). No italics or weights, so highlighted text keeps the plain text's exact
+ * advance and nothing shifts when the colours arrive.
  *
  * Component tokens
- *   --fa-code-*   the Shiki CSS-variables theme
+ *   --fa-code-*   the Shiki CSS-variables theme, mapped to the shared --code-* roles here; a
+ *                 host may still override any of them on .fa-ai-code
  *   --_lines      lines shown while collapsed (set inline from maxLines)
  */
 @layer components {
   .fa-ai-code {
-    --fa-code-foreground: var(--fg);
-    --fa-code-background: transparent;
-    --fa-code-token-keyword: var(--accent-text);
-    --fa-code-token-string: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 150));
-    --fa-code-token-string-expression: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 150));
-    --fa-code-token-constant: oklch(from var(--accent-text) l calc(c * 0.9) calc(h + 250));
-    --fa-code-token-function: oklch(from var(--accent-text) l calc(c * 0.8) calc(h + 205));
-    --fa-code-token-parameter: var(--fg-muted);
-    --fa-code-token-punctuation: var(--fg-muted);
-    --fa-code-token-comment: var(--fg-subtle);
-    --fa-code-token-link: var(--accent-text);
+    --fa-code-foreground: var(--code-foreground);
+    --fa-code-background: var(--code-background);
+    --fa-code-token-keyword: var(--code-keyword);
+    --fa-code-token-string: var(--code-string);
+    --fa-code-token-string-expression: var(--code-string-expression);
+    --fa-code-token-constant: var(--code-constant);
+    --fa-code-token-function: var(--code-function);
+    --fa-code-token-parameter: var(--code-parameter);
+    --fa-code-token-punctuation: var(--code-punctuation);
+    --fa-code-token-comment: var(--code-comment);
+    --fa-code-token-link: var(--code-link);
   }
 
   .fa-ai-code-scroll {

@@ -146,6 +146,20 @@ function ContrastBadge({ role }: { role: string }) {
   )
 }
 
+/** The shared code colours (src/styles/code.css), in the order a line of code reads them. */
+const CODE_ROLES: Array<[role: string, use: string]> = [
+  ["--code-keyword", "Keywords: the accent text"],
+  ["--code-string", "Strings"],
+  ["--code-string-expression", "Interpolated parts of a string"],
+  ["--code-constant", "Numbers and constants"],
+  ["--code-function", "Function and method names"],
+  ["--code-type", "Types and classes"],
+  ["--code-parameter", "Parameters"],
+  ["--code-punctuation", "Brackets, commas and operators"],
+  ["--code-comment", "Comments"],
+  ["--code-link", "Links inside code"],
+]
+
 export default function ColourSection() {
   const { appearance, update } = useAppearance()
   return (
@@ -201,6 +215,23 @@ export default function ColourSection() {
       <Specimen title="Text on glass" description="Each text role measured against the panel fill over the canvas, in the current mode and palette. AA requires 4.5:1." layout="stack">
         <ul className="colour-roles">
           {TEXT_ROLES.map(([role, use]) => (
+            <li key={role}>
+              <span className="colour-sample" style={{ color: `var(${role})` }}>
+                Aa
+              </span>
+              <span className="min-w-0 flex-1">
+                <code className="type-caption">{role}</code>
+                <span className="block type-caption text-fg-muted">{use}</span>
+              </span>
+              <ContrastBadge role={role} />
+            </li>
+          ))}
+        </ul>
+      </Specimen>
+
+      <Specimen title="Code" description="Anything that shows code reads these roles (code blocks, logs, diffs, an editor from another package), so they match. Each derives from the accent text, so every palette gets its own harmonious set." layout="stack">
+        <ul className="colour-roles">
+          {CODE_ROLES.map(([role, use]) => (
             <li key={role}>
               <span className="colour-sample" style={{ color: `var(${role})` }}>
                 Aa

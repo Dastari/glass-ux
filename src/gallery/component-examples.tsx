@@ -2035,13 +2035,14 @@ export function AppShellExample() {
     <SectionPage>
       <Specimen
         title="AppShell"
-        description="A bounded working shell with a section drawer. Open the inspector from the top bar to inspect the fictional exhibition."
+        description="A bounded working shell with a section drawer. Open the inspector from the top bar to inspect the fictional exhibition. With focusRegions, F6 and Shift+F6 move between its panes."
         layout="stack"
       >
-        <div className="relative h-120 w-full overflow-hidden">
+        <div className="relative h-120 w-full overflow-hidden" data-testid="app-shell-regions">
           <AppShell
             contentAs="div"
             className="h-full!"
+            focusRegions
             brand={
               <ShellBrand
                 label="Meridian"

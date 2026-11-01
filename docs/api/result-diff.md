@@ -1,8 +1,7 @@
 # ResultDiff
 
-A change preview — config, registry or policy — as a unified diff: removed lines on the
-danger tint, added lines on the success tint, the sign in the gutter so the change reads
-without colour too. The target is a context chip; the counts are the data line.
+A change preview — config, registry or policy — as a unified diff in a result card. The
+target is a context chip; the counts are the data line. The diff itself is `DiffView`.
 
 `import { ResultDiff } from "glass-ux/ai"`
 

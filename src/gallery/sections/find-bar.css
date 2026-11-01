@@ -19,4 +19,22 @@
     border-radius: var(--radius-line);
     background-color: var(--accent-soft);
   }
+  .gallery-regions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); /* tokens:allow a specimen's track */
+    gap: var(--gap-controls);
+    width: 100%;
+  }
+  .gallery-region {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-tile);
+  }
+  .gallery-region[inert] {
+    color: var(--fg-muted);
+  }
 }

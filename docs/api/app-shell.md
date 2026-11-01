@@ -16,6 +16,7 @@ Compose application navigation, a top bar and a workspace, with optional section
 | contentAs | `"div" \| "main" \| undefined` | "div", "main" | no | "main" | Workspace element. Use div when embedding a shell inside an existing main landmark. |
 | drawer | `ReactNode` | See type | no | — | The current section's navigation (SectionDrawer). Optional per section. |
 | drawerShortcut | `string \| undefined` | See type | no | "mod+b" | Toggle the drawer from the keyboard. Default mod+b. |
+| focusRegions | `boolean \| undefined` | false, true | no | false | F6 and Shift+F6 move between the top bar, rail, section drawer, workspace, inspector and phone navigation, so a keyboard user can leave an editor where Tab belongs to the content. Mark panes of your own inside the workspace with `data-focus-region`. See `useFocusRegions`. |
 | inspector | `ReactNode` | See type | no | — | Context pane (Inspector), docked beside the workspace on wide screens. |
 | rail | `ReactNode` | See type | yes | — | L1 navigation (Rail). |
 | tabBar | `ReactNode` | See type | no | — | Phone navigation (TabBar). |

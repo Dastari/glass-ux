@@ -22,6 +22,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - DiffView (`glass-ux/diff-view`): a general unified diff with the sign in the gutter, from
   ResultDiff, which is now a thin wrapper with no visual change. New token roles
   `--code-add-tint`, `--code-remove-tint`, `--code-add-text` and `--code-remove-text`.
+- Focus regions: `useFocusRegions` in `glass-ux/hooks` and an opt-in `focusRegions` on AppShell.
+  F6 and Shift+F6 move between an application's regions, skipping hidden and inert ones, and
+  leave the key to the browser while a modal dialog is open.
 - RichTextInput: opt-in `mentions` and `slashCommands`, on Typeahead. Picks stay Markdown.
 - Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
   (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,

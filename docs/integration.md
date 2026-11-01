@@ -40,6 +40,14 @@ default keeps them on. Their key hints leave the tooltips, menus and palette whi
 Shortcuts with Ctrl, Alt or Command, and keys that act only inside the widget that has
 focus, are not affected.
 
+`<AppShell focusRegions>` makes F6 and Shift+F6 move between the top bar, rail, section drawer,
+workspace, inspector and phone navigation, so a keyboard user can leave a text editor or
+terminal-like pane, where Tab belongs to the content. It is off by default. Mark panes of your
+own with `data-focus-region`, or use `useFocusRegions` from `glass-ux/hooks` without the shell.
+Browsers bind F6 to their own panes, usually the address bar. The hook cancels that only when it
+moves focus: with fewer than two regions or a modal dialog open the key stays the browser's.
+Ctrl+L, Alt+D and ⌘L still reach the address bar.
+
 When replacing local components, remove their duplicate implementation after the packaged
 version passes the application's checks. Keep application-specific components and compose
 them from Glass UX. A release dependency and lockfile should identify the exact archive used.

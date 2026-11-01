@@ -9,3 +9,4 @@ export {
 } from "../lib/use-element-size.js";
 export { useMediaQuery } from "../lib/use-media-query.js";
 export { useHotkeys, type HotkeyOptions } from "./use-hotkeys.js";
+export { useFocusRegions, type FocusRegionOptions } from "./use-focus-regions.js";

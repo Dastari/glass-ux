@@ -6,5 +6,5 @@ export const meta: SectionMeta = {
   group: "Patterns",
   order: 20,
   summary:
-    "Server-side sorting and pages, columns that fold by priority into “+N” and then cards, resizable and pinned columns, bulk actions, live rows, inline editing, CSV export and persistent column order.",
+    "Server-side sorting and pages, columns that fold by priority into “+N” and then cards, resizable and pinned columns, bulk actions, live rows, inline editing, CSV export, persistent column order, detail panels and tree rows with lazy children.",
 };

@@ -22,6 +22,7 @@ import { Button, ButtonGroup } from "../../ui/button/index.js";
 import {
   createDataTableColumns,
   DataTable,
+  filterTreeRows,
   IdentityCell,
   moveRow,
   NumericCell,
@@ -35,16 +36,22 @@ import {
   type DataTableRowMove,
   type DataTableSearch,
   type DataTableState,
+  type DataTableTree,
 } from "../../ui/data-table/index.js";
 import { endpointColumns, useEndpointRowActions } from "../sections/data-table.columns.js";
 import { DeviceGallery } from "../sections/devices.fixtures.js";
 import {
   createEndpointServer,
+  FOLDER_CHILDREN,
+  FOLDERS,
+  ORDERS,
   SORTABLE_COLUMNS,
   type Endpoint,
   type EndpointPage,
   type EndpointQuery,
   type EndpointServer,
+  type Folder,
+  type Order,
 } from "../sections/data-table.fixtures.js";
 
 /* One "server" for the whole section, so live ticks show up in every table. */
@@ -1100,6 +1107,194 @@ function SoftwareTable({
   );
 }
 
+/* ── Detail panels ─────────────────────────────────────────────────────────────── */
+const orderColumns = (() => {
+  const col = createDataTableColumns<Order>();
+  return col.columns([
+    col.accessor("reference", {
+      header: "Order",
+      width: 9,
+      cardRole: "title",
+    }),
+    col.accessor("customer", {
+      header: "Customer",
+      width: 14,
+      grow: true,
+      cardRole: "subtitle",
+    }),
+    col.accessor("status", { header: "Status", width: 8, cardRole: "meta" }),
+    col.accessor("total", {
+      header: "Total",
+      width: 8,
+      align: "end",
+      cardRole: "meta",
+      cell: ({ row }) => <NumericCell value={row.original.total} unit="AUD" />,
+    }),
+  ]);
+})();
+
+function OrderPanel({ order }: { order: Order }) {
+  return (
+    <dl className="dt-demo-panel" data-testid={`order-panel-${order.id}`}>
+      {order.lines.map((line) => (
+        <div key={line.item}>
+          <dt>{line.item}</dt>
+          <dd>{line.quantity} ×</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+const renderOrderPanel = (order: Order) => <OrderPanel order={order} />;
+const orderHasLines = (order: Order) => order.lines.length > 0;
+const orderPanelHeight = (order: Order) => 2 + order.lines.length * 2;
+const ORDER_STATE = { expanded: ["ord-1002"] };
+
+function DetailPanelsDemo() {
+  return (
+    <div className="gallery-lab-frame dt-demo-rows" data-testid="dt-panels">
+      <DataTable
+        id="gallery-detail-panels"
+        label="Orders"
+        rows={ORDERS}
+        columns={orderColumns}
+        getRowId={(order) => order.id}
+        getRowLabel={(order) => order.reference}
+        noun={{ one: "order", other: "orders" }}
+        pageSizes={[ORDERS.length]}
+        defaultState={ORDER_STATE}
+        renderRowDetail={renderOrderPanel}
+        canExpandRow={orderHasLines}
+        rowDetailHeight={orderPanelHeight}
+      />
+    </div>
+  );
+}
+
+/* ── Lazy tree ─────────────────────────────────────────────────────────────────── */
+const folderColumns = (() => {
+  const col = createDataTableColumns<Folder>();
+  return col.columns([
+    col.accessor("name", {
+      header: "Name",
+      width: 16,
+      grow: true,
+      cardRole: "title",
+    }),
+    col.accessor("kind", { header: "Type", width: 8, cardRole: "meta" }),
+    col.accessor("modified", {
+      header: "Modified",
+      width: 9,
+      cardRole: "meta",
+    }),
+    col.accessor("sizeMb", {
+      header: "Size",
+      width: 7,
+      align: "end",
+      cardRole: "meta",
+      cell: ({ row }) => <NumericCell value={row.original.sizeMb} unit="MB" />,
+    }),
+  ]);
+})();
+const LOAD_DELAY_MS = 500;
+const FOLDER_STATE = { expanded: ["projects"] };
+const FOLDER_SEARCH: DataTableSearch<Folder> = {
+  fields: [{ field: "Name", value: (folder) => folder.name }],
+  placeholder: "Search folders",
+};
+const CHILD_PAGE = 4;
+const folderId = (folder: Folder) => folder.id;
+const folderChildren = (folder: Folder) => folder.children;
+const withChildren = (folder: Folder, children: Folder[]): Folder => ({
+  ...folder,
+  children,
+});
+
+/** One folder's next page, as the demo's server returns it. */
+function withLoaded(folders: readonly Folder[], id: string): Folder[] {
+  return folders.map((folder) => {
+    if (folder.id === id)
+      return {
+        ...folder,
+        children: (FOLDER_CHILDREN[id] ?? []).slice(0, (folder.children?.length ?? 0) + CHILD_PAGE),
+      };
+    return folder.children ? { ...folder, children: withLoaded(folder.children, id) } : folder;
+  });
+}
+
+function LazyTreeDemo() {
+  const [folders, setFolders] = useState<readonly Folder[]>(FOLDERS);
+  const [query, setQuery] = useState("");
+  const failNext = useRef(false);
+  const [failing, setFailing] = useState(false);
+  const filtered = useMemo(
+    () =>
+      query
+        ? filterTreeRows({
+            rows: folders,
+            getSubRows: folderChildren,
+            withSubRows: withChildren,
+            getRowId: folderId,
+            matches: (folder) => folder.name.toLowerCase().includes(query.toLowerCase()),
+          })
+        : null,
+    [folders, query],
+  );
+  const context = filtered?.context;
+  const tree = useMemo<DataTableTree<Folder>>(
+    () => ({
+      getSubRows: folderChildren,
+      hasChildren: (folder) => folder.childCount > 0,
+      getChildCount: (folder) => folder.childCount,
+      isContext: (folder) => context?.has(folder.id) ?? false,
+      onLoadChildren: async (folder) => {
+        await new Promise((resolve) => setTimeout(resolve, LOAD_DELAY_MS));
+        if (failNext.current) {
+          failNext.current = false;
+          setFailing(false);
+          throw new Error("Not available");
+        }
+        setFolders((current) => withLoaded(current, folder.id));
+      },
+    }),
+    [context],
+  );
+  return (
+    <div className="dt-demo">
+      <div className="dt-demo-controls">
+        <Button
+          size="sm"
+          variant={failing ? "soft" : "ghost"}
+          aria-pressed={failing}
+          onClick={() => {
+            failNext.current = !failing;
+            setFailing(!failing);
+          }}
+        >
+          Fail next load
+        </Button>
+      </div>
+      <div className="gallery-lab-frame dt-demo-rows" data-testid="dt-tree">
+        <DataTable
+          id="gallery-lazy-tree"
+          label="Shared folders"
+          rows={filtered?.rows ?? folders}
+          columns={folderColumns}
+          getRowId={folderId}
+          getRowLabel={(folder) => folder.name}
+          noun={{ one: "folder", other: "folders" }}
+          pageSizes={[FOLDERS.length]}
+          defaultState={FOLDER_STATE}
+          tree={tree}
+          search={FOLDER_SEARCH}
+          onStateChange={(state) => setQuery(state.search ?? "")}
+        />
+      </div>
+    </div>
+  );
+}
+
 function DataTableSection() {
   return (
     <SectionPage>
@@ -1149,6 +1344,24 @@ function DataTableSection() {
         wide
       >
         <InfiniteDemo />
+      </Specimen>
+
+      <Specimen
+        title="Detail panels"
+        description="An expander opens host content under a row: the chevron, or → and ← on a focused row. Panels render when they open and are measured, so heights can differ. Order 1002 starts open; 1003 has no lines, so it has no expander. The header's button opens this page's rows and fetches nothing."
+        layout="bare"
+        wide
+      >
+        <DetailPanelsDemo />
+      </Specimen>
+
+      <Specimen
+        title="Lazy tree"
+        description="Children load when a folder opens, in the space they will take. Projects starts open; Archive holds more than one batch, so it ends in Show more. Fail next load makes the next request fail, with Retry in place. A search keeps the path to each match, drawn quieter, and opens it without changing what is open."
+        layout="bare"
+        wide
+      >
+        <LazyTreeDemo />
       </Specimen>
 
       <Specimen

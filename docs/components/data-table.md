@@ -46,6 +46,37 @@ value and a spinner. Successful saves flash the cell; rejected promises restore 
 value, expose `Error.message` in a tooltip and announce it politely. Keep stable record ids
 and immutable records, and update `rows` after successful persistence.
 
+## Detail panels and tree rows
+
+Both are opt-in. `renderRowDetail` shows host content under a row; `tree` makes `rows` a
+hierarchy, in a `treegrid`, with lazy children. Open rows are the `expanded` state slice.
+
+```tsx
+<DataTable
+  rows={orders}
+  renderRowDetail={(order) => <OrderLines order={order} />}
+  canExpandRow={(order) => order.lines.length > 0}
+  rowDetailHeight={(order) => 2 + order.lines.length * 2}
+  defaultState={{ expanded: ["ord-1002"] }}
+  …
+/>
+
+<DataTable
+  rows={folders}
+  tree={{
+    getSubRows: (folder) => folder.children,
+    hasChildren: (folder) => folder.childCount > 0,
+    getChildCount: (folder) => folder.childCount,
+    onLoadChildren: loadChildren,
+  }}
+  …
+/>
+```
+
+See [Open a row](../data-filters.md#open-a-row-detail-panels-and-tree-rows) for keyboard paths,
+lazy loading, and how sorting, filtering, selection, reorder, export, grouping and inline
+editing behave with open rows.
+
 ## CSV and clipboard
 
 Set `export` to show the Export menu. It exports visible columns in display order, using
@@ -62,8 +93,8 @@ const tsv = exportTsv({ rows, columns: exportColumns, headers: false })
 CSV uses RFC 4180 escaping and CRLF line endings. `bom` adds the UTF-8 BOM used by Excel.
 `headers` controls clipboard headers; CSV downloads always include headers. Ctrl/Cmd+C copies
 selected records as TSV, or the focused cell's text when nothing is selected. Editing inputs
-keep the browser's normal text-copy behaviour. Clipboard menu actions require the browser's
-clipboard capability and permission.
+keep the browser's normal text-copy behaviour. The clipboard menu action uses the Clipboard API,
+falling back to the browser's copy command on a page without one, such as `http:` on a LAN host.
 
 For a complete server result, supply `onExport({ format, columns, filters, sort, selection })`.
 The callback owns fetching and delivering that export. Local export does not fetch unloaded

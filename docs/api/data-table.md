@@ -4,8 +4,9 @@ The one data table (R16). Server-side sorting and pagination, container-aware co
 (priority hiding → "+N" detail → card list), resizable and pinnable columns persisted
 per user, selection with a bulk bar over the status bar, row ⋯ and right-click menus
 from the entity's ActionSet, live updates that flash in place, and loading, empty and
-error states that keep the table's box, and opt-in row reordering by drag or keyboard
-(`reorder`) that leaves the order to the host.
+error states that keep the table's box, opt-in row reordering by drag or keyboard
+(`reorder`) that leaves the order to the host, and opt-in detail panels (`renderRowDetail`)
+and tree rows with lazy children (`tree`).
 
 `import { DataTable } from "glass-ux/data-table"`
 
@@ -16,6 +17,7 @@ error states that keep the table's box, and opt-in row reordering by drag or key
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | actions | `ActionSet<T> \| undefined` | See type | no | — | The entity's actions (R12). The row ⋯ menu, the right-click menu and the bulk bar are the shared action renderers reading this one definition, so they match ActionMenu, ActionContextMenu and every other surface. |
+| canExpandRow | `((row: T) => boolean) \| undefined` | See type | no | — | Rows that have a panel (default: all). |
 | cardBreakpoint | `number \| undefined` | See type | no | 36 | Below this width (rem) rows become cards (default 36). |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | columnOrder | `readonly string[] \| undefined` | See type | no | — | Controlled display order. Pinned columns remain in their own group. |
@@ -28,6 +30,7 @@ error states that keep the table's box, and opt-in row reordering by drag or key
 | emptyAction | `ReactNode` | See type | no | — | The primary action for the unfiltered empty state ("Add a row"). |
 | emptyMessage | `ReactNode` | See type | no | — | One line for an empty result with nothing searched or filtered (R2.5), e.g. "No rows yet". While searching or filtering the table says so itself, with the `noun` (`No rows match "q3" and 2 filters`), and offers Clear search and Clear filters instead. |
 | error | `ReactNode` | See type | no | — | Shown in the body box with Retry. A string should say what failed and what to do. |
+| expandAll | `boolean \| undefined` | false, true | no | — | Offer an expand-all in the expander column's header, and in the settings menu on cards (default true). It opens the loaded rows of this view and fetches nothing: rows on other pages, batches that arrive later and unloaded children stay closed. |
 | export | `boolean \| DataTableExportSettings \| undefined` | See type | no | — | Opt in to the export toolbar. Exports loaded rows or the current selection. |
 | filterToggles | `readonly DataTableFilterToggle[] \| undefined` | See type | no | — | On/off filters that are not a column ("Show hidden"): rows in the Filters menu, and a chip while on. Clear filters turns them off too. |
 | getRowActions | `((row: T) => ActionSet<T> \| undefined) \| undefined` | See type | no | — | Per-row ActionSets, for rows of different kinds (a device list: an endpoint's set is not a printer's). It replaces `actions`. One row's ⋯ and right-click resolve its own set, so they match its header exactly. A selection of several kinds (right-click inside it, the bulk bar) offers the actions every kind's set resolves, bulk in each, and each kind runs its own definition against its own rows (`resolveRowActions`). Keep the sets stable: the same object for every row of a kind. |
@@ -50,15 +53,17 @@ error states that keep the table's box, and opt-in row reordering by drag or key
 | onExport | `((request: DataTableExportRequest<T>) => void \| Promise<void>) \| undefined` | See type | no | — | Delegate CSV or clipboard export to the server, including the current view state. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state; the button shows only when this is set. |
 | onRowOpen | `((row: T) => void) \| undefined` | See type | no | — | Called with the row when the person opens it: Enter on the focused row, or the pointer gesture `rowOpen` chooses (double-click by default). |
-| onStateChange | `((state: DataTableState, change: DataTableStateChange) => void) \| undefined` | See type | no | — | Called with the next full state and the slice that changed. |
+| onStateChange | `((state: DataTableState, change: DataTableStateChange, details?: DataTableStateChangeDetails) => void) \| undefined` | See type | no | — | Called with the next full state and the slice that changed. In a tree table a selection change also carries `DataTableStateChangeDetails`. |
 | pageSizes | `readonly number[] \| undefined` | See type | no | DEFAULT_PAGE_SIZES | Page-size choices offered by pagination. |
 | queryKey | `unknown` | See type | no | — | Identity of the query behind `rows` (scope, view, anything outside the table's state). When it changes the rows are a new result; when it does not, changed rows are live updates and flash. Sorting, the search, filters and the page are part of it already. |
 | refetching | `boolean \| undefined` | false, true | no | false | A refetch is in flight: rows stay, a thin line runs under the header. |
 | renderBulkActions | `((rows: T[], clear: () => void) => ReactNode) \| undefined` | See type | no | — | Replace the bulk bar's action buttons. |
 | renderRowActions | `((row: T) => ReactNode) \| undefined` | See type | no | — | Replace the ⋯ menu for a row (render your own trigger, e.g. a shared ActionMenu). |
 | renderRowContextMenu | `((row: T, targets: T[]) => ReactNode) \| undefined` | See type | no | — | Replace the context menu's content for a row (or the selection it belongs to). It is placed inside the shared ContextMenu popup, so build it from Menu parts. |
+| renderRowDetail | `((row: T) => ReactNode) \| undefined` | See type | no | — | A panel of host content under a row. An expander opens it, in the first visible column or on the card; the open rows are the `expanded` state slice. `render` runs only for a panel that is open and on screen, and its height is measured, so it can be anything. A panel scrolled far away unmounts like its row, so keep state worth keeping in the host. Keep the function stable: a new one redraws the panels on screen. |
 | reorder | `DataTableReorder<T> \| undefined` | See type | no | — | Row reordering by drag and keyboard (opt-in): a grip column before the checkboxes, also in cards. The host owns the order and receives each move; see `DataTableReorder`. |
 | rowCount | `number \| undefined` | See type | no | — | Total rows on the server (offset pagination). |
+| rowDetailHeight | `number \| ((row: T) => number) \| undefined` | See type | no | — | A panel's height before it is first measured, in rem (default 12). A close guess keeps the scrollbar steady while panels above the viewport are measured. |
 | rowOpen | `DataTableRowOpen \| undefined` | "double-click", "click" | no | — | The pointer gesture that opens a row with `onRowOpen`. Enter always opens it. - `"double-click"` (default): a double-click; a single click only focuses the row. - `"click"`: a single primary click, and the rows (and cards) read as links, with a   pointer cursor and the hover fill. A click is ignored when it lands on a control in the   row (a button, link, input, checkbox or `data-dt-interactive` element), carries Shift,   Ctrl, ⌘ or Alt (which keep their selection meanings), uses another button, is the   second click of a double-click, or ends a drag that selected text in the row. |
 | rows | `readonly T[]` | See type | yes | — | The current page of rows, already sorted and paged by the server. |
 | rowWrapper | `((row: T, children: ReactElement) => ReactElement) \| undefined` | See type | no | — | Wrap each row element (e.g. in the shared ActionContextMenu). Must render `children`. |
@@ -67,4 +72,5 @@ error states that keep the table's box, and opt-in row reordering by drag or key
 | state | `Partial<DataTableState> \| undefined` | See type | no | — | Controlled slices. A slice left out is owned by the table. |
 | status | `ReactNode` | See type | no | — | Extra status bar content (connection state, last sync). |
 | toolbar | `ReactNode` | See type | no | — | The table's own controls (a view switch, Refresh), at the end of the toolbar. |
+| tree | `DataTableTree<T> \| undefined` | See type | no | — | Hierarchical rows: see `DataTableTree`. The grid becomes a `treegrid`. With `renderRowDetail` a row's panel comes first, then its children, under one expander. |
 | updatedAt | `number \| Date \| undefined` | See type | no | — | When the data was last refreshed (status bar: "Updated 2 min ago"). |

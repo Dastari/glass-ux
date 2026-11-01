@@ -8,6 +8,16 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `DataTable`: detail panels and tree rows, both opt-in. `renderRowDetail` shows host content under
+  a row, rendered while open and measured, with `canExpandRow` and `rowDetailHeight`. `tree`
+  (`getSubRows`, `hasChildren`, `getChildCount`, `hasMoreChildren`, `onLoadChildren`, `column`,
+  `isContext`, `openMatches`) makes `rows` a hierarchy in a `treegrid`, with lazy children in
+  reserved space, failure with Retry, and "Show more" for partly loaded children. Open rows are the
+  new `expanded` state slice; `expandAll` controls an expand-all that opens loaded rows and fetches
+  nothing. A selection change in a tree also reports `{ unloaded }` to `onStateChange`, and
+  `filterTreeRows` filters local rows keeping the ancestors of a match. Works with virtualisation,
+  cards, grouping, selection, inline editing and export (which adds a Level column); reordering
+  is off, with the reason, while a row is open.
 - `glass-ux/menubar`: `Menubar`, an application's menus as data, on Base UI's Menubar. Commands,
   check and radio rows, groups, separators and submenus; chords and rebound keys shown through
   the keymap's read-only lookups, with no listener added; disabled reasons; a menu or submenu's
@@ -149,6 +159,11 @@ has upgrade steps in the [migration guide](docs/migration.md).
   strip in a pane being resized stays still (R18.5). What fits is unchanged.
 
 ### Fixed
+
+- `DataTable`: Copy as table works on non-secure pages through the shared clipboard helper, and
+  reports a refused copy as before.
+- `DataTable`: ← and → on a row with "+N" fields, and the open group chevron, follow the reading
+  direction in right-to-left tables.
 
 - DiffView and ResultDiff: line numbers use `--fg-muted` instead of `--fg-disabled`. They read at
   2.00:1 on the add tint (2.20:1 on remove, 2.65:1 on plain) and now at least 5.77:1 across all

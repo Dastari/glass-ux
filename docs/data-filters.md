@@ -108,6 +108,96 @@ with the reason as their tooltip, while sorted, searched, filtered, grouped (unl
 `withinGroups`), paged (unless `withinPage`) or saving. The order is not a table preference
 and is not written to the URL.
 
+## Open a row: detail panels and tree rows
+
+Both are opt-in; a table with neither stays a plain `grid` and reports the same state as
+before. The open rows are the `expanded` state slice: ids, controlled through `state` or
+started with `defaultState`, reported as `"expanded"` to `onStateChange`. Like selection they
+survive paging, sorting and filtering. They are a view choice, so neither the URL nor the saved
+preferences hold them; a host that wants a link to an open row keeps the ids itself.
+
+`renderRowDetail={(row) => …}` adds an expander in the first visible column (on cards, beside
+the actions) and shows host content under the row. `canExpandRow` limits which rows have a
+panel. A panel renders only while it is open and on screen, and its height is measured, so it
+needs no fixed size; `rowDetailHeight` (rem) is the guess before that, and a close one keeps
+the scrollbar steady. A panel scrolled far away unmounts like a row, except the one holding
+focus, so keep state worth keeping in the host. Its controls are in the page's tab order, so a
+table with panels open is more than one tab stop. It stays a `grid`: rows are not nested, so
+the expander holds `aria-expanded` and `aria-controls` and the row holds neither.
+
+`tree={{ getSubRows }}` makes `rows` the top of a hierarchy. The grid becomes a `treegrid`,
+because `aria-level`, `aria-posinset`, `aria-setsize` and a row's `aria-expanded` are allowed
+only there, and each row carries all four. Row ids must be unique across the tree. Paging,
+`rowCount`, `infinite` and grouping count top-level rows; under `grouping` a group header is
+level 1. `aria-rowcount` is -1 for both features, because an open row adds lines the server's
+count knows nothing about.
+
+From the keyboard, → opens a closed row and then moves into what it opened; ← closes an open
+row and moves from a closed one to its parent. Enter and, without selection, Space toggle a row
+unless `onRowOpen` takes Enter. ↑ and ↓ stop on a panel, where ← returns to its row; Shift with
+an arrow steps over panels, so a range keeps growing. `expandAll={false}` removes the
+expand-all, which otherwise stands over the expanders (in the settings menu on cards).
+
+### Load children on demand
+
+Mark rows that have children with `hasChildren`, give the count with `getChildCount` when the
+server knows it, and load in `onLoadChildren`. As with `infinite`, the host puts what arrives
+into `rows` (or returns a new `getSubRows`, for children kept elsewhere):
+
+```tsx
+const tree = useMemo<DataTableTree<Folder>>(() => ({
+  getSubRows: (folder) => folder.children,
+  hasChildren: (folder) => folder.childCount > 0,
+  getChildCount: (folder) => folder.childCount,
+  onLoadChildren: async (folder, { loaded, signal }) => {
+    const page = await fetchChildren(folder.id, { offset: loaded, signal });
+    setFolders((current) => withChildren(current, folder.id, page));
+  },
+}), []);
+
+<DataTable rows={folders} tree={tree} … />
+```
+
+A row shown open with no children loaded asks for them once. Placeholder rows hold the place
+of up to five children from `getChildCount`, so they replace the placeholders without moving
+what follows, and a failure sits over the same space with Retry; closing and reopening the row
+tries again. While fewer children are loaded than exist (`getChildCount`, or `hasMoreChildren`
+for a server that does not count), a "Show more" line ends them and asks with `loaded` as the
+offset. `signal` aborts when the result changes. Without `onLoadChildren`, watch `expanded` in
+`onStateChange` and fetch there.
+
+Expand-all covers the rows of the current view that are already loaded, and adds to ids from
+other pages. It never fetches: unloaded branches, other pages and later batches stay closed.
+
+### What each table feature does with open rows
+
+- **Sorting and filtering** stay the server's. Return siblings in the current order, sorted
+  within their parent. A filter keeps the ancestors of a match, because a match without its path
+  cannot be read: mark them with `tree.isContext`, and they are drawn quieter. A matching
+  parent keeps only the children that match too. Branches in a filtered result open without
+  writing `expanded` (`tree.openMatches: false` leaves them closed), and what a person closes
+  stays closed until the query changes. `filterTreeRows` applies all this to loaded rows and
+  returns `context`; a match in a branch that has not loaded is the server's to find.
+- **Selection** names rows, never descendants, as in Tree. Selecting a parent selects that row,
+  and `onStateChange` reports `{ unloaded }`: rows just selected whose children are not all
+  loaded, for the host to decide what they mean on the server. Select all and Shift ranges take
+  the rows on screen and pass over context rows, so a bulk action reaches only rows that matched.
+  A selected row stays selected when its parent closes.
+- **Reorder** needs the visible order to be `rows`: closed rows can be moved, and while any row
+  is open the grips are disabled with the reason. Top-level rows only; moving a row to another
+  parent is not supported, so a tree's hierarchy is the host's to change.
+- **Export** writes every loaded row in tree order, open or not, with a Level column first, since
+  a flat file has no indent. A selection exports those rows. Unloaded children are not fetched,
+  and panels are not exported: they are host content. `onExport` also receives `expanded`.
+- **Grouping** works with both. Groups hold top-level rows, whose children and panels follow them.
+  `infinite` still gives way to `grouping`.
+- **Inline editing** works in child rows and cards. Editors live in cells, so a panel's own
+  form is the host's. Tab moves through the rows on screen, not into closed branches.
+- **Live rows**: only top-level rows wait behind the "N new" pill. A child that arrives appears at
+  once, and the first line in view stays put if it arrives above it.
+- **Virtualisation**: when lines come and go above the viewport, or a panel measures itself, the
+  first line in view stays where it is. An expand-all from far down the list does not move it.
+
 ## Adapt the server shape
 
 The table's filter and search state is backend-neutral: each column's `FilterSpec` names the

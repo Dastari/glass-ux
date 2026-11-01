@@ -54,6 +54,16 @@ Return a promise for server saves; a rejection reverts the move. Do not add your
 handles or disable sorting UI; the grips explain why they are off while sorted, filtered,
 searched, grouped or paged.
 
+For a record's related detail, pass `renderRowDetail` rather than opening a dialog or a second
+table: an expander shows host content under the row, measured and rendered only while open.
+For a hierarchy, pass `tree={{ getSubRows, hasChildren, getChildCount, onLoadChildren }}`: the
+grid becomes a `treegrid` and children load in reserved space with Retry. Open rows are the
+`expanded` state slice, not in the URL. Paging counts top-level rows; keep sorting and filtering
+on the server, sorted within each parent, keeping ancestors of a match (`tree.isContext`, or
+`filterTreeRows` for local rows). Selection names rows, never descendants, and `onStateChange`
+reports `{ unloaded }`. Reordering is off while a row is open, and export adds a Level column
+(docs/data-filters.md).
+
 Below `cardBreakpoint` the table renders cards. Mark one column `cardRole: "title"` and,
 where useful, `"subtitle"` and `"status"`. Other columns with priority 1–3 flow as compact
 label/value pairs, lowest priority number first, so give the facts a phone user scans

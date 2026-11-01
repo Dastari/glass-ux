@@ -1,5 +1,21 @@
 /* Gallery-only layout for the DataTable section (the demos' frames and controls). */
 @layer components {
+  .dt-demo-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: var(--space-1) var(--space-4);
+    margin: 0;
+  }
+  .dt-demo-panel > div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+  .dt-demo-panel dd {
+    margin: 0;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
   .dt-demo {
     display: flex;
     flex-direction: column;
@@ -69,6 +85,10 @@
   /* Grouped rows: a pane tall enough for a few groups and their "Show more". */
   .dt-demo-grouped {
     height: calc(var(--row-h) * 11);
+  }
+  /* Detail panels and the lazy tree: a pane of about twelve rows. */
+  .dt-demo-rows {
+    height: calc(var(--row-h) * 12);
   }
   .dt-demo-infinite {
     height: calc(var(--row-h) * 12);

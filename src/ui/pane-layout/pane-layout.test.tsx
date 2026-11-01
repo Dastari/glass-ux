@@ -70,6 +70,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
+  vi.restoreAllMocks()
 })
 
 function Controlled({ initial, onChange }: { initial: PaneLayoutState; onChange?: (layout: PaneLayoutState) => void }) {
@@ -409,7 +410,7 @@ describe("usePaneLayout", () => {
     handle = usePaneLayout()
     return <Counted id={id} />
   }
-  const driven = (id: string) => (id === "editor" ? { title: "Editor", component: Driver } : panel(id))
+  const driven = (id: string) => (id === "editor" ? { title: "Editor", component: Driver, primary: true } : panel(id))
 
   it("opens, moves, reveals and closes on the live layout, each reported once", async () => {
     const onLayoutChange = vi.fn()
@@ -439,6 +440,19 @@ describe("usePaneLayout", () => {
     const onLayoutChange = vi.fn()
     render(<PaneLayout panel={driven} defaultLayout={workbench()} onLayoutChange={onLayoutChange} />)
     act(() => handle.reveal("files"))
+    expect(onLayoutChange).not.toHaveBeenCalled()
+  })
+
+  it("reveal in the collapsed view shows the panel in a sheet and writes nothing", async () => {
+    const onLayoutChange = vi.fn()
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({ width: 320, height: 640, left: 0, top: 0, right: 320, bottom: 640, x: 0, y: 0, toJSON: () => null })
+    render(<PaneLayout panel={driven} defaultLayout={workbench()} onLayoutChange={onLayoutChange} />)
+    expect(screen.getByRole("tablist", { name: "Panels" })).toBeInTheDocument()
+    expect(screen.queryAllByRole("separator")).toHaveLength(0)
+    expect(count("files").mounts).toBe(0)
+    act(() => handle.reveal("logs"))
+    expect(await screen.findByRole("dialog", { name: "Logs" })).toBeInTheDocument()
+    expect(hostOf("logs").closest('[role="dialog"]')).not.toBeNull()
     expect(onLayoutChange).not.toHaveBeenCalled()
   })
 

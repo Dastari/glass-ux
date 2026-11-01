@@ -47,7 +47,7 @@ export interface PaneLayoutHandle {
   /** Close a panel after its `canClose`. Resolves false when the panel refused. */
   close(id: string): Promise<boolean>
   move(id: string, to: PaneTarget): void
-  /** Show a panel: its stack's active panel, with the stack open and not covered. */
+  /** Show a panel: its stack's active panel, with the stack open and not covered. In the collapsed view, as if chosen from the strip, which writes nothing. */
   reveal(id: string): void
   /** Replace the whole layout, such as switching saved workspaces. A panel in both keeps its mount. */
   setLayout(layout: PaneLayoutState): void

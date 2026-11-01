@@ -639,7 +639,15 @@ interface PhoneState {
   open: boolean
 }
 
-function PhoneView({ stacks, main, phone, setPhone }: { stacks: readonly ViewStack[]; main: string | null; phone: PhoneState; setPhone: (update: (current: PhoneState) => PhoneState) => void }) {
+interface PhoneViewProps {
+  stacks: readonly ViewStack[]
+  main: string | null
+  phone: PhoneState
+  setPhone: (update: (current: PhoneState) => PhoneState) => void
+  show: (id: string) => void
+}
+
+function PhoneView({ stacks, main, phone, setPhone, show }: PhoneViewProps) {
   const shared = useShared()
   const { tree } = shared
   const { store, definition } = tree
@@ -679,8 +687,8 @@ function PhoneView({ stacks, main, phone, setPhone }: { stacks: readonly ViewSta
     return item
   })
   const choose = (id: string) => {
-    if (definition(id)?.primary || id === main) setPhone((current) => ({ ...current, main: id, open: false }))
-    else setPhone((current) => ({ ...current, sheet: id, open: true }))
+    if (id === main) setPhone((current) => ({ ...current, open: false }))
+    else show(id)
   }
   const title = sheet === null ? "" : (definition(sheet)?.title ?? "")
   return (
@@ -823,6 +831,10 @@ export function PaneLayout({
   const strips = useRef(new Map<string, TabListHandle>()).current
   const edge = useRef<TreeShared["edge"]["current"]>({ zone: null, edge: null, rect: null, indicator: null, rtl: false })
 
+  const [phone, setPhone] = useState<PhoneState>({ main: null, sheet: null, open: false })
+  const showOnPhone = (id: string) =>
+    setPhone((current) => (definition(id)?.primary ? { ...current, main: id, open: false } : { ...current, sheet: id, open: true }))
+
   const tree: PaneTree = {
     layout,
     store,
@@ -845,7 +857,11 @@ export function PaneLayout({
       move(id, to)
       announce(movedText(id, to))
     },
-    reveal: (id) => update("activate", (current) => revealPanel(current, id)),
+    reveal: (id) => {
+      // The collapsed view is a view: showing a panel there writes nothing.
+      if (narrow) showOnPhone(id)
+      else update("activate", (current) => revealPanel(current, id))
+    },
     setLayout: (next) => update("move", () => normaliseLayout(next)),
     maximise: (stack) => update("maximise", (current) => setMaximised(current, stack)),
     rtl: () => (rootRef.current ? isRtl(rootRef.current) : false),
@@ -904,7 +920,6 @@ export function PaneLayout({
   }
 
   // ── Which panels are shown ────────────────────────────────────────────────
-  const [phone, setPhone] = useState<PhoneState>({ main: null, sheet: null, open: false })
   const phoneMain = phone.main !== null && definitions.has(phone.main) ? phone.main : primaryOf(stacks, definition)
   const phoneSheet = phone.sheet !== null && definitions.has(phone.sheet) ? phone.sheet : null
   const shown = new Set<string>()
@@ -963,7 +978,7 @@ export function PaneLayout({
   const desktop = view ? <NodeView view={view} /> : <StackView view={{ type: "stack", node: stacksOf(layout.root)[0]!, panels: [], active: null }} />
   const framed = chrome === "flush" ? <Panel className="fa-pane-surface">{desktop}</Panel> : desktop
   const body = narrow ? (
-    <PhoneView stacks={stacks} main={phoneMain} phone={{ ...phone, sheet: phoneSheet }} setPhone={setPhone} />
+    <PhoneView stacks={stacks} main={phoneMain} phone={{ ...phone, sheet: phoneSheet }} setPhone={setPhone} show={showOnPhone} />
   ) : locked ? (
     framed
   ) : (

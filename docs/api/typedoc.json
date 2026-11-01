@@ -392459,7 +392459,7 @@
 										"summary": [
 											{
 												"kind": "text",
-												"text": "Show a panel: its stack's active panel, with the stack open and not covered."
+												"text": "Show a panel: its stack's active panel, with the stack open and not covered. In the collapsed view, as if chosen from the strip, which writes nothing."
 											}
 										]
 									},
@@ -394216,7 +394216,7 @@
 					"sources": [
 						{
 							"fileName": "ui/pane-layout/pane-layout.tsx",
-							"line": 725,
+							"line": 733,
 							"character": 16
 						}
 					],
@@ -394238,7 +394238,7 @@
 							"sources": [
 								{
 									"fileName": "ui/pane-layout/pane-layout.tsx",
-									"line": 725,
+									"line": 733,
 									"character": 16
 								}
 							],

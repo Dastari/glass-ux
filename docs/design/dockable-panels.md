@@ -185,8 +185,9 @@ Moving the host three times with parent re-renders gave one mount, one render an
 cleanup. Selection in an input survived every case.
 
 The restore step runs on any move and on any show. Scroll positions are kept current by one
-capture listener on the host, because a hidden element reads 0 and a hidden tab can move too; a move
-without `moveBefore` also reads every descendant first, because the listener may not have heard yet.
+capture listener on the host, because a hidden element reads 0 and a hidden tab can move too. A move
+also reads every descendant first, because the listener hears a frame late and Firefox can lose an
+offset through `moveBefore`.
 The active element is recorded at the move. Both are restored in the same task, once per move, not
 per frame.
 

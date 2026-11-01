@@ -119,7 +119,10 @@ export class HostStore {
     if (active instanceof HTMLElement && host.element.contains(active)) host.focus = active
   }
 
-  /** Everything scrolled now, for a move that will lose it: the listener may not have heard yet. */
+  /**
+   * Everything scrolled now, read once per move: the listener hears on the next frame, and
+   * Firefox's moveBefore can lose an offset through the frames it rebuilds.
+   */
   private keepScroll(host: Host) {
     const { element, scrolls } = host
     if (element.hidden) return
@@ -130,9 +133,8 @@ export class HostStore {
 
   private move(host: Host, slot: HTMLElement) {
     this.keepFocus(host)
-    if (moveWithState(slot, host.element)) return
     this.keepScroll(host)
-    slot.insertBefore(host.element, null)
+    if (!moveWithState(slot, host.element)) slot.insertBefore(host.element, null)
   }
 
   /** The restore step: once per move or show, never per frame. */

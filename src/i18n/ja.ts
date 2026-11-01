@@ -2051,6 +2051,11 @@ export default defineMessagePack("ja", {
     matchPosition: (current, total) => `${total}件中${current}件目の一致`,
     matchWhileSearching: (current) => `${current}件目の一致、検索を続行中`,
   },
+  diffView: {
+    added: "追加",
+    removed: "削除されました",
+    summary: ({ label, added, removed, locale = "ja" }) => `${label}: ${counted({ other: "{n}行追加" })(added, locale)}、${counted({ other: "{n}行削除" })(removed, locale)}`,
+  },
   sidebar: {
     toggleSidebar: "サイドバーを切り替え",
     expandSidebar: "サイドバーを展開",

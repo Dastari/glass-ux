@@ -2051,6 +2051,11 @@ export default defineMessagePack("ko", {
     matchPosition: (current, total) => `일치 항목 ${total}개 중 ${current}번째`,
     matchWhileSearching: (current) => `${current}번째 일치 항목, 검색 중`,
   },
+  diffView: {
+    added: "추가됨",
+    removed: "삭제됨",
+    summary: ({ label, added, removed, locale = "ko" }) => `${label}: ${counted({ other: "{n}줄 추가됨" })(added, locale)}, ${counted({ other: "{n}줄 삭제됨" })(removed, locale)}`,
+  },
   sidebar: {
     toggleSidebar: "사이드바 전환",
     expandSidebar: "사이드바 펼치기",

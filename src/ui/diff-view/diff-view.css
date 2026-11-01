@@ -1,0 +1,69 @@
+/*
+ * DiffView — a unified diff.
+ *
+ * Tints  the --code-add-tint and --code-remove-tint roles, with the sign in the matching text
+ *        role, so a change reads without colour too.
+ * Width  old number · new number · sign · text; below 25rem only the sign and the text.
+ */
+@layer components {
+  .fa-diff {
+    display: flex;
+    flex-direction: column;
+    padding-block: var(--space-1);
+    overflow-x: auto;
+    border-radius: var(--radius-control);
+    container: diff / inline-size;
+    font-family: var(--font-mono);
+    font-size: var(--type-mono-size);
+    line-height: var(--type-mono-line);
+  }
+  .fa-diff:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+  }
+  .fa-diff-rows {
+    display: flex;
+    flex-direction: column;
+    min-width: max-content;
+  }
+  .fa-diff-line {
+    display: grid;
+    grid-template-columns: 3ch 3ch 2ch minmax(0, 1fr);
+    gap: var(--space-2);
+    min-width: max-content;
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-line);
+  }
+  .fa-diff-line[data-type="add"] {
+    background-color: var(--code-add-tint);
+  }
+  .fa-diff-line[data-type="remove"] {
+    background-color: var(--code-remove-tint);
+  }
+  .fa-diff-number {
+    color: var(--fg-disabled);
+    text-align: end;
+    user-select: none;
+  }
+  .fa-diff-sign {
+    color: var(--fg-subtle);
+    text-align: center;
+    user-select: none;
+  }
+  .fa-diff-line[data-type="add"] .fa-diff-sign {
+    color: var(--code-add-text);
+  }
+  .fa-diff-line[data-type="remove"] .fa-diff-sign {
+    color: var(--code-remove-text);
+  }
+  .fa-diff-text {
+    white-space: pre;
+  }
+  @container diff (width < 25rem) {
+    .fa-diff-line {
+      grid-template-columns: 2ch minmax(0, 1fr);
+    }
+    .fa-diff-number {
+      display: none;
+    }
+  }
+}

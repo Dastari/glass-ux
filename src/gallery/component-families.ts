@@ -30,6 +30,7 @@ const familyRoots: Record<string, string> = {
   "date-picker": "date-field",
   "detail-tile": "detail-tile",
   dialog: "dialog",
+  "diff-view": "diff-view",
   "drag-drop": "drop-zone",
   "duration-field": "duration-field",
   "email-field": "email-field",

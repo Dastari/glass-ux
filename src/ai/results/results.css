@@ -313,64 +313,7 @@
     padding: 0 var(--_pad) var(--space-2);
   }
   .fa-ai-diff {
-    display: flex;
-    flex-direction: column;
     margin: 0 var(--space-2) var(--space-2);
-    padding-block: var(--space-1);
-    overflow-x: auto;
-    border-radius: var(--radius-control);
-    font-family: var(--font-mono);
-    font-size: var(--type-mono-size);
-    line-height: var(--type-mono-line);
-  }
-  .fa-ai-diff:focus-visible {
-    outline: var(--focus-ring-width) solid var(--accent-ring);
-  }
-  .fa-ai-diff-rows {
-    display: flex;
-    flex-direction: column;
-    min-width: max-content;
-  }
-  .fa-ai-diff-line {
-    display: grid;
-    grid-template-columns: 3ch 3ch 2ch minmax(0, 1fr);
-    gap: var(--space-2);
-    min-width: max-content;
-    padding-inline: var(--space-2);
-    border-radius: var(--radius-line);
-  }
-  .fa-ai-diff-line[data-type="add"] {
-    background-color: var(--success-soft);
-  }
-  .fa-ai-diff-line[data-type="remove"] {
-    background-color: var(--danger-soft);
-  }
-  .fa-ai-diff-number {
-    color: var(--fg-disabled);
-    text-align: end;
-    user-select: none;
-  }
-  .fa-ai-diff-sign {
-    color: var(--fg-subtle);
-    text-align: center;
-    user-select: none;
-  }
-  .fa-ai-diff-line[data-type="add"] .fa-ai-diff-sign {
-    color: var(--success-text);
-  }
-  .fa-ai-diff-line[data-type="remove"] .fa-ai-diff-sign {
-    color: var(--danger-text);
-  }
-  .fa-ai-diff-text {
-    white-space: pre;
-  }
-  @container ai-card (width < 26rem) {
-    .fa-ai-diff-line {
-      grid-template-columns: 2ch minmax(0, 1fr);
-    }
-    .fa-ai-diff-number {
-      display: none;
-    }
   }
 
   /* ── Log ───────────────────────────────────────────────────────────────── */

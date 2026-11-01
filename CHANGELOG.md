@@ -19,6 +19,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - ActivityFeed: a `tone` for the marker, one level of `children` and selection (`selectedId`,
   `defaultSelectedId`, `onSelectedIdChange`), which makes the feed a listbox with one tab stop. A
   feed that uses none of these renders exactly as before.
+- DiffView (`glass-ux/diff-view`): a general unified diff with the sign in the gutter, from
+  ResultDiff, which is now a thin wrapper with no visual change. New token roles
+  `--code-add-tint`, `--code-remove-tint`, `--code-add-text` and `--code-remove-text`.
 - RichTextInput: opt-in `mentions` and `slashCommands`, on Typeahead. Picks stay Markdown.
 - Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
   (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,

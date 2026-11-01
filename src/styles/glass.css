@@ -252,6 +252,8 @@
     --warning-soft: var(--tint-warning-solid);
     --danger-soft: var(--tint-danger-solid);
     --info-soft: var(--tint-info-solid);
+    --code-add-tint: var(--success-soft);
+    --code-remove-tint: var(--danger-soft);
     --glass-grain: none;
   }
   /* Opaque material: the static rims stay; light neither passes through nor reflects.
@@ -295,6 +297,8 @@
       --warning-soft: var(--tint-warning-solid);
       --danger-soft: var(--tint-danger-solid);
       --info-soft: var(--tint-info-solid);
+      --code-add-tint: var(--success-soft);
+      --code-remove-tint: var(--danger-soft);
       --glass-grain: none;
     }
     :root:not([data-glass="full"]),
@@ -621,6 +625,8 @@
     --warning-soft: color-mix(in oklab, var(--warning) 22%, var(--surface-3));
     --danger-soft: color-mix(in oklab, var(--danger) 18%, var(--surface-3));
     --info-soft: color-mix(in oklab, var(--info) 18%, var(--surface-3));
+    --code-add-tint: var(--success-soft);
+    --code-remove-tint: var(--danger-soft);
     --fg-muted: var(--fg);
     --fg-subtle: color-mix(in oklab, var(--fg) 88%, var(--canvas));
     /* A tight edge for crisp glyphs plus two soft layers that lift a pool of canvas colour

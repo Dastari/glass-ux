@@ -306,6 +306,10 @@
       "types": "./dist/ui/actions/index.d.ts",
       "import": "./dist/ui/actions/index.js"
     },
+    "./diff-view": {
+      "types": "./dist/ui/diff-view/index.d.ts",
+      "import": "./dist/ui/diff-view/index.js"
+    },
     "./find-bar": {
       "types": "./dist/ui/find-bar/index.d.ts",
       "import": "./dist/ui/find-bar/index.js"

@@ -2051,6 +2051,11 @@ export default defineMessagePack("zh-Hans", {
     matchPosition: (current, total) => `第 ${current} 个匹配项，共 ${total} 个`,
     matchWhileSearching: (current) => `第 ${current} 个匹配项，仍在搜索`,
   },
+  diffView: {
+    added: "已添加",
+    removed: "已移除",
+    summary: ({ label, added, removed, locale = "zh-Hans" }) => `${label}：${counted({ other: "新增 {n} 行" })(added, locale)}，${counted({ other: "删除 {n} 行" })(removed, locale)}`,
+  },
   sidebar: {
     toggleSidebar: "切换侧边栏",
     expandSidebar: "展开侧边栏",

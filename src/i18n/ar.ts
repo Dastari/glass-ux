@@ -2052,6 +2052,11 @@ export default defineMessagePack("ar", {
     matchPosition: (current, total) => `التطابق ${current} من ${total}`,
     matchWhileSearching: (current) => `التطابق ${current}، البحث مستمر`,
   },
+  diffView: {
+    added: "تمت الإضافة",
+    removed: "تمت الإزالة",
+    summary: ({ label, added, removed, locale = "ar" }) => `${label}: ${counted({ zero: "{n} سطر مضاف", one: "سطر مضاف", two: "سطران مضافان", few: "{n} أسطر مضافة", many: "{n} سطرًا مضافًا", other: "{n} سطر مضاف" })(added, locale)}، ${counted({ zero: "{n} سطر محذوف", one: "سطر محذوف", two: "سطران محذوفان", few: "{n} أسطر محذوفة", many: "{n} سطرًا محذوفًا", other: "{n} سطر محذوف" })(removed, locale)}`,
+  },
   sidebar: {
     toggleSidebar: "تبديل الشريط الجانبي",
     expandSidebar: "توسيع الشريط الجانبي",

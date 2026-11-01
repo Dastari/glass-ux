@@ -2051,6 +2051,11 @@ export default defineMessagePack("he", {
     matchPosition: (current, total) => `התאמה ${current} מתוך ${total}`,
     matchWhileSearching: (current) => `התאמה ${current}, החיפוש נמשך`,
   },
+  diffView: {
+    added: "נוסף",
+    removed: "הוסר",
+    summary: ({ label, added, removed, locale = "he" }) => `${label}: ${counted({ one: "שורה אחת נוספה", two: "שתי שורות נוספו", other: "{n} שורות נוספו" })(added, locale)}, ${counted({ one: "שורה אחת הוסרה", two: "שתי שורות הוסרו", other: "{n} שורות הוסרו" })(removed, locale)}`,
+  },
   sidebar: {
     toggleSidebar: "החלפת מצב סרגל הצד",
     expandSidebar: "הרחבת סרגל הצד",

@@ -2051,6 +2051,11 @@ export default defineMessagePack("pt-BR", {
     matchPosition: (current, total) => `Ocorrência ${current} de ${total}`,
     matchWhileSearching: (current) => `Ocorrência ${current}, ainda pesquisando`,
   },
+  diffView: {
+    added: "Adicionado",
+    removed: "Removido",
+    summary: ({ label, added, removed, locale = "pt-BR" }) => `${label}: ${counted({ one: "{n} linha adicionada", other: "{n} linhas adicionadas" })(added, locale)}, ${counted({ one: "{n} linha removida", other: "{n} linhas removidas" })(removed, locale)}`,
+  },
   sidebar: {
     toggleSidebar: "Alternar barra lateral",
     expandSidebar: "Expandir barra lateral",

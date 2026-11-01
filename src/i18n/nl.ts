@@ -2051,6 +2051,11 @@ export default defineMessagePack("nl", {
     matchPosition: (current, total) => `Overeenkomst ${current} van ${total}`,
     matchWhileSearching: (current) => `Overeenkomst ${current}, nog bezig met zoeken`,
   },
+  diffView: {
+    added: "Toegevoegd",
+    removed: "Verwijderd",
+    summary: ({ label, added, removed, locale = "nl" }) => `${label}: ${counted({ one: "{n} regel toegevoegd", other: "{n} regels toegevoegd" })(added, locale)}, ${counted({ one: "{n} regel verwijderd", other: "{n} regels verwijderd" })(removed, locale)}`,
+  },
   sidebar: {
     toggleSidebar: "Zijbalk tonen of verbergen",
     expandSidebar: "Zijbalk uitvouwen",

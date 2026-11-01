@@ -2051,6 +2051,11 @@ export default defineMessagePack("it", {
     matchPosition: (current, total) => `Risultato ${current} di ${total}`,
     matchWhileSearching: (current) => `Risultato ${current}, ricerca in corso`,
   },
+  diffView: {
+    added: "Aggiunto",
+    removed: "Rimosso",
+    summary: ({ label, added, removed, locale = "it" }) => `${label}: ${counted({ one: "{n} riga aggiunta", other: "{n} righe aggiunte" })(added, locale)}, ${counted({ one: "{n} riga rimossa", other: "{n} righe rimosse" })(removed, locale)}`,
+  },
   sidebar: {
     toggleSidebar: "Mostra o nascondi barra laterale",
     expandSidebar: "Espandi barra laterale",

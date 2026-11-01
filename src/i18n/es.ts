@@ -2051,6 +2051,11 @@ export default defineMessagePack("es", {
     matchPosition: (current, total) => `Coincidencia ${current} de ${total}`,
     matchWhileSearching: (current) => `Coincidencia ${current}, búsqueda en curso`,
   },
+  diffView: {
+    added: "Añadido",
+    removed: "Eliminado",
+    summary: ({ label, added, removed, locale = "es" }) => `${label}: ${counted({ one: "{n} línea añadida", other: "{n} líneas añadidas" })(added, locale)}, ${counted({ one: "{n} línea eliminada", other: "{n} líneas eliminadas" })(removed, locale)}`,
+  },
   sidebar: {
     toggleSidebar: "Alternar barra lateral",
     expandSidebar: "Expandir barra lateral",

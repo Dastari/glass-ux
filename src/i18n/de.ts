@@ -2051,6 +2051,11 @@ export default defineMessagePack("de", {
     matchPosition: (current, total) => `Treffer ${current} von ${total}`,
     matchWhileSearching: (current) => `Treffer ${current}, Suche läuft noch`,
   },
+  diffView: {
+    added: "Hinzugefügt",
+    removed: "Entfernt",
+    summary: ({ label, added, removed, locale = "de" }) => `${label}: ${counted({ one: "{n} Zeile hinzugefügt", other: "{n} Zeilen hinzugefügt" })(added, locale)}, ${counted({ one: "{n} Zeile entfernt", other: "{n} Zeilen entfernt" })(removed, locale)}`,
+  },
   sidebar: {
     toggleSidebar: "Seitenleiste umschalten",
     expandSidebar: "Seitenleiste ausklappen",

@@ -48,6 +48,10 @@
     --danger-text: oklch(0.52 0.2 22);
     --danger-soft: oklch(0.575 0.215 22 / 0.1);
     --danger-line: oklch(0.575 0.215 22 / 0.4);
+    --code-add-text: var(--success-text);
+    --code-add-tint: var(--success-soft);
+    --code-remove-text: var(--danger-text);
+    --code-remove-tint: var(--danger-soft);
     --info: oklch(0.55 0.18 252);
     --info-fg: oklch(0.99 0.01 252);
     --info-text: oklch(0.49 0.17 252);
@@ -110,6 +114,10 @@
     --danger-text: oklch(0.77 0.15 22);
     --danger-soft: oklch(0.62 0.21 22 / 0.18);
     --danger-line: oklch(0.68 0.2 22 / 0.5);
+    --code-add-text: var(--success-text);
+    --code-add-tint: var(--success-soft);
+    --code-remove-text: var(--danger-text);
+    --code-remove-tint: var(--danger-soft);
     --info: oklch(0.55 0.16 252);
     --info-fg: oklch(0.99 0.01 252);
     --info-text: oklch(0.79 0.12 252);

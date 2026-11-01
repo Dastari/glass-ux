@@ -3,8 +3,8 @@
  * Pack the release archive from a staging copy of the package. The archive carries the
  * library, its types, styles and fonts, the rules, guides, API pages and skills. It leaves out
  * what only the documentation site uses: the gallery (published on GitHub Pages and as the
- * glass-ux-docs.tar.gz release asset), source maps, the TypeDoc JSON model and brand source
- * artwork. The workspace manifest keeps its `./gallery` entries for the docs app; the staged
+ * glass-ux-docs.tar.gz release asset), source maps, the TypeDoc JSON model, design proposals
+ * and brand source artwork. The workspace manifest keeps its `./gallery` entries for the docs app; the staged
  * manifest drops them, with the scripts and devDependencies.
  *
  * Run after `pnpm build` (or `pnpm docs:build`). Plain `pnpm pack` still packs everything.
@@ -40,6 +40,8 @@ const excluded = (path) =>
   path.startsWith("dist/gallery/") ||
   path.endsWith(".map") ||
   path === "docs/api/typedoc.json" ||
+  // Proposals describe APIs that do not exist yet, and installed docs are read as the truth (R22.5).
+  path.startsWith("docs/design/") ||
   (path.startsWith("public/brand/") && path !== "public/brand/glass-ux.svg")
 
 class PackError extends Error {}

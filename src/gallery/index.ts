@@ -8,16 +8,17 @@ export {
   ComponentDocumentation,
   FoundationDocumentation,
   type FoundationDocumentationProps,
-  componentCatalogue,
 } from "./documentation.js";
 export {
+  componentCatalogue,
   componentFamilies,
   findComponentFamily,
   componentDestination,
   type ComponentCatalogueEntry,
   type ComponentFamily,
 } from "./component-families.js";
-export { LibraryGuide, libraryGuides } from "./guide.js";
+export { LibraryGuide } from "./guide.js";
+export { libraryGuides } from "./library-guides.js";
 export {
   CatalogueIndex,
   type CatalogueEntry,

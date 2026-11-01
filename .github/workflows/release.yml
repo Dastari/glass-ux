@@ -29,6 +29,7 @@ jobs:
         run: |
           mkdir -p .handoff/release
           node scripts/pack-release.mjs --out .handoff/release
+          node scripts/pack-docs-kit.mjs --out .handoff/release
           tar -czf .handoff/release/glass-ux-docs.tar.gz -C apps/docs/dist .
           cd .handoff/release
           sha256sum *.tgz *.tar.gz > SHA256SUMS

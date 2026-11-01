@@ -62,6 +62,8 @@ import { componentFamilies } from "glass-ux/gallery/component-families";
 import { libraryGuides } from "glass-ux/gallery/library-guides";
 import { templates } from "glass-ux/gallery/template-catalogue";
 import { configureDemoBrand } from "glass-ux/gallery/fixtures/brand";
+import { DocsKitProvider } from "glass-ux/gallery/site";
+import { site } from "glass-ux/gallery/site.generated";
 import "./styles.css";
 
 const Showcase = lazy(() =>
@@ -554,7 +556,9 @@ function Layout() {
       <TooltipProvider>
         <ActionProvider>
           <PaletteProvider>
-            <Outlet />
+            <DocsKitProvider site={site}>
+              <Outlet />
+            </DocsKitProvider>
           </PaletteProvider>
         </ActionProvider>
       </TooltipProvider>

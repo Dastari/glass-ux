@@ -8,7 +8,7 @@ import {
   literalOptions,
   packageTypePaths,
   propOrigin,
-} from "./docs-api-options.mjs";
+} from "./docs-kit/lib/api-options.mjs";
 
 const filename = resolve("scripts/.docs-api-options-fixture.ts");
 const input = `
@@ -144,7 +144,7 @@ test("generated Button size, variant and boolean choices remain complete", () =>
 
 test("prop origin separates Glass UX, Base UI and React DOM declarations", () => {
   const store = "/repo/node_modules/.pnpm";
-  assert.equal(propOrigin("/repo/src/ui/menu/menu.tsx"), "glass-ux");
+  assert.equal(propOrigin("/repo/src/ui/menu/menu.tsx"), "own");
   assert.equal(
     propOrigin(
       `${store}/@types+react@19.3.0/node_modules/@types/react/index.d.ts`,
@@ -166,7 +166,7 @@ test("prop origin separates Glass UX, Base UI and React DOM declarations", () =>
 });
 
 test("React DOM attributes are summarised unless Glass UX documents them", () => {
-  assert.equal(listsProp("glass-ux", "onClick"), true);
+  assert.equal(listsProp("own", "onClick"), true);
   assert.equal(listsProp("package", "openOnHover"), true);
   assert.equal(listsProp("react-dom", "aria-label"), false);
   assert.equal(listsProp("react-dom", "onPointerDown"), false);

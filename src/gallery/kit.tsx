@@ -4,7 +4,7 @@
  * examples), then the rules and the tokens the component reads.
  */
 import { useContext, useEffect, useState, type ReactNode } from "react";
-import { cx } from "../lib/cx.js";
+import { clsx as cx } from "clsx";
 import { DemoScope, HiddenSpecimens, specimenAnchor } from "./demo-scope.js";
 import { Button } from "../ui/button/index.js";
 

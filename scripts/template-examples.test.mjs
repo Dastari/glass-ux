@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { publicImports } from "./package-entries.mjs";
+import { publicImports } from "./docs-kit/lib/entries.mjs";
 import { templateExample, templateIds } from "./template-examples.mjs";
 
 const entries = new Map([["ui/button/index", "glass-ux/button"]]);

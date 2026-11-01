@@ -267,7 +267,7 @@ test("templates are in the directory and static routes", async ({ page }) => {
   await page.goto("/");
   await settle(page);
   for (const template of templates) await expect(page.getByRole("link", { name: template.title })).toBeAttached();
-  const site = readFileSync("scripts/docs-site.mjs", "utf8");
+  const site = readFileSync("docs-kit.config.mjs", "utf8");
   expect(site).toContain("templates/${id}/preview");
 });
 

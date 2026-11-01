@@ -1,6 +1,7 @@
 # Docs kit: design (item 28)
 
-Status: proposal for owner approval. Nothing here is built.
+Status: approved on 2026-11-01 with the recommended defaults, and built. The usage guide is
+[docs-kit.md](../docs-kit.md). "As built" below records where the result differs from this proposal.
 
 ## Decision
 
@@ -179,7 +180,29 @@ packages also need these to be "built like glass-ux", but that is a different re
 out: icon and font authoring, `pack-release.mjs`, CI workflows (`pages.yml` is a short copy), the
 showcase, and any hosted search.
 
+## As built
+
+- The parameterised scripts live in `scripts/docs-kit/lib`, with the template in
+  `scripts/docs-kit/templates`; the staging copy keeps those two folders at the package root.
+- The config gained what glass-ux's output needed to stay byte-identical: `entries.last` (the order
+  in which entries claim a re-exported component), `section` (the family-to-section rules),
+  `collections` (the icons page), `badges`, `familyMembers` (the second table in
+  `component-families.ts`) and `typedocDir`. `checks` gained per-check folders, `radiusAllow` and
+  `rules`, and `forbidden` accepts patterns as well as literal strings, since this repository's list
+  uses word boundaries.
+- `site` has `sectionMetas`, `sectionLoaders`, `loadGuide` and `loadContent`. `loadCoverage`, the
+  demo loaders, `loadApi` and `loadExample` sit in a second generated module, `site-content.generated.ts`,
+  that loads on demand. Vite inlines small assets as data URLs in the chunk holding the
+  `new URL(...)` pattern, so in `site.generated.ts` they tripled glass-ux's first chunk, from 708 KB
+  to 2.2 MB. `ComponentDocumentation` suspends on that module, so a page needs `Suspense`.
+- `families.generated.json` carries the two family tables, because `component-families.ts` also runs
+  under Playwright, where a module with `import.meta.glob` cannot load.
+- `docs/docs-kit.md` ships as the kit's README and is excluded from the main archive.
+- `clsx` and `postcss` are dependencies of the kit; `vite` is an optional peer for `check size`.
+
 ## Open decisions
+
+These were settled on 2026-11-01 with the recommended option in each case.
 
 1. **Separate package.** Recommended: yes, as above. The alternative is `glass-ux/docs-kit` inside
    the main archive. It fits the budget but gives every application a tool it will never run.

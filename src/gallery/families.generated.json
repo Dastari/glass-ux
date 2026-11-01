@@ -1,0 +1,280 @@
+{
+  "roots": {
+    "actions": "action-bar",
+    "address-field": "address-field",
+    "alert-dialog": "alert-dialog",
+    "appearance": "appearance-provider",
+    "avatar": "avatar",
+    "badge": "badge",
+    "brand": "brand-logo",
+    "button": "button",
+    "byte-size-field": "byte-size-field",
+    "carousel": "carousel",
+    "cascader": "cascader",
+    "command-palette": "command-panel",
+    "compare-slider": "compare-slider",
+    "combobox": "combobox",
+    "coordinates-field": "coordinates-field",
+    "country-select": "country-select",
+    "data-table": "data-table",
+    "date-picker": "date-field",
+    "detail-tile": "detail-tile",
+    "dialog": "dialog",
+    "diff-view": "diff-view",
+    "drag-drop": "drop-zone",
+    "duration-field": "duration-field",
+    "email-field": "email-field",
+    "entity": "entity-identity",
+    "entity-settings": "entity-settings-dialog",
+    "field": "field",
+    "emoji-picker": "emoji-picker",
+    "file-dialog": "file-dialog",
+    "file-drop": "file-drop",
+    "find-bar": "find-bar",
+    "form": "form",
+    "gradient-picker": "gradient-picker",
+    "hostname-field": "hostname-field",
+    "image-cropper": "image-cropper",
+    "input": "input",
+    "ip-field": "ip-field",
+    "keymap": "keymap-provider",
+    "login-flow": "login-flow",
+    "mac-field": "mac-address-field",
+    "media-player": "video-player",
+    "map": "geo-map",
+    "menu": "menu",
+    "menubar": "menubar",
+    "meter": "meter",
+    "metric": "metric",
+    "money-field": "money-field",
+    "on-screen-keyboard": "on-screen-keyboard",
+    "otp-field": "otp-field",
+    "pane-layout": "pane-layout",
+    "password-field": "password-field",
+    "percent-field": "percent-field",
+    "phone-field": "phone-field",
+    "port-field": "port-field",
+    "progress": "progress",
+    "masonry": "masonry",
+    "radio": "radio",
+    "rating": "rating",
+    "rich-text": "rich-text-field",
+    "setting-row": "setting-row",
+    "status-bar": "status-bar",
+    "level-gauge": "level-gauge",
+    "relationship-canvas": "relationship-canvas",
+    "sidebar": "sidebar",
+    "signature-pad": "signature-pad",
+    "sparkline": "sparkline",
+    "tabs": "tabs",
+    "textarea": "textarea",
+    "time-zone-select": "time-zone-select",
+    "toast": "toaster",
+    "tooltip": "tooltip",
+    "topology": "topology-canvas",
+    "tree": "tree",
+    "tree-select": "tree-select",
+    "typeahead": "typeahead",
+    "url-field": "url-field",
+    "vertical-tabs": "vertical-tabs",
+    "windows": "window-frame"
+  },
+  "related": {
+    "accordion": [
+      "disclosure"
+    ],
+    "badge": [
+      "status-badge",
+      "count-badge",
+      "status-dot",
+      "tone-dot",
+      "notification-dot"
+    ],
+    "breadcrumb": [
+      "route-breadcrumb"
+    ],
+    "button": [
+      "button-group",
+      "action-button",
+      "button-link",
+      "copy-button"
+    ],
+    "checkbox": [
+      "checkbox-group"
+    ],
+    "combobox": [
+      "multi-select",
+      "tag-input",
+      "autocomplete",
+      "combobox-popup",
+      "option-row",
+      "option-chip",
+      "option-status",
+      "option-more",
+      "chip-measure",
+      "highlight"
+    ],
+    "data-table": [
+      "identity-cell",
+      "text-cell",
+      "two-line-cell",
+      "numeric-cell",
+      "relative-time",
+      "sparkline-cell",
+      "meter-cell",
+      "filter-editor"
+    ],
+    "menu": [
+      "context-menu",
+      "menu-item-content",
+      "menu-preview"
+    ],
+    "panel": [
+      "panel-header",
+      "panel-body",
+      "panel-footer"
+    ],
+    "chart-frame": [
+      "chart-legend",
+      "chart-table",
+      "chart-tooltip",
+      "drill-path-bar",
+      "hit-layer",
+      "plot-skeleton",
+      "swatch",
+      "tooltip-body"
+    ],
+    "app-shell": [
+      "rail",
+      "top-bar",
+      "section-drawer",
+      "inspector",
+      "tab-bar",
+      "account-button",
+      "search-trigger",
+      "shell-brand",
+      "shortcut-keys",
+      "theme-toggle",
+      "timer-chip",
+      "top-bar-settings-button"
+    ],
+    "entity-header": [
+      "entity-header-skeleton"
+    ],
+    "inspector": [
+      "inspector-toggle"
+    ],
+    "context-switcher": [
+      "context-avatar",
+      "context-switcher-panel"
+    ],
+    "assistant-pane": [
+      "ai-hero",
+      "ai-mark"
+    ],
+    "ai-card": [
+      "ai-surface-provider"
+    ],
+    "conversation-log": [
+      "conversation-handlers-provider",
+      "turn",
+      "turn-navigator"
+    ],
+    "assistant-message": [
+      "user-message",
+      "system-notice",
+      "message-blocks",
+      "message-skeleton",
+      "reasoning"
+    ],
+    "composer": [
+      "attachment-chip",
+      "suggestion-chips",
+      "ai-status-strip"
+    ],
+    "lightbox": [
+      "image-viewer"
+    ],
+    "emoji-picker": [
+      "emoji-popover"
+    ],
+    "file-dialog": [
+      "file-conflict-dialog",
+      "file-dialog-preview"
+    ],
+    "notification-list": [
+      "notification-popover"
+    ],
+    "approval-card": [
+      "approval-record"
+    ],
+    "ask-card": [
+      "ask-layout",
+      "ask-record",
+      "ask-shell",
+      "clarify-ask",
+      "confirm-ask",
+      "date-time-ask",
+      "entity-picker-ask",
+      "form-ask",
+      "multi-choice-ask",
+      "quick-replies-ask",
+      "rank-ask",
+      "single-choice-ask"
+    ],
+    "ask-dock": [
+      "ask-dock-provider",
+      "ask-marker"
+    ],
+    "code-block": [
+      "inline-code"
+    ],
+    "result-value": [
+      "redacted"
+    ],
+    "entity-chip": [
+      "entity-glyph",
+      "entity-option-list",
+      "entity-preview-card",
+      "entity-preview-content",
+      "entity-quick-actions",
+      "entity-resolver-provider",
+      "entity-state-badge"
+    ],
+    "result-frame": [
+      "result-block",
+      "generic-result",
+      "result-chart",
+      "result-detail",
+      "result-diff",
+      "result-entities",
+      "result-entity",
+      "result-files",
+      "result-images",
+      "result-json",
+      "result-log",
+      "result-metrics",
+      "result-skeleton",
+      "result-table",
+      "result-value",
+      "table-scroll",
+      "file-glyph",
+      "file-row-item",
+      "image-lightbox",
+      "image-tile"
+    ],
+    "session-nav": [
+      "session-nav-skeleton"
+    ],
+    "source-list": [
+      "citation-marker",
+      "sources-provider"
+    ],
+    "tool-group": [
+      "tool-call-row",
+      "tool-call-skeleton",
+      "provider-activity",
+      "status-glyph"
+    ]
+  }
+}

@@ -15,7 +15,8 @@ import { execFileSync } from "node:child_process"
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { gzipSync, gunzipSync } from "node:zlib"
-import { dirname, join, relative, resolve } from "node:path"
+import { join, relative, resolve } from "node:path"
+import { stagedProblems } from "./pack-references.mjs"
 
 const root = resolve(import.meta.dirname, "..")
 const args = process.argv.slice(2)
@@ -45,6 +46,8 @@ const excluded = (path) =>
   path === "docs/api/typedoc.json" ||
   // Proposals describe APIs that do not exist yet, and installed docs are read as the truth (R22.5).
   path.startsWith("docs/design/") ||
+  // The docs kit's guide ships in the kit's own archive; an application never runs the kit.
+  path === "docs/docs-kit.md" ||
   (path.startsWith("public/brand/") && path !== "public/brand/glass-ux.svg")
 
 class PackError extends Error {}
@@ -89,31 +92,7 @@ try {
   const { scripts: _scripts, devDependencies: _devDependencies, ...manifest } = pkg
   writeFileSync(join(stage, "package.json"), `${JSON.stringify({ ...manifest, exports }, null, 2)}\n`)
 
-  // Every export target and every relative import, asset URL and stylesheet reference must
-  // resolve inside the staged package, so nothing left out is still needed.
-  const problems = []
-  const exists = (path) => existsSync(join(stage, path))
-  for (const [key, target] of Object.entries(exports)) {
-    for (const file of typeof target === "string" ? [target] : Object.values(target)) {
-      const path = file.replace(/^\.\//, "")
-      const ok = path.includes("*") ? exists(path.slice(0, path.indexOf("*"))) : exists(path)
-      if (!ok) problems.push(`export ${key} → ${file} is missing`)
-    }
-  }
-  const references = {
-    ".js": /(?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*|new URL\(\s*)["'](\.{1,2}\/[^"']+)["']/g,
-    ".d.ts": /(?:\bfrom\s*|\bimport\s*\(\s*)["'](\.{1,2}\/[^"']+)["']/g,
-    ".css": /(?:@import\s+|url\(\s*)["']?(\.{1,2}\/[^"')\s]+)["']?/g,
-  }
-  for (const path of staged) {
-    const kind = path.endsWith(".d.ts") ? ".d.ts" : Object.keys(references).find((ext) => path.endsWith(ext))
-    if (!kind) continue
-    for (const [, specifier] of readFileSync(join(stage, path), "utf8").matchAll(references[kind])) {
-      const target = relative(stage, resolve(join(stage, dirname(path)), specifier.replace(/[?#].*$/, "")))
-      const candidates = kind === ".d.ts" ? [target, target.replace(/\.js$/, ".d.ts"), `${target}.d.ts`] : [target]
-      if (!candidates.some(exists)) problems.push(`${path} → ${specifier} is missing`)
-    }
-  }
+  const problems = stagedProblems(stage, staged, exports)
   if (problems.length) fail(`the staged package is incomplete:\n  ${problems.slice(0, 20).join("\n  ")}`)
 
   // Sample media belongs to the gallery's page; the library ships none.

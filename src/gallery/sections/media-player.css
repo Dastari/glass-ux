@@ -1,5 +1,6 @@
 .media-demo {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   width: 100%;
   max-width: 44rem;
@@ -9,6 +10,11 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
+  min-width: 0;
+}
+.media-demo-row > * {
+  min-width: 0;
+  max-width: 100%;
 }
 .media-demo-note {
   min-height: 1.25rem;

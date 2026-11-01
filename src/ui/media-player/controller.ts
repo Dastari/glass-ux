@@ -266,6 +266,8 @@ export function createMediaController(initial: MediaPlayerOptions = {}): MediaPl
   let listKey = JSON.stringify(items)
   let resumeAt: number | null = null
   let playWhenReady = Boolean(initial.autoPlay)
+  /** The entry reached its end by playing, rather than by a seek while paused. */
+  let played = false
   let stallTimer: ReturnType<typeof setTimeout> | undefined
   let handle: MediaStreamHandle | null = null
   let cleanupAttach: (() => void) | null = null
@@ -306,7 +308,8 @@ export function createMediaController(initial: MediaPlayerOptions = {}): MediaPl
       currentTime: media.currentTime,
       duration,
       seekableStart: last >= 0 ? seekable.start(last) : 0,
-      seekableEnd: last >= 0 ? seekable.end(last) : Number.isFinite(duration) ? duration : 0,
+      // WebKit can report an empty window just after metadata; the duration is the same fact.
+      seekableEnd: Math.max(last >= 0 ? seekable.end(last) : 0, Number.isFinite(duration) && !state.live ? duration : 0),
     })
   }
 
@@ -472,17 +475,19 @@ export function createMediaController(initial: MediaPlayerOptions = {}): MediaPl
       update({ chapters: normaliseChapters(state.item?.chapters, media.duration) })
       readTime()
     })
-    on(media, "timeupdate", readTime)
-    on(media, "seeked", readTime)
+    // Some browsers fill `seekable` only after metadata, and nothing else fires while paused.
+    for (const name of ["timeupdate", "seeked", "loadeddata", "canplay"]) on(media, name, readTime)
     on(media, "progress", readBuffered)
     on(media, "loadeddata", readBuffered)
     on(media, "seeked", readBuffered)
     on(media, "playing", () => {
       clearStall()
-      if (!casting) update({ paused: false, ended: false })
+      // Read the element: in WebKit this event can arrive after a `pause`.
+      if (!casting) update({ paused: media.paused, ended: false })
     })
     on(media, "play", () => {
-      if (!casting) update({ paused: false, ended: false })
+      played = true
+      if (!casting) update({ paused: media.paused, ended: false })
     })
     on(media, "pause", () => {
       if (!casting) update({ paused: true })
@@ -512,7 +517,8 @@ export function createMediaController(initial: MediaPlayerOptions = {}): MediaPl
       if (casting) return
       update({ ended: true, paused: true })
       options.onEnded?.()
-      if (state.index < state.items.length - 1 && options.autoAdvance !== false) step(1, "ended", true)
+      // Seeking to the end while paused is looking at the end, not finishing the entry.
+      if (played && state.index < state.items.length - 1 && options.autoAdvance !== false) step(1, "ended", true)
     })
     on(media, "error", () => {
       if (!options.attach) fail(ERROR_KINDS[media.error?.code ?? 0] ?? "network")
@@ -689,14 +695,18 @@ export function createMediaController(initial: MediaPlayerOptions = {}): MediaPl
       else element?.pause()
     },
     toggle() {
-      if (state.paused) controller.play()
+      // The element knows at once; its `play` event, and so `state`, comes a task later.
+      if (casting ? state.paused : (element?.paused ?? state.paused)) controller.play()
       else controller.pause()
     },
     seek(seconds) {
       const end = state.live ? time.seekableEnd : time.duration
       const target = clamp(seconds, state.live ? time.seekableStart : 0, Number.isFinite(end) && end > 0 ? end : Math.max(seconds, 0))
       if (casting) void adapter?.seek(target)
-      else if (element) element.currentTime = target
+      else if (element) {
+        played = !state.paused
+        element.currentTime = target
+      }
       updateTime({ currentTime: target })
     },
     seekBy: (seconds) => controller.seek(time.currentTime + seconds),

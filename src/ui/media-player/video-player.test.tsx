@@ -95,6 +95,7 @@ describe("VideoPlayer", () => {
   it("announces state changes politely and keeps the clock out of the tree", () => {
     render(<VideoPlayer src="a.webm" />)
     const video = document.querySelector("video")!
+    Object.defineProperty(video, "paused", { configurable: true, value: false })
     act(() => {
       video.dispatchEvent(new Event("play"))
     })

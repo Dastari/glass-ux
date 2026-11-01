@@ -95,6 +95,8 @@
   .fa-media-pip-controls {
     /* Read inside the dark island, where the halo is dark in every page mode. */
     --_shade: color-mix(in oklab, var(--halo-colour) 82%, transparent);
+    /* A palette's accent can be nearly black: over pictures, progress is the foreground. */
+    --_progress: var(--fg);
   }
   .fa-media-stage {
     position: relative;
@@ -356,7 +358,7 @@
   .fa-media-seek-fill {
     position: absolute;
     inset: 0;
-    background-color: var(--accent);
+    background-color: var(--_progress);
     transform: scaleX(0);
     transform-origin: 0 50%;
   }
@@ -380,7 +382,7 @@
     block-size: var(--_thumb-size);
     margin-inline-start: calc(var(--_thumb-size) / -2);
     border-radius: var(--radius-full);
-    background-color: var(--accent);
+    background-color: var(--_progress);
     box-shadow: 0 0 0 var(--border-width) var(--_shade);
   }
   .fa-media-seek-input {
@@ -567,6 +569,7 @@
     display: grid;
     gap: var(--space-2);
     --_shade: var(--surface-1);
+    --_progress: var(--accent);
     container: fa-media / inline-size;
     outline: none;
   }

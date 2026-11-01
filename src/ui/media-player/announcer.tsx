@@ -45,7 +45,8 @@ export function MediaAnnouncer({ player, t, locale, mode, message }: { player: M
       const { t: words, locale: language } = latest.current
       const said = describe(previous, next, words, language)
       if (said) setText(said)
-      if (previous.volume !== next.volume && !next.muted) {
+      // A receiver reporting its own volume is not a change anyone made.
+      if (previous.volume !== next.volume && !next.muted && previous.cast.status === next.cast.status) {
         clearTimeout(timer)
         timer = setTimeout(() => setText(words.announceVolume(formatPercent(language, Math.round(next.volume * 100)))), SETTLE_MS)
       }

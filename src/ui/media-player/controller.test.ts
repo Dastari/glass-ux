@@ -18,9 +18,9 @@ function fakeMedia() {
   let paused = true
   Object.defineProperties(media, {
     currentTime: { get: () => time, set: (value: number) => ((time = value), media.dispatchEvent(new Event("seeked"))) },
-    paused: { get: () => paused },
+    paused: { configurable: true, get: () => paused },
     duration: { configurable: true, value: 60 },
-    seekable: { value: { length: 1, start: () => 0, end: () => 60 } },
+    seekable: { configurable: true, value: { length: 1, start: () => 0, end: () => 60 } },
     buffered: { value: { length: 1, start: () => 0, end: () => 20 } },
   })
   media.load = vi.fn()
@@ -87,6 +87,37 @@ describe("the controller", () => {
     expect(media.load).not.toHaveBeenCalled()
     player.configure({ src: "b.webm" })
     expect(media.load).toHaveBeenCalledOnce()
+  })
+
+  it("reads the seekable window again once the media can play", () => {
+    const player = createMediaController({ src: "a.webm" })
+    const media = mount(player)
+    media.dispatchEvent(new Event("canplay"))
+    expect(player.getTime().seekableEnd).toBe(60)
+  })
+
+  it("toggles from what the element says, not a state one event behind", () => {
+    const player = createMediaController({ src: "a.webm" })
+    const media = mount(player)
+    Object.defineProperty(media, "paused", { configurable: true, value: false })
+    expect(player.getState().paused).toBe(true)
+    player.toggle()
+    expect(media.pause).toHaveBeenCalled()
+  })
+
+  it("believes the element when a late playing event follows a pause", () => {
+    const player = createMediaController({ src: "a.webm" })
+    const media = mount(player)
+    media.dispatchEvent(new Event("playing"))
+    expect(player.getState().paused).toBe(true)
+  })
+
+  it("uses the duration when the seekable window is empty", () => {
+    const player = createMediaController({ src: "a.webm" })
+    const media = mount(player)
+    Object.defineProperty(media, "seekable", { value: { length: 1, start: () => 0, end: () => 0 } })
+    media.dispatchEvent(new Event("loadedmetadata"))
+    expect(player.getTime().seekableEnd).toBe(60)
   })
 
   it("keeps state changes and time changes apart", () => {
@@ -195,13 +226,24 @@ describe("playlists", () => {
     expect(media.getAttribute("src")).toBe("1.webm")
   })
 
+  it("stays on the entry when a paused seek reaches its end", () => {
+    const player = createMediaController({ playlist })
+    const media = mount(player)
+    media.dispatchEvent(new Event("loadedmetadata"))
+    player.seek(60)
+    media.dispatchEvent(new Event("ended"))
+    expect(player.getState().index).toBe(0)
+  })
+
   it("advances at the end and stops after the last", () => {
     const player = createMediaController({ playlist })
     const media = mount(player)
+    media.dispatchEvent(new Event("loadedmetadata"))
+    player.play()
     media.dispatchEvent(new Event("ended"))
     expect(player.getState().index).toBe(1)
     media.dispatchEvent(new Event("loadedmetadata"))
-    expect(media.play).toHaveBeenCalled()
+    expect(media.play).toHaveBeenCalledTimes(2)
     media.dispatchEvent(new Event("ended"))
     expect(player.getState().index).toBe(1)
   })

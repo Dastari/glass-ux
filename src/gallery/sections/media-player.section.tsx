@@ -275,7 +275,8 @@ import { VideoPlayer, AudioPlayer } from "glass-ux/media-player"
 
       <TokenTable
         tokens={[
-          ["--accent", "Seek bar fill and thumb"],
+          ["--fg", "Seek bar fill and thumb over video"],
+          ["--accent", "Seek bar fill and thumb in audio"],
           ["--halo-colour", "Shade behind controls, captions and states"],
           ["--radius-tile", "Corners in the page"],
           ["--radius-overlay", "Corners of the mini player"],

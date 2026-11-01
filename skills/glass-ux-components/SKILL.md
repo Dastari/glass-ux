@@ -40,6 +40,14 @@ Ctrl+B and becomes a sheet on phones (`docs/components/sidebar.md`). Rows take a
 line, a quiet `count` or an entity `face`; `Sidebar.Match` marks a filter's matches, and
 `Sidebar.Content fill` hands the height to a Tree that scrolls itself.
 
+For a list that opens from text and leaves focus there, use `Typeahead` with `useTypeahead`
+(glass-ux/typeahead), anchored to a caret or any rectangle; base UI menus move focus and cannot
+do this. `RichTextInput` takes `mentions` and `slashCommands`. For find in a log, table or
+document use `FindBar` (glass-ux/find-bar): the host owns matching. For a change to text use
+`DiffView` (glass-ux/diff-view). A version history is an `ActivityFeed` with `tone`, `children`
+and `selectedId`. `AppShell focusRegions`, or `useFocusRegions` from glass-ux/hooks, gives F6
+between panes.
+
 For a tree beside a table or a list above its details, use `SplitPane` (glass-ux/split-pane)
 rather than a hand-built divider: it is keyboard operable, clamps each pane, remembers its
 size per window kind and hides a pane behind a button when narrow. An explorer tree uses

@@ -28,9 +28,10 @@ beforeEach(() => localStorage.removeItem(SHELL_STORAGE_KEY));
 afterEach(cleanup);
 afterAll(() => vi.unstubAllGlobals());
 
-function Shell({ railActive = true }: { railActive?: boolean }) {
+function Shell({ railActive = true, focusRegions = false }: { railActive?: boolean; focusRegions?: boolean }) {
   return (
     <AppShell
+      focusRegions={focusRegions}
       brand={<span>Brand</span>}
       rail={
         <Rail.Root aria-label="Sections">
@@ -185,5 +186,22 @@ describe("the section drawer on Sidebar's state", () => {
     fireEvent.click(trigger);
     expect(JSON.parse(stored()!).collapsed).toEqual({ "projects.recent": true });
     expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+});
+
+describe("focus regions", () => {
+  it("adds nothing to the slots unless asked", () => {
+    const { container } = render(<Shell />);
+    expect(container.querySelector("[data-focus-region]")).toBeNull();
+  });
+
+  it("marks the slots and moves between them with F6, skipping a hidden inspector", () => {
+    render(<Shell focusRegions />);
+    const inside = screen.getByRole("button", { name: "Inside inspector" });
+    inside.focus();
+    expect(fireEvent.keyDown(inside, { key: "F6" })).toBe(false);
+    const after = document.activeElement as HTMLElement;
+    expect(after).not.toBe(inside);
+    expect(after.closest("[data-focus-region]")).not.toBeNull();
   });
 });

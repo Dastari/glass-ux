@@ -7,6 +7,7 @@ import { cx } from "../../lib/cx.js";
 import { ActionButton } from "../../ui/button/index.js";
 import { Combobox, OptionRow } from "../../ui/combobox/index.js";
 import { MultiSelect } from "../../ui/multi-select/index.js";
+import { TypeaheadOption } from "../../ui/typeahead/index.js";
 import { kindSpec } from "../entities.js";
 import { EntityGlyph, useEntityResolver } from "../entity-chip/index.js";
 import type { AiAsk, EntityRef } from "../types.js";
@@ -73,20 +74,15 @@ export function EntityOptionList({
       {options.map((entity, index) => {
         const picked = selected(entity);
         return (
-          <div
+          <TypeaheadOption
             key={key(entity)}
-            id={`${id}-${index}`}
-            role="option"
-            aria-selected={picked}
+            listId={id}
+            index={index}
+            active={index === active}
+            selected={picked}
             className="fa-item fa-ai-option"
-            data-highlighted={index === active ? "" : undefined}
-            tabIndex={-1}
-            onPointerMove={() => onActive(index)}
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => onPick(entity)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") onPick(entity);
-            }}
+            onPick={() => onPick(entity)}
+            onActive={onActive}
           >
             <OptionRow
               query={query}
@@ -100,7 +96,7 @@ export function EntityOptionList({
                 meta: entity.meta ?? entity.state?.label,
               }}
             />
-          </div>
+          </TypeaheadOption>
         );
       })}
     </div>

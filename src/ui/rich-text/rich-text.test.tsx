@@ -579,3 +579,46 @@ describe("URL policy", () => {
     expect(isSafeRichTextUrl("/images/entrance.png", true)).toBe(true);
   });
 });
+
+describe("mentions and slash commands", () => {
+  const people = [
+    { id: "mira", label: "Mira Rowan", href: "/people/mira" },
+    { id: "avery", label: "Avery Quinn" },
+  ];
+  const editable = () => screen.getByRole("textbox", { name: "Notes" });
+
+  it("adds nothing to the surface without the props", async () => {
+    render(<RichTextEditor value="Plain" aria-label="Notes" />);
+    await waitFor(() => expect(editable().textContent).toBe("Plain"));
+    expect(editable().hasAttribute("aria-autocomplete")).toBe(false);
+    expect(editable().hasAttribute("aria-haspopup")).toBe(false);
+    expect(screen.queryByRole("status")).toBeNull();
+  });
+
+  it("keeps a multi-line textbox and describes the list on it", async () => {
+    render(
+      <RichTextEditor
+        value=""
+        aria-label="Notes"
+        mentions={{ search: () => people }}
+        slashCommands
+      />,
+    );
+    const element = editable();
+    await waitFor(() =>
+      expect(element.getAttribute("aria-haspopup")).toBe("listbox"),
+    );
+    expect(element.getAttribute("role")).toBe("textbox");
+    expect(element.getAttribute("aria-multiline")).toBe("true");
+    expect(element.getAttribute("aria-autocomplete")).toBe("list");
+    expect(element.hasAttribute("aria-expanded")).toBe(false);
+  });
+
+  it("offers nothing while read-only or disabled", async () => {
+    render(
+      <RichTextEditor value="" aria-label="Notes" readOnly mentions={{ search: () => people }} />,
+    );
+    await waitFor(() => expect(editable()).toBeTruthy());
+    expect(editable().hasAttribute("aria-haspopup")).toBe(false);
+  });
+});

@@ -38,6 +38,7 @@ import type { IconComponent } from "../../ui/icon/index.js";
 import { Popover } from "../../ui/popover/index.js";
 import { ProgressRing } from "../../ui/progress/index.js";
 import { TruncatedText } from "../../ui/truncated-text/index.js";
+import { TypeaheadOption, TypeaheadPopup, useTypeahead } from "../../ui/typeahead/index.js";
 import { EntityOptionList } from "../asks/index.js";
 import { kindSpec } from "../entities.js";
 import {
@@ -287,20 +288,14 @@ function CommandList({
       {commands.map((command, index) => {
         const Icon = command.icon;
         return (
-          <div
+          <TypeaheadOption
             key={command.id}
-            id={`${id}-${index}`}
-            role="option"
-            aria-selected={index === active}
+            listId={id}
+            index={index}
+            active={index === active}
             className="fa-item fa-ai-option"
-            data-highlighted={index === active ? "" : undefined}
-            tabIndex={-1}
-            onPointerMove={() => onActive(index)}
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => onPick(command)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") onPick(command);
-            }}
+            onPick={() => onPick(command)}
+            onActive={onActive}
           >
             <OptionRow
               item={{
@@ -310,47 +305,10 @@ function CommandList({
                 icon: Icon ? <Icon /> : undefined,
               }}
             />
-          </div>
+          </TypeaheadOption>
         );
       })}
     </div>
-  );
-}
-
-/** The composer's floating menus (slash commands, @-mentions): fa-popup on glass-overlay. */
-function ComposerMenu({
-  anchor,
-  open,
-  onClose,
-  label,
-  children,
-}: {
-  /** Anchor used to position floating content. */
-  anchor: RefObject<HTMLElement | null>;
-  open: boolean;
-  /** Called when the popover asks to close (Esc or a press outside); set `open` to false in response. */
-  onClose: () => void;
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <BasePopover.Root
-      open={open}
-      onOpenChange={(next) => (next ? undefined : onClose())}
-    >
-      <Popover.Popup
-        side="top"
-        align="start"
-        className="fa-ai-menu"
-        size="md"
-        anchor={anchor}
-        aria-label={label}
-        initialFocus={false}
-        finalFocus={false}
-      >
-        {children}
-      </Popover.Popup>
-    </BasePopover.Root>
   );
 }
 
@@ -488,7 +446,6 @@ export function Composer({
   const [inner, setInner] = useState(defaultValue);
   const value = valueProp ?? inner;
   const [menu, setMenu] = useState<Menu>(null);
-  const [active, setActive] = useState(0);
   const [contextOpen, setContextOpen] = useState(false);
   const contextEntities = useRef(new Map<string, EntityRef>());
   const contextSource = useMemo(
@@ -544,8 +501,17 @@ export function Composer({
     menu?.type === "mention" && resolver.search
       ? resolver.search(menu.query).slice(0, 6)
       : [];
-  const options =
-    menu?.type === "slash" ? filteredCommands.length : mentions.length;
+  const typeahead = useTypeahead<SlashCommand | EntityRef>({
+    id: `${id}-menu`,
+    open: Boolean(menu),
+    query: menu?.query,
+    items: menu?.type === "slash" ? filteredCommands : mentions,
+    getId: (item) => ("kind" in item ? `${item.kind}:${item.id}` : item.id),
+    multiline: true,
+    onPick: (item) =>
+      "kind" in item ? pickMention(item) : pickCommand(item),
+    onClose: () => setMenu(null),
+  });
 
   const addContext = (entity: EntityRef) => {
     if (
@@ -582,27 +548,9 @@ export function Composer({
 
   const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.nativeEvent.isComposing) return;
-    if (menu && options > 0) {
-      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-        event.preventDefault();
-        setActive(
-          (index) =>
-            (index + (event.key === "ArrowDown" ? 1 : -1) + options) % options,
-        );
-        return;
-      }
-      if (event.key === "Enter" || event.key === "Tab") {
-        event.preventDefault();
-        if (menu.type === "slash") pickCommand(filteredCommands[active]!);
-        else pickMention(mentions[active]!);
-        return;
-      }
-    }
+    if (typeahead.onKeyDown(event)) return;
     if (event.key === "Escape") {
-      if (menu) {
-        event.preventDefault();
-        setMenu(null);
-      } else if (busy) {
+      if (busy) {
         event.preventDefault();
         onStop?.();
       }
@@ -632,7 +580,7 @@ export function Composer({
         ? found
         : null,
     );
-    setActive(0);
+    typeahead.reset();
   };
 
   const canSend = value.trim().length > 0 && !disabled;
@@ -687,9 +635,7 @@ export function Composer({
         aria-describedby={disabledReason ? `${id}-reason` : undefined}
         aria-haspopup="listbox"
         aria-controls={menu ? `${id}-menu` : undefined}
-        aria-activedescendant={
-          menu && options ? `${id}-menu-${active}` : undefined
-        }
+        aria-activedescendant={typeahead.activeDescendant}
         aria-autocomplete="list"
         onChange={onChange}
         onKeyDown={onKeyDown}
@@ -909,21 +855,23 @@ export function Composer({
         </div>
       </div>
       {status ? <div className="fa-ai-composer-status">{status}</div> : null}
-      <ComposerMenu
+      <TypeaheadPopup
         anchor={rootRef}
         open={
           Boolean(menu) && (menu?.type === "slash" ? commands.length > 0 : true)
         }
-        onClose={() => setMenu(null)}
+        onClose={typeahead.close}
         label={menu?.type === "slash" ? messages.commands : messages.mention}
+        side="top"
+        className="fa-ai-menu"
       >
         {menu?.type === "slash" ? (
           <CommandList
             id={`${id}-menu`}
             commands={filteredCommands}
-            active={active}
+            active={typeahead.activeIndex}
             onPick={pickCommand}
-            onActive={setActive}
+            onActive={typeahead.setActiveIndex}
           />
         ) : menu?.type === "mention" ? (
           <>
@@ -932,21 +880,21 @@ export function Composer({
               id={`${id}-menu`}
               query={menu.query}
               options={mentions}
-              active={active}
+              active={typeahead.activeIndex}
               selected={(entity) =>
                 context.some(
                   (item) => item.kind === entity.kind && item.id === entity.id,
                 )
               }
               onPick={pickMention}
-              onActive={setActive}
+              onActive={typeahead.setActiveIndex}
               empty={
                 menu.query ? messages.nothingMatches(menu.query) : messages.typeAName
               }
             />
           </>
         ) : null}
-      </ComposerMenu>
+      </TypeaheadPopup>
     </div>
   );
 }

@@ -10,7 +10,7 @@ export default function RichTextSection() {
         title="Loading geometry"
         description="The skeleton retains the toolbar and content height."
         layout="stack"
-        specimenKey="rich-text:default:5"
+        specimenKey="rich-text:default:6"
       >
         <SwapSlot
           id="rich-text-loading"

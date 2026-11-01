@@ -1,0 +1,42 @@
+@layer components {
+  .gallery-find-frame {
+    position: relative;
+    margin-block-start: var(--space-2);
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-tile);
+  }
+  .gallery-find-scroller {
+    height: 16rem; /* tokens:allow a specimen's height */
+    position: relative;
+    /* Two rows of the bar and its insets: below 28rem it wraps. */
+    --_clear: calc(var(--control-h-sm) * 2 + var(--space-8));
+    padding: var(--_clear) var(--space-3) var(--space-3);
+    overflow-y: auto;
+    scroll-padding-block-start: var(--_clear);
+    font-family: var(--font-mono);
+    font-size: var(--type-mono-size);
+    line-height: var(--type-mono-line);
+  }
+  .gallery-find-scroller [data-match] {
+    border-radius: var(--radius-line);
+    background-color: var(--accent-soft);
+  }
+  .gallery-regions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); /* tokens:allow a specimen's track */
+    gap: var(--gap-controls);
+    width: 100%;
+  }
+  .gallery-region {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-tile);
+  }
+  .gallery-region[inert] {
+    color: var(--fg-muted);
+  }
+}

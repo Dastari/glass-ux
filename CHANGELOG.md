@@ -22,6 +22,24 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - `usePanZoom` in `glass-ux/hooks`: drag, wheel, pinch and keys on one transform, with `onFrame` per
   frame and `onCommit` when a gesture ends, and the `cameraTransform` and `containCamera` helpers.
 - Histogram: `bins` also takes precomputed `{ from, to, count }` bins. `values` is unchanged.
+- Typeahead (`glass-ux/typeahead`): a listbox at a caret or any rectangle, with focus staying in
+  the text. `useTypeahead` holds the highlight, keys and ARIA attributes; `Typeahead` draws the
+  list with an optional detail pane; rows from the host are shown as given, and results that
+  arrive late do not move a row under the pointer (R9). Composer's slash and mention menus are
+  built on it, with no change in behaviour.
+- FindBar (`glass-ux/find-bar`): a find control that holds no search logic. The host supplies the
+  count, the current match and whether the count is still climbing; options come through a slot,
+  with an optional replace row, a reserved count, polite announcements and focus returned on Esc.
+- ActivityFeed: a `tone` for the marker, one level of `children` and selection (`selectedId`,
+  `defaultSelectedId`, `onSelectedIdChange`), which makes the feed a listbox with one tab stop. A
+  feed that uses none of these renders exactly as before.
+- DiffView (`glass-ux/diff-view`): a general unified diff with the sign in the gutter, from
+  ResultDiff, which is now a thin wrapper with no visual change. New token roles
+  `--code-add-tint`, `--code-remove-tint`, `--code-add-text` and `--code-remove-text`.
+- Focus regions: `useFocusRegions` in `glass-ux/hooks` and an opt-in `focusRegions` on AppShell.
+  F6 and Shift+F6 move between an application's regions, skipping hidden and inert ones, and
+  leave the key to the browser while a modal dialog is open.
+- RichTextInput: opt-in `mentions` and `slashCommands`, on Typeahead. Picks stay Markdown.
 - Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
   (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,
   `case-sensitive`, `whole-word`, `fold`, `unfold`, `collapse-all`), transforms (`rotate-cw`,

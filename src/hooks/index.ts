@@ -28,3 +28,4 @@ export {
   type UndoStack,
   type UndoState,
 } from "./use-undo-stack.js";
+export { useFocusRegions, type FocusRegionOptions } from "./use-focus-regions.js";

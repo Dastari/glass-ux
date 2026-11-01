@@ -54,6 +54,8 @@
     --success-text: oklch(0.42 0.13 152);
     --warning-text: oklch(0.45 0.12 60);
     --danger-text: oklch(0.45 0.19 22);
+    --code-add-text: var(--success-text);
+    --code-remove-text: var(--danger-text);
     --info-text: oklch(0.42 0.16 252);
 
     --surface-1: oklch(1 0 0);

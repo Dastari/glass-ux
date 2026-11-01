@@ -1,0 +1,89 @@
+/*
+ * FindBar — a find control. It holds no search logic.
+ *
+ * Row      term · count · toggles · previous, next, close. Below 28rem the toggles and count
+ *          take a second row, so the term keeps a usable width.
+ * Count    a one-cell grid with the widest forms invisible beneath the text, so its width
+ *          never changes while a search runs (R9.1).
+ * Floating overlay glass at the top end of a positioned ancestor, clear of the scroll edge
+ *          and of the scrollbar beside it.
+ *
+ * Component tokens
+ *   --_edge   the space kept clear of the scrollbar and the scroll edge
+ */
+@layer components {
+  .fa-find-bar {
+    --_edge: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    width: 100%;
+    min-width: 0;
+    container: find-bar / inline-size;
+  }
+  .fa-find-bar[data-floating] {
+    position: absolute;
+    z-index: var(--z-popover);
+    inset-block-start: var(--space-2);
+    inset-inline-end: var(--_edge);
+    width: min(32rem, calc(100% - var(--_edge) - var(--space-2))); /* tokens:allow the longest useful bar */
+  }
+  .fa-find-bar-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .fa-find-bar-term {
+    flex: 1 1 8rem; /* tokens:allow the term's usable width before the row wraps */
+    min-width: 0;
+  }
+  .fa-find-bar-disclosure,
+  .fa-find-bar-count,
+  .fa-find-bar-toggles,
+  .fa-find-bar-nav {
+    flex: none;
+  }
+  .fa-find-bar-count {
+    display: inline-grid;
+    padding-inline: var(--space-1);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-align: end;
+    white-space: nowrap;
+  }
+  .fa-find-bar-count > span {
+    grid-area: 1 / 1;
+  }
+  .fa-find-bar-sizer {
+    visibility: hidden;
+  }
+  .fa-find-bar-toggles,
+  .fa-find-bar-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+  }
+  /* The replace row lines up under the term, past the disclosure button. */
+  .fa-find-bar[data-replace] .fa-find-bar-replace {
+    padding-inline-start: calc(var(--control-h-sm) + var(--space-1));
+  }
+  @container find-bar (width < 28rem) {
+    .fa-find-bar-term {
+      flex-basis: calc(100% - var(--control-h-sm) * 4 - var(--space-1) * 3);
+    }
+    .fa-find-bar-count {
+      order: 3;
+      text-align: start;
+    }
+    .fa-find-bar-toggles {
+      order: 2;
+      flex: 1 1 auto;
+    }
+    .fa-find-bar-replace .fa-find-bar-term {
+      flex-basis: 100%;
+    }
+  }
+}

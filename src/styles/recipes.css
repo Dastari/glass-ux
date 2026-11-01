@@ -366,6 +366,11 @@
   .fa-item:is(:hover, [data-highlighted], [data-popup-open]):not([data-disabled]) > svg {
     color: var(--fg);
   }
+  /* A region holding no control takes focus itself (useFocusRegions); the ring stays inside it. */
+  [data-focus-region]:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
   .fa-item:focus-visible {
     outline: var(--focus-ring-width) solid var(--accent-ring);
     outline-offset: calc(var(--focus-ring-width) * -1);

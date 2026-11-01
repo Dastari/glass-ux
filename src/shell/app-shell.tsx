@@ -36,6 +36,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react"
+import { useFocusRegions } from "../hooks/use-focus-regions.js"
 import { cx } from "../lib/cx.js"
 import { focusFirst } from "../lib/focus.js"
 import type { SidebarInternal } from "../ui/sidebar/context.js"
@@ -129,6 +130,13 @@ export interface AppShellProps {
   tabBar?: ReactNode
   /** Toggle the drawer from the keyboard. Default mod+b. */
   drawerShortcut?: string
+  /**
+   * F6 and Shift+F6 move between the top bar, rail, section drawer, workspace, inspector and
+   * phone navigation, so a keyboard user can leave an editor where Tab belongs to the content.
+   * Mark panes of your own inside the workspace with `data-focus-region`. See `useFocusRegions`.
+   * @defaultValue false
+   */
+  focusRegions?: boolean
   className?: string
 }
 
@@ -155,6 +163,7 @@ export function AppShell({
   inspector,
   tabBar,
   drawerShortcut = "mod+b",
+  focusRegions = false,
   className,
 }: AppShellProps) {
   const prefs = useShellPrefs()
@@ -240,6 +249,9 @@ export function AppShell({
     [docked, returnFocusFrom]
   )
 
+  useFocusRegions({ scope: shellRef, enabled: focusRegions })
+  const region = focusRegions ? "" : undefined
+
   const value = useMemo<ShellContextValue>(
     () => ({
       phone,
@@ -272,23 +284,23 @@ export function AppShell({
         >
           <script dangerouslySetInnerHTML={{ __html: shellBootScript() }} />
           <div className="fa-shell-slot-brand">{brand}</div>
-          <div className="fa-shell-slot-top">{topBar}</div>
-          <div className="fa-shell-slot-rail">{rail}</div>
+          <div className="fa-shell-slot-top" data-focus-region={region}>{topBar}</div>
+          <div className="fa-shell-slot-rail" data-focus-region={region}>{rail}</div>
           {hasDrawer && desktop ? (
             <>
-              <div ref={drawerSlotRef} className="fa-shell-slot-drawer" inert={!drawerOpen}>
+              <div ref={drawerSlotRef} className="fa-shell-slot-drawer" data-focus-region={region} inert={!drawerOpen}>
                 <DrawerPlacement.Provider value="pane">{drawer}</DrawerPlacement.Provider>
               </div>
               <DrawerHandle ref={handleRef} shellRef={shellRef} open={drawerOpen} onToggle={toggleDrawer} />
             </>
           ) : null}
-          <Content ref={contentRef as RefObject<HTMLElement & HTMLDivElement>} className="fa-shell-slot-work">{children}</Content>
+          <Content ref={contentRef as RefObject<HTMLElement & HTMLDivElement>} className="fa-shell-slot-work" data-focus-region={region}>{children}</Content>
           {inspector ? (
-            <div ref={inspectorSlotRef} className="fa-shell-slot-inspector" inert={docked && !inspectorOpen}>
+            <div ref={inspectorSlotRef} className="fa-shell-slot-inspector" data-focus-region={region} inert={docked && !inspectorOpen}>
               {inspector}
             </div>
           ) : null}
-          {tabBar ? <div className="fa-shell-slot-tabbar">{tabBar}</div> : null}
+          {tabBar ? <div className="fa-shell-slot-tabbar" data-focus-region={region}>{tabBar}</div> : null}
         </div>
         {hasDrawer ? (
           <SidebarSheet side="start" open={sidebar.openMobile && !desktop} onOpenChange={(open, event) => changeMobile(open, "dismiss", event)}>

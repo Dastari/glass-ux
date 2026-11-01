@@ -15,7 +15,7 @@ import { chartTier, DEFAULT_TIERS, remPx, type ChartTier, type TierRule } from "
 export type ChartState = "ready" | "loading" | "empty" | "error"
 
 /** The plot's shape family: decides the skeleton and a few frame defaults. */
-export type ChartKind = "line" | "column" | "bar" | "pie" | "gauge" | "heatmap" | "scatter" | "treemap" | "sunburst"
+export type ChartKind = "line" | "column" | "combo" | "bar" | "pie" | "gauge" | "heatmap" | "scatter" | "treemap" | "sunburst" | "funnel" | "radar" | "sankey"
 
 /** The box a chart draws into, in px. */
 export interface PlotBox {
@@ -65,6 +65,8 @@ export interface ChartFrameProps extends ChartCommonProps {
   compactHead?: boolean
   /** Content after the plot in the micro tier (the latest value, a share). */
   trail?: ReactNode
+  /** `foot` is a legend: one control's height, not a brush's. */
+  footLegend?: boolean
   /** The trail is a nicety: it hides in narrow rows so the marks keep their room. */
   trailOptional?: boolean
   /** The trail's reserved width, so loading and loaded share one geometry: a bare `value`
@@ -80,8 +82,9 @@ export interface ChartFrameProps extends ChartCommonProps {
    */
   tools?: ReactNode
   /**
-   * A strip under the plot in the full tier (LineChart's overview brush). Its box is kept
-   * while the chart loads, as a skeleton, so loading moves nothing (R9.3).
+   * A strip under the plot in the full tier (LineChart's overview brush, the legend of a chart
+   * with too many entries for the head). Its box is kept while the chart loads, as a skeleton,
+   * so loading moves nothing (R9.3).
    */
   foot?: ReactNode
   children: (box: PlotBox) => ReactNode
@@ -113,6 +116,7 @@ export function ChartFrame({
   note,
   tools,
   foot,
+  footLegend = false,
   children,
   className,
   locale: localeProp,
@@ -186,7 +190,7 @@ export function ChartFrame({
           <div className="fa-chart-head">
             {title ? <span className="fa-chart-title">{title}</span> : null}
             <div className="fa-chart-head-main">
-              {state === "loading" ? <HeadSkeleton tier={tier} /> : state === "ready" ? head?.(tier) : null}
+              {state === "loading" ? head || foot === undefined ? <HeadSkeleton tier={tier} /> : null : state === "ready" ? head?.(tier) : null}
             </div>
             {tier === "full" && table ? (
               <div className="fa-chart-tools">
@@ -217,7 +221,7 @@ export function ChartFrame({
           {body}
         </div>
         {tier === "full" && foot !== undefined && (state === "ready" || state === "loading") && !tableView ? (
-          <div className="fa-chart-foot">{state === "loading" ? <span className="fa-skel fa-chart-foot-skel" aria-hidden /> : foot}</div>
+          <div className="fa-chart-foot" data-legend={footLegend ? "" : undefined}>{state === "loading" ? <span className="fa-skel fa-chart-foot-skel" aria-hidden /> : foot}</div>
         ) : null}
         {tier === "micro" && trail !== undefined && (state === "ready" || state === "loading") ? (
           <div className="fa-chart-trail" data-size={trailSize} data-optional={trailOptional ? "" : undefined}>
@@ -260,13 +264,16 @@ function HeadSkeleton({ tier }: { tier: ChartTier }) {
 export function PlotSkeleton({ kind, tier }: {
   /** Chart shape family; picks the placeholder marks. */
   kind: ChartKind
-  /** Size tier of the box; axes placeholders show only in `full` for line, column, scatter and heatmap charts. */
+  /** Size tier of the box; axes placeholders show only in `full` for line, column, combo, scatter and heatmap charts. */
   tier: ChartTier
 }) {
-  const axes = tier === "full" && (kind === "line" || kind === "column" || kind === "scatter" || kind === "heatmap")
+  const axes = tier === "full" && (kind === "line" || kind === "column" || kind === "combo" || kind === "scatter" || kind === "heatmap")
+  // A combo's second value axis keeps its gutter while the chart loads.
+  const dual = axes && kind === "combo"
   let marks: ReactNode
   switch (kind) {
     case "column":
+    case "combo":
       marks = (
         <span className="fa-chart-skel-columns">
           {[46, 72, 58, 88, 64, 40, 76, 54].map((h, index) => (
@@ -274,6 +281,51 @@ export function PlotSkeleton({ kind, tier }: {
           ))}
         </span>
       )
+      break
+    case "funnel":
+      marks =
+        tier === "micro" ? (
+          <span className="fa-chart-skel-columns">
+            {[100, 72, 48, 30].map((h, index) => (
+              <span key={index} className="fa-skel" style={{ blockSize: `${h}%` }} />
+            ))}
+          </span>
+        ) : (
+          <span className="fa-chart-skel-funnel">
+            {[100, 72, 48, 30].map((w, index) => (
+              <span key={index} className="fa-chart-skel-funnel-row">
+                <Skeleton.Text type="caption" className="fa-chart-skel-text" data-part="bar-label" />
+                <span className="fa-chart-skel-funnel-track">
+                  <span className="fa-skel" style={{ inlineSize: `${w}%` }} />
+                </span>
+                <Skeleton.Text type="caption" className="fa-chart-skel-text" data-part="tick" />
+              </span>
+            ))}
+          </span>
+        )
+      break
+    case "radar":
+      marks = (
+        <span className="fa-chart-skel-radial">
+          <span className="fa-skel fa-chart-skel-radar" />
+        </span>
+      )
+      break
+    case "sankey":
+      marks =
+        tier === "micro" ? (
+          <span className="fa-skel fa-chart-skel-strip" />
+        ) : (
+          <span className="fa-chart-skel-sankey">
+            {[2, 3, 2].map((nodes, column) => (
+              <span key={column} className="fa-chart-skel-sankey-column">
+                {Array.from({ length: nodes }, (_, index) => (
+                  <span key={index} className="fa-skel" />
+                ))}
+              </span>
+            ))}
+          </span>
+        )
       break
     case "bar":
       marks = (
@@ -315,7 +367,7 @@ export function PlotSkeleton({ kind, tier }: {
       marks = <span className="fa-skel fa-chart-skel-area" />
   }
   return (
-    <div className="fa-chart-skel" data-kind={kind} data-axes={axes ? "" : undefined} aria-hidden>
+    <div className="fa-chart-skel" data-kind={kind} data-axes={dual ? "dual" : axes ? "" : undefined} aria-hidden>
       {axes ? (
         <span className="fa-chart-skel-y">
           {Array.from({ length: 4 }, (_, index) => (
@@ -324,6 +376,13 @@ export function PlotSkeleton({ kind, tier }: {
         </span>
       ) : null}
       <span className="fa-chart-skel-marks">{marks}</span>
+      {dual ? (
+        <span className="fa-chart-skel-y" data-side="end">
+          {Array.from({ length: 4 }, (_, index) => (
+            <Skeleton.Text key={index} type="caption" className="fa-chart-skel-text" data-part="tick" />
+          ))}
+        </span>
+      ) : null}
       {axes ? (
         <span className="fa-chart-skel-x">
           {Array.from({ length: 5 }, (_, index) => (

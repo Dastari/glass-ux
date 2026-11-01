@@ -146,11 +146,56 @@
   .fa-chart-bar[data-end="bottom"] {
     transform-origin: 50% 0;
   }
+  /* A funnel's bars grow out from their centre line. */
+  .fa-chart-bar[data-end="centre"] {
+    --_grow-from: scaleX(0);
+    transform-origin: 50% 50%;
+  }
   .fa-chart-sheen-top {
     stop-color: color-mix(in oklab, var(--_c), var(--chart-sheen-light) var(--chart-sheen-mix));
   }
   .fa-chart-sheen-bottom {
     stop-color: var(--_c);
+  }
+
+  /* A line over columns (ComboChart): a surface edge keeps it apart from the marks it crosses,
+     which may be any other slot. */
+  .fa-chart-line-halo {
+    fill: none;
+    stroke: var(--surface-3);
+    stroke-width: calc(var(--chart-stroke) + var(--chart-gap) * 2);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: d var(--duration-slow) var(--ease-standard);
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
+  }
+
+  /* ── Dual value axes: each axis wears the colour of what it measures ───── */
+  .fa-chart-axis-rule {
+    stroke: var(--_c);
+    stroke-width: var(--chart-stroke);
+    stroke-linecap: round;
+  }
+  .fa-chart-axis-name {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .fa-chart-axis-name[data-side="right"] {
+    flex-direction: row-reverse;
+  }
+  .fa-chart-axis-name-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* ── Dots, crosshair, highlight ────────────────────────────────────────── */

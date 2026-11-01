@@ -19,9 +19,10 @@ The parent must give it a definite height.
 | compactHead | `boolean \| undefined` | false, true | no | false | Whether the head row exists in the compact tier (it always does in full). Fixed per chart type so the skeleton and the loaded chart share one geometry. |
 | emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
 | errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
-| foot | `ReactNode` | See type | no | — | A strip under the plot in the full tier (LineChart's overview brush). Its box is kept while the chart loads, as a skeleton, so loading moves nothing (R9.3). |
+| foot | `ReactNode` | See type | no | — | A strip under the plot in the full tier (LineChart's overview brush, the legend of a chart with too many entries for the head). Its box is kept while the chart loads, as a skeleton, so loading moves nothing (R9.3). |
+| footLegend | `boolean \| undefined` | false, true | no | false | `foot` is a legend: one control's height, not a brush's. |
 | head | `((tier: ChartTier) => ReactNode) \| undefined` | See type | no | — | Legend or readout for the head row (compact and full tiers). |
-| kind | `ChartKind` | "line", "column", "bar", "pie", "gauge", "heatmap", "scatter", "treemap", "sunburst" | yes | — | Semantic entity or content kind, used to choose labels and rendering. |
+| kind | `ChartKind` | "line", "column", "combo", "bar", "pie", "gauge", "heatmap", "scatter", "treemap", "sunburst", "funnel", "radar", "sankey" | yes | — | Semantic entity or content kind, used to choose labels and rendering. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for this chart's numbers, dates and table. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | note | `string \| undefined` | See type | no | — | A sentence that explains how the marks are drawn, added to the figure's accessible description. |

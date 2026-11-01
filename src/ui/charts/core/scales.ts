@@ -3,9 +3,18 @@
  * hold and resolves domains the same way Sparkline does (fixed, or the data's own range).
  */
 import { scaleLinear, scaleTime } from "d3-scale"
+import type { ValueFormat } from "./format.js"
 
 export type Domain = readonly [min: number, max: number]
 export type XValue = number | Date
+
+/** A named value axis: what it measures, how its numbers read and, optionally, a fixed range. */
+export interface ValueAxis extends ValueFormat {
+  /** What the axis measures: "CPU", "Orders", "Conversion". */
+  label: string
+  /** Fixed value range; defaults to the data, rounded to nice ticks. */
+  domain?: Domain
+}
 
 /** Pixels between y gridlines and between x labels. */
 export const Y_TICK_SPACING = 44
@@ -60,6 +69,80 @@ export function linearTicks(domain: Domain, length: number, spacing = Y_TICK_SPA
     step = 1
   }
   return { values, step }
+}
+
+const clean = (value: number) => Number(value.toPrecision(12))
+const NICE_STEPS = [1, 2, 2.5, 5, 10]
+
+/**
+ * A nice range over `domain` split into exactly `intervals` equal steps, so a second axis's
+ * labels can sit on the first axis's gridlines. The range only grows: nothing is cut off.
+ */
+export function alignedRange([lo, hi]: Domain, intervals: number, { integer = false }: { integer?: boolean } = {}): LinearTicks & { domain: Domain } {
+  const n = Math.max(1, Math.round(intervals))
+  const span = hi - lo || 1
+  for (let exponent = Math.floor(Math.log10(span / n)); ; exponent++) {
+    for (const mantissa of NICE_STEPS) {
+      const step = clean(mantissa * 10 ** exponent)
+      if (integer && !Number.isInteger(step)) continue
+      const start = clean(Math.floor(lo / step + 1e-9) * step)
+      if (start + n * step < hi - 1e-9) continue
+      const values = Array.from({ length: n + 1 }, (_, index) => clean(start + index * step))
+      return { values, step, domain: [values[0]!, values[n]!] }
+    }
+  }
+}
+
+export interface AxisInput {
+  /** The axis's resolved range. */
+  domain: Domain
+  /** The range was fixed by the caller: it is kept as given. */
+  fixed?: boolean
+  /** Whole counts: ticks stay whole. */
+  integer?: boolean
+}
+
+export interface AlignedAxis {
+  domain: Domain
+  ticks: LinearTicks
+}
+
+/**
+ * Two value axes that share one set of gridlines, so each line reads a value on both. Free
+ * ranges are rounded out to the number of intervals that wastes the least of the plot,
+ * as many as fit. A fixed range is kept: fixed on one side, the free axis takes its intervals;
+ * fixed on both, each keeps its own ticks and the second axis's labels stand between the lines.
+ */
+export function alignAxes(first: AxisInput, second: AxisInput, length: number, spacing = Y_TICK_SPACING): { first: AlignedAxis; second: AlignedAxis; aligned: boolean } {
+  const own = (axis: AxisInput): AlignedAxis => ({ domain: axis.domain, ticks: linearTicks(axis.domain, length, spacing, { integer: axis.integer }) })
+  const rounded = (axis: AxisInput, intervals: number): AlignedAxis => {
+    const { domain, ...ticks } = alignedRange(axis.domain, intervals, { integer: axis.integer })
+    return { domain, ticks }
+  }
+  const spans = ({ domain, ticks }: AlignedAxis) => ticks.values.length > 1 && Math.abs(ticks.values[0]! - domain[0]) < 1e-9 && Math.abs(ticks.values[ticks.values.length - 1]! - domain[1]) < 1e-9
+  const unaligned = { first: own(first), second: own(second), aligned: false }
+  if (first.fixed && second.fixed) return unaligned
+  if (first.fixed || second.fixed) {
+    const lead = first.fixed ? unaligned.first : unaligned.second
+    if (!spans(lead)) return unaligned
+    const follower = rounded(first.fixed ? second : first, lead.ticks.values.length - 1)
+    return { first: first.fixed ? lead : follower, second: first.fixed ? follower : lead, aligned: true }
+  }
+  const waste = ({ domain }: AlignedAxis, axis: AxisInput) => (domain[1] - domain[0]) / (axis.domain[1] - axis.domain[0] || 1)
+  const most = Math.max(2, Math.floor(length / spacing))
+  let best: { first: AlignedAxis; second: AlignedAxis; aligned: boolean } | null = null
+  let lowest = Infinity
+  // From the most intervals down, so a tie keeps the denser grid.
+  for (let intervals = most; intervals >= Math.min(3, most); intervals--) {
+    const a = rounded(first, intervals)
+    const b = rounded(second, intervals)
+    const cost = waste(a, first) * waste(b, second)
+    if (cost < lowest - 1e-9) {
+      lowest = cost
+      best = { first: a, second: b, aligned: true }
+    }
+  }
+  return best ?? unaligned
 }
 
 /** Whether every value is a whole number (a count): ticks then stay whole too. */

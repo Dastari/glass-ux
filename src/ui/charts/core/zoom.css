@@ -59,6 +59,10 @@
     block-size: var(--_brush-h);
     min-width: 0;
   }
+  /* A legend under the plot, for a chart whose entries would crowd the title out of the head. */
+  .fa-chart-foot[data-legend] {
+    block-size: var(--control-h-xs);
+  }
   .fa-chart-foot-skel {
     display: block;
     block-size: 100%;

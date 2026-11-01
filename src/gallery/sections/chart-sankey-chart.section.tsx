@@ -1,0 +1,131 @@
+import { useState, type ComponentProps } from "react";
+import { SankeyChart, type ChartState } from "../../ui/charts/index.js";
+import {
+  ContainerLab,
+  SectionPage,
+  Specimen,
+  TierBox,
+  TierRow,
+} from "../kit.js";
+import { SkeletonSwaps } from "./charts.kit.js";
+
+const sample = {
+  unit: "h",
+  nodes: [
+    { key: "brief", label: "Briefing", group: "Planning" },
+    { key: "research", label: "Research", group: "Planning" },
+    { key: "layout", label: "Layout", group: "Studio" },
+    { key: "imagery", label: "Imagery", group: "Studio" },
+    { key: "copy", label: "Copy", group: "Studio" },
+    { key: "print", label: "Print", group: "Delivery" },
+    { key: "web", label: "Web", group: "Delivery" },
+  ],
+  links: [
+    { source: "brief", target: "layout", value: 42 },
+    { source: "brief", target: "copy", value: 18 },
+    { source: "research", target: "imagery", value: 36 },
+    { source: "research", target: "copy", value: 24 },
+    { source: "layout", target: "print", value: 26 },
+    { source: "layout", target: "web", value: 16 },
+    { source: "imagery", target: "print", value: 12 },
+    { source: "imagery", target: "web", value: 24 },
+    { source: "copy", target: "web", value: 42 },
+  ],
+} satisfies Omit<ComponentProps<typeof SankeyChart>, "label">;
+
+const render = (state: ChartState = "ready") => (
+  <SankeyChart
+    {...sample}
+    label="SankeyChart · fictional studio hours"
+    title="Studio hours"
+    state={state}
+    emptyText="No hours recorded yet"
+    errorText="Hours could not load"
+    onRetry={() => undefined}
+  />
+);
+
+function Activated() {
+  const [picked, setPicked] = useState("Nothing selected");
+  return (
+    <>
+      <div className="charts-pane" data-size="short" data-testid="chart-sankey-chart-activate">
+        <SankeyChart
+          {...sample}
+          label="Hours by stage · fictional"
+          title="Choose a node or a flow"
+          onActivate={(target) => setPicked(target.kind === "node" ? target.key : `${target.source} to ${target.target}`)}
+        />
+      </div>
+      <p className="type-caption text-fg-muted" data-testid="chart-sankey-chart-picked">Selected: {picked}</p>
+    </>
+  );
+}
+
+export default function SankeyChartSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="SankeyChart"
+        description="Ribbons are as wide as what flows through them and take their source's colour. Nodes in one group share a colour and a legend entry; hide a group to re-lay the rest. Arrow keys move through nodes and the flows between them."
+        wide
+      >
+        <div className="charts-pane" data-testid="chart-sankey-chart">
+          {render()}
+        </div>
+      </Specimen>
+      <Specimen
+        title="Flows that loop"
+        description="A link that closes a loop cannot be drawn as a flow. It stays in the table, and the table and description say how many were left out."
+        wide
+      >
+        <div className="charts-pane" data-size="short" data-testid="chart-sankey-chart-loop">
+          <SankeyChart
+            label="Proof rounds · fictional"
+            title="Proof rounds"
+            nodes={[
+              { key: "draft", label: "Draft" },
+              { key: "proof", label: "Proof" },
+              { key: "final", label: "Final" },
+            ]}
+            links={[
+              { source: "draft", target: "proof", value: 30 },
+              { source: "proof", target: "final", value: 24 },
+              { source: "proof", target: "draft", value: 6 },
+            ]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
+        title="Activating a node or a flow"
+        description="With onActivate, Enter, Space or a click reports the node or flow under the cursor."
+        wide
+      >
+        <Activated />
+      </Specimen>
+      <Specimen
+        title="Responsive sizes"
+        description="Labels give way as columns narrow, and a row shows a strip of the first column with the total."
+        wide
+      >
+        <TierRow>{() => render()}</TierRow>
+      </Specimen>
+      <Specimen
+        title="Loading, empty and error"
+        description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
+        wide
+      >
+        <SkeletonSwaps id="sankey-chart" render={render} />
+        <div className="gallery-tiers">
+          <TierBox size="compact" label="Empty">
+            {render("empty")}
+          </TierBox>
+          <TierBox size="full" label="Error">
+            {render("error")}
+          </TierBox>
+        </div>
+      </Specimen>
+      <ContainerLab>{() => render()}</ContainerLab>
+    </SectionPage>
+  );
+}

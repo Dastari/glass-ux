@@ -1,0 +1,111 @@
+import { useState, type ComponentProps } from "react";
+import { FunnelChart, type ChartState } from "glass-ux/charts";
+import { ContainerLab, SectionPage, Specimen, TierBox, TierRow } from "glass-ux/gallery/kit";
+import { SkeletonSwaps } from "glass-ux/gallery/sections/charts.kit";
+
+const sample = {
+  stageLabel: "Stage",
+  unit: { one: "visitor", other: "visitors" },
+  stages: [
+    { key: "visited", label: "Visited gallery", value: 12480 },
+    { key: "enquired", label: "Enquired", value: 6240 },
+    { key: "quoted", label: "Received a quote", value: 3120 },
+    { key: "booked", label: "Booked", value: 1404 },
+    { key: "returned", label: "Returned", value: 562 },
+  ],
+} satisfies Omit<ComponentProps<typeof FunnelChart>, "label">;
+const render = (state: ChartState = "ready") => (
+  <FunnelChart
+    {...sample}
+    label="FunnelChart · fictional gallery visitors"
+    title="Gallery visitors"
+    state={state}
+    emptyText="No visitors recorded yet"
+    errorText="Visitors could not load"
+    onRetry={() => undefined}
+  />
+);
+
+function Activated() {
+  const [picked, setPicked] = useState("visited");
+  return (
+    <>
+      <div className="charts-pane" data-size="short" data-testid="chart-funnel-chart-activate">
+        <FunnelChart
+          {...sample}
+          label="Visitors by stage · fictional"
+          title="Choose a stage"
+          onActivate={(_, key) => setPicked(key)}
+        />
+      </div>
+      <p className="type-caption text-fg-muted" data-testid="chart-funnel-chart-picked">
+        Selected stage: {picked}
+      </p>
+    </>
+  );
+}
+
+export default function FunnelChartSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="FunnelChart"
+        description="Each row gives a stage, its value and its share of the first stage. The bands between rows carry the step rate. Hide a stage in the legend to compare the stages either side of it."
+        wide
+      >
+        <div className="charts-pane" data-testid="chart-funnel-chart">
+          {render()}
+        </div>
+      </Specimen>
+      <Specimen
+        title="Start alignment"
+        description="Bars lined up at one edge compare amounts exactly. A stage can wear a status tone when it means that state."
+        wide
+      >
+        <div className="charts-pane" data-size="short" data-testid="chart-funnel-chart-start">
+          <FunnelChart
+            label="Print orders by stage · fictional"
+            title="Print orders"
+            align="start"
+            stages={[
+              { key: "placed", label: "Placed", value: 860 },
+              { key: "proofed", label: "Proofed", value: 790 },
+              { key: "printed", label: "Printed", value: 744 },
+              { key: "rejected", label: "Rejected at check", value: 38, tone: "warning" },
+            ]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
+        title="Activating a stage"
+        description="With onActivate, Enter, Space or a click reports the stage under the cursor."
+        wide
+      >
+        <Activated />
+      </Specimen>
+      <Specimen
+        title="Responsive sizes"
+        description="Labels move over their bars in a narrow box, and a row shows falling columns with the overall rate."
+        wide
+      >
+        <TierRow>{() => render()}</TierRow>
+      </Specimen>
+      <Specimen
+        title="Loading, empty and error"
+        description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
+        wide
+      >
+        <SkeletonSwaps id="funnel-chart" render={render} />
+        <div className="gallery-tiers">
+          <TierBox size="compact" label="Empty">
+            {render("empty")}
+          </TierBox>
+          <TierBox size="full" label="Error">
+            {render("error")}
+          </TierBox>
+        </div>
+      </Specimen>
+      <ContainerLab>{() => render()}</ContainerLab>
+    </SectionPage>
+  );
+}

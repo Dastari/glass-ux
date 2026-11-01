@@ -3,13 +3,13 @@ import { barMessages } from "./messages.js"
 import { memo, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react"
 import { cartesianInset, textWidth, YGrid, YLabels } from "../core/axes.js"
 import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.js"
-import { formatShare, formatTick, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
+import { formatShare, formatTick, formatValue, type ChartUnit, type LocalizedFormat, type ValueFormat } from "../core/format.js"
 import { useLocale } from "../../../lib/locale/use-locale.js"
 import { barPath, cssPath } from "../core/geometry.js"
 import { HitLayer } from "../core/hit.js"
 import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
 import { ChartLegend, type LegendItem } from "../core/legend.js"
-import { allIntegers, linear, linearTicks, valueDomain, type Domain } from "../core/scales.js"
+import { alignAxes, allIntegers, linear, linearTicks, valueDomain, type Domain, type ValueAxis } from "../core/scales.js"
 import { seriesAttrs, slotFor, type ChartTone } from "../core/series.js"
 import type { ChartTableModel, ChartTableValue } from "../core/table.js"
 import type { ChartTier } from "../core/tier.js"
@@ -18,6 +18,7 @@ import { LiveRegion } from "../line/line-chart.js"
 import { resolveBands, type ReferenceBand, type Threshold } from "../core/reference.js"
 import { ReferenceLabels, ReferenceMarks, useReferenceNotes } from "../core/reference-layer.js"
 import { listFormat } from "../../../lib/locale/intl.js"
+import { AxisName, ComboHover, comboLine, ComboLines, type AxisKey, type ComboLine } from "./combo-marks.js"
 
 export interface BarSeries {
   key: string
@@ -28,6 +29,10 @@ export interface BarSeries {
   slot?: number
   /** Status tone, only when the series means that state (offline, failed). */
   tone?: ChartTone
+  /** `bar` (the default) or `line`, drawn over the same categories. Vertical columns only: horizontal bars draw every series as a bar. */
+  mark?: "bar" | "line"
+  /** The value axis the series reads. `secondary` takes effect with `secondaryAxis`, on vertical columns; otherwise the series reads the primary axis. */
+  axis?: "primary" | "secondary"
 }
 
 export interface BarChartProps extends ChartCommonProps, ValueFormat {
@@ -55,18 +60,75 @@ export interface BarChartProps extends ChartCommonProps, ValueFormat {
    * status threshold.
    */
   thresholds?: readonly Threshold[]
-  /** Shaded ranges on the value axis behind the columns. Vertical columns only. */
+  /** Shaded ranges on the value axis behind the columns. Vertical columns only. Thresholds and bands read the primary axis. */
   bands?: readonly ReferenceBand[]
+  /**
+   * Names the primary value axis ("Orders"), above its labels in the full tier. Vertical
+   * columns only. `unit`, `format` and `domain` describe the same axis.
+   */
+  valueLabel?: string
+  /**
+   * A second value axis at the plot's right edge, for series with `axis: "secondary"`. It has
+   * its own name, unit and format; its gridline positions follow the primary axis's. Vertical
+   * columns only. See `ComboChart` for when two axes mislead.
+   */
+  secondaryAxis?: ValueAxis
+  /**
+   * Click, Enter or Space on a category: its index and label. While set, the plot shows a
+   * pointer cursor and its accessible name says Enter selects.
+   */
+  onActivate?: (index: number, category: string) => void
+}
+
+/** What one value axis carries, and its range. */
+interface AxisData {
+  /** Bars that read this axis, in series order. */
+  bars: BarSeries[]
+  /** Lines that read this axis, in series order. */
+  lines: BarSeries[]
+  /** Per category, the sum of this axis's bars: a stack's height. */
+  totals: number[]
+  domain: Domain
+  /** Every value is a whole number: value ticks stay whole. */
+  integer: boolean
 }
 
 interface Prepared {
   visible: BarSeries[]
   /** Overrides for named content slots. */
   slots: Map<string, number>
-  totals: number[]
+  primary: AxisData
+  /** Present while the chart has a second value axis in use. */
+  secondary: AxisData | null
+  /** The primary axis's range, as computed from the data. */
   domain: Domain
-  /** Every value is a whole number: value ticks stay whole. */
-  integer: boolean
+  totals: number[]
+  /** Every series, hidden or not. */
+  all: readonly BarSeries[]
+  /** The caller fixed the primary range. */
+  fixed: boolean
+}
+
+/** The unit as a table header can name it: the plural of a counted noun. */
+const unitName = (unit: ChartUnit | undefined) => (typeof unit === "object" ? unit.other : unit)
+
+const hasLines = (series: readonly BarSeries[]) => series.some((item) => item.mark === "line")
+
+function axisData(all: readonly BarSeries[], hidden: ReadonlySet<string>, categories: readonly string[], stacked: boolean, fixed: Domain | undefined, references: readonly number[]): AxisData {
+  const visible = all.filter((item) => !hidden.has(item.key))
+  // An axis whose series are all hidden keeps its scale, so its labels do not change meaning.
+  const shown = visible.length ? visible : all
+  const bars = shown.filter((item) => item.mark !== "line")
+  const lines = shown.filter((item) => item.mark === "line")
+  const totals = categories.map((_, index) => bars.reduce((sum, item) => sum + Math.max(0, item.data[index] ?? 0), 0))
+  const values = [...(stacked ? totals : bars.flatMap((item) => item.data)), ...lines.flatMap((item) => item.data)]
+  return {
+    bars: visible.filter((item) => item.mark !== "line"),
+    lines: visible.filter((item) => item.mark === "line"),
+    totals,
+    domain: valueDomain([...values, ...references], fixed, { zero: true }),
+    integer: allIntegers(values),
+  }
 }
 
 /**
@@ -102,6 +164,9 @@ export function BarChart(props: BarChartProps) {
     formatEdge,
     thresholds: thresholdProp,
     bands: bandProp,
+    valueLabel,
+    secondaryAxis,
+    onActivate,
     ...rest
   } = props
   const categoryLabel = categoryLabelProp ?? messages.category
@@ -110,48 +175,93 @@ export function BarChart(props: BarChartProps) {
   const store = useHoverStore()
   const locale = useLocale(props.locale)
   const fmt: LocalizedFormat = useMemo(() => ({ unit, format, locale }), [unit, format, locale])
+  const secondaryUnit = secondaryAxis?.unit
+  const secondaryFormat = secondaryAxis?.format
+  const secondaryFmt: LocalizedFormat = useMemo(() => ({ unit: secondaryUnit, format: secondaryFormat, locale }), [secondaryUnit, secondaryFormat, locale])
   const stacked = layout === "stacked"
   const horizontal = orientation === "horizontal"
+  // Lines and a second axis sit on vertical columns: horizontal bars draw every series as a bar.
+  const drawn = useMemo(() => (horizontal ? series.map((item) => (item.mark === "line" ? { ...item, mark: "bar" as const } : item)) : series), [series, horizontal])
+  const dual = !horizontal && secondaryAxis !== undefined && drawn.some((item) => item.axis === "secondary")
+  const combo = !horizontal && (dual || hasLines(drawn))
+  const onSecondary = (item: BarSeries) => dual && item.axis === "secondary"
+  const fmtOf = (item: BarSeries) => (onSecondary(item) ? secondaryFmt : fmt)
   // References sit on a vertical value axis: columns only.
   const thresholds = horizontal ? undefined : thresholdProp
   const bands = horizontal ? undefined : bandProp
 
   const prepared = useMemo<Prepared>(() => {
-    const slots = new Map(series.map((item, index) => [item.key, slotFor(index, item.slot)]))
-    const visible = series.filter((item) => !hidden.has(item.key))
-    const totals = categories.map((_, index) => visible.reduce((sum, item) => sum + Math.max(0, item.data[index] ?? 0), 0))
-    const values = stacked ? totals : visible.flatMap((item) => item.data)
+    const slots = new Map(drawn.map((item, index) => [item.key, slotFor(index, item.slot)]))
+    const visible = drawn.filter((item) => !hidden.has(item.key))
     const references = [...(thresholds ?? []).map((item) => item.value), ...(bands ?? []).flatMap((item) => [item.from, item.to])]
-    return { visible, slots, totals, domain: valueDomain([...values, ...references], domain, { zero: true }), integer: allIntegers(values) }
-  }, [series, hidden, categories, stacked, domain, thresholds, bands])
+    const primary = axisData(dual ? drawn.filter((item) => item.axis !== "secondary") : drawn, hidden, categories, stacked, domain, references)
+    const secondary = dual ? axisData(drawn.filter((item) => item.axis === "secondary"), hidden, categories, stacked, secondaryAxis?.domain, []) : null
+    return { visible, slots, primary, secondary, domain: primary.domain, totals: primary.totals, all: drawn, fixed: domain !== undefined }
+  }, [drawn, dual, secondaryAxis?.domain, hidden, categories, stacked, domain, thresholds, bands])
   const notes = useReferenceNotes({ thresholds, bands, fmt })
 
+  // With two axes, an unnamed primary axis takes its series' names: no axis goes unlabelled.
+  const seriesNames = (items: readonly BarSeries[]) => listFormat(locale, { type: "conjunction" }).format(items.map((item) => item.label))
+  const primaryName = valueLabel ?? (dual ? seriesNames(drawn.filter((item) => item.axis !== "secondary")) : undefined)
+  const axisNotes = dual
+    ? [
+        messages.leftAxisNote({ axis: primaryName ?? "", series: seriesNames(drawn.filter((item) => item.axis !== "secondary")) }),
+        messages.rightAxisNote({ axis: secondaryAxis?.label ?? "", series: seriesNames(drawn.filter((item) => item.axis === "secondary")) }),
+      ]
+    : []
+  const axisNoteKey = axisNotes.join(" ")
+
   const table = useMemo<ChartTableModel>(() => {
+    // With two axes the numbers differ in kind: each column names its axis and unit, which also
+    // labels the CSV, whose cells carry none.
+    const header = (name: string, onAxis: { label?: string; unit?: ChartUnit }) => {
+      if (!dual) return name
+      const axisName = onAxis.label && onAxis.label !== name ? onAxis.label : undefined
+      const unitText = unitName(onAxis.unit)
+      if (axisName && unitText) return messages.seriesWithAxisAndUnit({ series: name, axis: axisName, unit: unitText })
+      return axisName || unitText ? messages.seriesWithAxis(name, axisName ?? unitText ?? "") : name
+    }
+    const primaryAxis = { label: primaryName, unit }
+    const secondAxis = { label: secondaryAxis?.label, unit: secondaryAxis?.unit }
+    const stacks = [
+      { key: "total", label: messages.total, axis: primaryAxis, format: fmt, bars: drawn.filter((item) => item.mark !== "line" && !onSecondary(item)) },
+      { key: "total2", label: messages.total, axis: secondAxis, format: secondaryFmt, bars: drawn.filter((item) => item.mark !== "line" && onSecondary(item)) },
+    ].filter((stack) => stacked && stack.bars.length > 1)
+    const sum = (bars: readonly BarSeries[], index: number) => bars.reduce((total, item) => total + (item.data[index] ?? 0), 0)
     const rows = categories.map((category, index) => {
       const row: Record<string, string> = { category: edges ? edgeLabel(edges, index, formatEdge) : category }
-      for (const item of series) row[item.key] = formatValue(item.data[index], fmt)
-      if (stacked && series.length > 1) row.total = formatValue(series.reduce((sum, item) => sum + (item.data[index] ?? 0), 0), fmt)
+      for (const item of drawn) row[item.key] = formatValue(item.data[index], fmtOf(item))
+      for (const stack of stacks) row[stack.key] = formatValue(sum(stack.bars, index), stack.format)
       return row
     })
     const values = categories.map((_, index) => {
       const raw: Record<string, ChartTableValue> = {}
-      for (const item of series) raw[item.key] = item.data[index] ?? null
-      if (stacked && series.length > 1) raw.total = series.reduce((sum, item) => sum + (item.data[index] ?? 0), 0)
+      for (const item of drawn) raw[item.key] = item.data[index] ?? null
+      for (const stack of stacks) raw[stack.key] = sum(stack.bars, index)
       return raw
     })
+    const allNotes = [...(axisNoteKey ? axisNotes : []), ...notes]
     return {
       columns: [
         { key: "category", label: categoryLabel },
-        ...series.map((item) => ({ key: item.key, label: item.label, numeric: true })),
-        ...(stacked && series.length > 1 ? [{ key: "total", label: messages.total, numeric: true }] : []),
+        ...drawn.map((item) => ({ key: item.key, label: header(item.label, onSecondary(item) ? secondAxis : primaryAxis), numeric: true })),
+        ...stacks.map((stack) => ({ key: stack.key, label: header(stack.label, stack.axis), numeric: true })),
       ],
       rows,
       values,
-      notes: notes.length ? notes : undefined,
+      notes: allNotes.length ? allNotes : undefined,
     }
-  }, [categories, series, fmt, stacked, categoryLabel, edges, formatEdge, notes])
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- fmtOf and onSecondary follow dual, fmt and secondaryFmt
+  }, [categories, drawn, fmt, secondaryFmt, dual, stacked, categoryLabel, edges, formatEdge, notes, axisNoteKey, primaryName, unit, secondaryAxis?.label, secondaryAxis?.unit, messages])
 
-  const legendItems: LegendItem[] = series.map((item) => ({ key: item.key, label: item.label, slot: prepared.slots.get(item.key), tone: item.tone, shape: "box" }))
+  const legendItems: LegendItem[] = drawn.map((item) => ({
+    key: item.key,
+    label: item.label,
+    slot: prepared.slots.get(item.key),
+    tone: item.tone,
+    shape: item.mark === "line" ? "line" : "box",
+    detail: dual ? (onSecondary(item) ? messages.rightAxis : messages.leftAxis) : undefined,
+  }))
   const toggle = (key: string) =>
     setHidden((current) => {
       const next = new Set(current)
@@ -164,19 +274,21 @@ export function BarChart(props: BarChartProps) {
 
   // The micro trail: the leader of a ranked list, or the latest column.
   const leadIndex = horizontal ? 0 : categories.length - 1
-  const lead = series.length === 1 ? series[0]!.data[leadIndex] : prepared.totals[leadIndex]
+  // A sum across a combo's series would add unlike things: it leads with its first series.
+  const leadSeries = combo || series.length === 1 ? drawn[0] : undefined
+  const lead = leadSeries ? leadSeries.data[leadIndex] : prepared.totals[leadIndex]
   const trail =
     categories.length > 0 ? (
       <span className="fa-chart-figure">
         <span className="fa-chart-figure-label">{edges ? edgeLabel(edges, leadIndex, formatEdge) : categories[leadIndex]}</span>
-        <span className="fa-chart-figure-value">{formatValue(lead, fmt)}</span>
+        <span className="fa-chart-figure-value">{formatValue(lead, leadSeries ? fmtOf(leadSeries) : fmt)}</span>
       </span>
     ) : null
 
   return (
     <ChartFrame
       {...rest}
-      kind={horizontal ? "bar" : "column"}
+      kind={horizontal ? "bar" : combo ? "combo" : "column"}
       label={label}
       title={title}
       state={state}
@@ -185,7 +297,7 @@ export function BarChart(props: BarChartProps) {
       compactHead={series.length > 1}
       trail={trail}
       trailOptional
-      note={notes.length ? notes.join(" ") : undefined}
+      note={axisNotes.length + notes.length ? [...axisNotes, ...notes].join(" ") : undefined}
     >
       {(box) => (
         <BarPlot
@@ -202,6 +314,10 @@ export function BarChart(props: BarChartProps) {
           formatEdge={formatEdge}
           thresholds={thresholds}
           bands={bands}
+          valueLabel={horizontal ? undefined : primaryName}
+          secondaryAxis={dual ? secondaryAxis : undefined}
+          secondaryFmt={secondaryFmt}
+          onActivate={onActivate}
         />
       )}
     </ChartFrame>
@@ -210,6 +326,39 @@ export function BarChart(props: BarChartProps) {
 
 /** Vertical columns. */
 export function ColumnChart(props: Omit<BarChartProps, "orientation">) {
+  return <BarChart {...props} orientation="vertical" />
+}
+
+export interface ComboChartProps extends Omit<BarChartProps, "orientation" | "edges" | "formatEdge" | "labels"> {
+  /** Names the primary value axis. Required: on a chart that mixes measures, no axis goes unnamed. */
+  valueLabel: string
+}
+
+/**
+ * Columns and lines over the same categories, on one value axis or two: orders per month as
+ * columns with the refund rate as a line. It is `BarChart` with vertical columns, so grouped
+ * and stacked columns, thresholds and tiers work as they do there. Give each series a `mark`
+ * and, for a second axis, `axis: "secondary"` and `secondaryAxis`.
+ *
+ * Two axes need care: their scales are independent, so where a line crosses a column, and how
+ * steep it looks beside it, says nothing about the data. Use them for two measures of one
+ * process that differ in unit and a reader compares by shape over the categories. Do not use
+ * them to compare two amounts of the same unit (use one axis), to suggest one measure drives
+ * another (use `ScatterChart`), or with more than one or two series a side: small multiples,
+ * two charts stacked over the same categories, read better. Each axis wears a key for the
+ * series it carries, the second axis's labels sit on the first's gridlines unless both ranges
+ * are fixed, and both ranges start at zero unless you fix them.
+ *
+ * Each axis needs its name (`valueLabel`, `secondaryAxis.label`). The table's columns name
+ * each series' axis and unit, and thresholds and bands read the primary axis. The x axis and
+ * the value axes do not mirror in right-to-left text: the primary axis stays on the left.
+ *
+ *   micro    columns and lines without axes; the first series' latest value as a trail
+ *   compact  baseline and category labels, passive legend
+ *   full     both value axes with their names, the interactive legend naming each series'
+ *            axis, a band highlight and the tooltip (every series in its own unit)
+ */
+export function ComboChart(props: ComboChartProps) {
   return <BarChart {...props} orientation="vertical" />
 }
 
@@ -234,6 +383,10 @@ interface BarPlotProps {
   formatEdge?: (value: number) => string
   thresholds?: readonly Threshold[]
   bands?: readonly ReferenceBand[]
+  valueLabel?: string
+  secondaryAxis?: ValueAxis
+  secondaryFmt: LocalizedFormat
+  onActivate?: (index: number, category: string) => void
 }
 
 interface Mark {
@@ -253,17 +406,18 @@ interface Mark {
 
 const GAP = 2
 
-const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, categories, stacked, horizontal, labels, fmt, label, edges, formatEdge, thresholds, bands }: BarPlotProps) {
+const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, categories, stacked, horizontal, labels, fmt, label, edges, formatEdge, thresholds, bands, valueLabel, secondaryAxis, secondaryFmt, onActivate }: BarPlotProps) {
   const messages = useMessages(barMessages)
 
   const id = useId()
   const plotRef = useRef<HTMLDivElement>(null)
   const { width, height, tier, rem } = box
-  const { visible, slots, totals, domain } = prepared
+  const { visible, slots, totals, domain, primary, secondary, all, fixed } = prepared
   const full = tier === "full"
   const micro = tier === "micro"
   const n = categories.length
   const k = Math.max(1, visible.length)
+  const bars = useMemo(() => [...primary.bars, ...(secondary?.bars ?? [])], [primary.bars, secondary?.bars])
   const barMax = 1.5 * rem
   const radius = 0.25 * rem
   const histogram = Boolean(edges)
@@ -286,13 +440,23 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
       const thick = Math.min(barMax, side ? pitch * 0.42 : 0.5 * rem)
       return { kind: "rows" as const, side, pitch, shown, labelW, bx0, bx1, thick, valueTexts }
     }
-    const yTicks = linearTicks(domain, height - 2 * rem, undefined, { integer: prepared.integer })
+    // Two axes share one set of gridlines: each line of the grid reads a value on both.
+    const paired = full && secondary ? alignAxes({ domain, fixed, integer: primary.integer }, { domain: secondary.domain, fixed: Boolean(secondaryAxis?.domain), integer: secondary.integer }, height - 2 * rem) : null
+    const yDomain = paired?.first.domain ?? domain
+    const yTicks = paired?.first.ticks ?? linearTicks(domain, height - 2 * rem, undefined, { integer: primary.integer })
     const yLabels = yTicks.values.map((tick) => formatTick(tick, yTicks.step, fmt))
-    const inset = cartesianInset({ tier, rem, yLabels, xAxis: !micro && !horizontal })
+    const rightLabels = paired?.second.ticks.values.map((tick) => formatTick(tick, paired.second.ticks.step, secondaryFmt)) ?? []
+    // Past the label's estimate, as the left gutter's label may overrun its own into the empty edge.
+    const right = rightLabels.length ? Math.max(...rightLabels.map((text) => textWidth(text, rem))) + 0.875 * rem : 0
+    const inset = cartesianInset({ tier, rem, yLabels, xAxis: !micro && !horizontal, right })
     if (!micro) inset.bottom = 1.25 * rem + 0.375 * rem
-    return { kind: "columns" as const, inset, yTicks }
-  }, [horizontal, micro, width, height, rem, full, n, categories, fmt, labels, stacked, k, visible, totals, domain, tier, barMax, prepared.integer])
+    // A row over the plot for the axes' names.
+    if (full && (valueLabel || secondary)) inset.top = 1.5 * rem
+    return { kind: "columns" as const, inset, yTicks, yDomain, right: paired?.second ?? null, secondaryDomain: paired?.second.domain ?? secondary?.domain ?? domain }
+  }, [horizontal, micro, width, height, rem, full, n, categories, fmt, labels, stacked, k, visible, totals, domain, tier, barMax, primary.integer, secondary, secondaryAxis?.domain, secondaryFmt, valueLabel, fixed])
 
+  const valueScale = geo.kind === "columns" ? geo.yDomain : domain
+  const scaleFor = (item: BarSeries) => (geo.kind === "columns" && secondary && item.axis === "secondary" ? geo.secondaryDomain : valueScale)
   const marks = useMemo<Mark[]>(() => {
     const out: Mark[] = []
     if (geo.kind === "rows") {
@@ -319,25 +483,51 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
     const y0 = inset.top
     const y1 = height - inset.bottom
     const band = (x1 - x0) / Math.max(1, n)
-    const py = linear(domain, [y1, y0])
+    // One slot in a category per bar, or per axis when stacked: stacks of unlike measures stand side by side.
+    const groups = stacked ? [primary.bars, secondary?.bars ?? []].filter((group) => group.length > 0) : bars.map((item) => [item])
+    const slotsPerBand = Math.max(1, groups.length)
     // Dense bins share the gap with their columns, so a column never loses its width to it.
-    const groupW = histogram ? band - Math.min(GAP, band / 2) : Math.min(band * (micro ? 0.7 : stacked || k === 1 ? 0.62 : 0.8), stacked ? barMax : k * barMax + (k - 1) * GAP)
-    const barW = histogram || stacked ? groupW : (groupW - (k - 1) * GAP) / k
+    const groupW = histogram ? band - Math.min(GAP, band / 2) : Math.min(band * (micro ? 0.7 : slotsPerBand === 1 ? 0.62 : 0.8), slotsPerBand * barMax + (slotsPerBand - 1) * GAP)
+    const barW = histogram ? groupW : (groupW - (slotsPerBand - 1) * GAP) / slotsPerBand
     for (let index = 0; index < n; index++) {
       const left = x0 + index * band + (band - groupW) / 2
-      let base = 0
-      visible.forEach((item, s) => {
-        const value = Math.max(0, item.data[index] ?? 0)
-        const top = py(base + value)
-        const bottom = py(base) - (stacked && s > 0 ? GAP : 0)
-        const x = stacked || histogram ? left : left + s * (barW + GAP)
-        const last = !stacked || s === visible.length - 1
-        out.push({ key: `${item.key}-${index}`, series: item.key, index, tip: top, slot: slots.get(item.key) ?? 1, tone: item.tone, d: barPath(x, top, barW, Math.max(0, bottom - top), last ? (histogram ? radius * 0.5 : radius) : 0, "top"), end: "top" })
-        if (stacked) base += value
+      groups.forEach((group, g) => {
+        let base = 0
+        group.forEach((item, s) => {
+          const py = linear(scaleFor(item), [y1, y0])
+          const value = Math.max(0, item.data[index] ?? 0)
+          const top = py(base + value)
+          const bottom = py(base) - (stacked && s > 0 ? GAP : 0)
+          const x = histogram ? left : left + g * (barW + GAP)
+          const last = !stacked || s === group.length - 1
+          out.push({ key: `${item.key}-${index}`, series: item.key, index, tip: top, slot: slots.get(item.key) ?? 1, tone: item.tone, d: barPath(x, top, barW, Math.max(0, bottom - top), last ? (histogram ? radius * 0.5 : radius) : 0, "top"), end: "top" })
+          if (stacked) base += value
+        })
       })
     }
     return out
-  }, [geo, domain, visible, slots, stacked, k, rem, radius, width, height, n, histogram, micro, barMax])
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- scaleFor follows geo and secondary
+  }, [geo, domain, visible, slots, stacked, k, rem, radius, width, height, n, histogram, micro, barMax, primary.bars, secondary, bars])
+
+  const lines = useMemo<ComboLine[]>(() => {
+    if (geo.kind !== "columns") return []
+    const { inset } = geo
+    const x0 = inset.left
+    const band = (width - inset.right - x0) / Math.max(1, n)
+    const at = (index: number) => x0 + band * (index + 0.5)
+    return [...primary.lines, ...(secondary?.lines ?? [])].map((item) => comboLine(item.key, slots.get(item.key) ?? 1, item.tone, item.data, n, at, linear(scaleFor(item), [height - inset.bottom, inset.top])))
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- scaleFor follows geo and secondary
+  }, [geo, primary.lines, secondary, slots, n, width, height])
+  // Where the tooltip anchors in each category: the highest mark in it.
+  const tips = useMemo(() => {
+    const out: Array<number | undefined> = Array.from({ length: n })
+    const raise = (index: number, y: number) => {
+      out[index] = Math.min(out[index] ?? y, y)
+    }
+    for (const mark of marks) raise(mark.index, mark.tip)
+    for (const line of lines) line.points.forEach((point, index) => point && raise(index, point.y))
+    return out
+  }, [marks, lines, n])
 
   // ── Hover geometry ────────────────────────────────────────────────────────────────────
   const count = geo.kind === "rows" ? geo.shown : n
@@ -355,27 +545,28 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
     if (geo.kind === "rows") return { x: geo.bx1 * 0.5 + geo.bx0 * 0.5, y: index * geo.pitch + geo.pitch / 2 }
     const x0 = geo.inset.left
     const band = (width - geo.inset.right - x0) / Math.max(1, n)
-    const py = linear(domain, [height - geo.inset.bottom, geo.inset.top])
-    const top = stacked ? totals[index] ?? 0 : maxAt(visible, index)
-    return { x: x0 + band * (index + 0.5), y: py(top) }
+    return { x: x0 + band * (index + 0.5), y: tips[index] ?? height - geo.inset.bottom }
   }
   const categoryText = (index: number) => (edges ? edgeLabel(edges, index, formatEdge) : (categories[index] ?? ""))
-  const valueText = (index: number) => `${categoryText(index)} · ${listFormat(fmt.locale, { type: "unit" }).format(visible.map((item) => `${item.label} ${formatValue(item.data[index], fmt)}`))}`
+  const fmtFor = (item: BarSeries) => (secondary && item.axis === "secondary" ? secondaryFmt : fmt)
+  const valueText = (index: number) => `${categoryText(index)} · ${listFormat(fmt.locale, { type: "unit" }).format(visible.map((item) => `${item.label} ${formatValue(item.data[index], fmtFor(item))}`))}`
   const sum = useMemo(() => totals.reduce((a, b) => a + b, 0), [totals])
   const reference = useMemo(() => {
     if (geo.kind !== "columns" || micro || (!thresholds?.length && !bands?.length)) return null
     const { inset } = geo
     const y0 = inset.top
     const y1 = height - inset.bottom
-    return { py: linear(domain, [y1, y0]), x0: inset.left, x1: width - inset.right, y0, y1, rem, shaded: resolveBands(thresholds, bands, domain[1]) }
-  }, [geo, micro, thresholds, bands, height, width, domain, rem])
+    return { py: linear(geo.yDomain, [y1, y0]), x0: inset.left, x1: width - inset.right, y0, y1, rem, shaded: resolveBands(thresholds, bands, geo.yDomain[1]) }
+  }, [geo, micro, thresholds, bands, height, width, rem])
+  const axisKeys = (onAxis: AxisData): AxisKey[] =>
+    all.filter((item) => (onAxis === secondary) === (item.axis === "secondary")).map((item) => ({ key: item.key, slot: slots.get(item.key) ?? 1, tone: item.tone, shape: item.mark === "line" ? "line" : "box", off: !visible.includes(item) }))
 
   return (
     <div ref={plotRef} className="fa-chart-layer">
       {full ? <BandHighlight store={store} geo={geo} width={width} height={height} n={n} rem={rem} /> : null}
       <svg className="fa-chart-svg" width={width} height={height} aria-hidden>
         <defs>
-          {visible.map((item) => (
+          {bars.map((item) => (
             <linearGradient key={item.key} id={`${id}-sheen-${item.key}`} x1="0" y1="0" x2="0" y2="1" {...seriesAttrs(slots.get(item.key), item.tone)}>
               <stop offset="0" className="fa-chart-sheen-top" />
               <stop offset="0.45" className="fa-chart-sheen-bottom" />
@@ -384,10 +575,16 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
         </defs>
         {geo.kind === "columns" && !micro ? (
           full ? (
-            <YGrid ticks={geo.yTicks.values} y={linear(domain, [height - geo.inset.bottom, geo.inset.top])} x0={geo.inset.left} x1={width - geo.inset.right} baseline={0} />
+            <YGrid ticks={geo.yTicks.values} y={linear(geo.yDomain, [height - geo.inset.bottom, geo.inset.top])} x0={geo.inset.left} x1={width - geo.inset.right} baseline={0} />
           ) : (
             <line className="fa-chart-grid" data-baseline="" x1={geo.inset.left} x2={width - geo.inset.right} y1={Math.round(height - geo.inset.bottom) - 0.5} y2={Math.round(height - geo.inset.bottom) - 0.5} />
           )
+        ) : null}
+        {geo.kind === "columns" && full && secondary ? (
+          <>
+            <AxisRule keys={axisKeys(primary)} x={geo.inset.left} y0={geo.inset.top} y1={height - geo.inset.bottom} />
+            <AxisRule keys={axisKeys(secondary)} x={width - geo.inset.right} y0={geo.inset.top} y1={height - geo.inset.bottom} />
+          </>
         ) : null}
         {reference ? <ReferenceMarks geometry={reference} thresholds={thresholds ?? []} bands={reference.shaded} shade={full} /> : null}
         {marks.map((mark) => (
@@ -405,12 +602,16 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
             }
           />
         ))}
+        <ComboLines lines={lines} rem={rem} />
       </svg>
 
       {/* Category and value labels are HTML so they truncate with a real ellipsis (R8). */}
       {!micro ? (
         <div className="fa-chart-labels" aria-hidden>
-          {geo.kind === "columns" && full ? <YLabels ticks={geo.yTicks.values} step={geo.yTicks.step} y={linear(domain, [height - geo.inset.bottom, geo.inset.top])} x0={geo.inset.left} format={fmt} gap={0.5 * rem} /> : null}
+          {geo.kind === "columns" && full ? <YLabels ticks={geo.yTicks.values} step={geo.yTicks.step} y={linear(geo.yDomain, [height - geo.inset.bottom, geo.inset.top])} x0={geo.inset.left} format={fmt} gap={0.5 * rem} /> : null}
+          {geo.kind === "columns" && full && geo.right ? <YLabels ticks={geo.right.ticks.values} step={geo.right.ticks.step} y={linear(geo.right.domain, [height - geo.inset.bottom, geo.inset.top])} x0={width - geo.inset.right} format={secondaryFmt} gap={0.5 * rem} side="right" /> : null}
+          {geo.kind === "columns" && full && valueLabel ? <AxisName label={valueLabel} side="left" keys={secondary ? axisKeys(primary) : []} x={0} width={secondary ? width * 0.48 : width} /> : null}
+          {geo.kind === "columns" && full && secondary && secondaryAxis ? <AxisName label={secondaryAxis.label} side="right" keys={axisKeys(secondary)} x={0} width={width * 0.48} /> : null}
           {reference && full ? <ReferenceLabels geometry={reference} thresholds={thresholds ?? []} bands={bands ?? []} fmt={fmt} /> : null}
           {geo.kind === "rows"
             ? categories.slice(0, geo.shown).map((category, index) => (
@@ -454,7 +655,7 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
                 }
                 return categories.map((category, index) =>
                   index % step === 0 ? (
-                    <span key={index} className="fa-chart-cat" data-align="middle" title={category} style={{ top, left: x0 + band * index + 1, width: band * step - 2 }}>
+                    <span key={index} className="fa-chart-cat" data-align="middle" title={category} style={{ top, left: x0 + band * index + 1, width: Math.min(band * step - 2, width - (x0 + band * index + 1)) }}>
                       {category}
                     </span>
                   ) : null
@@ -469,25 +670,41 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
 
       {full ? (
         <>
-          <HitLayer store={store} count={count} locate={locate} anchor={anchor} label={messages.inspectValues(label)} valueText={valueText} initial={0} />
+          <ComboHover store={store} lines={lines} width={width} height={height} rem={rem} />
+          <HitLayer
+            store={store}
+            count={count}
+            locate={locate}
+            anchor={anchor}
+            label={onActivate ? messages.inspectValuesEnterSelects(label) : messages.inspectValues(label)}
+            valueText={valueText}
+            initial={0}
+            cursor={onActivate ? "pointer" : "crosshair"}
+            onActivate={onActivate ? (index) => onActivate(index, categoryText(index)) : undefined}
+          />
           <ChartTooltip store={store} anchor={plotRef}>
             {(hover) => {
-              const rows: TooltipRow[] = visible.map((item) => ({
+              const row = (item: BarSeries): TooltipRow => ({
                 key: item.key,
                 label: item.label,
-                value: formatValue(item.data[hover.index], fmt),
+                value: formatValue(item.data[hover.index], fmtFor(item)),
                 slot: slots.get(item.key),
                 tone: item.tone,
-                shape: "box",
-                detail: visible.length === 1 && sum > 0 ? formatShare(item.data[hover.index] ?? 0, sum, fmt.locale) : undefined,
-              }))
-              return (
-                <TooltipBody
-                  title={categoryText(hover.index)}
-                  rows={stacked ? rows.toReversed() : rows}
-                  footer={stacked && visible.length > 1 ? messages.totalValue(formatValue(totals[hover.index], fmt)) : undefined}
-                />
-              )
+                shape: item.mark === "line" ? "line" : "box",
+                detail: secondary ? (item.axis === "secondary" ? messages.rightAxis : messages.leftAxis) : visible.length === 1 && item.mark !== "line" && sum > 0 ? formatShare(item.data[hover.index] ?? 0, sum, fmt.locale) : undefined,
+              })
+              const barRows = bars.map(row)
+              const lineRows = lines.flatMap((line) => visible.filter((item) => item.key === line.key).map(row))
+              // Each axis's stack has its own total: totals across unlike units would mean nothing.
+              const footer = stacked
+                ? [
+                    primary.bars.length > 1 ? messages.totalValue(formatValue(primary.totals[hover.index], fmt)) : null,
+                    secondary && secondary.bars.length > 1 ? messages.totalValue(formatValue(secondary.totals[hover.index], secondaryFmt)) : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")
+                : ""
+              return <TooltipBody title={categoryText(hover.index)} rows={[...(stacked ? barRows.toReversed() : barRows), ...lineRows]} footer={footer || undefined} />
             }}
           </ChartTooltip>
           <LiveRegion store={store} text={valueText} />
@@ -496,6 +713,13 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
     </div>
   )
 })
+
+/** The axis's edge in its series' colour, while it carries just one. */
+function AxisRule({ keys, x, y0, y1 }: { keys: readonly AxisKey[]; x: number; y0: number; y1: number }) {
+  const shown = keys.filter((item) => !item.off)
+  if (shown.length !== 1) return null
+  return <line className="fa-chart-axis-rule" {...seriesAttrs(shown[0]!.slot, shown[0]!.tone)} x1={x} x2={x} y1={y0} y2={y1} />
+}
 
 function maxAt(series: readonly BarSeries[], index: number) {
   let max = 0

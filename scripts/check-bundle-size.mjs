@@ -83,6 +83,12 @@ const BUDGETS = [
   { entry: 'glass-ux/pane-layout', named: 'movePanel', gzip: 1_500, forbid: ['@base-ui/react', 'dist/ui/tabs/tabs.js', 'dist/ui/drag-drop/manager.js'] },
   // Measured 61.4 KB, of which Menu is 54.4 KB. The action runner's router, dialog and toasts stay out
   // unless useMenubarActions is imported.
+  // Measured 44.2 KB and 46.3 KB: neither needs a scale. Sankey lays out in house: d3-sankey would bring older
+  // copies of d3-array and d3-shape. Radar's rings and combo's axes use the shared d3-scale ticks, at 52.3 KB and 57.8 KB.
+  { entry: 'glass-ux/charts', named: 'FunnelChart', gzip: 48_500, forbid: ['d3-scale', 'd3-shape', 'd3-hierarchy', 'd3-sankey'] },
+  { entry: 'glass-ux/charts', named: 'SankeyChart', gzip: 51_000, forbid: ['d3-scale', 'd3-shape', 'd3-hierarchy', 'd3-sankey'] },
+  { entry: 'glass-ux/charts', named: 'RadarChart', gzip: 57_500, forbid: ['d3-shape', 'd3-hierarchy', 'd3-sankey'] },
+  { entry: 'glass-ux/charts', named: 'ComboChart', gzip: 63_500, forbid: ['d3-shape', 'd3-hierarchy', 'd3-sankey'] },
   { entry: 'glass-ux/menubar', named: 'Menubar', gzip: 67_500, forbid: ['@tanstack/react-router', '@tanstack/react-form', 'd3-scale', 'shiki', 'zod'] },
   { entry: 'glass-ux/ai/code-block', named: 'CodeBlock', gzip: 40_000, forbid: ['shiki', '@shikijs/core'] },
   // Unused wrapper calls (`Object.assign`, `memo`, ...) carry /* @__PURE__ */ (pnpm pure:check), so

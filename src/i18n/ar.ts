@@ -425,6 +425,18 @@ export default defineMessagePack("ar", {
   tabs: {
     more: "المزيد",
     moreTabs: (count) => `المزيد من علامات التبويب (${count})`,
+    closeTab: (label) => `إغلاق ${label}`,
+    close: "إغلاق",
+    unsaved: "تغييرات غير محفوظة",
+    preview: "معاينة",
+    keepOpen: "إبقاؤها مفتوحة",
+    moveEarlier: "نقل إلى موضع أسبق",
+    moveLater: "نقل إلى موضع لاحق",
+    tabActions: (label) => `إجراءات ${label}`,
+    closeHint: "اضغط Delete للإغلاق.",
+    moveHint: "اضغط Shift ومفتاح سهم للنقل.",
+    closeAndMoveHint: "اضغط Delete للإغلاق، أو Shift ومفتاح سهم للنقل.",
+    movedTo: ({ label, position, total }) => `تم نقل ${label} إلى الموضع ${position} من ${total}`,
   },
   toolActivity: {
     queued: "في قائمة الانتظار",

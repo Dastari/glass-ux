@@ -425,6 +425,18 @@ export default defineMessagePack("zh-Hans", {
   tabs: {
     more: "更多",
     moreTabs: (count) => `更多选项卡 (${count})`,
+    closeTab: (label) => `关闭“${label}”`,
+    close: "关闭",
+    unsaved: "未保存的更改",
+    preview: "预览",
+    keepOpen: "保持打开",
+    moveEarlier: "前移",
+    moveLater: "后移",
+    tabActions: (label) => `“${label}”的操作`,
+    closeHint: "按 Delete 键关闭。",
+    moveHint: "按 Shift 和方向键移动。",
+    closeAndMoveHint: "按 Delete 键关闭，或按 Shift 和方向键移动。",
+    movedTo: ({ label, position, total }) => `“${label}”已移至第 ${position} 位，共 ${total} 位`,
   },
   toolActivity: {
     queued: "排队",

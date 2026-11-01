@@ -425,6 +425,18 @@ export default defineMessagePack("he", {
   tabs: {
     more: "עוד",
     moreTabs: (count) => `כרטיסיות נוספות (${count})`,
+    closeTab: (label) => `סגירת ${label}`,
+    close: "סגירה",
+    unsaved: "שינויים שלא נשמרו",
+    preview: "תצוגה מקדימה",
+    keepOpen: "השארה פתוחה",
+    moveEarlier: "העברה למיקום מוקדם יותר",
+    moveLater: "העברה למיקום מאוחר יותר",
+    tabActions: (label) => `פעולות עבור ${label}`,
+    closeHint: "הקישו Delete כדי לסגור.",
+    moveHint: "הקישו Shift ומקש חץ כדי להזיז.",
+    closeAndMoveHint: "הקישו Delete כדי לסגור, או Shift ומקש חץ כדי להזיז.",
+    movedTo: ({ label, position, total }) => `${label} הועבר למיקום ${position} מתוך ${total}`,
   },
   toolActivity: {
     queued: "בתור",

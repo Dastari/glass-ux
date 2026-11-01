@@ -425,6 +425,18 @@ export default defineMessagePack("ko", {
   tabs: {
     more: "더 보기",
     moreTabs: (count) => `추가 탭(${count})`,
+    closeTab: (label) => `${label} 닫기`,
+    close: "닫기",
+    unsaved: "저장되지 않은 변경 사항",
+    preview: "미리 보기",
+    keepOpen: "열어 두기",
+    moveEarlier: "앞으로 이동",
+    moveLater: "뒤로 이동",
+    tabActions: (label) => `${label} 작업`,
+    closeHint: "닫으려면 Delete 키를 누르세요.",
+    moveHint: "이동하려면 Shift와 화살표 키를 누르세요.",
+    closeAndMoveHint: "닫으려면 Delete 키를, 이동하려면 Shift와 화살표 키를 누르세요.",
+    movedTo: ({ label, position, total }) => `${label}을(를) ${total}개 중 ${position}번째로 이동했습니다`,
   },
   toolActivity: {
     queued: "대기 중",

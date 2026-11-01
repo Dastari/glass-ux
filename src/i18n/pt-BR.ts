@@ -425,6 +425,18 @@ export default defineMessagePack("pt-BR", {
   tabs: {
     more: "Mais",
     moreTabs: (count) => `Mais guias (${count})`,
+    closeTab: (label) => `Fechar ${label}`,
+    close: "Fechar",
+    unsaved: "Alterações não salvas",
+    preview: "Visualização",
+    keepOpen: "Manter aberta",
+    moveEarlier: "Mover para antes",
+    moveLater: "Mover para depois",
+    tabActions: (label) => `Ações de ${label}`,
+    closeHint: "Pressione Delete para fechar.",
+    moveHint: "Pressione Shift e uma seta para mover.",
+    closeAndMoveHint: "Pressione Delete para fechar, ou Shift e uma seta para mover.",
+    movedTo: ({ label, position, total }) => `${label} movida para a posição ${position} de ${total}`,
   },
   toolActivity: {
     queued: "Na fila",

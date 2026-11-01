@@ -1,11 +1,16 @@
 import "./messages.js"
 export {
+  TAB_DRAG_TYPE,
   TabNav,
   Tabs,
   TabsSkeleton,
   type RenderTabLink,
+  type TabCloseDetails,
+  type TabDragData,
   type TabItem,
   type TabLinkRenderProps,
+  type TabListHandle,
+  type TabMove,
   type TabNavProps,
   type TabsListProps,
   type TabsRootProps,

@@ -425,6 +425,18 @@ export default defineMessagePack("fr", {
   tabs: {
     more: "Plus",
     moreTabs: (count) => `Plus d'onglets (${count})`,
+    closeTab: (label) => `Fermer ${label}`,
+    close: "Fermer",
+    unsaved: "Modifications non enregistrées",
+    preview: "Aperçu",
+    keepOpen: "Garder ouvert",
+    moveEarlier: "Placer avant",
+    moveLater: "Placer après",
+    tabActions: (label) => `Actions pour ${label}`,
+    closeHint: "Appuyez sur Suppr pour fermer.",
+    moveHint: "Appuyez sur Maj et une flèche pour déplacer.",
+    closeAndMoveHint: "Appuyez sur Suppr pour fermer, ou sur Maj et une flèche pour déplacer.",
+    movedTo: ({ label, position, total }) => `${label} déplacé en position ${position} sur ${total}`,
   },
   toolActivity: {
     queued: "En file d'attente",

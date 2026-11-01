@@ -115,6 +115,108 @@
     cursor: not-allowed;
     opacity: var(--disabled-opacity);
   }
+  /* A preview tab: the next one opened replaces it. */
+  .fa-tab[data-preview] .fa-tab-label {
+    font-style: italic;
+  }
+  /* The marks after the label share one box, so nothing moves when one replaces the other. */
+  .fa-tab-marks {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    margin-inline-end: calc(var(--space-1) * -1);
+  }
+  .fa-tab-marks > * {
+    grid-area: 1 / 1;
+  }
+  /* A border, not a fill: forced colours keep it. */
+  .fa-tab-unsaved {
+    width: 0;
+    height: 0;
+    border: var(--space-1) solid currentColor;
+    border-radius: var(--radius-full);
+  }
+  .fa-tab-close {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-compact);
+    color: var(--fg-muted);
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-tab-close > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  /* The hit area reaches --target-aa without growing the mark (R20.4). */
+  .fa-tab-close::after {
+    content: "";
+    position: absolute;
+    inset: calc((100% - var(--target-aa)) / 2);
+  }
+  .fa-tab-close:hover {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-tab:is(:hover, :focus-visible, [data-active]) .fa-tab-close {
+    opacity: 1;
+  }
+  .fa-tab[data-unsaved]:is(:hover, :focus-visible) .fa-tab-unsaved {
+    opacity: 0;
+  }
+  .fa-tab[data-unsaved]:not(:hover, :focus-visible) .fa-tab-close {
+    opacity: 0;
+  }
+  @media (hover: none) {
+    .fa-tab:not([data-unsaved]) .fa-tab-close {
+      opacity: 1;
+    }
+  }
+  /* Outside the tablist: hidden until the keyboard reaches it, then over the bar's end. */
+  .fa-tabs-close-active {
+    position: absolute;
+    inset-block-start: var(--_pill-inset);
+    inset-inline-end: 0;
+    z-index: var(--z-raised);
+    display: inline-grid;
+    place-items: center;
+    width: var(--target-aa);
+    height: calc(100% - var(--_pill-inset) * 2);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-item);
+    background-color: var(--fill-hover);
+    color: var(--fg);
+    opacity: 0;
+    clip-path: inset(50%);
+    cursor: pointer;
+  }
+  .fa-tabs-close-active:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+    opacity: 1;
+    clip-path: none;
+  }
+  .fa-tabs-close-active > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-tabs-announcer {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   /* Only the active tab is left and it still does not fit: let it truncate. */
   .fa-tabs-list[data-solo] > .fa-tab {
     flex-shrink: 1;

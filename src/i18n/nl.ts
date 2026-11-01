@@ -425,6 +425,18 @@ export default defineMessagePack("nl", {
   tabs: {
     more: "Meer",
     moreTabs: (count) => `Meer tabbladen (${count})`,
+    closeTab: (label) => `${label} sluiten`,
+    close: "Sluiten",
+    unsaved: "Niet-opgeslagen wijzigingen",
+    preview: "Voorbeeld",
+    keepOpen: "Open houden",
+    moveEarlier: "Eerder plaatsen",
+    moveLater: "Later plaatsen",
+    tabActions: (label) => `Acties voor ${label}`,
+    closeHint: "Druk op Delete om te sluiten.",
+    moveHint: "Druk op Shift en een pijltoets om te verplaatsen.",
+    closeAndMoveHint: "Druk op Delete om te sluiten, of op Shift en een pijltoets om te verplaatsen.",
+    movedTo: ({ label, position, total }) => `${label} verplaatst naar positie ${position} van ${total}`,
   },
   toolActivity: {
     queued: "In de wachtrij",

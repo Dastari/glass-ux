@@ -425,6 +425,18 @@ export default defineMessagePack("it", {
   tabs: {
     more: "Altro",
     moreTabs: (count) => `Altre schede (${count})`,
+    closeTab: (label) => `Chiudi ${label}`,
+    close: "Chiudi",
+    unsaved: "Modifiche non salvate",
+    preview: "Anteprima",
+    keepOpen: "Mantieni aperta",
+    moveEarlier: "Sposta prima",
+    moveLater: "Sposta dopo",
+    tabActions: (label) => `Azioni per ${label}`,
+    closeHint: "Premi Canc per chiudere.",
+    moveHint: "Premi Maiusc e una freccia per spostare.",
+    closeAndMoveHint: "Premi Canc per chiudere, oppure Maiusc e una freccia per spostare.",
+    movedTo: ({ label, position, total }) => `${label} spostata in posizione ${position} di ${total}`,
   },
   toolActivity: {
     queued: "In coda",

@@ -425,6 +425,18 @@ export default defineMessagePack("ja", {
   tabs: {
     more: "その他",
     moreTabs: (count) => `その他のタブ (${count})`,
+    closeTab: (label) => `${label} を閉じる`,
+    close: "閉じる",
+    unsaved: "未保存の変更",
+    preview: "プレビュー",
+    keepOpen: "開いたままにする",
+    moveEarlier: "前へ移動",
+    moveLater: "後ろへ移動",
+    tabActions: (label) => `${label} の操作`,
+    closeHint: "閉じるには Delete キーを押します。",
+    moveHint: "移動するには Shift と矢印キーを押します。",
+    closeAndMoveHint: "閉じるには Delete キー、移動するには Shift と矢印キーを押します。",
+    movedTo: ({ label, position, total }) => `${label} を ${total} 個中 ${position} 番目に移動しました`,
   },
   toolActivity: {
     queued: "待機中",

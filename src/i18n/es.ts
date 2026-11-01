@@ -425,6 +425,18 @@ export default defineMessagePack("es", {
   tabs: {
     more: "Más",
     moreTabs: (count) => `Más pestañas (${count})`,
+    closeTab: (label) => `Cerrar ${label}`,
+    close: "Cerrar",
+    unsaved: "Cambios sin guardar",
+    preview: "Vista previa",
+    keepOpen: "Mantener abierta",
+    moveEarlier: "Mover antes",
+    moveLater: "Mover después",
+    tabActions: (label) => `Acciones de ${label}`,
+    closeHint: "Pulsa Supr para cerrar.",
+    moveHint: "Pulsa Mayús y una flecha para mover.",
+    closeAndMoveHint: "Pulsa Supr para cerrar, o Mayús y una flecha para mover.",
+    movedTo: ({ label, position, total }) => `${label} movido a la posición ${position} de ${total}`,
   },
   toolActivity: {
     queued: "En cola",

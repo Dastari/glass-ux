@@ -425,6 +425,18 @@ export default defineMessagePack("de", {
   tabs: {
     more: "Mehr",
     moreTabs: (count) => `Weitere Registerkarten (${count})`,
+    closeTab: (label) => `${label} schließen`,
+    close: "Schließen",
+    unsaved: "Nicht gespeicherte Änderungen",
+    preview: "Vorschau",
+    keepOpen: "Geöffnet lassen",
+    moveEarlier: "Weiter nach vorn",
+    moveLater: "Weiter nach hinten",
+    tabActions: (label) => `Aktionen für ${label}`,
+    closeHint: "Zum Schließen Entf drücken.",
+    moveHint: "Zum Verschieben Umschalt und eine Pfeiltaste drücken.",
+    closeAndMoveHint: "Zum Schließen Entf drücken, zum Verschieben Umschalt und eine Pfeiltaste.",
+    movedTo: ({ label, position, total }) => `${label} an Position ${position} von ${total} verschoben`,
   },
   toolActivity: {
     queued: "In der Warteschlange",

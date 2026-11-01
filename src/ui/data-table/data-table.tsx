@@ -4,6 +4,7 @@ import { CellEditStore } from "./edit-state.js";
 import { EditingContext } from "./editing.js";
 import { ExportMenu } from "./export-menu.js";
 import { exportCsv, exportTsv, type DataTableExportColumn } from "./export.js";
+import { writeClipboardText } from "../../lib/clipboard.js";
 import { normaliseColumnOrder, moveColumn } from "./column-order.js";
 import { DragDropProvider } from "../drag-drop/index.js";
 import {
@@ -2438,7 +2439,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         bom: exportSettings.bom,
       };
       if (format === "tsv") {
-        await navigator.clipboard.writeText(exportTsv(options));
+        await writeClipboardText(exportTsv(options));
         announceCell(messages.copiedRows(exportRows.length));
         return;
       }

@@ -221,6 +221,9 @@
 @utility p-panel {
   padding: var(--inset-panel);
 }
+@utility p-panel-compact {
+  padding: var(--inset-panel-compact);
+}
 @utility p-tile {
   padding: var(--inset-tile);
 }

@@ -54,6 +54,7 @@
     --inset-control: var(--space-3); /* horizontal padding inside a md control */
     --inset-tile: var(--space-4);
     --inset-panel: var(--space-5);
+    --inset-panel-compact: var(--space-3); /* dense tool panes: Panel compact, Surface padding="compact" */
     --inset-overlay: var(--space-1-5); /* menu/listbox padding around items */
     --inset-dialog: var(--space-6);
     --page-gutter: clamp(var(--space-3), 1.1vw, var(--space-6));
@@ -261,6 +262,7 @@
     --row-h-header: 2.25rem;
     --tile-icon-box: 2.25rem;
     --inset-panel: var(--space-4);
+    --inset-panel-compact: var(--space-2);
     --gap-fields: var(--space-4);
   }
 

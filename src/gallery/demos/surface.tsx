@@ -19,9 +19,18 @@ export default function SurfaceExample() {
         </Surface>
       </Specimen>
       <Specimen
-        title="Material level per surface"
+        title="Compact padding"
         layout="stack"
         specimenKey="component-examples:SurfaceExample:1"
+      >
+        <Surface material="panel" padding="compact">
+          padding="compact" reads --inset-panel-compact.
+        </Surface>
+      </Specimen>
+      <Specimen
+        title="Material level per surface"
+        layout="stack"
+        specimenKey="component-examples:SurfaceExample:2"
       >
         <Surface material="panel" padding="panel">
           The page's level (Glass unless Appearance says otherwise).

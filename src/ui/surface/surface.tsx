@@ -16,7 +16,7 @@ export type SurfaceMaterial =
   "chrome" | "panel" | "card" | "overlay" | "float" | "control" | "inset";
 export type SurfaceRadius =
   "control" | "tile" | "surface" | "overlay" | "dialog" | "none";
-export type SurfacePadding = "none" | "overlay" | "tile" | "panel" | "dialog";
+export type SurfacePadding = "none" | "overlay" | "tile" | "compact" | "panel" | "dialog";
 
 type SurfaceProps<T extends ElementType> = {
   /** Semantic element rendered by the polymorphic component. */
@@ -25,7 +25,11 @@ type SurfaceProps<T extends ElementType> = {
   material?: SurfaceMaterial;
   /** Semantic corner-radius role. */
   radius?: SurfaceRadius;
-  /** Semantic padding role. `overlay` is the item-list inset; pair it with `radius="overlay"` so `.fa-item` rows nest. */
+  /**
+   * Semantic padding role. `overlay` is the item-list inset; pair it with `radius="overlay"` so `.fa-item` rows nest.
+   * `compact` is the panel inset tightened for dense tool panes (`--inset-panel-compact`): 12px at the default scale
+   * under comfortable density and 8px under compact density, so it stays smaller than `panel` (20px, 16px) in both.
+   */
   padding?: SurfacePadding;
   /** Make this surface a size container so its contents can respond with @container. */
   container?: boolean;
@@ -67,6 +71,13 @@ export function Surface<T extends ElementType = "div">({
 export interface PanelProps extends ComponentProps<"section"> {
   /** Let the body scroll inside a bounded panel instead of growing the page. */
   scroll?: boolean;
+  /**
+   * Tighten the inset of the header, body and footer to `--inset-panel-compact`, for dense tool
+   * panes. It follows density and UI scale like `--inset-panel`: 12px at the default scale under
+   * comfortable density and 8px under compact density, against 20px and 16px for a regular panel.
+   * A Panel nested inside keeps its own inset. Default false.
+   */
+  compact?: boolean;
   /** This panel's own material level; see Surface `glass`. Default: the page's. */
   glass?: GlassLevel;
 }
@@ -76,7 +87,7 @@ export interface PanelProps extends ComponentProps<"section"> {
  * Every Panel is an inline-size container named `panel`, so anything inside it lays out
  * against the panel's width — never the viewport's.
  */
-export function Panel({ scroll = false, glass, className, ...rest }: PanelProps) {
+export function Panel({ scroll = false, compact = false, glass, className, ...rest }: PanelProps) {
   return (
     <PanelScroll value={scroll}>
       <section
@@ -84,6 +95,7 @@ export function Panel({ scroll = false, glass, className, ...rest }: PanelProps)
         className={cx("glass-panel fa-surface fa-panel", className)}
         data-radius="surface"
         data-scroll={scroll ? "" : undefined}
+        data-compact={compact ? "" : undefined}
         data-glass={glass}
       />
     </PanelScroll>

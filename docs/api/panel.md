@@ -12,6 +12,7 @@ against the panel's width — never the viewport's.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+| compact | `boolean \| undefined` | false, true | no | false | Tighten the inset of the header, body and footer to `--inset-panel-compact`, for dense tool panes. It follows density and UI scale like `--inset-panel`: 12px at the default scale under comfortable density and 8px under compact density, against 20px and 16px for a regular panel. A Panel nested inside keeps its own inset. Default false. |
 | glass | `"full" \| "solid" \| "reduced" \| undefined` | "full", "solid", "reduced" | no | — | This panel's own material level; see Surface `glass`. Default: the page's. |
 | scroll | `boolean \| undefined` | false, true | no | false | Let the body scroll inside a bounded panel instead of growing the page. |
 

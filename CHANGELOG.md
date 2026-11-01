@@ -28,6 +28,11 @@ has upgrade steps in the [migration guide](docs/migration.md).
   Its props type is `StandaloneSliderFieldProps`. The form kit's `SliderField` takes an opt-in
   `inline` prop for the same row and keeps its layout otherwise.
 
+- Panel `compact` and Surface `padding="compact"`: the panel inset tightened for dense tool panes, from
+  the new `--inset-panel-compact` token (12px comfortable, 8px under compact density, against 20px and
+  16px for `--inset-panel`; it scales with the UI scale). A nested Panel keeps its own inset. Tailwind
+  gets `p-panel-compact`.
+
 ### Fixed
 
 - ColorField and ColorPicker: the hex input and the swatch tooltips read left to right in right-to-left

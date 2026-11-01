@@ -1,0 +1,22 @@
+@layer components {
+  .gallery-find-frame {
+    position: relative;
+    margin-block-start: var(--space-2);
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-tile);
+  }
+  .gallery-find-scroller {
+    height: 16rem; /* tokens:allow a specimen's height */
+    position: relative;
+    padding: var(--space-16) var(--space-3) var(--space-3);
+    overflow-y: auto;
+    scroll-padding-block-start: var(--space-16);
+    font-family: var(--font-mono);
+    font-size: var(--type-mono-size);
+    line-height: var(--type-mono-line);
+  }
+  .gallery-find-scroller [data-match] {
+    border-radius: var(--radius-line);
+    background-color: var(--accent-soft);
+  }
+}

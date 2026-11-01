@@ -37,6 +37,7 @@ const familyRoots: Record<string, string> = {
   "entity-settings": "entity-settings-dialog",
   field: "field",
   "file-drop": "file-drop",
+  "find-bar": "find-bar",
   form: "form",
   "hostname-field": "hostname-field",
   input: "input",

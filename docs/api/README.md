@@ -148,6 +148,7 @@
 - [FileRow](file-row.md) — `glass-ux/file-drop`
 - [FileRowItem](file-row-item.md) — `glass-ux/ai`
 - [FilterEditor](filter-editor.md) — `glass-ux/data-table`
+- [FindBar](find-bar.md) — `glass-ux/find-bar`
 - [Form](form.md) — `glass-ux/form`
 - [FormActions](form-actions.md) — `glass-ux/form`
 - [FormAsk](form-ask.md) — `glass-ux/ai`

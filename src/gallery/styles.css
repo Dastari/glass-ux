@@ -10,6 +10,7 @@
 @import "./sections/data-table-filters.css";
 @import "./sections/data-table.css";
 @import "./sections/entity.css";
+@import "./sections/find-bar.css";
 @import "./sections/inputs.css";
 @import "./sections/map.css";
 @import "./sections/on-screen-keyboard.css";

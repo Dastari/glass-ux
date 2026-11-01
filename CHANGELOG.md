@@ -13,6 +13,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
   list with an optional detail pane; rows from the host are shown as given, and results that
   arrive late do not move a row under the pointer (R9). Composer's slash and mention menus are
   built on it, with no change in behaviour.
+- FindBar (`glass-ux/find-bar`): a find control that holds no search logic. The host supplies the
+  count, the current match and whether the count is still climbing; options come through a slot,
+  with an optional replace row, a reserved count, polite announcements and focus returned on Esc.
 - RichTextInput: opt-in `mentions` and `slashCommands`, on Typeahead. Picks stay Markdown.
 - Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
   (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,

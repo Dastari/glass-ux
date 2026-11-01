@@ -61,6 +61,8 @@ import { sections } from "glass-ux/gallery/registry";
 import { componentFamilies } from "glass-ux/gallery/component-families";
 import { libraryGuides } from "glass-ux/gallery/library-guides";
 import { configureDemoBrand } from "glass-ux/gallery/fixtures/brand";
+import { DocsKitProvider } from "glass-ux/gallery/site";
+import { site } from "glass-ux/gallery/site.generated";
 import "./styles.css";
 
 const Showcase = lazy(() =>
@@ -547,7 +549,9 @@ function Layout() {
               storageKey="glass-ux-docs.sidebar"
               className="gallery-shell docs-layout"
             >
-              <DocsFrame />
+              <DocsKitProvider site={site}>
+                <DocsFrame />
+              </DocsKitProvider>
             </SidebarProvider>
           </PaletteProvider>
         </ActionProvider>

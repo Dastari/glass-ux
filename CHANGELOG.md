@@ -8,6 +8,12 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `glass-ux-docs-kit`, a second archive on each release for packages built on `glass-ux`: the
+  `glass-ux-docs` bin (`api`, `site`, `check`, `init`), `defineDocsKit`, the catalogue page shell
+  and specimens in `glass-ux-docs-kit/react`, their styles, and a site frame copied once by
+  `init`. Entries and the package name come from `package.json` `exports`. It installs from the
+  release archive in the same version, with a peer on the same minor. The `glass-ux` archive does
+  not carry it.
 - `glass-ux/image-cropper`: `ImageCropper` (locked aspect or free, host presets), `ImageCropDialog`
   (pick, check, crop, save with `{ signal, setProgress }`), `ImageField`/`ImageInput` with
   `imageSchema` and an optional `onEdit`, and `cropToBlob`. `field.ImageField` is registered in

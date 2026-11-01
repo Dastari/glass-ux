@@ -1,3 +1,15 @@
+/** Optional peers a page may reach. Listing one that is not installed would warn at every start. */
+const OPTIONAL_PEERS = ["@hookform/resolvers/zod", "react-hook-form"];
+
+const installed = (id: string) => {
+  try {
+    import.meta.resolve(id);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 /** Keep asset and lazy-gallery imports available to Vite's transforms. */
 export function glassUx() {
   return {
@@ -8,8 +20,12 @@ export function glassUx() {
         optimizeDeps: {
           exclude: ["glass-ux"],
           // These ESM dependencies use CommonJS shims internally. Vite's optimizer
-          // must still process them when their parent package is excluded.
+          // must still process them when their parent package is excluded. The list is
+          // complete: a dependency Vite first meets on a lazy route makes it optimise
+          // again and reload the page, aborting the navigation, and modules loaded
+          // across that change can reach a second copy of React (src/vite.test.ts).
           include: [
+            ...OPTIONAL_PEERS.filter(installed).map((id) => `glass-ux > ${id}`),
             "glass-ux > @base-ui/react/accordion",
             "glass-ux > @base-ui/react/alert-dialog",
             "glass-ux > @base-ui/react/autocomplete",
@@ -21,11 +37,13 @@ export function glassUx() {
             "glass-ux > @base-ui/react/combobox",
             "glass-ux > @base-ui/react/context-menu",
             "glass-ux > @base-ui/react/dialog",
+            "glass-ux > @base-ui/react/direction-provider",
             "glass-ux > @base-ui/react/drawer",
             "glass-ux > @base-ui/react/field",
             "glass-ux > @base-ui/react/fieldset",
             "glass-ux > @base-ui/react/input",
             "glass-ux > @base-ui/react/menu",
+            "glass-ux > @base-ui/react/menubar",
             "glass-ux > @base-ui/react/merge-props",
             "glass-ux > @base-ui/react/meter",
             "glass-ux > @base-ui/react/number-field",
@@ -44,8 +62,25 @@ export function glassUx() {
             "glass-ux > @base-ui/react/toast",
             "glass-ux > @base-ui/react/toggle",
             "glass-ux > @base-ui/react/toggle-group",
+            "glass-ux > @base-ui/react/toolbar",
             "glass-ux > @base-ui/react/tooltip",
             "glass-ux > @base-ui/react/use-render",
+            "glass-ux > @lexical/code",
+            "glass-ux > @lexical/link",
+            "glass-ux > @lexical/list",
+            "glass-ux > @lexical/markdown",
+            "glass-ux > @lexical/react/LexicalCheckListPlugin",
+            "glass-ux > @lexical/react/LexicalComposer",
+            "glass-ux > @lexical/react/LexicalComposerContext",
+            "glass-ux > @lexical/react/LexicalContentEditable",
+            "glass-ux > @lexical/react/LexicalErrorBoundary",
+            "glass-ux > @lexical/react/LexicalHistoryPlugin",
+            "glass-ux > @lexical/react/LexicalLinkPlugin",
+            "glass-ux > @lexical/react/LexicalListPlugin",
+            "glass-ux > @lexical/react/LexicalMarkdownShortcutPlugin",
+            "glass-ux > @lexical/react/LexicalRichTextPlugin",
+            "glass-ux > @lexical/rich-text",
+            "glass-ux > @lexical/selection",
             "glass-ux > @tanstack/react-form",
             "glass-ux > @tanstack/react-router",
             "glass-ux > @tanstack/react-table",
@@ -56,10 +91,12 @@ export function glassUx() {
             "glass-ux > d3-hierarchy",
             "glass-ux > d3-scale",
             "glass-ux > d3-shape",
+            "glass-ux > lexical",
             "glass-ux > libphonenumber-js/max",
             "glass-ux > maplibre-gl",
             "glass-ux > react",
             "glass-ux > react-dom",
+            "glass-ux > react/jsx-runtime",
             "glass-ux > react-markdown",
             "glass-ux > rehype-sanitize",
             "glass-ux > remark-gfm",

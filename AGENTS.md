@@ -158,6 +158,25 @@ decides when to publish. The local route:
 - Next.js support is verified with webpack (`pnpm test:next`), not Turbopack; forced colours
   only with Chromium's emulation, not Windows High Contrast itself.
 
+- EmojiPicker draws in the system font, and this box has no emoji font: its glyphs have not been
+  seen here, only their sizes and rows.
+- PaneLayout moves panels with `moveBefore`, which Safari lacks: there `insertBefore` runs and
+  scroll and focus are restored in the same task, but an iframe reloads. Hosts parking relies on
+  React running a ref's cleanup while its slot is still in the document, so a React upgrade that
+  changes that order breaks it.
+- The keymap dispatcher listens on the main document only, so a popped-out window gets no keymap.
+- `src/ui/comment-thread/comment-row.tsx` lazily imports `src/ai/markdown`, the only import from
+  `ai` under `src/ui`. Moving it is not small: Markdown imports CodeBlock, EntityChip,
+  CitationMarker, TableScroll and `entities` from `ai`, so it needs those injected first.
+- Dark Glass: `--code-comment` in a CodeBlock bare on a canvas is 3.72:1 at worst (Ruby on Hills)
+  and about 4:1 on Network, Harbour and Facets. Line numbers are fine (5.59:1), and
+  `e2e/code-tokens.spec.ts` holds only those in dark.
+- `Base UI: CSS transitions and CSS animations both detected on Collapsible or Accordion panel`
+  in dev, on pages with a Sidebar group or Accordion. Not yet traced to its rule.
+- One Playwright page on the dev server stops loading after about 49,000 module requests (near
+  33 loads of a catalogue page): a WebSocket fails, Vite reloads, and the page stays blank. Open
+  a new page or change the appearance in place rather than navigating dozens of times in a test.
+
 - From the 0.12.0 audit:
   - Draggable rendered as an `li` keeps `role="button"` (axe `aria-allowed-role`/`list` on the
     drag-drop demos); fixing it changes consumers' role queries.

@@ -2,7 +2,7 @@
 import { act, cleanup, render } from "@testing-library/react"
 import { useRef } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { fitForm, nextFitForm, useFitForm, type FitWidths } from "./fit-form.js"
+import { fitForm, nextFitForm, overflowsOwnBox, useFitForm, type FitWidths } from "./fit-form.js"
 
 const FORMS = ["full", "icons", "menu"] as const
 type Form = (typeof FORMS)[number]
@@ -164,5 +164,33 @@ describe("useFitForm", () => {
     parentWidth = 100
     render(<Probe enabled={false} />)
     expect(shown()).toBe("full")
+  })
+})
+
+function row(direction: "ltr" | "rtl", item: { offsetLeft: number; offsetWidth: number }) {
+  const root = document.createElement("div")
+  root.style.direction = direction
+  root.style.paddingLeft = "4px"
+  root.style.paddingRight = "4px"
+  Object.defineProperty(root, "clientWidth", { value: 100 })
+  const last = document.createElement("div")
+  Object.defineProperty(last, "offsetLeft", { value: item.offsetLeft })
+  Object.defineProperty(last, "offsetWidth", { value: item.offsetWidth })
+  return [root, last] as const
+}
+
+describe("overflowsOwnBox", () => {
+  it("reads the right edge left to right", () => {
+    expect(overflowsOwnBox(...row("ltr", { offsetLeft: 60, offsetWidth: 36 }))).toBe(false)
+    expect(overflowsOwnBox(...row("ltr", { offsetLeft: 80, offsetWidth: 36 }))).toBe(true)
+  })
+
+  it("reads the left edge right to left, where the row spills", () => {
+    expect(overflowsOwnBox(...row("rtl", { offsetLeft: 4, offsetWidth: 36 }))).toBe(false)
+    expect(overflowsOwnBox(...row("rtl", { offsetLeft: -16, offsetWidth: 36 }))).toBe(true)
+  })
+
+  it("has nothing to measure without a last item", () => {
+    expect(overflowsOwnBox(document.createElement("div"), null)).toBe(false)
   })
 })

@@ -1922,6 +1922,23 @@ export default defineMessagePack("ko", {
   compareSlider: {
     label: "비교 위치",
   },
+  gradientPicker: {
+    picker: "그라디언트 선택기",
+    preview: "그라디언트 미리 보기",
+    kind: "그라디언트 유형",
+    linear: "선형",
+    radial: "방사형",
+    angular: "원뿔형",
+    angle: "각도",
+    stops: "색상 정지점",
+    stop: (number) => `정지점 ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "위치",
+    addStop: "정지점 추가",
+    removeStop: "정지점 제거",
+    mostStops: (count) => `그라디언트에는 정지점을 최대 ${count}개까지 넣을 수 있습니다`,
+    fewestStops: "그라디언트에는 정지점이 두 개 필요합니다",
+  },
   lightbox: {
     previous: "이전 이미지",
     next: "다음 이미지",

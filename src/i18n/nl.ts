@@ -1922,6 +1922,23 @@ export default defineMessagePack("nl", {
   compareSlider: {
     label: "Vergelijkingspositie",
   },
+  gradientPicker: {
+    picker: "Verloopkiezer",
+    preview: "Voorbeeld van verloop",
+    kind: "Type verloop",
+    linear: "Lineair",
+    radial: "Radiaal",
+    angular: "Hoekig",
+    angle: "Hoek",
+    stops: "Kleurstops",
+    stop: (number) => `Stop ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "Positie",
+    addStop: "Stop toevoegen",
+    removeStop: "Stop verwijderen",
+    mostStops: (count) => `Een verloop heeft maximaal ${count} stops`,
+    fewestStops: "Een verloop heeft twee stops nodig",
+  },
   lightbox: {
     previous: "Vorige afbeelding",
     next: "Volgende afbeelding",

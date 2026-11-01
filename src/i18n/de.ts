@@ -1922,6 +1922,23 @@ export default defineMessagePack("de", {
   compareSlider: {
     label: "Vergleichsposition",
   },
+  gradientPicker: {
+    picker: "Farbverlaufswähler",
+    preview: "Vorschau des Farbverlaufs",
+    kind: "Verlaufstyp",
+    linear: "Linear",
+    radial: "Radial",
+    angular: "Konisch",
+    angle: "Winkel",
+    stops: "Farbstopps",
+    stop: (number) => `Stopp ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "Position",
+    addStop: "Stopp hinzufügen",
+    removeStop: "Stopp entfernen",
+    mostStops: (count) => `Ein Farbverlauf kann bis zu ${count} Stopps enthalten`,
+    fewestStops: "Ein Farbverlauf braucht zwei Stopps",
+  },
   lightbox: {
     previous: "Vorheriges Bild",
     next: "Nächstes Bild",

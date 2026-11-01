@@ -1922,6 +1922,23 @@ export default defineMessagePack("ja", {
   compareSlider: {
     label: "比較の位置",
   },
+  gradientPicker: {
+    picker: "グラデーションピッカー",
+    preview: "グラデーションのプレビュー",
+    kind: "グラデーションの種類",
+    linear: "線形",
+    radial: "放射状",
+    angular: "円錐",
+    angle: "角度",
+    stops: "カラーストップ",
+    stop: (number) => `ストップ ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "位置",
+    addStop: "ストップを追加",
+    removeStop: "ストップを削除",
+    mostStops: (count) => `グラデーションのストップは最大 ${count} 個です`,
+    fewestStops: "グラデーションには 2 つのストップが必要です",
+  },
   lightbox: {
     previous: "前の画像",
     next: "次の画像",

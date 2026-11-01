@@ -1922,6 +1922,23 @@ export default defineMessagePack("pt-BR", {
   compareSlider: {
     label: "Posição da comparação",
   },
+  gradientPicker: {
+    picker: "Seletor de gradiente",
+    preview: "Prévia do gradiente",
+    kind: "Tipo de gradiente",
+    linear: "Linear",
+    radial: "Radial",
+    angular: "Angular",
+    angle: "Ângulo",
+    stops: "Paradas de cor",
+    stop: (number) => `Parada ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "Posição",
+    addStop: "Adicionar parada",
+    removeStop: "Remover parada",
+    mostStops: (count) => `Um gradiente aceita até ${count} paradas`,
+    fewestStops: "Um gradiente precisa de duas paradas",
+  },
   lightbox: {
     previous: "Imagem anterior",
     next: "Próxima imagem",

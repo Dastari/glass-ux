@@ -1,0 +1,104 @@
+/*
+ * GradientPicker: the preview, the type and angle, the rail of stops, and ColorPicker for the chosen
+ * stop. A drag writes --_gradient, --_rail and each stop's --_position, and nothing renders until
+ * release (R18.5). The preview and rail paint the CSS `gradientToCss` writes, in sRGB, so what shows
+ * is what the value will show anywhere. The rail is the gradient's axis: physical, like the colour
+ * picker's axes.
+ */
+@layer components {
+  .fa-gradient-picker {
+    --_thumb: calc(var(--check-size) + var(--space-1));
+    --_check: color-mix(in oklab, var(--fg-subtle) 22%, transparent);
+    --_checks: conic-gradient(var(--_check) 25%, transparent 0 50%, var(--_check) 0 75%, transparent 0) 0 0 / var(--space-2) var(--space-2);
+    display: grid;
+    gap: var(--space-3);
+    width: 100%;
+    min-width: 0;
+  }
+  .fa-gradient-picker[data-disabled] {
+    opacity: var(--disabled-opacity);
+  }
+  .fa-gradient-preview {
+    aspect-ratio: 8 / 3;
+    border-radius: var(--radius-tile);
+    background-image: var(--_gradient);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+  }
+  .fa-gradient-picker[data-alpha] > .fa-gradient-preview {
+    background: var(--_gradient), var(--_checks);
+  }
+  .fa-gradient-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-gradient-row[data-align="end"] {
+    align-items: flex-end;
+  }
+  .fa-gradient-row > .fa-field {
+    flex: none;
+    max-width: 100%;
+  }
+  .fa-gradient-rail {
+    position: relative;
+    block-size: var(--_thumb);
+    margin-inline: calc(var(--_thumb) / 2);
+    border-radius: var(--radius-full);
+    background-image: var(--_rail);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    touch-action: none;
+    cursor: copy;
+    direction: ltr;
+  }
+  .fa-gradient-picker[data-alpha] > .fa-gradient-rail {
+    background: var(--_rail), var(--_checks);
+  }
+  .fa-gradient-picker[data-disabled] > .fa-gradient-rail {
+    cursor: not-allowed;
+  }
+  .fa-gradient-stop {
+    position: absolute;
+    top: 50%;
+    left: var(--_position); /* logical:allow a gradient's axis runs left to right in every language */
+    width: var(--_thumb);
+    height: var(--_thumb);
+    border: calc(var(--border-width) * 2.5) solid oklch(1 0 0);
+    border-radius: var(--radius-full);
+    background-color: var(--_stop);
+    box-shadow: 0 0 0 var(--border-width) var(--line-strong);
+    translate: -50% -50%;
+    touch-action: none;
+    cursor: grab;
+  }
+  /* The hit area reaches --target-aa, and --target-min for a finger (R20.4). */
+  .fa-gradient-stop::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%; /* logical:allow a gradient's axis runs left to right in every language */
+    width: max(100%, var(--target-aa));
+    height: max(100%, var(--target-aa));
+    translate: -50% -50%;
+  }
+  @media (pointer: coarse) {
+    .fa-gradient-stop::after {
+      width: var(--target-min);
+      height: var(--target-min);
+    }
+  }
+  .fa-gradient-stop:active {
+    cursor: grabbing;
+  }
+  .fa-gradient-stop[data-selected] {
+    box-shadow: 0 0 0 calc(var(--border-width) * 2) var(--accent-ring);
+  }
+  .fa-gradient-stop:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-gradient-picker[data-disabled] .fa-gradient-stop {
+    cursor: not-allowed;
+  }
+}

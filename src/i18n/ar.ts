@@ -1923,6 +1923,23 @@ export default defineMessagePack("ar", {
   compareSlider: {
     label: "موضع المقارنة",
   },
+  gradientPicker: {
+    picker: "منتقي التدرج",
+    preview: "معاينة التدرج",
+    kind: "نوع التدرج",
+    linear: "خطي",
+    radial: "شعاعي",
+    angular: "زاوي",
+    angle: "الزاوية",
+    stops: "نقاط الألوان",
+    stop: (number) => `النقطة ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "الموضع",
+    addStop: "إضافة نقطة",
+    removeStop: "إزالة النقطة",
+    mostStops: (count) => `يتسع التدرج لما يصل إلى ${count} نقاط`,
+    fewestStops: "يحتاج التدرج إلى نقطتين",
+  },
   lightbox: {
     previous: "الصورة السابقة",
     next: "الصورة التالية",

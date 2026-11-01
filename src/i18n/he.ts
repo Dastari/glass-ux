@@ -1922,6 +1922,23 @@ export default defineMessagePack("he", {
   compareSlider: {
     label: "מיקום ההשוואה",
   },
+  gradientPicker: {
+    picker: "בורר מעברי צבע",
+    preview: "תצוגה מקדימה של מעבר הצבע",
+    kind: "סוג מעבר הצבע",
+    linear: "קווי",
+    radial: "מעגלי",
+    angular: "זוויתי",
+    angle: "זווית",
+    stops: "נקודות צבע",
+    stop: (number) => `נקודה ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "מיקום",
+    addStop: "הוסף נקודה",
+    removeStop: "הסר נקודה",
+    mostStops: (count) => `מעבר צבע מכיל עד ${count} נקודות`,
+    fewestStops: "מעבר צבע צריך שתי נקודות",
+  },
   lightbox: {
     previous: "תמונה קודמת",
     next: "התמונה הבאה",

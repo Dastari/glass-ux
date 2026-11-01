@@ -1922,6 +1922,23 @@ export default defineMessagePack("zh-Hans", {
   compareSlider: {
     label: "对比位置",
   },
+  gradientPicker: {
+    picker: "渐变选择器",
+    preview: "渐变预览",
+    kind: "渐变类型",
+    linear: "线性",
+    radial: "径向",
+    angular: "角度渐变",
+    angle: "角度",
+    stops: "色标",
+    stop: (number) => `色标 ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "位置",
+    addStop: "添加色标",
+    removeStop: "移除色标",
+    mostStops: (count) => `渐变最多包含 ${count} 个色标`,
+    fewestStops: "渐变至少需要两个色标",
+  },
   lightbox: {
     previous: "上一张图片",
     next: "下一张图片",

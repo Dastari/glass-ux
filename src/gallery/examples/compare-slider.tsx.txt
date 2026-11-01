@@ -1,0 +1,106 @@
+import { useState } from "react";
+import { CompareSlider } from "glass-ux/compare-slider";
+import { SCENE_IMAGES } from "glass-ux/gallery/fixtures/scenes";
+import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+const picture = (src: string, alt: string) => (
+  <img
+    src={src}
+    alt={alt}
+    width={1600}
+    height={1200}
+    draggable={false}
+    className="block h-auto w-full select-none"
+  />
+);
+const Dusk = picture(SCENE_IMAGES.dusk, "Fictional hills at dusk");
+const Day = picture(SCENE_IMAGES.harbour, "Fictional hills by day");
+
+function Controlled() {
+  const [value, setValue] = useState(30);
+  return (
+    <div className="flex flex-col gap-2" data-testid="compare-images">
+      <CompareSlider
+        before={Dusk}
+        after={Day}
+        beforeLabel="Dusk"
+        afterLabel="Day"
+        value={value}
+        onValueChange={setValue}
+      />
+      <output
+        className="type-caption text-fg-muted"
+        data-numeric
+        data-testid="compare-value"
+      >{`${value}%`}</output>
+    </div>
+  );
+}
+
+const copy = (text: string, version: string) => (
+  <div className="bg-surface-1 grid gap-2 p-4">
+    <p className="type-caption text-fg-muted">{version}</p>
+    <p>{text}</p>
+  </div>
+);
+
+export default function CompareSliderSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Two images"
+        description="Drag the divider, press anywhere to move it there, or focus it and use the arrow keys. The value is a percentage, committed when the drag ends."
+      >
+        <Controlled />
+      </Specimen>
+
+      <Specimen
+        title="Any content"
+        description="The two sides can be anything of the same size. A control inside them keeps working."
+      >
+        <CompareSlider
+          before={copy("Backups run at 02:00 and are kept for 30 days.", "Version 3")}
+          after={copy("Backups run every six hours and are kept for 90 days.", "Version 4")}
+          defaultValue={55}
+        />
+      </Specimen>
+
+      <Specimen title="Vertical">
+        <div data-testid="compare-vertical">
+          <CompareSlider
+            orientation="vertical"
+            before={Dusk}
+            after={Day}
+            beforeLabel="Dusk"
+            afterLabel="Day"
+          />
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="Right to left"
+        description="The before side follows the reading start, so it sits on the right. The pictures themselves do not mirror, and the arrow keys still move the divider the way they point."
+      >
+        <div dir="rtl" data-testid="compare-rtl">
+          <CompareSlider
+            before={Dusk}
+            after={Day}
+            beforeLabel="Dusk"
+            afterLabel="Day"
+            defaultValue={30}
+          />
+        </div>
+      </Specimen>
+
+      <Specimen title="Disabled">
+        <CompareSlider before={Dusk} after={Day} defaultValue={40} disabled />
+      </Specimen>
+
+      <ContainerLab>
+        <div className="h-full overflow-auto p-1">
+          <CompareSlider before={Dusk} after={Day} />
+        </div>
+      </ContainerLab>
+    </SectionPage>
+  );
+}

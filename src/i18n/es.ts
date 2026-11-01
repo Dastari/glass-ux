@@ -1922,6 +1922,23 @@ export default defineMessagePack("es", {
   compareSlider: {
     label: "Posición de la comparación",
   },
+  gradientPicker: {
+    picker: "Selector de degradado",
+    preview: "Vista previa del degradado",
+    kind: "Tipo de degradado",
+    linear: "Lineal",
+    radial: "Radial",
+    angular: "Angular",
+    angle: "Ángulo",
+    stops: "Paradas de color",
+    stop: (number) => `Parada ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "Posición",
+    addStop: "Añadir parada",
+    removeStop: "Quitar parada",
+    mostStops: (count) => `Un degradado admite hasta ${count} paradas`,
+    fewestStops: "Un degradado necesita dos paradas",
+  },
   lightbox: {
     previous: "Imagen anterior",
     next: "Imagen siguiente",

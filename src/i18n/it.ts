@@ -1922,6 +1922,23 @@ export default defineMessagePack("it", {
   compareSlider: {
     label: "Posizione del confronto",
   },
+  gradientPicker: {
+    picker: "Selettore di sfumatura",
+    preview: "Anteprima della sfumatura",
+    kind: "Tipo di sfumatura",
+    linear: "Lineare",
+    radial: "Radiale",
+    angular: "Angolare",
+    angle: "Angolo",
+    stops: "Punti colore",
+    stop: (number) => `Punto ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "Posizione",
+    addStop: "Aggiungi punto",
+    removeStop: "Rimuovi punto",
+    mostStops: (count) => `Una sfumatura può avere fino a ${count} punti`,
+    fewestStops: "Una sfumatura richiede due punti",
+  },
   lightbox: {
     previous: "Immagine precedente",
     next: "Immagine successiva",

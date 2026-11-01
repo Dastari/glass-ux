@@ -1922,6 +1922,23 @@ export default defineMessagePack("fr", {
   compareSlider: {
     label: "Position de la comparaison",
   },
+  gradientPicker: {
+    picker: "Sélecteur de dégradé",
+    preview: "Aperçu du dégradé",
+    kind: "Type de dégradé",
+    linear: "Linéaire",
+    radial: "Radial",
+    angular: "Angulaire",
+    angle: "Angle",
+    stops: "Arrêts de couleur",
+    stop: (number) => `Arrêt ${number}`,
+    stopValue: (position, color) => `${position}, ${color}`,
+    position: "Position",
+    addStop: "Ajouter un arrêt",
+    removeStop: "Supprimer l’arrêt",
+    mostStops: (count) => `Un dégradé compte au plus ${count} arrêts`,
+    fewestStops: "Un dégradé nécessite deux arrêts",
+  },
   lightbox: {
     previous: "Image précédente",
     next: "Image suivante",

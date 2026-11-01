@@ -100,7 +100,7 @@ function ShortcutRow({ command, rebind, recording, onRecording }: { command: Sho
   const messages = useMessages(keymapMessages)
   const keymap = useKeymap()
   const characterKeys = useCharacterShortcuts()
-  const keys = keymap.keysFor(command.id).filter((value) => characterKeys || !isCharacterShortcut(value))
+  const keys = keymap.keysFor(command.id).filter((value) => characterKeys || command.scope !== undefined || !isCharacterShortcut(value))
   return (
     <li className="fa-keymap-row" data-command={command.id}>
       <span className="fa-keymap-label">
@@ -142,7 +142,7 @@ function Recorder({ command, recording, onRecording }: { command: ShortcutComman
     return found.find((item) => item.kind === "reserved") ?? found.find((item) => item.kind === "same") ?? found.find((item) => item.kind === "prefix") ?? null
   }, [value, keymap, command, platform])
   const otherLabel = (ids: readonly string[]) => keymap.commands.find((other) => other.id !== command.id && ids.includes(other.id))?.label ?? ""
-  const off = value !== "" && !characterKeys && isCharacterShortcut(value)
+  const off = value !== "" && !characterKeys && command.scope === undefined && isCharacterShortcut(value)
   const note = off ? messages.characterKeysOff : conflict?.kind === "reserved" ? messages.browserKeeps : conflict?.kind === "same" ? messages.alsoAssigned(otherLabel(conflict.commands)) : conflict?.kind === "prefix" ? messages.startsTheSame(otherLabel(conflict.commands)) : null
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.nativeEvent.isComposing) return

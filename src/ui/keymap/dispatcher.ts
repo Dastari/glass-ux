@@ -3,6 +3,7 @@
  * chords, conflict detection. Plain data and one document listener, with no React here, so
  * menus can read a command's keys without loading the provider or its dialog.
  */
+import type { RefObject } from "react"
 import { isTextEntryTarget, isRichTextTarget } from "../../lib/text-entry.js"
 import { canonicalShortcut, canonicalStep, detectPlatform, shortcutAllowed, shortcutFromEvent, shortcutSteps, type Platform } from "../kbd/shortcut.js"
 
@@ -33,14 +34,38 @@ export interface ShortcutCommand {
    * applies at the moment.
    */
   context?: string
+  /**
+   * Run only while focus is inside this element (tool keys in an editor). Inside it, a scoped
+   * command wins over a page-wide one with the same keys. Scoped keys are active only while
+   * that element has focus, so single-character ones stay on under `configureShortcuts`
+   * (WCAG 2.1.4). Set `context` too, so they are not reported against page-wide keys.
+   */
+  scope?: RefObject<HTMLElement | null>
   /** Checked on each press. False: the command does not take the key. */
   when?: () => boolean
   /** Why it cannot run now. The key is not taken, and help shows the reason. */
   disabledReason?: string | null
   /** False keeps it out of rebinding. Default true. */
   rebindable?: boolean
-  /** Runs the command. `event` is the key press that finished the shortcut. */
-  run: (event: KeyboardEvent) => void
+  /**
+   * Runs the command. `event` is the key press that finished the shortcut. Leave it out to
+   * declare a binding that something else handles (an editor's own key handling, a command
+   * mounted later): it is listed in help, can be rebound and is looked up like any other,
+   * and the dispatcher never takes its keys.
+   */
+  run?: (event: KeyboardEvent) => void
+}
+
+/** A command's keys as they stand, from `useCommandBinding`. */
+export interface CommandBinding {
+  /** Every shortcut in effect; each may be a chord. Empty when unbound. */
+  keys: readonly string[]
+  /** The first of them: what a menu row shows. */
+  primary: string | undefined
+  /** The person changed it. */
+  rebound: boolean
+  /** It works only in part of the page: show it read-only, and do not expect it to run from here. */
+  scoped: boolean
 }
 
 /**
@@ -223,6 +248,18 @@ export class ShortcutDispatcher {
     return []
   }
 
+  /**
+   * A command's binding for display. The keymap applies whether or not the command is
+   * mounted, so a menu shows a rebinding of something that is not on screen. Reads only:
+   * looking a binding up never registers anything.
+   */
+  bindingFor(id: string, fallback: readonly string[] = []): CommandBinding {
+    const override = this.keymap[id]
+    const command = this.commands().find((candidate) => candidate.id === id)
+    const keys = override ?? (command ? defaultKeys(command) : fallback)
+    return { keys, primary: keys[0], rebound: override !== undefined, scoped: command?.scope !== undefined || (command !== undefined && command.run === undefined) }
+  }
+
   /** Collisions among the keys in effect. */
   conflicts(): ShortcutConflict[] {
     return findConflicts(
@@ -254,10 +291,21 @@ export class ShortcutDispatcher {
 
   private usable(entry: Entry) {
     const { command } = entry
-    return !command.disabledReason && shortcutAllowed(entry.keys) && command.when?.() !== false
+    return command.run !== undefined && !command.disabledReason && (command.scope !== undefined || shortcutAllowed(entry.keys)) && command.when?.() !== false
+  }
+
+  private inScope(entry: Entry, target: EventTarget | null) {
+    const { scope } = entry.command
+    return !scope || (target instanceof Node && scope.current?.contains(target) === true)
+  }
+
+  /** A scoped binding wins inside its element; among equals, the last registered. */
+  private pick(entries: readonly Entry[] | undefined, fits: (entry: Entry) => boolean) {
+    return entries?.findLast((entry) => entry.command.scope !== undefined && fits(entry)) ?? entries?.findLast(fits)
   }
 
   private allowedAt(entry: Entry, target: EventTarget | null) {
+    if (!this.inScope(entry, target)) return false
     const level = entry.command.textEntry ?? "none"
     if (!isTextEntryTarget(target)) return true
     if (level === "none") return false
@@ -298,9 +346,9 @@ export class ShortcutDispatcher {
     if (!this.index) this.build()
     const fits = (entry: Entry) => this.usable(entry) && this.allowedAt(entry, event.target)
     for (const press of this.pressed(event)) {
-      const chord = this.prefixes?.get(press)?.findLast(fits)
+      const chord = this.pick(this.prefixes?.get(press), fits)
       if (chord) return { press, chord }
-      const entry = this.index?.get(press)?.findLast(fits)
+      const entry = this.pick(this.index?.get(press), fits)
       if (entry) return { press, entry }
     }
     return null
@@ -318,7 +366,7 @@ export class ShortcutDispatcher {
     if (!found) return
     event.preventDefault()
     if (found.chord) this.startPending([found.press], found.chord.keys)
-    else found.entry?.command.run(event)
+    else found.entry?.command.run?.(event)
   }
 
   /** The next steps of a chord. Any key that does not continue it ends it and goes no further. */
@@ -331,15 +379,16 @@ export class ShortcutDispatcher {
     if (event.repeat) return
     if (event.key === "Escape") return this.clearPending()
     if (!this.index) this.build()
+    const fits = (entry: Entry) => this.usable(entry) && this.inScope(entry, event.target)
     for (const press of presses) {
       const steps = [...this.pendingSteps, press]
       const whole = steps.join(" ")
-      const chord = this.prefixes?.get(whole)?.findLast((entry) => this.usable(entry))
+      const chord = this.pick(this.prefixes?.get(whole), fits)
       if (chord) return this.startPending(steps, chord.keys)
-      const entry = this.index?.get(whole)?.findLast((candidate) => this.usable(candidate))
+      const entry = this.pick(this.index?.get(whole), fits)
       if (entry) {
         this.clearPending()
-        entry.command.run(event)
+        entry.command.run?.(event)
         return
       }
     }

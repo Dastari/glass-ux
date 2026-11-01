@@ -1,9 +1,10 @@
 import "./messages.js"
-export { useCommandKeys } from "./context.js"
+export { useBindingLookup, useCommandBinding, useCommandKeys } from "./context.js"
 export {
   defaultKeys,
   findConflicts,
   normaliseKeymap,
+  type CommandBinding,
   type Keymap,
   type ShortcutCommand,
   type ShortcutConflict,

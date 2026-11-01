@@ -42,6 +42,10 @@ export interface KeymapProviderProps {
  * Mount it once near the root. A widget that handles a key first keeps it, so rich text keeps
  * its keys, and the palette leaves alone any key the keymap holds; single-character shortcuts
  * obey `configureShortcuts`. `useHotkeys` is separate and unchanged.
+ *
+ * Showing a shortcut is separate from registering one: `Kbd`, `Button shortcut`, tooltips, menu
+ * rows and `useCommandBinding` only read. This one listener runs what is registered, and a
+ * command can be scoped to an element or declared with no `run`.
  */
 export function KeymapProvider({ children, keymap: keymapProp, defaultKeymap, onKeymapChange, chordTimeout = 3000, pendingDisplay = "float" }: KeymapProviderProps) {
   const platform = usePlatform()

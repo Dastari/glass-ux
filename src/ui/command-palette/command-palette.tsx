@@ -42,6 +42,8 @@ export interface PaletteCommand {
   shortcut?: string
   /** The command's id in a KeymapProvider. When registered there, the row shows its current keys and the provider runs them. */
   keymapId?: string
+  /** Show `shortcut` without listening for it: it works elsewhere, such as while an editor has focus. */
+  shortcutDisplayOnly?: boolean
   tone?: "default" | "danger"
   /** Shown instead of the detail; the command cannot run. */
   disabledReason?: string | null
@@ -185,7 +187,7 @@ function PaletteHost({ children, groupOrder }: Required<PaletteProviderProps>) {
       // Registered commands' own shortcuts. Plain keys never fire while typing.
       const editable = isEditable(event.target)
       for (const command of store.getSnapshot()) {
-        if (!command.shortcut || command.disabledReason) continue
+        if (!command.shortcut || command.disabledReason || command.shortcutDisplayOnly) continue
         // One event cannot be a chord, and the keymap runs what it holds.
         if (isChord(command.shortcut) || (command.keymapId && keymap?.has(command.keymapId))) continue
         if (editable && !/(mod|ctrl|alt|meta)\+/i.test(command.shortcut)) continue

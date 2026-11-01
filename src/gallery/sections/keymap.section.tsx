@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { Rules, SectionPage, Specimen } from "../kit.js"
 import { defineActions, ActionMenu, useActionShortcuts } from "../../ui/actions/index.js"
 import { Button } from "../../ui/button/index.js"
 import { Input } from "../../ui/input/index.js"
 import { Kbd } from "../../ui/kbd/index.js"
-import { KeymapProvider, ShortcutHelpDialog, ShortcutPending, useShortcutCommands, type Keymap, type ShortcutCommand } from "../../ui/keymap/index.js"
+import { KeymapProvider, ShortcutHelpDialog, ShortcutPending, useCommandBinding, useShortcutCommands, type Keymap, type ShortcutCommand } from "../../ui/keymap/index.js"
+import { Menu } from "../../ui/menu/index.js"
 import { StatusBar } from "../../ui/status-bar/index.js"
 
 interface Note {
@@ -39,6 +40,39 @@ function ActionKeys() {
   return <ActionMenu set={noteActions} targets={NOTE} label="Harbour survey" />
 }
 
+/** Tool keys that work only while the canvas has focus; the menu shows them read-only. */
+function ScopedTools({ onRun }: { onRun: (label: string) => void }) {
+  const canvas = useRef<HTMLDivElement>(null)
+  const commands = useMemo<ShortcutCommand[]>(
+    () => [
+      { id: "tool.brush", label: "Brush", group: "Canvas", context: "canvas", keys: "b", scope: canvas, run: () => onRun("Brush") },
+      { id: "tool.erase", label: "Eraser", group: "Canvas", context: "canvas", keys: "e", scope: canvas, run: () => onRun("Eraser") },
+    ],
+    [onRun]
+  )
+  useShortcutCommands(commands)
+  const brush = useCommandBinding("tool.brush")
+  const eraser = useCommandBinding("tool.erase")
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <div ref={canvas} tabIndex={0} role="application" aria-label="Canvas" className="grid h-16 w-56 max-w-full place-items-center rounded-md bg-fill-subtle" data-testid="keymap-canvas">
+        <span className="type-caption text-fg-muted">Focus here, then press B or E</span>
+      </div>
+      <Menu.Root>
+        <Menu.Trigger render={<Button variant="secondary">Tools</Button>} />
+        <Menu.Popup>
+          <Menu.Item shortcut={brush.primary} onClick={() => onRun("Brush")}>
+            Brush
+          </Menu.Item>
+          <Menu.Item shortcut={eraser.primary} onClick={() => onRun("Eraser")}>
+            Eraser
+          </Menu.Item>
+        </Menu.Popup>
+      </Menu.Root>
+    </div>
+  )
+}
+
 function KeymapDemo() {
   const [keymap, setKeymap] = useState<Keymap>({})
   const [help, setHelp] = useState(false)
@@ -53,6 +87,7 @@ function KeymapDemo() {
           <ActionKeys />
           <Input aria-label="Note title" placeholder="Note title" className="w-56 max-w-full" />
         </div>
+        <ScopedTools onRun={setLast} />
         <StatusBar aria-label="Keyboard status">
           <StatusBar.Start>
             <StatusBar.Item>Last command: {last}</StatusBar.Item>
@@ -79,7 +114,7 @@ function KeymapDemo() {
 export default function KeymapSection() {
   return (
     <SectionPage>
-      <Specimen title="Dispatcher, rebinding and help" description="Try Ctrl K, then S (⌘K, then S on a Mac): the chord in progress shows in the status bar and times out after three seconds. Save runs from the title field because its binding asks to. Press ? for the help dialog, where each shortcut can be changed. The keymap below is the JSON a host would store.">
+      <Specimen title="Dispatcher, rebinding and help" description="Try Ctrl K, then S (⌘K, then S on a Mac): the chord in progress shows in the status bar and times out after three seconds. Save runs from the title field because its binding asks to. Press ? for the help dialog, where each shortcut can be changed. Brush and Eraser are scoped: B and E work only while the canvas has focus, and the Tools menu shows them without taking them. The keymap below is the JSON a host would store.">
         <KeymapDemo />
       </Specimen>
 

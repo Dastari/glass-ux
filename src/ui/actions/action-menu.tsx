@@ -5,7 +5,7 @@ import { IconMoreHorizontal } from "../../icons/generated/icons.js"
 import { resolveActions, type ActionSet, type ActionSurface, type ResolvedAction, type ResolvedGroup } from "../../lib/actions/actions.js"
 import { Button, type ButtonSize } from "../button/index.js"
 import { isCharacterShortcut, useCharacterShortcuts } from "../kbd/index.js"
-import { useCommandKeys } from "../keymap/context.js"
+import { useCommandBinding } from "../keymap/context.js"
 import { Menu, MenuPreview } from "../menu/index.js"
 import { useActionRunner } from "./action-provider.js"
 
@@ -55,7 +55,7 @@ const shown = (shortcut: string | undefined, characterKeys: boolean) => (shortcu
 function ActionItem<T>({ action, targets, surface, onRun }: RowProps<T>) {
   const { start } = useActionRunner()
   const characterKeys = useCharacterShortcuts()
-  const keys = useCommandKeys(action.commandId, action.definition.shortcut)
+  const binding = useCommandBinding(action.commandId, action.definition.shortcut)
   if (action.children.length) {
     return (
       <Menu.Submenu
@@ -71,7 +71,7 @@ function ActionItem<T>({ action, targets, surface, onRun }: RowProps<T>) {
   return (
     <Menu.Item
       icon={actionIcon(action)}
-      shortcut={shown(keys, characterKeys)}
+      shortcut={binding.scoped || action.definition.shortcutScoped ? binding.primary : shown(binding.primary, characterKeys)}
       tone={toneOf(action)}
       disabledReason={action.disabledReason}
       onClick={() => afterClose(() => (onRun ? onRun(action, targets, surface) : void start(action, targets, surface)))}

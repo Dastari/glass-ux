@@ -57,6 +57,12 @@ export interface ActionDefinition<T> {
   /** Where `useActionShortcuts` runs the shortcut while focus is in text entry. Default `none`. */
   shortcutTextEntry?: "none" | "inputs" | "all"
   /**
+   * The shortcut works only in part of the page (a tool key while an editor has focus).
+   * Menus and the palette show it and nothing runs it page-wide: the palette does not listen
+   * for it, and `useActionShortcuts` runs it only with a `scope`.
+   */
+  shortcutScoped?: boolean
+  /**
    * Header promotion: the lowest numbers become header buttons (ActionBar). Actions
    * without a priority only appear in menus.
    */

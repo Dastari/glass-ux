@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react"
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { defineActions, ActionProvider, useActionShortcuts } from "../actions/index.js"
 import { Kbd, configureShortcuts, canonicalShortcut, formatShortcut, isChord, shortcutFromEvent, shortcutSteps } from "../kbd/index.js"
-import { findConflicts, KeymapProvider, normaliseKeymap, ShortcutHelpDialog, useKeymap, useShortcutCommands, type Keymap, type ShortcutCommand } from "./index.js"
+import { Button } from "../button/index.js"
+import { findConflicts, KeymapProvider, normaliseKeymap, ShortcutHelpDialog, useBindingLookup, useCommandBinding, useKeymap, useShortcutCommands, type Keymap, type ShortcutCommand } from "./index.js"
 
 beforeEach(() => {
   vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener: () => undefined, removeEventListener: () => undefined }))
@@ -229,6 +230,145 @@ describe("dispatcher", () => {
   })
 })
 
+describe("showing is separate from registering", () => {
+  const keydownListeners = () => {
+    const spies = [vi.spyOn(document, "addEventListener"), vi.spyOn(window, "addEventListener")]
+    return () => spies.flatMap((spy) => spy.mock.calls.filter(([type]) => type === "keydown"))
+  }
+
+  it("Kbd, Button shortcut and a binding lookup add no key listener", () => {
+    const listeners = keydownListeners()
+    function Shown() {
+      const binding = useCommandBinding("tool.brush", "b")
+      return <Kbd keys={binding.primary ?? ""} />
+    }
+    render(
+      <>
+        <Kbd keys="mod+k mod+s" />
+        <Kbd keys="mod+k mod+s" variant="text" />
+        <Button shortcut="mod+k">Open</Button>
+        <Shown />
+      </>
+    )
+    expect(listeners().map(([type, listener]) => `${type}: ${String(listener).slice(0, 80)}`)).toEqual([])
+  })
+
+  it("a displayed key does nothing; a chord shown by a menu is still display", () => {
+    const run = vi.fn()
+    function Shown() {
+      return <Kbd keys={useCommandBinding("tool.brush", "b").primary ?? ""} data-testid="kbd" />
+    }
+    render(
+      <KeymapProvider>
+        <Shown />
+      </KeymapProvider>
+    )
+    press("b")
+    expect(run).not.toHaveBeenCalled()
+    expect(screen.getByTestId("kbd")).toHaveTextContent("B")
+  })
+
+  it("looks up a rebinding, a chord and an unmounted command through the keymap", () => {
+    function Row({ id, fallback }: { id: string; fallback?: string }) {
+      const binding = useCommandBinding(id, fallback)
+      return (
+        <span data-testid={id}>
+          {binding.keys.join("|")}:{String(binding.rebound)}:{String(binding.scoped)}
+        </span>
+      )
+    }
+    function Lookup() {
+      const lookup = useBindingLookup()
+      return <span data-testid="lookup">{lookup("go", "mod+g").primary}</span>
+    }
+    render(
+      <KeymapProvider keymap={{ go: ["mod+k mod+g"], unmounted: ["alt+u"] }}>
+        <Commands commands={[{ id: "go", label: "Go", keys: "mod+g", run: () => undefined }, { id: "plain", label: "Plain", keys: "mod+p", run: () => undefined }]} />
+        <Row id="go" />
+        <Row id="plain" />
+        <Row id="unmounted" fallback="mod+u" />
+        <Row id="unknown" fallback="mod+y" />
+        <Lookup />
+      </KeymapProvider>
+    )
+    expect(screen.getByTestId("go")).toHaveTextContent("mod+k mod+g:true:false")
+    expect(screen.getByTestId("plain")).toHaveTextContent("mod+p:false:false")
+    expect(screen.getByTestId("unmounted")).toHaveTextContent("alt+u:true:false")
+    expect(screen.getByTestId("unknown")).toHaveTextContent("mod+y:false:false")
+    expect(screen.getByTestId("lookup")).toHaveTextContent("mod+k mod+g")
+  })
+})
+
+describe("scoped bindings", () => {
+  function Scoped({ onBrush, onPage, declared }: { onBrush: () => void; onPage?: () => void; declared?: () => void }) {
+    const canvas = useRef<HTMLDivElement>(null)
+    const commands = useMemo<ShortcutCommand[]>(
+      () => [
+        { id: "tool.brush", label: "Brush", keys: "b", context: "canvas", scope: canvas, run: onBrush },
+        ...(onPage ? [{ id: "page.b", label: "Page", keys: "b", context: "page", run: onPage }] : []),
+        ...(declared ? [{ id: "tool.text", label: "Text", keys: "t", context: "canvas" }] : []),
+      ],
+      [onBrush, onPage, declared]
+    )
+    useShortcutCommands(commands)
+    const binding = useCommandBinding("tool.brush")
+    return (
+      <>
+        <div ref={canvas} tabIndex={0} data-testid="canvas" />
+        <button>Elsewhere</button>
+        <span data-testid="shown">{`${binding.primary}:${binding.scoped}`}</span>
+      </>
+    )
+  }
+
+  it("runs only with focus inside, wins there, and reads as scoped", () => {
+    const brush = vi.fn()
+    const page = vi.fn()
+    render(
+      <KeymapProvider>
+        <Scoped onBrush={brush} onPage={page} />
+      </KeymapProvider>
+    )
+    press("b", {}, screen.getByRole("button", { name: "Elsewhere" }))
+    expect(brush).not.toHaveBeenCalled()
+    expect(page).toHaveBeenCalledTimes(1)
+    press("b", {}, screen.getByTestId("canvas"))
+    expect(brush).toHaveBeenCalledTimes(1)
+    expect(page).toHaveBeenCalledTimes(1)
+    expect(screen.getByTestId("shown")).toHaveTextContent("b:true")
+  })
+
+  it("stays on when character keys are off, as an element's own keys do", () => {
+    const brush = vi.fn()
+    render(
+      <KeymapProvider>
+        <Scoped onBrush={brush} />
+      </KeymapProvider>
+    )
+    configureShortcuts({ characterKeys: false })
+    press("b", {}, screen.getByTestId("canvas"))
+    expect(brush).toHaveBeenCalledTimes(1)
+  })
+
+  it("a keymap rebinds a scoped command, and a declared one never takes its key", () => {
+    const brush = vi.fn()
+    const outer = vi.fn((event: Event) => event.defaultPrevented)
+    render(
+      <KeymapProvider keymap={{ "tool.brush": ["alt+b"] }}>
+        <Scoped onBrush={brush} declared={() => undefined} />
+      </KeymapProvider>
+    )
+    press("b", {}, screen.getByTestId("canvas"))
+    expect(brush).not.toHaveBeenCalled()
+    press("b", { altKey: true }, screen.getByTestId("canvas"))
+    expect(brush).toHaveBeenCalledTimes(1)
+    document.addEventListener("keydown", outer)
+    press("t", {}, screen.getByTestId("canvas"))
+    document.removeEventListener("keydown", outer)
+    expect(outer.mock.results[0]?.value).toBe(false)
+  })
+})
+
 describe("actions", () => {
   it("registers an action's shortcut from its definition, with a stable id", () => {
     const run = vi.fn()
@@ -253,6 +393,28 @@ describe("actions", () => {
     expect(onKeymapChange).toHaveBeenCalledWith({ "site.restart": ["mod+j"] })
     press("j", { ctrlKey: true })
     expect(run).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe("a scoped action", () => {
+  it("is declared without a scope, and does not run page-wide", () => {
+    const run = vi.fn()
+    const set = defineActions<{ id: string }>("tool", [{ id: "brush", label: "Brush", group: "manage", shortcut: "b", shortcutScoped: true, run }])
+    function Host() {
+      const targets = useMemo(() => [{ id: "a" }], [])
+      useActionShortcuts(set, targets, "Tools")
+      return <span data-testid="binding">{useCommandBinding("tool.brush").scoped ? "scoped" : "page"}</span>
+    }
+    render(
+      <KeymapProvider>
+        <ActionProvider navigate={() => undefined}>
+          <Host />
+        </ActionProvider>
+      </KeymapProvider>
+    )
+    press("b")
+    expect(run).not.toHaveBeenCalled()
+    expect(screen.getByTestId("binding")).toHaveTextContent("scoped")
   })
 })
 

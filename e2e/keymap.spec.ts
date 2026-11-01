@@ -89,3 +89,25 @@ test("Kbd shows a chord's steps apart @responsive", async ({ page }) => {
   expect(second.x).toBeGreaterThan(first.x + first.width);
   await expect(chords.locator('[data-variant="text"]')).toHaveText(/\S \S/);
 });
+
+test("a scoped key runs only with focus inside; the menu shows it, and a rebinding, without taking it", async ({ page }) => {
+  const demo = page.getByTestId("keymap-demo");
+  await page.locator("body").click({ position: { x: 5, y: 5 } });
+  await page.keyboard.press("b");
+  await expect(demo).toContainText("Last command: Nothing yet");
+  await page.getByTestId("keymap-canvas").focus();
+  await page.keyboard.press("b");
+  await expect(demo).toContainText("Last command: Brush");
+
+  await page.getByRole("button", { name: "Keyboard shortcuts" }).click();
+  const dialog = page.getByRole("dialog", { name: "Keyboard shortcuts" });
+  await dialog.getByRole("button", { name: "Change the shortcut for Eraser" }).click();
+  await dialog.getByRole("textbox", { name: "New shortcut for Eraser" }).press("x");
+  await page.keyboard.press("Tab");
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Tools" }).click();
+  await expect(page.getByRole("menuitem", { name: /Eraser/ }).locator("kbd")).toHaveText("X");
+  await expect(page.getByRole("menuitem", { name: /Brush/ }).locator("kbd")).toHaveText("B");
+  await page.keyboard.press("Escape");
+});

@@ -48,6 +48,12 @@ has upgrade steps in the [migration guide](docs/migration.md).
   messages `colorPicker.areaHsv` and `areaValueHsv` in every language pack (the Arabic wording needs a
   native-speaker check).
 
+- Hooks (`glass-ux/hooks`): `useClipboard` (copy with a timed `copied` state and an `error`, falling back to
+  a hidden textarea where the page has no Clipboard API), `useDebouncedValue` and `useDebouncedCallback`
+  (with `cancel`, `flush` and `pending`), and the helpers components already shared: `readingKey` and
+  `isRtl`, `useScrollEdges`, `usePrinting`, `useSelectedId` with its change types, `tryFocus`, `focusFirst`,
+  `isTextEntryTarget` and `isRichTextTarget`. CopyButton writes through the same clipboard function.
+
 ### Fixed
 
 - ColorPicker: the hue and opacity beads no longer hang past the picker's edge at the ends of their tracks

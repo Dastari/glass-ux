@@ -17,6 +17,14 @@ import { popupContainer } from "../../lib/popup-container.js"
  *   collision       the distance kept from the viewport edge (--popup-collision)
  */
 
+/**
+ * How long a hover-opened submenu outlasts the pointer leaving it, in milliseconds. Base UI's
+ * safe triangle closes after 40ms without a move, or on a slow move, so on the way to a submenu
+ * a slow hand, or one long frame on a busy page, would lose it while the root stayed open.
+ * Reaching the submenu or its row in time cancels the close.
+ */
+const SUBMENU_CLOSE_DELAY_MS = 300
+
 export type MenuItemTone = "default" | "danger"
 
 interface ItemContentProps {
@@ -328,6 +336,7 @@ function MenuSubmenu({ icon, label, disabled, disabledReason, tone = "default", 
       <BaseMenu.SubmenuRoot disabled={isDisabled}>
         <ReasonTooltip reason={disabledReason}>
           <BaseMenu.SubmenuTrigger
+            closeDelay={SUBMENU_CLOSE_DELAY_MS}
             disabled={isDisabled}
             aria-describedby={disabledReason ? reasonId : undefined}
             className="fa-item fa-menu-item"

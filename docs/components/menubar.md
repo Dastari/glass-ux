@@ -162,7 +162,9 @@ direction.
 | Tab | Leave the bar | Close and leave the bar |
 | A letter | | Go to the next row starting with it |
 
-Once a menu is open, hovering another trigger switches to it.
+Once a menu is open, hovering another trigger switches to it. A hover-opened submenu outlasts the
+pointer by 300ms, so a slow or diagonal path into it does not lose it; a sibling row closes it after
+that delay.
 
 ## Touch and phones
 

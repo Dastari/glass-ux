@@ -157,6 +157,65 @@ test("hover switches menus once one is open, and only then", async ({ page }) =>
   await expect(page.getByRole("menu")).toHaveCount(0);
 });
 
+/** A hand's route from a row into its submenu, stalling in the gap the safe triangle covers. */
+const stallOnTheWay = async (page: Page, from: Locator, to: Locator, stall: number) => {
+  const start = (await from.boundingBox())!;
+  const end = (await to.boundingBox())!;
+  const [x0, y0, x1, y1] = [start.x + start.width / 2, start.y + start.height / 2, end.x + end.width / 2, end.y + end.height / 2];
+  await page.mouse.move(x0, y0, { steps: 6 });
+  for (let step = 1; step <= 4; step += 1) await page.mouse.move(x0 + ((x1 - x0) * step) / 10, y0 + ((y1 - y0) * step) / 10);
+  await page.waitForTimeout(stall);
+  await page.mouse.move(x1, y1);
+};
+
+test("a hovered submenu survives a real pointer path, with a stall on the way into it", async ({ page }) => {
+  await visit(page);
+  const transform = row(page, "Transform");
+  for (let run = 0; run < 4; run += 1) {
+    await applicationMenu(page, "Edit").click();
+    await transform.hover();
+    const leaf = row(page, /^Title case/);
+    await expect(leaf).toBeVisible();
+    await stallOnTheWay(page, transform, leaf, 120);
+    await page.waitForTimeout(300);
+    await expect(leaf, `run ${run}`).toBeVisible();
+    await expect(page.getByRole("menu")).toHaveCount(2);
+    await leaf.click();
+    await expect(page.getByRole("menu")).toHaveCount(0);
+    await expect(page.getByTestId("menubar-last-command")).toHaveText("Last command: title");
+    await page.mouse.move(5, 5);
+  }
+});
+
+test("a hovered submenu stays for a pointer at rest, and a sibling row still closes it", async ({ page }) => {
+  await visit(page);
+  await applicationMenu(page, "Edit").click();
+  const transform = row(page, "Transform");
+  await expect(transform).toBeVisible();
+  // Off the popup's enter animation, so the coordinates are still the row's when they land.
+  await page.waitForTimeout(300);
+  const rect = (await transform.boundingBox())!;
+  await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+  await expect(row(page, /^Title case/)).toBeVisible();
+  await page.waitForTimeout(600);
+  await expect(page.getByRole("menu")).toHaveCount(2);
+
+  // A sibling row is a change of mind: it closes the submenu after the short grace.
+  const copy = (await row(page, /^Copy/).boundingBox())!;
+  const moved = Date.now();
+  await page.mouse.move(copy.x + copy.width / 2, copy.y + copy.height / 2);
+  await expect(page.getByRole("menu")).toHaveCount(1);
+  expect(Date.now() - moved).toBeLessThan(1000);
+
+  // Off into the page, the submenu goes after its grace, and the root stays.
+  await transform.hover();
+  await expect(row(page, /^Title case/)).toBeVisible();
+  const box = (await page.getByRole("menu").first().boundingBox())!;
+  await page.mouse.move(box.x - 60, box.y + box.height / 2, { steps: 4 });
+  await expect(page.getByRole("menu")).toHaveCount(1);
+  await page.keyboard.press("Escape");
+});
+
 test("a command runs after the menu closes; toggles and choices stay open; disabled rows explain themselves", async ({ page }) => {
   await visit(page);
   await applicationMenu(page, "File").click();

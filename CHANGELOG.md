@@ -106,6 +106,10 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Fixed
 
+- `Menu.Submenu`: a hover-opened submenu no longer closes while the pointer is on its way to it. A
+  stall of more than 40ms, or a slow move, in the gap beside the row closed it, on a busy page in
+  particular, while the root menu stayed open. It now outlasts the pointer by 300ms; moving to a
+  sibling row closes it after the same delay.
 - ColorPicker: its controls no longer overflow a narrow box at a large UI scale.
 - Histogram: dense bins (a column under 4px wide) no longer lose their width to the gap.
 General extensions shared with the sister packages: Tree, Tabs, shortcuts and a status bar.

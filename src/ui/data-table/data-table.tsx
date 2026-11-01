@@ -105,6 +105,7 @@ import {
 } from "./features.js";
 import { FilterBar } from "./filters/bar.js";
 import { emptyText } from "./search/empty-text.js";
+import { normalizeSearch } from "./search/types.js";
 import type {
   SearchHandle,
   ToolbarSearchBinding,
@@ -454,6 +455,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   // and live data updates never come through here.
   const resultsDue = useRef(false);
   const resultsTimer = useRef(0);
+  const requestedSearch = useRef("");
   const [resultsTick, setResultsTick] = useState(0);
   const emit = useCallback(
     (
@@ -467,6 +469,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       if (details) onStateChangeRef.current?.(next, change, details);
       else onStateChangeRef.current?.(next, change);
       if (change === "search" || change === "filters") {
+        requestedSearch.current = normalizeSearch(next.search);
         window.clearTimeout(resultsTimer.current);
         resultsDue.current = false;
         resultsTimer.current = window.setTimeout(() => {
@@ -2569,9 +2572,11 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       : m.loaded(formatCount(data.length, noun, locale))
     : formatCount(grouping ? groupTotal : (rowCount ?? data.length), noun, locale);
   // After a person's search or filter change has paused: say what is left, once the rows
-  // have settled (a host that fetches may still be loading when the pause ends).
+  // have settled. When the pause ends a host may not have applied the search yet, or may be
+  // loading or refetching, with the old rows still showing.
   useEffect(() => {
-    if (!resultsDue.current || loading || error) return;
+    if (!resultsDue.current || loading || refetching || error) return;
+    if (normalizeSearch(searchQuery) !== requestedSearch.current) return;
     resultsDue.current = false;
     const query = searching ? searchQuery : "";
     announceCell(
@@ -2580,7 +2585,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         : m.resultsFound(countLabelText),
     );
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- it runs when the pause ends or the rows settle, not on every render
-  }, [resultsTick, loading, error, data.length, countLabelText]);
+  }, [resultsTick, loading, refetching, searchQuery, error, data.length, countLabelText]);
   const showTail = loadMore.active && !showSkeleton && !showError && !showEmpty;
   const colCount =
     visibleColumns.length + (selectable ? 2 : 1) + (reorderable ? 1 : 0);

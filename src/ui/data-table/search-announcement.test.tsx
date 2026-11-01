@@ -39,14 +39,23 @@ const ALL: Device[] = [
 ];
 
 /** The host filters the rows (as a server-backed table does) and passes the matching count. */
-function Table({ loading = false }: { loading?: boolean }) {
+function Table({ loading = false, refetching = false, rows = ALL, state, onStateChange }: {
+  loading?: boolean;
+  refetching?: boolean;
+  rows?: Device[];
+  state?: { search?: string };
+  onStateChange?: (state: { search?: string }) => void;
+}) {
   return (
     <TooltipProvider>
       <DataTable
         id="announce"
         label="Devices"
-        rows={ALL}
-        rowCount={ALL.length}
+        rows={rows}
+        rowCount={rows.length}
+        state={state}
+        onStateChange={onStateChange}
+        refetching={refetching}
         columns={columns}
         getRowId={(row) => row.id}
         getRowLabel={(row) => row.name}
@@ -89,5 +98,25 @@ describe("announcing search results", () => {
     expect(live()?.textContent).toBe("");
     view.rerender(<Table />);
     expect(live()?.textContent).toBe("Results: 3 rows");
+  });
+
+  it("waits for a refetch, which shows the old rows until it answers", () => {
+    const view = render(<Table refetching />);
+    const box = screen.getByRole("searchbox", { name: "Search rows" });
+    fireEvent.change(box, { target: { value: "zzqx" } });
+    act(() => void vi.advanceTimersByTime(220 + 600));
+    expect(live()?.textContent).toBe("");
+    view.rerender(<Table rows={[]} />);
+    expect(live()?.textContent).toContain("zzqx");
+  });
+
+  it("waits for a controlled host to apply the search", () => {
+    const view = render(<Table state={{ search: "" }} />);
+    const box = screen.getByRole("searchbox", { name: "Search rows" });
+    fireEvent.change(box, { target: { value: "zzqx" } });
+    act(() => void vi.advanceTimersByTime(220 + 600));
+    expect(live()?.textContent).toBe("");
+    view.rerender(<Table state={{ search: "zzqx" }} rows={[]} />);
+    expect(live()?.textContent).toContain("zzqx");
   });
 });

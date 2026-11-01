@@ -17,7 +17,7 @@ the manager.
 | --- | --- | --- | --- | --- | --- |
 | focused | `boolean \| undefined` | false, true | no | false | The focused window has a stronger edge; others dim their app bar. |
 | material | `"none" \| "panel" \| undefined` | "none", "panel" | no | "panel" | `panel` (default): a glass frame, for secondary windows. `none`: no frame, for the primary window, whose header, tabs and status sit on the canvas and whose content panels carry the glass. |
-| state | `WindowFrameState \| undefined` | "primary", "sheet", "tiled", "floating", "maximised", "minimised", "popout" | no | — | Controlled view state, including loading, empty and error states. |
+| state | `WindowFrameState \| undefined` | "primary", "sheet", "floating", "tiled", "maximised", "minimised", "popout" | no | — | Controlled view state, including loading, empty and error states. |
 
 Inherited properties:
 
@@ -100,6 +100,10 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+| disabledReason | `string \| null \| undefined` | See type | no | — | Why the button does nothing now. It stays focusable and shows this as its tooltip (R11.3). |
+| giveWay | `number \| undefined` | See type | no | — | Moves into the More popup when the box is too narrow, lowest rank first. Leave it unset for an item that stays in the bar and truncates instead. |
+| onClick | `MouseEventHandler<HTMLElement> \| undefined` | See type | no | — | Makes the item a button. |
+| ref | `Ref<HTMLElement> \| undefined` | See type | no | — | The element, for a menu or popover that this item opens. |
 | tone | `WindowStatusTone \| undefined` | "danger", "warning", "success", "neutral", "info" | no | — | Draws a status dot before the label. |
 
 Inherited properties:
@@ -109,7 +113,6 @@ Inherited properties:
 | children | `ReactNode` | See type | no | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
-| ref | `Ref<HTMLSpanElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
 
 Also accepts the element’s standard HTML attributes and React DOM events.
 

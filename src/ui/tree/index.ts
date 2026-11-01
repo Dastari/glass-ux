@@ -1,4 +1,23 @@
 import "./messages.js"
-export { Tree, TreeSkeleton, type TreeNode, type TreeProps, type TreeRowContent, type TreeRowRenderProps, type TreeSkeletonProps, type TreeSkeletonRow } from "./tree.js"
+export {
+  TREE_DRAG_TYPE,
+  Tree,
+  TreeMoveItems,
+  TreeSkeleton,
+  type TreeDragData,
+  type TreeHandle,
+  type TreeMoveDirection,
+  type TreeMoveItemsProps,
+  type TreeNode,
+  type TreeProps,
+  type TreeRenameDetails,
+  type TreeRevealOptions,
+  type TreeRowContent,
+  type TreeRowRenderProps,
+  type TreeSelectionDetails,
+  type TreeSelectionMode,
+  type TreeSkeletonProps,
+  type TreeSkeletonRow,
+} from "./tree.js"
 export type { SelectionChangeDetails, SelectionChangeReason } from "../../lib/use-selected-id.js"
-export { flattenTree, typeahead, type FlatRow, type KeywordMatch, type TreeNodeLike } from "./flatten.js"
+export { flattenTree, moveTreeNodes, treePath, typeahead, type FlatRow, type KeywordMatch, type TreeMove, type TreeNodeLike } from "./flatten.js"

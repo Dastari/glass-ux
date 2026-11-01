@@ -9,7 +9,16 @@ import {
   IconSoftware,
 } from "../../icons/generated/icons.js";
 import { Metric } from "../../ui/metric/index.js";
-import { Tabs, TabsSkeleton, type TabItem } from "../../ui/tabs/index.js";
+import { DragDropProvider, DropZone } from "../../ui/drag-drop/index.js";
+import { Menu } from "../../ui/menu/index.js";
+import {
+  TAB_DRAG_TYPE,
+  Tabs,
+  TabsSkeleton,
+  type TabDragData,
+  type TabItem,
+  type TabMove,
+} from "../../ui/tabs/index.js";
 import { ENDPOINT_TABS, clockTimes, series } from "../sections/nav.fixtures.js";
 
 const SHORT: TabItem[] = ENDPOINT_TABS.slice(0, 4);
@@ -72,6 +81,153 @@ function ChartWithRange() {
   );
 }
 
+const DOCUMENTS: TabItem[] = [
+  { value: "survey", label: "Harbour survey", closable: true },
+  { value: "budget", label: "Budget review", closable: true, unsaved: true },
+  { value: "minutes", label: "Minutes", closable: true, preview: true },
+  { value: "summary", label: "Summary" },
+];
+
+function place(list: TabItem[], item: TabItem, index: number) {
+  const rest = list.filter((entry) => entry.value !== item.value);
+  return [...rest.slice(0, index), item, ...rest.slice(index)];
+}
+
+function DocumentTabs() {
+  const [items, setItems] = useState(DOCUMENTS);
+  const [active, setActive] = useState("budget");
+  const [log, setLog] = useState("No move yet");
+  return (
+    <div className="flex w-full flex-col gap-3" data-testid="tabs-documents">
+      <Tabs.Root value={active} onValueChange={setActive}>
+        <Tabs.List
+          items={items.map((item) => ({
+            ...item,
+            contextMenu: (
+              <Menu.Item onClick={() => setLog(`Copied the link to ${item.label}`)}>
+                Copy link
+              </Menu.Item>
+            ),
+          }))}
+          aria-label="Open documents"
+          zoneId="documents"
+          onClose={(value) => setItems((list) => list.filter((item) => item.value !== value))}
+          onKeep={(value) =>
+            setItems((list) =>
+              list.map((item) => (item.value === value ? { ...item, preview: false } : item)),
+            )
+          }
+          onTabMove={(move) => {
+            setItems((list) =>
+              place(
+                list,
+                list.find((item) => item.value === move.value)!,
+                move.index,
+              ),
+            );
+            setLog(`${move.value} to ${move.index} by ${move.input}`);
+          }}
+        />
+      </Tabs.Root>
+      <p className="type-caption text-fg-muted" data-testid="tabs-log">
+        {log}
+      </p>
+    </div>
+  );
+}
+
+const LEFT: TabItem[] = [
+  "Agenda",
+  "Actions",
+  "Attendees",
+  "Budget",
+  "Calendar",
+  "Contacts",
+  "Contracts",
+].map((label) => ({ value: `left-${label.toLowerCase()}`, label, closable: true }));
+const RIGHT: TabItem[] = ["Notes", "Files"].map((label) => ({
+  value: `right-${label.toLowerCase()}`,
+  label,
+}));
+
+function SharedStrips() {
+  const [lists, setLists] = useState<Record<string, TabItem[]>>({ left: LEFT, right: RIGHT });
+  const [active, setActive] = useState<Record<string, string>>({
+    left: "left-contacts",
+    right: "right-notes",
+  });
+  const [docked, setDocked] = useState("Nothing docked");
+  const move = ({ value, from, to, index }: TabMove) => {
+    setLists((current) => {
+      const item = current[from]?.find((entry) => entry.value === value);
+      if (!item) return current;
+      return from === to
+        ? { ...current, [to]: place(current[to]!, item, index) }
+        : {
+            ...current,
+            [from]: current[from]!.filter((entry) => entry.value !== value),
+            [to]: place(current[to]!, item, index),
+          };
+    });
+    setActive((current) => ({ ...current, [to]: value }));
+  };
+  const strip = (id: string, name: string, width: string) => (
+    <div className={width} data-testid={`tabs-strip-${id}`}>
+      <Tabs.Root
+        value={active[id] ?? ""}
+        onValueChange={(value) => setActive((current) => ({ ...current, [id]: value }))}
+      >
+        <Tabs.List
+          items={lists[id] ?? []}
+          aria-label={name}
+          zoneId={id}
+          panelId={(value) => (value === active[id] ? `panel-${value}` : undefined)}
+          onClose={(value) =>
+            setLists((current) => ({
+              ...current,
+              [id]: current[id]!.filter((item) => item.value !== value),
+            }))
+          }
+          onTabMove={move}
+        />
+      </Tabs.Root>
+      <div
+        id={`panel-${active[id]}`}
+        role="region"
+        aria-label={`${name} content`}
+        className="type-caption text-fg-muted"
+      >
+        {lists[id]?.find((item) => item.value === active[id])?.label}
+      </div>
+    </div>
+  );
+  return (
+    <DragDropProvider>
+      <div className="flex w-full flex-col gap-3">
+        {strip("left", "Left group", "w-80 max-w-full")}
+        {strip("right", "Right group", "w-96 max-w-full")}
+        <DropZone
+          id="tabs-dock"
+          label="Dock"
+          accept={TAB_DRAG_TYPE}
+          className="grid h-16 w-96 max-w-full place-items-center"
+          data-testid="tabs-dock"
+          onDrop={(event) => {
+            const { value, stripId } = event.item.data as TabDragData;
+            setDocked(`${value} from ${stripId}`);
+            setLists((current) => ({
+              ...current,
+              [stripId]: current[stripId]!.filter((entry) => entry.value !== value),
+            }));
+          }}
+        >
+          <span className="type-caption text-fg-muted">{docked}</span>
+        </DropZone>
+      </div>
+    </DragDropProvider>
+  );
+}
+
 export default function TabsSection() {
   return (
     <SectionPage>
@@ -94,9 +250,25 @@ export default function TabsSection() {
       </Specimen>
 
       <Specimen
+        title="Open documents"
+        description="Closable, reorderable tabs in a fixed state. Close with the mark, a middle-click or Delete; Shift and an arrow key moves a tab, and the context menu (right-click, Shift+F10) has the same moves for a single pointer. Budget review has unsaved changes, and Minutes is a preview: double-click it to keep it. The application asks before closing unsaved work."
+        specimenKey="tabs:default:5"
+      >
+        <DocumentTabs />
+      </Specimen>
+
+      <Specimen
+        title="Tabs between strips"
+        description="Under one DragDropProvider, strips with the same dragType exchange tabs, and a DropZone can take one. The first strip overflows: Contacts stays visible, and a drop past its last tab lands at the very end."
+        specimenKey="tabs:default:6"
+      >
+        <SharedStrips />
+      </Specimen>
+
+      <Specimen
         title="States"
         description="Counts use tabular figures. A disabled tab stays in place and is skipped by the arrow keys."
-        specimenKey="tabs:default:5"
+        specimenKey="tabs:default:7"
       >
         <div className="w-full">
           <LocalTabs items={STATES} initial="software" />
@@ -106,7 +278,7 @@ export default function TabsSection() {
       <Specimen
         title="Loading"
         description="The skeleton strip occupies the same height and rhythm as the loaded strip. Swap them in place to compare."
-        specimenKey="tabs:default:6"
+        specimenKey="tabs:default:8"
       >
         <div className="w-105 max-w-full">
           <SwapSlot
@@ -121,7 +293,7 @@ export default function TabsSection() {
         title="Over imagery"
         description="On a card over busy content the underline and text keep their contrast."
         backdrop
-        specimenKey="tabs:default:7"
+        specimenKey="tabs:default:9"
       >
         <div className="glass-control w-130 max-w-full rounded-surface px-3">
           <LocalTabs items={SHORT} initial="software" />
@@ -130,7 +302,7 @@ export default function TabsSection() {
 
       <ContainerLab
         description="Row, header, tile, pane and tall-narrow (local mode, so each box can hold its own active tab). The strip shows what fits plus More; in the narrowest boxes only the active tab and More remain."
-        specimenKey="tabs:default:8"
+        specimenKey="tabs:default:10"
       >
         {() => <LocalTabs initial="activity" />}
       </ContainerLab>

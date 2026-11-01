@@ -53,6 +53,30 @@ has upgrade steps in the [migration guide](docs/migration.md).
   `mastercard`, `mistral`, `paypal`, `salesforce`, `sentry`, `visa` and `zendesk`.
 - Icons: `align-start`, `align-end`, `reply`, `forward` and the diagonal arrows mirror in
   right-to-left layouts. Media glyphs keep their shape, as `play` does.
+- Tree: `selectionMode="multiple"` with `selectedIds`, `defaultSelectedIds`,
+  `onSelectedIdsChange`, `selectionLimit` and `checkboxes`. A selection is a list of ids, so it
+  never needs every node loaded; `details.unloaded` names branches whose children are not.
+- Tree: `onRename` for renaming in place (F2, Enter, Escape) and `renamingId`.
+- Tree: `onMove` for moves by drag, Alt with the arrow keys and `TreeMoveItems` in a menu, with
+  `canMove`, and `moveTreeNodes` to apply one.
+- Tree: `renderTrailing` for content at a row's end, and `ref` with `reveal`, `rename`, `move`
+  and `canMove`. `reveal` opens, loads and pages to a row that is not loaded.
+- Tabs: `TabItem.closable`, `unsaved`, `preview` and `contextMenu`; `Tabs.List` `onClose`,
+  `onKeep`, `onTabMove`, `dragType`, `zoneId`, `panelId` and `ref` with `focusTab`. Close with
+  the mark, a middle-click, Delete, the context menu or a Close button outside the tablist.
+  Reorder with drag, Shift and the arrow keys, or the context menu. Strips under one
+  DragDropProvider exchange tabs, and a DropZone can take one.
+- `glass-ux/keymap`: `KeymapProvider`, a central dispatcher with chords, a serialisable keymap
+  the host stores, conflict detection, scoped and declared commands, `ShortcutHelpDialog` and
+  `ShortcutPending`. `useCommandBinding` and `useBindingLookup` read a command's keys, rebound
+  or not, without registering anything.
+- Actions: `useActionShortcuts`, `shortcutTextEntry`, `shortcutScoped` and
+  `ResolvedAction.commandId`. Menus and the palette show rebound keys.
+- Kbd and `formatShortcut` draw chords. `shortcutSteps`, `isChord`, `canonicalStep`,
+  `canonicalShortcut` and `shortcutFromEvent` join the `glass-ux/kbd` helpers.
+- `glass-ux/status-bar`: `StatusBar` with `Start`, `End`, `Item` and `Group`, interactive
+  items, and a stated order for giving way in a narrow box (`giveWay`).
+- PaletteCommand `keymapId` and `shortcutDisplayOnly`; DragDropProvider `liveRegionHost`.
 
 ### Changed
 
@@ -61,11 +85,21 @@ has upgrade steps in the [migration guide](docs/migration.md).
   `fa-image-cropper*`.
 - `cropImage` rejects with "The image could not be encoded." rather than "The photo could not be
   encoded." when a browser cannot encode.
+- `WindowFrame.StatusBar` and its parts are built on StatusBar, with the same elements, classes
+  and look. Its items also take `giveWay` and `onClick`. The inner `fa-window-status-label`
+  class is now `fa-status-bar-label`.
+- `formatShortcut` and `Kbd` show every step of a shortcut with a space, such as "g e", which
+  used to read as one key. `useAriaShortcut` returns undefined for a chord, which
+  `aria-keyshortcuts` cannot say.
+- The palette no longer runs a chord as if it were its last step.
 
 ### Fixed
 
 - ColorPicker: its controls no longer overflow a narrow box at a large UI scale.
 - Histogram: dense bins (a column under 4px wide) no longer lose their width to the gap.
+General extensions shared with the sister packages: Tree, Tabs, shortcuts and a status bar.
+Everything is opt-in; existing Tree, Tabs, `useHotkeys`, `parseShortcut`, `configureShortcuts`
+and `WindowFrame.StatusBar` consumers keep what they had.
 
 ## 0.13.1
 

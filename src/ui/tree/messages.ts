@@ -11,6 +11,21 @@ export const treeMessages = defineMessages("tree", {
   retry: (reason: string) => `${reason} · Retry`,
   loadingStatus: "Loading",
   retryAction: "Retry",
+  rename: (label: string) => `Rename ${label}`,
+  renameFailed: "Couldn't rename",
+  moveUp: "Move up",
+  moveDown: "Move down",
+  moveIn: "Move into the item above",
+  moveOut: "Move out of this folder",
+  cannotMove: "Can't move there",
+  clearSearchToMove: "Clear the search to move items",
+  movedWithin: ({ label, position, total }: { label: string; position: string; total: string }) => `${label} moved to position ${position} of ${total}`,
+  movedInto: ({ label, parent }: { label: string; parent: string }) => `${label} moved into ${parent}`,
+  movedToTop: (label: string) => `${label} moved to the top level`,
+  selectionLimited: (count: string) => `Selected the first ${count} rows`,
+  renameHint: "Press F2 to rename.",
+  moveHint: "Press Alt and an arrow key to move.",
+  renameAndMoveHint: "Press F2 to rename, or Alt and an arrow key to move.",
 })
 
 declare module "../../lib/i18n/catalog.js" {

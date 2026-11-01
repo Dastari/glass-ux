@@ -25,6 +25,8 @@ export function usePaletteActions<T>(set: ActionSet<T>, targets: readonly T[], l
         icon: Icon ? <Icon /> : undefined,
         keywords: [set.entity, ...(parent ? [parent.label] : [])],
         shortcut: action.definition.shortcut,
+        keymapId: action.commandId,
+        shortcutDisplayOnly: action.definition.shortcutScoped,
         tone: action.definition.group === "danger" ? "danger" : "default",
         disabledReason: action.disabledReason ?? parent?.disabledReason ?? null,
         run: () => start(action, targets, "palette"),

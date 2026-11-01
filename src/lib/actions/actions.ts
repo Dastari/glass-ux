@@ -49,8 +49,19 @@ export interface ActionDefinition<T> {
   label: string | ((targets: readonly T[]) => string)
   icon?: IconComponent
   group: ActionGroup
-  /** Keyboard shortcut shown in menus and registered in the palette, e.g. "mod+shift+r". */
+  /**
+   * Keyboard shortcut shown in menus and registered in the palette, e.g. "mod+shift+r". A
+   * chord ("mod+k mod+s") runs through a KeymapProvider with `useActionShortcuts`.
+   */
   shortcut?: string
+  /** Where `useActionShortcuts` runs the shortcut while focus is in text entry. Default `none`. */
+  shortcutTextEntry?: "none" | "inputs" | "all"
+  /**
+   * The shortcut works only in part of the page (a tool key while an editor has focus).
+   * Menus and the palette show it and nothing runs it page-wide: the palette does not listen
+   * for it, and `useActionShortcuts` runs it only with a `scope`.
+   */
+  shortcutScoped?: boolean
   /**
    * Header promotion: the lowest numbers become header buttons (ActionBar). Actions
    * without a priority only appear in menus.
@@ -126,6 +137,8 @@ export interface ResolvedAction<T> {
   definition: ActionDefinition<T>
   /** The definition's id; a split action's own run inside its submenu ends in `:self`. */
   id: string
+  /** The action's stable id in a keymap: `<entity>.<action id>`, with a submenu's id between them. */
+  commandId?: string
   /** The label, resolved for the targets when the definition's label is a function. */
   label: string
   /** Explains why the action is unavailable; the control remains focusable so the reason is accessible. */
@@ -142,12 +155,13 @@ export interface ResolvedGroup<T> {
   actions: ResolvedAction<T>[]
 }
 
-function resolveOne<T>(action: ActionDefinition<T>, targets: readonly T[], surface: ActionSurface): ResolvedAction<T> | null {
+function resolveOne<T>(action: ActionDefinition<T>, targets: readonly T[], surface: ActionSurface, path: string): ResolvedAction<T> | null {
   if (action.surfaces && !action.surfaces.includes(surface)) return null
   if (targets.length > 1 && !action.bulk) return null
   if (action.visible && !action.visible(targets)) return null
+  const commandId = `${path}.${action.id}`
   const children = (action.children ?? [])
-    .map((child) => resolveOne(child, targets, surface))
+    .map((child) => resolveOne(child, targets, surface, commandId))
     .filter((child): child is ResolvedAction<T> => child !== null)
   if (action.children?.length && !children.length) return null
   const reason = action.disabledReason?.(targets)
@@ -155,11 +169,12 @@ function resolveOne<T>(action: ActionDefinition<T>, targets: readonly T[], surfa
   // A parent that also runs (a split action) offers its own run first inside the submenu.
   if (action.run && children.length) {
     const own: ActionDefinition<T> = { ...action, id: `${action.id}:self`, children: undefined, primary: false, priority: undefined }
-    children.unshift({ definition: own, id: own.id, label, disabledReason: reason ? reason : null, children: [] })
+    children.unshift({ definition: own, id: own.id, commandId, label, disabledReason: reason ? reason : null, children: [] })
   }
   return {
     definition: action,
     id: action.id,
+    commandId,
     label,
     disabledReason: reason ? reason : null,
     children,
@@ -181,7 +196,7 @@ export function resolveActions<T>(set: ActionSet<T>, targets: readonly T[], surf
     group,
     actions: set.actions
       .filter((action) => action.group === group)
-      .map((action) => resolveOne(action, targets, surface))
+      .map((action) => resolveOne(action, targets, surface, set.entity))
       .filter((action): action is ResolvedAction<T> => action !== null),
   })).filter((group) => group.actions.length > 0)
 }

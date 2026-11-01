@@ -4,8 +4,12 @@ import { useMessages } from "../../lib/i18n/index.js"
 import { treeMessages } from "./messages.js"
 import { defaultRangeExtractor, useVirtualizer, type Range } from "@tanstack/react-virtual"
 import {
+  Suspense,
+  lazy,
   useCallback,
   useEffect,
+  useId,
+  useImperativeHandle,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -15,8 +19,9 @@ import {
   type MouseEvent,
   type ReactElement,
   type ReactNode,
+  type Ref,
 } from "react"
-import { IconChevronDown, IconChevronRight, IconError, IconFile, IconFolder, IconSearch } from "../../icons/generated/icons.js"
+import { IconCheck, IconChevronDown, IconChevronRight, IconError, IconFile, IconFolder, IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { useSelectedId, type SelectionChangeDetails } from "../../lib/use-selected-id.js"
@@ -27,7 +32,21 @@ import { EmptyState } from "../empty-state/index.js"
 import { ProgressRing } from "../progress/index.js"
 import { Skeleton } from "../skeleton/index.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
-import { flattenTree, rowKey, STATUS_SEPARATOR, typeahead, type FlatRow, type TreeLoadState } from "./flatten.js"
+import { numberFormat } from "../../lib/locale/intl.js"
+import { Menu } from "../menu/index.js"
+import { flattenTree, rowKey, STATUS_SEPARATOR, treePath, typeahead, type FlatRow, type TreeLoadState, type TreeMove } from "./flatten.js"
+import type { TreeDragRow, TreeDropPlan } from "./tree-drag.js"
+
+const TreeDrag = /* @__PURE__ */ lazy(() => import("./tree-drag.js"))
+
+/** The default `dragType` of rows, for a DropZone outside the tree. */
+export const TREE_DRAG_TYPE = "glass-ux/tree-node"
+
+/** `DragItem.data` of dragged rows. `DragItem.id` is the row under the pointer. */
+export interface TreeDragData {
+  /** Everything that moves: the selection when the row is in it, otherwise the row. */
+  ids: string[]
+}
 
 export interface TreeNode {
   id: string
@@ -59,6 +78,70 @@ export interface TreeNode {
    */
   selectable?: boolean
   disabled?: boolean
+  /** False keeps this row from being renamed. Default true with the Tree's `onRename`. */
+  renamable?: boolean
+  /** False keeps this row where it is. Default true with the Tree's `onMove`. */
+  movable?: boolean
+}
+
+/** One row's selection model. */
+export type TreeSelectionMode = "single" | "multiple"
+
+/** The second argument of `onSelectedIdsChange`. */
+export interface TreeSelectionDetails {
+  /** A click, Enter or Space on a row, or a key that selects a range. */
+  reason: "item-press" | "keyboard"
+  /** The DOM event behind the change. */
+  event: Event | undefined
+  /**
+   * Branches in what was just selected whose children are not all loaded. Selection names
+   * rows, never descendants: a selected branch stands for itself, and the host decides
+   * whether it means everything under it, here and on the server.
+   */
+  unloaded: string[]
+  /** `selectionLimit` cut a range or Select All short. */
+  limited: boolean
+}
+
+/** The second argument of `onRename`. */
+export interface TreeRenameDetails {
+  /** The node as it was. */
+  node: TreeNode
+}
+
+/** A direction for `TreeHandle.move`, which also works from a Move menu. */
+export type TreeMoveDirection = "up" | "down" | "in" | "out"
+
+/** Options for `TreeHandle.reveal`. */
+export interface TreeRevealOptions {
+  /**
+   * The ids from the top level down to the row's parent, for a row that is not loaded yet:
+   * each opens in turn and loads its children, paging through a branch's `hasMore` until the
+   * row appears. Without it, the loaded part of the tree is searched.
+   */
+  path?: readonly string[]
+  /** Give the row focus. Default false. */
+  focus?: boolean
+  /** Select the row. Default false. */
+  select?: boolean
+  /** Where the row lands in the scroller. Default "center". */
+  align?: "auto" | "start" | "center" | "end"
+}
+
+/** The handle `Tree` gives through `ref`. */
+export interface TreeHandle {
+  /**
+   * Bring a row into view, opening and loading what it takes. Resolves true once the row is
+   * there, and false when it is not found, its branch failed to load, a search hides it, or
+   * another reveal replaced this one.
+   */
+  reveal: (id: string, options?: TreeRevealOptions) => Promise<boolean>
+  /** Start renaming a row (from a menu, say). Reveals it first. */
+  rename: (id: string) => Promise<void>
+  /** Move a row one step, as the keyboard does. Resolves to whether it moved. */
+  move: (id: string, direction: TreeMoveDirection, input?: TreeMove["input"]) => boolean
+  /** Whether that move is possible now. */
+  canMove: (id: string, direction: TreeMoveDirection) => boolean
 }
 
 /**
@@ -171,6 +254,59 @@ export interface TreeProps {
   /** The line shown when nothing matches. Default: No match for “query”. */
   emptyText?: (query: string) => ReactNode
   className?: string
+  /**
+   * `multiple` selects several rows (R11.8): a click replaces, ⌘/Ctrl-click toggles,
+   * Shift-click takes a range. Keyboard: Space toggles, Shift with the arrows, Home or End
+   * extends, ⌘/Ctrl+A selects all loaded rows. The selection is a list of ids, so it costs
+   * nothing to hold and may name rows that are not loaded or are scrolled out of view.
+   * `selectedId` keeps reporting the row last pressed without a modifier.
+   */
+  selectionMode?: TreeSelectionMode
+  /** The selected rows in `multiple` mode. Controlled while defined. */
+  selectedIds?: readonly string[]
+  /** The rows selected at first when uncontrolled. */
+  defaultSelectedIds?: readonly string[]
+  /** Called with the whole selection after each change in `multiple` mode. */
+  onSelectedIdsChange?: (ids: string[], details: TreeSelectionDetails) => void
+  /** The most rows a range or Select All takes; the rest stay out and `details.limited` is true. Default none. */
+  selectionLimit?: number
+  /** Show a check mark on each selectable row in `multiple` mode, which toggles it: the route on touch. */
+  checkboxes?: boolean
+  /**
+   * Content at the row's end: a badge, a size, a sync state. It may be anything, but the rows
+   * are one tab stop (R11.5), so give a button `tabIndex={-1}` and repeat its action in
+   * `rowWrapper`'s context menu. Clicking a control here does not select the row.
+   */
+  renderTrailing?: (node: TreeNode, content: TreeRowContent) => ReactNode
+  /** `hover` shows trailing content on hover, focus and selection, and always on touch (R11.7). Default `always`. */
+  trailingVisibility?: "always" | "hover"
+  /**
+   * Makes rows renamable in place: F2, or `TreeHandle.rename` from a menu. Enter or leaving
+   * the field commits, Escape cancels. Update `nodes` to apply it. Return false, or a message
+   * saying why, to stay in the field; a promise holds the field until it settles, and a
+   * rejection says "Couldn't rename".
+   */
+  onRename?: (id: string, label: string, details: TreeRenameDetails) => void | boolean | string | Promise<void | boolean | string>
+  /** The row being renamed, or null. Controlled while defined. */
+  renamingId?: string | null
+  /** The row being renamed at first. */
+  defaultRenamingId?: string | null
+  /** Called when renaming starts or ends. */
+  onRenamingIdChange?: (id: string | null) => void
+  /**
+   * Makes rows movable: by drag on a pointer that hovers, Alt with the arrow keys (↑ ↓ among
+   * siblings, reading direction into and out of a branch), and `TreeMoveItems` in a menu, the
+   * single-pointer route (WCAG 2.5.7). A selected row moves with the selection. The host owns
+   * the data: apply the move to `nodes`, with `moveTreeNodes` or on the server. Unavailable
+   * while searching, when the rows shown are not the real order (R16.10).
+   */
+  onMove?: (move: TreeMove) => void
+  /** Refuse a move: return false, or a sentence saying why. A row never moves into itself. */
+  canMove?: (move: TreeMove) => boolean | string
+  /** What dragged rows carry, for a DropZone outside the tree. Default `TREE_DRAG_TYPE`. */
+  dragType?: string
+  /** The tree's handle: {@link TreeHandle}. */
+  ref?: Ref<TreeHandle>
 }
 
 const TYPEAHEAD_RESET_MS = 500
@@ -183,6 +319,13 @@ const removed = (set: ReadonlySet<string>, id: string) => {
   return next
 }
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
+const NO_IDS: readonly string[] = []
+/** How long a dragged row waits over a closed branch before it opens. */
+const SPRING_OPEN_MS = 700
+/** Pages a reveal loads while looking for a row in a branch with `hasMore`. */
+const REVEAL_PAGES = 50
+const CONTROL = "button, a[href], input, select, textarea, [role='button']"
+const notLoaded = (row: FlatRow<TreeNode>) => row.node.hasMore === true || (row.node.hasChildren === true && row.node.children === undefined)
 
 /** Render `text` with the [start, end) range wrapped in a highlight. */
 function Highlight({ text, range }: { text: string; range: readonly [number, number] | null }) {
@@ -206,6 +349,10 @@ function Highlight({ text, range }: { text: string; range: readonly [number, num
  * With `selectableGroups` a branch is selected like a leaf and opens from its chevron. Large
  * trees load lazily: `hasChildren` marks a branch whose children `onLoadChildren` fetches on
  * first open, and `hasMore` with `onLoadMore` pages them in.
+ *
+ * Opt in to multi-select with `selectionMode`, to reordering with `onMove`, to renaming with
+ * `onRename` and to trailing content with `renderTrailing`; `ref` gives `reveal`. All of them
+ * work on ids and the rows on screen, never by walking every node.
  */
 export function Tree({
   nodes,
@@ -226,8 +373,26 @@ export function Tree({
   groupCounts = true,
   className,
   "aria-label": label,
+  selectionMode = "single",
+  selectedIds: selectedIdsProp,
+  defaultSelectedIds,
+  onSelectedIdsChange,
+  selectionLimit,
+  checkboxes = false,
+  renderTrailing,
+  trailingVisibility = "always",
+  onRename,
+  renamingId: renamingIdProp,
+  defaultRenamingId,
+  onRenamingIdChange,
+  onMove,
+  canMove,
+  dragType = TREE_DRAG_TYPE,
+  ref,
 }: TreeProps) {
   const messages = useMessages(treeMessages)
+  const hintId = `${useId()}-hint`
+  const [liveHost, setLiveHost] = useState<HTMLElement | null>(null)
   const emptyText = emptyTextProp ?? ((q: string) => messages.noMatchFor(q))
 
   const [expandedList, setExpandedList] = useControllable<string[]>(expandedProp ?? undefined, defaultExpanded ?? [], onExpandedChange)
@@ -307,7 +472,7 @@ export function Tree({
 
   // ── Focus (roving tabindex) ──────────────────────────────────────────────
   // Keyed by rowKey: a status row's key is its parent's id and its kind.
-  const [focusedId, setFocusedId] = useState<string | null>(selectedId)
+  const [focusedId, setFocusedId] = useState<string | null>(selectedId ?? defaultSelectedIds?.[0] ?? null)
   const indexById = useMemo(() => new Map(rows.map((row, index) => [rowKey(row), index])), [rows])
   // A status row that went away (its children loaded, the last page arrived) hands the tab stop to its parent.
   const statusParent = focusedId?.split(STATUS_SEPARATOR)[0]
@@ -321,6 +486,8 @@ export function Tree({
           : -1
   const shouldFocus = useRef(false)
   const focusWithin = useRef(false)
+  // Rows a gesture needs on screen: the one being dragged and the one being renamed.
+  const keepIds = useRef(new Set<string>())
 
   // ── Row geometry from tokens (probes), then virtualisation ───────────────
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -339,6 +506,8 @@ export function Tree({
 
   const focusedRef = useRef(focusedIndex)
   focusedRef.current = focusedIndex
+  const keptIndex = useRef(indexById)
+  keptIndex.current = indexById
   // Changing getItemKey invalidates all measurements, even when only the scroll range moves.
   const keyAt = useCallback((index: number) => (rows[index] ? rowKey(rows[index]) : index), [rows])
   // oxlint-disable-next-line react/incompatible-library -- the app does not use the React Compiler; TanStack Virtual is the sanctioned virtualiser
@@ -353,6 +522,10 @@ export function Tree({
       const indexes = defaultRangeExtractor(range)
       const keep = focusedRef.current
       if (keep >= 0 && !indexes.includes(keep)) indexes.push(keep)
+      for (const id of keepIds.current) {
+        const index = keptIndex.current.get(id)
+        if (index !== undefined && !indexes.includes(index)) indexes.push(index)
+      }
       return indexes.toSorted((a, b) => a - b)
     },
   })
@@ -390,11 +563,57 @@ export function Tree({
     else if (row.status === "more" || row.status === "more-error") loadMore(row.node)
   }
 
+  // ── Multiple selection: a list of ids, never a walk of the tree ──────────
+  const multiple = selectionMode === "multiple"
+  const [idList, setIdList] = useControllable<readonly string[]>(selectedIdsProp, defaultSelectedIds ?? NO_IDS)
+  const idSet = useMemo(() => new Set(idList), [idList])
+  const anchor = useRef<string | null>(defaultSelectedIds?.at(-1) ?? null)
+  const setSelection = (ids: string[], event: Event | undefined, reason: TreeSelectionDetails["reason"], picked: readonly FlatRow<TreeNode>[], limited = false) => {
+    setIdList(ids)
+    onSelectedIdsChange?.(ids, { reason, event, unloaded: picked.filter(notLoaded).map((row) => row.node.id), limited })
+  }
+  const announcer = useRef<HTMLSpanElement>(null)
+  const announce = (text: string) => {
+    if (announcer.current) announcer.current.textContent = text
+  }
+  const locale_ = numberFormat(locale)
+  const selectRange = (to: number, event: Event, reason: TreeSelectionDetails["reason"]) => {
+    const from = anchor.current !== null ? (indexById.get(anchor.current) ?? to) : to
+    const span = rows.slice(Math.min(from, to), Math.max(from, to) + 1).filter((row) => selectable(row) && !row.node.disabled)
+    const picked = selectionLimit !== undefined ? span.slice(0, selectionLimit) : span
+    const limited = picked.length < span.length
+    if (limited) announce(messages.selectionLimited(locale_.format(picked.length)))
+    setSelection(
+      picked.map((row) => row.node.id),
+      event,
+      reason,
+      picked,
+      limited
+    )
+  }
+  const toggleSelected = (row: FlatRow<TreeNode>, event: Event, reason: TreeSelectionDetails["reason"]) => {
+    const id = row.node.id
+    anchor.current = id
+    setSelection(idSet.has(id) ? idList.filter((other) => other !== id) : [...idList, id], event, reason, [row])
+  }
+  const selectOnly = (row: FlatRow<TreeNode>, event: Event, reason: TreeSelectionDetails["reason"]) => {
+    anchor.current = row.node.id
+    if (idList.length !== 1 || idList[0] !== row.node.id) setSelection([row.node.id], event, reason, [row])
+  }
+
   const activate = (row: FlatRow<TreeNode>, event: Event) => {
     if (row.status) return runStatus(row)
     if (row.node.disabled) return
-    if (selectable(row)) select(row.node.id, { reason: "item-press", event, item: row.node })
-    else if (row.hasChildren) toggle(row)
+    if (selectable(row)) {
+      if (multiple) {
+        const keys = event as globalThis.MouseEvent
+        const index = indexById.get(rowKey(row)) ?? 0
+        if (keys.shiftKey) return selectRange(index, event, "item-press")
+        if (keys.ctrlKey || keys.metaKey) return toggleSelected(row, event, "item-press")
+        selectOnly(row, event, "item-press")
+      }
+      select(row.node.id, { reason: "item-press", event, item: row.node })
+    } else if (row.hasChildren) toggle(row)
   }
 
   /** Enter or Space on a row: a linked row follows its link (its click selects the row). */
@@ -404,23 +623,287 @@ export function Tree({
     else activate(row, event)
   }
 
+  // ── Renaming ─────────────────────────────────────────────────────────────
+  const [renamingId, setRenamingId] = useControllable<string | null>(renamingIdProp, defaultRenamingId ?? null, onRenamingIdChange)
+  const [renameError, setRenameError] = useState<string | null>(null)
+  const [renamePending, setRenamePending] = useState(false)
+  keepIds.current = new Set(renamingId !== null ? [renamingId] : [])
+  const startRename = (node: TreeNode) => {
+    if (!onRename || node.disabled || node.renamable === false) return
+    setRenameError(null)
+    setFocusedId(node.id)
+    setRenamingId(node.id)
+  }
+  const endRename = (id: string, refocus: boolean) => {
+    setRenameError(null)
+    setRenamePending(false)
+    setRenamingId(null)
+    if (refocus) {
+      shouldFocus.current = true
+      setFocusedId(id)
+    }
+  }
+  const commitRename = (node: TreeNode, value: string, refocus: boolean) => {
+    const label = value.trim()
+    if (renamePending) return
+    if (!label || label === node.label) return endRename(node.id, refocus)
+    const settle = (result: void | boolean | string) => {
+      setRenamePending(false)
+      if (typeof result === "string") setRenameError(result)
+      else if (result === false) setRenameError(messages.renameFailed)
+      else endRename(node.id, refocus)
+    }
+    const result = onRename?.(node.id, label, { node })
+    if (result instanceof Promise) {
+      setRenamePending(true)
+      result.then(settle, () => {
+        setRenamePending(false)
+        setRenameError(messages.renameFailed)
+      })
+    } else settle(result)
+  }
+  // A row removed from the tree while it is renamed takes the field with it.
+  const renamingGone = renamingId !== null && !indexById.has(renamingId)
+  useEffect(() => {
+    if (renamingGone && rows.length > 0) setRenamingId(null)
+  }, [renamingGone, rows.length, setRenamingId])
+
+  // ── Moving ───────────────────────────────────────────────────────────────
+  const movingIds = (id: string) => (multiple && idSet.has(id) ? [...rows.flatMap((row) => (!row.status && idSet.has(row.node.id) ? [row.node.id] : [])), ...idList.filter((other) => !indexById.has(other))] : [id])
+  const childrenOf = (parentId: string | null) => (parentId === null ? nodes : (rows[indexById.get(parentId) ?? -1]?.node.children ?? []))
+  /** The move a place would make, in its final form, or null when a row cannot go there. */
+  const planMove = (ids: string[], parentId: string | null, beforeId: string | null, input: TreeMove["input"]): TreeMove | null => {
+    for (let at = parentId; at !== null; at = rows[indexById.get(at) ?? -1]?.parentId ?? null) if (ids.includes(at)) return null
+    const siblings = childrenOf(parentId).filter((node) => !ids.includes(node.id))
+    const before = beforeId === null ? -1 : siblings.findIndex((node) => node.id === beforeId)
+    return { ids, parentId, beforeId, index: before < 0 ? siblings.length : before, input }
+  }
+  const movePlan = (id: string, direction: TreeMoveDirection, input: TreeMove["input"]): TreeMove | null => {
+    const index = indexById.get(id)
+    const row = index === undefined ? undefined : rows[index]
+    if (!row || searching || !onMove || row.node.movable === false || row.node.disabled) return null
+    const ids = movingIds(id)
+    const siblings = childrenOf(row.parentId)
+    const place = siblings.findIndex((node) => node.id === id)
+    const free = siblings.filter((node) => !ids.includes(node.id))
+    const previous = siblings.slice(0, place).findLast((node) => !ids.includes(node.id))
+    const next = siblings.slice(place + 1).find((node) => !ids.includes(node.id))
+    let plan: TreeMove | null = null
+    if (direction === "up" && previous) plan = planMove(ids, row.parentId, previous.id, input)
+    else if (direction === "down" && next) plan = planMove(ids, row.parentId, free[free.indexOf(next) + 1]?.id ?? null, input)
+    else if (direction === "in" && previous && (previous.children !== undefined || previous.hasChildren)) plan = planMove(ids, previous.id, null, input)
+    else if (direction === "out" && row.parentId !== null) {
+      const parent = rows[indexById.get(row.parentId) ?? -1]
+      if (parent) {
+        const outer = childrenOf(parent.parentId)
+        plan = planMove(ids, parent.parentId, outer[outer.findIndex((node) => node.id === parent.node.id) + 1]?.id ?? null, input)
+      }
+    }
+    return plan
+  }
+  const applyMove = (move: TreeMove) => {
+    const verdict = canMove?.(move)
+    if (verdict === false || typeof verdict === "string") {
+      announce(typeof verdict === "string" ? verdict : messages.cannotMove)
+      return false
+    }
+    onMove?.(move)
+    const first = rows[indexById.get(move.ids[0] ?? "") ?? -1]?.node.label ?? move.ids[0] ?? ""
+    const parent = move.parentId === null ? null : rows[indexById.get(move.parentId) ?? -1]?.node.label
+    const same = rows[indexById.get(move.ids[0] ?? "") ?? -1]?.parentId === move.parentId
+    if (same) announce(messages.movedWithin({ label: first, position: locale_.format(move.index + 1), total: locale_.format(childrenOf(move.parentId).length) }))
+    else announce(parent ? messages.movedInto({ label: first, parent }) : messages.movedToTop(first))
+    return true
+  }
+  const moveRow = (id: string, direction: TreeMoveDirection, input: TreeMove["input"]) => {
+    if (searching) {
+      announce(messages.clearSearchToMove)
+      return false
+    }
+    const plan = movePlan(id, direction, input)
+    if (!plan) {
+      announce(messages.cannotMove)
+      return false
+    }
+    shouldFocus.current = input === "keyboard"
+    return applyMove(plan)
+  }
+
+  // ── Reveal ───────────────────────────────────────────────────────────────
+  interface Revealing {
+    id: string
+    path: readonly string[]
+    options: TreeRevealOptions
+    resolve: (found: boolean) => void
+    pages: number
+  }
+  const revealing = useRef<Revealing | null>(null)
+  const advanceReveal = () => {
+    const job = revealing.current
+    if (!job) return
+    const finish = (found: boolean) => {
+      revealing.current = null
+      job.resolve(found)
+    }
+    const index = indexById.get(job.id)
+    const row = index === undefined ? undefined : rows[index]
+    if (index !== undefined && row) {
+      virtualizer.scrollToIndex(index, { align: job.options.align ?? "center" })
+      if (job.options.select) {
+        if (multiple) selectOnly(row, new Event("reveal"), "item-press")
+        select(row.node.id, { reason: "item-press", event: undefined, item: row.node })
+      }
+      if (job.options.focus) {
+        shouldFocus.current = true
+        setFocusedId(job.id)
+      }
+      return finish(true)
+    }
+    if (searching) return finish(false)
+    let deepest: FlatRow<TreeNode> | undefined
+    for (const ancestor of job.path) {
+      const current = rows[indexById.get(ancestor) ?? -1]
+      if (!current) break
+      deepest = current
+      if (load.failed.has(ancestor)) return finish(false)
+      if (load.loading.has(ancestor)) return
+      if (current.hasChildren && !current.expanded) return setExpanded(new Set([...expanded, ancestor]))
+    }
+    const parent = deepest?.node
+    if (parent?.hasMore && onLoadMore && job.pages > 0) {
+      if (load.moreLoading.has(parent.id)) return
+      if (load.moreFailed.has(parent.id)) return finish(false)
+      job.pages -= 1
+      return loadMore(parent)
+    }
+    if (parent && rows.some((candidate) => candidate.status === "loading" && candidate.node.id === parent.id)) return
+    finish(false)
+  }
+  const advance = useRef(advanceReveal)
+  advance.current = advanceReveal
+  useEffect(() => advance.current(), [rows, load])
+  useEffect(
+    () => () => {
+      revealing.current?.resolve(false)
+      revealing.current = null
+    },
+    []
+  )
+  const startRenameRef = useRef(startRename)
+  startRenameRef.current = startRename
+  const moveRef = useRef({ moveRow, movePlan })
+  moveRef.current = { moveRow, movePlan }
+  const nodesRef = useRef(nodes)
+  nodesRef.current = nodes
+  const handle = useMemo<TreeHandle>(() => {
+    const reveal: TreeHandle["reveal"] = (id, options = {}) => {
+      revealing.current?.resolve(false)
+      const path = options.path ?? treePath(nodesRef.current, id)
+      if (path === null) {
+        revealing.current = null
+        return Promise.resolve(false)
+      }
+      return new Promise<boolean>((resolve) => {
+        revealing.current = { id, path, options, resolve, pages: REVEAL_PAGES }
+        advance.current()
+      })
+    }
+    return {
+      reveal,
+      rename: async (id) => {
+        if (!(await reveal(id, { focus: false }))) return
+        const find = (list: readonly TreeNode[]): TreeNode | undefined => {
+          for (const node of list) {
+            if (node.id === id) return node
+            const below = node.children && find(node.children)
+            if (below) return below
+          }
+          return undefined
+        }
+        const node = find(nodesRef.current)
+        if (node) startRenameRef.current(node)
+      },
+      move: (id, direction, input = "menu") => moveRef.current.moveRow(id, direction, input),
+      canMove: (id, direction) => moveRef.current.movePlan(id, direction, "menu") !== null,
+    }
+  }, [])
+  useImperativeHandle(ref, () => handle, [handle])
+
+  // ── Dragging: plans on arithmetic, so rows out of view take part (R18.5) ──
+  const dropPlan = (clientY: number, ids: string[]): TreeDropPlan | null => {
+    const scroller = scrollRef.current
+    if (!scroller || rows.length === 0) return null
+    const offset = clientY - scroller.getBoundingClientRect().top + scroller.scrollTop
+    const item = virtualizer.getVirtualItemForOffset(offset)
+    const row = item ? rows[item.index] : undefined
+    if (!item || !row) return null
+    const fraction = (offset - item.start) / item.size
+    const target = row.status ? rows[item.index - 1] : row
+    if (!target) return null
+    const branch = target.branch && !row.status
+    const place = branch ? (fraction < 0.25 ? "before" : fraction > 0.75 && !target.expanded ? "after" : "inside") : fraction < 0.5 ? "before" : "after"
+    const siblings = childrenOf(target.parentId)
+    const after = siblings[siblings.findIndex((node) => node.id === target.node.id) + 1]?.id ?? null
+    const move = place === "inside" ? planMove(ids, target.node.id, null, "pointer") : planMove(ids, target.parentId, place === "before" ? target.node.id : after, "pointer")
+    if (!move) return null
+    const verdict = canMove?.(move)
+    return {
+      move,
+      place,
+      rowId: target.node.id,
+      top: place === "after" ? item.start + item.size : item.start,
+      level: place === "inside" ? target.level + 1 : target.level,
+      refused: verdict === false || typeof verdict === "string",
+      openable: place === "inside" && target.hasChildren && !target.expanded ? target.node.id : null,
+    }
+  }
+
   // ── Keyboard ─────────────────────────────────────────────────────────────
   const buffer = useRef({ text: "", timer: 0 as ReturnType<typeof setTimeout> | 0 })
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const row = rows[focusedIndex]
     if (!row) return
-    switch (readingKey(event.key, event.currentTarget)) {
-      case "ArrowDown":
-        moveTo(Math.min(rows.length - 1, focusedIndex + 1))
+    // A control inside trailing content keeps its keys.
+    if (event.target instanceof Element && event.target.closest(".fa-tree-trailing")) return
+    const key = readingKey(event.key, event.currentTarget)
+    const extend = multiple && event.shiftKey ? (index: number) => selectRange(index, event.nativeEvent, "keyboard") : null
+    if (multiple && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "a") {
+      event.preventDefault()
+      anchor.current = rows.find((candidate) => selectable(candidate) && !candidate.node.disabled)?.node.id ?? null
+      return selectRange(rows.length - 1, event.nativeEvent, "keyboard")
+    }
+    if (event.key === "F2" && onRename && !row.status) {
+      event.preventDefault()
+      return startRename(row.node)
+    }
+    if (onMove && event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
+      const direction = key === "ArrowUp" ? "up" : key === "ArrowDown" ? "down" : key === "ArrowRight" ? "in" : key === "ArrowLeft" ? "out" : null
+      if (direction) {
+        event.preventDefault()
+        moveRow(row.node.id, direction, "keyboard")
+        return
+      }
+    }
+    switch (key) {
+      case "ArrowDown": {
+        const next = Math.min(rows.length - 1, focusedIndex + 1)
+        moveTo(next)
+        extend?.(next)
         break
-      case "ArrowUp":
-        moveTo(Math.max(0, focusedIndex - 1))
+      }
+      case "ArrowUp": {
+        const next = Math.max(0, focusedIndex - 1)
+        moveTo(next)
+        extend?.(next)
         break
+      }
       case "Home":
         moveTo(0)
+        extend?.(0)
         break
       case "End":
         moveTo(rows.length - 1)
+        extend?.(rows.length - 1)
         break
       case "ArrowRight":
         if (row.hasChildren && !row.expanded) toggle(row, true)
@@ -436,7 +919,8 @@ export function Tree({
         activateFromKeyboard(row, event.nativeEvent)
         break
       case " ":
-        if (row.status || selectable(row) || !row.hasChildren) activateFromKeyboard(row, event.nativeEvent)
+        if (multiple && selectable(row) && !row.node.disabled) toggleSelected(row, event.nativeEvent, "keyboard")
+        else if (row.status || selectable(row) || !row.hasChildren) activateFromKeyboard(row, event.nativeEvent)
         else toggle(row)
         break
       default: {
@@ -460,13 +944,80 @@ export function Tree({
   }
 
   const items = virtualizer.getVirtualItems()
+  const hint = onRename && onMove ? messages.renameAndMoveHint : onRename ? messages.renameHint : onMove ? messages.moveHint : null
+  const canvas = (dragRow: TreeDragRow | null, dropLine: ReactNode) => (
+    <div role="presentation" className="fa-tree-canvas" style={{ height: virtualizer.getTotalSize() }}>
+      {items.map((item) => {
+        const row = rows[item.index]
+        if (!row) return null
+        const key = rowKey(row)
+        const onFocus = () => setFocusedId(key)
+        if (row.status) return <TreeStatusRow key={item.key} row={row} start={item.start} focused={item.index === focusedIndex} onClick={() => (setFocusedId(key), runStatus(row))} onFocus={onFocus} />
+        const canSelect = selectable(row)
+        return (
+          <TreeRow
+            key={item.key}
+            row={row}
+            start={item.start}
+            selectable={canSelect}
+            selected={canSelect && (multiple ? idSet.has(row.node.id) : row.node.id === selectedId)}
+            focused={item.index === focusedIndex}
+            busy={load.loading.has(row.node.id)}
+            counted={groupCounts}
+            renderLink={renderLink}
+            rowWrapper={rowWrapper}
+            renderContent={renderContent}
+            renderTrailing={renderTrailing}
+            check={multiple && checkboxes && canSelect}
+            renaming={row.node.id === renamingId}
+            renameError={renameError}
+            renamePending={renamePending}
+            onRenameCommit={commitRename}
+            onRenameCancel={(id) => endRename(id, true)}
+            dragRow={!searching && row.node.movable !== false ? dragRow : null}
+            movingIds={movingIds}
+            onClick={(event) => {
+              setFocusedId(key)
+              const target = event.target instanceof Element ? event.target : null
+              // A control in the trailing content keeps the click.
+              if (target?.closest(".fa-tree-trailing")?.contains(target.closest(CONTROL))) return
+              if (target?.closest(".fa-tree-rename")) return
+              if (target?.closest(".fa-tree-check")) {
+                event.preventDefault()
+                if (!row.node.disabled) toggleSelected(row, event.nativeEvent, "item-press")
+                return
+              }
+              // A disabled link, or a link's chevron, must not navigate.
+              const chevron = target !== null && target.closest(".fa-tree-chevron") !== null
+              if (row.node.disabled || (chevron && canSelect && row.hasChildren)) event.preventDefault()
+              if (chevron && canSelect && row.hasChildren) toggle(row)
+              else {
+                // A modified click extends the selection; it does not open a link in a new tab.
+                if (multiple && canSelect && (event.shiftKey || event.ctrlKey || event.metaKey)) event.preventDefault()
+                activate(row, event.nativeEvent)
+              }
+            }}
+            onDoubleClick={(event) => {
+              if (!canSelect || !row.hasChildren || row.node.disabled) return
+              if (event.target instanceof Element && event.target.closest(".fa-tree-chevron, .fa-tree-trailing, .fa-tree-rename, .fa-tree-check")) return
+              toggle(row)
+            }}
+            onFocus={onFocus}
+          />
+        )
+      })}
+      {dropLine}
+    </div>
+  )
   return (
-    <div className={cx("fa-tree", className)}>
+    <div className={cx("fa-tree", className)} data-trailing={renderTrailing ? trailingVisibility : undefined}>
       <div
         ref={scrollRef}
         className="fa-tree-scroll"
         role="tree"
         aria-label={label}
+        aria-multiselectable={multiple || undefined}
+        aria-describedby={hint ? hintId : undefined}
         tabIndex={-1}
         onKeyDown={onKeyDown}
         onFocus={() => (focusWithin.current = true)}
@@ -474,46 +1025,23 @@ export function Tree({
           // A row removed while focused blurs with no target: the tree keeps focus to hand on.
           if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) focusWithin.current = false
         }} data-scroll-container data-scrolled-top={edges.top ? "" : undefined} data-scrolled-bottom={edges.bottom ? "" : undefined}>
-        <div role="presentation" className="fa-tree-canvas" style={{ height: virtualizer.getTotalSize() }}>
-          {items.map((item) => {
-            const row = rows[item.index]
-            if (!row) return null
-            const key = rowKey(row)
-            const onFocus = () => setFocusedId(key)
-            if (row.status) return <TreeStatusRow key={item.key} row={row} start={item.start} focused={item.index === focusedIndex} onClick={() => (setFocusedId(key), runStatus(row))} onFocus={onFocus} />
-            const canSelect = selectable(row)
-            return (
-              <TreeRow
-                key={item.key}
-                row={row}
-                start={item.start}
-                selectable={canSelect}
-                selected={canSelect && row.node.id === selectedId}
-                focused={item.index === focusedIndex}
-                busy={load.loading.has(row.node.id)}
-                counted={groupCounts}
-                renderLink={renderLink}
-                rowWrapper={rowWrapper}
-                renderContent={renderContent}
-                onClick={(event) => {
-                  setFocusedId(key)
-                  // A disabled link, or a link's chevron, must not navigate.
-                  const chevron = event.target instanceof Element && event.target.closest(".fa-tree-chevron") !== null
-                  if (row.node.disabled || (chevron && canSelect && row.hasChildren)) event.preventDefault()
-                  if (chevron && canSelect && row.hasChildren) toggle(row)
-                  else activate(row, event.nativeEvent)
-                }}
-                onDoubleClick={(event) => {
-                  if (!canSelect || !row.hasChildren || row.node.disabled) return
-                  if (event.target instanceof Element && event.target.closest(".fa-tree-chevron")) return
-                  toggle(row)
-                }}
-                onFocus={onFocus}
-              />
-            )
-          })}
-        </div>
+        {onMove ? (
+          <Suspense fallback={canvas(null, null)}>
+            <TreeDrag scroller={scrollRef} label={label} type={dragType} plan={dropPlan} open={(id) => setExpanded(new Set([...expanded, id]))} commit={applyMove} keepIds={keepIds} springMs={SPRING_OPEN_MS} liveHost={liveHost}>
+              {canvas}
+            </TreeDrag>
+          </Suspense>
+        ) : (
+          canvas(null, null)
+        )}
       </div>
+      {hint ? (
+        <span id={hintId} hidden>
+          {hint}
+        </span>
+      ) : null}
+      {onMove || onRename || selectionLimit !== undefined ? <span ref={announcer} className="fa-tree-announcer" aria-live="polite" aria-atomic="true" /> : null}
+      {onMove ? <span ref={setLiveHost} /> : null}
       {/* Probes: one row of each kind, measured so virtual sizes follow tokens and density. */}
       <div className="fa-tree-probes" aria-hidden>
         <div ref={groupProbe}>
@@ -546,6 +1074,18 @@ interface TreeRowProps {
   renderLink?: TreeProps["renderLink"]
   rowWrapper?: TreeProps["rowWrapper"]
   renderContent?: TreeProps["renderContent"]
+  renderTrailing?: TreeProps["renderTrailing"]
+  /** Show the selection check mark. */
+  check: boolean
+  /** The row's label is the rename field. */
+  renaming: boolean
+  renameError: string | null
+  renamePending: boolean
+  onRenameCommit: (node: TreeNode, value: string, refocus: boolean) => void
+  onRenameCancel: (id: string) => void
+  /** Attaches the row to the drag, once that has loaded. */
+  dragRow: TreeDragRow | null
+  movingIds: (id: string) => string[]
   /** Called with the row's click event: select the row, or toggle a group. */
   onClick: (event: MouseEvent<HTMLElement>) => void
   /** Called with the row's double-click event: a selectable branch toggles. */
@@ -559,9 +1099,10 @@ interface TreeRowProps {
  * endpoint, or a branch when branches are selectable) it selects, and a selectable branch's
  * chevron toggles.
  */
-function TreeRow({ row, start, selectable, selected, focused, busy, counted, renderLink, rowWrapper, renderContent, onClick, onDoubleClick, onFocus }: TreeRowProps) {
+function TreeRow({ row, start, selectable, selected, focused, busy, counted, renderLink, rowWrapper, renderContent, renderTrailing, check, renaming, renameError, renamePending, onRenameCommit, onRenameCancel, dragRow, movingIds, onClick, onDoubleClick, onFocus }: TreeRowProps) {
   const statusMessages = useMessages(badgeMessages)
   const { node } = row
+  const rename = renaming ? <TreeRenameField node={node} error={renameError} pending={renamePending} onCommit={(value, refocus) => onRenameCommit(node, value, refocus)} onCancel={() => onRenameCancel(node.id)} /> : null
   const style = { "--_level": row.level, transform: `translateY(${start}px)` } as CSSProperties
   const twoLine = !row.branch && Boolean(node.description || row.keywordMatch)
   // A keyword match shows the keyword in place of the description.
@@ -570,13 +1111,21 @@ function TreeRow({ row, start, selectable, selected, focused, busy, counted, ren
   ) : (
     <Highlight text={node.description ?? ""} range={row.descriptionMatch} />
   )
-  const custom = renderContent?.(node, {
-    label: <Highlight text={node.label} range={row.labelMatch} />,
+  const content: TreeRowContent = {
+    label: rename ?? <Highlight text={node.label} range={row.labelMatch} />,
     description: twoLine ? description : null,
     matched: Boolean(row.labelMatch || row.descriptionMatch || row.keywordMatch),
     level: row.level,
     group: row.branch,
-  })
+  }
+  const custom = renderContent?.(node, content)
+  const trailing = renderTrailing?.(node, content)
+  const tail = trailing !== undefined && trailing !== null ? <span className="fa-tree-trailing" data-dnd-ignore="">{trailing}</span> : null
+  const mark = check ? (
+    <span className="fa-tree-check" aria-hidden data-checked={selected ? "" : undefined}>
+      {selected ? <IconCheck /> : null}
+    </span>
+  ) : null
   // A lazily loaded or paged branch shows no count: it would count only what has loaded.
   const count = counted && row.hasChildren && node.hasChildren === undefined && !node.hasMore ? <CountBadge value={row.leaves} className="fa-tree-count" /> : null
   const chevron = row.hasChildren ? (
@@ -589,20 +1138,25 @@ function TreeRow({ row, start, selectable, selected, focused, busy, counted, ren
   const children = custom ? (
     <>
       {chevron}
+      {mark}
       {custom}
       {count}
+      {tail}
     </>
   ) : (
     <>
       {chevron}
+      {mark}
       <span className="fa-tree-icon">
         {node.icon ?? (row.branch ? <IconFolder /> : <IconFile />)}
         {node.status ? <StatusDot status={node.status} label={statusMessages[node.status]} overlay /> : null}
       </span>
       <span className="fa-tree-text">
-        <span className="fa-tree-label" title={node.label}>
-          <Highlight text={node.label} range={row.labelMatch} />
-        </span>
+        {rename ?? (
+          <span className="fa-tree-label" title={node.label}>
+            <Highlight text={node.label} range={row.labelMatch} />
+          </span>
+        )}
         {twoLine ? (
           <span className="fa-tree-description" title={row.keywordMatch?.text ?? node.description}>
             {description}
@@ -610,6 +1164,7 @@ function TreeRow({ row, start, selectable, selected, focused, busy, counted, ren
         ) : null}
       </span>
       {count}
+      {tail}
     </>
   )
   const props: TreeRowRenderProps = {
@@ -634,10 +1189,101 @@ function TreeRow({ row, start, selectable, selected, focused, busy, counted, ren
     onFocus,
     children,
   }
-  const linked = selectable && renderLink ? renderLink(node, props) : null
-  // oxlint-disable-next-line jsx-a11y/click-events-have-key-events -- keys are handled once on the tree (roving focus)
-  const element = linked ?? <div {...props} />
-  return rowWrapper ? rowWrapper(node, element) : element
+  const build = (ref: Ref<HTMLElement> | undefined) => {
+    // Not in the public type: it stays spreadable onto any router's link element.
+    const attached = (ref ? { ...props, ref } : props) as TreeRowRenderProps
+    // A field cannot sit inside a link, so a row being renamed is plain for the moment.
+    const linked = selectable && renderLink && !renaming ? renderLink(node, attached) : null
+    // oxlint-disable-next-line jsx-a11y/click-events-have-key-events -- keys are handled once on the tree (roving focus)
+    const element = linked ?? <div {...attached} />
+    return rowWrapper ? rowWrapper(node, element) : element
+  }
+  if (!dragRow || renaming || node.disabled) return build(undefined)
+  const DragRow = dragRow
+  return <DragRow id={node.id} label={node.label} ids={movingIds} render={build} />
+}
+
+/** The label as a field. It takes focus once and holds it while the list scrolls or refreshes. */
+function TreeRenameField({ node, error, pending, onCommit, onCancel }: { node: TreeNode; error: string | null; pending: boolean; onCommit: (value: string, refocus: boolean) => void; onCancel: () => void }) {
+  const messages = useMessages(treeMessages)
+  const errorId = useId()
+  const input = useRef<HTMLInputElement>(null)
+  const cancelled = useRef(false)
+  useIsomorphicLayoutEffect(() => {
+    const element = input.current
+    if (!element) return
+    element.focus({ preventScroll: true })
+    // The name without its extension, as a file manager does.
+    const dot = node.label.lastIndexOf(".")
+    element.setSelectionRange(0, dot > 0 ? dot : node.label.length)
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- once, when the field opens
+  }, [])
+  return (
+    <span className="fa-tree-rename">
+      <input
+        ref={input}
+        className="fa-tree-rename-input"
+        defaultValue={node.label}
+        readOnly={pending}
+        aria-label={messages.rename(node.label)}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errorId : undefined}
+        onKeyDown={(event) => {
+          // Typing belongs to the field: not to the tree's typeahead, and Escape to nothing above.
+          event.stopPropagation()
+          if (event.nativeEvent.isComposing) return
+          if (event.key === "Enter") {
+            event.preventDefault()
+            onCommit(event.currentTarget.value, true)
+          } else if (event.key === "Escape") {
+            event.preventDefault()
+            event.nativeEvent.stopPropagation()
+            cancelled.current = true
+            onCancel()
+          }
+        }}
+        onBlur={(event) => {
+          // Another window taking focus leaves the field as it is.
+          if (cancelled.current || !document.hasFocus()) return
+          onCommit(event.currentTarget.value, false)
+        }}
+      />
+      {error ? (
+        <span id={errorId} className="fa-tree-rename-error" role="alert">
+          {error}
+        </span>
+      ) : null}
+    </span>
+  )
+}
+
+/** Props for {@link TreeMoveItems}. */
+export interface TreeMoveItemsProps {
+  /** The Tree's handle. */
+  tree: { readonly current: TreeHandle | null }
+  /** The row the menu is for. */
+  id: string
+}
+
+/**
+ * Move Up, Down, In and Out as menu rows, for a row's context menu or ⋯ menu: the
+ * single-pointer alternative to dragging (WCAG 2.5.7). The same moves as the keyboard.
+ */
+export function TreeMoveItems({ tree, id }: TreeMoveItemsProps) {
+  const messages = useMessages(treeMessages)
+  const row = (direction: TreeMoveDirection, label: string) => (
+    <Menu.Item disabled={!tree.current?.canMove(id, direction)} onClick={() => tree.current?.move(id, direction, "menu")}>
+      {label}
+    </Menu.Item>
+  )
+  return (
+    <>
+      {row("up", messages.moveUp)}
+      {row("down", messages.moveDown)}
+      {row("in", messages.moveIn)}
+      {row("out", messages.moveOut)}
+    </>
+  )
 }
 
 /**

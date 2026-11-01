@@ -158,6 +158,14 @@
       "types": "./dist/ui/kanban/index.d.ts",
       "import": "./dist/ui/kanban/index.js"
     },
+    "./keymap": {
+      "types": "./dist/ui/keymap/index.d.ts",
+      "import": "./dist/ui/keymap/index.js"
+    },
+    "./status-bar": {
+      "types": "./dist/ui/status-bar/index.d.ts",
+      "import": "./dist/ui/status-bar/index.js"
+    },
     "./tree": {
       "types": "./dist/ui/tree/index.d.ts",
       "import": "./dist/ui/tree/index.js"

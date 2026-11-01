@@ -2,7 +2,7 @@ import { useMessages } from "../../lib/i18n/index.js"
 import { kbdMessages } from "./messages.js"
 import { useSyncExternalStore, type ComponentProps } from "react"
 import { cx } from "../../lib/cx.js"
-import { ariaShortcut, characterShortcutsEnabled, detectPlatform, formatShortcut, shortcutKeys, subscribeShortcutConfig, type Platform } from "./shortcut.js"
+import { ariaShortcut, characterShortcutsEnabled, detectPlatform, formatShortcut, isChord, shortcutKeys, shortcutSteps, subscribeShortcutConfig, type Platform } from "./shortcut.js"
 
 const noop = () => () => {}
 
@@ -23,7 +23,7 @@ export function useCharacterShortcuts(): boolean {
 }
 
 export interface KbdProps extends Omit<ComponentProps<"kbd">, "children"> {
-  /** A shortcut such as "mod+k", "mod+shift+r", "shift+f10" or a single key ("esc"). */
+  /** A shortcut such as "mod+k", "mod+shift+r", "shift+f10", a single key ("esc") or a chord, whose steps are separated by a space ("mod+k mod+s"). */
   keys: string
   /**
    * `keys` draws keycaps (help text, palette hints). `text` is the quiet inline form used
@@ -35,6 +35,7 @@ export interface KbdProps extends Omit<ComponentProps<"kbd">, "children"> {
 
 /**
  * A keyboard shortcut, formatted for the viewer's platform: ⌘K on macOS, Ctrl K elsewhere.
+ * A chord shows each step in turn, set apart: Ctrl K, then Ctrl S.
  * The text is announced in its platform form; `aria-keyshortcuts` belongs on the control
  * the shortcut triggers, not here.
  */
@@ -48,19 +49,28 @@ export function Kbd({ keys, variant = "keys", size = "md", className, ...rest }:
       </kbd>
     )
   }
+  const caps = (shortcut: string) =>
+    shortcutKeys(shortcut, platform, messages).map((cap, index) => (
+      <kbd key={`${cap}-${index}`} className="fa-kbd-key">
+        {cap}
+      </kbd>
+    ))
+  const steps = shortcutSteps(keys)
   return (
-    <kbd {...rest} className={cx("fa-kbd", className)} data-variant="keys" data-size={size}>
-      {shortcutKeys(keys, platform, messages).map((cap, index) => (
-        <kbd key={`${cap}-${index}`} className="fa-kbd-key">
-          {cap}
-        </kbd>
-      ))}
+    <kbd {...rest} className={cx("fa-kbd", className)} data-variant="keys" data-size={size} data-chord={steps.length > 1 ? "" : undefined}>
+      {steps.length > 1
+        ? steps.map((step, index) => (
+            <span key={`${step}-${index}`} className="fa-kbd-step">
+              {caps(step)}
+            </span>
+          ))
+        : caps(keys)}
     </kbd>
   )
 }
 
-/** aria-keyshortcuts value for the current platform. */
+/** aria-keyshortcuts value for the current platform; undefined for a chord, which the attribute cannot say. */
 export function useAriaShortcut(keys: string | undefined) {
   const platform = usePlatform()
-  return keys ? ariaShortcut(keys, platform) : undefined
+  return keys && !isChord(keys) ? ariaShortcut(keys, platform) : undefined
 }

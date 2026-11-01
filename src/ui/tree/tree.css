@@ -148,6 +148,132 @@
     margin-inline-start: auto;
   }
 
+  /* Content at the row's end, from renderTrailing. */
+  .fa-tree-trailing {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+    margin-inline-start: auto;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Shown on hover, focus and selection; the room stays, so nothing moves (R9.6). */
+  .fa-tree[data-trailing="hover"] .fa-tree-row:not(:hover, :focus-visible, [data-selected]) .fa-tree-trailing {
+    opacity: 0;
+  }
+  @media (hover: none) {
+    .fa-tree[data-trailing="hover"] .fa-tree-row .fa-tree-trailing {
+      opacity: 1;
+    }
+  }
+
+  /* The selection check mark, for touch: a border, so forced colours keep it. */
+  .fa-tree-check {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    border: var(--border-width) solid color-mix(in oklab, var(--fg-subtle) 55%, transparent);
+    border-radius: var(--radius-check);
+    color: var(--accent-fg);
+  }
+  .fa-tree-check[data-checked] {
+    border-color: var(--accent);
+    background-color: var(--accent);
+  }
+  .fa-tree-check > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-tree-check::after {
+    content: "";
+    position: absolute;
+    inset: calc((100% - var(--target-aa)) / 2);
+  }
+
+  /* Renaming: the field takes the label's place at the label's height. */
+  .fa-tree-rename {
+    position: relative;
+    display: block;
+    min-width: 0;
+  }
+  .fa-tree-rename-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: var(--type-body-line);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-compact);
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    background-color: var(--glass-fill-inset);
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-tree-rename-input[aria-invalid] {
+    outline-color: var(--danger);
+  }
+  .fa-tree-rename-error {
+    position: absolute;
+    inset-block-start: calc(100% + var(--space-1));
+    inset-inline-start: 0;
+    z-index: var(--z-raised);
+    padding: var(--space-half) var(--space-1-5);
+    border-radius: var(--radius-compact);
+    background-color: var(--danger);
+    color: var(--danger-fg);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+  }
+  .fa-tree-row:has(.fa-tree-rename) {
+    z-index: var(--z-raised);
+  }
+
+  /* Where a dragged row would land. Moved with a transform, never by a render (R18.5). */
+  .fa-tree-drop-line {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: calc(var(--space-1-5) + (var(--_level, 1) - 1) * var(--_indent)) 0;
+    height: var(--_bar-w);
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+    pointer-events: none;
+  }
+  .fa-tree-drop-line[data-refused] {
+    background-color: var(--danger);
+  }
+  .fa-tree-row[data-drop-inside] {
+    background-color: var(--accent-soft);
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-tree-drag-preview {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1-5) var(--space-3);
+    border-radius: var(--radius-control);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    white-space: nowrap;
+  }
+  .fa-tree-announcer {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   /* Rows that stand in for a branch's children: loading, an error with Retry, "Load more". */
   .fa-tree-row[data-status] .fa-tree-label {
     color: var(--fg-muted);

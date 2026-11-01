@@ -3,6 +3,18 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## Unreleased
+
+No code changes are required. Behaviour to review:
+
+- `WindowFrame.StatusItem`'s label class is `fa-status-bar-label`, not
+  `fa-window-status-label`. Other status classes stay, and each part also gains its
+  `fa-status-bar-*` class.
+- A shortcut with spaces now displays each step: `formatShortcut("g e", "other")` is "G E",
+  not "G e", and `useAriaShortcut` returns undefined for one.
+- A palette command whose `shortcut` is a chord no longer fires on its last step alone; run
+  it through a KeymapProvider.
+
 ## 0.13.0 → 0.13.1
 
 No code changes are required. Behaviour to review:

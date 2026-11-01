@@ -37,7 +37,7 @@ A11y      role="log" without per-token chatter: completed answers are announced 
 | label | `string \| undefined` | See type | no | — | Accessible name. |
 | landing | `ReactNode` | See type | no | — | The empty conversation: shown centred above the composer until the first message (the hero). While set, the composer sits with it in the middle; when it clears, the same composer moves to its floating place at the bottom. |
 | landingFooter | `ReactNode` | See type | no | — | Under the composer on the landing: suggestions. |
-| surface | `AiSurface \| undefined` | "canvas", "panel", "float" | no | "panel" | canvas: the full-page conversation · panel: docked panes, windows, the gallery. |
+| surface | `AiSurface \| undefined` | "canvas", "float", "panel" | no | "panel" | canvas: the full-page conversation · panel: docked panes, windows, the gallery. |
 | turns | `TurnAnchor[] \| undefined` | See type | no | — | Prompts for the turn navigator (shown when the log is wide enough). |
 
 Inherited properties:

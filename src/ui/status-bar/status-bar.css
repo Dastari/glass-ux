@@ -1,0 +1,186 @@
+/*
+ * StatusBar — live state along the foot of a view or window (R14.6). WindowFrame's status
+ * bar is built on this: `--_pad` is the window's inline padding when there is one.
+ *
+ * Gives way in a stated order (R7.4): ranked items move into More (status-bar.tsx), then the
+ * end group truncates, then the start group; an item with a tone never shrinks.
+ */
+@layer components {
+  .fa-status-bar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--control-h-sm);
+    padding: var(--space-1) var(--_pad, var(--space-4)) var(--space-1-5);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    transition: box-shadow var(--duration-fast) var(--ease-standard);
+  }
+  /* Standalone it holds its own box: a long value never widens the view (the window clips). */
+  .fa-status-bar:not(.fa-window-status) {
+    width: 100%;
+    min-width: 0;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+  }
+  .fa-status-bar-group,
+  .fa-status-bar-start {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-status-bar-item {
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-width: 0;
+  }
+  /* The state itself (the toned item) never truncates; metadata gives way first. */
+  .fa-status-bar-item[data-tone] {
+    flex: none;
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+  }
+  .fa-status-bar-label {
+    min-width: 0;
+  }
+  /* :not(:first-child) rather than `* + *`: a universal sibling selector re-styles the
+     siblings of every node inserted anywhere in the document (docs/performance.md). */
+  .fa-status-bar-item:not([data-gave-way]) ~ .fa-status-bar-item::before,
+  .fa-status-bar-end > :where(:not(:first-child))::before {
+    content: "·";
+    margin-inline-end: var(--space-2);
+    color: var(--fg-subtle);
+    font-weight: var(--weight-regular);
+  }
+  .fa-status-bar-end {
+    display: inline-flex;
+    flex: 0 100 auto;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    margin-inline-start: auto;
+    color: var(--fg-subtle);
+  }
+  /* Truncation has a floor, so a value never shrinks to nothing (R7.4): the start group goes next. */
+  .fa-status-bar:not(.fa-window-status) .fa-status-bar-end {
+    min-width: var(--space-10);
+  }
+  .fa-status-bar-end > * {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-status-bar-end > [data-interactive] {
+    overflow: visible;
+  }
+  /* Attributes of its own, not `hidden`: resets make that !important, and it must be measured. */
+  .fa-status-bar-item[data-gave-way],
+  .fa-status-bar-more[data-idle] {
+    display: none;
+  }
+
+  /* An interactive item: the same line of text, with a hit area and the shared states. */
+  .fa-status-bar-item[data-interactive] {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-compact);
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  .fa-status-bar-item[data-interactive]:not([aria-disabled="true"]):hover {
+    color: var(--fg);
+  }
+  .fa-status-bar-item[data-interactive]:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+  }
+  .fa-status-bar-item[data-interactive][aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: var(--disabled-opacity);
+  }
+  .fa-status-bar-item[data-interactive]::after,
+  .fa-status-bar-more::after {
+    content: "";
+    position: absolute;
+    inset-block: calc((100% - var(--target-aa)) / 2);
+    inset-inline: 0;
+  }
+
+  .fa-status-bar-more {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--control-h-xs);
+    height: var(--control-h-xs);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-compact);
+    background: none;
+    color: var(--fg-muted);
+    cursor: pointer;
+  }
+  .fa-status-bar-more:hover,
+  .fa-status-bar-more[data-popup-open] {
+    background-color: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-status-bar-more:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+  }
+  .fa-status-bar-more > .fa-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+
+  /* One read per observer callback: everything at its natural width (useGiveWay). A group
+     outside a bar, as in a window's status slot, measures itself the same way. */
+  :is(.fa-status-bar, .fa-status-bar-group)[data-measuring] {
+    flex: none;
+    width: max-content;
+    max-width: none;
+  }
+  [data-measuring] :is(.fa-status-bar-start, .fa-status-bar-group, .fa-status-bar-end) {
+    flex: none;
+  }
+  [data-measuring] .fa-status-bar-item,
+  [data-measuring] .fa-status-bar-item[data-gave-way] {
+    display: inline-flex;
+    flex: none;
+  }
+  [data-measuring] .fa-status-bar-more[data-idle] {
+    display: inline-grid;
+  }
+  /* The separators too, or the width would depend on what is hidden now. */
+  [data-measuring] .fa-status-bar-item ~ .fa-status-bar-item::before {
+    content: "·";
+    margin-inline-end: var(--space-2);
+    font-weight: var(--weight-regular);
+  }
+
+  /* What gave way, in the More popup: one fact per line. */
+  .fa-status-bar-overflow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-status-bar-overflow .fa-status-bar-item::before {
+    content: none;
+  }
+}

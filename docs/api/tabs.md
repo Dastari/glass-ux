@@ -38,7 +38,14 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string \| undefined` | See type | no | — | Names the tab list for assistive tech, e.g. "NST-C106 sections". |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| dragType | `string \| undefined` | See type | no | — | What a dragged tab carries. Strips with the same type under one DragDropProvider exchange tabs, and a DropZone with this `accept` anywhere under it takes them as an ordinary drop: `event.item.id` is the value and `event.item.data` is {@link TabDragData}. Each value must be unique under the provider. A strip with no provider above brings its own. |
 | items | `TabItem[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
+| onClose | `((value: string, details: TabCloseDetails) => void) \| undefined` | See type | no | — | A closable tab asks to close: from its close mark, a middle-click, Delete, its context menu or the strip's Close button. Remove it from `items` to close it, or keep it (ask first when it is `unsaved`, R13.7). When the active tab goes, its neighbour is selected, and focus that was on it moves to the tab now in its place. |
+| onKeep | `((value: string) => void) \| undefined` | See type | no | — | A `preview` tab should stay: double-clicked, or Keep open in its menu. Clear `preview` in response. |
+| onTabMove | `((move: TabMove) => void) \| undefined` | See type | no | — | Makes tabs reorderable: by drag on a pointer that hovers, Shift with the arrow keys (in reading direction), Shift+Home and Shift+End, and Move rows in the context menu, the single-pointer route (WCAG 2.5.7). The strip owns no list: each move reports here, once, on the strip it lands on, and `items` changes when you change it. A keyboard move selects the tab, so it stays visible (R6.6). Dragging is off where nothing hovers (touch). |
+| panelId | `((value: string) => string \| undefined) \| undefined` | See type | no | — | The id of a tab's panel when panels render outside `Tabs.Panel`: sets the tab's `aria-controls`. Return undefined for a panel that is not in the document, since the attribute must name an element that exists. |
+| ref | `Ref<TabListHandle> \| undefined` | See type | no | — | The strip's handle: {@link TabListHandle}. |
+| zoneId | `string \| undefined` | See type | no | — | This strip's id in the drag system, and `from` and `to` in {@link TabMove}. Default generated. |
 
 ## Tabs.Panel
 

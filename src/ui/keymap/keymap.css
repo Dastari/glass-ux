@@ -1,0 +1,122 @@
+/*
+ * Keymap — the chord in progress, and the shortcut help dialog. The announcer is visually
+ * hidden and always mounted (R20.9); the floating label sits above the foot of the screen,
+ * over content, so a chord moves nothing.
+ */
+@layer components {
+  .fa-keymap-announcer {
+    position: fixed;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .fa-keymap-float {
+    position: fixed;
+    inset-block-end: calc(var(--space-6) + env(safe-area-inset-bottom));
+    inset-inline-start: 50%;
+    z-index: var(--z-toast);
+    padding: var(--space-1-5) var(--space-3);
+    border-radius: var(--radius-control);
+    translate: -50% 0;
+    pointer-events: none;
+  }
+  .fa-keymap-float:dir(rtl) {
+    translate: 50% 0;
+  }
+  .fa-keymap-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+  }
+
+  .fa-keymap-search {
+    flex: none;
+    padding: 0 var(--inset-dialog) var(--space-2);
+  }
+  .fa-keymap-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .fa-keymap-group + .fa-keymap-group {
+    margin-block-start: var(--gap-section);
+  }
+  .fa-keymap-rows {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-keymap-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: var(--space-1) var(--space-3);
+    min-height: var(--item-h);
+  }
+  .fa-keymap-label {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-keymap-reason {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-keymap-keys {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2);
+  }
+  .fa-keymap-unset {
+    color: var(--fg-subtle);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-keymap-actions {
+    display: inline-flex;
+    gap: var(--space-half);
+  }
+  .fa-keymap-recorder {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    align-items: center;
+    gap: var(--space-2);
+    padding-block-end: var(--space-2);
+  }
+  .fa-keymap-input {
+    flex: 1 1 0;
+    min-width: 0;
+    height: var(--control-h-sm);
+    padding-inline: var(--space-2);
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-control);
+    background-color: var(--glass-fill-inset);
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-body-size);
+    caret-color: transparent;
+  }
+  .fa-keymap-input:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+  }
+  .fa-keymap-note {
+    flex: 1 0 100%;
+    min-height: var(--type-caption-line);
+    margin: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+}

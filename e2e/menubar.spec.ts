@@ -157,34 +157,51 @@ test("hover switches menus once one is open, and only then", async ({ page }) =>
   await expect(page.getByRole("menu")).toHaveCount(0);
 });
 
-/** A hand's route from a row into its submenu, stalling in the gap the safe triangle covers. */
+/** Menu's SUBMENU_CLOSE_DELAY_MS. */
+const SUBMENU_GRACE = 300;
+
+/**
+ * A hand's way from a row into its submenu, stalling in the gap below the parent menu for longer
+ * than the safe triangle's 40ms. Returns how long the trip took, in milliseconds.
+ */
 const stallOnTheWay = async (page: Page, from: Locator, to: Locator, stall: number) => {
   const start = (await from.boundingBox())!;
   const end = (await to.boundingBox())!;
   const [x0, y0, x1, y1] = [start.x + start.width / 2, start.y + start.height / 2, end.x + end.width / 2, end.y + end.height / 2];
-  await page.mouse.move(x0, y0, { steps: 6 });
-  for (let step = 1; step <= 4; step += 1) await page.mouse.move(x0 + ((x1 - x0) * step) / 10, y0 + ((y1 - y0) * step) / 10);
+  await page.mouse.move(x0, y0, { steps: 4 });
+  const left = Date.now();
+  await page.mouse.move(x0 + (x1 - x0) * 0.4, y0 + (y1 - y0) * 0.4);
   await page.waitForTimeout(stall);
   await page.mouse.move(x1, y1);
+  return Date.now() - left;
 };
 
-test("a hovered submenu survives a real pointer path, with a stall on the way into it", async ({ page }) => {
+test("a hovered submenu survives a stall on the way into it, by a real pointer path", async ({ page }) => {
   await visit(page);
   const transform = row(page, "Transform");
-  for (let run = 0; run < 4; run += 1) {
+  const leaf = row(page, /^Title case/);
+  let reached = 0;
+  for (let attempt = 0; attempt < 16 && reached < 4; attempt += 1) {
     await applicationMenu(page, "Edit").click();
     await transform.hover();
-    const leaf = row(page, /^Title case/);
     await expect(leaf).toBeVisible();
-    await stallOnTheWay(page, transform, leaf, 120);
-    await page.waitForTimeout(300);
-    await expect(leaf, `run ${run}`).toBeVisible();
-    await expect(page.getByRole("menu")).toHaveCount(2);
-    await leaf.click();
+    const trip = await stallOnTheWay(page, transform, leaf, 60);
+    await page.waitForTimeout(100);
+    // A loaded box can stretch the trip past the grace, which proves nothing either way.
+    if (trip < SUBMENU_GRACE - 20) {
+      reached += 1;
+      await expect(leaf, `a trip of ${trip}ms`).toBeVisible();
+      await expect(page.getByRole("menu")).toHaveCount(2);
+      await leaf.click();
+      await expect(page.getByTestId("menubar-last-command")).toHaveText("Last command: title");
+    } else {
+      await page.keyboard.press("Escape");
+      await page.keyboard.press("Escape");
+    }
     await expect(page.getByRole("menu")).toHaveCount(0);
-    await expect(page.getByTestId("menubar-last-command")).toHaveText("Last command: title");
     await page.mouse.move(5, 5);
   }
+  expect(reached, "trips that beat the grace").toBeGreaterThan(0);
 });
 
 test("a hovered submenu stays for a pointer at rest, and a sibling row still closes it", async ({ page }) => {

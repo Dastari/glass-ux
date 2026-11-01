@@ -4,6 +4,24 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.13.1
+
+Two Sidebar fixes, and the documentation site's directory moved onto the Sidebar.
+
+### Fixed
+
+- Sidebar: the docked sidebar's landmark (`nav`, or `aside` with `as="aside"`) is now its
+  outer element, so the resize rail beside the pane is inside it. Before, a resizable
+  sidebar placed outside `<main>` left its rail outside every landmark (axe `region`). The
+  phone sheet is unchanged. Queries by role and name find the same landmark.
+- Sidebar: nested sidebars that share a shortcut no longer all toggle together. The innermost
+  one whose provider holds focus takes it; with focus in none of them, the outermost does.
+
+### Documentation
+
+- The documentation site's directory is a Sidebar: ⌘B / Ctrl B or the header button
+  collapses it, the rail resizes it (remembered), and on phones it is the Sidebar's sheet.
+
 ## 0.13.0
 
 A standalone Sidebar that AppShell's section drawer is now built on, Sheet snap points and

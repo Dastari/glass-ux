@@ -3,6 +3,15 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.13.0 → 0.13.1
+
+No code changes are required. Behaviour to review:
+
+- A docked Sidebar's landmark (`nav`, or `aside` with `as="aside"`) is now its outer element.
+  Role and name queries find the same landmark; a test that walks from the landmark to the
+  pane's DOM parent will see one more level.
+- With nested sidebars that share a shortcut, one sidebar now toggles rather than all of them.
+
 ## 0.12.1 → 0.13.0
 
 No code changes are required; AppShell, SectionDrawer and Sheet keep their props and exports.

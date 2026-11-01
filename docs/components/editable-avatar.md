@@ -7,7 +7,7 @@ on the top corner of an `xl` (56px) or `2xl` (96px) avatar; smaller avatars are 
 themselves. The button opens `AvatarDialog`, where people drop, browse for or paste a photo,
 position it in a round crop and save. Dropping a photo on the avatar opens the dialog with it.
 The library never uploads anything: `onSave` receives the cropped image and the application
-stores it.
+stores it. For other shapes and images, see [Image cropper](image-cropper.md).
 
 ```tsx
 import { EditableAvatar } from "glass-ux/avatar"

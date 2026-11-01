@@ -52,6 +52,7 @@ import { MultiSelect } from "../multi-select/index.js";
 import { NumberField, type NumberFieldProps } from "../number-field/index.js";
 import { OtpField } from "../otp-field/index.js";
 import { PasswordField } from "../password-field/index.js";
+import { ImageField } from "../image-cropper/index.js";
 import { SignatureField } from "../signature-pad/index.js";
 import { PercentField } from "../percent-field/index.js";
 import { MobileField, PhoneField } from "../phone-field/index.js";
@@ -886,6 +887,7 @@ export const { useAppForm, withForm, withFieldGroup } = /* @__PURE__ */ createFo
     PasswordField,
     OtpField,
     SignatureField,
+    ImageField,
     CoordinatesField,
     IpField,
     MacAddressField,

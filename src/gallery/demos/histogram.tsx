@@ -11,6 +11,20 @@ const sample = {
   unit: "h",
   countLabel: "Projects",
 } satisfies Omit<ComponentProps<typeof Histogram>, "label">;
+/** Fictional precomputed bins: a server's count of 256 brightness levels, two humps in fixed order. */
+const LEVELS = Array.from({ length: 256 }, (_, level) => ({
+  from: level,
+  to: level + 1,
+  count: Math.round(
+    900 * Math.exp(-(((level - 70) / 34) ** 2)) + 520 * Math.exp(-(((level - 188) / 22) ** 2)) + 40,
+  ),
+}));
+const QUARTERS = [
+  { from: 0, to: 25, count: 18 },
+  { from: 25, to: 50, count: 64 },
+  { from: 50, to: 75, count: 41 },
+  { from: 75, to: 100, count: 9 },
+];
 const render = (state: ChartState = "ready") => (
   <Histogram
     {...sample}
@@ -37,10 +51,33 @@ export default function HistogramSection() {
         </div>
       </Specimen>
       <Specimen
+        title="Precomputed bins"
+        description="Pass bins when the host has already counted them: from, to and count, touching and of equal width. Computing them stays in the host."
+        wide
+        specimenKey="chart-histogram:default:1"
+      >
+        <div className="charts-pane" data-testid="histogram-bins">
+          <Histogram
+            label="Brightness levels · fictional photograph"
+            title="Brightness"
+            bins={LEVELS}
+            countLabel="Pixels"
+          />
+        </div>
+        <div className="charts-pane" data-testid="histogram-few-bins">
+          <Histogram
+            label="Scores · fictional survey"
+            title="Scores"
+            bins={QUARTERS}
+            countLabel="Responses"
+          />
+        </div>
+      </Specimen>
+      <Specimen
         title="Responsive sizes"
         description="The same Histogram adapts to row, tile and full-panel sizes."
         wide
-        specimenKey="chart-histogram:default:1"
+        specimenKey="chart-histogram:default:2"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -48,7 +85,7 @@ export default function HistogramSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
-        specimenKey="chart-histogram:default:2"
+        specimenKey="chart-histogram:default:3"
       >
         <SkeletonSwaps id="histogram" render={render} />
         <div className="gallery-tiers">
@@ -60,7 +97,7 @@ export default function HistogramSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab specimenKey="chart-histogram:default:3">{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-histogram:default:4">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

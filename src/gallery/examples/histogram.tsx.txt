@@ -9,6 +9,20 @@ const sample = {
   unit: "h",
   countLabel: "Projects",
 } satisfies Omit<ComponentProps<typeof Histogram>, "label">;
+/** Fictional precomputed bins: a server's count of 256 brightness levels, two humps in fixed order. */
+const LEVELS = Array.from({ length: 256 }, (_, level) => ({
+  from: level,
+  to: level + 1,
+  count: Math.round(
+    900 * Math.exp(-(((level - 70) / 34) ** 2)) + 520 * Math.exp(-(((level - 188) / 22) ** 2)) + 40,
+  ),
+}));
+const QUARTERS = [
+  { from: 0, to: 25, count: 18 },
+  { from: 25, to: 50, count: 64 },
+  { from: 50, to: 75, count: 41 },
+  { from: 75, to: 100, count: 9 },
+];
 const render = (state: ChartState = "ready") => (
   <Histogram
     {...sample}
@@ -31,6 +45,28 @@ export default function HistogramSection() {
       >
         <div className="charts-pane" data-testid="chart-histogram">
           {render()}
+        </div>
+      </Specimen>
+      <Specimen
+        title="Precomputed bins"
+        description="Pass bins when the host has already counted them: from, to and count, touching and of equal width. Computing them stays in the host."
+        wide
+      >
+        <div className="charts-pane" data-testid="histogram-bins">
+          <Histogram
+            label="Brightness levels · fictional photograph"
+            title="Brightness"
+            bins={LEVELS}
+            countLabel="Pixels"
+          />
+        </div>
+        <div className="charts-pane" data-testid="histogram-few-bins">
+          <Histogram
+            label="Scores · fictional survey"
+            title="Scores"
+            bins={QUARTERS}
+            countLabel="Responses"
+          />
         </div>
       </Specimen>
       <Specimen

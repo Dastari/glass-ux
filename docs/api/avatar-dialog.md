@@ -4,7 +4,8 @@ Change a person's photo: drop, browse for or paste an image, position it in the 
 (drag, pinch, wheel or keys; the slider zooms) and save. The dialog checks the file against
 `requirements` before it can be cropped and hands the cropped square to `onSave`; the
 application uploads it. Outside presses do not close it, so a crop is never lost by a stray
-click; Cancel and Esc abort a save that is still running.
+click; Cancel and Esc abort a save that is still running. A square, round preset of
+`ImageCropDialog` that speaks of photos.
 
 `import { AvatarDialog } from "glass-ux/avatar"`
 

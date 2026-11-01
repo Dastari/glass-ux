@@ -8,6 +8,11 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `glass-ux/image-cropper`: `ImageCropper` (locked aspect or free, host presets), `ImageCropDialog`
+  (pick, check, crop, save with `{ signal, setProgress }`), `ImageField`/`ImageInput` with
+  `imageSchema` and an optional `onEdit`, and `cropToBlob`. `field.ImageField` is registered in
+  `useAppForm`.
+- Histogram: `bins` also takes precomputed `{ from, to, count }` bins. `values` is unchanged.
 - Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
   (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,
   `case-sensitive`, `whole-word`, `fold`, `unfold`, `collapse-all`), transforms (`rotate-cw`,
@@ -21,6 +26,18 @@ has upgrade steps in the [migration guide](docs/migration.md).
   `mastercard`, `mistral`, `paypal`, `salesforce`, `sentry`, `visa` and `zendesk`.
 - Icons: `align-start`, `align-end`, `reply`, `forward` and the diagonal arrows mirror in
   right-to-left layouts. Media glyphs keep their shape, as `play` does.
+
+### Changed
+
+- `AvatarDialog` and `EditableAvatar` are a preset of `ImageCropDialog`. Crop output, keys, wording
+  and exports are unchanged. The crop's class names moved from `fa-avatar-crop*` to
+  `fa-image-cropper*`.
+- `cropImage` rejects with "The image could not be encoded." rather than "The photo could not be
+  encoded." when a browser cannot encode.
+
+### Fixed
+
+- Histogram: dense bins (a column under 4px wide) no longer lose their width to the gap.
 
 ## 0.13.1
 

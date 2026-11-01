@@ -39,6 +39,7 @@ const familyRoots: Record<string, string> = {
   "file-drop": "file-drop",
   form: "form",
   "hostname-field": "hostname-field",
+  "image-cropper": "image-cropper",
   input: "input",
   "ip-field": "ip-field",
   "login-flow": "login-flow",

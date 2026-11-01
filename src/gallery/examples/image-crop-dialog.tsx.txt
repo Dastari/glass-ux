@@ -1,0 +1,49 @@
+import { useState } from "react";
+import { Button } from "glass-ux/button";
+import { ImageCropDialog, type ImageChange, type ImageSaveContext } from "glass-ux/image-cropper";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+/** A stand-in upload that reports progress in ten steps. */
+async function upload(_change: ImageChange, { signal, setProgress }: ImageSaveContext) {
+  for (let step = 1; step <= 10 && !signal.aborted; step++) {
+    await wait(80);
+    setProgress(step / 10);
+  }
+}
+
+function DialogDemo() {
+  const [saved, setSaved] = useState("Nothing saved");
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <ImageCropDialog
+        trigger={<Button>Change banner</Button>}
+        title="Change banner"
+        aspect={3}
+        fields={false}
+        output={{ width: 1500, type: "image/jpeg" }}
+        requirements={{ maxSize: 5 * 1024 * 1024, minWidth: 600, minHeight: 200 }}
+        onSave={async (change, context) => {
+          await upload(change, context);
+          setSaved(`${change.width} × ${change.height}, ${change.type}`);
+        }}
+      />
+      <output className="type-caption text-fg-muted" data-numeric>
+        {saved}
+      </output>
+    </div>
+  );
+}
+
+export default function ImageCropperSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Dialog"
+        description="Picks, checks and crops a file, then hands the result to onSave with signal and setProgress. The application uploads it."
+      >
+        <DialogDemo />
+      </Specimen>
+    </SectionPage>
+  );
+}

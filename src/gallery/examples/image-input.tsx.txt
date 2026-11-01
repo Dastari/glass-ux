@@ -1,0 +1,42 @@
+import { Field } from "glass-ux/field";
+import { FormStack } from "glass-ux/form";
+import { ImageCropper, ImageInput } from "glass-ux/image-cropper";
+import { SCENE_IMAGES } from "glass-ux/gallery/fixtures/scenes";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+const SCENE = SCENE_IMAGES.harbour;
+
+export default function ImageCropperSection() {
+  return (
+    <SectionPage>
+      <Specimen title="States" layout="grid">
+        <FormStack>
+          <Field label="Empty" nativeLabel={false}>
+            <ImageInput aspect={16 / 9} />
+          </Field>
+          <Field label="Chosen" nativeLabel={false}>
+            <ImageInput aspect={16 / 9} defaultValue={SCENE} alt="Fictional harbour" />
+          </Field>
+          <Field label="Missing" nativeLabel={false} error="Add an image">
+            <ImageInput aspect={16 / 9} invalid />
+          </Field>
+        </FormStack>
+        <FormStack>
+          <Field label="Read-only" nativeLabel={false}>
+            <ImageInput aspect={1} defaultValue={SCENE} readOnly alt="Fictional harbour" />
+          </Field>
+          <Field label="Disabled" nativeLabel={false}>
+            <ImageInput
+              aspect={1}
+              shape="round"
+              defaultValue={SCENE}
+              disabled
+              alt="Fictional harbour"
+            />
+          </Field>
+          <ImageCropper aspect={16 / 9} fields={false} disabled />
+        </FormStack>
+      </Specimen>
+    </SectionPage>
+  );
+}

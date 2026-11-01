@@ -1,0 +1,301 @@
+/*
+ * ImageCropper, ImageCropDialog and ImageField.
+ *
+ *   frame    the crop's shape inside a square of --image-cropper-frame; a locked crop fills it
+ *            and the image is placed in percentages of it, so nothing is measured
+ *   mask     a hairline; `round` dims the corners a round picture will not show
+ *   free     the whole image, shaded outside a box with eight handles. The shade clips to the
+ *            frame and the handles do not, so a box at the edge keeps its grips
+ *   zoom     the slider between zoom-out and zoom-in glyphs, as wide as the frame
+ *   status   one caption line: the limits, replaced in place by a reason or the upload bar,
+ *            so nothing below it moves
+ *   field    a tile of the crop's shape with its actions beside it; an empty field keeps the box
+ */
+@layer components {
+  .fa-image-cropper {
+    --_frame: var(--image-cropper-frame, 20rem); /* tokens:allow the crop's largest side: an image-sized square, not a spacing step */
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-image-cropper-frame {
+    position: relative;
+    width: min(100%, calc(var(--_frame) * var(--_fit, 1)));
+    aspect-ratio: var(--_aspect, 1);
+    container-type: inline-size;
+    border-radius: var(--radius-control);
+  }
+  .fa-image-cropper-frame[data-cropping]:not([data-free]) {
+    overflow: hidden;
+    background-color: var(--fill-muted);
+  }
+  .fa-image-cropper-frame:has(> .fa-image-cropper-area:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-image-cropper-frame[data-overlay] {
+    outline: var(--focus-ring-width) dashed var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-image-cropper-empty {
+    display: grid;
+    place-items: center;
+    block-size: 100%;
+    border-radius: var(--radius-control);
+    background-color: var(--fill-muted);
+    color: var(--fg-muted);
+  }
+  .fa-image-cropper-empty > .fa-icon {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+  .fa-image-cropper-area {
+    position: absolute;
+    inset: 0;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    outline: none;
+  }
+  .fa-image-cropper-area:active {
+    cursor: grabbing;
+  }
+  .fa-image-cropper-area[aria-disabled="true"] {
+    cursor: default;
+  }
+  .fa-image-cropper-image {
+    position: absolute;
+    max-width: none;
+    max-height: none;
+    pointer-events: none;
+    user-select: none;
+  }
+  .fa-image-cropper-mask {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+    pointer-events: none;
+  }
+  .fa-image-cropper-mask[data-shape="round"] {
+    border-radius: var(--radius-full);
+    box-shadow:
+      inset 0 0 0 var(--border-width) var(--line-strong),
+      0 0 0 100cqi color-mix(in oklch, var(--surface-3) 62%, transparent);
+  }
+  .fa-image-cropper-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: var(--space-3);
+    border-radius: var(--radius-control);
+    background-color: color-mix(in oklch, var(--surface-3) 80%, transparent);
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  /* Free: geometry is physical, a photo does not mirror. */
+  .fa-image-cropper-frame[data-free] > .fa-image-cropper-area {
+    cursor: default;
+  }
+  .fa-image-cropper-clip {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: var(--radius-control);
+    background-color: var(--fill-muted);
+    pointer-events: none;
+  }
+  .fa-image-cropper-whole {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    user-select: none;
+  }
+  .fa-image-cropper-shade,
+  .fa-image-cropper-box {
+    position: absolute;
+    left: var(--_box-x); /* logical:allow photo geometry does not mirror */
+    top: var(--_box-y);
+    width: var(--_box-width);
+    height: var(--_box-height);
+  }
+  .fa-image-cropper-shade {
+    box-shadow: 0 0 0 100cqi color-mix(in oklch, var(--surface-3) 62%, transparent);
+  }
+  .fa-image-cropper-box {
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+    cursor: move;
+  }
+  .fa-image-cropper-handle {
+    --_grip: var(--space-2);
+    position: absolute;
+    width: var(--_grip);
+    height: var(--_grip);
+    margin: calc(var(--_grip) / -2);
+    border: var(--border-width) solid var(--line-strong);
+    border-radius: var(--radius-mark);
+    background-color: var(--surface-1);
+  }
+  /* The hit area reaches --target-aa, and --target-min for a finger (R20.4). */
+  .fa-image-cropper-handle::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    left: 50%; /* logical:allow photo geometry does not mirror */
+    width: var(--target-aa);
+    height: var(--target-aa);
+    transform: translate(-50%, -50%);
+  }
+  @media (pointer: coarse) {
+    .fa-image-cropper-handle::after {
+      width: var(--target-min);
+      height: var(--target-min);
+    }
+  }
+  .fa-image-cropper-handle[data-handle*="n"] {
+    top: 0;
+  }
+  .fa-image-cropper-handle[data-handle*="s"] {
+    top: 100%;
+  }
+  .fa-image-cropper-handle[data-handle="n"],
+  .fa-image-cropper-handle[data-handle="s"] {
+    left: 50%; /* logical:allow photo geometry does not mirror */
+  }
+  .fa-image-cropper-handle[data-handle="e"],
+  .fa-image-cropper-handle[data-handle="w"] {
+    top: 50%;
+  }
+  .fa-image-cropper-handle[data-handle$="w"] {
+    left: 0; /* logical:allow photo geometry does not mirror */
+  }
+  .fa-image-cropper-handle[data-handle$="e"] {
+    left: 100%; /* logical:allow photo geometry does not mirror */
+  }
+  .fa-image-cropper-handle:is([data-handle="nw"], [data-handle="se"]) {
+    cursor: nwse-resize;
+  }
+  .fa-image-cropper-handle:is([data-handle="ne"], [data-handle="sw"]) {
+    cursor: nesw-resize;
+  }
+  .fa-image-cropper-handle:is([data-handle="n"], [data-handle="s"]) {
+    cursor: ns-resize;
+  }
+  .fa-image-cropper-handle:is([data-handle="e"], [data-handle="w"]) {
+    cursor: ew-resize;
+  }
+
+  .fa-image-cropper-zoom {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: min(100%, var(--_frame));
+    color: var(--fg-muted);
+  }
+  .fa-image-cropper-zoom > .fa-icon {
+    flex: none;
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-image-cropper-zoom > .fa-slider {
+    flex: 1;
+    min-width: 0;
+  }
+  .fa-image-cropper-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr)); /* tokens:allow the narrowest box a number and its steppers fit in */
+    justify-self: stretch;
+    gap: var(--space-3);
+  }
+
+  /* ── Dialog ─────────────────────────────────────────────────────────────── */
+  .fa-image-crop-dialog {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+  }
+  .fa-image-crop-dialog > :is(.fa-image-cropper, .fa-file-drop) {
+    justify-self: stretch;
+  }
+  .fa-image-crop-dialog-status {
+    display: grid;
+    align-items: center;
+    justify-self: stretch;
+    min-block-size: var(--type-caption-line);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-image-crop-dialog-status > * {
+    grid-area: 1 / 1;
+    min-width: 0;
+    margin: 0;
+  }
+  .fa-image-crop-dialog-hint {
+    color: var(--fg-muted);
+  }
+  .fa-image-crop-dialog-message {
+    color: var(--danger-text);
+    font-weight: var(--weight-medium);
+  }
+  .fa-image-crop-dialog-status:not([data-showing="hint"]) > .fa-image-crop-dialog-hint,
+  .fa-image-crop-dialog-status[data-showing="progress"] > .fa-image-crop-dialog-message {
+    visibility: hidden;
+  }
+
+  /* ── ImageField ─────────────────────────────────────────────────────────── */
+  .fa-image-input {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-image-input-dialog {
+    display: contents;
+  }
+  .fa-image-input-tile {
+    position: relative;
+    flex: none;
+    width: calc(var(--image-input-tile, 8rem) * var(--_fit, 1)); /* tokens:allow a thumbnail's largest side, not a spacing step */
+    aspect-ratio: var(--_aspect, 1);
+    overflow: hidden;
+    border-radius: var(--radius-media);
+    background-color: var(--fill-muted);
+    color: var(--fg-muted);
+  }
+  .fa-image-input-tile[data-shape="round"] {
+    border-radius: var(--radius-full);
+  }
+  .fa-image-input-tile[data-dragging] {
+    outline: var(--focus-ring-width) dashed var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-image-input[data-invalid] .fa-image-input-tile {
+    box-shadow: inset 0 0 0 var(--border-width) var(--danger);
+  }
+  .fa-image-input-tile > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .fa-image-input-tile > .fa-icon {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+  .fa-image-input-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+}

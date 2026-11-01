@@ -1,7 +1,8 @@
 # Histogram
 
-How values spread — check-in latency across the fleet. Columns touch (the 2px surface gap
-between them), the axis labels the bin edges, and the tooltip names the bin's range and
+How values spread — check-in latency across the fleet. Pass raw `values` to bin here, or
+precomputed `bins` when the host has already counted them. Columns touch (the 2px surface
+gap between them), the axis labels the bin edges, and the tooltip names the bin's range and
 count. Tiers are the column chart's.
 
 `import { Histogram } from "glass-ux/charts"`
@@ -12,7 +13,7 @@ count. Tiers are the column chart's.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| bins | `number \| undefined` | See type | no | 12 | About how many bins (d3 picks nice edges near this). |
+| bins | `number \| readonly HistogramBin[] \| undefined` | See type | no | — | About how many bins (d3 picks nice edges near this). The bins, touching and of equal width: each column is drawn the same width, and the axis labels their edges. |
 | countLabel | `string \| undefined` | See type | no | — | What is counted: "Endpoints", "Check-ins". |
 | domain | `Domain \| undefined` | See type | no | — | The x range to bin over; defaults to the data's extent. |
 | emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
@@ -24,7 +25,7 @@ count. Tiers are the column chart's.
 | state | `ChartState \| undefined` | "error", "loading", "ready", "empty" | no | — | Controlled view state, including loading, empty and error states. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | unit | `ChartUnit \| undefined` | See type | no | — | "%", "GB", "ms", or a counted noun ({ one, other })… "%" sticks to the number; other units take a space. |
-| values | `readonly number[]` | See type | yes | — | The raw values; they are binned here. |
+| values | `readonly number[] \| undefined` | See type | no | — | The raw values; they are binned here. |
 
 Inherited properties:
 

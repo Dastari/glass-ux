@@ -48,6 +48,10 @@ format in the page's `<html lang>`, then `en-US`. Set `lang` on the host page, o
 `configureLocale(tag)` from `glass-ux/locale` (on server and client for SSR). Wrap a region
 that must differ in `LocaleProvider`.
 
+To keep an appearance in the project, use `exportAppearance` and commit the `theme.ts` it writes;
+restore one with `importAppearance` (`docs/integration.md`, "Keep a theme in the project"). The
+documentation site's Templates group has whole screens to copy, built from public entries.
+
 For an existing application, migrate one coherent screen first. Check keyboard interaction,
 focus return, light/dark/Solid appearance and a narrow container before broadening the migration.
 For a new application, start with the verified root and form examples in the getting-started

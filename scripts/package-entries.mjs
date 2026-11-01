@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { relative, resolve } from "node:path";
 
 /**
  * Package specifiers for source modules. Only the named entries in package.json `exports`
@@ -29,6 +30,20 @@ export function publicSpecifier(source, entries = entrySpecifiers()) {
   if (entries.has(source)) return entries.get(source);
   if (source.startsWith("gallery/")) return `glass-ux/${source}`;
   return null;
+}
+
+/**
+ * `code` with its relative imports, written from the source folder `from`, as package
+ * specifiers. `missing(path)` throws for a module with no public path, and may refuse one.
+ */
+export function publicImports(code, from, entries, missing) {
+  return code.replace(/(from\s+["'])([^"']+)(["'])/g, (_match, before, path, after) => {
+    if (!path.startsWith(".")) return before + path + after;
+    const source = relative(resolve("src"), resolve(from, path))
+      .replaceAll("\\", "/")
+      .replace(/\.js$/, "");
+    return before + (publicSpecifier(source, entries) ?? missing(source)) + after;
+  });
 }
 
 /** Whether a package specifier resolves through package.json `exports` (patterns included). */

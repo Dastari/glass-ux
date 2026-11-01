@@ -22,6 +22,9 @@ const foundationIds = readdirSync("src/gallery/sections")
       ? [/id:\s*"([^"]+)"/.exec(source)[1]]
       : [];
   });
+const templateIds = readdirSync("src/gallery/templates")
+  .filter((file) => file.endsWith(".tsx") && file !== "application-shell.tsx")
+  .map((file) => file.replace(".tsx", ""));
 for (const route of [
   "guides/getting-started",
   "guides/integration",
@@ -31,6 +34,7 @@ for (const route of [
   "guides/testing",
   "guides/migration",
   ...foundationIds.map((id) => `foundations/${id}`),
+  ...templateIds.flatMap((id) => [`templates/${id}`, `templates/${id}/preview`]),
 ]) {
   const dir = `apps/docs/dist/${route}`;
   mkdirSync(dir, { recursive: true });

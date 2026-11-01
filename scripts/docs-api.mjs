@@ -10,6 +10,7 @@ import {
 } from "node:fs";
 import { join } from "node:path";
 import { generateComponentDemos } from "./component-demos.mjs";
+import { generateTemplateExamples } from "./template-examples.mjs";
 import {
   HTML_ATTRIBUTES_NOTE,
   listsProp,
@@ -392,6 +393,7 @@ function sectionFor(component) {
 for (const component of components) component.section = sectionFor(component);
 components.sort((a, b) => a.name.localeCompare(b.name));
 const coverage = await generateComponentDemos(program, checker, components);
+await generateTemplateExamples();
 console.log(
   `Focused demos: ${coverage.filter((c) => c.covered).length}/${coverage.length}; missing: ${coverage
     .filter((c) => !c.covered)

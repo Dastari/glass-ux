@@ -3,6 +3,7 @@ import { dirname, resolve, join } from "node:path";
 import ts from "typescript";
 import { undocumentedExports } from "./export-docs.mjs";
 import { resolvesInPackage } from "./package-entries.mjs";
+import { templateIds, templateExample } from "./template-examples.mjs";
 const components = JSON.parse(
   readFileSync("src/gallery/api.generated.json", "utf8"),
 );
@@ -62,6 +63,16 @@ for (const component of components) {
     for (const prop of part.props)
       if (!prop.inherited && !prop.description)
         failures.push(`${component.name}.${prop.name}: no description`);
+}
+// A template's public source is regenerated from its screen, and the screen uses package entries only.
+for (const id of await templateIds()) {
+  const path = `src/gallery/examples/template-${id}.tsx.txt`;
+  try {
+    if (!existsSync(path) || readFileSync(path, "utf8") !== (await templateExample(id)))
+      failures.push(`template ${id}: ${path} is stale; run pnpm docs:api`);
+  } catch (error) {
+    failures.push(`template ${id}: ${error.message}`);
+  }
 }
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((f) =>

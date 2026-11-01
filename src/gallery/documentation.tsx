@@ -569,7 +569,7 @@ export function FoundationDocumentation({ id }: FoundationDocumentationProps) {
   );
 }
 
-/** The complete runnable specimen source, using the package’s public import paths. */
+/** The complete source from the documentation's examples, using the package’s public import paths. */
 export function UsageExample({
   section,
   title = "Usage",

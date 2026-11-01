@@ -242,6 +242,7 @@
 - [Pagination](pagination.md) — `glass-ux/pagination`
 - [PaletteProvider](palette-provider.md) — `glass-ux/command-palette`
 - [Panel](panel.md) — `glass-ux/surface`
+- [PaneLayout](pane-layout.md) — `glass-ux/pane-layout`
 - [PanelBody](panel-body.md) — `glass-ux/surface`
 - [PanelFooter](panel-footer.md) — `glass-ux/surface`
 - [PanelHeader](panel-header.md) — `glass-ux/surface`

@@ -14,6 +14,7 @@ import {
   useImperativeHandle,
   useLayoutEffect,
   useMemo,
+  useReducer,
   useRef,
   useState,
   type ComponentProps,
@@ -30,7 +31,7 @@ import { cx } from "../../lib/cx.js"
 import { useGlide } from "../../lib/glide.js"
 import { numberFormat } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
-import { useElementSize } from "../../lib/use-element-size.js"
+import { observeElementSize } from "../../lib/use-element-size.js"
 import { CountBadge } from "../badge/index.js"
 import type { DropEvent } from "../drag-drop/index.js"
 import { Skeleton } from "../skeleton/index.js"
@@ -40,7 +41,6 @@ import { fitItems, useChildWidths } from "./overflow.js"
 import { rovingKeyDown } from "./roving.js"
 import type { TabMenuProps, TabMenuRow, WrapTab } from "./tab-extras.js"
 
-const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
 const TabExtras = /* @__PURE__ */ lazy(() => import("./tab-extras.js"))
 
 export interface TabItem {
@@ -223,30 +223,49 @@ interface Overflow {
   solo: boolean
 }
 
-/** Measure the strip and decide which tabs stay inline; `keep` is never hidden. */
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect
+
+/**
+ * Measure the strip and decide which tabs stay inline; `keep` is never hidden. Only a width that
+ * changes which tabs fit renders, so a strip in a pane resized by drag stays still (R18.5).
+ */
 function useTabOverflow(items: TabItem[], keep: number): Overflow {
   const barRef = useRef<HTMLDivElement | null>(null)
   const measureRef = useRef<HTMLDivElement>(null)
-  const bar = useElementSize(barRef)
   const signature = items.map((item) => `${item.value}:${item.label}:${item.count ?? ""}:${item.closable ? "c" : ""}:${item.unsaved ? "u" : ""}`).join("|")
   const { widths, gap } = useChildWidths(measureRef, signature)
+  const available = useRef(0)
+  const shown = useRef<number[]>([])
+  const [fitChange, bumpFit] = useReducer((count: number) => count + 1, 0)
+
+  const fit = (width: number) => {
+    const itemWidths = widths.slice(0, items.length)
+    if (itemWidths.length !== items.length || width <= 0) return items.map((_, index) => index)
+    return fitItems({ widths: itemWidths, available: width, gap, moreWidth: widths[items.length] ?? 0, keep })
+  }
+  const latestFit = useRef(fit)
+  latestFit.current = fit
+
+  useIsomorphicLayoutEffect(() => {
+    const bar = barRef.current
+    if (!bar) return
+    const update = (width: number) => {
+      available.current = width
+      const next = latestFit.current(width)
+      if (next.length !== shown.current.length || next.some((index, at) => index !== shown.current[at])) bumpFit()
+    }
+    update(bar.getBoundingClientRect().width)
+    return observeElementSize(bar, (entry) => update(entry.contentBoxSize?.[0]?.inlineSize ?? entry.contentRect.width))
+  }, [])
 
   return useMemo(() => {
-    const itemWidths = widths.slice(0, items.length)
-    const measured = itemWidths.length === items.length && bar.width > 0
-    const indices = measured
-      ? fitItems({
-          widths: itemWidths,
-          available: bar.width,
-          gap,
-          moreWidth: widths[items.length] ?? 0,
-          keep,
-        })
-      : items.map((_, index) => index)
+    const indices = fit(available.current)
+    shown.current = indices
     const visible = new Set(indices)
     const hidden = items.flatMap((_, index) => (visible.has(index) ? [] : [index]))
     return { barRef, measureRef, visible, hidden, solo: hidden.length > 0 && visible.size === 1 }
-  }, [widths, gap, items, bar.width, keep])
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- fit is built from these, and fitChange reports a new width
+  }, [widths, gap, items, keep, fitChange])
 }
 
 /** The off-screen row the strip measures: every tab plus the More trigger at natural width. */

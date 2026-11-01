@@ -37,6 +37,10 @@ give the manager a `channelName` (per tab, if each tab has its own windows) and 
 workspace for its windows when it connects. Restore through the registry so
 unknown window types can be handled deliberately after upgrades.
 
+Inside one window, use [PaneLayout](components/pane-layout.md) for docked panels. It remembers its
+layout per window kind through the same storage scope as SplitPane, and it does not import the
+window manager. Handing a panel to the window manager or a pop-out remounts it.
+
 The [workspace demo](https://dastari.github.io/glass-ux/components/workspace/) and individual
 window component pages include complete examples and API tables. The TypeDoc reference
 also lists store operations, registry contracts, geometry helpers and descriptor types.

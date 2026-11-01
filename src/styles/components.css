@@ -83,6 +83,7 @@
 @import "../ui/on-screen-keyboard/on-screen-keyboard.css";
 @import "../ui/otp-field/otp-field.css";
 @import "../ui/pagination/pagination.css";
+@import "../ui/pane-layout/pane-layout.css";
 @import "../ui/password-field/password-field.css";
 @import "../ui/phone-field/phone-field.css";
 @import "../ui/popover/popover.css";

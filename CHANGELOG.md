@@ -96,6 +96,13 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - `glass-ux/status-bar`: `StatusBar` with `Start`, `End`, `Item` and `Group`, interactive
   items, and a stated order for giving way in a narrow box (`giveWay`).
 - PaletteCommand `keymapId` and `shortcutDisplayOnly`; DragDropProvider `liveRegionHost`.
+- `glass-ux/pane-layout`: `PaneLayout`, panels in a JSON tree of splits and stacks. A panel moves
+  between stacks and splits by drag or a Move to menu with one mount, keeping scroll, focus and
+  input. Sizes use rem and `fr` together; `locked` gives a resize-only layout with no tabs, for mail
+  and dashboards; a narrow box collapses to a strip and a non-modal sheet and leaves the JSON
+  untouched. Saved layouts keep ids that no longer resolve. A hidden panel pauses by default;
+  `whenHidden: "run"` keeps its effects running with no remount, for a remote session. The tree
+  functions (`movePanel`, `closePanel`, `parsePaneLayout`, `pruneLayout`) run with no React or DOM.
 
 ### Changed
 
@@ -126,6 +133,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
   used to read as one key. `useAriaShortcut` returns undefined for a chord, which
   `aria-keyshortcuts` cannot say.
 - The palette no longer runs a chord as if it were its last step.
+
+- Tabs: a strip renders on resize only when a different set of tabs fits, not for every width, so a
+  strip in a pane being resized stays still (R18.5). What fits is unchanged.
 
 ### Fixed
 

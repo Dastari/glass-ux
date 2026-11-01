@@ -42,6 +42,7 @@ export default function DiffViewSection() {
           ["--code-remove-tint", "Fill of a removed line"],
           ["--code-add-text", "Sign of an added line"],
           ["--code-remove-text", "Sign of a removed line"],
+          ["--fg-muted", "Line numbers"],
         ]}
       />
     </SectionPage>

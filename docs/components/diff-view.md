@@ -23,6 +23,7 @@ lines count on from them. `diffText(lines)` gives the plain text for a copy acti
 
 `label` names the change, and the region is announced with the counts of added and removed
 lines. Both line numbers show in a wide box and drop below 25rem, leaving the sign and the text.
+The numbers are `--fg-muted`, which meets 4.5:1 on the plain, add and remove surfaces.
 Long lines scroll sideways and the region takes keyboard focus for that (R20.6). DiffView draws
 every line it is given; a very long diff needs a virtualised list of your own, which can match
 it through the tokens below. Code keeps the page's direction: pass `dir="ltr"` for source text

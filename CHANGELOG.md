@@ -72,6 +72,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Fixed
 
+- DiffView and ResultDiff: line numbers use `--fg-muted` instead of `--fg-disabled`. They read at
+  2.00:1 on the add tint (2.20:1 on remove, 2.65:1 on plain) and now at least 5.77:1 across all
+  12 palettes, both modes and Glass, Frosted and Solid. Only the numbers' colour changes.
 - ColorPicker: its controls no longer overflow a narrow box at a large UI scale.
 - Histogram: dense bins (a column under 4px wide) no longer lose their width to the gap.
 

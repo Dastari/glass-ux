@@ -6,55 +6,68 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ## Unreleased
 
+Application structure, files and media: `PaneLayout`, `Menubar`, `KeymapProvider`, `StatusBar`,
+`FileDialog` over a storage contract, video and audio players, `ImageCropper` and `CommentThread`,
+with four new chart types, DataTable detail panels and tree rows, and a full image viewer. Tree,
+Tabs, shortcuts and `WindowFrame.StatusBar` gain opt-in extensions; existing `useHotkeys`,
+`parseShortcut` and `configureShortcuts` consumers keep what they had. Code colours reach 4.5:1 in
+light mode, and the [migration guide](docs/migration.md) lists what to review.
+
 ### Added
 
-- `glass-ux/appearance`: `exportAppearance` turns an appearance into a theme a project keeps: the
-  value for `configureAppearance`, a typed `theme.ts` module and a small `theme.css` for pages
-  without the appearance runtime. `importAppearance` restores a theme from that value, its JSON or
-  the module's text. It validates every field against the runtime's lists and ranges, ignores
-  unknown fields, refuses a bad value with one issue per field, and refuses a picture on another
-  site unless `remotePictures` is set. Only numbers, hex-derived parameters and registered ids
-  reach the CSS, and pictures never do. Both are plain functions that server code can call.
-  `APPEARANCE_RANGES` and `appearanceColourVars` are exported for controls of your own.
-- Documentation: Foundations › Theme export, an appearance panel beside the generated files, with
-  download and a restore form.
-- Documentation: a Templates group with five complete screens to copy (overview dashboard,
-  settings page, list and detail, inbox, file manager), each with a live screen, its source using
-  public entries only, and a full-screen route inside a working application shell. They are
-  documentation, not package components.
-- `glass-ux/charts`: `ComboChart`, columns and lines over the same categories, on one value axis
-  or two. It is `BarChart` with vertical columns: `BarSeries` gains `mark: "line"` and
-  `axis: "secondary"`, and `BarChart` gains `secondaryAxis`, `valueLabel` and `onActivate`, so
-  grouped and stacked columns, thresholds and tiers work as they do there. Each axis has a name
-  with a key for its series, and a rule in the series' colour while it carries one; the second
-  axis's labels sit on the first's gridlines; the legend and tooltip name each series' axis; and
-  the table and CSV headers carry each series' axis and unit. The TSDoc says when not to use two
-  axes. The value axes do not mirror in right-to-left text.
-- `glass-ux/charts`: `FunnelChart`, stages drawn to scale with their share of the first stage and
-  the rate of each step, centred or start-aligned (`align`). Hiding a stage takes it out of the
-  rates; the table keeps every stage, with drop-off. Rows and `align="start"` follow the reading
-  direction.
-- `glass-ux/charts`: `RadarChart`, several measures on one scale as an outline per series. A null
-  breaks the outline at its spoke. Pointing at a series in the legend brings it forward, and arrow
-  keys move to the spoke in that direction. The ring does not mirror in right-to-left text.
-- `glass-ux/charts`: `SankeyChart`, flows between nodes in columns, laid out in the library with no
-  new dependency. Nodes can share a `group`, which sets their colour and legend entry; hiding one
-  re-lays the rest. Arrow keys move through nodes and the flows between them, and `onActivate`
-  reports either. A link that closes a loop stays in the table, and the chart says how many were
-  left out. The flow runs with the reading direction.
-- `glass-ux/charts`: `pointRect` for `spatialNav`, and `spatialNav` now lives in the chart core.
-  `ValueAxis`, the type `ScatterAxis` is now an alias of. `ChartFrame` takes `footLegend`, for a
-  legend in `foot`, and `ChartKind` adds `combo`, `funnel`, `radar` and `sankey`.
-- `DataTable`: detail panels and tree rows, both opt-in. `renderRowDetail` shows host content under
-  a row, rendered while open and measured, with `canExpandRow` and `rowDetailHeight`. `tree`
-  (`getSubRows`, `hasChildren`, `getChildCount`, `hasMoreChildren`, `onLoadChildren`, `column`,
-  `isContext`, `openMatches`) makes `rows` a hierarchy in a `treegrid`, with lazy children in
-  reserved space, failure with Retry, and "Show more" for partly loaded children. Open rows are the
-  new `expanded` state slice; `expandAll` controls an expand-all that opens loaded rows and fetches
-  nothing. A selection change in a tree also reports `{ unloaded }` to `onStateChange`, and
-  `filterTreeRows` filters local rows keeping the ancestors of a match. Works with virtualisation,
-  cards, grouping, selection, inline editing and export (which adds a Level column); reordering
-  is off, with the reason, while a row is open.
+- `glass-ux/pane-layout`: `PaneLayout`, panels in a JSON tree of splits and stacks. A panel moves
+  between stacks and splits by drag or a Move to menu with one mount, keeping scroll, focus and
+  input. Sizes use rem and `fr` together; `locked` gives a resize-only layout with no tabs, for mail
+  and dashboards; a narrow box collapses to a strip and a non-modal sheet and leaves the JSON
+  untouched. Saved layouts keep ids that no longer resolve. A hidden panel pauses by default;
+  `whenHidden: "run"` keeps its effects running with no remount, for a remote session. The tree
+  functions (`movePanel`, `closePanel`, `parsePaneLayout`, `pruneLayout`) run with no React or DOM.
+- `glass-ux/menubar`: `Menubar`, an application's menus as data, on Base UI's Menubar. Commands,
+  check and radio rows, groups, separators and submenus; chords and rebound keys shown through
+  the keymap's read-only lookups, with no listener added; disabled reasons; a menu or submenu's
+  rows loaded when it opens (`loadItems`), in reserved space, with failure and retry; a host-chosen
+  focus destination after a command (`focusAfterCommand`); long menus that scroll with hairline
+  edges; a thumbnail and detail line on a row; controlled or uncontrolled `openMenu`; and
+  collapse into one menu by the width of its box. `useMenubarActions` builds rows from
+  `defineActions`, and `MenubarSkeleton` holds the bar's place while it loads.
+- `glass-ux/status-bar`: `StatusBar` with `Start`, `End`, `Item` and `Group`, interactive
+  items, and a stated order for giving way in a narrow box (`giveWay`).
+- `glass-ux/keymap`: `KeymapProvider`, a central dispatcher with chords, a serialisable keymap
+  the host stores, conflict detection, scoped and declared commands, `ShortcutHelpDialog` and
+  `ShortcutPending`. `useCommandBinding` and `useBindingLookup` read a command's keys, rebound
+  or not, without registering anything.
+- `glass-ux/file-provider`: `FileProvider`, a storage contract as types only, with no imports and no
+  runtime code, compiling against the WebWorker lib as well as DOM. Ranged reads with an AbortSignal,
+  a version on stat, `WriteBase` in and `WriteResult` out (a conflict is a result, and a blind
+  overwrite is always explicit), optional `applyEdits`, paged listings, thumbnails and per-entry
+  `denied`. Everything beyond `stat` and `read` is an optional method. It has no authentication.
+- `glass-ux/file-provider/memory`: `memoryFiles`, a provider in memory for tests and demonstrations.
+- `testFileProvider` in `glass-ux/testing`: a conformance suite for a provider's adapter.
+- `glass-ux/file-dialog`: `FileDialog`, open and save over providers. Paged listing, a compact path, folders
+  in a Tree, list and grid with thumbnails, multiple selection, a name and formats for Save with
+  overwrite confirmation, `FileConflictDialog` for a conflict from the host, filters, and loading,
+  empty, denied and error states in one box. It adapts to the provider's methods. The host reads and
+  writes in `onOpen` and `onSave` with `{ signal, setProgress }`. `FileDialogPreview` draws it in the
+  page.
+- Media player: `glass-ux/media-player` adds `VideoPlayer`, `AudioPlayer` and a headless
+  `useMediaPlayer`. Video has five view modes on one media element (`inline`, `maximised`,
+  `windowed`, `fullscreen`, `pip`): nothing remounts, and the page keeps the player's box.
+  Maximised and the mini player use the top layer through the Popover API; the mini player drags,
+  resizes and snaps, and moves from the keyboard. Controls cover seeking with buffered ranges,
+  chapters and storyboard previews, volume, speed, captions with sizes, quality, live streams,
+  loop, playlists and Media Session, with shortcuts scoped to the focused player. `CastAdapter`,
+  `useRemotePlayback` and `attach` connect sender SDKs, the Remote Playback API, AirPlay and stream
+  engines; the library loads none of them. `useMediaViewMode` and `useCastSession` serve hosts with
+  their own controls.
+- `glass-ux/image-cropper`: `ImageCropper` (locked aspect or free, host presets), `ImageCropDialog`
+  (pick, check, crop, save with `{ signal, setProgress }`), `ImageField`/`ImageInput` with
+  `imageSchema` and an optional `onEdit`, and `cropToBlob`. `field.ImageField` is registered in
+  `useAppForm`.
+- `glass-ux/compare-slider`: `CompareSlider`, a before and after divider over any two pieces of
+  content, as a keyboard-operable slider in percent, horizontal or vertical. The sides follow the
+  reading direction.
+- `glass-ux/gradient-picker`: `GradientPicker`, built on ColorPicker: linear, radial and angular
+  gradients, stops by pointer and keyboard, a typed `GradientValue` and `gradientToCss`.
 - `glass-ux/masonry`: `Masonry`, items of different heights in columns from the container's width.
   Positions are arithmetic from the width and each item's ratio, so nothing moves while pictures
   load and appending never moves earlier items; an item without a ratio is measured. The DOM order is the
@@ -88,58 +101,6 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - `glass-ux/emoji-picker`: `EmojiPicker` and `EmojiPopover`, a searchable list in the system font, as
   one tab stop, with skin tones. Its data, 23.6 KB after gzip, loads on demand. Names and search are in
   English unless `loadNames` supplies the locale's.
-- `RelativeTime` and `ScrollArea` take `tabIndex`, for lists with roving focus.
-- `glass-ux/menubar`: `Menubar`, an application's menus as data, on Base UI's Menubar. Commands,
-  check and radio rows, groups, separators and submenus; chords and rebound keys shown through
-  the keymap's read-only lookups, with no listener added; disabled reasons; a menu or submenu's
-  rows loaded when it opens (`loadItems`), in reserved space, with failure and retry; a host-chosen
-  focus destination after a command (`focusAfterCommand`); long menus that scroll with hairline
-  edges; a thumbnail and detail line on a row; controlled or uncontrolled `openMenu`; and
-  collapse into one menu by the width of its box. `useMenubarActions` builds rows from
-  `defineActions`, and `MenubarSkeleton` holds the bar's place while it loads.
-- `Menu`: `Menu.Item` takes `detail`, a second line that gives the row a fixed rich height and
-  `icon` a thumbnail's box. `Menu.CheckboxItem` and `Menu.RadioItem` take `disabledReason` and
-  report `aria-keyshortcuts`. `Menu.Submenu` takes `popupClassName`.
-- `glass-ux/file-provider`: `FileProvider`, a storage contract as types only, with no imports and no
-  runtime code, compiling against the WebWorker lib as well as DOM. Ranged reads with an AbortSignal,
-  a version on stat, `WriteBase` in and `WriteResult` out (a conflict is a result, and a blind
-  overwrite is always explicit), optional `applyEdits`, paged listings, thumbnails and per-entry
-  `denied`. Everything beyond `stat` and `read` is an optional method. It has no authentication.
-- `glass-ux/file-provider/memory`: `memoryFiles`, a provider in memory for tests and demonstrations.
-- `glass-ux/file-dialog`: `FileDialog`, open and save over providers. Paged listing, a path, folders
-  in a Tree, list and grid with thumbnails, multiple selection, a name and formats for Save with
-  overwrite confirmation, `FileConflictDialog` for a conflict from the host, filters, and loading,
-  empty, denied and error states in one box. It adapts to the provider's methods. The host reads and
-  writes in `onOpen` and `onSave` with `{ signal, setProgress }`. `FileDialogPreview` draws it in the
-  page.
-- `testFileProvider` in `glass-ux/testing`: a conformance suite for a provider's adapter.
-- `glass-ux-docs-kit`, a second archive on each release for packages built on `glass-ux`: the
-  `glass-ux-docs` bin (`api`, `site`, `check`, `init`), `defineDocsKit`, the catalogue page shell
-  and specimens in `glass-ux-docs-kit/react`, their styles, and a site frame copied once by
-  `init`. Entries and the package name come from `package.json` `exports`. It installs from the
-  release archive in the same version, with a peer on the same minor. The `glass-ux` archive does
-  not carry it.
-- `glass-ux/image-cropper`: `ImageCropper` (locked aspect or free, host presets), `ImageCropDialog`
-  (pick, check, crop, save with `{ signal, setProgress }`), `ImageField`/`ImageInput` with
-  `imageSchema` and an optional `onEdit`, and `cropToBlob`. `field.ImageField` is registered in
-  `useAppForm`.
-- `glass-ux/compare-slider`: `CompareSlider`, a before and after divider over any two pieces of
-  content, as a keyboard-operable slider in percent, horizontal or vertical. The sides follow the
-  reading direction.
-- `glass-ux/gradient-picker`: `GradientPicker`, built on ColorPicker: linear, radial and angular
-  gradients, stops by pointer and keyboard, a typed `GradientValue` and `gradientToCss`.
-- `useUndoStack` in `glass-ux/hooks`: past, future, push, undo, redo, limit and optional coalescing,
-  with the same transitions as pure functions (`pushUndo`, `undoState`, `redoState`).
-- `usePanZoom` in `glass-ux/hooks`: drag, wheel, pinch and keys on one transform, with `onFrame` per
-  frame and `onCommit` when a gesture ends, and the `cameraTransform` and `containCamera` helpers.
-- Lightbox is now a full image viewer. Zoom and pan run on `usePanZoom`: wheel about the pointer,
-  pinch, double press between fit and actual size, drag to pan, `maxZoom`, and the 1 key for actual
-  size. New: view-only rotate and flip (R, Shift+R), full screen on the viewer (F), a slideshow
-  (`slideshowInterval`), a skeleton, `placeholder`, `pending` and Retry per picture, neighbours
-  loaded ahead, a details panel (`renderInfo`, `infoOpen`), `content` for an item that is not a
-  picture, `tools` to choose the tool groups and `autoHideChrome`.
-- `ImageViewer` in `glass-ux/lightbox`: the same viewer in the page, without the dialog.
-- Histogram: `bins` also takes precomputed `{ from, to, count }` bins. `values` is unchanged.
 - Typeahead (`glass-ux/typeahead`): a listbox at a caret or any rectangle, with focus staying in
   the text. `useTypeahead` holds the highlight, keys and ARIA attributes; `Typeahead` draws the
   list with an optional detail pane; rows from the host are shown as given, and results that
@@ -148,41 +109,55 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - FindBar (`glass-ux/find-bar`): a find control that holds no search logic. The host supplies the
   count, the current match and whether the count is still climbing; options come through a slot,
   with an optional replace row, a reserved count, polite announcements and focus returned on Esc.
-- ActivityFeed: a `tone` for the marker, one level of `children` and selection (`selectedId`,
-  `defaultSelectedId`, `onSelectedIdChange`), which makes the feed a listbox with one tab stop. A
-  feed that uses none of these renders exactly as before.
 - DiffView (`glass-ux/diff-view`): a general unified diff with the sign in the gutter, from
-  ResultDiff, which is now a thin wrapper with no visual change. New token roles
+  ResultDiff, which is now a thin wrapper. New token roles
   `--code-add-tint`, `--code-remove-tint`, `--code-add-text` and `--code-remove-text`.
-- Focus regions: `useFocusRegions` in `glass-ux/hooks` and an opt-in `focusRegions` on AppShell.
-  F6 and Shift+F6 move between an application's regions, skipping hidden and inert ones, and
-  leave the key to the browser while a modal dialog is open.
-- RichTextInput: opt-in `mentions` and `slashCommands`, on Typeahead. Picks stay Markdown.
-- Media player: `glass-ux/media-player` adds `VideoPlayer`, `AudioPlayer` and a headless
-  `useMediaPlayer`. Video has five view modes on one media element (`inline`, `maximised`,
-  `windowed`, `fullscreen`, `pip`): nothing remounts, and the page keeps the player's box.
-  Maximised and the mini player use the top layer through the Popover API; the mini player drags,
-  resizes and snaps, and moves from the keyboard. Controls cover seeking with buffered ranges,
-  chapters and storyboard previews, volume, speed, captions with sizes, quality, live streams,
-  loop, playlists and Media Session, with shortcuts scoped to the focused player. `CastAdapter`,
-  `useRemotePlayback` and `attach` connect sender SDKs, the Remote Playback API, AirPlay and stream
-  engines; the library loads none of them. `useMediaViewMode` and `useCastSession` serve hosts with
-  their own controls.
-- `PopupLayer` and `usePopupLayer` in the popup container module: Menu and Tooltip open inside a
-  surface in the top layer, as they already did inside a full-screen element.
-- Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
-  (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,
-  `case-sensitive`, `whole-word`, `fold`, `unfold`, `collapse-all`), transforms (`rotate-cw`,
-  `rotate-ccw`, `flip-horizontal`, `crop`, `move`), commerce (`credit-card`, `cart`, `receipt`)
-  and developer tools (`git-branch`, `git-pull-request`, `webhook`, `rocket`); more media
-  controls (`volume`, `skip-forward`, `seek-back`, `captions`, `cast`, `screen-share`,
-  `picture-in-picture`, `repeat`, `shuffle`, `playback-speed`), everyday glyphs (`save`, `heart`,
-  `flag`, `reply`, `forward`, `timer`, `sliders`, `adjust`, `brush`, `split-horizontal`,
-  `bell-off`, `link-off`, `wifi-off`, `cloud-download`) and arrows. Fifteen company marks join
-  the set: `azure`, `deepseek`, `gemini`, `grafana`, `hubspot`, `jira`, `kubernetes`, `linear`,
-  `mastercard`, `mistral`, `paypal`, `salesforce`, `sentry`, `visa` and `zendesk`.
-- Icons: `align-start`, `align-end`, `reply`, `forward` and the diagonal arrows mirror in
-  right-to-left layouts. Media glyphs keep their shape, as `play` does.
+- SliderField (`glass-ux/slider`): a slider with its label, track and current value on one row,
+  controlled or uncontrolled. The value's width is reserved from the widest value the slider can
+  show, so dragging never moves the track; below 22rem it wraps to label and value over the track.
+  Its props type is `StandaloneSliderFieldProps`. The form kit's `SliderField` takes an opt-in
+  `inline` prop for the same row and keeps its layout otherwise.
+- `glass-ux/charts`: `ComboChart`, columns and lines over the same categories, on one value axis
+  or two. It is `BarChart` with vertical columns: `BarSeries` gains `mark: "line"` and
+  `axis: "secondary"`, and `BarChart` gains `secondaryAxis`, `valueLabel` and `onActivate`, so
+  grouped and stacked columns, thresholds and tiers work as they do there. Each axis has a name
+  with a key for its series, and a rule in the series' colour while it carries one; the second
+  axis's labels sit on the first's gridlines; the legend and tooltip name each series' axis; and
+  the table and CSV headers carry each series' axis and unit. The TSDoc says when not to use two
+  axes. The value axes do not mirror in right-to-left text.
+- `glass-ux/charts`: `FunnelChart`, stages drawn to scale with their share of the first stage and
+  the rate of each step, centred or start-aligned (`align`). Hiding a stage takes it out of the
+  rates; the table keeps every stage, with drop-off. Rows and `align="start"` follow the reading
+  direction.
+- `glass-ux/charts`: `RadarChart`, several measures on one scale as an outline per series. A null
+  breaks the outline at its spoke. Pointing at a series in the legend brings it forward, and arrow
+  keys move to the spoke in that direction. The ring does not mirror in right-to-left text.
+- `glass-ux/charts`: `SankeyChart`, flows between nodes in columns, laid out in the library with no
+  new dependency. Nodes can share a `group`, which sets their colour and legend entry; hiding one
+  re-lays the rest. Arrow keys move through nodes and the flows between them, and `onActivate`
+  reports either. A link that closes a loop stays in the table, and the chart says how many were
+  left out. The flow runs with the reading direction.
+- `glass-ux/charts`: `pointRect` for `spatialNav`, and `spatialNav` now lives in the chart core.
+  `ValueAxis`, the type `ScatterAxis` is now an alias of. `ChartFrame` takes `footLegend`, for a
+  legend in `foot`, and `ChartKind` adds `combo`, `funnel`, `radar` and `sankey`.
+- Histogram: `bins` also takes precomputed `{ from, to, count }` bins. `values` is unchanged.
+- `DataTable`: detail panels and tree rows, both opt-in. `renderRowDetail` shows host content under
+  a row, rendered while open and measured, with `canExpandRow` and `rowDetailHeight`. `tree`
+  (`getSubRows`, `hasChildren`, `getChildCount`, `hasMoreChildren`, `onLoadChildren`, `column`,
+  `isContext`, `openMatches`) makes `rows` a hierarchy in a `treegrid`, with lazy children in
+  reserved space, failure with Retry, and "Show more" for partly loaded children. Open rows are the
+  new `expanded` state slice; `expandAll` controls an expand-all that opens loaded rows and fetches
+  nothing. A selection change in a tree also reports `{ unloaded }` to `onStateChange`, and
+  `filterTreeRows` filters local rows keeping the ancestors of a match. Works with virtualisation,
+  cards, grouping, selection, inline editing and export (which adds a Level column); reordering
+  is off, with the reason, while a row is open.
+- Lightbox is now a full image viewer. Zoom and pan run on `usePanZoom`: wheel about the pointer,
+  pinch, double press between fit and actual size, drag to pan, `maxZoom`, and the 1 key for actual
+  size. New: view-only rotate and flip (R, Shift+R), full screen on the viewer (F), a slideshow
+  (`slideshowInterval`), a skeleton, `placeholder`, `pending` and Retry per picture, neighbours
+  loaded ahead, a details panel (`renderInfo`, `infoOpen`), `content` for an item that is not a
+  picture, `tools` to choose the tool groups and `autoHideChrome`.
+- `ImageViewer` in `glass-ux/lightbox`: the same viewer in the page, without the dialog.
 - Tree: `selectionMode="multiple"` with `selectedIds`, `defaultSelectedIds`,
   `onSelectedIdsChange`, `selectionLimit` and `checkboxes`. A selection is a list of ids, so it
   never needs every node loaded; `details.unloaded` names branches whose children are not.
@@ -196,24 +171,93 @@ has upgrade steps in the [migration guide](docs/migration.md).
   the mark, a middle-click, Delete, the context menu or a Close button outside the tablist.
   Reorder with drag, Shift and the arrow keys, or the context menu. Strips under one
   DragDropProvider exchange tabs, and a DropZone can take one.
-- `glass-ux/keymap`: `KeymapProvider`, a central dispatcher with chords, a serialisable keymap
-  the host stores, conflict detection, scoped and declared commands, `ShortcutHelpDialog` and
-  `ShortcutPending`. `useCommandBinding` and `useBindingLookup` read a command's keys, rebound
-  or not, without registering anything.
-- Actions: `useActionShortcuts`, `shortcutTextEntry`, `shortcutScoped` and
-  `ResolvedAction.commandId`. Menus and the palette show rebound keys.
+- `Menu`: `Menu.Item` takes `detail`, a second line that gives the row a fixed rich height and
+  `icon` a thumbnail's box. `Menu.CheckboxItem` and `Menu.RadioItem` take `disabledReason` and
+  report `aria-keyshortcuts`. `Menu.Submenu` takes `popupClassName`.
+- Breadcrumb: `size="xs"`, a compact form for a path inside a pane (a file's folders in an editor
+  pane). It sets one line at `--control-h-xs`, never under `--target-aa`, in label type, folds
+  against its own box like the default, and is named "Path" unless the host passes `aria-label`.
+  Without `size` the markup and geometry are unchanged. New type `BreadcrumbSize`; new message
+  `breadcrumb.path` in every language pack.
+- Toolbar: `orientation="vertical"` for tool rails (Up and Down Arrow move between controls, folding is
+  by height, More opens at the inline end); single-choice groups, where `Toolbar.Group` with `value`,
+  `defaultValue` or `onValueChange` is a `radiogroup` of radio buttons (`Toolbar.Button value`) with
+  exactly one chosen; and `Toolbar.Flyout`, a tool button with related tools behind it, opened by a hold,
+  the context-menu gesture or the arrow at the reading end (Arrow Down in a row), beside a vertical
+  toolbar and mirrored in right-to-left layouts. Horizontal toolbars render as before. New message
+  `toolbar.relatedTools` in every language pack. Menu popups take an `anchor`, so a control that is not
+  the menu's trigger can position one.
+- ColorPicker: `size="sm"`, a compact picker for tool panels (shorter plane, thinner tracks, smaller beads;
+  hit areas stay 24px), and `plane="hsv"`, an optional saturation by value plane with its own HSV hue, beside
+  the default OKLCH plane. The value stays hex. `plane` also reaches the picker inside ColorField. New
+  messages `colorPicker.areaHsv` and `areaValueHsv` in every language pack (the Arabic wording needs a
+  native-speaker check).
+- RichTextInput: opt-in `mentions` and `slashCommands`, on Typeahead. Picks stay Markdown.
+- ActivityFeed: a `tone` for the marker, one level of `children` and selection (`selectedId`,
+  `defaultSelectedId`, `onSelectedIdChange`), which makes the feed a listbox with one tab stop. A
+  feed that uses none of these renders exactly as before.
+- Panel `compact` and Surface `padding="compact"`: the panel inset tightened for dense tool panes, from
+  the new `--inset-panel-compact` token (12px comfortable, 8px under compact density, against 20px and
+  16px for `--inset-panel`; it scales with the UI scale). A nested Panel keeps its own inset. Tailwind
+  gets `p-panel-compact`.
+- `RelativeTime` and `ScrollArea` take `tabIndex`, for lists with roving focus.
 - Kbd and `formatShortcut` draw chords. `shortcutSteps`, `isChord`, `canonicalStep`,
   `canonicalShortcut` and `shortcutFromEvent` join the `glass-ux/kbd` helpers.
-- `glass-ux/status-bar`: `StatusBar` with `Start`, `End`, `Item` and `Group`, interactive
-  items, and a stated order for giving way in a narrow box (`giveWay`).
+- Actions: `useActionShortcuts`, `shortcutTextEntry`, `shortcutScoped` and
+  `ResolvedAction.commandId`. Menus and the palette show rebound keys.
 - PaletteCommand `keymapId` and `shortcutDisplayOnly`; DragDropProvider `liveRegionHost`.
-- `glass-ux/pane-layout`: `PaneLayout`, panels in a JSON tree of splits and stacks. A panel moves
-  between stacks and splits by drag or a Move to menu with one mount, keeping scroll, focus and
-  input. Sizes use rem and `fr` together; `locked` gives a resize-only layout with no tabs, for mail
-  and dashboards; a narrow box collapses to a strip and a non-modal sheet and leaves the JSON
-  untouched. Saved layouts keep ids that no longer resolve. A hidden panel pauses by default;
-  `whenHidden: "run"` keeps its effects running with no remount, for a remote session. The tree
-  functions (`movePanel`, `closePanel`, `parsePaneLayout`, `pruneLayout`) run with no React or DOM.
+- Focus regions: `useFocusRegions` in `glass-ux/hooks` and an opt-in `focusRegions` on AppShell.
+  F6 and Shift+F6 move between an application's regions, skipping hidden and inert ones, and
+  leave the key to the browser while a modal dialog is open.
+- `useAnnounce` (`glass-ux/hooks`): one shared, always-mounted polite live region (R20.9) for outcomes no component
+  owns. It lives where the person is (inside the full-screen element or the topmost modal dialog, otherwise the
+  body, which a modal dialog makes inert), speaks the same message twice, speaks messages from a burst together
+  in order, and lets a `key` replace a waiting message. It renders nothing on the server. No component uses it
+  yet.
+- Hooks (`glass-ux/hooks`): `useClipboard` (copy with a timed `copied` state and an `error`, falling back to
+  a hidden textarea where the page has no Clipboard API), `useDebouncedValue` and `useDebouncedCallback`
+  (with `cancel`, `flush` and `pending`), and the helpers components already shared: `readingKey` and
+  `isRtl`, `useScrollEdges`, `usePrinting`, `useSelectedId` with its change types, `tryFocus`, `focusFirst`,
+  `isTextEntryTarget` and `isRichTextTarget`. CopyButton writes through the same clipboard function.
+- `useUndoStack` in `glass-ux/hooks`: past, future, push, undo, redo, limit and optional coalescing,
+  with the same transitions as pure functions (`pushUndo`, `undoState`, `redoState`).
+- `usePanZoom` in `glass-ux/hooks`: drag, wheel, pinch and keys on one transform, with `onFrame` per
+  frame and `onCommit` when a gesture ends, and the `cameraTransform` and `containCamera` helpers.
+- `PopupLayer` and `usePopupLayer` in the popup container module: Menu and Tooltip open inside a
+  surface in the top layer, as they already did inside a full-screen element.
+- `glass-ux/appearance`: `exportAppearance` turns an appearance into a theme a project keeps: the
+  value for `configureAppearance`, a typed `theme.ts` module and a small `theme.css` for pages
+  without the appearance runtime. `importAppearance` restores a theme from that value, its JSON or
+  the module's text. It validates every field against the runtime's lists and ranges, ignores
+  unknown fields, refuses a bad value with one issue per field, and refuses a picture on another
+  site unless `remotePictures` is set. Only numbers, hex-derived parameters and registered ids
+  reach the CSS, and pictures never do. Both are plain functions that server code can call.
+  `APPEARANCE_RANGES` and `appearanceColourVars` are exported for controls of your own.
+- Shared code colours: the syntax roles are now `--code-keyword`, `--code-string`, `--code-string-expression`,
+  `--code-constant`, `--code-function`, `--code-parameter`, `--code-punctuation`, `--code-comment` and
+  `--code-link`, plus `--code-foreground` and `--code-background`, available on the page and re-declared on
+  palette and mode islands, so anything showing code matches. New `--code-type` role for types. `.fa-ai-code`
+  maps the Shiki theme's `--fa-code-*` names to them, so code blocks render the same colours as before in
+  every palette and mode, and overriding a `--fa-code-token-*` on a code block still works.
+- Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
+  (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,
+  `case-sensitive`, `whole-word`, `fold`, `unfold`, `collapse-all`), transforms (`rotate-cw`,
+  `rotate-ccw`, `flip-horizontal`, `crop`, `move`), commerce (`credit-card`, `cart`, `receipt`)
+  and developer tools (`git-branch`, `git-pull-request`, `webhook`, `rocket`); more media
+  controls (`volume`, `skip-forward`, `seek-back`, `captions`, `cast`, `screen-share`,
+  `picture-in-picture`, `repeat`, `shuffle`, `playback-speed`), everyday glyphs (`save`, `heart`,
+  `flag`, `reply`, `forward`, `timer`, `sliders`, `adjust`, `brush`, `split-horizontal`,
+  `bell-off`, `link-off`, `wifi-off`, `cloud-download`) and arrows. Fifteen company marks join
+  the set: `azure`, `deepseek`, `gemini`, `grafana`, `hubspot`, `jira`, `kubernetes`, `linear`,
+  `mastercard`, `mistral`, `paypal`, `salesforce`, `sentry`, `visa` and `zendesk`.
+- Icons: `align-start`, `align-end`, `reply`, `forward` and the diagonal arrows mirror in
+  right-to-left layouts. Media glyphs keep their shape, as `play` does.
+- `glass-ux-docs-kit`, a second archive on each release for packages built on `glass-ux`: the
+  `glass-ux-docs` bin (`api`, `site`, `check`, `init`), `defineDocsKit`, the catalogue page shell
+  and specimens in `glass-ux-docs-kit/react`, their styles, and a site frame copied once by
+  `init`. Entries and the package name come from `package.json` `exports`. It installs from the
+  release archive in the same version, with a peer on the same minor. The `glass-ux` archive does
+  not carry it.
 
 ### Changed
 
@@ -224,14 +268,6 @@ has upgrade steps in the [migration guide](docs/migration.md).
   glyph because full screen took the old one. A Previous or Next press keeps focus on its button.
 - `ImageLightbox` and `ResultImages` load the viewer the first time an image is opened. A test
   that expects the dialog in the same tick as the click needs to wait for it.
-- Breadcrumb: `size="xs"`, a compact form for a path inside a pane (a file's folders in an editor
-  pane). It sets one line at `--control-h-xs`, never under `--target-aa`, in label type, folds
-  against its own box like the default, and is named "Path" unless the host passes `aria-label`.
-  Without `size` the markup and geometry are unchanged. New type `BreadcrumbSize`; new message
-  `breadcrumb.path` in every language pack.
-- UI rule R6.4 now reads "One breadcrumb for the route, in the top bar": a path that describes
-  content rather than the route may use a compact Breadcrumb in its pane, and never repeats or
-  replaces the route breadcrumb.
 - `AvatarDialog` and `EditableAvatar` are a preset of `ImageCropDialog`. Crop output, keys, wording
   and exports are unchanged. The crop's class names moved from `fa-avatar-crop*` to
   `fa-image-cropper*`.
@@ -244,83 +280,22 @@ has upgrade steps in the [migration guide](docs/migration.md).
   used to read as one key. `useAriaShortcut` returns undefined for a chord, which
   `aria-keyshortcuts` cannot say.
 - The palette no longer runs a chord as if it were its last step.
-
 - Tabs: a strip renders on resize only when a different set of tabs fits, not for every width, so a
   strip in a pane being resized stays still (R18.5). What fits is unchanged.
+- UI rule R6.4 now reads "One breadcrumb for the route, in the top bar": a path that describes
+  content rather than the route may use a compact Breadcrumb in its pane, and never repeats or
+  replaces the route breadcrumb.
 
 ### Fixed
 
-- CodeBlock: line numbers use `--fg-muted`, as DiffView's do; `--fg-disabled` measured about 2.6:1.
-- `Segmented` and `SwatchPicker` fold to their menu in right-to-left text when they run out of
-  room, instead of clipping: `overflowsOwnBox` (`glass-ux/fit-form`) now reads the edge the row
-  spills past.
-- `BarChart`: the last column's label no longer overruns the plot when a narrow box skips labels.
-- `DataTable`: Copy as table works on non-secure pages through the shared clipboard helper, and
-  reports a refused copy as before.
-- `DataTable`: ← and → on a row with "+N" fields, and the open group chevron, follow the reading
-  direction in right-to-left tables.
-
-- DiffView and ResultDiff: line numbers use `--fg-muted` instead of `--fg-disabled`. They read at
-  2.00:1 on the add tint (2.20:1 on remove, 2.65:1 on plain) and now at least 5.77:1 across all
-  12 palettes, both modes and Glass, Frosted and Solid. Only the numbers' colour changes.
-- `Menu.Submenu`: a hover-opened submenu no longer closes while the pointer is on its way to it. A
-  stall of more than 40ms, or a slow move, in the gap beside the row closed it, on a busy page in
-  particular, while the root menu stayed open. It now outlasts the pointer by 300ms; moving to a
-  sibling row closes it after the same delay.
-- ColorPicker: its controls no longer overflow a narrow box at a large UI scale.
-- Histogram: dense bins (a column under 4px wide) no longer lose their width to the gap.
-General extensions shared with the sister packages: Tree, Tabs, shortcuts and a status bar.
-Everything is opt-in; existing Tree, Tabs, `useHotkeys`, `parseShortcut`, `configureShortcuts`
-and `WindowFrame.StatusBar` consumers keep what they had.
-
-- SliderField (`glass-ux/slider`): a slider with its label, track and current value on one row,
-  controlled or uncontrolled. The value's width is reserved from the widest value the slider can
-  show, so dragging never moves the track; below 22rem it wraps to label and value over the track.
-  Its props type is `StandaloneSliderFieldProps`. The form kit's `SliderField` takes an opt-in
-  `inline` prop for the same row and keeps its layout otherwise.
-
-- Panel `compact` and Surface `padding="compact"`: the panel inset tightened for dense tool panes, from
-  the new `--inset-panel-compact` token (12px comfortable, 8px under compact density, against 20px and
-  16px for `--inset-panel`; it scales with the UI scale). A nested Panel keeps its own inset. Tailwind
-  gets `p-panel-compact`.
-
-- Toolbar: `orientation="vertical"` for tool rails (Up and Down Arrow move between controls, folding is
-  by height, More opens at the inline end); single-choice groups, where `Toolbar.Group` with `value`,
-  `defaultValue` or `onValueChange` is a `radiogroup` of radio buttons (`Toolbar.Button value`) with
-  exactly one chosen; and `Toolbar.Flyout`, a tool button with related tools behind it, opened by a hold,
-  the context-menu gesture or the arrow at the reading end (Arrow Down in a row), beside a vertical
-  toolbar and mirrored in right-to-left layouts. Horizontal toolbars render as before. New message
-  `toolbar.relatedTools` in every language pack. Menu popups take an `anchor`, so a control that is not
-  the menu's trigger can position one.
-
-- ColorPicker: `size="sm"`, a compact picker for tool panels (shorter plane, thinner tracks, smaller beads;
-  hit areas stay 24px), and `plane="hsv"`, an optional saturation by value plane with its own HSV hue, beside
-  the default OKLCH plane. The value stays hex. `plane` also reaches the picker inside ColorField. New
-  messages `colorPicker.areaHsv` and `areaValueHsv` in every language pack (the Arabic wording needs a
-  native-speaker check).
-
-- `useAnnounce` (`glass-ux/hooks`): one shared, always-mounted polite live region (R20.9) for outcomes no component
-  owns. It lives where the person is (inside the full-screen element or the topmost modal dialog, otherwise the
-  body, which a modal dialog makes inert), speaks the same message twice, speaks messages from a burst together
-  in order, and lets a `key` replace a waiting message. It renders nothing on the server. No component uses it
-  yet.
-- Hooks (`glass-ux/hooks`): `useClipboard` (copy with a timed `copied` state and an `error`, falling back to
-  a hidden textarea where the page has no Clipboard API), `useDebouncedValue` and `useDebouncedCallback`
-  (with `cancel`, `flush` and `pending`), and the helpers components already shared: `readingKey` and
-  `isRtl`, `useScrollEdges`, `usePrinting`, `useSelectedId` with its change types, `tryFocus`, `focusFirst`,
-  `isTextEntryTarget` and `isRichTextTarget`. CopyButton writes through the same clipboard function.
-
-- Shared code colours: the syntax roles are now `--code-keyword`, `--code-string`, `--code-string-expression`,
-  `--code-constant`, `--code-function`, `--code-parameter`, `--code-punctuation`, `--code-comment` and
-  `--code-link`, plus `--code-foreground` and `--code-background`, available on the page and re-declared on
-  palette and mode islands, so anything showing code matches. New `--code-type` role for types. `.fa-ai-code`
-  maps the Shiki theme's `--fa-code-*` names to them, so code blocks render the same colours as before in
-  every palette and mode, and overriding a `--fa-code-token-*` on a code block still works.
-- ColorPicker: the hue and opacity beads no longer hang past the picker's edge at the ends of their tracks
-  (they sat half a bead outside, which widened a scroll area around the picker), and a picker in a narrow box
-  squeezes its hex row instead of growing wider than the box.
-- ColorField and ColorPicker: the hex input and the swatch tooltips read left to right in right-to-left
-  layouts, so `#e8875a` no longer shows as `e8875a#`.
+- `glassUx()` from `glass-ux/vite` names every dependency a page can reach. The list had fallen
+  behind (Base UI's direction provider, menubar and toolbar, Lexical, react-hook-form), so Vite met
+  them on a lazy route, optimised again and reloaded the page: navigations aborted and pages loaded
+  across the change could reach a second copy of React (`Invalid hook call`).
+- `RichTextInput`: a controlled host that applies its state late no longer loses keystrokes. Each
+  late value was taken for an outside change and replaced what had been typed since.
+- `AppShell`: the boot script renders only in server HTML. On the client React warned about it
+  and never ran it.
 - Code colours: every `--code-*` syntax role now reaches 4.5:1 in light mode in all 12 palettes on
   Glass, Frosted and Solid, on every built-in canvas (the worst was 2.66:1). Light mode sets the
   roles at a lower lightness, adjusted for hue and stepped by role, with a chroma floor and ceiling,
@@ -330,6 +305,42 @@ and `WindowFrame.StatusBar` consumers keep what they had.
   on Silk. Light Glass gives the code well a firmer fill, `--glass-fill-code`, because a 4.5% tint
   over the darker canvases cannot carry 4.5:1 by colour alone. Dark mode, print and forced colours
   are unchanged.
+- CodeBlock: line numbers use `--fg-muted`, as DiffView's do; `--fg-disabled` measured about 2.6:1.
+  They now reach at least 6.27:1 on the well in every palette and material, and 4.94:1 in light and
+  5.59:1 in dark on the hardest canvas.
+- DiffView and ResultDiff: the diff has its own well, firmer than the code well, and line numbers
+  use `--fg-muted` instead of `--fg-disabled`. The numbers read at 2.00:1 on the add tint, and a
+  panel alone left them at 4.37:1 in dark Glass, 3.49:1 bare on the canvas. Numbers, signs and text
+  now hold at least 5.55:1 in all 12 palettes, both modes and Glass, Frosted and Solid, bare or in
+  a panel and on the darkest canvases, measured in rendered pixels.
+- `Menu.Submenu`: a hover-opened submenu no longer closes while the pointer is on its way to it. A
+  stall of more than 40ms, or a slow move, in the gap beside the row closed it, on a busy page in
+  particular, while the root menu stayed open. It now outlasts the pointer by 300ms; moving to a
+  sibling row closes it after the same delay.
+- `Segmented` and `SwatchPicker` fold to their menu in right-to-left text when they run out of
+  room, instead of clipping: `overflowsOwnBox` (`glass-ux/fit-form`) now reads the edge the row
+  spills past.
+- `BarChart`: the last column's label no longer overruns the plot when a narrow box skips labels.
+- `DataTable`: Copy as table works on non-secure pages through the shared clipboard helper, and
+  reports a refused copy as before.
+- `DataTable`: ← and → on a row with "+N" fields, and the open group chevron, follow the reading
+  direction in right-to-left tables.
+- ColorPicker: its controls no longer overflow a narrow box at a large UI scale.
+- ColorPicker: the hue and opacity beads no longer hang past the picker's edge at the ends of their tracks
+  (they sat half a bead outside, which widened a scroll area around the picker), and a picker in a narrow box
+  squeezes its hex row instead of growing wider than the box.
+- ColorField and ColorPicker: the hex input and the swatch tooltips read left to right in right-to-left
+  layouts, so `#e8875a` no longer shows as `e8875a#`.
+- Histogram: dense bins (a column under 4px wide) no longer lose their width to the gap.
+
+### Documentation
+
+- Documentation: Foundations › Theme export, an appearance panel beside the generated files, with
+  download and a restore form.
+- Documentation: a Templates group with five complete screens to copy (overview dashboard,
+  settings page, list and detail, inbox, file manager), each with a live screen, its source using
+  public entries only, and a full-screen route inside a working application shell. They are
+  documentation, not package components.
 
 ## 0.13.1
 

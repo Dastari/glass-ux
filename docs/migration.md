@@ -3,17 +3,59 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
-## Unreleased
+## 0.13.1 → next
 
-No code changes are required. Behaviour to review:
+Code edits, where a project uses these:
 
-- `WindowFrame.StatusItem`'s label class is `fa-status-bar-label`, not
-  `fa-window-status-label`. Other status classes stay, and each part also gains its
-  `fa-status-bar-*` class.
-- A shortcut with spaces now displays each step: `formatShortcut("g e", "other")` is "G E",
-  not "G e", and `useAriaShortcut` returns undefined for one.
-- A palette command whose `shortcut` is a chord no longer fires on its last step alone; run
-  it through a KeymapProvider.
+- Selectors on inner class names. The classes were never public API, but a stylesheet or test
+  may reach them:
+  - `fa-avatar-crop` is `fa-image-cropper-frame`; `fa-avatar-crop-area`, `-image` and `-mask` are
+    `fa-image-cropper-area`, `-image` and `-mask`; `fa-avatar-crop-drop` is
+    `fa-image-cropper-overlay`. `fa-avatar-crop-current` stays.
+  - `fa-avatar-dialog-status`, `-hint` and `-message` are `fa-image-crop-dialog-status`, `-hint`
+    and `-message`. `fa-avatar-dialog` stays, alongside `fa-image-crop-dialog`.
+  - ResultDiff's `.fa-ai-diff-rows`, `-line`, `-number`, `-sign` and `-text` are `.fa-diff-rows`,
+    `-line`, `-number`, `-sign` and `-text`. `.fa-ai-diff` stays on the root.
+  - `WindowFrame.StatusItem`'s label class is `fa-status-bar-label`, not `fa-window-status-label`.
+    Other status classes stay, and each part also gains its `fa-status-bar-*` class.
+- `HistogramProps` is a union of `HistogramValuesProps` and `HistogramBinnedProps`. An
+  `interface` cannot extend a union: extend `HistogramValuesProps`, which is the old shape, or use
+  a type alias.
+- `ChartKind` adds `combo`, `funnel`, `radar` and `sankey`, and `DataTableStateChange` adds
+  `expanded`. A `switch` that covers every member, or a `Record` keyed by either, needs the new
+  cases. `onStateChange` passes a third argument, `{ unloaded }`, only for a selection change in a
+  tree table.
+- `useAriaShortcut` returns undefined for a chord such as `g e`, which `aria-keyshortcuts` cannot
+  express. Code that spreads or asserts its value needs to allow for that.
+
+Behaviour to review:
+
+- `formatShortcut` and `Kbd` display each step of a shortcut with spaces: `formatShortcut("g e",
+  "other")` is "G E", not "G e". A test that compares the text needs the new form.
+- A palette command whose `shortcut` is a chord no longer runs on its last step alone. Run it
+  through a `KeymapProvider`.
+- `ImageLightbox` and `ResultImages` load the viewer the first time an image is opened, so the
+  dialog arrives after the click rather than in the same tick. Tests need to wait for it.
+- Lightbox thumbnails are one tab stop, the current picture, with the arrow keys, Home and End
+  moving between them. Only thumbnails near the strip's view load. Tests that tab through
+  thumbnails, or expect every thumbnail image to be requested, need updating. The viewer takes
+  new keys (R, Shift+R, F, 1), and the zoom readout shows `1:1` at actual size.
+- `Menu.Submenu`: a hover-opened submenu stays open for 300 ms after the pointer leaves, and
+  moving to a sibling row closes it after the same delay. A test that hovers away and expects it
+  gone at once needs to wait.
+- `Segmented` and `SwatchPicker` fold to their menu in right-to-left text when they run out of
+  room, instead of clipping. A right-to-left layout that clipped may now show the menu.
+- `cropImage` rejects with "The image could not be encoded." rather than "The photo could not be
+  encoded.".
+- Light mode code colours are darker, with new hues, in every palette: compare screenshots of code.
+  Comments take the same ink as parameters and punctuation. Light Glass gives the code well a
+  firmer fill, `--glass-fill-code`. A code block's `--fa-code-token-*` override still works.
+- DiffView and ResultDiff have their own well, so a diff that sat directly on a panel now shows a
+  ground of its own.
+- Line numbers in DiffView, ResultDiff and CodeBlock use `--fg-muted`, so they read stronger.
+- `AppShell` renders its boot script only in server HTML, so a client-rendered shell has no
+  `script` element.
+- `glassUx()` lists more dependencies, so the first dev server start optimises more of them once.
 
 ## 0.13.0 → 0.13.1
 

@@ -527,7 +527,7 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
           {(locationOptions.length > 1 || browsing || canGrid) && (
             <div className="fa-file-dialog-bar">
               {locationOptions.length > 1 ? <Select className="fa-file-dialog-places" aria-label={messages.location} options={locationOptions} value={locationValue} onValueChange={chooseLocation} size="sm" /> : null}
-              {browsing && !onDevice ? <Breadcrumb className="fa-file-dialog-path" aria-label={messages.path} items={crumbs} /> : <span className="fa-file-dialog-path" />}
+              {browsing && !onDevice ? <Breadcrumb className="fa-file-dialog-path" size="xs" aria-label={messages.path} items={crumbs} /> : <span className="fa-file-dialog-path" />}
               {browsing && !onDevice ? (
                 <div className="fa-file-dialog-commands">
                   {provider?.createDirectory ? <Button variant="ghost" size="sm" icon={<IconFolderPlus />} aria-label={messages.newFolder} disabledReason={createDenied ?? undefined} onClick={() => askName({ kind: "new-folder" })} /> : null}

@@ -62,6 +62,22 @@ test.describe("open", () => {
     await expect(page.getByRole("button", { name: "Open files", exact: true })).toBeFocused();
   });
 
+  test("the path is the compact breadcrumb, named for what it is @responsive", async ({ page }) => {
+    await page.getByRole("button", { name: "Open files", exact: true }).click();
+    const dialog = page.getByRole("dialog").last();
+    await row(dialog, "Reports").dblclick();
+    await expect(row(dialog, "Drafts")).toBeVisible();
+    const path = dialog.getByRole("navigation", { name: "Folder path", exact: true });
+    await expect(path).toHaveAttribute("data-size", "xs");
+    await expect(path).toContainText("Reports");
+    const crumbs = (await path.boundingBox())!;
+    const bar = (await dialog.locator(".fa-file-dialog-bar").boundingBox())!;
+    expect(crumbs.y).toBeGreaterThanOrEqual(bar.y);
+    expect(crumbs.y + crumbs.height).toBeLessThanOrEqual(bar.y + bar.height);
+    expect(crumbs.height).toBeGreaterThanOrEqual(24);
+    expect(await path.evaluate((element) => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
+  });
+
   test("selection follows the platform: click, Shift and Ctrl", async ({ page }) => {
     const dialog = await openDialog(page, "Open files");
     await row(dialog, "Budget.xlsx").click();

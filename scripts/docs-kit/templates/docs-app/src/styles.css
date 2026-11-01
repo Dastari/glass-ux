@@ -1,0 +1,247 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "glass-ux/styles.css";
+@import "glass-ux-docs-kit/styles.css";
+/* Tailwind scans these for class names: the library, the page shell, your components and this site. */
+@source "../../../node_modules/glass-ux/dist";
+@source "../../../node_modules/glass-ux-docs-kit/react";
+@source "../../../src";
+@source "./";
+@layer components {
+  :root[data-style="flat"] .docs-mobile-header {
+    padding-inline: var(--space-2);
+  }
+  :root[data-style="flat"] .docs-layout {
+    --gallery-shell-gutter: 0px;
+  }
+  :root[data-style="flat"] .docs-header {
+    border-block-end: var(--divider);
+  }
+  /* The SidebarProvider: the directory and the page in one row. The page keeps the gutter on
+     its other sides; beside an open floating sidebar, the pane's own margin is the gap. */
+  .docs-layout {
+    --gallery-shell-gutter: var(--gap-panels);
+    display: flex;
+    height: 100dvh;
+    gap: 0;
+    padding: 0;
+  }
+  .docs-main {
+    flex: 1 1 0;
+    padding: var(--gallery-shell-gutter);
+    padding-top: max(var(--gallery-shell-gutter), var(--safe-top));
+  }
+  .docs-sidebar[data-state="expanded"]:not([data-mobile]) ~ .docs-main {
+    padding-inline-start: 0;
+  }
+  .docs-header > .docs-sidebar-trigger {
+    margin-inline-end: auto;
+  }
+  .docs-content {
+    position: relative;
+  }
+  .docs-index {
+    padding: var(--inset-panel);
+  }
+  /* A route loading its code: the document column's opening, where the page will be. */
+  .docs-route-loading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-section);
+    width: 100%;
+    max-width: 64rem;
+    min-height: 100%;
+    margin-inline: auto;
+    padding: var(--inset-panel);
+  }
+  .docs-route-loading-block {
+    width: 100%;
+    height: calc(var(--unit) * 80);
+  }
+  .docs-main {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .docs-content {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+  .docs-header {
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+  /* The popover is for a fine pointer: the controls keep their own heights, not the phone
+     sheet's 44px targets. */
+  .fa-popover.docs-appearance-popover {
+    --_w: 30rem;
+  }
+  .docs-appearance-popover .docs-toolbar[data-expanded] {
+    gap: var(--space-3);
+  }
+  .docs-appearance-popover .docs-appearance-control {
+    gap: var(--space-1-5);
+  }
+  .docs-appearance-popover .docs-appearance-options > .fa-btn,
+  .docs-appearance-popover .docs-appearance-control .fa-swatch-picker-item {
+    min-width: 0;
+    min-height: 0;
+  }
+  .docs-appearance-popover .docs-appearance-control .fa-swatch-picker {
+    gap: var(--space-half);
+  }
+  .docs-repository-link {
+    width: var(--control-h-sm);
+    padding-inline: 0;
+    gap: 0;
+  }
+  .docs-repository-link .fa-btn-label {
+    display: none;
+  }
+  .docs-directory {
+    gap: var(--space-3);
+  }
+  .docs-directory-empty {
+    padding-inline: var(--space-2);
+  }
+  /* The interface language sits under the sidebar's links, across its width. */
+  .docs-language {
+    padding-block-start: var(--space-1);
+  }
+  .docs-language-select {
+    width: 100%;
+  }
+  .docs-toolbar[data-expanded] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-6);
+    overflow: visible;
+    min-width: 0;
+  }
+  .docs-appearance-control {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--gap-controls);
+    min-width: 0;
+  }
+  .docs-appearance-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-controls);
+    min-width: 0;
+    max-width: 100%;
+  }
+  .docs-appearance-options > .fa-btn,
+  .docs-mobile-header .fa-btn,
+  .docs-mobile-dialog .fa-dialog-close {
+    min-width: 2.75rem;
+    min-height: max(2.75rem, var(--control-h-md));
+  }
+  .docs-appearance-control .fa-swatch-picker {
+    flex-wrap: wrap;
+    width: fit-content;
+    max-width: 100%;
+    gap: var(--space-1);
+  }
+  .docs-appearance-control .fa-swatch-picker-item {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+  .docs-mobile-dialog .fa-dialog-body:last-child {
+    padding-block-end: max(
+      var(--inset-dialog),
+      calc(var(--safe-bottom) + var(--space-3))
+    );
+  }
+  @media (width < 48rem) {
+    .docs-layout {
+      --gallery-shell-gutter: var(--space-2);
+      flex-direction: column;
+      padding: max(var(--space-2), var(--safe-top))
+        max(var(--space-2), var(--safe-right)) var(--space-2)
+        max(var(--space-2), var(--safe-left));
+    }
+    .docs-main {
+      gap: 0;
+      padding: 0;
+    }
+    .docs-mobile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--gap-controls);
+      min-width: 0;
+      padding-block: var(--space-1) var(--space-2);
+      border-block-end: var(--border-width) solid var(--line);
+    }
+    .docs-mobile-header .gallery-brand {
+      gap: var(--space-2);
+      padding: 0;
+      min-width: 0;
+    }
+    .docs-mobile-header .gallery-brand-mark {
+      width: var(--space-6);
+      height: var(--space-6);
+      flex: none;
+    }
+    .docs-mobile-header .gallery-brand-name {
+      white-space: nowrap;
+      font-size: var(--type-body-size);
+      font-weight: var(--weight-medium);
+    }
+    .docs-mobile-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      flex: none;
+    }
+    .docs-mobile-action-label {
+      display: none;
+    }
+    .docs-mobile-actions .fa-btn {
+      padding-inline: var(--space-2);
+    }
+    .docs-content {
+      overscroll-behavior: contain;
+      padding-block-end: var(--safe-bottom);
+    }
+  }
+  @media (40rem <= width < 48rem) {
+    .docs-mobile-action-label {
+      display: inline;
+    }
+  }
+  @media (width < 40rem) {
+    .docs-mobile-actions .fa-btn {
+      width: max(2.75rem, var(--control-h-md));
+      padding-inline: 0;
+      gap: 0;
+    }
+    .docs-mobile-actions .fa-btn-label {
+      display: none;
+    }
+  }
+}
+
+/* Print: the documentation as one long document (the library's print layer does the rest). */
+@media print {
+  .docs-layout {
+    display: block;
+    height: auto;
+    padding: 0;
+  }
+  .docs-main {
+    padding: 0;
+  }
+  .docs-content {
+    overflow: visible;
+  }
+  .docs-header {
+    display: none;
+  }
+}

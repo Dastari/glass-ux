@@ -1,19 +1,16 @@
 import ts from "typescript";
-import { existsSync, readFileSync } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { exportMap, sourceFile } from "./entries.mjs";
 
-/** Generated icon modules are documented collectively by this file-level comment. */
+/** A collection's generated module is documented collectively by this file-level comment. */
 export const ICON_DOC_MARKER = "@packageDocumentation";
-const ICONS = "src/icons/generated/icons.tsx";
 
 /** Source entry files behind the concrete (non-pattern) JavaScript exports in package.json. */
-export function publicEntries(pkg = JSON.parse(readFileSync("package.json", "utf8"))) {
+export function publicEntries(kit) {
   const files = [];
-  for (const target of Object.values(pkg.exports)) {
+  for (const target of Object.values(exportMap(kit.pkg))) {
     const file = typeof target === "string" ? target : target.import;
     if (!file || file.includes("*") || !file.endsWith(".js")) continue;
-    const base = file.replace("./dist/", "src/").replace(/\.js$/, "");
-    const source = [`${base}.ts`, `${base}.tsx`].find((f) => existsSync(f));
+    const source = sourceFile(file, kit);
     if (source) files.push(source);
   }
   return [...new Set(files)];
@@ -23,10 +20,11 @@ export function publicEntries(pkg = JSON.parse(readFileSync("package.json", "utf
  * Runtime exports (functions, components, hooks, constants and classes) reachable from a
  * public entry without TSDoc. Type-only exports are covered by TypeDoc and the prop check.
  */
-export function undocumentedExports() {
+export function undocumentedExports(kit) {
+  const generated = new Set(kit.collections.map((item) => item.file));
   const config = ts.readConfigFile("tsconfig.json", ts.sys.readFile);
   const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, process.cwd());
-  const entries = publicEntries();
+  const entries = publicEntries(kit);
   const program = ts.createProgram(
     [...new Set([...parsed.fileNames, ...entries])],
     parsed.options,
@@ -52,9 +50,9 @@ export function undocumentedExports() {
         .fileName.replaceAll("\\", "/")
         .replace(`${process.cwd().replaceAll("\\", "/")}/`, "");
       if (file.includes("node_modules")) continue;
-      if (file === ICONS) {
+      if (generated.has(file)) {
         if (!declaration.getSourceFile().text.includes(ICON_DOC_MARKER))
-          failures.push(`${file}: generated icons lack the shared ${ICON_DOC_MARKER} comment`);
+          failures.push(`${file}: generated exports lack the shared ${ICON_DOC_MARKER} comment`);
         continue;
       }
       if (symbol.getDocumentationComment(checker).length) continue;
@@ -70,10 +68,4 @@ export function undocumentedExports() {
     }
   }
   return [...new Set(failures)];
-}
-
-if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
-  const failures = undocumentedExports();
-  console.log(failures.join("\n"));
-  console.log(`${failures.length} undocumented public runtime exports`);
 }

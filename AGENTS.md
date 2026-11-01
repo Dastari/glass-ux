@@ -43,6 +43,13 @@ maps and other docs-site-only files, and `pnpm pack:check` enforces its size bud
 JavaScript ships as built, readable ESM: do not minify the package to fit the budget. Raising
 the budget is a deliberate decision with its reason in `scripts/pack-release.mjs`.
 
+`glass-ux-docs-kit` is a second archive on each release, in the same version: the bin and
+scripts in `scripts/docs-kit`, the page shell and its stylesheets from `dist/gallery`, and the
+site template. `scripts/pack-docs-kit.mjs` follows imports from `src/gallery/docs-kit.ts`, turns
+imports leaving the gallery into public entries, refuses a module with no public entry, keeps
+its own budget, and checks the finished archive for the forbidden names. The main archive
+gains nothing from it, including `docs/docs-kit.md`, which `excluded()` leaves out.
+
 ## Working in this repository
 
 - The docs app reads the built `dist`, not `src`: run `pnpm build` (after `pnpm docs:api` for
@@ -54,6 +61,13 @@ the budget is a deliberate decision with its reason in `scripts/pack-release.mjs
   `docs/api/context-avatar.md` and `src/gallery/api/context-avatar.json`; revert that noise.
   When generated files (`docs/api/typedoc.json`, `src/gallery/*.generated.json`) conflict in a
   merge, take either side and regenerate rather than merging them by hand.
+- The docs scripts are the kit's: `scripts/docs-api.mjs`, `docs-site.mjs` and `check-*.mjs` are
+  thin calls into `scripts/docs-kit/lib`, which must stay free of this project's names and paths.
+  This project's tables, budgets and forbidden names live in `docs-kit.config.mjs`, which is never
+  published. Pages read `site` (`site.generated.ts`) through `DocsKitProvider`; keep the shell free
+  of module-relative loading. `component-families.ts` runs under Playwright too: no Vite globs.
+  Steps only this project has, such as the page templates' public sources, their stale check and
+  their routes, are `hooks` in that config and `scripts/template-examples.mjs`.
 - Generated sources have their own authoring scripts: icons in `scripts/icon-authoring`
   (`pnpm icons`, rules in docs/icon-spec.md) and canvas artwork in `scripts/build-canvas.mjs`
   (alpha masks painted in palette roles), emoji data in `scripts/build-emoji.mjs` (`pnpm emoji`).
@@ -108,8 +122,9 @@ decides when to publish. The local route:
 2. Bump `package.json`, the install URL in README.md and docs/getting-started.md, the
    CHANGELOG heading and docs/migration.md; run `pnpm docs:api` for the documentation version.
 3. Assets as `release.yml` builds them: `node scripts/pack-release.mjs --out
-   .handoff/release`, `tar -czf .handoff/release/glass-ux-docs.tar.gz -C apps/docs/dist .`,
-   and `sha256sum *.tgz *.tar.gz > SHA256SUMS` in that folder.
+   .handoff/release`, `node scripts/pack-docs-kit.mjs --out .handoff/release`, `tar -czf
+   .handoff/release/glass-ux-docs.tar.gz -C apps/docs/dist .`, and `sha256sum *.tgz *.tar.gz >
+   SHA256SUMS` in that folder.
 4. Fast-forward `main`, push an annotated tag `vX.Y.Z`, then `gh release create vX.Y.Z
    <assets> --verify-tag --title … --notes-file …` (summary, changelog section, install
    command). Cancel the tag's Release run, which would only repeat the e2e; download the

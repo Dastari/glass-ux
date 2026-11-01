@@ -14,7 +14,7 @@
 			"flags": {},
 			"children": [
 				{
-					"id": 24441,
+					"id": 24423,
 					"name": "Connection",
 					"variant": "declaration",
 					"kind": 256,
@@ -37,7 +37,7 @@
 					},
 					"children": [
 						{
-							"id": 24443,
+							"id": 24425,
 							"name": "Edges",
 							"variant": "declaration",
 							"kind": 1024,
@@ -57,11 +57,11 @@
 									"type": "array",
 									"elementType": {
 										"type": "reference",
-										"target": 24445,
+										"target": 24427,
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 24442,
+												"target": 24424,
 												"name": "N",
 												"package": "glass-ux",
 												"qualifiedName": "Connection.N",
@@ -75,7 +75,7 @@
 							}
 						},
 						{
-							"id": 24444,
+							"id": 24426,
 							"name": "PageInfo",
 							"variant": "declaration",
 							"kind": 1024,
@@ -90,7 +90,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 24449,
+								"target": 24431,
 								"name": "ConnectionPageInfo",
 								"package": "glass-ux"
 							}
@@ -100,8 +100,8 @@
 						{
 							"title": "Properties",
 							"children": [
-								24443,
-								24444
+								24425,
+								24426
 							]
 						}
 					],
@@ -115,7 +115,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 24442,
+							"id": 24424,
 							"name": "N",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -124,7 +124,7 @@
 					]
 				},
 				{
-					"id": 24445,
+					"id": 24427,
 					"name": "ConnectionEdge",
 					"variant": "declaration",
 					"kind": 256,
@@ -139,7 +139,7 @@
 					},
 					"children": [
 						{
-							"id": 24448,
+							"id": 24430,
 							"name": "Cursor",
 							"variant": "declaration",
 							"kind": 1024,
@@ -169,7 +169,7 @@
 							}
 						},
 						{
-							"id": 24447,
+							"id": 24429,
 							"name": "Node",
 							"variant": "declaration",
 							"kind": 1024,
@@ -184,7 +184,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 24446,
+								"target": 24428,
 								"name": "N",
 								"package": "glass-ux",
 								"qualifiedName": "ConnectionEdge.N",
@@ -196,8 +196,8 @@
 						{
 							"title": "Properties",
 							"children": [
-								24448,
-								24447
+								24430,
+								24429
 							]
 						}
 					],
@@ -211,7 +211,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 24446,
+							"id": 24428,
 							"name": "N",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -220,7 +220,7 @@
 					]
 				},
 				{
-					"id": 24449,
+					"id": 24431,
 					"name": "ConnectionPageInfo",
 					"variant": "declaration",
 					"kind": 256,
@@ -251,7 +251,7 @@
 					},
 					"children": [
 						{
-							"id": 24453,
+							"id": 24435,
 							"name": "EndCursor",
 							"variant": "declaration",
 							"kind": 1024,
@@ -281,7 +281,7 @@
 							}
 						},
 						{
-							"id": 24450,
+							"id": 24432,
 							"name": "HasNextPage",
 							"variant": "declaration",
 							"kind": 1024,
@@ -300,7 +300,7 @@
 							}
 						},
 						{
-							"id": 24451,
+							"id": 24433,
 							"name": "HasPreviousPage",
 							"variant": "declaration",
 							"kind": 1024,
@@ -330,7 +330,7 @@
 							}
 						},
 						{
-							"id": 24452,
+							"id": 24434,
 							"name": "StartCursor",
 							"variant": "declaration",
 							"kind": 1024,
@@ -360,7 +360,7 @@
 							}
 						},
 						{
-							"id": 24454,
+							"id": 24436,
 							"name": "TotalCount",
 							"variant": "declaration",
 							"kind": 1024,
@@ -394,11 +394,11 @@
 						{
 							"title": "Properties",
 							"children": [
-								24453,
-								24450,
-								24451,
-								24452,
-								24454
+								24435,
+								24432,
+								24433,
+								24434,
+								24436
 							]
 						}
 					],
@@ -412,14 +412,14 @@
 					]
 				},
 				{
-					"id": 24455,
+					"id": 24437,
 					"name": "ConnectionPaginationOptions",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
 					"children": [
 						{
-							"id": 24456,
+							"id": 24438,
 							"name": "pageArg",
 							"variant": "declaration",
 							"kind": 1024,
@@ -484,7 +484,7 @@
 						{
 							"title": "Properties",
 							"children": [
-								24456
+								24438
 							]
 						}
 					],
@@ -498,7 +498,7 @@
 					]
 				},
 				{
-					"id": 24457,
+					"id": 24439,
 					"name": "ConnectionRows",
 					"variant": "declaration",
 					"kind": 256,
@@ -513,7 +513,7 @@
 					},
 					"children": [
 						{
-							"id": 24462,
+							"id": 24444,
 							"name": "endCursor",
 							"variant": "declaration",
 							"kind": 1024,
@@ -561,7 +561,7 @@
 							}
 						},
 						{
-							"id": 24461,
+							"id": 24443,
 							"name": "hasMore",
 							"variant": "declaration",
 							"kind": 1024,
@@ -592,7 +592,7 @@
 							}
 						},
 						{
-							"id": 24460,
+							"id": 24442,
 							"name": "rowCount",
 							"variant": "declaration",
 							"kind": 1024,
@@ -632,7 +632,7 @@
 							}
 						},
 						{
-							"id": 24459,
+							"id": 24441,
 							"name": "rows",
 							"variant": "declaration",
 							"kind": 1024,
@@ -660,7 +660,7 @@
 									"type": "array",
 									"elementType": {
 										"type": "reference",
-										"target": 24458,
+										"target": 24440,
 										"name": "N",
 										"package": "glass-ux",
 										"qualifiedName": "ConnectionRows.N",
@@ -674,10 +674,10 @@
 						{
 							"title": "Properties",
 							"children": [
-								24462,
-								24461,
-								24460,
-								24459
+								24444,
+								24443,
+								24442,
+								24441
 							]
 						}
 					],
@@ -691,7 +691,7 @@
 					],
 					"typeParameters": [
 						{
-							"id": 24458,
+							"id": 24440,
 							"name": "N",
 							"variant": "typeParam",
 							"kind": 131072,
@@ -700,14 +700,14 @@
 					]
 				},
 				{
-					"id": 24403,
+					"id": 24385,
 					"name": "EvaluateOptions",
 					"variant": "declaration",
 					"kind": 256,
 					"flags": {},
 					"children": [
 						{
-							"id": 24404,
+							"id": 24386,
 							"name": "today",
 							"variant": "declaration",
 							"kind": 1024,
@@ -748,7 +748,7 @@
 						{
 							"title": "Properties",
 							"children": [
-								24404
+								24386
 							]
 						}
 					],
@@ -762,7 +762,7 @@
 					]
 				},
 				{
-					"id": 24392,
+					"id": 24374,
 					"name": "WhereOptions",
 					"variant": "declaration",
 					"kind": 256,
@@ -817,7 +817,7 @@
 					},
 					"children": [
 						{
-							"id": 24393,
+							"id": 24375,
 							"name": "now",
 							"variant": "declaration",
 							"kind": 1024,
@@ -852,7 +852,7 @@
 							}
 						},
 						{
-							"id": 24394,
+							"id": 24376,
 							"name": "search",
 							"variant": "declaration",
 							"kind": 1024,
@@ -894,14 +894,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 24395,
+									"id": 24377,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 24396,
+											"id": 24378,
 											"name": "query",
 											"variant": "declaration",
 											"kind": 1024,
@@ -929,7 +929,7 @@
 											}
 										},
 										{
-											"id": 24397,
+											"id": 24379,
 											"name": "spec",
 											"variant": "declaration",
 											"kind": 1024,
@@ -969,8 +969,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												24396,
-												24397
+												24378,
+												24379
 											]
 										}
 									]
@@ -982,8 +982,8 @@
 						{
 							"title": "Properties",
 							"children": [
-								24393,
-								24394
+								24375,
+								24376
 							]
 						}
 					],
@@ -997,7 +997,7 @@
 					]
 				},
 				{
-					"id": 24391,
+					"id": 24373,
 					"name": "WhereInput",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -1044,7 +1044,7 @@
 					}
 				},
 				{
-					"id": 24356,
+					"id": 24338,
 					"name": "columnEntries",
 					"variant": "declaration",
 					"kind": 64,
@@ -1107,7 +1107,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24357,
+							"id": 24339,
 							"name": "columnEntries",
 							"variant": "signature",
 							"kind": 4096,
@@ -1130,7 +1130,7 @@
 							],
 							"typeParameters": [
 								{
-									"id": 24358,
+									"id": 24340,
 									"name": "T",
 									"variant": "typeParam",
 									"kind": 131072,
@@ -1149,7 +1149,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24359,
+									"id": 24341,
 									"name": "filters",
 									"variant": "param",
 									"kind": 32768,
@@ -1166,7 +1166,7 @@
 									}
 								},
 								{
-									"id": 24360,
+									"id": 24342,
 									"name": "columns",
 									"variant": "param",
 									"kind": 32768,
@@ -1181,7 +1181,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 24358,
+												"target": 24340,
 												"name": "T",
 												"package": "glass-ux",
 												"refersToTypeParameter": true
@@ -1192,14 +1192,14 @@
 									}
 								},
 								{
-									"id": 24361,
+									"id": 24343,
 									"name": "options",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 24392,
+										"target": 24374,
 										"name": "WhereOptions",
 										"package": "glass-ux"
 									},
@@ -1219,7 +1219,7 @@
 					]
 				},
 				{
-					"id": 24362,
+					"id": 24344,
 					"name": "columnWhere",
 					"variant": "declaration",
 					"kind": 64,
@@ -1282,7 +1282,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24363,
+							"id": 24345,
 							"name": "columnWhere",
 							"variant": "signature",
 							"kind": 4096,
@@ -1313,7 +1313,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24364,
+									"id": 24346,
 									"name": "spec",
 									"variant": "param",
 									"kind": 32768,
@@ -1326,7 +1326,7 @@
 									}
 								},
 								{
-									"id": 24365,
+									"id": 24347,
 									"name": "value",
 									"variant": "param",
 									"kind": 32768,
@@ -1337,7 +1337,7 @@
 									}
 								},
 								{
-									"id": 24366,
+									"id": 24348,
 									"name": "context",
 									"variant": "param",
 									"kind": 32768,
@@ -1369,7 +1369,7 @@
 					]
 				},
 				{
-					"id": 24405,
+					"id": 24387,
 					"name": "connectionPagination",
 					"variant": "declaration",
 					"kind": 64,
@@ -1384,7 +1384,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24406,
+							"id": 24388,
 							"name": "connectionPagination",
 							"variant": "signature",
 							"kind": 4096,
@@ -1423,14 +1423,14 @@
 							],
 							"parameters": [
 								{
-									"id": 24407,
+									"id": 24389,
 									"name": "options",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 24455,
+										"target": 24437,
 										"name": "ConnectionPaginationOptions",
 										"package": "glass-ux"
 									},
@@ -1440,14 +1440,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 24408,
+									"id": 24390,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 24409,
+											"id": 24391,
 											"name": "keyArgs",
 											"variant": "declaration",
 											"kind": 2048,
@@ -1462,7 +1462,7 @@
 											],
 											"signatures": [
 												{
-													"id": 24410,
+													"id": 24392,
 													"name": "keyArgs",
 													"variant": "signature",
 													"kind": 4096,
@@ -1477,7 +1477,7 @@
 													],
 													"parameters": [
 														{
-															"id": 24411,
+															"id": 24393,
 															"name": "args",
 															"variant": "param",
 															"kind": 32768,
@@ -1514,7 +1514,7 @@
 											]
 										},
 										{
-											"id": 24412,
+											"id": 24394,
 											"name": "merge",
 											"variant": "declaration",
 											"kind": 2048,
@@ -1529,7 +1529,7 @@
 											],
 											"signatures": [
 												{
-													"id": 24413,
+													"id": 24395,
 													"name": "merge",
 													"variant": "signature",
 													"kind": 4096,
@@ -1544,7 +1544,7 @@
 													],
 													"parameters": [
 														{
-															"id": 24414,
+															"id": 24396,
 															"name": "existing",
 															"variant": "param",
 															"kind": 32768,
@@ -1554,7 +1554,7 @@
 																"types": [
 																	{
 																		"type": "reference",
-																		"target": 24441,
+																		"target": 24423,
 																		"typeArguments": [
 																			{
 																				"type": "intrinsic",
@@ -1572,14 +1572,14 @@
 															}
 														},
 														{
-															"id": 24415,
+															"id": 24397,
 															"name": "incoming",
 															"variant": "param",
 															"kind": 32768,
 															"flags": {},
 															"type": {
 																"type": "reference",
-																"target": 24441,
+																"target": 24423,
 																"typeArguments": [
 																	{
 																		"type": "intrinsic",
@@ -1591,7 +1591,7 @@
 															}
 														},
 														{
-															"id": 24416,
+															"id": 24398,
 															"name": "__namedParameters",
 															"variant": "param",
 															"kind": 32768,
@@ -1599,14 +1599,14 @@
 															"type": {
 																"type": "reflection",
 																"declaration": {
-																	"id": 24417,
+																	"id": 24399,
 																	"name": "__type",
 																	"variant": "declaration",
 																	"kind": 65536,
 																	"flags": {},
 																	"children": [
 																		{
-																			"id": 24418,
+																			"id": 24400,
 																			"name": "args",
 																			"variant": "declaration",
 																			"kind": 1024,
@@ -1635,7 +1635,7 @@
 																		{
 																			"title": "Properties",
 																			"children": [
-																				24418
+																				24400
 																			]
 																		}
 																	]
@@ -1645,7 +1645,7 @@
 													],
 													"type": {
 														"type": "reference",
-														"target": 24441,
+														"target": 24423,
 														"typeArguments": [
 															{
 																"type": "intrinsic",
@@ -1663,8 +1663,8 @@
 										{
 											"title": "Methods",
 											"children": [
-												24409,
-												24412
+												24391,
+												24394
 											]
 										}
 									]
@@ -1674,7 +1674,7 @@
 					]
 				},
 				{
-					"id": 24419,
+					"id": 24401,
 					"name": "connectionRows",
 					"variant": "declaration",
 					"kind": 64,
@@ -1689,7 +1689,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24420,
+							"id": 24402,
 							"name": "connectionRows",
 							"variant": "signature",
 							"kind": 4096,
@@ -1720,7 +1720,7 @@
 							],
 							"typeParameters": [
 								{
-									"id": 24421,
+									"id": 24403,
 									"name": "N",
 									"variant": "typeParam",
 									"kind": 131072,
@@ -1729,7 +1729,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24422,
+									"id": 24404,
 									"name": "connection",
 									"variant": "param",
 									"kind": 32768,
@@ -1739,11 +1739,11 @@
 										"types": [
 											{
 												"type": "reference",
-												"target": 24441,
+												"target": 24423,
 												"typeArguments": [
 													{
 														"type": "reference",
-														"target": 24421,
+														"target": 24403,
 														"name": "N",
 														"package": "glass-ux",
 														"refersToTypeParameter": true
@@ -1766,11 +1766,11 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 24457,
+								"target": 24439,
 								"typeArguments": [
 									{
 										"type": "reference",
-										"target": 24421,
+										"target": 24403,
 										"name": "N",
 										"package": "glass-ux",
 										"refersToTypeParameter": true
@@ -1783,7 +1783,7 @@
 					]
 				},
 				{
-					"id": 24367,
+					"id": 24349,
 					"name": "decimalText",
 					"variant": "declaration",
 					"kind": 64,
@@ -1846,7 +1846,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24368,
+							"id": 24350,
 							"name": "decimalText",
 							"variant": "signature",
 							"kind": 4096,
@@ -1869,7 +1869,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24369,
+									"id": 24351,
 									"name": "value",
 									"variant": "param",
 									"kind": 32768,
@@ -1888,7 +1888,7 @@
 					]
 				},
 				{
-					"id": 24398,
+					"id": 24380,
 					"name": "evaluateWhere",
 					"variant": "declaration",
 					"kind": 64,
@@ -1903,7 +1903,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24399,
+							"id": 24381,
 							"name": "evaluateWhere",
 							"variant": "signature",
 							"kind": 4096,
@@ -1942,7 +1942,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24400,
+									"id": 24382,
 									"name": "where",
 									"variant": "param",
 									"kind": 32768,
@@ -1968,7 +1968,7 @@
 									}
 								},
 								{
-									"id": 24401,
+									"id": 24383,
 									"name": "record",
 									"variant": "param",
 									"kind": 32768,
@@ -1995,14 +1995,14 @@
 									}
 								},
 								{
-									"id": 24402,
+									"id": 24384,
 									"name": "options",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 24403,
+										"target": 24385,
 										"name": "EvaluateOptions",
 										"package": "glass-ux"
 									},
@@ -2017,7 +2017,7 @@
 					]
 				},
 				{
-					"id": 24423,
+					"id": 24405,
 					"name": "nextKeysetPage",
 					"variant": "declaration",
 					"kind": 64,
@@ -2032,7 +2032,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24424,
+							"id": 24406,
 							"name": "nextKeysetPage",
 							"variant": "signature",
 							"kind": 4096,
@@ -2071,7 +2071,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24425,
+									"id": 24407,
 									"name": "connection",
 									"variant": "param",
 									"kind": 32768,
@@ -2081,7 +2081,7 @@
 										"types": [
 											{
 												"type": "reference",
-												"target": 24441,
+												"target": 24423,
 												"typeArguments": [
 													{
 														"type": "intrinsic",
@@ -2103,7 +2103,7 @@
 									}
 								},
 								{
-									"id": 24426,
+									"id": 24408,
 									"name": "limit",
 									"variant": "param",
 									"kind": 32768,
@@ -2114,7 +2114,7 @@
 									}
 								},
 								{
-									"id": 24427,
+									"id": 24409,
 									"name": "options",
 									"variant": "param",
 									"kind": 32768,
@@ -2122,14 +2122,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 24428,
+											"id": 24410,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 24429,
+													"id": 24411,
 													"name": "includeTotalCount",
 													"variant": "declaration",
 													"kind": 1024,
@@ -2154,7 +2154,7 @@
 												{
 													"title": "Properties",
 													"children": [
-														24429
+														24411
 													]
 												}
 											]
@@ -2166,14 +2166,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 24430,
+									"id": 24412,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 24431,
+											"id": 24413,
 											"name": "after",
 											"variant": "declaration",
 											"kind": 1024,
@@ -2194,7 +2194,7 @@
 											}
 										},
 										{
-											"id": 24433,
+											"id": 24415,
 											"name": "includeTotalCount",
 											"variant": "declaration",
 											"kind": 1024,
@@ -2213,7 +2213,7 @@
 											}
 										},
 										{
-											"id": 24432,
+											"id": 24414,
 											"name": "limit",
 											"variant": "declaration",
 											"kind": 1024,
@@ -2236,9 +2236,9 @@
 										{
 											"title": "Properties",
 											"children": [
-												24431,
-												24433,
-												24432
+												24413,
+												24415,
+												24414
 											]
 										}
 									]
@@ -2248,7 +2248,7 @@
 					]
 				},
 				{
-					"id": 24434,
+					"id": 24416,
 					"name": "nextOffsetPage",
 					"variant": "declaration",
 					"kind": 64,
@@ -2263,7 +2263,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24435,
+							"id": 24417,
 							"name": "nextOffsetPage",
 							"variant": "signature",
 							"kind": 4096,
@@ -2302,7 +2302,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24436,
+									"id": 24418,
 									"name": "connection",
 									"variant": "param",
 									"kind": 32768,
@@ -2312,7 +2312,7 @@
 										"types": [
 											{
 												"type": "reference",
-												"target": 24441,
+												"target": 24423,
 												"typeArguments": [
 													{
 														"type": "intrinsic",
@@ -2334,7 +2334,7 @@
 									}
 								},
 								{
-									"id": 24437,
+									"id": 24419,
 									"name": "limit",
 									"variant": "param",
 									"kind": 32768,
@@ -2348,14 +2348,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 24438,
+									"id": 24420,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 24439,
+											"id": 24421,
 											"name": "Limit",
 											"variant": "declaration",
 											"kind": 1024,
@@ -2374,7 +2374,7 @@
 											}
 										},
 										{
-											"id": 24440,
+											"id": 24422,
 											"name": "Offset",
 											"variant": "declaration",
 											"kind": 1024,
@@ -2397,8 +2397,8 @@
 										{
 											"title": "Properties",
 											"children": [
-												24439,
-												24440
+												24421,
+												24422
 											]
 										}
 									]
@@ -2408,7 +2408,7 @@
 					]
 				},
 				{
-					"id": 24370,
+					"id": 24352,
 					"name": "rfc3339",
 					"variant": "declaration",
 					"kind": 64,
@@ -2471,7 +2471,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24371,
+							"id": 24353,
 							"name": "rfc3339",
 							"variant": "signature",
 							"kind": 4096,
@@ -2498,7 +2498,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24372,
+									"id": 24354,
 									"name": "ms",
 									"variant": "param",
 									"kind": 32768,
@@ -2517,7 +2517,7 @@
 					]
 				},
 				{
-					"id": 24373,
+					"id": 24355,
 					"name": "searchWhere",
 					"variant": "declaration",
 					"kind": 64,
@@ -2580,7 +2580,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24374,
+							"id": 24356,
 							"name": "searchWhere",
 							"variant": "signature",
 							"kind": 4096,
@@ -2627,7 +2627,7 @@
 							],
 							"typeParameters": [
 								{
-									"id": 24375,
+									"id": 24357,
 									"name": "T",
 									"variant": "typeParam",
 									"kind": 131072,
@@ -2646,7 +2646,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24376,
+									"id": 24358,
 									"name": "query",
 									"variant": "param",
 									"kind": 32768,
@@ -2666,7 +2666,7 @@
 									}
 								},
 								{
-									"id": 24377,
+									"id": 24359,
 									"name": "spec",
 									"variant": "param",
 									"kind": 32768,
@@ -2680,7 +2680,7 @@
 												"typeArguments": [
 													{
 														"type": "reference",
-														"target": 24375,
+														"target": 24357,
 														"name": "T",
 														"package": "glass-ux",
 														"refersToTypeParameter": true
@@ -2697,7 +2697,7 @@
 									}
 								},
 								{
-									"id": 24378,
+									"id": 24360,
 									"name": "columns",
 									"variant": "param",
 									"kind": 32768,
@@ -2712,7 +2712,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 24375,
+												"target": 24357,
 												"name": "T",
 												"package": "glass-ux",
 												"refersToTypeParameter": true
@@ -2743,7 +2743,7 @@
 					]
 				},
 				{
-					"id": 24379,
+					"id": 24361,
 					"name": "toFilterInput",
 					"variant": "declaration",
 					"kind": 64,
@@ -2806,7 +2806,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24380,
+							"id": 24362,
 							"name": "toFilterInput",
 							"variant": "signature",
 							"kind": 4096,
@@ -2869,7 +2869,7 @@
 							],
 							"typeParameters": [
 								{
-									"id": 24381,
+									"id": 24363,
 									"name": "T",
 									"variant": "typeParam",
 									"kind": 131072,
@@ -2888,7 +2888,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24382,
+									"id": 24364,
 									"name": "filters",
 									"variant": "param",
 									"kind": 32768,
@@ -2905,7 +2905,7 @@
 									}
 								},
 								{
-									"id": 24383,
+									"id": 24365,
 									"name": "columns",
 									"variant": "param",
 									"kind": 32768,
@@ -2920,7 +2920,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 24381,
+												"target": 24363,
 												"name": "T",
 												"package": "glass-ux",
 												"refersToTypeParameter": true
@@ -2931,14 +2931,14 @@
 									}
 								},
 								{
-									"id": 24384,
+									"id": 24366,
 									"name": "options",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 24392,
+										"target": 24374,
 										"name": "WhereOptions",
 										"package": "glass-ux"
 									},
@@ -2947,7 +2947,7 @@
 							],
 							"type": {
 								"type": "reference",
-								"target": 24391,
+								"target": 24373,
 								"name": "WhereInput",
 								"package": "glass-ux"
 							}
@@ -2955,7 +2955,7 @@
 					]
 				},
 				{
-					"id": 24385,
+					"id": 24367,
 					"name": "toWhere",
 					"variant": "declaration",
 					"kind": 64,
@@ -3018,7 +3018,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24386,
+							"id": 24368,
 							"name": "toWhere",
 							"variant": "signature",
 							"kind": 4096,
@@ -3057,7 +3057,7 @@
 							],
 							"typeParameters": [
 								{
-									"id": 24387,
+									"id": 24369,
 									"name": "T",
 									"variant": "typeParam",
 									"kind": 131072,
@@ -3076,7 +3076,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24388,
+									"id": 24370,
 									"name": "filters",
 									"variant": "param",
 									"kind": 32768,
@@ -3093,7 +3093,7 @@
 									}
 								},
 								{
-									"id": 24389,
+									"id": 24371,
 									"name": "columns",
 									"variant": "param",
 									"kind": 32768,
@@ -3108,7 +3108,7 @@
 										"typeArguments": [
 											{
 												"type": "reference",
-												"target": 24387,
+												"target": 24369,
 												"name": "T",
 												"package": "glass-ux",
 												"refersToTypeParameter": true
@@ -3119,14 +3119,14 @@
 									}
 								},
 								{
-									"id": 24390,
+									"id": 24372,
 									"name": "options",
 									"variant": "param",
 									"kind": 32768,
 									"flags": {},
 									"type": {
 										"type": "reference",
-										"target": 24392,
+										"target": 24374,
 										"name": "WhereOptions",
 										"package": "glass-ux"
 									},
@@ -3156,36 +3156,36 @@
 				{
 					"title": "Interfaces",
 					"children": [
-						24441,
-						24445,
-						24449,
-						24455,
-						24457,
-						24403,
-						24392
+						24423,
+						24427,
+						24431,
+						24437,
+						24439,
+						24385,
+						24374
 					]
 				},
 				{
 					"title": "Type Aliases",
 					"children": [
-						24391
+						24373
 					]
 				},
 				{
 					"title": "Functions",
 					"children": [
-						24356,
-						24362,
+						24338,
+						24344,
+						24387,
+						24401,
+						24349,
+						24380,
 						24405,
-						24419,
-						24367,
-						24398,
-						24423,
-						24434,
-						24370,
-						24373,
-						24379,
-						24385
+						24416,
+						24352,
+						24355,
+						24361,
+						24367
 					]
 				}
 			],
@@ -54699,9 +54699,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 140,
+									"line": 124,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L140"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L124"
 								}
 							],
 							"type": {
@@ -54739,9 +54739,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 142,
+									"line": 126,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L142"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L126"
 								}
 							],
 							"type": {
@@ -54775,9 +54775,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 138,
+									"line": 122,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L138"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L122"
 								}
 							],
 							"type": {
@@ -54815,9 +54815,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 144,
+									"line": 128,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L144"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L128"
 								}
 							],
 							"type": {
@@ -54840,14 +54840,14 @@
 					"sources": [
 						{
 							"fileName": "gallery/documentation.tsx",
-							"line": 136,
+							"line": 120,
 							"character": 17,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L136"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L120"
 						}
 					]
 				},
 				{
-					"id": 24310,
+					"id": 24292,
 					"name": "CatalogueEntry",
 					"variant": "declaration",
 					"kind": 256,
@@ -54862,7 +54862,7 @@
 					},
 					"children": [
 						{
-							"id": 24314,
+							"id": 24296,
 							"name": "group",
 							"variant": "declaration",
 							"kind": 1024,
@@ -54889,7 +54889,7 @@
 							}
 						},
 						{
-							"id": 24315,
+							"id": 24297,
 							"name": "href",
 							"variant": "declaration",
 							"kind": 1024,
@@ -54916,7 +54916,7 @@
 							}
 						},
 						{
-							"id": 24311,
+							"id": 24293,
 							"name": "id",
 							"variant": "declaration",
 							"kind": 1024,
@@ -54943,7 +54943,7 @@
 							}
 						},
 						{
-							"id": 24313,
+							"id": 24295,
 							"name": "summary",
 							"variant": "declaration",
 							"kind": 1024,
@@ -54970,7 +54970,7 @@
 							}
 						},
 						{
-							"id": 24312,
+							"id": 24294,
 							"name": "title",
 							"variant": "declaration",
 							"kind": 1024,
@@ -54997,7 +54997,7 @@
 							}
 						},
 						{
-							"id": 24316,
+							"id": 24298,
 							"name": "trailing",
 							"variant": "declaration",
 							"kind": 1024,
@@ -55037,12 +55037,12 @@
 						{
 							"title": "Properties",
 							"children": [
-								24314,
-								24315,
-								24311,
-								24313,
-								24312,
-								24316
+								24296,
+								24297,
+								24293,
+								24295,
+								24294,
+								24298
 							]
 						}
 					],
@@ -55087,9 +55087,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/component-families.ts",
-									"line": 9,
+									"line": 11,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L9"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L11"
 								}
 							],
 							"type": {
@@ -55427,9 +55427,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/component-families.ts",
-							"line": 7,
+							"line": 9,
 							"character": 17,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L7"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L9"
 						}
 					],
 					"extendedTypes": [
@@ -55599,16 +55599,16 @@
 								"summary": [
 									{
 										"kind": "text",
-										"text": "Foundation section identifier: colour, typography, space, shape, materials, motion, knobs, locale, icons or brand."
+										"text": "Foundation section identifier, such as colour, typography or space."
 									}
 								]
 							},
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 541,
+									"line": 475,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L541"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L475"
 								}
 							],
 							"type": {
@@ -55628,9 +55628,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/documentation.tsx",
-							"line": 539,
+							"line": 473,
 							"character": 17,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L539"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L473"
 						}
 					]
 				},
@@ -56158,7 +56158,7 @@
 					]
 				},
 				{
-					"id": 24317,
+					"id": 24299,
 					"name": "CatalogueLinkProps",
 					"variant": "declaration",
 					"kind": 2097152,
@@ -56218,14 +56218,14 @@
 							{
 								"type": "reflection",
 								"declaration": {
-									"id": 24318,
+									"id": 24300,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 24319,
+											"id": 24301,
 											"name": "entry",
 											"variant": "declaration",
 											"kind": 1024,
@@ -56240,7 +56240,7 @@
 											],
 											"type": {
 												"type": "reference",
-												"target": 24310,
+												"target": 24292,
 												"name": "CatalogueEntry",
 												"package": "glass-ux"
 											}
@@ -56250,7 +56250,7 @@
 										{
 											"title": "Properties",
 											"children": [
-												24319
+												24301
 											]
 										}
 									]
@@ -56276,9 +56276,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/component-families.ts",
-							"line": 4,
+							"line": 6,
 							"character": 12,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L4"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L6"
 						}
 					],
 					"type": {
@@ -56444,10 +56444,10 @@
 					},
 					"sources": [
 						{
-							"fileName": "gallery/documentation.tsx",
-							"line": 17,
+							"fileName": "gallery/component-families.ts",
+							"line": 15,
 							"character": 13,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L17"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L15"
 						}
 					],
 					"type": {
@@ -56619,9 +56619,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/component-families.ts",
-							"line": 291,
+							"line": 20,
 							"character": 13,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L291"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L20"
 						}
 					],
 					"type": {
@@ -56633,7 +56633,7 @@
 							"package": "glass-ux"
 						}
 					},
-					"defaultValue": "..."
+					"defaultValue": "families.all"
 				},
 				{
 					"id": 2333,
@@ -56696,10 +56696,10 @@
 					},
 					"sources": [
 						{
-							"fileName": "gallery/registry.ts",
-							"line": 14,
+							"fileName": "gallery/site.tsx",
+							"line": 73,
 							"character": 13,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/registry.ts#L14"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/site.tsx#L73"
 						}
 					],
 					"type": {
@@ -56756,476 +56756,76 @@
 					"sources": [
 						{
 							"fileName": "gallery/library-guides.ts",
-							"line": 6,
+							"line": 8,
 							"character": 13,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L6"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L8"
 						}
 					],
 					"type": {
-						"type": "typeOperator",
-						"operator": "readonly",
-						"target": {
-							"type": "tuple",
-							"elements": [
-								{
-									"type": "reflection",
-									"declaration": {
-										"id": 24282,
-										"name": "__type",
+						"type": "array",
+						"elementType": {
+							"type": "reflection",
+							"declaration": {
+								"id": 24282,
+								"name": "__type",
+								"variant": "declaration",
+								"kind": 65536,
+								"flags": {},
+								"children": [
+									{
+										"id": 24283,
+										"name": "id",
 										"variant": "declaration",
-										"kind": 65536,
+										"kind": 1024,
 										"flags": {},
-										"children": [
+										"sources": [
 											{
-												"id": 24283,
-												"name": "id",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 7,
-														"character": 4,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L7"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "getting-started"
-												},
-												"defaultValue": "\"getting-started\""
-											},
-											{
-												"id": 24284,
-												"name": "title",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 7,
-														"character": 27,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L7"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "Getting started"
-												},
-												"defaultValue": "\"Getting started\""
+												"fileName": "gallery/site.generated.ts",
+												"line": 13,
+												"character": 12,
+												"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/site.generated.ts#L13"
 											}
 										],
-										"groups": [
-											{
-												"title": "Properties",
-												"children": [
-													24283,
-													24284
-												]
-											}
-										]
-									}
-								},
-								{
-									"type": "reflection",
-									"declaration": {
-										"id": 24285,
-										"name": "__type",
+										"type": {
+											"type": "intrinsic",
+											"name": "string"
+										},
+										"defaultValue": "\"getting-started\""
+									},
+									{
+										"id": 24284,
+										"name": "title",
 										"variant": "declaration",
-										"kind": 65536,
+										"kind": 1024,
 										"flags": {},
-										"children": [
+										"sources": [
 											{
-												"id": 24286,
-												"name": "id",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 8,
-														"character": 4,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L8"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "integration"
-												},
-												"defaultValue": "\"integration\""
-											},
-											{
-												"id": 24287,
-												"name": "title",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 8,
-														"character": 23,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L8"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "Existing applications"
-												},
-												"defaultValue": "\"Existing applications\""
+												"fileName": "gallery/site.generated.ts",
+												"line": 13,
+												"character": 35,
+												"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/site.generated.ts#L13"
 											}
 										],
-										"groups": [
-											{
-												"title": "Properties",
-												"children": [
-													24286,
-													24287
-												]
-											}
-										]
+										"type": {
+											"type": "intrinsic",
+											"name": "string"
+										},
+										"defaultValue": "\"Getting started\""
 									}
-								},
-								{
-									"type": "reflection",
-									"declaration": {
-										"id": 24288,
-										"name": "__type",
-										"variant": "declaration",
-										"kind": 65536,
-										"flags": {},
+								],
+								"groups": [
+									{
+										"title": "Properties",
 										"children": [
-											{
-												"id": 24289,
-												"name": "id",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 9,
-														"character": 4,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L9"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "agent-adoption"
-												},
-												"defaultValue": "\"agent-adoption\""
-											},
-											{
-												"id": 24290,
-												"name": "title",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 9,
-														"character": 26,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L9"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "AI agent adoption"
-												},
-												"defaultValue": "\"AI agent adoption\""
-											}
-										],
-										"groups": [
-											{
-												"title": "Properties",
-												"children": [
-													24289,
-													24290
-												]
-											}
+											24283,
+											24284
 										]
 									}
-								},
-								{
-									"type": "reflection",
-									"declaration": {
-										"id": 24291,
-										"name": "__type",
-										"variant": "declaration",
-										"kind": 65536,
-										"flags": {},
-										"children": [
-											{
-												"id": 24292,
-												"name": "id",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 10,
-														"character": 4,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L10"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "layout-contract"
-												},
-												"defaultValue": "\"layout-contract\""
-											},
-											{
-												"id": 24293,
-												"name": "title",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 10,
-														"character": 27,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L10"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "Theme and layout"
-												},
-												"defaultValue": "\"Theme and layout\""
-											}
-										],
-										"groups": [
-											{
-												"title": "Properties",
-												"children": [
-													24292,
-													24293
-												]
-											}
-										]
-									}
-								},
-								{
-									"type": "reflection",
-									"declaration": {
-										"id": 24294,
-										"name": "__type",
-										"variant": "declaration",
-										"kind": 65536,
-										"flags": {},
-										"children": [
-											{
-												"id": 24295,
-												"name": "id",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 11,
-														"character": 4,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L11"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "ui-rules"
-												},
-												"defaultValue": "\"ui-rules\""
-											},
-											{
-												"id": 24296,
-												"name": "title",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 11,
-														"character": 20,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L11"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "Design rules"
-												},
-												"defaultValue": "\"Design rules\""
-											}
-										],
-										"groups": [
-											{
-												"title": "Properties",
-												"children": [
-													24295,
-													24296
-												]
-											}
-										]
-									}
-								},
-								{
-									"type": "reflection",
-									"declaration": {
-										"id": 24297,
-										"name": "__type",
-										"variant": "declaration",
-										"kind": 65536,
-										"flags": {},
-										"children": [
-											{
-												"id": 24298,
-												"name": "id",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 12,
-														"character": 4,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L12"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "testing"
-												},
-												"defaultValue": "\"testing\""
-											},
-											{
-												"id": 24299,
-												"name": "title",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 12,
-														"character": 19,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L12"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "Testing"
-												},
-												"defaultValue": "\"Testing\""
-											}
-										],
-										"groups": [
-											{
-												"title": "Properties",
-												"children": [
-													24298,
-													24299
-												]
-											}
-										]
-									}
-								},
-								{
-									"type": "reflection",
-									"declaration": {
-										"id": 24300,
-										"name": "__type",
-										"variant": "declaration",
-										"kind": 65536,
-										"flags": {},
-										"children": [
-											{
-												"id": 24301,
-												"name": "id",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 13,
-														"character": 4,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L13"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "migration"
-												},
-												"defaultValue": "\"migration\""
-											},
-											{
-												"id": 24302,
-												"name": "title",
-												"variant": "declaration",
-												"kind": 1024,
-												"flags": {
-													"isReadonly": true
-												},
-												"sources": [
-													{
-														"fileName": "gallery/library-guides.ts",
-														"line": 13,
-														"character": 21,
-														"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/library-guides.ts#L13"
-													}
-												],
-												"type": {
-													"type": "literal",
-													"value": "Migration"
-												},
-												"defaultValue": "\"Migration\""
-											}
-										],
-										"groups": [
-											{
-												"title": "Properties",
-												"children": [
-													24301,
-													24302
-												]
-											}
-										]
-									}
-								}
-							]
+								]
+							}
 						}
 					},
-					"defaultValue": "..."
+					"defaultValue": "site.guides"
 				},
 				{
 					"id": 24216,
@@ -57262,9 +56862,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/registry.ts",
-							"line": 17,
+							"line": 15,
 							"character": 13,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/registry.ts#L17"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/registry.ts#L15"
 						}
 					],
 					"type": {
@@ -57301,9 +56901,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/registry.ts",
-							"line": 26,
+							"line": 21,
 							"character": 13,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/registry.ts#L26"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/registry.ts#L21"
 						}
 					],
 					"type": {
@@ -57331,7 +56931,7 @@
 					"defaultValue": "..."
 				},
 				{
-					"id": 24320,
+					"id": 24302,
 					"name": "templates",
 					"variant": "declaration",
 					"kind": 32,
@@ -57379,14 +56979,14 @@
 								{
 									"type": "reflection",
 									"declaration": {
-										"id": 24321,
+										"id": 24303,
 										"name": "__type",
 										"variant": "declaration",
 										"kind": 65536,
 										"flags": {},
 										"children": [
 											{
-												"id": 24322,
+												"id": 24304,
 												"name": "id",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57408,7 +57008,7 @@
 												"defaultValue": "\"overview\""
 											},
 											{
-												"id": 24324,
+												"id": 24306,
 												"name": "summary",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57430,7 +57030,7 @@
 												"defaultValue": "\"Figures, a trend chart and recent activity.\""
 											},
 											{
-												"id": 24323,
+												"id": 24305,
 												"name": "title",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57456,9 +57056,9 @@
 											{
 												"title": "Properties",
 												"children": [
-													24322,
-													24324,
-													24323
+													24304,
+													24306,
+													24305
 												]
 											}
 										]
@@ -57467,14 +57067,14 @@
 								{
 									"type": "reflection",
 									"declaration": {
-										"id": 24325,
+										"id": 24307,
 										"name": "__type",
 										"variant": "declaration",
 										"kind": 65536,
 										"flags": {},
 										"children": [
 											{
-												"id": 24326,
+												"id": 24308,
 												"name": "id",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57496,7 +57096,7 @@
 												"defaultValue": "\"settings\""
 											},
 											{
-												"id": 24328,
+												"id": 24310,
 												"name": "summary",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57518,7 +57118,7 @@
 												"defaultValue": "\"A section rail with a saved form and settings that apply at once.\""
 											},
 											{
-												"id": 24327,
+												"id": 24309,
 												"name": "title",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57544,9 +57144,9 @@
 											{
 												"title": "Properties",
 												"children": [
-													24326,
-													24328,
-													24327
+													24308,
+													24310,
+													24309
 												]
 											}
 										]
@@ -57555,14 +57155,14 @@
 								{
 									"type": "reflection",
 									"declaration": {
-										"id": 24329,
+										"id": 24311,
 										"name": "__type",
 										"variant": "declaration",
 										"kind": 65536,
 										"flags": {},
 										"children": [
 											{
-												"id": 24330,
+												"id": 24312,
 												"name": "id",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57584,7 +57184,7 @@
 												"defaultValue": "\"records\""
 											},
 											{
-												"id": 24332,
+												"id": 24314,
 												"name": "summary",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57606,7 +57206,7 @@
 												"defaultValue": "\"A DataTable with a detail pane beside it, or in its place on a narrow screen.\""
 											},
 											{
-												"id": 24331,
+												"id": 24313,
 												"name": "title",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57632,9 +57232,9 @@
 											{
 												"title": "Properties",
 												"children": [
-													24330,
-													24332,
-													24331
+													24312,
+													24314,
+													24313
 												]
 											}
 										]
@@ -57643,14 +57243,14 @@
 								{
 									"type": "reflection",
 									"declaration": {
-										"id": 24333,
+										"id": 24315,
 										"name": "__type",
 										"variant": "declaration",
 										"kind": 65536,
 										"flags": {},
 										"children": [
 											{
-												"id": 24334,
+												"id": 24316,
 												"name": "id",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57672,7 +57272,7 @@
 												"defaultValue": "\"inbox\""
 											},
 											{
-												"id": 24336,
+												"id": 24318,
 												"name": "summary",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57694,7 +57294,7 @@
 												"defaultValue": "\"Filtered notifications with the open message beside them.\""
 											},
 											{
-												"id": 24335,
+												"id": 24317,
 												"name": "title",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57720,9 +57320,9 @@
 											{
 												"title": "Properties",
 												"children": [
-													24334,
-													24336,
-													24335
+													24316,
+													24318,
+													24317
 												]
 											}
 										]
@@ -57731,14 +57331,14 @@
 								{
 									"type": "reflection",
 									"declaration": {
-										"id": 24337,
+										"id": 24319,
 										"name": "__type",
 										"variant": "declaration",
 										"kind": 65536,
 										"flags": {},
 										"children": [
 											{
-												"id": 24338,
+												"id": 24320,
 												"name": "id",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57760,7 +57360,7 @@
 												"defaultValue": "\"files\""
 											},
 											{
-												"id": 24340,
+												"id": 24322,
 												"name": "summary",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57782,7 +57382,7 @@
 												"defaultValue": "\"A folder Tree beside a DataTable of the open folder.\""
 											},
 											{
-												"id": 24339,
+												"id": 24321,
 												"name": "title",
 												"variant": "declaration",
 												"kind": 1024,
@@ -57808,9 +57408,9 @@
 											{
 												"title": "Properties",
 												"children": [
-													24338,
-													24340,
-													24339
+													24320,
+													24322,
+													24321
 												]
 											}
 										]
@@ -57830,9 +57430,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/documentation.tsx",
-							"line": 148,
+							"line": 132,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L148"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L132"
 						}
 					],
 					"signatures": [
@@ -57853,9 +57453,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 148,
+									"line": 132,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L148"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L132"
 								}
 							],
 							"parameters": [
@@ -57888,7 +57488,7 @@
 					]
 				},
 				{
-					"id": 24303,
+					"id": 24285,
 					"name": "CatalogueIndex",
 					"variant": "declaration",
 					"kind": 64,
@@ -57903,7 +57503,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24304,
+							"id": 24286,
 							"name": "CatalogueIndex",
 							"variant": "signature",
 							"kind": 4096,
@@ -57926,7 +57526,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24305,
+									"id": 24287,
 									"name": "__namedParameters",
 									"variant": "param",
 									"kind": 32768,
@@ -57934,14 +57534,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 24306,
+											"id": 24288,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 24307,
+													"id": 24289,
 													"name": "entries",
 													"variant": "declaration",
 													"kind": 1024,
@@ -57966,14 +57566,14 @@
 														"type": "array",
 														"elementType": {
 															"type": "reference",
-															"target": 24310,
+															"target": 24292,
 															"name": "CatalogueEntry",
 															"package": "glass-ux"
 														}
 													}
 												},
 												{
-													"id": 24308,
+													"id": 24290,
 													"name": "groups",
 													"variant": "declaration",
 													"kind": 1024,
@@ -58007,7 +57607,7 @@
 													}
 												},
 												{
-													"id": 24309,
+													"id": 24291,
 													"name": "LinkComponent",
 													"variant": "declaration",
 													"kind": 1024,
@@ -58040,7 +57640,7 @@
 														"typeArguments": [
 															{
 																"type": "reference",
-																"target": 24317,
+																"target": 24299,
 																"name": "CatalogueLinkProps",
 																"package": "glass-ux"
 															}
@@ -58056,9 +57656,9 @@
 												{
 													"title": "Properties",
 													"children": [
-														24307,
-														24308,
-														24309
+														24289,
+														24290,
+														24291
 													]
 												}
 											]
@@ -58089,9 +57689,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/component-families.ts",
-							"line": 303,
+							"line": 28,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L303"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L28"
 						}
 					],
 					"signatures": [
@@ -58112,9 +57712,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/component-families.ts",
-									"line": 303,
+									"line": 28,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L303"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L28"
 								}
 							],
 							"parameters": [
@@ -58150,9 +57750,9 @@
 											"sources": [
 												{
 													"fileName": "gallery/component-families.ts",
-													"line": 305,
+													"line": 30,
 													"character": 2,
-													"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L305"
+													"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L30"
 												}
 											],
 											"type": {
@@ -58169,9 +57769,9 @@
 											"sources": [
 												{
 													"fileName": "gallery/component-families.ts",
-													"line": 304,
+													"line": 29,
 													"character": 2,
-													"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L304"
+													"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L29"
 												}
 											],
 											"type": {
@@ -58203,9 +57803,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/documentation.tsx",
-							"line": 294,
+							"line": 230,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L294"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L230"
 						}
 					],
 					"signatures": [
@@ -58226,9 +57826,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 294,
+									"line": 230,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L294"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L230"
 								}
 							],
 							"parameters": [
@@ -58256,9 +57856,9 @@
 													"sources": [
 														{
 															"fileName": "gallery/documentation.tsx",
-															"line": 294,
+															"line": 230,
 															"character": 49,
-															"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L294"
+															"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L230"
 														}
 													],
 													"type": {
@@ -58809,9 +58409,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/component-families.ts",
-							"line": 296,
+							"line": 23,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L296"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L23"
 						}
 					],
 					"signatures": [
@@ -58832,9 +58432,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/component-families.ts",
-									"line": 296,
+									"line": 23,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L296"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/component-families.ts#L23"
 								}
 							],
 							"parameters": [
@@ -58877,9 +58477,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/registry.ts",
-							"line": 29,
+							"line": 24,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/registry.ts#L29"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/registry.ts#L24"
 						}
 					],
 					"signatures": [
@@ -58908,9 +58508,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/registry.ts",
-									"line": 29,
+									"line": 24,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/registry.ts#L29"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/registry.ts#L24"
 								}
 							],
 							"parameters": [
@@ -58957,9 +58557,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/documentation.tsx",
-							"line": 545,
+							"line": 479,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L545"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L479"
 						}
 					],
 					"signatures": [
@@ -58980,9 +58580,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 545,
+									"line": 479,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L545"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/documentation.tsx#L479"
 								}
 							],
 							"parameters": [
@@ -59023,9 +58623,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/guide.tsx",
-							"line": 10,
+							"line": 8,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/guide.tsx#L10"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/guide.tsx#L8"
 						}
 					],
 					"signatures": [
@@ -59046,9 +58646,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/guide.tsx",
-									"line": 10,
+									"line": 8,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/guide.tsx#L10"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/guide.tsx#L8"
 								}
 							],
 							"parameters": [
@@ -59076,9 +58676,9 @@
 													"sources": [
 														{
 															"fileName": "gallery/guide.tsx",
-															"line": 10,
+															"line": 8,
 															"character": 39,
-															"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/guide.tsx#L10"
+															"url": "https://github.com/dastari/glass-ux/blob/v0.13.1/src/gallery/guide.tsx#L8"
 														}
 													],
 													"type": {
@@ -60033,7 +59633,7 @@
 					]
 				},
 				{
-					"id": 24341,
+					"id": 24323,
 					"name": "TemplateDocumentation",
 					"variant": "declaration",
 					"kind": 64,
@@ -60048,7 +59648,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24342,
+							"id": 24324,
 							"name": "TemplateDocumentation",
 							"variant": "signature",
 							"kind": 4096,
@@ -60071,7 +59671,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24343,
+									"id": 24325,
 									"name": "__namedParameters",
 									"variant": "param",
 									"kind": 32768,
@@ -60079,14 +59679,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 24344,
+											"id": 24326,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 24346,
+													"id": 24328,
 													"name": "fullScreen",
 													"variant": "declaration",
 													"kind": 1024,
@@ -60122,7 +59722,7 @@
 													}
 												},
 												{
-													"id": 24345,
+													"id": 24327,
 													"name": "id",
 													"variant": "declaration",
 													"kind": 1024,
@@ -60161,8 +59761,8 @@
 												{
 													"title": "Properties",
 													"children": [
-														24346,
-														24345
+														24328,
+														24327
 													]
 												}
 											]
@@ -60185,7 +59785,7 @@
 					]
 				},
 				{
-					"id": 24347,
+					"id": 24329,
 					"name": "TemplatePreview",
 					"variant": "declaration",
 					"kind": 64,
@@ -60200,7 +59800,7 @@
 					],
 					"signatures": [
 						{
-							"id": 24348,
+							"id": 24330,
 							"name": "TemplatePreview",
 							"variant": "signature",
 							"kind": 4096,
@@ -60223,7 +59823,7 @@
 							],
 							"parameters": [
 								{
-									"id": 24349,
+									"id": 24331,
 									"name": "__namedParameters",
 									"variant": "param",
 									"kind": 32768,
@@ -60231,14 +59831,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 24350,
+											"id": 24332,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 24351,
+													"id": 24333,
 													"name": "id",
 													"variant": "declaration",
 													"kind": 1024,
@@ -60273,7 +59873,7 @@
 													}
 												},
 												{
-													"id": 24352,
+													"id": 24334,
 													"name": "link",
 													"variant": "declaration",
 													"kind": 1024,
@@ -60297,21 +59897,21 @@
 													"type": {
 														"type": "reflection",
 														"declaration": {
-															"id": 24353,
+															"id": 24335,
 															"name": "__type",
 															"variant": "declaration",
 															"kind": 65536,
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 24354,
+																	"id": 24336,
 																	"name": "__type",
 																	"variant": "signature",
 																	"kind": 4096,
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 24355,
+																			"id": 24337,
 																			"name": "id",
 																			"variant": "param",
 																			"kind": 32768,
@@ -60343,8 +59943,8 @@
 												{
 													"title": "Properties",
 													"children": [
-														24351,
-														24352
+														24333,
+														24334
 													]
 												}
 											]
@@ -60939,7 +60539,7 @@
 					"title": "Interfaces",
 					"children": [
 						24227,
-						24310,
+						24292,
 						24261,
 						2328,
 						24240,
@@ -60951,7 +60551,7 @@
 				{
 					"title": "Type Aliases",
 					"children": [
-						24317,
+						24299,
 						24260,
 						2219,
 						2226,
@@ -60968,14 +60568,14 @@
 						24281,
 						24216,
 						24221,
-						24320
+						24302
 					]
 				},
 				{
 					"title": "Functions",
 					"children": [
 						24224,
-						24303,
+						24285,
 						24254,
 						24232,
 						24222,
@@ -60991,8 +60591,8 @@
 						2231,
 						2236,
 						2248,
-						24341,
-						24347,
+						24323,
+						24329,
 						2301,
 						2298,
 						2310,
@@ -750514,7 +750114,7 @@
 		},
 		"24220": {
 			"packageName": "glass-ux",
-			"packagePath": "src/gallery/registry.ts",
+			"packagePath": "src/gallery/site.tsx",
 			"qualifiedName": "GROUPS"
 		},
 		"24221": {
@@ -750624,7 +750224,7 @@
 		},
 		"24242": {
 			"packageName": "glass-ux",
-			"packagePath": "src/gallery/documentation.tsx",
+			"packagePath": "src/gallery/component-families.ts",
 			"qualifiedName": "componentCatalogue"
 		},
 		"24243": {
@@ -750824,393 +750424,393 @@
 		},
 		"24282": {
 			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
+			"packagePath": "src/gallery/site.generated.ts",
 			"qualifiedName": "__object"
 		},
 		"24283": {
 			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
+			"packagePath": "src/gallery/site.generated.ts",
 			"qualifiedName": "__object.id"
 		},
 		"24284": {
 			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
+			"packagePath": "src/gallery/site.generated.ts",
 			"qualifiedName": "__object.title"
 		},
 		"24285": {
 			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object"
+			"packagePath": "src/gallery/catalogue-index.tsx",
+			"qualifiedName": "CatalogueIndex"
 		},
 		"24286": {
 			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.id"
+			"packagePath": "src/gallery/catalogue-index.tsx",
+			"qualifiedName": "CatalogueIndex"
 		},
 		"24287": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.title"
-		},
-		"24288": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object"
-		},
-		"24289": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.id"
-		},
-		"24290": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.title"
-		},
-		"24291": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object"
-		},
-		"24292": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.id"
-		},
-		"24293": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.title"
-		},
-		"24294": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object"
-		},
-		"24295": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.id"
-		},
-		"24296": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.title"
-		},
-		"24297": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object"
-		},
-		"24298": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.id"
-		},
-		"24299": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.title"
-		},
-		"24300": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object"
-		},
-		"24301": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.id"
-		},
-		"24302": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/library-guides.ts",
-			"qualifiedName": "__object.title"
-		},
-		"24303": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/catalogue-index.tsx",
-			"qualifiedName": "CatalogueIndex"
-		},
-		"24304": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/catalogue-index.tsx",
-			"qualifiedName": "CatalogueIndex"
-		},
-		"24305": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "__0"
 		},
-		"24306": {
+		"24288": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "__type"
 		},
-		"24307": {
+		"24289": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "__type.entries"
 		},
-		"24308": {
+		"24290": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "__type.groups"
 		},
-		"24309": {
+		"24291": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "__type.LinkComponent"
 		},
-		"24310": {
+		"24292": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "CatalogueEntry"
 		},
-		"24311": {
+		"24293": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "CatalogueEntry.id"
 		},
-		"24312": {
+		"24294": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "CatalogueEntry.title"
 		},
-		"24313": {
+		"24295": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "CatalogueEntry.summary"
 		},
-		"24314": {
+		"24296": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "CatalogueEntry.group"
 		},
-		"24315": {
+		"24297": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "CatalogueEntry.href"
 		},
-		"24316": {
+		"24298": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "CatalogueEntry.trailing"
 		},
-		"24317": {
+		"24299": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "CatalogueLinkProps"
 		},
-		"24318": {
+		"24300": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "__type"
 		},
-		"24319": {
+		"24301": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/catalogue-index.tsx",
 			"qualifiedName": "__type.entry"
 		},
-		"24320": {
+		"24302": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-catalogue.ts",
 			"qualifiedName": "templates"
 		},
-		"24321": {
+		"24303": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-catalogue.ts",
 			"qualifiedName": "__object"
+		},
+		"24304": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.id"
+		},
+		"24305": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.title"
+		},
+		"24306": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.summary"
+		},
+		"24307": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object"
+		},
+		"24308": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.id"
+		},
+		"24309": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.title"
+		},
+		"24310": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.summary"
+		},
+		"24311": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object"
+		},
+		"24312": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.id"
+		},
+		"24313": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.title"
+		},
+		"24314": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.summary"
+		},
+		"24315": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object"
+		},
+		"24316": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.id"
+		},
+		"24317": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.title"
+		},
+		"24318": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.summary"
+		},
+		"24319": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object"
+		},
+		"24320": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.id"
+		},
+		"24321": {
+			"packageName": "glass-ux",
+			"packagePath": "src/gallery/template-catalogue.ts",
+			"qualifiedName": "__object.title"
 		},
 		"24322": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.id"
+			"qualifiedName": "__object.summary"
 		},
 		"24323": {
 			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.title"
+			"packagePath": "src/gallery/template-documentation.tsx",
+			"qualifiedName": "TemplateDocumentation"
 		},
 		"24324": {
 			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.summary"
+			"packagePath": "src/gallery/template-documentation.tsx",
+			"qualifiedName": "TemplateDocumentation"
 		},
 		"24325": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object"
-		},
-		"24326": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.id"
-		},
-		"24327": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.title"
-		},
-		"24328": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.summary"
-		},
-		"24329": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object"
-		},
-		"24330": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.id"
-		},
-		"24331": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.title"
-		},
-		"24332": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.summary"
-		},
-		"24333": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object"
-		},
-		"24334": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.id"
-		},
-		"24335": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.title"
-		},
-		"24336": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.summary"
-		},
-		"24337": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object"
-		},
-		"24338": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.id"
-		},
-		"24339": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.title"
-		},
-		"24340": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-catalogue.ts",
-			"qualifiedName": "__object.summary"
-		},
-		"24341": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-documentation.tsx",
-			"qualifiedName": "TemplateDocumentation"
-		},
-		"24342": {
-			"packageName": "glass-ux",
-			"packagePath": "src/gallery/template-documentation.tsx",
-			"qualifiedName": "TemplateDocumentation"
-		},
-		"24343": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "__0"
 		},
-		"24344": {
+		"24326": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "__type"
 		},
-		"24345": {
+		"24327": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "__type.id"
 		},
-		"24346": {
+		"24328": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "__type.fullScreen"
 		},
-		"24347": {
+		"24329": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "TemplatePreview"
 		},
-		"24348": {
+		"24330": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "TemplatePreview"
 		},
-		"24349": {
+		"24331": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "__0"
 		},
-		"24350": {
+		"24332": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "__type"
 		},
-		"24351": {
+		"24333": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "__type.id"
 		},
-		"24352": {
+		"24334": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "__type.link"
 		},
-		"24353": {
+		"24335": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "__type"
 		},
-		"24354": {
+		"24336": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "__type"
 		},
-		"24355": {
+		"24337": {
 			"packageName": "glass-ux",
 			"packagePath": "src/gallery/template-documentation.tsx",
 			"qualifiedName": "id"
 		},
-		"24356": {
+		"24338": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
 			"qualifiedName": "columnEntries"
 		},
-		"24357": {
+		"24339": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
 			"qualifiedName": "columnEntries"
 		},
-		"24358": {
+		"24340": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
 			"qualifiedName": "T"
 		},
-		"24359": {
+		"24341": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
 			"qualifiedName": "filters"
+		},
+		"24342": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "columns"
+		},
+		"24343": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "options"
+		},
+		"24344": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "columnWhere"
+		},
+		"24345": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "columnWhere"
+		},
+		"24346": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "spec"
+		},
+		"24347": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "value"
+		},
+		"24348": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "context"
+		},
+		"24349": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "decimalText"
+		},
+		"24350": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "decimalText"
+		},
+		"24351": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "value"
+		},
+		"24352": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "rfc3339"
+		},
+		"24353": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "rfc3339"
+		},
+		"24354": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "ms"
+		},
+		"24355": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "searchWhere"
+		},
+		"24356": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "searchWhere"
+		},
+		"24357": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "T"
+		},
+		"24358": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "query"
+		},
+		"24359": {
+			"packageName": "glass-ux",
+			"packagePath": "src/adapters/graphql-orm/where.ts",
+			"qualifiedName": "spec"
 		},
 		"24360": {
 			"packageName": "glass-ux",
@@ -751220,509 +750820,419 @@
 		"24361": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "options"
+			"qualifiedName": "toFilterInput"
 		},
 		"24362": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "columnWhere"
+			"qualifiedName": "toFilterInput"
 		},
 		"24363": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "columnWhere"
+			"qualifiedName": "T"
 		},
 		"24364": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "spec"
+			"qualifiedName": "filters"
 		},
 		"24365": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "value"
+			"qualifiedName": "columns"
 		},
 		"24366": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "context"
+			"qualifiedName": "options"
 		},
 		"24367": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "decimalText"
+			"qualifiedName": "toWhere"
 		},
 		"24368": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "decimalText"
+			"qualifiedName": "toWhere"
 		},
 		"24369": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "value"
+			"qualifiedName": "T"
 		},
 		"24370": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "rfc3339"
+			"qualifiedName": "filters"
 		},
 		"24371": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "rfc3339"
+			"qualifiedName": "columns"
 		},
 		"24372": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "ms"
+			"qualifiedName": "options"
 		},
 		"24373": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "searchWhere"
+			"qualifiedName": "WhereInput"
 		},
 		"24374": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "searchWhere"
+			"qualifiedName": "WhereOptions"
 		},
 		"24375": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "T"
+			"qualifiedName": "WhereOptions.now"
 		},
 		"24376": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "query"
+			"qualifiedName": "WhereOptions.search"
 		},
 		"24377": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "spec"
+			"qualifiedName": "__type"
 		},
 		"24378": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "columns"
+			"qualifiedName": "__type.query"
 		},
 		"24379": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "toFilterInput"
+			"qualifiedName": "__type.spec"
 		},
 		"24380": {
 			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "toFilterInput"
+			"packagePath": "src/adapters/graphql-orm/evaluate.ts",
+			"qualifiedName": "evaluateWhere"
 		},
 		"24381": {
 			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "T"
+			"packagePath": "src/adapters/graphql-orm/evaluate.ts",
+			"qualifiedName": "evaluateWhere"
 		},
 		"24382": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "filters"
-		},
-		"24383": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "columns"
-		},
-		"24384": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "options"
-		},
-		"24385": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "toWhere"
-		},
-		"24386": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "toWhere"
-		},
-		"24387": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "T"
-		},
-		"24388": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "filters"
-		},
-		"24389": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "columns"
-		},
-		"24390": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "options"
-		},
-		"24391": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "WhereInput"
-		},
-		"24392": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "WhereOptions"
-		},
-		"24393": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "WhereOptions.now"
-		},
-		"24394": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "WhereOptions.search"
-		},
-		"24395": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "__type"
-		},
-		"24396": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "__type.query"
-		},
-		"24397": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/where.ts",
-			"qualifiedName": "__type.spec"
-		},
-		"24398": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/evaluate.ts",
-			"qualifiedName": "evaluateWhere"
-		},
-		"24399": {
-			"packageName": "glass-ux",
-			"packagePath": "src/adapters/graphql-orm/evaluate.ts",
-			"qualifiedName": "evaluateWhere"
-		},
-		"24400": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/evaluate.ts",
 			"qualifiedName": "where"
 		},
-		"24401": {
+		"24383": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/evaluate.ts",
 			"qualifiedName": "record"
 		},
-		"24402": {
+		"24384": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/evaluate.ts",
 			"qualifiedName": "options"
 		},
-		"24403": {
+		"24385": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/evaluate.ts",
 			"qualifiedName": "EvaluateOptions"
 		},
-		"24404": {
+		"24386": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/evaluate.ts",
 			"qualifiedName": "EvaluateOptions.today"
 		},
-		"24405": {
+		"24387": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "connectionPagination"
 		},
-		"24406": {
+		"24388": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "connectionPagination"
 		},
-		"24407": {
+		"24389": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "options"
 		},
-		"24408": {
+		"24390": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__object"
 		},
-		"24409": {
+		"24391": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__object.keyArgs"
 		},
-		"24410": {
+		"24392": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__object.keyArgs"
 		},
-		"24411": {
+		"24393": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "args"
 		},
-		"24412": {
+		"24394": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__object.merge"
 		},
-		"24413": {
+		"24395": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__object.merge"
 		},
-		"24414": {
+		"24396": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "existing"
 		},
-		"24415": {
+		"24397": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "incoming"
 		},
-		"24416": {
+		"24398": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__2"
 		},
-		"24417": {
+		"24399": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type"
 		},
-		"24418": {
+		"24400": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type.args"
 		},
-		"24419": {
+		"24401": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "connectionRows"
 		},
-		"24420": {
+		"24402": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "connectionRows"
 		},
-		"24421": {
+		"24403": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "N"
 		},
-		"24422": {
+		"24404": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "connection"
 		},
-		"24423": {
+		"24405": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "nextKeysetPage"
 		},
-		"24424": {
+		"24406": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "nextKeysetPage"
 		},
-		"24425": {
+		"24407": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "connection"
 		},
-		"24426": {
+		"24408": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "limit"
 		},
-		"24427": {
+		"24409": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "options"
 		},
-		"24428": {
+		"24410": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type"
 		},
-		"24429": {
+		"24411": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type.includeTotalCount"
 		},
-		"24430": {
+		"24412": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type"
 		},
-		"24431": {
+		"24413": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type.after"
 		},
-		"24432": {
+		"24414": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type.limit"
 		},
-		"24433": {
+		"24415": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type.includeTotalCount"
 		},
-		"24434": {
+		"24416": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "nextOffsetPage"
 		},
-		"24435": {
+		"24417": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "nextOffsetPage"
 		},
-		"24436": {
+		"24418": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "connection"
 		},
-		"24437": {
+		"24419": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "limit"
 		},
-		"24438": {
+		"24420": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type"
 		},
-		"24439": {
+		"24421": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type.Limit"
 		},
-		"24440": {
+		"24422": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "__type.Offset"
 		},
-		"24441": {
+		"24423": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "Connection"
 		},
-		"24442": {
+		"24424": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "Connection.N"
 		},
-		"24443": {
+		"24425": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "Connection.Edges"
 		},
-		"24444": {
+		"24426": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "Connection.PageInfo"
 		},
-		"24445": {
+		"24427": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionEdge"
 		},
-		"24446": {
+		"24428": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionEdge.N"
 		},
-		"24447": {
+		"24429": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionEdge.Node"
 		},
-		"24448": {
+		"24430": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionEdge.Cursor"
 		},
-		"24449": {
+		"24431": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionPageInfo"
 		},
-		"24450": {
+		"24432": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionPageInfo.HasNextPage"
 		},
-		"24451": {
+		"24433": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionPageInfo.HasPreviousPage"
 		},
-		"24452": {
+		"24434": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionPageInfo.StartCursor"
 		},
-		"24453": {
+		"24435": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionPageInfo.EndCursor"
 		},
-		"24454": {
+		"24436": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionPageInfo.TotalCount"
 		},
-		"24455": {
+		"24437": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionPaginationOptions"
 		},
-		"24456": {
+		"24438": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionPaginationOptions.pageArg"
 		},
-		"24457": {
+		"24439": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionRows"
 		},
-		"24458": {
+		"24440": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionRows.N"
 		},
-		"24459": {
+		"24441": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionRows.rows"
 		},
-		"24460": {
+		"24442": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionRows.rowCount"
 		},
-		"24461": {
+		"24443": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionRows.hasMore"
 		},
-		"24462": {
+		"24444": {
 			"packageName": "glass-ux",
 			"packagePath": "src/adapters/graphql-orm/connection.ts",
 			"qualifiedName": "ConnectionRows.endCursor"

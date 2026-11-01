@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { format } from "prettier";
-import { entrySpecifiers, publicImports } from "./package-entries.mjs";
+import { entrySpecifiers, publicImports } from "./docs-kit/lib/entries.mjs";
 
 const FOLDER = "src/gallery/templates";
 

@@ -24,20 +24,20 @@ export function literalOptions(type) {
 }
 
 /**
- * Where a prop is declared, from its declaration's file name: `"glass-ux"` for this
- * package's source, `"react-dom"` for React's DOM typings (HTMLAttributes, AriaAttributes,
+ * Where a prop is declared, from its declaration's file name: `"own"` for this package's
+ * source, `"react-dom"` for React's DOM typings (HTMLAttributes, AriaAttributes,
  * DOMAttributes, SVGAttributes, RefAttributes and the rest of `@types/react`), and
  * `"package"` for any other dependency, such as Base UI.
  */
-export function propOrigin(fileName) {
+export function propOrigin(fileName, srcDir = "src") {
   const file = fileName.replaceAll("\\", "/");
   if (file.includes("/node_modules/@types/react/")) return "react-dom";
   if (file.includes("/node_modules/")) return "package";
-  return file.includes("/src/") ? "glass-ux" : "package";
+  return file.includes(`/${srcDir}/`) ? "own" : "package";
 }
 
 /**
- * React DOM props the API reference still lists, because Glass UX gives them documented
+ * React DOM props the API reference still lists, because components give them documented
  * behaviour: content, layout class, ref, and form or control state.
  */
 export const LISTED_REACT_PROPS = new Set([
@@ -54,7 +54,7 @@ export const LISTED_REACT_PROPS = new Set([
 ]);
 
 /**
- * Whether the API reference lists a prop. Props declared by Glass UX or another package
+ * Whether the API reference lists a prop. Props declared by this package or another one
  * (Base UI) are always listed; standard React DOM attributes are summarised by a note on
  * the component or slot instead, except {@link LISTED_REACT_PROPS}.
  */

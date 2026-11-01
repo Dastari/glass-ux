@@ -1,20 +1,16 @@
 // oxlint-disable jsx-a11y/no-noninteractive-tabindex -- documentation scrollers must be keyboard reachable
-import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
-import catalogue from "./catalogue.generated.json";
-import coverage from "./demo-coverage.generated.json";
-import { findComponentFamily } from "./component-families.js";
+import { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
 import { DemoScope, HiddenSpecimens, specimenAnchor } from "./demo-scope.js";
-import { findSection } from "./registry.js";
+import { siteRuntime, useDocsSite, type DocsSite, type SiteCollection } from "./site.js";
 import { VerticalTabNav } from "../ui/vertical-tabs/index.js";
 import { Skeleton } from "../ui/skeleton/index.js";
 import { Notice } from "../ui/notice/index.js";
 import { Markdown } from "../ai/markdown/index.js";
 import { Badge } from "../ui/badge/index.js";
-import { usePhoneLayout } from "../lib/use-media-query.js";
+import { useMediaQuery } from "../hooks/index.js";
 import { CodeBlock } from "../ai/code-block/index.js";
 
-/** The generated component catalogue: each public component's family, entry point, description and prop table, as rendered by the documentation pages. */
-export const componentCatalogue = catalogue;
+const PHONE_QUERY = "(width < 48rem)";
 interface Prop {
   name: string;
   /** Semantic content or control type. */
@@ -43,20 +39,8 @@ interface Api {
     htmlAttributes?: boolean;
   }>;
 }
-const apiPromises = new Map<string, Promise<Api>>();
-function loadApi(id: string) {
-  let promise = apiPromises.get(id);
-  if (!promise) {
-    promise = fetch(new URL(`./api/${id}.json`, import.meta.url).href).then(
-      (response) => {
-        if (!response.ok) throw new Error("The API reference could not load.");
-        return response.json() as Promise<Api>;
-      },
-    );
-    apiPromises.set(id, promise);
-  }
-  return promise;
-}
+const collectionOf = (site: DocsSite, id: string): SiteCollection | undefined =>
+  site.collections.find((collection) => collection.id === id);
 
 function Props({
   props,
@@ -151,15 +135,18 @@ export function ApiReference({
   headingLevel = 2,
   title = "API",
 }: ApiReferenceProps) {
+  const site = useDocsSite();
   const [api, setApi] = useState<Api>();
   const [error, setError] = useState<string>();
   useEffect(() => {
     let active = true;
     setApi(undefined);
     setError(undefined);
-    loadApi(id)
+    siteRuntime(site)
+      .content()
+      .then((content) => content.loadApi(id))
       .then((value) => {
-        if (active) setApi(value);
+        if (active) setApi(value as Api);
       })
       .catch((reason) => {
         if (active) setError(String(reason));
@@ -167,7 +154,7 @@ export function ApiReference({
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [site, id]);
   const Heading = headingLevel === 2 ? "h2" : "h3";
   const SlotHeading = headingLevel === 2 ? "h3" : "h4";
   return (
@@ -182,7 +169,7 @@ export function ApiReference({
       ) : (
         <>
           <CodeBlock
-            code={`import { ${api.id === "icons" ? "IconSearch" : api.name} } from "${api.entry}"`}
+            code={`import { ${collectionOf(site, api.id)?.sample ?? api.name} } from "${api.entry}"`}
             language="tsx"
             title="Import"
             label={`${api.name} API import`}
@@ -216,39 +203,15 @@ export function ApiReference({
   );
 }
 
-const demoLoaders = import.meta.glob<{
-  default: import("react").ComponentType;
-}>("./demos/*.js");
-const demoModules = new Map(
-  Object.entries(demoLoaders).map(([path, loader]) => [
-    path.split("/").pop()!.replace(".js", ""),
-    loader,
-  ]),
-);
-const demoPromises = new Map<
-  string,
-  ReturnType<(typeof demoLoaders)[string]>
->();
-function loadDemo(id: string) {
-  let promise = demoPromises.get(id);
-  const loader = demoModules.get(id);
-  if (!promise && loader) {
-    promise = loader();
-    demoPromises.set(id, promise);
-  }
-  return promise;
-}
-/** The specimens each export's focused demo shows (key and title), from the demo generator. */
-const demoSpecimens = new Map(
-  (coverage as Array<{ id: string; specimens?: Array<{ key: string; title: string }> }>).map((entry) => [entry.id, entry.specimens ?? []]),
-);
-
 /**
  * For each related export after the base component: the specimens an earlier demo in the
  * document already showed (hidden in its demo), and the titles of its own specimens that are
  * all shown above when nothing new is left.
  */
-function sharedSpecimens(ids: string[]) {
+function sharedSpecimens(
+  ids: string[],
+  demoSpecimens: ReadonlyMap<string, Array<{ key: string; title: string }>>,
+) {
   const shown = new Set<string>();
   const result = new Map<string, { hidden: ReadonlySet<string>; above: Array<{ key: string; title: string }> | null }>();
   ids.forEach((id, index) => {
@@ -263,42 +226,22 @@ function sharedSpecimens(ids: string[]) {
 
 const EMPTY: ReadonlySet<string> = new Set();
 
-const focusedDemos = new Map(
-  [...demoModules.keys()].map((id) => [id, lazy(() => loadDemo(id)!)]),
-);
-const examplePromises = new Map<string, Promise<string>>();
-function loadExample(id: string) {
-  let promise = examplePromises.get(id);
-  if (!promise) {
-    promise = fetch(
-      new URL(`./examples/${id}.tsx.txt`, import.meta.url).href,
-    ).then((response) => {
-      if (!response.ok) throw new Error("Example source could not load.");
-      return response.text();
-    });
-    examplePromises.set(id, promise);
-  }
-  return promise;
-}
-const ICON_COMPONENT = {
-  id: "icons",
-  name: "Icons",
-  entry: "glass-ux/icons",
-  family: "icons",
-  description:
-    "A shared family of scalable icons with accessible labels, theme-aware strokes and tree-shaken named imports.",
-  section: "icons",
-};
-
 /** A centered, single-page component document with a section-jump side rail. */
 export function ComponentDocumentation({ id }: { id: string }) {
-  const family = findComponentFamily(id);
-  const component = id === "icons" ? ICON_COMPONENT : family;
+  const site = useDocsSite();
+  const runtime = siteRuntime(site);
+  const content = use(runtime.content());
+  const family = runtime.families.find(id);
+  const collection = collectionOf(site, id);
+  const component = collection ?? family;
   const components = useMemo(
     () => family?.components ?? (component ? [component] : []),
     [family, component],
   );
-  const sharing = useMemo(() => sharedSpecimens(components.map((item) => item.id)), [components]);
+  const sharing = useMemo(
+    () => sharedSpecimens(components.map((item) => item.id), content.specimens),
+    [components, content],
+  );
   const documentSections = useMemo(
     () => [
       { value: "examples", label: "Examples" },
@@ -311,7 +254,7 @@ export function ComponentDocumentation({ id }: { id: string }) {
     ],
     [components],
   );
-  const phone = usePhoneLayout();
+  const phone = useMediaQuery(PHONE_QUERY);
   const root = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState("examples");
   useEffect(() => {
@@ -354,9 +297,9 @@ export function ComponentDocumentation({ id }: { id: string }) {
       // after their modules, source and API content have committed their layout.
       void Promise.allSettled(
         components.flatMap((item) => [
-          loadDemo(item.id),
-          loadApi(item.id),
-          loadExample(item.id),
+          content.loadDemo(item.id),
+          content.loadApi(item.id),
+          content.loadExample(item.id),
         ]),
       ).then(() => {
         if (cancelled) return;
@@ -381,15 +324,14 @@ export function ComponentDocumentation({ id }: { id: string }) {
       window.removeEventListener("hashchange", goToHash);
       observer.disconnect();
     };
-  }, [id, component, components, documentSections]);
+  }, [id, component, components, documentSections, content]);
   if (!component)
     return (
       <Notice tone="warning">This component is not in the catalogue.</Notice>
     );
-  const Demo =
-    id === "icons"
-      ? findSection("icons")?.Component
-      : focusedDemos.get(component.id);
+  const Demo = collection
+    ? runtime.findSection(collection.section)?.Component
+    : content.focusedDemos.get(component.id);
   return (
     <div ref={root} className="gallery-document-layout">
       <aside className="gallery-document-rail">
@@ -413,22 +355,14 @@ export function ComponentDocumentation({ id }: { id: string }) {
         aria-label={`${component.name} documentation`}
       >
         <header className="gallery-document-intro">
-          <Badge>
-            {component.family === "icons"
-              ? "Foundation"
-              : component.family === "charts"
-                ? "Charts"
-                : component.family === "ai"
-                  ? "Assistant components"
-                  : "Component reference"}
-          </Badge>
+          <Badge>{site.badges[component.family] ?? "Component reference"}</Badge>
           <h1 className="type-display">{component.name}</h1>
           <Markdown
             text={component.description}
             className="gallery-document-description type-body text-fg-muted"
           />
           <CodeBlock
-            code={`import { ${component.id === "icons" ? "IconSearch" : component.name} } from "${component.entry}"`}
+            code={`import { ${collection?.sample ?? component.name} } from "${component.entry}"`}
             language="tsx"
             title="Import"
             label={`${component.name} import`}
@@ -451,7 +385,7 @@ export function ComponentDocumentation({ id }: { id: string }) {
             </Suspense>
           </section>
           {components.slice(1).map((item) => {
-            const RelatedDemo = focusedDemos.get(item.id);
+            const RelatedDemo = content.focusedDemos.get(item.id);
             const shared = sharing.get(item.id);
             return (
               <section
@@ -537,18 +471,19 @@ export function ComponentDocumentation({ id }: { id: string }) {
 }
 
 export interface FoundationDocumentationProps {
-  /** Foundation section identifier: colour, typography, space, shape, materials, motion, knobs, locale, icons or brand. */
+  /** Foundation section identifier, such as colour, typography or space. */
   id: string;
 }
 
 /** A Foundation's styled title, introduction and examples in one centered article. Icons retain their usage and API sections. */
 export function FoundationDocumentation({ id }: FoundationDocumentationProps) {
-  const section = findSection(id);
+  const site = useDocsSite();
+  const section = siteRuntime(site).findSection(id);
   if (!section || section.group !== "Foundations")
     return (
       <Notice tone="warning">This Foundation is not in the catalogue.</Notice>
     );
-  if (id === "icons") return <ComponentDocumentation id="icons" />;
+  if (collectionOf(site, id)) return <ComponentDocumentation id={id} />;
   const { Component } = section;
   return (
     <article
@@ -585,17 +520,21 @@ export function UsageExample({
   /** Heading level within the surrounding article. @defaultValue `2` */
   headingLevel?: 2 | 3;
 }) {
+  const site = useDocsSite();
   const [code, setCode] = useState("");
   useEffect(() => {
     let active = true;
     setCode("");
-    loadExample(section).then((text) => {
-      if (active) setCode(text);
-    });
+    siteRuntime(site)
+      .content()
+      .then((content) => content.loadExample(section))
+      .then((text) => {
+        if (active) setCode(text);
+      });
     return () => {
       active = false;
     };
-  }, [section]);
+  }, [site, section]);
   const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     <section className="gallery-usage-example">

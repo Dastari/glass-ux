@@ -2,31 +2,29 @@ import { useEffect, useState } from "react";
 import { Markdown } from "../ai/markdown/index.js";
 import { Notice } from "../ui/notice/index.js";
 import { Skeleton } from "../ui/skeleton/index.js";
-import { DOCUMENTATION_VERSION } from "./release.generated.js";
-
-export { libraryGuides } from "./library-guides.js";
+import { useDocsSite } from "./site.js";
 
 /** A version-matched human guide from the installed release. */
 export function LibraryGuide({ id }: { id: string }) {
+  const site = useDocsSite();
   const [text, setText] = useState("");
   const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
     setText("");
     setError("");
-    fetch(new URL(`./guides/${id}.md`, import.meta.url).href)
-      .then((response) => {
-        if (!response.ok) throw new Error("The guide could not load.");
-        return response.text();
-      })
+    site
+      .loadGuide(id)
       .then((value) => {
+        const base = site.docsSourceUrl;
         if (active)
           setText(
-            value.replace(
-              /\]\((?!https?:|#)([^)]+)\)/g,
-              (_match, path) =>
-                `](${new URL(path, `https://github.com/Dastari/glass-ux/blob/v${DOCUMENTATION_VERSION}/docs/`).href})`,
-            ),
+            base
+              ? value.replace(
+                  /\]\((?!https?:|#)([^)]+)\)/g,
+                  (_match, path) => `](${new URL(path, base).href})`,
+                )
+              : value,
           );
       })
       .catch((reason) => {
@@ -35,7 +33,7 @@ export function LibraryGuide({ id }: { id: string }) {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [site, id]);
   return (
     <article className="gallery-documentation gallery-guide-document">
       {error ? (

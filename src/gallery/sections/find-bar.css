@@ -8,9 +8,11 @@
   .gallery-find-scroller {
     height: 16rem; /* tokens:allow a specimen's height */
     position: relative;
-    padding: var(--space-16) var(--space-3) var(--space-3);
+    /* Two rows of the bar and its insets: below 28rem it wraps. */
+    --_clear: calc(var(--control-h-sm) * 2 + var(--space-8));
+    padding: var(--_clear) var(--space-3) var(--space-3);
     overflow-y: auto;
-    scroll-padding-block-start: var(--space-16);
+    scroll-padding-block-start: var(--_clear);
     font-family: var(--font-mono);
     font-size: var(--type-mono-size);
     line-height: var(--type-mono-line);

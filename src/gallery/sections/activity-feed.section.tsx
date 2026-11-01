@@ -23,7 +23,7 @@ const VERSIONS: ActivityItem[] = [
     ],
   },
   { id: "v12", content: "Version 12 · Rejected at review", at: "2026-03-09T10:00:00Z", tone: "danger", toneLabel: "Rejected" },
-  { id: "v11", content: "Version 11 · First issue", at: "2026-03-02T08:15:00Z" },
+  { id: "v11", content: "Version 11 · First issue", at: "2026-03-02T08:15:00Z", tone: "neutral", toneLabel: "Archived" },
 ];
 
 function VersionHistory() {

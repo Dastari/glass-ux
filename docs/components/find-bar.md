@@ -65,7 +65,8 @@ bar did (R20.3). Open the bar from your own shortcut, for example `useHotkeys("m
 Make that ancestor a wrapper around the scroller, not the scroller itself, or the bar scrolls
 away with the content. It keeps clear of the scrollbar and the top scroll edge, so the edge's
 hairline stays visible (R5.8). Give the scroller `scroll-padding-block-start` so that a match
-you reveal with `scrollIntoView` is not left under the bar.
+you reveal with `scrollIntoView` is not left under the bar, and allow for two rows in a box
+narrower than 28rem.
 
 ```tsx
 <div className="relative">

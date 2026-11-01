@@ -29,6 +29,8 @@ test("⌘B / Ctrl+B toggles the application frame, and its trigger reports it", 
   const trigger = app.getByRole("button", { name: "Toggle sidebar" })
   await expect(trigger).toHaveAttribute("aria-keyshortcuts", /Control\+B|Meta\+B/)
   await expect(sidebar).toHaveAttribute("data-state", "expanded")
+  // The documentation's own sidebar shares the shortcut: focus in the frame makes it the frame's.
+  await trigger.focus()
   await page.keyboard.press("ControlOrMeta+b")
   await expect(sidebar).toHaveAttribute("data-state", "collapsed")
   await expect(trigger).toHaveAttribute("aria-expanded", "false")
@@ -36,6 +38,7 @@ test("⌘B / Ctrl+B toggles the application frame, and its trigger reports it", 
   await expect(sidebar).toHaveAttribute("data-state", "expanded")
   // The other demos opt out (shortcut={false}), so only this one moved.
   await expect(page.getByTestId("sidebar-modes").locator(".fa-sidebar")).toHaveAttribute("data-state", "expanded")
+  await expect(page.locator(".docs-sidebar")).toHaveAttribute("data-state", "expanded")
 })
 
 test("icon mode labels the icons with tooltips and opens sub-menus as flyouts, by keyboard and pointer", async ({ page }) => {

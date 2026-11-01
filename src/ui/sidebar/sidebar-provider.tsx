@@ -54,7 +54,8 @@ export interface SidebarProviderProps extends Omit<ComponentProps<"div">, "onCha
    * The keys that toggle the sidebar from anywhere on the page, or `false` for none. The
    * default is `"mod+b"` (⌘B, Ctrl+B) for a start sidebar and none for an end one. It is
    * ignored while focus is in rich text or a custom text box, where Ctrl+B means bold.
-   * Triggers show it in their tooltips and `aria-keyshortcuts`.
+   * Triggers show it in their tooltips and `aria-keyshortcuts`. Nested sidebars that share
+   * it: the innermost whose provider holds focus takes it, else the outermost.
    */
   shortcut?: string | false
   /**
@@ -97,6 +98,17 @@ export type SidebarStateOptions = Pick<
   SidebarProviderProps,
   "open" | "defaultOpen" | "onOpenChange" | "openMobile" | "onOpenMobileChange" | "shortcut" | "storageKey" | "mobileQuery" | "name" | "nonce"
 >
+
+const SHORTCUT_ATTRIBUTE = "data-sidebar-shortcut"
+const REGION_ATTRIBUTE = "data-sidebar-region"
+
+/**
+ * Internal: the attributes that mark the element a sidebar's state lays out (the provider's,
+ * or AppShell's root) as the region its shortcut belongs to while focus is inside.
+ */
+export function sidebarRegionProps(sidebar: Pick<SidebarInternal, "shortcut" | "paneId">) {
+  return sidebar.shortcut ? { [SHORTCUT_ATTRIBUTE]: sidebar.shortcut, [REGION_ATTRIBUTE]: sidebar.paneId } : {}
+}
 
 /**
  * Internal: one sidebar's state, shortcut and focus return, without the provider's element.
@@ -224,12 +236,17 @@ export function useSidebarState({
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented || event.repeat || isRichTextTarget(event.target)) return
       if (!matchesShortcut(event, shortcut, platform)) return
+      // Nested sidebars with one shortcut (a demo inside a documentation site): the innermost
+      // region holding focus takes it; with focus in none of them, the outermost does.
+      const target = event.target instanceof Element ? event.target : null
+      const region = target?.closest(`[${SHORTCUT_ATTRIBUTE}="${CSS.escape(shortcut)}"]`)
+      if (region ? region.getAttribute(REGION_ATTRIBUTE) !== paneId : parent?.chain.some((outer) => outer.shortcut === shortcut)) return
       event.preventDefault()
       toggleWith("shortcut", event)
     }
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [shortcut, platform, toggleWith])
+  }, [shortcut, platform, toggleWith, paneId, parent])
 
   const value = useMemo<SidebarInternal>(() => {
     const internal: SidebarInternal = {
@@ -317,7 +334,7 @@ export function SidebarProvider({
   return (
     <SidebarContext.Provider value={value}>
       <TooltipProvider>
-        <div {...rest} className={cx("fa-sidebar-provider", className)} data-sidebar-name={name}>
+        <div {...rest} {...sidebarRegionProps(value)} className={cx("fa-sidebar-provider", className)} data-sidebar-name={name}>
           {children}
         </div>
       </TooltipProvider>

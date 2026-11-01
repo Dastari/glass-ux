@@ -174,6 +174,34 @@ describe("shortcut", () => {
     fireEvent.keyDown(window, { key: "b", ctrlKey: true })
     expect(pane()).toHaveAttribute("data-state", "expanded")
   })
+
+  it("goes to the innermost sidebar holding focus, else the outermost", () => {
+    render(
+      <SidebarProvider>
+        <Sidebar aria-label="Site">
+          <Sidebar.Content />
+        </Sidebar>
+        <SidebarInset>
+          <SidebarProvider>
+            <Sidebar aria-label="Demo">
+              <Sidebar.Content />
+            </Sidebar>
+            <SidebarInset render={<div />}>
+              <button type="button">Inside the demo</button>
+            </SidebarInset>
+          </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    )
+    const site = screen.getByRole("navigation", { name: "Site" })
+    const demo = screen.getByRole("navigation", { name: "Demo" })
+    fireEvent.keyDown(screen.getByRole("button", { name: "Inside the demo" }), { key: "b", ctrlKey: true })
+    expect(demo).toHaveAttribute("data-state", "collapsed")
+    expect(site).toHaveAttribute("data-state", "expanded")
+    fireEvent.keyDown(document.body, { key: "b", ctrlKey: true })
+    expect(site).toHaveAttribute("data-state", "collapsed")
+    expect(demo).toHaveAttribute("data-state", "collapsed")
+  })
 })
 
 describe("persistence", () => {

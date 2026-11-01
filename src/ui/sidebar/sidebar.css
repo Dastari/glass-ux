@@ -3,10 +3,12 @@
  * (.fa-sidebar-provider). Layout comes from data attributes on .fa-sidebar, which the boot
  * script sets before the first paint, so React only drives behaviour.
  *
- *   .fa-sidebar          the track the pane occupies in the row (width + margins)
+ *   .fa-sidebar          the track the pane occupies in the row (width + margins); the
+ *                        landmark, so the rail beside the pane is inside it
  *   .fa-sidebar-pane     the material, absolutely placed in the track; it slides (offcanvas)
  *                        or narrows (icon) over the content
- *   .fa-sidebar-nav      the landmark; clips the parts while the pane narrows
+ *   .fa-sidebar-nav      the parts' surface; clips them while the pane narrows (the landmark
+ *                        itself in the phone sheet)
  *   .fa-sidebar-inner    the parts, at the expanded width until the pane settles, so nothing
  *                        reflows mid-motion
  *

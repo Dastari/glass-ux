@@ -242,24 +242,37 @@ function SidebarRoot({
   } as CSSProperties
 
   const config: SidebarConfigValue = { side, collapsible, resizable, min, max, rootRef, paneRef, label }
-  const landmark = (placement: "pane" | "sheet") => (
-    <SidebarPlacement.Provider value={placement}>
-      <SidebarIconMode.Provider value={placement === "pane" && iconMode}>
-        <SidebarConfig.Provider value={config}>
-          <Landmark aria-label={label} className="fa-sidebar-nav" data-placement={placement} data-sidebar-surface="">
-            <div className="fa-sidebar-inner">{parts}</div>
-          </Landmark>
-        </SidebarConfig.Provider>
-      </SidebarIconMode.Provider>
-    </SidebarPlacement.Provider>
-  )
+  // Docked, the landmark is the outer element, so the rail beside the pane is inside it too;
+  // in the sheet it is the surface itself.
+  const landmark = (placement: "pane" | "sheet") => {
+    const Element = placement === "sheet" ? Landmark : "div"
+    return (
+      <SidebarPlacement.Provider value={placement}>
+        <SidebarIconMode.Provider value={placement === "pane" && iconMode}>
+          <SidebarConfig.Provider value={config}>
+            <Element
+              aria-label={placement === "sheet" ? label : undefined}
+              className="fa-sidebar-nav"
+              data-placement={placement}
+              data-sidebar-surface=""
+            >
+              <div className="fa-sidebar-inner">{parts}</div>
+            </Element>
+          </SidebarConfig.Provider>
+        </SidebarIconMode.Provider>
+      </SidebarPlacement.Provider>
+    )
+  }
 
+  // nav, aside and div take the same props here.
+  const Root = Landmark as "div"
   const material = variant === "floating" ? "glass-panel" : variant === "sidebar" ? "glass-chrome" : undefined
   return (
     <>
-      <div
+      <Root
         {...rest}
         ref={rootRef}
+        aria-label={Landmark === "div" ? undefined : label}
         className={cx("fa-sidebar", className)}
         style={rootStyle}
         data-side={side}
@@ -300,7 +313,7 @@ function SidebarRoot({
             <SidebarConfig.Provider value={config}>{rail}</SidebarConfig.Provider>
           </>
         )}
-      </div>
+      </Root>
       {mobile ? (
         <Suspense fallback={null}>
           <SidebarSheet side={side} open={ctx.openMobile} onOpenChange={(next, event) => ctx.changeMobile(next, "dismiss", event)} label={label} className="fa-sidebar-sheet">

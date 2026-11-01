@@ -19,7 +19,7 @@ Sidebar and SidebarInset out side by side, filling the container.
 | onOpenMobileChange | `((open: boolean, details: SidebarChangeDetails) => void) \| undefined` | See type | no | — | Called with the next phone sheet state and why: a trigger, a destination chosen in it, or swipe, Esc or the scrim. |
 | open | `boolean \| undefined` | false, true | no | — | Whether the desktop sidebar is expanded (controlled). Pair with `onOpenChange`. |
 | openMobile | `boolean \| undefined` | false, true | no | — | Whether the phone sheet is open (controlled). Pair with `onOpenMobileChange`. |
-| shortcut | `string \| false \| undefined` | See type | no | — | The keys that toggle the sidebar from anywhere on the page, or `false` for none. The default is `"mod+b"` (⌘B, Ctrl+B) for a start sidebar and none for an end one. It is ignored while focus is in rich text or a custom text box, where Ctrl+B means bold. Triggers show it in their tooltips and `aria-keyshortcuts`. |
+| shortcut | `string \| false \| undefined` | See type | no | — | The keys that toggle the sidebar from anywhere on the page, or `false` for none. The default is `"mod+b"` (⌘B, Ctrl+B) for a start sidebar and none for an end one. It is ignored while focus is in rich text or a custom text box, where Ctrl+B means bold. Triggers show it in their tooltips and `aria-keyshortcuts`. Nested sidebars that share it: the innermost whose provider holds focus takes it, else the outermost. |
 | storageKey | `string \| undefined` | See type | no | — | Remember the open state, the dragged width and the open groups under this localStorage key, so they survive a reload without a flash. Inside a storage scope (a window body) the scope is appended. Absent: nothing persists. |
 
 Inherited properties:

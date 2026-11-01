@@ -108,7 +108,9 @@ viewport first matches `mobileQuery`, so a desktop-only application never downlo
 - The shortcut (`shortcut`, default `"mod+b"` for a start sidebar and none for an end one;
   `false` switches it off) toggles the sidebar, or the sheet on phones. It is ignored in rich
   text and custom text boxes, where Ctrl+B means bold. Triggers show it in their tooltip and
-  `aria-keyshortcuts`.
+  `aria-keyshortcuts`. When nested sidebars share a shortcut (a sidebar demo inside a site
+  that has one), the innermost one whose provider holds focus takes it; with focus in none
+  of them, the outermost does.
 - Items keep native link and button semantics, so Tab walks them. With a `Sidebar.Search`,
   / or ⌘F / Ctrl F (while focus is in the sidebar) focuses the filter, ↓ moves into the
   items, ↑ and ↓ walk them and continue into a Tree in the content (whose own keys then

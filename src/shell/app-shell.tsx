@@ -40,7 +40,7 @@ import { cx } from "../lib/cx.js"
 import { focusFirst } from "../lib/focus.js"
 import type { SidebarInternal } from "../ui/sidebar/context.js"
 import { resizeKeyWidth, startPaneDrag, themeSidebarRem } from "../ui/sidebar/resize.js"
-import { useSidebarState } from "../ui/sidebar/sidebar-provider.js"
+import { sidebarRegionProps, useSidebarState } from "../ui/sidebar/sidebar-provider.js"
 import { SidebarSheet } from "../ui/sidebar/sidebar-sheet.js"
 import { TooltipProvider } from "../ui/tooltip/index.js"
 import {
@@ -264,6 +264,7 @@ export function AppShell({
       <TooltipProvider>
         <div
           ref={shellRef}
+          {...sidebarRegionProps(sidebar)}
           className={cx("fa-shell", className)}
           data-has-drawer={hasDrawer ? "" : undefined}
           data-has-inspector={inspectorAvailable ? "" : undefined}

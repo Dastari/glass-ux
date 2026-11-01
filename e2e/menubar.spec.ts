@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { holdTimers } from "./held-timers.js";
 
 const APPEARANCES = [
   { density: "comfortable", uiScale: 1, radiusScale: 1, borderWidth: 1 },
@@ -585,6 +586,7 @@ test("about 100 grouped items in 11 submenus; the longest fits or scrolls", asyn
 
 test("items load at open time in reserved space, with no row moving", async ({ page }) => {
   await visit(page);
+  const finishLoad = await holdTimers(page, 1500);
   const documents = trigger(page, "menubar-loaded", "Documents");
   await documents.focus();
   await press(page, "ArrowDown");
@@ -602,6 +604,7 @@ test("items load at open time in reserved space, with no row moving", async ({ p
   const parentRow = (await row(page, "Open recent").boundingBox())!;
 
   // Arrived in place: the first row sits where the placeholder did, the keyboard on it.
+  await finishLoad();
   const survey = row(page, /^Harbour survey/);
   await expect(survey).toBeFocused();
   const after = (await survey.boundingBox())!;
@@ -615,6 +618,7 @@ test("items load at open time in reserved space, with no row moving", async ({ p
   await expect(page.getByRole("menu")).toHaveCount(1);
   await press(page, "ArrowRight");
   await expect(page.locator(".fa-item[data-loading]")).toHaveCount(3);
+  await finishLoad();
   await expect(survey).toBeFocused();
   await press(page, "Escape", "Escape");
 });

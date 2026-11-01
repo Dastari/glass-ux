@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { holdTimers } from "./held-timers.js";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/components/data-table");
@@ -61,12 +62,14 @@ test("async rejection restores the previous value and exposes the server message
 }) => {
   const row = page.getByTestId("dt-inventory").locator('[data-row-id="i3"]');
   const name = row.getByRole("group", { name: "Edit Item", exact: true });
+  const finishSave = await holdTimers(page, 650);
   await name.dblclick();
   const input = row.getByRole("textbox", { name: "Edit Item" });
   await input.fill("Rejected value");
   await input.press("Enter");
   await expect(name).toContainText("Rejected value");
   await expect(name).toHaveAttribute("aria-busy", "true");
+  await finishSave();
   await expect(name).toHaveAttribute("data-error", "");
   await expect(name).toContainText("Locked sample");
   await name.hover();

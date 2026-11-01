@@ -90,6 +90,18 @@
       "types": "./dist/ui/file-drop/index.d.ts",
       "import": "./dist/ui/file-drop/index.js"
     },
+    "./file-dialog": {
+      "types": "./dist/ui/file-dialog/index.d.ts",
+      "import": "./dist/ui/file-dialog/index.js"
+    },
+    "./file-provider": {
+      "types": "./dist/file-provider/index.d.ts",
+      "import": "./dist/file-provider/index.js"
+    },
+    "./file-provider/memory": {
+      "types": "./dist/file-provider/memory.d.ts",
+      "import": "./dist/file-provider/memory.js"
+    },
     "./image": {
       "types": "./dist/ui/image/index.d.ts",
       "import": "./dist/ui/image/index.js"

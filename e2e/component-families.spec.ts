@@ -201,9 +201,6 @@ test("legacy subcomponent routes preserve specimen, usage and API destinations",
     ["#usage", "usage-panel-header"],
     ["#api", "api-panel-header"],
   ]) {
-    // Each step is a direct load. From the same path a goto is a same-document hash change, which
-    // races the first load's deferred scroll instead of testing the route.
-    await page.goto("about:blank");
     await page.goto(`./components/panel-header${hash}`);
     await expect(page.locator("main h1")).toHaveText("Panel");
     await expect(page.locator(`#${target}`)).toBeInViewport();

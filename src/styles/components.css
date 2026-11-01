@@ -50,6 +50,7 @@
 @import "../ui/entity/entity-identity.css";
 @import "../ui/fact-list/fact-list.css";
 @import "../ui/field/field.css";
+@import "../ui/file-dialog/file-dialog.css";
 @import "../ui/file-drop/file-drop.css";
 @import "../ui/find-bar/find-bar.css";
 @import "../ui/form/form.css";

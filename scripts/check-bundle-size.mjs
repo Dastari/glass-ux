@@ -58,6 +58,12 @@ const BUDGETS = [
   // Measured 18.5 KB: the keyboard plus the drawer's presence, inset and portal code. Of Base UI only the
   // direction context (0.4 KB); the popover, Button and the provider's linking stay in their own modules.
   { entry: 'glass-ux/on-screen-keyboard', named: 'KeyboardDrawer', gzip: 20_500, forbid: ['@tanstack/react-form', 'd3-scale', 'shiki', 'zod'] },
+  // Measured 141.8 KB: Dialog, Tree, Breadcrumb, Select, Segmented, FileDrop and the row menus, all drawn at once.
+  { entry: 'glass-ux/file-dialog', named: 'FileDialog', gzip: 156_000, forbid: ['@tanstack/react-form', '@tanstack/form-core', 'd3-scale', 'shiki', 'zod', 'lexical', 'maplibre-gl'] },
+  // The conflict step alone: a plain Save brings no browser with it.
+  { entry: 'glass-ux/file-dialog', named: 'FileConflictDialog', gzip: 59_000, forbid: ['dist/ui/file-dialog/file-browser.js', 'dist/ui/tree/tree.js', '@tanstack/react-virtual'] },
+  // A worker bundle pays for this and nothing else: no React, no Base UI.
+  { entry: 'glass-ux/file-provider/memory', named: 'memoryFiles', gzip: 2_600, forbid: ['react', '@base-ui/react'] },
   { entry: 'glass-ux/phone-field', named: 'PhoneField', gzip: 75_000, forbid: ['libphonenumber-js'] },
   { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text'] },
   // The list that RichTextInput drives lives outside the editor: importing it brings in no Lexical.

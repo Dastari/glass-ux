@@ -24,6 +24,7 @@ Static, non-interactive menu parts that render a menu's appearance in place, for
 | --- | --- | --- | --- | --- | --- |
 | checked | `boolean \| undefined` | false, true | no | — | Controlled checked state. The type specifies whether mixed state is supported. |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
+| detail | `ReactNode` | See type | no | — | A second line under the label. The row takes the taller rich height and `icon` a thumbnail's box. |
 | disabledReason | `string \| null \| undefined` | See type | no | — | Draws the row disabled. A live menu shows the reason as the row's tooltip; a static preview has none. |
 | highlighted | `boolean \| undefined` | false, true | no | — | Marks the item reached through keyboard or pointer navigation. |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |

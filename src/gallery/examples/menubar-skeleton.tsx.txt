@@ -1,0 +1,36 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { Menubar, MenubarSkeleton, type MenubarMenu } from "glass-ux/menubar";
+
+const BOX_MENUS: MenubarMenu[] = [
+  "File",
+  "Edit",
+  "View",
+  "Insert",
+  "Format",
+  "Tools",
+  "Window",
+  "Help",
+].map((label) => ({
+  id: label.toLowerCase(),
+  label,
+  items: [
+    { id: `${label}-first`, label: `${label} first` },
+    { id: `${label}-second`, label: `${label} second` },
+  ],
+}));
+
+export default function MenubarSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Skeleton"
+        description="Given the labels, each placeholder takes its trigger's width, so nothing moves when the bar loads."
+      >
+        <div className="flex w-full flex-col gap-2" data-testid="menubar-skeleton">
+          <MenubarSkeleton labels={BOX_MENUS.map((menu) => menu.label)} />
+          <Menubar aria-label="Loaded" menus={BOX_MENUS} />
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

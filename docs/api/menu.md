@@ -98,6 +98,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| detail | `ReactNode` | See type | no | — | A second line under the label, for a path or a date. The row takes the rich height, and `icon` may be a thumbnail. |
 | disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why. The row is dimmed but stays highlightable; the reason is its tooltip on hover and keyboard highlight, and its accessible description. |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | reasonId | `string \| undefined` | See type | no | — | Ignored. Rows used to point at a shared reason line; each row now describes itself. |
@@ -153,6 +154,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why. The row is dimmed but stays highlightable; the reason is its tooltip on hover and keyboard highlight, and its accessible description. |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard shortcut shown with the control, using the host platform’s modifier keys. |
 | trail | `ReactNode` | See type | no | — | A short trailing note in the trail slot, e.g. where a hidden column went ("In row details"). |
 
@@ -206,6 +208,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why. The row is dimmed but stays highlightable; the reason is its tooltip on hover and keyboard highlight, and its accessible description. |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard shortcut shown with the control, using the host platform’s modifier keys. |
 
 Inherited properties:
@@ -294,6 +297,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why. The row is dimmed but stays highlightable; the reason is its tooltip on hover and keyboard highlight, and its accessible description. |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | label | `ReactNode` | See type | yes | — | The visible or accessible label for this component. |
+| popupClassName | `string \| undefined` | See type | no | — | A class for the nested menu's popup. |
 | reasonId | `string \| undefined` | See type | no | — | Ignored. Rows used to point at a shared reason line; each row now describes itself. |
 | reasonShown | `boolean \| undefined` | false, true | no | — | Ignored. Rows used to share one reason line; the reason is now each row's tooltip. |
 | tone | `MenuItemTone \| undefined` | "danger", "default" | no | "default" | The semantic tone. Use danger and warning for consequences and states. |

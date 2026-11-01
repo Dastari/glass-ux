@@ -114,6 +114,10 @@
       "types": "./dist/ui/lightbox/index.d.ts",
       "import": "./dist/ui/lightbox/index.js"
     },
+    "./media-player": {
+      "types": "./dist/ui/media-player/index.d.ts",
+      "import": "./dist/ui/media-player/index.js"
+    },
     "./hover-card": {
       "types": "./dist/ui/hover-card/index.d.ts",
       "import": "./dist/ui/hover-card/index.js"
@@ -775,6 +779,7 @@
     "test:e2e": "playwright test",
     "pack:release": "pnpm run docs:build && node scripts/pack-release.mjs --out .handoff",
     "pack:check": "node scripts/pack-release.mjs --check",
+    "media:fixtures": "node scripts/build-media-fixtures.mjs",
     "styles": "node scripts/build-styles.mjs",
     "icons": "node scripts/build-icons.mjs",
     "icons:check": "node scripts/build-icons.mjs --check",

@@ -3,7 +3,7 @@ import { chromium, type FullConfig } from "@playwright/test";
 // Vite compiles a page's modules on its first request. On a cold CI runner that can take longer
 // than a test's own timeout, so the first tests to run failed while the rest passed. Visiting
 // the heaviest pages once here leaves the dev server's module graph and dependency bundles warm.
-const PAGES = ["/", "/components/account-button", "/components/data-table", "/components/app-shell", "/components/on-screen-keyboard", "/components/sidebar"];
+const PAGES = ["/", "/components/account-button", "/components/data-table", "/components/app-shell", "/components/on-screen-keyboard", "/components/sidebar", "/components/video-player"];
 
 export default async function warmUp(config: FullConfig) {
   const baseURL = config.projects[0]?.use.baseURL;

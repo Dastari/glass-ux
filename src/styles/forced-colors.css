@@ -22,6 +22,20 @@
  * Unlayered, so it wins over the layered component styles it corrects.
  */
 @media (forced-colors: active) {
+  /* ── Media player: the track keeps a boundary, progress is Highlight, and text over the picture sits on Canvas ── */
+  .fa-media-seek-track {
+    outline: var(--border-width) solid ButtonText;
+  }
+  .fa-media-seek-fill,
+  .fa-media-seek-thumb {
+    forced-color-adjust: none;
+    background-color: Highlight;
+  }
+  :is(.fa-media-cue, .fa-media-preview, .fa-media-glyph, .fa-media-state) {
+    border: var(--border-width) solid CanvasText;
+    background: Canvas;
+  }
+
   /* ── Materials ─────────────────────────────────────────────────────────── */
   :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-card, .glass-detached) {
     border: var(--border-width) solid CanvasText;

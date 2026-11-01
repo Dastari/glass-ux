@@ -6,7 +6,7 @@ import { cx } from "../../lib/cx.js"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Kbd, useAriaShortcut } from "../kbd/index.js"
 import { Tooltip } from "../tooltip/index.js"
-import { popupContainer } from "../../lib/popup-container.js"
+import { usePopupLayer } from "../../lib/popup-container.js"
 
 /*
  * Positioners take px numbers, so offsets are measured from tokens by usePopupMetrics and
@@ -91,8 +91,9 @@ export interface MenuPopupProps extends Omit<ComponentProps<typeof BaseMenu.Popu
 /** Portal + positioner + glass popup. Works for Menu, ContextMenu and submenus alike. */
 function MenuPopup({ side, align = "start", sideOffset, alignOffset = 0, className, children, ...rest }: MenuPopupProps) {
   const popup = usePopupMetrics()
+  const container = usePopupLayer()
   return (
-    <BaseMenu.Portal render={<DirectionPortal />} container={popupContainer()}>
+    <BaseMenu.Portal render={<DirectionPortal />} container={container}>
       <BaseMenu.Positioner
         className="fa-menu-positioner"
         side={side}

@@ -1,0 +1,15 @@
+import { AudioPlayer } from "glass-ux/media-player";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { TONES } from "glass-ux/gallery/fixtures/media";
+
+export default function MediaPlayerSection() {
+  return (
+    <SectionPage>
+      <Specimen title="Audio" layout="stack">
+        <div className="media-demo" data-testid="media-audio">
+          <AudioPlayer playlist={TONES} mediaSession={false} />
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

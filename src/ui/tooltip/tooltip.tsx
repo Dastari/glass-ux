@@ -17,7 +17,7 @@ import {
 } from "react"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Kbd } from "../kbd/index.js"
-import { popupContainer } from "../../lib/popup-container.js"
+import { PopupLayer, popupContainer, usePopupLayer } from "../../lib/popup-container.js"
 import { TOOLTIP_KEY, TooltipHost, TooltipHostContext, type Instant, type TooltipEntry, type TooltipHostApi } from "./tooltip-host.js"
 
 /** Hover delay before the first tooltip opens. Later ones in the same group open at once. */
@@ -203,6 +203,7 @@ function HostedTooltip({
   const id = `${key}tooltip`
   const triggerId = `base-ui-${key}`
   const [shown, setShownState] = useState(false)
+  const layer = useContext(PopupLayer)
   const onOpenChangeRef = useRef(onOpenChange)
   onOpenChangeRef.current = onOpenChange
   const element = useRef<HTMLElement | null>(null)
@@ -211,7 +212,7 @@ function HostedTooltip({
     element: element.current,
     enabled,
     render: (instant: Instant) => (
-      <BaseTooltip.Portal render={<DirectionPortal />} container={popupContainer()}>
+      <BaseTooltip.Portal render={<DirectionPortal />} container={layer ?? popupContainer()}>
         <TooltipBubble id={id} side={side} align={align} arrow={arrow} anchor={element.current} instant={instant}>
           <TooltipContent content={content} shortcut={shortcut} />
         </TooltipBubble>
@@ -285,10 +286,11 @@ interface TooltipPopupProps {
 
 /** Portal + positioner + the inverted glass bubble. */
 export function TooltipPopup(props: TooltipPopupProps) {
+  const container = usePopupLayer()
   // The portal mounts its children only while the tooltip shows, so a closed tooltip runs
   // none of the bubble's hooks (mode, metrics).
   return (
-    <BaseTooltip.Portal render={<DirectionPortal />} container={popupContainer()}>
+    <BaseTooltip.Portal render={<DirectionPortal />} container={container}>
       <TooltipBubble {...props} />
     </BaseTooltip.Portal>
   )

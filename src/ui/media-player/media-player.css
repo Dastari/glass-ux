@@ -1,0 +1,654 @@
+/*
+ * Media player. `.fa-media` is the reserved box in the page and never changes size. Inside it,
+ * `.fa-media-shell` is what enters the top layer (maximised, windowed) and `.fa-media-stage` is
+ * what goes full screen. The stage is a dark island (R3.5): controls sit on moving pictures,
+ * whatever the page's mode. Controls overlay the picture, so showing and hiding them moves
+ * nothing, and only opacity animates.
+ *
+ * Geometry on the timeline is physical by intent: it is `dir="ltr"` in every language, so the
+ * logical properties below always resolve the same way.
+ */
+@layer components {
+  .fa-media {
+    --_gap: var(--space-1);
+    --_bar-inset: var(--space-2);
+    --_track: var(--space-1);
+    --_thumb-size: var(--space-3);
+    position: relative;
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
+  .fa-media[data-kind="video"] {
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+    border-radius: var(--radius-tile);
+    background-color: var(--surface-2);
+  }
+  .fa-media[data-fill] {
+    block-size: 100%;
+  }
+  .fa-media-skeleton {
+    display: block;
+  }
+
+  /* ── While the picture is elsewhere ─────────────────────────────────────── */
+  .fa-media-away {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-raised);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .fa-media-away img {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    opacity: 0.32;
+  }
+  .fa-media-away-text {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    text-align: center;
+  }
+
+  /* ── The layers ─────────────────────────────────────────────────────────── */
+  .fa-media-shell {
+    position: absolute;
+    inset: 0;
+  }
+  .fa-media-shell:popover-open {
+    /* The UA gives a popover a border, padding and auto margins. */
+    margin: 0;
+    border: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    color: inherit;
+  }
+  .fa-media-shell[data-layer="maximised"]:popover-open {
+    position: fixed;
+    inset: 0;
+    inline-size: 100dvw;
+    block-size: 100dvh;
+    max-inline-size: none;
+    max-block-size: none;
+  }
+  .fa-media-shell[data-layer="windowed"]:popover-open {
+    position: fixed;
+    inset: 0 auto auto 0; /* logical:allow the mini player is spatial: x and y are viewport pixels */
+    max-inline-size: none;
+    max-block-size: none;
+  }
+  .fa-media-shell[data-moving] {
+    will-change: translate;
+    user-select: none;
+  }
+  .fa-media-stage,
+  .fa-media-pip-controls {
+    /* Read inside the dark island, where the halo is dark in every page mode. */
+    --_shade: color-mix(in oklab, var(--halo-colour) 82%, transparent);
+  }
+  .fa-media-stage {
+    position: relative;
+    inline-size: 100%;
+    block-size: 100%;
+    container: fa-media / inline-size;
+    color: var(--fg);
+    outline: none;
+  }
+  .fa-media-stage:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-media-stage:fullscreen {
+    border-radius: 0;
+    background-color: var(--canvas);
+  }
+  .fa-media-frame {
+    position: relative;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: clip;
+    border-radius: inherit;
+    background-color: var(--canvas);
+  }
+  .fa-media-shell[data-layer="inline"] .fa-media-stage {
+    border-radius: var(--radius-tile);
+  }
+  .fa-media-shell[data-layer="windowed"] .fa-media-stage {
+    border-radius: var(--radius-overlay);
+    box-shadow: var(--shadow-3);
+  }
+  .fa-media-element {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+    background-color: var(--canvas);
+  }
+  .fa-media-stage[data-away] .fa-media-element {
+    visibility: hidden;
+  }
+  .fa-media-surface {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .fa-media-shell[data-layer="windowed"] .fa-media-surface {
+    cursor: grab;
+    touch-action: none;
+  }
+  .fa-media-shell[data-moving] .fa-media-surface {
+    cursor: grabbing;
+  }
+  .fa-media-stage[data-controls="hidden"] {
+    cursor: none;
+  }
+  .fa-media-stage[data-controls="hidden"] .fa-media-surface {
+    cursor: none;
+  }
+
+  /* ── Overlays ───────────────────────────────────────────────────────────── */
+  .fa-media-controls {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    display: grid;
+    gap: var(--space-half);
+    padding-block: var(--space-6) var(--space-1);
+    padding-inline: var(--_bar-inset);
+    padding-block-end: calc(var(--space-1) + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(to top, var(--_shade), transparent);
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-media-window-bar {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--_gap);
+    padding: var(--space-1);
+    background: linear-gradient(to bottom, var(--_shade), transparent);
+    cursor: grab;
+    touch-action: none;
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-media-window-title {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-media-stage[data-controls="hidden"] :is(.fa-media-controls, .fa-media-window-bar) {
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* Keyboard focus brings them back at once, and the player's timer holds them. */
+  .fa-media-stage :is(.fa-media-controls, .fa-media-window-bar):has(:focus-visible) {
+    opacity: 1;
+  }
+  .fa-media-title {
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-line);
+  }
+  .fa-media-glyph {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    display: grid;
+    place-items: center;
+    inline-size: var(--control-h-lg);
+    block-size: var(--control-h-lg);
+    border-radius: var(--radius-full);
+    background-color: var(--_shade);
+    color: var(--fg);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+  }
+  .fa-media-glyph svg {
+    inline-size: var(--icon-lg);
+    block-size: var(--icon-lg);
+  }
+  .fa-media-spinner {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    animation: fa-media-appear var(--duration-base) var(--ease-standard) var(--spinner-delay) backwards;
+  }
+  @keyframes fa-media-appear {
+    from {
+      opacity: 0;
+    }
+  }
+  .fa-media-flash {
+    position: absolute;
+    inset-block-start: 50%;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-control);
+    background-color: var(--_shade);
+    font-size: var(--type-label-size);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%);
+  }
+  .fa-media-flash[data-side="start"] {
+    left: var(--space-6); /* logical:allow double-tap zones are spatial: left is back in every language */
+  }
+  .fa-media-flash[data-side="end"] {
+    right: var(--space-6); /* logical:allow double-tap zones are spatial: right is forward in every language */
+  }
+  .fa-media-state {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-raised);
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background-color: var(--_shade);
+    text-align: center;
+  }
+  .fa-media-state[data-kind="cast"] {
+    z-index: auto;
+    pointer-events: none;
+  }
+  .fa-media-state[data-kind="stalled"] {
+    background-color: transparent;
+    pointer-events: none;
+  }
+  .fa-media-state[data-kind="stalled"] > :is(button, .fa-btn) {
+    pointer-events: auto;
+  }
+  .fa-media-state img {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    opacity: 0.4;
+  }
+  .fa-media-state-text {
+    position: relative;
+    max-inline-size: var(--measure);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+
+  /* ── Captions ───────────────────────────────────────────────────────────── */
+  .fa-media-cues {
+    --_cue: 1;
+    position: absolute;
+    inset-inline: var(--space-4);
+    inset-block-end: var(--space-4);
+    z-index: var(--z-raised);
+    display: grid;
+    justify-items: center;
+    gap: var(--space-half);
+    text-align: center;
+    pointer-events: none;
+    transition: transform var(--duration-base) var(--ease-standard);
+    transform: translateY(calc(var(--control-h-sm) * -1.75));
+  }
+  .fa-media-stage[data-controls="hidden"] .fa-media-cues {
+    transform: none;
+  }
+  .fa-media-stage[data-caption-size="small"] .fa-media-cues {
+    --_cue: 0.85;
+  }
+  .fa-media-stage[data-caption-size="large"] .fa-media-cues {
+    --_cue: 1.3;
+  }
+  .fa-media-stage[data-caption-size="extra-large"] .fa-media-cues {
+    --_cue: 1.65;
+  }
+  .fa-media-cue {
+    padding: var(--space-half) var(--space-1-5);
+    border-radius: var(--radius-chip);
+    background-color: var(--_shade);
+    font-size: calc(var(--type-subtitle-size) * var(--_cue));
+    line-height: 1.3;
+    white-space: pre-line;
+  }
+
+  /* ── The seek bar ───────────────────────────────────────────────────────── */
+  .fa-media-seek {
+    position: relative;
+    display: flex;
+    align-items: center;
+    inline-size: 100%;
+    block-size: var(--control-h-xs);
+    cursor: pointer;
+    touch-action: none;
+  }
+  .fa-media-seek-track {
+    position: relative;
+    display: block;
+    flex: 1 1 auto;
+    block-size: var(--_track);
+    overflow: hidden;
+    border-radius: var(--radius-full);
+    background-color: color-mix(in oklab, var(--fg) 26%, transparent);
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+  .fa-media-seek:is(:hover, [data-scrubbing]) .fa-media-seek-track {
+    transform: scaleY(1.5);
+  }
+  .fa-media-seek-buffered {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(var(--_at) * 100%);
+    inline-size: calc(var(--_size) * 100%);
+    background-color: color-mix(in oklab, var(--fg) 40%, transparent);
+  }
+  .fa-media-seek-fill {
+    position: absolute;
+    inset: 0;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+  .fa-media-seek-mark {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(var(--_at) * 100%);
+    inline-size: var(--border-width-strong);
+    background-color: var(--_shade);
+  }
+  .fa-media-seek-head {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    transform: translateX(0);
+  }
+  .fa-media-seek-thumb {
+    inline-size: var(--_thumb-size);
+    block-size: var(--_thumb-size);
+    margin-inline-start: calc(var(--_thumb-size) / -2);
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+    box-shadow: 0 0 0 var(--border-width) var(--_shade);
+  }
+  .fa-media-seek-input {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .fa-media-seek:has(.fa-media-seek-input:focus-visible) .fa-media-seek-thumb {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--border-width-strong);
+  }
+  .fa-media-preview {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-start: 0;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-half);
+    padding: var(--space-1);
+    margin-block-end: var(--space-1);
+    max-inline-size: 100%;
+    border-radius: var(--radius-tile);
+    background-color: var(--_shade);
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .fa-media-preview[data-shown] {
+    opacity: 1;
+  }
+  .fa-media-preview-frame {
+    display: block;
+    border-radius: var(--radius-chip);
+    background-repeat: no-repeat;
+  }
+  .fa-media-preview-frame[hidden] {
+    display: none;
+  }
+  .fa-media-preview-text {
+    display: flex;
+    gap: var(--space-1-5);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-media-preview-label:empty {
+    display: none;
+  }
+
+  /* ── The bar ────────────────────────────────────────────────────────────── */
+  .fa-media-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--_gap);
+    min-inline-size: 0;
+  }
+  .fa-media-group,
+  .fa-media-volume {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--_gap);
+  }
+  .fa-media-volume-slider {
+    inline-size: var(--space-16);
+  }
+  .fa-media-spacer {
+    flex: 1 1 auto;
+  }
+  .fa-media-clock {
+    display: flex;
+    flex: none;
+    gap: var(--space-1-5);
+    padding-inline: var(--space-1);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-media-clock-part {
+    min-inline-size: calc(var(--_chars, 4) * 1ch);
+  }
+  .fa-media-clock-part[data-remaining] {
+    color: var(--fg-muted);
+  }
+  .fa-media-live .fa-media-live-dot {
+    inline-size: var(--space-1-5);
+    block-size: var(--space-1-5);
+    border-radius: var(--radius-full);
+    background-color: var(--fg-muted);
+  }
+  .fa-media-live-dot[data-edge="true"] {
+    background-color: var(--danger);
+  }
+
+  /* ── Container tiers: labels and extras give way before play and seek (R7.4) ── */
+  @container fa-media (max-width: 38rem) {
+    .fa-media-wide {
+      display: none;
+    }
+  }
+  @container fa-media (max-width: 26rem) {
+    .fa-media-bar {
+      --_gap: 0;
+    }
+    .fa-media-clock {
+      padding-inline: var(--space-half);
+    }
+    .fa-media-volume-slider,
+    .fa-media-clock-part[data-remaining] {
+      display: none;
+    }
+    .fa-media-cue {
+      font-size: calc(var(--type-label-size) * var(--_cue));
+    }
+  }
+  @container fa-media (max-width: 20rem) {
+    .fa-media-window-title {
+      visibility: hidden;
+    }
+    /* Entries stay in Settings, and volume in the keys and the system's own control. */
+    .fa-media-skip,
+    .fa-media-volume {
+      display: none;
+    }
+  }
+
+  /* ── The mini player's handles ──────────────────────────────────────────── */
+  .fa-media-grip {
+    cursor: grab;
+  }
+  .fa-media-resize {
+    position: absolute;
+    z-index: var(--z-raised);
+    inline-size: var(--space-4);
+    block-size: var(--space-4);
+    touch-action: none;
+  }
+  .fa-media-resize[data-corner="top-left"] {
+    top: calc(var(--space-2) * -1);
+    left: calc(var(--space-2) * -1); /* logical:allow named as seen; the mini player is spatial */
+    cursor: nwse-resize;
+  }
+  .fa-media-resize[data-corner="top-right"] {
+    top: calc(var(--space-2) * -1);
+    right: calc(var(--space-2) * -1); /* logical:allow named as seen; the mini player is spatial */
+    cursor: nesw-resize;
+  }
+  .fa-media-resize[data-corner="bottom-left"] {
+    bottom: calc(var(--space-2) * -1);
+    left: calc(var(--space-2) * -1); /* logical:allow named as seen; the mini player is spatial */
+    cursor: nesw-resize;
+  }
+  .fa-media-resize[data-corner="bottom-right"] {
+    bottom: calc(var(--space-2) * -1);
+    right: calc(var(--space-2) * -1); /* logical:allow named as seen; the mini player is spatial */
+    cursor: nwse-resize;
+  }
+
+  /* ── Document Picture-in-Picture ────────────────────────────────────────── */
+  .fa-media-pip {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    background-color: var(--canvas);
+  }
+  .fa-media-pip video {
+    inline-size: 100%;
+    block-size: 100%;
+    min-block-size: 0;
+    object-fit: contain;
+  }
+  .fa-media-pip-controls {
+    padding-inline: var(--space-2);
+    padding-block-end: var(--space-1);
+    color: var(--fg);
+  }
+
+  /* ── Audio ──────────────────────────────────────────────────────────────── */
+  .fa-media[data-kind="audio"] {
+    display: grid;
+    gap: var(--space-2);
+    --_shade: var(--surface-1);
+    container: fa-media / inline-size;
+    outline: none;
+  }
+  .fa-media-audio-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-inline-size: 0;
+  }
+  .fa-media-artwork {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--control-h-lg);
+    block-size: var(--control-h-lg);
+    overflow: hidden;
+    border-radius: var(--radius-tile);
+    background-color: var(--fill-muted);
+    color: var(--fg-muted);
+  }
+  .fa-media-artwork img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+  .fa-media-audio-text {
+    display: grid;
+    flex: 1 1 auto;
+    gap: var(--space-half);
+    min-inline-size: 0;
+  }
+  .fa-media-audio-title {
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    font-weight: var(--type-label-weight);
+  }
+  .fa-media-audio-subtitle {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-media-audio-skeleton-seek {
+    block-size: var(--control-h-xs);
+  }
+  .fa-media-audio-skeleton-bar {
+    block-size: var(--control-h-sm);
+  }
+  .fa-media[data-kind="audio"] .fa-media-seek-track {
+    background-color: var(--fill-muted);
+  }
+  .fa-media[data-kind="audio"] .fa-media-seek-buffered {
+    background-color: color-mix(in oklab, var(--fg) 18%, transparent);
+  }
+  .fa-media-playlist {
+    display: grid;
+    gap: var(--space-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-media-playlist-item {
+    display: grid;
+    inline-size: 100%;
+    gap: var(--space-half);
+    padding: var(--space-1) var(--space-2);
+    border: 0;
+    border-radius: var(--radius-item);
+    background: transparent;
+    color: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    text-align: start;
+    cursor: pointer;
+  }
+  .fa-media-playlist-item:hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-media-playlist-item:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-media-playlist-item[aria-current] {
+    background-color: var(--accent-soft);
+  }
+}

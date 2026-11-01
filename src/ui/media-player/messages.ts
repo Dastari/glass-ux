@@ -1,0 +1,108 @@
+import { defineMessages } from "../../lib/i18n/catalog.js"
+
+/** The media player's words. */
+export const mediaPlayerMessages = defineMessages("mediaPlayer", {
+  videoPlayer: "Video player",
+  audioPlayer: "Audio player",
+  play: "Play",
+  pause: "Pause",
+  replay: "Replay",
+  previousItem: "Previous",
+  nextItem: "Next",
+  seek: "Seek",
+  /** The seek bar's value text: "1 minute 30 seconds of 5 minutes". */
+  seekValue: ({ elapsed, total }: { elapsed: string; total: string }) => `${elapsed} of ${total}`,
+  /** The seek bar's value text in a live stream. */
+  seekLive: (behind: string) => `${behind} behind live`,
+  atLiveEdge: "At the live edge",
+  volume: "Volume",
+  mute: "Mute",
+  unmute: "Unmute",
+  settings: "Settings",
+  speed: "Playback speed",
+  /** A playback rate: "1.5×". */
+  rate: (rate: string) => `${rate}×`,
+  normalSpeed: "Normal",
+  captions: "Captions",
+  captionsOff: "Off",
+  captionSize: "Caption size",
+  captionSizeSmall: "Small",
+  captionSizeMedium: "Medium",
+  captionSizeLarge: "Large",
+  captionSizeExtraLarge: "Extra large",
+  chapters: "Chapters",
+  quality: "Quality",
+  qualityAuto: "Auto",
+  /** The automatic choice, naming what it picked: "Auto (720p)". */
+  qualityAutoActive: (level: string) => `Auto (${level})`,
+  loop: "Loop",
+  playlist: "Playlist",
+  view: "View",
+  viewInline: "In the page",
+  viewMaximised: "Maximised",
+  viewWindowed: "Mini player",
+  viewFullscreen: "Full screen",
+  viewPip: "Picture in picture",
+  maximise: "Maximise",
+  restore: "Restore",
+  miniPlayer: "Mini player",
+  fullscreen: "Full screen",
+  exitFullscreen: "Exit full screen",
+  pictureInPicture: "Picture in picture",
+  exitPictureInPicture: "Exit picture in picture",
+  cast: "Cast to a device",
+  /** The cast button while connecting. */
+  castConnecting: (device: string) => `Connecting to ${device}`,
+  stopCasting: (device: string) => `Stop casting to ${device}`,
+  castingTo: (device: string) => `Casting to ${device}`,
+  /** The cast button's name when the receiver has not given one. */
+  castDevice: "the device",
+  live: "Live",
+  goLive: "Go to live",
+  loading: "Loading",
+  stalled: "Playback is waiting for the network",
+  retry: "Retry",
+  errorNetwork: "The connection dropped while loading. Check it and retry.",
+  errorDecode: "This file is damaged or could not be decoded. Retry, or try another file.",
+  errorUnsupported: "This browser cannot play this file. Try another browser or format.",
+  errorAborted: "Loading was interrupted. Retry to continue.",
+  errorStream: "The stream stopped. Retry to reconnect.",
+  playingInMiniPlayer: "Playing in the mini player",
+  playingInPip: "Playing in picture in picture",
+  returnToPage: "Return to the page",
+  closePlayer: "Close player",
+  movePlayer: "Move player",
+  /** Help on the move handle. */
+  moveHelp: "Arrow keys move the player. Shift and arrow keys resize it.",
+  playerPosition: "Position and size",
+  topLeft: "Top left",
+  topRight: "Top right",
+  bottomLeft: "Bottom left",
+  bottomRight: "Bottom right",
+  sizeSmall: "Small",
+  sizeMedium: "Medium",
+  sizeLarge: "Large",
+  /** Announced when the player starts. */
+  announcePlaying: "Playing",
+  announcePaused: "Paused",
+  announceMuted: "Muted",
+  announceUnmuted: "Sound on",
+  /** Announced after a volume change. */
+  announceVolume: (level: string) => `Volume ${level}`,
+  announceSpeed: (rate: string) => `Speed ${rate}`,
+  announceCaptions: (label: string) => `Captions: ${label}`,
+  announceCaptionsOff: "Captions off",
+  announceQuality: (label: string) => `Quality: ${label}`,
+  announceLoopOn: "Loop on",
+  announceLoopOff: "Loop off",
+  announceItem: (title: string) => `Now playing: ${title}`,
+  announceCastEnded: "Casting ended",
+  announceView: (mode: string) => `View: ${mode}`,
+  announceMoved: "Player moved",
+})
+
+declare module "../../lib/i18n/catalog.js" {
+  interface MessageCatalog {
+    mediaPlayer: typeof mediaPlayerMessages.defaults
+  }
+}

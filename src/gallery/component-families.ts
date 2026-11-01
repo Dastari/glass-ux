@@ -43,6 +43,7 @@ const familyRoots: Record<string, string> = {
   "ip-field": "ip-field",
   "login-flow": "login-flow",
   "mac-field": "mac-address-field",
+  "media-player": "video-player",
   map: "geo-map",
   menu: "menu",
   meter: "meter",

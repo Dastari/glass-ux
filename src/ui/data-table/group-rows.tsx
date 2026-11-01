@@ -26,6 +26,8 @@ interface Placement {
   /** Singular and plural names used in counts and accessible labels. */
   noun: DataTableNoun;
   controller: RowController;
+  /** In a treegrid: how many groups there are. A group is level 1 and its rows level 2. */
+  treegridGroups?: number;
 }
 
 /**
@@ -42,6 +44,7 @@ function GroupHeaderView({
   colSpan,
   noun,
   controller,
+  treegridGroups,
 }: Placement & { item: HeaderItem }) {
   const { group, collapsed } = item;
   const locale = useLocale();
@@ -57,6 +60,10 @@ function GroupHeaderView({
       data-item="group"
       data-group-id={group.id}
       data-collapsed={collapsed ? "" : undefined}
+      aria-level={treegridGroups === undefined ? undefined : 1}
+      aria-posinset={treegridGroups === undefined ? undefined : item.index + 1}
+      aria-setsize={treegridGroups}
+      aria-expanded={treegridGroups === undefined ? undefined : !collapsed}
       style={
         top === undefined ? undefined : { transform: `translateY(${top}px)` }
       }
@@ -105,6 +112,7 @@ function GroupMoreView({
   active,
   colSpan,
   controller,
+  treegridGroups,
 }: Placement & { item: MoreItem }) {
   const m = useDataTableMessages();
   const { group, loaded, next, pending } = item;
@@ -119,6 +127,7 @@ function GroupMoreView({
       data-index={index}
       data-item="more"
       data-group-id={group.id}
+      aria-level={treegridGroups === undefined ? undefined : 2}
       style={
         top === undefined ? undefined : { transform: `translateY(${top}px)` }
       }

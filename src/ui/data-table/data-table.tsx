@@ -5,6 +5,7 @@ import { EditingContext } from "./editing.js";
 import { ExportMenu } from "./export-menu.js";
 import { exportCsv, exportTsv, type DataTableExportColumn } from "./export.js";
 import { writeClipboardText } from "../../lib/clipboard.js";
+import { readingKey } from "../../lib/direction.js";
 import { normaliseColumnOrder, moveColumn } from "./column-order.js";
 import { DragDropProvider } from "../drag-drop/index.js";
 import {
@@ -29,10 +30,12 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type FocusEvent as ReactFocusEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactElement,
+  type ReactNode,
 } from "react";
 import { flushSync } from "react-dom";
 import {
@@ -57,7 +60,31 @@ import {
   RowContextMenu,
   type MenuContent,
 } from "./actions-menu.js";
-import { BodyMessage, RetryButton, SkeletonRows, VirtualRows } from "./body.js";
+import {
+  BodyMessage,
+  RetryButton,
+  SkeletonRows,
+  VirtualRows,
+  type BodyExpansion,
+} from "./body.js";
+import {
+  ChildAnnouncer,
+  ChildMoreLine,
+  ChildStatusLine,
+  DetailLine,
+} from "./expansion-lines.js";
+import {
+  expandableIds,
+  expansionLines,
+  hasOpenLines,
+  survivingLine,
+  unloadedSelection,
+  type BodyLine,
+  type ChildState,
+  type ExpansionPlan,
+} from "./expansion.js";
+import { ExpandAllButton } from "./row-expander.js";
+import { childStatus, useChildLoads } from "./use-child-loads.js";
 import { LoadMoreCard, LoadMoreRow, useLoadMore } from "./infinite.js";
 import { useHeaderWheel } from "./wheel.js";
 import {
@@ -96,7 +123,6 @@ import {
   showMore,
   toggleCollapsed,
   type DataTableGroupState,
-  type GroupedItem,
 } from "./grouping.js";
 import {
   ColumnMenu,
@@ -150,6 +176,7 @@ import type {
   DataTableRowMove,
   DataTableState,
   DataTableStateChange,
+  DataTableStateChangeDetails,
 } from "./types.js";
 
 /* ── Geometry mirrored from data-table.css (rem at --ui-scale 1, scaled by the root size) ── */
@@ -172,6 +199,8 @@ const DETAIL = {
   inset: 0,
 };
 const DETAIL_INLINE_PAD = 1.5;
+/** A panel's height before it is measured, in rem, unless `rowDetailHeight` says otherwise. */
+const PANEL_ESTIMATE = 12;
 /** Below this height (rem) the footer collapses to a one-line pager. */
 const COMPACT_HEIGHT = 14;
 /**
@@ -190,7 +219,12 @@ function stableKey(value: unknown) {
   }
 }
 
-type Line = GroupedItem<Row<DataTableFeatures, RowData>>;
+type TableRow = Row<DataTableFeatures, RowData>;
+type Line = BodyLine<TableRow>;
+const lineKeyOf = (line: Line) =>
+  line.kind === "row" ? line.row.id : line.key;
+const NO_IDS: readonly string[] = [];
+const EMPTY_SET: ReadonlySet<string> = new Set();
 
 /** A new sort or filter starts every group on its first page, as it starts a flat table on page 1. */
 function firstGroupPages(current: DataTableState): Partial<DataTableState> {
@@ -198,6 +232,10 @@ function firstGroupPages(current: DataTableState): Partial<DataTableState> {
     ? { groups: { ...current.groups, shown: {} } }
     : {};
 }
+
+/** A panel's element id: row ids may hold anything an id may not. */
+const panelIdOf = (domId: string, rowId: string) =>
+  `${domId}-panel-${encodeURIComponent(rowId)}`;
 
 /** A click that ends a drag selecting text in the row: not a press (rowOpen "click"). */
 function endsTextSelection(row: Element) {
@@ -279,8 +317,9 @@ const NO_TOGGLES: readonly DataTableFilterToggle[] = [];
  * (priority hiding → "+N" detail → card list), resizable and pinnable columns persisted
  * per user, selection with a bulk bar over the status bar, row ⋯ and right-click menus
  * from the entity's ActionSet, live updates that flash in place, and loading, empty and
- * error states that keep the table's box, and opt-in row reordering by drag or keyboard
- * (`reorder`) that leaves the order to the host.
+ * error states that keep the table's box, opt-in row reordering by drag or keyboard
+ * (`reorder`) that leaves the order to the host, and opt-in detail panels (`renderRowDetail`)
+ * and tree rows with lazy children (`tree`).
  */
 
 export function DataTable<T extends RowData>(props: DataTableProps<T>) {
@@ -369,6 +408,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   // Grouped tables load each group's rows in place ("Show more") instead.
   const infinite = grouping ? undefined : props.infinite;
   const domId = useId();
+  const tree = props.tree;
+  const renderRowDetail = props.renderRowDetail;
+  const expandable = Boolean(tree || renderRowDetail);
 
   /* ── State: each slice controlled by the caller or owned here ─────────────────── */
   const [inner, setInner] = useState<DataTableState>(() => ({
@@ -381,31 +423,29 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     },
     selection: props.defaultState?.selection ?? {},
     groups: props.defaultState?.groups ?? EMPTY_GROUP_STATE,
+    expanded: props.defaultState?.expanded ?? NO_IDS,
   }));
   const sorting = props.state?.sorting ?? inner.sorting;
   const filters = props.state?.filters ?? inner.filters;
   const pagination = props.state?.pagination ?? inner.pagination;
   const selection = props.state?.selection ?? inner.selection;
   const groupState = props.state?.groups ?? inner.groups ?? EMPTY_GROUP_STATE;
+  const expandedIds = props.state?.expanded ?? inner.expanded ?? NO_IDS;
 
   const searchQuery = props.state?.search ?? inner.search ?? "";
 
-  const latestState = useRef<DataTableState>({
+  // `expanded` joins the reported state only where it means something.
+  const currentState: DataTableState = {
     sorting,
     filters,
     search: searchQuery,
     pagination,
     selection,
     groups: groupState,
-  });
-  latestState.current = {
-    sorting,
-    filters,
-    search: searchQuery,
-    pagination,
-    selection,
-    groups: groupState,
+    ...(expandable ? { expanded: expandedIds } : null),
   };
+  const latestState = useRef(currentState);
+  latestState.current = currentState;
   const onStateChangeRef = useRef(props.onStateChange);
   onStateChangeRef.current = props.onStateChange;
 
@@ -416,11 +456,16 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const resultsTimer = useRef(0);
   const [resultsTick, setResultsTick] = useState(0);
   const emit = useCallback(
-    (change: DataTableStateChange, patch: Partial<DataTableState>) => {
+    (
+      change: DataTableStateChange,
+      patch: Partial<DataTableState>,
+      details?: DataTableStateChangeDetails,
+    ) => {
       const next = { ...latestState.current, ...patch };
       latestState.current = next;
       setInner((current) => ({ ...current, ...patch }));
-      onStateChangeRef.current?.(next, change);
+      if (details) onStateChangeRef.current?.(next, change, details);
+      else onStateChangeRef.current?.(next, change);
       if (change === "search" || change === "filters") {
         window.clearTimeout(resultsTimer.current);
         resultsDue.current = false;
@@ -489,10 +534,29 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     [emit],
   );
   const setSelection = useCallback(
-    (updater: Updater<RowSelectionState>) =>
-      emit("selection", {
-        selection: functionalUpdate(updater, latestState.current.selection),
-      }),
+    (updater: Updater<RowSelectionState>) => {
+      const before = latestState.current.selection;
+      const next = functionalUpdate(updater, before);
+      const current = latest.current;
+      emit(
+        "selection",
+        { selection: next },
+        current.props.tree
+          ? {
+              unloaded: unloadedSelection(
+                before,
+                next,
+                current.expansionRows,
+                current.notFullyLoaded,
+              ),
+            }
+          : undefined,
+      );
+    },
+    [emit],
+  );
+  const setExpandedIds = useCallback(
+    (ids: readonly string[]) => emit("expanded", { expanded: ids }),
     [emit],
   );
 
@@ -793,13 +857,17 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const moveActive =
     shownMove !== null &&
     (shownMove.status === "pending" || shownMove.source === rows);
-  const data = useMemo(
-    () =>
-      (moveActive && shownMove
+  // TanStack rebuilds its rows when `data` changes, so a new `getSubRows` (children kept
+  // outside `rows`) has to arrive as new data.
+  const getSubRows = tree?.getSubRows;
+  const data = useMemo(() => {
+    const rows = (
+      moveActive && shownMove
         ? applyMove(liveRows.rows, getRowId, shownMove)
-        : liveRows.rows) as T[],
-    [liveRows.rows, moveActive, shownMove, getRowId],
-  );
+        : liveRows.rows
+    ) as T[];
+    return getSubRows ? [...rows] : rows;
+  }, [liveRows.rows, moveActive, shownMove, getRowId, getSubRows]);
 
   /* ── TanStack Table v9 ────────────────────────────────────────────────────────── */
   const getRowIdRef = useRef(getRowId);
@@ -827,6 +895,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     columns: columns as DataTableColumn<T>[],
     data,
     getRowId: stableGetRowId,
+    ...(getSubRows
+      ? { getSubRows: (row: T) => (getSubRows(row) ?? undefined) as T[] | undefined }
+      : null),
     rowCount: rowCount ?? data.length,
     manualSorting: true,
     manualFiltering: true,
@@ -872,20 +943,119 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const groupPageSize = grouping?.pageSize ?? DEFAULT_GROUP_PAGE_SIZE;
   const groupOfRef = useRef(grouping?.groupOf);
   groupOfRef.current = grouping?.groupOf;
-  const lines = useMemo<readonly Line[] | null>(
+  const groupedLines = useMemo(
     () =>
       grouping
-        ? (groupItems(
-            pageRows,
+        ? groupItems(
+            pageRows as readonly TableRow[],
             (row) => groupOfRef.current?.(row.original as T) ?? "",
             grouping.groups,
             groupState,
             groupPageSize,
-          ) as unknown as Line[])
+          )
         : null,
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- groupOf is read through a ref; the groups and state are the identity
     [pageRows, grouping?.groups, groupState, groupPageSize, Boolean(grouping)],
   );
+
+  /* ── Expansion: which rows are open, and the lines they add ───────────────────── */
+  const expansionRef = useRef({ tree, canExpandRow: props.canExpandRow });
+  expansionRef.current = { tree, canExpandRow: props.canExpandRow };
+  const expandedSet = useMemo(() => new Set(expandedIds), [expandedIds]);
+  // A filtered result opens its branches without touching `expanded`; what a person closes in
+  // it stays closed until the query changes.
+  const filtering = filters.length > 0 || searchQuery !== "";
+  const revealMatches = Boolean(tree) && filtering && tree?.openMatches !== false;
+  const filterKey = stableKey([filters, searchQuery]);
+  const [closedInResult, setClosedInResult] = useState({
+    key: filterKey,
+    ids: new Set<string>() as ReadonlySet<string>,
+  });
+  const closedIds =
+    closedInResult.key === filterKey ? closedInResult.ids : EMPTY_SET;
+  const hasPanel = useCallback(
+    (row: TableRow) =>
+      Boolean(renderRowDetail) &&
+      (expansionRef.current.canExpandRow?.(row.original as T) ?? true),
+    [renderRowDetail],
+  );
+  const flatRows = tree ? table.getCoreRowModel().flatRows : pageRows;
+  const getLabelRef = useRef<(row: T) => string>(() => "");
+  const childLoads = useChildLoads<T>({
+    tree,
+    resultKey: stableKey([filters, searchQuery, sorting, props.queryKey ?? null]),
+    getLabel: (row) => getLabelRef.current(row),
+    messages,
+  });
+  const { finished: childrenFinished } = childLoads;
+  const childState = useCallback(
+    (row: TableRow): ChildState => {
+      const current = expansionRef.current.tree;
+      const original = row.original as T;
+      const loaded = current?.getSubRows(original);
+      const total = current?.getChildCount?.(original);
+      const hasMore = current?.hasMoreChildren?.(original) ?? false;
+      const unloaded =
+        (loaded === undefined || loaded === null) &&
+        !childrenFinished.has(row.id) &&
+        (current?.hasChildren?.(original) ?? (total ?? 0) > 0);
+      return {
+        unloaded,
+        total,
+        more:
+          !unloaded &&
+          (hasMore || (total !== undefined && total > row.subRows.length)),
+      };
+    },
+    [childrenFinished],
+  );
+  const isOpen = useCallback(
+    (row: TableRow) =>
+      !closedIds.has(row.id) &&
+      (expandedSet.has(row.id) || (revealMatches && row.subRows.length > 0)),
+    [closedIds, expandedSet, revealMatches],
+  );
+  const canOpen = useCallback(
+    (row: TableRow) => {
+      if (hasPanel(row) || row.subRows.length > 0) return true;
+      return expansionRef.current.tree ? childState(row).unloaded : false;
+    },
+    [hasPanel, childState],
+  );
+  const firstTopRow = cursor || grouping ? 1 : pagination.pageIndex * pagination.pageSize + 1;
+  const topSetSize =
+    rowCount ?? (cursor || infinite?.hasMore ? -1 : data.length);
+  const lines = useMemo<readonly Line[] | null>(() => {
+    if (!expandable) return groupedLines as unknown as Line[] | null;
+    const plan: ExpansionPlan<TableRow> = {
+      isOpen: (row) => isOpen(row) && canOpen(row),
+      hasPanel,
+      childState: expansionRef.current.tree ? childState : undefined,
+    };
+    return expansionLines(
+      groupedLines ??
+        (pageRows as readonly TableRow[]).map((row) => ({
+          kind: "row" as const,
+          key: row.id,
+          row,
+          group: "",
+        })),
+      plan,
+      { first: firstTopRow, setSize: topSetSize },
+    );
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- `tree` is read through a ref; its getSubRows reaches here through `pageRows`
+  }, [
+    expandable,
+    groupedLines,
+    pageRows,
+    isOpen,
+    canOpen,
+    hasPanel,
+    childState,
+    firstTopRow,
+    topSetSize,
+    Boolean(tree),
+  ]);
   const order = useMemo(
     () =>
       lines
@@ -893,6 +1063,16 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         : pageRows.map((row) => row.id),
     [lines, pageRows],
   );
+  // Select all and ranges pass over rows that are only the path to a match.
+  const selectOrder = useMemo(() => {
+    const isContext = tree?.isContext;
+    if (!isContext || !lines) return order;
+    return lines.flatMap((line) =>
+      line.kind === "row" && !isContext(line.row.original as T)
+        ? [line.row.id]
+        : [],
+    );
+  }, [order, lines, tree?.isContext]);
   const lineCount = lines ? lines.length : pageRows.length;
   const groupTotal = useMemo(
     () =>
@@ -905,8 +1085,25 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     [grouping],
   );
   const rowsById = useMemo(
-    () => new Map(pageRows.map((row) => [row.id, row.original])),
-    [pageRows],
+    () => new Map(flatRows.map((row) => [row.id, row.original])),
+    [flatRows],
+  );
+  const rowLevels = useRef(new Map<string, number>());
+  const expansionRows = useMemo(() => {
+    const byId = new Map<string, TableRow>();
+    if (!expandable) return byId;
+    for (const row of flatRows as readonly TableRow[]) {
+      byId.set(row.id, row);
+      rowLevels.current.set(row.id, row.depth + 1);
+    }
+    return byId;
+  }, [flatRows, expandable]);
+  const notFullyLoaded = useCallback(
+    (row: TableRow) => {
+      const state = childState(row);
+      return state.unloaded || state.more;
+    },
+    [childState],
   );
 
   /* ── Selection: ids across pages; targets cached so bulk actions see every row ─── */
@@ -935,6 +1132,16 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const [activeIndex, setActiveIndex] = useState(0);
   const active = Math.min(activeIndex, Math.max(0, lineCount - 1));
   const focusRequest = useRef<number | null>(null);
+  /** The element of a body line, not of a table nested in a detail panel. */
+  const lineElement = useCallback((index: number) => {
+    const scroller = scrollRef.current;
+    if (!scroller) return null;
+    for (const element of scroller.querySelectorAll<HTMLElement>(
+      `[data-index="${index}"]`,
+    ))
+      if (element.closest(".fa-dt-scroll") === scroller) return element;
+    return null;
+  }, []);
   const virtualizerRef = useRef<Virtualizer<HTMLDivElement, Element> | null>(
     null,
   );
@@ -970,6 +1177,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const searching = Boolean(search) && searchQuery !== "";
 
   /* ── Reordering: why it is unavailable, and each row's grip ───────────────────── */
+  const hasOpen = Boolean(expandable && lines && hasOpenLines(lines));
+  // A gesture holds line indexes: new rows or a row opening end it.
+  const reorderKey = useMemo(() => ({}), [data, expandedSet]);
   const reorderReason = reorder
     ? reorderUnavailable(
         {
@@ -988,6 +1198,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
               (rowCount !== undefined && rowCount > rows.length)),
           held: liveRows.pending > 0,
           saving: shownMove?.status === "pending",
+          expanded: hasOpen,
         },
         m,
       )
@@ -1051,10 +1262,13 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     };
   }, [props.getRowLabel, definitions]);
 
+  getLabelRef.current = getLabel;
+
   /* ── Everything the stable controllers read ───────────────────────────────────── */
-  const latest = useRef({
+  const latestValues = {
     props,
     order,
+    selectOrder,
     lines,
     lineCount,
     rowsById,
@@ -1069,25 +1283,18 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     mode,
     rowHeight: metrics.rowHeight,
     data,
-  });
-  latest.current = {
-    props,
-    order,
-    lines,
-    lineCount,
-    rowsById,
-    selection,
-    selectedTargets,
-    layout,
-    table,
-    metaById,
-    getLabel,
-    filterController,
-    reasonOf,
-    mode,
-    rowHeight: metrics.rowHeight,
-    data,
+    active,
+    reorderKey,
+    isOpen,
+    expansionRows,
+    notFullyLoaded,
+    revealMatches,
+    closedIds,
+    childLoads,
+    filterKey,
   };
+  const latest = useRef(latestValues);
+  latest.current = latestValues;
 
   /** The row's actions: its own set (`getRowActions`), else the table's. */
   const actionsOf = useCallback((row: T) => {
@@ -1120,18 +1327,70 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     const next = Math.min(Math.max(index, 0), count - 1);
     setActiveIndex(next);
     focusRequest.current = next;
-    virtualizerRef.current?.scrollToIndex(next, { align: "auto" });
-  }, []);
+    const virtualizer = virtualizerRef.current;
+    // A panel taller than the view shows its start, where its content begins.
+    const tall =
+      latest.current.lines?.[next]?.kind === "detail" &&
+      (virtualizer?.measurementsCache[next]?.size ?? 0) >
+        (scrollRef.current?.clientHeight ?? Number.POSITIVE_INFINITY);
+    virtualizer?.scrollToIndex(next, { align: tall ? "start" : "auto" });
+    // Already the active line: nothing will commit, so the effect below would not run.
+    if (latest.current.active === next) {
+      focusRequest.current = null;
+      lineElement(next)?.focus({ preventScroll: true });
+    }
+  }, [lineElement]);
 
   useLayoutEffect(() => {
     if (focusRequest.current === null) return;
-    const target = scrollRef.current?.querySelector<HTMLElement>(
-      `[data-index="${focusRequest.current}"]`,
-    );
+    const target = lineElement(focusRequest.current);
     focusRequest.current = null;
     target?.focus({ preventScroll: true });
-    target?.scrollIntoView({ block: "nearest" });
+    target?.scrollIntoView({
+      block:
+        target.dataset.item === "detail" &&
+        target.offsetHeight > (scrollRef.current?.clientHeight ?? 0)
+          ? "start"
+          : "nearest",
+    });
   });
+
+  // The roving tab stop follows its line when lines come and go above it. If the line itself
+  // went, a parent having closed, it passes to what remains: focus too, if it was there (R20.3).
+  const shownKeys = useRef<readonly string[]>([]);
+  const focusInside = useRef(false);
+  if (expandable && scrollRef.current)
+    focusInside.current = scrollRef.current.contains(document.activeElement);
+  useLayoutEffect(() => {
+    if (!expandable || !lines) return;
+    const before = shownKeys.current;
+    const keys = lines.map(lineKeyOf);
+    shownKeys.current = keys;
+    if (!before.length || before[activeIndex] === keys[activeIndex]) return;
+    const next = survivingLine(
+      before,
+      activeIndex,
+      new Map(keys.map((key, index) => [key, index])),
+    );
+    if (next < 0) return;
+    setActiveIndex(next);
+    const body = !document.activeElement || document.activeElement === document.body;
+    if (focusInside.current && body) focusRequest.current = next;
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- runs when the lines change; the index it reads is the one they replaced
+  }, [lines, expandable]);
+
+  // "Show more" under a parent: its first new row takes the line's place, and focus goes there.
+  const focusAfterChildren = useRef<{ index: number; key: string } | null>(null);
+  useLayoutEffect(() => {
+    const pending = focusAfterChildren.current;
+    if (!pending || !lines) return;
+    const line = lines[pending.index];
+    if (line && lineKeyOf(line) === pending.key) return;
+    focusAfterChildren.current = null;
+    if (line?.kind !== "row") return;
+    setActiveIndex(pending.index);
+    focusRequest.current = pending.index;
+  }, [lines]);
 
   // "Show more" from a focused line: once the group's next rows arrive, focus moves to the
   // first of them (it takes the line's place), so the keyboard carries on where it was.
@@ -1150,9 +1409,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       return;
     if (line?.kind !== "row") return;
     // The line is the active one already (showMore made it so), so it is drawn: focus it now.
-    const target = scrollRef.current?.querySelector<HTMLElement>(
-      `[data-index="${pending.index}"]`,
-    );
+    const target = lineElement(pending.index);
     target?.focus({ preventScroll: true });
     target?.scrollIntoView({ block: "nearest" });
   }, [lines]);
@@ -1164,7 +1421,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         setSelection(
           selectRange(
             current.selection,
-            current.order,
+            current.selectOrder,
             anchor.current,
             rowId,
             value,
@@ -1210,7 +1467,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     let last = current.lineCount - 1;
     let group: Lift["group"];
     const entry = lines?.[line];
-    if (lines && entry?.kind === "row") {
+    if (current.props.grouping && lines && entry?.kind === "row") {
       const inGroup = (index: number) => {
         const other = lines[index];
         return other?.kind === "row" && other.group === entry.group;
@@ -1348,10 +1605,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
             toast.danger(m.rowNotMoved(lift.label), {
               description: reason || m.orderNotSaved,
             });
-          const element = scrollRef.current?.querySelector<HTMLElement>(
-            `[data-item="row"][data-index="${lift.line}"]`,
-          );
-          if (element) {
+          const element = lineElement(lift.line);
+          if (element?.dataset.item === "row") {
             element.setAttribute("data-reorder-failed", "");
             element.addEventListener(
               "animationend",
@@ -1363,7 +1618,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       );
     },
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- positionOf is pure; everything else is read through refs
-    [announce, m],
+    [announce, lineElement, m],
   );
 
   const gripController = useMemo<GripController>(
@@ -1410,7 +1665,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           reorderRef.current = {
             kind: "pointer",
             rowId,
-            key: latest.current.data,
+            key: latest.current.reorderKey,
             drag,
           };
       },
@@ -1447,7 +1702,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           reorderRef.current = {
             kind: "keyboard",
             rowId,
-            key: latest.current.data,
+            key: latest.current.reorderKey,
             lift,
             session,
           };
@@ -1528,7 +1783,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   // Rows replaced, or the layout switched, mid-gesture: the line indexes no longer hold.
   useLayoutEffect(() => {
     const active = reorderRef.current;
-    if (!active || active.key === data) return;
+    if (!active || active.key === reorderKey) return;
     reorderRef.current = null;
     if (active.kind === "pointer") active.drag.cancel();
     else active.session.finish(false);
@@ -1543,9 +1798,37 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     [mode],
   );
 
+  /** Open or close a row. In a filtered result, that choice lasts as long as the result. */
+  const toggleOpen = useCallback(
+    (rowId: string) => {
+      const current = latest.current;
+      const row = current.expansionRows.get(rowId);
+      if (!row) return;
+      const open = current.isOpen(row);
+      const ids = latestState.current.expanded ?? NO_IDS;
+      if (current.revealMatches) {
+        const closed = new Set(current.closedIds);
+        if (open) closed.add(rowId);
+        else closed.delete(rowId);
+        setClosedInResult({ key: current.filterKey, ids: closed });
+      }
+      if (open) {
+        current.childLoads.forget(row as never);
+        if (ids.includes(rowId))
+          setExpandedIds(ids.filter((id) => id !== rowId));
+      } else if (
+        !ids.includes(rowId) &&
+        !(current.revealMatches && row.subRows.length > 0)
+      )
+        setExpandedIds([...ids, rowId]);
+    },
+    [setExpandedIds],
+  );
+
   const rowController = useMemo<RowController>(
     () => ({
       toggleRow,
+      toggleOpen,
       toggleExpanded: (rowId) =>
         setExpanded((current) => {
           const next = new Set(current);
@@ -1620,8 +1903,76 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       },
       grip: reorderable ? gripController : undefined,
     }),
-    [toggleRow, rowMenu, actionsOf, setGroups, reorderable, gripController, m],
+    [
+      toggleRow,
+      toggleOpen,
+      rowMenu,
+      actionsOf,
+      setGroups,
+      reorderable,
+      gripController,
+      m,
+    ],
   );
+
+  /* ── Expand-all: this view's loaded rows, and nothing that would fetch ────────── */
+  const expandTargets = useMemo(
+    () =>
+      expandable
+        ? expandableIds(
+            flatRows as readonly TableRow[],
+            (row) => hasPanel(row) || row.subRows.length > 0,
+          )
+        : NO_IDS,
+    [expandable, flatRows, hasPanel],
+  );
+  const allOpen =
+    expandTargets.length > 0 &&
+    expandTargets.every((rowId) => {
+      const row = expansionRows.get(rowId);
+      return row ? isOpen(row) : true;
+    });
+  const expandTargetsRef = useRef(expandTargets);
+  expandTargetsRef.current = expandTargets;
+  const setAllOpen = useCallback(
+    (open: boolean) => {
+      const current = latest.current;
+      const ids = latestState.current.expanded ?? NO_IDS;
+      setClosedInResult({
+        key: current.filterKey,
+        ids:
+          open || !current.revealMatches
+            ? EMPTY_SET
+            : new Set(expandTargetsRef.current),
+      });
+      setExpandedIds(
+        open ? [...new Set([...ids, ...expandTargetsRef.current])] : NO_IDS,
+      );
+    },
+    [setExpandedIds],
+  );
+  const expandAllLabel = allOpen
+    ? m.collapseRows
+    : infinite
+      ? m.expandLoaded
+      : m.expandPage;
+  const offerExpandAll =
+    expandable && props.expandAll !== false && expandTargets.length > 0;
+  const expandAllControl = useMemo(
+    () =>
+      offerExpandAll ? (
+        <ExpandAllButton
+          open={allOpen}
+          label={expandAllLabel}
+          onToggle={() => setAllOpen(!allOpen)}
+        />
+      ) : undefined,
+    [offerExpandAll, allOpen, expandAllLabel, setAllOpen],
+  );
+  const expanderColumn = expandable
+    ? (visibleColumns.find((column) => column.id === tree?.column) ??
+        visibleColumns[0])?.id
+    : undefined;
 
   const commitWidth = useCallback(
     (columnId: string, width: number) => {
@@ -1690,7 +2041,11 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         setSorting(desc === null ? [] : [{ id: columnId, desc }]),
       togglePage: (value) =>
         setSelection(
-          togglePage(latest.current.selection, latest.current.order, value),
+          togglePage(
+            latest.current.selection,
+            latest.current.selectOrder,
+            value,
+          ),
         ),
       togglePin: (columnId) =>
         updatePreferences((current) => {
@@ -1843,7 +2198,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         ? idByKey.get(cell.dataset.col ?? "")
         : undefined;
     if (!columnId) return null;
-    const row = pageRows.find((entry) => entry.id === rowId);
+    const row =
+      (tree ? expansionRows.get(rowId) : undefined) ??
+      pageRows.find((entry) => entry.id === rowId);
     const found = row
       ? cellFilter(filterController, columnId, row.getValue(columnId), m)
       : null;
@@ -1894,13 +2251,23 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const lineFromEvent = (target: EventTarget | null) => {
     if (!(target instanceof Element)) return null;
     const element = target.closest<HTMLElement>("[data-item][data-index]");
-    if (!element || !scrollRef.current?.contains(element)) return null;
-    const kind = element.dataset.item as "row" | "group" | "more";
+    // A table nested in a detail panel keeps its own lines.
+    if (!element || element.closest(".fa-dt-scroll") !== scrollRef.current)
+      return null;
+    const kind = element.dataset.item as
+      | "row"
+      | "group"
+      | "more"
+      | "detail"
+      | "child-status"
+      | "child-more";
     return {
       element,
       kind,
       rowId: element.dataset.rowId ?? "",
       groupId: element.dataset.groupId ?? "",
+      /** The row a panel, status or "Show more" line belongs to. */
+      forRow: element.dataset.forRow ?? "",
       index: Number(element.dataset.index),
     };
   };
@@ -1928,7 +2295,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     if (!selectable) return;
     if (event.shiftKey && anchor.current) {
       setSelection(
-        selectRange(selection, order, anchor.current, hit.rowId, true),
+        selectRange(selection, selectOrder, anchor.current, hit.rowId, true),
       );
     } else if (event.metaKey || event.ctrlKey) {
       setSelection(toggleOne(selection, hit.rowId));
@@ -1948,11 +2315,37 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     if (event.shiftKey && rowFromEvent(event.target)) event.preventDefault();
   };
 
+  const lineIndexOfRow = (rowId: string) =>
+    lines?.findIndex((line) => line.kind === "row" && line.row.id === rowId) ??
+    -1;
+
   /** Keys on a group header or "Show more" line: toggle, collapse, expand, show more. */
   const onLineKeyDown = (
     event: ReactKeyboardEvent<HTMLDivElement>,
     hit: NonNullable<ReturnType<typeof lineFromEvent>>,
   ) => {
+    if (
+      hit.kind === "detail" ||
+      hit.kind === "child-status" ||
+      hit.kind === "child-more"
+    ) {
+      const backward =
+        readingKey(event.key, event.currentTarget) === "ArrowLeft";
+      if (backward) {
+        event.preventDefault();
+        focusRow(lineIndexOfRow(hit.forRow));
+        return true;
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        // The line's own button: "Show more", or Retry after a failure.
+        const button = hit.element.querySelector<HTMLElement>("button");
+        if (!button) return false;
+        event.preventDefault();
+        button.click();
+        return true;
+      }
+      return false;
+    }
     const collapsed = groupState.collapsed.includes(hit.groupId);
     switch (event.key) {
       case "Enter":
@@ -2007,15 +2400,22 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       const target = lines[clamped];
       return target?.kind === "row" ? target.row.id : undefined;
     };
-    const move = (index: number) => {
+    const move = (requested: number) => {
       event.preventDefault();
+      // A selection extending with Shift steps over panels and status lines.
+      let index = requested;
+      if (expandable && lines && event.shiftKey && selectable) {
+        const step = requested < hit.index ? -1 : 1;
+        while (lines[index] && lines[index]?.kind !== "row") index += step;
+        if (!lines[index]) index = hit.index;
+      }
       focusRow(index);
       const target = rowIdAt(index);
       if (event.shiftKey && selectable && target && hit.kind === "row") {
         setSelection(
           selectRange(
             selection,
-            order,
+            selectOrder,
             anchor.current ?? hit.rowId,
             target,
             true,
@@ -2025,6 +2425,10 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       }
     };
     const mod = event.metaKey || event.ctrlKey;
+    const expansionRow =
+      hit.kind === "row" ? expansionRows.get(hit.rowId) : undefined;
+    const openableRow =
+      expansionRow && canOpen(expansionRow) ? expansionRow : undefined;
     switch (event.key) {
       case "ArrowDown":
         return move(hit.index + 1);
@@ -2039,7 +2443,14 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       case "PageUp":
         return move(hit.index - page);
       case " ":
-        if (!selectable || hit.kind !== "row") return;
+        if (hit.kind !== "row") return;
+        if (!selectable) {
+          if (openableRow) {
+            event.preventDefault();
+            toggleOpen(hit.rowId);
+          }
+          return;
+        }
         event.preventDefault();
         return toggleRow(hit.rowId, !selection[hit.rowId], event.shiftKey);
       case "Enter": {
@@ -2047,30 +2458,42 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         if (row !== undefined && props.onRowOpen) {
           event.preventDefault();
           props.onRowOpen(row);
+        } else if (openableRow) {
+          event.preventDefault();
+          toggleOpen(hit.rowId);
         }
         return;
       }
       case "ArrowRight":
+      case "ArrowLeft": {
+        if (hit.kind !== "row") return;
+        const forward =
+          readingKey(event.key, event.currentTarget) === "ArrowRight";
+        if (openableRow) {
+          const open = isOpen(openableRow);
+          event.preventDefault();
+          if (forward === !open) return toggleOpen(hit.rowId);
+          if (forward) return focusRow(hit.index + 1);
+        }
+        // Treegrid: ← on a closed row moves to its parent.
+        if (!forward && !openableRow?.subRows.length) {
+          const parentId = expansionRows.get(hit.rowId)?.parentId;
+          if (parentId !== undefined) {
+            event.preventDefault();
+            return focusRow(lineIndexOfRow(parentId));
+          }
+        }
+        if (openableRow) return;
+        const closed = !expandAll && !expanded.has(hit.rowId);
         if (
-          hit.kind === "row" &&
           (mode === "cards" ? cards.details.length : hiddenColumns.length) &&
-          !expandAll &&
-          !expanded.has(hit.rowId)
+          (forward ? closed : expanded.has(hit.rowId))
         ) {
           event.preventDefault();
           rowController.toggleExpanded(hit.rowId);
         }
         return;
-      case "ArrowLeft":
-        if (
-          hit.kind === "row" &&
-          (mode === "cards" ? cards.details.length : hiddenColumns.length) &&
-          expanded.has(hit.rowId)
-        ) {
-          event.preventDefault();
-          rowController.toggleExpanded(hit.rowId);
-        }
-        return;
+      }
       case "Escape":
         if (selected) {
           event.preventDefault();
@@ -2088,7 +2511,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       default:
         if (mod && event.key.toLowerCase() === "a" && selectable) {
           event.preventDefault();
-          setSelection(togglePage(selection, order, true));
+          setSelection(togglePage(selection, selectOrder, true));
         }
     }
   };
@@ -2132,9 +2555,11 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   );
   const firstRowIndex =
     (cursor || grouping ? 0 : pagination.pageIndex * pagination.pageSize) + 2;
-  const totalRows = grouping
-    ? undefined
-    : (rowCount ?? (cursor || loadMore.active ? undefined : data.length));
+  // An open row adds lines the server's count knows nothing about.
+  const totalRows =
+    grouping || expandable
+      ? undefined
+      : (rowCount ?? (cursor || loadMore.active ? undefined : data.length));
   const countLabelText = loadMore.active
     ? rowCount !== undefined
       ? m.loadedOf(
@@ -2164,8 +2589,101 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     onClick: onRowsClick,
     onDoubleClick: onRowsDoubleClick,
     onMouseDown: onRowsMouseDown,
+    // Focus inside a panel keeps the panel mounted while its row scrolls away.
+    onFocus: expandable
+      ? (event: ReactFocusEvent<HTMLDivElement>) => {
+          const hit = lineFromEvent(event.target);
+          if (hit?.kind === "detail") setActiveIndex(hit.index);
+        }
+      : undefined,
     "data-row-open": openOnClick ? "click" : undefined,
   };
+
+  const expansion: BodyExpansion<T> | undefined = !expandable
+    ? undefined
+    : {
+        treegrid: Boolean(tree),
+        expanderColumn,
+        groupCount: grouping?.groups.length ?? 0,
+        panelEstimate: (row) => {
+          const height = props.rowDetailHeight;
+          const rem =
+            typeof height === "function" ? height(row) : height;
+          return (rem ?? PANEL_ESTIMATE) * metrics.rem;
+        },
+        rowProps: (line) => {
+          const row = line.row as unknown as TableRow;
+          const open = isOpen(row) && canOpen(row);
+          return {
+            treegrid: Boolean(tree),
+            level: line.level,
+            position: line.position,
+            setSize: line.setSize,
+            openable: canOpen(row),
+            open,
+            expanderColumn,
+            panelId: open && hasPanel(row) ? panelIdOf(domId, row.id) : undefined,
+            context: tree?.isContext?.(row.original as T) ?? false,
+          };
+        },
+        renderLine: (line, { index, top, measureRef }) => {
+          const row = line.row as unknown as TableRow;
+          const common = {
+            label: getLabel(row.original as T),
+            rowId: row.id,
+            index,
+            ariaRowIndex: firstRowIndex + index,
+            top,
+            active: index === active,
+            colSpan: mode === "cards" ? 1 : colCount,
+            level: line.level,
+            treegrid: Boolean(tree),
+          };
+          const loads = childLoads as unknown as {
+            request: (target: TableRow) => void;
+            retry: (target: TableRow) => void;
+          };
+          if (line.kind === "detail")
+            return (
+              <DetailLine<T>
+                {...common}
+                panelId={panelIdOf(domId, row.id)}
+                measureRef={measureRef}
+                render={renderRowDetail as (row: T) => ReactNode}
+                original={row.original as T}
+              />
+            );
+          if (line.kind === "child-status")
+            return (
+              <ChildStatusLine
+                {...common}
+                lines={line.lines}
+                status={childStatus(childLoads, row)}
+                columns={visibleColumns}
+                selectable={selectable}
+                grip={reorderable}
+                expanderColumn={expanderColumn}
+                cards={mode === "cards" ? cards : undefined}
+                actions={hasActions || Boolean(renderRowActions)}
+                onRequest={() => loads.request(row)}
+                onRetry={() => loads.retry(row)}
+              />
+            );
+          return (
+            <ChildMoreLine
+              {...common}
+              loaded={line.loaded}
+              total={line.total}
+              status={childStatus(childLoads, row)}
+              onMore={() => {
+                focusAfterChildren.current = { index, key: line.key };
+                setActiveIndex(index);
+                loads.retry(row);
+              }}
+            />
+          );
+        },
+      };
   const hasContextMenu = Boolean(
     hasActions || renderRowContextMenu || cellFilterable,
   );
@@ -2284,9 +2802,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       <div {...rowsContainerProps} role="rowgroup" className="fa-dt-cards">
         <CardList<T>
           rows={pageRows}
-          items={
-            lines as readonly GroupedItem<Row<DataTableFeatures, T>>[] | null
-          }
+          items={lines as readonly BodyLine<Row<DataTableFeatures, T>>[] | null}
+          expansion={expansion}
           noun={noun}
           layout={cards}
           expanded={expanded}
@@ -2318,9 +2835,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     body = (
       <VirtualRows<T>
         rows={pageRows}
-        items={
-          lines as readonly GroupedItem<Row<DataTableFeatures, T>>[] | null
-        }
+        items={lines as readonly BodyLine<Row<DataTableFeatures, T>>[] | null}
+        expansion={expansion}
         noun={noun}
         colSpan={colCount}
         scrollRef={scrollRef}
@@ -2387,6 +2903,13 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   );
   const effectiveDensity = density ?? globalDensity();
   // Memoised so the header (memo) skips renders that change nothing it shows.
+  const cardExpandAll = useMemo(
+    () =>
+      offerExpandAll && mode === "cards"
+        ? { label: expandAllLabel, onToggle: () => setAllOpen(!allOpen) }
+        : undefined,
+    [offerExpandAll, mode, expandAllLabel, setAllOpen, allOpen],
+  );
   const settingsMenu = useMemo(
     () => (
       <SettingsMenu
@@ -2395,6 +2918,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         autoHidden={autoHiddenSet}
         density={effectiveDensity}
         controller={headerController}
+        expandAll={cardExpandAll}
       />
     ),
     [
@@ -2403,23 +2927,36 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       autoHiddenSet,
       effectiveDensity,
       headerController,
+      cardExpandAll,
     ],
   );
 
-  const exportColumns: DataTableExportColumn<T>[] = visibleColumns.map(
-    (column) => ({
-      id: column.id,
-      header: column.meta.label,
-      value: (row) =>
-        column.meta.exportValue
-          ? column.meta.exportValue(row)
-          : table.getColumn(column.id)?.accessorFn?.(row, 0),
-    }),
-  );
+  const exportColumns: DataTableExportColumn<T>[] = [
+    // A flat file has no indent: each row states its depth.
+    ...(tree
+      ? [
+          {
+            id: "level",
+            header: m.exportLevel,
+            value: (row: T) => rowLevels.current.get(getRowIdRef.current(row)),
+          },
+        ]
+      : []),
+    ...visibleColumns.map(
+      (column): DataTableExportColumn<T> => ({
+        id: column.id,
+        header: column.meta.label,
+        value: (row) =>
+          column.meta.exportValue
+            ? column.meta.exportValue(row)
+            : table.getColumn(column.id)?.accessorFn?.(row, 0),
+      }),
+    ),
+  ];
   const exportSettings = typeof props.export === "object" ? props.export : {};
   const exportRows = selected
     ? selectedTargets
-    : pageRows.map((row) => row.original);
+    : flatRows.map((row) => row.original);
   const runExport = async (format: "csv" | "tsv") => {
     try {
       if (props.onExport) {
@@ -2429,6 +2966,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
           filters,
           sort: sorting,
           selection,
+          ...(expandable ? { expanded: expandedIds } : null),
         });
         return;
       }
@@ -2458,7 +2996,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const onCopy = (event: React.ClipboardEvent<HTMLDivElement>) => {
     if (
       (event.target as Element).closest(
-        "input, textarea, [contenteditable='true'], [data-editing]",
+        "input, textarea, [contenteditable='true'], [data-editing], [data-dt-panel]",
       )
     )
       return;
@@ -2645,7 +3183,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
               ) : null}
               <div className="fa-dt-frame">
                 <div
-                  role="grid"
+                  role={tree ? "treegrid" : "grid"}
                   className="fa-dt-grid"
                   aria-label={label}
                   aria-rowcount={
@@ -2677,8 +3215,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                         sorting={sorting}
                         sized={sized}
                         selectable={selectable}
-                        pageSelection={pageSelection(selection, order)}
-                        pageRowCount={order.length}
+                        pageSelection={pageSelection(selection, selectOrder)}
+                        pageRowCount={selectOrder.length}
                         loadedRows={Boolean(infinite)}
                         hiddenCount={hiddenColumns.length}
                         expandedAll={expandAll}
@@ -2687,6 +3225,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                         filtered={filtered}
                         settings={settingsMenu}
                         reorderable={reorderable}
+                        expanderColumn={expanderColumn}
+                        expandControl={expandAllControl}
                       />
                     </div>
                   ) : null}
@@ -2772,6 +3312,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
               {hasFilterBar ? (
                 <FilterPopover controller={filterController} />
               ) : null}
+              {tree?.onLoadChildren ? <ChildAnnouncer /> : null}
               {reorderable ? (
                 <>
                   <span id={`${domId}-reorder-help`} hidden>

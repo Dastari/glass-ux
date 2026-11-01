@@ -49,8 +49,14 @@ export { configureDataTables, type DataTableConfiguration } from "./persist.js";
 export { moveRow } from "./reorder.js";
 export { resolveRowActions, type RowActionsOf } from "./row-actions.js";
 export * from "./search/index.js";
+export {
+  filterTreeRows,
+  type FilterTreeOptions,
+  type FilteredTree,
+} from "./expansion.js";
 export type {
   CursorPagination,
+  DataTableChildRequest,
   DataTableDensity,
   DataTableFilterToggle,
   DataTableInfinite,
@@ -61,6 +67,8 @@ export type {
   DataTableRowMove,
   DataTableState,
   DataTableStateChange,
+  DataTableStateChangeDetails,
+  DataTableTree,
 } from "./types.js";
 export {
   parseFilters,

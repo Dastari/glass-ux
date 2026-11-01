@@ -44,9 +44,25 @@ export interface DataTableState {
    * to page 1; collapsed groups stay collapsed. Absent: every group expanded, first page.
    */
   groups?: DataTableGroupState;
+  /**
+   * Open rows, by id (with `renderRowDetail` or `tree`). Ids survive paging, sorting and
+   * filtering, as selection does; an id with no row on screen does nothing. A view choice:
+   * it is not in the URL or the saved preferences, so a host that wants either keeps it there.
+   */
+  expanded?: readonly string[];
 }
 
 export type DataTableStateChange = keyof DataTableState;
+
+/** The third argument of `onStateChange`, sent with a selection change in a tree table. */
+export interface DataTableStateChangeDetails {
+  /**
+   * Rows in what was just selected whose children are not all loaded. Selection names rows,
+   * never descendants, as in Tree: a selected parent stands for itself, and the host decides
+   * whether it means everything under it, here and on the server.
+   */
+  unloaded: string[];
+}
 
 export type DataTableDensity = "comfortable" | "compact";
 
@@ -87,6 +103,61 @@ export interface DataTableInfinite {
    * list shows it with Retry, which calls `onLoadMore`, and the loaded rows stay.
    */
   error?: ReactNode;
+}
+
+/** What `DataTableTree.onLoadChildren` is asked for. */
+export interface DataTableChildRequest {
+  /** Children already loaded: the offset of the next batch. */
+  loaded: number;
+  /** Aborted when the result changes or the table unmounts. */
+  signal: AbortSignal;
+}
+
+/**
+ * Hierarchical rows. `rows` holds the top of the tree; children come from `getSubRows` and
+ * indent under an expander, in a `treegrid`. Paging, `rowCount`, `infinite` and grouping count
+ * top-level rows only, and row ids must be unique across the whole tree.
+ *
+ * Sorting and filtering stay the server's: return siblings in the current order, sorted within
+ * their parent. A filter keeps the ancestors of a match, so a match never loses its path; mark
+ * those rows with `isContext`, and branches in the result open while the filter holds without
+ * changing `expanded`. `filterTreeRows` does this for local rows.
+ *
+ * Keep the functions stable. A new `getSubRows` means the children changed, so pass a new one
+ * when they live outside `rows`.
+ */
+export interface DataTableTree<T> {
+  /**
+   * A row's loaded children, in order. `undefined` or `null` means none are loaded; an empty
+   * array means it has none.
+   */
+  getSubRows: (row: T) => readonly T[] | null | undefined;
+  /** The server has children for this row though none are loaded: it gets an expander. */
+  hasChildren?: (row: T) => boolean;
+  /**
+   * Children on the server. It sets `aria-setsize`, reserves their place while they load (up to
+   * five rows), and adds a "Show more" line while fewer are loaded.
+   */
+  getChildCount?: (row: T) => number | undefined;
+  /** More children exist than are loaded, for a server that does not count them. */
+  hasMoreChildren?: (row: T) => boolean;
+  /**
+   * Load a row's children, when an unloaded row is shown open or "Show more" is pressed. Update
+   * `rows` (or return a new `getSubRows`) so `getSubRows` returns them, and return a promise: a
+   * rejection shows the failure with Retry in the children's place, and a promise that
+   * resolves with `getSubRows` still empty means the row has none. Called once per batch, and
+   * never by an expand-all. Without it, watch `expanded` in `onStateChange` and fetch there.
+   */
+  onLoadChildren?: (row: T, request: DataTableChildRequest) => void | Promise<unknown>;
+  /** The column that holds the expander and the indent. Default: the first visible column. */
+  column?: string;
+  /**
+   * The row is here only as the path to a match. It is drawn quieter, and Select all passes
+   * over it, so a bulk action reaches only rows that matched.
+   */
+  isContext?: (row: T) => boolean;
+  /** Open every branch in a filtered or searched result (default true). */
+  openMatches?: boolean;
 }
 
 /**
@@ -139,8 +210,15 @@ export interface DataTableProps<T extends RowData> {
   state?: Partial<DataTableState>;
   /** Initial uncontrolled view state. */
   defaultState?: Partial<DataTableState>;
-  /** Called with the next full state and the slice that changed. */
-  onStateChange?: (state: DataTableState, change: DataTableStateChange) => void;
+  /**
+   * Called with the next full state and the slice that changed. In a tree table a selection
+   * change also carries `DataTableStateChangeDetails`.
+   */
+  onStateChange?: (
+    state: DataTableState,
+    change: DataTableStateChange,
+    details?: DataTableStateChangeDetails,
+  ) => void;
   /** Switch the pager to cursor mode. */
   cursor?: CursorPagination;
   /**
@@ -243,6 +321,32 @@ export interface DataTableProps<T extends RowData> {
    * cards. The host owns the order and receives each move; see `DataTableReorder`.
    */
   reorder?: DataTableReorder<T>;
+  /**
+   * A panel of host content under a row. An expander opens it, in the first visible column or
+   * on the card; the open rows are the `expanded` state slice. `render` runs only for a panel
+   * that is open and on screen, and its height is measured, so it can be anything. A panel
+   * scrolled far away unmounts like its row, so keep state worth keeping in the host. Keep the
+   * function stable: a new one redraws the panels on screen.
+   */
+  renderRowDetail?: (row: T) => ReactNode;
+  /** Rows that have a panel (default: all). */
+  canExpandRow?: (row: T) => boolean;
+  /**
+   * A panel's height before it is first measured, in rem (default 12). A close guess keeps the
+   * scrollbar steady while panels above the viewport are measured.
+   */
+  rowDetailHeight?: number | ((row: T) => number);
+  /**
+   * Hierarchical rows: see `DataTableTree`. The grid becomes a `treegrid`. With `renderRowDetail`
+   * a row's panel comes first, then its children, under one expander.
+   */
+  tree?: DataTableTree<T>;
+  /**
+   * Offer an expand-all in the expander column's header, and in the settings menu on cards
+   * (default true). It opens the loaded rows of this view and fetches nothing: rows on other
+   * pages, batches that arrive later and unloaded children stay closed.
+   */
+  expandAll?: boolean;
   /**
    * Accessible label for a row ("NST-C106"): selection, actions and the reorder grip and
    * announcements use it. Defaults to the first column's text.
@@ -389,4 +493,6 @@ export interface DataTableExportRequest<T> {
   sort: DataTableState["sorting"];
   /** Selected record ids, including selections from other pages. */
   selection: DataTableState["selection"];
+  /** Open rows, in a table with `renderRowDetail` or `tree`. */
+  expanded?: readonly string[];
 }

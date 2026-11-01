@@ -1,18 +1,25 @@
 import { useDataTableMessages } from "./use-messages.js";
 import type { RowData } from "@tanstack/react-table";
 import type { Row, RowSelectionState } from "@tanstack/react-table";
-import { memo, type ReactElement, type ReactNode } from "react";
+import { Fragment, memo, type ReactElement, type ReactNode } from "react";
 import { IconChevronDown, IconChevronUp } from "../../icons/generated/icons.js";
 import { Button } from "../button/index.js";
 import { Skeleton } from "../skeleton/index.js";
-import { CellPlaceholder } from "./body.js";
+import { CellPlaceholder, type BodyExpansion } from "./body.js";
 import { SelectCheckbox } from "./checkbox.js";
 import { countRender } from "./debug.js";
+import { levelStyle, RowExpander } from "./row-expander.js";
+import type { BodyLine } from "./expansion.js";
 import type { DataTableFeatures } from "./features.js";
 import { GroupLine } from "./group-rows.js";
-import type { GroupedItem } from "./grouping.js";
 import { GripButton } from "./reorder-handle.js";
-import { cellContent, type ColumnInfo, type RowController } from "./row.js";
+import {
+  cellContent,
+  sameExpansion,
+  type ColumnInfo,
+  type RowController,
+  type RowExpansionProps,
+} from "./row.js";
 import type { DataTableNoun } from "./types.js";
 
 /** Which columns fill which slot of a card, from each column's `cardRole`. */
@@ -69,7 +76,7 @@ export function cardLayout(
   return { title, subtitle, status, meta, details };
 }
 
-interface CardProps<T extends RowData> {
+interface CardProps<T extends RowData> extends RowExpansionProps {
   row: Row<DataTableFeatures, T>;
   original: T;
   rowId: string;
@@ -105,6 +112,14 @@ function CardView<T extends RowData>({
   label,
   controller,
   grip,
+  treegrid = false,
+  level,
+  position,
+  setSize,
+  openable = false,
+  open = false,
+  panelId,
+  context = false,
 }: CardProps<T>) {
   const m = useDataTableMessages();
   countRender("cards");
@@ -158,6 +173,13 @@ function CardView<T extends RowData>({
       data-index={index}
       data-item="row"
       data-selected={selected ? "" : undefined}
+      data-open={open ? "" : undefined}
+      data-context={context ? "" : undefined}
+      aria-level={treegrid ? level : undefined}
+      aria-posinset={treegrid ? position : undefined}
+      aria-setsize={treegrid ? setSize : undefined}
+      aria-expanded={treegrid && openable ? open : undefined}
+      style={levelStyle(level)}
     >
       {grip !== undefined && controller.grip ? (
         <div role="gridcell" className="fa-dt-card-grip">
@@ -200,6 +222,16 @@ function CardView<T extends RowData>({
             </div>
           ) : null}
           <div className="fa-dt-card-actions">
+            {openable ? (
+              <RowExpander
+                label={label}
+                open={open}
+                openable
+                panelId={panelId}
+                tabIndex={tabIndex}
+                onToggle={() => controller.toggleOpen(rowId)}
+              />
+            ) : null}
             {fieldLine ? null : more}
             {controller.renderActions(rowId, label, tabIndex)}
           </div>
@@ -233,12 +265,14 @@ export const DataCard = /* @__PURE__ */ memo(
     a.label === b.label &&
     a.controller === b.controller &&
     a.grip === b.grip &&
-    a.revision === b.revision,
+    a.revision === b.revision &&
+    sameExpansion(a, b),
 ) as <T extends RowData>(props: CardProps<T>) => ReactElement;
 
 export function CardList<T extends RowData>({
   rows,
   items,
+  expansion,
   layout,
   expanded,
   expandAll,
@@ -258,7 +292,9 @@ export function CardList<T extends RowData>({
   /** Infinite loading: the line after the cards (a placeholder card, or the failure with Retry). */
   tail?: ReactNode;
   /** Grouped tables: group headers and "Show more" lines between the cards. */
-  items?: readonly GroupedItem<Row<DataTableFeatures, T>>[] | null;
+  items?: readonly BodyLine<Row<DataTableFeatures, T>>[] | null;
+  /** A table with `renderRowDetail` or `tree`. */
+  expansion?: BodyExpansion<T>;
   /** Layout or presentation mode. */
   layout: CardLayout;
   expanded: ReadonlySet<string>;
@@ -278,16 +314,26 @@ export function CardList<T extends RowData>({
 }) {
   const lines =
     items ??
-    rows.map((row): GroupedItem<Row<DataTableFeatures, T>> => ({
+    rows.map((row, index): BodyLine<Row<DataTableFeatures, T>> => ({
       kind: "row",
       key: row.id,
       row,
       group: "",
+      level: 1,
+      position: index + 1,
+      setSize: rows.length,
+      nested: false,
     }));
   return (
     <>
       {lines.map((item, index) =>
-        item.kind === "row" ? (
+        item.kind === "detail" ||
+        item.kind === "child-status" ||
+        item.kind === "child-more" ? (
+          <Fragment key={item.key}>
+            {expansion?.renderLine(item, { index })}
+          </Fragment>
+        ) : item.kind === "row" ? (
           <DataCard<T>
             key={item.row.id}
             row={item.row}
@@ -304,6 +350,7 @@ export function CardList<T extends RowData>({
             controller={controller}
             grip={gripOf?.(item.row)}
             revision={revision}
+            {...expansion?.rowProps(item)}
           />
         ) : (
           <GroupLine
@@ -315,6 +362,7 @@ export function CardList<T extends RowData>({
             colSpan={1}
             noun={noun}
             controller={controller}
+            treegridGroups={expansion?.treegrid ? expansion.groupCount : undefined}
           />
         ),
       )}

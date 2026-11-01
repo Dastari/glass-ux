@@ -18,6 +18,7 @@ import { Button } from "../button/index.js";
 import { SelectCheckbox } from "./checkbox.js";
 import { metaOf } from "./columns.js";
 import { EditableValue } from "./editing.js";
+import { levelStyle, RowExpander } from "./row-expander.js";
 import { countRender } from "./debug.js";
 import type { DataColumnMeta, DataTableFeatures } from "./features.js";
 import { columnStyle } from "./layout.js";
@@ -47,9 +48,30 @@ export interface RowController {
   showMore: (groupId: string) => void;
   /** Reorderable tables: what every grip shares. */
   grip?: GripController;
+  /** Open or close a row (detail panel or tree children). */
+  toggleOpen: (rowId: string) => void;
 }
 
-export interface DataRowProps<T extends RowData> {
+/** A row's place and state in a table with `renderRowDetail` or `tree`. All absent otherwise. */
+export interface RowExpansionProps {
+  /** The grid is a treegrid: the row carries level, position and state. */
+  treegrid?: boolean;
+  level?: number;
+  position?: number;
+  setSize?: number;
+  /** The row has a panel or children to show. */
+  openable?: boolean;
+  /** Showing them. */
+  open?: boolean;
+  /** The column that holds the expander. */
+  expanderColumn?: string;
+  /** The panel's element while open: the expander's aria-controls. */
+  panelId?: string;
+  /** Kept only as the path to a match. */
+  context?: boolean;
+}
+
+export interface DataRowProps<T extends RowData> extends RowExpansionProps {
   row: Row<DataTableFeatures, T>;
   /** Data identity: the row only re-renders when this object changes. */
   original: T;
@@ -173,6 +195,15 @@ function DataRowView<T extends RowData>({
   controller,
   grip,
   selectedNext = false,
+  treegrid = false,
+  level,
+  position,
+  setSize,
+  openable = false,
+  open = false,
+  expanderColumn,
+  panelId,
+  context = false,
 }: DataRowProps<T>) {
   const m = useDataTableMessages();
   countRender("rows");
@@ -216,7 +247,13 @@ function DataRowView<T extends RowData>({
       data-selected={selected ? "" : undefined}
       data-selected-next={selected && selectedNext ? "" : undefined}
       data-expanded={expanded ? "" : undefined}
-      style={{ transform: `translateY(${top}px)` }}
+      data-open={open ? "" : undefined}
+      data-context={context ? "" : undefined}
+      aria-level={treegrid ? level : undefined}
+      aria-posinset={treegrid ? position : undefined}
+      aria-setsize={treegrid ? setSize : undefined}
+      aria-expanded={treegrid && openable ? open : undefined}
+      style={{ ...levelStyle(level), transform: `translateY(${top}px)` }}
     >
       {grip !== undefined && controller.grip ? (
         <div role="gridcell" className="fa-dt-cell fa-dt-grip">
@@ -254,8 +291,19 @@ function DataRowView<T extends RowData>({
             data-wrap={column.meta.truncate === "wrap" ? "" : undefined}
             data-pinned={column.pinned ? "" : undefined}
             data-edge={column.edge ? "" : undefined}
+            data-expander={column.id === expanderColumn ? "" : undefined}
             style={column.style}
           >
+            {column.id === expanderColumn ? (
+              <RowExpander
+                label={label}
+                open={open}
+                openable={openable}
+                panelId={panelId}
+                tabIndex={tabIndex}
+                onToggle={() => controller.toggleOpen(rowId)}
+              />
+            ) : null}
             {cell ? cellContent(cell) : null}
           </div>
         );
@@ -300,6 +348,21 @@ function DataRowView<T extends RowData>({
   return controller.wrap(rowId, element);
 }
 
+/** Rows and cards compare the expansion props the same way. */
+export function sameExpansion(a: RowExpansionProps, b: RowExpansionProps) {
+  return (
+    a.treegrid === b.treegrid &&
+    a.level === b.level &&
+    a.position === b.position &&
+    a.setSize === b.setSize &&
+    a.openable === b.openable &&
+    a.open === b.open &&
+    a.expanderColumn === b.expanderColumn &&
+    a.panelId === b.panelId &&
+    a.context === b.context
+  );
+}
+
 function rowPropsEqual<T extends RowData>(
   a: DataRowProps<T>,
   b: DataRowProps<T>,
@@ -320,7 +383,8 @@ function rowPropsEqual<T extends RowData>(
     a.controller === b.controller &&
     a.grip === b.grip &&
     a.selectedNext === b.selectedNext &&
-    a.revision === b.revision
+    a.revision === b.revision &&
+    sameExpansion(a, b)
   );
 }
 

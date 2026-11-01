@@ -1919,6 +1919,9 @@ export default defineMessagePack("he", {
     addImage: "הוסף תמונה",
     imageRequired: "הוסף תמונה",
   },
+  compareSlider: {
+    label: "מיקום ההשוואה",
+  },
   lightbox: {
     previous: "תמונה קודמת",
     next: "התמונה הבאה",

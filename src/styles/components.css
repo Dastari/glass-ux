@@ -32,6 +32,7 @@
 @import "../ui/color-picker/color-picker.css";
 @import "../ui/combobox/combobox.css";
 @import "../ui/command-palette/command-palette.css";
+@import "../ui/compare-slider/compare-slider.css";
 @import "../ui/coordinates-field/coordinates-field.css";
 @import "../ui/country-select/country-select.css";
 @import "../ui/data-table/cells/cells.css";

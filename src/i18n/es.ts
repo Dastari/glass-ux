@@ -1919,6 +1919,9 @@ export default defineMessagePack("es", {
     addImage: "Añadir imagen",
     imageRequired: "Añada una imagen",
   },
+  compareSlider: {
+    label: "Posición de la comparación",
+  },
   lightbox: {
     previous: "Imagen anterior",
     next: "Imagen siguiente",

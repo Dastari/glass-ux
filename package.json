@@ -134,6 +134,10 @@
       "types": "./dist/ui/color-picker/index.d.ts",
       "import": "./dist/ui/color-picker/index.js"
     },
+    "./compare-slider": {
+      "types": "./dist/ui/compare-slider/index.d.ts",
+      "import": "./dist/ui/compare-slider/index.js"
+    },
     "./file-icon": {
       "types": "./dist/ui/file-icon/index.d.ts",
       "import": "./dist/ui/file-icon/index.js"

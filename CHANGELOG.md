@@ -12,6 +12,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
   (pick, check, crop, save with `{ signal, setProgress }`), `ImageField`/`ImageInput` with
   `imageSchema` and an optional `onEdit`, and `cropToBlob`. `field.ImageField` is registered in
   `useAppForm`.
+- `glass-ux/compare-slider`: `CompareSlider`, a before and after divider over any two pieces of
+  content, as a keyboard-operable slider in percent, horizontal or vertical. The sides follow the
+  reading direction.
 - `useUndoStack` in `glass-ux/hooks`: past, future, push, undo, redo, limit and optional coalescing,
   with the same transitions as pure functions (`pushUndo`, `undoState`, `redoState`).
 - `usePanZoom` in `glass-ux/hooks`: drag, wheel, pinch and keys on one transform, with `onFrame` per

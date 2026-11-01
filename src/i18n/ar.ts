@@ -1920,6 +1920,9 @@ export default defineMessagePack("ar", {
     addImage: "إضافة صورة",
     imageRequired: "أضف صورة",
   },
+  compareSlider: {
+    label: "موضع المقارنة",
+  },
   lightbox: {
     previous: "الصورة السابقة",
     next: "الصورة التالية",

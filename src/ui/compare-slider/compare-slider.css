@@ -1,0 +1,120 @@
+/*
+ * CompareSlider. The two sides are laid over each other in one grid cell, and `before` is clipped
+ * at --_split, so neither reflows as the divider moves. A drag writes --_split on the root and
+ * nothing renders until release (R14.5, R18.5).
+ *
+ * Which side `before` takes follows the reading direction: it is a reading-order choice, not
+ * spatial geometry, so nothing here is exempt from logical properties. clip-path has no logical
+ * form, so its right-to-left variant is written out under :dir(rtl). The content itself never
+ * mirrors. The grip stays inside the box at the ends, so it never overhangs what it sits in.
+ */
+@layer components {
+  .fa-compare {
+    --_grip: calc(var(--control-h-sm) + var(--space-1));
+    --_grip-at: clamp(calc(var(--_grip) / 2), var(--_split), calc(100% - var(--_grip) / 2));
+    position: relative;
+    display: grid;
+    min-width: 0;
+    border-radius: var(--radius-tile);
+    touch-action: pan-y;
+    user-select: none;
+    cursor: ew-resize;
+  }
+  .fa-compare[data-orientation="vertical"] {
+    touch-action: pan-x;
+    cursor: ns-resize;
+  }
+  .fa-compare[data-disabled] {
+    cursor: default;
+  }
+  .fa-compare-pane {
+    position: relative;
+    grid-area: 1 / 1;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+  .fa-compare-pane[data-side="before"] {
+    clip-path: inset(0 calc(100% - var(--_split)) 0 0);
+  }
+  .fa-compare-pane[data-side="before"]:dir(rtl) {
+    clip-path: inset(0 0 0 calc(100% - var(--_split)));
+  }
+  .fa-compare[data-orientation="vertical"] > .fa-compare-pane[data-side="before"] {
+    clip-path: inset(0 0 calc(100% - var(--_split)) 0);
+  }
+  .fa-compare-label {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    padding-block: var(--space-half);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-chip);
+    background-color: var(--glass-fill-control);
+    color: var(--fg);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-weight: var(--weight-medium);
+    pointer-events: none;
+  }
+  .fa-compare-pane[data-side="before"] > .fa-compare-label {
+    inset-inline-start: var(--space-2);
+  }
+  .fa-compare-pane[data-side="after"] > .fa-compare-label {
+    inset-inline-end: var(--space-2);
+  }
+  .fa-compare[data-orientation="vertical"] > .fa-compare-pane[data-side="after"] > .fa-compare-label {
+    inset-block: auto var(--space-2);
+  }
+
+  .fa-compare-line {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: var(--_split);
+    margin-inline-start: calc(var(--border-width) / -2);
+    border-inline-start: var(--border-width) solid var(--fg);
+    pointer-events: none;
+  }
+  .fa-compare[data-orientation="vertical"] > .fa-compare-line {
+    inset-block: var(--_split) auto;
+    inset-inline: 0;
+    margin-block-start: calc(var(--border-width) / -2);
+    margin-inline-start: 0;
+    border-block-start: var(--border-width) solid var(--fg);
+    border-inline-start: 0;
+  }
+  .fa-compare-handle {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: var(--_grip-at);
+    display: grid;
+    place-items: center;
+    width: var(--_grip);
+    height: var(--_grip);
+    margin-block-start: calc(var(--_grip) / -2);
+    margin-inline-start: calc(var(--_grip) / -2);
+    border: var(--border-width) solid var(--line-strong);
+    border-radius: var(--radius-full);
+    background-color: var(--surface-1);
+    color: var(--fg);
+    touch-action: none;
+    cursor: inherit;
+  }
+  .fa-compare-handle > .fa-icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-compare[data-orientation="vertical"] > .fa-compare-handle {
+    inset-block-start: var(--_grip-at);
+    inset-inline-start: 50%;
+  }
+  .fa-compare[data-orientation="vertical"] > .fa-compare-handle > .fa-icon {
+    rotate: 90deg;
+  }
+  .fa-compare-handle:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-compare[data-disabled] > .fa-compare-handle {
+    opacity: var(--disabled-opacity);
+  }
+}

@@ -1919,6 +1919,9 @@ export default defineMessagePack("zh-Hans", {
     addImage: "添加图片",
     imageRequired: "请添加图片",
   },
+  compareSlider: {
+    label: "对比位置",
+  },
   lightbox: {
     previous: "上一张图片",
     next: "下一张图片",

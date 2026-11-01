@@ -23,6 +23,7 @@ const familyRoots: Record<string, string> = {
   "byte-size-field": "byte-size-field",
   cascader: "cascader",
   "command-palette": "command-panel",
+  "compare-slider": "compare-slider",
   combobox: "combobox",
   "coordinates-field": "coordinates-field",
   "country-select": "country-select",

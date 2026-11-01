@@ -1919,6 +1919,9 @@ export default defineMessagePack("ko", {
     addImage: "이미지 추가",
     imageRequired: "이미지를 추가하세요",
   },
+  compareSlider: {
+    label: "비교 위치",
+  },
   lightbox: {
     previous: "이전 이미지",
     next: "다음 이미지",

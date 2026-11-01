@@ -67,7 +67,16 @@ const Thumbnail = /* @__PURE__ */ memo(function Thumbnail({
       tabIndex={current ? 0 : -1}
       onClick={() => onSelect(index)}
     >
-      <img ref={image} alt="" decoding="async" draggable={false} />
+      <img
+        ref={image}
+        alt=""
+        decoding="async"
+        draggable={false}
+        onError={(event) => {
+          // The tile's own fill stands in, not the browser's broken-image glyph.
+          event.currentTarget.hidden = true
+        }}
+      />
     </button>
   )
 })

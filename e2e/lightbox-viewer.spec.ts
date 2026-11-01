@@ -21,8 +21,10 @@ async function openDialog(page: Page) {
   return dialog;
 }
 
+/** The camera as drawn. usePanZoom commits at once and paints on the next frame, so this waits for that frame. */
 const camera = (dialog: Locator) =>
-  dialog.locator(".fa-lightbox-plane").evaluate((plane: HTMLElement) => {
+  dialog.locator(".fa-lightbox-plane").evaluate(async (plane: HTMLElement) => {
+    await new Promise((settled) => requestAnimationFrame(() => requestAnimationFrame(settled)));
     const match = /translate3d\(([-\d.]+)px, ([-\d.]+)px, 0px\) scale\(([\d.]+)\)/.exec(plane.style.transform)!;
     return { x: Number(match[1]), y: Number(match[2]), k: Number(match[3]) };
   });

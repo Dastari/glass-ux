@@ -2,9 +2,15 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { useMemo, useState } from "react";
 import { ContainerLab, Example, OnCanvas, SectionPage, Specimen } from "../kit.js";
-import { IconEndpoint, IconOrganisation } from "../../icons/generated/icons.js";
+import {
+  IconEndpoint,
+  IconFileText,
+  IconFolder,
+  IconOrganisation,
+} from "../../icons/generated/icons.js";
 import { STATUS } from "../../ui/badge/index.js";
 import { Breadcrumb, type BreadcrumbProps, type Crumb } from "../../ui/breadcrumb/index.js";
+import { Panel, PanelBody } from "../../ui/surface/index.js";
 import { Segmented } from "../../ui/segmented/index.js";
 import { ENDPOINTS, ENDPOINT_TABS, ORGANISATIONS } from "../sections/nav.fixtures.js";
 
@@ -61,6 +67,20 @@ function useTrail(
   }, [place]);
 }
 
+/** A fixed state for the pane example: the route above, the file's folders below. */
+const PANE_ROUTE: Crumb[] = [
+  { id: "projects", label: "Projects", onSelect: () => {} },
+  { id: "cedar-vale", label: "Cedar Vale Collective", onSelect: () => {} },
+  { id: "editor", label: "Editor" },
+];
+const FILE_PATH: Crumb[] = [
+  { id: "etc", label: "etc", icon: <IconFolder />, onSelect: () => {} },
+  { id: "cedar", label: "cedar", icon: <IconFolder />, onSelect: () => {} },
+  { id: "archive", label: "archive", icon: <IconFolder />, onSelect: () => {} },
+  { id: "storage-conf", label: "storage.conf", icon: <IconFileText /> },
+];
+const PANE_SOURCE = ["[archive]", "path = /volumes/cedar", "retention = 90", "compress = true"];
+
 function LiveBreadcrumb(props: Omit<BreadcrumbProps, "items">) {
   const items = useTrail();
   return <Breadcrumb items={items} {...props} />;
@@ -112,10 +132,53 @@ export default function BreadcrumbSection() {
       </OnCanvas>
 
       <Specimen
+        title="Path in a pane"
+        description='A path that describes content, not the route, uses size="xs" in its pane (R6.4). The route breadcrumb stays in the top bar; the pane&apos;s is named “File path”, not “Breadcrumb”.'
+        layout="stack"
+        wide
+        specimenKey="breadcrumb:default:2"
+      >
+        <div className="flex w-full max-w-2xl flex-col gap-2" data-testid="breadcrumb-pane-demo">
+          <div className="flex h-16 w-full items-center">
+            <Breadcrumb items={PANE_ROUTE} aria-label="Route" />
+          </div>
+          <Panel>
+            <PanelBody className="flex flex-col gap-2">
+              <Breadcrumb size="xs" items={FILE_PATH} aria-label="File path" />
+              <pre className="m-0 font-mono text-sm">{PANE_SOURCE.join("\n")}</pre>
+            </PanelBody>
+          </Panel>
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="Compact collapse"
+        description="The compact form folds against its own box: middle crumbs into a menu, then ‹ parent · current, then only the current place."
+        layout="stack"
+        wide
+        specimenKey="breadcrumb:default:3"
+      >
+        <div className="flex w-full flex-col gap-3" data-testid="breadcrumb-xs-collapse">
+          {[
+            ["Full · 384px", "w-96"],
+            ["Middle collapsed · 320px", "w-80"],
+            ["Parent · current · 240px", "w-60"],
+            ["Current place only · 160px", "w-40"],
+          ].map(([label, width]) => (
+            <Example key={label} label={label!}>
+              <div className={`${width} max-w-full`}>
+                <Breadcrumb size="xs" items={FILE_PATH} aria-label={`File path, ${label}`} />
+              </div>
+            </Example>
+          ))}
+        </div>
+      </Specimen>
+
+      <Specimen
         title="On glass"
         description="Muted crumbs, separators and hover fills read the same on panel glass as on the canvas."
         wide
-        specimenKey="breadcrumb:default:2"
+        specimenKey="breadcrumb:default:4"
       >
         <LiveBreadcrumb />
       </Specimen>
@@ -125,7 +188,7 @@ export default function BreadcrumbSection() {
         description="Measured against its own width: first the middle crumbs fold into an ellipsis menu, then the trail becomes ‹ parent · current, and last only the current place with the trail in its popup."
         layout="stack"
         wide
-        specimenKey="breadcrumb:default:3"
+        specimenKey="breadcrumb:default:5"
       >
         <Example label="Full · 720px">
           <div className="w-180 max-w-full">
@@ -149,7 +212,7 @@ export default function BreadcrumbSection() {
         description="The narrowest step: the current place as one button. Its popup holds the whole trail; every level navigates and a level with siblings offers Switch. On phones the top bar also folds its module switch and organisation into the popup."
         layout="stack"
         wide
-        specimenKey="breadcrumb:default:4"
+        specimenKey="breadcrumb:default:6"
       >
         <Example label="Folded by the host · 280px">
           <div className="w-70 max-w-full">
@@ -166,7 +229,7 @@ export default function BreadcrumbSection() {
       <Specimen
         title="Long names"
         description="Each crumb truncates at its own maximum width; the full name is in the title and in the menus."
-        specimenKey="breadcrumb:default:5"
+        specimenKey="breadcrumb:default:7"
       >
         <div className="w-full">
           <Breadcrumb
@@ -188,14 +251,14 @@ export default function BreadcrumbSection() {
         title="Over imagery"
         description="Muted crumbs, separators and hover fills keep their contrast over busy content."
         backdrop
-        specimenKey="breadcrumb:default:6"
+        specimenKey="breadcrumb:default:8"
       >
         <LiveBreadcrumb />
       </Specimen>
 
       <ContainerLab
         description="Full in the pane, middle-collapsed in the row, parent · current in the header, tile and tall-narrow boxes."
-        specimenKey="breadcrumb:default:7"
+        specimenKey="breadcrumb:default:9"
       >
         {() => <LiveBreadcrumb />}
       </ContainerLab>

@@ -1034,6 +1034,7 @@ export default defineMessagePack("ja", {
   },
   breadcrumb: {
     breadcrumb: "ブレッドクラム",
+    path: "パス",
     backTo: (label) => `${label} に戻る`,
     showMore: (count) => `${count} をもっと見る`,
     switchFrom: (label) => `${label} から切り替えます`,

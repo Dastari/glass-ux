@@ -106,6 +106,14 @@ has upgrade steps in the [migration guide](docs/migration.md).
   glyph because full screen took the old one. A Previous or Next press keeps focus on its button.
 - `ImageLightbox` and `ResultImages` load the viewer the first time an image is opened. A test
   that expects the dialog in the same tick as the click needs to wait for it.
+- Breadcrumb: `size="xs"`, a compact form for a path inside a pane (a file's folders in an editor
+  pane). It sets one line at `--control-h-xs`, never under `--target-aa`, in label type, folds
+  against its own box like the default, and is named "Path" unless the host passes `aria-label`.
+  Without `size` the markup and geometry are unchanged. New type `BreadcrumbSize`; new message
+  `breadcrumb.path` in every language pack.
+- UI rule R6.4 now reads "One breadcrumb for the route, in the top bar": a path that describes
+  content rather than the route may use a compact Breadcrumb in its pane, and never repeats or
+  replaces the route breadcrumb.
 - `AvatarDialog` and `EditableAvatar` are a preset of `ImageCropDialog`. Crop output, keys, wording
   and exports are unchanged. The crop's class names moved from `fa-avatar-crop*` to
   `fa-image-cropper*`.
@@ -121,6 +129,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Fixed
 
+- DiffView and ResultDiff: line numbers use `--fg-muted` instead of `--fg-disabled`. They read at
+  2.00:1 on the add tint (2.20:1 on remove, 2.65:1 on plain) and now at least 5.77:1 across all
+  12 palettes, both modes and Glass, Frosted and Solid. Only the numbers' colour changes.
 - ColorPicker: its controls no longer overflow a narrow box at a large UI scale.
 - Histogram: dense bins (a column under 4px wide) no longer lose their width to the gap.
 General extensions shared with the sister packages: Tree, Tabs, shortcuts and a status bar.

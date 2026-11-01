@@ -194,7 +194,9 @@ follows a fine pointer and a glint on the rim nearest it.
 - **R6.2** Places are routes. Level-three sections, table sorting, filters and paging belong
   in the URL; component state is the exception for transient presentation choices.
 - **R6.3** Only the routed view transitions between routes; the shell stays still.
-- **R6.4** One breadcrumb, in the top bar, always at the same position.
+- **R6.4** One breadcrumb for the route, in the top bar, always at the same position. A path
+  that describes content rather than the route, such as a file's folders in an editor pane, may
+  use a compact Breadcrumb in that pane; it never repeats or replaces the route breadcrumb.
 - **R6.5** A view does not repeat the breadcrumb's last crumb as its title.
 - **R6.6** Tabs that overflow move into a menu, and the active tab always stays visible.
 - **R6.7** On phones the Rail becomes the TabBar, a floating pill above the safe area.

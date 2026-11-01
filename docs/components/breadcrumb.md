@@ -17,6 +17,25 @@ targets as router links; the core `Breadcrumb` is router-agnostic.
 />
 ```
 
+## Compact form
+
+`size="xs"` is for a path that describes content rather than the route, such as a file's folders
+in an editor pane (R6.4). It never repeats or replaces the route breadcrumb in the top bar.
+
+```tsx
+<Breadcrumb size="xs" aria-label="File path" items={folders} />
+```
+
+- One line at `--control-h-xs` (never under `--target-aa`, 24px) in label type, with `--icon-xs`
+  icons. On a coarse pointer each crumb's hit area reaches `--target-min` above and below the line.
+- It folds against the pane's own width, as the default does (R7): `data-mode` takes the same
+  values, and the sizes are measured with the compact styles.
+- The name defaults to "Path", not "Breadcrumb", so the page keeps one landmark with that name.
+  Pass `aria-label` for what the path is.
+- The sizes are named for the control height they set: the default is `sm` (`--control-h-sm`).
+  `BreadcrumbMode`'s `compact` kind is the fold to `‹ parent · current` and has nothing to do
+  with `size`.
+
 ## Collapse
 
 Measured against its own width (`collapseCrumbs`, unit-tested), `data-mode` is:
@@ -55,5 +74,5 @@ Choosing the scope row closes the popup and then calls `scope.onSelect`, so the 
 (a bottom sheet on a phone) opens with focus history intact. Without a host, `header` and
 `scope` are not shown, because the bar still has them.
 
-**Parts:** `Breadcrumb`, `RouteBreadcrumb`, `BreadcrumbFoldContext`, `collapseCrumbs`,
+**Parts:** `Breadcrumb`, `RouteBreadcrumb`, `BreadcrumbFoldContext`, `BreadcrumbSize`, `collapseCrumbs`,
 `BREADCRUMB_BACK_MIN`, `BREADCRUMB_SEARCH_THRESHOLD`, `Crumb`, `CrumbSibling`, `BreadcrumbScope`.

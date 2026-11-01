@@ -29,7 +29,7 @@ test("the token roles follow a surface's own material", async ({ page }) => {
   await expect.poll(() => line.evaluate((element) => getComputedStyle(element).backgroundColor)).not.toBe(glass);
 });
 
-test("text on the tints meets AA in every palette, mode and material", async ({ page }) => {
+test("text, signs and line numbers on the plain, add and remove surfaces meet AA in every palette, mode and material", async ({ page }) => {
   test.setTimeout(120000);
   await page.goto("/components/diff-view");
   const demo = page.getByTestId("diff-view-demo");
@@ -69,7 +69,7 @@ test("text on the tints meets AA in every palette, mode and material", async ({ 
           root.dataset.glass = glass;
           const style = getComputedStyle(root);
           const surfaces = ["--surface-1", "--surface-2", "--surface-3"].map((name) => style.getPropertyValue(name));
-          for (const type of ["add", "remove"]) {
+          for (const type of ["context", "add", "remove"]) {
             const line = document.querySelector<HTMLElement>(`.fa-diff-line[data-type="${type}"]`)!;
             const tint = getComputedStyle(line).backgroundColor;
             const text = paint(getComputedStyle(line.querySelector(".fa-diff-text")!).color);
@@ -91,9 +91,13 @@ test("text on the tints meets AA in every palette, mode and material", async ({ 
         }
     return results;
   }, PALETTE_IDS);
-  expect(report.length).toBe(PALETTE_IDS.length * 2 * 3 * 2 * 3);
-  const worst = (key: string) => Math.min(...report.map((row) => row[key] as number));
-  console.log(`diff contrast over ${report.length} combinations: text ${worst("text").toFixed(2)}, sign ${worst("sign").toFixed(2)}, line number ${worst("number").toFixed(2)}`);
+  expect(report.length).toBe(PALETTE_IDS.length * 2 * 3 * 3 * 3);
+  const worst = (key: string, type?: string) => Math.min(...report.filter((row) => !type || row.type === type).map((row) => row[key] as number));
+  console.log(
+    `diff contrast over ${report.length} combinations: text ${worst("text").toFixed(2)}, sign ${worst("sign").toFixed(2)}, line number ${worst("number").toFixed(2)} ` +
+      `(plain ${worst("number", "context").toFixed(2)}, add ${worst("number", "add").toFixed(2)}, remove ${worst("number", "remove").toFixed(2)})`,
+  );
   expect(report.filter((row) => (row.text as number) < 4.5)).toEqual([]);
   expect(report.filter((row) => (row.sign as number) < 4.5)).toEqual([]);
+  expect(report.filter((row) => (row.number as number) < 4.5)).toEqual([]);
 });

@@ -1034,6 +1034,7 @@ export default defineMessagePack("he", {
   },
   breadcrumb: {
     breadcrumb: "פירורי לחם",
+    path: "נתיב",
     backTo: (label) => `חזרה אל ${label}`,
     showMore: (count) => `הצג עוד ${count}`,
     switchFrom: (label) => `עבור מ-${label}`,

@@ -1034,6 +1034,7 @@ export default defineMessagePack("es", {
   },
   breadcrumb: {
     breadcrumb: "Ruta de navegación",
+    path: "Ruta",
     backTo: (label) => `Volver a ${label}`,
     showMore: (count) => `Mostrar ${count} más`,
     switchFrom: (label) => `Cambiar de ${label}`,

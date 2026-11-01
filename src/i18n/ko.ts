@@ -1034,6 +1034,7 @@ export default defineMessagePack("ko", {
   },
   breadcrumb: {
     breadcrumb: "이동 경로",
+    path: "경로",
     backTo: (label) => `${label}으로 돌아가기`,
     showMore: (count) => `${count}개 더 표시`,
     switchFrom: (label) => `${label}에서 전환`,

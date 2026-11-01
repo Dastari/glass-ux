@@ -162,6 +162,7 @@ const groups: Record<string, string[]> = {
     "reasoning",
   ],
   composer: ["attachment-chip", "suggestion-chips", "ai-status-strip"],
+  lightbox: ["image-viewer"],
   "approval-card": ["approval-record"],
   "ask-card": [
     "ask-layout",

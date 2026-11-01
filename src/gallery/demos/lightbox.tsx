@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { IconDownload } from "../../icons/generated/icons.js";
 import { ButtonLink } from "../../ui/button-link/index.js";
+import { FactList } from "../../ui/fact-list/index.js";
 import { Image } from "../../ui/image/index.js";
 import { Grid } from "../../ui/layout/index.js";
 import { Lightbox, type LightboxImage } from "../../ui/lightbox/index.js";
@@ -15,8 +16,20 @@ const PHOTOS: LightboxImage[] = Object.entries(SCENE_IMAGES).map(([name, src]) =
   alt: `Sample landscape: ${name}`,
   caption: `${name[0]!.toUpperCase()}${name.slice(1)} at dusk`,
   width: 1600,
-  height: 1000,
+  height: 1200,
 }));
+
+function pictureDetails(image: LightboxImage) {
+  return (
+    <FactList
+      facts={[
+        { label: "File", value: `${image.id}.svg` },
+        { label: "Size", value: `${image.width} × ${image.height}` },
+        { label: "Location", value: "Sample Bay" },
+      ]}
+    />
+  );
+}
 
 export default function LightboxSection() {
   const [open, setOpen] = useState(false);
@@ -25,7 +38,7 @@ export default function LightboxSection() {
     <SectionPage>
       <Specimen
         title="Gallery"
-        description="Choose a picture to open it. ← → or a swipe move between pictures; + − zoom, and a zoomed picture pans by dragging."
+        description="Wheel or pinch to zoom, double press for actual size, R to rotate, F for full screen, ← → or a swipe to move."
         layout="stack"
         wide
         specimenKey="lightbox:default:0"
@@ -52,6 +65,7 @@ export default function LightboxSection() {
           onIndexChange={setIndex}
           open={open}
           onOpenChange={setOpen}
+          renderInfo={pictureDetails}
           actions={(image) => (
             <ButtonLink
               variant="ghost"

@@ -2,7 +2,7 @@
 
 A lightbox for result images: the library's Lightbox (previous / next, swipe, zoom and
 pan, thumbnails) fed with the result's images. ← → move between images, + and − zoom,
-0 fits.
+0 fits. The viewer's code loads the first time it opens.
 
 `import { ImageLightbox } from "glass-ux/ai"`
 

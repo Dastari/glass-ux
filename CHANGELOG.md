@@ -21,6 +21,13 @@ has upgrade steps in the [migration guide](docs/migration.md).
   with the same transitions as pure functions (`pushUndo`, `undoState`, `redoState`).
 - `usePanZoom` in `glass-ux/hooks`: drag, wheel, pinch and keys on one transform, with `onFrame` per
   frame and `onCommit` when a gesture ends, and the `cameraTransform` and `containCamera` helpers.
+- Lightbox is now a full image viewer. Zoom and pan run on `usePanZoom`: wheel about the pointer,
+  pinch, double press between fit and actual size, drag to pan, `maxZoom`, and the 1 key for actual
+  size. New: view-only rotate and flip (R, Shift+R), full screen on the viewer (F), a slideshow
+  (`slideshowInterval`), a skeleton, `placeholder`, `pending` and Retry per picture, neighbours
+  loaded ahead, a details panel (`renderInfo`, `infoOpen`), `content` for an item that is not a
+  picture, `tools` to choose the tool groups and `autoHideChrome`.
+- `ImageViewer` in `glass-ux/lightbox`: the same viewer in the page, without the dialog.
 - Histogram: `bins` also takes precomputed `{ from, to, count }` bins. `values` is unchanged.
 - Typeahead (`glass-ux/typeahead`): a listbox at a caret or any rectangle, with focus staying in
   the text. `useTypeahead` holds the highlight, keys and ARIA attributes; `Typeahead` draws the
@@ -80,6 +87,13 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Changed
 
+- Lightbox: the thumbnail strip is one tab stop, the current picture, instead of one per thumbnail;
+  the arrow keys change picture from it as before and focus follows, and Home and End go to the
+  ends. Only thumbnails near the strip's view load. The zoom readout shows `1:1` at actual size,
+  + and − also stop at actual size and `maxZoom` after `zoomSteps`, and the Fit button has a new
+  glyph because full screen took the old one. A Previous or Next press keeps focus on its button.
+- `ImageLightbox` and `ResultImages` load the viewer the first time an image is opened. A test
+  that expects the dialog in the same tick as the click needs to wait for it.
 - `AvatarDialog` and `EditableAvatar` are a preset of `ImageCropDialog`. Crop output, keys, wording
   and exports are unchanged. The crop's class names moved from `fa-avatar-crop*` to
   `fa-image-cropper*`.

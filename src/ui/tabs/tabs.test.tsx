@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { createRef, useState } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { DragDropProvider } from "../drag-drop/index.js"
@@ -81,8 +81,9 @@ describe("closing", () => {
     fireEvent.keyDown(alpha, { key: "Delete" })
     expect(onClose).toHaveBeenLastCalledWith("a", "keyboard")
     const beta = await tab("Beta Unsaved changes")
-    expect(beta).toHaveAttribute("aria-selected", "true")
-    expect(beta).toHaveFocus()
+    // The hand-over settles after the closed tab leaves, which can take a frame on a busy machine.
+    await waitFor(() => expect(beta).toHaveAttribute("aria-selected", "true"))
+    await waitFor(() => expect(beta).toHaveFocus())
     fireEvent(beta, new MouseEvent("auxclick", { bubbles: true, button: 1 }))
     expect(onClose).toHaveBeenLastCalledWith("b", "middle-click")
   })

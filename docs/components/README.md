@@ -85,6 +85,7 @@ For sign-in, providers, two-factor codes, password reset and account creation, s
 | Page                            | Components                                            | Notes                                                                    |
 | ------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
 | [Drag and drop](drag-drop.md)   | `DragDropProvider`, `Draggable`, `DragHandle`, `DropZone` | Typed objects, sortable lists and grids, reactive zone states, keyboard and touch |
+| [Lightbox and ImageViewer](lightbox.md) | `Lightbox`, `ImageViewer`                       | Pictures at full size, in a dialog or the page: zoom and pan, rotate and flip, full screen, slideshow, details |
 | [Kanban](kanban.md)             | `Kanban`, `KanbanCard`                                | Columns of cards on drag and drop: limits that refuse with a reason, collapse, saves that fly back |
 | [Typeahead](typeahead.md)       | `Typeahead`, `TypeaheadPopup`, `TypeaheadOption`, `useTypeahead` | A list at a caret or any rectangle that leaves focus in the text: host-supplied rows, a detail pane, results that arrive late without moving a row. Composer's and RichTextInput's menus use it |
 | [Diff view](diff-view.md)       | `DiffView`                                            | A unified diff with the sign in the gutter so a change reads without colour; tints as token roles for a diff drawn elsewhere; ResultDiff uses it |

@@ -70,12 +70,11 @@ const BUDGETS = [
   { entry: 'glass-ux/entity', named: 'EntityIdentitySkeleton', gzip: 3_000, forbid: ['@base-ui/react'] },
   { entry: 'glass-ux/ai/message', named: 'UserMessage', gzip: 79_000, forbid: ['react-markdown', 'd3-scale', '@tanstack/form-core', 'shiki'] },
   // Interface messages and the resolver add about 1–2 KB gzip to these compositions.
-  { entry: 'glass-ux/ai/results', named: 'ResultBlock', gzip: 103_000, /* the shared Lightbox replaced the results' own */ forbid: ['d3-scale', '@tanstack/form-core'] },
+  // The Lightbox loads with the first image opened: results that show none never pay for its viewer.
+  { entry: 'glass-ux/ai/results', named: 'ResultBlock', gzip: 103_000, forbid: ['d3-scale', '@tanstack/form-core', 'dist/ui/lightbox/viewer.js', 'dist/hooks/use-pan-zoom.js'] },
   // 230_000 → 232_000: the shared Lightbox now announces the picture it moves to (a live region and a message),
   // and the keyboard-shortcut policy (`configureShortcuts`) sits in the Kbd module every button tooltip uses.
-  // 232_000 → 233_000: 0.7 KB across shared modules once chords, Menu's anchor and the Composer's typeahead merged;
-  // none of the 30 largest modules grew, so there was nothing single to remove.
-  { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 233_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki'] },
+  { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 232_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki', 'dist/ui/lightbox/viewer.js', 'dist/hooks/use-pan-zoom.js'] },
 ]
 
 /** Packages large enough to be worth reporting when an entry pulls them in. */

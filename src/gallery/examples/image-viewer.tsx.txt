@@ -1,0 +1,139 @@
+import { useState } from "react";
+import { FactList } from "glass-ux/fact-list";
+import { Grid } from "glass-ux/layout";
+import { ImageViewer, type LightboxImage } from "glass-ux/lightbox";
+import { SCENE_IMAGES } from "glass-ux/gallery/fixtures/scenes";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+const PHOTOS: LightboxImage[] = Object.entries(SCENE_IMAGES).map(([name, src]) => ({
+  id: name,
+  src,
+  alt: `Sample landscape: ${name}`,
+  caption: `${name[0]!.toUpperCase()}${name.slice(1)} at dusk`,
+  width: 1600,
+  height: 1200,
+}));
+/** A long set: the same four scenes under their own keys, to show the strip's behaviour. */
+const LONG_SET: LightboxImage[] = Array.from({ length: 240 }, (_, position) => {
+  const photo = PHOTOS[position % PHOTOS.length]!;
+  return {
+    ...photo,
+    id: `frame-${position + 1}`,
+    alt: `Sample frame ${position + 1}`,
+    caption: `Frame ${position + 1}`,
+  };
+});
+const FIRST = PHOTOS[0]!;
+const STATES: LightboxImage[] = [
+  {
+    ...FIRST,
+    id: "failed",
+    src: "data:image/png;base64,AAAA",
+    alt: "Sample landscape that failed to load",
+    caption: "Failed",
+  },
+  {
+    ...FIRST,
+    id: "held",
+    pending: true,
+    alt: "Sample landscape not ready yet",
+    caption: "Skeleton",
+  },
+  {
+    ...FIRST,
+    id: "soft",
+    pending: true,
+    alt: "Sample landscape with a placeholder",
+    placeholder: PHOTOS[1]!.src,
+    caption: "Placeholder",
+  },
+];
+
+function pictureDetails(image: LightboxImage) {
+  return (
+    <FactList
+      facts={[
+        { label: "File", value: `${image.id}.svg` },
+        { label: "Size", value: `${image.width} × ${image.height}` },
+        { label: "Location", value: "Sample Bay" },
+      ]}
+    />
+  );
+}
+
+export default function LightboxSection() {
+  const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+  return (
+    <SectionPage>
+      <Specimen
+        title="In the page"
+        description="ImageViewer is the same viewer without the dialog. Its keys work while focus is inside it."
+        layout="stack"
+        wide
+      >
+        <div className="h-136">
+          <ImageViewer
+            images={PHOTOS}
+            renderInfo={pictureDetails}
+            defaultInfoOpen
+            aria-label="Sample landscapes"
+          />
+        </div>
+      </Specimen>
+      <Specimen
+        title="Loading and failure"
+        description="Each state holds the picture's shape and leaves the tools where they are."
+        layout="stack"
+        wide
+      >
+        <Grid columns={{ min: "md" }}>
+          {STATES.map((state) => (
+            <div key={state.id} className="h-96">
+              <ImageViewer images={[state]} tools={[]} aria-label={`${state.caption} state`} />
+            </div>
+          ))}
+        </Grid>
+      </Specimen>
+      <Specimen
+        title="Other content"
+        description="An item's content replaces the picture in the stage. The zoom and view tools are then unavailable."
+        layout="stack"
+        wide
+      >
+        <div className="h-120">
+          <ImageViewer
+            aria-label="Mixed items"
+            images={[
+              {
+                ...FIRST,
+                id: "summary",
+                alt: "Survey summary",
+                caption: "Survey summary",
+                content: (
+                  <FactList
+                    facts={[
+                      { label: "Sites", value: "12" },
+                      { label: "Month", value: "March" },
+                    ]}
+                  />
+                ),
+              },
+              ...PHOTOS.slice(1, 3),
+            ]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
+        title="A long set"
+        description="240 pictures. Only the thumbnails near the strip's view load, and the current one stays in view."
+        layout="stack"
+        wide
+      >
+        <div className="h-128">
+          <ImageViewer images={LONG_SET} defaultIndex={120} aria-label="Long set of frames" />
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

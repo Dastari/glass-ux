@@ -2038,4 +2038,7 @@ export default defineMessagePack("es", {
     filterPlaceholder: "Filtrar",
     filterNavigation: "Filtrar navegación",
   },
+  statusBar: {
+    moreStatus: (count) => `Más estados (${count})`,
+  },
 }) as CatalogueMessagePack

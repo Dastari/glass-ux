@@ -25,12 +25,11 @@ import {
 } from "../icons/generated/icons.js";
 import { cx } from "../lib/cx.js";
 import { useScrollEdges } from "../lib/use-scroll-edges.js";
-import { StatusDot } from "../ui/badge/index.js";
+import { StatusBar, type StatusBarItemProps } from "../ui/status-bar/index.js";
 import { TruncatedText } from "../ui/truncated-text/index.js";
 import { Button } from "../ui/button/index.js";
 import { ActionsOverflow } from "./window-actions.js";
 import {
-  WINDOW_TONE_STATUS,
   type WindowLayout,
   type WindowStatusTone,
 } from "./types.js";
@@ -187,48 +186,44 @@ export interface WindowStatusBarProps extends ComponentProps<"footer"> {
   narrow?: "show" | "hide";
 }
 
-function StatusBar({
+function WindowStatusBar({
   narrow = "show",
   className,
+  ref,
   ...rest
 }: WindowStatusBarProps) {
   return (
-    <footer
-      {...rest}
+    <StatusBar
+      {...(rest as ComponentProps<"div">)}
+      ref={ref as Ref<HTMLElement>}
+      render={<footer />}
       className={cx("fa-window-status", className)}
       data-narrow={narrow === "hide" ? "hide" : undefined}
     />
   );
 }
 
-export interface StatusItemProps extends ComponentProps<"span"> {
+export interface StatusItemProps extends StatusBarItemProps {
   /** Draws a status dot before the label. */
   tone?: WindowStatusTone;
 }
 
 /** One fact in the status bar. Items are joined with "·". */
-function StatusItem({ tone, className, children, ...rest }: StatusItemProps) {
+function StatusItem({ className, ...rest }: StatusItemProps) {
   return (
-    <span
+    <StatusBar.Item
       {...rest}
       className={cx("fa-window-status-item", className)}
-      data-tone={tone}
-    >
-      {tone ? <StatusDot status={WINDOW_TONE_STATUS[tone]} /> : null}
-      <TruncatedText className="fa-window-status-label">
-        {children}
-      </TruncatedText>
-    </span>
+    />
   );
 }
 
 /** Right-aligned metadata (resolution, latency, counts). Its items are joined with "·". */
 function StatusMeta({ className, ...rest }: ComponentProps<"span">) {
   return (
-    <span
+    <StatusBar.End
       {...rest}
       className={cx("fa-window-status-meta", className)}
-      data-numeric
     />
   );
 }
@@ -236,8 +231,7 @@ function StatusMeta({ className, ...rest }: ComponentProps<"span">) {
 /** Live region for status bars that report changes (connection lost, reconnecting). */
 function StatusGroup({ className, ...rest }: ComponentProps<"span">) {
   return (
-    <span
-      role="status"
+    <StatusBar.Group
       {...rest}
       className={cx("fa-window-status-group", className)}
     />
@@ -348,7 +342,7 @@ export const WindowFrame = {
   Root,
   AppBar,
   Body,
-  StatusBar,
+  StatusBar: WindowStatusBar,
   StatusItem,
   StatusMeta,
   StatusGroup,

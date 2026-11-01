@@ -2039,4 +2039,7 @@ export default defineMessagePack("ar", {
     filterPlaceholder: "تصفية",
     filterNavigation: "تصفية التنقل",
   },
+  statusBar: {
+    moreStatus: (count) => `حالات أخرى (${count})`,
+  },
 }) as CatalogueMessagePack

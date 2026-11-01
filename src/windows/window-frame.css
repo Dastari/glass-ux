@@ -212,21 +212,7 @@
     padding-top: var(--space-2);
   }
 
-  /* ── Status bar ────────────────────────────────────────────────────────── */
-  .fa-window-status {
-    display: flex;
-    flex: none;
-    align-items: center;
-    gap: var(--space-3);
-    min-height: var(--control-h-sm);
-    padding: var(--space-1) var(--_pad) var(--space-1-5);
-    color: var(--fg-muted);
-    font-size: var(--type-caption-size);
-    line-height: var(--type-caption-line);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    transition: box-shadow var(--duration-fast) var(--ease-standard);
-  }
+  /* ── Status bar: built on StatusBar (ui/status-bar/status-bar.css) ──────── */
   .fa-window-status:empty {
     display: none;
   }
@@ -234,55 +220,6 @@
     .fa-window-status[data-narrow="hide"] {
       display: none;
     }
-  }
-  .fa-window-status-group {
-    display: flex;
-    flex: 1 1 auto;
-    align-items: center;
-    gap: var(--space-2);
-    min-width: 0;
-  }
-  .fa-window-status-item {
-    display: inline-flex;
-    flex: 0 1 auto;
-    align-items: center;
-    gap: var(--space-1-5);
-    min-width: 0;
-  }
-  /* The state itself (the toned item) never truncates; metadata gives way first. */
-  .fa-window-status-item[data-tone] {
-    flex: none;
-  }
-  .fa-window-status-item[data-tone] {
-    color: var(--fg);
-    font-weight: var(--weight-medium);
-  }
-  .fa-window-status-label {
-    min-width: 0;
-  }
-  /* :not(:first-child) rather than `* + *`: a universal sibling selector re-styles the
-     siblings of every node inserted anywhere in the document (docs/performance.md). */
-  .fa-window-status-item + .fa-window-status-item::before,
-  .fa-window-status-meta > :where(:not(:first-child))::before {
-    content: "·";
-    margin-inline-end: var(--space-2);
-    color: var(--fg-subtle);
-    font-weight: var(--weight-regular);
-  }
-  .fa-window-status-meta {
-    display: inline-flex;
-    flex: 0 100 auto;
-    align-items: center;
-    gap: var(--space-2);
-    min-width: 0;
-    margin-inline-start: auto;
-    color: var(--fg-subtle);
-  }
-  .fa-window-status-meta > * {
-    flex: 0 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   /* ── Resize handles (floating windows) ─────────────────────────────────── */

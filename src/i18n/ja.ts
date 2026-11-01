@@ -2038,4 +2038,7 @@ export default defineMessagePack("ja", {
     filterPlaceholder: "絞り込み",
     filterNavigation: "ナビゲーションを絞り込む",
   },
+  statusBar: {
+    moreStatus: (count) => `その他のステータス（${count}）`,
+  },
 }) as CatalogueMessagePack

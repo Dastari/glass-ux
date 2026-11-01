@@ -2038,4 +2038,7 @@ export default defineMessagePack("he", {
     filterPlaceholder: "סינון",
     filterNavigation: "סינון הניווט",
   },
+  statusBar: {
+    moreStatus: (count) => `מצבים נוספים (${count})`,
+  },
 }) as CatalogueMessagePack

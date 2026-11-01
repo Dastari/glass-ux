@@ -1,0 +1,89 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { Menu } from "glass-ux/menu";
+import { StatusBar } from "glass-ux/status-bar";
+
+function ReportBar({ width }: { width?: string }) {
+  return (
+    <div
+      className="max-w-full"
+      style={{ width }}
+      data-testid={width ? `status-bar-${width}` : "status-bar-full"}
+    >
+      <StatusBar aria-label="Report status">
+        <StatusBar.Start>
+          <StatusBar.Item tone="success">Synced</StatusBar.Item>
+          <StatusBar.Item>Quarterly report for the Harbour project</StatusBar.Item>
+        </StatusBar.Start>
+        <StatusBar.End>
+          <StatusBar.Item giveWay={2} onClick={() => undefined} aria-label="Go to page">
+            Page 12 of 48
+          </StatusBar.Item>
+          <StatusBar.Item giveWay={1}>4,210 words</StatusBar.Item>
+          <StatusBar.Item giveWay={1}>English (Australia)</StatusBar.Item>
+          <StatusBar.Item>100%</StatusBar.Item>
+        </StatusBar.End>
+      </StatusBar>
+    </div>
+  );
+}
+
+function EncodingItem() {
+  return (
+    <Menu.Root>
+      <Menu.Trigger render={<StatusBar.Item aria-haspopup="menu">Spaces: 2</StatusBar.Item>} />
+      <Menu.Popup side="top" align="end">
+        <Menu.Item>Spaces: 2</Menu.Item>
+        <Menu.Item>Spaces: 4</Menu.Item>
+        <Menu.Item>Tabs</Menu.Item>
+      </Menu.Popup>
+    </Menu.Root>
+  );
+}
+
+export default function StatusBarSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Start and end groups"
+        description="Sits on the canvas under a view. The end group holds metadata at the reading end."
+      >
+        <ReportBar />
+      </Specimen>
+
+      <Specimen
+        title="Interactive items"
+        description="An item with onClick is a button; a menu trigger can render one. An unavailable item stays focusable and shows its reason."
+      >
+        <StatusBar aria-label="Document status">
+          <StatusBar.Start>
+            <StatusBar.Item
+              tone="warning"
+              onClick={() => undefined}
+              aria-label="Sync paused, resume"
+            >
+              Sync paused
+            </StatusBar.Item>
+          </StatusBar.Start>
+          <StatusBar.End>
+            <EncodingItem />
+            <StatusBar.Item onClick={() => undefined} disabledReason="The document is read-only">
+              Line endings: LF
+            </StatusBar.Item>
+          </StatusBar.End>
+        </StatusBar>
+      </Specimen>
+
+      <Specimen
+        title="Narrow boxes"
+        description="Fixed widths of the same bar. Rank 1 moves into More first, then rank 2; then the end group truncates, then the start group. The toned item never shrinks."
+      >
+        <div className="flex w-full flex-col gap-3" data-testid="status-bar-widths">
+          <ReportBar width="44rem" />
+          <ReportBar width="30rem" />
+          <ReportBar width="20rem" />
+          <ReportBar width="12rem" />
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

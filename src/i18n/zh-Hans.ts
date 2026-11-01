@@ -2038,4 +2038,7 @@ export default defineMessagePack("zh-Hans", {
     filterPlaceholder: "筛选",
     filterNavigation: "筛选导航",
   },
+  statusBar: {
+    moreStatus: (count) => `更多状态（${count}）`,
+  },
 }) as CatalogueMessagePack

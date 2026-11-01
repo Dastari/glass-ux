@@ -2038,4 +2038,7 @@ export default defineMessagePack("ko", {
     filterPlaceholder: "필터",
     filterNavigation: "내비게이션 필터링",
   },
+  statusBar: {
+    moreStatus: (count) => `상태 더 보기(${count})`,
+  },
 }) as CatalogueMessagePack

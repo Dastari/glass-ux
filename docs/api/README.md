@@ -326,6 +326,7 @@
 - [SplitPane](split-pane.md) — `glass-ux/split-pane`
 - [Stack](stack.md) — `glass-ux/layout`
 - [StatusBadge](status-badge.md) — `glass-ux/badge`
+- [StatusBar](status-bar.md) — `glass-ux/status-bar`
 - [StatusDot](status-dot.md) — `glass-ux/badge`
 - [StatusGlyph](status-glyph.md) — `glass-ux/ai`
 - [Stepper](stepper.md) — `glass-ux/stepper`

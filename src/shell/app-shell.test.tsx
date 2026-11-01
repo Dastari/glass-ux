@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { AppShell } from "./app-shell.js";
 import { Inspector } from "./inspector.js";
@@ -27,6 +28,20 @@ beforeAll(() => {
 beforeEach(() => localStorage.removeItem(SHELL_STORAGE_KEY));
 afterEach(cleanup);
 afterAll(() => vi.unstubAllGlobals());
+
+describe("AppShell boot script", () => {
+  it("is in server HTML, which applies stored preferences before first paint", () => {
+    expect(renderToString(<AppShell>Work</AppShell>)).toContain("<script");
+  });
+
+  it("is not rendered on the client, where React warns about it and never runs it", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { container } = render(<AppShell>Work</AppShell>);
+    expect(container.querySelector("script")).toBeNull();
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+});
 
 function Shell({ railActive = true, focusRegions = false }: { railActive?: boolean; focusRegions?: boolean }) {
   return (

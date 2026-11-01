@@ -27,7 +27,6 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  useSyncExternalStore,
   createContext,
   type ComponentProps,
   type CSSProperties,
@@ -40,6 +39,7 @@ import { cx } from "../../lib/cx.js"
 import { focusFirst } from "../../lib/focus.js"
 import { isRtl } from "../../lib/direction.js"
 import { useMessages } from "../../lib/i18n/index.js"
+import { useHydrated } from "../../lib/use-hydrated.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
 import { remPx } from "../../lib/rem.js"
 import { Button, type ButtonProps } from "../button/index.js"
@@ -83,15 +83,6 @@ export type SidebarWidth = `${number}rem`
 /** Parts that hide in icon mode; focus inside one moves to a part that stays (R20.3). */
 const HIDDEN_IN_ICON_MODE =
   ".fa-sidebar-title-block, .fa-sidebar-header-actions, .fa-sidebar-search-field, .fa-sidebar-group-label, .fa-sidebar-group-action, .fa-sidebar-menu-action, .fa-sidebar-menu-sub-panel, .fa-sidebar-menu-sub-toggle"
-
-const noopSubscribe = () => () => {}
-/** False on the server and while hydrating, true afterwards (and from the start of a client render). */
-const useHydrated = () =>
-  useSyncExternalStore(
-    noopSubscribe,
-    () => true,
-    () => false
-  )
 
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect
 

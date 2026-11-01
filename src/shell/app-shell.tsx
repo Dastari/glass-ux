@@ -53,6 +53,7 @@ import {
   updateShellPrefs,
   useShellPrefs,
 } from "./shell-state.js"
+import { useHydrated } from "../lib/use-hydrated.js"
 import { useMediaQuery } from "../lib/use-media-query.js"
 import { SHELL_QUERIES } from "./queries.js"
 
@@ -167,6 +168,7 @@ export function AppShell({
   className,
 }: AppShellProps) {
   const prefs = useShellPrefs()
+  const hydrated = useHydrated()
   const phone = useMediaQuery(SHELL_QUERIES.phone)
   const docked = useMediaQuery(SHELL_QUERIES.dockedInspector, true)
   const wide = useMediaQuery(SHELL_QUERIES.wide, true)
@@ -282,7 +284,7 @@ export function AppShell({
           data-has-inspector={inspectorAvailable ? "" : undefined}
           data-has-tabbar={tabBar ? "" : undefined}
         >
-          <script dangerouslySetInnerHTML={{ __html: shellBootScript() }} />
+          {hydrated ? null : <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: shellBootScript() }} />}
           <div className="fa-shell-slot-brand">{brand}</div>
           <div className="fa-shell-slot-top" data-focus-region={region}>{topBar}</div>
           <div className="fa-shell-slot-rail" data-focus-region={region}>{rail}</div>

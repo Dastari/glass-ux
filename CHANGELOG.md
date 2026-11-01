@@ -33,6 +33,15 @@ has upgrade steps in the [migration guide](docs/migration.md).
   16px for `--inset-panel`; it scales with the UI scale). A nested Panel keeps its own inset. Tailwind
   gets `p-panel-compact`.
 
+- Toolbar: `orientation="vertical"` for tool rails (Up and Down Arrow move between controls, folding is
+  by height, More opens at the inline end); single-choice groups, where `Toolbar.Group` with `value`,
+  `defaultValue` or `onValueChange` is a `radiogroup` of radio buttons (`Toolbar.Button value`) with
+  exactly one chosen; and `Toolbar.Flyout`, a tool button with related tools behind it, opened by a hold,
+  the context-menu gesture or the arrow at the reading end (Arrow Down in a row), beside a vertical
+  toolbar and mirrored in right-to-left layouts. Horizontal toolbars render as before. New message
+  `toolbar.relatedTools` in every language pack. Menu popups take an `anchor`, so a control that is not
+  the menu's trigger can position one.
+
 ### Fixed
 
 - ColorField and ColorPicker: the hex input and the swatch tooltips read left to right in right-to-left

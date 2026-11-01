@@ -1951,6 +1951,7 @@ export default defineMessagePack("ar", {
   },
   toolbar: {
     more: "المزيد",
+    relatedTools: "أدوات ذات صلة",
   },
   tour: {
     progress: (step, total) => `الخطوة ${step} من ${total}`,

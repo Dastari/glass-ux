@@ -1950,6 +1950,7 @@ export default defineMessagePack("zh-Hans", {
   },
   toolbar: {
     more: "更多",
+    relatedTools: "相关工具",
   },
   tour: {
     progress: (step, total) => `第 ${step} 步，共 ${total} 步`,

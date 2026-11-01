@@ -1950,6 +1950,7 @@ export default defineMessagePack("ko", {
   },
   toolbar: {
     more: "더 보기",
+    relatedTools: "관련 도구",
   },
   tour: {
     progress: (step, total) => `전체 ${total}단계 중 ${step}단계`,

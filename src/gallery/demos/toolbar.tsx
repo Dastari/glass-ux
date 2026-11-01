@@ -2,14 +2,21 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { useState } from "react";
 import {
+  IconAdjust,
+  IconBrush,
   IconColumns,
+  IconCrop,
+  IconCursor,
+  IconEdit,
   IconDownload,
   IconFilter,
   IconGrid,
   IconList,
+  IconMove,
   IconRefresh,
   IconShare,
   IconSort,
+  IconText,
   IconZoomIn,
   IconZoomOut,
 } from "../../icons/generated/icons.js";
@@ -91,6 +98,55 @@ function ReportToolbar() {
   );
 }
 
+const BRUSHES = [
+  { value: "brush", label: "Brush", icon: <IconBrush />, shortcut: "b" },
+  { value: "pencil", label: "Pencil", icon: <IconEdit />, shortcut: "n" },
+];
+
+/** A vertical tool rail: one tool chosen at a time, and a flyout of related brushes. */
+function ToolRail({ height }: { height?: string }) {
+  const [tool, setTool] = useState("move");
+  return (
+    <div className="flex items-start gap-4">
+      <div style={{ height }}>
+        <Toolbar aria-label="Tools" orientation="vertical" className="h-full">
+          <Toolbar.Group aria-label="Tool" value={tool} onValueChange={setTool}>
+            <Toolbar.Button value="move" label="Move" icon={<IconMove />} shortcut="v" />
+            <Toolbar.Button value="select" label="Select" icon={<IconCursor />} shortcut="s" />
+            <Toolbar.Flyout label="Brush tools" tools={BRUSHES} />
+            <Toolbar.Button value="crop" label="Crop" icon={<IconCrop />} shortcut="c" />
+            <Toolbar.Button
+              value="text"
+              label="Text"
+              icon={<IconText />}
+              shortcut="t"
+              priority="low"
+            />
+          </Toolbar.Group>
+          <Toolbar.Separator />
+          <Toolbar.Button label="Adjust" icon={<IconAdjust />} priority="low" onClick={() => {}} />
+        </Toolbar>
+      </div>
+      <p className="type-caption text-fg-muted" data-testid="chosen-tool">
+        Tool: {tool}
+      </p>
+    </div>
+  );
+}
+
+function ToolRow() {
+  const [tool, setTool] = useState("select");
+  return (
+    <Toolbar aria-label="Row tools">
+      <Toolbar.Group aria-label="Row tool" value={tool} onValueChange={setTool}>
+        <Toolbar.Button value="move" label="Move" icon={<IconMove />} />
+        <Toolbar.Button value="select" label="Select" icon={<IconCursor />} />
+        <Toolbar.Flyout label="Row brush tools" tools={BRUSHES} />
+      </Toolbar.Group>
+    </Toolbar>
+  );
+}
+
 export default function ToolbarSection() {
   return (
     <SectionPage>
@@ -103,10 +159,34 @@ export default function ToolbarSection() {
       >
         <ReportToolbar />
       </Specimen>
+      <Specimen
+        title="Vertical tool rail"
+        description="Up and Down Arrow move between tools, Space or Enter chooses one, and exactly one is chosen (a radio group). The Brush button holds related tools: hold it, press Right Arrow (Left in right-to-left layouts) or use the context-menu key to open them beside the rail."
+        layout="row"
+        specimenKey="toolbar:default:1"
+      >
+        <ToolRail />
+      </Specimen>
+      <Specimen
+        title="Folding by height"
+        description="A vertical toolbar folds low-priority tools into More by the height it is given."
+        layout="row"
+        specimenKey="toolbar:default:2"
+      >
+        <ToolRail height="calc(var(--control-h-sm) * 4)" />
+      </Specimen>
+      <Specimen
+        title="Single choice in a row"
+        description="The same group in a horizontal toolbar; the flyout opens below its button on Arrow Down."
+        layout="row"
+        specimenKey="toolbar:default:3"
+      >
+        <ToolRow />
+      </Specimen>
       <ContainerLab
         title="Folding"
         description="Low-priority items fold into More first, the last ones first; groups fold together; separators go with them. The layout switch never folds."
-        specimenKey="toolbar:default:1"
+        specimenKey="toolbar:default:4"
       >
         {() => (
           <div className="flex h-full items-start p-2">

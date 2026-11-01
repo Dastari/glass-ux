@@ -1950,6 +1950,7 @@ export default defineMessagePack("pt-BR", {
   },
   toolbar: {
     more: "Mais",
+    relatedTools: "Ferramentas relacionadas",
   },
   tour: {
     progress: (step, total) => `Etapa ${step} de ${total}`,

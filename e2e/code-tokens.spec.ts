@@ -11,7 +11,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 /** Every built-in palette (appearance.ts PALETTES; importing it here would pull the font assets into Playwright). */
 const PALETTES = ["ocean", "aurora", "emerald", "sunset", "graphite", "ruby", "lagoon", "indigo", "rose", "moss", "sand", "slate"];
-const ROLES = ["keyword", "string", "string-expression", "constant", "function", "type", "parameter", "punctuation", "comment", "link"] as const;
+const ROLES = ["keyword", "string", "string-expression", "constant", "function", "type", "parameter", "punctuation", "comment", "link", "line-number"] as const;
 /** The canvases a bare code well can sit on (appearance.ts BUILT_IN_BACKGROUNDS, without the empty picture slot). */
 const BACKGROUNDS = ["silk", "mesh", "currents", "waves", "contours", "facets", "grid", "pixels", "circuit", "network", "skyline", "harbour", "forest", "hills", "garden", "plain"];
 const FLOOR = 4.5;
@@ -69,7 +69,8 @@ async function worst(page: Page, index = 0) {
         }
       const result: Record<string, { ratio: number; colour: string }> = {};
       for (const role of roles) {
-        probe.style.color = `var(--code-${role})`;
+        // Line numbers are drawn in the muted text colour, not a code role.
+        probe.style.color = role === "line-number" ? "var(--fg-muted)" : `var(--code-${role})`;
         const colour = getComputedStyle(probe).color;
         const ink = rgb(colour);
         result[role] = { ratio: Math.min(...samples.map((ground) => ratio(ink, ground))), colour };
@@ -92,18 +93,20 @@ for (const mode of MODES)
         for (const role of ROLES) table.push([palette, role, result[role]!.ratio]);
       }
       const lowest = table.reduce((a, b) => (b[2] < a[2] ? b : a));
-      console.log(`code contrast ${mode}/${level}: worst ${lowest[2].toFixed(2)}:1 (${lowest[0]} ${lowest[1]})`);
+      const numbers = table.filter(([, role]) => role === "line-number").reduce((a, b) => (b[2] < a[2] ? b : a));
+      console.log(`code contrast ${mode}/${level}: worst ${lowest[2].toFixed(2)}:1 (${lowest[0]} ${lowest[1]}), line numbers ${numbers[2].toFixed(2)}:1 (${numbers[0]})`);
       const failures = table.filter(([, , ratio]) => ratio < FLOOR).map(([palette, role, ratio]) => `${palette} ${role} ${ratio.toFixed(2)}`);
       expect(failures).toEqual([]);
     });
 
 // Light Glass over the artwork: Ruby's canvas is the darkest and Emerald's greens the lightest ink.
-for (const palette of ["ruby", "emerald"])
-  test(`every code role reaches 4.5:1 on every canvas, along the whole page (light, Glass, ${palette})`, async ({ page }) => {
+// Dark Glass holds line numbers only: comments on a bare well are a known gap (AGENTS.md).
+for (const [mode, palette] of [["light", "ruby"], ["light", "emerald"], ["dark", "ruby"], ["dark", "emerald"]] as const)
+  test(`every code role reaches 4.5:1 on every canvas, along the whole page (${mode}, Glass, ${palette})`, async ({ page }) => {
     test.setTimeout(420_000);
     const table: Array<[string, string, number]> = [];
     for (const background of BACKGROUNDS) {
-      await open(page, { mode: "light", palette, glass: "full", background });
+      await open(page, { mode, palette, glass: "full", background });
       const blocks = await page.locator(".fa-ai-code-scroll").count();
       for (let index = 0; index < blocks; index++) {
         const result = await worst(page, index);
@@ -111,8 +114,11 @@ for (const palette of ["ruby", "emerald"])
       }
     }
     const lowest = table.reduce((a, b) => (b[2] < a[2] ? b : a));
-    console.log(`code contrast on canvases, ${palette}: worst ${lowest[2].toFixed(2)}:1 (${lowest[0]} ${lowest[1]})`);
-    const failures = table.filter(([, , ratio]) => ratio < FLOOR).map(([background, role, ratio]) => `${background} ${role} ${ratio.toFixed(2)}`);
+    const numbers = table.filter(([, role]) => role === "line-number").reduce((a, b) => (b[2] < a[2] ? b : a));
+    console.log(`code contrast on canvases, ${mode} ${palette}: worst ${lowest[2].toFixed(2)}:1 (${lowest[0]} ${lowest[1]}), line numbers ${numbers[2].toFixed(2)}:1 (${numbers[0]})`);
+    const failures = table
+      .filter(([, role, ratio]) => ratio < FLOOR && (mode === "light" || role === "line-number"))
+      .map(([background, role, ratio]) => `${background} ${role} ${ratio.toFixed(2)}`);
     expect(failures).toEqual([]);
   });
 

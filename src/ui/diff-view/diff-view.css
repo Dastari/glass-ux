@@ -1,9 +1,12 @@
 /*
  * DiffView — a unified diff.
  *
+ * Ground its own well, firmer than the code well: the numbers and tints have to hold 4.5:1 on any
+ *        canvas, bare or in a panel, and a canvas shows through a tint. Measured in rendered
+ *        pixels (e2e/diff-view.spec.ts).
  * Tints  the --code-add-tint and --code-remove-tint roles, with the sign in the matching text
  *        role, so a change reads without colour too.
- * Numbers --fg-muted; they meet 4.5:1 on the plain, add and remove surfaces (e2e/diff-view.spec.ts).
+ * Numbers --fg-muted.
  * Width  old number · new number · sign · text; below 25rem only the sign and the text.
  */
 @layer components {
@@ -17,6 +20,11 @@
     font-family: var(--font-mono);
     font-size: var(--type-mono-size);
     line-height: var(--type-mono-line);
+  }
+  @media screen and (forced-colors: none) {
+    .fa-diff {
+      background-color: color-mix(in oklab, var(--glass-inset-solid) 62%, var(--glass-fill-code));
+    }
   }
   .fa-diff:focus-visible {
     outline: var(--focus-ring-width) solid var(--accent-ring);

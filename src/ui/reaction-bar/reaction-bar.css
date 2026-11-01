@@ -27,7 +27,7 @@
     height: var(--control-h-xs);
     padding-inline: var(--space-1-5);
     border-radius: var(--radius-compact);
-    background: var(--fill-hover);
+    background: var(--fill-muted);
     color: var(--fg-muted);
   }
 }

@@ -31,6 +31,48 @@
     white-space: nowrap;
   }
 
+  /* The icon slot as its own box: any node sits at the slot's size. */
+  .fa-menu-leading {
+    display: inline-grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: var(--radius-media);
+  }
+  .fa-menu-leading > :is(img, picture, video, canvas, .fa-icon) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .fa-menu-item:is(:hover, [data-highlighted], [data-popup-open]):not([data-disabled]) > .fa-menu-leading {
+    color: var(--fg);
+  }
+
+  /* A row with a detail line: one height for every such row, whatever its text or thumbnail. */
+  .fa-menu-item[data-rich] {
+    --_rich-h: calc(var(--type-body-line) + var(--type-caption-line) + var(--space-1-5) * 2);
+    height: max(var(--item-h), var(--_rich-h));
+  }
+  .fa-menu-item[data-rich] > .fa-menu-leading {
+    width: calc(var(--_rich-h) - var(--space-1-5));
+    height: calc(var(--_rich-h) - var(--space-1-5));
+  }
+  .fa-menu-item[data-rich] .fa-item-label {
+    display: flex;
+    flex-direction: column;
+  }
+  .fa-menu-title,
+  .fa-menu-detail {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-menu-detail {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+
   /* A submenu row keeps its fill while its submenu is open and the pointer has moved in.
      (Candidate for the fa-item recipe: [data-popup-open] is a highlighted state.) */
   .fa-menu-item[data-popup-open]:not([data-disabled]) {

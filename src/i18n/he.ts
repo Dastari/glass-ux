@@ -2286,6 +2286,13 @@ export default defineMessagePack("he", {
     filterPlaceholder: "סינון",
     filterNavigation: "סינון הניווט",
   },
+  menubar: {
+    menu: "תפריט",
+    loading: "טוען",
+    loadFailed: "לא ניתן לטעון את הפריטים האלה.",
+    retry: "ניסיון חוזר",
+    empty: "אין פריטים",
+  },
   statusBar: {
     moreStatus: (count) => `מצבים נוספים (${count})`,
   },

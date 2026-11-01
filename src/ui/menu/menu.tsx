@@ -17,6 +17,14 @@ import { usePopupLayer } from "../../lib/popup-container.js"
  *   collision       the distance kept from the viewport edge (--popup-collision)
  */
 
+/**
+ * How long a hover-opened submenu outlasts the pointer leaving it, in milliseconds. Base UI's
+ * safe triangle closes after 40ms without a move, or on a slow move, so on the way to a submenu
+ * a slow hand, or one long frame on a busy page, would lose it while the root stayed open.
+ * Reaching the submenu or its row in time cancels the close.
+ */
+const SUBMENU_CLOSE_DELAY_MS = 300
+
 export type MenuItemTone = "default" | "danger"
 
 interface ItemContentProps {
@@ -26,21 +34,35 @@ interface ItemContentProps {
   shortcut?: string | undefined
   /** Ancestor trail before the current item. */
   trail?: ReactNode
+  /** A second line under the label. The row takes the taller rich height and `icon` a thumbnail's box. */
+  detail?: ReactNode
 }
 
 /**
  * The inside of every menu row (menu, context menu, action menus, previews): icon, label,
  * then a trailing shortcut or chevron. One layout, so every list reads the same.
  */
-export function MenuItemContent({ icon, children, shortcut, trail }: ItemContentProps) {
+export function MenuItemContent({ icon, children, shortcut, trail, detail }: ItemContentProps) {
   return (
     <>
-      {icon}
-      <span className="fa-item-label">{children}</span>
+      {detail && icon ? <MenuLeading>{icon}</MenuLeading> : icon}
+      {detail ? (
+        <span className="fa-item-label">
+          <span className="fa-menu-title">{children}</span>
+          <span className="fa-menu-detail">{detail}</span>
+        </span>
+      ) : (
+        <span className="fa-item-label">{children}</span>
+      )}
       {shortcut ? <Kbd keys={shortcut} variant="text" className="fa-item-trail" /> : null}
       {trail}
     </>
   )
+}
+
+/** The icon slot as a box of its own, so any node (an image, an avatar) sits at a stable size. */
+export function MenuLeading({ children }: { children: ReactNode }) {
+  return <span className="fa-item-icon fa-menu-leading">{children}</span>
 }
 
 function Chevron() {
@@ -124,6 +146,8 @@ export interface MenuItemProps extends Omit<ComponentProps<typeof BaseMenu.Item>
   shortcut?: string | undefined
   /** A short trailing note: the current value of what the row changes ("last 7 days"). */
   trail?: ReactNode
+  /** A second line under the label, for a path or a date. The row takes the rich height, and `icon` may be a thumbnail. */
+  detail?: ReactNode
   tone?: MenuItemTone
   /**
    * Disable the row and say why. The row is dimmed but stays highlightable; the reason is its
@@ -146,7 +170,7 @@ export interface MenuItemProps extends Omit<ComponentProps<typeof BaseMenu.Item>
   reasonId?: string
 }
 
-function MenuItem({ icon, children, shortcut, trail, tone = "default", disabled, disabledReason, reasonShown: _reasonShown, reasonId: _reasonId, className, ...rest }: MenuItemProps) {
+function MenuItem({ icon, children, shortcut, trail, detail, tone = "default", disabled, disabledReason, reasonShown: _reasonShown, reasonId: _reasonId, className, ...rest }: MenuItemProps) {
   const reasonId = useId()
   const aria = useAriaShortcut(shortcut)
   const isDisabled = Boolean(disabled || disabledReason)
@@ -160,8 +184,9 @@ function MenuItem({ icon, children, shortcut, trail, tone = "default", disabled,
           aria-keyshortcuts={aria}
           className={cx("fa-item fa-menu-item", className)}
           data-tone={tone === "danger" ? "danger" : undefined}
+          data-rich={detail ? "" : undefined}
         >
-          <MenuItemContent icon={icon} shortcut={shortcut} trail={trail ? <span className="fa-item-trail fa-menu-trail">{trail}</span> : undefined}>
+          <MenuItemContent icon={icon} detail={detail} shortcut={shortcut} trail={trail ? <span className="fa-item-trail fa-menu-trail">{trail}</span> : undefined}>
             {children}
           </MenuItemContent>
         </BaseMenu.Item>
@@ -192,21 +217,39 @@ export interface MenuCheckboxItemProps extends Omit<ComponentProps<typeof BaseMe
   shortcut?: string
   /** A short trailing note in the trail slot, e.g. where a hidden column went ("In row details"). */
   trail?: ReactNode
+  /**
+   * Disable the row and say why. The row is dimmed but stays highlightable; the reason is its
+   * tooltip on hover and keyboard highlight, and its accessible description.
+   */
+  disabledReason?: string | null | undefined
 }
 
 /** A toggle. The tick takes the icon slot so labels stay aligned with icon rows. */
-function MenuCheckboxItem({ children, shortcut, trail, className, ...rest }: MenuCheckboxItemProps) {
+function MenuCheckboxItem({ children, shortcut, trail, disabled, disabledReason, className, ...rest }: MenuCheckboxItemProps) {
+  const reasonId = useId()
+  const aria = useAriaShortcut(shortcut)
   return (
-    <BaseMenu.CheckboxItem {...rest} className={cx("fa-item fa-menu-item", className)}>
-      <span className="fa-item-icon fa-menu-indicator" aria-hidden>
-        <BaseMenu.CheckboxItemIndicator className="fa-menu-check" keepMounted>
-          <IconCheck />
-        </BaseMenu.CheckboxItemIndicator>
-      </span>
-      <MenuItemContent shortcut={shortcut} trail={trail ? <span className="fa-item-trail">{trail}</span> : undefined}>
-        {children}
-      </MenuItemContent>
-    </BaseMenu.CheckboxItem>
+    <>
+      <ReasonTooltip reason={disabledReason}>
+        <BaseMenu.CheckboxItem
+          {...rest}
+          disabled={Boolean(disabled || disabledReason)}
+          aria-describedby={disabledReason ? reasonId : undefined}
+          aria-keyshortcuts={aria}
+          className={cx("fa-item fa-menu-item", className)}
+        >
+          <span className="fa-item-icon fa-menu-indicator" aria-hidden>
+            <BaseMenu.CheckboxItemIndicator className="fa-menu-check" keepMounted>
+              <IconCheck />
+            </BaseMenu.CheckboxItemIndicator>
+          </span>
+          <MenuItemContent shortcut={shortcut} trail={trail ? <span className="fa-item-trail">{trail}</span> : undefined}>
+            {children}
+          </MenuItemContent>
+        </BaseMenu.CheckboxItem>
+      </ReasonTooltip>
+      <ReasonText id={reasonId} reason={disabledReason} />
+    </>
   )
 }
 
@@ -215,17 +258,35 @@ export interface MenuRadioItemProps extends Omit<ComponentProps<typeof BaseMenu.
   children: ReactNode
   /** Keyboard shortcut shown with the control, using the host platform’s modifier keys. */
   shortcut?: string
+  /**
+   * Disable the row and say why. The row is dimmed but stays highlightable; the reason is its
+   * tooltip on hover and keyboard highlight, and its accessible description.
+   */
+  disabledReason?: string | null | undefined
 }
 
 /** One choice in a RadioGroup. The dot takes the icon slot. */
-function MenuRadioItem({ children, shortcut, className, ...rest }: MenuRadioItemProps) {
+function MenuRadioItem({ children, shortcut, disabled, disabledReason, className, ...rest }: MenuRadioItemProps) {
+  const reasonId = useId()
+  const aria = useAriaShortcut(shortcut)
   return (
-    <BaseMenu.RadioItem {...rest} className={cx("fa-item fa-menu-item", className)}>
-      <span className="fa-item-icon fa-menu-indicator" aria-hidden>
-        <BaseMenu.RadioItemIndicator className="fa-menu-dot" keepMounted />
-      </span>
-      <MenuItemContent shortcut={shortcut}>{children}</MenuItemContent>
-    </BaseMenu.RadioItem>
+    <>
+      <ReasonTooltip reason={disabledReason}>
+        <BaseMenu.RadioItem
+          {...rest}
+          disabled={Boolean(disabled || disabledReason)}
+          aria-describedby={disabledReason ? reasonId : undefined}
+          aria-keyshortcuts={aria}
+          className={cx("fa-item fa-menu-item", className)}
+        >
+          <span className="fa-item-icon fa-menu-indicator" aria-hidden>
+            <BaseMenu.RadioItemIndicator className="fa-menu-dot" keepMounted />
+          </span>
+          <MenuItemContent shortcut={shortcut}>{children}</MenuItemContent>
+        </BaseMenu.RadioItem>
+      </ReasonTooltip>
+      <ReasonText id={reasonId} reason={disabledReason} />
+    </>
   )
 }
 
@@ -267,11 +328,13 @@ export interface MenuSubmenuProps {
    */
   reasonId?: string
   tone?: MenuItemTone
+  /** A class for the nested menu's popup. */
+  popupClassName?: string
   children: ReactNode
 }
 
 /** A row that opens a nested menu (→ / hover), with a chevron. */
-function MenuSubmenu({ icon, label, disabled, disabledReason, tone = "default", children }: MenuSubmenuProps) {
+function MenuSubmenu({ icon, label, disabled, disabledReason, tone = "default", popupClassName, children }: MenuSubmenuProps) {
   const reasonId = useId()
   const isDisabled = Boolean(disabled || disabledReason)
   const { submenuInset } = usePopupMetrics()
@@ -280,6 +343,7 @@ function MenuSubmenu({ icon, label, disabled, disabledReason, tone = "default", 
       <BaseMenu.SubmenuRoot disabled={isDisabled}>
         <ReasonTooltip reason={disabledReason}>
           <BaseMenu.SubmenuTrigger
+            closeDelay={SUBMENU_CLOSE_DELAY_MS}
             disabled={isDisabled}
             aria-describedby={disabledReason ? reasonId : undefined}
             className="fa-item fa-menu-item"
@@ -290,7 +354,7 @@ function MenuSubmenu({ icon, label, disabled, disabledReason, tone = "default", 
             </MenuItemContent>
           </BaseMenu.SubmenuTrigger>
         </ReasonTooltip>
-        <MenuPopup side="inline-end" align="start" sideOffset={0} alignOffset={-submenuInset}>
+        <MenuPopup side="inline-end" align="start" sideOffset={0} alignOffset={-submenuInset} className={popupClassName}>
           {children}
         </MenuPopup>
       </BaseMenu.SubmenuRoot>
@@ -334,7 +398,7 @@ interface PreviewItemProps extends ItemContentProps {
   radio?: boolean
 }
 
-function PreviewItem({ icon, children, shortcut, tone, highlighted, open, disabledReason, submenu, checked, radio }: PreviewItemProps) {
+function PreviewItem({ icon, children, shortcut, detail, tone, highlighted, open, disabledReason, submenu, checked, radio }: PreviewItemProps) {
   const indicator =
     checked === undefined ? null : (
       <span className="fa-item-icon fa-menu-indicator" aria-hidden>
@@ -354,9 +418,10 @@ function PreviewItem({ icon, children, shortcut, tone, highlighted, open, disabl
       data-highlighted={highlighted ? "" : undefined}
       data-popup-open={open ? "" : undefined}
       data-disabled={disabledReason ? "" : undefined}
+      data-rich={detail ? "" : undefined}
     >
       {indicator}
-      <MenuItemContent icon={icon} shortcut={shortcut} trail={submenu ? <Chevron /> : undefined}>
+      <MenuItemContent icon={icon} detail={detail} shortcut={shortcut} trail={submenu ? <Chevron /> : undefined}>
         {children}
       </MenuItemContent>
     </div>

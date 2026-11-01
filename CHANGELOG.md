@@ -8,6 +8,17 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `glass-ux/menubar`: `Menubar`, an application's menus as data, on Base UI's Menubar. Commands,
+  check and radio rows, groups, separators and submenus; chords and rebound keys shown through
+  the keymap's read-only lookups, with no listener added; disabled reasons; a menu or submenu's
+  rows loaded when it opens (`loadItems`), in reserved space, with failure and retry; a host-chosen
+  focus destination after a command (`focusAfterCommand`); long menus that scroll with hairline
+  edges; a thumbnail and detail line on a row; controlled or uncontrolled `openMenu`; and
+  collapse into one menu by the width of its box. `useMenubarActions` builds rows from
+  `defineActions`, and `MenubarSkeleton` holds the bar's place while it loads.
+- `Menu`: `Menu.Item` takes `detail`, a second line that gives the row a fixed rich height and
+  `icon` a thumbnail's box. `Menu.CheckboxItem` and `Menu.RadioItem` take `disabledReason` and
+  report `aria-keyshortcuts`. `Menu.Submenu` takes `popupClassName`.
 - `glass-ux/image-cropper`: `ImageCropper` (locked aspect or free, host presets), `ImageCropDialog`
   (pick, check, crop, save with `{ signal, setProgress }`), `ImageField`/`ImageInput` with
   `imageSchema` and an optional `onEdit`, and `cropToBlob`. `field.ImageField` is registered in
@@ -142,6 +153,10 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - DiffView and ResultDiff: line numbers use `--fg-muted` instead of `--fg-disabled`. They read at
   2.00:1 on the add tint (2.20:1 on remove, 2.65:1 on plain) and now at least 5.77:1 across all
   12 palettes, both modes and Glass, Frosted and Solid. Only the numbers' colour changes.
+- `Menu.Submenu`: a hover-opened submenu no longer closes while the pointer is on its way to it. A
+  stall of more than 40ms, or a slow move, in the gap beside the row closed it, on a busy page in
+  particular, while the root menu stayed open. It now outlasts the pointer by 300ms; moving to a
+  sibling row closes it after the same delay.
 - ColorPicker: its controls no longer overflow a narrow box at a large UI scale.
 - Histogram: dense bins (a column under 4px wide) no longer lose their width to the gap.
 General extensions shared with the sister packages: Tree, Tabs, shortcuts and a status bar.

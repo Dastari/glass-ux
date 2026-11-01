@@ -36,6 +36,11 @@
     background: Canvas;
   }
 
+  /* ── Scroll edges ──────────────────────────────────────────────────────── */
+  .fa-menubar-edge::before {
+    background-color: CanvasText;
+  }
+
   /* ── Materials ─────────────────────────────────────────────────────────── */
   :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-card, .glass-detached) {
     border: var(--border-width) solid CanvasText;

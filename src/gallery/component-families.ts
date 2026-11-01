@@ -52,6 +52,7 @@ const familyRoots: Record<string, string> = {
   "media-player": "video-player",
   map: "geo-map",
   menu: "menu",
+  menubar: "menubar",
   meter: "meter",
   metric: "metric",
   "money-field": "money-field",

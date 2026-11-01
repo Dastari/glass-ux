@@ -1,0 +1,299 @@
+import { useMemo, useRef, useState } from "react"
+import { Rules, SectionPage, Specimen } from "../kit.js"
+import { Button } from "../../ui/button/index.js"
+import { defineActions } from "../../ui/actions/index.js"
+import { IconCopy, IconFilePlus, IconFolderOpen, IconPrinter, IconSave, IconTrash } from "../../icons/generated/icons.js"
+import { KeymapProvider } from "../../ui/keymap/index.js"
+import { WindowFrame } from "../../windows/index.js"
+import { Menubar, MenubarSkeleton, useMenubarActions, type MenubarEntry, type MenubarMenu, type MenubarSubmenuEntry } from "../../ui/menubar/index.js"
+
+function ApplicationBar() {
+  const [ruler, setRuler] = useState(true)
+  const [status, setStatus] = useState(false)
+  const [zoom, setZoom] = useState("100")
+  const [last, setLast] = useState("None")
+  const menus: MenubarMenu[] = [
+    {
+      id: "file",
+      label: "File",
+      items: [
+        { id: "new", label: "New report", icon: <IconFilePlus />, shortcut: "mod+n" },
+        { id: "open", label: "Open…", icon: <IconFolderOpen />, shortcut: "mod+o" },
+        { id: "save", label: "Save", icon: <IconSave />, shortcut: "mod+s" },
+        { id: "save-as", label: "Save all", shortcut: "mod+k s" },
+        { kind: "separator", id: "print-separator" },
+        { id: "print", label: "Print…", icon: <IconPrinter />, shortcut: "mod+p", disabledReason: "Nothing is selected to print" },
+      ],
+    },
+    {
+      id: "edit",
+      label: "Edit",
+      items: [
+        { id: "undo", label: "Undo", shortcut: "mod+z" },
+        { id: "redo", label: "Redo", shortcut: "mod+shift+z" },
+        { kind: "separator", id: "clipboard-separator" },
+        { id: "copy", label: "Copy", icon: <IconCopy />, shortcut: "mod+c" },
+        {
+          kind: "submenu",
+          id: "transform",
+          label: "Transform",
+          items: [
+            { id: "upper", label: "Upper case", shortcut: "mod+k mod+u" },
+            { id: "lower", label: "Lower case", shortcut: "mod+k mod+l" },
+            { id: "title", label: "Title case" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "view",
+      label: "View",
+      items: [
+        { kind: "check", id: "ruler", label: "Ruler", checked: ruler, onCheckedChange: setRuler, shortcut: "mod+shift+r" },
+        { kind: "check", id: "status", label: "Status line", checked: status, onCheckedChange: setStatus },
+        { kind: "check", id: "outline", label: "Outline", checked: false, onCheckedChange: () => undefined, disabledReason: "This report has no headings" },
+        {
+          kind: "radio",
+          id: "zoom",
+          label: "Zoom",
+          value: zoom,
+          onValueChange: setZoom,
+          options: [
+            { value: "75", label: "75%" },
+            { value: "100", label: "100%", shortcut: "mod+0" },
+            { value: "150", label: "150%" },
+          ],
+        },
+      ],
+    },
+    { id: "tools", label: "Tools", disabledReason: "Tools need an open report", items: [] },
+    { id: "help", label: "Help", items: [{ id: "shortcuts", label: "Keyboard shortcuts", shortcut: "shift+?" }] },
+  ]
+  return (
+    <div className="flex w-full flex-col gap-2" data-testid="menubar-application">
+      <Menubar aria-label="Report editor" menus={menus} onCommand={(id) => setLast(id)} />
+      <p className="type-caption" data-testid="menubar-last-command">
+        Last command: {last}
+      </p>
+    </div>
+  )
+}
+
+const LONG_GROUPS = [
+  ["Lines", ["Straight", "Elbow", "Curved", "Double", "Dashed", "Dotted"]],
+  ["Blocks", ["Square", "Rounded", "Circle", "Diamond", "Hexagon", "Octagon", "Cylinder", "Cloud", "Tag", "Banner", "Bracket", "Brace", "Note", "Frame", "Arrow", "Star"]],
+  ["Tables", ["Two columns", "Three columns", "Four columns", "Summary", "Comparison", "Timeline", "Budget", "Roster", "Agenda", "Checklist"]],
+  ["Charts", ["Column", "Bar", "Line", "Area", "Donut", "Scatter", "Heatmap", "Treemap", "Gauge"]],
+  ["Dates", ["Today", "Tomorrow", "Week start", "Month start", "Quarter start", "Year start"]],
+  ["Symbols", ["Arrow right", "Arrow left", "Bullet", "Check mark", "Cross", "Degree", "Plus or minus", "Section"]],
+  ["Fields", ["Author", "Title", "Page number", "Page count", "File name", "Revision", "Status", "Owner"]],
+  ["Layouts", ["Single column", "Two columns", "Sidebar", "Header and footer", "Cover page", "Index page", "Appendix", "Blank"]],
+  ["Notes", ["Footnote", "Endnote", "Comment", "Caption", "Cross reference", "Citation"]],
+  ["Media", ["Picture", "Audio", "Video", "Attachment", "Embedded page", "Web link"]],
+  ["Stamps", ["Draft", "Approved", "Confidential", "Superseded", "Internal", "For review", "Final", "Expired", "Sample", "Void", "Copy"]],
+] as const
+
+const LONG_SUBMENUS: MenubarSubmenuEntry[] = LONG_GROUPS.map(([label, names]) => ({
+  kind: "submenu",
+  id: label.toLowerCase(),
+  label,
+  items: names.map((name) => ({ id: `${label}-${name}`, label: name })),
+}))
+
+const LONG_MENUS: MenubarMenu[] = [
+  {
+    id: "insert",
+    label: "Insert",
+    items: [
+      { kind: "group", id: "drawing", label: "Drawing", items: LONG_SUBMENUS.slice(0, 4) },
+      { kind: "group", id: "text", label: "Text", items: LONG_SUBMENUS.slice(4, 7) },
+      { kind: "group", id: "page", label: "Page", items: LONG_SUBMENUS.slice(7) },
+    ],
+  },
+  { id: "tall", label: "All blocks", items: LONG_GROUPS[1][1].flatMap((name) => [`${name} left`, `${name} centre`, `${name} right`]).map((name) => ({ id: name, label: name })) },
+]
+
+/** A sample picture: its colours belong to the picture, not the theme. */
+const thumbnail = (sky: string) =>
+  `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="${sky}"/><path d="M0 30 14 16l10 10 6-6 10 10v10H0z" fill="darkslategray"/></svg>`)}`
+
+const RECENT: MenubarEntry[] = [
+  { id: "survey", label: "Harbour survey", detail: "Reports · 12 March", icon: <img src={thumbnail("steelblue")} alt="" /> },
+  { id: "budget", label: "Depot budget", detail: "Finance · 9 March", icon: <img src={thumbnail("peru")} alt="" /> },
+  { id: "plan", label: "Bridge inspection plan with a long working title", detail: "Works · 2 March", icon: <img src={thumbnail("seagreen")} alt="" /> },
+]
+
+const after = <T,>(ms: number, signal: AbortSignal, value: () => T) =>
+  new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      try {
+        resolve(value())
+      } catch (error) {
+        reject(error instanceof Error ? error : new Error("Load failed"))
+      }
+    }, ms)
+    signal.addEventListener("abort", () => clearTimeout(timer))
+  })
+
+function LoadedBar() {
+  const attempts = useRef(0)
+  const menus: MenubarMenu[] = [
+    {
+      id: "documents",
+      label: "Documents",
+      items: [
+        { kind: "submenu", id: "recent", label: "Open recent", loadingRows: 3, loadItems: ({ signal }) => after(1500, signal, () => RECENT) },
+        {
+          kind: "submenu",
+          id: "shared",
+          label: "Shared with me",
+          loadingRows: 2,
+          loadError: "Shared documents are unavailable. Try again.",
+          loadItems: ({ signal }) =>
+            after(800, signal, () => {
+              attempts.current += 1
+              if (attempts.current % 2 === 1) throw new Error("503")
+              return [{ id: "minutes", label: "Meeting minutes" }]
+            }),
+        },
+        { kind: "submenu", id: "archived", label: "Archived", emptyLabel: "No archived documents", loadItems: ({ signal }) => after(300, signal, () => []) },
+      ],
+    },
+    { id: "templates", label: "Templates", loadingRows: 3, loadItems: ({ signal }) => after(1500, signal, () => ["Report", "Memo", "Letter"].map((label) => ({ id: label, label }))) },
+  ]
+  return (
+    <div className="w-full" data-testid="menubar-loaded">
+      <Menubar aria-label="Documents" menus={menus} />
+    </div>
+  )
+}
+
+const BOX_MENUS: MenubarMenu[] = ["File", "Edit", "View", "Insert", "Format", "Tools", "Window", "Help"].map((label) => ({
+  id: label.toLowerCase(),
+  label,
+  items: [{ id: `${label}-first`, label: `${label} first` }, { id: `${label}-second`, label: `${label} second` }],
+}))
+
+function FocusTarget() {
+  const target = useRef<HTMLTextAreaElement>(null)
+  const menus: MenubarMenu[] = [{ id: "format", label: "Format", items: [{ id: "bold", label: "Bold", shortcut: "mod+b", shortcutScoped: true }, { id: "italic", label: "Italic", shortcut: "mod+i", shortcutScoped: true }, { kind: "submenu", id: "case", label: "Case", items: [{ id: "upper", label: "Upper" }, { id: "lower", label: "Lower" }] }] }]
+  return (
+    <div className="flex w-full flex-col gap-2" data-testid="menubar-focus">
+      <Menubar aria-label="Formatting" menus={menus} focusAfterCommand={target} />
+      <textarea ref={target} aria-label="Report text" className="fa-control" rows={2} defaultValue="Harbour survey, section 2" />
+    </div>
+  )
+}
+
+function ControlledBar() {
+  const [open, setOpen] = useState<string | null>(null)
+  return (
+    <div className="flex w-full flex-col items-start gap-2" data-testid="menubar-controlled">
+      <Menubar aria-label="Project" menus={BOX_MENUS.slice(0, 3)} openMenu={open} onOpenMenuChange={setOpen} />
+      <div className="flex items-center gap-2">
+        <Button size="sm" onClick={() => setOpen("view")}>
+          Open View
+        </Button>
+        <span className="type-caption" data-testid="menubar-open-value">
+          Open: {open ?? "none"}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+function ActionsBar() {
+  const actions = useMenubarActions(reportActions, REPORTS)
+  const menus: MenubarMenu[] = [
+    { id: "report", label: "Report", items: [actions.item("save"), actions.item("publish"), { kind: "separator", id: "danger-separator" }, actions.item("delete")] },
+    { id: "all", label: "All actions", items: actions.all },
+  ]
+  return <Menubar aria-label="Report actions" menus={menus} />
+}
+
+interface Report {
+  name: string
+  published: boolean
+}
+const REPORTS: readonly Report[] = [{ name: "Harbour survey", published: true }]
+const reportActions = defineActions<Report>("report", [
+  { id: "save", label: "Save", icon: IconSave, group: "manage", shortcut: "mod+s", run: () => undefined },
+  { id: "publish", label: "Publish", group: "manage", shortcut: "mod+k mod+p", disabledReason: ([report]) => report?.published && "Already published", run: () => undefined },
+  { id: "delete", label: "Delete", icon: IconTrash, group: "danger", confirm: ([report]) => ({ title: `Delete ${report?.name}?`, body: "This cannot be undone.", confirmLabel: "Delete", tone: "danger" }), run: () => undefined },
+])
+
+function RebindingBar() {
+  const keymap = useMemo(() => ({ "report.save": ["mod+shift+s"] }), [])
+  return (
+    <KeymapProvider keymap={keymap}>
+      <ActionsBar />
+    </KeymapProvider>
+  )
+}
+
+export default function MenubarSection() {
+  return (
+    <SectionPage>
+      <Specimen title="Application bar" description="Rows are data: commands, toggles, choices, a submenu and disabled reasons. Keys show on the rows; nothing listens for them.">
+        <ApplicationBar />
+      </Specimen>
+
+      <Specimen title="Shared with actions" description="useMenubarActions builds rows from defineActions, so the menu, palette and keymap read one definition. Save is rebound here to show the keymap on the row.">
+        <div className="w-full" data-testid="menubar-actions">
+          <RebindingBar />
+        </div>
+      </Specimen>
+
+      <Specimen title="Long menus" description="Insert has 94 items in 11 submenus, under group labels; All blocks has 48 rows. A menu taller than the space scrolls, with a hairline at an edge with rows beyond it.">
+        <div className="w-full" data-testid="menubar-long">
+          <Menubar aria-label="Insert" menus={LONG_MENUS} />
+        </div>
+      </Specimen>
+
+      <Specimen title="Items at open time" description="Rows load when the menu opens, in reserved space. Open recent has thumbnails and a detail line. Shared with me fails first, then loads on Try again. Archived is empty.">
+        <LoadedBar />
+      </Specimen>
+
+      <Specimen title="Narrow boxes" description="Fixed widths of the same bar. It folds into one menu by the width of its box, not the viewport.">
+        <div className="flex w-full flex-col gap-3" data-testid="menubar-widths">
+          {(["w-120", "w-80", "w-40"] as const).map((width) => (
+            <div key={width} className={`${width} max-w-full`} data-testid={`menubar-${width}`}>
+              <Menubar aria-label={`Editor ${width}`} menus={BOX_MENUS} />
+            </div>
+          ))}
+        </div>
+      </Specimen>
+
+      <Specimen title="In a window" description="The window is the box: the same bar folds when the window narrows, and its menus still fit the screen.">
+        <div className="h-48 w-full max-w-72" data-testid="menubar-window">
+          <WindowFrame.Root focused className="glass-panel h-full">
+            <WindowFrame.AppBar title="Survey notes" />
+            <WindowFrame.Body variant="fill">
+              <Menubar aria-label="Survey notes" menus={BOX_MENUS} />
+            </WindowFrame.Body>
+          </WindowFrame.Root>
+        </div>
+      </Specimen>
+
+      <Specimen title="Focus after a command" description="A command returns focus to the text; Escape returns it to the trigger. The keys are scoped, so they show and only a click runs here.">
+        <FocusTarget />
+      </Specimen>
+
+      <Specimen title="Open state" description="Controlled by the page. The button opens View through openMenu.">
+        <ControlledBar />
+      </Specimen>
+
+      <Specimen title="Skeleton" description="Given the labels, each placeholder takes its trigger's width, so nothing moves when the bar loads.">
+        <div className="flex w-full flex-col gap-2" data-testid="menubar-skeleton">
+          <MenubarSkeleton labels={BOX_MENUS.map((menu) => menu.label)} />
+          <Menubar aria-label="Loaded" menus={BOX_MENUS} />
+        </div>
+      </Specimen>
+
+      <Rules
+        do={["Build rows from defineActions when the palette or keys run the same commands", "Give a loaded menu a loadError that says what to do next", "Pass focusAfterCommand when the bar drives a document"]}
+        dont={["Put a menubar on a page that has one or two actions: use ActionBar", "Use more than two separators in a menu", "Make a toggle or choice uncontrolled: a closed menu holds no state"]}
+      />
+    </SectionPage>
+  )
+}

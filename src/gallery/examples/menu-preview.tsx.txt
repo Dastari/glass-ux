@@ -1,4 +1,5 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { IconDownload } from "glass-ux/icons";
 import { ActionMenuPreview, ActionProvider } from "glass-ux/actions";
 import { MenuPreview } from "glass-ux/menu";
 import { ENDPOINTS, endpointActions } from "glass-ux/gallery/sections/overlays.fixtures";
@@ -34,6 +35,20 @@ export default function MenuSection() {
             </MenuPreview.Group>
           </MenuPreview.Surface>
           <ActionMenuPreview set={endpointActions} targets={[win11]} label={win11.name} />
+        </Specimen>
+
+        <Specimen
+          title="Detail line"
+          description="A second line under the label gives the row one fixed taller height, and the icon slot a thumbnail's box."
+        >
+          <MenuPreview.Surface label="Recent reports">
+            <MenuPreview.Item icon={<IconDownload />} detail="Reports · 12 March">
+              Harbour survey
+            </MenuPreview.Item>
+            <MenuPreview.Item icon={<IconDownload />} detail="Finance · 9 March">
+              Depot budget
+            </MenuPreview.Item>
+          </MenuPreview.Surface>
         </Specimen>
       </SectionPage>
     </ActionProvider>

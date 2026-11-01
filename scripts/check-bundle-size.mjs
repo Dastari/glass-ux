@@ -81,6 +81,9 @@ const BUDGETS = [
   },
   // The tree functions run anywhere: no React and no DOM, for migrations and tests.
   { entry: 'glass-ux/pane-layout', named: 'movePanel', gzip: 1_500, forbid: ['@base-ui/react', 'dist/ui/tabs/tabs.js', 'dist/ui/drag-drop/manager.js'] },
+  // Measured 61.4 KB, of which Menu is 54.4 KB. The action runner's router, dialog and toasts stay out
+  // unless useMenubarActions is imported.
+  { entry: 'glass-ux/menubar', named: 'Menubar', gzip: 67_500, forbid: ['@tanstack/react-router', '@tanstack/react-form', 'd3-scale', 'shiki', 'zod'] },
   { entry: 'glass-ux/ai/code-block', named: 'CodeBlock', gzip: 40_000, forbid: ['shiki', '@shikijs/core'] },
   // Unused wrapper calls (`Object.assign`, `memo`, ...) carry /* @__PURE__ */ (pnpm pure:check), so
   // importing one export does not pull the module's other components and their imports.

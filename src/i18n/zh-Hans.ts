@@ -2286,6 +2286,13 @@ export default defineMessagePack("zh-Hans", {
     filterPlaceholder: "筛选",
     filterNavigation: "筛选导航",
   },
+  menubar: {
+    menu: "菜单",
+    loading: "正在加载",
+    loadFailed: "无法加载这些项目。",
+    retry: "重试",
+    empty: "没有项目",
+  },
   statusBar: {
     moreStatus: (count) => `更多状态（${count}）`,
   },

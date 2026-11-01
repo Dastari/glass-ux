@@ -2286,6 +2286,13 @@ export default defineMessagePack("ja", {
     filterPlaceholder: "絞り込み",
     filterNavigation: "ナビゲーションを絞り込む",
   },
+  menubar: {
+    menu: "メニュー",
+    loading: "読み込み中",
+    loadFailed: "これらの項目を読み込めませんでした。",
+    retry: "再試行",
+    empty: "項目はありません",
+  },
   statusBar: {
     moreStatus: (count) => `その他のステータス（${count}）`,
   },

@@ -2286,6 +2286,13 @@ export default defineMessagePack("ko", {
     filterPlaceholder: "필터",
     filterNavigation: "내비게이션 필터링",
   },
+  menubar: {
+    menu: "메뉴",
+    loading: "로드 중",
+    loadFailed: "이 항목을 로드할 수 없습니다.",
+    retry: "다시 시도",
+    empty: "항목 없음",
+  },
   statusBar: {
     moreStatus: (count) => `상태 더 보기(${count})`,
   },

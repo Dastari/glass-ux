@@ -2068,6 +2068,22 @@ export default defineMessagePack("nl", {
     display: ({ label, value }) => `${label}: ${value}`,
     required: "Kies een beoordeling",
   },
+  carousel: {
+    label: "Carrousel",
+    roleCarousel: "carrousel",
+    roleSlide: "dia",
+    slide: ({ index, total, locale = "nl" }) => `${numberFormat(locale).format(index)} van ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "nl" }) =>
+      name ? `Dia ${numberFormat(locale).format(index)} van ${numberFormat(locale).format(total)}: ${name}` : `Dia ${numberFormat(locale).format(index)} van ${numberFormat(locale).format(total)}`,
+    previous: "Vorige dia",
+    next: "Volgende dia",
+    slides: "Dia's",
+    goTo: ({ index, total, locale = "nl" }) => `Ga naar dia ${numberFormat(locale).format(index)} van ${numberFormat(locale).format(total)}`,
+    firstSlide: "Dit is de eerste dia",
+    lastSlide: "Dit is de laatste dia",
+    pause: "Automatisch doorgaan onderbreken",
+    play: "Automatisch doorgaan starten",
+  },
   lightbox: {
     previous: "Vorige afbeelding",
     next: "Volgende afbeelding",

@@ -2068,6 +2068,22 @@ export default defineMessagePack("de", {
     display: ({ label, value }) => `${label}: ${value}`,
     required: "Wählen Sie eine Bewertung",
   },
+  carousel: {
+    label: "Karussell",
+    roleCarousel: "Karussell",
+    roleSlide: "Folie",
+    slide: ({ index, total, locale = "de" }) => `${numberFormat(locale).format(index)} von ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "de" }) =>
+      name ? `Folie ${numberFormat(locale).format(index)} von ${numberFormat(locale).format(total)}: ${name}` : `Folie ${numberFormat(locale).format(index)} von ${numberFormat(locale).format(total)}`,
+    previous: "Vorherige Folie",
+    next: "Nächste Folie",
+    slides: "Folien",
+    goTo: ({ index, total, locale = "de" }) => `Zu Folie ${numberFormat(locale).format(index)} von ${numberFormat(locale).format(total)}`,
+    firstSlide: "Dies ist die erste Folie",
+    lastSlide: "Dies ist die letzte Folie",
+    pause: "Automatischen Wechsel anhalten",
+    play: "Automatischen Wechsel starten",
+  },
   lightbox: {
     previous: "Vorheriges Bild",
     next: "Nächstes Bild",

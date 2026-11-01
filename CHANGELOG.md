@@ -8,6 +8,12 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `glass-ux/carousel`: `Carousel`, slides of any content in a scroll-snap strip, so swiping and snapping
+  cost no script. Previous and Next (stopping at the ends with a reason, or `loop`), indicators as one
+  tab stop, slides that are not shown `inert`, a height reserved by the tallest slide or `ratio`, and the
+  slide count when the indicators do not fit. A change the person makes is announced politely and a change
+  `autoplay` makes is not. `autoplay` shows a Pause button, holds on hover, focus and a hidden page, and
+  never starts under reduced motion. Right to left reverses the strip and mirrors the chevrons.
 - `glass-ux/rating`: `Rating`, a rating chosen from a row of icons or shown as one. A radio group
   (one tab stop; arrows move and choose, Home and End, Delete clears), whole or half steps, `max`,
   controlled or uncontrolled, `clearable`, a star or any icon, disabled, and a read-only display that

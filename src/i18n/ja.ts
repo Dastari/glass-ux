@@ -2068,6 +2068,22 @@ export default defineMessagePack("ja", {
     display: ({ label, value }) => `${label}：${value}`,
     required: "評価を選択してください",
   },
+  carousel: {
+    label: "カルーセル",
+    roleCarousel: "カルーセル",
+    roleSlide: "スライド",
+    slide: ({ index, total, locale = "ja" }) => `${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "ja" }) =>
+      name ? `スライド ${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}：${name}` : `スライド ${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}`,
+    previous: "前のスライド",
+    next: "次のスライド",
+    slides: "スライド",
+    goTo: ({ index, total, locale = "ja" }) => `スライド ${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)} へ移動`,
+    firstSlide: "最初のスライドです",
+    lastSlide: "最後のスライドです",
+    pause: "自動切り替えを一時停止",
+    play: "自動切り替えを開始",
+  },
   lightbox: {
     previous: "前の画像",
     next: "次の画像",

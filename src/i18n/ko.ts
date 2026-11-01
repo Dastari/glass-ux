@@ -2068,6 +2068,22 @@ export default defineMessagePack("ko", {
     display: ({ label, value }) => `${label}: ${value}`,
     required: "평점을 선택하세요",
   },
+  carousel: {
+    label: "캐러셀",
+    roleCarousel: "캐러셀",
+    roleSlide: "슬라이드",
+    slide: ({ index, total, locale = "ko" }) => `${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "ko" }) =>
+      name ? `슬라이드 ${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}: ${name}` : `슬라이드 ${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}`,
+    previous: "이전 슬라이드",
+    next: "다음 슬라이드",
+    slides: "슬라이드",
+    goTo: ({ index, total, locale = "ko" }) => `슬라이드 ${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}(으)로 이동`,
+    firstSlide: "첫 번째 슬라이드입니다",
+    lastSlide: "마지막 슬라이드입니다",
+    pause: "자동 넘김 일시 중지",
+    play: "자동 넘김 시작",
+  },
   lightbox: {
     previous: "이전 이미지",
     next: "다음 이미지",

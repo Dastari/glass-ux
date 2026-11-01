@@ -2068,6 +2068,22 @@ export default defineMessagePack("he", {
     display: ({ label, value }) => `${label}: ${value}`,
     required: "בחרו דירוג",
   },
+  carousel: {
+    label: "קרוסלה",
+    roleCarousel: "קרוסלה",
+    roleSlide: "שקופית",
+    slide: ({ index, total, locale = "he" }) => `${numberFormat(locale).format(index)} מתוך ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "he" }) =>
+      name ? `שקופית ${numberFormat(locale).format(index)} מתוך ${numberFormat(locale).format(total)}: ${name}` : `שקופית ${numberFormat(locale).format(index)} מתוך ${numberFormat(locale).format(total)}`,
+    previous: "השקופית הקודמת",
+    next: "השקופית הבאה",
+    slides: "שקופיות",
+    goTo: ({ index, total, locale = "he" }) => `מעבר לשקופית ${numberFormat(locale).format(index)} מתוך ${numberFormat(locale).format(total)}`,
+    firstSlide: "זו השקופית הראשונה",
+    lastSlide: "זו השקופית האחרונה",
+    pause: "השהיית המעבר האוטומטי",
+    play: "הפעלת המעבר האוטומטי",
+  },
   lightbox: {
     previous: "תמונה קודמת",
     next: "התמונה הבאה",

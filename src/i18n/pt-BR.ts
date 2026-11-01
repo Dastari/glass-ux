@@ -2068,6 +2068,22 @@ export default defineMessagePack("pt-BR", {
     display: ({ label, value }) => `${label}: ${value}`,
     required: "Escolha uma avaliação",
   },
+  carousel: {
+    label: "Carrossel",
+    roleCarousel: "carrossel",
+    roleSlide: "slide",
+    slide: ({ index, total, locale = "pt-BR" }) => `${numberFormat(locale).format(index)} de ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "pt-BR" }) =>
+      name ? `Slide ${numberFormat(locale).format(index)} de ${numberFormat(locale).format(total)}: ${name}` : `Slide ${numberFormat(locale).format(index)} de ${numberFormat(locale).format(total)}`,
+    previous: "Slide anterior",
+    next: "Próximo slide",
+    slides: "Slides",
+    goTo: ({ index, total, locale = "pt-BR" }) => `Ir para o slide ${numberFormat(locale).format(index)} de ${numberFormat(locale).format(total)}`,
+    firstSlide: "Este é o primeiro slide",
+    lastSlide: "Este é o último slide",
+    pause: "Pausar a passagem automática",
+    play: "Iniciar a passagem automática",
+  },
   lightbox: {
     previous: "Imagem anterior",
     next: "Próxima imagem",

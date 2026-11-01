@@ -21,6 +21,7 @@ const familyRoots: Record<string, string> = {
   brand: "brand-logo",
   button: "button",
   "byte-size-field": "byte-size-field",
+  carousel: "carousel",
   cascader: "cascader",
   "command-palette": "command-panel",
   "compare-slider": "compare-slider",

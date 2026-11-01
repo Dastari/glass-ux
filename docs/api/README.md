@@ -56,6 +56,7 @@
 - [ByteSizeField](byte-size-field.md) — `glass-ux/byte-size-field`
 - [ByteSizeInput](byte-size-input.md) — `glass-ux/byte-size-field`
 - [Calendar](calendar.md) — `glass-ux/date-picker`
+- [Carousel](carousel.md) — `glass-ux/carousel`
 - [Cascader](cascader.md) — `glass-ux/cascader`
 - [CascaderField](cascader-field.md) — `glass-ux/cascader`
 - [ChartBrush](chart-brush.md) — `glass-ux/charts`

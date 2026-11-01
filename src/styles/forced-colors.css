@@ -85,7 +85,8 @@
     outline-offset: calc(var(--border-width) * -1);
   }
   :is(.fa-switch, .fa-segmented):focus-visible,
-  :is(.fa-slider-thumb, .fa-rating-star):has(:focus-visible) {
+  :is(.fa-slider-thumb, .fa-rating-star):has(:focus-visible),
+  .fa-carousel-dot:focus-visible {
     outline: var(--focus-ring-width) solid Highlight;
     outline-offset: var(--focus-ring-offset);
   }
@@ -211,6 +212,15 @@
   }
   .fa-rating[data-disabled] :is(.fa-rating-fill, .fa-rating-base) {
     color: GrayText;
+  }
+
+  /* ── Carousel: the indicators keep a shape, and the current one is Highlight ── */
+  .fa-carousel-dot::before {
+    forced-color-adjust: none;
+    background: ButtonText;
+  }
+  .fa-carousel-dot[aria-selected="true"]::before {
+    background: Highlight;
   }
 
   /* ── Slider, Meter, Progress: the filled part in Highlight ───────────── */

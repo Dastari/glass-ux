@@ -194,6 +194,10 @@
       "types": "./dist/ui/tree-select/index.d.ts",
       "import": "./dist/ui/tree-select/index.js"
     },
+    "./carousel": {
+      "types": "./dist/ui/carousel/index.d.ts",
+      "import": "./dist/ui/carousel/index.js"
+    },
     "./cascader": {
       "types": "./dist/ui/cascader/index.d.ts",
       "import": "./dist/ui/cascader/index.js"

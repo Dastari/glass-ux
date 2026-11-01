@@ -2069,6 +2069,22 @@ export default defineMessagePack("ar", {
     display: ({ label, value }) => `${label}: ${value}`,
     required: "اختر تقييمًا",
   },
+  carousel: {
+    label: "شريط الصور المتحرك",
+    roleCarousel: "شريط متحرك",
+    roleSlide: "شريحة",
+    slide: ({ index, total, locale = "ar" }) => `${numberFormat(locale).format(index)} من ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "ar" }) =>
+      name ? `الشريحة ${numberFormat(locale).format(index)} من ${numberFormat(locale).format(total)}: ${name}` : `الشريحة ${numberFormat(locale).format(index)} من ${numberFormat(locale).format(total)}`,
+    previous: "الشريحة السابقة",
+    next: "الشريحة التالية",
+    slides: "الشرائح",
+    goTo: ({ index, total, locale = "ar" }) => `الانتقال إلى الشريحة ${numberFormat(locale).format(index)} من ${numberFormat(locale).format(total)}`,
+    firstSlide: "هذه هي الشريحة الأولى",
+    lastSlide: "هذه هي الشريحة الأخيرة",
+    pause: "إيقاف التقدم التلقائي مؤقتًا",
+    play: "بدء التقدم التلقائي",
+  },
   lightbox: {
     previous: "الصورة السابقة",
     next: "الصورة التالية",

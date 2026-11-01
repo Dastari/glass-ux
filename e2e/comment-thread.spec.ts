@@ -49,6 +49,8 @@ test("a failed send stays in place with Retry and Discard, and retry works @resp
   await page.getByRole("switch", { name: "Sends fail" }).click();
   await failed.getByRole("button", { name: "Retry" }).click();
   await expect(thread.getByText("Not sent")).toBeHidden();
+  // Not sent goes as the retry starts; the saved comment replaces the pending row when it lands.
+  await expect(thread.getByText("Sending…")).toBeHidden();
   const sent = comment(thread, "Will fail at first");
   await expect(sent).toBeVisible();
   expect(await place(sent)).toBe(before);

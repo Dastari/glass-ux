@@ -1,0 +1,137 @@
+/*
+ * Menubar: a row of ghost triggers with one tab stop, each opening a Menu. The bar draws no
+ * surface; the box it is given decides between the row and one collapsed menu, measured against
+ * a hidden copy of the triggers.
+ */
+@layer components {
+  .fa-menubar-box {
+    position: relative;
+    min-width: 0;
+    width: 100%;
+  }
+  .fa-menubar {
+    display: flex;
+    flex-wrap: wrap; /* `collapse="never"` in a narrow box: the row wraps rather than clips (R7.4) */
+    align-items: center;
+    gap: var(--space-half);
+    width: max-content;
+    max-width: 100%;
+  }
+  .fa-menubar > .fa-btn {
+    flex: none;
+  }
+  /* Takes no room and adds no scrollable overflow; only its row's width is read. */
+  .fa-menubar-measure {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-menubar-measure > .fa-menubar {
+    flex-wrap: nowrap;
+    max-width: none;
+  }
+
+  /* A long menu uses the height the screen has, not the shorter cap of a small dropdown. */
+  .fa-popup.fa-menubar-popup {
+    position: relative;
+    box-sizing: border-box;
+    max-height: var(--available-height, none);
+  }
+  .fa-menubar-rows {
+    display: contents;
+  }
+
+  /* Scroll edges (R5.8), sticking to the scrolling popup from inside it. */
+  .fa-menubar-edge {
+    position: sticky;
+    z-index: var(--z-raised);
+    display: block;
+    height: 0;
+    margin-inline: calc(var(--inset-overlay) * -1);
+    pointer-events: none;
+  }
+  .fa-menubar-edge[data-edge="start"] {
+    inset-block-start: 0;
+  }
+  .fa-menubar-edge[data-edge="end"] {
+    inset-block-end: 0;
+  }
+  .fa-menubar-edge::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    height: var(--border-width);
+    background-color: var(--line);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-menubar-edge[data-edge="end"]::before {
+    inset-block-end: 0;
+  }
+  .fa-menubar-edge[data-shown]::before {
+    opacity: 1;
+  }
+
+  /* Rows reserved while items load: real row boxes, so what arrives replaces them in place. */
+  .fa-menu-item[data-loading] {
+    cursor: progress;
+  }
+  .fa-menu-item[data-empty] {
+    color: var(--fg-muted);
+    cursor: default;
+  }
+  .fa-menu-item:is([data-loading], [data-empty]):hover:not([data-highlighted]) {
+    background-color: transparent;
+  }
+  .fa-menu-item[data-loading] .fa-item-label > .fa-skel-text,
+  .fa-menu-item[data-loading] > .fa-item-label {
+    display: block;
+    width: 100%;
+  }
+  .fa-menubar-failure {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2-5);
+    min-height: var(--item-h);
+    padding-inline: var(--space-2-5);
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-menubar-failure > svg {
+    flex: none;
+    width: var(--icon-md);
+    height: var(--icon-md);
+    color: var(--danger-text);
+  }
+
+  /* With no hover, a disabled row's tooltip cannot show, so its reason sits under the label. */
+  .fa-menubar-reason {
+    display: none;
+  }
+  @media (hover: none) {
+    .fa-menubar-reason {
+      display: block;
+      padding-block-end: var(--space-1);
+      color: var(--fg-muted);
+      font-size: var(--type-caption-size);
+      line-height: var(--type-caption-line);
+      white-space: normal;
+    }
+  }
+
+  .fa-menubar-skeleton-label {
+    position: relative;
+    display: inline-block;
+    color: transparent;
+  }
+  .fa-menubar-skeleton-bar {
+    position: absolute;
+    inset: 0;
+  }
+}

@@ -2158,6 +2158,13 @@ export default defineMessagePack("ar", {
     filterPlaceholder: "تصفية",
     filterNavigation: "تصفية التنقل",
   },
+  menubar: {
+    menu: "القائمة",
+    loading: "جارٍ التحميل",
+    loadFailed: "تعذّر تحميل هذه العناصر.",
+    retry: "إعادة المحاولة",
+    empty: "لا توجد عناصر",
+  },
   statusBar: {
     moreStatus: (count) => `حالات أخرى (${count})`,
   },

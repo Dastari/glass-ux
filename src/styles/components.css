@@ -70,6 +70,7 @@
 @import "../ui/map/map.css";
 @import "../ui/map/pin-map.css";
 @import "../ui/menu/menu.css";
+@import "../ui/menubar/menubar.css";
 @import "../ui/meter-cell/meter-cell.css";
 @import "../ui/meter/meter.css";
 @import "../ui/metric/metric.css";

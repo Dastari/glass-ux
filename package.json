@@ -162,6 +162,10 @@
       "types": "./dist/ui/keymap/index.d.ts",
       "import": "./dist/ui/keymap/index.js"
     },
+    "./menubar": {
+      "types": "./dist/ui/menubar/index.d.ts",
+      "import": "./dist/ui/menubar/index.js"
+    },
     "./status-bar": {
       "types": "./dist/ui/status-bar/index.d.ts",
       "import": "./dist/ui/status-bar/index.js"

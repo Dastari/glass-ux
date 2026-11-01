@@ -64,6 +64,9 @@ const BUDGETS = [
   { entry: 'glass-ux/typeahead', named: 'Typeahead', gzip: 50_000, forbid: ['lexical', '@lexical/rich-text', '@lexical/react'] },
   { entry: 'glass-ux/typeahead', named: 'useTypeahead', gzip: 2_000, forbid: ['@base-ui/react', 'lexical'] },
   { entry: 'glass-ux/map', named: 'GeoMap', gzip: 75_000, forbid: ['maplibre-gl'] },
+  // Measured 61.4 KB, of which Menu is 54.4 KB. The action runner's router, dialog and toasts stay out
+  // unless useMenubarActions is imported.
+  { entry: 'glass-ux/menubar', named: 'Menubar', gzip: 67_500, forbid: ['@tanstack/react-router', '@tanstack/react-form', 'd3-scale', 'shiki', 'zod'] },
   { entry: 'glass-ux/ai/code-block', named: 'CodeBlock', gzip: 40_000, forbid: ['shiki', '@shikijs/core'] },
   // Unused wrapper calls (`Object.assign`, `memo`, ...) carry /* @__PURE__ */ (pnpm pure:check), so
   // importing one export does not pull the module's other components and their imports.
@@ -73,7 +76,8 @@ const BUDGETS = [
   { entry: 'glass-ux/ai/results', named: 'ResultBlock', gzip: 103_000, /* the shared Lightbox replaced the results' own */ forbid: ['d3-scale', '@tanstack/form-core'] },
   // 230_000 → 232_000: the shared Lightbox now announces the picture it moves to (a live region and a message),
   // and the keyboard-shortcut policy (`configureShortcuts`) sits in the Kbd module every button tooltip uses.
-  { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 232_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki'] },
+  // 232_000 → 233_000: every Menu row gained the detail line, and check and radio rows their disabled reasons.
+  { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 233_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki'] },
 ]
 
 /** Packages large enough to be worth reporting when an entry pulls them in. */

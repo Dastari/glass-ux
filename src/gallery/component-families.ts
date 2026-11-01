@@ -51,6 +51,7 @@ const familyRoots: Record<string, string> = {
   "mac-field": "mac-address-field",
   map: "geo-map",
   menu: "menu",
+  menubar: "menubar",
   meter: "meter",
   metric: "metric",
   "money-field": "money-field",

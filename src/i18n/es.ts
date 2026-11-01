@@ -2157,6 +2157,13 @@ export default defineMessagePack("es", {
     filterPlaceholder: "Filtrar",
     filterNavigation: "Filtrar navegación",
   },
+  menubar: {
+    menu: "Menú",
+    loading: "Cargando",
+    loadFailed: "No se han podido cargar estos elementos.",
+    retry: "Reintentar",
+    empty: "Sin elementos",
+  },
   statusBar: {
     moreStatus: (count) => `Más estados (${count})`,
   },

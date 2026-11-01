@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { ContainerLab, Matrix, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { Field, type ChoiceSize, type ChoiceTone } from "../../ui/field/index.js"
-import { Slider } from "../../ui/slider/index.js"
+import { Slider, SliderField } from "../../ui/slider/index.js"
 import { Tabs } from "../../ui/tabs/index.js"
 
 const SIZES: ChoiceSize[] = ["sm", "md", "lg"]
@@ -107,6 +107,16 @@ export default function SliderSection() {
         </Field>
       </Specimen>
 
+      <Specimen title="Slider field" description="SliderField puts the label, track and value on one row. The value's width is reserved from the widest value the slider can show, so dragging never moves the track. In a container under 22rem the row wraps to the label and value above the track." layout="stack">
+        <SliderField label="Bandwidth limit" unit="Mbps" min={5} max={100} step={5} defaultValue={40} hint="Applies to file transfer." />
+        <SliderField label="Gain" unit="dB" min={-12} max={12} step={0.5} defaultValue={-3} size="sm" />
+        <SliderField label="Opacity" unit="%" defaultValue={80} tone="success" optional />
+        <SliderField label="Screen quality" min={1} max={3} defaultValue={2} format={(value) => ["Speed", "Balanced", "Quality"][value - 1] ?? ""} />
+        <SliderField label="Quality" showValue={false} min={1} max={3} defaultValue={2} />
+        <SliderField label="Limit" defaultValue={30} error="Choose a limit below 20." />
+        <SliderField label="Locked" defaultValue={50} disabled />
+      </Specimen>
+
       <Specimen title="Over glass and imagery" backdrop>
         <div className="w-72 pt-8">
           <Slider defaultValue={55} bubble="always" unit="%" aria-label="Opacity" />
@@ -143,7 +153,7 @@ export default function SliderSection() {
       <Rules
         do={[
           "Use a slider when the exact number matters less than the feel (quality, zoom, volume).",
-          "Show the value in the label row (Field aside) when it matters.",
+          "Show the value in the label row (Field aside) when it matters, or use SliderField to keep label, track and value on one row.",
           "Name each thumb of a range (“Window starts”, “Window ends”).",
           "Use a NumberField instead when people will type a precise value.",
         ]}

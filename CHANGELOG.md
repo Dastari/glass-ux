@@ -22,6 +22,12 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - Icons: `align-start`, `align-end`, `reply`, `forward` and the diagonal arrows mirror in
   right-to-left layouts. Media glyphs keep their shape, as `play` does.
 
+- SliderField (`glass-ux/slider`): a slider with its label, track and current value on one row,
+  controlled or uncontrolled. The value's width is reserved from the widest value the slider can
+  show, so dragging never moves the track; below 22rem it wraps to label and value over the track.
+  Its props type is `StandaloneSliderFieldProps`. The form kit's `SliderField` takes an opt-in
+  `inline` prop for the same row and keeps its layout otherwise.
+
 ### Fixed
 
 - ColorField and ColorPicker: the hex input and the swatch tooltips read left to right in right-to-left

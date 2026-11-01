@@ -176,7 +176,7 @@ export default function SliderSection() {
         </Field>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop specimenKey="slider:default:3">
+      <Specimen title="Over glass and imagery" backdrop specimenKey="slider:default:4">
         <div className="w-72 pt-8">
           <Slider defaultValue={55} bubble="always" unit="%" aria-label="Opacity" />
         </div>
@@ -189,12 +189,12 @@ export default function SliderSection() {
         title="Initially hidden controls"
         description="Retained tabs and dialogs can mount a slider before it has a measurable size. It measures when revealed, follows container resizing and keeps its value when hidden again."
         layout="bare"
-        specimenKey="slider:default:4"
+        specimenKey="slider:default:5"
       >
         <RetainedSlider />
       </Specimen>
 
-      <ContainerLab specimenKey="slider:default:5">
+      <ContainerLab specimenKey="slider:default:6">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-3 px-3">

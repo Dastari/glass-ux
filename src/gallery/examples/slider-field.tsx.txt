@@ -1,0 +1,44 @@
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { SliderField } from "glass-ux/slider";
+
+export default function SliderSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Slider field"
+        description="SliderField puts the label, track and value on one row. The value's width is reserved from the widest value the slider can show, so dragging never moves the track. In a container under 22rem the row wraps to the label and value above the track."
+        layout="stack"
+      >
+        <SliderField
+          label="Bandwidth limit"
+          unit="Mbps"
+          min={5}
+          max={100}
+          step={5}
+          defaultValue={40}
+          hint="Applies to file transfer."
+        />
+        <SliderField
+          label="Gain"
+          unit="dB"
+          min={-12}
+          max={12}
+          step={0.5}
+          defaultValue={-3}
+          size="sm"
+        />
+        <SliderField label="Opacity" unit="%" defaultValue={80} tone="success" optional />
+        <SliderField
+          label="Screen quality"
+          min={1}
+          max={3}
+          defaultValue={2}
+          format={(value) => ["Speed", "Balanced", "Quality"][value - 1] ?? ""}
+        />
+        <SliderField label="Quality" showValue={false} min={1} max={3} defaultValue={2} />
+        <SliderField label="Limit" defaultValue={30} error="Choose a limit below 20." />
+        <SliderField label="Locked" defaultValue={50} disabled />
+      </Specimen>
+    </SectionPage>
+  );
+}

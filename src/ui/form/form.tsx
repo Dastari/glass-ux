@@ -60,7 +60,7 @@ import { Radio, RadioCard, RadioGroup } from "../radio/index.js";
 import { Segmented, type SegmentedOption } from "../segmented/index.js";
 import { Select, type SelectOptions } from "../select/index.js";
 import { SettingRow } from "../setting-row/index.js";
-import { Slider, type SliderProps } from "../slider/index.js";
+import { Slider, SliderField as InlineSliderField, type SliderProps } from "../slider/index.js";
 import { Switch } from "../switch/index.js";
 import { TagInput, type TagInputProps } from "../tag-input/index.js";
 import { Textarea } from "../textarea/index.js";
@@ -717,8 +717,13 @@ export interface SliderFieldProps
       SliderProps,
       "min" | "max" | "step" | "largeStep" | "format" | "unit" | "marks" | "locale"
     > {
-  /** Show the current value at the end of the label row (default). */
+  /** Show the current value (default): at the end of the label row, or at the end of the row with `inline`. */
   showValue?: boolean;
+  /**
+   * Put the label, slider and value on one row (it wraps in a container narrower than 22rem)
+   * instead of the label row above the slider. Default false.
+   */
+  inline?: boolean;
 }
 
 function SliderField({
@@ -729,6 +734,7 @@ function SliderField({
   className,
   disabled,
   showValue = true,
+  inline = false,
   ...control
 }: SliderFieldProps) {
   const { field, root } = useFieldState<number>();
@@ -739,6 +745,24 @@ function SliderField({
       control.unit
         ? `${number.format(value)} ${control.unit}`
         : number.format(value));
+  if (inline) {
+    return (
+      <InlineSliderField
+        {...control}
+        {...root}
+        label={label}
+        hint={hint}
+        optional={optional}
+        required={required}
+        className={className}
+        disabled={disabled}
+        showValue={showValue}
+        value={field.state.value}
+        onValueChange={field.handleChange}
+        onBlur={field.handleBlur}
+      />
+    );
+  }
   return (
     <Field
       {...root}

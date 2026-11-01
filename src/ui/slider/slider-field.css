@@ -1,0 +1,82 @@
+/*
+ * SliderField — label, slider and current value on one row.
+ *
+ *   row     [label] [slider………] [value]; the label column is --slider-field-label-width wide (128px at the default scale) and long labels wrap
+ *   value   as wide as the widest value the slider can show, so dragging moves nothing
+ *
+ * Below 22rem the row becomes the label and value over the full-width track.
+ */
+@layer components {
+  .fa-slider-field {
+    /* The label column's width, so the tracks of stacked fields line up; a long label wraps. */
+    --_label-w: var(--slider-field-label-width, calc(var(--space-16) * 2));
+    container-type: inline-size;
+  }
+  .fa-slider-field-row {
+    display: grid;
+    grid-template-columns: minmax(0, var(--_label-w)) minmax(calc(var(--space-16) * 2), 1fr);
+    grid-template-areas: "name track";
+    align-items: center;
+    column-gap: var(--space-3);
+    min-width: 0;
+  }
+  .fa-slider-field-row[data-value] {
+    grid-template-columns: minmax(0, var(--_label-w)) minmax(calc(var(--space-16) * 2), 1fr) auto;
+    grid-template-areas: "name track value";
+  }
+  .fa-slider-field-name {
+    grid-area: name;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-1-5);
+    min-width: 0;
+    max-width: 40cqi;
+  }
+  .fa-slider-field-name .fa-field-label {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .fa-slider-field-row > .fa-slider {
+    grid-area: track;
+  }
+  .fa-slider-field-value {
+    grid-area: value;
+    display: inline-grid;
+    justify-items: end;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .fa-slider-field-value > * {
+    grid-area: 1 / 1;
+  }
+  /* Same box as the live text, never painted: only its width counts. */
+  .fa-slider-field-sample {
+    visibility: hidden;
+  }
+  .fa-slider-field[data-disabled] .fa-slider-field-value {
+    color: var(--fg-subtle);
+  }
+
+  @container (inline-size < 22rem) {
+    .fa-slider-field-row,
+    .fa-slider-field-row[data-value] {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        "name value"
+        "track track";
+      row-gap: var(--space-1-5);
+    }
+    .fa-slider-field-row:not([data-value]) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "name" "track";
+    }
+    .fa-slider-field-name {
+      max-width: none;
+    }
+  }
+}

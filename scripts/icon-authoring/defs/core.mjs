@@ -28,7 +28,7 @@ def("menu", () => [path("M4 6.5H20"), path("M4 12H20"), path("M4 17.5H20")])
 def("spinner", () => [path(d([arc(C, 8.5, 0, 270)]))])
 
 // ── status ────────────────────────────────────────────────────────────────────
-const ring = (tint = true) => (tint ? [circle(12, 12, 9, "t"), circle(12, 12, 9)] : [circle(12, 12, 9)])
+export const ring = (tint = true) => (tint ? [circle(12, 12, 9, "t"), circle(12, 12, 9)] : [circle(12, 12, 9)])
 def("success", () => [...ring(), path("M8.25 12L10.75 14.5L15.75 9.5")])
 def("error", () => [...ring(), path("M9.25 9.25L14.75 14.75"), path("M14.75 9.25L9.25 14.75")])
 def("info", () => [...ring(), path("M12 11.25V16.5"), dotEl(12, 8, 1.15)])
@@ -93,8 +93,11 @@ def("settings", () => {
   return [...tinted(gear), circle(12, 12, 3)]
 })
 
+// Bell: the body and clapper are primitives so `bell-off` can cut them.
+export const bellBody = () => [line([4.5, 16], [6, 14.5]), line([6, 14.5], [6, 9]), arc([12, 9], 6, 270, 450), line([18, 9], [18, 14.5]), line([18, 14.5], [19.5, 16])]
+export const bellClapper = () => arc([12, 19], 2, 270, 90)
 def("bell", () => {
-  const body = `M4.5 16L6 14.5V9A6 6 0 0 1 18 9V14.5L19.5 16Z`
+  const body = d(bellBody(), true)
   return [path(body, "t"), path(body), path("M10 19A2 2 0 0 0 14 19")]
 })
 

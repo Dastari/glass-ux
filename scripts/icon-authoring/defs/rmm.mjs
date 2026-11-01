@@ -150,15 +150,8 @@ def("signal", () => [
   path("M14.5 19V8.5"),
   path("M19.5 19V5"),
 ])
-def("wifi", () => {
-  const c = [12, 17.5]
-  return [
-    path(d([arc(c, 4, -45, 45)])),
-    path(d([arc(c, 8, -45, 45)])),
-    path(d([arc(c, 12, -45, 45)])),
-    dotEl(12, 17.5, 1.3),
-  ]
-})
+export const wifiArcs = (c = [12, 17.5], radii = [4, 8, 12]) => radii.map((r) => arc(c, r, -45, 45))
+def("wifi", () => [...wifiArcs().map((a) => path(d([a]))), dotEl(12, 17.5, 1.3)])
 def("network", () => [
   rect(9, 3.5, 6, 6, 1.5, "t"),
   rect(9, 3.5, 6, 6, 1.5),
@@ -237,20 +230,15 @@ def("bug", () => {
     path("M16.25 18L18.75 20.5"),
   ]
 })
-def("bolt", () => {
-  const b = poly(
-    [
-      [13.5, 2.5],
-      [5, 13.5],
-      [11.5, 13.5],
-      [10.5, 21.5],
-      [19, 10.5],
-      [12.5, 10.5],
-    ],
-    [0.75, 1, 0.5, 0.75, 1, 0.5]
-  )
-  return tinted(b)
-})
+export const boltPoints = [
+  [13.5, 2.5],
+  [5, 13.5],
+  [11.5, 13.5],
+  [10.5, 21.5],
+  [19, 10.5],
+  [12.5, 10.5],
+]
+def("bolt", () => tinted(poly(boltPoints, [0.75, 1, 0.5, 0.75, 1, 0.5])))
 def("activity", () => [path("M2.5 12H6.5L9.25 5L14.75 19L17.5 12H21.5")])
 def("gauge", () => {
   const c = [12, 13.25]

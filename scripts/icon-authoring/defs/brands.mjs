@@ -1,4 +1,5 @@
-import { angleOf, arc, circle, cut, d, dotEl, ellipse, intersect, line, move, nearPrims, path, pl, poly, rect, rot, tinted, V } from "../lib.mjs"
+import { angleOf, arc, circle, cut, d, dotEl, ellipse, intersect, line, move, nearPrims, path, pl, polar, poly, rect, rot, tinted, V } from "../lib.mjs"
+import { sparkle } from "./core.mjs"
 
 // Original, monochrome adaptations for identifying external services. These use the
 // shared grid and circular geometry rather than importing third-party SVG artwork.
@@ -315,3 +316,138 @@ def("openai", () => {
 def("anthropic", () => [
   path("M3.5 20.5L10 3.5L16.5 20.5M6 14H14M15.5 3.5L22 20.5"),
 ])
+
+def("gemini", () => tinted(sparkle(12, 12, 9.75, 1)))
+
+def("mistral", () => {
+  // The stepped M: square shoulders stairing into the centre, on two slab feet.
+  const m = outline([
+    [4, 4.5], [7, 4.5], [7, 7.5], [10, 7.5], [10, 10.5], [14, 10.5], [14, 7.5], [17, 7.5], [17, 4.5], [20, 4.5],
+    [20, 16.5], [22, 16.5], [22, 19.5], [14, 19.5], [14, 14], [10, 14], [10, 19.5], [2, 19.5], [2, 16.5], [4, 16.5],
+  ], 0)
+  return [path(m, "t"), path(m)]
+})
+
+def("deepseek", () => {
+  // The whale: head and belly in one round sweep, the back dipping to a lifted tail.
+  const body = "M2.75 11.75A9.5 9.5 0 0 0 21 13.75A7 7 0 0 0 19.75 7.75A8 8 0 0 1 14 12.75A7 7 0 0 0 2.75 11.75Z"
+  return [path(body, "t"), path(body), path("M19.75 7.75A4 4 0 0 0 21.75 4"), path("M19.75 7.75A4 4 0 0 1 16 5"), dotEl(8, 14.25, 1)]
+})
+
+def("jira", () => {
+  // Three folded bands stepping up to the right, each 3 wide and 3 clear of the next.
+  const fold = (x, y) => outline([[x, y], [x + 7.5, y], [x + 7.5, y + 7.5], [x + 4.5, y + 7.5], [x + 4.5, y + 3], [x, y + 3]], 0.75)
+  const folds = [fold(2.25, 14.25), fold(8.25, 8.25), fold(14.25, 2.25)]
+  return [path(folds.join(""), "t"), ...folds.map((shape) => path(shape))]
+})
+
+def("linear", () => {
+  // A disc with its lower left resolved into three parallel chords.
+  const c = [12, 12], R = 9, dir = V.norm([-1, 1]), run = V.norm([1, 1])
+  const chord = (t) => {
+    const h = Math.sqrt(R * R - t * t)
+    const m = V.add(c, V.mul(dir, t))
+    return [V.add(m, V.mul(run, -h)), V.add(m, V.mul(run, h))]
+  }
+  const [a, b] = chord(-1.5)
+  const disc = [arc(c, R, angleOf(c, a), angleOf(c, b) + (angleOf(c, b) < angleOf(c, a) ? 360 : 0)), line(b, a)]
+  return [path(d(disc, true), "t"), path(d(disc, true)), ...[1.5, 4.5, 7.5].map((t) => path(d([line(...chord(t))])))]
+})
+
+def("azure", () => {
+  // The A of two shards: the raked left leg, and the blade folding back along its foot.
+  const leg = outline([[9, 3.5], [14.5, 3.5], [8, 20.5], [2.5, 20.5]], 0.75)
+  const blade = outline([[15.5, 8], [21.5, 20.5], [10.5, 20.5], [15.5, 17], [12.5, 13]], 0.5)
+  return [path(leg, "t"), path(leg), path(blade)]
+})
+
+def("kubernetes", () => {
+  // The helm in its heptagon: seven spokes from the hub.
+  const hept = poly(Array.from({ length: 7 }, (_, i) => polar(12, 12.25, 10.25, (i * 360) / 7)), 1.5)
+  return [...tinted(hept), ...Array.from({ length: 7 }, (_, i) => path(d([line(polar(12, 12.25, 2.75, (i * 360) / 7), polar(12, 12.25, 6, (i * 360) / 7))]))), dotEl(12, 12.25, 1.25)]
+})
+
+def("visa", () => {
+  // The heavy raked V of the wordmark, with the wedge at its left terminal.
+  const v = outline([[2.5, 5.5], [8.75, 5.5], [11.5, 14.5], [15.75, 5.5], [21.5, 5.5], [13.75, 18.5], [9.25, 18.5], [6.75, 8.5]], [0.5, 0.75, 0.5, 0.75, 0.75, 0.75, 0.75, 1])
+  return [path(v, "t"), path(v)]
+})
+
+def("mastercard", () => {
+  // Two interlocking circles, the tint on the overlap.
+  const r = 6.5, L = [8.5, 12], R = [15.5, 12]
+  const [t, b] = intersect(L, r, R, r)
+  const lens = [arc(L, r, angleOf(L, t), angleOf(L, b)), arc(R, r, angleOf(R, b), angleOf(R, t) + 360)]
+  return [path(d(lens, true), "t"), circle(...L, r), circle(...R, r)]
+})
+
+def("paypal", () => {
+  // Two raked Ps: the front one solid in outline, the rear showing past its bowl and foot.
+  const front = "M6.75 3H12.5A5.25 5.25 0 0 1 12.5 13.5H9.25L8 20H3.5Z"
+  return [path(front, "t"), path(front), path("M9.25 8.25H12"), path("M18.25 6.25A5.25 5.25 0 0 1 15.75 16H12.75L11.5 21H9.25")]
+})
+
+def("salesforce", () => {
+  // The cloud with lobes all round, base included; `cloud` stands on a flat line.
+  const lobes = [[5.75, 13], 3.25, [9.75, 8.75], 3.75, [15, 8.5], 3.25, [18.5, 12], 3.5, [14.25, 15.75], 3.25, [9, 16.25], 2.75]
+  const n = lobes.length / 2
+  const c = (i) => lobes[(2 * i + lobes.length) % lobes.length]
+  const r = (i) => lobes[(2 * i + 1 + lobes.length) % lobes.length]
+  const outer = (i) => {
+    const pts = intersect(c(i), r(i), c(i + 1), r(i + 1))
+    return pts.reduce((a, b) => (V.len(V.sub(a, [12, 12])) > V.len(V.sub(b, [12, 12])) ? a : b))
+  }
+  const prims = []
+  for (let i = 0; i < n; i++) {
+    const a0 = angleOf(c(i), outer(i - 1))
+    let a1 = angleOf(c(i), outer(i))
+    if (a1 < a0) a1 += 360
+    prims.push(arc(c(i), r(i), a0, a1))
+  }
+  return tinted(prims)
+})
+
+def("hubspot", () => [
+  // The sprocket: a hub with three arms ending in dots.
+  circle(15.25, 14, 4.5, "t"),
+  circle(15.25, 14, 4.5),
+  path("M15.25 9.5V5.75"),
+  dotEl(15.25, 3.5, 1.6),
+  path("M11.75 11L7.25 6.5"),
+  dotEl(5.75, 5, 1.6),
+  path("M12 17.25L9.25 20"),
+  dotEl(8, 20.5, 1.5),
+])
+
+def("zendesk", () => {
+  // Two half discs and two triangles that together make the Z.
+  const up = outline([[13, 5], [21.5, 5], [13, 15]], 0.5)
+  const down = outline([[11, 9], [11, 19], [2.5, 19]], 0.5)
+  const hang = d([line([2.5, 5], [11, 5]), arc([6.75, 5], 4.25, 90, 270)], true)
+  const rise = d([line([21.5, 19], [13, 19]), arc([17.25, 19], 4.25, 270, 450)], true)
+  return [path(up + down, "t"), path(up), path(down), path(hang), path(rise)]
+})
+
+def("sentry", () => {
+  // The rounded triangle open along its base, with two ridges rising from its left foot.
+  const foot = [4.75, 20]
+  const apex = [12, 4]
+  const onLeg = (r) => {
+    // where a ridge of radius r about the foot meets the left leg
+    const a = [3, 20], u = V.norm(V.sub(apex, a)), f = V.sub(a, foot)
+    const b = V.dot(f, u), t = -b + Math.sqrt(b * b - V.dot(f, f) + r * r)
+    return V.add(a, V.mul(u, t))
+  }
+  const ridge = (r) => path(d([arc(foot, r, 90, angleOf(foot, onLeg(r)))]))
+  return [path(d(pl([[7.5, 20], [3, 20], apex, [21, 20], [16.75, 20]], [0, 1.25, 1, 1.25, 0]))), ridge(12), ridge(7.25)]
+})
+
+def("grafana", () => {
+  // The raked crown of flame-like teeth around the spiral, which opens to the lower right.
+  const pts = []
+  for (let i = 0; i < 8; i++) {
+    const a = i * 45
+    pts.push(polar(12, 12, 8, a - 13), polar(12, 12, 10.25, a + 3), polar(12, 12, 10.25, a + 11), polar(12, 12, 8, a + 18))
+  }
+  return [...tinted(poly(pts, 0.5)), path(d([arc([12, 12], 5.25, 90, -90), arc([10, 12], 3.25, 270, 90), arc([11.75, 12], 1.5, 90, -90)]))]
+})

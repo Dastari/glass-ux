@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path class="t" d="M7 7H15A2 2 0 0 1 17 9V17H9A2 2 0 0 1 7 15Z"/>
+  <path d="M7 3V15A2 2 0 0 0 9 17H21"/>
+  <path d="M3 7H15A2 2 0 0 1 17 9V21"/>
+</svg>

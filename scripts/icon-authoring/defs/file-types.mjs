@@ -9,7 +9,7 @@ const def = (name, fn) => (icons[name] = fn)
 
 const PAGE = "M14 2.5H7A2.5 2.5 0 0 0 4.5 5V19A2.5 2.5 0 0 0 7 21.5H17A2.5 2.5 0 0 0 19.5 19V8Z"
 const FOLD = "M14 2.5V6A2 2 0 0 0 16 8H19.5"
-const page = (...emblem) => [path(PAGE, "t"), path(PAGE), path(FOLD), ...emblem]
+export const page = (...emblem) => [path(PAGE, "t"), path(PAGE), path(FOLD), ...emblem]
 
 def("file", () => page())
 def("file-text", () => page(path("M8.5 12.5H15.5"), path("M8.5 16H15.5"), path("M8.5 9H10.5")))

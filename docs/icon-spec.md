@@ -33,6 +33,9 @@ Six traits make the set read as one hand. A new icon has all six.
    - **dome:** `camera-dome`, `camera-ptz`, `siren`
    - **contactless arcs:** `nfc`, `access-reader`, `access-card`
    - **doorway:** `door`, `door-open`
+   - **speaker:** `volume`, `volume-low`, `volume-off`, held in one position across levels
+   - **rotate ring:** `rotate-cw`, `rotate-ccw`, `seek-forward`, `seek-back`
+   - **git node:** `git-branch`, `git-merge`, `git-pull-request`
 6. **Even mass.** Every glyph fills the keyline shape nearest to it, so a circle, a square
    and a monitor read as the same weight at 14px.
 
@@ -173,6 +176,18 @@ masking.
 - `nfc` is the contactless mark (arcs opening to the reading side), never `wifi`. `gate` is
   a pedestrian or driveway gate; `barrier` is the boom across a vehicle lane. `vehicle` is a
   car; `supplier` stays the delivery truck.
+- `ban` is a crossed-out octagon: blocking something. `offline` stays the slashed circle, a
+  status. `cast` puts the `wifi` arcs under a screen, because `sessions` owns the corner arcs.
+  `backup` is also the upload-to-cloud arrow, `return` the corner arrow, `unpin` the pin off
+  and `supplier` the truck; do not draw second copies of them.
+- `search` is the magnifier, and `zoom-in` and `zoom-out` add to it. `zoom` is the Zoom company
+  mark, so no other icon takes that word.
+- `sliders` is a pair of tracks and `adjust` a rotary knob. `fold` and `unfold` are arrows at
+  a rule; the rule keeps `unfold` apart from `chevrons-up-down`. `split-horizontal` has a
+  horizontal divider with the panes stacked. `columns` holds panes side by side.
+- `shrink` and `expand` are diagonal arrows for resizing content. `maximise`, `restore` and
+  `fullscreen` stay the window controls. `seek-back` and `seek-forward` state no step: the
+  double chevron leaves the number of seconds to a visible label.
 - Use the simplest metaphor that survives at 14px, with at most three ideas per icon.
 - Status icons: `success` (check in a circle), `warning` (triangle), `error` (× in a
   circle), `info`, `help`, `pending` (dashed ring) and `offline` (slashed circle). They
@@ -205,7 +220,7 @@ rather than "PDF". The exact format is text beside the icon.
 ## Company and manufacturer icons
 
 Author these in `scripts/icon-authoring/defs/brands.mjs`, then run the authoring build
-and `pnpm icons`. They follow the same 24 grid, live area, circular arcs, rounded stroke,
+(`node scripts/icon-authoring/build.mjs`) and `pnpm icons`. They follow the same 24 grid, live area, circular arcs, rounded stroke,
 optional tint and size compensation as the rest of the set. Brand letterforms and symbols
 may require angles other than 45°; preserve their identifying geometry without adding
 freehand Béziers, embedded text, gradients or hard-coded brand colours. Use deliberate

@@ -1,5 +1,5 @@
 import { pinPrims } from "./actions.mjs"
-import { arc, d, dotEl, path, polar, poly, rect, tinted } from "../lib.mjs"
+import { arc, d, dotEl, line, path, polar, poly, rect, tinted } from "../lib.mjs"
 
 export const icons = {}
 const def = (name, fn) => (icons[name] = fn)
@@ -19,6 +19,8 @@ def("inspector", () => [
   path("M14.5 4V20"),
 ])
 def("columns", () => [frame(), path("M9 4V20"), path("M15 4V20")])
+// A horizontal split: the divider runs across, the panes stack.
+def("split-horizontal", () => [path("M3 12V6.5A2.5 2.5 0 0 1 5.5 4H18.5A2.5 2.5 0 0 1 21 6.5V12Z", "t"), frame(), path("M3 12H21")])
 def("grid", () => [rect(3.5, 3.5, 7, 7, 1.5), rect(13.5, 3.5, 7, 7, 1.5), rect(3.5, 13.5, 7, 7, 1.5), rect(13.5, 13.5, 7, 7, 1.5)])
 def("list", () => [
   dotEl(5, 6.5, 1.25),
@@ -62,20 +64,19 @@ def("pop-out", () => [
   path("M9 15L15.5 8.5"),
   path("M10 8.5H15.5V14"),
 ])
-def("filter", () => {
-  const funnel = poly(
+export const funnel = (dx = 0) =>
+  poly(
     [
-      [3.5, 4.5],
-      [20.5, 4.5],
-      [14, 12.5],
-      [14, 19.5],
-      [10, 17.5],
-      [10, 12.5],
+      [3.5 + dx, 4.5],
+      [20.5 + dx, 4.5],
+      [14 + dx, 12.5],
+      [14 + dx, 19.5],
+      [10 + dx, 17.5],
+      [10 + dx, 12.5],
     ],
     [1.5, 1.5, 0.75, 1, 1, 0.75]
   )
-  return tinted(funnel)
-})
+def("filter", () => tinted(funnel()))
 def("sort", () => [path("M8 19.5V4.5"), path("M4.5 8L8 4.5L11.5 8"), path("M16 4.5V19.5"), path("M12.5 16L16 19.5L19.5 16")])
 def("sort-asc", () => [path("M7 19.5V4.5"), path("M3.5 8L7 4.5L10.5 8"), path("M13.5 6.5H16"), path("M13.5 12H18"), path("M13.5 17.5H20.5")])
 def("sort-desc", () => [path("M7 4.5V19.5"), path("M3.5 16L7 19.5L10.5 16"), path("M13.5 6.5H20.5"), path("M13.5 12H18"), path("M13.5 17.5H16")])
@@ -106,6 +107,16 @@ def("link", () => [
   path("M14.5 7.5H16.5A4.5 4.5 0 0 1 16.5 16.5H14.5"),
   path("M8.5 12H15.5"),
 ])
+/** `link` as primitives, for `link-off` to cut. */
+export const linkPrims = () => [
+  line([9.5, 7.5], [7.5, 7.5]),
+  arc([7.5, 12], 4.5, 0, -180),
+  line([7.5, 16.5], [9.5, 16.5]),
+  line([14.5, 7.5], [16.5, 7.5]),
+  arc([16.5, 12], 4.5, 0, 180),
+  line([16.5, 16.5], [14.5, 16.5]),
+  line([8.5, 12], [15.5, 12]),
+]
 def("pin", () => [...tinted(pinPrims()), path("M12 14.5V20.5")])
 def("command", () => [
   path("M9 9V6A3 3 0 1 0 6 9H18A3 3 0 1 0 15 6V18A3 3 0 1 0 18 15H6A3 3 0 1 0 9 18V9"),

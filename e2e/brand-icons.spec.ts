@@ -137,7 +137,7 @@ for (const width of [320, 1440]) {
         exact: true,
       });
       const tiles = group.locator("[data-icon-tile]");
-      await expect(tiles).toHaveCount(38);
+      await expect(tiles).toHaveCount(53);
       const repository = page.getByRole("link", {
         name: "Glass UX on GitHub",
         exact: true,

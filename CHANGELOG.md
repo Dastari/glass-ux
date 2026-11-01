@@ -4,6 +4,24 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Added
+
+- Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
+  (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,
+  `case-sensitive`, `whole-word`, `fold`, `unfold`, `collapse-all`), transforms (`rotate-cw`,
+  `rotate-ccw`, `flip-horizontal`, `crop`, `move`), commerce (`credit-card`, `cart`, `receipt`)
+  and developer tools (`git-branch`, `git-pull-request`, `webhook`, `rocket`); more media
+  controls (`volume`, `skip-forward`, `seek-back`, `captions`, `cast`, `screen-share`,
+  `picture-in-picture`, `repeat`, `shuffle`, `playback-speed`), everyday glyphs (`save`, `heart`,
+  `flag`, `reply`, `forward`, `timer`, `sliders`, `adjust`, `brush`, `split-horizontal`,
+  `bell-off`, `link-off`, `wifi-off`, `cloud-download`) and arrows. Fifteen company marks join
+  the set: `azure`, `deepseek`, `gemini`, `grafana`, `hubspot`, `jira`, `kubernetes`, `linear`,
+  `mastercard`, `mistral`, `paypal`, `salesforce`, `sentry`, `visa` and `zendesk`.
+- Icons: `align-start`, `align-end`, `reply`, `forward` and the diagonal arrows mirror in
+  right-to-left layouts. Media glyphs keep their shape, as `play` does.
+
 ## 0.13.1
 
 Two Sidebar fixes, and the documentation site's directory moved onto the Sidebar.

@@ -1,0 +1,395 @@
+/*
+ * FileDialog — a location, a path, and a folder's entries, over a fixed height, so moving between
+ * folders, loading, errors and status never resize the dialog or move its buttons (R9).
+ *
+ * Anatomy  bar (location · path · commands) / panes (folders · entries) / name row (Save) /
+ *          status line (reserved) / footer. The entries are the only part that grows.
+ * Rows     fa-item rows at --item-h in list view, tiles of fixed size in grid view. Heights are
+ *          fixed per kind so the virtualiser can place them; Entries measures them from these
+ *          rules (probes), so density and touch sizes just work.
+ * Narrow   secondary columns give way in a stated order, date then size (R7.4), and the folders
+ *          give way to the path line (measured in JS, so a phone never loads them).
+ */
+@layer components {
+  .fa-file-dialog {
+    --_h: 42rem;
+    height: min(var(--_h), 100%);
+  }
+  .fa-file-dialog-preview .fa-dialog {
+    --_h: 36rem;
+    height: var(--_h);
+  }
+  .fa-file-dialog[data-sheet] {
+    --_h: 100dvh;
+  }
+
+  .fa-file-dialog-body.fa-dialog-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    padding-inline: var(--inset-dialog);
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+  }
+  .fa-file-dialog-layout {
+    /* component tokens: the bar, the folders, the columns and the name row */
+    --_places: 12rem;
+    --_path: 10rem;
+    --_folders: 13rem;
+    --_size: 5.5rem;
+    --_date: 6.5rem;
+    --_name: 14rem;
+    --_format: 12rem;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+    min-height: 0;
+  }
+
+  /* ── Bar ──────────────────────────────────────────────────────────────── */
+  .fa-file-dialog-bar {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-controls);
+    min-width: 0;
+    padding-block: var(--focus-reach);
+  }
+  .fa-file-dialog-places {
+    flex: 0 1 var(--_places);
+    min-width: 0;
+  }
+  .fa-file-dialog-path {
+    flex: 1 1 var(--_path);
+    min-width: 0;
+  }
+  .fa-file-dialog-commands {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--gap-controls);
+  }
+
+  /* ── Panes ────────────────────────────────────────────────────────────── */
+  .fa-file-dialog-panes {
+    display: flex;
+    flex: 1 1 0;
+    gap: var(--space-3);
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-file-dialog-folders {
+    display: flex;
+    flex: 0 0 var(--_folders);
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-file-dialog-main {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    outline: none;
+    container-type: inline-size;
+  }
+  .fa-file-dialog-entries-frame {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-file-dialog-entries-frame[data-scrolled-top] {
+    box-shadow: inset 0 var(--border-width) 0 var(--line);
+  }
+  .fa-file-dialog-entries-frame[data-scrolled-bottom] {
+    box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
+  }
+  .fa-file-dialog-entries-frame[data-scrolled-top][data-scrolled-bottom] {
+    box-shadow:
+      inset 0 var(--border-width) 0 var(--line),
+      inset 0 calc(var(--border-width) * -1) 0 var(--line);
+  }
+  .fa-file-dialog-entries {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    outline: none;
+  }
+  .fa-file-dialog-canvas {
+    position: relative;
+    width: 100%;
+  }
+
+  /* ── List rows ────────────────────────────────────────────────────────── */
+  .fa-file-dialog-row {
+    --_picture: var(--icon-lg);
+    gap: var(--space-3);
+    height: var(--item-h);
+    min-height: 0;
+    padding-inline: var(--space-2);
+  }
+  .fa-file-dialog-canvas > .fa-file-dialog-row {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+  }
+  .fa-file-dialog-cell {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+  }
+  .fa-file-dialog-cell[data-cell="name"] {
+    flex: 1 1 auto;
+    gap: var(--space-2);
+    color: var(--fg);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-file-dialog-cell[data-cell="size"] {
+    flex: 0 0 var(--_size);
+    justify-content: flex-end;
+  }
+  .fa-file-dialog-cell[data-cell="date"] {
+    flex: 0 0 var(--_date);
+  }
+  .fa-file-dialog-cell[data-cell="menu"] {
+    flex: none;
+    overflow: visible;
+  }
+  .fa-file-dialog-name {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .fa-file-dialog-picture {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--_picture);
+    height: var(--_picture);
+    color: var(--fg-muted);
+    overflow: hidden;
+    border-radius: var(--radius-media);
+  }
+  .fa-file-dialog-picture > .fa-icon {
+    width: min(100%, var(--icon-xl));
+    height: min(100%, var(--icon-xl));
+  }
+  .fa-file-dialog-picture > * {
+    grid-area: 1 / 1;
+    width: 100%;
+  }
+
+  /* ── Grid tiles ───────────────────────────────────────────────────────── */
+  .fa-file-dialog-tiles {
+    --_tile: 8.5rem;
+    --_tile-gap: var(--space-2);
+    display: grid;
+    grid-template-columns: repeat(var(--_columns, 2), var(--_tile));
+    justify-content: space-between;
+    column-gap: var(--_tile-gap);
+    padding-block-end: var(--_tile-gap);
+  }
+  .fa-file-dialog-canvas > .fa-file-dialog-tiles {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+  }
+  .fa-file-dialog-tiles[data-flow] {
+    grid-template-columns: repeat(auto-fill, var(--_tile));
+    row-gap: var(--_tile-gap);
+  }
+  .fa-file-dialog-tile {
+    --_picture: calc(var(--_tile) - var(--space-1-5) * 2);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    width: var(--_tile);
+    min-height: 0;
+    padding: var(--space-1-5);
+  }
+  .fa-file-dialog-tile > .fa-file-dialog-name {
+    margin-block-start: var(--space-1-5);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-file-dialog-tile > .fa-file-dialog-picture > .fa-icon {
+    width: var(--icon-2xl);
+    height: var(--icon-2xl);
+  }
+  .fa-file-dialog-detail {
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-file-dialog-tile > .fa-file-dialog-check {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    inset-inline-start: var(--space-2);
+  }
+  .fa-file-dialog-tile > .fa-file-dialog-menu {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    inset-inline-end: var(--space-2);
+  }
+
+  /* Row actions appear on hover and focus, and always on touch (R11.7). */
+  .fa-file-dialog-menu {
+    display: inline-flex;
+    flex: none;
+    opacity: 0;
+  }
+  :is(.fa-file-dialog-row, .fa-file-dialog-tile):is(:hover, :focus-visible, :focus-within, [data-selected]) .fa-file-dialog-menu,
+  .fa-file-dialog-menu:has([data-popup-open]) {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .fa-file-dialog-menu {
+      opacity: 1;
+    }
+  }
+
+  /* The check mark is the touch route to a multiple selection (R11.8). */
+  .fa-file-dialog-check {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    border: var(--border-width) solid color-mix(in oklab, var(--fg-subtle) 55%, transparent);
+    border-radius: var(--radius-check);
+    color: var(--accent-fg);
+  }
+  .fa-file-dialog-check[data-checked] {
+    border-color: var(--accent);
+    background-color: var(--accent);
+  }
+  .fa-file-dialog-check[data-none] {
+    visibility: hidden;
+  }
+  .fa-file-dialog-check > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-file-dialog-check::after {
+    content: "";
+    position: absolute;
+    inset: calc((100% - var(--target-aa)) / 2);
+  }
+
+  /* ── States ───────────────────────────────────────────────────────────── */
+  .fa-file-dialog-more {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    display: flex;
+    align-items: center;
+  }
+  .fa-file-dialog-more-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-inline: var(--space-2);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-file-dialog-probes {
+    position: absolute;
+    inset-inline: 0;
+    block-size: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-file-dialog-location {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-height: 0;
+    padding-inline: var(--focus-reach);
+    padding-block-start: var(--focus-reach);
+  }
+  .fa-file-dialog-drop {
+    flex: 1 1 auto;
+  }
+
+  /* ── Name and status ──────────────────────────────────────────────────── */
+  .fa-file-dialog-name-row {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    gap: var(--gap-controls);
+    padding-inline: var(--focus-reach);
+  }
+  .fa-file-dialog-name-field {
+    flex: 1 1 var(--_name);
+    min-width: 0;
+  }
+  .fa-file-dialog-format-field {
+    flex: 0 1 var(--_format);
+    min-width: 0;
+  }
+  .fa-file-dialog-status {
+    flex: none;
+    min-height: var(--type-caption-line);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    overflow-wrap: anywhere;
+  }
+  .fa-file-dialog-status[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .fa-file-dialog-progress {
+    --_bar: 10rem;
+    display: block;
+    inline-size: var(--_bar);
+    max-inline-size: 100%;
+  }
+
+  @media (forced-colors: active) {
+    .fa-file-dialog-check {
+      border-color: ButtonText;
+    }
+    .fa-file-dialog-check[data-checked] {
+      border-color: Highlight;
+      background-color: Highlight;
+      color: HighlightText;
+    }
+  }
+
+  @container (width < 34rem) {
+    .fa-file-dialog-cell[data-cell="date"] {
+      display: none;
+    }
+  }
+  @container (width < 24rem) {
+    .fa-file-dialog-cell[data-cell="size"] {
+      display: none;
+    }
+  }
+}

@@ -11,3 +11,9 @@ export {
   getCell,
   expectToast,
 } from "./interactions.js";
+export {
+  testFileProvider,
+  type FileProviderCheck,
+  type FileProviderConformanceOptions,
+  type FileProviderReport,
+} from "./file-provider.js";

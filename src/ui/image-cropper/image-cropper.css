@@ -26,6 +26,11 @@
     container-type: inline-size;
     border-radius: var(--radius-control);
   }
+  /* The handles hang outside a free frame: leave them room, or a frame that fills its box scrolls it. */
+  .fa-image-cropper-frame[data-free] {
+    width: min(100% - var(--target-aa), calc(var(--_frame) * var(--_fit, 1)));
+  }
+
   .fa-image-cropper-frame[data-cropping]:not([data-free]) {
     overflow: hidden;
     background-color: var(--fill-muted);

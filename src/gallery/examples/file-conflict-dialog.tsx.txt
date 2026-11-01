@@ -1,0 +1,58 @@
+import { useState } from "react";
+import type { FileStat } from "glass-ux/file-provider";
+import { Button } from "glass-ux/button";
+import { FileConflictDialog } from "glass-ux/file-dialog";
+import { sampleWorkspace, slowListing } from "glass-ux/gallery/fixtures/sample-files";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+const NEWER: FileStat = {
+  uri: "team:///Plan.txt",
+  name: "Plan.txt",
+  kind: "file",
+  size: 2048,
+  version: "v9",
+  modified: Date.UTC(2026, 2, 16, 9, 30),
+};
+
+export default function FileDialogSection() {
+  const [opened, setOpened] = useState("");
+  const [saved, setSaved] = useState("");
+  const [open, setOpen] = useState(false);
+  const [view, setView] = useState<"list" | "grid">("grid");
+  const [aborted, setAborted] = useState(0);
+  const [abortable] = useState(() =>
+    slowListing(sampleWorkspace("distant", "Distant"), 2000, () =>
+      setAborted((count) => count + 1),
+    ),
+  );
+  const [rival, setRival] = useState(true);
+  const [compared, setCompared] = useState("");
+  const [question, setQuestion] = useState<"changed" | "gone" | null>(null);
+  const [answer, setAnswer] = useState("");
+  return (
+    <SectionPage>
+      <Specimen
+        title="The conflict step alone"
+        description="FileConflictDialog, for a plain Save that opens no dialog."
+        layout="stack"
+      >
+        <Button onClick={() => setQuestion("changed")}>A newer version</Button>
+        <Button onClick={() => setQuestion("gone")}>The file has gone</Button>
+        <FileConflictDialog
+          open={question !== null}
+          name="Plan.txt"
+          current={question === "changed" ? NEWER : null}
+          onCompare={() => {
+            setAnswer("compare");
+            setQuestion(null);
+          }}
+          onResolve={(choice) => {
+            setAnswer(choice);
+            setQuestion(null);
+          }}
+        />
+        <p data-testid="file-dialog-answer">{answer || "No answer"}</p>
+      </Specimen>
+    </SectionPage>
+  );
+}

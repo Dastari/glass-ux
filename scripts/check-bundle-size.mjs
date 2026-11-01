@@ -65,6 +65,12 @@ const BUDGETS = [
   { entry: 'glass-ux/media-player', named: 'AudioPlayer', gzip: 85_000, forbid: ['dist/windows/managed-window.js', 'dist/ui/media-player/video-player.js', 'dist/ui/media-player/mini-window.js', 'hls.js', 'dash.js'] },
   // Measured 4.1 KB: the headless controller stays free of controls and of Base UI.
   { entry: 'glass-ux/media-player', named: 'useMediaPlayer', gzip: 4_600, forbid: ['@base-ui/react', 'dist/ui/media-player/controls.js'] },
+  // Measured 141.8 KB: Dialog, Tree, Breadcrumb, Select, Segmented, FileDrop and the row menus, all drawn at once.
+  { entry: 'glass-ux/file-dialog', named: 'FileDialog', gzip: 156_000, forbid: ['@tanstack/react-form', '@tanstack/form-core', 'd3-scale', 'shiki', 'zod', 'lexical', 'maplibre-gl'] },
+  // The conflict step alone: a plain Save brings no browser with it.
+  { entry: 'glass-ux/file-dialog', named: 'FileConflictDialog', gzip: 59_000, forbid: ['dist/ui/file-dialog/file-browser.js', 'dist/ui/tree/tree.js', '@tanstack/react-virtual'] },
+  // A worker bundle pays for this and nothing else: no React, no Base UI.
+  { entry: 'glass-ux/file-provider/memory', named: 'memoryFiles', gzip: 2_600, forbid: ['react', '@base-ui/react'] },
   { entry: 'glass-ux/phone-field', named: 'PhoneField', gzip: 75_000, forbid: ['libphonenumber-js'] },
   { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text'] },
   // The list that RichTextInput drives lives outside the editor: importing it brings in no Lexical.

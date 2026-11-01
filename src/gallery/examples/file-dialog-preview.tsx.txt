@@ -1,0 +1,102 @@
+import { useState } from "react";
+import { memoryFiles } from "glass-ux/file-provider/memory";
+import { FileDialogPreview } from "glass-ux/file-dialog";
+import { sampleWorkspace, slowListing, stuckListing } from "glass-ux/gallery/fixtures/sample-files";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+const noop = () => undefined;
+const EMPTY = memoryFiles({}, { scheme: "empty", label: "Empty" });
+const LOADING = stuckListing(sampleWorkspace("waiting", "Waiting"), null);
+const REFUSED = stuckListing(
+  sampleWorkspace("refused", "Refused"),
+  "denied",
+  "Your session has ended. Sign in again from the main window.",
+);
+const OFFLINE = stuckListing(
+  sampleWorkspace("offline", "Offline"),
+  "unavailable",
+  "The archive is offline for maintenance until 18:00.",
+);
+const FLAT = memoryFiles(
+  {
+    "Notes.txt": { content: "Notes", mime: "text/plain", modified: 0 },
+    "Summary.pdf": { content: "Summary", mime: "application/pdf", modified: 0 },
+  },
+  { scheme: "flat", label: "Flat" },
+);
+
+export default function FileDialogSection() {
+  const [opened, setOpened] = useState("");
+  const [saved, setSaved] = useState("");
+  const [open, setOpen] = useState(false);
+  const [view, setView] = useState<"list" | "grid">("grid");
+  const [aborted, setAborted] = useState(0);
+  const [abortable] = useState(() =>
+    slowListing(sampleWorkspace("distant", "Distant"), 2000, () =>
+      setAborted((count) => count + 1),
+    ),
+  );
+  const [rival, setRival] = useState(true);
+  const [compared, setCompared] = useState("");
+  const [question, setQuestion] = useState<"changed" | "gone" | null>(null);
+  const [answer, setAnswer] = useState("");
+  return (
+    <SectionPage>
+      <Specimen
+        title="In the page"
+        description="FileDialogPreview draws the real parts in place, for documentation and comparison."
+        layout="stack"
+        wide
+      >
+        <div data-testid="file-dialog-list">
+          <FileDialogPreview
+            mode="open"
+            multiple
+            providers={[sampleWorkspace("list", "Workspace")]}
+            onOpen={noop}
+          />
+        </div>
+        <div data-testid="file-dialog-grid">
+          <FileDialogPreview
+            mode="open"
+            defaultView="grid"
+            providers={[sampleWorkspace("grid", "Workspace")]}
+            defaultUri="grid:///Pictures"
+            onOpen={noop}
+          />
+        </div>
+        <div data-testid="file-dialog-save">
+          <FileDialogPreview
+            mode="save"
+            defaultName="Quarterly plan.txt"
+            providers={[sampleWorkspace("save", "Workspace")]}
+            onSave={() => Promise.reject(new Error("Unreachable"))}
+          />
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="States"
+        description="Loading, empty, a provider with no folders, denied and failed all use the same box."
+        layout="stack"
+        wide
+      >
+        <div data-testid="file-dialog-loading">
+          <FileDialogPreview mode="open" providers={[LOADING]} onOpen={noop} />
+        </div>
+        <div data-testid="file-dialog-empty">
+          <FileDialogPreview mode="open" providers={[EMPTY]} onOpen={noop} />
+        </div>
+        <div data-testid="file-dialog-flat">
+          <FileDialogPreview mode="open" providers={[FLAT]} onOpen={noop} />
+        </div>
+        <div data-testid="file-dialog-denied">
+          <FileDialogPreview mode="open" providers={[REFUSED]} onOpen={noop} />
+        </div>
+        <div data-testid="file-dialog-error">
+          <FileDialogPreview mode="open" providers={[OFFLINE]} onOpen={noop} />
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

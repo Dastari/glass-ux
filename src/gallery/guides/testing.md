@@ -86,3 +86,18 @@ test("updates a record", async ({ page }) => {
 For this repository, give concurrent checkouts different `GLASS_UX_DEV_PORT` values so
 Playwright's reusable web server belongs to the checkout under test. Run phone checks for
 layout-sensitive changes and inspect actual insets, scale, density, radius and scroll edges.
+
+## File providers
+
+`testFileProvider` checks a `FileProvider` adapter against the contract: ranged and short reads,
+version pinning, conflicts on all three `WriteBase` forms, abort, cursors and `applyEdits`. Methods
+the provider does not have are reported as `skipped`. A provider with `write` gets temporary files
+in `folder`, removed afterwards when it has `delete`. See
+[FileDialog and FileProvider](components/file-dialog.md#testing-an-adapter).
+
+```ts
+import { testFileProvider } from "glass-ux/testing";
+
+const { failed } = await testFileProvider(myProvider);
+expect(failed).toEqual([]);
+```

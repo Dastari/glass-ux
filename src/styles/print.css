@@ -241,6 +241,10 @@
     position: relative;
     transform: none !important;
   }
+  .fa-dt-panel-cell {
+    position: static;
+    inline-size: 100%;
+  }
   .fa-dt-head {
     overflow: visible;
   }

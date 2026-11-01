@@ -350,3 +350,90 @@ export function createEndpointServer(count = 1284) {
 }
 
 export type EndpointServer = ReturnType<typeof createEndpointServer>
+
+/* ── Detail panels and lazy tree: fixed sample data, so the demos open the same way every time ── */
+
+export interface OrderLine {
+  item: string;
+  quantity: number;
+}
+
+export interface Order {
+  id: string;
+  reference: string;
+  customer: string;
+  status: string;
+  total: number;
+  lines: OrderLine[];
+}
+
+const ORDER_CUSTOMERS = ["Harbour Stationers", "Linden Supply", "Quarry Lane Press", "Northgate Provisions"];
+const ORDER_ITEMS = ["Letter paper", "Envelopes", "Toner", "Folders", "Staples", "Labels", "Binders"];
+const ORDER_STATUSES = ["Packing", "Shipped", "Delivered"];
+
+/** 120 orders whose panels differ in height: every third row is one to five lines long. */
+export const ORDERS: readonly Order[] = Array.from({ length: 120 }, (_, index) => {
+  const number = 1001 + index;
+  // Order 1003 has no lines and so no panel.
+  const count = number === 1003 ? 0 : (index % 5) + 1;
+  return {
+    id: `ord-${number}`,
+    reference: `Order ${number}`,
+    customer: ORDER_CUSTOMERS[index % ORDER_CUSTOMERS.length]!,
+    status: ORDER_STATUSES[index % ORDER_STATUSES.length]!,
+    total: 180 + ((index * 37) % 900),
+    lines: Array.from({ length: count }, (_, line) => ({
+      item: ORDER_ITEMS[(index + line) % ORDER_ITEMS.length]!,
+      quantity: ((index + line) % 9) + 1,
+    })),
+  };
+});
+
+export interface Folder {
+  id: string;
+  name: string;
+  kind: "Folder" | "Document";
+  modified: string;
+  sizeMb: number;
+  /** Children on the server. */
+  childCount: number;
+  /** Loaded children; undefined until they load. */
+  children?: Folder[];
+}
+
+const folder = (id: string, name: string, modified: string, sizeMb: number, childCount = 0, children?: Folder[]): Folder => ({
+  id,
+  name,
+  kind: childCount || children ? "Folder" : "Document",
+  modified,
+  sizeMb,
+  childCount,
+  children,
+});
+
+/** What the demo's server holds under each folder that has not loaded. */
+export const FOLDER_CHILDREN: Readonly<Record<string, readonly Folder[]>> = {
+  designs: [
+    folder("designs-1", "Floor plans", "2 Mar 2026", 48),
+    folder("designs-2", "Signage", "11 Mar 2026", 21),
+    folder("designs-3", "Colour samples", "19 Mar 2026", 7),
+  ],
+  archive: Array.from({ length: 10 }, (_, index) =>
+    folder(`archive-${index + 1}`, `Report ${2016 + index}`, `14 Jan ${2017 + index}`, 12 + index),
+  ),
+  reports: [
+    folder("reports-1", "Quarter one", "4 Apr 2026", 3),
+    folder("reports-2", "Quarter two", "6 Jul 2026", 4),
+  ],
+};
+
+export const FOLDERS: readonly Folder[] = [
+  folder("projects", "Projects", "24 Mar 2026", 412, 3, [
+    folder("designs", "Designs", "19 Mar 2026", 76, 3),
+    folder("reports", "Reports", "6 Jul 2026", 7, 2),
+    folder("brief", "Project brief", "2 Feb 2026", 1),
+  ]),
+  folder("archive", "Archive", "2 Jan 2026", 2140, 10),
+  folder("templates", "Templates", "9 Feb 2026", 18, 0),
+  folder("budget", "Budget", "12 Jun 2026", 2),
+];

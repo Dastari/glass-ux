@@ -86,6 +86,10 @@ export interface HeaderProps {
   settings: ReactNode;
   /** Draw the reorder grip column's header. */
   reorderable?: boolean;
+  /** The column that holds the row expanders. */
+  expanderColumn?: string;
+  /** Over them: expand-all, or a space that keeps the header in line with the rows. */
+  expandControl?: ReactNode;
 }
 
 function SortGlyph({ direction }: { direction: false | "asc" | "desc" }) {
@@ -104,7 +108,10 @@ function HeaderCell({
   filtered,
   columnMenu,
   controller,
+  expander,
 }: {
+  /** The expander column: what stands over the rows' expanders (a space, or expand-all). */
+  expander?: ReactNode;
   column: ColumnInfo;
   sortIndex: number;
   direction: false | "asc" | "desc";
@@ -184,8 +191,10 @@ function HeaderCell({
       data-edge={column.edge ? "" : undefined}
       data-sorted={direction || undefined}
       data-filtered={filtered ? "" : undefined}
+      data-expander={expander === undefined ? undefined : ""}
       style={column.style}
     >
+      {expander}
       <span
         ref={drag.handleRef}
         {...drag.handleProps}
@@ -253,6 +262,8 @@ function HeaderView({
   filtered,
   settings,
   reorderable = false,
+  expanderColumn,
+  expandControl = <span className="fa-dt-expander" data-spacer="" />,
 }: HeaderProps) {
   const m = useDataTableMessages();
   const zoneId = useId();
@@ -338,6 +349,7 @@ function HeaderView({
               filtered={filtered.has(column.id)}
               columnMenu={columnMenu}
               controller={controller}
+              expander={column.id === expanderColumn ? expandControl : undefined}
             />
           );
         })}
@@ -519,7 +531,10 @@ export function SettingsMenu({
   autoHidden,
   density,
   controller,
+  expandAll,
 }: {
+  /** Cards: expand-all, which has no header to live in. */
+  expandAll?: { label: string; onToggle: () => void };
   /** Typed column definitions, including rendering, sorting, priorities and filters. */
   columns: ReadonlyArray<{ id: string; label: string; hideable: boolean }>;
   userHidden: ReadonlySet<string>;
@@ -578,6 +593,11 @@ export function SettingsMenu({
             ))}
           </Menu.RadioGroup>
         </Menu.Group>
+        {expandAll ? (
+          <Menu.Group>
+            <Menu.Item onClick={expandAll.onToggle}>{expandAll.label}</Menu.Item>
+          </Menu.Group>
+        ) : null}
         <Menu.Group>
           <Menu.Item icon={<IconUndo />} onClick={controller.resetColumns}>
             {m.resetColumns}

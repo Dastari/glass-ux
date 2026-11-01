@@ -754,6 +754,155 @@
     padding-inline-start: var(--space-1);
   }
 
+  /* ── Open rows: the expander, the indent, panels and children on their way ──── */
+  /* The expander sits in the first visible column, after the indent, which gives way before
+     the content does. --fa-dt-level is the row's depth. */
+  .fa-dt {
+    --fa-dt-expander-w: var(--control-h-xs);
+    --fa-dt-indent-step: var(--space-5);
+  }
+  /* Read where the level is set: a custom property resolves on the element declaring it. */
+  .fa-dt-row {
+    --_indent: min(calc(var(--fa-dt-indent-step) * var(--fa-dt-level, 0)), 40cqi);
+  }
+  .fa-dt-cell[data-expander] {
+    gap: var(--space-1);
+    padding-inline-start: calc(var(--space-2) + var(--_indent));
+  }
+  .fa-dt-expander {
+    flex: none;
+    color: var(--fg-muted);
+  }
+  .fa-dt-expander[data-spacer] {
+    inline-size: var(--fa-dt-expander-w);
+  }
+  .fa-dt-expander:not(.fa-dt-expand-all) .fa-icon {
+    transition: rotate var(--duration-base) var(--ease-standard);
+  }
+  .fa-dt-expander[aria-expanded="true"] .fa-icon {
+    rotate: 90deg;
+  }
+  .fa-dt-expander[aria-expanded="true"] .fa-icon:dir(rtl),
+  .fa-dt-group-toggle[aria-expanded="true"] .fa-dt-group-chevron > .fa-icon:dir(rtl) {
+    rotate: -90deg;
+  }
+  /* The header's label lines up with the content of an unindented row. */
+  .fa-dt-th[data-expander] {
+    padding-inline-start: var(--space-2);
+  }
+  .fa-dt-th[data-expander] .fa-dt-th-button {
+    padding-inline-start: var(--space-1);
+  }
+  /* A row kept only as the path to a match. */
+  .fa-dt-row[data-context] .fa-dt-text,
+  .fa-dt-card[data-context] .fa-dt-text {
+    color: var(--fg-subtle);
+  }
+
+  /* A panel stays in view while the rows scroll sideways, and starts under its row's content. */
+  .fa-dt-rows > .fa-dt-panel-row {
+    --_sep: transparent;
+    block-size: auto;
+  }
+  .fa-dt-rows > .fa-dt-panel-row:not(.fa-dt-skel-row):hover {
+    --_bg: transparent;
+  }
+  .fa-dt-panel-cell {
+    position: sticky;
+    inset-inline-start: 0;
+    flex: none;
+    inline-size: min(100%, 100cqi);
+    min-inline-size: 0;
+    padding-block-end: var(--space-2);
+    padding-inline: calc(var(--space-2) + var(--_indent)) var(--space-2);
+  }
+  .fa-dt-panel {
+    border-radius: var(--radius-tile);
+    padding: var(--inset-tile);
+    overflow-wrap: anywhere;
+  }
+  .fa-dt-cards > .fa-dt-panel-row {
+    min-inline-size: 0;
+    outline: none;
+  }
+  .fa-dt-cards > .fa-dt-panel-row .fa-dt-panel-cell {
+    position: static;
+    inline-size: 100%;
+    padding: 0;
+  }
+
+  /* Children on their way hold the rows they will fill; a failure sits over the same space. */
+  .fa-dt-rows > .fa-dt-status-row {
+    --_sep: transparent;
+    block-size: calc(var(--_row-h) * var(--fa-dt-status-lines));
+  }
+  .fa-dt-rows > .fa-dt-status-row:not(.fa-dt-skel-row):hover {
+    --_bg: transparent;
+  }
+  .fa-dt-status-cell {
+    position: relative;
+    flex: none;
+    inline-size: 100%;
+    min-inline-size: 0;
+    block-size: 100%;
+  }
+  .fa-dt-status-shape {
+    pointer-events: none;
+  }
+  .fa-dt-status-shape > .fa-dt-row {
+    position: absolute;
+    inset-inline-start: 0;
+    inline-size: 100%;
+    block-size: var(--_row-h);
+  }
+  .fa-dt-status-row[data-state="error"] .fa-dt-status-shape {
+    visibility: hidden;
+  }
+  .fa-dt-status-message {
+    position: sticky;
+    inset-inline-start: 0;
+  }
+  .fa-dt-rows .fa-dt-status-message {
+    padding-inline-start: calc(
+      var(--fa-dt-lead-w) + var(--space-2) + var(--_indent)
+    );
+  }
+  .fa-dt-rows .fa-dt-child-more .fa-dt-more-cell {
+    padding-inline-start: calc(
+      var(--fa-dt-lead-w) + var(--space-2) + var(--_indent)
+    );
+  }
+  .fa-dt-child-more[data-state="error"] .fa-dt-more-cell {
+    color: var(--fg-muted);
+  }
+
+  /* Cards: depth is an inset, kept small so a nested card still holds its fields. */
+  .fa-dt-cards > :is(.fa-dt-card, .fa-dt-status-row, .fa-dt-child-more, .fa-dt-panel-row) {
+    --_card-inset: min(calc(var(--space-3) * var(--fa-dt-level, 0)), 15cqi);
+    margin-inline-start: var(--_card-inset);
+  }
+  .fa-dt-cards > .fa-dt-status-row {
+    position: relative;
+    min-inline-size: 0;
+    outline: none;
+  }
+  .fa-dt-cards > .fa-dt-status-row .fa-dt-status-shape {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .fa-dt-cards > .fa-dt-status-row .fa-dt-status-message {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    inline-size: 100%;
+    padding-inline-start: var(--space-1);
+  }
+  .fa-dt-cards > :is(.fa-dt-status-row, .fa-dt-panel-row):focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+
   /* ── Infinite loading: the line after the last loaded row ───────────────────── */
   /* A placeholder row while the server has more, or the failure with Retry, one row tall
      either way so nothing moves when it changes. The failure sticks to the start edge. */

@@ -90,6 +90,8 @@ export interface ReorderConditions {
   paged: boolean;
   /** Live rows held behind the "N new" pill. */
   held: boolean;
+  /** A row is open: the visible order is not the flat order of `rows`. */
+  expanded?: boolean;
   /** A previous move is still being saved. */
   saving: boolean;
 }
@@ -121,6 +123,7 @@ export function reorderUnavailable(
     "grouped",
     "paged",
     "held",
+    "expanded",
   ] as const)
     if (conditions[key])
       return {
@@ -131,6 +134,7 @@ export function reorderUnavailable(
         grouped: m.reorderGrouped,
         paged: m.reorderPaged,
         held: m.reorderHeld,
+        expanded: m.reorderExpanded,
       }[key];
   return null;
 }

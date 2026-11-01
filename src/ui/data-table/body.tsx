@@ -10,7 +10,9 @@ import {
 import {
   Fragment,
   useCallback,
+  useEffect,
   useLayoutEffect,
+  useRef,
   type HTMLAttributes,
   type ReactElement,
   type ReactNode,
@@ -22,11 +24,49 @@ import { Button } from "../button/index.js";
 import { EntityIdentitySkeleton } from "../entity/index.js";
 import { cx } from "../../lib/cx.js";
 import { Skeleton } from "../skeleton/index.js";
+import type { BodyLine, RowLine } from "./expansion.js";
 import type { CellSkeleton, DataTableFeatures } from "./features.js";
 import { GroupLine } from "./group-rows.js";
-import type { GroupedItem } from "./grouping.js";
-import { DataRow, type ColumnInfo, type RowController } from "./row.js";
+import {
+  DataRow,
+  type ColumnInfo,
+  type RowController,
+  type RowExpansionProps,
+} from "./row.js";
 import type { DataTableNoun } from "./types.js";
+
+/** What rows and cards ask a table with `renderRowDetail` or `tree`. */
+export interface BodyExpansion<T extends RowData> {
+  treegrid: boolean;
+  expanderColumn: string | undefined;
+  /** How many groups a treegrid's group headers count among. */
+  groupCount: number;
+  rowProps: (line: RowLine<Row<DataTableFeatures, T>>) => RowExpansionProps;
+  /** A panel, status or "Show more" line. `top` is undefined in the card list. */
+  renderLine: (
+    line: Exclude<
+      BodyLine<Row<DataTableFeatures, T>>,
+      { kind: "row" | "group" | "more" }
+    >,
+    placement: {
+      index: number;
+      top?: number;
+      measureRef?: (element: HTMLDivElement | null) => void;
+    },
+  ) => ReactElement;
+  /** A panel's height before it is measured (px). */
+  panelEstimate: (row: T) => number;
+}
+
+/** The first line in view: what stays put when lines around it change. */
+interface ScrollAnchor {
+  key: unknown;
+  /** Line's start minus the scroll position. */
+  offset: number;
+}
+
+const lineKeyOf = <R extends { id: string }>(line: BodyLine<R>) =>
+  line.kind === "row" ? line.row.id : line.key;
 
 export interface VirtualRowsProps<T extends RowData> {
   /** Records or matrix rows in display order. */
@@ -35,7 +75,9 @@ export interface VirtualRowsProps<T extends RowData> {
    * Grouped tables: the body in display order (group headers, rows, "Show more" lines). Each
    * line is one row tall; indexes, keyboard focus and aria-rowindex count every line.
    */
-  items?: readonly GroupedItem<Row<DataTableFeatures, T>>[] | null;
+  items?: readonly BodyLine<Row<DataTableFeatures, T>>[] | null;
+  /** A table with `renderRowDetail` or `tree`. */
+  expansion?: BodyExpansion<T>;
   scrollRef: RefObject<HTMLDivElement | null>;
   virtualizerRef: RefObject<Virtualizer<HTMLDivElement, Element> | null>;
   /** Typed column definitions, including rendering, sorting, priorities and filters. */
@@ -83,6 +125,7 @@ export interface VirtualRowsProps<T extends RowData> {
 export function VirtualRows<T extends RowData>({
   rows,
   items,
+  expansion,
   scrollRef,
   virtualizerRef,
   columns,
@@ -114,6 +157,14 @@ export function VirtualRows<T extends RowData>({
   const printing = usePrinting();
   const lineCount = items ? items.length : rows.length;
   const count = lineCount + (renderTail ? 1 : 0);
+  /** Measured panel heights. `virtualizer.measure()` forgets its own; these survive it. */
+  const panelSizes = useRef(new Map<unknown, number>());
+
+  /** Bumps when a panel's height changes. */
+  const sizeVersion = useRef(0);
+  /** The first line in view, noted on every scroll. */
+  const anchor = useRef<ScrollAnchor | null>(null);
+  const laidOut = useRef({ items, sizes: 0 });
   const rowAt = (index: number): Row<DataTableFeatures, T> | undefined => {
     if (!items) return rows[index];
     const item = items[index];
@@ -127,17 +178,44 @@ export function VirtualRows<T extends RowData>({
       if (!items) return rows[index]?.id ?? index;
       const item = items[index];
       if (!item) return index;
-      return item.kind === "row" ? item.row.id : item.key;
+      return lineKeyOf(item);
     },
     [rows, items, lineCount],
   );
+  const lineSize = (index: number) => {
+    const item = items?.[index];
+    if (item?.kind === "detail")
+      return (
+        panelSizes.current.get(item.key) ??
+        expansion?.panelEstimate(item.row.original) ??
+        rowHeight
+      );
+    if (item?.kind === "child-status") return rowHeight * item.lines;
+    return rowHeight + (isExpanded(rowAt(index)) ? detailHeight : 0);
+  };
   // oxlint-disable-next-line react/incompatible-library -- TanStack Virtual is the table's virtualizer (R16); rows are memoised by data identity, not by the compiler
   const virtualizer = useVirtualizer<HTMLDivElement, Element>({
     count,
     getScrollElement: () => scrollRef.current,
-    estimateSize: (index) =>
-      rowHeight + (isExpanded(rowAt(index)) ? detailHeight : 0),
+    estimateSize: lineSize,
     getItemKey: keyAt,
+    // A panel's new height moves the rows under it, which a ResizeObserver callback must not do.
+    useAnimationFrameWithResizeObserver: Boolean(expansion),
+    // Only panels attach a ref, so this reads their height alone.
+    measureElement: expansion
+      ? (element, entry, instance) => {
+          const box = entry?.borderBoxSize?.[0];
+          const size = Math.round(
+            box ? box.blockSize : element.getBoundingClientRect().height,
+          );
+          const key = instance.options.getItemKey(
+            instance.indexFromElement(element),
+          );
+          if (panelSizes.current.get(key) !== size) sizeVersion.current++;
+          panelSizes.current.set(key, size);
+          return size;
+        }
+      : undefined,
     // Printing lays out every loaded row (print.css puts them in document flow).
     overscan: renderAll || printing ? count : 6,
     initialRect: { width: 0, height: renderAll ? count * rowHeight : 0 },
@@ -151,12 +229,27 @@ export function VirtualRows<T extends RowData>({
         indexes.push(activeIndex);
         indexes.sort((a, b) => a - b);
       }
+      // A mounted row's panel is mounted with it: its expander's aria-controls names it.
+      if (items && expansion) {
+        for (const index of indexes.slice())
+          if (
+            items[index]?.kind === "row" &&
+            items[index + 1]?.kind === "detail" &&
+            !indexes.includes(index + 1)
+          )
+            indexes.push(index + 1);
+        indexes.sort((a, b) => a - b);
+      }
       // The end line stays mounted: it watches for the end of the list coming near.
       if (renderTail && !indexes.includes(lineCount)) indexes.push(lineCount);
       return indexes;
     },
   });
   virtualizerRef.current = virtualizer;
+  // Anchoring below has one owner: left to the virtualizer too, the two would fight.
+  virtualizer.shouldAdjustScrollPositionOnItemSizeChange = expansion
+    ? () => false
+    : undefined;
 
   // Heights change with density, expansion and the grouped lines; re-measure in the same frame.
   useLayoutEffect(() => {
@@ -170,6 +263,56 @@ export function VirtualRows<T extends RowData>({
     hidden.length,
     items,
   ]);
+
+  // Lines coming and going, and panels measuring themselves, must not move what the reader is
+  // looking at: the first line in view stays where it was. A line that went (its parent
+  // closed) leaves the place to the first line after it that remains.
+  const anchoring = Boolean(expansion);
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    if (!anchoring || !scroller) return;
+    const note = () => {
+      const { scrollTop } = scroller;
+      const first =
+        scrollTop > 0
+          ? virtualizerRef.current?.getVirtualItemForOffset(scrollTop)
+          : undefined;
+      anchor.current = first
+        ? { key: first.key, offset: first.start - scrollTop }
+        : null;
+    };
+    scroller.addEventListener("scroll", note, { passive: true });
+    return () => scroller.removeEventListener("scroll", note);
+  }, [anchoring, scrollRef, virtualizerRef]);
+  useLayoutEffect(() => {
+    if (!anchoring) return;
+    const before = laidOut.current;
+    if (before.items === items && before.sizes === sizeVersion.current) return;
+    laidOut.current = { items, sizes: sizeVersion.current };
+    const place = anchor.current;
+    const scroller = scrollRef.current;
+    if (!place || !scroller || !items) return;
+    const indexes = new Map(items.map((line, index) => [lineKeyOf(line), index]));
+    const previous = before.items ?? [];
+    let index = indexes.get(place.key as string);
+    if (index === undefined) {
+      const gone = previous.findIndex((line) => lineKeyOf(line) === place.key);
+      for (let at = gone + 1; gone >= 0 && at < previous.length; at++) {
+        const key = lineKeyOf(previous[at]!);
+        index = indexes.get(key);
+        if (index === undefined) continue;
+        place.key = key;
+        break;
+      }
+    }
+    if (index === undefined) return;
+    virtualizer.getTotalSize();
+    const start = virtualizer.measurementsCache[index]?.start;
+    if (start === undefined) return;
+    const scrollTop = start - place.offset;
+    if (Math.abs(scroller.scrollTop - scrollTop) >= 1)
+      scroller.scrollTop = scrollTop;
+  });
 
   const virtualItems = virtualizer.getVirtualItems();
   return wrapContainer(
@@ -187,7 +330,7 @@ export function VirtualRows<T extends RowData>({
             </Fragment>
           );
         const item = items?.[virtual.index];
-        if (item && item.kind !== "row") {
+        if (item?.kind === "group" || item?.kind === "more") {
           return (
             <GroupLine
               key={item.key}
@@ -199,9 +342,21 @@ export function VirtualRows<T extends RowData>({
               colSpan={colSpan}
               noun={noun}
               controller={controller}
+              treegridGroups={expansion?.treegrid ? expansion.groupCount : undefined}
             />
           );
         }
+        if (item && item.kind !== "row" && expansion)
+          return (
+            <Fragment key={item.key}>
+              {expansion.renderLine(item, {
+                index: virtual.index,
+                top: virtual.start,
+                measureRef: virtualizer.measureElement,
+              })}
+            </Fragment>
+          );
+        if (item && item.kind !== "row") return null;
         const row = item ? item.row : rows[virtual.index];
         if (!row) return null;
         const next = rowAt(virtual.index + 1);
@@ -225,6 +380,7 @@ export function VirtualRows<T extends RowData>({
             grip={gripOf?.(row)}
             selectedNext={next ? selection[next.id] === true : false}
             revision={revision}
+            {...(item ? expansion?.rowProps(item) : undefined)}
           />
         );
       })}
@@ -304,6 +460,7 @@ export function SkeletonRow({
   grip = false,
   className,
   ref,
+  expanderColumn,
 }: {
   /** Varies the placeholder widths. */
   seed: number;
@@ -315,6 +472,8 @@ export function SkeletonRow({
   grip?: boolean;
   className?: string;
   ref?: Ref<HTMLDivElement>;
+  /** The column that holds the expander: its content starts after the indent. */
+  expanderColumn?: string;
 }) {
   return (
     <div
@@ -337,8 +496,12 @@ export function SkeletonRow({
           data-align={column.meta.align}
           data-pinned={column.pinned ? "" : undefined}
           data-edge={column.edge ? "" : undefined}
+          data-expander={column.id === expanderColumn ? "" : undefined}
           style={column.style}
         >
+          {column.id === expanderColumn ? (
+            <span className="fa-dt-expander" data-spacer="" />
+          ) : null}
           <CellPlaceholder
             kind={column.meta.skeleton}
             seed={seed + columnIndex * 3}

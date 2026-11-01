@@ -2485,6 +2485,23 @@ export function PanelExample() {
           </PanelBody>
         </Panel>
       </Specimen>
+      <Specimen
+        title="Compact panel"
+        description="A regular panel takes --inset-panel (20px, or 16px under compact density); compact takes --inset-panel-compact (12px, or 8px) for dense tool panes."
+        layout="stack"
+      >
+        <Panel aria-label="Standard inset">
+          <PanelHeader title="Regular" />
+          <PanelBody>Content at the panel inset.</PanelBody>
+        </Panel>
+        <Panel compact aria-label="Dense inset">
+          <PanelHeader title="Compact" />
+          <PanelBody>Content at the compact inset.</PanelBody>
+          <PanelFooter>
+            <Button size="sm">Apply</Button>
+          </PanelFooter>
+        </Panel>
+      </Specimen>
     </SectionPage>
   );
 }
@@ -2497,6 +2514,11 @@ export function SurfaceExample() {
         </Surface>
         <Surface material="card" radius="tile" padding="tile">
           Repeated cards use tile geometry and the unblurred card material.
+        </Surface>
+      </Specimen>
+      <Specimen title="Compact padding" layout="stack">
+        <Surface material="panel" padding="compact">
+          padding="compact" reads --inset-panel-compact.
         </Surface>
       </Specimen>
       <Specimen title="Material level per surface" layout="stack">

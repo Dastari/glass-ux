@@ -5,5 +5,5 @@ export const meta: SectionMeta = {
   title: "Hooks",
   group: "Foundations",
   order: 76,
-  summary: "Controlled state, element measurements, media queries, scoped keyboard shortcuts and focus regions.",
+  summary: "Controlled state, element measurements, media queries, scoped keyboard shortcuts, focus regions, pan and zoom, undo, live-region announcements, clipboard, debounce, scroll edges and reading-direction keys.",
 };

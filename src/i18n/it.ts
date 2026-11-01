@@ -1755,6 +1755,8 @@ export default defineMessagePack("it", {
     picker: "Selettore colore",
     area: "Luminosità e croma",
     areaValue: (lightness, chroma) => `Luminosità ${lightness}%, croma ${chroma}`,
+    areaHsv: "Saturazione e valore",
+    areaValueHsv: (saturation, brightness) => `Saturazione ${saturation}%, valore ${brightness}%`,
     hue: "Tonalità",
     alpha: "Opacità",
     hex: "Colore esadecimale",
@@ -2041,6 +2043,7 @@ export default defineMessagePack("it", {
   },
   toolbar: {
     more: "Altro",
+    relatedTools: "Strumenti correlati",
   },
   tour: {
     progress: (step, total) => `Passaggio ${step} di ${total}`,

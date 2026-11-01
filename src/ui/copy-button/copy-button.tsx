@@ -1,6 +1,7 @@
 import { useMessages } from "../../lib/i18n/index.js"
 import { copyButtonMessages, getCopyButtonMessages } from "./messages.js"
 import { IconCopy } from "../../icons/generated/icons.js"
+import { writeClipboardText } from "../../lib/clipboard.js"
 import { cx } from "../../lib/cx.js"
 import { Button, useActionFeedback, type ButtonProps } from "../button/index.js"
 import { toast } from "../toast/index.js"
@@ -16,20 +17,13 @@ export interface CopyButtonProps extends Omit<ButtonProps, "onClick" | "status" 
 
 /** Write text to the clipboard; falls back to a hidden textarea where the API is unavailable. */
 export async function copyText(text: string, messages = getCopyButtonMessages()): Promise<void> {
-  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text)
-    return
+  try {
+    await writeClipboardText(text)
+  } catch (error) {
+    // Only "no way to copy" gets the button's own wording; a refusal from the Clipboard API passes through.
+    if (error instanceof Error && error.message === "Clipboard unavailable") throw new Error(messages.copyUnavailable)
+    throw error
   }
-  const area = document.createElement("textarea")
-  area.value = text
-  area.setAttribute("readonly", "")
-  area.style.position = "fixed"
-  area.style.opacity = "0"
-  document.body.append(area)
-  area.select()
-  const done = document.execCommand("copy")
-  area.remove()
-  if (!done) throw new Error(messages.copyUnavailable)
 }
 
 function getCOPY_ANNOUNCEMENT(messages: typeof copyButtonMessages.defaults) { return { success: messages.copied, error: messages.copyFailed } }

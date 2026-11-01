@@ -67,7 +67,9 @@ Keep modules tree-shakable and renders cheap:
 
 Accessibility patterns that are easy to get wrong:
 - Keep ticking text (elapsed times, countdowns, relative times) out of `role="status"` and
-  live regions. Announce state changes from a separate polite region.
+  live regions. Announce state changes from a separate polite region: use `useAnnounce`
+  (`glass-ux/hooks`) rather than a new `aria-live` element, since it lives inside a modal
+  dialog or full-screen element where a body-level region would be inert or unseen.
 - Visually hidden text is absolutely positioned. Inside a scroller, give it a positioned
   ancestor within the scroller, or it escapes and widens the page in RTL.
 - Merge a caller's `aria-describedby` with your own ids instead of replacing it.

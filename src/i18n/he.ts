@@ -1755,6 +1755,8 @@ export default defineMessagePack("he", {
     picker: "בוחר צבעים",
     area: "בהירות וכרומה",
     areaValue: (lightness, chroma) => `בהירות ${lightness}%, כרומה ${chroma}`,
+    areaHsv: "רוויה וערך",
+    areaValueHsv: (saturation, brightness) => `רוויה ${saturation}%, ערך ${brightness}%`,
     hue: "גוון",
     alpha: "אטימות",
     hex: "צבע הקסדצימלי",
@@ -2041,6 +2043,7 @@ export default defineMessagePack("he", {
   },
   toolbar: {
     more: "עוד",
+    relatedTools: "כלים קשורים",
   },
   tour: {
     progress: (step, total) => `שלב ${step} מתוך ${total}`,

@@ -1,0 +1,39 @@
+/*
+ * Glass UX code colours — the roles anything that shows code reads, so a code block, a log, a
+ * diff and an editor from another package all match.
+ *
+ * Syntax roles --code-keyword · --code-string · --code-string-expression · --code-constant ·
+ *   --code-function · --code-type · --code-parameter · --code-punctuation · --code-comment ·
+ *   --code-link, and the text and ground --code-foreground · --code-background.
+ *
+ * Every role derives from the palette's --accent-text (themes.css), which is AA on glass in both
+ * modes, so each palette gets a harmonious set at one lightness: keywords and links take the
+ * accent, the rest turn round the hue circle (strings and string expressions +150°, constants
+ * +250°, functions +205°, types +305°) at a little less chroma, and parameters, punctuation and
+ * comments take the muted foregrounds. No italics or weights: highlighted text keeps the plain
+ * text's exact advance, so nothing shifts when the colours arrive.
+ *
+ * The roles are re-declared on islands ([data-mode], [data-palette]) like the data colours
+ * (data.css), so a palette or mode island recomputes its own set. e2e/code-tokens.spec.ts
+ * proves 4.5:1 on the rendered ground for every palette in both modes, in Glass and Solid.
+ * The Shiki CSS-variables theme reads the same roles through the --fa-code-* names that
+ * code-block.css maps to them.
+ */
+@layer base {
+  :root,
+  [data-mode],
+  [data-palette] {
+    --code-foreground: var(--fg);
+    --code-background: transparent;
+    --code-keyword: var(--accent-text);
+    --code-string: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 150));
+    --code-string-expression: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 150));
+    --code-constant: oklch(from var(--accent-text) l calc(c * 0.9) calc(h + 250));
+    --code-function: oklch(from var(--accent-text) l calc(c * 0.8) calc(h + 205));
+    --code-type: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 305));
+    --code-parameter: var(--fg-muted);
+    --code-punctuation: var(--fg-muted);
+    --code-comment: var(--fg-subtle);
+    --code-link: var(--accent-text);
+  }
+}

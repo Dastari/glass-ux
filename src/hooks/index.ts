@@ -29,3 +29,26 @@ export {
   type UndoState,
 } from "./use-undo-stack.js";
 export { useFocusRegions, type FocusRegionOptions } from "./use-focus-regions.js";
+export { useAnnounce, type Announce, type AnnounceOptions } from "./use-announce.js";
+export { useClipboard, type ClipboardOptions, type ClipboardState } from "./use-clipboard.js";
+export {
+  useDebouncedCallback,
+  useDebouncedValue,
+  type DebouncedCallbackOptions,
+  type DebouncedFunction,
+} from "./use-debounced.js";
+export { isRtl, readingKey } from "../lib/direction.js";
+export {
+  useScrollEdges,
+  type ScrollEdges,
+  type ScrollEdgesOptions,
+} from "../lib/use-scroll-edges.js";
+export { usePrinting } from "../lib/use-printing.js";
+export {
+  useSelectedId,
+  type SelectedIdChangeHandler,
+  type SelectionChangeDetails,
+  type SelectionChangeReason,
+} from "../lib/use-selected-id.js";
+export { focusFirst, tryFocus } from "../lib/focus.js";
+export { isRichTextTarget, isTextEntryTarget } from "../lib/text-entry.js";

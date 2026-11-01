@@ -86,15 +86,21 @@ export interface MenuPopupProps extends Omit<ComponentProps<typeof BaseMenu.Popu
   sideOffset?: number
   /** Alignment offset from the anchor, in CSS pixels. */
   alignOffset?: number
+  /**
+   * Position against this element instead of the trigger, for a menu a control opens without being
+   * its Menu.Trigger (a flyout that a press does not open).
+   */
+  anchor?: ComponentProps<typeof BaseMenu.Positioner>["anchor"]
 }
 
 /** Portal + positioner + glass popup. Works for Menu, ContextMenu and submenus alike. */
-function MenuPopup({ side, align = "start", sideOffset, alignOffset = 0, className, children, ...rest }: MenuPopupProps) {
+function MenuPopup({ side, align = "start", sideOffset, alignOffset = 0, anchor, className, children, ...rest }: MenuPopupProps) {
   const popup = usePopupMetrics()
   return (
     <BaseMenu.Portal render={<DirectionPortal />} container={popupContainer()}>
       <BaseMenu.Positioner
         className="fa-menu-positioner"
+        anchor={anchor}
         side={side}
         align={align}
         sideOffset={sideOffset ?? popup.offset}

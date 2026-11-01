@@ -1755,6 +1755,8 @@ export default defineMessagePack("zh-Hans", {
     picker: "颜色选择器",
     area: "明度和彩度",
     areaValue: (lightness, chroma) => `明度 ${lightness}%，彩度 ${chroma}`,
+    areaHsv: "饱和度和明度",
+    areaValueHsv: (saturation, brightness) => `饱和度 ${saturation}%，明度 ${brightness}%`,
     hue: "色相",
     alpha: "不透明度",
     hex: "十六进制颜色",
@@ -2041,6 +2043,7 @@ export default defineMessagePack("zh-Hans", {
   },
   toolbar: {
     more: "更多",
+    relatedTools: "相关工具",
   },
   tour: {
     progress: (step, total) => `第 ${step} 步，共 ${total} 步`,

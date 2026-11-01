@@ -1755,6 +1755,8 @@ export default defineMessagePack("pt-BR", {
     picker: "Seletor de cores",
     area: "Luminosidade e croma",
     areaValue: (lightness, chroma) => `Luminosidade ${lightness}%, croma ${chroma}`,
+    areaHsv: "Saturação e valor",
+    areaValueHsv: (saturation, brightness) => `Saturação ${saturation}%, valor ${brightness}%`,
     hue: "Matiz",
     alpha: "Opacidade",
     hex: "Cor hexadecimal",
@@ -2041,6 +2043,7 @@ export default defineMessagePack("pt-BR", {
   },
   toolbar: {
     more: "Mais",
+    relatedTools: "Ferramentas relacionadas",
   },
   tour: {
     progress: (step, total) => `Etapa ${step} de ${total}`,

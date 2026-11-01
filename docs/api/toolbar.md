@@ -1,7 +1,7 @@
 # Toolbar
 
-A toolbar: `Root`, `Button` (with toggles), `Group`, `Item` (any control), `Separator`
-and `Spacer`, plus Base UI's `Input` and `Link` for text fields and links in the row.
+A toolbar: `Root`, `Button` (with toggles), `Group` (also single-choice), `Flyout` (a tool
+with related tools), `Item` (any control), `Separator` and `Spacer`, plus Base UI's `Input` and `Link` for text fields and links in the row.
 
 `import { Toolbar } from "glass-ux/toolbar"`
 
@@ -15,6 +15,7 @@ and `Spacer`, plus Base UI's `Input` and `Link` for text fields and links in the
 | children | `ReactNode` | See type | yes | — | Toolbar.Button, Toolbar.Group, Toolbar.Item, Toolbar.Separator and Toolbar.Spacer. |
 | className | `string \| undefined` | See type | no | — | Layout only. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
-| labels | `Partial<{ more: string; }> \| undefined` | See type | no | — | Wording overrides (the More button). |
+| labels | `Partial<{ more: string; relatedTools: string; }> \| undefined` | See type | no | — | Wording overrides (the More button). |
+| orientation | `ToolbarOrientation \| undefined` | "horizontal", "vertical" | no | "horizontal" | `horizontal` (default) is a row; `vertical` is a column, such as a tool rail. In a column Up and Down Arrow move between the controls (Left and Right stay free for a flyout), items fold into More by height, so give it a bounded height, and More and flyouts open at the inline end. |
 | overflow | `boolean \| undefined` | false, true | no | true | Fold items into a trailing More menu when they do not fit, by `priority` (default true). Off, the toolbar never folds; give it room or let it scroll. |
 | size | `ToolbarSize \| undefined` | "sm", "md" | no | "sm" | sm (default) for panel headers and editors, md beside fields. |

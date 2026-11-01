@@ -1,13 +1,20 @@
 import { useState } from "react"
 import {
+  IconAdjust,
+  IconBrush,
   IconColumns,
+  IconCrop,
+  IconCursor,
+  IconEdit,
   IconDownload,
   IconFilter,
   IconGrid,
   IconList,
+  IconMove,
   IconRefresh,
   IconShare,
   IconSort,
+  IconText,
   IconZoomIn,
   IconZoomOut,
 } from "../../icons/generated/icons.js"
@@ -71,11 +78,63 @@ function ReportToolbar() {
   )
 }
 
+const BRUSHES = [
+  { value: "brush", label: "Brush", icon: <IconBrush />, shortcut: "b" },
+  { value: "pencil", label: "Pencil", icon: <IconEdit />, shortcut: "n" },
+]
+
+/** A vertical tool rail: one tool chosen at a time, and a flyout of related brushes. */
+function ToolRail({ height }: { height?: string }) {
+  const [tool, setTool] = useState("move")
+  return (
+    <div className="flex items-start gap-4">
+      <div style={{ height }}>
+        <Toolbar aria-label="Tools" orientation="vertical" className="h-full">
+          <Toolbar.Group aria-label="Tool" value={tool} onValueChange={setTool}>
+            <Toolbar.Button value="move" label="Move" icon={<IconMove />} shortcut="v" />
+            <Toolbar.Button value="select" label="Select" icon={<IconCursor />} shortcut="s" />
+            <Toolbar.Flyout label="Brush tools" tools={BRUSHES} />
+            <Toolbar.Button value="crop" label="Crop" icon={<IconCrop />} shortcut="c" />
+            <Toolbar.Button value="text" label="Text" icon={<IconText />} shortcut="t" priority="low" />
+          </Toolbar.Group>
+          <Toolbar.Separator />
+          <Toolbar.Button label="Adjust" icon={<IconAdjust />} priority="low" onClick={() => {}} />
+        </Toolbar>
+      </div>
+      <p className="type-caption text-fg-muted" data-testid="chosen-tool">
+        Tool: {tool}
+      </p>
+    </div>
+  )
+}
+
+function ToolRow() {
+  const [tool, setTool] = useState("select")
+  return (
+    <Toolbar aria-label="Row tools">
+      <Toolbar.Group aria-label="Row tool" value={tool} onValueChange={setTool}>
+        <Toolbar.Button value="move" label="Move" icon={<IconMove />} />
+        <Toolbar.Button value="select" label="Select" icon={<IconCursor />} />
+        <Toolbar.Flyout label="Row brush tools" tools={BRUSHES} />
+      </Toolbar.Group>
+    </Toolbar>
+  )
+}
+
 export default function ToolbarSection() {
   return (
     <SectionPage>
       <Specimen title="Toolbar" description="Arrow keys move between controls; Tab leaves the row. Toggles that are on take the accent's soft fill." layout="stack" wide>
         <ReportToolbar />
+      </Specimen>
+      <Specimen title="Vertical tool rail" description="Up and Down Arrow move between tools, Space or Enter chooses one, and exactly one is chosen (a radio group). The Brush button holds related tools: hold it, press Right Arrow (Left in right-to-left layouts) or use the context-menu key to open them beside the rail." layout="row">
+        <ToolRail />
+      </Specimen>
+      <Specimen title="Folding by height" description="A vertical toolbar folds low-priority tools into More by the height it is given." layout="row">
+        <ToolRail height="calc(var(--control-h-sm) * 4)" />
+      </Specimen>
+      <Specimen title="Single choice in a row" description="The same group in a horizontal toolbar; the flyout opens below its button on Arrow Down." layout="row">
+        <ToolRow />
       </Specimen>
       <ContainerLab title="Folding" description="Low-priority items fold into More first, the last ones first; groups fold together; separators go with them. The layout switch never folds.">
         {() => (
@@ -91,6 +150,8 @@ export default function ToolbarSection() {
           "Give every icon-only control a label: it is the tooltip, the accessible name and the More menu item.",
           "Mark what can wait as low priority, so the important controls stay in the row longest.",
           "Group related controls and separate groups.",
+          "Use a single-choice group when exactly one tool is active: it reads as a radio group, not a row of toggles.",
+          "Keep the flyout's tools to one family; the button shows the one used last.",
         ]}
         dont={[
           "Don't put a toolbar's only primary action in More; set it to always.",

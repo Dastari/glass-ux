@@ -58,6 +58,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | align | `import("@base-ui/react/internals/useAnchorPositioning").Align \| undefined` | "center", "start", "end" | no | — | Alignment of the overlay relative to its anchor. |
 | alignOffset | `number \| undefined` | See type | no | — | Alignment offset from the anchor, in CSS pixels. |
+| anchor | `Element \| import("@floating-ui/dom").VirtualElement \| import("react").RefObject<Element \| null> \| (() => Element \| import("@floating-ui/dom").VirtualElement \| null) \| null \| undefined` | See type | no | — | Position against this element instead of the trigger, for a menu a control opens without being its Menu.Trigger (a flyout that a press does not open). |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | side | `import("@base-ui/react/internals/useAnchorPositioning").Side \| undefined` | "top", "bottom", "left", "right", "inline-end", "inline-start" | no | — | Preferred side of the anchor; collision handling may choose another side. |
 | sideOffset | `number \| undefined` | See type | no | — | Gap between the overlay and its anchor, in CSS pixels. Defaults to `--popup-offset`. |

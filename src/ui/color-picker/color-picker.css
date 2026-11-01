@@ -2,7 +2,9 @@
  * ColorPicker and ColorField.
  *
  *   area     lightness (up) × chroma (across) at the chosen hue, painted into a canvas; the
- *            sRGB gamut's edge shows because colours outside it are drawn faintly
+ *            sRGB gamut's edge shows because colours outside it are drawn faintly. With
+ *            data-plane="hsv" it is value (up) × saturation (across) at the HSV hue
+ *   size     data-size="sm" is the compact picker: a shorter area, thinner tracks, smaller beads
  *   thumbs   the slider bead as a ring around the current colour
  *   sliders  hue and opacity on recessed tracks that show their own gradient
  *   inputs   a preview chip, the hex field and the eyedropper
@@ -16,7 +18,7 @@
     --_check: color-mix(in oklab, var(--fg-subtle) 22%, transparent);
     --_checks: conic-gradient(var(--_check) 25%, transparent 0 50%, var(--_check) 0 75%, transparent 0) 0 0 / var(--space-2) var(--space-2);
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr); /* a narrow box squeezes the hex row, not the whole picker wider */
     gap: var(--space-3);
     width: 100%;
     min-width: 0;
@@ -100,6 +102,32 @@
   }
   .fa-color-slider:not([data-alpha]) .fa-color-slider-thumb {
     background: oklch(72% 0.14 calc(var(--_f) * 360)); /* tokens:allow the hue thumb shows its own hue */
+  }
+  .fa-color-slider[data-hsv]:not([data-alpha]) .fa-color-slider-thumb {
+    background: hsl(calc(var(--_f) * 360) 100% 50%); /* tokens:allow the HSV hue thumb shows its own hue */
+  }
+
+  /* ── Compact ───────────────────────────────────────────────────────────────── */
+  .fa-color-picker[data-size="sm"] {
+    --_thumb: var(--check-size);
+    gap: var(--space-2);
+  }
+  .fa-color-picker[data-size="sm"] .fa-color-area {
+    aspect-ratio: 2 / 1;
+    border-radius: var(--radius-control);
+  }
+  .fa-color-picker[data-size="sm"] .fa-color-sliders {
+    gap: var(--space-1);
+  }
+  .fa-color-picker[data-size="sm"] .fa-color-slider-track {
+    height: var(--space-2);
+  }
+  .fa-color-picker[data-size="sm"] .fa-color-swatches {
+    gap: var(--space-1);
+  }
+  /* Beads shrink, hit areas do not (R20.4): the slider rows keep --target-aa. */
+  .fa-color-picker[data-size="sm"] .fa-color-slider-control {
+    height: max(var(--_thumb), var(--target-aa));
   }
 
   /* ── Hex, preview and eyedropper ───────────────────────────────────────────── */

@@ -1756,6 +1756,8 @@ export default defineMessagePack("ar", {
     picker: "منتقي الألوان",
     area: "الإضاءة والتلوّن",
     areaValue: (lightness, chroma) => `الإضاءة ${lightness}٪، التلوّن ${chroma}`,
+    areaHsv: "التشبع والسطوع",
+    areaValueHsv: (saturation, brightness) => `التشبع ${saturation}٪، السطوع ${brightness}٪`,
     hue: "درجة اللون",
     alpha: "التعتيم",
     hex: "لون سداسي عشري",
@@ -2042,6 +2044,7 @@ export default defineMessagePack("ar", {
   },
   toolbar: {
     more: "المزيد",
+    relatedTools: "أدوات ذات صلة",
   },
   tour: {
     progress: (step, total) => `الخطوة ${step} من ${total}`,

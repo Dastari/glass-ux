@@ -90,6 +90,7 @@ export default function SpaceSection() {
           ["--unit", "One grid unit"],
           ["--page-gutter", "Shell gutter"],
           ["--inset-panel", "Panel padding"],
+          ["--inset-panel-compact", "Compact panel padding"],
           ["--inset-dialog", "Dialog padding"],
           ["--sidebar-w", "Sidebar"],
           ["--topbar-h", "Top bar"],

@@ -328,6 +328,7 @@
 - [SingleChoiceAsk](single-choice-ask.md) — `glass-ux/ai`
 - [Skeleton](skeleton.md) — `glass-ux/skeleton`
 - [Slider](slider.md) — `glass-ux/slider`
+- [SliderField](slider-field.md) — `glass-ux/slider`
 - [SourceList](source-list.md) — `glass-ux/ai`
 - [SourcesProvider](sources-provider.md) — `glass-ux/ai`
 - [Sparkline](sparkline.md) — `glass-ux/sparkline`

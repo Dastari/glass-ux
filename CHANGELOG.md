@@ -101,6 +101,55 @@ General extensions shared with the sister packages: Tree, Tabs, shortcuts and a 
 Everything is opt-in; existing Tree, Tabs, `useHotkeys`, `parseShortcut`, `configureShortcuts`
 and `WindowFrame.StatusBar` consumers keep what they had.
 
+- SliderField (`glass-ux/slider`): a slider with its label, track and current value on one row,
+  controlled or uncontrolled. The value's width is reserved from the widest value the slider can
+  show, so dragging never moves the track; below 22rem it wraps to label and value over the track.
+  Its props type is `StandaloneSliderFieldProps`. The form kit's `SliderField` takes an opt-in
+  `inline` prop for the same row and keeps its layout otherwise.
+
+- Panel `compact` and Surface `padding="compact"`: the panel inset tightened for dense tool panes, from
+  the new `--inset-panel-compact` token (12px comfortable, 8px under compact density, against 20px and
+  16px for `--inset-panel`; it scales with the UI scale). A nested Panel keeps its own inset. Tailwind
+  gets `p-panel-compact`.
+
+- Toolbar: `orientation="vertical"` for tool rails (Up and Down Arrow move between controls, folding is
+  by height, More opens at the inline end); single-choice groups, where `Toolbar.Group` with `value`,
+  `defaultValue` or `onValueChange` is a `radiogroup` of radio buttons (`Toolbar.Button value`) with
+  exactly one chosen; and `Toolbar.Flyout`, a tool button with related tools behind it, opened by a hold,
+  the context-menu gesture or the arrow at the reading end (Arrow Down in a row), beside a vertical
+  toolbar and mirrored in right-to-left layouts. Horizontal toolbars render as before. New message
+  `toolbar.relatedTools` in every language pack. Menu popups take an `anchor`, so a control that is not
+  the menu's trigger can position one.
+
+- ColorPicker: `size="sm"`, a compact picker for tool panels (shorter plane, thinner tracks, smaller beads;
+  hit areas stay 24px), and `plane="hsv"`, an optional saturation by value plane with its own HSV hue, beside
+  the default OKLCH plane. The value stays hex. `plane` also reaches the picker inside ColorField. New
+  messages `colorPicker.areaHsv` and `areaValueHsv` in every language pack (the Arabic wording needs a
+  native-speaker check).
+
+- `useAnnounce` (`glass-ux/hooks`): one shared, always-mounted polite live region (R20.9) for outcomes no component
+  owns. It lives where the person is (inside the full-screen element or the topmost modal dialog, otherwise the
+  body, which a modal dialog makes inert), speaks the same message twice, speaks messages from a burst together
+  in order, and lets a `key` replace a waiting message. It renders nothing on the server. No component uses it
+  yet.
+- Hooks (`glass-ux/hooks`): `useClipboard` (copy with a timed `copied` state and an `error`, falling back to
+  a hidden textarea where the page has no Clipboard API), `useDebouncedValue` and `useDebouncedCallback`
+  (with `cancel`, `flush` and `pending`), and the helpers components already shared: `readingKey` and
+  `isRtl`, `useScrollEdges`, `usePrinting`, `useSelectedId` with its change types, `tryFocus`, `focusFirst`,
+  `isTextEntryTarget` and `isRichTextTarget`. CopyButton writes through the same clipboard function.
+
+- Shared code colours: the syntax roles are now `--code-keyword`, `--code-string`, `--code-string-expression`,
+  `--code-constant`, `--code-function`, `--code-parameter`, `--code-punctuation`, `--code-comment` and
+  `--code-link`, plus `--code-foreground` and `--code-background`, available on the page and re-declared on
+  palette and mode islands, so anything showing code matches. New `--code-type` role for types. `.fa-ai-code`
+  maps the Shiki theme's `--fa-code-*` names to them, so code blocks render the same colours as before in
+  every palette and mode, and overriding a `--fa-code-token-*` on a code block still works.
+- ColorPicker: the hue and opacity beads no longer hang past the picker's edge at the ends of their tracks
+  (they sat half a bead outside, which widened a scroll area around the picker), and a picker in a narrow box
+  squeezes its hex row instead of growing wider than the box.
+- ColorField and ColorPicker: the hex input and the swatch tooltips read left to right in right-to-left
+  layouts, so `#e8875a` no longer shows as `e8875a#`.
+
 ## 0.13.1
 
 Two Sidebar fixes, and the documentation site's directory moved onto the Sidebar.

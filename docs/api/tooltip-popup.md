@@ -11,7 +11,7 @@ Portal + positioner + the inverted glass bubble.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | align | `NonNullable<"center" \| "start" \| "end" \| undefined>` | "center", "start", "end" | yes | — | Alignment of the overlay relative to its anchor. |
-| anchor | `Element \| import("react").RefObject<Element \| null> \| import("@floating-ui/dom").VirtualElement \| (() => Element \| import("@floating-ui/dom").VirtualElement \| null) \| null \| undefined` | See type | no | — | Anchor used to position floating content. |
+| anchor | `Element \| import("@floating-ui/dom").VirtualElement \| import("react").RefObject<Element \| null> \| (() => Element \| import("@floating-ui/dom").VirtualElement \| null) \| null \| undefined` | See type | no | — | Anchor used to position floating content. |
 | arrow | `boolean` | false, true | yes | — | Whether floating content displays a positioning arrow. |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |

@@ -73,7 +73,9 @@ const BUDGETS = [
   { entry: 'glass-ux/ai/results', named: 'ResultBlock', gzip: 103_000, /* the shared Lightbox replaced the results' own */ forbid: ['d3-scale', '@tanstack/form-core'] },
   // 230_000 → 232_000: the shared Lightbox now announces the picture it moves to (a live region and a message),
   // and the keyboard-shortcut policy (`configureShortcuts`) sits in the Kbd module every button tooltip uses.
-  { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 232_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki'] },
+  // 232_000 → 233_000: 0.7 KB across shared modules once chords, Menu's anchor and the Composer's typeahead merged;
+  // none of the 30 largest modules grew, so there was nothing single to remove.
+  { entry: 'glass-ux/ai/message', named: 'AssistantMessage', gzip: 233_000, forbid: ['d3-scale', '@tanstack/form-core', 'shiki'] },
 ]
 
 /** Packages large enough to be worth reporting when an entry pulls them in. */

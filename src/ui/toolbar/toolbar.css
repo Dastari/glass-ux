@@ -1,7 +1,8 @@
 /*
  * Toolbar: one row of controls with a single tab stop. Units (buttons, groups, items) sit in
- * a flex row; folded units are hidden and listed in the trailing More menu. Toggles that are
- * on take the accent's soft fill, like a selected segment.
+ * a flex row (a column when vertical); folded units are hidden and listed in the trailing More
+ * menu. Toggles and chosen tools that are on take the accent's soft fill, like a selected
+ * segment. A flyout button carries a small corner mark: the tools behind it.
  */
 @layer components {
   .fa-toolbar {
@@ -46,6 +47,51 @@
     inset-inline-end: 0;
     visibility: hidden;
     pointer-events: none;
+  }
+  /* ── Vertical: a column, such as a tool rail ───────────────────────────── */
+  .fa-toolbar[data-orientation="vertical"] {
+    flex-direction: column;
+    align-items: center;
+    min-width: auto;
+    min-height: 0;
+  }
+  .fa-toolbar[data-orientation="vertical"] .fa-toolbar-unit,
+  .fa-toolbar[data-orientation="vertical"] .fa-toolbar-group {
+    flex-direction: column;
+  }
+  .fa-toolbar[data-orientation="vertical"] .fa-toolbar-unit[data-kind="spacer"] {
+    flex: 1 1 0;
+  }
+  .fa-toolbar[data-orientation="vertical"] .fa-toolbar-separator {
+    width: calc(var(--control-h-sm) - var(--space-3));
+    height: var(--border-width);
+    margin-inline: 0;
+    margin-block: var(--space-1);
+  }
+  .fa-toolbar[data-orientation="vertical"] .fa-toolbar-more {
+    margin-inline-start: 0;
+    margin-block-start: auto;
+  }
+  .fa-toolbar[data-orientation="vertical"] .fa-toolbar-more[data-idle] {
+    inset-inline-end: auto;
+    inset-block-end: 0;
+  }
+
+  /* ── Flyout mark: a corner triangle at the inline end, in the button's text colour ───────── */
+  .fa-toolbar-flyout-mark {
+    content: "";
+    position: absolute;
+    inset-inline-end: var(--space-half);
+    inset-block-end: var(--space-half);
+    width: var(--space-1);
+    height: var(--space-1);
+    background: currentColor;
+    opacity: 0.6;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    pointer-events: none;
+  }
+  .fa-toolbar-flyout-mark:dir(rtl) {
+    clip-path: polygon(0 0, 100% 100%, 0 100%);
   }
   .fa-toolbar .fa-btn[data-pressed-state="on"] {
     background: var(--accent-soft);

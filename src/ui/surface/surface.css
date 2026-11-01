@@ -27,6 +27,9 @@
   .fa-surface[data-padding="tile"] {
     padding: var(--inset-tile);
   }
+  .fa-surface[data-padding="compact"] {
+    padding: var(--inset-panel-compact);
+  }
   .fa-surface[data-padding="panel"] {
     padding: var(--inset-panel);
   }
@@ -38,10 +41,15 @@
   }
 
   .fa-panel {
+    /* Each panel names its own inset, so a compact panel never tightens one nested inside it. */
+    --_inset: var(--inset-panel);
     display: flex;
     flex-direction: column;
     min-height: 0;
     container: panel / inline-size;
+  }
+  .fa-panel[data-compact] {
+    --_inset: var(--inset-panel-compact);
   }
   .fa-panel[data-scroll] {
     overflow: hidden;
@@ -50,8 +58,8 @@
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    min-height: calc(var(--control-h-md) + var(--inset-panel));
-    padding: var(--inset-panel) var(--inset-panel) 0;
+    min-height: calc(var(--control-h-md) + var(--_inset, var(--inset-panel)));
+    padding: var(--_inset, var(--inset-panel)) var(--_inset, var(--inset-panel)) 0;
   }
   .fa-panel-header-icon {
     display: inline-grid;
@@ -91,7 +99,7 @@
   .fa-panel-body {
     flex: 1 1 auto;
     min-height: 0;
-    padding: var(--inset-panel);
+    padding: var(--_inset, var(--inset-panel));
   }
   .fa-panel[data-scroll] > .fa-panel-body {
     overflow-y: auto;
@@ -113,7 +121,7 @@
     align-items: center;
     justify-content: flex-end;
     gap: var(--gap-controls);
-    padding: 0 var(--inset-panel) var(--inset-panel);
+    padding: 0 var(--_inset, var(--inset-panel)) var(--_inset, var(--inset-panel));
   }
   /* R5.8: the footer edge appears only while content scrolls beneath it. */
   .fa-panel[data-scroll][data-scrolled-end="false"] > .fa-panel-footer {

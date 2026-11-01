@@ -11,6 +11,12 @@ const PRESETS = [
   { value: "#9334e6", label: "Dusk violet" }, // tokens:allow sample preset
   { value: "#5f6368", label: "Slate grey" }, // tokens:allow sample preset
 ];
+const HSV_SAMPLE = "#1f6feb"; // tokens:allow sample value
+
+const COMPACT_SAMPLE = "#e8710a"; // tokens:allow sample value
+
+const COMPACT_HSV_SAMPLE = "#9334e6"; // tokens:allow sample value
+
 const WHITE = parseHex("#ffffff")!; // tokens:allow contrast reference
 
 export default function ColorPickerSection() {
@@ -36,6 +42,45 @@ export default function ColorPickerSection() {
           <p className="type-caption text-fg-muted" data-numeric>
             {colour} · white text on it {ratio.toFixed(2)}:1 {ratio >= 4.5 ? "(AA)" : "(below AA)"}
           </p>
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="HSV plane"
+        description='plane="hsv" swaps the plane for value (up) × saturation (across) at the HSV hue, the layout most design tools use. The value stays hex and the hue slider follows the plane.'
+        layout="stack"
+      >
+        <div className="grid max-w-md gap-3">
+          <ColorPicker
+            plane="hsv"
+            defaultValue={HSV_SAMPLE}
+            swatches={PRESETS}
+            aria-label="HSV colour"
+          />
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="Compact"
+        description='size="sm" is for tool panels: a shorter plane, thinner tracks and tighter spacing. Targets stay 24px (R20.4).'
+        layout="row"
+      >
+        <div className="grid w-60 gap-3">
+          <ColorPicker
+            size="sm"
+            defaultValue={COMPACT_SAMPLE}
+            alpha
+            swatches={PRESETS}
+            aria-label="Compact colour"
+          />
+        </div>
+        <div className="grid w-60 gap-3">
+          <ColorPicker
+            size="sm"
+            plane="hsv"
+            defaultValue={COMPACT_HSV_SAMPLE}
+            aria-label="Compact HSV colour"
+          />
         </div>
       </Specimen>
     </SectionPage>

@@ -12,6 +12,11 @@ export default function SurfaceExample() {
           Repeated cards use tile geometry and the unblurred card material.
         </Surface>
       </Specimen>
+      <Specimen title="Compact padding" layout="stack">
+        <Surface material="panel" padding="compact">
+          padding="compact" reads --inset-panel-compact.
+        </Surface>
+      </Specimen>
       <Specimen title="Material level per surface" layout="stack">
         <Surface material="panel" padding="panel">
           The page's level (Glass unless Appearance says otherwise).

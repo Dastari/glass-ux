@@ -28,7 +28,7 @@ export default function ColorPickerSection() {
         title="Field"
         description="The hex value is typed in place; the swatch opens the picker. Clearable fields can hold no colour."
         layout="stack"
-        specimenKey="color-picker:default:1"
+        specimenKey="color-picker:default:3"
       >
         <div className="grid max-w-md gap-4">
           <Field label="Tag colour" description="Shown on the tag's chip.">

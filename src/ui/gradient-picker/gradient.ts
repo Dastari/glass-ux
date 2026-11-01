@@ -48,7 +48,7 @@ const round = (value: number) => Math.round(value * 10) / 10
 const clampPosition = (position: number) => Math.min(100, Math.max(0, round(position)))
 const inOrder = (stops: readonly GradientStop[]) => stops.toSorted((a, b) => a.position - b.position)
 
-function rgba(hex: string) {
+function channels(hex: string) {
   const color = parseHex(hex)
   const value = hex.replace("#", "")
   const full = value.length <= 4 ? value.replace(/./g, (ch) => ch + ch) : value
@@ -60,8 +60,8 @@ const pair = (value: number) => Math.round(value).toString(16).padStart(2, "0")
 
 /** Blend two colours in sRGB with premultiplied alpha, as a browser does. */
 function mixSrgb(from: string, to: string, t: number) {
-  const a = rgba(from)
-  const b = rgba(to)
+  const a = channels(from)
+  const b = channels(to)
   const alpha = a.a + (b.a - a.a) * t
   const channel = (x: number, y: number) => (alpha === 0 ? 0 : (x * a.a + (y * b.a - x * a.a) * t) / alpha)
   const hex = `#${pair(channel(a.r, b.r))}${pair(channel(a.g, b.g))}${pair(channel(a.b, b.b))}`

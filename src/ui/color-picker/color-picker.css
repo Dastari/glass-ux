@@ -16,6 +16,7 @@
     --_check: color-mix(in oklab, var(--fg-subtle) 22%, transparent);
     --_checks: conic-gradient(var(--_check) 25%, transparent 0 50%, var(--_check) 0 75%, transparent 0) 0 0 / var(--space-2) var(--space-2);
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-3);
     width: 100%;
     min-width: 0;

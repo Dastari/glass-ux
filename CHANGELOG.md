@@ -46,6 +46,7 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Fixed
 
+- ColorPicker: its controls no longer overflow a narrow box at a large UI scale.
 - Histogram: dense bins (a column under 4px wide) no longer lose their width to the gap.
 
 ## 0.13.1

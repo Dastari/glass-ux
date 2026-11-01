@@ -37,7 +37,7 @@ function PanZoomDemo() {
         role="application"
         aria-label="Sample picture"
         tabIndex={0}
-        className="relative h-64 overflow-hidden rounded-lg bg-fill-muted"
+        className="relative h-64 overflow-hidden rounded-tile bg-fill-muted"
       >
         <img
           ref={picture}

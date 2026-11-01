@@ -8,6 +8,7 @@
 @layer components {
   .fa-gradient-picker {
     --_thumb: calc(var(--check-size) + var(--space-1));
+    --_ring: oklch(1 0 0);
     --_check: color-mix(in oklab, var(--fg-subtle) 22%, transparent);
     --_checks: conic-gradient(var(--_check) 25%, transparent 0 50%, var(--_check) 0 75%, transparent 0) 0 0 / var(--space-2) var(--space-2);
     display: grid;
@@ -64,7 +65,7 @@
     left: var(--_position); /* logical:allow a gradient's axis runs left to right in every language */
     width: var(--_thumb);
     height: var(--_thumb);
-    border: calc(var(--border-width) * 2.5) solid oklch(1 0 0);
+    border: calc(var(--border-width) * 2.5) solid var(--_ring);
     border-radius: var(--radius-full);
     background-color: var(--_stop);
     box-shadow: 0 0 0 var(--border-width) var(--line-strong);

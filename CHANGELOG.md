@@ -8,6 +8,19 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `glass-ux/file-provider`: `FileProvider`, a storage contract as types only, with no imports and no
+  runtime code, compiling against the WebWorker lib as well as DOM. Ranged reads with an AbortSignal,
+  a version on stat, `WriteBase` in and `WriteResult` out (a conflict is a result, and a blind
+  overwrite is always explicit), optional `applyEdits`, paged listings, thumbnails and per-entry
+  `denied`. Everything beyond `stat` and `read` is an optional method. It has no authentication.
+- `glass-ux/file-provider/memory`: `memoryFiles`, a provider in memory for tests and demonstrations.
+- `glass-ux/file-dialog`: `FileDialog`, open and save over providers. Paged listing, a path, folders
+  in a Tree, list and grid with thumbnails, multiple selection, a name and formats for Save with
+  overwrite confirmation, `FileConflictDialog` for a conflict from the host, filters, and loading,
+  empty, denied and error states in one box. It adapts to the provider's methods. The host reads and
+  writes in `onOpen` and `onSave` with `{ signal, setProgress }`. `FileDialogPreview` draws it in the
+  page.
+- `testFileProvider` in `glass-ux/testing`: a conformance suite for a provider's adapter.
 - `glass-ux/image-cropper`: `ImageCropper` (locked aspect or free, host presets), `ImageCropDialog`
   (pick, check, crop, save with `{ signal, setProgress }`), `ImageField`/`ImageInput` with
   `imageSchema` and an optional `onEdit`, and `cropToBlob`. `field.ImageField` is registered in

@@ -1,6 +1,7 @@
 # File provider and FileDialog: design (item 27)
 
-Status: proposal for owner approval. Nothing here is built.
+Status: approved 2026-11-01 with the recommended defaults, and built. See
+[FileDialog and FileProvider](../components/file-dialog.md) for the shipped API.
 
 ## Decision
 

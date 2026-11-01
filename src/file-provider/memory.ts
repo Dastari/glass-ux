@@ -82,6 +82,13 @@ function failure(code: FileProviderError["code"], message: string): FileProvider
   return Object.assign(new Error(message), { name: "FileProviderError", code })
 }
 
+/** One turn of the event loop, as a backend would take, with abort checked on both sides of it. */
+async function turn(signal: AbortSignal) {
+  signal.throwIfAborted()
+  await Promise.resolve()
+  signal.throwIfAborted()
+}
+
 const toBytes = (content: string | Uint8Array | undefined) => (content === undefined ? NO_BYTES : typeof content === "string" ? new TextEncoder().encode(content) : content.slice())
 
 /**
@@ -222,16 +229,12 @@ export function memoryFiles(seed: MemorySeed = {}, options: MemoryFilesOptions =
     root,
 
     async stat(uri: FileUri, { signal }: FileRequest): Promise<FileStat> {
-      signal.throwIfAborted()
-      await null
-      signal.throwIfAborted()
+      await turn(signal)
       return entryOf(uri, existing(uri))
     },
 
     async read(uri: FileUri, { offset, length }: ByteRange, { signal, version }: ReadOptions): Promise<Uint8Array> {
-      signal.throwIfAborted()
-      await null
-      signal.throwIfAborted()
+      await turn(signal)
       const node = requireFile(uri)
       refuse(node, "read")
       if (version !== undefined && node.version !== version) throw failure("changed", `${uri} is no longer version ${version}`)
@@ -239,9 +242,7 @@ export function memoryFiles(seed: MemorySeed = {}, options: MemoryFilesOptions =
     },
 
     async readDirectory(uri: FileUri, { signal, cursor, limit }: ListOptions): Promise<DirectoryPage> {
-      signal.throwIfAborted()
-      await null
-      signal.throwIfAborted()
+      await turn(signal)
       refuse(requireFolder(uri), "read")
       const all = childrenOf(uri)
       const start = cursor ? Number(cursor) : 0
@@ -286,9 +287,7 @@ export function memoryFiles(seed: MemorySeed = {}, options: MemoryFilesOptions =
     },
 
     async applyEdits(uri: FileUri, base: FileVersion, edits: readonly ByteEdit[], { signal }: FileRequest): Promise<WriteResult> {
-      signal.throwIfAborted()
-      await null
-      signal.throwIfAborted()
+      await turn(signal)
       const node = nodeAt(uri)
       if (!node) return { status: "conflict", current: null }
       if (node.kind !== "file") throw failure("unsupported", `${uri} is a folder`)
@@ -312,9 +311,7 @@ export function memoryFiles(seed: MemorySeed = {}, options: MemoryFilesOptions =
     },
 
     async thumbnail(uri: FileUri, { signal, version }: ThumbnailOptions): Promise<FileThumbnail | null> {
-      signal.throwIfAborted()
-      await null
-      signal.throwIfAborted()
+      await turn(signal)
       const node = requireFile(uri)
       if (version !== undefined && node.version !== version) throw failure("changed", `${uri} is no longer version ${version}`)
       if (node.thumbnail) return node.thumbnail
@@ -329,9 +326,7 @@ export function memoryFiles(seed: MemorySeed = {}, options: MemoryFilesOptions =
     },
 
     async createDirectory(uri: FileUri, { signal }: FileRequest): Promise<FileStat> {
-      signal.throwIfAborted()
-      await null
-      signal.throwIfAborted()
+      await turn(signal)
       if (nodeAt(uri)) throw failure("exists", `${uri} already exists`)
       const parent = parentOf(uri)
       if (parent === null) throw failure("not-found", `${uri} has no parent`)
@@ -343,9 +338,7 @@ export function memoryFiles(seed: MemorySeed = {}, options: MemoryFilesOptions =
     },
 
     async rename(from: FileUri, to: FileUri, { signal }: FileRequest): Promise<FileStat> {
-      signal.throwIfAborted()
-      await null
-      signal.throwIfAborted()
+      await turn(signal)
       const node = existing(from)
       refuse(node, "rename")
       if (key(from) === key(root)) throw failure("unsupported", "The root cannot be renamed")
@@ -354,7 +347,7 @@ export function memoryFiles(seed: MemorySeed = {}, options: MemoryFilesOptions =
       if (parent === null) throw failure("not-found", `${to} has no parent`)
       refuse(requireFolder(parent), "create")
       const oldKey = key(from)
-      for (const [at, moved] of [...nodes]) {
+      for (const [at, moved] of Array.from(nodes)) {
         if (at !== oldKey && !at.startsWith(`${oldKey}/`)) continue
         nodes.delete(at)
         nodes.set(`${key(to)}${at.slice(oldKey.length)}`, moved)
@@ -365,13 +358,11 @@ export function memoryFiles(seed: MemorySeed = {}, options: MemoryFilesOptions =
     },
 
     async delete(uri: FileUri, { signal }: FileRequest): Promise<void> {
-      signal.throwIfAborted()
-      await null
-      signal.throwIfAborted()
+      await turn(signal)
       refuse(existing(uri), "delete")
       if (key(uri) === key(root)) throw failure("unsupported", "The root cannot be deleted")
       const gone = key(uri)
-      for (const at of [...nodes.keys()]) if (at === gone || at.startsWith(`${gone}/`)) nodes.delete(at)
+      for (const at of Array.from(nodes.keys())) if (at === gone || at.startsWith(`${gone}/`)) nodes.delete(at)
       notify({ type: "deleted", uri })
     },
   } satisfies FileProvider

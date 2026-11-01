@@ -544,6 +544,8 @@ const app = await Application.bootstrapWithPlugins({
     "src/hooks/index.ts",
     "src/testing/index.ts",
     "src/testing/playwright.ts",
+    "src/file-provider/index.ts",
+    "src/file-provider/memory.ts",
     "src/gallery/index.ts",
     "src/adapters/graphql-orm/index.ts",
   ],

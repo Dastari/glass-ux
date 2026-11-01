@@ -44,7 +44,9 @@ For a list that opens from text and leaves focus there, use `Typeahead` with `us
 (glass-ux/typeahead), anchored to a caret or any rectangle; base UI menus move focus and cannot
 do this. `RichTextInput` takes `mentions` and `slashCommands`. For find in a log, table or
 document use `FindBar` (glass-ux/find-bar): the host owns matching. For a change to text use
-`DiffView` (glass-ux/diff-view). A version history is an `ActivityFeed` with `tone`, `children`
+`DiffView` (glass-ux/diff-view). For choosing files or where to save over host storage, use
+`FileDialog` (glass-ux/file-dialog) with a `FileProvider` (glass-ux/file-provider): it lists and
+chooses, and the host reads and writes. A version history is an `ActivityFeed` with `tone`, `children`
 and `selectedId`. `AppShell focusRegions`, or `useFocusRegions` from glass-ux/hooks, gives F6
 between panes.
 

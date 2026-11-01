@@ -28,16 +28,27 @@ export async function openSection(page: Page, name: string) {
   }).toPass({ timeout: 20_000 });
 }
 
-/** Every section the rail offers, in the strip or its More menu. */
+/**
+ * Every section the rail offers, in the strip or its More menu. The menu mounts a moment after
+ * the click, so wait for its rows; the scroll spy can swap a section between the strip and the
+ * menu at any time, so read both in one query rather than one after the other.
+ */
 export async function sectionNames(page: Page): Promise<string[]> {
   const rail = documentRail(page);
   await expect(rail.getByRole("link").first()).toBeVisible();
-  const names = await rail.getByRole("link").allTextContents();
   const more = rail.getByRole("button", { name: moreTabs });
-  if (await more.count()) {
+  const opened = (await more.count()) > 0;
+  if (opened) {
     await more.click();
-    names.push(...(await page.getByRole("menuitem").allTextContents()));
+    await expect(page.getByRole("menuitem").first()).toBeVisible();
+  }
+  const names = await rail
+    .getByRole("link")
+    .or(page.getByRole("menuitem"))
+    .allTextContents();
+  if (opened) {
     await page.keyboard.press("Escape");
+    await expect(page.getByRole("menu", { name: moreTabs })).toBeHidden();
   }
   return names.map((name) => name.trim());
 }

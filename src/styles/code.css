@@ -6,18 +6,27 @@
  *   --code-function · --code-type · --code-parameter · --code-punctuation · --code-comment ·
  *   --code-link, and the text and ground --code-foreground · --code-background.
  *
- * Every role derives from the palette's --accent-text (themes.css), which is AA on glass in both
- * modes, so each palette gets a harmonious set at one lightness: keywords and links take the
- * accent, the rest turn round the hue circle (strings and string expressions +150°, constants
- * +250°, functions +205°, types +305°) at a little less chroma, and parameters, punctuation and
- * comments take the muted foregrounds. No italics or weights: highlighted text keeps the plain
- * text's exact advance, so nothing shifts when the colours arrive.
+ * Every role derives from the palette's --accent-text (themes.css): keywords and links take the
+ * accent's hue, the rest turn round the hue circle (strings and string expressions +150°,
+ * constants +250°, functions +205°, types +305°) at a little less chroma, and parameters,
+ * punctuation and comments take the muted foregrounds. No italics or weights: highlighted text
+ * keeps the plain text's exact advance, so nothing shifts when the colours arrive.
+ *
+ * Each mode then sets the ink through --code-ink-l, --code-ink-c and --code-ink-step (themes.css):
+ *   dark   the accent text's own lightness, with every role's chroma kept
+ *   light  a lightness low enough for 4.5:1 on the darkest Glass ground. Luminance at one OKLCH
+ *          lightness changes with hue, so --code-ink-l is lower for greens and cyans. Roles step
+ *          down from it (strings 0, constants 1, keywords 2, functions 4, types 5), because that
+ *          lightness difference is what separates two hues for red-green colour vision, and
+ *          chroma has a floor, so the quiet palettes stay distinct and a vivid hue stays in sRGB.
+ * Comments take the muted ink in light mode: --fg-subtle is too light for 4.5:1 on Glass, so
+ * they share the colour of parameters and punctuation. print.css keeps the accent text's ink.
  *
  * The roles are re-declared on islands ([data-mode], [data-palette]) like the data colours
  * (data.css), so a palette or mode island recomputes its own set. e2e/code-tokens.spec.ts
- * proves 4.5:1 on the rendered ground for every palette in both modes, in Glass and Solid.
- * The Shiki CSS-variables theme reads the same roles through the --fa-code-* names that
- * code-block.css maps to them.
+ * proves 4.5:1 on the rendered ground for every palette in both modes, in Glass, Frosted and
+ * Solid, and that the roles stay distinct. The Shiki CSS-variables theme reads the same roles
+ * through the --fa-code-* names that code-block.css maps to them.
  */
 @layer base {
   :root,
@@ -25,15 +34,15 @@
   [data-palette] {
     --code-foreground: var(--fg);
     --code-background: transparent;
-    --code-keyword: var(--accent-text);
-    --code-string: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 150));
-    --code-string-expression: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 150));
-    --code-constant: oklch(from var(--accent-text) l calc(c * 0.9) calc(h + 250));
-    --code-function: oklch(from var(--accent-text) l calc(c * 0.8) calc(h + 205));
-    --code-type: oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 305));
+    --code-keyword: oklch(from var(--accent-text) calc(var(--code-ink-l) - 2 * var(--code-ink-step)) var(--code-ink-c) h);
+    --code-string: oklch(from oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 150)) var(--code-ink-l) var(--code-ink-c) h);
+    --code-string-expression: var(--code-string);
+    --code-constant: oklch(from oklch(from var(--accent-text) l calc(c * 0.9) calc(h + 250)) calc(var(--code-ink-l) - var(--code-ink-step)) var(--code-ink-c) h);
+    --code-function: oklch(from oklch(from var(--accent-text) l calc(c * 0.8) calc(h + 205)) calc(var(--code-ink-l) - 4 * var(--code-ink-step)) var(--code-ink-c) h);
+    --code-type: oklch(from oklch(from var(--accent-text) l calc(c * 0.85) calc(h + 305)) calc(var(--code-ink-l) - 5 * var(--code-ink-step)) var(--code-ink-c) h);
     --code-parameter: var(--fg-muted);
     --code-punctuation: var(--fg-muted);
-    --code-comment: var(--fg-subtle);
-    --code-link: var(--accent-text);
+    --code-comment: var(--code-comment-ink);
+    --code-link: var(--code-keyword);
   }
 }

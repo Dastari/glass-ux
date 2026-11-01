@@ -2,8 +2,7 @@
  * CodeBlock — fenced code in an AiCard well, highlighted lazily with Shiki.
  *
  * The syntax colours are the shared --code-* roles (src/styles/code.css), derived from the
- * accent so every palette gets a harmonious set at the accent text's lightness (AA on glass
- * in both modes). No italics or weights, so highlighted text keeps the plain text's exact
+ * accent so every palette gets a harmonious set at 4.5:1 on the well in both modes. No italics or weights, so highlighted text keeps the plain text's exact
  * advance and nothing shifts when the colours arrive.
  *
  * Component tokens
@@ -24,6 +23,13 @@
     --fa-code-token-punctuation: var(--code-punctuation);
     --fa-code-token-comment: var(--code-comment);
     --fa-code-token-link: var(--code-link);
+  }
+
+  /* --glass-fill-code is the inset well, firmer in light Glass (glass.css). */
+  @media screen and (forced-colors: none) {
+    .fa-ai-code.glass-inset {
+      background-color: var(--glass-fill-code);
+    }
   }
 
   .fa-ai-code-scroll {

@@ -63,6 +63,9 @@
     --glass-fill-card: color-mix(in oklab, var(--surface-2) 82%, transparent);
     --glass-fill-control-hover: oklch(1 0 0 / 0.9);
     --glass-fill-inset: oklch(0.35 0.04 var(--neutral-h) / 0.045);
+    /* A code well can sit straight on the canvas, and a 4.5% tint leaves syntax on whatever the
+       artwork paints there. This fill keeps its darkest ground at 4.5:1 for every code role. */
+    --glass-fill-code: color-mix(in oklab, var(--glass-inset-solid) 38%, transparent);
     /* Opaque equivalents of the fills that are translucent in Glass: Solid uses them and
        Frosted moves most of the way towards them. Tints mix with the panel surface, as they
        do over imagery. */
@@ -123,6 +126,7 @@
     --glass-fill-card: color-mix(in oklab, var(--surface-2) 82%, transparent);
     --glass-fill-control-hover: oklch(1 0 0 / 0.1);
     --glass-fill-inset: oklch(0 0 0 / 0.2);
+    --glass-fill-code: var(--glass-fill-inset);
     --glass-control-solid: color-mix(in oklab, oklch(1 0 0) 6%, var(--surface-2));
     --glass-control-solid-hover: color-mix(in oklab, oklch(1 0 0) 10%, var(--surface-2));
     --glass-inset-solid: color-mix(in oklab, oklch(0 0 0) 20%, var(--surface-2));
@@ -224,6 +228,7 @@
     --glass-fill-control: color-mix(in oklab, var(--glass-control-solid) 86%, transparent);
     --glass-fill-control-hover: color-mix(in oklab, var(--glass-control-solid-hover) 92%, transparent);
     --glass-fill-inset: color-mix(in oklab, var(--glass-inset-solid) 86%, transparent);
+    --glass-fill-code: var(--glass-fill-inset);
   }
 
   :root[data-glass="solid"],
@@ -245,6 +250,7 @@
     --glass-fill-control: var(--glass-control-solid);
     --glass-fill-control-hover: var(--glass-control-solid-hover);
     --glass-fill-inset: var(--glass-inset-solid);
+    --glass-fill-code: var(--glass-fill-inset);
     --fill-muted: var(--tint-muted-solid);
     --accent-soft: var(--tint-accent-solid);
     --accent-soft-hover: var(--tint-accent-solid-hover);
@@ -290,6 +296,7 @@
       --glass-fill-control: var(--glass-control-solid);
       --glass-fill-control-hover: var(--glass-control-solid-hover);
       --glass-fill-inset: var(--glass-inset-solid);
+      --glass-fill-code: var(--glass-fill-inset);
       --fill-muted: var(--tint-muted-solid);
       --accent-soft: var(--tint-accent-solid);
       --accent-soft-hover: var(--tint-accent-solid-hover);
@@ -611,6 +618,7 @@
       transparent
     );
     --glass-fill-inset: color-mix(in oklab, var(--surface-2) 72%, transparent);
+    --glass-fill-code: var(--glass-fill-inset);
     --fill-hover: color-mix(in oklab, var(--surface-3) 72%, transparent);
     --fill-press: color-mix(in oklab, var(--surface-3) 88%, transparent);
     --fill-muted: color-mix(in oklab, var(--surface-2) 64%, transparent);

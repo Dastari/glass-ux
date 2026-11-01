@@ -148,7 +148,7 @@ function ContrastBadge({ role }: { role: string }) {
 
 /** The shared code colours (src/styles/code.css), in the order a line of code reads them. */
 const CODE_ROLES: Array<[role: string, use: string]> = [
-  ["--code-keyword", "Keywords: the accent text"],
+  ["--code-keyword", "Keywords: the accent hue"],
   ["--code-string", "Strings"],
   ["--code-string-expression", "Interpolated parts of a string"],
   ["--code-constant", "Numbers and constants"],

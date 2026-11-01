@@ -13,6 +13,7 @@
       --glass-fill-control: var(--surface-2);
       --glass-fill-control-hover: var(--glass-control-solid-hover);
       --glass-fill-inset: var(--glass-inset-solid);
+      --glass-fill-code: var(--glass-fill-inset);
       --glass-edge: var(--line-strong);
       --glass-rim: transparent;
       --glass-rim-top: transparent;

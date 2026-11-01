@@ -314,6 +314,15 @@ and `WindowFrame.StatusBar` consumers keep what they had.
   squeezes its hex row instead of growing wider than the box.
 - ColorField and ColorPicker: the hex input and the swatch tooltips read left to right in right-to-left
   layouts, so `#e8875a` no longer shows as `e8875a#`.
+- Code colours: every `--code-*` syntax role now reaches 4.5:1 in light mode in all 12 palettes on
+  Glass, Frosted and Solid, on every built-in canvas (the worst was 2.66:1). Light mode sets the
+  roles at a lower lightness, adjusted for hue and stepped by role, with a chroma floor and ceiling,
+  so hues stay apart, including for red-green colour vision, and Graphite, Sand and Slate no longer
+  collapse into one grey. Comments take the same ink as parameters and punctuation in light mode.
+  `--code-add-text` and `--code-remove-text` are darker in light mode, so DiffView signs reach 4.5:1
+  on Silk. Light Glass gives the code well a firmer fill, `--glass-fill-code`, because a 4.5% tint
+  over the darker canvases cannot carry 4.5:1 by colour alone. Dark mode, print and forced colours
+  are unchanged.
 
 ## 0.13.1
 

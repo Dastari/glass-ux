@@ -57,6 +57,11 @@ export interface DragDropProviderProps extends DragDropCallbacks {
   instructions?: string
   /** Scroll containers and the page while a pointer drag nears their edges. Default true. */
   autoScroll?: boolean
+  /**
+   * Where the instructions and live region render, for a provider inside a widget whose role
+   * allows only certain children (a tree). Default: after `children`.
+   */
+  liveRegionHost?: HTMLElement | null
 }
 
 /**
@@ -65,7 +70,7 @@ export interface DragDropProviderProps extends DragDropCallbacks {
  * drops, and the lifecycle callbacks for every drag in it (`onDragStart` … `onDragEnd`).
  * Put one around a screen or the whole application; providers do not exchange items.
  */
-export function DragDropProvider({ children, announcements, instructions: instructionsProp, autoScroll = true, ...callbacks }: DragDropProviderProps) {
+export function DragDropProvider({ children, announcements, instructions: instructionsProp, autoScroll = true, liveRegionHost, ...callbacks }: DragDropProviderProps) {
  const messages = useMessages(dragDropMessages)
  const instructions = instructionsProp ?? messages.dragInstructions
   const [manager] = useState(() => new DragDropManager())
@@ -80,13 +85,18 @@ export function DragDropProvider({ children, announcements, instructions: instru
   useEffect(() => () => manager.destroy(), [manager])
   const active = useSyncExternalStore(manager.subscribeActive, manager.getActive, () => null)
   const context = useMemo(() => ({ manager, instructionsId }), [manager, instructionsId])
-  return (
-    <DragDropContext value={context}>
-      {children}
+  const live = (
+    <>
       <span id={instructionsId} hidden>
         {instructions}
       </span>
       <span ref={announcer} className="fa-dnd-announcer" aria-live="polite" aria-atomic="true" />
+    </>
+  )
+  return (
+    <DragDropContext value={context}>
+      {children}
+      {liveRegionHost ? createPortal(live, liveRegionHost) : live}
       {active?.preview && active.previewHost ? createPortal(active.preview, active.previewHost) : null}
     </DragDropContext>
   )

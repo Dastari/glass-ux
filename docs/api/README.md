@@ -380,6 +380,7 @@
 - [TransferList](transfer-list.md) — `glass-ux/transfer-list`
 - [Tree](tree.md) — `glass-ux/tree`
 - [Treemap](treemap.md) — `glass-ux/charts`
+- [TreeMoveItems](tree-move-items.md) — `glass-ux/tree`
 - [TreeSelect](tree-select.md) — `glass-ux/tree-select`
 - [TreeSelectField](tree-select-field.md) — `glass-ux/tree-select`
 - [TreeSkeleton](tree-skeleton.md) — `glass-ux/tree`

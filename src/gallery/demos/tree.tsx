@@ -7,7 +7,18 @@ import { IconEndpoint, IconOrganisation } from "../../icons/generated/icons.js";
 import { CountBadge } from "../../ui/badge/index.js";
 import { SearchField } from "../../ui/input/index.js";
 import { ActionContextMenu } from "../../ui/actions/index.js";
-import { Tree, TreeSkeleton, type TreeNode } from "../../ui/tree/index.js";
+import { Button } from "../../ui/button/index.js";
+import { ContextMenu } from "../../ui/context-menu/index.js";
+import { Menu } from "../../ui/menu/index.js";
+import {
+  Tree,
+  TreeMoveItems,
+  TreeSkeleton,
+  moveTreeNodes,
+  type TreeHandle,
+  type TreeMove,
+  type TreeNode,
+} from "../../ui/tree/index.js";
 import {
   ENDPOINTS,
   ORGANISATIONS,
@@ -254,6 +265,148 @@ function ExplorerTree() {
   );
 }
 
+// ── Project files: every addition together, in a fixed state ────────────────────────────
+const PROJECT: TreeNode[] = [
+  {
+    id: "brief",
+    label: "Brief",
+    children: [
+      { id: "brief/scope", label: "scope.md" },
+      { id: "brief/budget", label: "budget.xlsx" },
+      { id: "brief/timeline", label: "timeline.md", renamable: false },
+    ],
+  },
+  {
+    id: "surveys",
+    label: "Surveys",
+    children: [
+      { id: "surveys/north", label: "north-shore.pdf" },
+      { id: "surveys/south", label: "south-shore.pdf" },
+    ],
+  },
+  { id: "locked", label: "Signed contract.pdf", movable: false },
+  { id: "notes", label: "notes.md" },
+];
+const SIZES: Record<string, string> = {
+  "brief/scope": "4 KB",
+  "brief/budget": "86 KB",
+  "surveys/north": "2.1 MB",
+  "surveys/south": "1.9 MB",
+  notes: "1 KB",
+};
+
+function ProjectTree() {
+  const [nodes, setNodes] = useState(PROJECT);
+  const [selected, setSelected] = useState<string[]>(["brief/budget"]);
+  const [log, setLog] = useState("No change yet");
+  const tree = useRef<TreeHandle>(null);
+  const rename = (id: string, label: string) => {
+    if (label.includes("/")) return "A name can't contain a slash";
+    setNodes((list) => patchNode(list, id, (node) => ({ ...node, label })));
+    setLog(`Renamed to ${label}`);
+    return undefined;
+  };
+  const move = (next: TreeMove) => {
+    setNodes((list) => moveTreeNodes(list, next));
+    setLog(
+      `${next.ids.join(", ")} to ${next.parentId ?? "top level"} at ${next.index} by ${next.input}`,
+    );
+  };
+  return (
+    <div className="flex w-96 max-w-full flex-col gap-2" data-testid="tree-project">
+      <div className="h-90">
+        <Tree
+          ref={tree}
+          nodes={nodes}
+          aria-label="Project files"
+          defaultExpanded={["brief", "surveys"]}
+          selectionMode="multiple"
+          selectedIds={selected}
+          onSelectedIdsChange={setSelected}
+          selectionLimit={6}
+          selectableGroups
+          checkboxes
+          onRename={rename}
+          onMove={move}
+          canMove={(next) =>
+            next.parentId === "locked" ? "Signed contract.pdf isn't a folder" : true
+          }
+          renderTrailing={(node) => SIZES[node.id] ?? null}
+          rowWrapper={(node, row) => (
+            <ContextMenu.Root>
+              <ContextMenu.Trigger render={row} />
+              <ContextMenu.Popup aria-label={`Actions for ${node.label}`}>
+                <Menu.Item onClick={() => void tree.current?.rename(node.id)}>Rename</Menu.Item>
+                <TreeMoveItems tree={tree} id={node.id} />
+              </ContextMenu.Popup>
+            </ContextMenu.Root>
+          )}
+        />
+      </div>
+      <p className="type-caption text-fg-muted" data-testid="tree-project-log">
+        {log}
+      </p>
+      <p className="type-caption text-fg-muted" data-testid="tree-project-selected">
+        {selected.join(", ") || "Nothing selected"}
+      </p>
+    </div>
+  );
+}
+
+function RevealTree() {
+  const [nodes, setNodes] = useState(STORE_ROOTS);
+  const [result, setResult] = useState("Not revealed yet");
+  const tree = useRef<TreeHandle>(null);
+  const loadChildren = (node: TreeNode) =>
+    later(() => {
+      const all = subkeys(node.id);
+      setNodes((list) =>
+        patchNode(list, node.id, (current) => ({
+          ...current,
+          children: all.slice(0, PAGE),
+          hasMore: all.length > PAGE,
+        })),
+      );
+    });
+  const loadMore = (node: TreeNode) =>
+    later(() => {
+      const all = subkeys(node.id);
+      setNodes((list) =>
+        patchNode(list, node.id, (current) => {
+          const count = (current.children?.length ?? 0) + PAGE;
+          return { ...current, children: all.slice(0, count), hasMore: all.length > count };
+        }),
+      );
+    });
+  return (
+    <div className="flex w-72 max-w-full flex-col gap-2" data-testid="tree-reveal">
+      <Button
+        onClick={() => {
+          setResult("Looking…");
+          void tree.current
+            ?.reveal("studio/fonts/zephyr", { path: ["studio", "studio/fonts"], focus: true })
+            .then((found) => setResult(found ? "Found Zephyr" : "Not found"));
+        }}
+      >
+        Reveal Zephyr
+      </Button>
+      <div className="h-80">
+        <Tree
+          ref={tree}
+          nodes={nodes}
+          aria-label="Settings store"
+          selectableGroups
+          onLoadChildren={loadChildren}
+          onLoadMore={loadMore}
+        />
+      </div>
+      <p className="type-caption text-fg-muted" data-testid="tree-reveal-result" aria-live="polite">
+        {result}
+      </p>
+    </div>
+  );
+}
+
 export default function TreeSection() {
   return (
     <SectionPage>
@@ -282,9 +435,25 @@ export default function TreeSection() {
       </Specimen>
 
       <Specimen
+        title="Project files: select, rename, move"
+        description="selectionMode multiple: a click replaces, Ctrl or ⌘ toggles, Shift takes a range, Space toggles, Shift with an arrow extends and Ctrl+A selects what is loaded, here limited to six. F2 renames (Enter saves, Escape cancels). Alt with an arrow key moves a row, drag does the same, and the context menu has both for a single pointer. Row sizes are renderTrailing."
+        specimenKey="tree:default:3"
+      >
+        <ProjectTree />
+      </Specimen>
+
+      <Specimen
+        title="Reveal a row that is not loaded"
+        description="reveal opens each branch on the path, waits for it to load and pages through Fonts until Zephyr appears, then scrolls to it and focuses it."
+        specimenKey="tree:default:4"
+      >
+        <RevealTree />
+      </Specimen>
+
+      <Specimen
         title="2,400 endpoints"
         description="Rows are virtualised with fixed heights from tokens: only the rows in view (plus a few) are in the DOM, and the focused row is always kept."
-        specimenKey="tree:default:3"
+        specimenKey="tree:default:5"
       >
         <div className="h-140 w-72 max-w-full" data-testid="tree-many">
           <Tree
@@ -299,7 +468,7 @@ export default function TreeSection() {
       <Specimen
         title="Search states"
         description="A match by organisation shows its endpoints; no match shows one factual line in the tree's own box."
-        specimenKey="tree:default:4"
+        specimenKey="tree:default:6"
       >
         <SidebarTree initialQuery="northstar" height="h-80" />
         <SidebarTree initialQuery="orb-9" height="h-40" />
@@ -308,7 +477,7 @@ export default function TreeSection() {
       <Specimen
         title="Loading"
         description="Skeleton rows have the tree's exact heights, icon boxes and text roles. Swap in place to compare."
-        specimenKey="tree:default:5"
+        specimenKey="tree:default:7"
       >
         <div className="w-72 max-w-full">
           <SwapSlot
@@ -341,7 +510,7 @@ export default function TreeSection() {
 
       <ContainerLab
         description="The tree fills its box and scrolls inside it; names and users truncate with an ellipsis."
-        specimenKey="tree:default:6"
+        specimenKey="tree:default:8"
       >
         {() => (
           <Tree

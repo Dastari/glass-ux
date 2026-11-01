@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Tree } from "./tree.js";
+import { createRef, useState } from "react";
+import { Tree, moveTreeNodes, treePath, type TreeHandle, type TreeMove, type TreeNode } from "./index.js";
 
 beforeEach(() => {
   vi.stubGlobal(
@@ -222,3 +223,240 @@ describe("group counts", () => {
     expect(view.container.querySelector(".fa-tree-count")).toBeNull()
   })
 })
+
+const row = (view: ReturnType<typeof render>, id: string) => view.container.querySelector<HTMLElement>(`[data-row-id="${id}"]`);
+
+describe("multiple selection", () => {
+  const nodes = [
+    { id: "g", label: "Group", children: [{ id: "a", label: "Alpha" }, { id: "b", label: "Beta" }, { id: "c", label: "Gamma" }] },
+    { id: "lazy", label: "Lazy", hasChildren: true, selectable: true },
+  ];
+
+  it("leaves single selection's markup alone", () => {
+    const view = render(<Tree nodes={nodes} aria-label="Nodes" defaultExpanded={["g"]} />);
+    expect(view.getByRole("tree")).not.toHaveAttribute("aria-multiselectable");
+    expect(view.getByRole("tree")).not.toHaveAttribute("aria-describedby");
+    expect(view.container.querySelector(".fa-tree-announcer, .fa-tree-trailing, .fa-tree-check")).toBeNull();
+  });
+
+  it("replaces, toggles and takes ranges, and reports ids", () => {
+    const onChange = vi.fn();
+    const view = render(<Tree nodes={nodes} aria-label="Nodes" defaultExpanded={["g"]} selectionMode="multiple" onSelectedIdsChange={onChange} />);
+    expect(view.getByRole("tree")).toHaveAttribute("aria-multiselectable", "true");
+    fireEvent.click(row(view, "a")!);
+    expect(onChange).toHaveBeenLastCalledWith(["a"], expect.objectContaining({ reason: "item-press" }));
+    fireEvent.click(row(view, "c")!, { ctrlKey: true });
+    expect(onChange).toHaveBeenLastCalledWith(["a", "c"], expect.anything());
+    expect(row(view, "c")).toHaveAttribute("aria-selected", "true");
+    expect(row(view, "b")).toHaveAttribute("aria-selected", "false");
+    fireEvent.click(row(view, "a")!, { metaKey: true });
+    expect(onChange).toHaveBeenLastCalledWith(["c"], expect.anything());
+    fireEvent.click(row(view, "c")!, { shiftKey: true });
+    expect(onChange).toHaveBeenLastCalledWith(["a", "b", "c"], expect.anything());
+  });
+
+  it("keys: Space toggles, Shift extends, Ctrl+A takes what is loaded and names what is not", () => {
+    const onChange = vi.fn();
+    const view = render(<Tree nodes={nodes} aria-label="Nodes" defaultExpanded={["g"]} selectionMode="multiple" onSelectedIdsChange={onChange} />);
+    const tree = view.getByRole("tree");
+    fireEvent.focus(row(view, "a")!);
+    fireEvent.keyDown(tree, { key: " " });
+    expect(onChange).toHaveBeenLastCalledWith(["a"], expect.objectContaining({ reason: "keyboard" }));
+    fireEvent.keyDown(tree, { key: "ArrowDown", shiftKey: true });
+    expect(onChange).toHaveBeenLastCalledWith(["a", "b"], expect.anything());
+    fireEvent.keyDown(tree, { key: "a", ctrlKey: true });
+    const [ids, details] = onChange.mock.calls.at(-1)!;
+    expect(ids).toEqual(["a", "b", "c", "lazy"]);
+    expect(details.unloaded).toEqual(["lazy"]);
+    expect(details.limited).toBe(false);
+  });
+
+  it("holds ids that are not loaded, and a limit stops a range", () => {
+    const onChange = vi.fn();
+    const view = render(<Tree nodes={nodes} aria-label="Nodes" defaultExpanded={["g"]} selectionMode="multiple" defaultSelectedIds={["not-loaded", "a"]} selectionLimit={2} onSelectedIdsChange={onChange} />);
+    expect(row(view, "a")).toHaveAttribute("aria-selected", "true");
+    fireEvent.click(row(view, "b")!, { ctrlKey: true });
+    expect(onChange).toHaveBeenLastCalledWith(["not-loaded", "a", "b"], expect.anything());
+    fireEvent.keyDown(view.getByRole("tree"), { key: "a", ctrlKey: true });
+    expect(onChange.mock.calls.at(-1)![1].limited).toBe(true);
+    expect(onChange.mock.calls.at(-1)![0]).toHaveLength(2);
+    expect(view.container.querySelector(".fa-tree-announcer")).toHaveTextContent("Selected the first 2 rows");
+  });
+
+  it("a check mark toggles without a modifier", () => {
+    const onChange = vi.fn();
+    const view = render(<Tree nodes={nodes} aria-label="Nodes" defaultExpanded={["g"]} selectionMode="multiple" checkboxes defaultSelectedIds={["a"]} onSelectedIdsChange={onChange} />);
+    fireEvent.click(row(view, "b")!.querySelector(".fa-tree-check")!);
+    expect(onChange).toHaveBeenLastCalledWith(["a", "b"], expect.anything());
+  });
+});
+
+describe("trailing content", () => {
+  it("renders at the row's end, and a control there keeps its click", () => {
+    const onSelectedIdChange = vi.fn();
+    const onClick = vi.fn();
+    const view = render(<Tree nodes={[{ id: "a", label: "Alpha" }]} aria-label="Nodes" onSelectedIdChange={onSelectedIdChange} renderTrailing={() => <button tabIndex={-1} onClick={onClick}>Sync</button>} />);
+    fireEvent.click(view.getByRole("button", { name: "Sync", hidden: true }));
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onSelectedIdChange).not.toHaveBeenCalled();
+  });
+});
+
+describe("rename", () => {
+  const nodes: TreeNode[] = [{ id: "a", label: "report.pdf" }, { id: "b", label: "Fixed", renamable: false }];
+
+  it("F2 opens the field on the row, Enter commits and focus returns", () => {
+    const onRename = vi.fn();
+    const view = render(<Tree nodes={nodes} aria-label="Files" onRename={onRename} />);
+    fireEvent.focus(row(view, "a")!);
+    fireEvent.keyDown(view.getByRole("tree"), { key: "F2" });
+    const field = view.getByRole("textbox", { name: "Rename report.pdf" }) as HTMLInputElement;
+    expect(field).toHaveFocus();
+    expect([field.selectionStart, field.selectionEnd]).toEqual([0, 6]);
+    fireEvent.change(field, { target: { value: "summary.pdf" } });
+    fireEvent.keyDown(field, { key: "Enter" });
+    expect(onRename).toHaveBeenCalledWith("a", "summary.pdf", { node: nodes[0] });
+    expect(view.queryByRole("textbox")).toBeNull();
+    expect(row(view, "a")).toHaveFocus();
+  });
+
+  it("Escape cancels without reporting, and stays out of the tree's keys", () => {
+    const onRename = vi.fn();
+    const view = render(<Tree nodes={nodes} aria-label="Files" defaultRenamingId="a" onRename={onRename} />);
+    const field = view.getByRole("textbox");
+    fireEvent.keyDown(field, { key: "ArrowDown" });
+    expect(field).toBeInTheDocument();
+    fireEvent.change(field, { target: { value: "other" } });
+    fireEvent.keyDown(field, { key: "Escape" });
+    expect(onRename).not.toHaveBeenCalled();
+    expect(view.queryByRole("textbox")).toBeNull();
+    expect(row(view, "a")).toHaveFocus();
+  });
+
+  it("a refusal keeps the field and says why", () => {
+    const view = render(<Tree nodes={nodes} aria-label="Files" defaultRenamingId="a" onRename={() => "That name is taken"} />);
+    const field = view.getByRole("textbox");
+    fireEvent.change(field, { target: { value: "taken" } });
+    fireEvent.keyDown(field, { key: "Enter" });
+    expect(field).toHaveFocus();
+    expect(field).toHaveAttribute("aria-invalid", "true");
+    expect(view.getByRole("alert")).toHaveTextContent("That name is taken");
+  });
+
+  it("respects renamable", () => {
+    const view = render(<Tree nodes={nodes} aria-label="Files" onRename={() => undefined} />);
+    fireEvent.focus(row(view, "b")!);
+    fireEvent.keyDown(view.getByRole("tree"), { key: "F2" });
+    expect(view.queryByRole("textbox")).toBeNull();
+  });
+});
+
+describe("moving", () => {
+  const nodes: TreeNode[] = [
+    { id: "f", label: "Folder", children: [{ id: "x", label: "X" }, { id: "y", label: "Y" }] },
+    { id: "a", label: "Alpha" },
+    { id: "b", label: "Beta" },
+  ];
+
+  function Host({ onMove, canMove }: { onMove: (move: TreeMove) => void; canMove?: (move: TreeMove) => boolean | string }) {
+    const [list, setList] = useState(nodes);
+    return <Tree nodes={list} aria-label="Files" defaultExpanded={["f"]} canMove={canMove} onMove={(move) => { onMove(move); setList((current) => moveTreeNodes(current, move)); }} />;
+  }
+
+  it("Alt with the arrows moves among siblings, into and out of a branch", async () => {
+    const onMove = vi.fn();
+    const view = render(<Host onMove={onMove} />);
+    await act(async () => {});
+    const tree = view.getByRole("tree");
+    const order = () => [...view.container.querySelectorAll("[data-row-id]")].map((element) => element.getAttribute("data-row-id"));
+    fireEvent.focus(row(view, "a")!);
+    fireEvent.keyDown(tree, { key: "ArrowDown", altKey: true });
+    expect(onMove).toHaveBeenLastCalledWith({ ids: ["a"], parentId: null, beforeId: null, index: 2, input: "keyboard" });
+    fireEvent.keyDown(tree, { key: "ArrowUp", altKey: true });
+    expect(onMove).toHaveBeenLastCalledWith({ ids: ["a"], parentId: null, beforeId: "b", index: 1, input: "keyboard" });
+    fireEvent.keyDown(tree, { key: "ArrowRight", altKey: true });
+    expect(onMove).toHaveBeenLastCalledWith({ ids: ["a"], parentId: "f", beforeId: null, index: 2, input: "keyboard" });
+    expect(order()).toContain("a");
+    fireEvent.keyDown(tree, { key: "ArrowLeft", altKey: true });
+    expect(onMove).toHaveBeenLastCalledWith({ ids: ["a"], parentId: null, beforeId: "b", index: 1, input: "keyboard" });
+  });
+
+  it("never moves a branch into itself, and says why a move is refused", async () => {
+    const onMove = vi.fn();
+    const view = render(<Host onMove={onMove} canMove={() => "Not here"} />);
+    await act(async () => {});
+    fireEvent.focus(row(view, "a")!);
+    fireEvent.keyDown(view.getByRole("tree"), { key: "ArrowUp", altKey: true });
+    expect(onMove).not.toHaveBeenCalled();
+    expect(view.container.querySelector(".fa-tree-announcer")).toHaveTextContent("Not here");
+  });
+
+  it("is unavailable while searching", async () => {
+    const onMove = vi.fn();
+    const view = render(<Tree nodes={nodes} aria-label="Files" query="a" onMove={onMove} />);
+    await act(async () => {});
+    fireEvent.focus(row(view, "a")!);
+    fireEvent.keyDown(view.getByRole("tree"), { key: "ArrowDown", altKey: true });
+    expect(onMove).not.toHaveBeenCalled();
+    expect(view.container.querySelector(".fa-tree-announcer")).toHaveTextContent("Clear the search to move items");
+  });
+
+  it("moveTreeNodes applies a move anywhere, and treePath finds a loaded row", () => {
+    expect(moveTreeNodes(nodes, { ids: ["x", "b"], parentId: null, beforeId: "a" }).map((node) => node.id)).toEqual(["f", "x", "b", "a"]);
+    expect(moveTreeNodes(nodes, { ids: ["a"], parentId: "f", beforeId: "y" })[0]!.children!.map((node) => node.id)).toEqual(["x", "a", "y"]);
+    expect(treePath(nodes, "y")).toEqual(["f"]);
+    expect(treePath(nodes, "a")).toEqual([]);
+    expect(treePath(nodes, "nope")).toBeNull();
+  });
+});
+
+describe("reveal", () => {
+  const virtual = { id: "deep", label: "Deep" };
+
+  it("opens loaded ancestors and resolves true; false for what is not there", async () => {
+    const handle = createRef<TreeHandle>();
+    const nodes = [{ id: "g", label: "Group", children: [{ id: "h", label: "Inner", children: [virtual] }] }];
+    const view = render(<Tree ref={handle} nodes={nodes} aria-label="Nodes" />);
+    let found!: Promise<boolean>;
+    await act(async () => {
+      found = handle.current!.reveal("deep", { focus: true });
+    });
+    await expect(found).resolves.toBe(true);
+    expect(row(view, "deep")).toHaveFocus();
+    await expect(handle.current!.reveal("nothing")).resolves.toBe(false);
+  });
+
+  it("loads a path it has not seen, paging a large branch", async () => {
+    const handle = createRef<TreeHandle>();
+    function Host() {
+      const [nodes, setNodes] = useState<TreeNode[]>([{ id: "root", label: "Root", hasChildren: true }]);
+      return (
+        <Tree
+          ref={handle}
+          nodes={nodes}
+          aria-label="Nodes"
+          onLoadChildren={async () => setNodes([{ id: "root", label: "Root", children: [{ id: "one", label: "One" }], hasMore: true }])}
+          onLoadMore={async () => setNodes([{ id: "root", label: "Root", children: [{ id: "one", label: "One" }, { id: "two", label: "Two" }], hasMore: false }])}
+        />
+      );
+    }
+    const view = render(<Host />);
+    let found!: Promise<boolean>;
+    await act(async () => {
+      found = handle.current!.reveal("two", { path: ["root"], select: true });
+    });
+    await expect(found).resolves.toBe(true);
+    expect(row(view, "two")).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("a failed load resolves false, and a second reveal replaces the first", async () => {
+    const handle = createRef<TreeHandle>();
+    const nodes = [{ id: "root", label: "Root", hasChildren: true }];
+    render(<Tree ref={handle} nodes={nodes} aria-label="Nodes" onLoadChildren={() => Promise.reject(new Error("offline"))} />);
+    let found!: Promise<boolean>;
+    await act(async () => {
+      found = handle.current!.reveal("two", { path: ["root"] });
+    });
+    await expect(found).resolves.toBe(false);
+  });
+});

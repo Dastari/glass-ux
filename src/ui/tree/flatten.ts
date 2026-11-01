@@ -186,3 +186,56 @@ export function typeahead<T extends TreeNodeLike<T>>(rows: readonly FlatRow<T>[]
   }
   return -1
 }
+
+/**
+ * A move of tree rows. A tree may hold only part of its data, so a move names places rather
+ * than indexes alone: the nodes go into `parentId` in front of `beforeId`.
+ */
+export interface TreeMove {
+  /** The ids that move, in visible order. A selection may include rows that are not loaded. */
+  ids: string[]
+  /** The new parent, or null for the top level. */
+  parentId: string | null
+  /** The sibling they go in front of, or null for the end of what is loaded. */
+  beforeId: string | null
+  /** Their position among the parent's loaded children, once they have left their old places. */
+  index: number
+  /** What moved them. */
+  input: "pointer" | "keyboard" | "menu"
+}
+
+/**
+ * `nodes` with a move applied, for trees held whole in memory; a host with its data elsewhere
+ * applies the move there instead. Nodes that are not found are skipped.
+ */
+export function moveTreeNodes<T extends TreeNodeLike<T>>(nodes: readonly T[], move: Pick<TreeMove, "ids" | "parentId" | "beforeId">): T[] {
+  const moved = new Map<string, T>()
+  const take = (list: readonly T[]): T[] =>
+    list.flatMap((node) => {
+      if (move.ids.includes(node.id)) {
+        moved.set(node.id, node)
+        return []
+      }
+      return node.children ? [{ ...node, children: take(node.children) }] : [node]
+    })
+  const rest = take(nodes)
+  const items = move.ids.flatMap((id) => moved.get(id) ?? [])
+  const insert = (list: readonly T[]): T[] => {
+    const at = move.beforeId === null ? -1 : list.findIndex((node) => node.id === move.beforeId)
+    return at < 0 ? [...list, ...items] : [...list.slice(0, at), ...items, ...list.slice(at)]
+  }
+  if (move.parentId === null) return insert(rest)
+  const place = (list: readonly T[]): T[] => list.map((node) => (node.id === move.parentId ? { ...node, children: insert(node.children ?? []) } : node.children ? { ...node, children: place(node.children) } : node))
+  return place(rest)
+}
+
+/** The ids from the top level down to `id`'s parent, among what is loaded; null when it is not found. */
+export function treePath<T extends TreeNodeLike<T>>(nodes: readonly T[], id: string): string[] | null {
+  for (const node of nodes) {
+    if (node.id === id) return []
+    if (!node.children) continue
+    const below = treePath(node.children, id)
+    if (below) return [node.id, ...below]
+  }
+  return null
+}

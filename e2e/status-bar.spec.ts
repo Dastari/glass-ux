@@ -18,7 +18,7 @@ test("gives way in the stated order: rank 1, rank 2, then truncation, and the to
   expect(await shown(page, "status-bar-12rem")).toContain("Synced");
   for (const id of ["status-bar-44rem", "status-bar-30rem", "status-bar-20rem", "status-bar-12rem"]) {
     const bar = page.getByTestId(id).locator(".fa-status-bar");
-    await expect(bar.locator('[data-tone="success"]')).toBeVisible();
+    await expect(bar.locator('.fa-status-bar-item[data-tone="success"]')).toBeVisible();
     const overflow = await bar.evaluate((element) => {
       const edge = element.getBoundingClientRect();
       return [...element.querySelectorAll(".fa-status-bar-item:not([data-gave-way]), .fa-status-bar-more:not([data-idle])")].filter((item) => {

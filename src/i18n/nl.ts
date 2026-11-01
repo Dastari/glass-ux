@@ -1022,6 +1022,7 @@ export default defineMessagePack("nl", {
   },
   breadcrumb: {
     breadcrumb: "Broodkruimel",
+    path: "Pad",
     backTo: (label) => `Terug naar ${label}`,
     showMore: (count) => `Laat nog ${count} meer zien`,
     switchFrom: (label) => `Overstappen van ${label}`,

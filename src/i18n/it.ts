@@ -1022,6 +1022,7 @@ export default defineMessagePack("it", {
   },
   breadcrumb: {
     breadcrumb: "Pangrattato",
+    path: "Percorso",
     backTo: (label) => `Torna a ${label}`,
     showMore: (count) => `Mostra altri ${count}`,
     switchFrom: (label) => `Passa da ${label}`,

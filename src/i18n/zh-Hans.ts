@@ -1022,6 +1022,7 @@ export default defineMessagePack("zh-Hans", {
   },
   breadcrumb: {
     breadcrumb: "面包屑",
+    path: "路径",
     backTo: (label) => `返回${label}`,
     showMore: (count) => `显示另外 ${count} 个`,
     switchFrom: (label) => `从${label}切换`,

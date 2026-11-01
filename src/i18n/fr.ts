@@ -1022,6 +1022,7 @@ export default defineMessagePack("fr", {
   },
   breadcrumb: {
     breadcrumb: "Fil d'Ariane",
+    path: "Chemin",
     backTo: (label) => `Retour à ${label}`,
     showMore: (count) => `Afficher ${count} de plus`,
     switchFrom: (label) => `Passer de ${label}`,

@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { ContainerLab, Example, OnCanvas, SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { IconEndpoint, IconOrganisation } from "glass-ux/icons";
+import { IconEndpoint, IconFileText, IconFolder, IconOrganisation } from "glass-ux/icons";
 import { STATUS } from "glass-ux/badge";
 import { Breadcrumb, type BreadcrumbProps, type Crumb } from "glass-ux/breadcrumb";
+import { Panel, PanelBody } from "glass-ux/surface";
 import { Segmented } from "glass-ux/segmented";
 import { ENDPOINTS, ENDPOINT_TABS, ORGANISATIONS } from "glass-ux/gallery/sections/nav.fixtures";
 
@@ -59,6 +60,20 @@ function useTrail(
   }, [place]);
 }
 
+/** A fixed state for the pane example: the route above, the file's folders below. */
+const PANE_ROUTE: Crumb[] = [
+  { id: "projects", label: "Projects", onSelect: () => {} },
+  { id: "cedar-vale", label: "Cedar Vale Collective", onSelect: () => {} },
+  { id: "editor", label: "Editor" },
+];
+const FILE_PATH: Crumb[] = [
+  { id: "etc", label: "etc", icon: <IconFolder />, onSelect: () => {} },
+  { id: "cedar", label: "cedar", icon: <IconFolder />, onSelect: () => {} },
+  { id: "archive", label: "archive", icon: <IconFolder />, onSelect: () => {} },
+  { id: "storage-conf", label: "storage.conf", icon: <IconFileText /> },
+];
+const PANE_SOURCE = ["[archive]", "path = /volumes/cedar", "retention = 90", "compress = true"];
+
 function LiveBreadcrumb(props: Omit<BreadcrumbProps, "items">) {
   const items = useTrail();
   return <Breadcrumb items={items} {...props} />;
@@ -107,6 +122,47 @@ export default function BreadcrumbSection() {
           <LiveBreadcrumb />
         </div>
       </OnCanvas>
+
+      <Specimen
+        title="Path in a pane"
+        description='A path that describes content, not the route, uses size="xs" in its pane (R6.4). The route breadcrumb stays in the top bar; the pane&apos;s is named “File path”, not “Breadcrumb”.'
+        layout="stack"
+        wide
+      >
+        <div className="flex w-full max-w-2xl flex-col gap-2" data-testid="breadcrumb-pane-demo">
+          <div className="flex h-16 w-full items-center">
+            <Breadcrumb items={PANE_ROUTE} aria-label="Route" />
+          </div>
+          <Panel>
+            <PanelBody className="flex flex-col gap-2">
+              <Breadcrumb size="xs" items={FILE_PATH} aria-label="File path" />
+              <pre className="m-0 font-mono text-sm">{PANE_SOURCE.join("\n")}</pre>
+            </PanelBody>
+          </Panel>
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="Compact collapse"
+        description="The compact form folds against its own box: middle crumbs into a menu, then ‹ parent · current, then only the current place."
+        layout="stack"
+        wide
+      >
+        <div className="flex w-full flex-col gap-3" data-testid="breadcrumb-xs-collapse">
+          {[
+            ["Full · 384px", "w-96"],
+            ["Middle collapsed · 320px", "w-80"],
+            ["Parent · current · 240px", "w-60"],
+            ["Current place only · 160px", "w-40"],
+          ].map(([label, width]) => (
+            <Example key={label} label={label!}>
+              <div className={`${width} max-w-full`}>
+                <Breadcrumb size="xs" items={FILE_PATH} aria-label={`File path, ${label}`} />
+              </div>
+            </Example>
+          ))}
+        </div>
+      </Specimen>
 
       <Specimen
         title="On glass"

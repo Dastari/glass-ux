@@ -1023,6 +1023,7 @@ export default defineMessagePack("ar", {
   },
   breadcrumb: {
     breadcrumb: "مسار التنقل",
+    path: "المسار",
     backTo: (label) => `العودة إلى ${label}`,
     showMore: (count) => `أظهر ${count} المزيد`,
     switchFrom: (label) => `التبديل من ${label}`,

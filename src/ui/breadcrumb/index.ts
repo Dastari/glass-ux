@@ -9,6 +9,7 @@ export {
   type BreadcrumbMode,
   type BreadcrumbProps,
   type BreadcrumbScope,
+  type BreadcrumbSize,
   type Crumb,
   type CrumbLinkRenderProps,
   type CrumbSibling,

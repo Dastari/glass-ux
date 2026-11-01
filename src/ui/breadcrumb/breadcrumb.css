@@ -6,6 +6,10 @@
  * Separators are xs chevrons in fg-subtle, never dividers. A crumb with siblings carries a
  * small switcher (chevrons-up-down) that opens a menu, searchable past seven entries.
  *
+ * size="xs" is the compact form for a path inside a pane (R6.4): one line at --control-h-xs,
+ * never under --target-aa, in label type, with the same collapse measured against its own box.
+ * Everything else about the crumbs is shared; only height, type, icon and padding change.
+ *
  * Collapse (measured against the breadcrumb's own width):
  *   full → middle (first › … › tail) → compact (… ‹ parent · current) → current
  * Each crumb truncates with an ellipsis at --_crumb-max (current: --_current-max).
@@ -204,6 +208,48 @@
   }
   .fa-item:not(:has(.fa-crumb-meta)) > .fa-crumb-check {
     margin-inline-start: auto;
+  }
+
+  /* ── Compact (size="xs") ──────────────────────────────────────────────────── */
+  .fa-breadcrumb[data-size="xs"] {
+    --_crumb-max: 12rem;
+    --_current-max: 16rem;
+    /* The hit area is the row: it keeps --target-aa when the UI scale shrinks the rem. */
+    --_h: max(var(--control-h-xs), var(--target-aa));
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    letter-spacing: var(--type-label-tracking);
+  }
+  .fa-breadcrumb[data-size="xs"] .fa-crumb-link {
+    gap: var(--space-1);
+    padding-inline: var(--space-1-5);
+    border-radius: var(--radius-compact);
+  }
+  .fa-breadcrumb[data-size="xs"] .fa-crumb-link:has(+ .fa-crumb-switch) {
+    padding-inline-end: var(--space-half);
+  }
+  .fa-breadcrumb[data-size="xs"] .fa-crumb-link > .fa-icon {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+  }
+  .fa-breadcrumb[data-size="xs"] .fa-crumb-switch {
+    width: var(--_h);
+    height: var(--_h);
+  }
+  /* A finger gets --target-min without the pane's line growing: the hit area reaches past
+     the row above and below (the trail button does the same, below). */
+  @media (pointer: coarse) {
+    .fa-breadcrumb[data-size="xs"] :is(a, button).fa-crumb-link:not(.fa-crumb-trail),
+    .fa-breadcrumb[data-size="xs"] button.fa-crumb-switch {
+      position: relative;
+    }
+    .fa-breadcrumb[data-size="xs"] :is(a, button).fa-crumb-link:not(.fa-crumb-trail)::after,
+    .fa-breadcrumb[data-size="xs"] button.fa-crumb-switch::after {
+      position: absolute;
+      inset-block: min(0px, calc((var(--_h) - var(--target-min)) / 2));
+      inset-inline: 0;
+      content: "";
+    }
   }
 
   /* Off-screen measuring row. */

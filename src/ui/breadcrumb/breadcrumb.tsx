@@ -131,6 +131,13 @@ export interface BreadcrumbFold {
 /** Context through which a host folds itself into the breadcrumb; defaults to `{ folded: false }`. Provide it with a `BreadcrumbFold` value. */
 export const BreadcrumbFoldContext = /* @__PURE__ */ createContext<BreadcrumbFold>({ folded: false })
 
+/**
+ * The Breadcrumb's size, named for the control height it sets: `sm` is the route breadcrumb's
+ * one line at `--control-h-sm`, `xs` the compact form at `--control-h-xs` (never under
+ * `--target-aa`) for a path inside a pane. Unrelated to `BreadcrumbMode`'s `compact` fold.
+ */
+export type BreadcrumbSize = "xs" | "sm"
+
 export interface BreadcrumbProps {
   /** Root first, current place last. Feed it from the router's matches. */
   items: Crumb[]
@@ -146,7 +153,19 @@ export interface BreadcrumbProps {
   header?: ReactNode
   /** The scope row above the trail when folded into it: the organisation. */
   scope?: BreadcrumbScope
-  /** Accessible name when a visible label does not name the control. */
+  /**
+   * "sm" (default): the route breadcrumb, one line at `--control-h-sm`, in the top bar. "xs": a
+   * compact path inside a pane, one line at `--control-h-xs` with label-size type, for content
+   * rather than the route (a file's folders in an editor pane, R6.4). It folds within its own
+   * box like the default and never replaces or repeats the route breadcrumb. Name it with
+   * `aria-label`.
+   */
+  size?: BreadcrumbSize
+  /**
+   * Accessible name when a visible label does not name the control. The default form is named
+   * "Breadcrumb"; the compact form falls back to "Path", so supply what the path is ("File path")
+   * and never a name that claims to be the route breadcrumb.
+   */
   "aria-label"?: string
   className?: string
 }
@@ -155,11 +174,15 @@ export interface BreadcrumbProps {
  * The universal breadcrumb (R6.4): one line at --control-h-sm in the top bar. Every crumb
  * but the current one navigates; a crumb with siblings carries a switcher. It collapses
  * against its own width — first the middle crumbs, then to `‹ parent · current` — and each
- * crumb truncates with an ellipsis at a maximum width.
+ * crumb truncates with an ellipsis at a maximum width. `size="xs"` is the compact form for a
+ * path within a pane; it folds the same way within its own box.
+ * @example
+ * <Breadcrumb size="xs" aria-label="File path" items={folders} />
  */
-export function Breadcrumb({ items, renderLink, collapse = "auto", header, scope, className, "aria-label": labelProp }: BreadcrumbProps) {
+export function Breadcrumb({ items, renderLink, collapse = "auto", header, scope, size: sizeProp = "sm", className, "aria-label": labelProp }: BreadcrumbProps) {
   const messages = useMessages(breadcrumbMessages)
-  const label = labelProp ?? messages.breadcrumb
+  const xs = sizeProp === "xs"
+  const label = labelProp ?? (xs ? messages.path : messages.breadcrumb)
 
   const fold = use(BreadcrumbFoldContext)
   const folded = collapse === "current" || fold.folded
@@ -237,7 +260,7 @@ export function Breadcrumb({ items, renderLink, collapse = "auto", header, scope
 
   return (
     <RenderLinkContext value={renderLink}>
-      <nav ref={navRef} aria-label={label} className={cx("fa-breadcrumb", className)} data-mode={mode.kind} data-natural-width={natural}>
+      <nav ref={navRef} aria-label={label} className={cx("fa-breadcrumb", className)} data-mode={mode.kind} data-size={xs ? "xs" : undefined} data-natural-width={natural}>
         <ol className="fa-breadcrumb-list">{content}</ol>
         <div className="fa-breadcrumb-measure" aria-hidden>
           <div ref={measureRef} className="fa-breadcrumb-list fa-breadcrumb-measure-row">

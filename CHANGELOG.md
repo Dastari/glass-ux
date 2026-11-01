@@ -53,9 +53,17 @@ has upgrade steps in the [migration guide](docs/migration.md).
   `mastercard`, `mistral`, `paypal`, `salesforce`, `sentry`, `visa` and `zendesk`.
 - Icons: `align-start`, `align-end`, `reply`, `forward` and the diagonal arrows mirror in
   right-to-left layouts. Media glyphs keep their shape, as `play` does.
+- Breadcrumb: `size="xs"`, a compact form for a path inside a pane (a file's folders in an editor
+  pane). It sets one line at `--control-h-xs`, never under `--target-aa`, in label type, folds
+  against its own box like the default, and is named "Path" unless the host passes `aria-label`.
+  Without `size` the markup and geometry are unchanged. New type `BreadcrumbSize`; new message
+  `breadcrumb.path` in every language pack.
 
 ### Changed
 
+- UI rule R6.4 now reads "One breadcrumb for the route, in the top bar": a path that describes
+  content rather than the route may use a compact Breadcrumb in its pane, and never repeats or
+  replaces the route breadcrumb.
 - `AvatarDialog` and `EditableAvatar` are a preset of `ImageCropDialog`. Crop output, keys, wording
   and exports are unchanged. The crop's class names moved from `fa-avatar-crop*` to
   `fa-image-cropper*`.

@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react"
 import { ContainerLab, Example, OnCanvas, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { IconEndpoint, IconOrganisation } from "../../icons/generated/icons.js"
+import { IconEndpoint, IconFileText, IconFolder, IconOrganisation } from "../../icons/generated/icons.js"
 import { STATUS } from "../../ui/badge/index.js"
 import { sections } from "../registry.js"
 import { Breadcrumb, RouteBreadcrumb, type BreadcrumbProps, type Crumb, type RouteCrumb } from "../../ui/breadcrumb/index.js"
+import { Panel, PanelBody } from "../../ui/surface/index.js"
 import { Segmented } from "../../ui/segmented/index.js"
 import { ENDPOINTS, ENDPOINT_TABS, ORGANISATIONS } from "./nav.fixtures.js"
 
@@ -72,6 +73,20 @@ const ROUTE_TRAIL: RouteCrumb[] = [
   },
 ]
 
+/** A fixed state for the pane example: the route above, the file's folders below. */
+const PANE_ROUTE: Crumb[] = [
+  { id: "projects", label: "Projects", onSelect: () => {} },
+  { id: "cedar-vale", label: "Cedar Vale Collective", onSelect: () => {} },
+  { id: "editor", label: "Editor" },
+]
+const FILE_PATH: Crumb[] = [
+  { id: "etc", label: "etc", icon: <IconFolder />, onSelect: () => {} },
+  { id: "cedar", label: "cedar", icon: <IconFolder />, onSelect: () => {} },
+  { id: "archive", label: "archive", icon: <IconFolder />, onSelect: () => {} },
+  { id: "storage-conf", label: "storage.conf", icon: <IconFileText /> },
+]
+const PANE_SOURCE = ["[archive]", "path = /volumes/cedar", "retention = 90", "compress = true"]
+
 function LiveBreadcrumb(props: Omit<BreadcrumbProps, "items">) {
   const items = useTrail()
   return <Breadcrumb items={items} {...props} />
@@ -127,6 +142,47 @@ export default function BreadcrumbSection() {
         wide
       >
         <RouteBreadcrumb items={ROUTE_TRAIL} aria-label="Gallery breadcrumb" />
+      </Specimen>
+
+      <Specimen
+        title="Path in a pane"
+        description="A path that describes content, not the route, uses size=&quot;xs&quot; in its pane (R6.4). The route breadcrumb stays in the top bar; the pane's is named “File path”, not “Breadcrumb”."
+        layout="stack"
+        wide
+      >
+        <div className="flex w-full max-w-2xl flex-col gap-2" data-testid="breadcrumb-pane-demo">
+          <div className="flex h-16 w-full items-center">
+            <Breadcrumb items={PANE_ROUTE} aria-label="Route" />
+          </div>
+          <Panel>
+            <PanelBody className="flex flex-col gap-2">
+              <Breadcrumb size="xs" items={FILE_PATH} aria-label="File path" />
+              <pre className="m-0 font-mono text-sm">{PANE_SOURCE.join("\n")}</pre>
+            </PanelBody>
+          </Panel>
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="Compact collapse"
+        description="The compact form folds against its own box: middle crumbs into a menu, then ‹ parent · current, then only the current place."
+        layout="stack"
+        wide
+      >
+        <div className="flex w-full flex-col gap-3" data-testid="breadcrumb-xs-collapse">
+          {[
+            ["Full · 384px", "w-96"],
+            ["Middle collapsed · 320px", "w-80"],
+            ["Parent · current · 240px", "w-60"],
+            ["Current place only · 160px", "w-40"],
+          ].map(([label, width]) => (
+            <Example key={label} label={label!}>
+              <div className={`${width} max-w-full`}>
+                <Breadcrumb size="xs" items={FILE_PATH} aria-label={`File path, ${label}`} />
+              </div>
+            </Example>
+          ))}
+        </div>
       </Specimen>
 
       <Specimen title="On glass" description="Muted crumbs, separators and hover fills read the same on panel glass as on the canvas." wide>
@@ -204,7 +260,7 @@ export default function BreadcrumbSection() {
         ]}
         dont={[
           "Repeat the breadcrumb's last crumb as a page title (R2.1, R6.5).",
-          "Put a second breadcrumb inside a page or window.",
+          "Put a second route breadcrumb inside a page or window. A pane's own path (a file's folders) uses the compact size and a name of its own.",
           "Use dividers or slashes between crumbs; the chevron is the separator.",
           "Make the current crumb a link to itself.",
         ]}
@@ -213,6 +269,7 @@ export default function BreadcrumbSection() {
       <TokenTable
         tokens={[
           ["--control-h-sm", "Breadcrumb height"],
+          ["--control-h-xs", "Compact height (never under --target-aa)"],
           ["--fg-muted", "Ancestor crumbs"],
           ["--fg", "Current crumb"],
           ["--fg-subtle", "Separators and switchers"],

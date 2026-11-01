@@ -93,7 +93,7 @@ test("a required image refuses the submit, a chosen one fills the field, and Edi
   const form = page.getByTestId("image-form");
   const add = form.getByRole("button", { name: "Add image" });
   await add.click();
-  const dialog = page.getByRole("dialog", { name: "Change image" });
+  const dialog = page.getByRole("dialog", { name: /^(Add|Change) image$/ });
   await expect(dialog).toBeVisible();
   const png = await page.evaluate(() => {
     const canvas = document.createElement("canvas");

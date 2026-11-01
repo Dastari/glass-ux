@@ -216,6 +216,7 @@ export function ImageInput({
           fields={fields}
           onSave={save}
           onReject={onReject}
+          title={src ? t.changeImage : t.addImage}
           labels={labels}
         />
       </BaseField.Root>

@@ -10,7 +10,7 @@ import { useLocale } from "../../../lib/locale/use-locale.js"
 import { HitLayer } from "../core/hit.js"
 import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
 import { ChartLegend, type LegendItem } from "../core/legend.js"
-import { linear, linearTicks, valueDomain, type Domain } from "../core/scales.js"
+import { linear, linearTicks, valueDomain, type Domain, type ValueAxis } from "../core/scales.js"
 import { seriesAttrs, slotFor, type ChartTone } from "../core/series.js"
 import type { ChartTableModel } from "../core/table.js"
 import type { ChartTier } from "../core/tier.js"
@@ -40,11 +40,8 @@ export interface ScatterSeries {
   tone?: ChartTone
 }
 
-export interface ScatterAxis extends ValueFormat {
-  /** "CPU", "Memory". */
-  label: string
-  domain?: Domain
-}
+/** One axis of a scatter chart. */
+export type ScatterAxis = ValueAxis
 
 type LocalizedAxis = ScatterAxis & LocalizedFormat
 

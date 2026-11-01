@@ -8,6 +8,29 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `glass-ux/charts`: `ComboChart`, columns and lines over the same categories, on one value axis
+  or two. It is `BarChart` with vertical columns: `BarSeries` gains `mark: "line"` and
+  `axis: "secondary"`, and `BarChart` gains `secondaryAxis`, `valueLabel` and `onActivate`, so
+  grouped and stacked columns, thresholds and tiers work as they do there. Each axis has a name
+  with a key for its series, and a rule in the series' colour while it carries one; the second
+  axis's labels sit on the first's gridlines; the legend and tooltip name each series' axis; and
+  the table and CSV headers carry each series' axis and unit. The TSDoc says when not to use two
+  axes. The value axes do not mirror in right-to-left text.
+- `glass-ux/charts`: `FunnelChart`, stages drawn to scale with their share of the first stage and
+  the rate of each step, centred or start-aligned (`align`). Hiding a stage takes it out of the
+  rates; the table keeps every stage, with drop-off. Rows and `align="start"` follow the reading
+  direction.
+- `glass-ux/charts`: `RadarChart`, several measures on one scale as an outline per series. A null
+  breaks the outline at its spoke. Pointing at a series in the legend brings it forward, and arrow
+  keys move to the spoke in that direction. The ring does not mirror in right-to-left text.
+- `glass-ux/charts`: `SankeyChart`, flows between nodes in columns, laid out in the library with no
+  new dependency. Nodes can share a `group`, which sets their colour and legend entry; hiding one
+  re-lays the rest. Arrow keys move through nodes and the flows between them, and `onActivate`
+  reports either. A link that closes a loop stays in the table, and the chart says how many were
+  left out. The flow runs with the reading direction.
+- `glass-ux/charts`: `pointRect` for `spatialNav`, and `spatialNav` now lives in the chart core.
+  `ValueAxis`, the type `ScatterAxis` is now an alias of. `ChartFrame` takes `footLegend`, for a
+  legend in `foot`, and `ChartKind` adds `combo`, `funnel`, `radar` and `sankey`.
 - `glass-ux/menubar`: `Menubar`, an application's menus as data, on Base UI's Menubar. Commands,
   check and radio rows, groups, separators and submenus; chords and rebound keys shown through
   the keymap's read-only lookups, with no listener added; disabled reasons; a menu or submenu's
@@ -163,6 +186,7 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Fixed
 
+- `BarChart`: the last column's label no longer overruns the plot when a narrow box skips labels.
 - DiffView and ResultDiff: line numbers use `--fg-muted` instead of `--fg-disabled`. They read at
   2.00:1 on the add tint (2.20:1 on remove, 2.65:1 on plain) and now at least 5.77:1 across all
   12 palettes, both modes and Glass, Frosted and Solid. Only the numbers' colour changes.

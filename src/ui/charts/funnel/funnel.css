@@ -1,0 +1,65 @@
+/*
+ * FunnelChart: stages as rows. Bars are the family's solid fills with its light from above and
+ * a corner from --chart-bar-radius; the band between two bars is a wash of the stage's colour,
+ * decoration that repeats what the rows and rates say in words, so it need not reach 3:1.
+ */
+@layer components {
+  .fa-chart-funnel-bar {
+    rx: var(--chart-bar-radius);
+    ry: var(--chart-bar-radius);
+    transition:
+      x var(--duration-slow) var(--ease-standard),
+      y var(--duration-slow) var(--ease-standard),
+      width var(--duration-slow) var(--ease-standard),
+      height var(--duration-slow) var(--ease-standard),
+      opacity var(--duration-fast) var(--ease-standard);
+  }
+  .fa-chart-funnel-link {
+    fill: color-mix(in oklab, var(--_c) var(--chart-group-mix), transparent);
+    transition: d var(--duration-slow) var(--ease-standard);
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
+  }
+  .fa-chart-funnel-label {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    white-space: nowrap;
+  }
+  .fa-chart-funnel-name {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fa-chart-funnel-value {
+    flex: none;
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chart-funnel-share {
+    flex: none;
+    color: var(--fg-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .fa-chart-funnel-rate {
+    position: absolute;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    translate: -50% -50%;
+    white-space: nowrap;
+  }
+  .fa-chart-funnel-micro {
+    rx: calc(var(--chart-bar-radius) * 0.5);
+    ry: calc(var(--chart-bar-radius) * 0.5);
+  }
+}

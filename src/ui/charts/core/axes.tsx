@@ -70,6 +70,8 @@ export interface YAxisProps {
   baseline?: number
   /** px between a label and the plot. */
   gap?: number
+  /** The gutter the labels stand in; a value axis keeps its side in right-to-left text, as a chart's x axis does. */
+  side?: "left" | "right"
 }
 
 const crisp = (value: number) => Math.round(value) + 0.5
@@ -86,14 +88,14 @@ export function YGrid({ ticks, y, x0, x1, baseline }: Pick<YAxisProps, "ticks" |
   )
 }
 
-/** The y labels, right-aligned in the gutter beside each gridline (HTML, inside .fa-chart-labels). */
-export function YLabels({ ticks, step, y, x0, format, gap = 8 }: Pick<YAxisProps, "ticks" | "step" | "y" | "x0" | "format" | "gap">) {
+/** The y labels in the gutter beside each gridline, aligned to the plot (HTML, inside .fa-chart-labels). For the right gutter `x0` is the plot's right edge. */
+export function YLabels({ ticks, step, y, x0, format, gap = 8, side = "left" }: Pick<YAxisProps, "ticks" | "step" | "y" | "x0" | "format" | "gap" | "side">) {
   const locale = useLocale(format?.locale)
   const localized = { ...format, locale }
   return (
     <>
       {ticks.map((tick) => (
-        <ChartText key={tick} className="fa-chart-tick" data-axis="y" x={x0 - gap} y={crisp(y(tick))} anchor="end">
+        <ChartText key={tick} className="fa-chart-tick" data-axis="y" data-side={side} x={side === "left" ? x0 - gap : x0 + gap} y={crisp(y(tick))} anchor={side === "left" ? "end" : "start"}>
           {formatTick(tick, step, localized)}
         </ChartText>
       ))}

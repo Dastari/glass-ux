@@ -80,3 +80,11 @@ Charts use the data palette and assign stable series identifiers. Semantic red/a
 represent thresholds and states. Provide a definite plot height and an accessible table view.
 Maps and topology accept host-owned points, nodes, tile providers and attribution. Keep fixture
 providers out of production integration and retain the declared source attribution.
+
+Choose the chart by the question. `ComboChart` mixes columns and lines over the same categories;
+give it a second axis only for two measures of one process that differ in unit, name both axes
+(`valueLabel`, `secondaryAxis.label`) and set `axis: "secondary"` on the series that read it. The
+crossing point of two scales means nothing, so never use two axes for amounts in one unit.
+`FunnelChart` reads stages in order. `RadarChart` compares the shape of two or three profiles on
+one scale; for exact amounts use `BarChart`. `SankeyChart` shows how amounts divide and join across
+stages; past eight groups, colour stops telling nodes apart, so set `group` on related nodes.

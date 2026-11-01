@@ -10,7 +10,7 @@ Vertical columns.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| bands | `readonly ReferenceBand[] \| undefined` | See type | no | — | Shaded ranges on the value axis behind the columns. Vertical columns only. |
+| bands | `readonly ReferenceBand[] \| undefined` | See type | no | — | Shaded ranges on the value axis behind the columns. Vertical columns only. Thresholds and bands read the primary axis. |
 | categories | `readonly string[]` | See type | yes | — | One label per band: days, processes, organisations. |
 | categoryLabel | `string \| undefined` | See type | no | — | Header for the category column of the table ("Process", "Day"). |
 | domain | `Domain \| undefined` | See type | no | — | Fixed value range; defaults to zero → the data, rounded to nice ticks. |
@@ -23,12 +23,15 @@ Vertical columns.
 | labels | `boolean \| undefined` | false, true | no | — | Values at the bar tips. Defaults on for horizontal bars (ranked lists), off for columns. |
 | layout | `"grouped" \| "stacked" \| undefined` | "grouped", "stacked" | no | — | Several series side by side, or stacked as parts of a total. |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for this chart's numbers, dates and table. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
+| onActivate | `((index: number, category: string) => void) \| undefined` | See type | no | — | Click, Enter or Space on a category: its index and label. While set, the plot shows a pointer cursor and its accessible name says Enter selects. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |
+| secondaryAxis | `ValueAxis \| undefined` | See type | no | — | A second value axis at the plot's right edge, for series with `axis: "secondary"`. It has its own name, unit and format; its gridline positions follow the primary axis's. Vertical columns only. See `ComboChart` for when two axes mislead. |
 | series | `readonly BarSeries[]` | See type | yes | — | Chart series with stable identifiers, labels and typed values. |
 | state | `ChartState \| undefined` | "error", "loading", "ready", "empty" | no | — | Controlled view state, including loading, empty and error states. |
 | thresholds | `readonly Threshold[] \| undefined` | See type | no | — | Lines across the columns at values (a quota, a target), labelled at the line's end. Vertical columns only. A status tone without `bands` shades the range up to the next status threshold. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
 | unit | `ChartUnit \| undefined` | See type | no | — | "%", "GB", "ms", or a counted noun ({ one, other })… "%" sticks to the number; other units take a space. |
+| valueLabel | `string \| undefined` | See type | no | — | Names the primary value axis ("Orders"), above its labels in the full tier. Vertical columns only. `unit`, `format` and `domain` describe the same axis. |
 
 Inherited properties:
 

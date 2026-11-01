@@ -11,5 +11,5 @@ in the data moves nothing. Built from Skeleton parts; the shimmer is the page's 
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| kind | `ChartKind` | "line", "column", "bar", "pie", "gauge", "heatmap", "scatter", "treemap", "sunburst" | yes | — | Chart shape family; picks the placeholder marks. |
-| tier | `ChartTier` | "full", "compact", "micro" | yes | — | Size tier of the box; axes placeholders show only in `full` for line, column, scatter and heatmap charts. |
+| kind | `ChartKind` | "line", "column", "combo", "bar", "pie", "gauge", "heatmap", "scatter", "treemap", "sunburst", "funnel", "radar", "sankey" | yes | — | Chart shape family; picks the placeholder marks. |
+| tier | `ChartTier` | "full", "compact", "micro" | yes | — | Size tier of the box; axes placeholders show only in `full` for line, column, combo, scatter and heatmap charts. |

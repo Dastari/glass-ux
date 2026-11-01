@@ -24,8 +24,11 @@
 @import "../ui/charts/core/marks.css";
 @import "../ui/charts/core/reference.css";
 @import "../ui/charts/core/zoom.css";
+@import "../ui/charts/funnel/funnel.css";
 @import "../ui/charts/heatmap/heatmap.css";
 @import "../ui/charts/pie/pie.css";
+@import "../ui/charts/radar/radar.css";
+@import "../ui/charts/sankey/sankey.css";
 @import "../ui/charts/treemap/treemap.css";
 @import "../ui/checkbox/checkbox.css";
 @import "../ui/chip-overflow/chip-overflow.css";

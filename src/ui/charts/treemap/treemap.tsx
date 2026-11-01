@@ -7,7 +7,7 @@ import { ChartFrame, type ChartCommonProps, type PlotBox } from "../core/frame.j
 import { formatShare, formatValue, type LocalizedFormat, type ValueFormat } from "../core/format.js"
 import { useLocale } from "../../../lib/locale/use-locale.js"
 import { cssPath, roundRectPath } from "../core/geometry.js"
-import { HitLayer } from "../core/hit.js"
+import { HitLayer, spatialNav } from "../core/hit.js"
 import { useHoverStore, useStoreValue, type HoverStore } from "../core/hover.js"
 import { seriesAttrs } from "../core/series.js"
 import { ProportionStrip, type StripItem } from "../core/strip.js"
@@ -317,55 +317,4 @@ function TileHighlight({ store, tiles, width, height, rem }: { store: HoverStore
       <path className="fa-chart-hover-ring" d={roundRectPath(rect.x0 + 0.75, rect.y0 + 0.75, rect.x1 - rect.x0 - 1.5, rect.y1 - rect.y0 - 1.5, tile.depth === 1 ? 0.375 * rem : 0.25 * rem)} />
     </svg>
   )
-}
-
-/** Move to the nearest rectangle in the arrow's direction (centre to centre, favouring the axis). */
-export function spatialNav(rects: ReadonlyArray<{ x0: number; x1: number; y0: number; y1: number }>, index: number, key: string): number | null {
-  const from = rects[index]
-  if (!from) return null
-  if (key === "Home") return 0
-  if (key === "End") return rects.length - 1
-  const cx = (from.x0 + from.x1) / 2
-  const cy = (from.y0 + from.y1) / 2
-  let best: number | null = null
-  let bestScore = Infinity
-  rects.forEach((rect, candidate) => {
-    if (candidate === index) return
-    const x = (rect.x0 + rect.x1) / 2
-    const y = (rect.y0 + rect.y1) / 2
-    const dx = x - cx
-    const dy = y - cy
-    let primary = 0
-    let secondary = 0
-    switch (key) {
-      case "ArrowRight":
-        if (rect.x0 < from.x1 - 1) return
-        primary = dx
-        secondary = Math.abs(dy)
-        break
-      case "ArrowLeft":
-        if (rect.x1 > from.x0 + 1) return
-        primary = -dx
-        secondary = Math.abs(dy)
-        break
-      case "ArrowDown":
-        if (rect.y0 < from.y1 - 1) return
-        primary = dy
-        secondary = Math.abs(dx)
-        break
-      case "ArrowUp":
-        if (rect.y1 > from.y0 + 1) return
-        primary = -dy
-        secondary = Math.abs(dx)
-        break
-      default:
-        return
-    }
-    const score = primary + secondary * 2
-    if (score < bestScore) {
-      bestScore = score
-      best = candidate
-    }
-  })
-  return best
 }

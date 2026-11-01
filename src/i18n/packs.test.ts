@@ -95,6 +95,18 @@ it.each(packs)("$locale keeps optional values inside complete announcements", (p
   expect(conflict).toContain("cedar-author")
 })
 
+it("runs a sankey flow's arrow with the reading direction, and pluralises its loop note", () => {
+  expect(de.messages.sankey!.flow!("A", "B")).toBe("A → B")
+  for (const pack of [ar, he]) expect(pack.messages.sankey!.flow!("A", "B")).toBe("A ← B")
+  for (const pack of packs) {
+    for (const n of [1, 2, 11]) {
+      const text = pack.messages.sankey!.loopsNotDrawn!(n, pack.locale)
+      expect(text).toMatch(/\p{N}/u)
+      expect(text).not.toMatch(/undefined|\{\d+\}/)
+    }
+  }
+})
+
 it("uses Japanese rows and a complete page-input label", () => {
   expect(ja.messages.pagination!.noRows).toBe("行がありません")
   expect(ja.messages.pagination!.previousPage).toBe("前のページ")

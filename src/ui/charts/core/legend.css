@@ -82,6 +82,16 @@
     text-align: end;
   }
 
+  /* In a row the detail names an axis: in a narrow head the series name keeps the room. */
+  .fa-chart-legend[data-layout="row"] .fa-chart-legend-detail {
+    --_detail-w: 0;
+  }
+  @container fa-chart (width < 36rem) {
+    .fa-chart-legend[data-layout="row"] .fa-chart-legend-detail {
+      display: none;
+    }
+  }
+
   /* The list layout: one series per row, values aligned in a column. */
   .fa-chart-legend[data-layout="list"] {
     flex-direction: column;

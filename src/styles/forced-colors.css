@@ -260,8 +260,12 @@
   }
 
   /* ── Charts: series keep their colours, the frame takes system colours ── */
-  :is(.fa-chart-series, .fa-chart-bar, .fa-chart-dot, .fa-chart-key, .fa-chart-swatch, .fa-chart-brush-line, .fa-chart-brush-area, .fa-spark-line) {
+  :is(.fa-chart-series, .fa-chart-bar, .fa-chart-dot, .fa-chart-key, .fa-chart-swatch, .fa-chart-brush-line, .fa-chart-brush-area, .fa-spark-line, .fa-chart-axis-rule, .fa-chart-funnel-link, .fa-chart-sankey-node, .fa-chart-sankey-link) {
     forced-color-adjust: none;
+  }
+  /* The surface edge between a line and the columns it crosses. */
+  .fa-chart-line-halo {
+    stroke: Canvas;
   }
   /* Gridlines stay recessive: the text colour at low opacity, not GrayText (which means
      disabled and is often vivid in high-contrast themes). */
@@ -274,8 +278,12 @@
     stroke: CanvasText;
     stroke-opacity: 0.6;
   }
-  :is(.fa-chart-crosshair, .fa-chart-threshold) {
+  :is(.fa-chart-crosshair, .fa-chart-threshold, .fa-chart-radar-hover) {
     stroke: CanvasText;
+  }
+  .fa-chart-radar-grid {
+    stroke: CanvasText;
+    stroke-opacity: 0.3;
   }
   .fa-chart-band {
     forced-color-adjust: none;
@@ -295,7 +303,7 @@
     forced-color-adjust: none;
     background: ButtonText;
   }
-  :is(.fa-chart-threshold-label, .fa-chart-marker-label, .fa-chart-band-label, .fa-chart-ring-label) {
+  :is(.fa-chart-threshold-label, .fa-chart-marker-label, .fa-chart-band-label, .fa-chart-ring-label, .fa-chart-sankey-label) {
     text-shadow: none;
   }
 

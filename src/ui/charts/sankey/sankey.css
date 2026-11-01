@@ -1,0 +1,58 @@
+/*
+ * SankeyChart: nodes in the series colour, ribbons in a soft tint of their source with an edge
+ * in the colour itself, which carries the ribbon's 3:1 where the tint alone would not. Labels
+ * knock a halo out of the ribbons behind them. While the cursor is out the other ribbons recede
+ * and the overlay redraws those it is on.
+ */
+@layer components {
+  .fa-chart-sankey-node {
+    fill: var(--_c);
+    rx: min(var(--chart-bar-radius), var(--radius-mark));
+    ry: min(var(--chart-bar-radius), var(--radius-mark));
+    transition:
+      x var(--duration-slow) var(--ease-standard),
+      y var(--duration-slow) var(--ease-standard),
+      height var(--duration-slow) var(--ease-standard);
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
+  }
+  .fa-chart-sankey-link {
+    fill: color-mix(in oklab, var(--_c) calc(var(--chart-tile-mix) * 0.7), transparent);
+    stroke: var(--_c);
+    stroke-width: var(--border-width);
+    transition:
+      d var(--duration-slow) var(--ease-standard),
+      opacity var(--duration-fast) var(--ease-standard);
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
+  }
+  .fa-chart-svg[data-hovering] .fa-chart-sankey-link {
+    opacity: 0.32;
+  }
+  .fa-chart-sankey-link[data-lift] {
+    fill: color-mix(in oklab, var(--_c) calc(var(--chart-tile-mix) * 1.6), transparent);
+    transition: none;
+    animation: none;
+  }
+  .fa-chart-sankey-label {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-1-5);
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+    text-shadow:
+      0 0 var(--chart-label-halo) var(--halo-colour),
+      0 0 var(--chart-label-halo) var(--halo-colour),
+      0 0 calc(var(--chart-label-halo) * 2) var(--halo-colour);
+  }
+  .fa-chart-sankey-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* On a ribbon's tint, so in ink: only the weight sets it back from the name. */
+  .fa-chart-sankey-value {
+    flex: none;
+    color: var(--fg);
+    font-weight: var(--weight-regular);
+    font-variant-numeric: tabular-nums;
+  }
+}

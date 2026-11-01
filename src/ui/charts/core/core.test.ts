@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
 import { configureLocale, configuredLocale } from "../../../lib/locale/locale.js"
-import { spatialNav } from "../treemap/treemap.js"
 import { lttbIndices } from "./decimate.js"
 import { centreSize, formatBytes, formatRelative, formatShare, formatTick, formatTimeTicks, formatValue } from "./format.js"
 import { barPath, gapBridges, segments } from "./geometry.js"
-import { linearTicks, nearestIndex, valueDomain } from "./scales.js"
+import { spatialNav } from "./hit.js"
+import { alignAxes, alignedRange, linearTicks, nearestIndex, valueDomain } from "./scales.js"
 import { slotFor } from "./series.js"
 import { chartTier } from "./tier.js"
 
@@ -215,5 +215,60 @@ describe("whole-number counts", () => {
     expect(plain(formatValue(1, alerts))).toBe("1 alert")
     expect(plain(formatValue(1.5, alerts))).toBe("1.5 alerts")
     expect(plain(formatTick(1, 1, { unit: "alerts" }))).toBe("1 alerts")
+  })
+})
+
+describe("two value axes on one set of gridlines", () => {
+  it("rounds a range out to a number of equal steps", () => {
+    expect(alignedRange([0, 8], 5)).toEqual({ domain: [0, 10], step: 2, values: [0, 2, 4, 6, 8, 10] })
+    expect(alignedRange([0, 4.2], 4)).toEqual({ domain: [0, 8], step: 2, values: [0, 2, 4, 6, 8] })
+  })
+
+  it("never cuts the data off, and keeps a negative low end", () => {
+    for (const [lo, hi, n] of [[0, 7.3, 3], [-12, 40, 6], [2.5, 2.6, 4], [0, 1234567, 8]] as const) {
+      const { domain, values } = alignedRange([lo, hi], n)
+      expect(domain[0]).toBeLessThanOrEqual(lo)
+      expect(domain[1]).toBeGreaterThanOrEqual(hi)
+      expect(values).toHaveLength(n + 1)
+    }
+  })
+
+  it("keeps whole steps for whole counts", () => {
+    const { step, values } = alignedRange([0, 7], 4, { integer: true })
+    expect(Number.isInteger(step)).toBe(true)
+    expect(values.every(Number.isInteger)).toBe(true)
+  })
+
+  it("gives both axes the same number of intervals, spanning the plot", () => {
+    const { first, second, aligned } = alignAxes({ domain: [0, 800] }, { domain: [0, 5] }, 240)
+    expect(aligned).toBe(true)
+    expect(second.ticks.values).toHaveLength(first.ticks.values.length)
+    expect(first.domain).toEqual([first.ticks.values[0], first.ticks.values.at(-1)])
+    expect(second.domain).toEqual([second.ticks.values[0], second.ticks.values.at(-1)])
+  })
+
+  it("chooses the intervals that waste the least of the plot", () => {
+    // Four intervals would stretch the second axis to 8; five stretch the first a little instead.
+    const { first, second } = alignAxes({ domain: [0, 800] }, { domain: [0, 5] }, 240)
+    expect(second.domain).toEqual([0, 5])
+    expect(first.domain).toEqual([0, 1000])
+  })
+
+  it("follows a fixed axis with the free one", () => {
+    const { first, second, aligned } = alignAxes({ domain: [0, 800] }, { domain: [0, 100], fixed: true }, 240)
+    expect(aligned).toBe(true)
+    expect(second.domain).toEqual([0, 100])
+    expect(first.ticks.values).toHaveLength(second.ticks.values.length)
+  })
+
+  it("leaves two fixed axes as given", () => {
+    const { first, second, aligned } = alignAxes({ domain: [0, 7], fixed: true }, { domain: [0, 100], fixed: true }, 240)
+    expect(aligned).toBe(false)
+    expect(first.domain).toEqual([0, 7])
+    expect(second.domain).toEqual([0, 100])
+  })
+
+  it("does not align to a fixed range its ticks do not span", () => {
+    expect(alignAxes({ domain: [0, 7.5], fixed: true }, { domain: [0, 10] }, 240).aligned).toBe(false)
   })
 })

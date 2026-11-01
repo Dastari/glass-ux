@@ -200,6 +200,14 @@
       ". x" auto / auto minmax(0, 1fr);
     gap: var(--space-1-5) var(--space-2);
   }
+  .fa-chart-skel[data-axes="dual"] {
+    grid-template:
+      "y marks y2" minmax(0, 1fr)
+      ". x ." auto / auto minmax(0, 1fr) auto;
+  }
+  .fa-chart-skel-y[data-side="end"] {
+    grid-area: y2;
+  }
   .fa-chart-skel-y {
     grid-area: y;
     display: flex;
@@ -286,6 +294,53 @@
   }
   .fa-chart-skel-ring[data-kind="sunburst"] {
     mask-image: radial-gradient(closest-side, transparent 30%, var(--fg) 31%);
+  }
+  .fa-chart-skel-funnel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: var(--space-1);
+  }
+  .fa-chart-skel-funnel-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 0;
+  }
+  .fa-chart-skel-funnel-track {
+    display: flex;
+    flex: 1 1 0;
+    justify-content: center;
+    min-width: 0;
+  }
+  .fa-chart-skel-funnel-track > .fa-skel {
+    height: min(var(--space-4), 100%);
+    border-radius: var(--chart-bar-radius);
+  }
+  /* A hexagon: a radar's outline, whatever the number of axes. */
+  .fa-chart-skel-radar {
+    height: min(100%, 100cqw);
+    max-height: 100%;
+    aspect-ratio: 1;
+    clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  }
+  .fa-chart-skel-sankey {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: space-between;
+  }
+  .fa-chart-skel-sankey-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: var(--space-2);
+  }
+  .fa-chart-skel-sankey-column > .fa-skel {
+    flex: 1 1 0;
+    border-radius: var(--radius-mark);
   }
   .fa-chart-skel-strip {
     position: absolute;

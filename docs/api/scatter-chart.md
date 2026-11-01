@@ -26,8 +26,8 @@ surface colour so overlaps stay legible; the pointer only has to be nearest, not
 | state | `ChartState \| undefined` | "error", "loading", "ready", "empty" | no | "ready" | Controlled view state, including loading, empty and error states. |
 | thresholds | `readonly Threshold[] \| undefined` | See type | no | — | Lines across the plot at y values (a limit, a target), labelled at the line's end, in the y axis's format. |
 | title | `string \| undefined` | See type | no | — | A visible label in Metric's label role. Omit inside a panel whose header already names it. |
-| x | `ScatterAxis` | See type | yes | — | Horizontal coordinate or accessor. |
-| y | `ScatterAxis` | See type | yes | — | Vertical coordinate or accessor. |
+| x | `ValueAxis` | See type | yes | — | Horizontal coordinate or accessor. |
+| y | `ValueAxis` | See type | yes | — | Vertical coordinate or accessor. |
 
 Inherited properties:
 

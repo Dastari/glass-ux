@@ -191,3 +191,57 @@ export function HitLayer({ store, count, locate, anchor, snap = false, nav, onAc
     />
   )
 }
+
+/** A point as a rectangle for `spatialNav`: wide enough that points in one column are not each other's left and right. */
+export const pointRect = ({ x, y }: { x: number; y: number }) => ({ x0: x - 2, x1: x + 2, y0: y - 2, y1: y + 2 })
+
+/** Move to the nearest rectangle in the arrow's direction (centre to centre, favouring the axis). */
+export function spatialNav(rects: ReadonlyArray<{ x0: number; x1: number; y0: number; y1: number }>, index: number, key: string): number | null {
+  const from = rects[index]
+  if (!from) return null
+  if (key === "Home") return 0
+  if (key === "End") return rects.length - 1
+  const cx = (from.x0 + from.x1) / 2
+  const cy = (from.y0 + from.y1) / 2
+  let best: number | null = null
+  let bestScore = Infinity
+  rects.forEach((rect, candidate) => {
+    if (candidate === index) return
+    const x = (rect.x0 + rect.x1) / 2
+    const y = (rect.y0 + rect.y1) / 2
+    const dx = x - cx
+    const dy = y - cy
+    let primary = 0
+    let secondary = 0
+    switch (key) {
+      case "ArrowRight":
+        if (rect.x0 < from.x1 - 1) return
+        primary = dx
+        secondary = Math.abs(dy)
+        break
+      case "ArrowLeft":
+        if (rect.x1 > from.x0 + 1) return
+        primary = -dx
+        secondary = Math.abs(dy)
+        break
+      case "ArrowDown":
+        if (rect.y0 < from.y1 - 1) return
+        primary = dy
+        secondary = Math.abs(dx)
+        break
+      case "ArrowUp":
+        if (rect.y1 > from.y0 + 1) return
+        primary = -dy
+        secondary = Math.abs(dx)
+        break
+      default:
+        return
+    }
+    const score = primary + secondary * 2
+    if (score < bestScore) {
+      bestScore = score
+      best = candidate
+    }
+  })
+  return best
+}

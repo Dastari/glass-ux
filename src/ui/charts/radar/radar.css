@@ -1,0 +1,30 @@
+/*
+ * RadarChart: rings and spokes in the grid's hairlines, each series an outline in the 2px line
+ * with its wash inside and a dot at each reading. Rings are polygons, so its sides are straight
+ * between readings as the series' sides are. Diagonal hairlines stay anti-aliased: the grid's
+ * crispEdges would stair-step them.
+ */
+@layer components {
+  .fa-chart-radar-grid {
+    fill: none;
+    stroke: var(--chart-grid);
+    stroke-width: var(--border-width);
+  }
+  .fa-chart-radar-grid[data-rim] {
+    stroke: var(--chart-baseline);
+  }
+  .fa-chart-radar-area {
+    fill: color-mix(in oklab, var(--_c) var(--chart-wash), transparent);
+    transition:
+      d var(--duration-slow) var(--ease-standard),
+      opacity var(--duration-fast) var(--ease-standard);
+    animation: fa-fade-in var(--duration-slower) var(--ease-enter) backwards;
+  }
+  .fa-chart-radar-hover {
+    stroke: var(--chart-baseline);
+    stroke-width: var(--border-width);
+  }
+  .fa-chart-radar-label {
+    color: var(--fg-muted);
+  }
+}

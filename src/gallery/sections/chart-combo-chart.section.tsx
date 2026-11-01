@@ -1,0 +1,121 @@
+import { useState, type ComponentProps } from "react";
+import { ComboChart, type ChartState } from "../../ui/charts/index.js";
+import {
+  ContainerLab,
+  SectionPage,
+  Specimen,
+  TierBox,
+  TierRow,
+} from "../kit.js";
+import { SkeletonSwaps } from "./charts.kit.js";
+
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"];
+
+const sample = {
+  categories: months,
+  categoryLabel: "Month",
+  valueLabel: "Revenue",
+  unit: "k€",
+  secondaryAxis: { label: "Return rate", unit: "%" },
+  series: [
+    { key: "revenue", label: "Revenue", data: [412, 468, 520, 498, 611, 654, 702, 688] },
+    { key: "returns", label: "Returns", mark: "line", axis: "secondary", data: [4.2, 3.9, 3.4, 3.6, 2.8, 2.6, 2.3, 2.4] },
+  ],
+} satisfies Omit<ComponentProps<typeof ComboChart>, "label">;
+
+const render = (state: ChartState = "ready") => (
+  <ComboChart
+    {...sample}
+    label="ComboChart · fictional revenue and return rate"
+    title="Revenue and returns"
+    state={state}
+    emptyText="No sales recorded yet"
+    errorText="Sales could not load"
+    onRetry={() => undefined}
+  />
+);
+
+function Activated() {
+  const [picked, setPicked] = useState("Aug");
+  return (
+    <>
+      <div className="charts-pane" data-size="short" data-testid="chart-combo-chart-activate">
+        <ComboChart
+          {...sample}
+          label="Revenue by month · fictional"
+          title="Choose a month"
+          onActivate={(_, month) => setPicked(month)}
+        />
+      </div>
+      <p className="type-caption text-fg-muted" data-testid="chart-combo-chart-picked">Selected month: {picked}</p>
+    </>
+  );
+}
+
+export default function ComboChartSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="ComboChart"
+        description="ComboChart is BarChart with a line mark and an optional second value axis. Each axis names its measure and carries a key for its series. Hide a series in the legend; the axes keep their sides. Use two axes only for measures of one process that differ in unit: the crossing points of the marks mean nothing."
+        wide
+      >
+        <div className="charts-pane" data-testid="chart-combo-chart">
+          {render()}
+        </div>
+      </Specimen>
+      <Specimen
+        title="One value axis"
+        description="A line that shares the columns' unit needs no second axis. Stacked columns take a line for their target."
+        wide
+      >
+        <div className="charts-pane" data-size="short" data-testid="chart-combo-chart-single">
+          <ComboChart
+            label="Studio hours against plan · fictional"
+            title="Hours against plan"
+            valueLabel="Hours"
+            unit="h"
+            layout="stacked"
+            categories={months.slice(0, 6)}
+            categoryLabel="Month"
+            series={[
+              { key: "design", label: "Design", data: [32, 40, 36, 44, 38, 42] },
+              { key: "build", label: "Build", data: [48, 44, 52, 50, 60, 56] },
+              { key: "plan", label: "Plan", mark: "line", data: [90, 90, 90, 100, 100, 100] },
+            ]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
+        title="Activating a category"
+        description="With onActivate, Enter, Space or a click reports the category under the cursor."
+        wide
+      >
+        <Activated />
+      </Specimen>
+      <Specimen
+        title="Responsive sizes"
+        description="Micro and compact boxes drop the value axes. The table keeps each series' axis and unit."
+        wide
+      >
+        <TierRow>{() => render()}</TierRow>
+      </Specimen>
+      <Specimen
+        title="Loading, empty and error"
+        description="States stay in the chart's own box. The skeleton keeps both axis gutters."
+        wide
+      >
+        <SkeletonSwaps id="combo-chart" render={render} />
+        <div className="gallery-tiers">
+          <TierBox size="compact" label="Empty">
+            {render("empty")}
+          </TierBox>
+          <TierBox size="full" label="Error">
+            {render("error")}
+          </TierBox>
+        </div>
+      </Specimen>
+      <ContainerLab>{() => render()}</ContainerLab>
+    </SectionPage>
+  );
+}

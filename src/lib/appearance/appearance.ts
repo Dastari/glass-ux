@@ -248,7 +248,15 @@ export const GLASS_LABELS: Record<GlassLevel, string> = {
   solid: "Solid",
 };
 
-const clamp = (value: unknown, min: number, max: number, fallback: number) =>
+/** The accepted range of each numeric knob, as `[minimum, maximum]`. */
+export const APPEARANCE_RANGES = {
+  radiusScale: [0, 1.5],
+  borderWidth: [0.5, 2],
+  uiScale: [0.875, 1.25],
+  accentHue: [0, 360],
+} as const;
+
+const clamp = (value: unknown, [min, max]: readonly [number, number], fallback: number) =>
   typeof value === "number" && Number.isFinite(value)
     ? Math.min(max, Math.max(min, value))
     : fallback;
@@ -289,13 +297,13 @@ export function normalizeAppearance(input: unknown): Appearance {
     glass: pick(raw.glass, GLASS_LEVELS, d.glass),
     motion: pick(raw.motion, MOTION_LEVELS, d.motion),
     background: pick(raw.background, BACKGROUNDS, d.background ?? "silk"),
-    radiusScale: clamp(raw.radiusScale, 0, 1.5, d.radiusScale),
-    borderWidth: clamp(raw.borderWidth, 0.5, 2, d.borderWidth),
-    uiScale: clamp(raw.uiScale, 0.875, 1.25, d.uiScale),
+    radiusScale: clamp(raw.radiusScale, APPEARANCE_RANGES.radiusScale, d.radiusScale),
+    borderWidth: clamp(raw.borderWidth, APPEARANCE_RANGES.borderWidth, d.borderWidth),
+    uiScale: clamp(raw.uiScale, APPEARANCE_RANGES.uiScale, d.uiScale),
     accentHue:
       raw.accentHue === null || raw.accentHue === undefined
         ? d.accentHue
-        : clamp(raw.accentHue, 0, 360, 25),
+        : clamp(raw.accentHue, APPEARANCE_RANGES.accentHue, 25),
     accentColor: raw.accentColor === undefined ? (d.accentColor ?? null) : normalizeHex(raw.accentColor),
     accentColor2: raw.accentColor2 === undefined ? (d.accentColor2 ?? null) : normalizeHex(raw.accentColor2),
     canvasTint: raw.canvasTint === undefined ? (d.canvasTint ?? null) : normalizeHex(raw.canvasTint),
@@ -313,6 +321,20 @@ export function resolveMode(
   prefersDark: boolean,
 ): "light" | "dark" {
   return mode === "system" ? (prefersDark ? "dark" : "light") : mode;
+}
+
+/** The palette parameters an appearance sets: its custom colours, or a custom accent hue. An accent colour replaces the accent hue. */
+export function appearanceColourVars(appearance: Pick<Appearance, "accentHue" | "accentColor" | "accentColor2" | "canvasTint">): Record<string, string> {
+  const custom = customColourVars({
+    accentColor: appearance.accentColor ?? null,
+    accentColor2: appearance.accentColor2 ?? null,
+    canvasTint: appearance.canvasTint ?? null,
+  });
+  if (appearance.accentHue !== null && !("--accent-h" in custom)) {
+    custom["--accent-h"] = String(appearance.accentHue);
+    custom["--accent-2-h"] = String((appearance.accentHue + 340) % 360);
+  }
+  return custom;
 }
 
 /** Preload the active font files so a non-default choice paints in its face on the first frame. */
@@ -366,16 +388,8 @@ export function applyAppearance(
   set("--radius-scale", appearance.radiusScale, 1);
   set("--border-width", appearance.borderWidth, 1, "px");
   set("--ui-scale", appearance.uiScale, 1);
-  // Custom colours set palette parameters inline; an accent colour replaces the accent hue.
-  const custom = customColourVars({
-    accentColor: appearance.accentColor ?? null,
-    accentColor2: appearance.accentColor2 ?? null,
-    canvasTint: appearance.canvasTint ?? null,
-  });
-  if (appearance.accentHue !== null && !("--accent-h" in custom)) {
-    custom["--accent-h"] = String(appearance.accentHue);
-    custom["--accent-2-h"] = String((appearance.accentHue + 340) % 360);
-  }
+  // Custom colours set palette parameters inline.
+  const custom = appearanceColourVars(appearance);
   for (const name of CUSTOM_COLOUR_VARS) {
     const value = custom[name];
     if (value === undefined) root.style.removeProperty(name);

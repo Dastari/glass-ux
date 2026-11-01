@@ -58,7 +58,8 @@ Optional server adapters are separate entries. The graphql-orm filter mapping mo
 ## Documentation and demos
 
 - [Installation, providers and your first form](docs/getting-started.md).
-- [Migrating an existing application](docs/integration.md).
+- [Migrating an existing application](docs/integration.md), with
+  [keeping a theme in the project](docs/integration.md#keep-a-theme-in-the-project).
 - [Theme geometry and layout verification](docs/layout-contract.md).
 - [Component and browser testing helpers](docs/testing.md).
 - [AI agent skills and adoption](docs/agent-adoption.md).
@@ -72,7 +73,8 @@ Optional server adapters are separate entries. The graphql-orm filter mapping mo
   a scripted assistant chat beside a phone preview, a live network-operations workspace
   (map, site table, device topology windows, review notes and account switching with
   `LoginFlow`) and appearance controls for the six canvas backgrounds, UI scale, corner
-  radius and line weight. Component family pages combine related examples with section navigation and
+  radius and line weight. Copyable page templates cover an overview dashboard, settings, a list
+  with a detail pane, an inbox and a file manager. Component family pages combine related examples with section navigation and
   API references for every public export.
 
 Each release also attaches the built documentation site as `glass-ux-docs.tar.gz`, for

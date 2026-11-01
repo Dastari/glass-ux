@@ -23,3 +23,5 @@ export {
   type CatalogueEntry,
   type CatalogueLinkProps,
 } from "./catalogue-index.js";
+export { templates } from "./template-catalogue.js";
+export { TemplateDocumentation, TemplatePreview } from "./template-documentation.js";

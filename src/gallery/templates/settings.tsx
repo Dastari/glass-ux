@@ -1,0 +1,144 @@
+import { useState } from "react";
+import { z } from "zod";
+import { confirm } from "../../ui/alert-dialog/index.js";
+import { AppearanceSettings } from "../../ui/appearance-settings/index.js";
+import { Button } from "../../ui/button/index.js";
+import { emailSchema } from "../../ui/email-field/index.js";
+import { Form, FormActions, FormGroup, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js";
+import { IconBell, IconPalette, IconShield, IconUser } from "../../icons/generated/icons.js";
+import { SettingRow } from "../../ui/setting-row/index.js";
+import { Panel, PanelBody } from "../../ui/surface/index.js";
+import { Switch } from "../../ui/switch/index.js";
+import { toast } from "../../ui/toast/index.js";
+import { VerticalTabs, type VerticalTabItem } from "../../ui/vertical-tabs/index.js";
+
+const SECTIONS: VerticalTabItem[] = [
+  { value: "profile", label: "Profile", icon: <IconUser /> },
+  { value: "notifications", label: "Notifications", icon: <IconBell /> },
+  { value: "appearance", label: "Appearance", icon: <IconPalette /> },
+  { value: "security", label: "Security", icon: <IconShield /> },
+];
+
+const NOTIFICATIONS = [
+  { id: "mentions", label: "Mentions", description: "When someone mentions you in a comment." },
+  { id: "assignments", label: "Assignments", description: "When a task is assigned to you." },
+  { id: "digest", label: "Weekly digest", description: "A summary of your projects every Monday." },
+];
+
+const profileSchema = z.object({
+  name: z.string().trim().min(1, "Enter your name"),
+  email: emailSchema({ required: true }),
+  role: z.string(),
+});
+
+function ProfileSection() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { name: "Avery Quinn", email: "avery.quinn@example.com", role: "lead" },
+    validators: { onDynamic: profileSchema },
+    onSubmit: async ({ value, formApi }) => {
+      // Replace with your application's save.
+      formApi.reset(value);
+    },
+  });
+  return (
+    <Form form={form}>
+      <FormStack>
+        <form.AppField name="name">{(field) => <field.TextField label="Name" autoComplete="name" />}</form.AppField>
+        <form.AppField name="email">{(field) => <field.EmailField label="Email" />}</form.AppField>
+        <form.AppField name="role">
+          {(field) => (
+            <field.SelectField
+              label="Role"
+              options={[
+                { value: "lead", label: "Project lead" },
+                { value: "designer", label: "Designer" },
+                { value: "reviewer", label: "Reviewer" },
+              ]}
+            />
+          )}
+        </form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save changes</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  );
+}
+
+/** Each switch applies at once, so this section has no Save button (R15.11). */
+function NotificationsSection() {
+  const [enabled, setEnabled] = useState<Record<string, boolean>>({ mentions: true, assignments: true, digest: false });
+  return (
+    <FormGroup label="Email me about">
+      {NOTIFICATIONS.map((item) => (
+        <SettingRow
+          key={item.id}
+          label={item.label}
+          description={item.description}
+          control={
+            <Switch
+              aria-label={item.label}
+              checked={enabled[item.id]}
+              onCheckedChange={(checked) => setEnabled((current) => ({ ...current, [item.id]: checked }))}
+            />
+          }
+        />
+      ))}
+    </FormGroup>
+  );
+}
+
+function SecuritySection() {
+  const [twoStep, setTwoStep] = useState(true);
+  return (
+    <FormGroup label="Sign-in">
+      <SettingRow
+        label="Two-step sign-in"
+        description="Ask for a code from an authenticator app."
+        control={<Switch aria-label="Two-step sign-in" checked={twoStep} onCheckedChange={setTwoStep} />}
+      />
+      <SettingRow
+        label="Other sessions"
+        description="2 other browsers are signed in."
+        control={
+          <Button
+            variant="secondary"
+            onClick={async () => {
+              const confirmed = await confirm({
+                title: "Sign out of 2 other sessions?",
+                description: "They will need to sign in again.",
+                confirmLabel: "Sign out",
+              });
+              if (confirmed) toast.success("Signed out of 2 sessions");
+            }}
+          >
+            Sign out
+          </Button>
+        }
+      />
+    </FormGroup>
+  );
+}
+
+/** Account settings: the section rail names each section, so the panes start with their content. */
+export default function SettingsTemplate() {
+  return (
+    <div className="@container flex h-full min-h-0 flex-col p-gutter">
+      <VerticalTabs.Root items={SECTIONS} defaultValue="profile" aria-label="Settings sections" className="min-h-0 flex-1">
+        {SECTIONS.map((section) => (
+          <VerticalTabs.Panel key={section.value} value={section.value} className="h-full min-h-0">
+            <Panel scroll className="h-full" aria-label={section.label}>
+              <PanelBody>
+                {section.value === "profile" ? <ProfileSection /> : null}
+                {section.value === "notifications" ? <NotificationsSection /> : null}
+                {section.value === "appearance" ? <AppearanceSettings sections={["theme", "display", "size", "shape"]} /> : null}
+                {section.value === "security" ? <SecuritySection /> : null}
+              </PanelBody>
+            </Panel>
+          </VerticalTabs.Panel>
+        ))}
+      </VerticalTabs.Root>
+    </div>
+  );
+}

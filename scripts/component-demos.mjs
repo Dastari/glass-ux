@@ -2,7 +2,7 @@ import ts from "typescript";
 import { format } from "prettier";
 import { readdirSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { dirname, resolve, relative } from "node:path";
-import { entrySpecifiers, publicSpecifier } from "./package-entries.mjs";
+import { entrySpecifiers, publicImports } from "./package-entries.mjs";
 
 /** Extract a selected component's actual specimens, with only reachable declarations/imports. */
 export async function generateComponentDemos(program, checker, components) {
@@ -380,22 +380,14 @@ export async function generateComponentDemos(program, checker, components) {
         "\n",
     );
     // The keys only steer the documentation page; usage examples do not show them.
-    const publicCode = output.replace(/\s*specimenKey="[^"]*"/g, "").replace(
-      /(from\s+["'])([^"']+)(["'])/g,
-      (_m, a, path, b) => {
-        if (!path.startsWith(".")) return a + path + b;
-        const resolved = relative(
-          resolve("src"),
-          resolve("src/gallery/demos", path),
-        )
-          .replaceAll("\\", "/")
-          .replace(/\.js$/, "");
-        const specifier = publicSpecifier(resolved, entries);
-        if (!specifier)
-          throw new Error(
-            `${relative(process.cwd(), story.fileName)}: the ${component.name} demo imports src/${resolved}, which no package entry exports. Import it from the entry's index module, or keep the specimen's internals in a gallery module.`,
-          );
-        return a + specifier + b;
+    const publicCode = publicImports(
+      output.replace(/\s*specimenKey="[^"]*"/g, ""),
+      "src/gallery/demos",
+      entries,
+      (resolved) => {
+        throw new Error(
+          `${relative(process.cwd(), story.fileName)}: the ${component.name} demo imports src/${resolved}, which no package entry exports. Import it from the entry's index module, or keep the specimen's internals in a gallery module.`,
+        );
       },
     );
     writeFileSync(

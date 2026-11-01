@@ -82,7 +82,10 @@ export function contentWidth(element: HTMLElement): number {
  */
 export function overflowsOwnBox(root: HTMLElement, lastItem: HTMLElement | null): boolean {
   if (!lastItem) return false
-  const pad = Number.parseFloat(getComputedStyle(root).paddingRight) || 0
+  const style = getComputedStyle(root)
+  // A right-to-left row spills past its left edge, so only that edge shows the overflow.
+  if (style.direction === "rtl") return lastItem.offsetLeft < (Number.parseFloat(style.paddingLeft) || 0) - 1
+  const pad = Number.parseFloat(style.paddingRight) || 0
   return lastItem.offsetLeft + lastItem.offsetWidth + pad > root.clientWidth + 1
 }
 

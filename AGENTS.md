@@ -58,6 +58,12 @@ the budget is a deliberate decision with its reason in `scripts/pack-release.mjs
   (`pnpm icons`, rules in docs/icon-spec.md) and canvas artwork in `scripts/build-canvas.mjs`
   (alpha masks painted in palette roles), emoji data in `scripts/build-emoji.mjs` (`pnpm emoji`).
   Never hand-edit their output.
+- Page templates are `src/gallery/templates/*.tsx`, one self-contained file per screen (plus
+  `application-shell.tsx`, their frame), listed in `src/gallery/template-catalogue.ts`.
+  `pnpm docs:api` writes their public source to `src/gallery/examples/template-*.tsx.txt` and
+  refuses any import that is not a package entry; `pnpm docs:check` fails while one is stale.
+  Lay them out with Tailwind utilities, never gallery CSS, so a copy works in a consumer. A Panel
+  is its own container, so name the screen's (`@container/screen`) for a query inside one.
 - Component stylesheets sit beside their components; `pnpm build` writes
   `dist/styles/manifest.json` for `glass-ux styles` (selective stylesheets). The manifest
   finds styles through imports, `fa-*` class names in strings and shared custom properties,

@@ -60,6 +60,7 @@ import { Skeleton } from "glass-ux/skeleton";
 import { sections } from "glass-ux/gallery/registry";
 import { componentFamilies } from "glass-ux/gallery/component-families";
 import { libraryGuides } from "glass-ux/gallery/library-guides";
+import { templates } from "glass-ux/gallery/template-catalogue";
 import { configureDemoBrand } from "glass-ux/gallery/fixtures/brand";
 import "./styles.css";
 
@@ -74,6 +75,16 @@ const ComponentDocumentation = lazy(() =>
 const FoundationDocumentation = lazy(() =>
   import("glass-ux/gallery/documentation").then((module) => ({
     default: module.FoundationDocumentation,
+  })),
+);
+const TemplateDocumentation = lazy(() =>
+  import("glass-ux/gallery/template-documentation").then((module) => ({
+    default: module.TemplateDocumentation,
+  })),
+);
+const TemplatePreview = lazy(() =>
+  import("glass-ux/gallery/template-documentation").then((module) => ({
+    default: module.TemplatePreview,
   })),
 );
 const LibraryGuide = lazy(() =>
@@ -543,16 +554,22 @@ function Layout() {
       <TooltipProvider>
         <ActionProvider>
           <PaletteProvider>
-            <SidebarProvider
-              storageKey="glass-ux-docs.sidebar"
-              className="gallery-shell docs-layout"
-            >
-              <DocsFrame />
-            </SidebarProvider>
+            <Outlet />
           </PaletteProvider>
         </ActionProvider>
       </TooltipProvider>
     </AppearanceProvider>
+  );
+}
+
+function DocsLayout() {
+  return (
+    <SidebarProvider
+      storageKey="glass-ux-docs.sidebar"
+      className="gallery-shell docs-layout"
+    >
+      <DocsFrame />
+    </SidebarProvider>
   );
 }
 
@@ -591,12 +608,16 @@ function DocsFrame() {
   const foundationItems = foundations.filter((section) =>
     matches(section.title, section.summary, section.id, "Foundations"),
   );
+  const templateItems = templates.filter((template) =>
+    matches(template.title, template.summary, template.id, "Templates"),
+  );
   const showTypes = matches("Types and helpers", "TypeDoc", "API reference");
   const showSource = matches("Source and releases", "GitHub");
   const empty =
     !items.length &&
     !guides.length &&
     !foundationItems.length &&
+    !templateItems.length &&
     !showTypes &&
     !showSource;
   const searching = Boolean(search);
@@ -695,6 +716,25 @@ function DocsFrame() {
                   active={activePath === `/foundations/${section.id}`}
                   onClick={activate}
                   link={<Link to="/foundations/$section" params={{ section: section.id }} />}
+                />
+              ))}
+            </DirectoryGroup>
+          ) : null}
+          {templateItems.length ? (
+            <DirectoryGroup
+              id="templates"
+              title="Templates"
+              count={templateItems.length}
+              searching={searching}
+            >
+              {templateItems.map((template) => (
+                <DirectoryLink
+                  key={template.id}
+                  label={template.title}
+                  query={marked}
+                  active={activePath === `/templates/${template.id}`}
+                  onClick={activate}
+                  link={<Link to="/templates/$template" params={{ template: template.id }} />}
                 />
               ))}
             </DirectoryGroup>
@@ -804,13 +844,18 @@ function DocsFrame() {
   );
 }
 const rootRoute = createRootRoute({ component: Layout });
-const indexRoute = createRoute({
+const docsRoute = createRoute({
   getParentRoute: () => rootRoute,
+  id: "docs",
+  component: DocsLayout,
+});
+const indexRoute = createRoute({
+  getParentRoute: () => docsRoute,
   path: "/",
   component: Showcase,
 });
 const componentRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => docsRoute,
   path: "/components/$component",
   component: () => {
     const { component } = componentRoute.useParams();
@@ -818,7 +863,7 @@ const componentRoute = createRoute({
   },
 });
 const guideRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => docsRoute,
   path: "/guides/$guide",
   component: () => {
     const { guide } = guideRoute.useParams();
@@ -826,7 +871,7 @@ const guideRoute = createRoute({
   },
 });
 const foundationRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => docsRoute,
   path: "/foundations/$section",
   component: () => {
     const { section: id } = foundationRoute.useParams();
@@ -836,12 +881,52 @@ const foundationRoute = createRoute({
     return <FoundationDocumentation key={id} id={id} />;
   },
 });
+const previewLink = (template: string) => <Link to="/templates/$template/preview" params={{ template }} />;
+const templateRoute = createRoute({
+  getParentRoute: () => docsRoute,
+  path: "/templates/$template",
+  component: () => {
+    const { template } = templateRoute.useParams();
+    return (
+      <TemplateDocumentation
+        key={template}
+        id={template}
+        fullScreen={
+          <ButtonLink
+            variant="secondary"
+            size="sm"
+            render={<Link to="/templates/$template/preview" params={{ template }} />}
+          >
+            Open full screen
+          </ButtonLink>
+        }
+      />
+    );
+  },
+});
+// A screen on its own, inside a real application shell, without the documentation around it.
+const templatePreviewRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/templates/$template/preview",
+  component: () => {
+    const { template } = templatePreviewRoute.useParams();
+    return (
+      <Suspense fallback={<RouteLoading />}>
+        <TemplatePreview id={template} link={previewLink} />
+      </Suspense>
+    );
+  },
+});
 const router = createRouter({
   routeTree: rootRoute.addChildren([
-    indexRoute,
-    componentRoute,
-    guideRoute,
-    foundationRoute,
+    docsRoute.addChildren([
+      indexRoute,
+      componentRoute,
+      guideRoute,
+      foundationRoute,
+      templateRoute,
+    ]),
+    templatePreviewRoute,
   ]),
   basepath: import.meta.env.BASE_URL.replace(/\/$/, "") || "/",
 });

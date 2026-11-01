@@ -8,6 +8,20 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `glass-ux/appearance`: `exportAppearance` turns an appearance into a theme a project keeps: the
+  value for `configureAppearance`, a typed `theme.ts` module and a small `theme.css` for pages
+  without the appearance runtime. `importAppearance` restores a theme from that value, its JSON or
+  the module's text. It validates every field against the runtime's lists and ranges, ignores
+  unknown fields, refuses a bad value with one issue per field, and refuses a picture on another
+  site unless `remotePictures` is set. Only numbers, hex-derived parameters and registered ids
+  reach the CSS, and pictures never do. Both are plain functions that server code can call.
+  `APPEARANCE_RANGES` and `appearanceColourVars` are exported for controls of your own.
+- Documentation: Foundations › Theme export, an appearance panel beside the generated files, with
+  download and a restore form.
+- Documentation: a Templates group with five complete screens to copy (overview dashboard,
+  settings page, list and detail, inbox, file manager), each with a live screen, its source using
+  public entries only, and a full-screen route inside a working application shell. They are
+  documentation, not package components.
 - `glass-ux/charts`: `ComboChart`, columns and lines over the same categories, on one value axis
   or two. It is `BarChart` with vertical columns: `BarSeries` gains `mark: "line"` and
   `axis: "secondary"`, and `BarChart` gains `secondaryAxis`, `valueLabel` and `onActivate`, so
@@ -230,6 +244,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Fixed
 
+- `Segmented` and `SwatchPicker` fold to their menu in right-to-left text when they run out of
+  room, instead of clipping: `overflowsOwnBox` (`glass-ux/fit-form`) now reads the edge the row
+  spills past.
 - `BarChart`: the last column's label no longer overruns the plot when a narrow box skips labels.
 - `DataTable`: Copy as table works on non-secure pages through the shared clipboard helper, and
   reports a refused copy as before.

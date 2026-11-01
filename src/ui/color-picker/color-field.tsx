@@ -103,6 +103,9 @@ export function ColorField({
         placeholder={placeholder ?? (clearable ? t.none : undefined)}
         spellCheck={false}
         autoComplete="off"
+        // A hex code reads left to right in any language; in an RTL page the bidi algorithm
+        // otherwise moves the leading "#" to the end ("e8875a#").
+        dir="ltr"
         value={shown}
         clearable={clearable}
         onClear={() => setValue(null)}

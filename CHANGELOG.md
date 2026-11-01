@@ -22,6 +22,11 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - Icons: `align-start`, `align-end`, `reply`, `forward` and the diagonal arrows mirror in
   right-to-left layouts. Media glyphs keep their shape, as `play` does.
 
+### Fixed
+
+- ColorField and ColorPicker: the hex input and the swatch tooltips read left to right in right-to-left
+  layouts, so `#e8875a` no longer shows as `e8875a#`.
+
 ## 0.13.1
 
 Two Sidebar fixes, and the documentation site's directory moved onto the Sidebar.

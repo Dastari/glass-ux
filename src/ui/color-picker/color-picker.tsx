@@ -191,7 +191,7 @@ export function ColorPicker({
             if (!parsed) return null
             const pressed = formatHex(parsed, alpha) === hex
             return (
-              <Tooltip key={swatchHex} content={swatchLabel(swatch)}>
+              <Tooltip key={swatchHex} content={typeof swatch === "string" ? <bdi dir="ltr">{swatch}</bdi> : swatch.label}>
                 <button
                   type="button"
                   className="fa-color-swatch fa-pressable"
@@ -390,6 +390,7 @@ function HexInput({ hex, label, disabled, onCommit }: { hex: string; label: stri
       aria-label={label}
       spellCheck={false}
       autoComplete="off"
+      dir="ltr"
       disabled={disabled}
       value={draft ?? hex}
       invalid={draft !== null && !parseHex(draft)}

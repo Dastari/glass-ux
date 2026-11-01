@@ -2,6 +2,7 @@
 // tokens:allow-file colour values under test
 import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
+import { DirectionProvider } from "../../lib/locale/direction.js"
 import { ColorField, ColorPicker } from "./index.js"
 import { clampToGamut, formatHex, inGamut, maxChroma, parseHex } from "./color.js"
 
@@ -83,5 +84,35 @@ describe("ColorField", () => {
     fireEvent.change(input, { target: { value: "" } })
     fireEvent.blur(input)
     expect(change).toHaveBeenLastCalledWith(null)
+  })
+})
+
+describe("right-to-left layouts", () => {
+  // The bidi algorithm moves a leading "#" to the end of a hex code in an RTL page
+  // ("e8875a#"), so every hex input is isolated as left-to-right.
+  it("keeps the ColorField hex input left to right", () => {
+    render(
+      <DirectionProvider direction="rtl">
+        <div dir="rtl">
+          <ColorField aria-label="Tag colour" defaultValue="#e8875a" />
+        </div>
+      </DirectionProvider>,
+    )
+    const input = screen.getByRole("textbox", { name: "Tag colour" }) as HTMLInputElement
+    expect(input.value).toBe("#e8875a")
+    expect(input.getAttribute("dir")).toBe("ltr")
+  })
+
+  it("keeps the ColorPicker hex input and swatch labels left to right", () => {
+    render(
+      <DirectionProvider direction="rtl">
+        <div dir="rtl">
+          <ColorPicker defaultValue="#e8875a" swatches={["#0f9d58"]} />
+        </div>
+      </DirectionProvider>,
+    )
+    const hex = screen.getByRole("textbox", { name: "Hex colour" }) as HTMLInputElement
+    expect(hex.value).toBe("#e8875a")
+    expect(hex.getAttribute("dir")).toBe("ltr")
   })
 })

@@ -85,6 +85,7 @@ For sign-in, providers, two-factor codes, password reset and account creation, s
 | Page                            | Components                                            | Notes                                                                    |
 | ------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
 | [Drag and drop](drag-drop.md)   | `DragDropProvider`, `Draggable`, `DragHandle`, `DropZone` | Typed objects, sortable lists and grids, reactive zone states, keyboard and touch |
+| [Lightbox and ImageViewer](lightbox.md) | `Lightbox`, `ImageViewer`                       | Pictures at full size, in a dialog or the page: zoom and pan, rotate and flip, full screen, slideshow, details |
 | [Kanban](kanban.md)             | `Kanban`, `KanbanCard`                                | Columns of cards on drag and drop: limits that refuse with a reason, collapse, saves that fly back |
 | [Editable avatar](editable-avatar.md) | `EditableAvatar`, `AvatarDialog`                  | Change a photo where it is shown: drop, browse or paste, a round crop, requirements, upload progress and failures in place |
 | [Level gauge](level-gauge.md) | `LevelGauge`                                    | A small ordered scale (Low · Moderate · High) in status tones, with an earlier level traced or striped; sm for cells, md for forms |

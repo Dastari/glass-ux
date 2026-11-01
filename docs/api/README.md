@@ -176,6 +176,7 @@
 - [ImageInput](image-input.md) — `glass-ux/image-cropper`
 - [ImageLightbox](image-lightbox.md) — `glass-ux/ai`
 - [ImageTile](image-tile.md) — `glass-ux/ai`
+- [ImageViewer](image-viewer.md) — `glass-ux/lightbox`
 - [InheritedSetting](inherited-setting.md) — `glass-ux/entity-settings`
 - [InlineCode](inline-code.md) — `glass-ux/ai`
 - [Input](input.md) — `glass-ux/input`

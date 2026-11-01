@@ -1,63 +1,141 @@
 /*
- * Lightbox: the picture on the canvas inside an xl dialog, a thumbnail strip under it, and
- * zoom controls in the footer. The stage's height is fixed per viewport so moving between
- * pictures of different shapes never resizes the dialog.
+ * Lightbox and ImageViewer: the picture on the canvas, a thumbnail strip under it, tools in
+ * the footer. The stage's height is fixed per viewport so moving between pictures of
+ * different shapes never resizes the dialog, and the tools never move. A short box takes the
+ * shortfall from the stage, down to --_stage-min.
+ *
+ * The stage clips a view of its own box; the plane in it takes the camera's one transform,
+ * and a picture is laid out at its pixel size so a transform never draws past its pixels
+ * until the scale passes actual size. The extent is the zoomed picture's size: the stage
+ * scrolls over it, and the view is sticky, so that scroll moves nothing and only reports.
  */
 @layer components {
-  .fa-lightbox {
+  .fa-lightbox-viewer {
     --_stage-h: min(68vh, 44rem);
-    --_zoom-base: 60rem;
+    --_stage-min: 12rem;
     --_zoom-label: 3.5rem;
     --_thumb: 3.5rem;
-  }
-  .fa-lightbox .fa-dialog-body {
-    display: flex;
-  }
-  .fa-lightbox-main {
+    --_details: 20rem;
+    position: relative;
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
     min-width: 0;
+    min-height: 0;
+    container: lightbox / inline-size;
+  }
+  .fa-lightbox-viewer[data-frame="inline"] {
+    height: 100%;
+  }
+  .fa-lightbox-viewer .fa-dialog-body {
+    display: flex;
+  }
+  .fa-lightbox-main {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-rows: minmax(var(--_stage-min), 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
   }
   .fa-lightbox-stage {
-    display: grid;
-    flex: none;
-    place-items: center;
+    position: relative;
+    min-height: 0;
     height: var(--_stage-h);
-    overflow: auto;
+    max-height: 100%;
+    overflow: hidden;
     overscroll-behavior: contain;
     background-color: var(--canvas);
     touch-action: pan-y pinch-zoom;
     user-select: none;
   }
+  /* Fills a parent of definite height; in one without, the percentages lapse to --_stage-h. */
+  .fa-lightbox-viewer[data-frame="inline"] .fa-lightbox-stage {
+    min-height: 100%;
+  }
   .fa-lightbox-stage:focus-visible {
     outline: var(--focus-ring-width) solid var(--accent-ring);
     outline-offset: calc(var(--focus-ring-width) * -1);
   }
-  .fa-lightbox-stage img {
-    display: block;
-    max-width: 100%;
-    max-height: var(--_stage-h);
-    width: auto;
-    height: auto;
-    border-radius: var(--radius-media);
-  }
   .fa-lightbox-stage[data-zoomed] {
-    place-items: start;
     cursor: grab;
-    touch-action: none;
   }
   .fa-lightbox-stage[data-zoomed]:active {
     cursor: grabbing;
   }
-  .fa-lightbox-stage[data-zoomed] img {
-    max-width: none;
-    max-height: none;
-    width: calc(var(--_scale) * min(100%, var(--_zoom-base)));
+  .fa-lightbox-extent {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
+  .fa-lightbox-view {
+    position: sticky;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  .fa-lightbox-plane {
+    position: absolute;
+    top: 0; /* logical:allow the camera's coordinates are physical (R5.11) */
+    left: 0; /* logical:allow the camera's coordinates are physical (R5.11) */
+    transform-origin: 0 0;
+  }
+  .fa-lightbox-picture {
+    position: absolute;
+    top: 50%; /* logical:allow the camera's coordinates are physical (R5.11) */
+    left: 50%; /* logical:allow the camera's coordinates are physical (R5.11) */
+    translate: -50% -50%;
+    border-radius: calc(var(--radius-media) / var(--_k, 1));
+  }
+  .fa-lightbox-picture > * {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: contain;
+  }
+  .fa-lightbox-image {
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-lightbox-picture[data-state="loading"] .fa-lightbox-image {
+    opacity: 0;
+  }
+  .fa-lightbox-picture[data-state="error"] {
+    background-color: var(--fill-muted);
+  }
+  .fa-lightbox-failed {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--inset-panel);
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    text-align: center;
+  }
+  .fa-lightbox-custom {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    user-select: text;
+  }
+
+  /* ── Thumbnails ─────────────────────────────────────────────────────────── */
   .fa-lightbox-thumbnails {
     display: flex;
     gap: var(--space-1-5);
+    min-width: 0;
     padding: var(--space-2) var(--space-3);
     overflow-x: auto;
     scrollbar-width: thin;
@@ -87,11 +165,51 @@
     box-shadow: 0 0 0 var(--focus-ring-width) var(--accent-soft);
     opacity: 1;
   }
+
+  /* ── Details ────────────────────────────────────────────────────────────── */
+  .fa-lightbox-details {
+    min-width: 0;
+    padding: var(--inset-panel);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  @container lightbox (width >= 44rem) {
+    .fa-lightbox-viewer[data-details] .fa-lightbox-main {
+      grid-template-columns: minmax(0, 1fr) var(--_details);
+    }
+    /* Its own content does not stretch the rows beside it: it scrolls within them. */
+    .fa-lightbox-details {
+      grid-row: 1 / -1;
+      grid-column: 2;
+      block-size: 0;
+      min-block-size: 100%;
+    }
+  }
+
+  /* ── Tools ──────────────────────────────────────────────────────────────── */
   .fa-lightbox-zoom {
     min-width: var(--_zoom-label);
     color: var(--fg-muted);
     font-size: var(--type-label-size);
     text-align: center;
+  }
+  .fa-lightbox-tools {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--gap-controls);
+  }
+  .fa-lightbox-more {
+    display: none;
+  }
+  @container lightbox (width < 44rem) {
+    .fa-lightbox-tools {
+      display: none;
+    }
+    .fa-lightbox-more {
+      display: inline-flex;
+    }
   }
   .fa-lightbox-actions {
     display: inline-flex;
@@ -99,5 +217,66 @@
     margin-inline-start: var(--space-2);
     padding-inline-start: var(--space-2);
     border-inline-start: var(--border-width) solid var(--line);
+  }
+
+  /* ── Full screen ────────────────────────────────────────────────────────── */
+  /* The stage takes the whole first column in or out of the chrome's fade, so nothing moves. */
+  .fa-lightbox-viewer[data-fullscreen] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    background-color: var(--canvas);
+  }
+  .fa-lightbox-viewer[data-fullscreen] .fa-dialog-body,
+  .fa-lightbox-viewer[data-fullscreen] .fa-lightbox-main {
+    display: contents;
+  }
+  .fa-lightbox-viewer[data-fullscreen] .fa-lightbox-stage {
+    grid-area: 1 / 1 / -1 / 2;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
+  .fa-lightbox-viewer[data-fullscreen] .fa-dialog-header {
+    z-index: 1;
+    grid-area: 1 / 1;
+    padding-block-start: max(var(--space-4), var(--safe-top));
+  }
+  .fa-lightbox-viewer[data-fullscreen] .fa-lightbox-thumbnails {
+    z-index: 1;
+    grid-area: 3 / 1;
+    justify-self: center;
+    max-width: 100%;
+  }
+  .fa-lightbox-viewer[data-fullscreen] .fa-dialog-footer {
+    z-index: 1;
+    grid-area: 4 / 1;
+    justify-content: center;
+    padding-block-end: max(var(--space-4), var(--safe-bottom));
+  }
+  .fa-lightbox-viewer[data-fullscreen] .fa-lightbox-details {
+    z-index: 1;
+    grid-area: 1 / 2 / -1 / 3;
+    width: var(--_details);
+    block-size: auto;
+    min-block-size: 0;
+    background-color: var(--surface-2);
+  }
+  @container lightbox (width < 44rem) {
+    .fa-lightbox-viewer[data-fullscreen] .fa-lightbox-details {
+      grid-area: 3 / 1;
+      width: auto;
+      max-height: 40cqw;
+    }
+  }
+  .fa-lightbox-chrome {
+    transition: opacity var(--duration-base) var(--ease-standard);
+  }
+  .fa-lightbox-viewer[data-chrome-idle] .fa-lightbox-chrome {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .fa-lightbox-viewer[data-chrome-idle] .fa-lightbox-stage {
+    cursor: none;
   }
 }

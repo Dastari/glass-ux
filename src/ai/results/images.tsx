@@ -1,14 +1,16 @@
 import { useMessages } from "../../lib/i18n/index.js"
 import { resultsMessages } from "./messages.js"
-import { useState, type CSSProperties } from "react"
+import { lazy, Suspense, useState, type CSSProperties } from "react"
 import { IconImage } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
-import { Lightbox } from "../../ui/lightbox/index.js"
 import type { AiResult, ResultImage } from "../types.js"
 import { ResultFrame } from "./frame.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 
 type ImagesResult = Extract<AiResult, { type: "images" }>
+
+// The viewer loads with the first image opened, not with every message that shows one (R10.3).
+const Lightbox = /* @__PURE__ */ lazy(() => import("../../ui/lightbox/lightbox.js").then((module) => ({ default: module.Lightbox })))
 
 /** One image in its reserved aspect-ratio box: it never moves anything when it loads. */
 export function ImageTile({ image, onOpen, cover = false, className }: {
@@ -58,18 +60,22 @@ interface LightboxProps {
 /**
  * A lightbox for result images: the library's Lightbox (previous / next, swipe, zoom and
  * pan, thumbnails) fed with the result's images. ← → move between images, + and − zoom,
- * 0 fits.
+ * 0 fits. The viewer's code loads the first time it opens.
  */
 export function ImageLightbox({ images, index, onIndexChange, open, onOpenChange }: LightboxProps) {
-  if (!images[index]) return null
+  const [opened, setOpened] = useState(open)
+  if (open && !opened) setOpened(true)
+  if (!images[index] || !opened) return null
   return (
-    <Lightbox
-      images={images.map((image) => ({ id: image.id, src: image.src, alt: image.alt, width: image.width, height: image.height, caption: image.caption }))}
-      index={index}
-      onIndexChange={onIndexChange}
-      open={open}
-      onOpenChange={onOpenChange}
-    />
+    <Suspense fallback={null}>
+      <Lightbox
+        images={images.map((image) => ({ id: image.id, src: image.src, alt: image.alt, width: image.width, height: image.height, caption: image.caption }))}
+        index={index}
+        onIndexChange={onIndexChange}
+        open={open}
+        onOpenChange={onOpenChange}
+      />
+    </Suspense>
   )
 }
 

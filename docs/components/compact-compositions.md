@@ -9,7 +9,7 @@ They do not own routing, domain queries, persistence or backend authorization.
 | Small label/value list                | `glass-ux/fact-list`     | `FactList` renders a semantic `dl` without a tile around each fact. Use `DetailTile` for larger readings.                                   |
 | Button appearance with link semantics | `glass-ux/button-link`   | `ButtonLink` keeps a native anchor and shares Button sizes and variants. Compose the router anchor through `render`.                        |
 | Clickable compact row                 | `glass-ux/list-row`      | `ListRow` composes icon, title, metadata and trailing content, with a native button or supplied link.                                       |
-| Time-stamped activity                 | `glass-ux/activity-feed` | `ActivityFeed` renders an ordered feed with shared relative times and exact-time tooltips.                                                  |
+| Time-stamped activity                 | `glass-ux/activity-feed` | `ActivityFeed` renders an ordered feed with shared relative times and exact-time tooltips. As a timeline it takes a `tone` per marker, one level of `children` and selection (`selectedId`), which makes it a one-stop listbox.                                                  |
 | Meter in a data-table cell            | `glass-ux/meter-cell`    | `MeterCell` always keeps its reading and hides the bar in a narrow cell. Values stay numeric.                                               |
 | Many identity chips                   | `glass-ux/chip-overflow` | `ChipOverflow` shows the first chips and a searchable overflow popover. Supply stable IDs and the identity renderer.                        |
 

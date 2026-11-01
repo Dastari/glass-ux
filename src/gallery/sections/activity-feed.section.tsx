@@ -1,11 +1,40 @@
+import { useState } from "react";
 import {
   IconCalendar,
   IconCheck,
   IconFileText,
+  IconGitBranch,
 } from "../../icons/generated/icons.js";
-import { ActivityFeed } from "../../ui/activity-feed/index.js";
+import { ActivityFeed, type ActivityItem } from "../../ui/activity-feed/index.js";
 import { Badge } from "../../ui/badge/index.js";
 import { SectionPage, Specimen } from "../kit.js";
+
+const VERSIONS: ActivityItem[] = [
+  { id: "v14", content: "Version 14 · Published by Mira Rowan", at: "2026-03-12T09:30:00Z", tone: "success", toneLabel: "Published" },
+  {
+    id: "v13",
+    content: "Version 13 · Floor plan revised",
+    at: "2026-03-11T16:10:00Z",
+    tone: "accent",
+    toneLabel: "Draft",
+    children: [
+      { id: "v13-lighting", content: "Lighting study · Avery Quinn", at: "2026-03-11T14:05:00Z", icon: <IconGitBranch /> },
+      { id: "v13-materials", content: "Material options · Noor Haddad", at: "2026-03-10T11:40:00Z", icon: <IconGitBranch /> },
+    ],
+  },
+  { id: "v12", content: "Version 12 · Rejected at review", at: "2026-03-09T10:00:00Z", tone: "danger", toneLabel: "Rejected" },
+  { id: "v11", content: "Version 11 · First issue", at: "2026-03-02T08:15:00Z" },
+];
+
+function VersionHistory() {
+  const [selected, setSelected] = useState<string | null>("v13-lighting");
+  return (
+    <div className="w-full max-w-xl" data-testid="activity-history">
+      <ActivityFeed aria-label="Version history" items={VERSIONS} selectedId={selected} onSelectedIdChange={setSelected} />
+      <output className="sr-only" data-testid="activity-selected">{selected}</output>
+    </div>
+  );
+}
 
 export default function ActivityFeedSection() {
   const now = Date.now();
@@ -46,6 +75,20 @@ export default function ActivityFeedSection() {
               },
             ]}
           />
+        </div>
+      </Specimen>
+      <Specimen
+        title="Version history"
+        description="Selection makes the feed one tab stop: arrow keys move, Enter or Space selects. Tone colours the marker, and one level of branches hangs under an event."
+      >
+        <VersionHistory />
+      </Specimen>
+      <Specimen
+        title="Markers and branches without selection"
+        description="Tone and branches alone leave the feed an ordinary list."
+      >
+        <div className="w-full max-w-xl" data-testid="activity-plain-timeline">
+          <ActivityFeed aria-label="Release timeline" items={VERSIONS} />
         </div>
       </Specimen>
       <Specimen

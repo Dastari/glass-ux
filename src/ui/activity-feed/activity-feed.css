@@ -28,4 +28,53 @@
     width: var(--icon-sm);
     height: var(--icon-sm);
   }
+  .fa-activity-icon[data-tone="accent"] {
+    color: var(--accent-text);
+  }
+  .fa-activity-icon[data-tone="success"] {
+    color: var(--success-text);
+  }
+  .fa-activity-icon[data-tone="warning"] {
+    color: var(--warning-text);
+  }
+  .fa-activity-icon[data-tone="danger"] {
+    color: var(--danger-text);
+  }
+  .fa-activity-icon[data-tone="info"] {
+    color: var(--info-text);
+  }
+
+  /* A branch hangs from its parent, one level in, its rail aligned with the parent's marker. */
+  .fa-activity-branch {
+    display: flex;
+    flex: 1 0 100%;
+    flex-direction: column;
+    gap: var(--gap-controls);
+    min-width: 0;
+    margin: 0;
+    padding-block: 0;
+    padding-inline: var(--space-6) 0;
+    list-style: none;
+  }
+
+  /* Selectable: rows are the shared item, wrapping like the plain feed's. */
+  .fa-activity-feed[data-selectable] {
+    gap: var(--space-half);
+  }
+  .fa-activity-feed[data-selectable] li {
+    display: block;
+  }
+  .fa-activity-feed[data-selectable] .fa-activity-branch {
+    gap: var(--space-half);
+    margin-block-start: var(--space-half);
+  }
+  .fa-activity-row.fa-item {
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--gap-controls);
+    padding-block: var(--space-1);
+    font-size: inherit;
+    line-height: inherit;
+    user-select: text;
+  }
 }

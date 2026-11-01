@@ -129,6 +129,8 @@ decides when to publish. The local route:
 - Focus room (R11.10, `e2e/focus-reach.spec.ts`): Safari ignores `overflow-clip-margin`, so
   truncated titles and clipped frames still cut rings there; a shaded (bar-only) window cuts
   its title-bar buttons' rings by 1px.
+- Package size: the budgets rose to 13 MB unpacked and 4 MB archive for 0.14. The owner wants an
+  optimisation pass after that release; `dist/ui` and the language packs are the largest parts.
 - Native-speaker review: "chroma" in the Arabic and Hebrew colour picker messages, and
   "preview class" in Japanese, Korean, Arabic and Hebrew (`results.previewUnavailable`).
 - Next.js support is verified with webpack (`pnpm test:next`), not Turbopack; forced colours

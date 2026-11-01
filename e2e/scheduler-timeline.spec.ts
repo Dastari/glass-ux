@@ -1,5 +1,11 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+// The demos place events from today, and these tests need a day mid-month and mid-week: on the
+// 1st a screen of scrolling stays in the month, and the first day with events is the month before.
+test.beforeEach(async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-10-14T10:00:00"));
+});
+
 async function open(page: Page) {
   await page.addInitScript(() =>
     localStorage.setItem(

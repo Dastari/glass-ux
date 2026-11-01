@@ -99,3 +99,30 @@ Applications own storage, authorization, document IDs, revisions and save operat
 required semantics. `maxLength` counts UTF-16 code units, including Markdown syntax.
 Use the same limits on the server. Tests cover conversion stability, view preservation,
 controlled replacements, read-only source, URL safety, formatting, validation and geometry.
+
+## Mentions and slash commands
+
+Both are off by default. `mentions` opens a list on @ after a space or at the start of a
+line; `slashCommands` opens one on / at the start of a block. They use the shared
+[Typeahead](typeahead.md): focus stays in the text, and the surface stays a multi-line
+`textbox` carrying `aria-activedescendant`. Nothing opens in the Markdown view, or while
+read-only or disabled, and neither opens inside code or a link.
+
+```tsx
+<RichTextInput
+  aria-label="Notes"
+  mentions={{
+    search: (query, { signal }) => searchPeople(query, signal),
+    reserveRows: 5,
+  }}
+  slashCommands
+/>
+```
+
+`search` returns rows at once or as a promise, and `signal` aborts when a newer query replaces
+this one. The host does the matching. A pick places `insert` (default "@" and the label) in
+the document; with `href` it is a Markdown link, so the value stays Markdown.
+
+`slashCommands` takes `true` for the block styles and lists, or your own rows: `block` turns
+the current block into that style, `insert` places plain text and `onSelect` runs an action of
+your own. Unlike mentions, the editor filters these rows by what is typed.

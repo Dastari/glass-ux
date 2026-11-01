@@ -6,6 +6,7 @@ import {
   useState,
   type CSSProperties,
   type FocusEvent,
+  type ReactNode,
   type Ref,
 } from "react";
 import { cx } from "../../lib/cx.js";
@@ -35,6 +36,60 @@ export interface RichTextAttachment {
   url: string;
   /** Image alternative text or the file link's visible text. */
   label: string;
+}
+
+/** A block a slash command can turn the current one into. */
+export type RichTextBlock = "paragraph" | "h1" | "h2" | "h3" | "quote" | "code" | "bullet" | "number" | "check";
+
+/** One row of the mention list. */
+export interface RichTextMention {
+  /** Stable identifier. */
+  id: string;
+  /** The name shown in the list. */
+  label: string;
+  /** Second line. */
+  description?: string;
+  /** Leading icon. Pass it without a size. */
+  icon?: ReactNode;
+  /** Trailing data. */
+  meta?: string;
+  /** The text placed in the document. Default "@" and the label. */
+  insert?: string;
+  /** Makes the mention a Markdown link. The address passes the editor's link check, or the text goes in unlinked. */
+  href?: string;
+}
+
+/** The mention list: opens on @ after a space or at the start of a line. */
+export interface RichTextMentions {
+  /** The rows for what has been typed after the @, at once or as a promise. The host does the matching; `signal` aborts when a newer query replaces this one. */
+  search: (
+    query: string,
+    options: { signal: AbortSignal },
+  ) => readonly RichTextMention[] | Promise<readonly RichTextMention[]>;
+  /** Accessible name of the list. Default "Mentions". */
+  label?: string;
+  /** The highlighted row's detail, beside the list. */
+  renderDetail?: (mention: RichTextMention) => ReactNode;
+  /** Rows of height to hold while results load, so the popup keeps its size and place. */
+  reserveRows?: number;
+}
+
+/** One row of the slash menu. */
+export interface RichTextCommand {
+  /** Stable identifier. */
+  id: string;
+  /** The name shown in the list and matched against what is typed. */
+  label: string;
+  /** Second line. */
+  description?: string;
+  /** Leading icon. Pass it without a size. */
+  icon?: ReactNode;
+  /** Plain text that replaces the typed command. Default: the command is removed. */
+  insert?: string;
+  /** Turn the block holding the caret into this one. */
+  block?: RichTextBlock;
+  /** Called after the typed command has gone, for an action of the host's own. */
+  onSelect?: () => void;
 }
 
 export interface RichTextInputProps {
@@ -94,6 +149,10 @@ export interface RichTextInputProps {
    * announces it.
    */
   onAttachmentError?: (error: unknown) => void;
+  /** Offer an @ mention list in the visual view. Off by default. */
+  mentions?: RichTextMentions;
+  /** Offer a / menu at the start of a block in the visual view: `true` for the block styles and lists, or your own rows. Off by default. */
+  slashCommands?: boolean | readonly RichTextCommand[];
   /** Receives an editing-engine error; the original Markdown remains available in source view. */
   onError?: (error: Error) => void;
   /** Outer layout classes. */

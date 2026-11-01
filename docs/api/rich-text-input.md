@@ -29,6 +29,7 @@ The editing engine loads only when this component renders.
 | id | `string \| undefined` | See type | no | — | ID of the active editing surface. Field supplies a label when wrapped. |
 | invalid | `boolean \| undefined` | false, true | no | — | Mark a bare input invalid; RichTextField derives this from validation. |
 | maxHeight | `number \| undefined` | See type | no | 480 | Maximum content height, in CSS pixels; longer documents scroll. Default 480. |
+| mentions | `RichTextMentions \| undefined` | See type | no | — | Offer an @ mention list in the visual view. Off by default. |
 | minHeight | `number \| undefined` | See type | no | 160 | Minimum content height, in CSS pixels. Default 160. Toolbar height is additional. |
 | name | `string \| undefined` | See type | no | — | Native form field name; its value is Markdown. |
 | onAttachmentError | `((error: unknown) => void) \| undefined` | See type | no | — | Reports an upload failure to the host instead of the default toast. The Attach button shows the failure in place, its tooltip carries the message and a status region announces it. |
@@ -41,6 +42,7 @@ The editing engine loads only when this component renders.
 | ref | `Ref<HTMLDivElement \| HTMLTextAreaElement> \| undefined` | See type | no | — | Receives the visible editing surface for focus. |
 | required | `boolean \| undefined` | false, true | no | — | Announce that the document is required. Validate with richTextSchema. |
 | resize | `boolean \| undefined` | false, true | no | — | Allow vertical resizing of the editing surface between its limits. Default true. |
+| slashCommands | `boolean \| readonly RichTextCommand[] \| undefined` | See type | no | — | Offer a / menu at the start of a block in the visual view: `true` for the block styles and lists, or your own rows. Off by default. |
 | sourceView | `boolean \| undefined` | false, true | no | — | Offer the Markdown source view. Labels become named Eye/Code icons before formatting wraps. Default true. |
 | spellCheck | `boolean \| undefined` | false, true | no | — | Enable browser spelling checks. Default true. |
 | style | `CSSProperties \| undefined` | See type | no | — | Outer layout styles. |

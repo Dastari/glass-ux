@@ -1179,6 +1179,8 @@ export default defineMessagePack("zh-Hans", {
     codeBlock: "代码块",
     visual: "可视化",
     markdown: "Markdown",
+    mentions: "提及",
+    commands: "命令",
   },
   addressField: {
     street: "街道",
@@ -2025,6 +2027,11 @@ export default defineMessagePack("zh-Hans", {
     hiragana: "平假名",
     keyboardToggle: "屏幕键盘",
     keyboardPanel: "屏幕键盘",
+  },
+  typeahead: {
+    noResults: "没有结果",
+    searching: "正在搜索…",
+    resultCount: counted({"other": "{n} 条结果"}),
   },
   sidebar: {
     toggleSidebar: "切换侧边栏",

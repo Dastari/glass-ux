@@ -1179,6 +1179,8 @@ export default defineMessagePack("ko", {
     codeBlock: "코드 블록",
     visual: "편집 화면",
     markdown: "Markdown",
+    mentions: "멘션",
+    commands: "명령",
   },
   addressField: {
     street: "거리",
@@ -2025,6 +2027,11 @@ export default defineMessagePack("ko", {
     hiragana: "히라가나",
     keyboardToggle: "화상 키보드",
     keyboardPanel: "화상 키보드",
+  },
+  typeahead: {
+    noResults: "결과 없음",
+    searching: "검색 중…",
+    resultCount: counted({"other": "결과 {n}개"}),
   },
   sidebar: {
     toggleSidebar: "사이드바 전환",

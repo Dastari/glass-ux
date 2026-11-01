@@ -1179,6 +1179,8 @@ export default defineMessagePack("nl", {
     codeBlock: "Codeblok",
     visual: "Visueel",
     markdown: "Markdown",
+    mentions: "Vermeldingen",
+    commands: "Commando's",
   },
   addressField: {
     street: "Straat",
@@ -2025,6 +2027,11 @@ export default defineMessagePack("nl", {
     hiragana: "Hiragana",
     keyboardToggle: "Schermtoetsenbord",
     keyboardPanel: "Schermtoetsenbord",
+  },
+  typeahead: {
+    noResults: "Geen resultaten",
+    searching: "Bezig met zoeken…",
+    resultCount: counted({"one": "{n} resultaat", "other": "{n} resultaten"}),
   },
   sidebar: {
     toggleSidebar: "Zijbalk tonen of verbergen",

@@ -8,6 +8,12 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- Typeahead (`glass-ux/typeahead`): a listbox at a caret or any rectangle, with focus staying in
+  the text. `useTypeahead` holds the highlight, keys and ARIA attributes; `Typeahead` draws the
+  list with an optional detail pane; rows from the host are shown as given, and results that
+  arrive late do not move a row under the pointer (R9). Composer's slash and mention menus are
+  built on it, with no change in behaviour.
+- RichTextInput: opt-in `mentions` and `slashCommands`, on Typeahead. Picks stay Markdown.
 - Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
   (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,
   `case-sensitive`, `whole-word`, `fold`, `unfold`, `collapse-all`), transforms (`rotate-cw`,

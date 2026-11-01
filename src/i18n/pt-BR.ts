@@ -1179,6 +1179,8 @@ export default defineMessagePack("pt-BR", {
     codeBlock: "Bloco de código",
     visual: "Visuais",
     markdown: "Markdown",
+    mentions: "Menções",
+    commands: "Comandos",
   },
   addressField: {
     street: "Rua",
@@ -2025,6 +2027,11 @@ export default defineMessagePack("pt-BR", {
     hiragana: "Hiragana",
     keyboardToggle: "Teclado na tela",
     keyboardPanel: "Teclado na tela",
+  },
+  typeahead: {
+    noResults: "Nenhum resultado",
+    searching: "Pesquisando…",
+    resultCount: counted({"one": "{n} resultado", "other": "{n} resultados"}),
   },
   sidebar: {
     toggleSidebar: "Alternar barra lateral",

@@ -1,0 +1,65 @@
+/*
+ * Typeahead — a list that opens from text, at a caret or any rectangle.
+ *
+ * List    fa-item rows in a box of at most six; with data-reserve the box holds --_rows
+ *         rows from the start, so results arriving late change neither the popup's size
+ *         nor its side, and nothing moves under the pointer (R9).
+ * Detail  beside the list; below 28rem it moves under the list at a fixed height.
+ *
+ * Component tokens
+ *   --_row    the height of a row with a description
+ *   --_rows   the rows to reserve, set inline from `reserveRows`
+ */
+@layer components {
+  .fa-popover.fa-typeahead[data-detail] {
+    --_w: 38rem;
+    max-width: calc(100vw - var(--space-4) * 2);
+  }
+  .fa-typeahead-panes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+  .fa-typeahead[data-detail] .fa-typeahead-panes {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .fa-typeahead-scroll {
+    --_row: calc(var(--type-label-line) + var(--type-caption-line) + var(--space-2));
+    max-height: calc(var(--_row) * 6);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .fa-typeahead-scroll[data-reserve] {
+    height: calc(var(--_row) * var(--_rows));
+  }
+  .fa-typeahead-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+  }
+  .fa-typeahead-empty {
+    padding: var(--space-2) var(--space-2-5);
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+  }
+  .fa-typeahead-detail {
+    min-width: 0;
+    max-height: calc(var(--type-label-line) * 8);
+    padding: var(--space-2) var(--space-2-5);
+    overflow-y: auto;
+    border-radius: var(--radius-item);
+    background-color: var(--fill-muted);
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    overflow-wrap: anywhere;
+  }
+  @container (width < 28rem) {
+    .fa-typeahead[data-detail] .fa-typeahead-panes {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .fa-typeahead-detail {
+      height: calc(var(--type-label-line) * 3 + var(--space-2) * 2);
+    }
+  }
+}

@@ -44,6 +44,8 @@ export const richTextMessages = defineMessages("richText", {
   codeBlock: 'Code block',
   visual: 'Visual',
   markdown: 'Markdown',
+  mentions: 'Mentions',
+  commands: 'Commands',
 })
 
 declare module "../../lib/i18n/catalog.js" {

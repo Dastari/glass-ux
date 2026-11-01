@@ -46,6 +46,7 @@ import { LinkActivation } from "./link-activation.js";
 import { MARKDOWN_TRANSFORMERS } from "./markdown.js";
 import type { RichTextInputProps, RichTextView } from "./rich-text.js";
 import { isSafeRichTextUrl } from "./urls.js";
+import { TypeaheadPlugin } from "./typeahead-plugin.js";
 import { richTextViews } from "./view-options.js";
 
 const EXTERNAL_TAG = "glass-rich-text-source";
@@ -312,6 +313,8 @@ export default function RichTextEditor({
   ref,
   onBlur,
   onError,
+  mentions,
+  slashCommands,
   ...props
 }: RichTextInputProps) {
   const messages = useMessages(richTextMessages)
@@ -417,6 +420,9 @@ export default function RichTextEditor({
         />
         <LinkActivation readOnly={readOnly} disabled={disabled} />
         <MarkdownShortcutPlugin transformers={MARKDOWN_TRANSFORMERS} />
+        {(mentions || slashCommands) && view === "visual" && !disabled && !readOnly ? (
+          <TypeaheadPlugin mentions={mentions} slashCommands={slashCommands} />
+        ) : null}
       </LexicalComposer>
     </div>
   );

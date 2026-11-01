@@ -1180,6 +1180,8 @@ export default defineMessagePack("ar", {
     codeBlock: "كتلة التعليمات البرمجية",
     visual: "مرئي",
     markdown: "Markdown",
+    mentions: "الإشارات",
+    commands: "الأوامر",
   },
   addressField: {
     street: "الشارع",
@@ -2026,6 +2028,11 @@ export default defineMessagePack("ar", {
     hiragana: "هيراغانا",
     keyboardToggle: "لوحة المفاتيح على الشاشة",
     keyboardPanel: "لوحة المفاتيح على الشاشة",
+  },
+  typeahead: {
+    noResults: "لا توجد نتائج",
+    searching: "جارٍ البحث…",
+    resultCount: counted({"zero": "{n} نتائج", "one": "{n} نتيجة", "two": "نتيجتان ({n})", "few": "{n} نتائج", "many": "{n} نتيجةً", "other": "{n} نتيجة"}),
   },
   sidebar: {
     toggleSidebar: "تبديل الشريط الجانبي",

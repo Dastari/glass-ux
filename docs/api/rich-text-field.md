@@ -21,6 +21,7 @@ Markdown input bound to a string form field, with Field label and reserved valid
 | id | `string \| undefined` | See type | no | — | ID of the active editing surface. Field supplies a label when wrapped. |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
 | maxHeight | `number \| undefined` | See type | no | — | Maximum content height, in CSS pixels; longer documents scroll. Default 480. |
+| mentions | `RichTextMentions \| undefined` | See type | no | — | Offer an @ mention list in the visual view. Off by default. |
 | minHeight | `number \| undefined` | See type | no | — | Minimum content height, in CSS pixels. Default 160. Toolbar height is additional. |
 | onAttachmentError | `((error: unknown) => void) \| undefined` | See type | no | — | Reports an upload failure to the host instead of the default toast. The Attach button shows the failure in place, its tooltip carries the message and a status region announces it. |
 | onError | `((error: Error) => void) \| undefined` | See type | no | — | Receives an editing-engine error; the original Markdown remains available in source view. |
@@ -31,6 +32,7 @@ Markdown input bound to a string form field, with Field label and reserved valid
 | ref | `Ref<HTMLDivElement \| HTMLTextAreaElement> \| undefined` | See type | no | — | Receives the visible editing surface for focus. |
 | required | `boolean \| undefined` | false, true | no | — | Shows the required marker. Pass `required` to the control as well. |
 | resize | `boolean \| undefined` | false, true | no | — | Allow vertical resizing of the editing surface between its limits. Default true. |
+| slashCommands | `boolean \| readonly RichTextCommand[] \| undefined` | See type | no | — | Offer a / menu at the start of a block in the visual view: `true` for the block styles and lists, or your own rows. Off by default. |
 | sourceView | `boolean \| undefined` | false, true | no | — | Offer the Markdown source view. Labels become named Eye/Code icons before formatting wraps. Default true. |
 | spellCheck | `boolean \| undefined` | false, true | no | — | Enable browser spelling checks. Default true. |
 | style | `CSSProperties \| undefined` | See type | no | — | Outer layout styles. |

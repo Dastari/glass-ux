@@ -71,6 +71,7 @@ const familyRoots: Record<string, string> = {
   topology: "topology-canvas",
   tree: "tree",
   "tree-select": "tree-select",
+  typeahead: "typeahead",
   "url-field": "url-field",
   "vertical-tabs": "vertical-tabs",
   windows: "window-frame",

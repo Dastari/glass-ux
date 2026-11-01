@@ -1179,6 +1179,8 @@ export default defineMessagePack("he", {
     codeBlock: "בלוק קוד",
     visual: "ויזואלי",
     markdown: "Markdown",
+    mentions: "אזכורים",
+    commands: "פקודות",
   },
   addressField: {
     street: "רחוב",
@@ -2025,6 +2027,11 @@ export default defineMessagePack("he", {
     hiragana: "הירגאנה",
     keyboardToggle: "מקלדת על המסך",
     keyboardPanel: "מקלדת על המסך",
+  },
+  typeahead: {
+    noResults: "אין תוצאות",
+    searching: "מחפש…",
+    resultCount: counted({"one": "{n} תוצאה", "other": "{n} תוצאות", "two": "{n} תוצאות"}),
   },
   sidebar: {
     toggleSidebar: "החלפת מצב סרגל הצד",

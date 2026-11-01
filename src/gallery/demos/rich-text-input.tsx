@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ContainerLab, SectionPage, Specimen, SwapSlot } from "../kit.js";
 import { Button } from "../../ui/button/index.js";
 import { Field } from "../../ui/field/index.js";
-import { RichTextInput, RichTextSkeleton } from "../../ui/rich-text/index.js";
+import { RichTextInput, RichTextSkeleton, type RichTextMention } from "../../ui/rich-text/index.js";
 
 const DOCUMENT = `## Northstar welcome guide
 
@@ -18,6 +18,34 @@ Check the **site contact** before changing a device. Keep the handover *clear an
 
 Use \`device status\` to check the connection.
 `;
+const TEAM: RichTextMention[] = [
+  { id: "mira", label: "Mira Rowan", description: "Site lead", href: "/people/mira" },
+  { id: "avery", label: "Avery Quinn", description: "Surveyor", href: "/people/avery" },
+  { id: "noor", label: "Noor Haddad", description: "Handover" },
+];
+const searchTeam = (query: string) =>
+  TEAM.filter((person) => person.label.toLowerCase().includes(query.toLowerCase()));
+
+function MentionsDemo() {
+  const [markdown, setMarkdown] = useState(
+    "Type @ for the team, or / on a new line for block styles.",
+  );
+  return (
+    <div className="w-full max-w-2xl" data-testid="rich-text-typeahead-demo">
+      <RichTextInput
+        aria-label="Handover notes"
+        value={markdown}
+        onValueChange={setMarkdown}
+        minHeight={120}
+        mentions={{ search: searchTeam }}
+        slashCommands
+      />
+      <pre className="sr-only" data-testid="rich-text-typeahead-markdown">
+        {markdown}
+      </pre>
+    </div>
+  );
+}
 
 function DocumentDemo() {
   const [markdown, setMarkdown] = useState(DOCUMENT);
@@ -131,7 +159,14 @@ export default function RichTextSection() {
       >
         <AttachmentDemo />
       </Specimen>
-      <Specimen title="States" layout="stack" specimenKey="rich-text:default:4">
+      <Specimen
+        title="Mentions and slash commands"
+        description="Opt in with mentions and slashCommands. Focus stays in the text; the host supplies the people, and a mention with an address becomes a Markdown link."
+        specimenKey="rich-text:default:4"
+      >
+        <MentionsDemo />
+      </Specimen>
+      <Specimen title="States" layout="stack" specimenKey="rich-text:default:5">
         <Field label="Empty document" nativeLabel={false}>
           <RichTextInput minHeight={100} maxHeight={220} />
         </Field>
@@ -169,7 +204,7 @@ export default function RichTextSection() {
         title="Loading geometry"
         description="The skeleton retains the toolbar and content height."
         layout="stack"
-        specimenKey="rich-text:default:5"
+        specimenKey="rich-text:default:6"
       >
         <SwapSlot
           id="rich-text-loading"
@@ -190,7 +225,7 @@ export default function RichTextSection() {
           { id: "tall", label: "Tall narrow 240×640", width: 240, height: 640 },
         ]}
         description="Formatting buttons wrap within the container; the source switch adapts with Segmented. Content scrolls after its maximum height, and either view can be resized vertically."
-        specimenKey="rich-text:default:6"
+        specimenKey="rich-text:default:7"
       >
         <div className="p-2">
           <RichTextInput

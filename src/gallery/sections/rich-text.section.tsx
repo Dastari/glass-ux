@@ -21,6 +21,7 @@ import {
   RichTextInput,
   RichTextSkeleton,
   richTextSchema,
+  type RichTextMention,
 } from "../../ui/rich-text/index.js";
 import { Usage } from "./inputs.kit.js";
 
@@ -36,6 +37,32 @@ Check the **site contact** before changing a device. Keep the handover *clear an
 
 Use \`device status\` to check the connection.
 `;
+
+const TEAM: RichTextMention[] = [
+  { id: "mira", label: "Mira Rowan", description: "Site lead", href: "/people/mira" },
+  { id: "avery", label: "Avery Quinn", description: "Surveyor", href: "/people/avery" },
+  { id: "noor", label: "Noor Haddad", description: "Handover" },
+];
+
+const searchTeam = (query: string) =>
+  TEAM.filter((person) => person.label.toLowerCase().includes(query.toLowerCase()));
+
+function MentionsDemo() {
+  const [markdown, setMarkdown] = useState("Type @ for the team, or / on a new line for block styles.");
+  return (
+    <div className="w-full max-w-2xl" data-testid="rich-text-typeahead-demo">
+      <RichTextInput
+        aria-label="Handover notes"
+        value={markdown}
+        onValueChange={setMarkdown}
+        minHeight={120}
+        mentions={{ search: searchTeam }}
+        slashCommands
+      />
+      <pre className="sr-only" data-testid="rich-text-typeahead-markdown">{markdown}</pre>
+    </div>
+  );
+}
 
 function DocumentDemo() {
   const [markdown, setMarkdown] = useState(DOCUMENT);
@@ -208,6 +235,12 @@ export default function RichTextSection() {
         layout="stack"
       >
         <AttachmentDemo />
+      </Specimen>
+      <Specimen
+        title="Mentions and slash commands"
+        description="Opt in with mentions and slashCommands. Focus stays in the text; the host supplies the people, and a mention with an address becomes a Markdown link."
+      >
+        <MentionsDemo />
       </Specimen>
       <Specimen title="States" layout="stack">
         <Field label="Empty document" nativeLabel={false}>

@@ -113,6 +113,7 @@
 @import "../ui/tree-select/tree-select.css";
 @import "../ui/tree/tree.css";
 @import "../ui/truncated-text/truncated-text.css";
+@import "../ui/typeahead/typeahead.css";
 @import "../ui/vertical-tabs/vertical-tabs.css";
 @import "../ui/virtual-list/virtual-list.css";
 @import "../ui/visually-hidden/visually-hidden.css";

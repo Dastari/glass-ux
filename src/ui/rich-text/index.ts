@@ -6,6 +6,10 @@ export type {
   RichTextSkeletonProps,
   RichTextView,
   RichTextAttachment,
+  RichTextBlock,
+  RichTextCommand,
+  RichTextMention,
+  RichTextMentions,
 } from "./rich-text.js";
 export { richTextSchema } from "./schema.js";
 export type { RichTextSchemaOptions } from "./schema.js";

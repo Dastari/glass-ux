@@ -1,0 +1,105 @@
+import { useState } from "react";
+import { IconFileText, IconFolder, IconImage } from "glass-ux/icons";
+import { Input } from "glass-ux/input";
+import {
+  TypeaheadOption,
+  TypeaheadPopup,
+  useTypeahead,
+  type TypeaheadItem,
+} from "glass-ux/typeahead";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+interface FileItem extends TypeaheadItem {
+  modified: string;
+}
+
+const FILES: FileItem[] = [
+  {
+    id: "brief",
+    label: "Studio brief.md",
+    description: "Cedar Studio",
+    icon: <IconFileText />,
+    modified: "Edited by Mira Rowan on 12 March",
+  },
+  {
+    id: "plans",
+    label: "Floor plans",
+    description: "Cedar Studio",
+    icon: <IconFolder />,
+    modified: "Holds 14 drawings",
+  },
+  {
+    id: "photo",
+    label: "Site photo.jpg",
+    description: "Harbour Works",
+    icon: <IconImage />,
+    modified: "Added by Avery Quinn on 2 April",
+  },
+  {
+    id: "notes",
+    label: "Meeting notes.md",
+    description: "Harbour Works",
+    icon: <IconFileText />,
+    modified: "Edited by Noor Haddad on 9 April",
+  },
+];
+
+/** A caret rectangle needs no element: anything that yields a box can hold the list. */
+function RectangleDemo() {
+  const [open, setOpen] = useState(false);
+  const typeahead = useTypeahead({
+    id: "typeahead-rectangle",
+    open,
+    items: FILES,
+    onPick: () => setOpen(false),
+    onClose: () => setOpen(false),
+  });
+  return (
+    <div className="w-full max-w-sm">
+      <Input
+        {...typeahead.textProps}
+        aria-label="Open at the top of the window"
+        placeholder="Focus to open"
+        readOnly
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        onKeyDown={typeahead.onKeyDown}
+      />
+      <TypeaheadPopup
+        open={open}
+        onClose={typeahead.close}
+        anchor={{ x: 24, y: 24, width: 0, height: 20 }}
+        label="Files"
+        className="fa-typeahead"
+      >
+        <div id={typeahead.id} role="listbox" aria-label="Files" className="fa-typeahead-list">
+          {typeahead.items.map((file, index) => (
+            <TypeaheadOption
+              key={file.id}
+              listId={typeahead.id}
+              index={index}
+              active={index === typeahead.activeIndex}
+              onPick={() => typeahead.pick(file)}
+              onActive={typeahead.setActiveIndex}
+            >
+              {file.label}
+            </TypeaheadOption>
+          ))}
+        </div>
+      </TypeaheadPopup>
+    </div>
+  );
+}
+
+export default function TypeaheadSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Any rectangle"
+        description="The anchor is a rectangle in viewport coordinates, such as a caret. This one is near the top of the window."
+      >
+        <RectangleDemo />
+      </Specimen>
+    </SectionPage>
+  );
+}

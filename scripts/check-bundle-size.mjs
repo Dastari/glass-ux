@@ -59,6 +59,9 @@ const BUDGETS = [
   { entry: 'glass-ux/on-screen-keyboard', named: 'KeyboardDrawer', gzip: 20_500, forbid: ['@tanstack/react-form', 'd3-scale', 'shiki', 'zod'] },
   { entry: 'glass-ux/phone-field', named: 'PhoneField', gzip: 75_000, forbid: ['libphonenumber-js'] },
   { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text'] },
+  // The list that RichTextInput drives lives outside the editor: importing it brings in no Lexical.
+  { entry: 'glass-ux/typeahead', named: 'Typeahead', gzip: 50_000, forbid: ['lexical', '@lexical/rich-text', '@lexical/react'] },
+  { entry: 'glass-ux/typeahead', named: 'useTypeahead', gzip: 2_000, forbid: ['@base-ui/react', 'lexical'] },
   { entry: 'glass-ux/map', named: 'GeoMap', gzip: 75_000, forbid: ['maplibre-gl'] },
   { entry: 'glass-ux/ai/code-block', named: 'CodeBlock', gzip: 40_000, forbid: ['shiki', '@shikijs/core'] },
   // Unused wrapper calls (`Object.assign`, `memo`, ...) carry /* @__PURE__ */ (pnpm pure:check), so

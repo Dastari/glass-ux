@@ -1,0 +1,5 @@
+import "./messages.js"
+export { EmojiPicker, type EmojiPick, type EmojiPickerProps } from "./emoji-picker.js"
+export { EmojiPopover, type EmojiPopoverProps } from "./emoji-popover.js"
+export type { EmojiEntry, EmojiGroup, EmojiSkinTone } from "./emoji.js"
+export { emojiPickerMessages, getEmojiPickerMessages } from "./messages.js"

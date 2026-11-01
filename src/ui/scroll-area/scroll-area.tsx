@@ -17,6 +17,8 @@ export interface ScrollAreaProps {
   /** Names the scrolling region when it holds more than a list (makes it a landmark-free
    *  focusable region for keyboard scrolling). */
   "aria-label"?: string
+  /** Tab order of the viewport. Pass -1 only when the content always holds something to focus, which scrolls it (R20.6). Default 0. */
+  tabIndex?: number
   className?: string
 }
 
@@ -25,7 +27,7 @@ export interface ScrollAreaProps {
  * `data-scrolled-top|bottom|left|right` on the root for edge treatments. Fills its box; give
  * the parent a height.
  */
-export function ScrollArea({ children, orientation = "vertical", edges = "hairline", className, "aria-label": label }: ScrollAreaProps) {
+export function ScrollArea({ children, orientation = "vertical", edges = "hairline", tabIndex = 0, className, "aria-label": label }: ScrollAreaProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const scrolled = useScrollEdges(viewportRef)
   const vertical = orientation !== "horizontal"
@@ -44,7 +46,7 @@ export function ScrollArea({ children, orientation = "vertical", edges = "hairli
       <BaseScrollArea.Viewport
         ref={viewportRef}
         className="fa-scroll-viewport"
-        tabIndex={0}
+        tabIndex={tabIndex}
         aria-label={label}
         role={label ? "region" : undefined}
         data-scroll-container

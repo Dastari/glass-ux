@@ -86,6 +86,10 @@ For sign-in, providers, two-factor codes, password reset and account creation, s
 | Page                            | Components                                            | Notes                                                                    |
 | ------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
 | [Drag and drop](drag-drop.md)   | `DragDropProvider`, `Draggable`, `DragHandle`, `DropZone` | Typed objects, sortable lists and grids, reactive zone states, keyboard and touch |
+| [NotificationList](notification-list.md) | `NotificationList`, `NotificationPopover`            | The rows behind an unread count: day or host groups, read and dismiss, paging, new rows behind a count; connects to AccountButton and the rail |
+| [CommentThread](comment-thread.md) | `CommentThread`                                    | Comments and one level of replies with a rich text composer and mentions: sends that show at once and fail in place, permissions from the host |
+| [ReactionBar](reaction-bar.md)  | `ReactionBar`                                         | Emoji reactions with counts: toggles named for what they say, one tab stop, a picker loaded on demand |
+| [EmojiPicker](emoji-picker.md)  | `EmojiPicker`, `EmojiPopover`                         | Searchable emoji in the system font, one tab stop, with its data loaded on demand; English names unless the application supplies others |
 | [FileDialog and FileProvider](file-dialog.md) | `FileDialog`, `FileConflictDialog`, `FileDialogPreview` | Open and save over a storage contract: paged folders, thumbnails, conflicts that close nothing; the host reads and writes |
 | [Lightbox and ImageViewer](lightbox.md) | `Lightbox`, `ImageViewer`                       | Pictures at full size, in a dialog or the page: zoom and pan, rotate and flip, full screen, slideshow, details |
 | [Kanban](kanban.md)             | `Kanban`, `KanbanCard`                                | Columns of cards on drag and drop: limits that refuse with a reason, collapse, saves that fly back |

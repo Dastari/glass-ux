@@ -1,0 +1,211 @@
+/*
+ * CommentThread — a header, the comments, and the composer. Avatars and text line up in a grid;
+ * replies hang one level in from the text. The header keeps a place for the count of new
+ * comments, and a comment's send state takes the place of its time, so neither moves anything.
+ *
+ * With data-fill the comments scroll between the header and a composer that stays at the foot.
+ *
+ * Component tokens
+ *   --_avatar   the avatar column
+ *   --_new      the slot held for the count of new comments
+ *   --_hint     the width a composer's hint or error starts from
+ */
+@layer components {
+  .fa-comment-thread {
+    --_avatar: var(--control-h-sm);
+    --_new: 5rem;
+    --_hint: 8rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
+    min-width: 0;
+    container-type: inline-size;
+  }
+  .fa-comment-thread[data-fill] {
+    height: 100%;
+    min-height: 0;
+  }
+  .fa-comment-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  /* Room for the rings of controls at the edge, and no sideways scroll from a touch target. */
+  .fa-comment-scroll .fa-scroll-content {
+    padding: var(--focus-reach);
+    overflow-x: clip;
+    overflow-clip-margin: var(--focus-reach);
+  }
+  .fa-comment-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--control-h-xs);
+    min-width: 0;
+  }
+  .fa-comment-title {
+    min-width: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    overflow-wrap: anywhere;
+  }
+  .fa-comment-new {
+    display: flex;
+    flex: 0 1 auto;
+    justify-content: flex-end;
+    min-width: var(--_new);
+    margin-inline-start: auto;
+  }
+  .fa-comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-comment-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-comment {
+    display: grid;
+    grid-template-columns: var(--_avatar) minmax(0, 1fr);
+    column-gap: var(--space-2);
+    row-gap: var(--space-half);
+    min-width: 0;
+    border-radius: var(--radius-item);
+    outline: none;
+  }
+  .fa-comment:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-comment-avatar {
+    grid-row: 1 / span 3;
+  }
+  .fa-comment-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    grid-column: 2;
+    min-height: var(--control-h-xs);
+    min-width: 0;
+  }
+  .fa-comment-author {
+    min-width: 0;
+    font-size: var(--type-label-size);
+    font-weight: var(--weight-semibold);
+    line-height: var(--type-label-line);
+    overflow-wrap: anywhere;
+  }
+  .fa-comment-meta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-comment-failed {
+    color: var(--danger-text);
+  }
+  .fa-comment-tools {
+    display: inline-flex;
+    gap: var(--space-half);
+    margin-inline-start: auto;
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  /* Comment tools appear on hover and focus, and always on touch (R11.7). */
+  .fa-comment:is(:hover, :focus-within) .fa-comment-tools,
+  .fa-comment-tools:has([data-popup-open]) {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .fa-comment-tools {
+      opacity: 1;
+    }
+  }
+  .fa-comment-body {
+    grid-column: 2;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-comment[data-status="pending"] .fa-comment-body {
+    color: var(--fg-muted);
+  }
+  /* Body type, as the plain text that holds the place while Markdown loads: nothing moves when it arrives. */
+  .fa-comment-body .fa-ai-md {
+    --_size: var(--type-body-size);
+    --_line: var(--type-body-line);
+    --_gap: var(--space-2);
+  }
+  .fa-comment-plain {
+    margin: 0;
+    white-space: pre-wrap;
+  }
+  .fa-comment-deleted {
+    margin: 0;
+    color: var(--fg-muted);
+    font-style: italic;
+  }
+  .fa-comment-reactions {
+    grid-column: 2;
+    margin-block-start: var(--space-half);
+  }
+  .fa-comment-branch {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-inline-start: calc(var(--_avatar) + var(--space-2));
+  }
+  .fa-comment-compose-row {
+    display: grid;
+    grid-template-columns: var(--_avatar) minmax(0, 1fr);
+    column-gap: var(--space-2);
+    flex: none;
+    min-width: 0;
+  }
+  .fa-comment-compose-row > .fa-comment-composer:only-child {
+    grid-column: 1 / -1;
+  }
+  .fa-comment-composer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-comment-composer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    min-height: var(--control-h-sm);
+  }
+  .fa-comment-hint,
+  .fa-comment-error {
+    flex: 1 1 var(--_hint);
+    min-width: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-comment-error {
+    color: var(--danger-text);
+  }
+  @container (max-width: 24rem) {
+    .fa-comment-hint {
+      display: none;
+    }
+  }
+}

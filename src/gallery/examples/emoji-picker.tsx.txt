@@ -1,0 +1,61 @@
+import { useState } from "react";
+import { EmojiPicker, type EmojiPick, type EmojiSkinTone } from "glass-ux/emoji-picker";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+const RECENT = ["👍", "🎉", "🙏🏽", "🚀"];
+
+function InPage() {
+  const [picked, setPicked] = useState<EmojiPick | null>(null);
+  const [tone, setTone] = useState<EmojiSkinTone>(0);
+  return (
+    <div className="w-full max-w-sm" data-testid="emoji-inline">
+      <EmojiPicker recent={RECENT} skinTone={tone} onSkinToneChange={setTone} onPick={setPicked} />
+      <p data-testid="emoji-picked">
+        {picked ? `${picked.emoji} ${picked.name}` : "Nothing picked"}
+      </p>
+    </div>
+  );
+}
+
+const FRENCH = () =>
+  Promise.resolve<Record<string, string>>({
+    "😀": "visage souriant sourire",
+    "👍": "pouce levé bravo",
+  });
+
+function LocalisedNames() {
+  const [picked, setPicked] = useState("");
+  return (
+    <div className="w-full max-w-sm" data-testid="emoji-names">
+      <EmojiPicker
+        aria-label="Emoji picker with supplied names"
+        loadNames={FRENCH}
+        skinTones={false}
+        onPick={({ name }) => setPicked(name)}
+      />
+      <p>{picked || "Nothing picked"}</p>
+    </div>
+  );
+}
+
+export default function EmojiPickerSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="In a page"
+        description="The list is one tab stop: arrow keys move, Enter or Space picks, and typing searches. ↓ enters the list from the search. The host keeps the recent emoji."
+        layout="stack"
+      >
+        <InPage />
+      </Specimen>
+
+      <Specimen
+        title="Names from the application"
+        description="Search is in English unless loadNames supplies the locale's names. This one names two emoji in French: try sourire."
+        layout="stack"
+      >
+        <LocalisedNames />
+      </Specimen>
+    </SectionPage>
+  );
+}

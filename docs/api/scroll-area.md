@@ -17,3 +17,4 @@ the parent a height.
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | edges | `"none" \| "hairline" \| "fade" \| undefined` | "none", "hairline", "fade" | no | "hairline" | What marks an edge with content beyond it (R5.8):   hairline  a 1px line at the scrolled edge (lists under a header, above a footer)   fade      a soft mask (strips of chips, previews)   none |
 | orientation | `"horizontal" \| "vertical" \| "both" \| undefined` | "horizontal", "vertical", "both" | no | "vertical" | Which axes scroll. |
+| tabIndex | `number \| undefined` | See type | no | 0 | Tab order of the viewport. Pass -1 only when the content always holds something to focus, which scrolls it (R20.6). Default 0. |

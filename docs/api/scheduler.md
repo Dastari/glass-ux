@@ -27,7 +27,7 @@ container's height; give it one (a Panel body, a sized region).
 | continuous | `boolean \| undefined` | false, true | no | false | Timeline month: one strip from the month before to the month after that scrolls sideways; scrolling into another month makes it the date (`onDateChange`), and previous and next move a month. Fetch what `onRangeChange` reports. |
 | date | `string \| undefined` | See type | no | — | A day in the range shown (controlled): the month, week or day around it. |
 | defaultDate | `string \| undefined` | See type | no | — | The first day shown when uncontrolled. Default today in `timeZone`. |
-| defaultView | `SchedulerView \| undefined` | "month", "week", "day", "agenda" | no | "week" | The first view when uncontrolled. Default "week". |
+| defaultView | `SchedulerView \| undefined` | "day", "month", "week", "agenda" | no | "week" | The first view when uncontrolled. Default "week". |
 | dropAccept | `DropAccept \| undefined` | See type | no | — | Timeline: which of your DragDrop items its rows take (a type, types or a test). Default none: rows only take its own events. |
 | editable | `boolean \| ((event: E) => boolean \| string) \| undefined` | See type | no | false | Let people move and resize events by dragging and with the keyboard. A function decides per event; returning a string locks the event and says why ("Sent to the crew"). |
 | eventEffect | `((event: E) => DragEffect) \| undefined` | See type | no | — | Timeline: whether dragging an event moves it (default) or copies it, leaving it in place (templates, repeating work). |
@@ -57,6 +57,6 @@ container's height; give it one (a Panel body, a sized region).
 | style | `CSSProperties \| undefined` | See type | no | — | Layout only. |
 | timeZone | `string \| undefined` | See type | no | — | The IANA zone whose wall clock the grid shows ("Australia/Sydney"). Default the browser's. |
 | validateDrop | `((drag: DragInfo, resource: R, target: SchedulerDropTarget) => DropVerdict) \| undefined` | See type | no | — | Timeline: whether a row takes the item being dragged now, or why not, for its own events and your items alike. `target` is where it would land: the day, the proposed interval and the resource's blocks it would overlap. Asked again as the day or row under it changes, and for moves and resizes made with the keyboard. |
-| view | `SchedulerView \| undefined` | "month", "week", "day", "agenda" | no | — | The view shown (controlled). |
+| view | `SchedulerView \| undefined` | "day", "month", "week", "agenda" | no | — | The view shown (controlled). |
 | views | `readonly SchedulerView[] \| undefined` | See type | no | layout === "timeline" ? TIMELINE_VIEWS : ALL_VIEWS | The views in the switch, in order. Default month, week, day and agenda; with the timeline layout day, week and month. |
 | weekStartsOn | `number \| undefined` | See type | no | — | First day of the week, 1 = Monday … 7 = Sunday. Default the locale's. |

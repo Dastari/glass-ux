@@ -1,0 +1,33 @@
+/*
+ * ReactionBar — toggles with counts on the shared Button, or plain chips when read-only. The add
+ * control leads, so reactions arriving at the end move nothing. Counts are tabular with a
+ * minimum width, so a count that changes does not move its neighbours (R9).
+ */
+@layer components {
+  .fa-reactions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .fa-reaction-glyph {
+    font-size: var(--icon-sm);
+  }
+  .fa-reaction-count {
+    min-width: 1ch;
+    font-size: var(--type-caption-size);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+  .fa-reactions[data-read-only] .fa-reaction {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    height: var(--control-h-xs);
+    padding-inline: var(--space-1-5);
+    border-radius: var(--radius-compact);
+    background: var(--fill-hover);
+    color: var(--fg-muted);
+  }
+}

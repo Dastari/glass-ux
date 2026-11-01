@@ -1,0 +1,56 @@
+import { useState } from "react"
+import { Button } from "../../ui/button/index.js"
+import { ReactionBar, type Reaction } from "../../ui/reaction-bar/index.js"
+import { SectionPage, Specimen } from "../kit.js"
+
+const START: readonly Reaction[] = [
+  { emoji: "👍", count: 2, people: ["Noor Haddad", "Jamie Wells"] },
+  { emoji: "❤️", count: 1, reacted: true },
+  { emoji: "🚀", count: 12, label: "rocket" },
+]
+
+function Controlled() {
+  const [reactions, setReactions] = useState<readonly Reaction[]>(START)
+  const [last, setLast] = useState("No change yet")
+  return (
+    <div className="flex flex-col gap-3" data-testid="reactions-controlled">
+      <ReactionBar
+        reactions={reactions}
+        onReactionsChange={(next, change) => {
+          setReactions(next)
+          setLast(`${change.emoji} ${change.reacted ? "added" : "removed"}`)
+        }}
+      />
+      <Button
+        size="sm"
+        className="self-start"
+        onClick={() => setReactions((rows) => (rows.some((row) => row.emoji === "🎉") ? rows.map((row) => (row.emoji === "🎉" ? { ...row, count: row.count + 1 } : row)) : [...rows, { emoji: "🎉", count: 1 }]))}
+      >
+        Someone reacts
+      </Button>
+      <p data-testid="reactions-last">{last}</p>
+    </div>
+  )
+}
+
+export default function ReactionBarSection() {
+  return (
+    <SectionPage>
+      <Specimen title="Reactions" description="One tab stop: arrow keys move along the bar, and Enter or Space toggles. The add control comes first, so a new reaction moves nothing." layout="stack">
+        <Controlled />
+      </Specimen>
+      <Specimen title="Uncontrolled" description="The bar counts the person's own changes itself." layout="stack">
+        <ReactionBar aria-label="Uncontrolled reactions" defaultReactions={[{ emoji: "🎉", count: 3 }]} />
+      </Specimen>
+      <Specimen title="Read-only" description="Counts with no buttons and no add control." layout="stack">
+        <ReactionBar aria-label="Read-only reactions" readOnly reactions={START} />
+      </Specimen>
+      <Specimen title="Unavailable with a reason" description="The reactions stay and say why." layout="stack">
+        <ReactionBar aria-label="Locked reactions" disabledReason="Reactions are locked during the design freeze" reactions={START} />
+      </Specimen>
+      <Specimen title="Without the picker" description="People join reactions already drawn." layout="stack">
+        <ReactionBar aria-label="Fixed reactions" picker={false} defaultReactions={START} />
+      </Specimen>
+    </SectionPage>
+  )
+}

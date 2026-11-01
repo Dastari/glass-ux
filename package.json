@@ -90,6 +90,22 @@
       "types": "./dist/ui/file-drop/index.d.ts",
       "import": "./dist/ui/file-drop/index.js"
     },
+    "./comment-thread": {
+      "types": "./dist/ui/comment-thread/index.d.ts",
+      "import": "./dist/ui/comment-thread/index.js"
+    },
+    "./emoji-picker": {
+      "types": "./dist/ui/emoji-picker/index.d.ts",
+      "import": "./dist/ui/emoji-picker/index.js"
+    },
+    "./notification-list": {
+      "types": "./dist/ui/notification-list/index.d.ts",
+      "import": "./dist/ui/notification-list/index.js"
+    },
+    "./reaction-bar": {
+      "types": "./dist/ui/reaction-bar/index.d.ts",
+      "import": "./dist/ui/reaction-bar/index.js"
+    },
     "./file-dialog": {
       "types": "./dist/ui/file-dialog/index.d.ts",
       "import": "./dist/ui/file-dialog/index.js"
@@ -743,13 +759,13 @@
     }
   },
   "peerDependencies": {
-    "react": ">=19 <20",
-    "react-dom": ">=19 <20",
-    "react-hook-form": ">=7.60 <8",
     "@hookform/resolvers": ">=5 <7",
+    "@playwright/test": ">=1.50 <2",
     "@testing-library/react": ">=16 <17",
     "@testing-library/user-event": ">=14 <15",
-    "@playwright/test": ">=1.50 <2"
+    "react": ">=19 <20",
+    "react-dom": ">=19 <20",
+    "react-hook-form": ">=7.60 <8"
   },
   "dependencies": {
     "@base-ui/react": "1.9.0",
@@ -812,6 +828,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "6.1.2",
+    "emojilib": "4.0.3",
     "jsdom": "^30.1.2",
     "oxlint": "^1.87.0",
     "postcss": "8.5.30",
@@ -824,6 +841,7 @@
     "tailwindcss": "4.3.3",
     "typedoc": "0.28.20",
     "typescript": "~6.0.3",
+    "unicode-emoji-json": "0.9.0",
     "vite": "8.3.4",
     "vitest": "^5.0.3"
   },
@@ -836,7 +854,7 @@
     "docs:build": "pnpm run docs:api && pnpm run build && pnpm --filter glass-ux-docs build && node scripts/docs-site.mjs",
     "dev": "pnpm --filter glass-ux-docs dev",
     "dev:flat": "VITE_GLASS_UX_STYLE=flat pnpm --filter glass-ux-docs exec vite --host 0.0.0.0 --port 4230 --strictPort",
-    "check": "pnpm run brand:check && pnpm run styles:check && pnpm run icons:check && pnpm run fonts:check && pnpm run tokens:check && pnpm run logical:check && pnpm run layout:check && pnpm run css-perf:check && pnpm run size:check && pnpm run pure:check && pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run test:docs && pnpm run boundaries:check && pnpm run docs:check",
+    "check": "pnpm run brand:check && pnpm run styles:check && pnpm run icons:check && pnpm run emoji:check && pnpm run fonts:check && pnpm run tokens:check && pnpm run logical:check && pnpm run layout:check && pnpm run css-perf:check && pnpm run size:check && pnpm run pure:check && pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run test:docs && pnpm run boundaries:check && pnpm run docs:check",
     "boundaries:check": "node scripts/check-boundaries.mjs",
     "docs:check": "node scripts/check-docs.mjs",
     "test:docs": "node --test scripts/docs-api.test.mjs scripts/css-buckets.test.mjs scripts/client-boundaries.test.mjs scripts/style-manifest.test.mjs scripts/styles-cli.test.mjs",
@@ -845,6 +863,8 @@
     "pack:check": "node scripts/pack-release.mjs --check",
     "media:fixtures": "node scripts/build-media-fixtures.mjs",
     "styles": "node scripts/build-styles.mjs",
+    "emoji": "node scripts/build-emoji.mjs",
+    "emoji:check": "node scripts/build-emoji.mjs --check",
     "icons": "node scripts/build-icons.mjs",
     "icons:check": "node scripts/build-icons.mjs --check",
     "styles:check": "node scripts/build-styles.mjs --check",

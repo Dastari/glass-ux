@@ -5,7 +5,7 @@ import { WindowFrame } from "../../windows/index.js"
 
 function ReportBar({ width }: { width?: string }) {
   return (
-    <div className="max-w-full" style={{ width }} data-testid={width ? `status-bar-${width}` : "status-bar-full"}>
+    <div className="w-full max-w-full" style={{ width }} data-testid={width ? `status-bar-${width}` : "status-bar-full"}>
       <StatusBar aria-label="Report status">
         <StatusBar.Start>
           <StatusBar.Item tone="success">Synced</StatusBar.Item>

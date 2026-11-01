@@ -428079,7 +428079,7 @@
 					"sources": [
 						{
 							"fileName": "ui/status-bar/status-bar.tsx",
-							"line": 195,
+							"line": 205,
 							"character": 17
 						}
 					],
@@ -428112,7 +428112,7 @@
 					"sources": [
 						{
 							"fileName": "ui/status-bar/status-bar.tsx",
-							"line": 202,
+							"line": 212,
 							"character": 17
 						}
 					],
@@ -428162,7 +428162,7 @@
 							"sources": [
 								{
 									"fileName": "ui/status-bar/status-bar.tsx",
-									"line": 238,
+									"line": 248,
 									"character": 2
 								}
 							],
@@ -428199,7 +428199,7 @@
 							"sources": [
 								{
 									"fileName": "ui/status-bar/status-bar.tsx",
-									"line": 234,
+									"line": 244,
 									"character": 2
 								}
 							],
@@ -428227,7 +428227,7 @@
 							"sources": [
 								{
 									"fileName": "ui/status-bar/status-bar.tsx",
-									"line": 236,
+									"line": 246,
 									"character": 2
 								}
 							],
@@ -428274,7 +428274,7 @@
 							"sources": [
 								{
 									"fileName": "ui/status-bar/status-bar.tsx",
-									"line": 240,
+									"line": 250,
 									"character": 2
 								}
 							],
@@ -428321,7 +428321,7 @@
 							"sources": [
 								{
 									"fileName": "ui/status-bar/status-bar.tsx",
-									"line": 229,
+									"line": 239,
 									"character": 2
 								}
 							],
@@ -428348,7 +428348,7 @@
 					"sources": [
 						{
 							"fileName": "ui/status-bar/status-bar.tsx",
-							"line": 227,
+							"line": 237,
 							"character": 17
 						}
 					],
@@ -428423,7 +428423,7 @@
 							"sources": [
 								{
 									"fileName": "ui/status-bar/status-bar.tsx",
-									"line": 147,
+									"line": 157,
 									"character": 2
 								}
 							],
@@ -428457,7 +428457,7 @@
 							"sources": [
 								{
 									"fileName": "ui/status-bar/status-bar.tsx",
-									"line": 151,
+									"line": 161,
 									"character": 2
 								}
 							],
@@ -428512,7 +428512,7 @@
 							"sources": [
 								{
 									"fileName": "ui/status-bar/status-bar.tsx",
-									"line": 149,
+									"line": 159,
 									"character": 2
 								}
 							],
@@ -428574,7 +428574,7 @@
 					"sources": [
 						{
 							"fileName": "ui/status-bar/status-bar.tsx",
-							"line": 145,
+							"line": 155,
 							"character": 17
 						}
 					],
@@ -428623,7 +428623,7 @@
 					"sources": [
 						{
 							"fileName": "ui/status-bar/status-bar.tsx",
-							"line": 188,
+							"line": 198,
 							"character": 17
 						}
 					],
@@ -428761,7 +428761,7 @@
 					"sources": [
 						{
 							"fileName": "ui/status-bar/status-bar.tsx",
-							"line": 304,
+							"line": 314,
 							"character": 13
 						}
 					],
@@ -428927,7 +428927,7 @@
 											"sources": [
 												{
 													"fileName": "ui/status-bar/status-bar.tsx",
-													"line": 304,
+													"line": 314,
 													"character": 79
 												}
 											],
@@ -428994,7 +428994,7 @@
 											"sources": [
 												{
 													"fileName": "ui/status-bar/status-bar.tsx",
-													"line": 304,
+													"line": 314,
 													"character": 90
 												}
 											],
@@ -429061,7 +429061,7 @@
 											"sources": [
 												{
 													"fileName": "ui/status-bar/status-bar.tsx",
-													"line": 304,
+													"line": 314,
 													"character": 84
 												}
 											],
@@ -429176,7 +429176,7 @@
 											"sources": [
 												{
 													"fileName": "ui/status-bar/status-bar.tsx",
-													"line": 304,
+													"line": 314,
 													"character": 72
 												}
 											],

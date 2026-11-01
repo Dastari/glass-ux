@@ -7,7 +7,7 @@ import { StatusBar } from "../../ui/status-bar/index.js";
 function ReportBar({ width }: { width?: string }) {
   return (
     <div
-      className="max-w-full"
+      className="w-full max-w-full"
       style={{ width }}
       data-testid={width ? `status-bar-${width}` : "status-bar-full"}
     >

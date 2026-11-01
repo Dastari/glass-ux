@@ -59,8 +59,9 @@ const GiveWayContext = /* @__PURE__ */ createContext<GiveWay | null>(null)
 
 /**
  * Which items fit. The natural widths are read when the shared observer reports the bar or
- * an item, with `data-measuring` showing everything at max-content for that one read, so the
- * answer never depends on what is currently hidden. Only runs once an item has a rank.
+ * an item, with `data-measuring` showing everything at max-content for that one read. The
+ * bar must measure the same whatever is hidden, or it would flip between two answers. Only
+ * runs once an item has a rank.
  */
 function useGiveWay(barRef: { current: HTMLElement | null }) {
   const items = useRef(new Map<string, RankedItem>())
@@ -71,6 +72,8 @@ function useGiveWay(barRef: { current: HTMLElement | null }) {
   const [host, setHost] = useState<HTMLElement | null>(null)
   const hostRef = useRef<HTMLElement | null>(null)
   hostRef.current = host
+  const levelRef = useRef(0)
+  const countRef = useRef(0)
 
   const register = useCallback((id: string, item: RankedItem) => {
     items.current.set(id, item)
@@ -92,7 +95,11 @@ function useGiveWay(barRef: { current: HTMLElement | null }) {
       bar.toggleAttribute("data-measuring", true)
       const natural = bar.getBoundingClientRect().width
       const more = bar.querySelector<HTMLElement>(":scope > .fa-status-bar-more")?.getBoundingClientRect().width ?? 0
-      for (const [id, item] of items.current) widths.current.set(id, item.element.getBoundingClientRect().width)
+      for (const [id, item] of items.current) {
+        const parent = item.element.parentElement
+        const gapAfter = parent ? Number.parseFloat(getComputedStyle(parent).columnGap) || 0 : 0
+        widths.current.set(id, item.element.getBoundingClientRect().width + gapAfter)
+      }
       bar.removeAttribute("data-measuring")
       const gap = Number.parseFloat(getComputedStyle(bar).columnGap) || 0
       const ranks = [...new Set([...items.current.values()].map((item) => item.rank))].toSorted((a, b) => a - b)
@@ -111,6 +118,9 @@ function useGiveWay(barRef: { current: HTMLElement | null }) {
           next = rank
         }
       }
+      if (next === levelRef.current && moved === countRef.current) return
+      levelRef.current = next
+      countRef.current = moved
       flushSync(() => {
         setLevel(next)
         setCount(moved)
@@ -132,7 +142,7 @@ function More({ count, shown, setHost }: { count: number; shown: boolean; setHos
   const locale = useLocale()
   return (
     <BasePopover.Root onOpenChange={(open) => (open ? undefined : setHost(null))}>
-      <BasePopover.Trigger type="button" className="fa-status-bar-more fa-pressable" hidden={!shown} aria-label={messages.moreStatus(numberFormat(locale).format(count))}>
+      <BasePopover.Trigger type="button" className="fa-status-bar-more fa-pressable" data-idle={shown ? undefined : ""} aria-label={messages.moreStatus(numberFormat(locale).format(count))}>
         <IconMoreHorizontal />
       </BasePopover.Trigger>
       <Popover.Popup size="sm" side="top" align="end">
@@ -273,7 +283,7 @@ function Item({ tone, giveWay, onClick, disabledReason, className, children, ref
     className: cx("fa-status-bar-item", interactive && "fa-pressable", className),
     "data-tone": tone,
     "data-give-way": giveWay,
-    hidden: (gaveWay && !host) || undefined,
+    "data-gave-way": gaveWay && !host ? "" : undefined,
   }
   let node: ReactNode = interactive ? (
     <button

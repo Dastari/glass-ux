@@ -233,6 +233,8 @@ test.describe("lazy tree", () => {
     await expect(status).toHaveAttribute("data-state", "error");
     await expect(status).toContainText("Couldn't load rows under Designs");
     expect(await top(below)).toBeCloseTo(before, 0);
+    const failed = await new AxeBuilder({ page }).include('[data-testid="dt-tree"]').analyze();
+    expect(failed.violations.map((violation) => violation.id)).toEqual([]);
     await status.getByRole("button", { name: "Retry" }).click();
     await expect(line(table, "designs-1")).toBeVisible();
     expect(await top(below)).toBeCloseTo(before, 0);
@@ -364,8 +366,8 @@ for (const density of ["comfortable", "compact"] as const) {
         expect(clip.start).toBeGreaterThanOrEqual(measured.reach - 0.5);
         expect(clip.top).toBeGreaterThanOrEqual(measured.reach - 0.5);
         expect(clip.bottom).toBeGreaterThanOrEqual(measured.reach - 0.5);
+        for (const gap of await lineGaps(table)) expect(gap).toBeLessThan(1.5);
       }
-      for (const gap of await lineGaps(table)) expect(gap).toBeLessThan(1.5);
     });
   }
 }

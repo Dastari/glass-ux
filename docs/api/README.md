@@ -215,6 +215,7 @@
 - [MapStatusSummary](map-status-summary.md) — `glass-ux/map`
 - [MapViewToggle](map-view-toggle.md) — `glass-ux/map`
 - [Markdown](markdown.md) — `glass-ux/ai`
+- [Masonry](masonry.md) — `glass-ux/masonry`
 - [Menu](menu.md) — `glass-ux/menu`
 - [Menubar](menubar.md) — `glass-ux/menubar`
 - [MenubarSkeleton](menubar-skeleton.md) — `glass-ux/menubar`

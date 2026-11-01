@@ -386,6 +386,10 @@
       "types": "./dist/ui/duration-field/index.d.ts",
       "import": "./dist/ui/duration-field/index.js"
     },
+    "./masonry": {
+      "types": "./dist/ui/masonry/index.d.ts",
+      "import": "./dist/ui/masonry/index.js"
+    },
     "./radio": {
       "types": "./dist/ui/radio/index.d.ts",
       "import": "./dist/ui/radio/index.js"

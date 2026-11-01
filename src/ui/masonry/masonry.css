@@ -1,0 +1,50 @@
+/*
+ * Masonry. Every item is placed at an exact offset from the box's reading start and top, computed
+ * from the width and the items' ratios (masonry.tsx, layout.ts), so the layout needs no measuring of
+ * pictures and nothing moves while they load. The offsets are logical (inset-inline-start), so the
+ * columns start at the right in right-to-left. Nothing clips: a focus ring on an item shows in full.
+ * The probe is a hidden box the width of the narrowest column and the height of the gap, so the
+ * script reads both from the tokens as they compute.
+ */
+@layer components {
+  .fa-masonry {
+    /* The named column widths, the same as Grid's (layout.css). They are private here so this sheet
+       needs no other: a custom property two sheets declare drags both into a selective stylesheet. */
+    --_xs: 8rem;
+    --_sm: 10rem;
+    --_md: 14rem;
+    --_lg: 18rem;
+    --_xl: 24rem;
+    position: relative;
+    min-width: 0;
+  }
+  .fa-masonry-list {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-masonry-item {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+  .fa-masonry-item[data-fixed] > * {
+    width: 100%;
+    height: 100%;
+  }
+  /* Before the first measure there is no width to lay out from. */
+  .fa-masonry:not([data-ready]) .fa-masonry-item {
+    visibility: hidden;
+  }
+  .fa-masonry-probe {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: var(--_min);
+    height: var(--_gap);
+    visibility: hidden;
+    pointer-events: none;
+  }
+}

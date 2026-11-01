@@ -66,6 +66,7 @@ const familyRoots: Record<string, string> = {
   "phone-field": "phone-field",
   "port-field": "port-field",
   progress: "progress",
+  masonry: "masonry",
   radio: "radio",
   rating: "rating",
   "rich-text": "rich-text-field",

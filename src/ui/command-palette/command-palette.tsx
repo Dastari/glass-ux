@@ -18,7 +18,9 @@ import { IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { DialogSurface, useDialogScrollEdges } from "../dialog/index.js"
-import { Kbd, isCharacterShortcut, matchesShortcut, shortcutAllowed, useCharacterShortcuts, usePlatform } from "../kbd/index.js"
+import { Kbd, isCharacterShortcut, isChord, matchesShortcut, shortcutAllowed, useCharacterShortcuts, usePlatform } from "../kbd/index.js"
+import { KeymapContext, useCommandKeys } from "../keymap/context.js"
+import { keymapClaims } from "../keymap/dispatcher.js"
 import { Skeleton } from "../skeleton/index.js"
 import { useSingleton } from "../toast/index.js"
 import { fuzzyMatchFields, highlightRuns } from "./fuzzy.js"
@@ -36,8 +38,10 @@ export interface PaletteCommand {
   detail?: string
   /** Extra words that should find it ("reboot" for Restart). */
   keywords?: readonly string[]
-  /** Keyboard shortcut shown with the control, using the host platform’s modifier keys. */
+  /** Keyboard shortcut shown with the control, using the host platform’s modifier keys. A chord needs a KeymapProvider and `keymapId` to run. */
   shortcut?: string
+  /** The command's id in a KeymapProvider. When registered there, the row shows its current keys and the provider runs them. */
+  keymapId?: string
   tone?: "default" | "danger"
   /** Shown instead of the detail; the command cannot run. */
   disabledReason?: string | null
@@ -137,6 +141,12 @@ export function PaletteProvider({ children, groupOrder = DEFAULT_ORDER }: Palett
   return <PaletteHost groupOrder={groupOrder}>{children}</PaletteHost>
 }
 
+/** A row's shortcut: the keymap's when it holds the command. */
+function CommandKeys({ command, characterKeys }: { command: PaletteCommand; characterKeys: boolean }) {
+  const keys = useCommandKeys(command.keymapId, command.shortcut)
+  return keys && (characterKeys || !isCharacterShortcut(keys)) ? <Kbd keys={keys} variant="text" className="fa-item-trail" /> : null
+}
+
 function isEditable(target: EventTarget | null) {
   const element = target as HTMLElement | null
   if (!element) return false
@@ -148,6 +158,7 @@ function PaletteHost({ children, groupOrder }: Required<PaletteProviderProps>) {
   const [open, setOpen] = useState(false)
   const platform = usePlatform()
   const owns = useSingleton("command-palette")
+  const keymap = useContext(KeymapContext)
 
   const value = useMemo<PaletteContextValue>(
     () => ({ store, open: () => setOpen(true), close: () => setOpen(false), toggle: () => setOpen((current) => !current) }),
@@ -165,6 +176,7 @@ function PaletteHost({ children, groupOrder }: Required<PaletteProviderProps>) {
         'button[aria-disabled="true"], [role="button"][aria-disabled="true"]'
       )
       if (event.defaultPrevented && !(paletteShortcut && disabledButton)) return
+      if (keymapClaims(event)) return
       if (paletteShortcut) {
         event.preventDefault()
         setOpen((current) => !current)
@@ -174,6 +186,8 @@ function PaletteHost({ children, groupOrder }: Required<PaletteProviderProps>) {
       const editable = isEditable(event.target)
       for (const command of store.getSnapshot()) {
         if (!command.shortcut || command.disabledReason) continue
+        // One event cannot be a chord, and the keymap runs what it holds.
+        if (isChord(command.shortcut) || (command.keymapId && keymap?.has(command.keymapId))) continue
         if (editable && !/(mod|ctrl|alt|meta)\+/i.test(command.shortcut)) continue
         // WCAG 2.1.4: the application can switch single-character shortcuts off (configureShortcuts).
         if (!shortcutAllowed(command.shortcut)) continue
@@ -186,7 +200,7 @@ function PaletteHost({ children, groupOrder }: Required<PaletteProviderProps>) {
     }
     document.addEventListener("keydown", onKeyDown)
     return () => document.removeEventListener("keydown", onKeyDown)
-  }, [owns, platform, store])
+  }, [owns, platform, store, keymap])
 
   return (
     <PaletteContext value={value}>
@@ -438,7 +452,7 @@ export function CommandPanel({ commands, onRun, loading = false, groupOrder = DE
                             <span className="fa-palette-detail">{command.disabledReason ?? command.detail}</span>
                           ) : null}
                         </span>
-                        {command.shortcut && (characterKeys || !isCharacterShortcut(command.shortcut)) ? <Kbd keys={command.shortcut} variant="text" className="fa-item-trail" /> : null}
+                        <CommandKeys command={command} characterKeys={characterKeys} />
                       </Autocomplete.Item>
                     )
                   }}

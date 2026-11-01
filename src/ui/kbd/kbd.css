@@ -36,6 +36,15 @@
     color: var(--fg-muted);
     font: inherit;
   }
+  /* A chord: each step's keycaps together, the steps set apart. */
+  .fa-kbd[data-chord] {
+    gap: var(--space-1-5);
+  }
+  .fa-kbd-step {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-half);
+  }
   .fa-kbd[data-variant="text"] {
     color: var(--fg-subtle);
     font-weight: var(--weight-regular);

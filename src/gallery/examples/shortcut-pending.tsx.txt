@@ -1,0 +1,147 @@
+import { useMemo, useState } from "react";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { defineActions, ActionMenu, useActionShortcuts } from "glass-ux/actions";
+import { Button } from "glass-ux/button";
+import { Input } from "glass-ux/input";
+import { Kbd } from "glass-ux/kbd";
+import {
+  KeymapProvider,
+  ShortcutHelpDialog,
+  ShortcutPending,
+  useShortcutCommands,
+  type Keymap,
+  type ShortcutCommand,
+} from "glass-ux/keymap";
+import { StatusBar } from "glass-ux/status-bar";
+
+interface Note {
+  name: string;
+}
+
+const NOTE: readonly Note[] = [{ name: "Harbour survey" }];
+
+function Commands({ onRun, onHelp }: { onRun: (label: string) => void; onHelp: () => void }) {
+  const commands = useMemo<ShortcutCommand[]>(
+    () => [
+      { id: "help.open", label: "Show keyboard shortcuts", group: "Help", keys: "?", run: onHelp },
+      {
+        id: "file.save",
+        label: "Save",
+        group: "File",
+        keys: "mod+s",
+        textEntry: "inputs",
+        run: () => onRun("Save"),
+      },
+      {
+        id: "file.saveAll",
+        label: "Save all",
+        group: "File",
+        keys: "mod+k mod+s",
+        textEntry: "inputs",
+        run: () => onRun("Save all"),
+      },
+      {
+        id: "view.zen",
+        label: "Hide panels",
+        group: "View",
+        keys: ["mod+k z", "f11"],
+        run: () => onRun("Hide panels"),
+      },
+      {
+        id: "view.next",
+        label: "Next view",
+        group: "View",
+        keys: "g n",
+        run: () => onRun("Next view"),
+      },
+      {
+        id: "file.print",
+        label: "Print",
+        group: "File",
+        disabledReason: "Nothing is open",
+        keys: "mod+p",
+        run: () => onRun("Print"),
+      },
+    ],
+    [onHelp, onRun],
+  );
+  useShortcutCommands(commands);
+  return null;
+}
+
+const noteActions = defineActions<Note>("note", [
+  {
+    id: "duplicate",
+    label: "Duplicate",
+    group: "manage",
+    shortcut: "mod+k d",
+    run: () => undefined,
+  },
+  {
+    id: "archive",
+    label: "Archive",
+    group: "organise",
+    shortcut: "mod+shift+a",
+    run: () => undefined,
+  },
+]);
+
+function ActionKeys() {
+  useActionShortcuts(noteActions, NOTE, "Notes");
+  return <ActionMenu set={noteActions} targets={NOTE} label="Harbour survey" />;
+}
+
+function KeymapDemo() {
+  const [keymap, setKeymap] = useState<Keymap>({});
+  const [help, setHelp] = useState(false);
+  const [last, setLast] = useState("Nothing yet");
+  const onHelp = useMemo(() => () => setHelp(true), []);
+  return (
+    <KeymapProvider keymap={keymap} onKeymapChange={setKeymap} pendingDisplay="none">
+      <Commands onRun={setLast} onHelp={onHelp} />
+      <div className="flex w-full flex-col gap-3" data-testid="keymap-demo">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button onClick={() => setHelp(true)}>Keyboard shortcuts</Button>
+          <ActionKeys />
+          <Input aria-label="Note title" placeholder="Note title" className="w-56 max-w-full" />
+        </div>
+        <StatusBar aria-label="Keyboard status">
+          <StatusBar.Start>
+            <StatusBar.Item>Last command: {last}</StatusBar.Item>
+          </StatusBar.Start>
+          <StatusBar.End>
+            <ShortcutPending />
+          </StatusBar.End>
+        </StatusBar>
+        <div className="flex flex-wrap items-center gap-6" data-testid="kbd-chords">
+          <Kbd keys="mod+k mod+s" />
+          <Kbd keys="mod+k mod+s" size="sm" />
+          <Kbd keys="g e" />
+          <Kbd keys="mod+k z" variant="text" />
+        </div>
+        <pre className="type-caption text-fg-muted" data-testid="keymap-json">
+          {JSON.stringify(keymap)}
+        </pre>
+      </div>
+      <ShortcutHelpDialog
+        open={help}
+        onOpenChange={setHelp}
+        rebind
+        groupOrder={["File", "View", "Notes", "Help"]}
+      />
+    </KeymapProvider>
+  );
+}
+
+export default function KeymapSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Dispatcher, rebinding and help"
+        description="Try Ctrl K, then S (⌘K, then S on a Mac): the chord in progress shows in the status bar and times out after three seconds. Save runs from the title field because its binding asks to. Press ? for the help dialog, where each shortcut can be changed. The keymap below is the JSON a host would store."
+      >
+        <KeymapDemo />
+      </Specimen>
+    </SectionPage>
+  );
+}

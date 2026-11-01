@@ -17,3 +17,4 @@ export { ActionContextMenu, type ActionContextMenuProps } from "./action-context
 export { ActionMenu, ActionMenuItems, ActionMenuPreview, type ActionMenuItemsProps, type ActionMenuProps, type ActionRunHandler } from "./action-menu.js"
 export { ActionProvider, useActionRunner, useActionServices, type ActionProviderProps, type ActionServices } from "./action-provider.js"
 export { usePaletteActions } from "./palette-actions.js"
+export { useActionShortcuts } from "./action-shortcuts.js"

@@ -50,6 +50,24 @@ export function parseShortcut(shortcut: string): ParsedShortcut {
   return { modifiers, key }
 }
 
+/**
+ * The steps of a shortcut, each one combination: "mod+k mod+s" → ["mod+k", "mod+s"], "g e" →
+ * ["g", "e"], "mod + k" → ["mod+k"]. A shortcut with more than one step is a chord: press
+ * each step in turn. `parseShortcut` and `matchesShortcut` read one step.
+ */
+export function shortcutSteps(shortcut: string): string[] {
+  return shortcut
+    .trim()
+    .replace(/\s*\+\s*/g, "+")
+    .split(/\s+/)
+    .filter(Boolean)
+}
+
+/** Whether a shortcut is a chord: more than one step, such as "mod+k mod+s". */
+export function isChord(shortcut: string): boolean {
+  return shortcutSteps(shortcut).length > 1
+}
+
 const MAC_GLYPH: Record<Modifier, string> = { ctrl: "⌃", alt: "⌥", shift: "⇧", mod: "⌘", meta: "⌘" }
 const MAC_ORDER: Modifier[] = ["ctrl", "alt", "shift", "mod", "meta"]
 function modifierLabels(messages: typeof kbdMessages.defaults): Record<Modifier, string> { return { ctrl: messages.ctrl, alt: messages.alt, shift: messages.shift, mod: messages.ctrl, meta: messages.win } }
@@ -87,6 +105,7 @@ function keyLabels(messages: typeof kbdMessages.defaults): Record<Platform, Reco
 function keyLabel(key: string, platform: Platform, messages = kbdMessages.defaults) {
   const named = keyLabels(messages)[platform][key]
   if (named) return named
+  if (key === "plus") return "+"
   if (/^f\d{1,2}$/.test(key)) return key.toUpperCase()
   return key.length === 1 ? key.toUpperCase() : key.charAt(0).toUpperCase() + key.slice(1)
 }
@@ -108,13 +127,20 @@ export function shortcutKeys(shortcut: string, platform: Platform, messages: Ret
   return caps
 }
 
-/** One string: "⇧⌘R" on macOS, "Ctrl+Shift+R" elsewhere. */
+/** One string: "⇧⌘R" on macOS, "Ctrl+Shift+R" elsewhere; a chord's steps are separated by a space. */
 export function formatShortcut(shortcut: string, platform: Platform, messages: ReturnType<typeof getKbdMessages> = getKbdMessages()): string {
-  const caps = shortcutKeys(shortcut, platform, messages)
-  return platform === "mac" ? caps.join("") : caps.join("+")
+  return shortcutSteps(shortcut)
+    .map((step) => {
+      const caps = shortcutKeys(step, platform, messages)
+      return platform === "mac" ? caps.join("") : caps.join("+")
+    })
+    .join(" ")
 }
 
-/** The spoken form for aria-keyshortcuts ("Control+Shift+R", "Meta+K"). */
+/**
+ * The spoken form for aria-keyshortcuts ("Control+Shift+R", "Meta+K"). One step only:
+ * aria-keyshortcuts has no way to say a chord, so leave the attribute off for one.
+ */
 export function ariaShortcut(shortcut: string, platform: Platform): string {
   const { modifiers, key } = parseShortcut(shortcut)
   const names: string[] = []
@@ -188,9 +214,9 @@ export function shortcutAllowed(shortcut: string): boolean {
   return characterKeys || !isCharacterShortcut(shortcut)
 }
 
-const EVENT_KEY: Record<string, string> = { escape: "esc", " ": "space" }
+const EVENT_KEY: Record<string, string> = { escape: "esc", " ": "space", "+": "plus" }
 
-/** Whether a keyboard event is this shortcut on this platform. */
+/** Whether a keyboard event is this shortcut on this platform. Pass one step of a chord. */
 export function matchesShortcut(
   event: Pick<KeyboardEvent, "key" | "metaKey" | "ctrlKey" | "altKey" | "shiftKey">,
   shortcut: string,
@@ -203,6 +229,53 @@ export function matchesShortcut(
   if (event.altKey !== modifiers.has("alt") || event.shiftKey !== modifiers.has("shift")) return false
   const pressed = event.key.toLowerCase()
   return (EVENT_KEY[pressed] ?? pressed) === key
+}
+
+type KeyEvent = Pick<KeyboardEvent, "key" | "metaKey" | "ctrlKey" | "altKey" | "shiftKey">
+
+/**
+ * One step as a canonical string for this platform, so steps written differently compare
+ * equal: "cmd+shift+K" and "shift+mod+k" are the same step, and "mod+k" equals "ctrl+k" away
+ * from Apple platforms.
+ */
+export function canonicalStep(step: string, platform: Platform): string {
+  const { modifiers, key } = parseShortcut(step)
+  const parts: string[] = []
+  if (modifiers.has("ctrl") || (modifiers.has("mod") && platform === "other")) parts.push("ctrl")
+  if (modifiers.has("alt")) parts.push("alt")
+  if (modifiers.has("shift")) parts.push("shift")
+  if (modifiers.has("meta") || (modifiers.has("mod") && platform === "mac")) parts.push("meta")
+  parts.push(key)
+  return parts.join("+")
+}
+
+/** A whole shortcut in canonical form, for comparing and for conflict checks. */
+export function canonicalShortcut(shortcut: string, platform: Platform): string {
+  return shortcutSteps(shortcut)
+    .map((step) => canonicalStep(step, platform))
+    .join(" ")
+}
+
+const MODIFIER_KEYS = new Set(["Control", "Alt", "AltGraph", "Shift", "Meta", "OS", "Dead", "Unidentified", "Process"])
+
+/**
+ * The step a key press makes, written portably: the platform's main modifier is `mod`, so a
+ * keymap recorded on one platform works on the other. Null for a press of a modifier alone.
+ * A symbol typed with Shift needs no `shift+` ("?" rather than "shift+?").
+ */
+export function shortcutFromEvent(event: KeyEvent, platform: Platform): string | null {
+  if (MODIFIER_KEYS.has(event.key)) return null
+  const pressed = event.key.toLowerCase()
+  const key = EVENT_KEY[pressed] ?? ALIASES[pressed] ?? pressed
+  const symbol = [...key].length === 1 && !/\p{L}/u.test(key)
+  const parts: string[] = []
+  if (platform === "mac" ? event.ctrlKey : false) parts.push("ctrl")
+  if (event.altKey) parts.push("alt")
+  if (event.shiftKey && !symbol) parts.push("shift")
+  if (platform === "mac" ? event.metaKey : event.ctrlKey) parts.push("mod")
+  if (platform !== "mac" && event.metaKey) parts.push("meta")
+  parts.push(key)
+  return parts.join("+")
 }
 
 /** Returns "mac" on macOS and iOS devices (from the user-agent platform), otherwise "other"; "other" when there is no `navigator` (server rendering). */

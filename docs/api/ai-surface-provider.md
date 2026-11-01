@@ -11,4 +11,4 @@ Choose the surrounding canvas, panel or floating surface so assistant cards use 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
-| surface | `AiSurface` | "canvas", "panel", "float" | yes | — | Where the cards below are drawn: `canvas` (glass-panel), `panel` (glass-control) or `float` (glass-overlay). |
+| surface | `AiSurface` | "canvas", "float", "panel" | yes | — | Where the cards below are drawn: `canvas` (glass-panel), `panel` (glass-control) or `float` (glass-overlay). |

@@ -55,6 +55,7 @@
 @import "../ui/input/input.css";
 @import "../ui/kanban/kanban.css";
 @import "../ui/kbd/kbd.css";
+@import "../ui/keymap/keymap.css";
 @import "../ui/layout/layout.css";
 @import "../ui/level-gauge/level-gauge.css";
 @import "../ui/lightbox/lightbox.css";

@@ -12,6 +12,10 @@ has upgrade steps in the [migration guide](docs/migration.md).
   (pick, check, crop, save with `{ signal, setProgress }`), `ImageField`/`ImageInput` with
   `imageSchema` and an optional `onEdit`, and `cropToBlob`. `field.ImageField` is registered in
   `useAppForm`.
+- `useUndoStack` in `glass-ux/hooks`: past, future, push, undo, redo, limit and optional coalescing,
+  with the same transitions as pure functions (`pushUndo`, `undoState`, `redoState`).
+- `usePanZoom` in `glass-ux/hooks`: drag, wheel, pinch and keys on one transform, with `onFrame` per
+  frame and `onCommit` when a gesture ends, and the `cameraTransform` and `containCamera` helpers.
 - Histogram: `bins` also takes precomputed `{ from, to, count }` bins. `values` is unchanged.
 - Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
   (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,

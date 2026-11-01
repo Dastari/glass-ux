@@ -337,18 +337,19 @@ export function ComponentDocumentation({ id }: { id: string }) {
       },
     );
     targets.forEach((target) => observer.observe(target));
-    const hash = decodeURIComponent(window.location.hash.slice(1));
-    // Old per-export routes still open the same specimen, usage or API within
-    // their parent document. Named family anchors also work on a direct load.
-    const related = component && id !== component.id;
-    const targetId = related
-      ? !hash || hash === "examples"
-        ? id
-        : hash === "api" || hash === "usage"
-          ? `${hash}-${id}`
-          : hash
-      : hash;
-    if (targetId) {
+    const goToHash = () => {
+      const hash = decodeURIComponent(window.location.hash.slice(1));
+      // Old per-export routes still open the same specimen, usage or API within
+      // their parent document. Named family anchors also work on a direct load.
+      const related = component && id !== component.id;
+      const targetId = related
+        ? !hash || hash === "examples"
+          ? id
+          : hash === "api" || hash === "usage"
+            ? `${hash}-${id}`
+            : hash
+        : hash;
+      if (!targetId) return;
       // Large families can finish loading examples above a deep link. Scroll only
       // after their modules, source and API content have committed their layout.
       void Promise.allSettled(
@@ -359,6 +360,7 @@ export function ComponentDocumentation({ id }: { id: string }) {
         ]),
       ).then(() => {
         if (cancelled) return;
+        cancelAnimationFrame(frame);
         frame = requestAnimationFrame(() => {
           frame = requestAnimationFrame(() => {
             if (!cancelled)
@@ -368,10 +370,15 @@ export function ComponentDocumentation({ id }: { id: string }) {
           });
         });
       });
-    }
+    };
+    goToHash();
+    // A link to another hash on this page does not reload it, and the browser's own
+    // jump goes to the section anchor rather than an old route's destination.
+    window.addEventListener("hashchange", goToHash);
     return () => {
       cancelled = true;
       cancelAnimationFrame(frame);
+      window.removeEventListener("hashchange", goToHash);
       observer.disconnect();
     };
   }, [id, component, components, documentSections]);

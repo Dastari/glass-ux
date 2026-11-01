@@ -151,6 +151,28 @@ export async function generateComponentDemos(
     };
     numberSpecimens(root);
     const kept = [];
+    // A keyed element sat in a list, where an empty fragment would be a child with no key.
+    const removedElement = (n) => {
+      const parent = ts.getOriginalNode(n).parent;
+      const attributes = ts.isJsxElement(n) ? n.openingElement.attributes : n.attributes;
+      const keyed = attributes.properties.some((attribute) => ts.isJsxAttribute(attribute) && attribute.name.getText(story) === "key");
+      return keyed && !ts.isJsxElement(parent) && !ts.isJsxFragment(parent)
+        ? ts.factory.createNull()
+        : ts.factory.createJsxFragment(
+            ts.factory.createJsxOpeningFragment(),
+            [],
+            ts.factory.createJsxJsxClosingFragment(),
+          );
+    };
+    // What is left of a list whose every row was removed, which no example should print.
+    const listOfNothing = (expression) =>
+      !!expression &&
+      ts.isCallExpression(expression) &&
+      expression.arguments.some(
+        (argument) =>
+          ts.isArrowFunction(argument) &&
+          ts.skipOuterExpressions(argument.body).kind === ts.SyntaxKind.NullKeyword,
+      );
     const withKey = (n) => {
       const entry = specimenKeys.get(ts.getOriginalNode(n));
       if (!entry) return n;
@@ -171,6 +193,10 @@ export async function generateComponentDemos(
       ts.transform(node, [
         (context) => {
           const visit = (n) => {
+            if (ts.isJsxExpression(n)) {
+              const next = ts.visitEachChild(n, visit, context);
+              return listOfNothing(next.expression) ? undefined : next;
+            }
             if (ts.isJsxElement(n)) {
               const tag = n.openingElement.tagName.getText(story);
               if (tag === "SectionPage") {
@@ -193,11 +219,7 @@ export async function generateComponentDemos(
                 removed.has(tag) ||
                 (scopes.has(tag) && !contains(n, component.name))
               )
-                return ts.factory.createJsxFragment(
-                  ts.factory.createJsxOpeningFragment(),
-                  [],
-                  ts.factory.createJsxJsxClosingFragment(),
-                );
+                return removedElement(n);
               if (scopes.has(tag)) return withKey(ts.visitEachChild(n, visit, context));
             }
             if (
@@ -210,11 +232,7 @@ export async function generateComponentDemos(
               ts.isJsxSelfClosingElement(n) &&
               removed.has(n.tagName.getText(story))
             )
-              return ts.factory.createJsxFragment(
-                ts.factory.createJsxOpeningFragment(),
-                [],
-                ts.factory.createJsxJsxClosingFragment(),
-              );
+              return removedElement(n);
             return ts.visitEachChild(n, visit, context);
           };
           return visit;

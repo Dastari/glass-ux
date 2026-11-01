@@ -344,10 +344,6 @@ export default function AiCatalogueSection() {
             </table>
           </TableScroll>
         </Specimen>
-
-        {FAMILIES.map((family) => (
-          <></>
-        ))}
       </SectionPage>
     </AiGallery>
   );

@@ -58,6 +58,7 @@ import { PercentField } from "../percent-field/index.js";
 import { MobileField, PhoneField } from "../phone-field/index.js";
 import { PortField } from "../port-field/index.js";
 import { Radio, RadioCard, RadioGroup } from "../radio/index.js";
+import { RatingField } from "../rating/index.js";
 import { Segmented, type SegmentedOption } from "../segmented/index.js";
 import { Select, type SelectOptions } from "../select/index.js";
 import { SettingRow } from "../setting-row/index.js";
@@ -911,6 +912,7 @@ export const { useAppForm, withForm, withFieldGroup } = /* @__PURE__ */ createFo
     PasswordField,
     OtpField,
     SignatureField,
+    RatingField,
     ImageField,
     CoordinatesField,
     IpField,

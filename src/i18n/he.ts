@@ -2060,6 +2060,14 @@ export default defineMessagePack("he", {
     mostStops: (count) => `מעבר צבע מכיל עד ${count} נקודות`,
     fewestStops: "מעבר צבע צריך שתי נקודות",
   },
+  rating: {
+    label: "דירוג",
+    valueText: ({ value, total, locale = "he" }) =>
+      plural(locale, total, { one: `${value} מתוך כוכב אחד`, other: `${value} מתוך ${numberFormat(locale).format(total)} כוכבים`, two: `${value} מתוך ${numberFormat(locale).format(total)} כוכבים` }),
+    unrated: "לא מדורג",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "בחרו דירוג",
+  },
   lightbox: {
     previous: "תמונה קודמת",
     next: "התמונה הבאה",

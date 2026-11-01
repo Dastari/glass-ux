@@ -2060,6 +2060,14 @@ export default defineMessagePack("pt-BR", {
     mostStops: (count) => `Um gradiente aceita até ${count} paradas`,
     fewestStops: "Um gradiente precisa de duas paradas",
   },
+  rating: {
+    label: "Avaliação",
+    valueText: ({ value, total, locale = "pt-BR" }) =>
+      plural(locale, total, { one: `${value} de ${numberFormat(locale).format(total)} estrela`, other: `${value} de ${numberFormat(locale).format(total)} estrelas` }),
+    unrated: "Sem avaliação",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Escolha uma avaliação",
+  },
   lightbox: {
     previous: "Imagem anterior",
     next: "Próxima imagem",

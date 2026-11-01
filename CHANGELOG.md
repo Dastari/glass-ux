@@ -8,6 +8,12 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `glass-ux/rating`: `Rating`, a rating chosen from a row of icons or shown as one. A radio group
+  (one tab stop; arrows move and choose, Home and End, Delete clears), whole or half steps, `max`,
+  controlled or uncontrolled, `clearable`, a star or any icon, disabled, and a read-only display that
+  is one named image filled to the exact value. Value text agrees its unit with the total and formats
+  numbers in the locale; the fill and the arrows follow the reading direction; the hover preview
+  changes colour only. `field.RatingField` is registered in `useAppForm`, with `ratingSchema`.
 - `glass-ux/menubar`: `Menubar`, an application's menus as data, on Base UI's Menubar. Commands,
   check and radio rows, groups, separators and submenus; chords and rebound keys shown through
   the keymap's read-only lookups, with no listener added; disabled reasons; a menu or submenu's

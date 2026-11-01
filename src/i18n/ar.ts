@@ -2061,6 +2061,14 @@ export default defineMessagePack("ar", {
     mostStops: (count) => `يتسع التدرج لما يصل إلى ${count} نقاط`,
     fewestStops: "يحتاج التدرج إلى نقطتين",
   },
+  rating: {
+    label: "التقييم",
+    valueText: ({ value, total, locale = "ar" }) =>
+      plural(locale, total, { one: `${value} من نجمة واحدة`, other: `${value} من ${numberFormat(locale).format(total)} نجمة`, two: `${value} من نجمتين`, zero: `${value} من ${numberFormat(locale).format(total)} نجمة`, few: `${value} من ${numberFormat(locale).format(total)} نجوم`, many: `${value} من ${numberFormat(locale).format(total)} نجمة` }),
+    unrated: "غير مقيَّم",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "اختر تقييمًا",
+  },
   lightbox: {
     previous: "الصورة السابقة",
     next: "الصورة التالية",

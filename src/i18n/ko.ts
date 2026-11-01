@@ -2060,6 +2060,14 @@ export default defineMessagePack("ko", {
     mostStops: (count) => `그라디언트에는 정지점을 최대 ${count}개까지 넣을 수 있습니다`,
     fewestStops: "그라디언트에는 정지점이 두 개 필요합니다",
   },
+  rating: {
+    label: "평점",
+    valueText: ({ value, total, locale = "ko" }) =>
+      plural(locale, total, { one: `별 ${numberFormat(locale).format(total)}개 중 ${value}개`, other: `별 ${numberFormat(locale).format(total)}개 중 ${value}개` }),
+    unrated: "평점 없음",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "평점을 선택하세요",
+  },
   lightbox: {
     previous: "이전 이미지",
     next: "다음 이미지",

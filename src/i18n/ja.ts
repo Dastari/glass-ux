@@ -2060,6 +2060,14 @@ export default defineMessagePack("ja", {
     mostStops: (count) => `グラデーションのストップは最大 ${count} 個です`,
     fewestStops: "グラデーションには 2 つのストップが必要です",
   },
+  rating: {
+    label: "評価",
+    valueText: ({ value, total, locale = "ja" }) =>
+      plural(locale, total, { one: `${numberFormat(locale).format(total)}つ星のうち${value}`, other: `${numberFormat(locale).format(total)}つ星のうち${value}` }),
+    unrated: "未評価",
+    display: ({ label, value }) => `${label}：${value}`,
+    required: "評価を選択してください",
+  },
   lightbox: {
     previous: "前の画像",
     next: "次の画像",

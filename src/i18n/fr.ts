@@ -2060,6 +2060,14 @@ export default defineMessagePack("fr", {
     mostStops: (count) => `Un dégradé compte au plus ${count} arrêts`,
     fewestStops: "Un dégradé nécessite deux arrêts",
   },
+  rating: {
+    label: "Note",
+    valueText: ({ value, total, locale = "fr" }) =>
+      plural(locale, total, { one: `${value} sur ${numberFormat(locale).format(total)} étoile`, other: `${value} sur ${numberFormat(locale).format(total)} étoiles` }),
+    unrated: "Non noté",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Choisissez une note",
+  },
   lightbox: {
     previous: "Image précédente",
     next: "Image suivante",

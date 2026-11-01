@@ -2060,6 +2060,14 @@ export default defineMessagePack("es", {
     mostStops: (count) => `Un degradado admite hasta ${count} paradas`,
     fewestStops: "Un degradado necesita dos paradas",
   },
+  rating: {
+    label: "Valoración",
+    valueText: ({ value, total, locale = "es" }) =>
+      plural(locale, total, { one: `${value} de ${numberFormat(locale).format(total)} estrella`, other: `${value} de ${numberFormat(locale).format(total)} estrellas` }),
+    unrated: "Sin valorar",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Elige una valoración",
+  },
   lightbox: {
     previous: "Imagen anterior",
     next: "Imagen siguiente",

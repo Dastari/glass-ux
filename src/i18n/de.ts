@@ -2060,6 +2060,14 @@ export default defineMessagePack("de", {
     mostStops: (count) => `Ein Farbverlauf kann bis zu ${count} Stopps enthalten`,
     fewestStops: "Ein Farbverlauf braucht zwei Stopps",
   },
+  rating: {
+    label: "Bewertung",
+    valueText: ({ value, total, locale = "de" }) =>
+      plural(locale, total, { one: `${value} von ${numberFormat(locale).format(total)} Stern`, other: `${value} von ${numberFormat(locale).format(total)} Sternen` }),
+    unrated: "Nicht bewertet",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Wählen Sie eine Bewertung",
+  },
   lightbox: {
     previous: "Vorheriges Bild",
     next: "Nächstes Bild",

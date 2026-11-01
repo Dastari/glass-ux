@@ -2060,6 +2060,14 @@ export default defineMessagePack("it", {
     mostStops: (count) => `Una sfumatura può avere fino a ${count} punti`,
     fewestStops: "Una sfumatura richiede due punti",
   },
+  rating: {
+    label: "Valutazione",
+    valueText: ({ value, total, locale = "it" }) =>
+      plural(locale, total, { one: `${value} su ${numberFormat(locale).format(total)} stella`, other: `${value} su ${numberFormat(locale).format(total)} stelle` }),
+    unrated: "Non valutato",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Scegli una valutazione",
+  },
   lightbox: {
     previous: "Immagine precedente",
     next: "Immagine successiva",

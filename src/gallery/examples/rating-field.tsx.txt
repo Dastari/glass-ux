@@ -1,0 +1,36 @@
+import { z } from "zod";
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+import { ratingSchema } from "glass-ux/rating";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+function ReviewForm() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { quality: null as number | null },
+    validators: { onDynamic: z.object({ quality: ratingSchema({ required: true }) }) },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="Review" className="w-full" data-testid="rating-form">
+      <FormStack>
+        <form.AppField name="quality">
+          {(field) => <field.RatingField label="Quality" required />}
+        </form.AppField>
+        <FormActions>
+          <form.SubmitButton>Send review</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  );
+}
+
+export default function RatingSection() {
+  return (
+    <SectionPage>
+      <Specimen title="In a form">
+        <ReviewForm />
+      </Specimen>
+    </SectionPage>
+  );
+}

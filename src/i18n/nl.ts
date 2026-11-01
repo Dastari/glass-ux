@@ -2060,6 +2060,14 @@ export default defineMessagePack("nl", {
     mostStops: (count) => `Een verloop heeft maximaal ${count} stops`,
     fewestStops: "Een verloop heeft twee stops nodig",
   },
+  rating: {
+    label: "Beoordeling",
+    valueText: ({ value, total, locale = "nl" }) =>
+      plural(locale, total, { one: `${value} van ${numberFormat(locale).format(total)} ster`, other: `${value} van ${numberFormat(locale).format(total)} sterren` }),
+    unrated: "Niet beoordeeld",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Kies een beoordeling",
+  },
   lightbox: {
     previous: "Vorige afbeelding",
     next: "Volgende afbeelding",

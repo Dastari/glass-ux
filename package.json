@@ -386,6 +386,10 @@
       "types": "./dist/ui/radio/index.d.ts",
       "import": "./dist/ui/radio/index.js"
     },
+    "./rating": {
+      "types": "./dist/ui/rating/index.d.ts",
+      "import": "./dist/ui/rating/index.js"
+    },
     "./surface": {
       "types": "./dist/ui/surface/index.d.ts",
       "import": "./dist/ui/surface/index.js"

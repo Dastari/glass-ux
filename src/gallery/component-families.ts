@@ -66,6 +66,7 @@ const familyRoots: Record<string, string> = {
   "port-field": "port-field",
   progress: "progress",
   radio: "radio",
+  rating: "rating",
   "rich-text": "rich-text-field",
   "setting-row": "setting-row",
   "status-bar": "status-bar",

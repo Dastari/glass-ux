@@ -1,0 +1,85 @@
+import { useState } from "react";
+import { IconHeart } from "glass-ux/icons";
+import { Field } from "glass-ux/field";
+import { Rating } from "glass-ux/rating";
+import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+function Chosen() {
+  const [value, setValue] = useState<number | null>(3);
+  return (
+    <div className="flex items-center gap-3" data-testid="rating-basic">
+      <Rating aria-label="Service" value={value} onValueChange={setValue} />
+      <output className="type-caption text-fg-muted" data-numeric data-testid="rating-value">
+        {value ?? "–"}
+      </output>
+    </div>
+  );
+}
+
+export default function RatingSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Choose a rating"
+        description="Arrow keys move and choose, Home and End go to the ends. The pointer previews a rating in colour only."
+      >
+        <Chosen />
+      </Specimen>
+
+      <Specimen
+        title="Half steps and clearing"
+        description="Each icon is two choices. Choosing the current rating again, or Delete, clears it."
+      >
+        <div data-testid="rating-half">
+          <Rating aria-label="Comfort" step={0.5} clearable size="lg" defaultValue={3.5} />
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="Display"
+        description="A read-only rating is one image named with its value, filled to the exact figure."
+      >
+        <div className="flex flex-col gap-2" data-testid="rating-display">
+          <Rating readOnly aria-label="Harbour Cafe" value={4.3} />
+          <Rating readOnly aria-label="Cedar Hall" value={2.8} size="sm" />
+          <Rating readOnly aria-label="Stonebridge Rooms" value={null} size="sm" />
+        </div>
+      </Specimen>
+
+      <Specimen title="Another icon">
+        <Rating
+          aria-label="Appeal"
+          icon={<IconHeart />}
+          max={3}
+          defaultValue={2}
+          valueText={(value, max) => `${value} of ${max} hearts`}
+        />
+      </Specimen>
+
+      <Specimen title="Sizes and states" layout="grid">
+        <Rating aria-label="Small" size="sm" defaultValue={2} />
+        <Rating aria-label="Medium" defaultValue={2} />
+        <Rating aria-label="Large" size="lg" defaultValue={2} />
+        <Rating aria-label="Disabled" disabled defaultValue={4} />
+        <Field label="Invalid" error="Choose a rating">
+          <Rating invalid />
+        </Field>
+      </Specimen>
+
+      <Specimen
+        title="Right to left"
+        description="The fill starts at the reading start; the arrows still point the way they move."
+      >
+        <div dir="rtl" data-testid="rating-rtl">
+          <Rating aria-label="Service" step={0.5} defaultValue={2.5} />
+        </div>
+      </Specimen>
+
+      <ContainerLab>
+        <div className="flex h-full items-center p-1">
+          <Rating aria-label="Service" size="lg" defaultValue={4} />
+        </div>
+      </ContainerLab>
+    </SectionPage>
+  );
+}

@@ -71,6 +71,8 @@ const BUDGETS = [
   { entry: 'glass-ux/file-dialog', named: 'FileConflictDialog', gzip: 59_000, forbid: ['dist/ui/file-dialog/file-browser.js', 'dist/ui/tree/tree.js', '@tanstack/react-virtual'] },
   // A worker bundle pays for this and nothing else: no React, no Base UI.
   { entry: 'glass-ux/file-provider/memory', named: 'memoryFiles', gzip: 2_600, forbid: ['react', '@base-ui/react'] },
+  // Measured 3.3 KB: the radios, the keys and the star. The Field, the form binding and the schema stay out unless used.
+  { entry: 'glass-ux/rating', named: 'Rating', gzip: 3_700, forbid: ['@base-ui/react', '@tanstack/react-form', '@tanstack/form-core', 'zod'] },
   { entry: 'glass-ux/phone-field', named: 'PhoneField', gzip: 75_000, forbid: ['libphonenumber-js'] },
   { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text'] },
   // The list that RichTextInput drives lives outside the editor: importing it brings in no Lexical.

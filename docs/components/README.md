@@ -55,6 +55,7 @@ const form = useAppForm({ ...formBehaviour, defaultValues, validators: { onDynam
 | [Time zone](time-zone-select.md)          | `TimeZoneField`                              | IANA name, `string \| null`           | `timeZoneSchema`                          |
 | [Time and date-time](time-field.md)       | `TimeField`, `DateTimeField`                 | `"HH:mm"`, wall clock, `string \| null` | `timeSchema`, `dateTimeSchema`            |
 | [Signature](signature-pad.md)             | `SignatureField`                             | `SignatureValue \| null` (strokes or typed name) | `signatureSchema`                         |
+| [Rating](rating.md)                       | `RatingField`                                | `number \| null`, 0 to `max`          | `ratingSchema`                            |
 | [Image](image-cropper.md)                 | `ImageField`                                 | URL, `ImageChange` or `null`          | `imageSchema`                             |
 | [Copy button](copy-button.md)             | —                                            | —                                     | —                                         |
 | [Swatch picker](swatch-picker.md)         | — (bare control in a `SettingRow`)           | option value                          | —                                         |

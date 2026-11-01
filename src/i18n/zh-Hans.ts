@@ -2060,6 +2060,14 @@ export default defineMessagePack("zh-Hans", {
     mostStops: (count) => `渐变最多包含 ${count} 个色标`,
     fewestStops: "渐变至少需要两个色标",
   },
+  rating: {
+    label: "评分",
+    valueText: ({ value, total, locale = "zh-Hans" }) =>
+      plural(locale, total, { one: `${numberFormat(locale).format(total)} 星中的 ${value} 星`, other: `${numberFormat(locale).format(total)} 星中的 ${value} 星` }),
+    unrated: "未评分",
+    display: ({ label, value }) => `${label}：${value}`,
+    required: "请选择评分",
+  },
   lightbox: {
     previous: "上一张图片",
     next: "下一张图片",

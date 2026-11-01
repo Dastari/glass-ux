@@ -56,3 +56,41 @@ test("scroll edges follow the scroller, and readingKey follows the direction", a
   await page.keyboard.press("ArrowLeft");
   await expect(state).toContainText("ArrowLeft → ArrowRight (rtl)");
 });
+
+test("useAnnounce keeps one region, speaks inside a modal dialog and the full-screen element, and says a repeat again", async ({ page }) => {
+  const regions = page.locator("[data-fa-announcer]");
+  await expect(regions).toHaveCount(1);
+  await expect(regions.first()).toHaveAttribute("aria-live", "polite");
+  // Repeats: the text changes each time (a trailing no-break space), so it is spoken again.
+  await page.getByRole("button", { name: "Announce “Draft saved”" }).click();
+  await expect(regions.first()).toHaveText(/^Draft saved/, { timeout: 3000 });
+  const first = await regions.first().evaluate((node) => node.textContent);
+  await page.waitForTimeout(400);
+  await page.getByRole("button", { name: "Announce “Draft saved”" }).click();
+  await expect.poll(() => regions.first().evaluate((node) => node.textContent), { timeout: 3000 }).not.toBe(first);
+  await expect(regions.first()).toHaveText(/^Draft saved/);
+  // A burst of counts under one key is spoken once, with the last.
+  await page.getByRole("button", { name: "Burst of three counts" }).click();
+  await expect(regions.first()).toHaveText("1 result", { timeout: 3000 });
+
+  // A modal dialog hides the page behind it: the message goes to a region inside the dialog.
+  await page.getByRole("button", { name: "Open a modal dialog" }).click();
+  const dialog = page.getByRole("dialog", { name: "Announce from a dialog" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Announce “Draft saved”" }).click();
+  const inside = dialog.locator("[data-fa-announcer]");
+  await expect(inside).toHaveText(/^Draft saved/, { timeout: 3000 });
+  const hiddenAbove = await inside.evaluate((node) => Boolean(node.closest("[aria-hidden='true'], [inert]")));
+  expect(hiddenAbove).toBe(false);
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+});
+
+test("useAnnounce speaks inside the full-screen element", async ({ page }) => {
+  const frame = page.getByTestId("announce-frame");
+  await page.getByRole("button", { name: "Full screen" }).click();
+  await expect.poll(() => page.evaluate(() => document.fullscreenElement?.getAttribute("data-testid"))).toBe("announce-frame");
+  await frame.getByRole("button", { name: "Announce “Draft saved”" }).click();
+  await expect(frame.locator("[data-fa-announcer]")).toHaveText(/^Draft saved/, { timeout: 3000 });
+  await page.evaluate(() => document.exitFullscreen());
+});

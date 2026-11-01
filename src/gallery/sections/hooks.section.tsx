@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import {
   isRtl,
   readingKey,
+  useAnnounce,
   useClipboard,
   useControllable,
   useDebouncedCallback,
@@ -12,6 +13,7 @@ import {
   useScrollEdges,
 } from "../../hooks/index.js";
 import { Button } from "../../ui/button/index.js";
+import { Dialog } from "../../ui/dialog/index.js";
 import { SectionPage, Specimen } from "../kit.js";
 
 /** A fictional address to copy; the hook confirms for two seconds and reports a refusal. */
@@ -82,6 +84,51 @@ function EdgesDemo() {
   );
 }
 
+/** Messages to the shared live region; the log shows what was sent (the region itself is hidden). */
+function AnnounceDemo() {
+  const announce = useAnnounce();
+  const [sent, setSent] = useState<string[]>([]);
+  const send = (message: string, key?: string) => {
+    announce(message, key ? { key } : undefined);
+    setSent((log) => [...log.slice(-3), message]);
+  };
+  const frame = useRef<HTMLDivElement>(null);
+  const controls = (
+    <div className="flex flex-wrap gap-2">
+      <Button onClick={() => send("Draft saved")}>Announce “Draft saved”</Button>
+      <Button
+        onClick={() => {
+          send("3 results", "results");
+          send("2 results", "results");
+          send("1 result", "results");
+        }}
+      >
+        Burst of three counts
+      </Button>
+    </div>
+  );
+  return (
+    <div ref={frame} className="flex flex-col gap-3" data-testid="announce-frame">
+      {controls}
+      <div className="flex flex-wrap gap-2">
+        <Dialog.Root>
+          <Dialog.Trigger render={<Button variant="secondary">Open a modal dialog</Button>} />
+          <Dialog.Popup size="sm">
+            <Dialog.Header title="Announce from a dialog" />
+            <Dialog.Body>{controls}</Dialog.Body>
+          </Dialog.Popup>
+        </Dialog.Root>
+        <Button variant="secondary" onClick={() => void frame.current?.requestFullscreen().catch(() => {})}>
+          Full screen
+        </Button>
+      </div>
+      <output className="min-h-6" data-numeric data-testid="announce-log">
+        Sent: {sent.join(" · ")}
+      </output>
+    </div>
+  );
+}
+
 export default function HooksSection() {
   const [count, increment] = useControllable<number>(undefined, 0);
   const [shortcuts, setShortcuts] = useState(0);
@@ -119,6 +166,13 @@ export default function HooksSection() {
             Reduced motion: {reduced ? "yes" : "no"}
           </output>
         </div>
+      </Specimen>
+      <Specimen
+        layout="stack"
+        title="Announcements"
+        description="useAnnounce sends text to one shared polite live region that lives where the person is: inside a modal dialog or the full-screen element, otherwise the page. The same message twice is announced twice, and messages in a burst are spoken together; a key lets a newer message replace one still waiting."
+      >
+        <AnnounceDemo />
       </Specimen>
       <Specimen
         layout="stack"

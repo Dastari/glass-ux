@@ -48,6 +48,11 @@ has upgrade steps in the [migration guide](docs/migration.md).
   messages `colorPicker.areaHsv` and `areaValueHsv` in every language pack (the Arabic wording needs a
   native-speaker check).
 
+- `useAnnounce` (`glass-ux/hooks`): one shared, always-mounted polite live region (R20.9) for outcomes no component
+  owns. It lives where the person is (inside the full-screen element or the topmost modal dialog, otherwise the
+  body, which a modal dialog makes inert), speaks the same message twice, speaks messages from a burst together
+  in order, and lets a `key` replace a waiting message. It renders nothing on the server. No component uses it
+  yet.
 - Hooks (`glass-ux/hooks`): `useClipboard` (copy with a timed `copied` state and an `error`, falling back to
   a hidden textarea where the page has no Clipboard API), `useDebouncedValue` and `useDebouncedCallback`
   (with `cancel`, `flush` and `pending`), and the helpers components already shared: `readingKey` and

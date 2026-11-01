@@ -1,6 +1,8 @@
 # Dockable panels: design (item 26)
 
-Status: proposal for owner approval. Nothing here is built.
+Status: built as `glass-ux/pane-layout`. The owner approved the recommended defaults on
+1 November 2026, listed under Decisions. Usage is in
+[the component guide](../components/pane-layout.md); this page records why it works as it does.
 
 ## Decision
 
@@ -17,7 +19,7 @@ lets a pane move without remounting.
 | --- | --- |
 | `SplitPane` | Stays as it is, for exactly two panes. Nested SplitPanes cannot do this job: a pane's React parent is its position, so a move remounts it, and each split keeps its own storage. An internal separator (length parsing, clamping, key handling) is extracted and shared, with no behaviour change. |
 | `glass-ux/windows` | The outer level. Windows hold views in a workspace, with z-order, tiling, cross-tab sync, close guards and pop-out. A PaneLayout fills one bounded box, which can be a window body, and it remembers per window kind through the same storage scope as SplitPane. The entry does not import the window manager. |
-| Tabs | Consumer. Stacks render `TabStrip`. Contract below. |
+| Tabs | Consumer. Stacks render `Tabs.Root` with `Tabs.List`. Contract below. |
 | DragDrop | Foundation. Handles previews, shields, announcements and keyboard lift. No manager changes are expected. |
 | AppShell, Sidebar, Inspector | Unchanged, outside it. A PaneLayout goes in the content area. |
 
@@ -71,10 +73,16 @@ export interface PaneDefinition {
   /** The panel that fills the box when the layout collapses (R21.3). */
   primary?: boolean
   movable?: boolean
+  /** False offers no way to close the panel. Default true. */
+  closable?: boolean
   /** Runs before close, like a window's CloseGuard (R13.7). Without it the panel simply closes. */
   canClose?: () => boolean | Promise<boolean>
   unsaved?: boolean
   preview?: boolean
+  /** A `preview` tab should stay. */
+  onKeep?: () => void
+  /** Menu rows above the ones the layout adds. */
+  contextMenu?: ReactNode
 }
 
 export interface PaneLayoutChange {
@@ -125,6 +133,9 @@ export function usePaneLayout(): {
   reveal(id: string): void
   setLayout(layout: PaneLayoutState): void
 }
+
+/** Inside a panel: its menus' rows as one action set, for the palette. Targets are panel ids. */
+export function usePanelActions(): ActionSet<string>
 ```
 
 Controlled and uncontrolled follow R22.3. Tracks map directly to CSS grid
@@ -155,7 +166,11 @@ present in both keeps its mount.
 2. The layout tree renders separately. Each stack draws a slot element. A layout effect puts each
    panel's host in its stack's slot: `slot.moveBefore(host, null)` when the browser has it and both
    are connected, otherwise `insertBefore` plus a restore step.
-3. Hidden tabs stay in their slot, hidden in place. Hosts are not parked elsewhere.
+3. Hidden tabs stay in their slot, hidden in place.
+4. A commit that removes a slot would take its hosts out of the document with it: a stack emptied by
+   a move, or a stack that a split reparents, since React remounts it. The slot's ref cleanup runs
+   before React removes the element, so it hands the hosts to one parking element in the root, and
+   the new slot's layout effect takes them in the same commit. Nothing paints in between.
 
 Tested on 1 November 2026 in Chromium 156, with React 19 under jsdom for the mount counts:
 
@@ -169,13 +184,20 @@ Tested on 1 November 2026 in Chromium 156, with React 19 under jsdom for the mou
 Moving the host three times with parent re-renders gave one mount, one render and no effect
 cleanup. Selection in an input survived every case.
 
-The restore step runs on any move without `moveBefore` and on any move out of a hidden parent. It
-records `scrollTop` and `scrollLeft` of scrolled descendants and the active element, then restores
-them in the same task. It runs once per move, not per frame.
+The restore step runs on any move and on any show. Scroll positions are kept current by one
+capture listener on the host, because a hidden element reads 0 and a hidden tab can move too; a move
+without `moveBefore` also reads every descendant first, because the listener may not have heard yet.
+The active element is recorded at the move. Both are restored in the same task, once per move, not
+per frame.
 
-**Not tested:** Firefox and WebKit. Neither would launch here, and I could not confirm their
-`moveBefore` status. Feature detection means the design holds either way, but the iframe row
-depends on the answer. Verify both before building.
+Measured on 1 November 2026 with the browser spec (`e2e/pane-layout.spec.ts`):
+
+| Browser | `moveBefore` | iframe in a moved panel | Scroll, focus, selection |
+| --- | --- | --- | --- |
+| Chromium 156 | Yes | Kept | Kept |
+| Firefox 157 | Yes | Kept | Kept |
+| WebKit 27.2 (Playwright's WPE build) | No | Reloaded, as accepted in decision 3 | Restored |
+| Chromium 156 with `moveBefore` removed | No | Reloaded | Restored |
 
 What breaks it:
 
@@ -204,8 +226,12 @@ because tab order and screen-reader order would stop following the visual order.
   R18.5). A cancelled pointer restores the old size.
 - **Move.** DragDrop's preview and shield carry the drag. Each stack has one body zone. `onDragMove`
   works out the edge from the pointer and writes `data-edge` on that stack's indicator, without
-  React state. The outer quarter on each side means split, the centre means add as a tab. Nothing in
-  the tree changes until the drop, which commits one `movePanel` and moves one host.
+  React state. `onDragOver` does the same with the last pointer, because the target changes on the
+  frame after a move and a pointer that has stopped sends no more. The outer quarter on each side
+  means split, the centre means add as a tab. Nothing in the tree changes until the drop, which
+  commits one `movePanel` and moves one host.
+- **Strips while resizing.** `Tabs.List` used to render for every width. It now renders only when a
+  different set of tabs fits, so a commit during a drag can only be a strip refitting.
 
 ## Keyboard and non-dragging paths
 
@@ -215,9 +241,12 @@ WCAG 2.5.7 requires a single-pointer path without dragging, so a keyboard drag a
 | --- | --- |
 | Resize | Separator keys as SplitPane: arrows, Shift for bigger steps, Home, End, Enter to collapse. Double-click resets. |
 | Move, any input | Every tab and panel header has a menu and context menu (R11.6): **Move to** lists other stacks, then Split left, right, up, down. It needs no drag and no keyboard. |
-| Move between strips | Lift the tab and use arrows, from item 23. Body zones refuse keyboard drags through `validate`, so the arrows stop only at strips. |
+| Move between strips | The Move to rows. A tab has no keyboard lift (`liftKeys` is empty, because Enter and Space belong to the tab), so cross-strip keyboard moves are host rows in `contextMenu`. Body zones refuse keyboard drags through `validate` in any case. |
 | Close, maximise | Same menu, plus Tabs' keyboard close. |
-| Commands | Each move is a `defineActions` action (R1.2), so the palette and Shortcuts reach them. No default global keys. |
+| Commands | Each move is a `defineActions` action (R1.2), from `usePanelActions`, so the palette and Shortcuts reach them. No default global keys. |
+
+A stack of one panel in an editable layout draws a bar with the panel's title and the same menu, so
+it has a drag handle and a menu with no strip. A locked layout draws no bar unless it has tabs.
 
 Focus stays with the moved content and the result is announced politely (R20.9). Each stack is a
 labelled region, which item 20's F6 can walk.
@@ -227,34 +256,36 @@ labelled region, which item 20's F6 can walk.
 The layout adapts to its own box, not the device (R7.1, R21.1). Below `collapseBelow`:
 
 - The `primary` panel fills the box, or the first stack's active panel if none is marked (R21.3).
-- One bottom `TabStrip` lists the other panels in tree reading order, with overflow in More (R6.6).
+- One bottom `Tabs.List` lists every panel in tree reading order, with overflow in More (R6.6). The
+  panel on show stays in the list, so a choice never moves the tabs under the finger.
 - Tapping a panel marked `primary` replaces the content. Tapping any other opens it in a non-modal
   bottom Sheet with snap points. Its host moves into the Sheet and back, using the restore step.
 - Handles and drags are gone; the Move submenu is hidden (R12.3). Close stays.
-- This is a view, not an edit. The JSON keeps the desktop tree, and widening restores it. Only
-  activation reaches `onLayoutChange`.
+- This is a view, not an edit. The JSON keeps the desktop tree, and widening restores it. Choosing
+  a panel is local to the view, per decision 6, so only closing a panel reaches `onLayoutChange`.
 
-## Contract needed from Tabs (item 23)
+## What Tabs supplies (item 23)
 
-`feat/sister-g3-extensions` has no commits yet, so none of this could be checked against code.
+`TabStrip` stays internal, so each stack renders `Tabs.Root` with `Tabs.List`.
 
-1. **Shared provider.** Strips join a `DragDropProvider` above them and bring their own only when
-   there is none.
-2. **Configurable drag type and zone id.** `dragType` and `zoneId` props. Strips with the same type
-   exchange tabs. A tab's `DragItem.id` is its value, and `data` carries `{ value, stripId }`.
-3. **The strip owns no list.** One callback, `onTabMove({ value, from, to, index })`, and the strip
-   never mutates its items. PaneLayout turns that into one layout commit.
-4. **Tabs are droppable elsewhere.** A DropZone outside a strip can accept the type, and a release
-   there is an ordinary drop.
-5. **External panels.** `TabStrip` renders no panels. It needs a way to set each tab's
-   `aria-controls`, such as `panelId(value)`, because the tabpanel is a host-side element.
-6. **Focus after a cross-strip drop** lands on the tab in the new strip, so a stable lookup by value
-   or an imperative `focusTab(value)`.
-7. **Overflow** accepts a drop at the end while the active tab stays visible (R6.6).
-8. **Per-item state:** close, unsaved, preview and the context menu slot come through `TabItem`, so
-   the layout can pass them straight on.
+1. **Shared provider.** Strips join the `DragDropProvider` the layout puts above them.
+2. **Configurable drag type and zone id.** `dragType` and `zoneId`. A tab's `DragItem.id` is its
+   value, and `data` carries `{ value, stripId }`. A panel's title drags with the same type and data,
+   so strips and bodies treat both alike. Tab values must be unique under one provider, which panel
+   ids are.
+3. **The strip owns no list.** `onTabMove({ value, from, to, index, input })` fires once, on the
+   destination strip, and the layout turns it into one commit. `index` counts what the strip shows,
+   and the layout maps it past dormant ids.
+4. **Tabs are droppable elsewhere.** A DropZone outside a strip gets an ordinary `onDrop`, and
+   `onTabMove` does not fire.
+5. **External panels.** `panelId(value)` sets `aria-controls`. It returns undefined for a panel that
+   has not mounted, because axe rejects a reference to a missing element.
+6. **Focus after a move.** `focusTab(value)` on the list's ref.
+7. **Overflow** takes a drop at the end while the active tab stays visible (R6.6).
+8. **Per-item state:** `closable`, `unsaved`, `preview` and `contextMenu` come through `TabItem`.
 
-Points 2 and 4 are the ones this design cannot work without.
+`movable: false` cannot stop a tab lifting, because a strip has no per-tab drag switch. Every zone
+refuses the drop instead.
 
 ## How each uses it
 
@@ -291,18 +322,21 @@ Floating panels and tear-out (decision 1), browser pop-out, automatic placement 
 upgrade, tree animation on drop beyond DragDrop's settle, per-panel header toolbars beyond what the
 host renders inside, and any file, document or tool concept.
 
-## Open decisions
+## Decisions
 
-1. **Floating panels.** Recommended: not in the first version, with an optional `floating` field
-   added later without a version bump. If built, render frames inside PaneLayout with `WindowFrame`,
-   so hosts stay put. Handing a panel to the window manager would remount it.
-2. **Unknown ids.** Recommended: dormant and invisible. The alternative is an "unavailable"
-   placeholder like the one windows show, which is noisier for a panel that a feature flag removed.
-3. **iframes without `moveBefore`.** Recommended: accept the reload and document it. An overlay mode
-   for iframe panels would be a second mechanism.
-4. **Hidden tabs.** Recommended: `pause` by default. It stops observers and timers at the cost of
-   effects re-running on show. `run` is opt-in per panel.
-5. **Fixed tracks.** Recommended: rem and `fr` together, so a side panel keeps its width when the
-   window resizes. Fractions alone are simpler but make side panels grow.
-6. **Phone form.** Recommended: strip and Sheet as above. The alternative is a single-column stack
-   of all panels, which pushes primary content down.
+The owner approved each of these on 1 November 2026.
+
+1. **Floating panels.** Not in the first version. A saved layout keeps fields it does not know, so
+   an optional `floating` field can arrive later without a version bump. If built, render frames
+   inside PaneLayout with `WindowFrame`, so hosts stay put. Handing a panel to the window manager
+   would remount it.
+2. **Unknown ids.** Dormant and invisible, preserved in the JSON. The alternative was an
+   "unavailable" placeholder like the one windows show, which is noisier for a panel that a feature
+   flag removed.
+3. **iframes without `moveBefore`.** Accept the reload and document it. An overlay mode for iframe
+   panels would be a second mechanism.
+4. **Hidden tabs.** `pause` by default. It stops observers and timers at the cost of effects
+   re-running on show. `run` is opt-in per panel, and keeps effects alive with no cleanup and no
+   remount, which a remote session in a background panel needs.
+5. **Fixed tracks.** Rem and `fr` together, so a side panel keeps its width when the window resizes.
+6. **Phone form.** Strip and Sheet as above. The collapsed view leaves the saved JSON untouched.

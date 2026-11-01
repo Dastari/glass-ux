@@ -27,10 +27,10 @@ import {
 } from "react"
 import { IconSidebar } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
-import { remPx } from "../../lib/rem.js"
 import { useStorageScope } from "../../lib/storage-scope.js"
 import { useElementSize } from "../../lib/use-element-size.js"
 import { Button } from "../button/index.js"
+import { clampLength, lengthCss, lengthPx, separatorKeyAction, Separator, startSeparatorDrag } from "./separator.js"
 
 /** A length along the split: px as a number, or a string in rem, px or % of the split. */
 export type SplitPaneLength = number | `${number}rem` | `${number}px` | `${number}%`
@@ -79,18 +79,6 @@ interface Remembered {
   collapsed?: boolean
 }
 
-/** A length in px against the split's length. */
-function toPx(length: SplitPaneLength, total: number): number {
-  if (typeof length === "number") return length
-  const value = Number.parseFloat(length)
-  if (length.endsWith("%")) return (value / 100) * total
-  if (length.endsWith("rem")) return value * remPx()
-  return value
-}
-
-/** A length as CSS. */
-const toCss = (length: SplitPaneLength) => (typeof length === "number" ? `${length}px` : length)
-
 function read(key: string | null): Remembered {
   if (!key || typeof localStorage === "undefined") return {}
   try {
@@ -109,9 +97,6 @@ function write(key: string | null, value: Remembered) {
     // Private mode or a full store: the size lasts for this page.
   }
 }
-
-const STEP_REM = 1
-const BIG_STEP_REM = 4
 
 /**
  * Two panes and the divider between them: a tree beside a table, a list above its details.
@@ -156,7 +141,7 @@ export function SplitPane({
   const [overlay, setOverlay] = useState(false)
 
   const measured = total > 0
-  const narrow = measured && total < toPx(collapseBelow, total)
+  const narrow = measured && total < lengthPx(collapseBelow, total)
   const collapsed = Boolean(remembered.collapsed)
   const hidden = narrow || collapsed
   // While hidden in a narrow split, the button shows the pane over the other one.
@@ -170,16 +155,13 @@ export function SplitPane({
   const handlePx = horizontal ? handleBox.width : handleBox.height
   const bounds = () => {
     const room = total - handlePx
-    const low = Math.max(toPx(startMin, total), room - toPx(endMax, total))
-    const high = Math.min(toPx(startMax, total), room - toPx(endMin, total))
+    const low = Math.max(lengthPx(startMin, total), room - lengthPx(endMax, total))
+    const high = Math.min(lengthPx(startMax, total), room - lengthPx(endMin, total))
     return { low, high: Math.max(low, high) }
   }
-  const clamp = (value: number) => {
-    const { low, high } = bounds()
-    return Math.min(high, Math.max(low, value))
-  }
+  const clamp = (value: number) => clampLength(value, bounds())
   const raw = sizeProp ?? remembered.size
-  const current = raw !== undefined ? clamp(raw) : measured ? clamp(toPx(defaultSize, total)) : 0
+  const current = raw !== undefined ? clamp(raw) : measured ? clamp(lengthPx(defaultSize, total)) : 0
 
   const commit = (next: number) => {
     const value = Math.round(clamp(next))
@@ -199,53 +181,40 @@ export function SplitPane({
     const stored = { ...remembered, size: undefined }
     setRemembered(stored)
     write(key, stored)
-    if (measured) onSizeChange?.(Math.round(clamp(toPx(defaultSize, total))))
+    if (measured) onSizeChange?.(Math.round(clamp(lengthPx(defaultSize, total))))
   }
 
   // ── Drag ───────────────────────────────────────────────────────────────
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.button !== 0 || !rootRef.current) return
-    event.preventDefault()
-    const handle = event.currentTarget
     const root = rootRef.current
-    handle.setPointerCapture(event.pointerId)
-    // In RTL the first pane is on the right: moving right makes it smaller.
-    const sign = horizontal && getComputedStyle(root).direction === "rtl" ? -1 : 1
-    const origin = horizontal ? event.clientX : event.clientY
     const from = current
     let latest = from
+    startSeparatorDrag(event, {
+      root,
+      horizontal,
+      onMove: (delta) => {
+        latest = clamp(from + delta)
+        root.style.setProperty("--_size", `${latest}px`)
+      },
+      onEnd: () => {
+        root.style.removeProperty("--_size")
+        setDragging(false)
+        if (latest !== from) commit(latest)
+      },
+    })
     setDragging(true)
-    const move = (moveEvent: PointerEvent) => {
-      const position = horizontal ? moveEvent.clientX : moveEvent.clientY
-      latest = clamp(from + sign * (position - origin))
-      root.style.setProperty("--_size", `${latest}px`)
-    }
-    const up = () => {
-      handle.removeEventListener("pointermove", move)
-      handle.removeEventListener("pointerup", up)
-      handle.removeEventListener("pointercancel", up)
-      root.style.removeProperty("--_size")
-      setDragging(false)
-      if (latest !== from) commit(latest)
-    }
-    handle.addEventListener("pointermove", move)
-    handle.addEventListener("pointerup", up)
-    handle.addEventListener("pointercancel", up)
   }
 
   // ── Keys ───────────────────────────────────────────────────────────────
   const onKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    const rtl = horizontal && rootRef.current && getComputedStyle(rootRef.current).direction === "rtl"
-    const grow = horizontal ? (rtl ? "ArrowLeft" : "ArrowRight") : "ArrowDown"
-    const shrink = horizontal ? (rtl ? "ArrowRight" : "ArrowLeft") : "ArrowUp"
-    const step = (event.shiftKey ? BIG_STEP_REM : STEP_REM) * remPx()
+    const action = separatorKeyAction(event, horizontal, rootRef.current)
+    if (!action) return
     const { low, high } = bounds()
-    if (event.key === grow) commit(current + step)
-    else if (event.key === shrink) commit(current - step)
-    else if (event.key === "Home") commit(low)
-    else if (event.key === "End") commit(high)
-    else if (event.key === "Enter") setCollapsed(!collapsed)
-    else return
+    if (action.kind === "step") commit(current + action.delta)
+    else if (action.kind === "low") commit(low)
+    else if (action.kind === "high") commit(high)
+    else setCollapsed(!collapsed)
     event.preventDefault()
   }
 
@@ -258,7 +227,7 @@ export function SplitPane({
     : "var(--_start) var(--_handle) minmax(0, 1fr)"
   const vars = {
     // The first pane's size, clamped to both panes' limits along the split.
-    "--_start": `clamp(${toCss(startMin)}, var(--_size, ${raw !== undefined ? `${raw}px` : toCss(defaultSize)}), min(${toCss(startMax)}, 100% - var(--_handle) - ${toCss(endMin)}))`,
+    "--_start": `clamp(${lengthCss(startMin)}, var(--_size, ${raw !== undefined ? `${raw}px` : lengthCss(defaultSize)}), min(${lengthCss(startMax)}, 100% - var(--_handle) - ${lengthCss(endMin)}))`,
     [horizontal ? "gridTemplateColumns" : "gridTemplateRows"]: tracks,
     ...style,
   } as CSSProperties
@@ -310,24 +279,19 @@ export function SplitPane({
       {hidden ? (
         toggle
       ) : (
-        <div
+        <Separator
           ref={handleRef}
-          role="separator"
-          tabIndex={0}
-          aria-orientation={horizontal ? "vertical" : "horizontal"}
-          aria-label={messages.resize(startLabel)}
-          aria-controls={startId}
-          aria-valuemin={percent(bounds().low)}
-          aria-valuemax={percent(bounds().high)}
-          aria-valuenow={percent(current)}
-          className="fa-split-handle"
-          data-active={dragging ? "" : undefined}
+          horizontal={horizontal}
+          label={messages.resize(startLabel)}
+          controls={startId}
+          min={percent(bounds().low)}
+          max={percent(bounds().high)}
+          now={percent(current)}
+          active={dragging}
           onPointerDown={onPointerDown}
           onKeyDown={onKeyDown}
           onDoubleClick={reset}
-        >
-          <span className="fa-split-grip" aria-hidden />
-        </div>
+        />
       )}
       <div
         id={endId}

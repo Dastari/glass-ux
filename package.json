@@ -394,6 +394,10 @@
       "types": "./dist/ui/split-pane/index.d.ts",
       "import": "./dist/ui/split-pane/index.js"
     },
+    "./pane-layout": {
+      "types": "./dist/ui/pane-layout/index.d.ts",
+      "import": "./dist/ui/pane-layout/index.js"
+    },
     "./reference-input": {
       "types": "./dist/ui/reference-input/index.d.ts",
       "import": "./dist/ui/reference-input/index.js"

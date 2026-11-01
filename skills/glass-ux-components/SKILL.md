@@ -50,7 +50,11 @@ between panes.
 
 For a tree beside a table or a list above its details, use `SplitPane` (glass-ux/split-pane)
 rather than a hand-built divider: it is keyboard operable, clamps each pane, remembers its
-size per window kind and hides a pane behind a button when narrow. An explorer tree uses
+size per window kind and hides a pane behind a button when narrow. For more than two panes,
+or panels people rearrange, use `PaneLayout` (glass-ux/pane-layout): a JSON tree of splits and
+stacks where a panel moves without remounting. `locked` gives a resize-only layout with no tabs
+for mail and dashboards. A panel that must stay connected while hidden, such as a remote session,
+needs `whenHidden: "run"`. An explorer tree uses
 `Tree` with `selectableGroups`, and `hasChildren`/`onLoadChildren` (and `hasMore`/`onLoadMore`)
 for hierarchies too large to load at once. Wrap window app bar actions in `Window.Action`
 with a label and priority so a narrow window folds them into More instead of pushing its

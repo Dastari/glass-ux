@@ -1,0 +1,239 @@
+/*
+ * PaneLayout — a tree of splits and stacks in one bounded box (pane-layout.tsx).
+ *
+ * A split is SplitPane's own grid (.fa-split, .fa-split-handle, .fa-split-rail): each child a
+ * track, a --_handle between them, and the tracks in the element's inline style. A drag writes
+ * --_t0, --_t1 … on the split. Each stack holds a slot, and each panel a .fa-pane-host created
+ * outside React that sits absolutely in its slot, so nothing inside a panel can move the tracks.
+ *
+ * Component tokens
+ *   --_bar  the height of a stack's strip or title
+ */
+@layer components {
+  .fa-pane-layout {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+  }
+  /* The maximised stack is placed against the layout, through any splits around it. */
+  .fa-pane-layout .fa-pane-split {
+    position: static;
+  }
+  .fa-pane-surface {
+    min-height: 0;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+  }
+  .fa-pane-track {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-pane-track > .fa-pane-stack,
+  .fa-pane-track > .fa-pane-split {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* In panel chrome the gap is the separator: space, not a line (R5.8). */
+  .fa-pane-layout[data-chrome="panel"] .fa-split-handle::before {
+    display: none;
+  }
+  .fa-pane-layout[data-chrome="panel"] .fa-split-rail {
+    box-shadow: none;
+  }
+
+  .fa-pane-stack {
+    --_bar: var(--control-h-md);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+  }
+  .fa-pane-stack[hidden] {
+    display: none;
+  }
+  /* The stack's own corners, so a panel's content stays inside them. */
+  .fa-pane-layout[data-chrome="panel"] .fa-pane-stack {
+    border-radius: var(--radius-surface);
+  }
+
+  .fa-pane-bar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+    height: var(--_bar);
+    padding-inline: var(--space-2);
+  }
+  .fa-pane-bar > .fa-tabs {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .fa-pane-title {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    height: 100%;
+    padding-inline: var(--space-1);
+    color: var(--fg-muted);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--type-body-tracking);
+    user-select: none;
+  }
+  .fa-pane-title[data-movable] {
+    cursor: grab;
+  }
+  .fa-pane-title-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  /* The ⋯ button's place, held while its code loads. */
+  .fa-pane-menu {
+    flex: none;
+    width: var(--control-h-sm);
+    height: var(--control-h-sm);
+  }
+
+  .fa-pane-body {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-pane-slot {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-pane-skeleton {
+    position: absolute;
+    inset: var(--inset-panel);
+  }
+
+  /* Absolute, so a panel's content cannot change a track, whatever it does. */
+  .fa-pane-host {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    outline: none;
+  }
+  .fa-pane-host[hidden] {
+    display: none;
+  }
+  /* The host scrolls: a child keeps its height, so its bottom padding stays in the scroll range. */
+  .fa-pane-host > * {
+    flex: 1 0 auto;
+  }
+  .fa-pane-host:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  /* R5.8: the edge under the bar shows only while content scrolls beneath it. */
+  .fa-pane-host[data-scrolled-top]::before {
+    content: "";
+    position: sticky;
+    z-index: var(--z-raised);
+    inset-block-start: 0;
+    flex: none;
+    height: var(--border-width);
+    margin-block-end: calc(var(--border-width) * -1);
+    background-color: var(--line);
+  }
+
+  /* Where a drop lands: the half it splits to, or the whole body to join the stack. */
+  .fa-pane-drop {
+    position: absolute;
+    z-index: var(--z-raised);
+    inset: 0;
+    border: var(--border-width) solid var(--accent);
+    border-radius: var(--radius-tile);
+    background-color: var(--accent-soft);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .fa-pane-drop[data-edge] {
+    opacity: 1;
+  }
+  .fa-pane-drop[data-edge="start"] {
+    inset-inline-end: 50%;
+  }
+  .fa-pane-drop[data-edge="end"] {
+    inset-inline-start: 50%;
+  }
+  .fa-pane-drop[data-edge="top"] {
+    inset-block-end: 50%;
+  }
+  .fa-pane-drop[data-edge="bottom"] {
+    inset-block-start: 50%;
+  }
+
+  /* Maximised: the stack fills the layout, and the tree stays laid out behind it. */
+  .fa-pane-layout[data-maximised] .fa-pane-stack[data-covered],
+  .fa-pane-layout[data-maximised] .fa-split-handle,
+  .fa-pane-layout[data-maximised] .fa-split-rail {
+    visibility: hidden;
+  }
+  .fa-pane-stack[data-maximised] {
+    position: absolute;
+    z-index: var(--z-raised);
+    inset: 0;
+  }
+
+  .fa-pane-parking {
+    position: absolute;
+    inset: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .fa-pane-parking:empty {
+    display: none;
+  }
+
+  .fa-pane-announcer {
+    position: absolute;
+    width: var(--border-width);
+    height: var(--border-width);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* A narrow box: one panel over the strip that reaches the rest. */
+  .fa-pane-phone {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: var(--space-1);
+    min-width: 0;
+    min-height: 0;
+  }
+  .fa-pane-phone-main {
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+  }
+  .fa-pane-phone-tabs {
+    min-width: 0;
+    padding-inline: var(--space-2);
+  }
+  .fa-pane-slot[data-sheet] {
+    min-height: 100%;
+  }
+}

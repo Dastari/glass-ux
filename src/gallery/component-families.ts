@@ -56,6 +56,7 @@ const familyRoots: Record<string, string> = {
   "money-field": "money-field",
   "on-screen-keyboard": "on-screen-keyboard",
   "otp-field": "otp-field",
+  "pane-layout": "pane-layout",
   "password-field": "password-field",
   "percent-field": "percent-field",
   "phone-field": "phone-field",

@@ -8,6 +8,22 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- `glass-ux/notification-list`: `NotificationList`, the rows behind the top bar's unread count, with
+  no knowledge of what a notification is about. Day or host groups, unread in the accessible name,
+  mark read, mark all read, dismiss, an action on each row, a filter (client or host), loading,
+  empty and error states in one box, incremental loading with retry, and one tab stop. New rows wait
+  behind a count and are announced politely. `NotificationPopover` places it for the shell, opened
+  from an AccountButton menu or a Rail.Item; neither changes.
+- `glass-ux/comment-thread`: `CommentThread`, comments and one level of replies with a
+  `RichTextInput` composer and mentions, edit and delete, pending and failed sends with retry,
+  resolved threads and an anchor label. `permissions` from the host decide which controls exist, and
+  a string keeps one disabled with its reason. The Markdown renderer and the editor load on demand.
+- `glass-ux/reaction-bar`: `ReactionBar`, reactions with counts, named for what they say, as one tab
+  stop.
+- `glass-ux/emoji-picker`: `EmojiPicker` and `EmojiPopover`, a searchable list in the system font, as
+  one tab stop, with skin tones. Its data, 23.6 KB after gzip, loads on demand. Names and search are in
+  English unless `loadNames` supplies the locale's.
+- `RelativeTime` and `ScrollArea` take `tabIndex`, for lists with roving focus.
 - `glass-ux/menubar`: `Menubar`, an application's menus as data, on Base UI's Menubar. Commands,
   check and radio rows, groups, separators and submenus; chords and rebound keys shown through
   the keymap's read-only lookups, with no listener added; disabled reasons; a menu or submenu's

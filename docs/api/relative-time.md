@@ -11,4 +11,5 @@
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | fallback | `string \| undefined` | See type | no | — | Text for a missing value. |
+| tabIndex | `number \| undefined` | See type | no | — | Tab order, for a list with roving focus. Default: focusable unless a control around it already is. |
 | value | `string \| number \| Date \| null \| undefined` | See type | yes | — | The controlled value. Keep it in application state and update it in the change callback. |

@@ -56,7 +56,8 @@ the budget is a deliberate decision with its reason in `scripts/pack-release.mjs
   merge, take either side and regenerate rather than merging them by hand.
 - Generated sources have their own authoring scripts: icons in `scripts/icon-authoring`
   (`pnpm icons`, rules in docs/icon-spec.md) and canvas artwork in `scripts/build-canvas.mjs`
-  (alpha masks painted in palette roles). Never hand-edit their output.
+  (alpha masks painted in palette roles), emoji data in `scripts/build-emoji.mjs` (`pnpm emoji`).
+  Never hand-edit their output.
 - Component stylesheets sit beside their components; `pnpm build` writes
   `dist/styles/manifest.json` for `glass-ux styles` (selective stylesheets). The manifest
   finds styles through imports, `fa-*` class names in strings and shared custom properties,

@@ -183,6 +183,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: 6.1.2
         version: 6.1.2(vite@8.3.4(@types/node@26.6.5)(jiti@2.7.0)(yaml@2.9.1))
+      emojilib:
+        specifier: 4.0.3
+        version: 4.0.3
       jsdom:
         specifier: ^30.1.2
         version: 30.1.2
@@ -219,6 +222,9 @@ importers:
       typescript:
         specifier: ~6.0.3
         version: 6.0.3
+      unicode-emoji-json:
+        specifier: 0.9.0
+        version: 0.9.0
       vite:
         specifier: 8.3.4
         version: 8.3.4(@types/node@26.6.5)(jiti@2.7.0)(yaml@2.9.1)
@@ -1650,6 +1656,9 @@ packages:
   earcut@3.2.4:
     resolution: {integrity: sha512-FHc6yNpnTORB0tM5kmZ03iD2mDuNakDE2lvf4Hw1XkfxtEHIGVi01B/GqUSwx+NcC1WGjidAfpTXzeALtPtfpg==}
 
+  emojilib@4.0.3:
+    resolution: {integrity: sha512-KbWiYre9aRSaPbHrHZIz9zmoM+21LAsK1VFJtnTh1VCtWE/rNMDviGhQTmselFl95dhqtGlY22iH0leG5BuW0g==}
+
   enhanced-resolve@5.26.0:
     resolution: {integrity: sha512-9vhedylFonb2YGogzUKX6+Ja72gOJbN1QHAqdrvqLwhdl/QWbKopzoUC9EbQNVsAns/bx/4uyqalrQAoy1IByw==}
     engines: {node: '>=10.13.0'}
@@ -2478,6 +2487,9 @@ packages:
   undici@8.11.2:
     resolution: {integrity: sha512-u4UB2/IrKdU6lFxumHmmo1a3fCQO5tzQllRorfoRS63txhrB7xTpSn1PftwC4qEHkOaqP95fCWW4lJzwErwzhQ==}
     engines: {node: '>=22.19.0'}
+
+  unicode-emoji-json@0.9.0:
+    resolution: {integrity: sha512-HdrQW/7SdbXUsTd8uTATv7LvQJkCSgbAgRCDCtOhQ6xn3EAx+xZHQtRniOXWJK3ywIqPegkNhP4U4EbuFsiQng==}
 
   unified@11.0.5:
     resolution: {integrity: sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==}
@@ -3750,6 +3762,8 @@ snapshots:
 
   earcut@3.2.4: {}
 
+  emojilib@4.0.3: {}
+
   enhanced-resolve@5.26.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -4769,6 +4783,8 @@ snapshots:
   undici-types@8.9.0: {}
 
   undici@8.11.2: {}
+
+  unicode-emoji-json@0.9.0: {}
 
   unified@11.0.5:
     dependencies:

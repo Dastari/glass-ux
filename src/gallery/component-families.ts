@@ -38,6 +38,7 @@ const familyRoots: Record<string, string> = {
   entity: "entity-identity",
   "entity-settings": "entity-settings-dialog",
   field: "field",
+  "emoji-picker": "emoji-picker",
   "file-dialog": "file-dialog",
   "file-drop": "file-drop",
   "find-bar": "find-bar",
@@ -167,7 +168,9 @@ const groups: Record<string, string[]> = {
   ],
   composer: ["attachment-chip", "suggestion-chips", "ai-status-strip"],
   lightbox: ["image-viewer"],
+  "emoji-picker": ["emoji-popover"],
   "file-dialog": ["file-conflict-dialog", "file-dialog-preview"],
+  "notification-list": ["notification-popover"],
   "approval-card": ["approval-record"],
   "ask-card": [
     "ask-layout",

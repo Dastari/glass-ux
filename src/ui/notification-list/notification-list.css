@@ -1,0 +1,209 @@
+/*
+ * NotificationList — a toolbar over a scrolling list, filling its box, so loading, empty and
+ * error states take the same place as the rows (R9). The toolbar keeps a slot for the count of
+ * new rows: the count appears without moving anything.
+ *
+ * Row     a grid: unread dot, marker, text, then the row's tools at the end. The dot's column
+ *         stays when a row is read, so its text does not shift.
+ * Main    the row's link or button. Its ::after stretches over the row, and the tools sit
+ *         above it, so a click anywhere opens and the ring stays inside the scroller (R11.10).
+ *
+ * Component tokens
+ *   --_dot      the unread dot
+ *   --_marker   the marker column
+ *   --_new      the slot held for the count of new rows
+ *   --_popup-h  its height in a popover
+ */
+@layer components {
+  .fa-notification-list {
+    --_dot: var(--space-1-5);
+    --_marker: var(--icon-md);
+    --_new: 5rem;
+    --_popup-h: 30rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-controls);
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    container-type: inline-size;
+  }
+  .fa-notification-popup .fa-notification-list {
+    height: min(var(--_popup-h), calc(100dvh - var(--space-16)));
+  }
+  .fa-notification-toolbar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-height: var(--control-h-sm);
+    min-width: 0;
+  }
+  .fa-notification-new {
+    display: flex;
+    flex: 0 1 auto;
+    justify-content: flex-end;
+    min-width: var(--_new);
+    margin-inline-start: auto;
+  }
+  .fa-notification-body {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+  }
+  /* A touch target reaches past the row's padding; it must not give the list a sideways scroll. */
+  .fa-notification-rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    overflow-x: clip;
+  }
+  .fa-notification-group {
+    min-width: 0;
+  }
+  .fa-notification-heading {
+    padding-block-end: var(--space-1);
+    padding-inline-start: var(--space-2);
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    font-weight: var(--weight-medium);
+    line-height: var(--type-caption-line);
+  }
+  .fa-notification-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fa-notification {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--_dot) var(--_marker) minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: var(--space-2);
+    padding: var(--space-1-5) var(--space-2);
+    border-radius: var(--radius-item);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-notification:not([data-skeleton]):hover {
+    background: var(--fill-hover);
+  }
+  .fa-notification-dot {
+    width: var(--_dot);
+    height: var(--_dot);
+    margin-block-start: calc((var(--type-label-line) - var(--_dot)) / 2);
+    border-radius: 50%;
+  }
+  .fa-notification[data-unread] .fa-notification-dot {
+    background: var(--accent);
+  }
+  .fa-notification-marker {
+    display: inline-grid;
+    place-items: center;
+    width: var(--_marker);
+    min-height: var(--type-label-line);
+    color: var(--fg-muted);
+  }
+  .fa-notification-marker > svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
+  .fa-notification-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-half);
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    text-decoration: none;
+  }
+  :is(a, button).fa-notification-main {
+    cursor: pointer;
+    outline: none;
+  }
+  :is(a, button).fa-notification-main::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-item);
+  }
+  :is(a, button).fa-notification-main:focus-visible::after {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-notification-title {
+    position: relative;
+    overflow-wrap: anywhere;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  .fa-notification[data-unread] .fa-notification-title {
+    font-weight: var(--weight-semibold);
+  }
+  .fa-notification-description,
+  .fa-notification-time {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    overflow-wrap: anywhere;
+  }
+  .fa-notification-action {
+    position: relative;
+    z-index: var(--z-raised);
+    grid-column: 3;
+    grid-row: 2;
+    margin-block-start: var(--space-1);
+  }
+  .fa-notification-link {
+    color: var(--accent-text);
+    font-size: var(--type-caption-size);
+    line-height: var(--control-h-xs);
+  }
+  .fa-notification-tools {
+    position: relative;
+    z-index: var(--z-raised);
+    display: inline-flex;
+    grid-column: 4;
+    grid-row: 1;
+    gap: var(--space-half);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+  }
+  /* Row tools appear on hover and focus, and always on touch (R11.7). */
+  .fa-notification:is(:hover, :focus-within) .fa-notification-tools {
+    opacity: 1;
+  }
+  @media (hover: none) {
+    .fa-notification-tools {
+      opacity: 1;
+    }
+  }
+  .fa-notification-foot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: calc(var(--control-h-sm) + var(--space-2));
+    padding-block: var(--space-1);
+  }
+  .fa-notification-foot-text {
+    color: var(--danger-text);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  @media (forced-colors: active) {
+    .fa-notification[data-unread] .fa-notification-dot {
+      background: Highlight;
+      forced-color-adjust: none;
+    }
+  }
+}

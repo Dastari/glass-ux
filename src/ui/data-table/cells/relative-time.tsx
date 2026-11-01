@@ -8,12 +8,14 @@ export interface RelativeTimeProps {
   value: Date | number | string | null | undefined;
   /** Text for a missing value. */
   fallback?: string;
+  /** Tab order, for a list with roving focus. Default: focusable unless a control around it already is. */
+  tabIndex?: number;
 }
 
 /**
  * "2 min ago", ticking on a shared clock; the absolute time is in a keyboard-accessible tooltip (R2.7).
  */
-export function RelativeTime({ value, fallback }: RelativeTimeProps) {
+export function RelativeTime({ value, fallback, tabIndex }: RelativeTimeProps) {
   const m = useDataTableCellMessages();
   const now = useNow();
   const locale = useLocale();
@@ -29,7 +31,8 @@ export function RelativeTime({ value, fallback }: RelativeTimeProps) {
   return (
     <Tooltip content={formatAbsolute(time, locale)}>
       <time
-        ref={focusableOutsideControls}
+        ref={tabIndex === undefined ? focusableOutsideControls : undefined}
+        tabIndex={tabIndex}
         className="fa-dt-text"
         dateTime={new Date(time).toISOString()}
         suppressHydrationWarning

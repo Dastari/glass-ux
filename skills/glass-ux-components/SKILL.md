@@ -47,7 +47,10 @@ document use `FindBar` (glass-ux/find-bar): the host owns matching. For a change
 `DiffView` (glass-ux/diff-view). For choosing files or where to save over host storage, use
 `FileDialog` (glass-ux/file-dialog) with a `FileProvider` (glass-ux/file-provider): it lists and
 chooses, and the host reads and writes. A version history is an `ActivityFeed` with `tone`, `children`
-and `selectedId`. `AppShell focusRegions`, or `useFocusRegions` from glass-ux/hooks, gives F6
+and `selectedId`. For the rows behind an unread count use `NotificationList` or `NotificationPopover`
+(glass-ux/notification-list), passing the count to `AccountButton` or a `Rail.Item`, which do not change. For discussion use
+`CommentThread` (glass-ux/comment-thread): `permissions` decides which controls exist. Use `ReactionBar`
+(glass-ux/reaction-bar) for reactions and `EmojiPicker` (glass-ux/emoji-picker) to choose an emoji. `AppShell focusRegions`, or `useFocusRegions` from glass-ux/hooks, gives F6
 between panes.
 
 For a tree beside a table or a list above its details, use `SplitPane` (glass-ux/split-pane)

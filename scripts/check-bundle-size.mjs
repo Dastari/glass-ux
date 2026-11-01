@@ -71,6 +71,16 @@ const BUDGETS = [
   { entry: 'glass-ux/file-dialog', named: 'FileConflictDialog', gzip: 59_000, forbid: ['dist/ui/file-dialog/file-browser.js', 'dist/ui/tree/tree.js', '@tanstack/react-virtual'] },
   // A worker bundle pays for this and nothing else: no React, no Base UI.
   { entry: 'glass-ux/file-provider/memory', named: 'memoryFiles', gzip: 2_600, forbid: ['react', '@base-ui/react'] },
+  // Measured 70.6 KB: the rows on the shared Button, Segmented (with its collapsed Menu), ScrollArea and RelativeTime.
+  { entry: 'glass-ux/notification-list', named: 'NotificationList', gzip: 78_000, forbid: ['lexical', 'react-markdown', '@tanstack/react-form', 'd3-scale', 'shiki', 'zod'] },
+  { entry: 'glass-ux/notification-list', named: 'NotificationPopover', gzip: 81_000, forbid: ['lexical', 'react-markdown', '@tanstack/react-form', 'd3-scale', 'shiki', 'zod'] },
+  // Measured 98.0 KB. The editor and the Markdown renderer load on demand, each behind a placeholder of the right size.
+  { entry: 'glass-ux/comment-thread', named: 'CommentThread', gzip: 108_000, forbid: ['lexical', '@lexical/rich-text', 'react-markdown', 'dist/ui/emoji-picker/emoji-picker.js', 'dist/ui/emoji-picker/emoji-data.js'] },
+  // Measured 52.3 KB: the toolbar, the popover around the picker and Button. Neither the picker's code nor its data.
+  { entry: 'glass-ux/reaction-bar', named: 'ReactionBar', gzip: 58_000, forbid: ['dist/ui/emoji-picker/emoji-picker.js', 'dist/ui/emoji-picker/emoji-data.js', 'lexical'] },
+  // Measured 67.5 KB without its data, a further 23.6 KB of strings that load when a picker first renders.
+  { entry: 'glass-ux/emoji-picker', named: 'EmojiPicker', gzip: 75_000, forbid: ['dist/ui/emoji-picker/emoji-data.js', 'lexical'] },
+  { entry: 'glass-ux/emoji-picker', named: 'EmojiPopover', gzip: 53_000, forbid: ['dist/ui/emoji-picker/emoji-data.js', 'dist/ui/emoji-picker/emoji-picker.js', 'lexical'] },
   { entry: 'glass-ux/phone-field', named: 'PhoneField', gzip: 75_000, forbid: ['libphonenumber-js'] },
   { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text'] },
   // The list that RichTextInput drives lives outside the editor: importing it brings in no Lexical.

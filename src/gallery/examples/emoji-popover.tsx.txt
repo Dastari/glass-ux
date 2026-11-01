@@ -1,0 +1,32 @@
+import { useState } from "react";
+import { IconSmile } from "glass-ux/icons";
+import { Button } from "glass-ux/button";
+import { EmojiPopover } from "glass-ux/emoji-picker";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+
+function InPopover() {
+  const [picked, setPicked] = useState("");
+  return (
+    <div className="flex items-center gap-3" data-testid="emoji-popover">
+      <EmojiPopover
+        onPick={({ emoji }) => setPicked(emoji)}
+        trigger={<Button icon={<IconSmile />}>Choose an emoji</Button>}
+      />
+      <p data-testid="emoji-popover-picked">{picked || "Nothing picked"}</p>
+    </div>
+  );
+}
+
+export default function EmojiPickerSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="In a popover"
+        description="The picker's code and data load when it first opens."
+        layout="stack"
+      >
+        <InPopover />
+      </Specimen>
+    </SectionPage>
+  );
+}

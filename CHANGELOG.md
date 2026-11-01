@@ -47,6 +47,18 @@ has upgrade steps in the [migration guide](docs/migration.md).
   F6 and Shift+F6 move between an application's regions, skipping hidden and inert ones, and
   leave the key to the browser while a modal dialog is open.
 - RichTextInput: opt-in `mentions` and `slashCommands`, on Typeahead. Picks stay Markdown.
+- Media player: `glass-ux/media-player` adds `VideoPlayer`, `AudioPlayer` and a headless
+  `useMediaPlayer`. Video has five view modes on one media element (`inline`, `maximised`,
+  `windowed`, `fullscreen`, `pip`): nothing remounts, and the page keeps the player's box.
+  Maximised and the mini player use the top layer through the Popover API; the mini player drags,
+  resizes and snaps, and moves from the keyboard. Controls cover seeking with buffered ranges,
+  chapters and storyboard previews, volume, speed, captions with sizes, quality, live streams,
+  loop, playlists and Media Session, with shortcuts scoped to the focused player. `CastAdapter`,
+  `useRemotePlayback` and `attach` connect sender SDKs, the Remote Playback API, AirPlay and stream
+  engines; the library loads none of them. `useMediaViewMode` and `useCastSession` serve hosts with
+  their own controls.
+- `PopupLayer` and `usePopupLayer` in the popup container module: Menu and Tooltip open inside a
+  surface in the top layer, as they already did inside a full-screen element.
 - Icons: 131 hand-authored glyphs, taking the set from 372 to 503. New groups for text editing
   (`text`, `bold`, `align-start`, `list-ordered`, `indent`, `slash-command`, `replace`, `regex`,
   `case-sensitive`, `whole-word`, `fold`, `unfold`, `collapse-all`), transforms (`rotate-cw`,

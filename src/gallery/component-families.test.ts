@@ -46,6 +46,7 @@ describe("component documentation families", () => {
     ["ask-record", "ask-card"],
     ["ask-shell", "ask-card"],
     ["keyboard-drawer", "on-screen-keyboard"],
+    ["audio-player", "video-player"],
     ["keyboard-toggle", "on-screen-keyboard"],
     ["sidebar-provider", "sidebar"],
     ["sidebar-trigger", "sidebar"],

@@ -21,5 +21,5 @@ belong to the container (Stack's gap).
 | title | `string \| undefined` | See type | no | — | The heading or title content. |
 | tone | `TextTone \| undefined` | "danger", "warning", "default", "success", "accent", "info", "subtle", "muted" | no | — | The semantic tone. Use danger and warning for consequences and states. |
 | truncate | `number \| boolean \| undefined` | See type | no | — | Cut to one line with an ellipsis (`true`), or to a number of lines. Pair with a tooltip or the full text nearby. |
-| variant | `TextVariant \| undefined` | "body", "caption", "label", "title", "display", "headline", "subtitle", "overline" | no | "body" | The type role. Default `body`. |
+| variant | `TextVariant \| undefined` | "body", "caption", "label", "title", "display", "subtitle", "headline", "overline" | no | "body" | The type role. Default `body`. |
 | weight | `"medium" \| "regular" \| "semibold" \| undefined` | "medium", "regular", "semibold" | no | — | `medium` or `semibold` over the role's own weight. |

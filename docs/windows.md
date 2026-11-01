@@ -26,6 +26,10 @@ its own floating tools (and, for a remote session, to lock the keyboard), and
 `useWindow().exitFullscreen()` offers a way out besides Esc. Your own portals can follow it
 with `container={popupContainer()}`.
 
+A `VideoPlayer` in a window takes `fill` and `viewModes={["fullscreen", "pip"]}`: the window owns
+position and size, so the player's own maximised and mini-player modes stay out. See the
+[media player guide](components/media-player.md#in-a-managed-window).
+
 Persist only when the product calls for it. `windowStorageKey(userId, namespace)` gives
 the host control over both application and user scope. Pop-out works without storage too:
 give the manager a `channelName` (per tab, if each tab has its own windows) and a

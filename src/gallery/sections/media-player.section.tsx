@@ -1,0 +1,289 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { Button } from "../../ui/button/index.js"
+import {
+  AudioPlayer,
+  AudioPlayerSkeleton,
+  VideoPlayer,
+  VideoPlayerSkeleton,
+  useMediaPlayer,
+  useMediaPlayerState,
+  useMediaPlayerTime,
+  type MediaPlayerController,
+  type MediaViewMode,
+  type MediaViewModeChangeDetails,
+  type VideoPlayerProps,
+} from "../../ui/media-player/index.js"
+import { Segmented } from "../../ui/segmented/index.js"
+import { ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
+import { FIELD_NOTES, RIDGE, TIDE, TIDE_SRC, TONES, createDemoCastAdapter, demoStream } from "../fixtures/media.js"
+import { Usage } from "./inputs.kit.js"
+
+const VIEW_OPTIONS: { value: MediaViewMode; label: string }[] = [
+  { value: "inline", label: "Inline" },
+  { value: "maximised", label: "Maximised" },
+  { value: "windowed", label: "Windowed" },
+  { value: "fullscreen", label: "Full screen" },
+  { value: "pip", label: "Picture in picture" },
+]
+
+/** Everything on: chapters, two caption tracks, a storyboard, a playlist and every view mode. */
+function FullDemo() {
+  return (
+    <div className="media-demo" data-testid="media-full">
+      <VideoPlayer playlist={FIELD_NOTES} defaultSelectedId="tide-survey" />
+    </div>
+  )
+}
+
+/** A controlled mode beside the player, with what the callback last reported. */
+function ViewModesDemo() {
+  const [mode, setMode] = useState<MediaViewMode>("inline")
+  const [details, setDetails] = useState<MediaViewModeChangeDetails | null>(null)
+  const [pictureInPicture, setPictureInPicture] = useState<"native" | "document">("native")
+  const onChange = useCallback((next: MediaViewMode, change: MediaViewModeChangeDetails) => {
+    setMode(next)
+    setDetails(change)
+  }, [])
+  return (
+    <div className="media-demo" data-testid="media-views">
+      <div className="media-demo-row">
+        <Segmented aria-label="View mode" value={mode} onValueChange={(next) => setMode(next as MediaViewMode)} options={VIEW_OPTIONS} />
+        <Segmented
+          aria-label="Picture-in-picture kind"
+          value={pictureInPicture}
+          onValueChange={(next) => setPictureInPicture(next as "native" | "document")}
+          options={[
+            { value: "native", label: "Native" },
+            { value: "document", label: "Document" },
+          ]}
+        />
+      </div>
+      <VideoPlayer {...TIDE} viewMode={mode} onViewModeChange={onChange} pictureInPicture={pictureInPicture} />
+      <p className="media-demo-note" data-testid="media-views-report">
+        {details ? `${details.previous} to ${mode}, reason ${details.reason}` : "No change yet"}
+      </p>
+    </div>
+  )
+}
+
+function CastDemo() {
+  const adapter = useMemo(() => createDemoCastAdapter(), [])
+  const [calls, setCalls] = useState<string[]>([])
+  useEffect(() => adapter.subscribe(() => setCalls(adapter.calls.slice(-5))), [adapter])
+  return (
+    <div className="media-demo" data-testid="media-cast">
+      <VideoPlayer {...TIDE} castAdapter={adapter} mediaSession={false} />
+      <p className="media-demo-note" data-testid="media-cast-log">
+        {calls.length ? calls.join(" · ") : "No calls yet"}
+      </p>
+    </div>
+  )
+}
+
+function HeadlessDemo() {
+  const player = useMediaPlayer({ src: TIDE_SRC, mediaSession: false })
+  const { paused, muted } = useMediaPlayerState(player)
+  const { currentTime, duration } = useMediaPlayerTime(player)
+  return (
+    <div className="media-demo" data-testid="media-headless">
+      <video ref={player.mediaRef} className="media-demo-video" />
+      <div className="media-demo-row">
+        <Button size="sm" onClick={player.toggle}>
+          {paused ? "Play" : "Pause"}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={player.toggleMuted}>
+          {muted ? "Unmute" : "Mute"}
+        </Button>
+        <span data-numeric>
+          {currentTime.toFixed(1)} / {duration.toFixed(1)} s
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/** Shows the player's stall message by telling it the media is waiting. */
+function StalledDemo() {
+  return (
+    <VideoPlayer
+      {...RIDGE}
+      stallAfter={0}
+      viewModes={[]}
+      mediaSession={false}
+      aria-label="Stalled"
+      defaultMuted
+      attach={(media) => {
+        media.src = RIDGE.src ?? ""
+        const stall = () => setTimeout(() => media.dispatchEvent(new Event("waiting")))
+        media.addEventListener("canplay", stall, { once: true })
+        return () => media.removeEventListener("canplay", stall)
+      }}
+    />
+  )
+}
+
+/** One player held paused at 0:06, so the same frame shows in every run. */
+function FixedPlayer(props: Partial<VideoPlayerProps> & { at?: number }) {
+  const { at = 6, ...rest } = props
+  const ref = useRef<MediaPlayerController>(null)
+  useEffect(() => {
+    const media = ref.current?.media.current
+    if (!media) return
+    const hold = () => {
+      media.currentTime = at
+    }
+    if (media.readyState >= 1) hold()
+    else media.addEventListener("loadedmetadata", hold, { once: true })
+    return () => media.removeEventListener("loadedmetadata", hold)
+  }, [at])
+  return <VideoPlayer {...TIDE} preload="auto" mediaSession={false} playerRef={ref} {...rest} />
+}
+
+const FIXED_STATES: Record<string, { label: string; props: Partial<VideoPlayerProps> & { at?: number } }> = {
+  inline: { label: "Inline", props: {} },
+  maximised: { label: "Maximised", props: { defaultViewMode: "maximised" } },
+  windowed: { label: "Windowed", props: { defaultViewMode: "windowed", defaultWindowRect: { x: 880, y: 500, width: 400, height: 225 } } },
+  captions: { label: "Captions, large", props: { defaultCaptionSize: "large", tracks: TIDE.tracks?.map((track, index) => ({ ...track, default: index === 0 })) } },
+  ended: { label: "Near the end", props: { at: 23 } },
+  long: { label: "Long title", props: { title: "Tide survey of the northern approaches to Cedar Inlet, second instalment, recorded at low water" } },
+}
+
+/** `?media-demo=<state>` shows one fixed state alone. */
+function useFixedState() {
+  return typeof location === "undefined" ? null : new URLSearchParams(location.search).get("media-demo")
+}
+
+/** The state named by `?media-demo=`, alone in its specimen and in view. */
+function FixedStateDemo() {
+  const id = useFixedState()
+  const state = FIXED_STATES[id ?? "inline"] ?? FIXED_STATES.inline!
+  const box = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (id) box.current?.scrollIntoView({ block: "center" })
+  }, [id])
+  return (
+    <div ref={box} className="media-demo" data-testid="media-fixed">
+      <ul className="media-demo-links">
+        {Object.entries(FIXED_STATES).map(([key, { label }]) => (
+          <li key={key}>
+            <a href={`?media-demo=${key}`} aria-current={key === (id ?? "inline") ? "page" : undefined}>
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <FixedPlayer {...state.props} />
+    </div>
+  )
+}
+
+export default function MediaPlayerSection() {
+  return (
+    <SectionPage>
+      <Specimen title="Video" description="Chapters, two caption tracks, a storyboard preview on the seek bar and a two-entry playlist. Click the picture to play, or focus the player and use the shortcuts.">
+        <FullDemo />
+      </Specimen>
+
+      <Specimen title="View modes" description="The same media element in all five modes. The player's box stays reserved in the page, so nothing below it moves.">
+        <ViewModesDemo />
+      </Specimen>
+
+      <Specimen title="Casting" description="A fictional receiver held in memory. Connect with the cast button: local playback pauses, the receiver starts from the same position, and the controls drive it. Disconnecting resumes here from the receiver's position.">
+        <CastDemo />
+      </Specimen>
+
+      <Specimen title="Stream engine" description="attach() gets the media element in place of src. This one only reports renditions, so the quality menu appears under Settings; a host connects hls.js or dash.js the same way.">
+        <div className="media-demo" data-testid="media-stream">
+          <VideoPlayer {...TIDE} attach={demoStream} mediaSession={false} />
+        </div>
+      </Specimen>
+
+      <Specimen title="Live" description="A live stream shows its seekable window and a Live control that jumps to the edge.">
+        <div className="media-demo" data-testid="media-live">
+          <VideoPlayer {...TIDE} chapters={undefined} live mediaSession={false} />
+        </div>
+      </Specimen>
+
+      <Specimen title="Filling a parent" description="fill takes the parent's height instead of an aspect ratio, as in a window's body. The window owns position and size, so only full screen and picture-in-picture remain.">
+        <div className="media-demo media-demo-fill" data-testid="media-fill">
+          <VideoPlayer {...RIDGE} fill viewModes={["fullscreen", "pip"]} mediaSession={false} />
+        </div>
+      </Specimen>
+
+      <Specimen title="Audio" layout="stack">
+        <div className="media-demo" data-testid="media-audio">
+          <AudioPlayer playlist={TONES} mediaSession={false} />
+        </div>
+      </Specimen>
+
+      <Specimen title="Headless" description="useMediaPlayer drives any element you render. These controls are plain buttons.">
+        <HeadlessDemo />
+      </Specimen>
+
+      <Specimen title="Loading and failure" layout="grid" description="The skeleton reserves the loaded shape. A failure says what happened and offers Retry in the same box.">
+        <div data-testid="media-skeleton">
+          <VideoPlayerSkeleton />
+        </div>
+        <div data-testid="media-error">
+          <VideoPlayer src="/media/missing.webm" title="Missing file" mediaSession={false} viewModes={[]} />
+        </div>
+        <div data-testid="media-stalled">
+          <StalledDemo />
+        </div>
+        <div data-testid="media-audio-skeleton">
+          <AudioPlayerSkeleton />
+        </div>
+      </Specimen>
+
+      <Specimen title="Fixed states" description="One player paused at 0:06, to compare the same frame between builds. Each link reloads the page in that state.">
+        <FixedStateDemo />
+      </Specimen>
+
+      <ContainerLab>
+        <div className="flex h-full items-center p-1">
+          <VideoPlayer {...RIDGE} mediaSession={false} viewModes={["inline", "fullscreen"]} />
+        </div>
+      </ContainerLab>
+
+      <Usage
+        code={`
+import { VideoPlayer, AudioPlayer } from "glass-ux/media-player"
+
+<VideoPlayer
+  src="/talks/tide-survey.webm"
+  poster="/talks/tide-survey.jpg"
+  title="Tide survey"
+  chapters={[{ start: 0, title: "Low water" }, { start: 8, title: "Flood" }]}
+  tracks={[{ src: "/talks/tide-survey.vtt", label: "English", language: "en" }]}
+  viewModes={["inline", "windowed", "fullscreen", "pip"]}
+  onViewModeChange={(mode, details) => console.log(mode, details.reason)}
+/>`}
+      />
+
+      <Rules
+        do={[
+          "Give every video a title and, where there is speech, a caption track.",
+          "Let the player keep its box: controls overlay the picture, so nothing around it moves.",
+          "Connect hls.js or dash.js through attach, and a sender SDK through a CastAdapter.",
+        ]}
+        dont={[
+          "Start playback with sound without a person's action; browsers refuse it, and the player stays paused.",
+          "Move the player between parents to change mode; that remounts the media element. Use viewMode.",
+          "Put credentials in a media URL or a CastLoadRequest; authentication belongs to the host.",
+        ]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--fg", "Seek bar fill and thumb over video"],
+          ["--accent", "Seek bar fill and thumb in audio"],
+          ["--halo-colour", "Shade behind controls, captions and states"],
+          ["--radius-tile", "Corners in the page"],
+          ["--radius-overlay", "Corners of the mini player"],
+          ["--shadow-3", "Elevation of the mini player"],
+        ]}
+      />
+    </SectionPage>
+  )
+}
+

@@ -27,7 +27,8 @@ const BUDGETS = [
   { entry: 'glass-ux/icons', named: 'IconSearch', gzip: 1_000 },
   // Includes the shared Base UI direction context and script-aware localeDirection fallback.
   { entry: 'glass-ux/locale', gzip: 1_300 },
-  // Raised from 34,000 for chords: a Button's tooltip reaches Kbd, which draws each step of one.
+  // 34_000 → 34_500: a tooltip reaches Kbd, which draws each step of a chord, and reads PopupLayer, so a tooltip
+  // inside a player in the top layer opens above it instead of behind it.
   { entry: 'glass-ux/button', named: 'Button', gzip: 34_500 },
   { entry: 'glass-ux/input', named: 'Input', gzip: 40_000 },
   { entry: 'glass-ux/form', named: 'FormStack', gzip: 1_000, forbid: ['@tanstack/form-core', '@tanstack/react-form'] },
@@ -58,6 +59,12 @@ const BUDGETS = [
   // Measured 18.5 KB: the keyboard plus the drawer's presence, inset and portal code. Of Base UI only the
   // direction context (0.4 KB); the popover, Button and the provider's linking stay in their own modules.
   { entry: 'glass-ux/on-screen-keyboard', named: 'KeyboardDrawer', gzip: 20_500, forbid: ['@tanstack/react-form', 'd3-scale', 'shiki', 'zod'] },
+  // Measured 82.6 KB: about 20 KB of player on the shared Button, Tooltip, Menu and Slider. Of glass-ux/windows
+  // only the pure fullscreenSupported and DRAG_THRESHOLD; stream engines and sender SDKs are the host's.
+  { entry: 'glass-ux/media-player', named: 'VideoPlayer', gzip: 91_000, forbid: ['dist/windows/managed-window.js', 'dist/windows/store.js', 'dist/windows/geometry.js', 'hls.js', 'dash.js'] },
+  { entry: 'glass-ux/media-player', named: 'AudioPlayer', gzip: 85_000, forbid: ['dist/windows/managed-window.js', 'dist/ui/media-player/video-player.js', 'dist/ui/media-player/mini-window.js', 'hls.js', 'dash.js'] },
+  // Measured 4.1 KB: the headless controller stays free of controls and of Base UI.
+  { entry: 'glass-ux/media-player', named: 'useMediaPlayer', gzip: 4_600, forbid: ['@base-ui/react', 'dist/ui/media-player/controls.js'] },
   { entry: 'glass-ux/phone-field', named: 'PhoneField', gzip: 75_000, forbid: ['libphonenumber-js'] },
   { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text'] },
   // The list that RichTextInput drives lives outside the editor: importing it brings in no Lexical.

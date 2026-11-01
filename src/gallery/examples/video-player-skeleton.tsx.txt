@@ -1,0 +1,53 @@
+import { AudioPlayerSkeleton, VideoPlayer, VideoPlayerSkeleton } from "glass-ux/media-player";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { RIDGE } from "glass-ux/gallery/fixtures/media";
+
+/** Shows the player's stall message by telling it the media is waiting. */
+function StalledDemo() {
+  return (
+    <VideoPlayer
+      {...RIDGE}
+      stallAfter={0}
+      viewModes={[]}
+      mediaSession={false}
+      aria-label="Stalled"
+      defaultMuted
+      attach={(media) => {
+        media.src = RIDGE.src ?? "";
+        const stall = () => setTimeout(() => media.dispatchEvent(new Event("waiting")));
+        media.addEventListener("canplay", stall, { once: true });
+        return () => media.removeEventListener("canplay", stall);
+      }}
+    />
+  );
+}
+
+export default function MediaPlayerSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Loading and failure"
+        layout="grid"
+        description="The skeleton reserves the loaded shape. A failure says what happened and offers Retry in the same box."
+      >
+        <div data-testid="media-skeleton">
+          <VideoPlayerSkeleton />
+        </div>
+        <div data-testid="media-error">
+          <VideoPlayer
+            src="/media/missing.webm"
+            title="Missing file"
+            mediaSession={false}
+            viewModes={[]}
+          />
+        </div>
+        <div data-testid="media-stalled">
+          <StalledDemo />
+        </div>
+        <div data-testid="media-audio-skeleton">
+          <AudioPlayerSkeleton />
+        </div>
+      </Specimen>
+    </SectionPage>
+  );
+}

@@ -113,6 +113,10 @@ try {
   }
   if (problems.length) fail(`the staged package is incomplete:\n  ${problems.slice(0, 20).join("\n  ")}`)
 
+  // Sample media belongs to the gallery's page; the library ships none.
+  const media = staged.filter((path) => /\.(?:webm|mp4|vtt)$/.test(path))
+  if (media.length) fail(`sample media reached the archive:\n  ${media.slice(0, 20).join("\n  ")}`)
+
   const unpacked = staged.reduce((total, path) => total + statSync(join(stage, path)).size, 0)
   const destination = check ? mkdtempSync(join(tmpdir(), "glass-ux-archive-")) : out
   const archive = `${pkg.name}-${pkg.version}.tgz`

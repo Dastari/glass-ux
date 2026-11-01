@@ -6,13 +6,25 @@
  *
  * Read at render time: a popup renders when it opens, so it lands in the right place.
  */
-import { useSyncExternalStore } from "react"
+import { createContext, useContext, useSyncExternalStore } from "react"
 
 /** The element popups should portal into: the full-screen element, if any (not the root), else undefined for Base UI's default body. Pass it as a portal's `container`. */
 export function popupContainer(): HTMLElement | undefined {
   if (typeof document === "undefined") return undefined
   const element = document.fullscreenElement
   return element instanceof HTMLElement && element !== document.documentElement ? element : undefined
+}
+
+/**
+ * An element a subtree's popups belong in, for content in the top layer that is not full
+ * screen (a player shown with the Popover API): anything portalled to the body would open
+ * behind it. Read by Menu and Tooltip through `usePopupLayer`.
+ */
+export const PopupLayer = /* @__PURE__ */ createContext<HTMLElement | null>(null)
+
+/** The element a popup rendered here should portal into: the nearest `PopupLayer`, else `popupContainer()`. */
+export function usePopupLayer(): HTMLElement | undefined {
+  return useContext(PopupLayer) ?? popupContainer()
 }
 
 function subscribe(notify: () => void) {

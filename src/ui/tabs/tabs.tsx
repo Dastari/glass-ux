@@ -12,6 +12,7 @@ import {
   useEffect,
   useId,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -39,6 +40,7 @@ import { fitItems, useChildWidths } from "./overflow.js"
 import { rovingKeyDown } from "./roving.js"
 import type { TabMenuProps, TabMenuRow, WrapTab } from "./tab-extras.js"
 
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? () => {} : useLayoutEffect
 const TabExtras = /* @__PURE__ */ lazy(() => import("./tab-extras.js"))
 
 export interface TabItem {
@@ -391,16 +393,28 @@ export function TabStrip<T extends TabItem>(props: TabStripProps<T>) {
   const generatedId = useId()
   const stripId = zoneId ?? generatedId
   const dropHandler = useRef<((event: DropEvent<TabDragData>) => void) | null>(null)
+  // Above the swap below: a close that lands as the extras arrive must survive the remount.
+  const handOver = useRef<HandOver>({ closing: null, lastActive: null, focused: null, announcement: "" })
   const extended = Boolean(onClose || onKeep || onTabMove) || items.some((item) => item.contextMenu)
   // The extras load with a plain strip in their place; once they are in, the strip mounts
   // anew under them, and measures itself again.
-  if (!extended) return <StripBody {...props} stripId={stripId} extended={false} dropHandler={dropHandler} wrapTab={noWrap} />
+  if (!extended) return <StripBody {...props} stripId={stripId} extended={false} dropHandler={dropHandler} handOver={handOver} wrapTab={noWrap} />
   const zone = onTabMove ? { id: stripId, label: label ?? stripId, type: dragType, onDrop: (event: DropEvent<TabDragData>) => dropHandler.current?.(event) } : null
   return (
-    <Suspense fallback={<StripBody {...props} stripId={stripId} extended dropHandler={dropHandler} wrapTab={noWrap} />}>
-      <TabExtras zone={zone}>{(wrapTab, zoneRef, tabMenu) => <StripBody {...props} stripId={stripId} extended dropHandler={dropHandler} wrapTab={wrapTab} zoneRef={zoneRef} tabMenu={tabMenu} />}</TabExtras>
+    <Suspense fallback={<StripBody {...props} stripId={stripId} extended dropHandler={dropHandler} handOver={handOver} wrapTab={noWrap} />}>
+      <TabExtras zone={zone}>{(wrapTab, zoneRef, tabMenu) => <StripBody {...props} stripId={stripId} extended dropHandler={dropHandler} handOver={handOver} wrapTab={wrapTab} zoneRef={zoneRef} tabMenu={tabMenu} />}</TabExtras>
     </Suspense>
   )
+}
+
+/** Which tab is closing, and which index was active: what a strip needs to hand selection on. */
+interface HandOver {
+  closing: { value: string; index: number } | null
+  lastActive: number | null
+  /** The tab that held focus as the strip was replaced. */
+  focused: string | null
+  /** The last move announced, so a replaced strip's live region keeps it. */
+  announcement: string
 }
 
 interface StripBodyProps<T extends TabItem> extends TabStripProps<T> {
@@ -409,13 +423,14 @@ interface StripBodyProps<T extends TabItem> extends TabStripProps<T> {
   extended: boolean
   /** Filled here: the zone is above the strip, and the visible tabs are known here. */
   dropHandler: { current: ((event: DropEvent<TabDragData>) => void) | null }
+  handOver: { current: HandOver }
   wrapTab: WrapTab
   zoneRef?: Ref<HTMLElement> | undefined
   /** The context menu, once loaded. */
   tabMenu?: (props: TabMenuProps) => ReactNode
 }
 
-function StripBody<T extends TabItem>({ items, value, select, className, content = defaultContent, menuContent = defaultMenuContent, onClose, onKeep, onTabMove, panelId, ref, stripId, extended, dropHandler, wrapTab, zoneRef, tabMenu, ...rest }: StripBodyProps<T>) {
+function StripBody<T extends TabItem>({ items, value, select, className, content = defaultContent, menuContent = defaultMenuContent, onClose, onKeep, onTabMove, panelId, ref, stripId, extended, dropHandler, handOver, wrapTab, zoneRef, tabMenu, ...rest }: StripBodyProps<T>) {
   const messages = useMessages(tabsMessages)
   const locale = useLocale()
 
@@ -423,7 +438,7 @@ function StripBody<T extends TabItem>({ items, value, select, className, content
   const { barRef, measureRef, visible, hidden, solo } = useTabOverflow(items, activeIndex)
   const pendingFocus = useRef<string | null>(null)
   const hintId = `${useId()}-hint`
-  const [announcement, setAnnouncement] = useState("")
+  const [announcement, setAnnouncement] = useState(handOver.current.announcement)
 
   const tabFor = (next: string) => barRef.current?.querySelector<HTMLElement>(`.fa-tabs-list [data-value="${CSS.escape(next)}"]`)
 
@@ -462,19 +477,30 @@ function StripBody<T extends TabItem>({ items, value, select, className, content
     [requestFocus]
   )
 
+  // Keyboard focus crosses the swap from the plain strip to the one under the extras.
+  useIsomorphicLayoutEffect(() => {
+    const focused = handOver.current.focused
+    handOver.current.focused = null
+    if (focused) tabFor(focused)?.focus()
+    const bar = barRef.current
+    return () => {
+      const tab = document.activeElement
+      if (tab instanceof HTMLElement && bar?.contains(tab)) handOver.current.focused = tab.dataset.value ?? null
+    }
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- once per strip instance
+  }, [])
+
   // ── Closing ───────────────────────────────────────────────────────────────
   const closable = (item: T) => Boolean(item.closable && onClose)
-  const closing = useRef<{ value: string; index: number } | null>(null)
   const requestClose = (item: T, reason: TabCloseDetails["reason"]) => {
-    closing.current = { value: item.value, index: items.indexOf(item) }
+    handOver.current.closing = { value: item.value, index: items.indexOf(item) }
     onClose?.(item.value, { reason })
   }
-  const lastActive = useRef(activeIndex)
   useEffect(() => {
-    const previous = lastActive.current
-    lastActive.current = activeIndex
-    const closed = closing.current
-    closing.current = null
+    const previous = handOver.current.lastActive ?? activeIndex
+    handOver.current.lastActive = activeIndex
+    const closed = handOver.current.closing
+    handOver.current.closing = null
     if (!onClose && !onTabMove) return
     const present = closed && items.some((item) => item.value === closed.value)
     const place = closed && !present ? closed.index : previous
@@ -499,7 +525,9 @@ function StripBody<T extends TabItem>({ items, value, select, className, content
     if (item.value !== value) select(item.value)
     requestFocus(item.value)
     onTabMove({ value: item.value, from: stripId, to: stripId, index: bounded, input })
-    setAnnouncement(messages.movedTo({ label: item.label, position: numberFormat(locale).format(bounded + 1), total: numberFormat(locale).format(items.length) }))
+    const moved = messages.movedTo({ label: item.label, position: numberFormat(locale).format(bounded + 1), total: numberFormat(locale).format(items.length) })
+    handOver.current.announcement = moved
+    setAnnouncement(moved)
   }
   const onDrop = (event: DropEvent<TabDragData>) => {
     const moved = event.item.data.value

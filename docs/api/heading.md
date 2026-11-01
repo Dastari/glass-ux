@@ -20,5 +20,5 @@ A heading whose level (the outline) and look (the type role) are set separately.
 | title | `string \| undefined` | See type | no | — | The heading or title content. |
 | tone | `TextTone \| undefined` | "danger", "warning", "default", "success", "accent", "info", "subtle", "muted" | no | — | The semantic tone. Use danger and warning for consequences and states. |
 | truncate | `number \| boolean \| undefined` | See type | no | — | Cut to one line with an ellipsis (`true`), or to a number of lines. Pair with a tooltip or the full text nearby. |
-| variant | `TextVariant \| undefined` | "body", "caption", "label", "title", "display", "headline", "subtitle", "overline" | no | — | The look, independent of the level. Default by level: 1 display, 2 headline, 3 title, 4 subtitle, 5–6 label. |
+| variant | `TextVariant \| undefined` | "body", "caption", "label", "title", "display", "subtitle", "headline", "overline" | no | — | The look, independent of the level. Default by level: 1 display, 2 headline, 3 title, 4 subtitle, 5–6 label. |
 | weight | `"medium" \| "regular" \| "semibold" \| undefined` | "medium", "regular", "semibold" | no | — | `medium` or `semibold` over the role's own weight. |

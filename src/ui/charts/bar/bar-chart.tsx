@@ -320,7 +320,8 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
     const y1 = height - inset.bottom
     const band = (x1 - x0) / Math.max(1, n)
     const py = linear(domain, [y1, y0])
-    const groupW = histogram ? band - GAP : Math.min(band * (micro ? 0.7 : stacked || k === 1 ? 0.62 : 0.8), stacked ? barMax : k * barMax + (k - 1) * GAP)
+    // Dense bins share the gap with their columns, so a column never loses its width to it.
+    const groupW = histogram ? band - Math.min(GAP, band / 2) : Math.min(band * (micro ? 0.7 : stacked || k === 1 ? 0.62 : 0.8), stacked ? barMax : k * barMax + (k - 1) * GAP)
     const barW = histogram || stacked ? groupW : (groupW - (k - 1) * GAP) / k
     for (let index = 0; index < n; index++) {
       const left = x0 + index * band + (band - groupW) / 2

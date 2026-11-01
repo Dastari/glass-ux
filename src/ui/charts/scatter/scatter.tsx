@@ -269,38 +269,72 @@ function DotHighlight({ store, dots, width, height, rem }: { store: HoverStore; 
 
 // ── Histogram ─────────────────────────────────────────────────────────────────────────────
 
-export interface HistogramProps extends ChartCommonProps, ValueFormat {
+/** One precomputed bin: the range it covers and how many values fall in it. */
+export interface HistogramBin {
+  /** Lower edge, in the value's units. */
+  from: number
+  /** Upper edge; the next bin's `from`. */
+  to: number
+  /** How many values fall in the bin. */
+  count: number
+}
+
+interface HistogramBaseProps extends ChartCommonProps, ValueFormat {
+  /** What is counted: "Endpoints", "Check-ins". */
+  countLabel?: string
+}
+
+/** Bin raw values here. */
+export interface HistogramValuesProps extends HistogramBaseProps {
   /** The raw values; they are binned here. */
   values: readonly number[]
   /** About how many bins (d3 picks nice edges near this). */
   bins?: number
   /** The x range to bin over; defaults to the data's extent. */
   domain?: Domain
-  /** What is counted: "Endpoints", "Check-ins". */
-  countLabel?: string
+}
+
+/** Show bins the host already computed: a server's aggregation, or a distribution too large to send. */
+export interface HistogramBinnedProps extends HistogramBaseProps {
+  /** The bins, touching and of equal width: each column is drawn the same width, and the axis labels their edges. */
+  bins: readonly HistogramBin[]
+  values?: undefined
+  domain?: undefined
+}
+
+/** `values` to bin here, or precomputed `bins`. */
+export type HistogramProps = HistogramValuesProps | HistogramBinnedProps
+
+/** Edges and counts for the columns, from raw values or precomputed bins. */
+export function histogramColumns(values: readonly number[] | undefined, bins: number | readonly HistogramBin[] | undefined, domain: Domain | undefined) {
+  if (typeof bins === "object") {
+    const ordered = bins.toSorted((a, b) => a.from - b.from)
+    return { edges: ordered.length ? [ordered[0]!.from, ...ordered.map((bin) => bin.to)] : [], counts: ordered.map((bin) => bin.count) }
+  }
+  const rawValues = values ?? []
+  const [lo, hi] = domain ?? (extent(rawValues) as [number | undefined, number | undefined])
+  const generator = d3bin<number, number>()
+    .domain([lo ?? 0, hi ?? 1])
+    .thresholds(bins ?? 12)
+  const result = generator([...rawValues])
+  const edges = result.length ? [result[0]!.x0 ?? 0, ...result.map((b) => b.x1 ?? 0)] : []
+  return { edges, counts: result.map((b) => b.length) }
 }
 
 /**
- * How values spread — check-in latency across the fleet. Columns touch (the 2px surface gap
- * between them), the axis labels the bin edges, and the tooltip names the bin's range and
+ * How values spread — check-in latency across the fleet. Pass raw `values` to bin here, or
+ * precomputed `bins` when the host has already counted them. Columns touch (the 2px surface
+ * gap between them), the axis labels the bin edges, and the tooltip names the bin's range and
  * count. Tiers are the column chart's.
  */
 export function Histogram(props: HistogramProps) {
   const messages = useMessages(scatterMessages)
 
-  const { values, bins = 12, domain, countLabel: countLabelProp, unit, format, ...rest } = props
+  const { values, bins, domain, countLabel: countLabelProp, unit, format, ...rest } = props
   const countLabel = countLabelProp ?? messages.count
 
   const locale = useLocale(props.locale)
-  const binned = useMemo(() => {
-    const [lo, hi] = domain ?? (extent(values) as [number | undefined, number | undefined])
-    const generator = d3bin<number, number>()
-      .domain([lo ?? 0, hi ?? 1])
-      .thresholds(bins)
-    const result = generator([...values])
-    const edges = result.length ? [result[0]!.x0 ?? 0, ...result.map((b) => b.x1 ?? 0)] : []
-    return { edges, counts: result.map((b) => b.length) }
-  }, [values, bins, domain])
+  const binned = useMemo(() => histogramColumns(values, bins, domain), [values, bins, domain])
   const formatEdge = (value: number) => formatValue(value, { unit, format, locale })
   return (
     <BarChart

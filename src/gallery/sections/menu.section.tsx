@@ -140,6 +140,17 @@ export default function MenuSection() {
           <ActionMenuPreview set={endpointActions} targets={[win11]} label={win11.name} />
         </Specimen>
 
+        <Specimen title="Detail line" description="A second line under the label gives the row one fixed taller height, and the icon slot a thumbnail's box.">
+          <MenuPreview.Surface label="Recent reports">
+            <MenuPreview.Item icon={<IconDownload />} detail="Reports · 12 March">
+              Harbour survey
+            </MenuPreview.Item>
+            <MenuPreview.Item icon={<IconDownload />} detail="Finance · 9 March">
+              Depot budget
+            </MenuPreview.Item>
+          </MenuPreview.Surface>
+        </Specimen>
+
         <Specimen title="Over imagery" backdrop>
           <ActionMenuPreview set={endpointActions} targets={[nst]} label={nst.name} openSubmenu="move" highlight="move" />
         </Specimen>

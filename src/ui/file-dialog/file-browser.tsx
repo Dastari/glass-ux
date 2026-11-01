@@ -384,10 +384,14 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
       setMessage(describeFailure(error, messages))
     }
   }
-  /** After a row was added, moved or removed: Base UI's return would land on nothing, or on a stale control. */
+  /**
+   * After a row was added, moved or removed. The control that had focus may be gone, so Base UI's
+   * return can land outside the dialog: this runs a frame after it.
+   */
   const restoreFocus = () => {
-    if (refocus.current !== null) entriesRef.current?.focusAt(refocus.current)
+    const at = refocus.current
     refocus.current = null
+    if (at !== null) requestAnimationFrame(() => entriesRef.current?.focusAt(at))
   }
   // A nested alert keeps its words while it leaves.
   const lastRemoving = useRef(removing)
@@ -633,7 +637,6 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
           initial={step.kind === "rename" ? step.entry.name : ""}
           confirmLabel={step.kind === "rename" ? messages.rename : messages.create}
           onSubmit={submitName}
-          finalFocus={() => refocus.current === null}
           onClose={() => setNaming(false)}
           onClosed={() => {
             setStep(null)

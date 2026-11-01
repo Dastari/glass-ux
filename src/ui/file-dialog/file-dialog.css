@@ -371,6 +371,17 @@
     max-inline-size: 100%;
   }
 
+  @media (forced-colors: active) {
+    .fa-file-dialog-check {
+      border-color: ButtonText;
+    }
+    .fa-file-dialog-check[data-checked] {
+      border-color: Highlight;
+      background-color: Highlight;
+      color: HighlightText;
+    }
+  }
+
   @container (width < 34rem) {
     .fa-file-dialog-cell[data-cell="date"] {
       display: none;

@@ -20,12 +20,10 @@ export interface NameDialogProps {
   onClose: () => void
   /** Runs once the dialog has gone, for focus. */
   onClosed?: () => void
-  /** Whether focus returns to what opened it. */
-  finalFocus?: () => boolean
 }
 
 /** One name in a small nested dialog: New folder and Rename. A refusal stays in the field. */
-export function NameDialog({ open, title, initial, confirmLabel, onSubmit, onClose, onClosed, finalFocus }: NameDialogProps) {
+export function NameDialog({ open, title, initial, confirmLabel, onSubmit, onClose, onClosed }: NameDialogProps) {
   const messages = useMessages(fileDialogMessages)
   const input = useRef<HTMLInputElement>(null)
   const [name, setName] = useState(initial)
@@ -51,7 +49,7 @@ export function NameDialog({ open, title, initial, confirmLabel, onSubmit, onClo
       }}
       onOpenChangeComplete={(next) => (next ? undefined : onClosed?.())}
     >
-      <Dialog.Popup size="sm" initialFocus={input} finalFocus={finalFocus}>
+      <Dialog.Popup size="sm" initialFocus={input}>
         <Dialog.Header title={title} close={false} />
         <form onSubmit={(event) => void submit(event)}>
           <Dialog.Body>

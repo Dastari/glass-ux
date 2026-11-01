@@ -45,7 +45,7 @@ test("component search and deep-link navigation @responsive", async ({
     .getByRole("searchbox", { name: "Search documentation" })
     .fill("SwatchPicker");
   await page
-    .getByRole("navigation", { name: "Components" })
+    .getByRole("navigation", { name: "Documentation navigation" })
     .getByRole("link", { name: "SwatchPicker", exact: true })
     .click();
   await expect(page.locator("main h1")).toHaveText("SwatchPicker");

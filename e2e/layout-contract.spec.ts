@@ -41,7 +41,7 @@ for (const appearance of [
       page.locator(".showcase-metrics > .fa-surface").first(),
     ).toBeVisible();
     const geometry = await page.evaluate(() => {
-      const sidebar = document.querySelector<HTMLElement>(".docs-sidebar")!;
+      const sidebar = document.querySelector<HTMLElement>(".docs-sidebar > .fa-sidebar-pane")!;
       const card = document.querySelector<HTMLElement>(
         ".showcase-metrics > .fa-surface",
       )!;
@@ -86,7 +86,7 @@ for (const appearance of [
         sidebar: measured(sidebar),
         drawerInset,
         drawerSearchInset: getComputedStyle(
-          sidebar.querySelector(".fa-shell-drawer-search")!,
+          sidebar.querySelector(".fa-sidebar-search")!,
         ).paddingLeft,
         card: measured(card),
         groups,

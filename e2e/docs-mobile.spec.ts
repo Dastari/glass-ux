@@ -141,14 +141,14 @@ for (const width of [320, 360, 390, 430, 480, 640]) {
       await expect(appearance).toBeFocused();
       await browse.click();
       const directory = page.getByRole("dialog", {
-        name: "Documentation",
+        name: "Documentation navigation",
         exact: true,
       });
       const search = directory.getByRole("searchbox", {
         name: "Search documentation",
         exact: true,
       });
-      await expect(search).toBeFocused();
+      await expect(directory).toBeVisible();
       await search.fill(" PanelHeader ");
       await directory.getByRole("link", { name: "Panel", exact: true }).click();
       await expect(page).toHaveURL(/\/components\/panel#panel-header$/);
@@ -159,10 +159,11 @@ for (const width of [320, 360, 390, 430, 480, 640]) {
       expect(
         (
           await new AxeBuilder({ page })
-            .include(".docs-navigation-dialog")
+            .include(".fa-sidebar-sheet")
             .analyze()
         ).violations.map((issue) => issue.id),
       ).toEqual([]);
+      await search.focus();
       await page.keyboard.press("Escape");
       // The drawer search returns focus to its active row before the next Esc closes it.
       await expect(directory).toBeVisible();

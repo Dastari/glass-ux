@@ -17,10 +17,8 @@ for (const width of [320, 1440]) {
         }),
       );
       localStorage.setItem(
-        "workspace.shell.v1",
-        JSON.stringify({
-          collapsed: { "docs.guides": true, "docs.components": true },
-        }),
+        "glass-ux-docs.sidebar",
+        JSON.stringify({ groups: { guides: false, components: false } }),
       );
     });
     await page.goto("./");
@@ -29,7 +27,9 @@ for (const width of [320, 1440]) {
         await page.getByRole("button", { name: "Browse", exact: true }).click();
     };
     await openDirectory();
-    const directory = page.locator(".docs-directory");
+    const directory = page.getByRole("navigation", {
+      name: "Documentation navigation",
+    });
     const search = directory.getByRole("searchbox", {
       name: "Search documentation",
     });
@@ -61,10 +61,7 @@ for (const width of [320, 1440]) {
       search: await search.boundingBox(),
       api: await api.boundingBox(),
     };
-    const scroll =
-      width < 768
-        ? directory.locator(".fa-dialog-body")
-        : directory.locator(".docs-directory-scroll");
+    const scroll = directory.locator(".docs-directory");
     await scroll.evaluate((element) => {
       element.scrollTop = element.scrollHeight;
     });
@@ -76,21 +73,16 @@ for (const width of [320, 1440]) {
     expect((await search.boundingBox())!.y).toBeCloseTo(before.search!.y, 1);
     expect((await api.boundingBox())!.y).toBeCloseTo(before.api!.y, 1);
     if (width < 768) {
-      const insets = await directory
-        .locator(".fa-shell-drawer-body, .fa-shell-drawer-footer")
-        .evaluateAll((elements) =>
-          elements.map((element) => getComputedStyle(element).paddingLeft),
-        );
-      expect(insets).toEqual(["0px", "0px"]);
+      // The sheet's items and pinned links share one inline edge.
       const edges = await directory
-        .locator(".fa-shell-drawer-body, .fa-shell-drawer-footer")
+        .locator(".docs-directory .fa-sidebar-menu-button, .fa-sidebar-footer .fa-sidebar-menu-button")
         .evaluateAll((elements) =>
           elements.map((element) => element.getBoundingClientRect().left),
         );
       expect(edges[0]).toBeCloseTo(edges[1]!, 1);
     }
     const result = await new AxeBuilder({ page })
-      .include(width < 768 ? ".docs-navigation-dialog" : ".docs-sidebar")
+      .include(width < 768 ? ".fa-sidebar-sheet" : ".docs-sidebar")
       .analyze();
     expect(result.violations.map((violation) => violation.id)).toEqual([]);
   });
@@ -113,17 +105,19 @@ for (const width of [320, 390, 1920]) {
       await page.goto("./");
       if (width < 768)
         await page.getByRole("button", { name: "Browse", exact: true }).click();
-      const directory = page.locator(".docs-directory");
+      const directory = page.getByRole("navigation", {
+        name: "Documentation navigation",
+      });
       const search = directory.getByRole("searchbox");
       await search.fill("   tHeMe AND laYouT   ");
       await expect(
         directory.getByRole("link", { name: "Theme and layout", exact: true }),
       ).toBeVisible();
       await expect(
-        directory.getByRole("navigation", { name: "Foundations" }),
+        directory.getByRole("group", { name: /^Foundations/ }),
       ).toHaveCount(0);
       await expect(
-        directory.getByRole("navigation", { name: "Components" }),
+        directory.getByRole("group", { name: /^Components/ }),
       ).toHaveCount(0);
       await directory
         .getByRole("link", { name: "Theme and layout", exact: true })
@@ -133,7 +127,7 @@ for (const width of [320, 390, 1920]) {
         "Theme and layout contract",
       );
       if (width < 768)
-        await expect(page.locator(".docs-navigation-dialog")).toHaveCount(0);
+        await expect(page.locator(".fa-sidebar-sheet")).toHaveCount(0);
       if (width < 768)
         await page.getByRole("button", { name: "Browse", exact: true }).click();
       await expect(search).toHaveValue("");
@@ -142,7 +136,7 @@ for (const width of [320, 390, 1920]) {
         directory.getByRole("link", { name: "Space and layout", exact: true }),
       ).toBeVisible();
       await expect(
-        directory.getByRole("navigation", { name: "Guides" }),
+        directory.getByRole("group", { name: /^Guides/ }),
       ).toHaveCount(0);
       await search.fill(" typedoc ");
       await expect(
@@ -151,7 +145,7 @@ for (const width of [320, 390, 1920]) {
           exact: true,
         }),
       ).toBeVisible();
-      await expect(directory.getByRole("navigation")).toHaveCount(0);
+      await expect(directory.locator(".fa-sidebar-group")).toHaveCount(0);
       await search.fill("GitHub");
       await expect(
         directory.getByRole("link", {
@@ -163,14 +157,16 @@ for (const width of [320, 390, 1920]) {
       await expect(directory.getByRole("status")).toContainText(
         "No documentation matches",
       );
-      await expect(directory.getByRole("link")).toHaveCount(0);
+      await expect(
+        directory.locator(".docs-directory, .fa-sidebar-footer").getByRole("link"),
+      ).toHaveCount(0);
       await directory
         .getByRole("button", { name: "Clear", exact: true })
         .click();
       await expect(search).toHaveValue("");
       await expect(directory.getByRole("status")).toHaveCount(0);
       await expect(
-        directory.getByRole("navigation", { name: "Guides" }),
+        directory.getByRole("group", { name: /^Guides/ }),
       ).toBeVisible();
       await search.fill(" Space and layout ");
       await directory
@@ -180,7 +176,7 @@ for (const width of [320, 390, 1920]) {
       await expect(page.locator("main h1")).toHaveText("Space and layout");
       if (width < 768) {
         // The route renders before the sheet's exit animation and focus trap finish.
-        await expect(page.locator(".docs-navigation-dialog")).toHaveCount(0);
+        await expect(page.locator(".fa-sidebar-sheet")).toHaveCount(0);
         await expect(
           page.locator('[data-base-ui-focus-guard][data-type="inside"]'),
         ).toHaveCount(0);

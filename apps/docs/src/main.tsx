@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  type ReactElement,
   type ReactNode,
 } from "react";
 import {
@@ -42,8 +43,7 @@ import { Button } from "glass-ux/button";
 import { ButtonLink } from "glass-ux/button-link";
 import { Dialog } from "glass-ux/dialog";
 import { Popover } from "glass-ux/popover";
-import { usePhoneLayout } from "glass-ux/dialog";
-import { DrawerPlacement, SectionDrawer } from "glass-ux/shell";
+import { Sidebar, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from "glass-ux/sidebar";
 import { BrandMark } from "glass-ux/brand";
 import { DOCUMENTATION_VERSION } from "glass-ux/gallery/release.generated";
 import {
@@ -176,6 +176,10 @@ const foundations = sections.filter(
   (section) => section.group === "Foundations",
 );
 
+/**
+ * A directory group: a remembered disclosure, or while searching an open group of its matches
+ * (every match shows, whatever the group's remembered state).
+ */
 function DirectoryGroup({
   id,
   title,
@@ -189,15 +193,40 @@ function DirectoryGroup({
   searching: boolean;
   children: ReactNode;
 }) {
-  return searching ? (
-    <div className="docs-filtered-group">
-      <span className="type-overline text-fg-muted">{title}</span>
-      {children}
-    </div>
-  ) : (
-    <SectionDrawer.Group id={`docs.${id}`} title={title} count={count}>
-      {children}
-    </SectionDrawer.Group>
+  return (
+    <Sidebar.Group id={id} collapsible={!searching}>
+      <Sidebar.GroupLabel count={searching ? undefined : count}>
+        {title}
+      </Sidebar.GroupLabel>
+      <Sidebar.GroupContent>
+        <Sidebar.Menu>{children}</Sidebar.Menu>
+      </Sidebar.GroupContent>
+    </Sidebar.Group>
+  );
+}
+
+/** One destination: its label with the search's matches marked, and the route's link. */
+function DirectoryLink({
+  label,
+  query,
+  active = false,
+  icon,
+  link,
+  onClick,
+}: {
+  label: string;
+  query: string;
+  active?: boolean;
+  icon?: ReactNode;
+  link: ReactElement;
+  onClick: () => void;
+}) {
+  return (
+    <Sidebar.MenuItem>
+      <Sidebar.MenuButton icon={icon} active={active} render={link} onClick={onClick}>
+        <Sidebar.Match text={label} query={query} />
+      </Sidebar.MenuButton>
+    </Sidebar.MenuItem>
   );
 }
 
@@ -509,12 +538,34 @@ function VisualStyleSwitch() {
 }
 
 function Layout() {
+  return (
+    <AppearanceProvider>
+      <TooltipProvider>
+        <ActionProvider>
+          <PaletteProvider>
+            <SidebarProvider
+              storageKey="glass-ux-docs.sidebar"
+              className="gallery-shell docs-layout"
+            >
+              <DocsFrame />
+            </SidebarProvider>
+          </PaletteProvider>
+        </ActionProvider>
+      </TooltipProvider>
+    </AppearanceProvider>
+  );
+}
+
+/**
+ * The documentation's frame: the directory in a Sidebar (a sheet on phones, ⌘B / Ctrl B
+ * toggles it, the rail resizes it) beside the routed page.
+ */
+function DocsFrame() {
   const [query, setQuery] = useState("");
-  const [browse, setBrowse] = useState(false);
   const [appearanceOpen, setAppearanceOpen] = useState(false);
-  const browseButton = useRef<HTMLButtonElement>(null);
   const appearanceButton = useRef<HTMLButtonElement>(null);
-  const phone = usePhoneLayout();
+  const { appearance } = useAppearance();
+  const { isMobile: phone, openMobile, setOpenMobile } = useSidebar();
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
@@ -548,292 +599,208 @@ function Layout() {
     !foundationItems.length &&
     !showTypes &&
     !showSource;
-  const activate = () => {
-    setQuery("");
-    setBrowse(false);
-  };
-  const directory = (
-    <div className="docs-directory">
-      <SectionDrawer.Search
-        noun="documentation"
-        placeholder="Search"
-        value={query}
-        onValueChange={setQuery}
-      />
-      <SectionDrawer.Body className="docs-directory-scroll">
-        {empty ? (
-          <p role="status" className="type-caption text-fg-muted">
-            No documentation matches “{query.trim()}”.
-          </p>
-        ) : null}
-        {guides.length ? (
-          <nav className="docs-nav" aria-label="Guides">
-            <DirectoryGroup
-              id="guides"
-              title="Guides"
-              count={guides.length}
-              searching={Boolean(search)}
+  const searching = Boolean(search);
+  const marked = query.trim();
+  // Choosing a destination clears the search; the phone sheet closes itself.
+  const activate = () => setQuery("");
+  return (
+    <>
+      {phone ? (
+        <header className="docs-mobile-header">
+          <Link to="/" className="gallery-brand" aria-label="Glass UX" onClick={activate}>
+            <BrandMark mark="product" tones="palette" className="gallery-brand-mark" />
+            <span className="gallery-brand-name">Glass UX</span>
+          </Link>
+          <div className="docs-mobile-actions">
+            <RepositoryLink />
+            <Button
+              variant="ghost"
+              icon={<IconSidebar />}
+              aria-label="Browse"
+              aria-expanded={openMobile}
+              aria-haspopup="dialog"
+              onClick={() => setOpenMobile(true)}
             >
-              <SectionDrawer.List>
-                {guides.map((guide) => (
-                  <SectionDrawer.Item
-                    key={guide.id}
-                    onClick={activate}
-                    active={activePath === `/guides/${guide.id}`}
-                    label={
-                      <SectionDrawer.Match
-                        text={guide.title}
-                        query={query.trim()}
-                      />
-                    }
-                    render={
-                      <Link to="/guides/$guide" params={{ guide: guide.id }} />
-                    }
-                  />
-                ))}
-              </SectionDrawer.List>
+              <span className="docs-mobile-action-label">Browse</span>
+            </Button>
+            <Button
+              ref={appearanceButton}
+              variant="ghost"
+              icon={<IconSettings />}
+              aria-label="Appearance"
+              aria-expanded={appearanceOpen}
+              aria-haspopup="dialog"
+              onClick={() => setAppearanceOpen(true)}
+            >
+              <span className="docs-mobile-action-label">Appearance</span>
+            </Button>
+          </div>
+        </header>
+      ) : null}
+      <Sidebar
+        className="docs-sidebar"
+        variant={appearance.style === "flat" ? "sidebar" : "floating"}
+        resizable
+        aria-label="Documentation navigation"
+      >
+        <Sidebar.Header
+          icon={<BrandMark mark="product" tones="palette" />}
+          title={
+            <Link to="/" onClick={activate}>
+              Glass UX
+            </Link>
+          }
+          subtitle={`v${DOCUMENTATION_VERSION}`}
+          // The page header's trigger toggles the docked sidebar; the sheet keeps its close button.
+          toggle={phone}
+        />
+        <Sidebar.Search
+          aria-label="Search documentation"
+          placeholder="Search"
+          value={query}
+          onValueChange={setQuery}
+        />
+        <Sidebar.Content className="docs-directory">
+          {empty ? (
+            <p role="status" className="type-caption text-fg-muted docs-directory-empty">
+              No documentation matches “{marked}”.
+            </p>
+          ) : null}
+          {guides.length ? (
+            <DirectoryGroup id="guides" title="Guides" count={guides.length} searching={searching}>
+              {guides.map((guide) => (
+                <DirectoryLink
+                  key={guide.id}
+                  label={guide.title}
+                  query={marked}
+                  active={activePath === `/guides/${guide.id}`}
+                  onClick={activate}
+                  link={<Link to="/guides/$guide" params={{ guide: guide.id }} />}
+                />
+              ))}
             </DirectoryGroup>
-          </nav>
-        ) : null}
-        {foundationItems.length ? (
-          <nav className="docs-nav" aria-label="Foundations">
+          ) : null}
+          {foundationItems.length ? (
             <DirectoryGroup
               id="foundations"
               title="Foundations"
               count={foundationItems.length}
-              searching={Boolean(search)}
+              searching={searching}
             >
-              <SectionDrawer.List>
-                {foundationItems.map((section) => (
-                  <SectionDrawer.Item
-                    key={section.id}
+              {foundationItems.map((section) => (
+                <DirectoryLink
+                  key={section.id}
+                  label={section.title}
+                  query={marked}
+                  active={activePath === `/foundations/${section.id}`}
+                  onClick={activate}
+                  link={<Link to="/foundations/$section" params={{ section: section.id }} />}
+                />
+              ))}
+            </DirectoryGroup>
+          ) : null}
+          {COMPONENT_GROUPS.map((group) => {
+            const entries = items.filter((item) => componentGroup(item.family) === group);
+            return entries.length ? (
+              <DirectoryGroup
+                key={group}
+                id={group.toLowerCase()}
+                title={group}
+                count={entries.length}
+                searching={searching}
+              >
+                {entries.map((item) => (
+                  <DirectoryLink
+                    key={item.id}
+                    label={item.name}
+                    query={marked}
+                    active={item.components.some(
+                      (component) => activePath === `/components/${component.id}`,
+                    )}
                     onClick={activate}
-                    active={activePath === `/foundations/${section.id}`}
-                    label={
-                      <SectionDrawer.Match
-                        text={section.title}
-                        query={query.trim()}
-                      />
-                    }
-                    render={
+                    link={
                       <Link
-                        to="/foundations/$section"
-                        params={{ section: section.id }}
+                        to="/components/$component"
+                        params={{ component: item.id }}
+                        hash={
+                          search && !matches(item.name, item.description, item.id)
+                            ? item.components.find((component) =>
+                                matches(component.name, component.description, component.id),
+                              )?.id
+                            : undefined
+                        }
                       />
                     }
                   />
                 ))}
-              </SectionDrawer.List>
-            </DirectoryGroup>
-          </nav>
-        ) : null}
-
-        {items.length ? (
-          <nav className="docs-nav" aria-label="Components">
-            {COMPONENT_GROUPS.map((group) => {
-              const entries = items.filter(
-                (item) => componentGroup(item.family) === group,
-              );
-              return entries.length ? (
-                <DirectoryGroup
-                  key={group}
-                  id={group.toLowerCase()}
-                  title={group}
-                  count={entries.length}
-                  searching={Boolean(search)}
-                >
-                  <SectionDrawer.List>
-                    {entries.map((item) => (
-                      <SectionDrawer.Item
-                        key={item.id}
-                        onClick={activate}
-                        active={item.components.some(
-                          (component) =>
-                            activePath === `/components/${component.id}`,
-                        )}
-                        label={
-                          <SectionDrawer.Match
-                            text={item.name}
-                            query={query.trim()}
-                          />
-                        }
-                        render={
-                          <Link
-                            to="/components/$component"
-                            params={{ component: item.id }}
-                            hash={
-                              search &&
-                              !matches(item.name, item.description, item.id)
-                                ? item.components.find((component) =>
-                                    matches(
-                                      component.name,
-                                      component.description,
-                                      component.id,
-                                    ),
-                                  )?.id
-                                : undefined
-                            }
-                          />
-                        }
-                      />
-                    ))}
-                  </SectionDrawer.List>
-                </DirectoryGroup>
-              ) : null;
-            })}
-          </nav>
-        ) : null}
-      </SectionDrawer.Body>
-      <SectionDrawer.Footer>
-        {showTypes || showSource ? (
-          <SectionDrawer.List>
-            {showTypes ? (
-              <SectionDrawer.Item
-                icon={<IconCode />}
-                label="API reference"
-                render={<a href={`${import.meta.env.BASE_URL}api/`} />}
-                onClick={activate}
-              />
-            ) : null}
-            {showSource ? (
-              <SectionDrawer.Item
-                icon={<IconGithub />}
-                label="Source and releases"
-                render={<a href="https://github.com/Dastari/glass-ux" />}
-                onClick={activate}
-              />
-            ) : null}
-          </SectionDrawer.List>
-        ) : null}
-        <div className="docs-language">
-          <LanguageSelect />
-        </div>
-      </SectionDrawer.Footer>
-    </div>
-  );
-  return (
-    <AppearanceProvider>
-      <TooltipProvider>
-        <ActionProvider>
-          <PaletteProvider>
-            <div className="gallery-shell docs-layout">
-              {phone ? (
-                <header className="docs-mobile-header">
-                  <Link to="/" className="gallery-brand" aria-label="Glass UX" onClick={activate}>
-                    <BrandMark mark="product" tones="palette" className="gallery-brand-mark" />
-                    <span className="gallery-brand-name">Glass UX</span>
-                  </Link>
-                  <div className="docs-mobile-actions">
-                    <RepositoryLink />
-                    <Button
-                      ref={browseButton}
-                      variant="ghost"
-                      icon={<IconSidebar />}
-                      aria-label="Browse"
-                      aria-expanded={browse}
-                      aria-haspopup="dialog"
-                      onClick={() => setBrowse(true)}
-                    >
-                      <span className="docs-mobile-action-label">Browse</span>
-                    </Button>
-                    <Button
-                      ref={appearanceButton}
-                      variant="ghost"
-                      icon={<IconSettings />}
-                      aria-label="Appearance"
-                      aria-expanded={appearanceOpen}
-                      aria-haspopup="dialog"
-                      onClick={() => setAppearanceOpen(true)}
-                    >
-                      <span className="docs-mobile-action-label">
-                        Appearance
-                      </span>
-                    </Button>
-                  </div>
-                </header>
-              ) : (
-                <SectionDrawer.Root
-                  className="docs-sidebar"
-                  aria-label="Component navigation"
-                >
-                  <SectionDrawer.Header
-                    icon={<BrandMark mark="product" tones="palette" />}
-                    title={
-                      <Link to="/" onClick={activate}>
-                        Glass UX
-                      </Link>
-                    }
-                    subtitle={`v${DOCUMENTATION_VERSION}`}
-                  />
-                  {directory}
-                </SectionDrawer.Root>
-              )}
-              <main
-                className="gallery-main docs-main"
-                tabIndex={0}
-                aria-label="Documentation"
-              >
-                {!phone ? (
-                  <header className="gallery-header docs-header">
-                    <VisualStyleSwitch />
-                    <RepositoryLink />
-                    <HeaderAppearance />
-                  </header>
-                ) : null}
-                <div
-                  className="gallery-content docs-content"
-                  data-scroll-container
-                  tabIndex={0}
-                  role="region"
-                  aria-label="Documentation content"
-                >
-                  <Suspense fallback={<RouteLoading />}>
-                    <Outlet />
-                  </Suspense>
-                </div>
-              </main>
-              {phone ? (
-                <>
-                  <Dialog.Root open={browse} onOpenChange={setBrowse}>
-                    <Dialog.Popup
-                      className="docs-mobile-dialog docs-navigation-dialog"
-                      initialFocus={() =>
-                        document.querySelector<HTMLInputElement>(
-                          '.docs-navigation-dialog [aria-label="Search documentation"]',
-                        )
-                      }
-                      finalFocus={browseButton}
-                    >
-                      <Dialog.Header
-                        role="presentation"
-                        title="Documentation"
-                      />
-                      <DrawerPlacement value="sheet">
-                        {directory}
-                      </DrawerPlacement>
-                    </Dialog.Popup>
-                  </Dialog.Root>
-                  <Dialog.Root
-                    open={appearanceOpen}
-                    onOpenChange={setAppearanceOpen}
-                  >
-                    <Dialog.Popup
-                      className="docs-mobile-dialog docs-appearance-dialog"
-                      finalFocus={appearanceButton}
-                    >
-                      <Dialog.Header role="presentation" title="Appearance" />
-                      <Dialog.Body>
-                        <Toolbar expanded />
-                      </Dialog.Body>
-                    </Dialog.Popup>
-                  </Dialog.Root>
-                </>
+              </DirectoryGroup>
+            ) : null;
+          })}
+        </Sidebar.Content>
+        <Sidebar.Footer>
+          {showTypes || showSource ? (
+            <Sidebar.Menu>
+              {showTypes ? (
+                <DirectoryLink
+                  icon={<IconCode />}
+                  label="API reference"
+                  query=""
+                  onClick={activate}
+                  link={<a href={`${import.meta.env.BASE_URL}api/`} />}
+                />
               ) : null}
-            </div>
-          </PaletteProvider>
-        </ActionProvider>
-      </TooltipProvider>
-    </AppearanceProvider>
+              {showSource ? (
+                <DirectoryLink
+                  icon={<IconGithub />}
+                  label="Source and releases"
+                  query=""
+                  onClick={activate}
+                  link={<a href="https://github.com/Dastari/glass-ux" />}
+                />
+              ) : null}
+            </Sidebar.Menu>
+          ) : null}
+          <div className="docs-language">
+            <LanguageSelect />
+          </div>
+        </Sidebar.Footer>
+        <Sidebar.Rail />
+      </Sidebar>
+      <SidebarInset className="gallery-main docs-main" tabIndex={0} aria-label="Documentation">
+        {!phone ? (
+          <header className="gallery-header docs-header">
+            <SidebarTrigger className="docs-sidebar-trigger" />
+            <VisualStyleSwitch />
+            <RepositoryLink />
+            <HeaderAppearance />
+          </header>
+        ) : null}
+        <div
+          className="gallery-content docs-content"
+          data-scroll-container
+          tabIndex={0}
+          role="region"
+          aria-label="Documentation content"
+        >
+          <Suspense fallback={<RouteLoading />}>
+            <Outlet />
+          </Suspense>
+        </div>
+      </SidebarInset>
+      {phone ? (
+        <Dialog.Root open={appearanceOpen} onOpenChange={setAppearanceOpen}>
+          <Dialog.Popup
+            className="docs-mobile-dialog docs-appearance-dialog"
+            finalFocus={appearanceButton}
+          >
+            <Dialog.Header role="presentation" title="Appearance" />
+            <Dialog.Body>
+              <Toolbar expanded />
+            </Dialog.Body>
+          </Dialog.Popup>
+        </Dialog.Root>
+      ) : null}
+    </>
   );
 }
 const rootRoute = createRootRoute({ component: Layout });

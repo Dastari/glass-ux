@@ -89,7 +89,7 @@ test.describe("docs toolbar fit", () => {
     await page.goto("components/swatch-picker/");
     await expect(page.locator(".docs-header .docs-toolbar")).toBeVisible();
     const seen: Record<number, ToolbarState> = {};
-    for (const width of [1920, 1600, 1500, 1366, 1280, 1024, 960, 900, 800, 768]) {
+    for (const width of [1920, 1600, 1500, 1440, 1366, 1280, 1024, 960, 900, 800, 768]) {
       await page.setViewportSize({ width, height: 900 });
       await settle(page);
       await settle(page);
@@ -104,7 +104,7 @@ test.describe("docs toolbar fit", () => {
     // Twelve palettes: the palette folds to its menu first, and alone at 1500px.
     expect(folded(seen[1500]!)).toEqual([true, false, false, false, false]);
     // The palette gives way before any segmented control; Blur is the first of those.
-    expect(folded(seen[1366]!)).toEqual([true, true, false, false, false]);
+    expect(folded(seen[1440]!)).toEqual([true, true, false, false, false]);
     // Narrower, the other segmented controls follow (how many depends on their labels).
     expect(seen[1280]!.shown).toBe(true);
     expect(folded(seen[1280]!).slice(0, 2)).toEqual([true, true]);
@@ -140,7 +140,7 @@ test.describe("docs toolbar fit", () => {
       await page.setViewportSize({ width: 1920, height: 900 });
       await page.goto("components/swatch-picker/");
       await expect(page.locator(".docs-header .docs-toolbar")).toBeVisible();
-      for (const width of [1920, 1600, 1500, 1366, 1280, 1024, 960, 900, 800, 768]) {
+      for (const width of [1920, 1600, 1500, 1440, 1366, 1280, 1024, 960, 900, 800, 768]) {
         await page.setViewportSize({ width, height: 900 });
         await settle(page);
         await settle(page);

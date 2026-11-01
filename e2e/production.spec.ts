@@ -150,7 +150,7 @@ test("the supplied brand mark, favicon and sharing image load under the deployme
 }) => {
   await page.goto("guides/getting-started/");
   const logo = page
-    .getByRole("navigation", { name: "Component navigation", exact: true })
+    .getByRole("navigation", { name: "Documentation navigation", exact: true })
     .locator("svg[data-brand='glass-ux']");
   await expect(logo).toBeVisible();
   // The drawer's mark follows the selected palette.

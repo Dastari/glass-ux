@@ -36,8 +36,8 @@ const bake = async (page: Page) => {
 
 /** The sidebar's material alone (its contents hidden), as pixels. */
 const sidebarPixels = async (page: Page) => {
-  await page.addStyleTag({ content: ".docs-sidebar > * { visibility: hidden !important; }" });
-  const box = (await page.locator(".docs-sidebar").boundingBox())!;
+  await page.addStyleTag({ content: ".docs-sidebar .fa-sidebar-nav { visibility: hidden !important; }" });
+  const box = (await page.locator(".docs-sidebar > .fa-sidebar-pane").boundingBox())!;
   // Inside the rims and lens: the frosted body of the pane.
   return page.screenshot({ clip: { x: box.x + 24, y: box.y + 24, width: box.width - 48, height: box.height - 48 } });
 };
@@ -45,10 +45,10 @@ const sidebarPixels = async (page: Page) => {
 test("baked frost matches the live blur at rest", async ({ page }) => {
   await open(page);
   await page.waitForTimeout(500);
-  expect(await frost(page, ".docs-sidebar")).toMatchObject({ blur: expect.stringContaining("blur("), baked: false });
+  expect(await frost(page, ".docs-sidebar > .fa-sidebar-pane")).toMatchObject({ blur: expect.stringContaining("blur("), baked: false });
   const live = await sidebarPixels(page);
   await bake(page);
-  expect(await frost(page, ".docs-sidebar")).toMatchObject({ blur: "none", baked: true });
+  expect(await frost(page, ".docs-sidebar > .fa-sidebar-pane")).toMatchObject({ blur: "none", baked: true });
   const baked = await sidebarPixels(page);
   const diff = await page.evaluate(
     async ([a, b]) => {
@@ -123,5 +123,5 @@ test("the documentation toolbar switches the glass rendering and remembers it", 
   await expect(page.locator("html")).toHaveAttribute("data-frost", "", { timeout: 10_000 });
   await page.locator('.docs-header [aria-label="Blur"]').getByText("Live").first().click();
   await expect(page.locator("html")).not.toHaveAttribute("data-glass-rendering", /./);
-  expect((await frost(page, ".docs-sidebar")).blur).toContain("blur(");
+  expect((await frost(page, ".docs-sidebar > .fa-sidebar-pane")).blur).toContain("blur(");
 });

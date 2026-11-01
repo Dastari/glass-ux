@@ -16,30 +16,30 @@
     padding-inline: var(--space-2);
   }
   :root[data-style="flat"] .docs-layout {
-    gap: 0;
-    padding: 0;
-  }
-  :root[data-style="flat"] .docs-sidebar {
-    border: 0;
-    border-inline-end: var(--divider);
-    border-radius: 0;
+    --gallery-shell-gutter: 0px;
   }
   :root[data-style="flat"] .docs-header {
     border-block-end: var(--divider);
   }
+  /* The SidebarProvider: the directory and the page in one row. The page keeps the gutter on
+     its other sides; beside an open floating sidebar, the pane's own margin is the gap. */
   .docs-layout {
-    display: grid;
-    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
-    height: 100dvh;
-    gap: var(--gap-panels);
-    padding: var(--page-gutter);
-  }
-  .docs-sidebar {
-    min-height: 0;
+    --gallery-shell-gutter: var(--gap-panels);
     display: flex;
-    flex-direction: column;
+    height: 100dvh;
     gap: 0;
-    overflow: hidden;
+    padding: 0;
+  }
+  .docs-main {
+    flex: 1 1 0;
+    padding: var(--gallery-shell-gutter);
+    padding-top: max(var(--gallery-shell-gutter), var(--safe-top));
+  }
+  .docs-sidebar[data-state="expanded"]:not([data-mobile]) ~ .docs-main {
+    padding-inline-start: 0;
+  }
+  .docs-header > .docs-sidebar-trigger {
+    margin-inline-end: auto;
   }
   .docs-content {
     position: relative;
@@ -129,35 +129,10 @@
     display: none;
   }
   .docs-directory {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    min-height: 0;
-    flex: 1;
-  }
-  .docs-directory-scroll {
-    display: flex;
-    flex-direction: column;
     gap: var(--space-3);
-    overflow-y: auto;
-    min-height: 0;
-    flex: 1;
   }
-  .docs-directory[hidden] {
-    display: none;
-  }
-  .docs-nav {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-  .docs-filtered-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-  .docs-filtered-group > .type-overline {
-    padding-inline: var(--space-2-5);
+  .docs-directory-empty {
+    padding-inline: var(--space-2);
   }
   .docs-toolbar {
     display: flex;
@@ -172,7 +147,7 @@
   }
   /* The interface language sits under the sidebar's links, across its width. */
   .docs-language {
-    padding: var(--space-1) var(--space-2) var(--space-2);
+    padding-block-start: var(--space-1);
   }
   .docs-language-select {
     width: 100%;
@@ -215,19 +190,6 @@
     min-width: 2.75rem;
     min-height: 2.75rem;
   }
-  .docs-navigation-dialog {
-    height: min(46rem, 100%);
-  }
-  .docs-navigation-dialog .docs-directory-scroll {
-    overflow: visible;
-    flex: none;
-  }
-  .docs-navigation-dialog
-    :is(.fa-shell-drawer-item, .fa-shell-drawer-group-trigger) {
-    display: flex;
-    align-items: center;
-    min-height: max(2.75rem, var(--control-h-md));
-  }
   .docs-mobile-dialog .fa-dialog-body:last-child {
     padding-block-end: max(
       var(--inset-dialog),
@@ -237,17 +199,14 @@
   @media (width < 48rem) {
     .docs-layout {
       --gallery-shell-gutter: var(--space-2);
-      grid-template-columns: 1fr;
-      grid-template-rows: auto minmax(0, 1fr);
-    }
-    .docs-layout {
-      gap: 0;
+      flex-direction: column;
       padding: max(var(--space-2), var(--safe-top))
         max(var(--space-2), var(--safe-right)) var(--space-2)
         max(var(--space-2), var(--safe-left));
     }
     .docs-main {
       gap: 0;
+      padding: 0;
     }
     .docs-mobile-header {
       display: flex;
@@ -312,6 +271,9 @@
   .docs-layout {
     display: block;
     height: auto;
+    padding: 0;
+  }
+  .docs-main {
     padding: 0;
   }
   .docs-content {

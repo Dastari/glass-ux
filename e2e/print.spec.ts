@@ -26,17 +26,12 @@ test("a dark page prints light: white materials with a hairline, dark text, no b
   const panel = page.locator(".glass-panel").first();
   const before = await panel.evaluate((el) => getComputedStyle(el, "::before").backgroundColor);
   await page.emulateMedia({ media: "print" });
-  const printed = await panel.evaluate((el) => {
-    const cs = getComputedStyle(el);
-    const before = getComputedStyle(el, "::before");
-    return { display: cs.display, border: cs.borderTopWidth, shadow: cs.boxShadow, beforeFill: before.backgroundColor, beforeBlur: before.backdropFilter, blur: cs.backdropFilter };
-  });
   // The docs sidebar is shell chrome: it is left out.
-  expect(printed.display).toBe("none");
+  expect(await page.locator(".docs-sidebar").evaluate((el) => getComputedStyle(el).display)).toBe("none");
   // A material that stays: the code well and every glass panel in the document.
   const glass = await page.evaluate(() =>
     [...document.querySelectorAll(".glass-panel, .glass-card, .glass-overlay, .glass-chrome")]
-      .filter((el) => getComputedStyle(el).display !== "none")
+      .filter((el) => el.checkVisibility())
       .map((el) => ({ fill: getComputedStyle(el).backgroundColor, shadow: getComputedStyle(el).boxShadow, blur: getComputedStyle(el).backdropFilter })),
   );
   for (const material of glass) {

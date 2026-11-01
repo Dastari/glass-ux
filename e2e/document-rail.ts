@@ -10,14 +10,22 @@ export function documentRail(page: Page) {
 
 const moreTabs = /^More tabs/;
 
-/** Follow a section link, opening the strip's More menu when the section has moved into it. */
+/**
+ * Follow a section link, opening the strip's More menu when the section has moved into it.
+ * The strip measures again as fonts settle, so a link can move between the two while this
+ * runs: try again from the start until one click lands.
+ */
 export async function openSection(page: Page, name: string) {
   const rail = documentRail(page);
   await expect(rail.getByRole("link").first()).toBeVisible();
-  const link = rail.getByRole("link", { name, exact: true });
-  if (await link.count()) return link.click();
-  await rail.getByRole("button", { name: moreTabs }).click();
-  await page.getByRole("menuitem", { name, exact: true }).click();
+  await expect(async () => {
+    const menu = page.getByRole("menu", { name: moreTabs });
+    if (await menu.isVisible()) await page.keyboard.press("Escape");
+    const link = rail.getByRole("link", { name, exact: true });
+    if (await link.count()) return link.click({ timeout: 2_000 });
+    await rail.getByRole("button", { name: moreTabs }).click({ timeout: 2_000 });
+    await page.getByRole("menuitem", { name, exact: true }).click({ timeout: 2_000 });
+  }).toPass({ timeout: 20_000 });
 }
 
 /** Every section the rail offers, in the strip or its More menu. */

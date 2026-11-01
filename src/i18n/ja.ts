@@ -1726,6 +1726,8 @@ export default defineMessagePack("ja", {
     picker: "カラーピッカー",
     area: "明度と彩度",
     areaValue: (lightness, chroma) => `明度${lightness}%、彩度${chroma}`,
+    areaHsv: "彩度と明度",
+    areaValueHsv: (saturation, brightness) => `彩度${saturation}%、明度${brightness}%`,
     hue: "色相",
     alpha: "不透明度",
     hex: "16進カラー",

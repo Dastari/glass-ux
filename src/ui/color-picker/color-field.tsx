@@ -51,6 +51,7 @@ export function ColorField({
   onValueCommit,
   clearable = false,
   alpha = false,
+  plane,
   swatches,
   eyeDropper,
   disabled,
@@ -137,6 +138,7 @@ export function ColorField({
           value={value ?? undefined}
           defaultValue={value ?? undefined}
           alpha={alpha}
+          plane={plane}
           swatches={swatches}
           eyeDropper={eyeDropper}
           disabled={disabled}

@@ -123,6 +123,67 @@ export function hueGradient(direction = "to right"): string {
   return `linear-gradient(${direction}, ${stops.join(", ")})`
 }
 
+/** A colour as hue (0–360°), saturation and value (0–1), the plane many editors and design tools show. */
+export interface Hsv {
+  h: number
+  s: number
+  v: number
+}
+
+/** sRGB bytes to HSV. A grey has no hue, so `fallbackHue` (the hue it had before) is kept. */
+export function rgbToHsv([r, g, b]: [number, number, number], fallbackHue = 0): Hsv {
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  const delta = max - min
+  let h = fallbackHue
+  if (delta > 0) {
+    if (max === r) h = ((g - b) / delta) % 6
+    else if (max === g) h = (b - r) / delta + 2
+    else h = (r - g) / delta + 4
+    h = (h * 60 + 360) % 360
+  }
+  return { h, s: max === 0 ? 0 : delta / max, v: max / 255 }
+}
+
+/** HSV to sRGB bytes. */
+export function hsvToRgb({ h, s, v }: Hsv): [number, number, number] {
+  const f = (n: number) => {
+    const k = (n + h / 60) % 6
+    return byte(v - v * s * Math.max(0, Math.min(k, 4 - k, 1)))
+  }
+  return [f(5), f(3), f(1)]
+}
+
+/** `#rrggbb` of an HSV colour. */
+export function hsvToHex(hsv: Hsv): string {
+  return `#${hsvToRgb(hsv).map(pair).join("")}`
+}
+
+/** A hue gradient for an HSV hue track: the rainbow at full saturation and value. */
+export function hsvHueGradient(direction = "to right"): string {
+  const stops = Array.from({ length: 13 }, (_, i) => `hsl(${i * 30} 100% 50%)`)
+  return `linear-gradient(${direction}, ${stops.join(", ")})`
+}
+
+/** Paint the HSV plane into a canvas: saturation across, value up the side, at `hue`. */
+export function paintHsvArea(canvas: HTMLCanvasElement, hue: number): void {
+  const context = canvas.getContext("2d")
+  if (!context) return
+  const { width, height } = canvas
+  const image = context.createImageData(width, height)
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const [r, g, b] = hsvToRgb({ h: hue, s: x / (width - 1), v: 1 - y / (height - 1) })
+      const i = (y * width + x) * 4
+      image.data[i] = r
+      image.data[i + 1] = g
+      image.data[i + 2] = b
+      image.data[i + 3] = 255
+    }
+  }
+  context.putImageData(image, 0, 0)
+}
+
 /** How strongly colours outside sRGB are drawn (0–255): enough to show the gamut's shape. */
 const OUTSIDE = 40
 

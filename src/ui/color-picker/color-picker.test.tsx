@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { DirectionProvider } from "../../lib/locale/direction.js"
 import { ColorField, ColorPicker } from "./index.js"
-import { clampToGamut, formatHex, inGamut, maxChroma, parseHex } from "./color.js"
+import { clampToGamut, formatHex, hsvToHex, inGamut, maxChroma, parseHex, rgbToHsv, toRgb } from "./color.js"
 
 beforeAll(() => {
   // jsdom has no canvas; the area paints nothing there.
@@ -114,5 +114,45 @@ describe("right-to-left layouts", () => {
     const hex = screen.getByRole("textbox", { name: "Hex colour" }) as HTMLInputElement
     expect(hex.value).toBe("#e8875a")
     expect(hex.getAttribute("dir")).toBe("ltr")
+  })
+})
+
+describe("HSV plane", () => {
+  it("round-trips HSV through RGB", () => {
+    for (const hex of ["#000000", "#ffffff", "#808080", "#1f6feb", "#e8710a", "#ff0000", "#00ff00", "#0000ff"]) {
+      const parsed = parseHex(hex)!
+      const [r, g, b] = toRgb(parsed)
+      expect(hsvToHex(rgbToHsv([r, g, b]))).toBe(formatHex(parsed))
+    }
+    expect(rgbToHsv([0, 255, 0])).toEqual({ h: 120, s: 1, v: 1 })
+    expect(rgbToHsv([128, 128, 128], 200).h).toBe(200)
+  })
+
+  it("moves saturation and value with the keyboard and keeps the hue", () => {
+    const change = vi.fn()
+    const commit = vi.fn()
+    render(<ColorPicker plane="hsv" defaultValue="#ff0000" onValueChange={change} onValueCommit={commit} />)
+    const area = screen.getByRole("slider", { name: "Saturation and value" })
+    expect(area.getAttribute("aria-valuetext")).toBe("Saturation 100%, value 100%")
+    fireEvent.keyDown(area, { key: "ArrowDown", shiftKey: true })
+    expect(change).toHaveBeenLastCalledWith("#e60000")
+    fireEvent.keyDown(area, { key: "Home" })
+    expect(change).toHaveBeenLastCalledWith("#e6e6e6")
+    expect(area.getAttribute("aria-valuetext")).toBe("Saturation 0%, value 90%")
+    // The hue slider keeps the red it had, though the colour is grey (e2e/color-picker-plane.spec.ts checks it: the thumb mounts once measured).
+    expect(commit).toHaveBeenCalled()
+  })
+
+  it("follows a controlled value from outside and keeps the OKLCH plane by default", () => {
+    const { rerender } = render(<ColorPicker plane="hsv" value="#00ff00" />)
+    const area = screen.getByRole("slider", { name: "Saturation and value" })
+    expect(area.getAttribute("aria-valuetext")).toBe("Saturation 100%, value 100%")
+    rerender(<ColorPicker value="#00ff00" />)
+    expect(screen.getByRole("slider", { name: "Lightness and chroma" })).toBeTruthy()
+  })
+
+  it("is compact with size sm", () => {
+    const { container } = render(<ColorPicker size="sm" />)
+    expect(container.querySelector(".fa-color-picker")!.getAttribute("data-size")).toBe("sm")
   })
 })

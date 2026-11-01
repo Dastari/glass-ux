@@ -1726,6 +1726,8 @@ export default defineMessagePack("es", {
     picker: "Selector de color",
     area: "Luminosidad y croma",
     areaValue: (lightness, chroma) => `Luminosidad ${lightness} %, croma ${chroma}`,
+    areaHsv: "Saturación y valor",
+    areaValueHsv: (saturation, brightness) => `Saturación ${saturation} %, valor ${brightness} %`,
     hue: "Tono",
     alpha: "Opacidad",
     hex: "Color hexadecimal",

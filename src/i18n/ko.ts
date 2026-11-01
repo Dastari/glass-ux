@@ -1726,6 +1726,8 @@ export default defineMessagePack("ko", {
     picker: "색상 선택기",
     area: "명도 및 채도",
     areaValue: (lightness, chroma) => `명도 ${lightness}%, 채도 ${chroma}`,
+    areaHsv: "채도 및 명도",
+    areaValueHsv: (saturation, brightness) => `채도 ${saturation}%, 명도 ${brightness}%`,
     hue: "색조",
     alpha: "불투명도",
     hex: "16진수 색상",

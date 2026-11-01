@@ -5,6 +5,8 @@ export const colorPickerMessages = defineMessages("colorPicker", {
   picker: "Colour picker",
   area: "Lightness and chroma",
   areaValue: (lightness: number, chroma: number) => `Lightness ${lightness}%, chroma ${chroma}`,
+  areaHsv: "Saturation and value",
+  areaValueHsv: (saturation: number, brightness: number) => `Saturation ${saturation}%, value ${brightness}%`,
   hue: "Hue",
   alpha: "Opacity",
   hex: "Hex colour",

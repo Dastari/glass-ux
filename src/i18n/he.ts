@@ -1726,6 +1726,8 @@ export default defineMessagePack("he", {
     picker: "בוחר צבעים",
     area: "בהירות וכרומה",
     areaValue: (lightness, chroma) => `בהירות ${lightness}%, כרומה ${chroma}`,
+    areaHsv: "רוויה וערך",
+    areaValueHsv: (saturation, brightness) => `רוויה ${saturation}%, ערך ${brightness}%`,
     hue: "גוון",
     alpha: "אטימות",
     hex: "צבע הקסדצימלי",

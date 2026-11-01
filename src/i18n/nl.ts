@@ -1726,6 +1726,8 @@ export default defineMessagePack("nl", {
     picker: "Kleurkiezer",
     area: "Lichtheid en chroma",
     areaValue: (lightness, chroma) => `Lichtheid ${lightness}%, chroma ${chroma}`,
+    areaHsv: "Verzadiging en waarde",
+    areaValueHsv: (saturation, brightness) => `Verzadiging ${saturation}%, waarde ${brightness}%`,
     hue: "Tint",
     alpha: "Dekking",
     hex: "Hexkleur",

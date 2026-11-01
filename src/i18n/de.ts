@@ -1726,6 +1726,8 @@ export default defineMessagePack("de", {
     picker: "Farbauswahl",
     area: "Helligkeit und Buntheit",
     areaValue: (lightness, chroma) => `Helligkeit ${lightness} %, Buntheit ${chroma}`,
+    areaHsv: "Sättigung und Hellwert",
+    areaValueHsv: (saturation, brightness) => `Sättigung ${saturation} %, Hellwert ${brightness} %`,
     hue: "Farbton",
     alpha: "Deckkraft",
     hex: "Hex-Farbe",

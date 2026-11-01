@@ -42,8 +42,17 @@ has upgrade steps in the [migration guide](docs/migration.md).
   `toolbar.relatedTools` in every language pack. Menu popups take an `anchor`, so a control that is not
   the menu's trigger can position one.
 
+- ColorPicker: `size="sm"`, a compact picker for tool panels (shorter plane, thinner tracks, smaller beads;
+  hit areas stay 24px), and `plane="hsv"`, an optional saturation by value plane with its own HSV hue, beside
+  the default OKLCH plane. The value stays hex. `plane` also reaches the picker inside ColorField. New
+  messages `colorPicker.areaHsv` and `areaValueHsv` in every language pack (the Arabic wording needs a
+  native-speaker check).
+
 ### Fixed
 
+- ColorPicker: the hue and opacity beads no longer hang past the picker's edge at the ends of their tracks
+  (they sat half a bead outside, which widened a scroll area around the picker), and a picker in a narrow box
+  squeezes its hex row instead of growing wider than the box.
 - ColorField and ColorPicker: the hex input and the swatch tooltips read left to right in right-to-left
   layouts, so `#e8875a` no longer shows as `e8875a#`.
 

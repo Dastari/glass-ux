@@ -6,8 +6,9 @@ moves to the nearest colour that can be shown), a hue slider, an optional opacit
 hex field, preset swatches and the browser's eyedropper where available. Values are hex.
 
 Keyboard: in the area, ↑ ↓ change lightness and ← → chroma (Shift for larger steps, Page
-Up/Down for lightness by 10%, Home/End for no chroma and the most). The sliders follow the
-slider pattern.
+Up/Down for lightness by 10%, Home/End for no chroma and the most); with `plane="hsv"` they
+change value and saturation likewise. The sliders follow the slider pattern. The planes
+run left to right in every language, like a chart.
 
 `import { ColorPicker } from "glass-ux/color-picker"`
 
@@ -25,9 +26,11 @@ slider pattern.
 | disabled | `boolean \| undefined` | false, true | no | false | Disables interaction while retaining the component’s disabled appearance. |
 | eyeDropper | `boolean \| undefined` | false, true | no | true | Offer the browser's eyedropper where it has one (`window.EyeDropper`). Default true. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
-| labels | `Partial<{ picker: string; area: string; areaValue: (lightness: number, chroma: number) => string; hue: string; alpha: string; hex: string; eyeDropper: string; swatches: string; open: string; none: string; clear: string; }> \| undefined` | See type | no | — | Wording overrides for this picker. |
+| labels | `Partial<{ picker: string; area: string; areaValue: (lightness: number, chroma: number) => string; areaHsv: string; areaValueHsv: (saturation: number, brightness: number) => string; hue: string; alpha: string; hex: string; eyeDropper: string; swatches: string; open: string; none: string; clear: string; }> \| undefined` | See type | no | — | Wording overrides for this picker. |
 | locale | `string \| undefined` | See type | no | — | Formatting and wording locale; defaults to the nearest LocaleProvider. |
 | onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the new hex colour on every change, while dragging too. |
 | onValueCommit | `((value: string) => void) \| undefined` | See type | no | — | Called with the hex colour when a change is finished: the pointer is released, a key is pressed, a swatch is chosen or the hex field commits. |
+| plane | `"oklch" \| "hsv" \| undefined` | "oklch", "hsv" | no | "oklch" | The plane under the hue slider. `oklch` (default) is lightness by chroma at the OKLCH hue, the space the library's palettes use; `hsv` is saturation by value at the HSV hue, the plane most design tools show. Either way the value is hex and the hue slider follows the plane. |
+| size | `"sm" \| "md" \| undefined` | "sm", "md" | no | "md" | `md` (default) or `sm`, a compact picker with a shorter plane and tighter spacing for tool panels. |
 | swatches | `ColorSwatch[] \| undefined` | See type | no | — | Preset colours shown under the controls. |
 | value | `string \| undefined` | See type | no | — | The colour as hex (`#rrggbb`, or `#rrggbbaa` with `alpha`). Pair with `onValueChange` to control it. |

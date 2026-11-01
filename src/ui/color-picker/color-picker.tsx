@@ -18,7 +18,23 @@ import { DirectionProvider } from "../../lib/locale/direction.js"
 import { Button } from "../button/index.js"
 import { Input } from "../input/index.js"
 import { Tooltip } from "../tooltip/index.js"
-import { clampToGamut, cssColor, formatHex, hueGradient, maxChroma, paintArea, parseHex, peakChroma, type Oklch } from "./color.js"
+import {
+  clampToGamut,
+  cssColor,
+  formatHex,
+  hsvHueGradient,
+  hsvToHex,
+  hueGradient,
+  maxChroma,
+  paintArea,
+  paintHsvArea,
+  parseHex,
+  peakChroma,
+  rgbToHsv,
+  toRgb,
+  type Hsv,
+  type Oklch,
+} from "./color.js"
 import { colorPickerMessages } from "./messages.js"
 
 /** A preset colour: a hex value, or a hex value with a name for its tooltip and accessible name. */
@@ -36,6 +52,12 @@ export interface ColorPickerBaseProps {
   onValueCommit?: (value: string) => void
   /** Offer an opacity slider and keep alpha in the value (`#rrggbbaa`). Default false. */
   alpha?: boolean
+  /**
+   * The plane under the hue slider. `oklch` (default) is lightness by chroma at the OKLCH hue,
+   * the space the library's palettes use; `hsv` is saturation by value at the HSV hue, the plane
+   * most design tools show. Either way the value is hex and the hue slider follows the plane.
+   */
+  plane?: "oklch" | "hsv"
   /** Preset colours shown under the controls. */
   swatches?: ColorSwatch[]
   /** Offer the browser's eyedropper where it has one (`window.EyeDropper`). Default true. */
@@ -48,6 +70,8 @@ export interface ColorPickerBaseProps {
 }
 
 export interface ColorPickerProps extends ColorPickerBaseProps {
+  /** `md` (default) or `sm`, a compact picker with a shorter plane and tighter spacing for tool panels. */
+  size?: "sm" | "md"
   /** Layout only. */
   className?: string
   id?: string
@@ -85,8 +109,9 @@ const swatchLabel = (swatch: ColorSwatch) => (typeof swatch === "string" ? swatc
  * hex field, preset swatches and the browser's eyedropper where available. Values are hex.
  *
  * Keyboard: in the area, ↑ ↓ change lightness and ← → chroma (Shift for larger steps, Page
- * Up/Down for lightness by 10%, Home/End for no chroma and the most). The sliders follow the
- * slider pattern.
+ * Up/Down for lightness by 10%, Home/End for no chroma and the most); with `plane="hsv"` they
+ * change value and saturation likewise. The sliders follow the slider pattern. The planes
+ * run left to right in every language, like a chart.
  */
 export function ColorPicker({
   value,
@@ -94,6 +119,8 @@ export function ColorPicker({
   onValueChange,
   onValueCommit,
   alpha = false,
+  plane = "oklch",
+  size = "md",
   swatches,
   eyeDropper = true,
   disabled = false,
@@ -131,6 +158,15 @@ export function ColorPicker({
   )
   const commit = () => onValueCommit?.(formatHex(latest.current, alpha))
 
+  // The HSV plane keeps its own hue: a grey has none in the value, and the hue slider must not jump.
+  const [hsvState, setHsvState] = useState<Hsv>(() => rgbToHsv(toRgb(color)))
+  const hsv = hsvToHex(hsvState) === formatHex(color) ? hsvState : rgbToHsv(toRgb(color), hsvState.h)
+  const updateHsv = (next: Hsv, commit = false) => {
+    setHsvState(next)
+    const parsed = readColor(hsvToHex(next), latest.current.h)
+    if (parsed) update({ ...parsed, a: latest.current.a }, commit)
+  }
+
   const peak = useMemo(() => Math.max(0.01, peakChroma(color.h)), [color.h])
   const groupLabel = ariaLabelledBy ? undefined : (ariaLabel ?? t.picker)
 
@@ -141,20 +177,27 @@ export function ColorPicker({
       aria-label={groupLabel}
       aria-labelledby={ariaLabelledBy}
       className={cx("fa-color-picker", className)}
+      data-size={size === "md" ? undefined : size}
+      data-plane={plane === "hsv" ? "hsv" : undefined}
       data-disabled={disabled ? "" : undefined}
       style={{ "--_colour": cssColor({ ...color, a: 1 }), "--_colour-alpha": cssColor(color) } as CSSProperties}
     >
       {/* Lightness, chroma and hue are physical axes, as in a chart: left to right in any language. */}
       <DirectionProvider direction="ltr">
-      <ColorArea color={color} peak={peak} disabled={disabled} label={t.area} valueText={t.areaValue} onChange={update} onCommit={commit} />
+      {plane === "hsv" ? (
+        <HsvArea hsv={hsv} disabled={disabled} label={t.areaHsv} valueText={t.areaValueHsv} onChange={updateHsv} onCommit={commit} />
+      ) : (
+        <ColorArea color={color} peak={peak} disabled={disabled} label={t.area} valueText={t.areaValue} onChange={update} onCommit={commit} />
+      )}
       <div className="fa-color-sliders" dir="ltr">
         <ColorSlider
           label={t.hue}
-          value={Math.round(color.h)}
+          value={Math.round(plane === "hsv" ? hsv.h : color.h)}
           max={360}
-          track={hueGradient()}
+          track={plane === "hsv" ? hsvHueGradient() : hueGradient()}
+          hsv={plane === "hsv"}
           disabled={disabled}
-          onChange={(h) => update({ ...latest.current, h })}
+          onChange={(h) => (plane === "hsv" ? updateHsv({ ...hsv, h }) : update({ ...latest.current, h }))}
           onCommit={commit}
         />
         {alpha ? (
@@ -210,7 +253,100 @@ export function ColorPicker({
   )
 }
 
-/** The lightness × chroma area with its thumb (a 2D slider). */
+/**
+ * A two-axis picking plane: a painted canvas, a pointer that reports where it is as fractions
+ * (left to right, top to bottom) and a thumb that is a 2D slider for assistive technology. The
+ * axes are physical, as in a chart: left to right in any language.
+ */
+function AreaFrame({
+  x,
+  y,
+  label,
+  now,
+  valueText,
+  disabled,
+  paint,
+  paintKey,
+  onPoint,
+  onKeyDown,
+  onCommit,
+}: {
+  /** Thumb position as fractions of the plane's width and height from the top left. */
+  x: number
+  y: number
+  label: string
+  /** The slider's `aria-valuenow`, a percentage. */
+  now: number
+  valueText: string
+  disabled: boolean
+  paint: (canvas: HTMLCanvasElement) => void
+  /** Repaint when this changes. */
+  paintKey: string
+  onPoint: (x: number, y: number) => void
+  onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void
+  onCommit: () => void
+}) {
+  const canvas = useRef<HTMLCanvasElement>(null)
+  const box = useRef<HTMLDivElement>(null)
+  const dragging = useRef(false)
+
+  // Repaint when the plane's own parameter changes; the thumb's moves never repaint.
+  useLayoutEffect(() => {
+    if (canvas.current) paint(canvas.current)
+  }, [paintKey]) // `paintKey` names everything `paint` reads
+
+  const fromPointer = (event: PointerEvent<HTMLElement>) => {
+    const rect = box.current!.getBoundingClientRect()
+    onPoint(
+      Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)),
+      Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height)),
+    )
+  }
+
+  return (
+    <div
+      ref={box}
+      dir="ltr"
+      className="fa-color-area"
+      data-disabled={disabled ? "" : undefined}
+      onPointerDown={(event) => {
+        if (disabled || event.button !== 0) return
+        event.currentTarget.setPointerCapture(event.pointerId)
+        dragging.current = true
+        fromPointer(event)
+        event.currentTarget.querySelector<HTMLElement>(".fa-color-area-thumb")?.focus({ preventScroll: true })
+      }}
+      onPointerMove={(event) => {
+        if (dragging.current) fromPointer(event)
+      }}
+      onPointerUp={() => {
+        if (!dragging.current) return
+        dragging.current = false
+        onCommit()
+      }}
+      onPointerCancel={() => {
+        dragging.current = false
+      }}
+    >
+      <canvas ref={canvas} className="fa-color-area-canvas" width={256} height={160} aria-hidden />
+      <div
+        className="fa-color-area-thumb"
+        role="slider"
+        tabIndex={disabled ? -1 : 0}
+        aria-label={label}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={now}
+        aria-valuetext={valueText}
+        aria-disabled={disabled || undefined}
+        onKeyDown={disabled ? undefined : onKeyDown}
+        style={{ "--_x": String(x), "--_y": String(y) } as CSSProperties}
+      />
+    </div>
+  )
+}
+
+/** The lightness × chroma plane at the OKLCH hue. */
 function ColorArea({
   color,
   peak,
@@ -228,23 +364,6 @@ function ColorArea({
   onChange: (next: Oklch) => void
   onCommit: () => void
 }) {
-  const canvas = useRef<HTMLCanvasElement>(null)
-  const box = useRef<HTMLDivElement>(null)
-  const dragging = useRef(false)
-
-  // Repaint when the hue changes; lightness and chroma only move the thumb.
-  useLayoutEffect(() => {
-    if (canvas.current) paintArea(canvas.current, color.h, peak)
-  }, [color.h, peak])
-
-  const fromPointer = (event: PointerEvent<HTMLElement>) => {
-    const rect = box.current!.getBoundingClientRect()
-    const x = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width))
-    const y = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height))
-    const l = 1 - y
-    onChange({ ...color, l, c: Math.min(x * peak, maxChroma(l, color.h)) })
-  }
-
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const big = event.shiftKey
     const lStep = big ? 0.1 : 0.01
@@ -287,45 +406,92 @@ function ColorArea({
 
   const lightness = Math.round(color.l * 100)
   return (
-    <div
-      ref={box}
-      dir="ltr"
-      className="fa-color-area"
-      data-disabled={disabled ? "" : undefined}
-      onPointerDown={(event) => {
-        if (disabled || event.button !== 0) return
-        event.currentTarget.setPointerCapture(event.pointerId)
-        dragging.current = true
-        fromPointer(event)
-        event.currentTarget.querySelector<HTMLElement>(".fa-color-area-thumb")?.focus({ preventScroll: true })
+    <AreaFrame
+      x={Math.min(1, color.c / peak)}
+      y={1 - color.l}
+      label={label}
+      now={lightness}
+      valueText={valueText(lightness, Number(color.c.toFixed(3)))}
+      disabled={disabled}
+      paint={(canvas) => paintArea(canvas, color.h, peak)}
+      paintKey={`${color.h}|${peak}`}
+      onPoint={(x, y) => {
+        const l = 1 - y
+        onChange({ ...color, l, c: Math.min(x * peak, maxChroma(l, color.h)) })
       }}
-      onPointerMove={(event) => {
-        if (dragging.current) fromPointer(event)
-      }}
-      onPointerUp={() => {
-        if (!dragging.current) return
-        dragging.current = false
-        onCommit()
-      }}
-      onPointerCancel={() => {
-        dragging.current = false
-      }}
-    >
-      <canvas ref={canvas} className="fa-color-area-canvas" width={256} height={160} aria-hidden />
-      <div
-        className="fa-color-area-thumb"
-        role="slider"
-        tabIndex={disabled ? -1 : 0}
-        aria-label={label}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={lightness}
-        aria-valuetext={valueText(lightness, Number(color.c.toFixed(3)))}
-        aria-disabled={disabled || undefined}
-        onKeyDown={disabled ? undefined : onKeyDown}
-        style={{ "--_x": String(Math.min(1, color.c / peak)), "--_y": String(1 - color.l) } as CSSProperties}
-      />
-    </div>
+      onKeyDown={onKeyDown}
+      onCommit={onCommit}
+    />
+  )
+}
+
+/** The saturation × value plane at the HSV hue. The same keys as the OKLCH plane: ↑ ↓ value, ← → saturation. */
+function HsvArea({
+  hsv,
+  disabled,
+  label,
+  valueText,
+  onChange,
+  onCommit,
+}: {
+  hsv: Hsv
+  disabled: boolean
+  label: string
+  valueText: (saturation: number, brightness: number) => string
+  onChange: (next: Hsv, commit?: boolean) => void
+  onCommit: () => void
+}) {
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const step = event.shiftKey ? 0.1 : 0.01
+    let { s, v } = hsv
+    switch (event.key) {
+      case "ArrowUp":
+        v += step
+        break
+      case "ArrowDown":
+        v -= step
+        break
+      case "PageUp":
+        v += 0.1
+        break
+      case "PageDown":
+        v -= 0.1
+        break
+      case "ArrowRight":
+        s += step
+        break
+      case "ArrowLeft":
+        s -= step
+        break
+      case "Home":
+        s = 0
+        break
+      case "End":
+        s = 1
+        break
+      default:
+        return
+    }
+    event.preventDefault()
+    onChange({ ...hsv, s: Math.min(1, Math.max(0, s)), v: Math.min(1, Math.max(0, v)) }, true)
+  }
+
+  const saturation = Math.round(hsv.s * 100)
+  const brightness = Math.round(hsv.v * 100)
+  return (
+    <AreaFrame
+      x={hsv.s}
+      y={1 - hsv.v}
+      label={label}
+      now={brightness}
+      valueText={valueText(saturation, brightness)}
+      disabled={disabled}
+      paint={(canvas) => paintHsvArea(canvas, hsv.h)}
+      paintKey={String(hsv.h)}
+      onPoint={(x, y) => onChange({ ...hsv, s: x, v: 1 - y })}
+      onKeyDown={onKeyDown}
+      onCommit={onCommit}
+    />
   )
 }
 
@@ -337,6 +503,7 @@ function ColorSlider({
   unit = "°",
   track,
   alpha = false,
+  hsv = false,
   disabled,
   onChange,
   onCommit,
@@ -347,6 +514,8 @@ function ColorSlider({
   unit?: string
   track: string
   alpha?: boolean
+  /** The hue is an HSV hue: its thumb shows the rainbow's colour instead of the OKLCH one. */
+  hsv?: boolean
   disabled: boolean
   onChange: (value: number) => void
   onCommit: () => void
@@ -355,12 +524,14 @@ function ColorSlider({
     <BaseSlider.Root
       className="fa-color-slider"
       data-alpha={alpha ? "" : undefined}
+      data-hsv={hsv ? "" : undefined}
       value={value}
       min={0}
       max={max}
       step={1}
       largeStep={10}
       disabled={disabled}
+      thumbAlignment="edge"
       onValueChange={(next) => onChange(next as number)}
       onValueCommitted={onCommit}
       style={{ "--_track": track, "--_f": String(value / max) } as CSSProperties}

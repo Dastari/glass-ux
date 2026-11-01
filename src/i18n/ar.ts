@@ -2115,6 +2115,30 @@ export default defineMessagePack("ar", {
     mostStops: (count) => `يتسع التدرج لما يصل إلى ${count} نقاط`,
     fewestStops: "يحتاج التدرج إلى نقطتين",
   },
+  rating: {
+    label: "التقييم",
+    valueText: ({ value, total, locale = "ar" }) =>
+      plural(locale, total, { one: `${value} من نجمة واحدة`, other: `${value} من ${numberFormat(locale).format(total)} نجمة`, two: `${value} من نجمتين`, zero: `${value} من ${numberFormat(locale).format(total)} نجمة`, few: `${value} من ${numberFormat(locale).format(total)} نجوم`, many: `${value} من ${numberFormat(locale).format(total)} نجمة` }),
+    unrated: "غير مقيَّم",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "اختر تقييمًا",
+  },
+  carousel: {
+    label: "شريط الصور المتحرك",
+    roleCarousel: "شريط متحرك",
+    roleSlide: "شريحة",
+    slide: ({ index, total, locale = "ar" }) => `${numberFormat(locale).format(index)} من ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "ar" }) =>
+      name ? `الشريحة ${numberFormat(locale).format(index)} من ${numberFormat(locale).format(total)}: ${name}` : `الشريحة ${numberFormat(locale).format(index)} من ${numberFormat(locale).format(total)}`,
+    previous: "الشريحة السابقة",
+    next: "الشريحة التالية",
+    slides: "الشرائح",
+    goTo: ({ index, total, locale = "ar" }) => `الانتقال إلى الشريحة ${numberFormat(locale).format(index)} من ${numberFormat(locale).format(total)}`,
+    firstSlide: "هذه هي الشريحة الأولى",
+    lastSlide: "هذه هي الشريحة الأخيرة",
+    pause: "إيقاف التقدم التلقائي مؤقتًا",
+    play: "بدء التقدم التلقائي",
+  },
   lightbox: {
     previous: "الصورة السابقة",
     next: "الصورة التالية",

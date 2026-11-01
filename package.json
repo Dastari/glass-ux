@@ -194,6 +194,10 @@
       "types": "./dist/ui/tree-select/index.d.ts",
       "import": "./dist/ui/tree-select/index.js"
     },
+    "./carousel": {
+      "types": "./dist/ui/carousel/index.d.ts",
+      "import": "./dist/ui/carousel/index.js"
+    },
     "./cascader": {
       "types": "./dist/ui/cascader/index.d.ts",
       "import": "./dist/ui/cascader/index.js"
@@ -382,9 +386,17 @@
       "types": "./dist/ui/duration-field/index.d.ts",
       "import": "./dist/ui/duration-field/index.js"
     },
+    "./masonry": {
+      "types": "./dist/ui/masonry/index.d.ts",
+      "import": "./dist/ui/masonry/index.js"
+    },
     "./radio": {
       "types": "./dist/ui/radio/index.d.ts",
       "import": "./dist/ui/radio/index.js"
+    },
+    "./rating": {
+      "types": "./dist/ui/rating/index.d.ts",
+      "import": "./dist/ui/rating/index.js"
     },
     "./surface": {
       "types": "./dist/ui/surface/index.d.ts",

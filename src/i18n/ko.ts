@@ -2114,6 +2114,30 @@ export default defineMessagePack("ko", {
     mostStops: (count) => `그라디언트에는 정지점을 최대 ${count}개까지 넣을 수 있습니다`,
     fewestStops: "그라디언트에는 정지점이 두 개 필요합니다",
   },
+  rating: {
+    label: "평점",
+    valueText: ({ value, total, locale = "ko" }) =>
+      plural(locale, total, { one: `별 ${numberFormat(locale).format(total)}개 중 ${value}개`, other: `별 ${numberFormat(locale).format(total)}개 중 ${value}개` }),
+    unrated: "평점 없음",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "평점을 선택하세요",
+  },
+  carousel: {
+    label: "캐러셀",
+    roleCarousel: "캐러셀",
+    roleSlide: "슬라이드",
+    slide: ({ index, total, locale = "ko" }) => `${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "ko" }) =>
+      name ? `슬라이드 ${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}: ${name}` : `슬라이드 ${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}`,
+    previous: "이전 슬라이드",
+    next: "다음 슬라이드",
+    slides: "슬라이드",
+    goTo: ({ index, total, locale = "ko" }) => `슬라이드 ${numberFormat(locale).format(index)} / ${numberFormat(locale).format(total)}(으)로 이동`,
+    firstSlide: "첫 번째 슬라이드입니다",
+    lastSlide: "마지막 슬라이드입니다",
+    pause: "자동 넘김 일시 중지",
+    play: "자동 넘김 시작",
+  },
   lightbox: {
     previous: "이전 이미지",
     next: "다음 이미지",

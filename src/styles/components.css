@@ -18,6 +18,7 @@
 @import "../ui/breadcrumb/breadcrumb.css";
 @import "../ui/button-link/button-link.css";
 @import "../ui/button/button.css";
+@import "../ui/carousel/carousel.css";
 @import "../ui/cascader/cascader.css";
 @import "../ui/charts/core/frame.css";
 @import "../ui/charts/core/legend.css";
@@ -73,6 +74,7 @@
 @import "../ui/login-flow/login-flow.css";
 @import "../ui/map/map.css";
 @import "../ui/map/pin-map.css";
+@import "../ui/masonry/masonry.css";
 @import "../ui/media-player/media-player.css";
 @import "../ui/menu/menu.css";
 @import "../ui/menubar/menubar.css";
@@ -95,6 +97,7 @@
 @import "../ui/port-field/port-field.css";
 @import "../ui/progress/progress.css";
 @import "../ui/radio/radio.css";
+@import "../ui/rating/rating.css";
 @import "../ui/reference-input/reference-input.css";
 @import "../ui/relationship-canvas/relationship-canvas.css";
 @import "../ui/rich-text/rich-text.css";

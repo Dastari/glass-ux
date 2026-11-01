@@ -2114,6 +2114,30 @@ export default defineMessagePack("es", {
     mostStops: (count) => `Un degradado admite hasta ${count} paradas`,
     fewestStops: "Un degradado necesita dos paradas",
   },
+  rating: {
+    label: "Valoración",
+    valueText: ({ value, total, locale = "es" }) =>
+      plural(locale, total, { one: `${value} de ${numberFormat(locale).format(total)} estrella`, other: `${value} de ${numberFormat(locale).format(total)} estrellas` }),
+    unrated: "Sin valorar",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Elige una valoración",
+  },
+  carousel: {
+    label: "Carrusel",
+    roleCarousel: "carrusel",
+    roleSlide: "diapositiva",
+    slide: ({ index, total, locale = "es" }) => `${numberFormat(locale).format(index)} de ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "es" }) =>
+      name ? `Diapositiva ${numberFormat(locale).format(index)} de ${numberFormat(locale).format(total)}: ${name}` : `Diapositiva ${numberFormat(locale).format(index)} de ${numberFormat(locale).format(total)}`,
+    previous: "Diapositiva anterior",
+    next: "Diapositiva siguiente",
+    slides: "Diapositivas",
+    goTo: ({ index, total, locale = "es" }) => `Ir a la diapositiva ${numberFormat(locale).format(index)} de ${numberFormat(locale).format(total)}`,
+    firstSlide: "Esta es la primera diapositiva",
+    lastSlide: "Esta es la última diapositiva",
+    pause: "Pausar el avance automático",
+    play: "Iniciar el avance automático",
+  },
   lightbox: {
     previous: "Imagen anterior",
     next: "Imagen siguiente",

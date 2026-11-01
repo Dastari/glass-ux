@@ -2114,6 +2114,30 @@ export default defineMessagePack("nl", {
     mostStops: (count) => `Een verloop heeft maximaal ${count} stops`,
     fewestStops: "Een verloop heeft twee stops nodig",
   },
+  rating: {
+    label: "Beoordeling",
+    valueText: ({ value, total, locale = "nl" }) =>
+      plural(locale, total, { one: `${value} van ${numberFormat(locale).format(total)} ster`, other: `${value} van ${numberFormat(locale).format(total)} sterren` }),
+    unrated: "Niet beoordeeld",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Kies een beoordeling",
+  },
+  carousel: {
+    label: "Carrousel",
+    roleCarousel: "carrousel",
+    roleSlide: "dia",
+    slide: ({ index, total, locale = "nl" }) => `${numberFormat(locale).format(index)} van ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "nl" }) =>
+      name ? `Dia ${numberFormat(locale).format(index)} van ${numberFormat(locale).format(total)}: ${name}` : `Dia ${numberFormat(locale).format(index)} van ${numberFormat(locale).format(total)}`,
+    previous: "Vorige dia",
+    next: "Volgende dia",
+    slides: "Dia's",
+    goTo: ({ index, total, locale = "nl" }) => `Ga naar dia ${numberFormat(locale).format(index)} van ${numberFormat(locale).format(total)}`,
+    firstSlide: "Dit is de eerste dia",
+    lastSlide: "Dit is de laatste dia",
+    pause: "Automatisch doorgaan onderbreken",
+    play: "Automatisch doorgaan starten",
+  },
   lightbox: {
     previous: "Vorige afbeelding",
     next: "Volgende afbeelding",

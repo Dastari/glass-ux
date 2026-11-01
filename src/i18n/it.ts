@@ -2114,6 +2114,30 @@ export default defineMessagePack("it", {
     mostStops: (count) => `Una sfumatura può avere fino a ${count} punti`,
     fewestStops: "Una sfumatura richiede due punti",
   },
+  rating: {
+    label: "Valutazione",
+    valueText: ({ value, total, locale = "it" }) =>
+      plural(locale, total, { one: `${value} su ${numberFormat(locale).format(total)} stella`, other: `${value} su ${numberFormat(locale).format(total)} stelle` }),
+    unrated: "Non valutato",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Scegli una valutazione",
+  },
+  carousel: {
+    label: "Carosello",
+    roleCarousel: "carosello",
+    roleSlide: "diapositiva",
+    slide: ({ index, total, locale = "it" }) => `${numberFormat(locale).format(index)} di ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "it" }) =>
+      name ? `Diapositiva ${numberFormat(locale).format(index)} di ${numberFormat(locale).format(total)}: ${name}` : `Diapositiva ${numberFormat(locale).format(index)} di ${numberFormat(locale).format(total)}`,
+    previous: "Diapositiva precedente",
+    next: "Diapositiva successiva",
+    slides: "Diapositive",
+    goTo: ({ index, total, locale = "it" }) => `Vai alla diapositiva ${numberFormat(locale).format(index)} di ${numberFormat(locale).format(total)}`,
+    firstSlide: "Questa è la prima diapositiva",
+    lastSlide: "Questa è l'ultima diapositiva",
+    pause: "Sospendi l'avanzamento automatico",
+    play: "Avvia l'avanzamento automatico",
+  },
   lightbox: {
     previous: "Immagine precedente",
     next: "Immagine successiva",

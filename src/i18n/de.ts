@@ -2114,6 +2114,30 @@ export default defineMessagePack("de", {
     mostStops: (count) => `Ein Farbverlauf kann bis zu ${count} Stopps enthalten`,
     fewestStops: "Ein Farbverlauf braucht zwei Stopps",
   },
+  rating: {
+    label: "Bewertung",
+    valueText: ({ value, total, locale = "de" }) =>
+      plural(locale, total, { one: `${value} von ${numberFormat(locale).format(total)} Stern`, other: `${value} von ${numberFormat(locale).format(total)} Sternen` }),
+    unrated: "Nicht bewertet",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Wählen Sie eine Bewertung",
+  },
+  carousel: {
+    label: "Karussell",
+    roleCarousel: "Karussell",
+    roleSlide: "Folie",
+    slide: ({ index, total, locale = "de" }) => `${numberFormat(locale).format(index)} von ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "de" }) =>
+      name ? `Folie ${numberFormat(locale).format(index)} von ${numberFormat(locale).format(total)}: ${name}` : `Folie ${numberFormat(locale).format(index)} von ${numberFormat(locale).format(total)}`,
+    previous: "Vorherige Folie",
+    next: "Nächste Folie",
+    slides: "Folien",
+    goTo: ({ index, total, locale = "de" }) => `Zu Folie ${numberFormat(locale).format(index)} von ${numberFormat(locale).format(total)}`,
+    firstSlide: "Dies ist die erste Folie",
+    lastSlide: "Dies ist die letzte Folie",
+    pause: "Automatischen Wechsel anhalten",
+    play: "Automatischen Wechsel starten",
+  },
   lightbox: {
     previous: "Vorheriges Bild",
     next: "Nächstes Bild",

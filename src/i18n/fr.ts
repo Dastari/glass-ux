@@ -2114,6 +2114,30 @@ export default defineMessagePack("fr", {
     mostStops: (count) => `Un dégradé compte au plus ${count} arrêts`,
     fewestStops: "Un dégradé nécessite deux arrêts",
   },
+  rating: {
+    label: "Note",
+    valueText: ({ value, total, locale = "fr" }) =>
+      plural(locale, total, { one: `${value} sur ${numberFormat(locale).format(total)} étoile`, other: `${value} sur ${numberFormat(locale).format(total)} étoiles` }),
+    unrated: "Non noté",
+    display: ({ label, value }) => `${label}: ${value}`,
+    required: "Choisissez une note",
+  },
+  carousel: {
+    label: "Carrousel",
+    roleCarousel: "carrousel",
+    roleSlide: "diapositive",
+    slide: ({ index, total, locale = "fr" }) => `${numberFormat(locale).format(index)} sur ${numberFormat(locale).format(total)}`,
+    shown: ({ index, total, name, locale = "fr" }) =>
+      name ? `Diapositive ${numberFormat(locale).format(index)} sur ${numberFormat(locale).format(total)} : ${name}` : `Diapositive ${numberFormat(locale).format(index)} sur ${numberFormat(locale).format(total)}`,
+    previous: "Diapositive précédente",
+    next: "Diapositive suivante",
+    slides: "Diapositives",
+    goTo: ({ index, total, locale = "fr" }) => `Aller à la diapositive ${numberFormat(locale).format(index)} sur ${numberFormat(locale).format(total)}`,
+    firstSlide: "Ceci est la première diapositive",
+    lastSlide: "Ceci est la dernière diapositive",
+    pause: "Suspendre le défilement automatique",
+    play: "Démarrer le défilement automatique",
+  },
   lightbox: {
     previous: "Image précédente",
     next: "Image suivante",

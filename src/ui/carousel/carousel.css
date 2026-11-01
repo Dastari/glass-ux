@@ -1,0 +1,97 @@
+/*
+ * Carousel. The slides sit in one row of a scroll-snap strip: the browser does the swiping and the
+ * snapping, and script only follows where the strip comes to rest. Every slide is rendered at the
+ * strip's width and the row stretches them to the tallest, so the height is the same on every slide
+ * (or the --_ratio the host fixes), and the controls below never move. A slide that is not shown is
+ * inert. The strip's order and scroll origin follow the reading direction.
+ */
+@layer components {
+  .fa-carousel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  .fa-carousel-viewport {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-radius: var(--radius-media);
+  }
+  .fa-carousel-viewport:focus-visible {
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-carousel-viewport::-webkit-scrollbar {
+    display: none;
+  }
+  .fa-carousel-viewport[data-fixed] {
+    aspect-ratio: var(--_ratio);
+  }
+  .fa-carousel-slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .fa-carousel-viewport[data-fixed] > .fa-carousel-slide {
+    overflow: hidden;
+  }
+  .fa-carousel-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  /* The room the indicators have: they show while one 24px target each fits, and the count otherwise. */
+  .fa-carousel-slot {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: var(--control-h-sm);
+  }
+  .fa-carousel-dots {
+    display: flex;
+    justify-content: center;
+  }
+  .fa-carousel-dot {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--target-aa);
+    height: var(--target-aa);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-full);
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fa-carousel-dot::before {
+    content: "";
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--fg-subtle);
+    transition-property: background-color, transform;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-carousel-dot:hover::before {
+    background-color: var(--fg-muted);
+  }
+  .fa-carousel-dot[aria-selected="true"]::before {
+    background-color: var(--accent-text);
+    transform: scale(1.5);
+  }
+  .fa-carousel-count {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+}

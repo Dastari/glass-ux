@@ -2114,6 +2114,30 @@ export default defineMessagePack("zh-Hans", {
     mostStops: (count) => `渐变最多包含 ${count} 个色标`,
     fewestStops: "渐变至少需要两个色标",
   },
+  rating: {
+    label: "评分",
+    valueText: ({ value, total, locale = "zh-Hans" }) =>
+      plural(locale, total, { one: `${numberFormat(locale).format(total)} 星中的 ${value} 星`, other: `${numberFormat(locale).format(total)} 星中的 ${value} 星` }),
+    unrated: "未评分",
+    display: ({ label, value }) => `${label}：${value}`,
+    required: "请选择评分",
+  },
+  carousel: {
+    label: "轮播",
+    roleCarousel: "轮播",
+    roleSlide: "幻灯片",
+    slide: ({ index, total, locale = "zh-Hans" }) => `第 ${numberFormat(locale).format(index)} 张，共 ${numberFormat(locale).format(total)} 张`,
+    shown: ({ index, total, name, locale = "zh-Hans" }) =>
+      name ? `幻灯片 第 ${numberFormat(locale).format(index)} 张，共 ${numberFormat(locale).format(total)} 张：${name}` : `幻灯片 第 ${numberFormat(locale).format(index)} 张，共 ${numberFormat(locale).format(total)} 张`,
+    previous: "上一张幻灯片",
+    next: "下一张幻灯片",
+    slides: "幻灯片",
+    goTo: ({ index, total, locale = "zh-Hans" }) => `转到第 ${numberFormat(locale).format(index)} 张幻灯片，共 ${numberFormat(locale).format(total)} 张`,
+    firstSlide: "这是第一张幻灯片",
+    lastSlide: "这是最后一张幻灯片",
+    pause: "暂停自动切换",
+    play: "开始自动切换",
+  },
   lightbox: {
     previous: "上一张图片",
     next: "下一张图片",

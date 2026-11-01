@@ -1,0 +1,114 @@
+/*
+ * Rating. Each icon is two copies in one box: the outline and, over it, the same icon clipped to
+ * the filled part. The clip is an inline size from the start edge, so the fill begins at the
+ * reading start and mirrors in right-to-left. The radios are transparent buttons over the icons
+ * (half an icon wide with half steps). A hover preview changes --_shown on the root and the
+ * colour of the fill, and never any size or position (R9.6).
+ */
+@layer components {
+  .fa-rating {
+    --_size: var(--icon-xl);
+    --_shown: var(--_value);
+    display: inline-flex;
+    max-width: 100%;
+    vertical-align: middle;
+    color: var(--accent-text);
+  }
+  .fa-rating[data-size="sm"] {
+    --_size: var(--icon-lg);
+  }
+  .fa-rating[data-size="lg"] {
+    --_size: calc(var(--icon-xl) + var(--space-2));
+  }
+  .fa-rating[data-hovering] {
+    --_shown: var(--_hover);
+  }
+  .fa-rating-star {
+    /* A pointer target of at least --target-aa, and the icon centred in it. */
+    --_slot: max(var(--_size), var(--target-aa));
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--_slot);
+    height: var(--_slot);
+    border-radius: var(--radius-compact);
+  }
+  .fa-rating-star:has(:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--focus-ring-offset);
+  }
+  .fa-rating-glyph {
+    position: relative;
+    display: flex;
+    flex: none;
+    width: var(--_size);
+    height: var(--_size);
+    pointer-events: none;
+  }
+  .fa-rating-glyph .fa-icon {
+    width: var(--_size);
+    height: var(--_size);
+  }
+  .fa-rating-base {
+    display: flex;
+    color: var(--fg-muted);
+  }
+  .fa-rating-base .fa-icon-tint {
+    display: none;
+  }
+  .fa-rating-fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    display: flex;
+    overflow: hidden;
+    width: calc(clamp(0, var(--_shown) - var(--_i), 1) * 100%);
+    color: var(--accent-text);
+  }
+  /* The chosen part is a solid shape: the icon's tint layer at full strength. */
+  .fa-rating-fill .fa-icon-tint {
+    opacity: 1;
+  }
+  .fa-rating[data-hovering] .fa-rating-fill {
+    opacity: 0.72;
+  }
+  .fa-rating-hit {
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    outline: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fa-rating[data-step="half"] .fa-rating-hit[data-part="start"] {
+    inset-inline-end: 50%;
+  }
+  .fa-rating[data-step="half"] .fa-rating-hit[data-part="end"] {
+    inset-inline-start: 50%;
+  }
+  @media (pointer: coarse) {
+    /* Taller to --target-min without growing the row. */
+    .fa-rating-hit {
+      inset-block: min(0px, calc((var(--_slot) - var(--target-min)) / 2));
+    }
+  }
+  .fa-rating[data-readonly] .fa-rating-star {
+    width: var(--_size);
+    height: var(--_size);
+  }
+  .fa-rating[data-disabled] {
+    opacity: var(--disabled-opacity);
+  }
+  .fa-rating[data-disabled] .fa-rating-hit {
+    cursor: not-allowed;
+  }
+  .fa-rating[data-invalid] .fa-rating-base {
+    color: var(--danger-text);
+  }
+}

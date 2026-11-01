@@ -41,6 +41,24 @@ has upgrade steps in the [migration guide](docs/migration.md).
   `filterTreeRows` filters local rows keeping the ancestors of a match. Works with virtualisation,
   cards, grouping, selection, inline editing and export (which adds a Level column); reordering
   is off, with the reason, while a row is open.
+- `glass-ux/masonry`: `Masonry`, items of different heights in columns from the container's width.
+  Positions are arithmetic from the width and each item's ratio, so nothing moves while pictures
+  load and appending never moves earlier items; an item without a ratio is measured. The DOM order is the
+  order of reading (each item goes to the shortest column), so Tab does not run down one column at a
+  time as it does with CSS `columns`. Logical offsets for right to left. `layoutMasonry` is the same
+  arithmetic as a pure function, for hosts that window a long list.
+- `glass-ux/carousel`: `Carousel`, slides of any content in a scroll-snap strip, so swiping and snapping
+  cost no script. Previous and Next (stopping at the ends with a reason, or `loop`), indicators as one
+  tab stop, slides that are not shown `inert`, a height reserved by the tallest slide or `ratio`, and the
+  slide count when the indicators do not fit. A change the person makes is announced politely and a change
+  `autoplay` makes is not. `autoplay` shows a Pause button, holds on hover, focus and a hidden page, and
+  never starts under reduced motion. Right to left reverses the strip and mirrors the chevrons.
+- `glass-ux/rating`: `Rating`, a rating chosen from a row of icons or shown as one. A radio group
+  (one tab stop; arrows move and choose, Home and End, Delete clears), whole or half steps, `max`,
+  controlled or uncontrolled, `clearable`, a star or any icon, disabled, and a read-only display that
+  is one named image filled to the exact value. Value text agrees its unit with the total and formats
+  numbers in the locale; the fill and the arrows follow the reading direction; the hover preview
+  changes colour only. `field.RatingField` is registered in `useAppForm`, with `ratingSchema`.
 - `glass-ux/menubar`: `Menubar`, an application's menus as data, on Base UI's Menubar. Commands,
   check and radio rows, groups, separators and submenus; chords and rebound keys shown through
   the keymap's read-only lookups, with no listener added; disabled reasons; a menu or submenu's

@@ -85,7 +85,8 @@
     outline-offset: calc(var(--border-width) * -1);
   }
   :is(.fa-switch, .fa-segmented):focus-visible,
-  .fa-slider-thumb:has(:focus-visible) {
+  :is(.fa-slider-thumb, .fa-rating-star):has(:focus-visible),
+  .fa-carousel-dot:focus-visible {
     outline: var(--focus-ring-width) solid Highlight;
     outline-offset: var(--focus-ring-offset);
   }
@@ -199,6 +200,27 @@
   :is(.fa-radio[data-checked], .fa-radio-card[data-checked]) .fa-radio-indicator {
     forced-color-adjust: none;
     background: HighlightText;
+  }
+
+  /* ── Rating: the chosen part in Highlight, the rest an outline ───────── */
+  .fa-rating-fill {
+    forced-color-adjust: none;
+    color: Highlight;
+  }
+  .fa-rating-base {
+    color: CanvasText;
+  }
+  .fa-rating[data-disabled] :is(.fa-rating-fill, .fa-rating-base) {
+    color: GrayText;
+  }
+
+  /* ── Carousel: the indicators keep a shape, and the current one is Highlight ── */
+  .fa-carousel-dot::before {
+    forced-color-adjust: none;
+    background: ButtonText;
+  }
+  .fa-carousel-dot[aria-selected="true"]::before {
+    background: Highlight;
   }
 
   /* ── Slider, Meter, Progress: the filled part in Highlight ───────────── */

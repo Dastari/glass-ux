@@ -4,12 +4,13 @@ import { SectionPage, Specimen } from "../kit.js";
 import { Menu } from "../../ui/menu/index.js";
 import { StatusBar } from "../../ui/status-bar/index.js";
 
-function ReportBar({ width }: { width?: string }) {
+const WIDTHS = { wide: "w-176", medium: "w-120", narrow: "w-80", tiny: "w-48" };
+
+function ReportBar({ size }: { size?: keyof typeof WIDTHS }) {
   return (
     <div
-      className="w-full max-w-full"
-      style={{ width }}
-      data-testid={width ? `status-bar-${width}` : "status-bar-full"}
+      className={`${size ? WIDTHS[size] : "w-full"} max-w-full`}
+      data-testid={size ? `status-bar-${size}` : "status-bar-full"}
     >
       <StatusBar aria-label="Report status">
         <StatusBar.Start>
@@ -83,10 +84,24 @@ export default function StatusBarSection() {
         specimenKey="status-bar:default:2"
       >
         <div className="flex w-full flex-col gap-3" data-testid="status-bar-widths">
-          <ReportBar width="44rem" />
-          <ReportBar width="30rem" />
-          <ReportBar width="20rem" />
-          <ReportBar width="12rem" />
+          <ReportBar size="wide" />
+          <ReportBar size="medium" />
+          <ReportBar size="narrow" />
+          <ReportBar size="tiny" />
+        </div>
+      </Specimen>
+
+      <Specimen
+        title="In a window's status slot"
+        description="Window.Status portals a live group into the frame, and that group keeps the same order by itself."
+        specimenKey="status-bar:default:4"
+      >
+        <div className="flex w-56 max-w-full" data-testid="status-bar-slot">
+          <StatusBar.Group>
+            <StatusBar.Item tone="success">Connected</StatusBar.Item>
+            <StatusBar.Item giveWay={1}>1920 × 1080</StatusBar.Item>
+            <StatusBar.Item giveWay={1}>28 ms latency</StatusBar.Item>
+          </StatusBar.Group>
         </div>
       </Specimen>
     </SectionPage>

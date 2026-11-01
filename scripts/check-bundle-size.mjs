@@ -27,7 +27,8 @@ const BUDGETS = [
   { entry: 'glass-ux/icons', named: 'IconSearch', gzip: 1_000 },
   // Includes the shared Base UI direction context and script-aware localeDirection fallback.
   { entry: 'glass-ux/locale', gzip: 1_300 },
-  { entry: 'glass-ux/button', named: 'Button', gzip: 34_000 },
+  // Raised from 34,000 for chords: a Button's tooltip reaches Kbd, which draws each step of one.
+  { entry: 'glass-ux/button', named: 'Button', gzip: 34_500 },
   { entry: 'glass-ux/input', named: 'Input', gzip: 40_000 },
   { entry: 'glass-ux/form', named: 'FormStack', gzip: 1_000, forbid: ['@tanstack/form-core', '@tanstack/react-form'] },
   // Measured 51.3 KB: the parts plus Base UI's Collapsible, Tooltip and the filter's Field. The phone sheet

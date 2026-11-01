@@ -40,6 +40,14 @@ default keeps them on. Their key hints leave the tooltips, menus and palette whi
 Shortcuts with Ctrl, Alt or Command, and keys that act only inside the widget that has
 focus, are not affected.
 
+For rebinding, chords and a help dialog, mount `KeymapProvider` from `glass-ux/keymap` once and
+register commands with `useShortcutCommands`, or `useActionShortcuts` for a `defineActions` set.
+Pass `keymap` and `onKeymapChange` to keep the person's changes wherever preferences live: the
+value is plain JSON, and `normaliseKeymap` cleans what comes back from storage. Showing a
+shortcut registers nothing: `Kbd`, `Button shortcut`, tooltips and menu rows only draw it, and
+`useCommandBinding` reads its current keys. Give a command `scope` when its keys work only while
+an element has focus, or leave out `run` when something else handles them.
+
 When replacing local components, remove their duplicate implementation after the packaged
 version passes the application's checks. Keep application-specific components and compose
 them from Glass UX. A release dependency and lockfile should identify the exact archive used.

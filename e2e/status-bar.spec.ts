@@ -12,11 +12,11 @@ const shown = (page: Page, id: string) =>
 
 test("gives way in the stated order: rank 1, rank 2, then truncation, and the toned item stays", async ({ page }) => {
   await expect.poll(() => shown(page, "status-bar-full")).toContain("4,210 words");
-  await expect.poll(() => shown(page, "status-bar-44rem")).not.toContain("4,210 words");
-  expect(await shown(page, "status-bar-44rem")).toContain("Page 12 of 48");
-  await expect.poll(() => shown(page, "status-bar-30rem")).not.toContain("Page 12 of 48");
-  expect(await shown(page, "status-bar-12rem")).toContain("Synced");
-  for (const id of ["status-bar-44rem", "status-bar-30rem", "status-bar-20rem", "status-bar-12rem"]) {
+  await expect.poll(() => shown(page, "status-bar-wide")).not.toContain("4,210 words");
+  expect(await shown(page, "status-bar-wide")).toContain("Page 12 of 48");
+  await expect.poll(() => shown(page, "status-bar-medium")).not.toContain("Page 12 of 48");
+  expect(await shown(page, "status-bar-tiny")).toContain("Synced");
+  for (const id of ["status-bar-wide", "status-bar-medium", "status-bar-narrow", "status-bar-tiny"]) {
     const bar = page.getByTestId(id).locator(".fa-status-bar");
     await expect(bar.locator('.fa-status-bar-item[data-tone="success"]')).toBeVisible();
     const overflow = await bar.evaluate((element) => {
@@ -26,7 +26,10 @@ test("gives way in the stated order: rank 1, rank 2, then truncation, and the to
         return box.width > 0 && (box.right > edge.right + 1 || box.left < edge.left - 1);
       }).length;
     });
-    if (id !== "status-bar-12rem") expect(overflow, id).toBe(0);
+    if (id !== "status-bar-tiny") expect(overflow, id).toBe(0);
+    // Truncation stops short of nothing: the unranked value stays on screen.
+    const value = (await bar.locator(".fa-status-bar-end .fa-status-bar-item").last().boundingBox())!;
+    expect(value.width, id).toBeGreaterThan(20);
   }
 });
 
@@ -47,7 +50,7 @@ test("the bar settles: no flipping and no ResizeObserver loop", async ({ page })
 });
 
 test("what gave way is in More, with its button still working", async ({ page }) => {
-  const bar = page.getByTestId("status-bar-20rem");
+  const bar = page.getByTestId("status-bar-narrow");
   const more = bar.getByRole("button", { name: /More status/ });
   await expect(more).toBeVisible();
   await more.click();
@@ -56,6 +59,12 @@ test("what gave way is in More, with its button still working", async ({ page })
   await expect(popup.getByRole("button", { name: "Go to page" })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(more).toBeFocused();
+});
+
+test("a group on its own, as in a window's status slot, gives way too", async ({ page }) => {
+  const slot = page.getByTestId("status-bar-slot");
+  await expect(slot.getByRole("button", { name: /More status/ })).toBeVisible();
+  await expect.poll(() => shown(page, "status-bar-slot")).toEqual(["Connected"]);
 });
 
 test("a reason keeps an item focusable; a menu opens from an item", async ({ page }) => {
@@ -69,6 +78,8 @@ test("a reason keeps an item focusable; a menu opens from an item", async ({ pag
 });
 
 test("phone width: nothing widens the page, and axe passes @responsive", async ({ page }) => {
+  const value = (await page.getByTestId("status-bar-full").locator(".fa-status-bar-end .fa-status-bar-item").last().boundingBox())!;
+  expect(value.width).toBeGreaterThan(20);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(0);
   const result = await new AxeBuilder({ page }).include('[data-testid="status-bar-widths"]').analyze();

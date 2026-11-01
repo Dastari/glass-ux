@@ -55,10 +55,11 @@ export function Kbd({ keys, variant = "keys", size = "md", className, ...rest }:
         {cap}
       </kbd>
     ))
+  const steps = shortcutSteps(keys)
   return (
-    <kbd {...rest} className={cx("fa-kbd", className)} data-variant="keys" data-size={size} data-chord={isChord(keys) ? "" : undefined}>
-      {isChord(keys)
-        ? shortcutSteps(keys).map((step, index) => (
+    <kbd {...rest} className={cx("fa-kbd", className)} data-variant="keys" data-size={size} data-chord={steps.length > 1 ? "" : undefined}>
+      {steps.length > 1
+        ? steps.map((step, index) => (
             <span key={`${step}-${index}`} className="fa-kbd-step">
               {caps(step)}
             </span>

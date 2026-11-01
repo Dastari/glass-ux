@@ -96,7 +96,7 @@
     padding-block-end: var(--space-2);
   }
   .fa-keymap-input {
-    flex: 1 1 10rem;
+    flex: 1 1 0;
     min-width: 0;
     height: var(--control-h-sm);
     padding-inline: var(--space-2);

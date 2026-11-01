@@ -69,6 +69,10 @@
     margin-inline-start: auto;
     color: var(--fg-subtle);
   }
+  /* Truncation has a floor, so a value never shrinks to nothing (R7.4): the start group goes next. */
+  .fa-status-bar:not(.fa-window-status) .fa-status-bar-end {
+    min-width: var(--space-10);
+  }
   .fa-status-bar-end > * {
     flex: 0 1 auto;
     min-width: 0;
@@ -141,24 +145,26 @@
     height: var(--icon-sm);
   }
 
-  /* One read per observer callback: everything at its natural width (useGiveWay). */
-  .fa-status-bar[data-measuring] {
+  /* One read per observer callback: everything at its natural width (useGiveWay). A group
+     outside a bar, as in a window's status slot, measures itself the same way. */
+  :is(.fa-status-bar, .fa-status-bar-group)[data-measuring] {
+    flex: none;
     width: max-content;
     max-width: none;
   }
-  .fa-status-bar[data-measuring] :is(.fa-status-bar-start, .fa-status-bar-group, .fa-status-bar-end) {
+  [data-measuring] :is(.fa-status-bar-start, .fa-status-bar-group, .fa-status-bar-end) {
     flex: none;
   }
-  .fa-status-bar[data-measuring] .fa-status-bar-item,
-  .fa-status-bar[data-measuring] .fa-status-bar-item[data-gave-way] {
+  [data-measuring] .fa-status-bar-item,
+  [data-measuring] .fa-status-bar-item[data-gave-way] {
     display: inline-flex;
     flex: none;
   }
-  .fa-status-bar[data-measuring] .fa-status-bar-more[data-idle] {
+  [data-measuring] .fa-status-bar-more[data-idle] {
     display: inline-grid;
   }
   /* The separators too, or the width would depend on what is hidden now. */
-  .fa-status-bar[data-measuring] .fa-status-bar-item ~ .fa-status-bar-item::before {
+  [data-measuring] .fa-status-bar-item ~ .fa-status-bar-item::before {
     content: "·";
     margin-inline-end: var(--space-2);
     font-weight: var(--weight-regular);

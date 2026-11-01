@@ -131,7 +131,7 @@ function ScopedTools({ onRun }: { onRun: (label: string) => void }) {
         tabIndex={0}
         role="application"
         aria-label="Canvas"
-        className="grid h-16 w-56 max-w-full place-items-center rounded-md bg-fill-subtle"
+        className="grid h-16 w-56 max-w-full place-items-center rounded-tile bg-fill-muted"
         data-testid="keymap-canvas"
       >
         <span className="type-caption text-fg-muted">Focus here, then press B or E</span>

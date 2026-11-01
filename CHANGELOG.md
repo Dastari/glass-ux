@@ -244,6 +244,7 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Fixed
 
+- CodeBlock: line numbers use `--fg-muted`, as DiffView's do; `--fg-disabled` measured about 2.6:1.
 - `Segmented` and `SwatchPicker` fold to their menu in right-to-left text when they run out of
   room, instead of clipping: `overflowsOwnBox` (`glass-ux/fit-form`) now reads the edge the row
   spills past.

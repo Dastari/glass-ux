@@ -88,7 +88,7 @@
     display: inline-block;
     width: 4ch;
     margin-inline-end: var(--space-3);
-    color: var(--fg-disabled);
+    color: var(--fg-muted);
     text-align: end;
     text-indent: 0;
     user-select: none;

@@ -81,6 +81,9 @@ function MarkdownState({
   const [editor] = useLexicalComposerContext();
   const lastSource = useRef(value);
   const canonical = useRef<string | null>(null);
+  // Edits sent to the host and not yet seen again. A host may apply them late, and an old
+  // one coming back is not a change: importing it would drop what was typed since.
+  const unechoed = useRef<string[]>([]);
   const callback = useRef(onValueChange);
   useEffect(() => {
     callback.current = onValueChange;
@@ -104,14 +107,21 @@ function MarkdownState({
         if (canonical.current === next) return;
         canonical.current = next;
         lastSource.current = next;
+        unechoed.current.push(next);
         callback.current?.(next);
       },
     );
   }, [editor]);
   useEffect(() => {
     editor.setEditable(editable);
+    const echoed = unechoed.current.indexOf(value);
+    if (echoed >= 0) {
+      unechoed.current.splice(0, echoed + 1);
+      return;
+    }
     if (value === lastSource.current) return;
     lastSource.current = value;
+    unechoed.current = [];
     editor.update(
       () => {
         $convertFromMarkdownString(

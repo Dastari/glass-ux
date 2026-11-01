@@ -13,7 +13,8 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { createEditor } from "lexical";
+import { $getRoot, createEditor, type LexicalEditor } from "lexical";
+import { useState } from "react";
 import {
   afterEach,
   beforeAll,
@@ -44,6 +45,12 @@ beforeAll(() =>
   ),
 );
 afterAll(() => vi.unstubAllGlobals());
+
+const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Lexical keeps its editor on the root element. */
+const lexicalEditor = (element: HTMLElement) =>
+  (element as HTMLElement & { __lexicalEditor: LexicalEditor }).__lexicalEditor;
 
 function roundTrip(markdown: string) {
   const editor = createEditor({
@@ -208,6 +215,64 @@ describe("Markdown value contract", () => {
       "## Replacement\n\nFresh text",
     );
     expect(change).not.toHaveBeenCalled();
+  });
+
+  it("keeps every keystroke when a controlled host applies its state late", async () => {
+    let hostValue = "";
+    function LateHost() {
+      const [value, setValue] = useState("");
+      hostValue = value;
+      return (
+        <RichTextInput
+          aria-label="Late"
+          value={value}
+          onValueChange={(next) => setTimeout(() => setValue(next), 30)}
+        />
+      );
+    }
+    render(<LateHost />);
+    const box = await screen.findByRole("textbox", { name: "Late" }, { timeout: 5000 });
+    await waitFor(() => expect(lexicalEditor(box)).toBeDefined());
+    const editor = lexicalEditor(box);
+    // act() would hold every state update until it exits, so the echoes arrive as a host's would.
+    vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", false);
+    for (const letter of "abcdef") {
+      editor.update(() => $getRoot().selectEnd().insertText(letter), { discrete: true });
+      await pause(10);
+    }
+    await pause(120);
+    expect(box.textContent).toBe("abcdef");
+    expect(hostValue).toBe("abcdef");
+    vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+  });
+
+  it("still applies a value the host sets while its echoes are in flight", async () => {
+    function ClearingHost() {
+      const [value, setValue] = useState("");
+      return (
+        <>
+          <RichTextInput
+            aria-label="Clearing"
+            value={value}
+            onValueChange={(next) => setTimeout(() => setValue(next), 20)}
+          />
+          <button type="button" onClick={() => setValue("")}>
+            Clear
+          </button>
+        </>
+      );
+    }
+    render(<ClearingHost />);
+    const box = await screen.findByRole("textbox", { name: "Clearing" }, { timeout: 5000 });
+    await waitFor(() => expect(lexicalEditor(box)).toBeDefined());
+    const editor = lexicalEditor(box);
+    vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", false);
+    editor.update(() => $getRoot().selectEnd().insertText("sent"), { discrete: true });
+    await pause(60);
+    expect(box.textContent).toBe("sent");
+    fireEvent.click(screen.getByRole("button", { name: "Clear" }));
+    await waitFor(() => expect(box.textContent).toBe(""));
+    vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   });
 
   it("keeps read-only source inspectable and disables editing", () => {

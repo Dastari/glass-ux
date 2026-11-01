@@ -83,7 +83,8 @@ test("Full screen fills the screen with the body, popups open inside, and Exit r
 
 test("the anatomy frame shows Full screen beside Pop out", async ({ page }) => {
   await page.goto("/components/window-frame");
-  const controls = page.getByRole("group", { name: "Window controls" }).first();
+  // The page opens on a popped-out frame, which offers Return instead: take the first that can pop out.
+  const controls = page.getByRole("group", { name: "Window controls" }).filter({ has: page.locator('[data-control="popout"]') }).first();
   await expect(controls).toBeVisible({ timeout: 30_000 });
   const order = await controls.locator("[data-control]").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("data-control")));
   expect(order.slice(0, 2)).toEqual(["popout", "fullscreen"]);

@@ -32,6 +32,10 @@
  *
  * Optional parameter: --accent-text-max-l caps light-mode accent text, for a light custom
  * accent (customPaletteVars) whose own lightness would be too pale to read on the canvas.
+ *
+ * --code-ink-l, --code-ink-c and --code-ink-step are the syntax ink of each mode (code.css says
+ * why). They are written with the relative colour channels l, c and h on purpose: they only mean
+ * anything substituted into the roles there, where h is the role's own hue.
  */
 
 @layer base {
@@ -257,10 +261,14 @@
       --danger-text: oklch(0.52 0.2 22);
       --danger-soft: oklch(0.575 0.215 22 / 0.1);
       --danger-line: oklch(0.575 0.215 22 / 0.4);
-      --code-add-text: var(--success-text);
+      --code-add-text: oklch(0.4 0.12 152);
       --code-add-tint: var(--success-soft);
-      --code-remove-text: var(--danger-text);
+      --code-remove-text: oklch(0.44 0.19 22);
       --code-remove-tint: var(--danger-soft);
+      --code-ink-l: calc(0.42 - 0.02 * (1 + cos((h - 195) * 1deg)));
+      --code-ink-c: clamp(0.12, c, 0.15);
+      --code-ink-step: 0.02;
+      --code-comment-ink: var(--fg-muted);
       --info: oklch(0.55 0.18 252);
       --info-fg: oklch(0.99 0.01 252);
       --info-text: oklch(0.49 0.17 252);
@@ -335,6 +343,10 @@
       --code-add-tint: var(--success-soft);
       --code-remove-text: var(--danger-text);
       --code-remove-tint: var(--danger-soft);
+      --code-ink-l: l;
+      --code-ink-c: c;
+      --code-ink-step: 0;
+      --code-comment-ink: var(--fg-subtle);
       --info: oklch(0.55 0.16 252);
       --info-fg: oklch(0.99 0.01 252);
       --info-text: oklch(0.79 0.12 252);

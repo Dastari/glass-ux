@@ -357,6 +357,8 @@ test("keyboard shortcuts are scoped to the focused player and respect configureS
   await page.keyboard.press("Space");
   await expect(video).toHaveJSProperty("paused", true);
   await expect(root.locator("[aria-live='polite']")).toHaveText("Paused");
+  // iPhone Safari has no element fullscreen (the player hands the video to the system instead).
+  if (!(await page.evaluate(() => document.fullscreenEnabled))) return;
   await page.keyboard.press("f");
   await expect.poll(() => page.evaluate(() => document.fullscreenElement?.className)).toContain("fa-media-stage");
   await page.keyboard.press("f");

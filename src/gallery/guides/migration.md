@@ -3,7 +3,7 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
-## 0.13.1 → next
+## 0.13.1 → 0.14.0
 
 Code edits, where a project uses these:
 
@@ -45,6 +45,8 @@ Behaviour to review:
   gone at once needs to wait.
 - `Segmented` and `SwatchPicker` fold to their menu in right-to-left text when they run out of
   room, instead of clipping. A right-to-left layout that clipped may now show the menu.
+- `overflowsOwnBox` allows 2px rather than 1px, so a row at a fit boundary can stay on its wider
+  form up to 2px past its box. A test that asserts the exact width of a fold needs a look.
 - `cropImage` rejects with "The image could not be encoded." rather than "The photo could not be
   encoded.".
 - Light mode code colours are darker, with new hues, in every palette: compare screenshots of code.

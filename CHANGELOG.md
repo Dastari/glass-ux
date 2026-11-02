@@ -4,7 +4,7 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## Unreleased
+## 0.14.0
 
 Application structure, files and media: `PaneLayout`, `Menubar`, `KeymapProvider`, `StatusBar`,
 `FileDialog` over a storage contract, video and audio players, `ImageCropper` and `CommentThread`,

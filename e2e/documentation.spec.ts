@@ -21,7 +21,7 @@ for (const id of [
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(`/components/${id}`);
-    await expect(page.locator("main h1")).toBeVisible();
+    await expect(page.locator(".gallery-document-intro h1")).toBeVisible();
     await expect(
       page
         .getByRole("navigation", { name: "On this page" })

@@ -168,6 +168,9 @@ decides when to publish. The local route:
 - `src/ui/comment-thread/comment-row.tsx` lazily imports `src/ai/markdown`, the only import from
   `ai` under `src/ui`. Moving it is not small: Markdown imports CodeBlock, EntityChip,
   CitationMarker, TableScroll and `entities` from `ai`, so it needs those injected first.
+- WPE WebKit (build 2368, not Safari itself): DataTable pages raise `ResizeObserver loop completed
+  with undelivered notifications` as a page error, and Menubar keyboard moves, the context
+  switcher's focus return and a disabled row's tooltip placement fail there. None is traced yet.
 - Base UI warns once in a while in dev that a RadioGroup changes from uncontrolled to controlled
   (two in a full e2e run); not yet traced to a component.
 - Dark Glass: `--code-comment` in a CodeBlock bare on a canvas is 3.72:1 at worst (Ruby on Hills)

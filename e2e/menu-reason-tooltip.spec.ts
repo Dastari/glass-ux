@@ -23,6 +23,8 @@ for (const uiScale of [1, 1.25]) {
     // No caption line under the row; the reason is the row's accessible description.
     await expect(page.locator(".fa-menu-reason")).toHaveCount(0);
     await expect(row).toHaveAccessibleDescription("STUDIO-VM is offline");
+    // The popup's first frame is its starting transform (WebKit reads it here); measure two frames on.
+    await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
     const rowBox = (await row.boundingBox())!;
     const height = await menu
       .getByRole("menuitem")

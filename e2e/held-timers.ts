@@ -13,7 +13,10 @@ export async function holdTimers(page: Page, delay: number) {
       held.push(run);
       return 0;
     }) as typeof window.setTimeout;
-    (window as unknown as { releaseTimers: () => void }).releaseTimers = () => held.splice(0).forEach((run) => run());
+    (window as unknown as { releaseTimers: () => void }).releaseTimers = () => {
+      window.setTimeout = original;
+      held.splice(0).forEach((run) => run());
+    };
   }, delay);
   return () => page.evaluate(() => (window as unknown as { releaseTimers: () => void }).releaseTimers());
 }

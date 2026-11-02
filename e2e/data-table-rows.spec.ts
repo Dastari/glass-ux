@@ -448,12 +448,12 @@ test("right to left: chevrons, indent and arrow keys follow the reading directio
   await table.evaluate((element) => {
     element.style.width = "60rem";
   });
-  const right = async (row: Locator) => {
-    const box = (await textOf(row).boundingBox())!;
-    return box.x + box.width;
-  };
+  const right = (row: Locator) => textOf(row).evaluate((text) => text.getBoundingClientRect().right);
+  // The width takes a phone's cards to a table, and the rows are new ones after that.
+  await expect(table).toHaveAttribute("data-mode", "table");
+  await expect(designs).toBeVisible();
   // Indent runs from the right edge, away from the row's start.
-  expect(await right(designs)).toBeLessThan(await right(projects));
+  await expect(async () => expect(await right(designs)).toBeLessThan(await right(projects))).toPass();
   // The closed chevron points along the reading direction; the open one points down.
   const closed = designs.locator("button.fa-dt-expander .fa-icon");
   const open_ = projects.locator("button.fa-dt-expander .fa-icon");

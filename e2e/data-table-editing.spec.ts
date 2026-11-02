@@ -32,8 +32,10 @@ test("keyboard edit, commit, cancel, validation and Tab preserve row geometry @r
   await page.keyboard.press("c");
   await expect(input).toHaveValue("c");
   await input.fill("Cedar module");
+  const finishCommit = await holdTimers(page, 650);
   await input.press("Tab");
   await expect(name).toHaveAttribute("data-pending", "");
+  await finishCommit();
   const number = row.getByRole("textbox", { name: "Edit Quantity" });
   await expect(number).toBeFocused();
   await number.fill("-1");

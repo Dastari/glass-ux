@@ -306,6 +306,7 @@ export function ContextSwitcher<I extends ContextItem>({
     <>
       <SwitcherList
         key={fresh.generation}
+        onClosing={fresh.onClosing}
         onOpenChangeComplete={fresh.onOpenChangeComplete}
         tree={tree}
         items={items}
@@ -348,17 +349,30 @@ function useFreshAfterClose() {
     if (!active || active === document.body)
       node.focus({ preventScroll: true });
   }, []);
+  /** Focus was in the switcher when a dismissal that is not a press elsewhere began. */
+  const leftFromInside = useRef(false);
+  const inside = () => {
+    const active = document.activeElement;
+    return (
+      active === trigger.current ||
+      Boolean(active?.closest(".fa-context-switcher-popup"))
+    );
+  };
+  const onClosing = (reason: string) => {
+    // WebKit drops focus from a popup that starts to close, before the close completes, so
+    // where focus was is read here; a press or a focus move elsewhere takes it for itself.
+    leftFromInside.current =
+      reason !== "outside-press" && reason !== "focus-out" && inside();
+  };
   const onOpenChangeComplete = (open: boolean) => {
     if (open) return;
     // Base UI returns focus to the trigger after the popup unmounts; the remount replaces both,
     // so the new trigger takes focus if it was in the switcher and nowhere else has it.
-    const active = document.activeElement;
-    refocus.current =
-      active === trigger.current ||
-      Boolean(active?.closest(".fa-context-switcher-popup"));
+    refocus.current = leftFromInside.current || inside();
+    leftFromInside.current = false;
     setGeneration((current) => current + 1);
   };
-  return { generation, triggerRef, onOpenChangeComplete };
+  return { generation, triggerRef, onClosing, onOpenChangeComplete };
 }
 
 /** How long the trigger stays highlighted after the scope changes from elsewhere. */
@@ -412,6 +426,8 @@ interface SwitcherListProps {
   open?: boolean;
   /** Called with the next open state when the popup opens or is dismissed; closing clears a local search query. */
   onOpenChange?: (open: boolean) => void;
+  /** The popup is closing, with Base UI's reason; focus is still where it was. */
+  onClosing?: (reason: string) => void;
   /** The popup finished closing (or opening): its animations are done. */
   onOpenChangeComplete?: (open: boolean) => void;
   /** Control that opens the overlay or action. */
@@ -436,6 +452,7 @@ function SwitcherList({
   placement = "page",
   open,
   onOpenChange,
+  onClosing,
   onOpenChangeComplete,
   trigger,
 }: SwitcherListProps) {
@@ -536,8 +553,9 @@ function SwitcherList({
       itemToStringValue={(row: SwitcherRow) => row.key}
       isItemEqualToValue={(a: SwitcherRow, b: SwitcherRow) => a.key === b.key}
       open={inline ? true : open}
-      onOpenChange={(next) => {
+      onOpenChange={(next, details) => {
         if (!next && !remote) setLocalQuery("");
+        if (!next) onClosing?.(details.reason);
         onOpenChange?.(next);
       }}
       onOpenChangeComplete={onOpenChangeComplete}

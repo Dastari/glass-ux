@@ -205,3 +205,32 @@ test("a project switcher speaks of projects, has no All row and passes axe @resp
   await expect(page.getByLabel("Project: Lantern archive", { exact: true })).toBeFocused();
   expect(errors).toEqual([]);
 });
+
+// WebKit drops focus from a popup as it starts to close; the switcher reads where focus was first.
+test("a popup closed from the keyboard hands focus back to the trigger; a press elsewhere keeps its own", async ({
+  page,
+}) => {
+  test.skip((page.viewportSize()?.width ?? 1920) < 768, "a phone opens a sheet");
+  await page.goto("components/context-switcher");
+  const trigger = page.getByLabel("Project: Harbour survey", { exact: true });
+  await expect(trigger).toBeVisible({ timeout: 30_000 });
+  const search = page.getByRole("combobox", { name: "Search projects" });
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  await expect(search).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(search).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+
+  await page.keyboard.press("Enter");
+  await search.fill("lant");
+  await page.keyboard.press("Enter");
+  await expect(search).toHaveCount(0);
+  await expect(page.getByLabel("Project: Lantern archive", { exact: true })).toBeFocused();
+
+  await page.getByLabel("Project: Lantern archive", { exact: true }).click();
+  await expect(search).toBeFocused();
+  await page.mouse.click(2, 2);
+  await expect(search).toHaveCount(0);
+  await expect(page.getByLabel("Project: Lantern archive", { exact: true })).not.toBeFocused();
+});

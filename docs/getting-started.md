@@ -247,6 +247,21 @@ registerMessagePack(defineMessagePack("fi", {
 }));
 ```
 
+A package built on Glass UX adds its own namespace to the same catalogue, so its packs are typed
+like the library's:
+
+```ts
+import { defineMessages } from "glass-ux/i18n";
+
+export const notebookMessages = defineMessages("notebook", { run: "Run cell" });
+
+declare module "glass-ux/i18n/catalog" {
+  interface MessageCatalog {
+    notebook: typeof notebookMessages.defaults;
+  }
+}
+```
+
 To load a language only when it is needed, pass `loadMessagePack` a map of tag to import. It
 matches the locale as `messagePackFor` does (`de` serves `de-AT`), registers the pack and
 resolves with it, or with `undefined` when no entry fits:

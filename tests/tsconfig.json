@@ -1,5 +1,12 @@
 {
   "extends": "../tsconfig.json",
-  "include": ["form-rhf-types.tsx"],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["../src/*"],
+      "glass-ux/i18n": ["../src/lib/i18n/index.ts"],
+      "glass-ux/i18n/catalog": ["../src/lib/i18n/catalog.ts"]
+    }
+  },
+  "include": ["form-rhf-types.tsx", "message-catalog-types.ts", "../src/ui/pane-layout/messages.ts"],
   "exclude": []
 }

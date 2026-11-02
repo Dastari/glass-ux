@@ -95,8 +95,12 @@ the provider does not have are reported as `skipped`. A provider with `write` ge
 in `folder`, removed afterwards when it has `delete`. See
 [FileDialog and FileProvider](components/file-dialog.md#testing-an-adapter).
 
+It has its own entry, `glass-ux/testing/file-provider`, which loads no test runner, so it also runs
+in a browser for an adapter that only works there, such as one over OPFS. `glass-ux/testing`
+exports it too.
+
 ```ts
-import { testFileProvider } from "glass-ux/testing";
+import { testFileProvider } from "glass-ux/testing/file-provider";
 
 const { failed } = await testFileProvider(myProvider);
 expect(failed).toEqual([]);

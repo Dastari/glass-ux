@@ -562,6 +562,10 @@
       "types": "./dist/lib/locale/index.d.ts",
       "import": "./dist/lib/locale/index.js"
     },
+    "./i18n/catalog": {
+      "types": "./dist/lib/i18n/catalog.d.ts",
+      "import": "./dist/lib/i18n/catalog.js"
+    },
     "./i18n/*": {
       "types": "./dist/i18n/*.d.ts",
       "import": "./dist/i18n/*.js"
@@ -752,6 +756,10 @@
     "./testing": {
       "types": "./dist/testing/index.d.ts",
       "import": "./dist/testing/index.js"
+    },
+    "./testing/file-provider": {
+      "types": "./dist/testing/file-provider.d.ts",
+      "import": "./dist/testing/file-provider.js"
     },
     "./testing/playwright": {
       "types": "./dist/testing/playwright.d.ts",

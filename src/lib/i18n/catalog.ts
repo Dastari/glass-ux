@@ -31,7 +31,9 @@ export type MessageSet = Record<string, Message>
 
 /**
  * Every namespace's messages, by namespace. Components extend it by module augmentation
- * (see the file comment), so packs and overrides are typed against the real messages.
+ * (see the file comment), so packs and overrides are typed against the real messages. A package
+ * built on Glass UX does the same with `declare module "glass-ux/i18n/catalog"`: an augmentation
+ * has to name the module that declares the interface, so `glass-ux/i18n` cannot take it.
  */
 // biome-ignore lint/suspicious/noEmptyInterface: extended by module augmentation
 export interface MessageCatalog {}

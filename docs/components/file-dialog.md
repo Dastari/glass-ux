@@ -190,12 +190,13 @@ const { write, applyEdits, ...readOnly } = files
 
 ## Testing an adapter
 
-`testFileProvider` in `glass-ux/testing` is the conformance suite: ranged and short reads, version
+`testFileProvider` in `glass-ux/testing/file-provider` is the conformance suite: ranged and short reads, version
 pinning, conflicts on all three `WriteBase` forms, abort, cursors and `applyEdits`. It skips what a
-provider doesn't have, and reports rather than asserts, so it fits any test runner.
+provider doesn't have, and reports rather than asserts, so it fits any test runner, and that entry
+runs in a browser.
 
 ```ts
-import { testFileProvider } from "glass-ux/testing"
+import { testFileProvider } from "glass-ux/testing/file-provider"
 
 it("conforms", async () => {
   const { failed } = await testFileProvider(myProvider)

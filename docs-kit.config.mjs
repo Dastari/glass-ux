@@ -442,6 +442,7 @@ export default defineDocsKit({
       "src/lib/fit-form.ts",
       "src/hooks/index.ts",
       "src/testing/index.ts",
+      "src/testing/file-provider.ts",
       "src/testing/playwright.ts",
       "src/file-provider/index.ts",
       "src/file-provider/memory.ts",

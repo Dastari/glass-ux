@@ -112,7 +112,11 @@ test("keyboard: bar arrows, opening, moving between menus, submenus and Escape",
   await expect(row(page, /^Upper case/)).toHaveCount(0);
 
   // Right on a leaf of a submenu closes the chain and goes to the next menu.
-  await press(page, "ArrowRight", "ArrowDown");
+  // The submenu takes focus a moment after the key (60 to 180 ms in WebKit); a Down sent before
+  // it lands moves the parent list instead, so wait for the first row.
+  await press(page, "ArrowRight");
+  await expect(row(page, /^Upper case/)).toBeFocused();
+  await press(page, "ArrowDown");
   await expect(row(page, /^Lower case/)).toBeFocused();
   await press(page, "ArrowRight");
   await expect(check(page, /^Ruler/)).toBeFocused();
@@ -364,7 +368,9 @@ test("focus after a command goes to the host's element; Escape returns to the tr
   await row(page, /^Lower case/).click();
   await expect(page.getByRole("menu")).toHaveCount(0);
   await expect(edit).toBeFocused();
-  await press(page, "ArrowDown", "End", "ArrowRight", "Enter");
+  await press(page, "ArrowDown", "End", "ArrowRight");
+  await expect(row(page, /^Upper case/)).toBeFocused();
+  await press(page, "Enter");
   await expect(page.getByRole("menu")).toHaveCount(0);
   await expect(edit).toBeFocused();
   await expect(page.getByTestId("menubar-last-command")).toHaveText("Last command: upper");

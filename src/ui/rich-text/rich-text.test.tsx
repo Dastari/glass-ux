@@ -14,7 +14,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { $getRoot, createEditor, KEY_DOWN_COMMAND, type LexicalEditor } from "lexical";
+import { $getRoot, createEditor, KEY_DOWN_COMMAND, KEY_ENTER_COMMAND, type LexicalEditor } from "lexical";
 import { useState } from "react";
 import {
   afterEach,
@@ -698,13 +698,11 @@ describe("mentions and slash commands", () => {
         await pause(0);
       });
       await waitFor(() => expect(screen.queryByRole("option")).toBeNull());
-      let handled = true;
       await act(async () => {
-        handled = editorOf.dispatchCommand(KEY_DOWN_COMMAND, new KeyboardEvent("keydown", { key: "Enter", cancelable: true }));
+        editorOf.dispatchCommand(KEY_ENTER_COMMAND, new KeyboardEvent("keydown", { key: "Enter", cancelable: true }));
         await pause(0);
       });
-      expect(handled).toBe(false);
-      expect(box.textContent).toBe("@");
+      await waitFor(() => expect(box.querySelectorAll("p")).toHaveLength(2));
     });
 
     it("forgets the Enter when more typing has moved on", async () => {

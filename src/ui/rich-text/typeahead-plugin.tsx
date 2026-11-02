@@ -220,7 +220,8 @@ export function TypeaheadPlugin({
           // "@". It picks the first row of the answer, unless more typing has moved on.
           if (event.key === "Enter" || event.key === "Tab") {
             const typed = editor.getEditorState().read(() => $triggerAt(hasMentions, hasCommands));
-            if (typed?.kind === "mention" && typed.query !== answered.current) {
+            const closed = typed && dismissed.current === `${typed.key}:${typed.start}`;
+            if (typed?.kind === "mention" && !closed && typed.query !== answered.current) {
               event.preventDefault();
               waiting.current = typed.query;
               return true;

@@ -679,7 +679,7 @@ describe("mentions and slash commands", () => {
       await type("@");
       await act(async () => answers.get("")!(people));
       await screen.findByRole("option", { name: /Noor Haddad/ });
-      return { answers, box, type, enter };
+      return { answers, box, type, enter, editorOf: editor };
     }
 
     it("picks the first row of the answer, not the row from the earlier query", async () => {
@@ -689,6 +689,22 @@ describe("mentions and slash commands", () => {
       expect(box.textContent).toBe("@no");
       await act(async () => answers.get("no")!(people.slice(1)));
       await waitFor(() => expect(box.textContent).toContain("@Noor Haddad"));
+    });
+
+    it("leaves Enter alone once Escape has dismissed the list", async () => {
+      const { box, editorOf } = await setup();
+      await act(async () => {
+        editorOf.dispatchCommand(KEY_DOWN_COMMAND, new KeyboardEvent("keydown", { key: "Escape", cancelable: true }));
+        await pause(0);
+      });
+      await waitFor(() => expect(screen.queryByRole("option")).toBeNull());
+      let handled = true;
+      await act(async () => {
+        handled = editorOf.dispatchCommand(KEY_DOWN_COMMAND, new KeyboardEvent("keydown", { key: "Enter", cancelable: true }));
+        await pause(0);
+      });
+      expect(handled).toBe(false);
+      expect(box.textContent).toBe("@");
     });
 
     it("forgets the Enter when more typing has moved on", async () => {

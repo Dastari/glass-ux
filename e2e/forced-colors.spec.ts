@@ -153,3 +153,20 @@ test("charts keep their series colours and the brush's handles; axe finds nothin
   const result = await new AxeBuilder({ page }).include("[data-testid='chart-zoom']").include("[data-testid='chart-references']").analyze();
   expect(result.violations.map((v) => ({ id: v.id, targets: v.nodes.map((n) => n.target) }))).toEqual([]);
 });
+
+test("a gradient keeps its colours in a boundary, and a status bar's buttons have one", async ({ page }) => {
+  await page.goto("/components/gradient-picker");
+  const preview = page.locator(".fa-gradient-preview").first();
+  await expect(preview).toBeVisible({ timeout: 30_000 });
+  expect(await style(preview, "forced-color-adjust")).toBe("none");
+  expect(await style(preview, "background-image")).toContain("gradient");
+  expect(await bounded(preview)).toBe(true);
+  expect(await bounded(page.locator(".fa-gradient-rail").first())).toBe(true);
+  await shoot(page, "gradient-picker");
+
+  await page.goto("/components/status-bar");
+  const items = page.locator("button.fa-status-bar-item, button.fa-status-bar-more").filter({ visible: true });
+  await expect(items.first()).toBeVisible({ timeout: 30_000 });
+  for (const item of await items.all()) expect(await bounded(item)).toBe(true);
+  await shoot(page, "status-bar");
+});

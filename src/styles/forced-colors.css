@@ -36,6 +36,20 @@
     background: Canvas;
   }
 
+  /* ── Gradient picker: the gradient is the value, so it keeps its colours, inside a boundary. ── */
+  :is(.fa-gradient-preview, .fa-gradient-rail) {
+    forced-color-adjust: none;
+    outline: var(--border-width) solid CanvasText;
+  }
+
+  /* ── Status bar: an interactive item looks like one, beside the plain items. ───────────── */
+  :is(button.fa-status-bar-item, .fa-status-bar-more) {
+    outline: var(--border-width) solid ButtonText;
+  }
+  :is(button.fa-status-bar-item, .fa-status-bar-more):is(:disabled, [aria-disabled="true"]) {
+    outline-color: GrayText;
+  }
+
   /* ── Scroll edges ──────────────────────────────────────────────────────── */
   .fa-menubar-edge::before {
     background-color: CanvasText;

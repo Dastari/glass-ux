@@ -27,6 +27,15 @@ const token = (page: Page, name: string, property = "height") =>
     [name, property],
   );
 
+/** Both sides are read again on each try: the appearance applies after the page's first paint. */
+const expectRadius = (page: Page, locator: Locator, name: string) =>
+  expect
+    .poll(async () => {
+      const radius = await locator.evaluate((element) => Number.parseFloat(getComputedStyle(element).borderTopLeftRadius));
+      return radius === (await token(page, name, "border-top-left-radius"));
+    })
+    .toBe(true);
+
 const noPageOverflow = (page: Page) =>
   expect(page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).resolves.toBe(true);
 
@@ -89,7 +98,7 @@ for (const preset of PRESETS)
     test(`ActivityFeed rows follow the theme @responsive`, async ({ page }) => {
       await page.goto("/components/activity-feed");
       const option = page.getByRole("listbox", { name: "Version history" }).getByRole("option").first();
-      await expect(option).toHaveCSS("border-top-left-radius", `${await token(page, "--radius-item", "border-top-left-radius")}px`);
+      await expectRadius(page, option, "--radius-item");
       const row = (await option.boundingBox())!;
       expect(row.height).toBeGreaterThanOrEqual((await token(page, "--item-h")) - 0.5);
       await noPageOverflow(page);
@@ -98,7 +107,7 @@ for (const preset of PRESETS)
     test(`DiffView follows the theme @responsive`, async ({ page }) => {
       await page.goto("/components/diff-view");
       const line = page.getByTestId("diff-view-demo").locator(".fa-diff-line").first();
-      await expect(line).toHaveCSS("border-top-left-radius", `${await token(page, "--radius-line", "border-top-left-radius")}px`);
+      await expectRadius(page, line, "--radius-line");
       await expect(page.getByTestId("diff-view-narrow").locator(".fa-diff-number").first()).toBeHidden();
       await noPageOverflow(page);
     });

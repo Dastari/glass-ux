@@ -478,6 +478,8 @@ test.describe("accessibility", () => {
     await save.getByRole("button", { name: "Save", exact: true }).click();
     await page.getByRole("alertdialog").getByRole("button", { name: "Replace" }).click();
     await expect(page.getByRole("alertdialog", { name: "Plan.txt changed while you were working" })).toBeVisible();
+    // The Replace confirmation is still closing, and two footers at once are two landmarks.
+    await expect(page.getByRole("alertdialog")).toHaveCount(1);
     await scan();
   });
 

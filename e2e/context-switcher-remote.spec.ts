@@ -127,6 +127,9 @@ for (const geometry of [
       geometry.width < 768
         ? page.getByRole("dialog", { name: "Organisation", exact: true })
         : page.locator(".fa-context-switcher-popup").filter({ visible: true });
+    // A sheet slides in; WebKit's first read comes before the first frame of that slide.
+    await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+    await popup.evaluate((element) => Promise.all(element.getAnimations({ subtree: true }).map((animation) => animation.finished.catch(() => {}))));
     const box = await popup.evaluate((element) => {
       const rect = element.getBoundingClientRect();
       const option = element

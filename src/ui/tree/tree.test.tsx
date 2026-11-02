@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRef, useState } from "react";
 import { Tree, moveTreeNodes, treePath, type TreeHandle, type TreeMove, type TreeNode } from "./index.js";
@@ -13,6 +13,7 @@ beforeEach(() => {
       disconnect() {}
     },
   );
+  vi.stubGlobal("matchMedia", () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
   vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(200);
   vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockReturnValue(800);
   HTMLElement.prototype.scrollTo = vi.fn();
@@ -21,6 +22,21 @@ afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+});
+
+describe("Tree loading its drag support", () => {
+  it("keeps focus on the row when the rows remount under the loaded provider", async () => {
+    const nodes = [
+      { id: "g", label: "Group", children: [{ id: "a", label: "Alpha" }] },
+      { id: "b", label: "Beta" },
+    ];
+    render(<Tree nodes={nodes} aria-label="Movable" defaultExpanded={["g"]} onMove={() => undefined} />);
+    const row = screen.getByRole("treeitem", { name: /Beta/ });
+    row.focus();
+    expect(document.activeElement).toBe(row);
+    await waitFor(() => expect(row.isConnected).toBe(false));
+    expect(document.activeElement?.getAttribute("data-row-id")).toBe("b");
+  });
 });
 
 describe("selection", () => {

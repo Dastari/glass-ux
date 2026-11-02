@@ -945,8 +945,19 @@ export function Tree({
 
   const items = virtualizer.getVirtualItems()
   const hint = onRename && onMove ? messages.renameAndMoveHint : onRename ? messages.renameHint : onMove ? messages.moveHint : null
+  // Drag support loads with a plain copy of the rows in its place, and the rows mount anew
+  // under it. A row focused in that moment goes with them, so the new canvas takes focus back.
+  const focusedKey = useRef(focusedId)
+  focusedKey.current = focusedId
+  const takeFocusBack = useCallback((element: HTMLDivElement | null) => {
+    if (!element || !focusWithin.current) return
+    const active = element.ownerDocument.activeElement
+    if (active && active !== element.ownerDocument.body) return
+    const key = focusedKey.current
+    if (key) element.querySelector<HTMLElement>(`[data-row-id="${CSS.escape(key)}"]`)?.focus({ preventScroll: true })
+  }, [])
   const canvas = (dragRow: TreeDragRow | null, dropLine: ReactNode) => (
-    <div role="presentation" className="fa-tree-canvas" style={{ height: virtualizer.getTotalSize() }}>
+    <div ref={takeFocusBack} role="presentation" className="fa-tree-canvas" style={{ height: virtualizer.getTotalSize() }}>
       {items.map((item) => {
         const row = rows[item.index]
         if (!row) return null

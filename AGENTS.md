@@ -171,6 +171,9 @@ decides when to publish. The local route:
 - WPE WebKit (build 2368, not Safari itself): DataTable pages raise `ResizeObserver loop completed
   with undelivered notifications` as a page error, and Menubar keyboard moves, the context
   switcher's focus return and a disabled row's tooltip placement fail there. None is traced yet.
+- Tree with `onMove` (and PaneLayout's tab titles) remount when their lazy drag or menu code
+  arrives. Tree hands focus back, but a click landing in that moment loses its selection. Loading
+  the code with the component would remove the swap, at the cost of the split.
 - Base UI warns once in a while in dev that a RadioGroup changes from uncontrolled to controlled
   (two in a full e2e run); not yet traced to a component.
 - Dark Glass: `--code-comment` in a CodeBlock bare on a canvas is 3.72:1 at worst (Ruby on Hills)

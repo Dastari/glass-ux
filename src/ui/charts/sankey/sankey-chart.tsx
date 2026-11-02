@@ -264,7 +264,7 @@ const SankeyPlot = /* @__PURE__ */ memo(function SankeyPlot({ box, nodes, links,
     <div ref={plotRef} className="fa-chart-layer fa-chart-sankey">
       <svg ref={svgRef} className="fa-chart-svg" width={width} height={height} aria-hidden>
         {layout.links.map((link) => (
-          <path key={link.index} className="fa-chart-sankey-link" {...seriesAttrs(colour(layout.nodes[link.source]).slot, colour(layout.nodes[link.source]).tone)} style={{ d: cssPath(ribbonPath(link)) } as CSSProperties} />
+          <path key={link.index} className="fa-chart-sankey-link" {...seriesAttrs(colour(layout.nodes[link.source]).slot, colour(layout.nodes[link.source]).tone)} d={ribbonPath(link)} style={{ d: cssPath(ribbonPath(link)) } as CSSProperties} />
         ))}
         {layout.nodes.map((node) => (
           <rect key={node.key} className="fa-chart-sankey-node" x={node.x0} y={node.y0} width={node.x1 - node.x0} height={Math.max(1, node.y1 - node.y0)} {...seriesAttrs(colour(node).slot, colour(node).tone)} />

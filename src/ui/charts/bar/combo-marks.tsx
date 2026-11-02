@@ -39,10 +39,10 @@ export function ComboLines({ lines, rem }: { lines: readonly ComboLine[]; rem: n
       {lines.map(({ key, slot, tone, paths, lone, end }) => (
         <g key={key} className="fa-chart-series" {...seriesAttrs(slot, tone)}>
           {paths.map((d, index) => (
-            <path key={`h${index}`} className="fa-chart-line-halo" style={{ d: cssPath(d) } as CSSProperties} />
+            <path key={`h${index}`} className="fa-chart-line-halo" d={d} style={{ d: cssPath(d) } as CSSProperties} />
           ))}
           {paths.map((d, index) => (
-            <path key={`l${index}`} className="fa-chart-line" data-enter="" pathLength={1} style={{ d: cssPath(d) } as CSSProperties} />
+            <path key={`l${index}`} className="fa-chart-line" data-enter="" pathLength={1} d={d} style={{ d: cssPath(d) } as CSSProperties} />
           ))}
           {lone.map((point) => (
             <circle key={point.x} className="fa-chart-dot" data-enter="" cx={point.x} cy={point.y} r={0.25 * rem} />

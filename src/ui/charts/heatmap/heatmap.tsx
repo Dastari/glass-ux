@@ -211,7 +211,7 @@ const HeatmapPlot = /* @__PURE__ */ memo(function HeatmapPlot({ box, rows, colum
     <div ref={plotRef} className="fa-chart-layer">
       <svg className="fa-chart-svg" width={width} height={height} aria-hidden>
         {cells.map((cell) => (
-          <path key={cell.key} className="fa-chart-cell" data-step={cell.step} style={{ d: cssPath(cell.d) } as CSSProperties} />
+          <path key={cell.key} className="fa-chart-cell" data-step={cell.step} d={cell.d} style={{ d: cssPath(cell.d) } as CSSProperties} />
         ))}
       </svg>
       {!micro ? (

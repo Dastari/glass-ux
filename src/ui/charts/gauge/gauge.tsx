@@ -98,7 +98,7 @@ const GaugePlot = /* @__PURE__ */ memo(function GaugePlot({ box, ratio, tone, va
     return (
       <svg className="fa-chart-svg" width={width} height={height} aria-hidden>
         <rect className="fa-chart-track" x={0} y={y} width={width} height={thick} rx={thick / 2} />
-        <path className="fa-chart-bar" data-end="right" {...seriesAttrs(1, tone)} style={{ d: cssPath(barPath(0, y, Math.max(thick, width * ratio), thick, thick / 2, "right")) } as CSSProperties} />
+        <path className="fa-chart-bar" data-end="right" {...seriesAttrs(1, tone)} d={barPath(0, y, Math.max(thick, width * ratio), thick, thick / 2, "right")} style={{ d: cssPath(barPath(0, y, Math.max(thick, width * ratio), thick, thick / 2, "right")) } as CSSProperties} />
         {thresholds.slice(0, 1).map((t) => (
           <line key={t} className="fa-chart-threshold" x1={Math.round(width * t) + 0.5} x2={Math.round(width * t) + 0.5} y1={y - 2} y2={y + thick + 2} />
         ))}
@@ -126,7 +126,7 @@ const GaugePlot = /* @__PURE__ */ memo(function GaugePlot({ box, ratio, tone, va
       <svg className="fa-chart-svg" width={width} height={height} aria-hidden>
         <g transform={`translate(${cx},${cy})`}>
           <path className="fa-chart-track" d={track} />
-          <path className="fa-chart-arc" data-gauge="" {...seriesAttrs(1, tone)} style={{ d: cssPath(fill) } as CSSProperties} />
+          <path className="fa-chart-arc" data-gauge="" {...seriesAttrs(1, tone)} d={fill} style={{ d: cssPath(fill) } as CSSProperties} />
           {thresholds.map((t) => {
             const angle = START + SWEEP * t
             const sin = Math.sin(angle)
@@ -240,7 +240,7 @@ const RadialPlot = /* @__PURE__ */ memo(function RadialPlot({ box, items, fmt }:
           return (
             <g key={item.key}>
               <rect className="fa-chart-track" x={0} y={y} width={width} height={thick} rx={thick / 2} />
-              <path className="fa-chart-bar" data-end="right" {...seriesAttrs(item.slot, item.tone)} style={{ d: cssPath(barPath(0, y, Math.max(thick, width * item.ratio), thick, thick / 2, "right")) } as CSSProperties} />
+              <path className="fa-chart-bar" data-end="right" {...seriesAttrs(item.slot, item.tone)} d={barPath(0, y, Math.max(thick, width * item.ratio), thick, thick / 2, "right")} style={{ d: cssPath(barPath(0, y, Math.max(thick, width * item.ratio), thick, thick / 2, "right")) } as CSSProperties} />
             </g>
           )
         })}
@@ -279,7 +279,7 @@ const RadialPlot = /* @__PURE__ */ memo(function RadialPlot({ box, items, fmt }:
           {rings.map(({ item, track, fill }, index) => (
             <g key={item.key} {...seriesAttrs(item.slot, item.tone)}>
               <path className="fa-chart-track" d={track} />
-              <path className="fa-chart-arc" data-gauge="" style={{ d: cssPath(fill), "--_enter-delay": `calc(var(--duration-instant) * ${index})` } as CSSProperties} />
+              <path className="fa-chart-arc" data-gauge="" d={fill} style={{ d: cssPath(fill), "--_enter-delay": `calc(var(--duration-instant) * ${index})` } as CSSProperties} />
             </g>
           ))}
         </g>

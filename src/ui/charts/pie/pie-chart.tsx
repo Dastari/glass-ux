@@ -198,7 +198,7 @@ const PiePlot = /* @__PURE__ */ memo(function PiePlot({ box, slices, total, stor
       <svg className="fa-chart-svg" width={width} height={height} aria-hidden>
         <g transform={`translate(${cx},${cy})`}>
           {arcs.map(({ datum, d }, index) => (
-            <path key={datum.data.key} className="fa-chart-arc" {...sliceAttrs(datum.data)} style={{ d: cssPath(d), "--_enter-delay": `calc(var(--duration-instant) * ${index * 0.5})` } as CSSProperties} />
+            <path key={datum.data.key} className="fa-chart-arc" {...sliceAttrs(datum.data)} d={d} style={{ d: cssPath(d), "--_enter-delay": `calc(var(--duration-instant) * ${index * 0.5})` } as CSSProperties} />
           ))}
         </g>
         <PieHover store={store} arcs={arcs} cx={cx} cy={cy} inner={inner} r={r} rem={rem} donut={donut} />

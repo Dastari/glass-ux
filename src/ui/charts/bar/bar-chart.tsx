@@ -593,7 +593,7 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
             className="fa-chart-bar"
             data-end={mark.end}
             {...seriesAttrs(mark.slot, mark.tone)}
-            style={
+            d={mark.d} style={
               {
                 d: cssPath(mark.d),
                 fill: `url(#${id}-sheen-${mark.series})`,

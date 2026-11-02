@@ -25,7 +25,8 @@ test("bridges draw only with gaps='bridge', dashed, with a title and a descripti
   expect(await first.evaluate((path) => getComputedStyle(path).strokeDasharray)).not.toBe("none");
   await expect(first.locator("title")).toHaveText("No samples available · visual bridge only");
   // A straight segment between two real readings: one move and one line command.
-  expect(await first.evaluate((path) => getComputedStyle(path).d)).toMatch(/^path\("M [\d.]+ [\d.]+ L [\d.]+ [\d.]+"\)$/);
+  // The `d` attribute, which every engine draws; Safari has no CSS `d` property to read.
+  expect(await first.getAttribute("d")).toMatch(/^M[\d.]+,[\d.]+L[\d.]+,[\d.]+$/);
   const figure = bridged.locator("figure");
   const describedBy = await figure.getAttribute("aria-describedby");
   expect(describedBy).toBeTruthy();

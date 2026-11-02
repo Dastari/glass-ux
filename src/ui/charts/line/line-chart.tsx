@@ -885,11 +885,11 @@ const LinePlot = /* @__PURE__ */ memo(function LinePlot({
                     className="fa-chart-area"
                     data-stacked={stacked ? "" : undefined}
                     fill={`url(#${id}-wash-${item.key})`}
-                    style={{ d: cssPath(d) } as CSSProperties}
+                    d={d} style={{ d: cssPath(d) } as CSSProperties}
                   />
                 ))}
                 {bridges.map(({ key, d }) => (
-                  <path key={`b${key}`} className="fa-chart-bridge" data-enter="" style={{ d: cssPath(d) } as CSSProperties}>
+                  <path key={`b${key}`} className="fa-chart-bridge" data-enter="" d={d} style={{ d: cssPath(d) } as CSSProperties}>
                     <title>{getGAP_BRIDGE_TITLE(messages)}</title>
                   </path>
                 ))}
@@ -899,7 +899,7 @@ const LinePlot = /* @__PURE__ */ memo(function LinePlot({
                     className="fa-chart-line"
                     data-enter=""
                     pathLength={1}
-                    style={{ d: cssPath(d), ...(toned && order === 0 ? { stroke: `url(#${id}-tone)` } : {}) } as CSSProperties}
+                    d={d} style={{ d: cssPath(d), ...(toned && order === 0 ? { stroke: `url(#${id}-tone)` } : {}) } as CSSProperties}
                   />
                 ))}
                 {end && (tier !== "micro" || visible.length <= 3) ? (

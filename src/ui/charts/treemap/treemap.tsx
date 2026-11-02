@@ -217,7 +217,7 @@ const TreemapPlot = /* @__PURE__ */ memo(function TreemapPlot({ box, focus, root
             data-depth={tile.depth}
             data-group={tile.group ? "" : undefined}
             {...(tile.slot === "other" ? { "data-slot": "other" } : seriesAttrs(tile.slot))}
-            style={{ d: cssPath(tile.d) } as CSSProperties}
+            d={tile.d} style={{ d: cssPath(tile.d) } as CSSProperties}
           />
         ))}
       </svg>

@@ -244,10 +244,10 @@ const RadarPlot = /* @__PURE__ */ memo(function RadarPlot({ box, measures, visib
         )}
         {drawn.map(({ item, slot, points, closed, runs, lone }) => (
           <g key={item.key} className="fa-chart-series" data-series={item.key} {...seriesAttrs(slot, item.tone)}>
-            {closed ? <path className="fa-chart-radar-area" style={{ d: cssPath(closed) } as CSSProperties} /> : null}
-            {closed ? <path className="fa-chart-line" data-enter="" pathLength={1} style={{ d: cssPath(closed) } as CSSProperties} /> : null}
+            {closed ? <path className="fa-chart-radar-area" d={closed} style={{ d: cssPath(closed) } as CSSProperties} /> : null}
+            {closed ? <path className="fa-chart-line" data-enter="" pathLength={1} d={closed} style={{ d: cssPath(closed) } as CSSProperties} /> : null}
             {runs.map((d, index) => (
-              <path key={index} className="fa-chart-line" data-enter="" pathLength={1} style={{ d: cssPath(d) } as CSSProperties} />
+              <path key={index} className="fa-chart-line" data-enter="" pathLength={1} d={d} style={{ d: cssPath(d) } as CSSProperties} />
             ))}
             {micro
               ? lone.map((point) => <circle key={`${point.x}-${point.y}`} className="fa-chart-dot" cx={point.x} cy={point.y} r={0.1875 * rem} />)

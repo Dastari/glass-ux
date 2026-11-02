@@ -25,9 +25,12 @@ async function open(page: Page, id: string, query = "") {
   return { pane, chart };
 }
 
-/** Every label stands inside the chart's box: nothing overhangs at any size or scale. */
+/**
+ * Every label stands inside the chart's box: nothing overhangs at any size or scale. A resize
+ * re-lays the labels a frame later, and WebKit can be read in between, so this polls to rest.
+ */
 async function expectLabelsInside(chart: Locator) {
-  const overflow = await chart.evaluate((element) => {
+  await expect.poll(() => chart.evaluate((element) => {
     const box = element.getBoundingClientRect();
     const out: string[] = [];
     for (const label of element.querySelectorAll(".fa-chart-labels *, .fa-chart-text, .fa-chart-axis-name")) {
@@ -37,8 +40,7 @@ async function expectLabelsInside(chart: Locator) {
         out.push(`${label.textContent}: ${Math.round(rect.left - box.left)}…${Math.round(rect.right - box.left)} of ${Math.round(box.width)}, ${Math.round(rect.top - box.top)}…${Math.round(rect.bottom - box.top)} of ${Math.round(box.height)}`);
     }
     return out;
-  });
-  expect(overflow).toEqual([]);
+  })).toEqual([]);
 }
 
 const marks = (chart: Locator) => chart.locator(".fa-chart-svg").first().locator(".fa-chart-bar, .fa-chart-line, .fa-chart-sankey-node");

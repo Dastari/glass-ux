@@ -221,7 +221,7 @@ const FunnelPlot = /* @__PURE__ */ memo(function FunnelPlot({ box, stages, store
         ) : (
           <>
             {layout.connectors
-              ? stages.slice(0, -1).map((stage, index) => <path key={stage.key} className="fa-chart-funnel-link" {...seriesAttrs(stage.slot ?? 1, stage.tone)} style={{ d: `path("${funnelConnector(layout.bars[index]!, layout.bars[index + 1]!)}")` } as CSSProperties} />)
+              ? stages.slice(0, -1).map((stage, index) => <path key={stage.key} className="fa-chart-funnel-link" {...seriesAttrs(stage.slot ?? 1, stage.tone)} d={funnelConnector(layout.bars[index]!, layout.bars[index + 1]!)} style={{ d: `path("${funnelConnector(layout.bars[index]!, layout.bars[index + 1]!)}")` } as CSSProperties} />)
               : null}
             {stages.map((stage, index) => (
               <FunnelBarMark key={stage.key} id={id} stage={stage} bar={layout.bars[index]!} index={index} />

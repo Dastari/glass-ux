@@ -198,7 +198,7 @@ const SunburstPlot = /* @__PURE__ */ memo(function SunburstPlot({ box, focus, co
               className="fa-chart-arc"
               data-depth={a.depth}
               {...(a.slot === "other" ? { "data-slot": "other" } : seriesAttrs(a.slot))}
-              style={{ d: cssPath(a.d), "--_enter-delay": `calc(var(--duration-instant) * ${a.depth - 1})` } as CSSProperties}
+              d={a.d} style={{ d: cssPath(a.d), "--_enter-delay": `calc(var(--duration-instant) * ${a.depth - 1})` } as CSSProperties}
             />
           ))}
         </g>

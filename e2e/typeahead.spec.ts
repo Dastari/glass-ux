@@ -127,6 +127,8 @@ test.describe("in RichTextInput", () => {
     const active = await list.getByRole("option").first().getAttribute("id");
     await expect(editor(page)).toHaveAttribute("aria-activedescendant", active!);
 
+    // It opens at 0.9 scale: its box is only true once the transition has finished.
+    await page.locator(".fa-typeahead").evaluate((element) => Promise.all(element.getAnimations().map((animation) => animation.finished)));
     const popup = (await page.locator(".fa-typeahead").boundingBox())!;
     await page.keyboard.type("v");
     await expect(list.getByRole("option")).toHaveCount(1);

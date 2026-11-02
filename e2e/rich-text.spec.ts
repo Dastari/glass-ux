@@ -575,6 +575,7 @@ test("host attachment adapter inserts a safe Markdown file link", async ({
 for (const mode of ["light", "dark"] as const) {
   test(`editor follows ${mode} appearance and container bounds @responsive`, async ({
     page,
+    browserName,
   }, testInfo) => {
     const phone = testInfo.project.name === "phone";
     await page.setViewportSize(
@@ -667,7 +668,8 @@ for (const mode of ["light", "dark"] as const) {
     await demo.getByRole("button", { name: "Markdown", exact: true }).click();
     const bounds = await editor.boundingBox();
     expect(bounds).not.toBeNull();
-    if (!phone && bounds) {
+    // Playwright's WebKit cannot drag a native resize grip (a bare textarea does not move either).
+    if (!phone && bounds && browserName !== "webkit") {
       await page.mouse.move(
         bounds.x + bounds.width - 8,
         bounds.y + bounds.height - 8,

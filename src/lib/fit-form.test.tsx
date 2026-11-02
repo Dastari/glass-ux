@@ -185,6 +185,12 @@ describe("overflowsOwnBox", () => {
     expect(overflowsOwnBox(...row("ltr", { offsetLeft: 80, offsetWidth: 36 }))).toBe(true)
   })
 
+  it("tolerates what rounding adds: WebKit rounds an item up where the row rounds down", () => {
+    // 62 + 36 + 4 padding is two pixels past a 100 px row: a fit, not a spill.
+    expect(overflowsOwnBox(...row("ltr", { offsetLeft: 62, offsetWidth: 36 }))).toBe(false)
+    expect(overflowsOwnBox(...row("ltr", { offsetLeft: 63, offsetWidth: 36 }))).toBe(true)
+  })
+
   it("reads the left edge right to left, where the row spills", () => {
     expect(overflowsOwnBox(...row("rtl", { offsetLeft: 4, offsetWidth: 36 }))).toBe(false)
     expect(overflowsOwnBox(...row("rtl", { offsetLeft: -16, offsetWidth: 36 }))).toBe(true)

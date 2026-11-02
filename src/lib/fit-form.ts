@@ -77,16 +77,18 @@ export function contentWidth(element: HTMLElement): number {
 
 /**
  * Whether a row's last item ends past the row's own box (beyond its end padding), with a
- * pixel of tolerance. Measures the items, not scrollWidth, which would also count an
- * indicator mid-slide.
+ * two pixels of tolerance: offsetLeft, offsetWidth and clientWidth are each rounded, and
+ * WebKit rounds an item's width up where the row's own width rounds down, so a row that fits
+ * exactly can read a quarter pixel over. Measures the items, not scrollWidth, which would also
+ * count an indicator mid-slide.
  */
 export function overflowsOwnBox(root: HTMLElement, lastItem: HTMLElement | null): boolean {
   if (!lastItem) return false
   const style = getComputedStyle(root)
   // A right-to-left row spills past its left edge, so only that edge shows the overflow.
-  if (style.direction === "rtl") return lastItem.offsetLeft < (Number.parseFloat(style.paddingLeft) || 0) - 1
+  if (style.direction === "rtl") return lastItem.offsetLeft < (Number.parseFloat(style.paddingLeft) || 0) - 2
   const pad = Number.parseFloat(style.paddingRight) || 0
-  return lastItem.offsetLeft + lastItem.offsetWidth + pad > root.clientWidth + 1
+  return lastItem.offsetLeft + lastItem.offsetWidth + pad > root.clientWidth + 2
 }
 
 /** Options for {@link useFitForm}: the forms, the root to measure and how to read widths. */

@@ -7,13 +7,14 @@ import {
 } from "@lexical/markdown";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import {
+  act,
   cleanup,
   fireEvent,
   render,
   screen,
   waitFor,
 } from "@testing-library/react";
-import { $getRoot, createEditor, type LexicalEditor } from "lexical";
+import { $getRoot, createEditor, KEY_DOWN_COMMAND, type LexicalEditor } from "lexical";
 import { useState } from "react";
 import {
   afterEach,
@@ -651,6 +652,55 @@ describe("mentions and slash commands", () => {
     { id: "avery", label: "Avery Quinn" },
   ];
   const editable = () => screen.getByRole("textbox", { name: "Notes" });
+
+  describe("Enter while a search is out", () => {
+    const people = [
+      { id: "mira", label: "Mira Rowan" },
+      { id: "noor", label: "Noor Haddad" },
+    ];
+    async function setup() {
+      const answers = new Map<string, (rows: typeof people) => void>();
+      const search = (query: string) =>
+        new Promise<typeof people>((resolve) => answers.set(query, resolve));
+      render(<RichTextInput aria-label="Mentions" mentions={{ search }} />);
+      const box = await screen.findByRole("textbox", { name: "Mentions" }, { timeout: 5000 });
+      await waitFor(() => expect(lexicalEditor(box)).toBeDefined());
+      const editor = lexicalEditor(box);
+      const type = (text: string) =>
+        act(async () => {
+          editor.update(() => $getRoot().selectEnd().insertText(text), { discrete: true });
+          await pause(0);
+        });
+      const enter = () =>
+        act(async () => {
+          editor.dispatchCommand(KEY_DOWN_COMMAND, new KeyboardEvent("keydown", { key: "Enter", cancelable: true }));
+          await pause(0);
+        });
+      await type("@");
+      await act(async () => answers.get("")!(people));
+      await screen.findByRole("option", { name: /Noor Haddad/ });
+      return { answers, box, type, enter };
+    }
+
+    it("picks the first row of the answer, not the row from the earlier query", async () => {
+      const { answers, box, type, enter } = await setup();
+      await type("no");
+      await enter();
+      expect(box.textContent).toBe("@no");
+      await act(async () => answers.get("no")!(people.slice(1)));
+      await waitFor(() => expect(box.textContent).toContain("@Noor Haddad"));
+    });
+
+    it("forgets the Enter when more typing has moved on", async () => {
+      const { answers, box, type, enter } = await setup();
+      await type("no");
+      await enter();
+      await type("o");
+      await act(async () => answers.get("no")?.(people.slice(1)));
+      await act(async () => answers.get("noo")!(people.slice(1)));
+      expect(box.textContent).toBe("@noo");
+    });
+  });
 
   it("adds nothing to the surface without the props", async () => {
     render(<RichTextEditor value="Plain" aria-label="Notes" />);

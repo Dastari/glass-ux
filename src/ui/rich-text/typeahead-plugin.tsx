@@ -126,6 +126,9 @@ export function TypeaheadPlugin({
   const [loading, setLoading] = useState(false);
   // A dismissed trigger stays closed until the caret leaves it.
   const dismissed = useRef<string | null>(null);
+  // The query the rows on show answer, and one whose first row Enter or Tab asked for.
+  const answered = useRef<string | null>(null);
+  const waiting = useRef<string | null>(null);
   const hasMentions = Boolean(mentions);
   const hasCommands = Boolean(slashCommands);
 
@@ -210,7 +213,23 @@ export function TypeaheadPlugin({
             : next;
         });
       }),
-      editor.registerCommand(KEY_DOWN_COMMAND, onKeyDown, COMMAND_PRIORITY_CRITICAL),
+      editor.registerCommand(
+        KEY_DOWN_COMMAND,
+        (event) => {
+          // The rows may still answer an earlier query: "@no" then Enter must not pick from
+          // "@". It picks the first row of the answer, unless more typing has moved on.
+          if (event.key === "Enter" || event.key === "Tab") {
+            const typed = editor.getEditorState().read(() => $triggerAt(hasMentions, hasCommands));
+            if (typed?.kind === "mention" && typed.query !== answered.current) {
+              event.preventDefault();
+              waiting.current = typed.query;
+              return true;
+            }
+          }
+          return onKeyDown(event);
+        },
+        COMMAND_PRIORITY_CRITICAL,
+      ),
       editor.registerCommand(
         BLUR_COMMAND,
         () => {
@@ -228,6 +247,7 @@ export function TypeaheadPlugin({
   const query = trigger?.kind === "mention" ? trigger.query : null;
   useEffect(() => {
     if (query === null || !search) {
+      answered.current = null;
       setResults([]);
       setLoading(false);
       return;
@@ -235,6 +255,7 @@ export function TypeaheadPlugin({
     const controller = new AbortController();
     const found = search(query, { signal: controller.signal });
     if (!("then" in found)) {
+      answered.current = query;
       setResults(found);
       setLoading(false);
       return () => controller.abort();
@@ -243,17 +264,27 @@ export function TypeaheadPlugin({
     found.then(
       (rows) => {
         if (controller.signal.aborted) return;
+        answered.current = query;
         setResults(rows);
         setLoading(false);
       },
       () => {
         if (controller.signal.aborted) return;
+        answered.current = query;
         setResults([]);
         setLoading(false);
       },
     );
     return () => controller.abort();
   }, [query, search]);
+
+  useEffect(() => {
+    if (waiting.current === null || answered.current !== query) return;
+    const asked = waiting.current;
+    waiting.current = null;
+    if (asked === query && results[0]) pick(results[0]);
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- it runs when an answer arrives
+  }, [results, query]);
 
   const { "aria-controls": controls, "aria-activedescendant": activeDescendant } = state.textProps;
   useEffect(() => {

@@ -168,6 +168,8 @@ decides when to publish. The local route:
 - `src/ui/comment-thread/comment-row.tsx` lazily imports `src/ai/markdown`, the only import from
   `ai` under `src/ui`. Moving it is not small: Markdown imports CodeBlock, EntityChip,
   CitationMarker, TableScroll and `entities` from `ai`, so it needs those injected first.
+- Base UI warns once in a while in dev that a RadioGroup changes from uncontrolled to controlled
+  (two in a full e2e run); not yet traced to a component.
 - Dark Glass: `--code-comment` in a CodeBlock bare on a canvas is 3.72:1 at worst (Ruby on Hills)
   and about 4:1 on Network, Harbour and Facets. Line numbers are fine (5.59:1), and
   `e2e/code-tokens.spec.ts` holds only those in dark.
@@ -191,9 +193,6 @@ decides when to publish. The local route:
 - A `start`/`end` Sheet opened after a page-level direction change inside the page keeps the
   earlier direction in production builds, but not in the dev server (`e2e/rtl.spec.ts:84`
   against `vite preview`; already present in 0.12.1).
-- The DataTable demo can drop a search typed before its first load finishes (seen on slow CI
-  runners: the announcement read the unfiltered count). Check whether URL-state restore
-  overwrites an early query; `e2e/data-table-announce.spec.ts` now waits for the first load.
 
 For adoption into a consuming application, read docs/getting-started.md and docs/integration.md.
 Bundled skills under skills/ cover adoption, component choice, forms, data views, assistant UI

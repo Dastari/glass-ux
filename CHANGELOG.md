@@ -294,6 +294,14 @@ light mode, and the [migration guide](docs/migration.md) lists what to review.
   across the change could reach a second copy of React (`Invalid hook call`).
 - `RichTextInput`: a controlled host that applies its state late no longer loses keystrokes. Each
   late value was taken for an outside change and replaced what had been typed since.
+- `RichTextInput` mentions: Enter and Tab wait for the rows that answer what was typed, then pick
+  the first. "@no" then Enter used to insert the row highlighted for "@" while the search was out.
+- `DataTable`: a search or filter's result count is announced for the applied search, once a
+  refetch has finished. A host that was refetching, or had not applied the search, had the old
+  rows' count announced, and the real result was never said.
+- `ReactionBar`: a read-only reaction's fill is opaque under Solid.
+- Forced colours: `GradientPicker` keeps its preview and rail in their colours, and `StatusBar`'s
+  interactive items and More button have a boundary.
 - `AppShell`: the boot script renders only in server HTML. On the client React warned about it
   and never ran it.
 - Code colours: every `--code-*` syntax role now reaches 4.5:1 in light mode in all 12 palettes on

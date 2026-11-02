@@ -21,6 +21,7 @@ import {
 } from "./docs-kit/lib/entries.mjs";
 import { propOrigin } from "./docs-kit/lib/api-options.mjs";
 import { initDocsKit } from "./docs-kit/lib/init.mjs";
+import { llmsText, writeSiteModule } from "./docs-kit/lib/site-module.mjs";
 
 const scratch = mkdtempSync(join(tmpdir(), "docs-kit-test-"));
 after(() => rmSync(scratch, { recursive: true, force: true }));
@@ -160,6 +161,27 @@ test("the scripts name no glass-ux table or path of their own", () => {
   for (const file of readdirSync(lib).filter((name) => name.endsWith(".mjs"))) {
     const text = readFileSync(join(lib, file), "utf8");
     assert.doesNotMatch(text, /sectionByFamily|familyRoots|["'`]src\/ui|apps\/docs\/dist"\)/, file);
+  }
+});
+
+test("llms.txt needs only an intro", () => {
+  assert.equal(llmsText({ title: "Sample", llms: { intro: "About it." } }), "# Sample\n\nAbout it.\n\n");
+  assert.equal(
+    llmsText({ title: "Sample", llms: { intro: "About it.", links: [{ title: "Guide", path: "docs/guide.md" }] } }),
+    "# Sample\n\nAbout it.\n\n- [Guide](docs/guide.md)\n",
+  );
+});
+
+test("a project with no guides still gets typed guides", () => {
+  const root = mkdtempSync(join(tmpdir(), "docs-kit-site-"));
+  try {
+    writeSiteModule(
+      { galleryDir: root, title: "Sample", name: "sample", version: "1.2.3", guides: [], badges: {}, families: [], familyMembers: {}, docsDir: "docs" },
+      [],
+    );
+    assert.match(readFileSync(join(root, "site.generated.ts"), "utf8"), /guides: \[\] as \{ id: string; title: string \}\[\],/);
+  } finally {
+    rmSync(root, { recursive: true });
   }
 });
 

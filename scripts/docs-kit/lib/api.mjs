@@ -23,7 +23,7 @@ import {
   entrySpecifiers,
   publicSpecifier,
 } from "./entries.mjs";
-import { writeSiteModule } from "./site-module.mjs";
+import { llmsText, writeSiteModule } from "./site-module.mjs";
 
 /** Generic prop descriptions; a project's `propDescriptions` merge over them. */
 const DESCRIPTIONS = {
@@ -465,14 +465,7 @@ export async function generateApi(kit) {
   mkdirSync(`${gallery}/guides`, { recursive: true });
   for (const guide of kit.guides)
     cpSync(`${kit.docsDir}/${guide.id}.md`, `${gallery}/guides/${guide.id}.md`);
-  if (kit.llms)
-    writeFileSync(
-      "llms.txt",
-      `# ${kit.title}\n\n${kit.llms.intro}\n\n` +
-        kit.llms.links
-          .map((link) => `- [${link.title}](${link.path})\n`)
-          .join(""),
-    );
+  if (kit.llms) writeFileSync("llms.txt", llmsText(kit));
   writeSiteModule(kit, collections);
   const app = await Application.bootstrapWithPlugins({
     entryPoints: [...entries.map((e) => e.file), ...kit.entries.referenceOnly],

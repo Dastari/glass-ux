@@ -4,6 +4,24 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Added
+
+- `glass-ux/pane-layout` exports `openPanel`, `panelsOf`, `stacksOf` and `stackOf`, for a host that
+  holds the layout outside the panels.
+- `glass-ux/testing/file-provider`: `testFileProvider` with no test runner behind it, so an adapter
+  that only works in a browser can run it there. `glass-ux/testing` keeps exporting it.
+- `glass-ux/i18n/catalog`, the module a package built on Glass UX augments to add its namespace to
+  `MessageCatalog`, so `defineMessagePack` and `MessageOverrides` type it. `declare module
+  "glass-ux/i18n"` cannot merge, because that entry re-exports the interface.
+
+### Fixed
+
+- `glass-ux-docs api`: `llms` works with no `links`. It crashed.
+- `glass-ux-docs-kit`: the site frame from `init` compiles under `noUncheckedIndexedAccess` and in
+  a project with no guides. A site's `guides` is typed even when empty.
+
 ## 0.14.0
 
 Application structure, files and media: `PaneLayout`, `Menubar`, `KeymapProvider`, `StatusBar`,

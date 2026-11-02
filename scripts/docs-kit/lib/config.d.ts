@@ -94,7 +94,7 @@ export interface DocsKitConfig {
   /** Guide files under `docsDir`, routed and copied for the site. A bare id takes its title from the first heading. */
   guides?: readonly (string | { id: string; title: string })[];
   /** Text and links for `llms.txt`. Omit to skip it. */
-  llms?: { intro: string; links: readonly { title: string; path: string }[] };
+  llms?: { intro: string; links?: readonly { title: string; path: string }[] };
   /** Merged over the generic prop descriptions. */
   propDescriptions?: Readonly<Record<string, string>>;
   /** The section showing a component. Default: the section named after its family. */

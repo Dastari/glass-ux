@@ -6,6 +6,11 @@ const properties = (value) =>
     .map(([key, item]) => `  ${key}: ${JSON.stringify(item)},`)
     .join("\n");
 
+/** The text of `llms.txt`. A project may give an intro and no links. */
+export const llmsText = (kit) =>
+  `# ${kit.title}\n\n${kit.llms.intro}\n\n` +
+  (kit.llms.links ?? []).map((link) => `- [${link.title}](${link.path})\n`).join("");
+
 /**
  * Writes the module a site passes to `DocsKitProvider`. The `import.meta.glob` calls and the
  * `new URL(..., import.meta.url)` patterns live in these generated files because Vite resolves
@@ -15,6 +20,9 @@ const properties = (value) =>
  * Page content sits in a second module that loads on demand. Vite inlines small assets as data
  * URLs wherever the pattern is, so in `site.generated.ts` every API page and example under its
  * inline limit would join the first chunk, and the demo map would bring its preload lists too.
+ *
+ * `guides` carries its type because an empty list would otherwise be `never[]`, which stops a
+ * project with no guides compiling the site frame.
  *
  * Keep the coverage JSON a dynamic import. Imported statically it changes the order TypeScript
  * creates literal types in, which reorders unions across the generated API pages.
@@ -34,7 +42,6 @@ export function writeSiteModule(kit, collections) {
     docsSourceUrl: kit.repository
       ? `${kit.repository}/blob/v${kit.version}/${kit.docsDir}/`
       : null,
-    guides: kit.guides,
     collections: collections.map(({ collection, api }) => ({
       id: collection.id,
       name: collection.name,
@@ -56,6 +63,7 @@ import families from "./families.generated.json";
 
 export const site = {
 ${properties(site)}
+  guides: ${JSON.stringify(kit.guides)} as { id: string; title: string }[],
   catalogue,
   families,
   sectionMetas: import.meta.glob("./sections/*.meta.{js,ts}", { eager: true, import: "meta" }),

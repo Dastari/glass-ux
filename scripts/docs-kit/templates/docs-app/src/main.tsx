@@ -252,7 +252,7 @@ function Toolbar() {
         value={flat ? "plain" : (appearance.background ?? "silk")}
         disabled={flat}
         onValueChange={(background) => update({ background })}
-        options={BACKGROUNDS.map((value) => ({ value, label: BACKGROUND_LABELS[value] }))}
+        options={BACKGROUNDS.map((value) => ({ value, label: BACKGROUND_LABELS[value] ?? value }))}
       />
     </div>
   );

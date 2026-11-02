@@ -4,8 +4,7 @@ import { Profiler, StrictMode, useEffect, useState, type ComponentType } from "r
 import { renderToString } from "react-dom/server"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { StorageScopeContext } from "../../lib/storage-scope.js"
-import { closePanel, column, layoutOf, movePanel, PaneLayout, paneLayoutStorageKey, row, sized, stack, usePaneLayout, usePanelActions, type PaneDefinition, type PaneLayoutHandle, type PaneLayoutState, type PaneSplit, type PaneStack } from "./index.js"
-import { stackOf } from "./tree.js"
+import { closePanel, column, layoutOf, movePanel, openPanel, PaneLayout, paneLayoutStorageKey, panelsOf, row, sized, stack, stackOf, stacksOf, usePaneLayout, usePanelActions, type PaneDefinition, type PaneLayoutHandle, type PaneLayoutState, type PaneSplit, type PaneStack } from "./index.js"
 
 /** Counts for one panel: a mount is a useState initialiser, an effect is a setup. */
 interface Counts {
@@ -487,5 +486,13 @@ describe("the panel's actions", () => {
   it("names its region and buttons from the panel's title in a strip-less stack", () => {
     render(<PaneLayout panel={panel} defaultLayout={layoutOf(row(stack("editor"), stack("files")))} />)
     expect(within(screen.getByRole("region", { name: "Editor" })).getByText("Editor")).toBeInTheDocument()
+  })
+})
+
+describe("a layout held outside the panels", () => {
+  it("opens a panel and reads the tree through the public entry", () => {
+    const layout = openPanel(layoutOf(row(stack("files"), stack("editor"))), "notes", { stack: stacksOf(layoutOf(row(stack("files"), stack("editor"))).root)[1]!.id })
+    expect(panelsOf(layout.root)).toEqual(["files", "editor", "notes"])
+    expect(stackOf(layout.root, "notes")?.active).toBe("notes")
   })
 })

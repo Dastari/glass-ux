@@ -51,7 +51,7 @@ no change to the JSON.
 
 | Build | Result |
 | --- | --- |
-| `stack("a", "b")` | Panels in one place, the first active. One panel draws no strip unless `tabs: "always"`. |
+| `stack("a", "b")` | Panels in one place, the first active. One panel draws no strip unless `tabs: "always"`, which an editor needs to keep a file's name and unsaved mark in view. |
 | `row(...)`, `column(...)` | Children side by side, or one above the other. |
 | `sized(node, 2)` | A share of the free space (`fr`). The default is 1. |
 | `sized(node, "16rem")` | A fixed track that follows UI scale and keeps its width as the box resizes. |
@@ -66,8 +66,9 @@ fires once per finished change with a `reason`, never during a drag. `storageKey
 uncontrolled layout; inside a window body it defaults to one key per window kind, and
 `paneLayoutStorageKey(kind)` names it for clearing.
 
-The pure functions work on any layout, with no React or DOM: `movePanel`, `closePanel`,
-`parsePaneLayout` and `pruneLayout`. Inside a panel, `usePaneLayout()` gives `open`, `close`, `move`,
+The pure functions work on any layout, with no React or DOM: `openPanel`, `movePanel`, `closePanel`,
+`panelsOf`, `stacksOf`, `stackOf`, `parsePaneLayout` and `pruneLayout`. A host that holds `layout`
+outside the panels, opening a file from a Sidebar for instance, uses these. Inside a panel, `usePaneLayout()` gives `open`, `close`, `move`,
 `reveal`, `setLayout` and the live `layout`. `setLayout` switches saved workspaces, and a panel in
 both keeps its mount.
 

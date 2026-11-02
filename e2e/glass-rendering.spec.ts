@@ -27,6 +27,10 @@ async function open(page: Page, glass = "full") {
   await expect(page.locator(".docs-sidebar")).toBeVisible({ timeout: 30_000 });
 }
 
+/** Safari has no canvas filters, so the baked renderer declines and the live blur stays (frost-render.ts). */
+const canBake = (page: Page) => page.evaluate(() => "filter" in CanvasRenderingContext2D.prototype);
+const NO_BAKE = "this browser has no canvas filters: baked frost falls back to the live blur";
+
 const bake = async (page: Page) => {
   await page.evaluate(() => {
     document.documentElement.dataset.glassRendering = "baked";
@@ -44,6 +48,7 @@ const sidebarPixels = async (page: Page) => {
 
 test("baked frost matches the live blur at rest", async ({ page }) => {
   await open(page);
+  test.skip(!(await canBake(page)), NO_BAKE);
   await page.waitForTimeout(500);
   expect(await frost(page, ".docs-sidebar > .fa-sidebar-pane")).toMatchObject({ blur: expect.stringContaining("blur("), baked: false });
   const live = await sidebarPixels(page);
@@ -74,6 +79,7 @@ test("baked frost matches the live blur at rest", async ({ page }) => {
 
 test("a scrolling page blurs live and returns to the bake when it settles", async ({ page }) => {
   await open(page);
+  test.skip(!(await canBake(page)), NO_BAKE);
   await bake(page);
   const panel = ".gallery-document-sections .glass-panel";
   expect(await frost(page, panel)).toMatchObject({ blur: "none", baked: true });
@@ -87,6 +93,7 @@ test("a scrolling page blurs live and returns to the bake when it settles", asyn
 
 test("a surface takes its own level, never more transparent than the page's", async ({ page }) => {
   await open(page);
+  test.skip(!(await canBake(page)), NO_BAKE);
   const panel = page.locator(".gallery-document-sections .glass-panel").first();
   await panel.evaluate((element) => {
     element.dataset.glass = "reduced";
@@ -116,12 +123,25 @@ test("a surface takes its own level, never more transparent than the page's", as
 test("the documentation toolbar switches the glass rendering and remembers it", async ({ page }) => {
   await open(page);
   const blur = page.locator('.docs-header [aria-label="Blur"]');
+  const baking = await canBake(page);
   await blur.getByText("Baked").first().click();
   await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "baked");
-  await expect(page.locator("html")).toHaveAttribute("data-frost", "", { timeout: 10_000 });
+  if (baking) await expect(page.locator("html")).toHaveAttribute("data-frost", "", { timeout: 10_000 });
   await page.reload();
-  await expect(page.locator("html")).toHaveAttribute("data-frost", "", { timeout: 10_000 });
+  await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "baked");
+  if (baking) await expect(page.locator("html")).toHaveAttribute("data-frost", "", { timeout: 10_000 });
   await page.locator('.docs-header [aria-label="Blur"]').getByText("Live").first().click();
   await expect(page.locator("html")).not.toHaveAttribute("data-glass-rendering", /./);
   expect((await frost(page, ".docs-sidebar > .fa-sidebar-pane")).blur).toContain("blur(");
+});
+
+test("without canvas filters a baked setting keeps the live blur", async ({ page }) => {
+  await open(page);
+  test.skip(await canBake(page), "this browser bakes");
+  await page.evaluate(() => {
+    document.documentElement.dataset.glassRendering = "baked";
+  });
+  await page.waitForTimeout(1500);
+  await expect(page.locator("html")).not.toHaveAttribute("data-frost", /./);
+  expect(await frost(page, ".docs-sidebar > .fa-sidebar-pane")).toMatchObject({ blur: expect.stringContaining("blur("), baked: false });
 });

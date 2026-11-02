@@ -1,4 +1,8 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
+
+/** The popup opens at 0.9 scale: its box is only true once the transition has finished. */
+const settled = (popup: Locator) =>
+  popup.evaluate((element) => Promise.all(element.getAnimations().map((animation) => animation.finished)));
 
 /**
  * Density, UI scale, radius and line weight for Typeahead, FindBar, ActivityFeed and DiffView,
@@ -60,6 +64,7 @@ for (const preset of PRESETS)
       await page.getByRole("combobox", { name: "Find a file with detail" }).focus();
       const popup = page.locator(".fa-typeahead");
       await expect(popup.getByRole("option").first()).toBeVisible();
+      await settled(popup);
       await expect(popup).toHaveCSS("border-top-left-radius", `${await token(page, "--radius-overlay", "border-top-left-radius")}px`);
       const row = (await popup.getByRole("option").first().boundingBox())!;
       expect(row.height).toBeGreaterThanOrEqual((await token(page, "--item-h")) - 0.5);
@@ -75,6 +80,7 @@ for (const preset of PRESETS)
       await page.getByRole("combobox", { name: "Find a file, slowly" }).focus();
       const popup = page.locator(".fa-typeahead");
       await expect(popup.getByRole("option")).toHaveCount(2);
+      await settled(popup);
       const before = (await popup.boundingBox())!;
       await expect(popup.getByRole("option")).toHaveCount(6);
       expect(await popup.boundingBox()).toEqual(before);

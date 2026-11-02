@@ -280,7 +280,35 @@ export function ComponentDocumentation({ id }: { id: string }) {
       },
     );
     targets.forEach((target) => observer.observe(target));
+    // Sections above the target keep growing for a moment after the jump. Chromium's scroll
+    // anchoring holds the target in place; Safari has none, so the target ends up far below
+    // the view. Hold its place until the person scrolls or the layout has been still for a while.
+    let release = () => {};
+    const holdPlace = (target: HTMLElement) => {
+      release();
+      const edge = scrollRoot ?? document.documentElement;
+      const offset = () =>
+        target.getBoundingClientRect().top -
+        (scrollRoot ? scrollRoot.getBoundingClientRect().top : 0);
+      const wanted = offset();
+      const observer = new ResizeObserver(() => {
+        const moved = offset() - wanted;
+        if (Math.abs(moved) > 1) (scrollRoot ?? window).scrollBy({ top: moved });
+      });
+      if (root.current) observer.observe(root.current);
+      const events = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
+      const stop = () => {
+        observer.disconnect();
+        window.clearTimeout(timer);
+        events.forEach((name) => edge.removeEventListener(name, stop));
+        if (release === stop) release = () => {};
+      };
+      const timer = window.setTimeout(stop, 3000);
+      events.forEach((name) => edge.addEventListener(name, stop, { passive: true }));
+      release = stop;
+    };
     const goToHash = () => {
+      release();
       const hash = decodeURIComponent(window.location.hash.slice(1));
       // Old per-export routes still open the same specimen, usage or API within
       // their parent document. Named family anchors also work on a direct load.
@@ -306,10 +334,13 @@ export function ComponentDocumentation({ id }: { id: string }) {
         cancelAnimationFrame(frame);
         frame = requestAnimationFrame(() => {
           frame = requestAnimationFrame(() => {
-            if (!cancelled)
-              root.current
-                ?.querySelector<HTMLElement>(`#${CSS.escape(targetId)}`)
-                ?.scrollIntoView({ block: "start" });
+            if (cancelled) return;
+            const target = root.current?.querySelector<HTMLElement>(
+              `#${CSS.escape(targetId)}`,
+            );
+            if (!target) return;
+            target.scrollIntoView({ block: "start" });
+            holdPlace(target);
           });
         });
       });
@@ -320,6 +351,7 @@ export function ComponentDocumentation({ id }: { id: string }) {
     window.addEventListener("hashchange", goToHash);
     return () => {
       cancelled = true;
+      release();
       cancelAnimationFrame(frame);
       window.removeEventListener("hashchange", goToHash);
       observer.disconnect();

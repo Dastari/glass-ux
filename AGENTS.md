@@ -168,9 +168,22 @@ decides when to publish. The local route:
 - `src/ui/comment-thread/comment-row.tsx` lazily imports `src/ai/markdown`, the only import from
   `ai` under `src/ui`. Moving it is not small: Markdown imports CodeBlock, EntityChip,
   CitationMarker, TableScroll and `entities` from `ai`, so it needs those injected first.
-- WPE WebKit (build 2368, not Safari itself): DataTable pages raise `ResizeObserver loop completed
-  with undelivered notifications` as a page error, and Menubar keyboard moves, the context
-  switcher's focus return and a disabled row's tooltip placement fail there. None is traced yet.
+- WebKit triage (WPE build 2368, not Safari; `.handoff/webkit-triage.md` has the table). Fixed:
+  charts drew nothing (Safari has no CSS `d`; marks now carry the `d` attribute too), the context
+  switcher lost focus on close, the docs deep link missed its target (no scroll anchoring),
+  fit-form read a fit as a spill. Still open:
+  - DataTable pages fire `ResizeObserver loop completed with undelivered notifications` in
+    Chromium too (Playwright only reports it as a page error in WebKit): tables mount inside the
+    shared observer's delivery, and their first observations sit above the depth already
+    delivered. One frame late, no feedback loop; error reporters see it. Deferring the commit out
+    of the delivery is the fix, and it changes first-paint timing.
+  - ConversationLog in WebKit ends 26 px short of the end after an answer completes (the browser
+    moves `scrollTop` with no size change, so nothing re-pins). `conversation-follow.spec.ts:11`.
+  - Baked frost needs canvas filters, which Safari lacks: it keeps the live blur by design.
+  - `fit-form` tolerance went from 1 to 2 px; a row can now stay on its wider form up to 2 px
+    past its box (owner to see).
+  - WPE cannot test forced colours, element fullscreen, WebGL 2 (`maps-basemap`), clipboard
+    permissions, CDP, mobile wheel, or dragging a native resize grip.
 - Tree with `onMove` (and PaneLayout's tab titles) remount when their lazy drag or menu code
   arrives. Tree hands focus back, but a click landing in that moment loses its selection. Loading
   the code with the component would remove the swap, at the cost of the split.

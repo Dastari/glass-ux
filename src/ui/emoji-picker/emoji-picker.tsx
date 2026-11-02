@@ -265,7 +265,7 @@ export function EmojiPicker({
   }, [searching, ready, entries.length, announce, messages, locale])
 
   const pick = (entry: EmojiEntry, index: number) => {
-    const emoji = showRecent ? (recent?.[index] ?? entry.emoji) : entry.tones ? applySkinTone(entry.emoji, tone) : entry.emoji
+    const emoji = showRecent && !query.trim() ? (recent?.[index] ?? entry.emoji) : entry.tones ? applySkinTone(entry.emoji, tone) : entry.emoji
     onPick({ emoji, base: entry.emoji, name: entry.name, skinTone: entry.tones ? tone : 0 })
   }
   const updatePreview = useCallback((entry: EmojiEntry, glyph: string) => setPreview({ glyph, name: entry.name }), [])
@@ -317,8 +317,11 @@ export function EmojiPicker({
           if (event.key === "ArrowDown") {
             listRef.current?.querySelector<HTMLElement>('[tabindex="0"]')?.focus()
             event.preventDefault()
-          } else if (event.key === "Enter" && entries[0]) {
-            pick(entries[0], 0)
+          } else if (event.key === "Enter") {
+            // The list follows the field at low priority: pick from what was typed.
+            const first = set && query.trim() ? searchEmoji(set, query, locale)[0] : entries[0]
+            if (!first) return
+            pick(first, 0)
             event.preventDefault()
           }
         }}

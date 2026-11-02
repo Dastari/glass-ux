@@ -299,6 +299,7 @@ light mode, and the [migration guide](docs/migration.md) lists what to review.
 - `Tree`: with `onMove`, the rows mount anew when drag support finishes loading. A row focused at
   that moment now keeps focus, so the keyboard is not left on the page. A click landing in the same
   moment still loses its selection, because its element has gone.
+- `EmojiPicker`: Enter in the search picks from what was typed, not the list still catching up.
 - `FileDialog`: a tap into a folder followed quickly by a tap on the row that replaced it no longer
   opens that file: a double press takes two presses on the same row.
 - `DataTable`: a search or filter's result count is announced for the applied search, once a

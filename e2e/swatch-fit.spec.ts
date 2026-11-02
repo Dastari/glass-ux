@@ -194,6 +194,11 @@ test.describe("docs toolbar fit", () => {
     const group = toolbar.getByRole("group", { name: "Palette", exact: true });
     await expect(group).toHaveAttribute("data-form", "menu");
     const trigger = toolbar.getByRole("button", { name: "Palette: Ocean", exact: true });
+    // The toolbar's controls fold one after another, a delivery each; Mode was still folding
+    // (18 px) when WebKit's first read came, so let it settle before taking the width.
+    await expect(toolbar.getByRole("group", { name: "Mode" })).toHaveAttribute("data-form", "icons");
+    await settle(page);
+    await settle(page);
     const before = await trigger.boundingBox();
     await trigger.focus();
     await page.keyboard.press("Enter");

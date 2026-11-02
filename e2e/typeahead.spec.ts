@@ -204,6 +204,9 @@ test.describe("in RichTextInput", () => {
     const results = await new AxeBuilder({ page })
       .include('[data-testid="rich-text-typeahead-demo"]')
       .include(".fa-typeahead")
+      // Base UI's focus guards are aria-hidden with tabindex 0 by design. Chromium's axe reports
+      // them "incomplete" (a modal is open); in WebKit the same DOM counts as a violation.
+      .exclude("[data-base-ui-focus-guard]")
       .analyze();
     expect(results.violations).toEqual([]);
   });

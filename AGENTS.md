@@ -176,12 +176,13 @@ decides when to publish. The local route:
     Chromium too (Playwright only reports it as a page error in WebKit): tables mount inside the
     shared observer's delivery, and their first observations sit above the depth already
     delivered. One frame late, no feedback loop; error reporters see it. Deferring the commit out
-    of the delivery is the fix, and it changes first-paint timing.
+    of the delivery is the fix, and it changes first-paint timing. Menubar pages report the same
+    message in WebKit (`menubar.spec.ts`); its cause there has not been traced.
   - ConversationLog in WebKit ends 26 px short of the end after an answer completes (the browser
     moves `scrollTop` with no size change, so nothing re-pins). `conversation-follow.spec.ts:11`.
   - Baked frost needs canvas filters, which Safari lacks: it keeps the live blur by design.
   - `fit-form` tolerance went from 1 to 2 px; a row can now stay on its wider form up to 2 px
-    past its box (owner to see).
+    past its box.
   - WPE cannot test forced colours, element fullscreen, WebGL 2 (`maps-basemap`), clipboard
     permissions, CDP, mobile wheel, or dragging a native resize grip.
 - Tree with `onMove` (and PaneLayout's tab titles) remount when their lazy drag or menu code

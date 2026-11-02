@@ -334,6 +334,12 @@ light mode, and the [migration guide](docs/migration.md) lists what to review.
 - `Segmented` and `SwatchPicker` fold to their menu in right-to-left text when they run out of
   room, instead of clipping: `overflowsOwnBox` (`glass-ux/fit-form`) now reads the edge the row
   spills past.
+- Charts: path marks carry the `d` attribute as well as the CSS property, which Safari does not have.
+  Marks in 15 chart types, among them line, bar, pie and treemap, drew nothing in WebKit, where the
+  bug was found.
+- `ContextSwitcher`: focus returns to the trigger on close where WebKit blurs a closing popup.
+- `overflowsOwnBox` (`glass-ux/fit-form`): the tolerance is 2px rather than 1px, for three rounded
+  measurements. WebKit could read a row that fits as spilling and leave it on its menu form.
 - `BarChart`: the last column's label no longer overruns the plot when a narrow box skips labels.
 - `DataTable`: Copy as table works on non-secure pages through the shared clipboard helper, and
   reports a refused copy as before.

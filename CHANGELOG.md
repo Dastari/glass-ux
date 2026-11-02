@@ -296,6 +296,8 @@ light mode, and the [migration guide](docs/migration.md) lists what to review.
   late value was taken for an outside change and replaced what had been typed since.
 - `RichTextInput` mentions: Enter and Tab wait for the rows that answer what was typed, then pick
   the first. "@no" then Enter used to insert the row highlighted for "@" while the search was out.
+- `FileDialog`: a tap into a folder followed quickly by a tap on the row that replaced it no longer
+  opens that file: a double press takes two presses on the same row.
 - `DataTable`: a search or filter's result count is announced for the applied search, once a
   refetch has finished. A host that was refetching, or had not applied the search, had the old
   rows' count announced, and the real result was never said.

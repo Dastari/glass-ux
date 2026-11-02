@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react"
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { DirectoryPage, FileProvider, ListOptions } from "../../file-provider/index.js"
@@ -169,6 +169,23 @@ describe("runs", () => {
     await user.click(await screen.findByRole("button", { name: messages.cancel }))
     expect(onOpenChange).toHaveBeenCalledWith(false)
     expect(screen.getByRole("dialog")).toBeTruthy()
+  })
+
+  it("a double press needs both presses on the same row", async () => {
+    const onOpen = vi.fn()
+    render(<FileDialog mode="open" open providers={[memoryFiles(SEED)]} onOpenChange={() => undefined} onOpen={onOpen} />)
+    const row = async (name: string) => (await screen.findByText(name)).closest<HTMLElement>('[role="row"]')!
+    const first = await row("b.txt")
+    const second = await row("c.png")
+    // A tap that replaces the list leaves a new row under the finger, and the browser sees a double-tap.
+    fireEvent.click(first)
+    fireEvent.click(second)
+    fireEvent.doubleClick(second)
+    expect(onOpen).not.toHaveBeenCalled()
+    fireEvent.click(second)
+    fireEvent.click(second)
+    fireEvent.doubleClick(second)
+    await waitFor(() => expect(onOpen).toHaveBeenCalledOnce())
   })
 
   it("is uncontrolled from a trigger, with the view from defaultView", async () => {

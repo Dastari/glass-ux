@@ -242,7 +242,11 @@ export function Entries({ provider, entries, view, multiple, selected, blocked, 
   }
 
   const pointer = useRef("mouse")
+  // The last two rows pressed. A tap that replaces the list leaves a new row under the finger,
+  // and the browser counts the next tap as a double-tap on it, which must not open anything.
+  const pressed = useRef<[string | null, string | null]>([null, null])
   const press = (entry: FileEntry, index: number, event: MouseEvent<HTMLElement>) => {
+    pressed.current = [pressed.current[1], entry.uri]
     setFocusUri(entry.uri)
     const target = event.target instanceof Element ? event.target : null
     if (target?.closest(".fa-file-dialog-menu")) return
@@ -394,6 +398,7 @@ export function Entries({ provider, entries, view, multiple, selected, blocked, 
       onClick: (event: MouseEvent<HTMLElement>) => press(entry, index, event),
       onDoubleClick: (event: MouseEvent<HTMLElement>) => {
         if (reason || (event.target instanceof Element && event.target.closest(".fa-file-dialog-menu"))) return
+        if (pressed.current[0] !== entry.uri) return
         onActivate(entry)
       },
     }

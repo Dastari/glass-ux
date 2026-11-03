@@ -486,8 +486,8 @@
        panel or chrome layer on the page canvas shows the canvas blurred once into a bitmap,
        fixed to the viewport like the canvas, under its own fill, instead of blurring what is
        behind it every frame. The live blur stays wherever the bitmap would be wrong: a layer
-       being dragged, a layer in another layer, a floating window, the window dock and phone
-       tab bar (they sit over content), a mode island, and a layer on any canvas other than
+       being dragged, a layer in another layer, a floating window, a floating pane stack, the
+       window dock and phone tab bar (they sit over content), a mode island, and a layer on any canvas other than
        the page's; and, by the rule after this one, a layer that slides or whose scroller
        scrolls (data-frost-live). */
     :root[data-glass-rendering="baked"][data-frost]
@@ -497,6 +497,7 @@
         [data-mode]:not(:root) *,
         :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached) *,
         .fa-window:not([data-primary]),
+        .fa-pane-stack[data-overlay="floating"],
         .fa-wm-dock,
         .fa-tabbar,
         :is(.canvas-ambient, .canvas-background):not([data-frost-canvas]) *

@@ -6,8 +6,14 @@
  * --_t0, --_t1 … on the split. Each stack holds a slot, and each panel a .fa-pane-host created
  * outside React that sits absolutely in its slot, so nothing inside a panel can move the tracks.
  *
+ * Overlay placement (data-placement="overlay"): the ground stack, the one holding the primary
+ * panel, lies under the layout from edge to edge, and the tree keeps its tracks over it. Its own
+ * track is left clear, so the other stacks float anchored to their edges and their separators
+ * still resize them. Only attributes change between docked and overlay: no element moves.
+ *
  * Component tokens
- *   --_bar  the height of a stack's strip or title
+ *   --_bar    the height of a stack's strip or title
+ *   --_inset  overlay: the room between floating stacks and the ground's edges
  */
 @layer components {
   .fa-pane-layout {
@@ -196,6 +202,43 @@
     position: absolute;
     z-index: var(--z-raised);
     inset: 0;
+  }
+
+  /* ── Overlay placement ─────────────────────────────────────────────────── */
+  .fa-pane-layout[data-placement="overlay"] {
+    --_inset: var(--gap-panels);
+    isolation: isolate;
+    padding: var(--_inset);
+  }
+  /* The ground's bar (title, tabs, menu) stays in view: floating stacks start below it. */
+  .fa-pane-layout[data-placement="overlay"][data-ground-bar] {
+    padding-block-start: calc(var(--control-h-md) + var(--_inset));
+  }
+  .fa-pane-stack[data-overlay="ground"] {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+  }
+  /* The tree passes the pointer through its clear track and gaps to the ground. */
+  .fa-pane-split[data-placement="overlay"] {
+    pointer-events: none;
+  }
+  .fa-pane-stack[data-overlay],
+  .fa-pane-split[data-placement="overlay"] > .fa-split-handle,
+  .fa-pane-split[data-placement="overlay"] > .fa-pane-track > .fa-split-rail {
+    pointer-events: auto;
+  }
+  .fa-pane-stack[data-overlay="floating"],
+  .fa-pane-split[data-placement="overlay"] > .fa-split-handle,
+  .fa-pane-split[data-placement="overlay"] > .fa-pane-track > .fa-split-rail {
+    position: relative;
+    z-index: var(--z-raised);
+  }
+  /* A hidden floating stack leaves a chip with its show button, not a strip across the ground. */
+  .fa-pane-split[data-placement="overlay"] > .fa-pane-track > .fa-split-rail {
+    align-self: flex-start;
+    border-radius: calc(var(--radius-control) + var(--space-1));
+    box-shadow: revert-layer; /* the material's elevation, not the docked rail's hairline */
   }
 
   .fa-pane-parking {

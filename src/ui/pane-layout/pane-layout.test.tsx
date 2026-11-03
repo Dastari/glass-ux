@@ -4,7 +4,8 @@ import { Profiler, StrictMode, useEffect, useState, type ComponentType } from "r
 import { renderToString } from "react-dom/server"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { StorageScopeContext } from "../../lib/storage-scope.js"
-import { closePanel, column, layoutOf, movePanel, openPanel, PaneLayout, paneLayoutStorageKey, panelsOf, row, sized, stack, stackOf, stacksOf, usePaneLayout, usePanelActions, type PaneDefinition, type PaneLayoutHandle, type PaneLayoutState, type PaneSplit, type PaneStack } from "./index.js"
+import { setMaximised } from "./tree.js"
+import { closePanel, column, layoutOf, movePanel, openPanel, PaneLayout, paneLayoutStorageKey, panelsOf, row, setPlacement, sized, stack, stackOf, stacksOf, usePaneLayout, usePanelActions, type PaneDefinition, type PaneLayoutHandle, type PaneLayoutState, type PaneSplit, type PaneStack } from "./index.js"
 
 /** Counts for one panel: a mount is a useState initialiser, an effect is a setup. */
 interface Counts {
@@ -494,5 +495,131 @@ describe("a layout held outside the panels", () => {
     const layout = openPanel(layoutOf(row(stack("files"), stack("editor"))), "notes", { stack: stacksOf(layoutOf(row(stack("files"), stack("editor"))).root)[1]!.id })
     expect(panelsOf(layout.root)).toEqual(["files", "editor", "notes"])
     expect(stackOf(layout.root, "notes")?.active).toBe("notes")
+  })
+})
+
+describe("overlay placement", () => {
+  const overlay = () => setPlacement(workbench(), "overlay")
+  const stackEl = (id: string) => hostOf(id).closest<HTMLElement>("[data-stack]")!
+  const root = () => document.querySelector<HTMLElement>(".fa-pane-layout")!
+
+  it("a docked layout carries none of its attributes", () => {
+    render(<PaneLayout panel={panel} defaultLayout={workbench()} moving />)
+    expect(document.querySelectorAll("[data-overlay], [data-placement], [data-ground-bar], [data-moving]")).toHaveLength(0)
+    expect(document.querySelector(".fa-split-rail.glass-chrome")).toBeNull()
+  })
+
+  it("lays the primary panel's stack under the rest, with the tree's order and regions unchanged", () => {
+    render(<PaneLayout panel={panel} defaultLayout={overlay()} />)
+    expect(root()).toHaveAttribute("data-placement", "overlay")
+    expect(root()).toHaveAttribute("data-ground-bar")
+    expect(stackEl("editor")).toHaveAttribute("data-overlay", "ground")
+    expect(stackEl("files")).toHaveAttribute("data-overlay", "floating")
+    expect(stackEl("session")).toHaveAttribute("data-overlay", "floating")
+    expect(screen.getAllByRole("region").map((region) => region.getAttribute("aria-label"))).toEqual(["Files", "Editor", "Session"])
+    expect(screen.getAllByRole("separator")).toHaveLength(2)
+    expect(document.querySelectorAll("[data-stack][data-focus-region]")).toHaveLength(3)
+  })
+
+  it("switching docked and overlay moves no host and remounts nothing, run panels included", () => {
+    const onLayoutChange = vi.fn()
+    render(<Controlled initial={workbench()} onChange={onLayoutChange} />)
+    fireEvent.click(screen.getByRole("tab", { name: "Logs" }))
+    onLayoutChange.mockClear()
+    const before = ["files", "editor", "logs", "session"].map((id) => [hostOf(id), hostOf(id).parentElement])
+    const stacks = [...document.querySelectorAll("[data-stack]")]
+    for (const placement of ["overlay", "docked", "overlay"] as const) {
+      act(() => latest((layout) => setPlacement(layout, placement)))
+      expect(["files", "editor", "logs", "session"].map((id) => [hostOf(id), hostOf(id).parentElement])).toEqual(before)
+      expect([...document.querySelectorAll("[data-stack]")]).toEqual(stacks)
+    }
+    for (const id of ["files", "editor", "logs"]) expect(count(id)).toMatchObject({ mounts: 1, setups: 1, cleanups: 0 })
+    expect(count("session")).toMatchObject({ mounts: 1, setups: 1, cleanups: 0 })
+    expect(onLayoutChange).not.toHaveBeenCalled()
+  })
+
+  it('a flush layout draws each stack as a Panel in overlay, and keeps its mounts through the switch', () => {
+    function Flush() {
+      const [layout, setLayout] = useState(workbench())
+      latest = setLayout
+      return <PaneLayout panel={panel} layout={layout} chrome="flush" />
+    }
+    render(<Flush />)
+    expect(document.querySelector(".fa-pane-surface")).not.toBeNull()
+    act(() => latest((layout) => setPlacement(layout, "overlay")))
+    expect(document.querySelector(".fa-pane-surface")).toBeNull()
+    expect(root()).toHaveAttribute("data-chrome", "panel")
+    expect(stackEl("files")).toHaveClass("glass-panel")
+    act(() => latest((layout) => setPlacement(layout, "docked")))
+    expect(document.querySelector(".fa-pane-surface")).not.toBeNull()
+    for (const id of ["files", "editor", "session"]) expect(count(id)).toMatchObject({ mounts: 1, cleanups: 0 })
+  })
+
+  it("moving marks the floating stacks only, and only in overlay", () => {
+    function Host({ moving, layout }: { moving: boolean; layout: PaneLayoutState }) {
+      return <PaneLayout panel={panel} layout={layout} moving={moving} />
+    }
+    const view = render(<Host moving={false} layout={overlay()} />)
+    expect(document.querySelectorAll("[data-moving]")).toHaveLength(0)
+    view.rerender(<Host moving layout={overlay()} />)
+    expect(stackEl("files")).toHaveAttribute("data-moving")
+    expect(stackEl("session")).toHaveAttribute("data-moving")
+    expect(stackEl("editor")).not.toHaveAttribute("data-moving")
+    view.rerender(<Host moving layout={workbench()} />)
+    expect(document.querySelectorAll("[data-moving]")).toHaveLength(0)
+    view.rerender(<Host moving layout={overlay()} />)
+    expect(document.querySelectorAll("[data-moving]")).toHaveLength(2)
+    view.rerender(<Host moving={false} layout={overlay()} />)
+    expect(document.querySelectorAll("[data-moving]")).toHaveLength(0)
+  })
+
+  it("a panel says it is moving with setMoving, and nothing renders", () => {
+    let handle: PaneLayoutHandle | null = null
+    const Driver: ComponentType<{ id: string }> = ({ id }) => {
+      handle = usePaneLayout()
+      return <Counted id={id} />
+    }
+    const driven = (id: string) => (id === "editor" ? { title: "Editor", component: Driver, primary: true } : panel(id))
+    const onRender = vi.fn()
+    render(
+      <Profiler id="layout" onRender={onRender}>
+        <PaneLayout panel={driven} defaultLayout={overlay()} />
+      </Profiler>
+    )
+    const renders = onRender.mock.calls.length
+    act(() => handle!.setMoving(true))
+    expect(document.querySelectorAll("[data-moving]")).toHaveLength(2)
+    expect(stackEl("editor")).not.toHaveAttribute("data-moving")
+    act(() => handle!.setMoving(false))
+    expect(document.querySelectorAll("[data-moving]")).toHaveLength(0)
+    expect(onRender.mock.calls.length).toBe(renders)
+  })
+
+  it("is not drawn on a phone, while a stack is maximised, or with nothing to float", () => {
+    const rect = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({ width: 320, height: 640, left: 0, top: 0, right: 320, bottom: 640, x: 0, y: 0, toJSON: () => null })
+    const phone = render(<PaneLayout panel={panel} defaultLayout={overlay()} />)
+    expect(screen.getByRole("tablist", { name: "Panels" })).toBeInTheDocument()
+    expect(document.querySelectorAll("[data-overlay], [data-placement]")).toHaveLength(0)
+    phone.unmount()
+    rect.mockRestore()
+    const maximised = render(<PaneLayout panel={panel} defaultLayout={setMaximised(overlay(), stackId(workbench(), "files"))} />)
+    expect(document.querySelectorAll("[data-overlay], [data-placement]")).toHaveLength(0)
+    maximised.unmount()
+    render(<PaneLayout panel={panel} defaultLayout={setPlacement(layoutOf(stack("editor")), "overlay")} />)
+    expect(document.querySelectorAll("[data-overlay], [data-placement]")).toHaveLength(0)
+  })
+
+  it("a collapsed floating stack leaves a rail with material, and Move to still lists every stack", () => {
+    const layout = workbench()
+    const collapsed: PaneLayoutState = { ...overlay(), root: { ...(layout.root as PaneSplit), children: (layout.root as PaneSplit).children.map((child) => (child.type === "stack" && child.panels.includes("session") ? { ...child, collapsed: true } : child)) } }
+    render(<PaneLayout panel={panel} defaultLayout={collapsed} />)
+    const rail = document.querySelector(".fa-split-rail")!
+    expect(rail).toHaveClass("glass-chrome")
+    expect(within(rail as HTMLElement).getByRole("button", { name: "Show Session" })).toBeInTheDocument()
+  })
+
+  it("the ground is the stack whose primary panel is active", () => {
+    render(<PaneLayout panel={panel} defaultLayout={setPlacement(layoutOf(row(stack("files"), stack("logs", "editor"), stack("search"))), "overlay")} />)
+    expect(document.querySelector('[data-overlay="ground"]')).toHaveAttribute("aria-label", "Logs")
   })
 })

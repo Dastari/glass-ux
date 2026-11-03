@@ -51,6 +51,13 @@ export interface PaneLayoutHandle {
   reveal(id: string): void
   /** Replace the whole layout, such as switching saved workspaces. A panel in both keeps its mount. */
   setLayout(layout: PaneLayoutState): void
+  /**
+   * Say that a gesture is moving the content under floating stacks (a pan, a zoom, a scrub), so
+   * they take the material's `data-moving` treatment until it ends. Renders nothing: call it at
+   * the gesture's start and end, not per frame. Combines with PaneLayout's `moving` prop, and
+   * does nothing while the layout is docked.
+   */
+  setMoving(moving: boolean): void
 }
 
 /** What the tree, its menus and `usePanelActions` share. */

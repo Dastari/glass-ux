@@ -319,7 +319,7 @@ A mail application that edits nothing, with no tabs and no drag:
 
 ## Left out
 
-Floating panels and tear-out (decision 1), browser pop-out, automatic placement of panels new in an
+Free-floating panels and tear-out (decision 1), browser pop-out, automatic placement of panels new in an
 upgrade, tree animation on drop beyond DragDrop's settle, per-panel header toolbars beyond what the
 host renders inside, and any file, document or tool concept.
 
@@ -331,6 +331,9 @@ The owner approved each of these on 1 November 2026.
    an optional `floating` field can arrive later without a version bump. If built, render frames
    inside PaneLayout with `WindowFrame`, so hosts stay put. Handing a panel to the window manager
    would remount it.
+   After 0.14, the optional `placement: "overlay"` field arrived this way: the primary panel's stack
+   lies under the layout and the other stacks float over it in their tracks, anchored to their
+   edges (an image editor's Focus workspace). Free positions remain this decision's subject.
 2. **Unknown ids.** Dormant and invisible, preserved in the JSON. The alternative was an
    "unavailable" placeholder like the one windows show, which is noisier for a panel that a feature
    flag removed.

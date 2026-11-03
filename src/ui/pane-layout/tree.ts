@@ -36,6 +36,15 @@ export interface PaneStack {
 export type PaneNode = PaneSplit | PaneStack
 
 /**
+ * How the layout draws its tree.
+ *
+ * - `docked`: every stack takes its own track.
+ * - `overlay`: the stack holding the `primary` panel fills the layout underneath, and every other
+ *   stack keeps its track and floats over it, anchored to the edge the tree puts it on.
+ */
+export type PanePlacement = "docked" | "overlay"
+
+/**
  * A saved layout: structure and ids only, never React nodes, callbacks or credentials. Fields
  * this release does not know, such as a later optional `floating`, pass through unchanged.
  */
@@ -44,6 +53,12 @@ export interface PaneLayoutState {
   root: PaneNode
   /** The id of a stack filling the layout. */
   maximised?: string | null
+  /**
+   * `overlay` floats the stacks around the primary panel's stack over it (see
+   * {@link PanePlacement}). Absent means docked; a release before this field draws the layout
+   * docked and keeps the field.
+   */
+  placement?: "overlay"
 }
 
 /** Where a panel goes: into a stack (at `index` among its panels, default the end), or beside one, splitting it. */
@@ -303,6 +318,13 @@ export function setMaximised(layout: PaneLayoutState, id: string | null): PaneLa
   return normaliseLayout(id ? { ...rest, maximised: id } : rest)
 }
 
+/** A layout drawn docked or overlay. `docked` removes the field, so a docked layout stays as it was saved. */
+export function setPlacement(layout: PaneLayoutState, placement: PanePlacement): PaneLayoutState {
+  if ((layout.placement === "overlay") === (placement === "overlay")) return layout
+  const { placement: _placement, ...rest } = layout
+  return placement === "overlay" ? { ...rest, placement } : rest
+}
+
 /** A layout with new sizes for a split's children, in `children` order. */
 export function setSizes(layout: PaneLayoutState, id: string, sizes: readonly PaneSize[]): PaneLayoutState {
   return withRoot(layout, mapNode(layout.root, (node) => (node.id === id && node.type === "split" && !sameList(node.sizes, sizes) ? { ...node, sizes } : node)))
@@ -366,8 +388,9 @@ export function parsePaneLayout(value: unknown): PaneLayoutState | null {
   if (layout.version !== VERSION) return null
   const root = parseNode(layout.root)
   if (!root) return null
-  const { maximised, ...rest } = layout
+  const { maximised, placement, ...rest } = layout
   const parsed: PaneLayoutState = { ...rest, version: VERSION, root }
+  if (placement === "overlay") parsed.placement = placement
   return normaliseLayout(typeof maximised === "string" ? { ...parsed, maximised } : parsed)
 }
 

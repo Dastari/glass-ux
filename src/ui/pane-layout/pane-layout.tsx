@@ -123,8 +123,19 @@ export interface PaneLayoutProps extends Omit<ComponentProps<"div">, "children" 
   storageKey?: string | null
   /** Tells several layouts in one window kind apart in storage. Default "layout". */
   name?: string
-  /** `panel` (default): each stack is a Panel with `--gap-panels` between. `flush`: one surface. */
+  /**
+   * `panel` (default): each stack is a Panel with `--gap-panels` between. `flush`: one surface.
+   * A layout drawn in `overlay` placement draws each stack as its own Panel whatever this says,
+   * since a floating stack needs its own material.
+   */
   chrome?: "panel" | "flush"
+  /**
+   * A gesture is moving the content under floating stacks (a pan, a zoom, a scrub): while true
+   * they take the material's `data-moving` treatment, an opaque fill instead of a blur of
+   * something that changes every frame. Set it for the gesture only. Ignored while docked.
+   * Panels can say the same with `usePaneLayout().setMoving`.
+   */
+  moving?: boolean
 }
 
 /** The default storage key for a layout inside a window body of `kind`, for clearing it. */
@@ -184,6 +195,12 @@ function viewOf(node: PaneNode, known: (id: string) => boolean): ViewNode | null
 const viewStacks = (view: ViewNode | null): ViewStack[] => (!view ? [] : view.type === "stack" ? [view] : view.items.flatMap((item) => viewStacks(item.view)))
 
 const isCollapsed = (view: ViewNode) => view.type === "stack" && Boolean(view.node.collapsed)
+
+/** Whether a stack draws a tab strip. */
+const hasStrip = (view: ViewStack) => view.panels.length > 0 && (view.node.tabs === "always" || (view.node.tabs !== "never" && view.panels.length > 1))
+
+/** Whether a stack draws a bar: its strip, or in an editable layout its panel's title and menu. */
+const hasBar = (view: ViewStack, locked: boolean) => view.active !== null && (hasStrip(view) || !locked)
 
 /** The smallest length of a node along an axis, in rem. */
 function minRem(view: ViewNode, horizontal: boolean, definition: PaneTree["definition"]): number {
@@ -257,6 +274,10 @@ interface TreeShared {
   ready: boolean
   chrome: "panel" | "flush"
   maximised: string | null
+  /** In overlay placement, the stack filling the layout under the rest; null while docked. */
+  ground: string | null
+  /** Each stack's element, for the attributes written outside React (`data-moving`). */
+  stackElements: Map<string, HTMLElement>
   /** The stack each edge drag is over, written without React state. */
   bodies: Map<string, HTMLElement>
   strips: Map<string, TabListHandle>
@@ -415,7 +436,7 @@ function Strip({ view, title }: { view: ViewStack; title: string }) {
 
 function StackView({ view }: { view: ViewStack }) {
   const shared = useShared()
-  const { tree, ready, chrome, maximised } = shared
+  const { tree, ready, chrome, maximised, ground, stackElements } = shared
   const { store, locked } = tree
   const { node, panels, active } = view
   const slot = useRef<HTMLDivElement | null>(null)
@@ -423,7 +444,18 @@ function StackView({ view }: { view: ViewStack }) {
   const definition = active === null ? null : tree.definition(active)
   const covered = maximised !== null && maximised !== node.id
   const hidden = Boolean(node.collapsed) || covered
-  const strip = panels.length > 0 && (node.tabs === "always" || (node.tabs !== "never" && panels.length > 1))
+  const strip = hasStrip(view)
+  const stackId = node.id
+  const stackRef = useCallback(
+    (element: HTMLElement | null) => {
+      if (!element) return
+      stackElements.set(stackId, element)
+      return () => {
+        if (stackElements.get(stackId) === element) stackElements.delete(stackId)
+      }
+    },
+    [stackElements, stackId]
+  )
   const slotRef = useCallback(
     (element: HTMLDivElement | null) => {
       slot.current = element
@@ -440,7 +472,7 @@ function StackView({ view }: { view: ViewStack }) {
     for (const id of panels) store.describe(id, tree.definition(id)?.title ?? "", strip)
   })
   const bar =
-    active !== null && definition && (strip || !locked) ? (
+    active !== null && definition && hasBar(view, locked) ? (
       <div className="fa-pane-bar">
         {strip ? <Strip view={view} title={title} /> : <Title id={active} definition={definition} stripId={`${STRIP_ZONE}${node.id}`} />}
         {locked ? null : (
@@ -457,8 +489,10 @@ function StackView({ view }: { view: ViewStack }) {
     </>
   )
   const props = {
+    ref: stackRef,
     "aria-label": title || undefined,
     "data-stack": node.id,
+    "data-overlay": ground === null ? undefined : ground === node.id ? "ground" : "floating",
     "data-focus-region": "",
     "data-covered": covered ? "" : undefined,
     "data-maximised": maximised === node.id ? "" : undefined,
@@ -477,7 +511,7 @@ function StackView({ view }: { view: ViewStack }) {
 
 function SplitView({ view }: { view: ViewSplit }) {
   const shared = useShared()
-  const { tree, collapse, resize, resetPair } = shared
+  const { tree, ground, collapse, resize, resetPair } = shared
   const { definition } = tree
   const messages = useMessages(splitPaneMessages)
   const element = useRef<HTMLDivElement>(null)
@@ -575,13 +609,13 @@ function SplitView({ view }: { view: ViewSplit }) {
   const template = trackTemplate(view, horizontal, definition)
   const style: CSSProperties = horizontal ? { gridTemplateColumns: template } : { gridTemplateRows: template }
   return (
-    <div ref={element} className="fa-split fa-pane-split" data-orientation={node.orientation} data-split={node.id} style={style}>
+    <div ref={element} className="fa-split fa-pane-split" data-orientation={node.orientation} data-split={node.id} data-placement={ground === null ? undefined : "overlay"} style={style}>
       {items.flatMap((item, at) => {
         const next = items[at + 1]
         const track = (
           <div key={item.view.node.id} id={tree.store.domId(`node:${item.view.node.id}`)} className="fa-pane-track">
             {isCollapsed(item.view) ? (
-              <div className="fa-split-rail">
+              <div className={ground === null ? "fa-split-rail" : "fa-split-rail glass-chrome"}>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -741,6 +775,7 @@ export function PaneLayout({
   storageKey,
   name = "layout",
   chrome = "panel",
+  moving = false,
   className,
   ...rest
 }: PaneLayoutProps) {
@@ -831,6 +866,24 @@ export function PaneLayout({
   const strips = useRef(new Map<string, TabListHandle>()).current
   const edge = useRef<TreeShared["edge"]["current"]>({ zone: null, edge: null, rect: null, indicator: null, rtl: false })
 
+  // Overlay: the stack the phone form would fill the box with lies under the rest. Not drawn on a
+  // phone, while a stack is maximised, or when nothing would float.
+  const groundPanel = primaryOf(stacks, definition)
+  const groundView = groundPanel === null ? undefined : stacks.find((stack) => stack.panels.includes(groundPanel))
+  const ground = layout.placement === "overlay" && !narrow && !layout.maximised && view?.type === "split" && groundView && !groundView.node.collapsed ? groundView : null
+  const drawnChrome = ground ? "panel" : chrome
+  const stackElements = useRef(new Map<string, HTMLElement>()).current
+  const motion = useRef({ prop: moving, panel: false, ground: null as string | null })
+  motion.current.prop = moving
+  motion.current.ground = ground?.node.id ?? null
+  /** Write `data-moving` on floating stacks: after each commit, and when a panel calls setMoving. */
+  const applyMotion = useCallback(() => {
+    const { prop, panel: fromPanel, ground: current } = motion.current
+    const on = current !== null && (prop || fromPanel)
+    for (const [id, element] of stackElements) element.toggleAttribute("data-moving", on && id !== current)
+  }, [stackElements])
+  useLayoutEffect(applyMotion)
+
   const [phone, setPhone] = useState<PhoneState>({ main: null, sheet: null, open: false })
   const showOnPhone = (id: string) =>
     setPhone((current) => (definition(id)?.primary ? { ...current, main: id, open: false } : { ...current, sheet: id, open: true }))
@@ -863,6 +916,10 @@ export function PaneLayout({
       else update("activate", (current) => revealPanel(current, id))
     },
     setLayout: (next) => update("move", () => normaliseLayout(next)),
+    setMoving: (next) => {
+      motion.current.panel = next
+      applyMotion()
+    },
     maximise: (stack) => update("maximise", (current) => setMaximised(current, stack)),
     rtl: () => (rootRef.current ? isRtl(rootRef.current) : false),
   }
@@ -877,6 +934,7 @@ export function PaneLayout({
       move: (id, to) => treeRef.current.move(id, to),
       reveal: (id) => treeRef.current.reveal(id),
       setLayout: (next) => treeRef.current.setLayout(next),
+      setMoving: (next) => treeRef.current.setMoving(next),
     }),
     [layout]
   )
@@ -900,8 +958,10 @@ export function PaneLayout({
   const shared: TreeShared = {
     tree,
     ready,
-    chrome,
+    chrome: drawnChrome,
     maximised: layout.maximised ?? null,
+    ground: ground?.node.id ?? null,
+    stackElements,
     bodies,
     strips,
     edge,
@@ -945,6 +1005,25 @@ export function PaneLayout({
   })
   useLayoutEffect(() => store.dropExcept(mounted))
 
+  // How far floating stacks reach into the ground from each edge, for content that keeps its
+  // own controls clear. Written from observers, never React state.
+  const groundId = ground?.node.id ?? null
+  useLayoutEffect(() => {
+    const root = rootRef.current
+    const element = groundId === null ? undefined : stackElements.get(groundId)
+    const clear = element?.parentElement
+    const area = root?.querySelector<HTMLElement>(":scope > .fa-pane-split, :scope > .fa-pane-surface > .fa-pane-split")
+    const body = element?.querySelector<HTMLElement>(":scope > .fa-pane-body")
+    if (!root || !element || !clear || !area || !body) return
+    const write = () => writeCovered(element, clear.getBoundingClientRect(), area.getBoundingClientRect(), body.getBoundingClientRect(), isRtl(root))
+    write()
+    const stops = [clear, area, body].map((target) => observeElementSize(target, write))
+    return () => {
+      for (const stop of stops) stop()
+      for (const name of COVERED) element.style.removeProperty(name)
+    }
+  }, [groundId, layout, ready, stackElements])
+
   const pointer = useRef<{ x: number; y: number } | null>(null)
   /** Write where a drop would land to the stack's indicator, with no React state (R18.5). */
   const trackEdge = (zone: string | null) => {
@@ -976,7 +1055,7 @@ export function PaneLayout({
   }
 
   const desktop = view ? <NodeView view={view} /> : <StackView view={{ type: "stack", node: stacksOf(layout.root)[0]!, panels: [], active: null }} />
-  const framed = chrome === "flush" ? <Panel className="fa-pane-surface">{desktop}</Panel> : desktop
+  const framed = drawnChrome === "flush" ? <Panel className="fa-pane-surface">{desktop}</Panel> : desktop
   const body = narrow ? (
     <PhoneView stacks={stacks} main={phoneMain} phone={{ ...phone, sheet: phoneSheet }} setPhone={setPhone} show={showOnPhone} />
   ) : locked ? (
@@ -991,7 +1070,9 @@ export function PaneLayout({
       {...rest}
       ref={rootRef}
       className={cx("fa-pane-layout", className)}
-      data-chrome={chrome}
+      data-chrome={drawnChrome}
+      data-placement={ground ? "overlay" : undefined}
+      data-ground-bar={ground && hasBar(ground, locked) ? "" : undefined}
       data-locked={locked ? "" : undefined}
       data-narrow={narrow ? "" : undefined}
       data-maximised={layout.maximised ? "" : undefined}
@@ -1004,6 +1085,28 @@ export function PaneLayout({
       <span ref={announcer} className="fa-pane-announcer" aria-live="polite" aria-atomic="true" />
     </div>
   )
+}
+
+const COVERED = ["--pane-covered-block-start", "--pane-covered-block-end", "--pane-covered-inline-start", "--pane-covered-inline-end"] as const
+
+/**
+ * The covered amounts on the ground: from each edge of its body to the clear area, its own track.
+ * A side where the clear area meets the floating area's edge has nothing floating there: 0.
+ */
+function writeCovered(element: HTMLElement, clear: DOMRect, area: DOMRect, body: DOMRect, rtl: boolean) {
+  const reach = (touches: boolean, length: number) => (touches ? 0 : Math.max(0, Math.round(length)))
+  const left = reach(Math.abs(clear.left - area.left) < 0.5, clear.left - body.left)
+  const right = reach(Math.abs(area.right - clear.right) < 0.5, body.right - clear.right)
+  const values = [
+    reach(Math.abs(clear.top - area.top) < 0.5, clear.top - body.top),
+    reach(Math.abs(area.bottom - clear.bottom) < 0.5, body.bottom - clear.bottom),
+    rtl ? right : left,
+    rtl ? left : right,
+  ]
+  COVERED.forEach((name, index) => {
+    const value = `${values[index]}px`
+    if (element.style.getPropertyValue(name) !== value) element.style.setProperty(name, value)
+  })
 }
 
 function baselineSplit(layout: PaneLayoutState, id: string): PaneSplit | null {

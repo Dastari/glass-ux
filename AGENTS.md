@@ -185,6 +185,13 @@ decides when to publish. The local route:
     past its box.
   - WPE cannot test forced colours, element fullscreen, WebGL 2 (`maps-basemap`), clipboard
     permissions, CDP, mobile wheel, or dragging a native resize grip.
+- `:dir(rtl)` in library CSS (46 selectors in 27 stylesheets) becomes a list of right-to-left
+  `:lang()` values when a consumer's Tailwind v4 build (Lightning CSS, targets before Chrome 120)
+  processes `glass-ux/styles.css`. A page or region set to RTL by `dir` with a left-to-right `lang`
+  then gets left-to-right styling: the slider fill grew from the wrong end in a built demo with
+  `lang="en-AU" dir="rtl"`. The dev server does not transpile, and `e2e/rtl.spec.ts` always sets
+  `lang=ar`, so tests do not see it. Needs a selector Lightning CSS keeps, or a documented `lang`
+  requirement.
 - Tree with `onMove` (and PaneLayout's tab titles) remount when their lazy drag or menu code
   arrives. Tree hands focus back, but a click landing in that moment loses its selection. Loading
   the code with the component would remove the swap, at the cost of the split.

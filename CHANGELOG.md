@@ -12,12 +12,24 @@ has upgrade steps in the [migration guide](docs/migration.md).
   holds the layout outside the panels.
 - `glass-ux/testing/file-provider`: `testFileProvider` with no test runner behind it, so an adapter
   that only works in a browser can run it there. `glass-ux/testing` keeps exporting it.
+- Slider and both SliderFields take `origin`, for a two-way slider such as -100 to 100: the fill
+  grows from that value toward the thumb on either side, in the reading direction, and there is
+  none at the origin.
+- `glass-ux/locale` exports `numberFormat` and `formatPercent`, the cached formatters the
+  components use, so an application need not keep its own `Intl.NumberFormat` cache.
+- `useFocusRegionNavigation` in `glass-ux/hooks`: the traversal behind `useFocusRegions`, with
+  `next()` and `previous()` and no key bound, for an application that routes its own shortcuts.
+  `useFocusRegions` is built on it and behaves as before.
 - `glass-ux/i18n/catalog`, the module a package built on Glass UX augments to add its namespace to
   `MessageCatalog`, so `defineMessagePack` and `MessageOverrides` type it. `declare module
   "glass-ux/i18n"` cannot merge, because that entry re-exports the interface.
 
 ### Fixed
 
+- Slider: in right-to-left text under a `DirectionProvider`, a thumb sat one thumb's width away
+  from the end of its fill (16px small, 20px medium), at the end of the track past its edge. The
+  slider now centres its thumbs itself, so they sit at their value with a provider or with only
+  the page's `dir`.
 - `glass-ux-docs api`: `llms` works with no `links`. It crashed.
 - `glass-ux-docs-kit`: the site frame from `init` compiles under `noUncheckedIndexedAccess` and in
   a project with no guides. A site's `guides` is typed even when empty.

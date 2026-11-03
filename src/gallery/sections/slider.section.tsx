@@ -93,6 +93,13 @@ export default function SliderSection() {
         />
       </Specimen>
 
+      <Specimen title="Two-way" description="With origin, the fill grows from that value toward the thumb on either side, so a value at the origin shows no fill." layout="stack">
+        <SliderField label="Exposure" min={-100} max={100} origin={0} defaultValue={35} />
+        <SliderField label="Contrast" min={-100} max={100} origin={0} defaultValue={-40} />
+        <SliderField label="Tint" min={-100} max={100} origin={0} defaultValue={0} />
+        <SliderField label="Balance" unit="dB" min={-12} max={12} step={0.5} origin={0} defaultValue={4.5} size="sm" marks={[0]} />
+      </Specimen>
+
       <Specimen title="In a field" description="The label row carries the live value on the right, so the bubble is only needed while dragging." layout="stack">
         <BandwidthField />
         <WindowField />

@@ -5,6 +5,27 @@ export default function SliderSection() {
   return (
     <SectionPage>
       <Specimen
+        title="Two-way"
+        description="With origin, the fill grows from that value toward the thumb on either side, so a value at the origin shows no fill."
+        layout="stack"
+      >
+        <SliderField label="Exposure" min={-100} max={100} origin={0} defaultValue={35} />
+        <SliderField label="Contrast" min={-100} max={100} origin={0} defaultValue={-40} />
+        <SliderField label="Tint" min={-100} max={100} origin={0} defaultValue={0} />
+        <SliderField
+          label="Balance"
+          unit="dB"
+          min={-12}
+          max={12}
+          step={0.5}
+          origin={0}
+          defaultValue={4.5}
+          size="sm"
+          marks={[0]}
+        />
+      </Specimen>
+
+      <Specimen
         title="Slider field"
         description="SliderField puts the label, track and value on one row. The value's width is reserved from the widest value the slider can show, so dragging never moves the track. In a container under 22rem the row wraps to the label and value above the track."
         layout="stack"

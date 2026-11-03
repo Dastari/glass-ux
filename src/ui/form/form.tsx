@@ -717,7 +717,7 @@ export interface SliderFieldProps
     Chrome,
     Pick<
       SliderProps,
-      "min" | "max" | "step" | "largeStep" | "format" | "unit" | "marks" | "locale"
+      "min" | "max" | "step" | "largeStep" | "origin" | "format" | "unit" | "marks" | "locale"
     > {
   /** Show the current value (default): at the end of the label row, or at the end of the row with `inline`. */
   showValue?: boolean;

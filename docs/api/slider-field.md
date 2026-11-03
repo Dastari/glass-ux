@@ -38,6 +38,7 @@ thumb already announces its value text. Use `Slider` directly for a range.
 | onValueChange | `((value: number) => void) \| undefined` | See type | no | — | Called continuously while the thumb is dragged or stepped. |
 | onValueCommitted | `((value: number) => void) \| undefined` | See type | no | — | Called once when the user lets go (or after a keyboard step). |
 | optional | `boolean \| undefined` | false, true | no | false | Marks the label "Optional". Prefer this over marking required fields. |
+| origin | `number \| undefined` | See type | no | — | The value the fill grows from, for a two-way slider such as -100 to 100: the fill runs from the origin to the thumb, on either side, in the reading direction. At the origin there is no fill. One thumb only; a range ignores it. Default: `min`, the fill from the start. |
 | required | `boolean \| undefined` | false, true | no | false | Shows the required marker. Pass `required` to the control as well. |
 | showValue | `boolean \| undefined` | false, true | no | true | Show the current value at the end of the row. Default true. When false the bubble shows while dragging unless `bubble` says otherwise. |
 | size | `ChoiceSize \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |

@@ -14,7 +14,7 @@ Arrow keys step, Shift/Page keys take large steps, Home/End jump to the ends.
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string \| undefined` | See type | no | — | Accessible name when a visible label does not name the control. |
 | aria-labelledby | `string \| undefined` | See type | no | — | IDs of elements that provide the accessible name. |
-| bubble | `"auto" \| "always" \| "never" \| undefined` | "auto", "always", "never" | no | "auto" | auto: the value bubble shows while dragging or keyboard-focused. always: pinned. |
+| bubble | `"auto" \| "never" \| "always" \| undefined` | "auto", "never", "always" | no | "auto" | auto: the value bubble shows while dragging or keyboard-focused. always: pinned. |
 | className | `string \| undefined` | See type | no | — | Layout only. |
 | defaultValue | `number \| number[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
@@ -29,6 +29,7 @@ Arrow keys step, Shift/Page keys take large steps, Home/End jump to the ends.
 | onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when a thumb loses focus, so a form can mark the field touched. |
 | onValueChange | `((value: number \| number[]) => void) \| undefined` | See type | no | — | Called continuously while a thumb is dragged or stepped, with a number for one thumb or an array for a range. Pair with `value` to control it; use `defaultValue` otherwise. |
 | onValueCommitted | `((value: number \| number[]) => void) \| undefined` | See type | no | — | Fires once when the user lets go (or after a keyboard step). |
+| origin | `number \| undefined` | See type | no | — | The value the fill grows from, for a two-way slider such as -100 to 100: the fill runs from the origin to the thumb, on either side, in the reading direction. At the origin there is no fill. One thumb only; a range ignores it. Default: `min`, the fill from the start. |
 | size | `ChoiceSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | step | `number \| undefined` | See type | no | 1 | Increment used by keyboard and stepper interaction. |
 | thumbLabels | `string[] \| undefined` | See type | no | — | Names each thumb of a range ("Minimum", "Maximum"). |

@@ -69,11 +69,9 @@
   }
   .fa-slider {
     --_dir: 1;
-    --_rtl: 0;
   }
   .fa-slider:dir(rtl) {
     --_dir: -1;
-    --_rtl: 1;
   }
   /* The range's clip: the track's box, clipped across. It also draws the range's glow, which
      a filter paints outside its own element's clip. Thumbs, bubbles and ticks sit outside. */
@@ -107,15 +105,10 @@
       calc(var(--_dir) * (var(--_at-to) - var(--_at-from) * var(--_ranged, 0) - 100cqi))
     );
   }
-  /* Base UI centres a thumb with an inline translate of -50% in either direction; from the
-     right-hand start in RTL that leaves it a thumb short, so RTL adds one thumb back. */
+  /* slider.tsx centres a thumb on its start edge with a translate of -50% in the reading
+     direction (Base UI's own follows only a DirectionProvider), so the move is the same in both. */
   .fa-slider-thumb {
-    transform: translateX(
-      calc(
-        var(--_dir) * (var(--_thumb) / 2 + var(--_f, 0) * (100cqi - var(--_thumb))) +
-          var(--_rtl) * var(--_thumb)
-      )
-    );
+    transform: translateX(calc(var(--_dir) * (var(--_thumb) / 2 + var(--_f, 0) * (100cqi - var(--_thumb)))));
   }
 
   /* Glide between values unless the pointer is driving. */

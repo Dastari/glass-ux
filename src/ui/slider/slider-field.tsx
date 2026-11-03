@@ -22,6 +22,7 @@ export interface StandaloneSliderFieldProps
       | "max"
       | "step"
       | "largeStep"
+      | "origin"
       | "format"
       | "unit"
       | "marks"

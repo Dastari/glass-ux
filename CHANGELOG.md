@@ -10,6 +10,12 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 - `glass-ux/pane-layout` exports `openPanel`, `panelsOf`, `stacksOf` and `stackOf`, for a host that
   holds the layout outside the panels.
+- `PaneLayout` overlay placement: `placement: "overlay"` in a saved layout (set with `setPlacement`)
+  keeps the primary panel's stack under the whole box and floats the other stacks over it in their
+  tracks, with their tabs, separators, rails and moves. Switching remounts nothing. The `moving`
+  prop and `usePaneLayout().setMoving` give floating stacks the material's `data-moving` state
+  during a pan or zoom, and `--pane-covered-*` on the primary stack say how far they reach in. A
+  layout without the field renders as before, and a phone keeps its collapsed view.
 - `glass-ux/testing/file-provider`: `testFileProvider` with no test runner behind it, so an adapter
   that only works in a browser can run it there. `glass-ux/testing` keeps exporting it.
 - `glass-ux/i18n/catalog`, the module a package built on Glass UX augments to add its namespace to

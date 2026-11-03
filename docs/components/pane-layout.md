@@ -67,9 +67,9 @@ uncontrolled layout; inside a window body it defaults to one key per window kind
 `paneLayoutStorageKey(kind)` names it for clearing.
 
 The pure functions work on any layout, with no React or DOM: `openPanel`, `movePanel`, `closePanel`,
-`panelsOf`, `stacksOf`, `stackOf`, `parsePaneLayout` and `pruneLayout`. A host that holds `layout`
+`setPlacement`, `panelsOf`, `stacksOf`, `stackOf`, `parsePaneLayout` and `pruneLayout`. A host that holds `layout`
 outside the panels, opening a file from a Sidebar for instance, uses these. Inside a panel, `usePaneLayout()` gives `open`, `close`, `move`,
-`reveal`, `setLayout` and the live `layout`. `setLayout` switches saved workspaces, and a panel in
+`reveal`, `setLayout`, `setMoving` and the live `layout`. `setLayout` switches saved workspaces, and a panel in
 both keeps its mount.
 
 ### Saved layouts and upgrades
@@ -80,6 +80,58 @@ both keeps its mount.
   of only dormant panels takes no space. When the id resolves again it reappears in place.
   `onUnknownPanels` reports these ids, and `pruneLayout` removes them for a host that prefers that.
 - Fields this release does not know pass through, so a later optional field survives a save.
+
+## Floating over the primary panel
+
+`placement: "overlay"` keeps the stack holding the `primary` panel under the whole box and floats
+every other stack over it: a picture, map, document or video stays full size with its tools on top.
+The tree is the same tree, so floating stacks keep their ids, tabs, rails, Move to and drag. Each
+keeps its track and stays anchored to the edge the tree puts it on; the primary's own track is the
+clear area in the middle.
+
+```tsx
+import { PaneLayout, setPlacement, type PaneLayoutState } from "glass-ux/pane-layout"
+
+const [layout, setLayout] = useState<PaneLayoutState>(start)
+const focus = () => setLayout((current) => setPlacement(current, "overlay")) // "docked" switches back
+
+<PaneLayout panel={panel} layout={layout} onLayoutChange={setLayout} moving={panning} />
+```
+
+- **Saved with the layout.** `placement` is an optional field of the JSON. A layout without it is
+  docked, as before, and a release that predates the field keeps it and draws the layout docked.
+  Two saved layouts can be two workspaces, each with its own sizes.
+- **No remount.** Switching changes attributes only: no panel moves or mounts again, and
+  `whenHidden: "run"` panels keep their effects. With `chrome="flush"` an overlay layout draws each
+  stack as its own Panel, since a floating stack needs its own material; panels move then, with one
+  mount, as in any move.
+- **Resizing.** A floating stack's separator is its edge facing the clear area, with the same keys,
+  minimums and double-click. Enter hides it behind a rail button, which floats too.
+- **What stays clear.** Floating stacks sit `--gap-panels` inside the box and below the primary
+  stack's bar, so its title, tabs and menu are never covered. The pointer passes through the clear
+  area and the gaps to the primary panel. The primary stack publishes how far floating stacks reach
+  into it: pad the content's own controls with these, for instance
+  `inset-inline-end: calc(var(--pane-covered-inline-end, 0px) + var(--space-3))`.
+
+  | Custom property | From the primary panel's edge to the clear area |
+  | --- | --- |
+  | `--pane-covered-block-start`, `--pane-covered-block-end` | Top and bottom |
+  | `--pane-covered-inline-start`, `--pane-covered-inline-end` | Reading start and end |
+
+  Each is `0px` where nothing floats on that side, and unset while docked.
+- **Motion.** While a gesture moves the content underneath (a pan, a zoom, a scrub), pass
+  `moving`, or call `usePaneLayout().setMoving(true)` from the panel that sees the gesture and
+  `false` when it ends. Floating stacks then carry `data-moving`, the material's state for a layer
+  over moving content: an opaque fill instead of a blur redone every frame. `setMoving` renders
+  nothing, so call it at the gesture's start and end, not per frame. Under baked frost, floating
+  stacks keep the live blur.
+- **Order.** Tab and F6 follow the tree's reading order, the same as docked.
+- **When it is not drawn.** On a phone (below `collapseBelow`) the collapsed view is unchanged. While
+  a stack is maximised, and when there is only the primary stack, the layout draws docked.
+- **Styling hooks.** `data-placement="overlay"` on the layout, and `data-overlay="ground"` or
+  `"floating"` on each stack.
+
+Free positions and windows that overlap each other belong to `glass-ux/windows`.
 
 ## Moving panels
 

@@ -101,6 +101,7 @@ const families = {
   cascader: "cascader",
   "command-palette": "command-panel",
   "compare-slider": "compare-slider",
+  "color-wheel": "color-wheel",
   combobox: "combobox",
   "coordinates-field": "coordinates-field",
   "country-select": "country-select",

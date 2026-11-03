@@ -74,6 +74,7 @@
 - [CodeBlock](code-block.md) — `glass-ux/ai`
 - [ColorField](color-field.md) — `glass-ux/color-picker`
 - [ColorPicker](color-picker.md) — `glass-ux/color-picker`
+- [ColorWheel](color-wheel.md) — `glass-ux/color-wheel`
 - [ColumnChart](column-chart.md) — `glass-ux/charts`
 - [Combobox](combobox.md) — `glass-ux/combobox`
 - [ComboboxPopup](combobox-popup.md) — `glass-ux/combobox`

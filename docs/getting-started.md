@@ -216,6 +216,17 @@ field's `locale` to it when they differ. A server has no `<html lang>` to read: 
 `configureLocale` with the same tag on the server and the client. Otherwise the first render
 uses `en-US` and the page's locale applies once hydration completes.
 
+Your own numbers can use the components' cached formatters. Building an `Intl.NumberFormat` costs
+far more than using one, so `numberFormat` keeps one per locale and option set:
+
+```ts
+import { formatPercent, numberFormat, useLocale } from "glass-ux/locale";
+
+const locale = useLocale();
+numberFormat(locale).format(12500); // "12,500" in en, "12.500" in de
+formatPercent(locale, 50); // "50%" in en, "50 %" in de; 0–100, not a fraction
+```
+
 ## Translate the interface
 
 Register only the packs you need. Built-in wording follows the same locale as formatting:

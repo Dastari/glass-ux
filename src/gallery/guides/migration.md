@@ -3,7 +3,7 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
-## 0.14.0 → next
+## 0.14.0 → 0.15.0
 
 Behaviour to review:
 

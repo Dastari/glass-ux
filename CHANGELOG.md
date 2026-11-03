@@ -4,7 +4,13 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## Unreleased
+## 0.15.0
+
+Requests from the packages built on Glass UX: `PaneLayout` can float its stacks over the primary
+panel, `ColorWheel` is new, Slider takes an `origin` for two-way values, and the locale
+formatters, focus-region traversal, pane-layout functions and a browser test provider are public.
+Code reads left to right on right-to-left pages, and right-to-left Slider thumbs sit at their
+value; the [migration guide](docs/migration.md) lists what to review.
 
 ### Added
 

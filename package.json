@@ -166,6 +166,10 @@
       "types": "./dist/ui/color-picker/index.d.ts",
       "import": "./dist/ui/color-picker/index.js"
     },
+    "./color-wheel": {
+      "types": "./dist/ui/color-wheel/index.d.ts",
+      "import": "./dist/ui/color-wheel/index.js"
+    },
     "./compare-slider": {
       "types": "./dist/ui/compare-slider/index.d.ts",
       "import": "./dist/ui/compare-slider/index.js"

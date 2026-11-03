@@ -31,6 +31,13 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - `glass-ux/i18n/catalog`, the module a package built on Glass UX augments to add its namespace to
   `MessageCatalog`, so `defineMessagePack` and `MessageOverrides` type it. `declare module
   "glass-ux/i18n"` cannot merge, because that entry re-exports the interface.
+- `glass-ux/color-wheel`: `ColorWheel`, a hue and an amount around a neutral centre for colour
+  balance, grading wheels and tints, valued `{ hue, amount }` (the OKLCH hue in degrees, 0 at the
+  centre to `max` at the rim). The disc is drawn in OKLCH at one lightness, so hues are evenly
+  spaced; `colorWheelColor` gives the colour under the bead. One tab stop holds a Hue and an Amount
+  slider: Left and Right turn the hue, Up and Down, Page Up/Down, Home (neutral) and End change the
+  amount, and a double press returns to neutral. `disc` and `ring` variants, `sm` and `md` sizes and
+  an optional readout.
 
 ### Fixed
 

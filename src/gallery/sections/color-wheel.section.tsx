@@ -1,0 +1,134 @@
+import { useState } from "react"
+import { cssColor } from "../../ui/color-picker/index.js"
+import { ColorWheel, colorWheelColor, type ColorWheelValue } from "../../ui/color-wheel/index.js"
+import { Panel, PanelBody, PanelHeader } from "../../ui/surface/index.js"
+import { ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
+import { Usage } from "./inputs.kit.js"
+
+function Balance() {
+  const [value, setValue] = useState<ColorWheelValue>({ hue: 58, amount: 30 })
+  const [committed, setCommitted] = useState(value)
+  return (
+    <div className="flex flex-wrap items-center gap-6" data-testid="color-wheel">
+      <ColorWheel value={value} onValueChange={setValue} onValueCommitted={setCommitted} readout aria-label="Tint" />
+      <div className="grid gap-2">
+        <span className="size-10 rounded-full" style={{ background: cssColor(colorWheelColor(value)) }} aria-hidden />
+        <output className="type-caption text-fg-muted" data-numeric data-testid="color-wheel-value">
+          {`hue ${value.hue}, amount ${value.amount}`}
+        </output>
+        <output className="type-caption text-fg-muted" data-numeric data-testid="color-wheel-committed">
+          {`committed ${committed.hue}, ${committed.amount}`}
+        </output>
+      </div>
+    </div>
+  )
+}
+
+const RANGES = [
+  { id: "shadows", label: "Shadows", value: { hue: 222, amount: 18 } },
+  { id: "midtones", label: "Midtones", value: { hue: 0, amount: 0 } },
+  { id: "highlights", label: "Highlights", value: { hue: 72, amount: 26 } },
+] as const
+
+function Grading() {
+  return (
+    <Panel compact className="w-full max-w-sm" data-testid="color-grading">
+      <PanelHeader title="Colour grading" />
+      <PanelBody>
+        <div className="grid grid-cols-3 gap-2">
+          {RANGES.map((range) => (
+            <div key={range.id} className="flex min-w-0 flex-col items-center gap-1">
+              <span id={`grading-${range.id}`} className="type-caption text-fg">
+                {range.label}
+              </span>
+              <ColorWheel size="sm" variant="ring" readout aria-labelledby={`grading-${range.id}`} defaultValue={range.value} />
+            </div>
+          ))}
+        </div>
+      </PanelBody>
+    </Panel>
+  )
+}
+
+export default function ColorWheelSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="Wheel"
+        description="Drag on the disc, or focus it and use the arrows: Left and Right turn the hue, Up and Down change the amount, Home returns to neutral. A double press returns to neutral too. The swatch is colorWheelColor(value)."
+      >
+        <Balance />
+      </Specimen>
+
+      <Specimen
+        title="Ring, in a tool panel"
+        description="variant=&quot;ring&quot; draws the hues as a ring around a neutral well, for several wheels side by side. size=&quot;sm&quot; is ColorPicker's compact size; the disc is the hit area."
+      >
+        <Grading />
+      </Specimen>
+
+      <Specimen title="Scale and format" description="max sets the amount at the rim and step the keyboard's increment. format writes the readout and the spoken amount.">
+        <ColorWheel
+          size="sm"
+          max={1}
+          step={0.01}
+          readout
+          format={(amount) => amount.toFixed(2)}
+          defaultValue={{ hue: 264, amount: 0.4 }}
+          aria-label="Tint strength"
+        />
+      </Specimen>
+
+      <Specimen
+        title="Right to left"
+        description="The wheel does not mirror: hue angles are physical, as in a chart. Left and Right swap, as in every slider."
+      >
+        <div dir="rtl" data-testid="color-wheel-rtl">
+          <ColorWheel size="sm" readout defaultValue={{ hue: 195, amount: 50 }} aria-label="Tint" />
+        </div>
+      </Specimen>
+
+      <Specimen title="Disabled">
+        <ColorWheel size="sm" disabled defaultValue={{ hue: 30, amount: 50 }} aria-label="Tint" />
+      </Specimen>
+
+      <ContainerLab>
+        <div className="h-full overflow-auto p-1">
+          <ColorWheel readout defaultValue={{ hue: 140, amount: 60 }} aria-label="Tint" />
+        </div>
+      </ContainerLab>
+
+      <Usage
+        description="The value is the hue in degrees and the amount from 0 to max. onValueChange fires while dragging; onValueCommitted once per gesture."
+        code={`
+import { ColorWheel } from "glass-ux/color-wheel"
+
+<ColorWheel
+  aria-label="Shadows"
+  size="sm"
+  readout
+  value={shadows}
+  onValueChange={previewShadows}
+  onValueCommitted={saveShadows}
+/>`}
+      />
+
+      <Rules
+        do={[
+          "Use it for a direction and a strength away from neutral: colour balance, a grade's ranges, a tint.",
+          "Name each wheel (Shadows, Midtones, Highlights) with a visible label and aria-labelledby.",
+        ]}
+        dont={["Don't use it to choose a colour; that is a ColorPicker.", "Don't scale the hue: it is the OKLCH hue, in degrees."]}
+      />
+
+      <TokenTable
+        tokens={[
+          ["--check-size", "Bead"],
+          ["--space-16", "Wheel size (three for md, two for sm)"],
+          ["--line", "Rim"],
+          ["--accent-ring", "Focus ring"],
+        ]}
+      />
+    </SectionPage>
+  )
+}

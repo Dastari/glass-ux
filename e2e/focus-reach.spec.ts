@@ -28,6 +28,7 @@ const PAGES = [
   "image-cropper",
   "compare-slider",
   "gradient-picker",
+  "color-wheel",
   "relationship-canvas",
   "level-gauge",
   "login-flow",

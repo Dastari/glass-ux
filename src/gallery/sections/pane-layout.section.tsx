@@ -1,15 +1,18 @@
-import { Profiler, useEffect, useRef, useState, type ComponentType } from "react"
+import { Profiler, useEffect, useRef, useState, type ComponentType, type PointerEvent as ReactPointerEvent } from "react"
 import { SectionPage, Specimen } from "../kit.js"
 import { Button } from "../../ui/button/index.js"
-import { PanelBody } from "../../ui/surface/index.js"
+import { PanelBody, Surface } from "../../ui/surface/index.js"
 import { Input } from "../../ui/input/index.js"
-import { column, layoutOf, PaneLayout, row, sized, stack, usePaneLayout, type PaneDefinition, type PaneLayoutState } from "../../ui/pane-layout/index.js"
+import { Segmented } from "../../ui/segmented/index.js"
+import { column, layoutOf, PaneLayout, row, setPlacement, sized, stack, usePaneLayout, type PaneDefinition, type PaneLayoutState, type PanePlacement } from "../../ui/pane-layout/index.js"
 
 // Track sizes and minimums are PaneLayout values, in rem so they follow UI scale.
 const WIDE_TRACK = "18rem" // tokens:allow a PaneLayout size
 const OUTLINE_TRACK = "16rem" // tokens:allow a PaneLayout size
 const NARROW_TRACK = "12rem" // tokens:allow a PaneLayout size
 const FOLDER_MIN = "10rem" // tokens:allow a PaneLayout minimum
+const LAYERS_TRACK = "16rem" // tokens:allow a PaneLayout size
+const INSPECTOR_TRACK = "15rem" // tokens:allow a PaneLayout size
 
 // Counters live outside React, so a remount shows as a second mount and not as a reset.
 const COUNTS = new Map<string, { mounts: number; setups: number; cleanups: number }>()
@@ -176,6 +179,113 @@ function Background({ name, label }: { name: string; label: string }) {
   )
 }
 
+// A field of palette colours to pan, so the floating materials have something busy beneath them.
+const FIELD = [
+  "radial-gradient(circle at 20% 30%, var(--chart-1), transparent 28%)",
+  "radial-gradient(circle at 70% 20%, var(--chart-3), transparent 30%)",
+  "radial-gradient(circle at 45% 75%, var(--chart-5), transparent 32%)",
+  "radial-gradient(circle at 85% 70%, var(--chart-2), transparent 26%)",
+  "conic-gradient(from 40deg at 50% 50%, var(--chart-4), var(--chart-6), var(--chart-7), var(--chart-8), var(--chart-4))",
+].join(", ")
+// Corner content keeps clear of floating stacks with the amounts the layout publishes.
+const CLEAR_START = { insetInlineStart: "calc(var(--pane-covered-inline-start, 0px) + var(--space-3))", insetBlockEnd: "calc(var(--pane-covered-block-end, 0px) + var(--space-3))" }
+const CLEAR_END = { insetInlineEnd: "calc(var(--pane-covered-inline-end, 0px) + var(--space-3))", insetBlockEnd: "calc(var(--pane-covered-block-end, 0px) + var(--space-3))" }
+
+/** The primary panel: drag to pan. The gesture tells the layout, and the corner button keeps clear of floating stacks. */
+function SurveyField({ id }: { id: string }) {
+  const { setMoving } = usePaneLayout()
+  const field = useRef<HTMLDivElement>(null)
+  const offset = useRef({ x: 0, y: 0 })
+  const pan = (dx: number, dy: number) => {
+    offset.current = { x: offset.current.x + dx, y: offset.current.y + dy }
+    field.current?.style.setProperty("background-position", `${offset.current.x}px ${offset.current.y}px`)
+  }
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0 || event.target !== event.currentTarget) return
+    event.currentTarget.setPointerCapture(event.pointerId)
+    setMoving(true)
+  }
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) pan(event.movementX, event.movementY)
+  }
+  const end = () => setMoving(false)
+  return (
+    <div
+      ref={field}
+      className="relative min-h-0 cursor-grab touch-none select-none"
+      style={{ backgroundImage: FIELD, backgroundSize: "200% 200%" }}
+      data-testid="pane-field"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={end}
+      onPointerCancel={end}
+    >
+      <div className="pointer-events-none absolute" style={CLEAR_START}>
+        <Surface material="control" radius="control" className="px-2 py-1">
+          <Lifecycle name={`overlay-${id}`} label="Survey" />
+        </Surface>
+      </div>
+      <Button
+        size="sm"
+        variant="secondary"
+        className="absolute"
+        style={CLEAR_END}
+        onClick={() => {
+          offset.current = { x: 0, y: 0 }
+          field.current?.style.removeProperty("background-position")
+        }}
+      >
+        Centre
+      </Button>
+    </div>
+  )
+}
+
+const overlayList = (name: string, lines: readonly string[]): ComponentType<{ id: string }> => ({ id }) => (
+  <PanelBody>
+    <div className="flex flex-col gap-2">
+      <Lifecycle name={`overlay-${id}`} label={name} />
+      <ul className="type-body">
+        {lines.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ul>
+    </div>
+  </PanelBody>
+)
+
+const OVERLAY: Record<string, PaneDefinition> = {
+  field: { title: "Survey field", primary: true, movable: false, closable: false, whenHidden: "run", component: SurveyField },
+  layers: { title: "Layers", component: /* @__PURE__ */ overlayList("Layers", ["Contours", "Footpaths", "Water"]) },
+  legend: { title: "Legend", component: /* @__PURE__ */ overlayList("Legend", ["Survey point", "Boundary"]) },
+  inspector: { title: "Inspector", component: /* @__PURE__ */ overlayList("Inspector", ["Ridge marker", "Elevation 214 m"]) },
+}
+const overlayPanel = (id: string) => OVERLAY[id] ?? null
+const OVERLAY_LAYOUT = layoutOf(row(sized(stack("layers", "legend"), LAYERS_TRACK), stack("field"), sized(stack("inspector"), INSPECTOR_TRACK)))
+const PLACEMENTS = [
+  { value: "docked", label: "Docked" },
+  { value: "overlay", label: "Overlay" },
+] satisfies { value: PanePlacement; label: string }[]
+
+function OverlayField() {
+  const [layout, setLayout] = useState<PaneLayoutState>(() => setPlacement(OVERLAY_LAYOUT, "overlay"))
+  return (
+    <div className="flex w-full flex-col gap-2" data-testid="pane-overlay">
+      <Segmented
+        size="sm"
+        aria-label="Placement"
+        className="self-start"
+        options={PLACEMENTS}
+        value={layout.placement ?? "docked"}
+        onValueChange={(value) => setLayout((current) => setPlacement(current, value as PanePlacement))}
+      />
+      <div className="h-120 w-full">
+        <PaneLayout panel={overlayPanel} layout={layout} onLayoutChange={setLayout} storageKey={null} />
+      </div>
+    </div>
+  )
+}
+
 export default function PaneLayoutSection() {
   return (
     <SectionPage>
@@ -185,6 +295,14 @@ export default function PaneLayoutSection() {
         wide
       >
         <Workbench />
+      </Specimen>
+
+      <Specimen
+        title="Floating over the primary panel"
+        description='placement: "overlay" lays the primary panel under the layout and floats the other stacks over it, anchored to their edges. They keep their tabs, separators, rails and Move to. Drag the field to pan: the floating stacks drop their blur while it moves. The Centre button keeps clear of them with --pane-covered-inline-end.'
+        wide
+      >
+        <OverlayField />
       </Specimen>
 
       <Specimen title="Mail, with no tabs" description="locked keeps the layout to resizing: no strip, no menus and no moves. Each panel fills its stack." wide>

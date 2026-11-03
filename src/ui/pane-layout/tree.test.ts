@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { closePanel, column, emptyLayout, layoutOf, movePanel, normaliseLayout, openPanel, panelsOf, parsePaneLayout, pruneLayout, resizedPair, revealPanel, row, setMaximised, setSizes, setStackCollapsed, sized, stack, stackOf, stacksOf, type PaneLayoutState, type PaneSplit, type PaneStack } from "./tree.js"
+import { closePanel, column, emptyLayout, layoutOf, movePanel, normaliseLayout, openPanel, panelsOf, parsePaneLayout, pruneLayout, resizedPair, revealPanel, row, setMaximised, setPlacement, setSizes, setStackCollapsed, sized, stack, stackOf, stacksOf, type PaneLayoutState, type PaneSplit, type PaneStack } from "./tree.js"
 
 const base = () => layoutOf(row(sized(stack("tools"), "3rem"), stack("canvas", "preview"), sized(column(stack("layers", "adjust"), stack("histogram")), "18rem")))
 const panelsIn = (layout: PaneLayoutState, id: string) => stackOf(layout.root, id)?.panels
@@ -186,6 +186,28 @@ describe("normalising", () => {
   })
 })
 
+describe("placement", () => {
+  it("sets overlay, and docked removes the field", () => {
+    const docked = base()
+    const overlay = setPlacement(docked, "overlay")
+    expect(overlay.placement).toBe("overlay")
+    expect(overlay.root).toBe(docked.root)
+    expect(setPlacement(overlay, "overlay")).toBe(overlay)
+    expect(setPlacement(docked, "docked")).toBe(docked)
+    const back = setPlacement(overlay, "docked")
+    expect(back).not.toHaveProperty("placement")
+    expect(back).toEqual(docked)
+  })
+
+  it("survives the tree operations", () => {
+    const overlay = setPlacement(base(), "overlay")
+    const moved = movePanel(overlay, "histogram", { stack: stackOf(overlay.root, "tools")!.id })
+    expect(moved.placement).toBe("overlay")
+    expect(setMaximised(moved, stackOf(moved.root, "canvas")!.id).placement).toBe("overlay")
+    expect(normaliseLayout(moved).placement).toBe("overlay")
+  })
+})
+
 describe("saved layouts", () => {
   it("reads back what it wrote", () => {
     const layout = movePanel(base(), "preview", { stack: stackOf(base().root, "tools")!.id, edge: "end" })
@@ -240,6 +262,14 @@ describe("saved layouts", () => {
     const parsed = parsePaneLayout(saved)!
     expect(panelsOf(parsed.root)).toEqual(["known", "from-a-plugin"])
     expect((parsed as unknown as { floating: unknown }).floating).toEqual([{ id: "palette" }])
+  })
+
+  it("keeps an overlay placement, drops any other value, and leaves a layout without one as it was", () => {
+    const overlay = setPlacement(base(), "overlay")
+    expect(parsePaneLayout(roundTrip(overlay))).toEqual(overlay)
+    expect(parsePaneLayout(roundTrip(overlay))?.placement).toBe("overlay")
+    for (const placement of ["docked", "floating", 1, true, null]) expect(parsePaneLayout({ ...(roundTrip(base()) as object), placement })).not.toHaveProperty("placement")
+    expect(Object.keys(parsePaneLayout(roundTrip(base()))!)).toEqual(Object.keys(base()))
   })
 
   it("pruneLayout removes what the host no longer knows", () => {

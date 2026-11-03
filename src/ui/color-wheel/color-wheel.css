@@ -36,7 +36,6 @@
       oklch(0.75 0.125 60),
       oklch(0.75 0.125 0)
     );
-    --_mark: oklch(0.22 0.01 var(--neutral-h) / 0.45);
     display: grid;
     justify-items: center;
     gap: var(--space-2);
@@ -106,23 +105,8 @@
     mask: radial-gradient(closest-side, transparent calc(100% - var(--_band)), var(--fg) calc(100% - var(--_band) + var(--border-width)));
   }
   .fa-color-wheel[data-variant="ring"] .fa-color-wheel-field {
-    --_mark: color-mix(in oklab, var(--fg-subtle) 70%, transparent);
     background-color: var(--_well);
     box-shadow: var(--_well-shadow);
-  }
-
-  /* ── Centre ────────────────────────────────────────────────────────────── */
-  .fa-color-wheel-centre {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
-    width: var(--space-2);
-    height: var(--space-2);
-    margin-block-start: calc(var(--space-2) / -2);
-    margin-inline-start: calc(var(--space-2) / -2);
-    border-radius: var(--radius-full);
-    box-shadow: inset 0 0 0 var(--border-width) var(--_mark);
-    pointer-events: none;
   }
 
   /* ── Bead ──────────────────────────────────────────────────────────────── */

@@ -318,7 +318,6 @@ export function ColorWheel({
           {variant === "disc" ? (
             <canvas ref={canvas} className="fa-color-wheel-canvas" width={CANVAS_SIZE} height={CANVAS_SIZE} aria-hidden />
           ) : null}
-          <span className="fa-color-wheel-centre" aria-hidden />
           <span className="fa-color-wheel-bead">
             <input
               ref={inputs.hue}

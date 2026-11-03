@@ -219,6 +219,8 @@ export function ColorWheel({
   }
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    // Any key shows the focus ring a press left hidden.
+    root.current?.removeAttribute("data-pointer-focus")
     const current = live.current
     const many = event.shiftKey ? 10 : 1
     let next: ColorWheelValue
@@ -280,19 +282,23 @@ export function ColorWheel({
       data-variant={variant}
       data-disabled={disabled ? "" : undefined}
       style={{ "--_h": String(shown.hue), "--_a": String(fraction) } as CSSProperties}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) event.currentTarget.removeAttribute("data-pointer-focus")
+      }}
     >
       {/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- the pointer surface; the sliders inside take the keyboard */}
       <div
         className="fa-color-wheel-disc"
         onPointerDown={(event) => {
           if (disabled || (event.pointerType === "mouse" && event.button !== 0)) return
-          // No mouse default: it would move focus off the slider and select text.
-          event.preventDefault()
           event.currentTarget.setPointerCapture(event.pointerId)
+          root.current?.setAttribute("data-pointer-focus", "")
           drag.current = { pointerId: event.pointerId, start: live.current }
           focusAxis(axis)
           emit(fromPointer(event), false)
         }}
+        // The press's default would move focus off the slider it just focused.
+        onMouseDown={(event) => event.preventDefault()}
         onPointerMove={(event) => {
           if (drag.current?.pointerId === event.pointerId) emit(fromPointer(event), false)
         }}

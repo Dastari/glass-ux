@@ -50,7 +50,7 @@
   .fa-color-wheel-field {
     outline: var(--border-width) solid CanvasText;
   }
-  .fa-color-wheel-bead:has(:focus-visible) {
+  .fa-color-wheel:not([data-pointer-focus]) .fa-color-wheel-bead:has(:focus-visible) {
     outline: var(--focus-ring-width) solid Highlight;
   }
   .fa-color-wheel[data-disabled] {

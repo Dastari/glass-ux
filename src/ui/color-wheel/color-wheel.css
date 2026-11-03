@@ -6,8 +6,9 @@
  *   field    the circle the bead travels in: the centre is neutral, the edge is `max`
  *   canvas   (disc variant) the OKLab a–b plane at one lightness, painted once (wheel.ts)
  *   ring     (ring variant) a hue ring outside the field, which becomes a recessed well
- *   bead     the ColorPicker bead: the chosen colour inside a white ring with a dark edge, so
- *            it reads on every hue and on the grey centre (one of the two is ≥ 3:1)
+ *   bead     the ColorPicker bead: the chosen colour inside a white ring with an opaque dark
+ *            edge, so it reads on every hue, the grey centre and the well (the edge is ≥ 3:1
+ *            against the disc everywhere; the white ring against a dark well)
  *   readout  an optional caption line, reserved so nothing moves as it changes
  *
  * Hue angles are physical, as in a chart: 0° to the right, counter-clockwise, in every
@@ -20,8 +21,9 @@
     --_thumb: calc(var(--check-size) + var(--space-1));
     --_ring: oklch(1 0 0);
     --_ring-width: calc(var(--border-width) * 2.5);
-    --_ring-edge: oklch(0.22 0.01 var(--neutral-h) / 0.62);
-    --_pad: calc(var(--_thumb) / 2 + var(--_ring-width) + var(--border-width));
+    --_ring-edge: oklch(0.3 0.01 var(--neutral-h));
+    --_edge-width: max(var(--border-width), 1px); /* the dark edge never thins below a pixel */
+    --_pad: calc(var(--_thumb) / 2 + var(--_ring-width) + var(--_edge-width));
     /* the disc's colour under the bead: wheel.ts WHEEL_LIGHTNESS and WHEEL_CHROMA */
     --_tint: oklch(0.75 calc(var(--_a, 0) * 0.125) calc(var(--_h, 0) * 1));
     --_hues: conic-gradient(
@@ -135,17 +137,19 @@
     background: var(--_tint);
     box-shadow:
       0 0 0 var(--_ring-width) var(--_ring),
-      0 0 0 calc(var(--_ring-width) + var(--border-width)) var(--_ring-edge),
+      0 0 0 calc(var(--_ring-width) + var(--_edge-width)) var(--_ring-edge),
       var(--_bead-shadow);
     transform: translate(
       calc(cos(calc(var(--_h, 0) * 1deg)) * var(--_a, 0) * 50cqw),
       calc(sin(calc(var(--_h, 0) * 1deg)) * var(--_a, 0) * -50cqh)
     );
     pointer-events: none;
+    z-index: 1; /* over the rim's hairline */
   }
-  .fa-color-wheel-bead:has(:focus-visible) {
+  /* A press focuses the wheel too; the ring waits for a key (data-pointer-focus). */
+  .fa-color-wheel:not([data-pointer-focus]) .fa-color-wheel-bead:has(:focus-visible) {
     outline: var(--focus-ring-width) solid var(--accent-ring);
-    outline-offset: calc(var(--_ring-width) + var(--border-width) + var(--focus-ring-offset));
+    outline-offset: calc(var(--_ring-width) + var(--_edge-width) + var(--focus-ring-offset));
   }
   /* The sliders sit on the bead, unseen: a screen reader's focus box is the bead. */
   .fa-color-wheel-input {

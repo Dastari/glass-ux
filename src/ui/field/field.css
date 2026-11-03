@@ -339,7 +339,8 @@
   }
   .fa-switch,
   .fa-slider,
-  .fa-color-picker {
+  .fa-color-picker,
+  .fa-color-wheel {
     --_bead: radial-gradient(
       130% 130% at 30% 22%,
       oklch(1 0 0) 0%,

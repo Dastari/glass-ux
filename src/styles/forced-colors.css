@@ -42,6 +42,24 @@
     outline: var(--border-width) solid CanvasText;
   }
 
+  /* ── Colour wheel: the hues are the scale, so the disc, ring and bead keep their colours,
+        the wheel gains a boundary and focus is a Highlight outline. ────────────────────── */
+  :is(.fa-color-wheel-field, .fa-color-wheel-ring, .fa-color-wheel-bead) {
+    forced-color-adjust: none;
+  }
+  .fa-color-wheel-field {
+    outline: var(--border-width) solid CanvasText;
+  }
+  .fa-color-wheel-bead:has(:focus-visible) {
+    outline: var(--focus-ring-width) solid Highlight;
+  }
+  .fa-color-wheel[data-disabled] {
+    opacity: 1;
+  }
+  .fa-color-wheel[data-disabled] .fa-color-wheel-field {
+    outline-color: GrayText;
+  }
+
   /* ── Status bar: an interactive item looks like one, beside the plain items. ───────────── */
   :is(button.fa-status-bar-item, .fa-status-bar-more) {
     outline: var(--border-width) solid ButtonText;

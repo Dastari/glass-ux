@@ -1,0 +1,177 @@
+/*
+ * ColorWheel.
+ *
+ *   disc     the box the pointer works in. It is the wheel plus half a bead and its rings on
+ *            every side, so a bead at the rim never reaches past the box it was given
+ *   field    the circle the bead travels in: the centre is neutral, the edge is `max`
+ *   canvas   (disc variant) the OKLab a–b plane at one lightness, painted once (wheel.ts)
+ *   ring     (ring variant) a hue ring outside the field, which becomes a recessed well
+ *   bead     the ColorPicker bead: the chosen colour inside a white ring with a dark edge, so
+ *            it reads on every hue and on the grey centre (one of the two is ≥ 3:1)
+ *   readout  an optional caption line, reserved so nothing moves as it changes
+ *
+ * Hue angles are physical, as in a chart: 0° to the right, counter-clockwise, in every
+ * language. The bead moves with a transform from --_h (degrees) and --_a (0–1), written by
+ * the component during a drag without a render.
+ */
+@layer components {
+  .fa-color-wheel {
+    --_size: calc(var(--space-16) * 3);
+    --_thumb: calc(var(--check-size) + var(--space-1));
+    --_ring: oklch(1 0 0);
+    --_ring-width: calc(var(--border-width) * 2.5);
+    --_ring-edge: oklch(0.22 0.01 var(--neutral-h) / 0.62);
+    --_pad: calc(var(--_thumb) / 2 + var(--_ring-width) + var(--border-width));
+    /* the disc's colour under the bead: wheel.ts WHEEL_LIGHTNESS and WHEEL_CHROMA */
+    --_tint: oklch(0.75 calc(var(--_a, 0) * 0.125) calc(var(--_h, 0) * 1));
+    --_hues: conic-gradient(
+      from 90deg in oklch,
+      oklch(0.75 0.125 360),
+      oklch(0.75 0.125 300),
+      oklch(0.75 0.125 240),
+      oklch(0.75 0.125 180),
+      oklch(0.75 0.125 120),
+      oklch(0.75 0.125 60),
+      oklch(0.75 0.125 0)
+    );
+    --_mark: oklch(0.22 0.01 var(--neutral-h) / 0.45);
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    /* Its own size wherever it sits (a flex row, a grid cell), never wider than its box. */
+    inline-size: var(--_size);
+    max-inline-size: 100%;
+    min-inline-size: calc(var(--_thumb) * 3);
+  }
+  .fa-color-wheel[data-size="sm"] {
+    --_size: calc(var(--space-16) * 2);
+    --_thumb: var(--check-size);
+    gap: var(--space-1);
+  }
+  .fa-color-wheel[data-disabled] {
+    opacity: var(--disabled-opacity);
+  }
+
+  .fa-color-wheel-disc {
+    position: relative;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    touch-action: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: crosshair;
+  }
+  .fa-color-wheel[data-disabled] .fa-color-wheel-disc {
+    cursor: not-allowed;
+  }
+
+  /* The bead's travel. A size container, so the bead's transform can reach its edge. */
+  .fa-color-wheel-field {
+    position: absolute;
+    inset: var(--_pad);
+    container-type: size;
+    border-radius: var(--radius-full);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+  }
+  .fa-color-wheel-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+  }
+  /* The rim's hairline over the painted disc. */
+  .fa-color-wheel[data-variant="disc"] .fa-color-wheel-field::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 var(--border-width) var(--line);
+    pointer-events: none;
+  }
+
+  /* ── Ring variant ──────────────────────────────────────────────────────── */
+  .fa-color-wheel-ring {
+    display: none;
+  }
+  .fa-color-wheel[data-variant="ring"] .fa-color-wheel-ring {
+    --_band: calc(var(--_pad) - var(--space-1));
+    display: block;
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-full);
+    background: var(--_hues);
+    mask: radial-gradient(closest-side, transparent calc(100% - var(--_band)), var(--fg) calc(100% - var(--_band) + var(--border-width)));
+  }
+  .fa-color-wheel[data-variant="ring"] .fa-color-wheel-field {
+    --_mark: color-mix(in oklab, var(--fg-subtle) 70%, transparent);
+    background-color: var(--_well);
+    box-shadow: var(--_well-shadow);
+  }
+
+  /* ── Centre ────────────────────────────────────────────────────────────── */
+  .fa-color-wheel-centre {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    width: var(--space-2);
+    height: var(--space-2);
+    margin-block-start: calc(var(--space-2) / -2);
+    margin-inline-start: calc(var(--space-2) / -2);
+    border-radius: var(--radius-full);
+    box-shadow: inset 0 0 0 var(--border-width) var(--_mark);
+    pointer-events: none;
+  }
+
+  /* ── Bead ──────────────────────────────────────────────────────────────── */
+  .fa-color-wheel-bead {
+    position: absolute;
+    left: 50%; /* logical:allow the bead starts at the centre; hue angles are physical */
+    top: 50%;
+    width: var(--_thumb);
+    height: var(--_thumb);
+    margin: calc(var(--_thumb) / -2);
+    border-radius: var(--radius-full);
+    background: var(--_tint);
+    box-shadow:
+      0 0 0 var(--_ring-width) var(--_ring),
+      0 0 0 calc(var(--_ring-width) + var(--border-width)) var(--_ring-edge),
+      var(--_bead-shadow);
+    transform: translate(
+      calc(cos(calc(var(--_h, 0) * 1deg)) * var(--_a, 0) * 50cqw),
+      calc(sin(calc(var(--_h, 0) * 1deg)) * var(--_a, 0) * -50cqh)
+    );
+    pointer-events: none;
+  }
+  .fa-color-wheel-bead:has(:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--_ring-width) + var(--border-width) + var(--focus-ring-offset));
+  }
+  /* The sliders sit on the bead, unseen: a screen reader's focus box is the bead. */
+  .fa-color-wheel-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    appearance: none;
+    pointer-events: none;
+  }
+
+  /* ── Readout ───────────────────────────────────────────────────────────── */
+  .fa-color-wheel-readout {
+    max-inline-size: 100%;
+    min-block-size: var(--type-caption-line);
+    overflow: hidden;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

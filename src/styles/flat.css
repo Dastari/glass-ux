@@ -107,7 +107,7 @@
 
     /* Choice controls declare their own local material tokens. Flatten the bead and
        well, retaining their tone and the switch thumb's checked-position transform. */
-    :root[data-style="flat"] :is(.fa-check, .fa-radio, .fa-switch, .fa-slider) {
+    :root[data-style="flat"] :is(.fa-check, .fa-radio, .fa-switch, .fa-slider, .fa-color-wheel) {
       --_on-fill: none;
       --_on-glow: transparent;
       --_bead: var(--surface-3);

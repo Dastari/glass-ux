@@ -9,6 +9,8 @@ export interface SectionMeta {
   order: number
   /** One sentence shown under the title. */
   summary: string
+  /** The badge over a section page's title, such as "Tool" or "Filter". Default "Foundation". */
+  badge?: string
 }
 
 export type SignoffStatus = "pending" | "approved" | "changes"

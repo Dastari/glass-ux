@@ -20,6 +20,8 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - `useFocusRegionNavigation` in `glass-ux/hooks`: the traversal behind `useFocusRegions`, with
   `next()` and `previous()` and no key bound, for an application that routes its own shortcuts.
   `useFocusRegions` is built on it and behaves as before.
+- `glass-ux-docs-kit`: `SectionMeta.badge` and a `badge` prop on `FoundationDocumentation`, so a
+  reference page can be badged "Tool" or "Filter" instead of "Foundation".
 - `glass-ux/i18n/catalog`, the module a package built on Glass UX augments to add its namespace to
   `MessageCatalog`, so `defineMessagePack` and `MessageOverrides` type it. `declare module
   "glass-ux/i18n"` cannot merge, because that entry re-exports the interface.

@@ -505,10 +505,12 @@ export function ComponentDocumentation({ id }: { id: string }) {
 export interface FoundationDocumentationProps {
   /** Foundation section identifier, such as colour, typography or space. */
   id: string;
+  /** The badge over the title, such as "Tool" or "Filter". Default: the section's `badge`, then "Foundation". */
+  badge?: string;
 }
 
 /** A Foundation's styled title, introduction and examples in one centered article. Icons retain their usage and API sections. */
-export function FoundationDocumentation({ id }: FoundationDocumentationProps) {
+export function FoundationDocumentation({ id, badge }: FoundationDocumentationProps) {
   const site = useDocsSite();
   const section = siteRuntime(site).findSection(id);
   if (!section || section.group !== "Foundations")
@@ -517,13 +519,14 @@ export function FoundationDocumentation({ id }: FoundationDocumentationProps) {
     );
   if (collectionOf(site, id)) return <ComponentDocumentation id={id} />;
   const { Component } = section;
+  const kind = badge ?? section.badge ?? "Foundation";
   return (
     <article
       className="gallery-documentation gallery-foundation-document"
-      aria-label={`${section.title} foundation`}
+      aria-label={`${section.title} ${kind.toLowerCase()}`}
     >
       <header className="gallery-document-intro">
-        <Badge>Foundation</Badge>
+        <Badge>{kind}</Badge>
         <h1 className="type-display">{section.title}</h1>
         <p className="gallery-document-description type-body text-fg-muted">
           {section.summary}

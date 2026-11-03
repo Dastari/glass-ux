@@ -172,6 +172,10 @@ import { site } from "../../../src/gallery/site.generated";
 
 Wrap the pages in `Suspense`: a component page loads that content on first render.
 
+`FoundationDocumentation` shows any section in the Foundations group as a reference page, badged
+"Foundation". A section that is a tool, a filter or a kit sets `badge` in its meta (`badge: "Tool"`),
+or the page takes a `badge` prop.
+
 `glass-ux-docs-kit/react` exports the pages (`ComponentDocumentation`, `FoundationDocumentation`,
 `ApiReference`, `UsageExample`, `LibraryGuide`, `CatalogueIndex`), the specimens (`SectionPage`,
 `Specimen`, `OnCanvas`, `Example`, `Matrix`, `Rules`, `TokenTable`, `ContainerLab`, `SwapSlot`,

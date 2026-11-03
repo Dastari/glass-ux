@@ -192,6 +192,10 @@ decides when to publish. The local route:
   `lang="en-AU" dir="rtl"`. The dev server does not transpile, and `e2e/rtl.spec.ts` always sets
   `lang=ar`, so tests do not see it. Needs a selector Lightning CSS keeps, or a documented `lang`
   requirement.
+- The docs kit does not export `TemplateDocumentation` or `TemplatePreview`
+  (src/gallery/template-documentation.tsx): they read this project's template list and application
+  shell. Sister packages copy their structure. Exporting them needs the screen, sources and shell
+  passed in.
 - Tree with `onMove` (and PaneLayout's tab titles) remount when their lazy drag or menu code
   arrives. Tree hands focus back, but a click landing in that moment loses its selection. Loading
   the code with the component would remove the swap, at the cost of the split.

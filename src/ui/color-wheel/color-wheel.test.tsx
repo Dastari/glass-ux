@@ -143,8 +143,14 @@ describe("ColorWheel", () => {
 
     cleanup()
     render(<ColorWheel value={{ hue: 30, amount: 10 }} onValueChange={() => {}} />)
-    fireEvent.keyDown(sliders().amount, { key: "ArrowUp" })
-    expect(sliders().amount).toHaveAttribute("aria-valuetext", "10%")
+    const { amount } = sliders()
+    amount.focus()
+    // Twice on the same slider, so no focus move re-renders the wheel in between.
+    fireEvent.keyDown(amount, { key: "ArrowUp" })
+    fireEvent.keyDown(amount, { key: "ArrowUp" })
+    expect(amount).toHaveAttribute("aria-valuetext", "10%")
+    fireEvent.change(amount, { target: { value: "40" } })
+    expect(amount).toHaveValue("10")
   })
 
   it("takes a screen reader's own increment of a slider", () => {

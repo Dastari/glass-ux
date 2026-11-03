@@ -23,11 +23,6 @@ async function field(wheel: Locator) {
   return { x: box.x + box.width / 2, y: box.y + box.height / 2, r: box.width / 2 };
 }
 
-const parse = (text: string | null) => {
-  const [, hue, amount] = /hue ([\d.]+), amount ([\d.]+)/.exec(text ?? "")!;
-  return { hue: Number(hue), amount: Number(amount) };
-};
-
 test("a drag reports as it moves and commits once on release @responsive", async ({ page }) => {
   const { errors, demo, value, committed } = await open(page);
   const centre = await field(demo);

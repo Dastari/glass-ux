@@ -185,11 +185,14 @@ export function ColorWheel({
     if (variant === "disc" && canvas.current) paintDisc(canvas.current)
   }, [variant])
 
-  /** Paint and report a value; returns whether it changed. */
+  /**
+   * Report a value; returns whether it changed. A drag paints ahead of the render; otherwise a
+   * controlled wheel waits for its host's render, so a value the host refuses never shows.
+   */
   const emit = (next: ColorWheelValue, commit: boolean) => {
     const fitted = fit(next)
     if (same(fitted, live.current)) return false
-    paint(fitted)
+    if (drag.current || !controlled) paint(fitted)
     onValueChange?.(fitted)
     if (!drag.current && !controlled) setInner(fitted)
     if (commit) onValueCommitted?.(fitted)
@@ -264,6 +267,8 @@ export function ColorWheel({
   const onInput = (which: Axis) => (event: ChangeEvent<HTMLInputElement>) => {
     const number = Number(event.currentTarget.value)
     if (Number.isFinite(number)) emit({ ...live.current, [which]: number }, true)
+    // Until a render says otherwise, the input shows the value the wheel holds.
+    event.currentTarget.value = String(live.current[which])
   }
 
   const words = texts(shown)

@@ -204,3 +204,33 @@ for (let chunk = 0; chunk < Math.ceil(paths.length / 12); chunk++) {
     }
   })
 }
+
+test("code reads left to right on a right-to-left page, while its card follows the page", async ({ page }) => {
+  await page.goto("/components/slider?dir=rtl&lang=ar")
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl")
+  const block = page.locator(".fa-ai-code").first()
+  await block.scrollIntoViewIfNeeded()
+  await expect(block).toHaveCSS("direction", "rtl")
+  await expect(block.locator(".fa-ai-code-scroll")).toHaveCSS("direction", "ltr")
+  // The line's first character is drawn at its left end: the bidi algorithm did not move a quote there.
+  const order = await block.locator(".fa-ai-code-line").first().evaluate((line) => {
+    const text = line.textContent!.trimEnd()
+    const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT)
+    const nodes: Text[] = []
+    while (walker.nextNode()) nodes.push(walker.currentNode as Text)
+    const rect = (node: Text, offset: number) => {
+      const range = document.createRange()
+      range.setStart(node, offset)
+      range.setEnd(node, offset + 1)
+      return range.getBoundingClientRect()
+    }
+    const first = nodes.find((node) => node.data.trim())!
+    const last = [...nodes].reverse().find((node) => node.data.trim())!
+    const end = last.data.trimEnd().length - 1
+    return { text, first: rect(first, first.data.search(/\S/)).left, last: rect(last, end).right, quoteLast: last.data.trimEnd().at(-1) }
+  })
+  expect(order.text).toMatch(/^import /)
+  expect(order.first).toBeLessThan(order.last)
+  await page.locator("#api").scrollIntoViewIfNeeded()
+  await expect(page.locator("#api th[scope='row'] code").first()).toHaveCSS("direction", "ltr")
+})

@@ -303,10 +303,10 @@ export function TokenTable({
             {tokens.map(([name, note]) => (
               <tr key={name}>
                 <td>
-                  <code>{name}</code>
+                  <code dir="ltr">{name}</code>
                 </td>
                 <td>
-                  <code className="gallery-token-value">
+                  <code dir="ltr" className="gallery-token-value">
                     {values[name] || "—"}
                   </code>
                 </td>

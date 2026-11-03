@@ -30,6 +30,10 @@ has upgrade steps in the [migration guide](docs/migration.md).
   from the end of its fill (16px small, 20px medium), at the end of the track past its edge. The
   slider now centres its thumbs itself, so they sit at their value with a provider or with only
   the page's `dir`.
+- Code reads left to right on a right-to-left page: `CodeBlock`'s code (its card still follows the
+  page), `InlineCode`, `DiffView` (a host's own `dir` still wins), and the docs kit's API tables. The
+  bidi algorithm moved a line's closing quote to its start, so `import { X } from "pkg"` was
+  garbled on catalogue pages in RTL.
 - `glass-ux-docs api`: `llms` works with no `links`. It crashed.
 - `glass-ux-docs-kit`: the site frame from `init` compiles under `noUncheckedIndexedAccess` and in
   a project with no guides. A site's `guides` is typed even when empty.

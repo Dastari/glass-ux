@@ -3,6 +3,16 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.14.0 → next
+
+Behaviour to review:
+
+- In right-to-left pages, `CodeBlock`'s code, `InlineCode` and `DiffView` lay out left to right,
+  so a DiffView's line numbers and signs move to the left. Pass `dir` to DiffView to keep the old
+  order.
+- A Slider in right-to-left text under a `DirectionProvider` draws each thumb at its value. Before,
+  it sat one thumb's width past the end of the fill; a screenshot taken then will differ.
+
 ## 0.13.1 → 0.14.0
 
 Code edits, where a project uses these:

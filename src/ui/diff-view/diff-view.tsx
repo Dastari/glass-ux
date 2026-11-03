@@ -59,7 +59,9 @@ export function DiffView({ lines, label, summary, addedLabel, removedLabel, clas
     })
   }
   return (
+    // Code reads left to right in any page; a host can still pass its own dir.
     <div
+      dir="ltr"
       {...rest}
       className={cx("fa-diff", className)}
       role="region"

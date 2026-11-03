@@ -74,21 +74,21 @@ function Props({
           {rows.map((prop) => (
             <tr key={prop.name}>
               <th scope="row">
-                <code>{prop.name}</code>
+                <code dir="ltr">{prop.name}</code>
                 {prop.required ? <span> required</span> : null}
               </th>
               <td>
-                <code>{prop.type}</code>
+                <code dir="ltr">{prop.type}</code>
               </td>
               <td>
-                <code>
+                <code dir="ltr">
                   {prop.options
                     .map((value) => JSON.stringify(value))
                     .join(" · ") || "See type"}
                 </code>
               </td>
               <td>
-                <code>{prop.default ?? "—"}</code>
+                <code dir="ltr">{prop.default ?? "—"}</code>
               </td>
               <td>{prop.description}</td>
             </tr>

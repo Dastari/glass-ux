@@ -73,3 +73,13 @@ describe("DiffView", () => {
     expect(diffText(lines)).toBe("  keep\n- old\n+ new\n  ")
   })
 })
+
+describe("DiffView direction", () => {
+  it("reads left to right unless the host says otherwise", () => {
+    render(<DiffView label="a" lines={[{ type: "add", text: "x = 1" }]} data-testid="ltr" />)
+    expect(screen.getByTestId("ltr").getAttribute("dir")).toBe("ltr")
+    cleanup()
+    render(<DiffView label="a" lines={[{ type: "add", text: "x = 1" }]} dir="rtl" data-testid="rtl" />)
+    expect(screen.getByTestId("rtl").getAttribute("dir")).toBe("rtl")
+  })
+})

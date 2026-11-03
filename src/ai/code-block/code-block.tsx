@@ -121,8 +121,10 @@ export function CodeBlock({
           </>
         }
       />
+      {/* Code reads left to right in any page; the card itself still follows the page. */}
       <div
         id={id}
+        dir="ltr"
         className="fa-ai-code-scroll"
         data-collapsed={collapsed ? "" : undefined}
         style={{ "--_lines": maxLines } as CSSProperties}
@@ -175,5 +177,6 @@ export function CodeBlock({
 
 /** Inline code inside prose. */
 export function InlineCode({ children }: { children: string }) {
-  return <code className="fa-ai-inline-code">{children}</code>;
+  // An isolate, so the bidi algorithm cannot move its punctuation into right-to-left prose.
+  return <code dir="ltr" className="fa-ai-inline-code">{children}</code>;
 }

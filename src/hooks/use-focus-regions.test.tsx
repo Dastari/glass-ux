@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { useRef, type ReactNode } from "react"
-import { useFocusRegions, type FocusRegionOptions } from "./index.js"
+import { useFocusRegionNavigation, useFocusRegions, type FocusRegionNavigation, type FocusRegionOptions } from "./index.js"
 
 afterEach(cleanup)
 
@@ -211,5 +211,35 @@ describe("useFocusRegions", () => {
     screen.getByRole("button", { name: "Left" }).focus()
     press()
     expect(name()).toBe("Right")
+  })
+})
+
+describe("useFocusRegionNavigation", () => {
+  let regions: FocusRegionNavigation
+  function Host({ children, ...options }: FocusRegionOptions & { children: ReactNode }) {
+    regions = useFocusRegionNavigation(options)
+    return <>{children}</>
+  }
+
+  it("moves on a call, remembers focus, and binds no key", () => {
+    render(<Host><Three /></Host>)
+    screen.getByRole("button", { name: "Second" }).focus()
+    expect(press()).toBe(false)
+    expect(name()).toBe("Second")
+    act(() => void expect(regions.next()).toBe(true))
+    expect(name()).toBe("Editor")
+    act(() => void expect(regions.previous()).toBe(true))
+    expect(name()).toBe("Second")
+    act(() => void regions.previous())
+    expect(name()).toBe("Third")
+  })
+
+  it("reports when focus stays: one region, a modal open, or disabled", () => {
+    const { rerender } = render(<Host><nav data-focus-region><button>Only</button></nav></Host>)
+    expect(regions.next()).toBe(false)
+    rerender(<Host><Three /><div role="alertdialog" aria-label="Confirm" /></Host>)
+    expect(regions.next()).toBe(false)
+    rerender(<Host enabled={false}><Three /></Host>)
+    expect(regions.next()).toBe(false)
   })
 })

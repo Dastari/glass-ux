@@ -84,7 +84,9 @@ terminal-like pane, where Tab belongs to the content. It is off by default. Mark
 own with `data-focus-region`, or use `useFocusRegions` from `glass-ux/hooks` without the shell.
 Browsers bind F6 to their own panes, usually the address bar. The hook cancels that only when it
 moves focus: with fewer than two regions or a modal dialog open the key stays the browser's.
-Ctrl+L, Alt+D and ⌘L still reach the address bar.
+Ctrl+L, Alt+D and ⌘L still reach the address bar. An application that routes its own shortcuts,
+so a host can veto or rebind them, binds F6 itself and calls `next()` and `previous()` from
+`useFocusRegionNavigation`, which moves the same way and binds no key.
 
 For rebinding, chords and a help dialog, mount `KeymapProvider` from `glass-ux/keymap` once and
 register commands with `useShortcutCommands`, or `useActionShortcuts` for a `defineActions` set.

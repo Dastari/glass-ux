@@ -28,7 +28,7 @@ export {
   type UndoStack,
   type UndoState,
 } from "./use-undo-stack.js";
-export { useFocusRegions, type FocusRegionOptions } from "./use-focus-regions.js";
+export { useFocusRegionNavigation, useFocusRegions, type FocusRegionNavigation, type FocusRegionOptions } from "./use-focus-regions.js";
 export { useAnnounce, type Announce, type AnnounceOptions } from "./use-announce.js";
 export { useClipboard, type ClipboardOptions, type ClipboardState } from "./use-clipboard.js";
 export {

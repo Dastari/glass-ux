@@ -3,6 +3,18 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.15.0 → next
+
+Behaviour to review:
+
+- `colorWheelColor(value)` returns a stronger colour for the same value: the rim is now each hue's
+  most saturated sRGB colour, and lightness moves toward it. A tint stored as the colour rather than
+  the value will differ from one taken now; the stored `{ hue, amount }` values are unchanged.
+- `ColorPicker`'s area is narrower for cyan, teal and yellow hues, so a colour sits further toward
+  the rim than before, and an arrow key there moves chroma by a little less.
+- `GradientPicker` without a value starts from `#2563eb` to `#c026d3`. Pass `defaultValue` to keep
+  the old start.
+
 ## 0.14.0 → 0.15.0
 
 Behaviour to review:

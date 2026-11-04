@@ -19,7 +19,7 @@ preview shows that same string, in sRGB, so it looks the same on any display.
 | aria-label | `string \| undefined` | See type | no | — | Accessible name for the picker group when no visible label names it. |
 | aria-labelledby | `string \| undefined` | See type | no | — | IDs of elements that name the picker. |
 | className | `string \| undefined` | See type | no | — | Layout only. |
-| defaultValue | `GradientValue \| undefined` | See type | no | DEFAULT_GRADIENT | The starting gradient when uncontrolled. Default: a mid blue to a pale violet. |
+| defaultValue | `GradientValue \| undefined` | See type | no | DEFAULT_GRADIENT | The starting gradient when uncontrolled. Default: a strong blue (`#2563eb`) to fuchsia (`#c026d3`). |
 | disabled | `boolean \| undefined` | false, true | no | false | Disables interaction while retaining the component’s disabled appearance. |
 | eyeDropper | `boolean \| undefined` | false, true | no | — | Offer the browser's eyedropper where it has one. Default true. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |

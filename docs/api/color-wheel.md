@@ -4,8 +4,9 @@ A colour wheel: a hue and an amount around a neutral centre, the control for a c
 a grade's shadows, midtones and highlights, or a tint. The value is `{ hue, amount }`: the OKLCH
 hue in degrees, at its angle on the wheel (0° to the right of the centre, rising
 counter-clockwise, in every language, as in a chart), and the amount from 0 at the centre to
-`max` at the rim. The disc is drawn in OKLCH at one lightness, so the hues are evenly spaced and
-equally strong; `colorWheelColor` gives the colour under the bead.
+`max` at the rim. The disc runs from grey at the centre to each hue's most saturated sRGB colour
+at the rim, so pure red, yellow, green, cyan, blue and magenta sit on its edge;
+`colorWheelColor` gives the colour under the bead.
 
 Pointer: press or drag anywhere on the wheel; a double press returns to neutral.
 

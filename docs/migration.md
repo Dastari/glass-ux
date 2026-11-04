@@ -3,6 +3,21 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.16.0 → 0.16.1
+
+Code edits, where a project uses these:
+
+- `FileKind` adds `"layered-image"`. Exhaustive switches and records keyed by `FileKind`
+  need the new case. PSD, PSB, XCF, KRA, ORA, Affinity Photo and Paint.NET files now use
+  that kind and the `file-layers` icon instead of `image`.
+
+Behaviour to review:
+
+- Dark Flat canvases use OKLCH lightness `0.18` across all palettes, down from `0.215`.
+  Hue and chroma, light Flat and Glass canvases are unchanged.
+- The 47 image-editing icons are new exports from `glass-ux/icons`; existing icon names
+  and artwork are unchanged.
+
 ## 0.15.0 → 0.16.0
 
 Behaviour to review:

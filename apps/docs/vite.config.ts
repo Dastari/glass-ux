@@ -6,5 +6,10 @@ export default defineConfig({
   base: process.env.GLASS_UX_BASE ?? "/",
   publicDir: "../../public",
   plugins: [react(), tailwind(), glassUx()],
-  server: { host: "127.0.0.1", port: 4220, strictPort: true },
+  server: {
+    host: "127.0.0.1",
+    port: 4220,
+    strictPort: true,
+    allowedHosts: ["development.tail7a58a6.ts.net"],
+  },
 });

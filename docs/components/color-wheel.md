@@ -16,8 +16,10 @@ import { ColorWheel } from "glass-ux/color-wheel"
   `defaultValue` starts it (neutral). `onValueChange` fires while dragging, without the wheel
   re-rendering itself; `onValueCommitted` fires once per gesture and not for one that changed
   nothing. Pointer values snap to `step` (`max / 100`) and `hueStep` (1°).
-- **Disc:** the OKLab a–b plane at one lightness, where every hue reaches the same chroma in
-  sRGB, so the hues are evenly spaced. 0° is to the right and hues rise counter-clockwise, in
+- **Disc:** grey at the centre, and at the rim each hue at its most saturated in sRGB, so pure
+  red, yellow, green, cyan, blue and magenta sit on the edge. Each spoke is a straight line through
+  OKLab, so lightness follows the hue toward the rim: yellow is light and blue is dark, as in the
+  colours themselves. 0° is to the right and hues rise counter-clockwise, in
   every language. `colorWheelColor(value, max)` returns the colour under the bead, for
   `cssColor` or `formatHex` from `glass-ux/color-picker`.
 - **Keyboard:** one tab stop holding two sliders, Hue and Amount. Left and Right turn the hue

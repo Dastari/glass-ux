@@ -5,7 +5,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { registerMessagePack } from "../../lib/i18n/index.js"
 import { LocaleProvider } from "../../lib/locale/index.js"
 import de from "../../i18n/de.js"
-import { inGamut } from "../color-picker/color.js"
+import { formatHex, inGamut, parseHex } from "../color-picker/color.js"
 import { ColorWheel, colorWheelColor, type ColorWheelValue } from "./index.js"
 import { hueFamily, normalizeWheel, pointToWheel, wheelToPoint, wrapHue } from "./wheel.js"
 
@@ -50,12 +50,16 @@ describe("wheel geometry", () => {
     expect(hueFamily(295)).toBe("purple")
   })
 
-  it("shows every hue at the rim inside sRGB, so the disc is even", () => {
+  it("reaches each hue's strongest sRGB colour at the rim, and grey at the centre", () => {
     for (let hue = 0; hue < 360; hue += 3) {
       const { l, c, h } = colorWheelColor({ hue, amount: 100 })
       expect(inGamut(l, c, h), `hue ${hue}`).toBe(true)
     }
+    for (const hex of ["#ff0000", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff"]) {
+      expect(formatHex(colorWheelColor({ hue: parseHex(hex)!.h, amount: 100 }))).toBe(hex)
+    }
     expect(colorWheelColor({ hue: 90, amount: 0 }).c).toBe(0)
+    expect(colorWheelColor({ hue: 200, amount: 0 }).l).toBe(colorWheelColor({ hue: 20, amount: 0 }).l)
     expect(colorWheelColor({ hue: 90, amount: 0.5 }, 1).c).toBeCloseTo(colorWheelColor({ hue: 90, amount: 100 }).c / 2)
   })
 })

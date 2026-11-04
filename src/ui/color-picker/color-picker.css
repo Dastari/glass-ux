@@ -101,7 +101,7 @@
     outline-offset: calc(var(--_ring-width) + var(--focus-ring-offset));
   }
   .fa-color-slider:not([data-alpha]) .fa-color-slider-thumb {
-    background: oklch(72% 0.14 calc(var(--_f) * 360)); /* tokens:allow the hue thumb shows its own hue */
+    background: var(--_hue-thumb); /* the hue at its most saturated, from the component */
   }
   .fa-color-slider[data-hsv]:not([data-alpha]) .fa-color-slider-thumb {
     background: hsl(calc(var(--_f) * 360) 100% 50%); /* tokens:allow the HSV hue thumb shows its own hue */

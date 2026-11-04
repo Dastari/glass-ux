@@ -1,13 +1,13 @@
 /**
  * tokens:allow-file colour maths for the colour wheel.
  *
- * The wheel is the OKLab a–b plane at one lightness: hue is the OKLCH hue, the angle from the
- * +a axis (to the right), counter-clockwise; the distance from the centre is chroma, 0 (grey)
- * at the centre up to WHEEL_CHROMA at the rim. Every hue reaches the same chroma at
- * WHEEL_LIGHTNESS inside sRGB, so the disc is even all the way round and the bead's CSS colour
- * is the disc's colour beneath it.
+ * Hue is the OKLCH hue, the angle from the +a axis (to the right), counter-clockwise. Along each
+ * spoke the colour runs in a straight line through OKLab from the grey centre (WHEEL_LIGHTNESS)
+ * to that hue's cusp at the rim, the most saturated colour sRGB can show at that hue. So every
+ * hue reaches its full strength at the rim, and lightness follows the hue there: yellow is
+ * light and blue is dark, as in the sRGB rainbow. The bead's colour is the disc's beneath it.
  */
-import { toRgb, type Oklch } from "../color-picker/color.js"
+import { clampToGamut, cssColor, hueCusp, toRgb, type Oklch } from "../color-picker/color.js"
 
 /** A colour wheel value: a direction and how far from neutral. */
 export interface ColorWheelValue {
@@ -17,10 +17,14 @@ export interface ColorWheelValue {
   amount: number
 }
 
-/** The disc's lightness: the highest at which every hue reaches WHEEL_CHROMA in sRGB. */
+/** The lightness of the neutral centre. */
 export const WHEEL_LIGHTNESS = 0.75
-/** The disc's chroma at the rim. */
-export const WHEEL_CHROMA = 0.125
+
+/** The colour on a spoke at a hue, `fraction` of the way from the centre to the rim, before gamut clipping. */
+function spoke(hue: number, fraction: number): Omit<Oklch, "a"> {
+  const cusp = hueCusp(hue)
+  return { l: WHEEL_LIGHTNESS + (cusp.l - WHEEL_LIGHTNESS) * fraction, c: cusp.c * fraction, h: hue }
+}
 
 /** Round to a multiple of `step`, without binary noise (0.1 + 0.2). */
 export function snap(value: number, step: number): number {
@@ -65,7 +69,15 @@ export function wheelToPoint(value: ColorWheelValue, max: number): { x: number; 
  */
 export function colorWheelColor(value: ColorWheelValue, max = 100): Oklch {
   const fraction = max > 0 ? Math.min(1, Math.max(0, value.amount / max)) : 0
-  return { l: WHEEL_LIGHTNESS, c: WHEEL_CHROMA * fraction, h: wrapHue(value.hue), a: 1 }
+  return clampToGamut({ ...spoke(wrapHue(value.hue), fraction), a: 1 })
+}
+
+/** The hues at the rim as a conic gradient, for the `ring` variant: 0° to the right, counter-clockwise. */
+let rimGradient: string | undefined
+export function wheelHueGradient(): string {
+  // A conic gradient runs clockwise, so the stops are listed from 360° down to 0°.
+  rimGradient ??= `conic-gradient(from 90deg, ${Array.from({ length: 37 }, (_, i) => cssColor(colorWheelColor({ hue: (36 - i) * 10, amount: 1 }, 1))).join(", ")})`
+  return rimGradient
 }
 
 /** Hue families for the spoken value, by their centres in OKLCH degrees (sRGB red is 29°, blue 264°). */
@@ -98,8 +110,8 @@ export function hueFamily(hue: number): HueFamily {
 }
 
 /**
- * Paint the disc into a square canvas: the OKLab a–b plane at WHEEL_LIGHTNESS, chroma rising
- * linearly from the centre to WHEEL_CHROMA at the canvas's inscribed circle. Pixels outside the
+ * Paint the disc into a square canvas: each spoke from the grey centre to its hue's cusp at the
+ * canvas's inscribed circle. Pixels outside the
  * circle are left transparent (the element's own rounding clips it cleanly).
  */
 export function paintWheel(canvas: HTMLCanvasElement): void {
@@ -117,7 +129,7 @@ export function paintWheel(canvas: HTMLCanvasElement): void {
       const i = (py * size + px) * 4
       if (r > 1 + 1 / half) continue
       const h = (Math.atan2(y, x) * 180) / Math.PI
-      const [red, green, blue] = toRgb({ l: WHEEL_LIGHTNESS, c: WHEEL_CHROMA * Math.min(1, r), h: h < 0 ? h + 360 : h })
+      const [red, green, blue] = toRgb(spoke(h < 0 ? h + 360 : h, Math.min(1, r)))
       data[i] = red
       data[i + 1] = green
       data[i + 2] = blue

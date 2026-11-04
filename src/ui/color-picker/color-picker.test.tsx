@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { DirectionProvider } from "../../lib/locale/direction.js"
 import { ColorField, ColorPicker } from "./index.js"
-import { clampToGamut, formatHex, hsvToHex, inGamut, maxChroma, parseHex, rgbToHsv, toRgb } from "./color.js"
+import { clampToGamut, formatHex, hsvToHex, hueCusp, hueGradient, inGamut, maxChroma, parseHex, peakChroma, rgbToHsv, toRgb, vividHue } from "./color.js"
 
 beforeAll(() => {
   // jsdom has no canvas; the area paints nothing there.
@@ -13,6 +13,34 @@ beforeAll(() => {
 afterEach(cleanup)
 
 describe("colour maths", () => {
+  it("finds each hue's cusp: the sRGB primaries and secondaries are their own", () => {
+    for (const hex of ["#ff0000", "#ffff00", "#00ff00", "#00ffff", "#0000ff", "#ff00ff", "#0087ff"]) {
+      const colour = parseHex(hex)!
+      const cusp = hueCusp(colour.h)
+      expect(cusp.l, hex).toBeCloseTo(colour.l, 3)
+      expect(cusp.c, hex).toBeCloseTo(colour.c, 3)
+      expect(formatHex({ ...colour, ...cusp })).toBe(hex)
+    }
+  })
+
+  it("puts the cusp on the gamut's edge at every hue", () => {
+    for (let h = 0; h < 360; h += 2) {
+      const { l, c } = hueCusp(h)
+      expect(inGamut(l, c * 0.995, h), `hue ${h}`).toBe(true)
+      expect(inGamut(l, c * 1.02, h), `hue ${h}`).toBe(false)
+      expect(peakChroma(h)).toBe(c)
+    }
+  })
+
+  it("draws the hue track and thumb at full strength", () => {
+    const red = parseHex("#ff0000")!
+    const [l, c, h] = vividHue(red.h).match(/[\d.]+/g)!.map(Number)
+    expect(l! / 100).toBeCloseTo(red.l, 3)
+    expect(c).toBeCloseTo(red.c, 3)
+    expect(h).toBeCloseTo(red.h, 1)
+    expect(hueGradient().match(/oklch\(/g)).toHaveLength(37)
+  })
+
   it("round-trips hex through OKLCH", () => {
     for (const hex of ["#000000", "#ffffff", "#1f6feb", "#e8710a", "#0f9d58", "#80808080"]) {
       const parsed = parseHex(hex)!

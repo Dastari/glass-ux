@@ -4,6 +4,24 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Changed
+
+- `ColorWheel` reaches each hue's most saturated sRGB colour at its rim, from grey at the centre:
+  pure red, yellow, green, cyan, blue and magenta now sit on the edge. Before, every hue stopped at
+  the chroma the weakest could reach at one lightness, between 40% and 86% of its strength. The
+  `ring` variant's hues and `colorWheelColor` follow; values are unchanged.
+- `ColorPicker`'s hue slider and its thumb show each hue at full strength, as the HSV plane's did.
+- `GradientPicker` starts from a strong blue to fuchsia (`#2563eb` to `#c026d3`) instead of a mid
+  blue to a pale violet.
+
+### Fixed
+
+- `ColorPicker`: for cyan, teal and yellow hues the area was up to a quarter wider than the colours
+  it could show, because near-black colours inside the gamut test's rounding counted toward its
+  width. The area now ends at the hue's most saturated colour, so the real colours fill it.
+
 ## 0.15.0
 
 Requests from the packages built on Glass UX: `PaneLayout` can float its stacks over the primary

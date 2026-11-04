@@ -4,7 +4,8 @@
  *   disc     the box the pointer works in. It is the wheel plus half a bead and its rings on
  *            every side, so a bead at the rim never reaches past the box it was given
  *   field    the circle the bead travels in: the centre is neutral, the edge is `max`
- *   canvas   (disc variant) the OKLab a–b plane at one lightness, painted once (wheel.ts)
+ *   canvas   (disc variant) grey at the centre to each hue's most saturated sRGB colour at the
+ *            rim, painted once (wheel.ts)
  *   ring     (ring variant) a hue ring outside the field, which becomes a recessed well
  *   bead     the ColorPicker bead: the chosen colour inside a white ring with an opaque dark
  *            edge, so it reads on every hue, the grey centre and the well (the edge is ≥ 3:1
@@ -24,18 +25,8 @@
     --_ring-edge: oklch(0.3 0.01 var(--neutral-h));
     --_edge-width: max(var(--border-width), 1px); /* the dark edge never thins below a pixel */
     --_pad: calc(var(--_thumb) / 2 + var(--_ring-width) + var(--_edge-width));
-    /* the disc's colour under the bead: wheel.ts WHEEL_LIGHTNESS and WHEEL_CHROMA */
-    --_tint: oklch(0.75 calc(var(--_a, 0) * 0.125) calc(var(--_h, 0) * 1));
-    --_hues: conic-gradient(
-      from 90deg in oklch,
-      oklch(0.75 0.125 360),
-      oklch(0.75 0.125 300),
-      oklch(0.75 0.125 240),
-      oklch(0.75 0.125 180),
-      oklch(0.75 0.125 120),
-      oklch(0.75 0.125 60),
-      oklch(0.75 0.125 0)
-    );
+    /* --_tint (the colour under the bead) and --_hues (the rim's hues, for the ring) come from
+       the component: each hue's strength at the rim follows the sRGB gamut, which CSS cannot work out. */
     display: grid;
     justify-items: center;
     gap: var(--space-2);

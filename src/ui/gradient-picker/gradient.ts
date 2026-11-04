@@ -31,13 +31,13 @@ export interface GradientValue {
   interpolation?: GradientInterpolation
 }
 
-/** The starting value: a mid blue to a pale violet. */
+/** The starting value: a strong blue to fuchsia. */
 export const DEFAULT_GRADIENT: GradientValue = {
   kind: "linear",
   angle: 90,
   stops: [
-    { color: "#3b6fd4", position: 0 }, // tokens:allow a colour value, not a theme colour
-    { color: "#c7b6f2", position: 100 }, // tokens:allow a colour value, not a theme colour
+    { color: "#2563eb", position: 0 }, // tokens:allow a colour value, not a theme colour
+    { color: "#c026d3", position: 100 }, // tokens:allow a colour value, not a theme colour
   ],
 }
 

@@ -13,7 +13,8 @@ import { useMessages } from "../../lib/i18n/use-messages.js"
 import { formatPercent, numberFormat } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { colorWheelMessages } from "./messages.js"
-import { hueFamily, normalizeWheel, paintWheel, pointToWheel, type ColorWheelValue, type HueFamily } from "./wheel.js"
+import { cssColor } from "../color-picker/color.js"
+import { colorWheelColor, hueFamily, normalizeWheel, paintWheel, pointToWheel, wheelHueGradient, type ColorWheelValue, type HueFamily } from "./wheel.js"
 
 export interface ColorWheelProps {
   /** The value: `hue` in degrees and `amount` from 0 (neutral) to `max`. Pair with `onValueChange` to control it. */
@@ -92,8 +93,9 @@ function paintDisc(canvas: HTMLCanvasElement) {
  * a grade's shadows, midtones and highlights, or a tint. The value is `{ hue, amount }`: the OKLCH
  * hue in degrees, at its angle on the wheel (0° to the right of the centre, rising
  * counter-clockwise, in every language, as in a chart), and the amount from 0 at the centre to
- * `max` at the rim. The disc is drawn in OKLCH at one lightness, so the hues are evenly spaced and
- * equally strong; `colorWheelColor` gives the colour under the bead.
+ * `max` at the rim. The disc runs from grey at the centre to each hue's most saturated sRGB colour
+ * at the rim, so pure red, yellow, green, cyan, blue and magenta sit on its edge;
+ * `colorWheelColor` gives the colour under the bead.
  *
  * Pointer: press or drag anywhere on the wheel; a double press returns to neutral.
  *
@@ -163,6 +165,7 @@ export function ColorWheel({
     if (!element) return
     element.style.setProperty("--_h", String(next.hue))
     element.style.setProperty("--_a", String(latest.current.max > 0 ? next.amount / latest.current.max : 0))
+    element.style.setProperty("--_tint", cssColor(colorWheelColor(next, latest.current.max)))
     const hue = inputs.hue.current
     const amount = inputs.amount.current
     if (hue) {
@@ -286,7 +289,14 @@ export function ColorWheel({
       data-size={size === "md" ? undefined : size}
       data-variant={variant}
       data-disabled={disabled ? "" : undefined}
-      style={{ "--_h": String(shown.hue), "--_a": String(fraction) } as CSSProperties}
+      style={
+        {
+          "--_h": String(shown.hue),
+          "--_a": String(fraction),
+          "--_tint": cssColor(colorWheelColor(shown, max)),
+          "--_hues": variant === "ring" ? wheelHueGradient() : undefined,
+        } as CSSProperties
+      }
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node | null)) event.currentTarget.removeAttribute("data-pointer-focus")
       }}

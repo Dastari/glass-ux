@@ -25,6 +25,7 @@ import {
   hsvHueGradient,
   hsvToHex,
   hueGradient,
+  vividHue,
   maxChroma,
   paintArea,
   paintHsvArea,
@@ -195,6 +196,7 @@ export function ColorPicker({
           value={Math.round(plane === "hsv" ? hsv.h : color.h)}
           max={360}
           track={plane === "hsv" ? hsvHueGradient() : hueGradient()}
+          thumb={plane === "hsv" ? undefined : vividHue(color.h)}
           hsv={plane === "hsv"}
           disabled={disabled}
           onChange={(h) => (plane === "hsv" ? updateHsv({ ...hsv, h }) : update({ ...latest.current, h }))}
@@ -502,6 +504,7 @@ function ColorSlider({
   max,
   unit = "°",
   track,
+  thumb,
   alpha = false,
   hsv = false,
   disabled,
@@ -513,6 +516,8 @@ function ColorSlider({
   max: number
   unit?: string
   track: string
+  /** The thumb's fill, when it shows the hue under it rather than the chosen colour. */
+  thumb?: string
   alpha?: boolean
   /** The hue is an HSV hue: its thumb shows the rainbow's colour instead of the OKLCH one. */
   hsv?: boolean
@@ -534,7 +539,7 @@ function ColorSlider({
       thumbAlignment="edge"
       onValueChange={(next) => onChange(next as number)}
       onValueCommitted={onCommit}
-      style={{ "--_track": track, "--_f": String(value / max) } as CSSProperties}
+      style={{ "--_track": track, "--_f": String(value / max), "--_hue-thumb": thumb } as CSSProperties}
     >
       <BaseSlider.Control className="fa-color-slider-control">
         <BaseSlider.Track className="fa-color-slider-track">

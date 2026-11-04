@@ -52,11 +52,13 @@ export function maxChroma(l: number, h: number): number {
   return lo
 }
 
-/** The largest chroma any lightness reaches at this hue: the width of the picker's area. */
+/**
+ * The largest chroma any lightness reaches at this hue: the width of the picker's area. It is the
+ * hue's cusp; a search over lightness would also count the near-black colours that only fit within
+ * the gamut test's rounding allowance.
+ */
 export function peakChroma(h: number): number {
-  let peak = 0
-  for (let l = 0.02; l < 1; l += 0.02) peak = Math.max(peak, maxChroma(l, h))
-  return peak
+  return hueCusp(h).c
 }
 
 /** The colour with chroma reduced until it fits in sRGB. */
@@ -73,8 +75,12 @@ export function parseHex(value: string): Oklch | null {
   let hex = match[1]!
   if (hex.length <= 4) hex = hex.replace(/./g, (ch) => ch + ch)
   const n = (i: number) => parseInt(hex.slice(i, i + 2), 16) / 255
-  const [r, g, b] = [toLinear(n(0)), toLinear(n(2)), toLinear(n(4))]
   const a = hex.length === 8 ? n(6) : 1
+  return { ...linearToOklch(toLinear(n(0)), toLinear(n(2)), toLinear(n(4))), a }
+}
+
+/** OKLCH of a linear sRGB colour (channels 0–1). */
+function linearToOklch(r: number, g: number, b: number): Omit<Oklch, "a"> {
   const L = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
   const M = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
   const S = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
@@ -82,7 +88,56 @@ export function parseHex(value: string): Oklch | null {
   const A = 1.9779984951 * L - 2.428592205 * M + 0.4505937099 * S
   const B = 0.0259040371 * L + 0.7827717662 * M - 0.808675766 * S
   const h = (Math.atan2(B, A) * 180) / Math.PI
-  return { l, c: Math.sqrt(A * A + B * B), h: h < 0 ? h + 360 : h, a }
+  return { l, c: Math.sqrt(A * A + B * B), h: h < 0 ? h + 360 : h }
+}
+
+/**
+ * The largest saturation (chroma / lightness) sRGB reaches along a hue, `a` and `b` the hue's unit
+ * vector in OKLab. Björn Ottosson's fit from "sRGB gamut clipping" (2021): a polynomial guess for
+ * the channel that clips first, then one Halley step.
+ */
+function maxSaturation(a: number, b: number): number {
+  let k: [number, number, number, number, number]
+  let w: [number, number, number]
+  if (-1.88170328 * a - 0.80936493 * b > 1) {
+    k = [1.19086277, 1.76576728, 0.59662641, 0.75515197, 0.56771245]
+    w = [4.0767416621, -3.3077115913, 0.2309699292]
+  } else if (1.81444104 * a - 1.19445276 * b > 1) {
+    k = [0.73956515, -0.45954404, 0.08285427, 0.1254107, 0.14503204]
+    w = [-1.2684380046, 2.6097574011, -0.3413193965]
+  } else {
+    k = [1.35733652, -0.00915799, -1.1513021, -0.50559606, 0.00692167]
+    w = [-0.0041960863, -0.7034186147, 1.707614701]
+  }
+  let S = k[0] + k[1] * a + k[2] * b + k[3] * a * a + k[4] * a * b
+  const kl = 0.3963377774 * a + 0.2158037573 * b
+  const km = -0.1055613458 * a - 0.0638541728 * b
+  const ks = -0.0894841775 * a - 1.291485548 * b
+  const l_ = 1 + S * kl
+  const m_ = 1 + S * km
+  const s_ = 1 + S * ks
+  const f = w[0] * l_ ** 3 + w[1] * m_ ** 3 + w[2] * s_ ** 3
+  const f1 = w[0] * 3 * kl * l_ ** 2 + w[1] * 3 * km * m_ ** 2 + w[2] * 3 * ks * s_ ** 2
+  const f2 = w[0] * 6 * kl * kl * l_ + w[1] * 6 * km * km * m_ + w[2] * 6 * ks * ks * s_
+  S -= (f * f1) / (f1 * f1 - 0.5 * f * f2)
+  return S
+}
+
+/** The most saturated colour sRGB can show at an OKLCH hue: its lightness and chroma. */
+export function hueCusp(hue: number): { l: number; c: number } {
+  const rad = (hue * Math.PI) / 180
+  const a = Math.cos(rad)
+  const b = Math.sin(rad)
+  const S = maxSaturation(a, b)
+  const rgb = oklchToLinear(1, S, hue)
+  const l = Math.cbrt(1 / Math.max(rgb[0], rgb[1], rgb[2]))
+  return { l, c: l * S }
+}
+
+/** A hue at its most saturated in sRGB, as a CSS colour: the colour a hue track or hue thumb shows. */
+export function vividHue(hue: number): string {
+  const { l, c } = hueCusp(hue)
+  return cssColor({ l, c, h: hue, a: 1 })
 }
 
 const byte = (v: number) => Math.round(Math.min(1, Math.max(0, v)) * 255)
@@ -117,9 +172,9 @@ export function contrast(a: Pick<Oklch, "l" | "c" | "h">, b: Pick<Oklch, "l" | "
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05)
 }
 
-/** A hue gradient for a track: stops every 30° at a lightness and chroma most hues can show. */
+/** A hue gradient for a track: each hue at its most saturated in sRGB, a stop every 10°. */
 export function hueGradient(direction = "to right"): string {
-  const stops = Array.from({ length: 13 }, (_, i) => `oklch(72% 0.14 ${i * 30})`)
+  const stops = Array.from({ length: 37 }, (_, i) => vividHue(i * 10))
   return `linear-gradient(${direction}, ${stops.join(", ")})`
 }
 

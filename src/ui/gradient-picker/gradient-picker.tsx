@@ -20,7 +20,7 @@ const KINDS: readonly GradientKind[] = ["linear", "radial", "angular"]
 export interface GradientPickerProps {
   /** The gradient. Pair with `onValueChange` to control it. */
   value?: GradientValue
-  /** The starting gradient when uncontrolled. Default: a mid blue to a pale violet. */
+  /** The starting gradient when uncontrolled. Default: a strong blue (`#2563eb`) to fuchsia (`#c026d3`). */
   defaultValue?: GradientValue
   /** Called with the gradient when a change is finished: a stop or colour drag released, a key, a typed number. A drag only repaints until then. */
   onValueChange?: (value: GradientValue) => void

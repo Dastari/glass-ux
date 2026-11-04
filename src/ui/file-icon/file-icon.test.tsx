@@ -17,6 +17,8 @@ describe("fileKind", () => {
     [{ mime: "application/vnd.api+json" }, "data"],
     [{ mime: "text/x-unknown" }, "text"],
     [{ name: "logo.svg", mime: "application/octet-stream" }, "vector"],
+    [{ name: "poster.PSD" }, "layered-image"],
+    [{ name: "scan", mime: "image/x-xcf" }, "layered-image"],
     [{ name: ".env" }, "data"],
     [{ name: "Dockerfile" }, "code"],
     [{ name: "server.key" }, "key"],

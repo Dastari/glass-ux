@@ -81,14 +81,27 @@ def("slash-command", () => [rect(3.5, 3.5, 17, 17, 2.5, "t"), rect(3.5, 3.5, 17,
 // Text: the text tool's serifed T, as in `file-font`. `file-text` is the document.
 def("text", () => [path("M5 7V4.5H19V7"), path("M12 4.5V19.5"), path("M9 19.5H15")])
 
-// Brush: a round brush on the 45° axis of `edit`, the bristles carrying the tint.
-def("brush", () => {
+/**
+ * A point on the 45° tool axis of `edit` and `brush`: `u` runs along the handle towards the
+ * top right, `v` across it towards the bottom right. Shared by the image-editing tools.
+ */
+export const toolAxis = (origin, k = 1) => {
   const U = V.norm([1, -1])
   const N = V.norm([1, 1])
-  const P = (u, v) => V.add([11.25, 12.75], V.add(V.mul(U, u), V.mul(N, v)))
+  return (u, v) => V.add(origin, V.add(V.mul(U, u * k), V.mul(N, v * k)))
+}
+/** Round brush on the tool axis: the bristles (tinted) and the handle, scaled by `k`. */
+export const brushParts = (origin = [11.25, 12.75], k = 1) => {
+  const P = toolAxis(origin, k)
   const f = (p) => `${+p[0].toFixed(2)} ${+p[1].toFixed(2)}`
-  const handle = pl([P(1, -1.75), P(11.5, -1.75), P(11.5, 1.75), P(1, 1.75)], [0, 1.75, 1.75, 0])
-  const bristles = `M${f(P(1, -3.25))}L${f(P(1, 3.25))}A9 9 0 0 1 ${f(P(-9.5, 0))}A9 9 0 0 1 ${f(P(1, -3.25))}Z`
+  const r = +(9 * k).toFixed(2)
+  const handle = pl([P(1, -1.75), P(11.5, -1.75), P(11.5, 1.75), P(1, 1.75)], [0, 1.75 * k, 1.75 * k, 0])
+  const bristles = `M${f(P(1, -3.25))}L${f(P(1, 3.25))}A${r} ${r} 0 0 1 ${f(P(-9.5, 0))}A${r} ${r} 0 0 1 ${f(P(1, -3.25))}Z`
+  return { bristles, handle }
+}
+// Brush: a round brush on the 45° axis of `edit`, the bristles carrying the tint.
+def("brush", () => {
+  const { bristles, handle } = brushParts()
   return [path(bristles, "t"), path(bristles), path(d(handle))]
 })
 

@@ -13,6 +13,7 @@ const KINDS: Array<[FileKind, string]> = [
   ["presentation", "pptx odp"],
   ["ebook", "epub mobi"],
   ["image", "png jpg heic"],
+  ["layered-image", "psd xcf kra"],
   ["vector", "svg ai eps"],
   ["audio", "mp3 m4a flac"],
   ["video", "mp4 mov mkv"],

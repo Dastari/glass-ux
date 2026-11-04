@@ -12,6 +12,7 @@ export type FileKind =
   | "presentation"
   | "ebook"
   | "image"
+  | "layered-image"
   | "vector"
   | "audio"
   | "video"
@@ -72,6 +73,7 @@ add(
    application/vnd.openxmlformats-officedocument.presentationml.slideshow`
 )
 add(byMime, "ebook", "application/epub+zip application/x-mobipocket-ebook application/vnd.amazon.ebook")
+add(byMime, "layered-image", "image/vnd.adobe.photoshop application/x-photoshop image/x-xcf image/openraster application/x-krita")
 add(byMime, "vector", "image/svg+xml application/postscript application/illustrator image/x-eps")
 add(byMime, "font", "application/font-woff application/x-font-ttf application/x-font-otf application/vnd.ms-fontobject")
 add(byMime, "model", "application/sla application/vnd.ms-pki.stl")
@@ -127,7 +129,8 @@ add(byExtension, "spreadsheet", "xls xlsx xlsm xlsb xlt xltx ods numbers csv tsv
 // `.key` is a private key here, not a Keynote deck; Keynote sends its MIME type.
 add(byExtension, "presentation", "ppt pptx pptm pps ppsx odp")
 add(byExtension, "ebook", "epub mobi azw azw3 fb2")
-add(byExtension, "image", "png jpg jpeg jfif gif webp avif heic heif bmp tif tiff ico psd raw cr2 nef dng")
+add(byExtension, "image", "png jpg jpeg jfif gif webp avif heic heif bmp tif tiff ico raw cr2 nef dng")
+add(byExtension, "layered-image", "psd psb xcf kra ora afphoto pdn")
 add(byExtension, "vector", "svg svgz ai eps")
 add(byExtension, "audio", "mp3 m4a aac wav flac ogg oga opus wma aif aiff mid midi")
 add(byExtension, "video", "mp4 m4v mov mkv webm avi wmv mpg mpeg 3gp")

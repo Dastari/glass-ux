@@ -4,6 +4,24 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Added
+
+- Icons: 47 image-editing glyphs in a new **Image editing** gallery group, named as general
+  image-editing words so a CMS, a file manager or an avatar editor can use them too. Selection and
+  geometry (`select-object`, `marquee`, `straighten`, `image-size`, `canvas-size`, `transform`,
+  `perspective`, `fill-edges`); tone and colour (`develop`, `exposure`, `curves`, `levels`,
+  `histogram`, `hsl`, `colour-balance`, `detail`, `auto-enhance`); retouching (`clone-stamp`,
+  `healing-brush`, `spot-healing`, `patch-region`, `blur`, `sharpen`, `smudge`, `dodge`, `burn`,
+  `sponge`, `colour-replace`, `red-eye`, `liquify`, `eraser`); layers (`mask`, `mask-plus`,
+  `mask-apply`, `merge-down`, `flatten`); `effects` and `looks`; `image-info`, `image-metadata`,
+  `batch`; and views (`before-after`, `focus-mode`, `fit-screen`, `actual-size`, `transparency`).
+  `image-size` and `before-after` mirror in right-to-left layouts.
+- `FileKind` gains `layered-image` for layered image documents (PSD, PSB, XCF, KRA, ORA,
+  Affinity Photo, Paint.NET), drawn by the new `file-layers` icon. These files showed the
+  `image` kind before.
+
 ## 0.16.0
 
 `ActivityFeed` gains a timeline variant for ticket and case histories, with a joining rail,

@@ -77,3 +77,44 @@ for (const mode of ["light", "dark"] as const) {
     await expect(page.locator("html")).toHaveAttribute("data-style", "flat");
   });
 }
+
+test("Flat canvas uses the darker colour across every palette and mode island @responsive", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByTestId("studio-workspace")).toBeVisible();
+  const colours = await page.evaluate((palettes) => {
+    const root = document.documentElement;
+    const probe = document.createElement("div");
+    probe.style.backgroundColor = "var(--canvas)";
+    document.body.append(probe);
+    const results = [];
+    for (const palette of palettes) {
+      root.dataset.palette = palette;
+      for (const mode of ["light", "dark"]) {
+        root.dataset.mode = mode;
+        for (const style of ["flat", "glass"]) {
+          root.dataset.style = style;
+          const colour = getComputedStyle(probe).backgroundColor;
+          const hue = Number(getComputedStyle(root).getPropertyValue("--neutral-h"));
+          const island = document.createElement("div");
+          island.dataset.mode = mode === "dark" ? "light" : "dark";
+          island.dataset.palette = palette;
+          island.style.backgroundColor = "var(--canvas)";
+          probe.append(island);
+          results.push({ palette, mode, style, colour, hue, island: getComputedStyle(island).backgroundColor });
+          island.remove();
+        }
+      }
+    }
+    probe.remove();
+    return results;
+  }, ["ocean", "aurora", "emerald", "sunset", "graphite", "ruby", "lagoon", "indigo", "rose", "moss", "sand", "slate"]);
+  for (const { palette, mode, style, colour, hue, island } of colours) {
+    const expected = (dark: boolean) => {
+      const lightness = dark ? { flat: 0.18, glass: 0.17 } : { flat: 0.985, glass: 0.94 };
+      const chroma = dark ? 0.022 : style === "flat" ? 0.005 : 0.016;
+      return `oklch(${lightness[style as "flat" | "glass"]} ${chroma} ${hue})`;
+    };
+    expect(colour, `${palette} ${mode} ${style}`).toBe(expected(mode === "dark"));
+    expect(island, `${palette} ${mode} ${style} inverted island`).toBe(expected(mode !== "dark"));
+  }
+});

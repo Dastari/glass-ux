@@ -22,6 +22,11 @@ has upgrade steps in the [migration guide](docs/migration.md).
   Affinity Photo, Paint.NET), drawn by the new `file-layers` icon. These files showed the
   `image` kind before.
 
+### Changed
+
+- Dark Flat canvases use OKLCH lightness `0.18` across all palettes, retaining their neutral
+  hue and chroma. Light Flat and Glass canvases keep their existing colours.
+
 ## 0.16.0
 
 `ActivityFeed` gains a timeline variant for ticket and case histories, with a joining rail,

@@ -12,6 +12,7 @@
     color-scheme: light;
     --canvas: oklch(0.94 0.016 var(--neutral-h));
     --canvas-solid: oklch(0.985 0.005 var(--neutral-h));
+    --canvas-flat: var(--canvas-solid);
     --fg: oklch(0.235 0.03 var(--neutral-h));
     --fg-muted: oklch(0.42 0.026 var(--neutral-h));
     --fg-subtle: oklch(0.49 0.022 var(--neutral-h));
@@ -82,6 +83,7 @@
     color-scheme: dark;
     --canvas: oklch(0.17 0.022 var(--neutral-h));
     --canvas-solid: oklch(0.215 0.022 var(--neutral-h));
+    --canvas-flat: oklch(0.18 0.022 var(--neutral-h));
     --fg: oklch(0.965 0.006 var(--neutral-h));
     --fg-muted: oklch(0.77 0.016 var(--neutral-h));
     --fg-subtle: oklch(0.66 0.016 var(--neutral-h));

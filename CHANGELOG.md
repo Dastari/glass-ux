@@ -4,7 +4,13 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## Unreleased
+## 0.16.0
+
+`ActivityFeed` gains a timeline variant for ticket and case histories, with a joining rail,
+content under any event, ordering by date and inline times. The colour wheel, hue sliders and the
+gradient picker's default now reach each hue's full sRGB strength, and the colour picker's area no
+longer runs wider than the colours it can show; the [migration guide](docs/migration.md) lists
+what to review.
 
 ### Added
 

@@ -7,7 +7,8 @@
     margin: 0;
     list-style: none;
   }
-  .fa-activity-feed li {
+  /* Rows are the feed's own items: a list inside a detail keeps its own layout. */
+  :is(.fa-activity-feed, .fa-activity-branch) > li {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
@@ -19,9 +20,15 @@
     min-width: 0;
     overflow-wrap: anywhere;
   }
+  /* The marker centres on the first line of text, however many lines the event wraps to or
+     whatever sits beneath it: a box one line high, at the top of the row. */
   .fa-activity-icon {
     display: inline-flex;
-    align-self: center;
+    flex: none;
+    align-self: flex-start;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 1lh;
     color: var(--fg-muted);
   }
   .fa-activity-icon svg {
@@ -44,6 +51,49 @@
     color: var(--info-text);
   }
 
+  /* The event's line, when content and time share one box: a timeline, inline time or a detail. */
+  .fa-activity-line {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .fa-activity-line[data-placement="end"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--gap-controls);
+  }
+  .fa-activity-line[data-placement="inline"] {
+    display: block;
+    overflow-wrap: anywhere;
+  }
+  .fa-activity-line[data-placement="inline"] > .fa-activity-content {
+    display: inline;
+  }
+  /* The time keeps the width of its longer forms ("12 min ago", "yesterday"), so the shared
+     clock's ticks change its text without re-wrapping the line and moving the rows below (R9.4). */
+  .fa-activity-time {
+    display: inline-block;
+    min-inline-size: 10ch;
+    color: var(--fg-muted);
+    white-space: nowrap;
+  }
+  .fa-activity-line[data-placement="end"] > .fa-activity-time {
+    text-align: end;
+  }
+  .fa-activity-line[data-placement="inline"] > .fa-activity-time::before {
+    content: "·";
+    content: "·" / "";
+    margin-inline-end: var(--space-1-5);
+    color: var(--fg-subtle);
+  }
+
+  /* A detail sits under the line, in the content column, at a readable measure. */
+  .fa-activity-detail {
+    flex: 1 0 100%;
+    min-width: 0;
+    max-inline-size: var(--measure);
+  }
+
   /* A branch hangs from its parent, one level in, its rail aligned with the parent's marker. */
   .fa-activity-branch {
     display: flex;
@@ -61,7 +111,8 @@
   .fa-activity-feed[data-selectable] {
     gap: var(--space-half);
   }
-  .fa-activity-feed[data-selectable] li {
+  .fa-activity-feed[data-selectable] > li,
+  .fa-activity-feed[data-selectable] .fa-activity-branch > li {
     display: block;
   }
   .fa-activity-feed[data-selectable] .fa-activity-branch {
@@ -76,5 +127,122 @@
     font-size: inherit;
     line-height: inherit;
     user-select: text;
+  }
+
+  /*
+   * Timeline. Every marker sits in one column on the reading-start side and a rail joins
+   * them. Each row draws its own two pieces of rail inside its own box: from its top to the gap
+   * above its marker (::before), and from the gap below its marker to its end (::after). Rows
+   * hold the space between them as padding rather than a gap, so the rows tile the list, the
+   * pieces never overlap, and the rail runs beside a detail or a branch of any height and stops
+   * at the first and last marker of each level without measuring anything. A marker's centre is
+   * half a line below the row's padding; the gap is measured from the drawn marker (--_mark).
+   */
+  .fa-activity-feed[data-variant="timeline"] {
+    --_mark-col: var(--icon-lg); /* the marker column; avatars take this size */
+    --_dot: 0.5rem; /* a status dot or node, as ToneDot draws it */
+    --_rail-w: var(--border-width);
+    --_rail-gap: var(--space-1);
+    --_rail-colour: var(--line-strong);
+    --_row-gap: var(--space-3);
+    --_col-gap: var(--space-3);
+    --_pad-block: 0px; /* a selectable row's own padding above its line */
+    --_pad-inline: 0px;
+    gap: 0;
+    isolation: isolate;
+  }
+  .fa-activity-feed[data-variant="timeline"] .fa-activity-branch {
+    gap: 0;
+    padding-inline: 0;
+  }
+  /* Timeline rows carry data-marker (which marker the rail stops short of); a selectable row's
+     li has role="none" and holds the option, which is laid out like a plain row. */
+  .fa-activity-feed[data-variant="timeline"] li[data-marker] {
+    --_mark: var(--icon-sm);
+    --_space-start: calc(var(--_row-gap) / 2);
+    position: relative;
+    padding-block: var(--_space-start) calc(var(--_row-gap) / 2);
+  }
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]:first-child {
+    --_space-start: 0px;
+  }
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]:last-child {
+    padding-block-end: 0;
+  }
+  .fa-activity-feed[data-variant="timeline"] li:is([data-marker="dot"], [data-marker="node"]) {
+    --_mark: var(--_dot);
+  }
+  .fa-activity-feed[data-variant="timeline"]
+    li[data-marker]:has(> .fa-activity-icon > .fa-avatar, > .fa-activity-row > .fa-activity-icon > .fa-avatar) {
+    --_mark: var(--_mark-col);
+  }
+
+  /* The row: marker column and content column; the line, detail and branch stack in the second. */
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]:not([role]),
+  .fa-activity-feed[data-variant="timeline"] li[data-marker] > .fa-activity-row.fa-item {
+    display: grid;
+    grid-template-columns: var(--_mark-col) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-2) var(--_col-gap);
+  }
+  .fa-activity-feed[data-variant="timeline"] :is(li[data-marker], li[data-marker] > .fa-activity-row) > .fa-activity-icon {
+    grid-row: 1;
+    grid-column: 1;
+    block-size: 1lh;
+    min-block-size: 0;
+  }
+  .fa-activity-feed[data-variant="timeline"] :is(li[data-marker], li[data-marker] > .fa-activity-row) > :not(.fa-activity-icon) {
+    grid-column: 2;
+  }
+  .fa-activity-feed[data-variant="timeline"] .fa-activity-icon > .fa-avatar {
+    --_size: var(--_mark-col);
+  }
+  .fa-activity-feed[data-variant="timeline"] .fa-activity-icon > .fa-avatar .fa-avatar-initials {
+    font-size: calc(var(--_size) * 0.42);
+  }
+  .fa-activity-node {
+    flex: none;
+    inline-size: var(--_dot);
+    block-size: var(--_dot);
+    border: calc(var(--border-width) * 1.5) solid var(--fg-subtle);
+    border-radius: var(--radius-full);
+  }
+
+  /* The rail. */
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]::before,
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset-inline-start: calc(var(--_pad-inline) + (var(--_mark-col) - var(--_rail-w)) / 2);
+    border-inline-start: var(--_rail-w) solid var(--_rail-colour);
+    pointer-events: none;
+  }
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]::before {
+    inset-block-start: 0;
+    block-size: max(0px, calc(var(--_space-start) + var(--_pad-block) + 0.5lh - var(--_mark) / 2 - var(--_rail-gap)));
+  }
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]::after {
+    inset-block: calc(var(--_space-start) + var(--_pad-block) + 0.5lh + var(--_mark) / 2 + var(--_rail-gap)) 0;
+  }
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]:first-child::before,
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]:last-child::after {
+    content: none;
+  }
+
+  /* A selectable timeline: rows are items as tall as a menu row for one line, the line centred
+     in them, and a branch's markers line up under its parent's text. */
+  .fa-activity-feed[data-variant="timeline"][data-selectable] {
+    --_row-gap: var(--space-half);
+    --_pad-block: max(var(--space-1), calc((var(--item-h) - 1lh) / 2));
+    --_pad-inline: var(--space-2-5);
+  }
+  .fa-activity-feed[data-variant="timeline"] li[data-marker] > .fa-activity-row.fa-item {
+    padding-block: var(--_pad-block);
+    padding-inline: var(--_pad-inline);
+  }
+  .fa-activity-feed[data-variant="timeline"][data-selectable] .fa-activity-branch {
+    margin-block-start: var(--_row-gap);
+    padding-inline-start: calc(var(--_mark-col) + var(--_col-gap));
   }
 }

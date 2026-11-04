@@ -281,6 +281,13 @@
     background: transparent;
   }
 
+  /* ── Activity timeline: the rail and nodes are drawn in the text colour ── */
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]::before,
+  .fa-activity-feed[data-variant="timeline"] li[data-marker]::after,
+  .fa-activity-node {
+    border-color: CanvasText;
+  }
+
   /* ── Badges and status dots: keep the tone, add a ring ───────────────── */
   :is(.fa-status-dot, .fa-badge-dot, .fa-notify-dot) {
     forced-color-adjust: none;

@@ -6,6 +6,18 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ## Unreleased
 
+### Added
+
+- `ActivityFeed` draws a ticket or case history. `variant="timeline"` puts the markers in one
+  column on the reading-start side, joined by a rail that stops a small gap short of each marker
+  and ends at the first and last; events without a marker sit on it as a node, avatars and icons
+  are sized to the column, and branches get a rail of their own. `ActivityItem.detail` draws a
+  post's message or any component under the event's line, on an inset well, a card
+  (`detailSurface`) or no surface. `order="newest"` or `"oldest"` sorts by `at`, stably, with
+  branches kept under their parent; the default still keeps the given order.
+  `timePlacement="inline"` puts the time after the sentence ("… to High · 2 min ago"). New types:
+  `ActivityOrder`, `ActivityDetailSurface`. A [guide](docs/components/activity-feed.md) covers them.
+
 ### Changed
 
 - `ColorWheel` reaches each hue's most saturated sRGB colour at its rim, from grey at the centre:
@@ -18,6 +30,8 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Fixed
 
+- `ActivityFeed` markers centre on the event's first line. They were centred on the whole row, so
+  an event that wrapped had its marker beside the middle of its text.
 - `ColorPicker`: for cyan, teal and yellow hues the area was up to a quarter wider than the colours
   it could show, because near-black colours inside the gamut test's rounding counted toward its
   width. The area now ends at the hue's most saturated colour, so the real colours fill it.

@@ -86,6 +86,7 @@ For sign-in, providers, two-factor codes, password reset and account creation, s
 | Page                            | Components                                            | Notes                                                                    |
 | ------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
 | [Drag and drop](drag-drop.md)   | `DragDropProvider`, `Draggable`, `DragHandle`, `DropZone` | Typed objects, sortable lists and grids, reactive zone states, keyboard and touch |
+| [ActivityFeed](activity-feed.md) | `ActivityFeed`                                        | Time-stamped events as a feed or a timeline: a rail joining the markers, avatars, details under a line, sorting by time, inline times, branches and one-stop selection |
 | [NotificationList](notification-list.md) | `NotificationList`, `NotificationPopover`            | The rows behind an unread count: day or host groups, read and dismiss, paging, new rows behind a count; connects to AccountButton and the rail |
 | [CommentThread](comment-thread.md) | `CommentThread`                                    | Comments and one level of replies with a rich text composer and mentions: sends that show at once and fail in place, permissions from the host |
 | [ReactionBar](reaction-bar.md)  | `ReactionBar`                                         | Emoji reactions with counts: toggles named for what they say, one tab stop, a picker loaded on demand |

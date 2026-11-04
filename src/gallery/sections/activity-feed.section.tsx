@@ -1,12 +1,19 @@
 import { useState } from "react";
 import {
+  IconActivity,
   IconCalendar,
   IconCheck,
   IconFileText,
+  IconFlag,
   IconGitBranch,
+  IconTag,
+  IconTickets,
+  IconUserCheck,
 } from "../../icons/generated/icons.js";
 import { ActivityFeed, type ActivityItem } from "../../ui/activity-feed/index.js";
+import { Avatar } from "../../ui/avatar/index.js";
 import { Badge } from "../../ui/badge/index.js";
+import { Button } from "../../ui/button/index.js";
 import { SectionPage, Specimen } from "../kit.js";
 
 const VERSIONS: ActivityItem[] = [
@@ -32,6 +39,137 @@ function VersionHistory() {
     <div className="w-full max-w-xl" data-testid="activity-history">
       <ActivityFeed aria-label="Version history" items={VERSIONS} selectedId={selected} onSelectedIdChange={setSelected} />
       <output className="sr-only" data-testid="activity-selected">{selected}</output>
+    </div>
+  );
+}
+
+const MINUTE = 60_000;
+
+/** A help-desk ticket's history at a fictional freight company, oldest first. */
+function ticketHistory(now: number): ActivityItem[] {
+  return [
+    {
+      id: "opened",
+      content: <>Priya Nair opened the ticket from the portal for <strong>HF-PRN-07</strong></>,
+      at: now - 42 * MINUTE,
+      icon: <IconTickets />,
+    },
+    {
+      id: "report",
+      content: <strong>Priya Nair</strong>,
+      at: now - 42 * MINUTE,
+      icon: <Avatar name="Priya Nair" decorative />,
+      detail: (
+        <div className="flex flex-col gap-1">
+          <p className="m-0">
+            <strong>Label printer offline</strong> · Printers ·{" "}
+            <Badge size="sm" tone="danger">
+              Down
+            </Badge>
+          </p>
+          <p className="m-0">HF-PRN-07 · Halden Freight · Dock 3</p>
+          <p className="m-0">No labels since 08:42, the second time this week. Monday's outage cleared after a restart.</p>
+        </div>
+      ),
+    },
+    { id: "sla", content: "First response due within 1 hour", at: now - 41 * MINUTE },
+    {
+      id: "priority",
+      content: (
+        <>
+          Routing rules set the priority to <strong>High</strong> and added the group <strong>Service desk</strong>
+        </>
+      ),
+      at: now - 41 * MINUTE,
+      icon: <IconFlag />,
+    },
+    {
+      id: "assigned",
+      content: (
+        <>
+          Ari Moss assigned the ticket to <strong>Sam Okafor</strong>
+        </>
+      ),
+      at: now - 30 * MINUTE,
+      icon: <IconUserCheck />,
+    },
+    {
+      id: "tags",
+      content: (
+        <>
+          Sam Okafor added the tags <strong>Printing</strong> and <strong>Hardware</strong>
+        </>
+      ),
+      at: now - 24 * MINUTE,
+      icon: <IconTag />,
+    },
+    {
+      id: "status",
+      content: (
+        <>
+          Sam Okafor changed the status to <strong>In progress</strong>
+        </>
+      ),
+      at: now - 20 * MINUTE,
+      icon: <IconActivity />,
+    },
+    {
+      id: "reply",
+      content: <strong>Sam Okafor</strong>,
+      at: now - 6 * MINUTE,
+      icon: <Avatar name="Sam Okafor" decorative />,
+      detail: (
+        <p className="m-0">
+          Replaced the network cable at Dock 3 and the printer answers again. The ticket stays open until the first run
+          tomorrow.
+        </p>
+      ),
+    },
+  ];
+}
+
+function TicketTimeline() {
+  const [items, setItems] = useState(() => ticketHistory(Date.now()));
+  // Arrivals go to the end of an oldest-first timeline, so nothing above them moves (R17.3).
+  const addCheck = () =>
+    setItems((current) => [
+      ...current,
+      {
+        id: `check-${current.length}`,
+        content: (
+          <>
+            Monitoring reported <strong>HF-PRN-07</strong> online
+          </>
+        ),
+        at: Date.now(),
+        icon: <IconCheck />,
+        tone: "success",
+      },
+    ]);
+  return (
+    <div className="flex w-full max-w-2xl flex-col gap-4" data-testid="activity-ticket">
+      <div>
+        <Button size="sm" onClick={addCheck}>
+          Add a monitoring event
+        </Button>
+      </div>
+      <ActivityFeed aria-label="Ticket history" items={items} variant="timeline" order="oldest" timePlacement="inline" />
+    </div>
+  );
+}
+
+function VersionTimeline() {
+  const [selected, setSelected] = useState<string | null>("v13");
+  return (
+    <div className="w-full max-w-xl" data-testid="activity-version-timeline">
+      <ActivityFeed
+        aria-label="Version timeline"
+        items={VERSIONS}
+        variant="timeline"
+        order="newest"
+        selectedId={selected}
+        onSelectedIdChange={setSelected}
+      />
     </div>
   );
 }
@@ -90,6 +228,18 @@ export default function ActivityFeedSection() {
         <div className="w-full max-w-xl" data-testid="activity-plain-timeline">
           <ActivityFeed aria-label="Release timeline" items={VERSIONS} />
         </div>
+      </Specimen>
+      <Specimen
+        title="Ticket timeline"
+        description="The timeline variant joins the markers with a rail. An avatar marks a post, whose message is its detail, and an event without a marker sits on the rail as a node. Sorted oldest first, so arrivals join the end and move nothing above them."
+      >
+        <TicketTimeline />
+      </Specimen>
+      <Specimen
+        title="Selectable timeline"
+        description="Newest first, with branches on a rail of their own. Selection works as in the version history."
+      >
+        <VersionTimeline />
       </Specimen>
       <Specimen
         title="Empty feed"

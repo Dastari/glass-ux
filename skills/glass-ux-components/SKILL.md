@@ -47,7 +47,8 @@ document use `FindBar` (glass-ux/find-bar): the host owns matching. For a change
 `DiffView` (glass-ux/diff-view). For choosing files or where to save over host storage, use
 `FileDialog` (glass-ux/file-dialog) with a `FileProvider` (glass-ux/file-provider): it lists and
 chooses, and the host reads and writes. For a rating from icons, or an average shown as one, use `Rating` (glass-ux/rating) and `field.RatingField`; it is a radio group. For slides of any content one at a time use `Carousel` (glass-ux/carousel): `ratio` reserves its height and `autoplay` shows a Pause button. For items of different heights in columns use `Masonry` (glass-ux/masonry) with `getRatio`, never CSS `columns`, which breaks the tab order. A version history is an `ActivityFeed` with `tone`, `children`
-and `selectedId`. For the rows behind an unread count use `NotificationList` or `NotificationPopover`
+and `selectedId`; a ticket or case history is one with `variant="timeline"` (markers on a rail),
+avatar markers, a `detail` under each post and `order="oldest"`. For the rows behind an unread count use `NotificationList` or `NotificationPopover`
 (glass-ux/notification-list), passing the count to `AccountButton` or a `Rail.Item`, which do not change. For discussion use
 `CommentThread` (glass-ux/comment-thread): `permissions` decides which controls exist. Use `ReactionBar`
 (glass-ux/reaction-bar) for reactions and `EmojiPicker` (glass-ux/emoji-picker) to choose an emoji. `AppShell focusRegions`, or `useFocusRegions` from glass-ux/hooks, gives F6

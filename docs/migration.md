@@ -3,6 +3,22 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.16.1 → 0.16.2
+
+No code edits are needed.
+
+Behaviour to review:
+
+- `Rail`: items that do not fit its height move into a More menu instead of scrolling, and the
+  current section stays visible. Set `overflow="scroll"` on `Rail.Root` to keep the scrolling
+  column.
+- `TabBar`: the bar shows at most five tabs, More included, and fewer when a tab would be too
+  narrow to read. The rest move into a More sheet. Bars with six or more `TabBar.Item`s now fold
+  even on wider phones; raise `maxItems` to keep more in the bar. A `TabBar.More` you wrote lists
+  the folded tabs before its own rows, and counts as one of the tabs.
+- Sheet rows for folded tabs are buttons that click the tab, so they do not offer a browser's
+  link actions. Tabs that need them can be written as `TabBar.MoreItem` links.
+
 ## 0.16.0 → 0.16.1
 
 Code edits, where a project uses these:

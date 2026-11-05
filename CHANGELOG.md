@@ -4,6 +4,21 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.16.2
+
+### Added
+
+- Rail: items that do not fit its height move into a More menu instead of scrolling out of
+  reach. More sits before the first `Rail.Spacer`; the items after it stay longest, and the
+  current section always stays visible. A menu row or a shortcut uses the item itself, so its
+  router link, handler and drawer toggle run as they do from the rail, and an item used from
+  the menu joins the rail, so anything it opens has an anchor. More shows a dot while a hidden
+  item has a badge. `overflow="scroll"` on `Rail.Root` keeps every item in a scrolling column.
+- TabBar: tabs beyond `maxItems` (default 5, More included), or too narrow to stay readable,
+  move into a More sheet, and the current destination stays in the bar. Without a `TabBar.More`
+  the bar adds one when needed; with one, its sheet lists those tabs before its own rows. The
+  same list of destinations can now go to both `Rail` and `TabBar`.
+
 ## 0.16.1
 
 ### Added

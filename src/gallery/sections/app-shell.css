@@ -163,6 +163,42 @@
     height: 100%;
     container-type: size;
   }
+  /* A rail with a height to fit into; the host drags its bottom edge. */
+  .gallery-shell-rail-frame {
+    display: flex;
+    gap: var(--space-4);
+    block-size: 20rem;
+    min-block-size: 8rem;
+    max-block-size: 36rem;
+    padding: var(--space-2);
+    overflow: hidden;
+    resize: vertical;
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-surface);
+  }
+  .gallery-shell-rail-frame > .fa-shell-rail {
+    flex: none;
+  }
+  .gallery-shell-rail-frame-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  /* A tab bar at phone widths; the host drags its corner. */
+  .gallery-shell-tabbar-frame {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    inline-size: 24rem;
+    min-inline-size: 15rem;
+    max-inline-size: 100%;
+    padding: var(--space-2);
+    overflow: hidden;
+    resize: horizontal;
+    border: var(--border-width) solid var(--line);
+    border-radius: var(--radius-surface);
+  }
   .gallery-shell-sidebar {
     display: flex;
     gap: var(--gap-panels);

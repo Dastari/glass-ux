@@ -4,6 +4,11 @@
  * an accent-soft tile; clicking it again collapses or expands the section drawer (the
  * VS Code activity-bar model). On phones the rail is replaced by the TabBar.
  *
+ * Items that do not fit its height move into a More menu (R6.6), or with `overflow="scroll"`
+ * the column scrolls. In More they stay in the document, hidden, so a menu row or a shortcut
+ * clicks the item itself: its router link, its handler and the drawer toggle all run as they
+ * do from the rail. The current section stays visible.
+ *
  * Shortcuts are two-key sequences ("g e": press G, then E) so they never collide with the
  * browser's own Ctrl/Alt bindings or with text entry. They are single-character shortcuts
  * (WCAG 2.1.4): `configureShortcuts({ characterKeys: false })` switches them off, and their
@@ -13,8 +18,12 @@ import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type ComponentProps,
@@ -22,15 +31,57 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react"
+import { IconMoreHorizontal } from "../icons/generated/icons.js"
 import { cx } from "../lib/cx.js"
+import { useMessages } from "../lib/i18n/index.js"
+import { observeElementSizes } from "../lib/resize-observer.js"
+import { NotificationDot } from "../ui/badge/index.js"
 import { BrandMark } from "../ui/brand/index.js"
 import { Kbd, characterShortcutsEnabled, useCharacterShortcuts } from "../ui/kbd/index.js"
+import { Menu } from "../ui/menu/index.js"
 import { Tooltip } from "../ui/tooltip/index.js"
 import { ShellFocusContext, useOptionalShell } from "./app-shell.js"
+import { shellMessages } from "./messages.js"
+import { railOverflow, type RailFitEntry } from "./rail-fit.js"
+
+const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect
 
 /** A sequence's target: the element to click (a rail item), or a command. */
 type ShortcutRegistry = Map<string, () => Pick<HTMLElement, "click"> | null>
 const RailShortcuts = /* @__PURE__ */ createContext<ShortcutRegistry | null>(null)
+
+/** What a hidden item's row in the More menu draws, and the item the row clicks. */
+interface RailEntry {
+  label: string
+  icon: ReactNode
+  badge: ReactNode
+  shortcut: string | undefined
+  disabledReason: string | undefined
+  element: { current: HTMLElement | null }
+}
+
+interface RailOverflowActions {
+  /** Keep an item's latest row. */
+  update: (id: string, entry: RailEntry) => void
+  remove: (id: string) => void
+  /** Items came, went or changed section: fit the rail again. */
+  changed: () => void
+  /** A hidden item was used: bring it into the rail, in place of the last one shown. */
+  promote: (id: string) => void
+}
+
+interface RailOverflowValue {
+  actions: RailOverflowActions
+  /** The items in More, in document order. */
+  hidden: readonly string[]
+  /** The first Spacer: More sits just before it, at the end of the main items. */
+  host: Element | null
+  rows: ReadonlyMap<string, RailEntry>
+  /** Changes when a hidden item's row does, so the menu draws it again. */
+  version: number
+}
+
+const RailOverflow = /* @__PURE__ */ createContext<RailOverflowValue | null>(null)
 
 const SEQUENCE_TIMEOUT = 1200
 
@@ -80,17 +131,164 @@ function useSequenceShortcuts(registry: ShortcutRegistry) {
 export interface RailProps extends ComponentProps<"nav"> {
   /** Accessible name of the navigation landmark. */
   "aria-label": string
+  /**
+   * What happens to items that do not fit the rail's height. `more`: they move into a More menu,
+   * and the current section stays visible. `scroll`: every item stays in the column, which
+   * scrolls with no visible scrollbar.
+   * @defaultValue "more"
+   */
+  overflow?: "more" | "scroll"
 }
 
-function Root({ className, children, ...rest }: RailProps) {
+function Root({ overflow: mode = "more", className, children, ...rest }: RailProps) {
   const [registry] = useState<ShortcutRegistry>(() => new Map())
   useSequenceShortcuts(registry)
+  const overflow = useRailOverflow(mode)
   return (
     <RailShortcuts.Provider value={registry}>
-      <nav {...rest} className={cx("fa-shell-rail", className)}>
-        <ul className="fa-shell-rail-list">{children}</ul>
-      </nav>
+      <RailOverflow.Provider value={overflow.value}>
+        <nav {...rest} className={cx("fa-shell-rail", className)}>
+          <ul ref={overflow.listRef} className="fa-shell-rail-list">
+            {children}
+            {overflow.value.host ? null : <More />}
+          </ul>
+        </nav>
+      </RailOverflow.Provider>
     </RailShortcuts.Provider>
+  )
+}
+
+const px = (value: string) => Number.parseFloat(value) || 0
+
+/** Fit the rail's items to its height, before paint and whenever a size changes. */
+function useRailOverflow(mode: "more" | "scroll") {
+  const listRef = useRef<HTMLUListElement>(null)
+  const chosen = useRef<string | null>(null)
+  const [rows] = useState(() => new Map<string, RailEntry>())
+  const [hidden, setHidden] = useState<readonly string[]>([])
+  const [host, setHost] = useState<Element | null>(null)
+  const [version, setVersion] = useState(0)
+  const [revision, setRevision] = useState(0)
+  const hiddenNow = useRef(hidden)
+
+  const measure = useCallback(() => {
+    const list = listRef.current
+    if (mode === "scroll") {
+      setHost(null)
+      hiddenNow.current = []
+      setHidden((current) => (current.length ? [] : current))
+      return
+    }
+    // No height: the rail is not laid out (the TabBar replaces it on phones). Keep what it had.
+    if (!list?.clientHeight) return
+    const style = getComputedStyle(list)
+    const fixed: number[] = []
+    const entries: RailFitEntry[] = []
+    let spacer: Element | null = null
+    for (const child of list.children) {
+      if (child.hasAttribute("data-rail-more")) continue
+      if (child.classList.contains("fa-shell-rail-spacer")) {
+        spacer ??= child
+        fixed.push(0)
+        continue
+      }
+      const size = child.getBoundingClientRect().height
+      const id = child.getAttribute("data-rail-id")
+      if (!id) {
+        fixed.push(size)
+        continue
+      }
+      const pinned = id === chosen.current || Boolean(child.querySelector("[data-active]")) || child.contains(document.activeElement)
+      entries.push({ id, size, foot: spacer !== null, pinned })
+    }
+    const next = railOverflow({ room: list.clientHeight - px(style.paddingBlockStart) - px(style.paddingBlockEnd), gap: px(style.rowGap), fixed, entries })
+    setHost(spacer)
+    if (next.join() === hiddenNow.current.join()) return
+    hiddenNow.current = next
+    setHidden(next)
+  }, [mode])
+
+  // Hidden items keep their height, so these measure the same whatever is in More.
+  useIsoLayoutEffect(measure)
+  useEffect(() => {
+    const list = listRef.current
+    if (!list || mode === "scroll") return
+    const sizes = observeElementSizes(measure)
+    sizes.observe(list)
+    for (const child of list.children) if (child.hasAttribute("data-rail-id")) sizes.observe(child)
+    return () => sizes.disconnect()
+  }, [measure, mode, revision])
+
+  const latestMeasure = useRef(measure)
+  latestMeasure.current = measure
+  const [actions] = useState<RailOverflowActions>(() => ({
+    update: (id, entry) => {
+      const before = rows.get(id)
+      rows.set(id, entry)
+      const same =
+        before && before.label === entry.label && before.icon === entry.icon && before.badge === entry.badge && before.shortcut === entry.shortcut && before.disabledReason === entry.disabledReason
+      if (!same && hiddenNow.current.includes(id)) setVersion((current) => current + 1)
+    },
+    remove: (id) => {
+      rows.delete(id)
+    },
+    changed: () => setRevision((current) => current + 1),
+    promote: (id) => {
+      chosen.current = id
+      latestMeasure.current()
+    },
+  }))
+  const value = useMemo<RailOverflowValue>(() => ({ actions, hidden, host, rows, version }), [actions, hidden, host, rows, version])
+  return { listRef, value }
+}
+
+/** The menu of what does not fit. Rows click the hidden item, so it behaves as it does from the rail. */
+function More() {
+  const overflow = useContext(RailOverflow)
+  const messages = useMessages(shellMessages)
+  const sequences = useCharacterShortcuts()
+  if (!overflow?.hidden.length) return null
+  const rows = overflow.hidden.flatMap((id) => {
+    const row = overflow.rows.get(id)
+    return row ? [{ id, ...row }] : []
+  })
+  return (
+    <li className="fa-shell-rail-entry" data-rail-more="">
+      <Menu.Root>
+        <Tooltip side="inline-end" content={messages.more}>
+          <Menu.Trigger className="fa-shell-rail-item fa-pressable" aria-label={messages.more}>
+            <IconMoreHorizontal />
+            {rows.some((row) => row.badge) ? <NotificationDot label="" aria-hidden /> : null}
+          </Menu.Trigger>
+        </Tooltip>
+        <Menu.Popup side="inline-end">
+          {rows.map((row) => {
+            const keys = row.shortcut && sequences && !row.disabledReason ? <ShortcutKeys shortcut={row.shortcut} /> : null
+            return (
+              <Menu.Item
+                key={row.id}
+                icon={row.icon}
+                disabledReason={row.disabledReason}
+                trail={
+                  row.badge || keys ? (
+                    <span className="fa-shell-rail-menu-trail">
+                      {row.badge}
+                      {keys}
+                    </span>
+                  ) : undefined
+                }
+                onClick={(event) => {
+                  const { altKey, ctrlKey, metaKey, shiftKey } = event
+                  row.element.current?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, altKey, ctrlKey, metaKey, shiftKey }))
+                }}
+              >
+                {row.label}
+              </Menu.Item>
+            )
+          })}
+        </Menu.Popup>
+      </Menu.Root>
+    </li>
   )
 }
 
@@ -133,6 +331,22 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
   const focusTargets = useContext(ShellFocusContext)
   const ref = useRef<HTMLElement>(null)
   const sequences = useCharacterShortcuts()
+  const id = useId()
+  const overflow = useContext(RailOverflow)
+  const actions = overflow?.actions
+  const inMore = overflow?.hidden.includes(id) ?? false
+
+  useIsoLayoutEffect(() => {
+    actions?.update(id, { label, icon, badge, shortcut, disabledReason, element: ref })
+  })
+  useIsoLayoutEffect(() => {
+    return () => actions?.remove(id)
+  }, [actions, id])
+  // Coming, going or becoming the current section changes what fits.
+  useIsoLayoutEffect(() => {
+    actions?.changed()
+    return () => actions?.changed()
+  }, [actions, active])
 
   // The current section's item reopens its drawer, so collapsing the drawer from inside
   // returns focus here (AppShell).
@@ -156,6 +370,8 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
       event.preventDefault()
       return
     }
+    // Used from More or by its shortcut: it joins the rail, so anything it opens has an anchor.
+    if (inMore) actions?.promote(id)
     onClick?.(event)
     if (event.defaultPrevented || !shell?.hasDrawer) return
     if (active) {
@@ -192,7 +408,7 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
   })
 
   return (
-    <li className="fa-shell-rail-entry">
+    <li className="fa-shell-rail-entry" data-rail-id={id} data-overflowed={inMore ? "" : undefined}>
       <Tooltip
         side="inline-end"
         content={
@@ -210,7 +426,14 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
 
 /** Pushes the following items to the foot of the rail (settings, help). */
 function Spacer() {
-  return <li className="fa-shell-rail-spacer" aria-hidden />
+  const overflow = useContext(RailOverflow)
+  const [element, setElement] = useState<HTMLLIElement | null>(null)
+  return (
+    <>
+      {element && overflow?.host === element ? <More /> : null}
+      <li ref={setElement} className="fa-shell-rail-spacer" aria-hidden />
+    </>
+  )
 }
 
 /**
@@ -239,7 +462,7 @@ function Shortcut({ keys, onTrigger }: {
   return null
 }
 
-/** Compose the primary application navigation rail from accessible items, separators and flexible spacers. */
+/** Compose the primary application navigation rail from accessible items, separators and flexible spacers. Items that do not fit its height move into a More menu, and the current section stays visible. */
 export const Rail = { Root, Item, Spacer, Shortcut }
 
 export interface ShellBrandProps extends Omit<ComponentProps<"a">, "children"> {

@@ -198,8 +198,10 @@ follows a fine pointer and a glint on the rim nearest it.
   that describes content rather than the route, such as a file's folders in an editor pane, may
   use a compact Breadcrumb in that pane; it never repeats or replaces the route breadcrumb.
 - **R6.5** A view does not repeat the breadcrumb's last crumb as its title.
-- **R6.6** Tabs that overflow move into a menu, and the active tab always stays visible.
-- **R6.7** On phones the Rail becomes the TabBar, a floating pill above the safe area.
+- **R6.6** Tabs and rail items that overflow move into a menu, and the active one always stays
+  visible.
+- **R6.7** On phones the Rail becomes the TabBar, a floating pill above the safe area, with at
+  most five tabs. The rest move into its More sheet (R6.6); the TabBar does not scroll.
 - **R6.8** Below the navigation's container threshold, a section rail becomes the horizontal
   tab strip (its overflow in More, R6.6), and section navigation may give way to the section
   drawer. Show a section drawer only when it holds real navigation.

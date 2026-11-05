@@ -10,6 +10,7 @@
  *   --_capsule-w / --_capsule-h   the active capsule behind the icon
  *   --_condensed                  the pill's scale while condensed
  *   --_fold                       how far an icon moves to the centre when its label folds
+ *   --_tab-min                    the narrowest readable tab: below it, tabs move into More
  */
 @layer components {
   .fa-tabbar {
@@ -17,6 +18,7 @@
     --_capsule-h: var(--control-h-sm);
     --_condensed: 0.9;
     --_fold: calc((var(--type-overline-line) + var(--space-half)) / 2);
+    --_tab-min: calc(var(--_capsule-w) + var(--space-1-5) * 2);
     display: flex;
     width: 100%;
     min-width: 0;
@@ -27,6 +29,7 @@
     transition: transform var(--duration-base) var(--ease-standard);
   }
   .fa-tabbar-list {
+    position: relative;
     display: flex;
     flex: 1 1 auto;
     min-width: 0;
@@ -37,10 +40,18 @@
     padding: 0;
     list-style: none;
   }
+  /* The basis is what TabBar measures against. Tabs still share the bar equally, and shrink
+     below it until the first measure (server-rendered pages). */
   .fa-tabbar-entry {
     display: flex;
-    flex: 1 1 0;
+    flex: 1 1 var(--_tab-min);
     min-width: 0;
+  }
+  /* In the More sheet: out of the flow and the tab order, but still in the document, so a row
+     can click it. */
+  .fa-tabbar-entry[data-overflowed] {
+    position: absolute;
+    visibility: hidden;
   }
   .fa-tabbar-item {
     display: flex;

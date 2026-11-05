@@ -6,16 +6,22 @@ import { ORGANISATION_SETTINGS, moduleRail } from "../fixtures/brand.js";
 import { SectionPage, Specimen } from "../kit.js";
 import {
   IconArchive,
+  IconCalendar,
   IconFolder,
   IconHistory,
+  IconInbox,
   IconNewChat,
+  IconReporting,
   IconSearch,
   IconSettings,
+  IconUsers,
 } from "../../icons/generated/icons.js";
 import { Rail, SectionDrawer } from "../../shell/index.js";
+import { CountBadge } from "../../ui/badge/index.js";
 import { BrandMark } from "../../ui/brand/index.js";
 import { Button } from "../../ui/button/index.js";
 import { EmptyState } from "../../ui/empty-state/index.js";
+import { Segmented } from "../../ui/segmented/index.js";
 
 /* ── Live parts ──────────────────────────────────────────────────────────── */
 const RAIL_ITEMS: Array<{
@@ -32,6 +38,61 @@ const SPECIMEN_ITEMS = [
   { label: "Archived chats", icon: <IconArchive />, count: 6 },
 ];
 const SPECIMEN_PROJECTS = ["Northstar Studio migration", "Patch Tuesday · October"];
+const OVERFLOW_ITEMS = [
+  { label: "Projects", icon: <IconFolder /> },
+  { label: "Search", icon: <IconSearch /> },
+  { label: "History", icon: <IconHistory /> },
+  { label: "Archive", icon: <IconArchive /> },
+  { label: "Calendar", icon: <IconCalendar /> },
+  { label: "Reports", icon: <IconReporting /> },
+  { label: "Team", icon: <IconUsers /> },
+  { label: "Inbox", icon: <IconInbox /> },
+];
+
+function RailOverflowFrame() {
+  const [current, setCurrent] = useState("Projects");
+  const [overflow, setOverflow] = useState<"more" | "scroll">("more");
+  return (
+    <div className="gallery-shell-rail-frame" data-testid="rail-overflow">
+      <Rail.Root aria-label="Main (overflow specimen)" overflow={overflow}>
+        {OVERFLOW_ITEMS.map((item) => (
+          <Rail.Item
+            key={item.label}
+            icon={item.icon}
+            label={item.label}
+            active={item.label === current}
+            badge={
+              item.label === "Inbox" ? (
+                <CountBadge value={4} tone="accent" overlay aria-hidden />
+              ) : undefined
+            }
+            onClick={() => setCurrent(item.label)}
+          />
+        ))}
+        <Rail.Spacer />
+        <Rail.Item
+          icon={<IconSettings />}
+          label="Settings"
+          onClick={() => setCurrent("Settings")}
+          active={current === "Settings"}
+        />
+      </Rail.Root>
+      <div className="gallery-shell-rail-frame-side">
+        <Segmented
+          size="sm"
+          aria-label="Overflow"
+          value={overflow}
+          onValueChange={setOverflow}
+          options={[
+            { value: "more", label: "More" },
+            { value: "scroll", label: "Scroll" },
+          ]}
+        />
+        <p className="type-caption text-fg-muted">{current}</p>
+      </div>
+    </div>
+  );
+}
 
 function RailAndDrawer() {
   const scope = useContext(DemoScope);
@@ -121,6 +182,14 @@ export default function AppShellSection() {
         specimenKey="app-shell:default:3"
       >
         <RailAndDrawer />
+      </Specimen>
+
+      <Specimen
+        title="Rail overflow"
+        description="Items that do not fit the rail's height move into a More menu, before the spacer, or the column scrolls. The current section stays visible, and an item chosen from the menu joins the rail. Drag the frame's bottom edge to change the height."
+        specimenKey="app-shell:default:4"
+      >
+        <RailOverflowFrame />
       </Specimen>
     </SectionPage>
   );

@@ -1,9 +1,12 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react"
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { configureShortcuts } from "../ui/kbd/index.js"
 import { TooltipProvider } from "../ui/tooltip/index.js"
 import { Rail } from "./rail.js"
+import { railOverflow, type RailFitEntry } from "./rail-fit.js"
+import { TabBar } from "./tab-bar.js"
+import { tabBarOverflow } from "./tab-bar-fit.js"
 
 beforeAll(() => {
   vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} })
@@ -60,5 +63,215 @@ describe("Rail sequence shortcuts", () => {
     fireEvent.keyDown(field, { key: "g" })
     fireEvent.keyDown(field, { key: "e" })
     expect(go).not.toHaveBeenCalled()
+  })
+})
+
+const entry = (id: string, more: Partial<RailFitEntry> = {}): RailFitEntry => ({ id, size: 40, foot: false, pinned: false, ...more })
+
+describe("railOverflow", () => {
+  const items = ["a", "b", "c", "d", "e"].map((id) => entry(id))
+
+  it("hides nothing when everything fits, the gaps included", () => {
+    expect(railOverflow({ room: 232, gap: 8, fixed: [], entries: items })).toEqual([])
+  })
+
+  it("makes room for More from the end of the main items", () => {
+    // 3 items and More: 4 x 40 + 3 x 8.
+    expect(railOverflow({ room: 184, gap: 8, fixed: [], entries: items })).toEqual(["d", "e"])
+  })
+
+  it("counts a spacer's gaps and other children's heights", () => {
+    expect(railOverflow({ room: 232, gap: 8, fixed: [0], entries: items })).toEqual(["d", "e"])
+    expect(railOverflow({ room: 232, gap: 8, fixed: [48], entries: items })).toEqual(["c", "d", "e"])
+  })
+
+  it("keeps a pinned item in place of the last one shown", () => {
+    const entries = items.map((item) => (item.id === "e" ? { ...item, pinned: true } : item))
+    expect(railOverflow({ room: 184, gap: 8, fixed: [], entries })).toEqual(["c", "d"])
+  })
+
+  it("keeps the foot items longest", () => {
+    const entries = items.map((item) => (item.id === "e" ? { ...item, foot: true } : item))
+    expect(railOverflow({ room: 136, gap: 8, fixed: [], entries })).toEqual(["b", "c", "d"])
+  })
+
+  it("hides everything when only More fits", () => {
+    expect(railOverflow({ room: 40, gap: 8, fixed: [], entries: items })).toEqual(["a", "b", "c", "d", "e"])
+  })
+})
+
+describe("Rail overflow", () => {
+  const room = (height: number) => {
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(height)
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({ height: 40 } as DOMRect)
+  }
+  afterEach(() => vi.restoreAllMocks())
+
+  function Nav({ onGo, active }: { onGo: (label: string) => void; active?: string }) {
+    return (
+      <TooltipProvider>
+        <Rail.Root aria-label="Main">
+          {["One", "Two", "Three", "Four", "Five"].map((label) => (
+            <Rail.Item key={label} icon={<span />} label={label} active={label === active} shortcut={label === "Five" ? "g f" : undefined} onClick={() => onGo(label)} />
+          ))}
+          <Rail.Spacer />
+          <Rail.Item icon={<span />} label="Settings" onClick={() => onGo("Settings")} />
+        </Rail.Root>
+      </TooltipProvider>
+    )
+  }
+  const entryOf = (name: string) => screen.getByRole("button", { name, hidden: true }).closest("li")!
+
+  it("shows no More button when everything fits", () => {
+    room(1000)
+    render(<Nav onGo={() => {}} />)
+    expect(screen.queryByRole("button", { name: "More" })).toBeNull()
+  })
+
+  it("puts More before the spacer and hides what does not fit, keeping the current section and the foot", () => {
+    room(160)
+    render(<Nav onGo={() => {}} active="Five" />)
+    const more = screen.getByRole("button", { name: "More" }).closest("li")!
+    expect(more.nextElementSibling).toHaveClass("fa-shell-rail-spacer")
+    expect(entryOf("Five")).not.toHaveAttribute("data-overflowed")
+    expect(entryOf("Settings")).not.toHaveAttribute("data-overflowed")
+    expect(entryOf("One")).not.toHaveAttribute("data-overflowed")
+    expect(entryOf("Two")).toHaveAttribute("data-overflowed")
+  })
+
+  it("a menu row uses the hidden item, once, and it joins the rail", async () => {
+    room(160)
+    const go = vi.fn()
+    render(<Nav onGo={go} />)
+    expect(entryOf("Three")).toHaveAttribute("data-overflowed")
+    fireEvent.click(screen.getByRole("button", { name: "More" }))
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Three" }))
+    expect(go).toHaveBeenCalledTimes(1)
+    expect(go).toHaveBeenCalledWith("Three")
+    expect(entryOf("Three")).not.toHaveAttribute("data-overflowed")
+  })
+
+  it("a hidden item's shortcut still works", () => {
+    room(160)
+    const go = vi.fn()
+    render(<Nav onGo={go} />)
+    expect(entryOf("Five")).toHaveAttribute("data-overflowed")
+    press("g")
+    press("f")
+    expect(go).toHaveBeenCalledWith("Five")
+  })
+
+  it("scrolls instead when asked: no More, and nothing hidden", () => {
+    room(160)
+    render(
+      <TooltipProvider>
+        <Rail.Root aria-label="Main" overflow="scroll">
+          {["One", "Two", "Three", "Four", "Five", "Six"].map((label) => (
+            <Rail.Item key={label} icon={<span />} label={label} />
+          ))}
+        </Rail.Root>
+      </TooltipProvider>
+    )
+    expect(screen.queryByRole("button", { name: "More" })).toBeNull()
+    expect(document.querySelectorAll("[data-overflowed]")).toHaveLength(0)
+  })
+
+  it("keeps its items when the rail has no height (the TabBar replaces it on phones)", () => {
+    room(0)
+    render(<Nav onGo={() => {}} />)
+    expect(screen.queryByRole("button", { name: "More" })).toBeNull()
+  })
+})
+
+describe("tabBarOverflow", () => {
+  const tabs = ["a", "b", "c", "d", "e", "f", "g"].map((id) => ({ id, pinned: false }))
+  const fit = { room: 1000, gap: 2, tabMin: 64, maxItems: 5, fixed: 0, hasMore: false }
+
+  it("hides nothing up to the limit", () => {
+    expect(tabBarOverflow({ ...fit, entries: tabs.slice(0, 5) })).toEqual([])
+  })
+
+  it("keeps the limit with More counted, however wide the bar", () => {
+    expect(tabBarOverflow({ ...fit, entries: tabs })).toEqual(["e", "f", "g"])
+    expect(tabBarOverflow({ ...fit, maxItems: 7, entries: tabs })).toEqual([])
+  })
+
+  it("folds sooner when tabs would be too narrow", () => {
+    // 3 x 64 + 2 x 2 = 196: two tabs and More.
+    expect(tabBarOverflow({ ...fit, room: 196, entries: tabs })).toEqual(["c", "d", "e", "f", "g"])
+  })
+
+  it("keeps the current destination in place of the last one shown", () => {
+    const entries = tabs.map((tab) => ({ ...tab, pinned: tab.id === "g" }))
+    expect(tabBarOverflow({ ...fit, entries })).toEqual(["d", "e", "f"])
+  })
+
+  it("counts a More written by the host, needing no second one", () => {
+    expect(tabBarOverflow({ ...fit, fixed: 1, hasMore: true, entries: tabs.slice(0, 4) })).toEqual([])
+    expect(tabBarOverflow({ ...fit, fixed: 1, hasMore: true, entries: tabs.slice(0, 5) })).toEqual(["e"])
+  })
+
+  it("always keeps one tab beside More", () => {
+    expect(tabBarOverflow({ ...fit, room: 40, entries: tabs })).toEqual(["b", "c", "d", "e", "f", "g"])
+  })
+})
+
+describe("TabBar overflow", () => {
+  afterEach(() => vi.restoreAllMocks())
+  const wide = () => vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(1000)
+  const LABELS = ["One", "Two", "Three", "Four", "Five", "Six", "Seven"]
+
+  it("adds More when tabs do not fit, and a sheet row uses the hidden tab once", async () => {
+    wide()
+    const go = vi.fn()
+    render(
+      <TooltipProvider>
+        <TabBar.Root aria-label="Main">
+          {LABELS.map((label) => (
+            <TabBar.Item key={label} icon={<span />} label={label} onClick={() => go(label)} />
+          ))}
+        </TabBar.Root>
+      </TooltipProvider>
+    )
+    const six = screen.getByRole("button", { name: "Six", hidden: true }).closest("li")!
+    expect(six).toHaveAttribute("data-overflowed")
+    fireEvent.click(screen.getByRole("button", { name: "More" }))
+    const dialog = await screen.findByRole("dialog")
+    fireEvent.click(within(dialog).getByRole("button", { name: "Six" }))
+    expect(go).toHaveBeenCalledTimes(1)
+    expect(go).toHaveBeenCalledWith("Six")
+    expect(six).not.toHaveAttribute("data-overflowed")
+  })
+
+  it("adds no More while everything fits, and joins a More written by the host", async () => {
+    wide()
+    const { unmount } = render(
+      <TooltipProvider>
+        <TabBar.Root aria-label="Main">
+          {LABELS.slice(0, 5).map((label) => (
+            <TabBar.Item key={label} icon={<span />} label={label} />
+          ))}
+        </TabBar.Root>
+      </TooltipProvider>
+    )
+    expect(screen.queryByRole("button", { name: "More" })).toBeNull()
+    unmount()
+    render(
+      <TooltipProvider>
+        <TabBar.Root aria-label="Main">
+          {LABELS.slice(0, 5).map((label) => (
+            <TabBar.Item key={label} icon={<span />} label={label} />
+          ))}
+          <TabBar.More>
+            <TabBar.MoreItem icon={<span />} label="Settings" />
+          </TabBar.More>
+        </TabBar.Root>
+      </TooltipProvider>
+    )
+    expect(screen.getAllByRole("button", { name: "More" })).toHaveLength(1)
+    fireEvent.click(screen.getByRole("button", { name: "More" }))
+    const rows = within(await screen.findByRole("dialog")).getAllByRole("button").map((row) => row.textContent)
+    expect(rows).toContain("Five")
+    expect(rows.indexOf("Five")).toBeLessThan(rows.indexOf("Settings"))
   })
 })

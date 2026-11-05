@@ -3,16 +3,17 @@ import { DemoScope } from "../demo-scope.js"
 import { MOCK_ORGANISATIONS, PORTRAITS, toContextItem } from "../fixtures/organisations.js"
 import { WORKSPACE_SETTINGS, ORGANISATION_SETTINGS, moduleRail } from "../fixtures/brand.js"
 import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { IconAi, IconArchive, IconAlerts, IconDashboard, IconEndpoint, IconFolder, IconHistory, IconNewChat, IconOrganisation, IconSearch, IconSettings, IconTickets,  } from "../../icons/generated/icons.js"
+import { IconAi, IconArchive, IconAlerts, IconCalendar, IconDashboard, IconEndpoint, IconFolder, IconHistory, IconInbox, IconNewChat, IconOrganisation, IconReporting, IconSearch, IconSettings, IconTickets, IconUsers,  } from "../../icons/generated/icons.js"
 import { AccountButton, EntityHeader, EntityHeaderSkeleton, Rail, SearchTrigger, SectionDrawer, TabBar, TopBar, TopBarSettingsButton,  } from "../../shell/index.js"
 import { ContextSwitcher } from "../../shell/context-switcher/index.js"
 import { ActionBar } from "../../ui/actions/index.js"
-import { StatusBadge, StatusDot } from "../../ui/badge/index.js"
+import { CountBadge, StatusBadge, StatusDot } from "../../ui/badge/index.js"
 import { BrandMark } from "../../ui/brand/index.js"
 import { Breadcrumb } from "../../ui/breadcrumb/index.js"
 import { Button } from "../../ui/button/index.js"
 import { EmptyState } from "../../ui/empty-state/index.js"
 import { Menu } from "../../ui/menu/index.js"
+import { Segmented } from "../../ui/segmented/index.js"
 import { ENDPOINTS, endpointActions } from "./overlays.fixtures.js"
 
 /* ── Anatomy diagrams ────────────────────────────────────────────────────── */
@@ -57,6 +58,67 @@ const SPECIMEN_ITEMS = [
   { label: "Archived chats", icon: <IconArchive />, count: 6 },
 ]
 const SPECIMEN_PROJECTS = ["Northstar Studio migration", "Patch Tuesday · October"]
+
+const OVERFLOW_ITEMS = [
+  { label: "Projects", icon: <IconFolder /> },
+  { label: "Search", icon: <IconSearch /> },
+  { label: "History", icon: <IconHistory /> },
+  { label: "Archive", icon: <IconArchive /> },
+  { label: "Calendar", icon: <IconCalendar /> },
+  { label: "Reports", icon: <IconReporting /> },
+  { label: "Team", icon: <IconUsers /> },
+  { label: "Inbox", icon: <IconInbox /> },
+]
+
+function RailOverflowFrame() {
+  const [current, setCurrent] = useState("Projects")
+  const [overflow, setOverflow] = useState<"more" | "scroll">("more")
+  return (
+    <div className="gallery-shell-rail-frame" data-testid="rail-overflow">
+      <Rail.Root aria-label="Main (overflow specimen)" overflow={overflow}>
+        {OVERFLOW_ITEMS.map((item) => (
+          <Rail.Item
+            key={item.label}
+            icon={item.icon}
+            label={item.label}
+            active={item.label === current}
+            badge={item.label === "Inbox" ? <CountBadge value={4} tone="accent" overlay aria-hidden /> : undefined}
+            onClick={() => setCurrent(item.label)}
+          />
+        ))}
+        <Rail.Spacer />
+        <Rail.Item icon={<IconSettings />} label="Settings" onClick={() => setCurrent("Settings")} active={current === "Settings"} />
+      </Rail.Root>
+      <div className="gallery-shell-rail-frame-side">
+        <Segmented
+          size="sm"
+          aria-label="Overflow"
+          value={overflow}
+          onValueChange={setOverflow}
+          options={[
+            { value: "more", label: "More" },
+            { value: "scroll", label: "Scroll" },
+          ]}
+        />
+        <p className="type-caption text-fg-muted">{current}</p>
+      </div>
+    </div>
+  )
+}
+
+function TabBarOverflowFrame() {
+  const [current, setCurrent] = useState("Projects")
+  return (
+    <div className="gallery-shell-tabbar-frame" data-testid="tabbar-overflow">
+      <TabBar.Root aria-label="Main (overflow specimen)">
+        {OVERFLOW_ITEMS.map((item) => (
+          <TabBar.Item key={item.label} icon={item.icon} label={item.label} active={item.label === current} onClick={() => setCurrent(item.label)} />
+        ))}
+      </TabBar.Root>
+      <p className="type-caption text-fg-muted">{current}</p>
+    </div>
+  )
+}
 
 function RailAndDrawer() {
   const scope = useContext(DemoScope)
@@ -188,7 +250,7 @@ const BREAKPOINTS: Array<[string, string]> = [
 
 const SLOTS: Array<[string, string]> = [
   ["AppShell.brand", "ShellBrand: the product mark over the rail (the configured BrandMark product mark by default)."],
-  ["AppShell.rail", "Rail.Root with Rail.Item (icon, label, shortcut, active, render link) and Rail.Spacer."],
+  ["AppShell.rail", "Rail.Root with Rail.Item (icon, label, shortcut, active, render link) and Rail.Spacer. Items that do not fit move into a More menu."],
   ["AppShell.drawer", "SectionDrawer for the current section; omit for none. Docked, resizable and collapsible on desktops, a left Sheet below. SectionDrawer.Search (between Header and Body, fixed while the list scrolls) filters the list with local state: / or ⌘F / Ctrl F focuses it from anywhere in the drawer, ↓ enters the list, Esc clears and then returns focus; highlight with SectionDrawer.Match, or hand the query to a Tree. SectionDrawer.Body fill hands the height to a Tree that scrolls itself; useDrawerDismiss closes the sheet after a choice."],
   ["AppShell.topBar", "TopBar with scope (ContextSwitcher: the organisation or project in the URL, first after the logo), breadcrumb (RouteBreadcrumb after the scope, fed from route matches), search (SearchTrigger → useCommandPalette().open), actions and account (AccountButton with the shared Avatar, a Menu trigger)."],
   ["Workspace.scopes", "The current organisation and how to draw one. Windows from another organisation show its chip; the dock groups by organisation (R14.4)."],
@@ -254,6 +316,10 @@ export default function AppShellSection() {
         <RailAndDrawer />
       </Specimen>
 
+      <Specimen title="Rail overflow" description="Items that do not fit the rail's height move into a More menu, before the spacer, or the column scrolls. The current section stays visible, and an item chosen from the menu joins the rail. Drag the frame's bottom edge to change the height.">
+        <RailOverflowFrame />
+      </Specimen>
+
       <Specimen title="Top bar" description="The application context: organisation switcher, search, settings and the account with its notification badge. As the bar narrows, the organisation and account fold to avatars and search to a button." wide layout="stack">
         {(["wide", "medium", "narrow"] as const).map((width) => (
           <Example key={width} label={width === "wide" ? "Wide" : width === "medium" ? "Medium" : "Narrow"}>
@@ -271,6 +337,10 @@ export default function AppShellSection() {
         <Example label="Condensed">
           <SpecimenTabBar condensed />
         </Example>
+      </Specimen>
+
+      <Specimen title="Tab bar overflow" description="Five tabs at most, More included. Tabs beyond that, or too narrow to read, move into More's sheet, and the current destination stays in the bar. Drag the frame's corner to change the width.">
+        <TabBarOverflowFrame />
       </Specimen>
 
       <Specimen title="Breakpoints" description="Only the shell reads the viewport (R7.1); everything inside adapts to its container." wide layout="bare">

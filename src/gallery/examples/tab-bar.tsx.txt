@@ -1,15 +1,55 @@
+import { useState } from "react";
 import { WORKSPACE_SETTINGS, ORGANISATION_SETTINGS } from "glass-ux/gallery/fixtures/brand";
 import { Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import {
   IconAi,
+  IconArchive,
   IconAlerts,
+  IconCalendar,
   IconDashboard,
   IconEndpoint,
+  IconFolder,
+  IconHistory,
+  IconInbox,
   IconOrganisation,
+  IconReporting,
+  IconSearch,
   IconSettings,
   IconTickets,
+  IconUsers,
 } from "glass-ux/icons";
 import { TabBar } from "glass-ux/shell";
+
+const OVERFLOW_ITEMS = [
+  { label: "Projects", icon: <IconFolder /> },
+  { label: "Search", icon: <IconSearch /> },
+  { label: "History", icon: <IconHistory /> },
+  { label: "Archive", icon: <IconArchive /> },
+  { label: "Calendar", icon: <IconCalendar /> },
+  { label: "Reports", icon: <IconReporting /> },
+  { label: "Team", icon: <IconUsers /> },
+  { label: "Inbox", icon: <IconInbox /> },
+];
+
+function TabBarOverflowFrame() {
+  const [current, setCurrent] = useState("Projects");
+  return (
+    <div className="gallery-shell-tabbar-frame" data-testid="tabbar-overflow">
+      <TabBar.Root aria-label="Main (overflow specimen)">
+        {OVERFLOW_ITEMS.map((item) => (
+          <TabBar.Item
+            key={item.label}
+            icon={item.icon}
+            label={item.label}
+            active={item.label === current}
+            onClick={() => setCurrent(item.label)}
+          />
+        ))}
+      </TabBar.Root>
+      <p className="type-caption text-fg-muted">{current}</p>
+    </div>
+  );
+}
 
 function SpecimenTabBar({ condensed }: { condensed?: boolean }) {
   return (
@@ -46,6 +86,13 @@ export default function AppShellSection() {
         <Example label="Condensed">
           <SpecimenTabBar condensed />
         </Example>
+      </Specimen>
+
+      <Specimen
+        title="Tab bar overflow"
+        description="Five tabs at most, More included. Tabs beyond that, or too narrow to read, move into More's sheet, and the current destination stays in the bar. Drag the frame's corner to change the width."
+      >
+        <TabBarOverflowFrame />
       </Specimen>
     </SectionPage>
   );

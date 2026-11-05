@@ -13,6 +13,7 @@ Compose primary application navigation for a narrow viewport, with labelled item
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | condensed | `boolean \| undefined` | false, true | no | — | Force the condensed state (documentation); by default it follows scrolling. |
+| maxItems | `number \| undefined` | See type | no | 5 | The most tabs the bar shows, More included. Tabs beyond it, or too narrow to stay readable at the bar's width, move into More's sheet, and the current destination stays in the bar. A TabBar.More you write keeps its own rows, after those; without one, More appears when needed. |
 
 Inherited properties:
 
@@ -53,6 +54,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | active | `boolean \| undefined` | false, true | no | false | Marks the current destination or active choice. |
+| auto | `boolean \| undefined` | false, true | no | false | Internal: the one the bar adds by itself. |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | label | `string \| undefined` | See type | no | — | The visible or accessible label for this component. |
 | title | `string \| undefined` | See type | no | — | The heading or title content. |

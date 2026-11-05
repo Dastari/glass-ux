@@ -1,6 +1,6 @@
 # Rail
 
-Compose the primary application navigation rail from accessible items, separators and flexible spacers.
+Compose the primary application navigation rail from accessible items, separators and flexible spacers. Items that do not fit its height move into a More menu, and the current section stays visible.
 
 `import { Rail } from "glass-ux/shell"`
 
@@ -13,6 +13,7 @@ Compose the primary application navigation rail from accessible items, separator
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string` | See type | yes | — | Accessible name of the navigation landmark. |
+| overflow | `"more" \| "scroll" \| undefined` | "more", "scroll" | no | "more" | What happens to items that do not fit the rail's height. `more`: they move into a More menu, and the current section stays visible. `scroll`: every item stays in the column, which scrolls with no visible scrollbar. |
 
 Inherited properties:
 

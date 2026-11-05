@@ -73,9 +73,10 @@ const OVERFLOW_ITEMS = [
 function RailOverflowFrame() {
   const [current, setCurrent] = useState("Projects")
   const [overflow, setOverflow] = useState<"more" | "scroll">("more")
+  const scope = useContext(DemoScope)
   return (
     <div className="gallery-shell-rail-frame" data-testid="rail-overflow">
-      <Rail.Root aria-label="Main (overflow specimen)" overflow={overflow}>
+      <Rail.Root aria-label={scope ? `Rail overflow (specimen): ${scope}` : "Rail overflow (specimen)"} overflow={overflow}>
         {OVERFLOW_ITEMS.map((item) => (
           <Rail.Item
             key={item.label}
@@ -108,9 +109,10 @@ function RailOverflowFrame() {
 
 function TabBarOverflowFrame() {
   const [current, setCurrent] = useState("Projects")
+  const scope = useContext(DemoScope)
   return (
     <div className="gallery-shell-tabbar-frame" data-testid="tabbar-overflow">
-      <TabBar.Root aria-label="Main (overflow specimen)">
+      <TabBar.Root aria-label={scope ? `Tab bar overflow (specimen): ${scope}` : "Tab bar overflow (specimen)"}>
         {OVERFLOW_ITEMS.map((item) => (
           <TabBar.Item key={item.label} icon={item.icon} label={item.label} active={item.label === current} onClick={() => setCurrent(item.label)} />
         ))}

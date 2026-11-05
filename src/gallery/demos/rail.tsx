@@ -52,9 +52,13 @@ const OVERFLOW_ITEMS = [
 function RailOverflowFrame() {
   const [current, setCurrent] = useState("Projects");
   const [overflow, setOverflow] = useState<"more" | "scroll">("more");
+  const scope = useContext(DemoScope);
   return (
     <div className="gallery-shell-rail-frame" data-testid="rail-overflow">
-      <Rail.Root aria-label="Main (overflow specimen)" overflow={overflow}>
+      <Rail.Root
+        aria-label={scope ? `Rail overflow (specimen): ${scope}` : "Rail overflow (specimen)"}
+        overflow={overflow}
+      >
         {OVERFLOW_ITEMS.map((item) => (
           <Rail.Item
             key={item.label}

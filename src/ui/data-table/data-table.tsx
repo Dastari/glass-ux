@@ -339,6 +339,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     onRetry,
     emptyMessage,
     emptyAction,
+    emptyIcon,
     selectable = true,
     actions,
     getRowActions,
@@ -2766,6 +2767,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         ) : (
           <BodyMessage
             tone="empty"
+            icon={searching || filters.length ? undefined : emptyIcon}
             action={
               searching || filters.length ? (
                 <>

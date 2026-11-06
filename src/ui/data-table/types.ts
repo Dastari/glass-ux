@@ -252,6 +252,12 @@ export interface DataTableProps<T extends RowData> {
   emptyMessage?: ReactNode;
   /** The primary action for the unfiltered empty state ("Add a row"). */
   emptyAction?: ReactNode;
+  /**
+   * An icon for the unfiltered empty state: the thing that is missing, before `emptyMessage`. The
+   * table sizes it and hides it from assistive technology, so pass it without a size. Default:
+   * none. While searching or filtering the table says so itself, with no icon.
+   */
+  emptyIcon?: ReactNode;
 
   /** Show checkboxes and allow selection (default true). */
   selectable?: boolean;

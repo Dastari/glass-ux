@@ -223,6 +223,16 @@ export class GeocoderError extends Error {
 }
 
 /**
+ * Which wording a failed lookup takes. Any error with status 429 or code `RATE_LIMITED` means too
+ * many lookups, so a custom adapter gets it by throwing one; everything else (a timeout, an upstream
+ * failure, no network) means the lookup is unavailable.
+ */
+export function geocoderFailure(error: unknown): "rate-limited" | "unavailable" {
+  const { status, code } = (error ?? {}) as { status?: unknown; code?: unknown }
+  return status === 429 || code === "RATE_LIMITED" ? "rate-limited" : "unavailable"
+}
+
+/**
  * The default adapter for the host application's Photon-compatible server route.
  * Same-origin credentials are included; the host implements the endpoint.
  */
@@ -274,7 +284,7 @@ export function createPhotonGeocoder(options: PhotonOptions = {}): GeocoderAdapt
         params.set("location_bias_scale", "0.3")
       }
       const response = await fetch(`${base}/api?${params}`, { signal, headers: { Accept: "application/json" } })
-      if (!response.ok) throw new Error(getAddressFieldMessages().lookupStatusError(response.status))
+      if (!response.ok) throw new GeocoderError(response.status, "")
       const body = (await response.json()) as { features?: PhotonFeature[] }
       return photonToSuggestions(body.features ?? [], query)
     },

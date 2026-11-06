@@ -7,7 +7,8 @@ import { addressFieldMessages } from "./messages.js"
  *   lookup     "Start typing an address": suggestions from the geocoder (debounced, stale
  *              requests cancelled, biased to the home region, limited to `countries`), with
  *              the data credit in the list's footer. "Enter manually" (the label row's aside)
- *              opens the fields without a lookup.
+ *              opens the fields without a lookup. A failed lookup says so in the list, and on a
+ *              line under the field once the list has closed.
  *   fields     Street address · Unit, level or building · Suburb or town · State · Postcode ·
  *              Country — labels follow the country (ZIP code, Province…). A suggestion fills
  *              them all and they stay editable.
@@ -51,7 +52,7 @@ import {
   type AddressValue,
   type GeoPoint,
 } from "./address.js"
-import { createServerGeocoder, localiseGeocoderAttribution, type AddressSuggestion, type GeocoderAdapter, type GeocoderBias } from "./geocoder.js"
+import { createServerGeocoder, geocoderFailure, localiseGeocoderAttribution, type AddressSuggestion, type GeocoderAdapter, type GeocoderBias } from "./geocoder.js"
 import { listFormat } from "../../lib/locale/intl.js"
 
 // The map (and MapLibre) load only when an address field shows one.
@@ -193,6 +194,8 @@ export function AddressEditor({
   // The lookup's own point for this address, so a hand-placed pin can be reset.
   const [lookupPoint, setLookupPoint] = useState<GeoPoint | null>(value.pinned ? null : value.location)
   const firstFieldRef = useRef<HTMLInputElement>(null)
+  // Held here so the failure outlives the list, which closes with the field's focus.
+  const [lookupFailure, setLookupFailure] = useState<ReturnType<typeof geocoderFailure> | null>(null)
 
   const biasKey = bias ? `${bias.lat},${bias.lng},${bias.zoom ?? ""}` : ""
   const source = useMemo<OptionSource<string>>(
@@ -200,7 +203,14 @@ export function AddressEditor({
       debounceMs: geocoder.debounceMs ?? 300,
       minChars: geocoder.minChars ?? 3,
       search: async (text, { signal }) => {
-        const results = await geocoder.search(text, { signal, bias, countries })
+        let results: AddressSuggestion[]
+        try {
+          results = await geocoder.search(text, { signal, bias, countries })
+        } catch (failure) {
+          if (!signal.aborted) setLookupFailure(geocoderFailure(failure))
+          throw failure
+        }
+        if (!signal.aborted) setLookupFailure(null)
         for (const result of results) seen.current.set(result.id, result)
         return results.map(
           (result): OptionItem<string> => ({
@@ -254,6 +264,16 @@ export function AddressEditor({
     )
   }
 
+  const failureText = !lookupFailure
+    ? null
+    : lookupFailure === "rate-limited"
+      ? messages.lookupRateLimited
+      : expanded
+        ? messages.lookupUnavailableBelow
+        : map
+          ? messages.lookupUnavailable(messages.enterManually)
+          : messages.lookupUnavailableNoPin(messages.enterManually)
+
   return (
     <div className={cx("fa-address", className)} data-expanded={expanded ? "" : undefined}>
       <Field
@@ -267,7 +287,8 @@ export function AddressEditor({
         aside={
           expanded || disabled ? undefined : (
             <Button
-              variant="ghost"
+              // The way forward once a lookup has failed.
+              variant={lookupFailure ? "secondary" : "ghost"}
               size="xs"
               className="fa-address-manual"
               onClick={() => {
@@ -283,7 +304,11 @@ export function AddressEditor({
         <Autocomplete<string>
           source={engaged ? source : undefined}
           value={query}
-          onValueChange={setQuery}
+          onValueChange={(next) => {
+            setQuery(next)
+            setLookupFailure(null)
+          }}
+          errorText={failureText}
           onFocus={() => setEngaged(true)}
           openOnInputClick={Boolean(defaultQuery)}
           onPick={pick}
@@ -313,6 +338,11 @@ export function AddressEditor({
           invalid={Boolean(shownError)}
         />
       </Field>
+      {failureText ? (
+        <p className="fa-hint fa-address-lookup-failure" role="status">
+          {failureText}
+        </p>
+      ) : null}
 
       {expanded ? (
         <>

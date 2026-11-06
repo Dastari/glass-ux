@@ -41,6 +41,8 @@ export interface AutocompleteProps<V extends string = string> {
   empty?: (query: string) => ReactNode
   /** A quiet line at the foot of the suggestions: a data source's attribution. */
   footer?: ReactNode
+  /** What the list says when a source's search fails, in place of the default "Search failed" text. Retry stays beside it. */
+  errorText?: ReactNode
   disabled?: boolean
   readOnly?: boolean
   required?: boolean
@@ -82,6 +84,7 @@ export function Autocomplete<V extends string = string>({
   icon,
   empty,
   footer,
+  errorText,
   disabled,
   readOnly,
   required,
@@ -194,7 +197,7 @@ export function Autocomplete<V extends string = string>({
             data-status={status}
           >
             <BaseAutocomplete.Status className="sr-only">{statusAnnouncement(status, items.length, text, optionMessages, optionLocale)}</BaseAutocomplete.Status>
-            <OptionStatus status={status} twoLine={twoLine} needsMore={search.needsMore} onRetry={search.retry} />
+            <OptionStatus status={status} twoLine={twoLine} needsMore={search.needsMore} onRetry={search.retry} errorText={errorText} />
             <BaseAutocomplete.Empty className="fa-combobox-empty-slot">
               {showEmpty ? <div className="fa-combobox-empty">{empty ? empty(text) : (text.trim() ? optionMessages.noMatchesFor(text.trim()) : optionMessages.noOptions)}</div> : null}
             </BaseAutocomplete.Empty>

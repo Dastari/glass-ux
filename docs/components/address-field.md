@@ -84,7 +84,9 @@ Glass UX does not include a server, proxy, authentication layer or upstream rate
 The default adapter sends `q`, `limit`, `lang`, repeated `country` parameters and optional
 `lat`, `lon`, `zoom`. It expects `{ features: PhotonFeature[] }`; use
 `photonToSuggestions` when adapting Photon-compatible results. A non-success response
-may return `{ code: string }`, which becomes a `GeocoderError`.
+may return `{ code: string }`, which becomes a `GeocoderError`. A status of 429 or a code of
+`RATE_LIMITED` reads as too many lookups; any other failure says the lookup is unavailable and points
+to manual entry. A custom adapter gets the first wording by throwing an error with that `status` or `code`.
 
 Choose your own provider, attribution, caching, rate limits and authentication. A
 self-hosted Photon can use `createPhotonGeocoder({ url })`, subject to your network and

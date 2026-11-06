@@ -21,6 +21,12 @@
     margin-block: calc(var(--space-1) * -1);
   }
 
+  /* A failed lookup, under the field: it stays after the list closes, and wraps. */
+  .fa-address-lookup-failure {
+    margin: calc(var(--space-1-5) * -1) 0 0;
+    text-wrap: pretty;
+  }
+
   /* ── Map row ───────────────────────────────────────────────────────────── */
   .fa-address-map {
     display: flex;

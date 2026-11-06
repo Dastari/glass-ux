@@ -88,6 +88,8 @@ export interface OptionStatusProps {
   needsMore?: number
   /** Called when Retry is pressed in the error row. Without it the error row has no Retry button. */
   onRetry?: () => void
+  /** The error row's wording, for a source that knows more than the default "Search failed". It wraps. */
+  errorText?: ReactNode
 }
 
 /**
@@ -95,7 +97,7 @@ export interface OptionStatusProps {
  * (the previous ones stay), skeleton rows on the first load, an error row with Retry, or
  * a prompt for more characters. Rows are exactly one option tall.
  */
-export function OptionStatus({ status, twoLine = false, needsMore = 0, onRetry }: OptionStatusProps) {
+export function OptionStatus({ status, twoLine = false, needsMore = 0, onRetry, errorText }: OptionStatusProps) {
   const messages = useMessages(comboboxMessages)
 
   return (
@@ -114,7 +116,7 @@ export function OptionStatus({ status, twoLine = false, needsMore = 0, onRetry }
       {status === "error" ? (
         <div className="fa-option-note" data-tone="danger" role="alert">
           <IconAlert />
-          <span className="fa-option-note-text">{messages.searchError}</span>
+          <span className="fa-option-note-text">{errorText ?? messages.searchError}</span>
           {onRetry ? (
             <Button size="sm" variant="ghost" onClick={onRetry} className="fa-option-retry">
               {messages.retry} </Button>

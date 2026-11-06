@@ -25,7 +25,13 @@ export const addressFieldMessages = defineMessages("addressField", {
   searchByPhoton: "Search by Photon",
   openstreetmapContributors: "© OpenStreetMap contributors",
   addressLookupFailed: (status: number, code?: string) => `Address lookup failed (${status}${code ? ` ${code}` : ""})`,
-  lookupStatusError: (status: number) => `Address lookup failed (${status})`,
+  /** `action` is the wording of `enterManually`. */
+  lookupUnavailable: (action: string) => `Address lookup is unavailable right now. You can type the address under ${action} and place the pin.`,
+  /** The same with no map to place a pin on. `action` is the wording of `enterManually`. */
+  lookupUnavailableNoPin: (action: string) => `Address lookup is unavailable right now. You can type the address under ${action}.`,
+  /** The same once the address fields are showing. */
+  lookupUnavailableBelow: "Address lookup is unavailable right now. You can type the address in the fields below.",
+  lookupRateLimited: "Too many lookups. Try again in a moment.",
   streetTooLong: "Use 120 characters or fewer",
   localityTooLong: "Use 80 characters or fewer",
   postcodeTooLong: "Use 12 characters or fewer",

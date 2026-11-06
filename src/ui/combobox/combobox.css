@@ -122,7 +122,17 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* A failure says what to do next: it wraps rather than lose the end of its sentence. */
+  .fa-option-note[data-tone="danger"] {
+    padding-block: var(--space-1-5);
+  }
+  .fa-option-note[data-tone="danger"] .fa-option-note-text {
+    overflow: visible;
+    white-space: normal;
+    text-wrap: pretty;
+  }
   .fa-option-retry {
+    flex: none;
     margin-inline-end: calc(var(--space-1) * -1);
   }
   .fa-option-more {

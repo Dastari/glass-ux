@@ -4,8 +4,9 @@ import { TruncatedText } from "../ui/truncated-text/index.js";
 import { PanelHeader } from "../ui/surface/index.js";
 /**
  * Inspector — context beside the workspace: Assistant, the selected item's details.
- * Docked as a glass pane at 1280px and wider (open by default from 1920px, R5.4); a
- * slide-over sheet below that. Its open state persists (shell-state.ts).
+ * Docked as a glass pane at 1280px and wider (open by default from 1920px, R5.4, unless
+ * AppShell's `inspectorDefault` says closed); a slide-over sheet below that. Its open state
+ * persists (shell-state.ts).
  */
 import {
   Activity,
@@ -37,6 +38,12 @@ export interface InspectorProps {
    * its own scroller, floating composer and ask dock. Default: a padded scrolling column.
    */
   fill?: boolean;
+  /**
+   * The pane's name for its close button, docked or as a sheet: "Close Meridian Assistant".
+   * Pass the title, or a steadier name when the title follows the selection. Default: the
+   * docked pane's button is "Hide inspector" and the sheet's is "Close".
+   */
+  closeName?: string;
   children: ReactNode;
   className?: string;
 }
@@ -48,6 +55,7 @@ function InspectorPane({
   actions,
   footer,
   fill = false,
+  closeName,
   children,
   className,
   open,
@@ -79,7 +87,7 @@ function InspectorPane({
                 variant="ghost"
                 size="sm"
                 icon={<IconClose />}
-                aria-label={messages.hideInspector}
+                aria-label={closeName ? messages.closePane(closeName) : messages.hideInspector}
                 onClick={onClose}
               />
             </>
@@ -140,6 +148,7 @@ function useCollapsed(paneRef: RefObject<HTMLElement | null>, open: boolean) {
 
 /** Docked: a glass pane. Narrower than 80rem: the same content in a Sheet. */
 export function Inspector(props: InspectorProps) {
+  const messages = useMessages(shellMessages);
   const shell = useShell();
   if (shell.inspectorDocked)
     return (
@@ -156,6 +165,7 @@ export function Inspector(props: InspectorProps) {
     actions,
     footer,
     fill = false,
+    closeName,
     children,
   } = props;
   return (
@@ -172,6 +182,7 @@ export function Inspector(props: InspectorProps) {
           }
           title={title}
           subtitle={subtitle}
+          closeLabel={closeName ? messages.closePane(closeName) : undefined}
         >
           {actions}
         </Sheet.Header>

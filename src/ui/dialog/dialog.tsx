@@ -319,6 +319,8 @@ export interface DialogHeaderProps extends Omit<ComponentProps<"header">, "title
   subtitle?: ReactNode
   /** Show the close button (default). */
   close?: boolean
+  /** The close button's accessible name and tooltip, when "Close" alone is not enough. */
+  closeLabel?: string
 }
 
 function DialogHeader({
@@ -328,6 +330,7 @@ function DialogHeader({
   title,
   subtitle,
   close = true,
+  closeLabel,
   className,
   children,
   ...rest
@@ -353,7 +356,7 @@ function DialogHeader({
       {close ? (
         <DialogClosePart
           className="fa-dialog-close"
-          render={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label={messages.close} />}
+          render={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label={closeLabel ?? messages.close} />}
         />
       ) : null}
     </header>

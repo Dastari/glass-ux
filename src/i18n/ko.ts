@@ -1146,6 +1146,7 @@ export default defineMessagePack("ko", {
   shell: {
     resizeSectionNavigation: "크기 조정 섹션 탐색",
     hideInspector: "검사기 숨기기",
+    closePane: (name) => `${name} 닫기`,
     collapseSectionNavigation: "축소 섹션 탐색",
     search: (noun) => `검색 ${noun}`,
     more: "더 보기",

@@ -1146,6 +1146,7 @@ export default defineMessagePack("he", {
   shell: {
     resizeSectionNavigation: "ניווט בגודל מקטע",
     hideInspector: "הסתרת חלונית הבדיקה",
+    closePane: (name) => `סגירת ${name}`,
     collapseSectionNavigation: "ניווט מקטע כווץ",
     search: (noun) => `חפש ${noun}`,
     more: "עוד",

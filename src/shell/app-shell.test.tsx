@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { AppShell } from "./app-shell.js";
@@ -129,6 +129,136 @@ describe("a collapsed docked inspector", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+describe("inspectorDefault", () => {
+  function DefaultClosed() {
+    return (
+      <AppShell
+        inspectorDefault="closed"
+        brand={null}
+        rail={null}
+        topBar={<InspectorToggle />}
+        inspector={
+          <Inspector title="Details">
+            <button type="button">Inside inspector</button>
+          </Inspector>
+        }
+      >
+        <p>Workspace</p>
+      </AppShell>
+    );
+  }
+  const slot = () => document.querySelector(".fa-shell-slot-inspector");
+
+  it("leaves the inspector open on a wide screen by default", () => {
+    render(<Shell />);
+    expect(slot()).not.toHaveAttribute("inert");
+    expect(document.querySelector(".fa-shell")).not.toHaveAttribute("data-inspector-default");
+  });
+
+  it("starts closed on a wide screen with nothing stored, and says so to the first paint's CSS", () => {
+    render(<DefaultClosed />);
+    expect(slot()).toHaveAttribute("inert");
+    expect(screen.getByRole("button", { name: "Show inspector" })).toHaveAttribute("aria-pressed", "false");
+    expect(document.querySelector(".fa-shell")).toHaveAttribute("data-inspector-default", "closed");
+    expect(renderToString(<DefaultClosed />)).toContain('data-inspector-default="closed"');
+  });
+
+  it("gives way to a stored choice of open", () => {
+    localStorage.setItem(SHELL_STORAGE_KEY, JSON.stringify({ inspector: "open" }));
+    render(<DefaultClosed />);
+    expect(slot()).not.toHaveAttribute("inert");
+    expect(screen.getByRole("button", { name: "Hide inspector", pressed: true })).toBeInTheDocument();
+  });
+
+  it("stores the person's choice when they open it", () => {
+    render(<DefaultClosed />);
+    fireEvent.click(screen.getByRole("button", { name: "Show inspector" }));
+    expect(JSON.parse(localStorage.getItem(SHELL_STORAGE_KEY)!).inspector).toBe("open");
+    expect(slot()).not.toHaveAttribute("inert");
+  });
+});
+
+describe("Inspector closeName", () => {
+  function Named({ closeName }: { closeName?: string }) {
+    return (
+      <AppShell
+        brand={null}
+        rail={null}
+        topBar={null}
+        inspector={
+          <Inspector title="Details" closeName={closeName}>
+            <p>Body</p>
+          </Inspector>
+        }
+      >
+        <p>Workspace</p>
+      </AppShell>
+    );
+  }
+
+  it("keeps Hide inspector when it is not given", () => {
+    render(<Named />);
+    expect(screen.getByRole("button", { name: "Hide inspector" })).toBeInTheDocument();
+  });
+
+  it("names the docked pane's close button", () => {
+    render(<Named closeName="Meridian Assistant" />);
+    expect(screen.getByRole("button", { name: "Close Meridian Assistant" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Hide inspector" })).toBeNull();
+  });
+
+  describe("as a sheet", () => {
+    const openSheet = () =>
+      act(() => {
+        fireEvent.click(screen.getByRole("button", { name: "Show inspector" }));
+      });
+    function InSheet({ closeName }: { closeName?: string }) {
+      return (
+        <AppShell
+          brand={null}
+          rail={null}
+          topBar={<InspectorToggle />}
+          inspector={
+            <Inspector title="Details" closeName={closeName}>
+              <p>Body</p>
+            </Inspector>
+          }
+        >
+          <p>Workspace</p>
+        </AppShell>
+      );
+    }
+    beforeEach(() => {
+      vi.stubGlobal("matchMedia", (query: string) => ({
+        matches: query.includes("<"),
+        addEventListener() {},
+        removeEventListener() {},
+      }));
+    });
+    afterEach(() => {
+      vi.stubGlobal("matchMedia", (query: string) => ({
+        matches: !query.includes("<"),
+        addEventListener() {},
+        removeEventListener() {},
+      }));
+    });
+
+    it("keeps Close when it is not given", async () => {
+      render(<InSheet />);
+      openSheet();
+      const dialog = await screen.findByRole("dialog", { name: "Details" });
+      expect(within(dialog).getByRole("button", { name: "Close" })).toBeInTheDocument();
+    });
+
+    it("names the sheet's close button too", async () => {
+      render(<InSheet closeName="Meridian Assistant" />);
+      openSheet();
+      const dialog = await screen.findByRole("dialog", { name: "Details" });
+      expect(within(dialog).getByRole("button", { name: "Close Meridian Assistant" })).toBeInTheDocument();
+    });
   });
 });
 

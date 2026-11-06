@@ -246,7 +246,7 @@ const BREAKPOINTS: Array<[string, string]> = [
   ["Phone · under 48rem", "Top bar, workspace and a floating tab bar (four destinations and More). The section drawer is a left Sheet and More a bottom Sheet. Windows are full-screen sheets with a switcher."],
   ["Tablet · 48–64rem", "The rail stays on the canvas; the section drawer slides over from the left (a Sheet) from the top bar's toggle. The inspector is a right Sheet. Windows float or maximise."],
   ["Desktop · 64rem and wider", "Rail and a resizable section drawer (14–28rem, collapses to the rail). The inspector docks from 80rem when opened. Windows float by default and tile in two columns."],
-  ["Wide · 120rem (1920px) and wider", "The inspector is open by default. New windows tile beside the page."],
+  ["Wide · 120rem (1920px) and wider", "The inspector is open by default, unless inspectorDefault is closed. New windows tile beside the page."],
   ["Ultra-wide · 160rem (2560px) and wider", "Up to three columns: the page and two columns of tiled windows."],
 ]
 
@@ -257,7 +257,7 @@ const SLOTS: Array<[string, string]> = [
   ["AppShell.topBar", "TopBar with scope (ContextSwitcher: the organisation or project in the URL, first after the logo), breadcrumb (RouteBreadcrumb after the scope, fed from route matches), search (SearchTrigger → useCommandPalette().open), actions and account (AccountButton with the shared Avatar, a Menu trigger)."],
   ["Workspace.scopes", "The current organisation and how to draw one. Windows from another organisation show its chip; the dock groups by organisation (R14.4)."],
   ["AppShell.children", "The Workspace: primary (the routed view) and the dock."],
-  ["AppShell.inspector", "Inspector (title, icon, actions, footer). Docked at 80rem and wider, a Sheet below."],
+  ["AppShell.inspector", "Inspector (title, icon, actions, footer, closeName). Docked at 80rem and wider, a Sheet below. inspectorDefault sets whether it starts open; a stored choice wins."],
   ["AppShell.tabBar", "TabBar.Root with TabBar.Item, TabBar.More and TabBar.MoreItem for phones."],
   ["EntityHeader", "icon, iconStatus, title, status, subtitle (data only), actions (ActionBar over the entity's ActionSet), tabs (RouteTabs)."],
 ]

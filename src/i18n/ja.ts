@@ -1146,6 +1146,7 @@ export default defineMessagePack("ja", {
   shell: {
     resizeSectionNavigation: "セクションナビゲーションのサイズ変更",
     hideInspector: "インスペクターを非表示",
+    closePane: (name) => `${name} を閉じる`,
     collapseSectionNavigation: "セクションナビゲーションを折りたたむ",
     search: (noun) => `${noun}を検索`,
     more: "その他",

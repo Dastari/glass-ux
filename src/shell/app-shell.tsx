@@ -127,6 +127,13 @@ export interface AppShellProps {
   contentAs?: "main" | "div"
   /** Context pane (Inspector), docked beside the workspace on wide screens. */
   inspector?: ReactNode
+  /**
+   * Whether the inspector starts open before the person has chosen. `wide`: open at 120rem
+   * (1920px) and wider, closed below. `closed`: closed at every width. Their stored choice, from
+   * `InspectorToggle` or the pane's close button, always wins over this.
+   * @defaultValue "wide"
+   */
+  inspectorDefault?: "wide" | "closed"
   /** Phone navigation (TabBar). */
   tabBar?: ReactNode
   /** Toggle the drawer from the keyboard. Default mod+b. */
@@ -162,6 +169,7 @@ export function AppShell({
   children,
   contentAs: Content = "main",
   inspector,
+  inspectorDefault = "wide",
   tabBar,
   drawerShortcut = "mod+b",
   focusRegions = false,
@@ -240,7 +248,7 @@ export function AppShell({
   const toggleDrawer = useCallback(() => toggleWith("api"), [toggleWith])
 
   const inspectorAvailable = Boolean(inspector)
-  const inspectorOpen = docked ? (prefs.inspector === null ? wide : prefs.inspector === "open") : overlayInspector
+  const inspectorOpen = docked ? (prefs.inspector === null ? inspectorDefault === "wide" && wide : prefs.inspector === "open") : overlayInspector
   const setInspectorOpen = useCallback(
     (open: boolean) => {
       if (docked) {
@@ -282,6 +290,7 @@ export function AppShell({
           className={cx("fa-shell", className)}
           data-has-drawer={hasDrawer ? "" : undefined}
           data-has-inspector={inspectorAvailable ? "" : undefined}
+          data-inspector-default={inspectorDefault === "closed" ? "closed" : undefined}
           data-has-tabbar={tabBar ? "" : undefined}
         >
           {hydrated ? null : <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: shellBootScript() }} />}

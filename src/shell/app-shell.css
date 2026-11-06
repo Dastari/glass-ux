@@ -236,15 +236,15 @@
     transition: transform var(--duration-base) var(--ease-exit);
   }
   @media (width >= 120rem) {
-    :root:not([data-shell-inspector="closed"]) .fa-shell[data-has-inspector] {
+    :root:not([data-shell-inspector="closed"]) .fa-shell[data-has-inspector]:not([data-inspector-default="closed"]) {
       --_insp-col: calc(var(--inspector-w) + var(--gap-panels));
       --_insp-commit: var(--duration-base);
     }
-    :root:not([data-shell-inspector="closed"]) .fa-shell-slot-inspector {
+    :root:not([data-shell-inspector="closed"]) .fa-shell:not([data-inspector-default="closed"]) > .fa-shell-slot-inspector {
       visibility: visible;
       transition-delay: 0s;
     }
-    :root:not([data-shell-inspector="closed"]) .fa-shell-slot-inspector > * {
+    :root:not([data-shell-inspector="closed"]) .fa-shell:not([data-inspector-default="closed"]) > .fa-shell-slot-inspector > * {
       transform: none;
       transition-timing-function: var(--ease-enter);
     }

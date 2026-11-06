@@ -5,6 +5,7 @@ import { getLocale } from "../lib/locale/locale.js"
 export const shellMessages = defineMessages("shell", {
   resizeSectionNavigation: "Resize section navigation",
   hideInspector: "Hide inspector",
+  closePane: (name: string) => `Close ${name}`,
   collapseSectionNavigation: "Collapse section navigation",
   search: (noun: string) => `Search ${noun}`,
   more: "More",

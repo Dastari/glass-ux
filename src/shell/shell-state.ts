@@ -18,7 +18,7 @@ export interface ShellPrefs {
   drawer: "open" | "closed"
   /** Drawer width in rem (so it follows the UI scale); null = the default width. */
   drawerWidth: number | null
-  /** null follows the default: open at 1920px and wider, closed below. */
+  /** null follows AppShell's `inspectorDefault`: by default open at 1920px and wider, closed below. */
   inspector: "open" | "closed" | null
   /** Collapsed drawer groups by id. */
   collapsed: Readonly<Record<string, boolean>>

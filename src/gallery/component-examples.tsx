@@ -998,14 +998,26 @@ export function FileRowItemExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="FileRowItem" layout="stack">
+        <Specimen title="FileRowItem" description='A list row by default, directly under a ul. Outside a list, as="div" draws the same row.' layout="stack">
+          <ul className="fa-ai-files">
+            <FileRowItem
+              file={{
+                id: "brief",
+                name: "exhibition-brief.pdf",
+                size: 240000,
+                mime: "application/pdf",
+                href: "https://files.northstar.example/brief.pdf",
+              }}
+            />
+          </ul>
           <FileRowItem
+            as="div"
             file={{
-              id: "brief",
-              name: "exhibition-brief.pdf",
-              size: 240000,
-              mime: "application/pdf",
-              href: "https://files.northstar.example/brief.pdf",
+              id: "floorplan",
+              name: "gallery-floorplan.png",
+              size: 1820000,
+              mime: "image/png",
+              href: "https://files.northstar.example/floorplan.png",
             }}
           />
         </Specimen>

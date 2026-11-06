@@ -73,13 +73,15 @@ export interface ReferenceInputProps<R extends string = string> {
   disabledReason?: (target: ReferenceTarget) => string | undefined
   /** Most links allowed. */
   max?: number
-  /** Show the kind filter chips in the popup (default when there is more than one kind). */
+  /** Show the kind filter chips in the popup, in one row that scrolls (default when there is more than one kind). */
   kindFilter?: boolean
   /** `from`: backlinks, read with each relation's inverse label. Implies read-only. */
   direction?: "to" | "from"
   /** What a read-only input with no links says. */
   emptyText?: string
   placeholder?: string
+  /** The add button's label: "Tag…" on a tags field. Default: the `referenceInput.link` message ("Link…"). */
+  addLabel?: string
   /** Available width or named width tier. */
   width?: FieldWidth
   disabled?: boolean
@@ -221,6 +223,7 @@ export function ReferenceInput<R extends string = string>({
   direction = "to",
   emptyText: emptyTextProp,
   placeholder: placeholderProp,
+  addLabel,
   width,
   disabled,
   readOnly: readOnlyProp,
@@ -250,7 +253,12 @@ export function ReferenceInput<R extends string = string>({
   const [flash, setFlash] = useState<string | null>(null)
   const flashTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const kindsRef = useRef<HTMLDivElement>(null)
   useEffect(() => () => clearTimeout(flashTimer.current), [])
+  // The kinds scroll in one row, and Alt ← → can choose one that is out of sight.
+  useEffect(() => {
+    kindsRef.current?.querySelector('[aria-pressed="true"]')?.scrollIntoView?.({ block: "nearest", inline: "nearest" })
+  }, [kind])
 
   const fallback = (defaultRelation ?? relations?.[0]?.value ?? ("related" as R)) as R
   const kindOf = (kindId: string) => kinds.find((entry) => entry.id === kindId)
@@ -487,7 +495,7 @@ export function ReferenceInput<R extends string = string>({
             onMouseDown={(event) => event.preventDefault()}
             onClick={startLink}
           >
-            {messages.link} </Button>
+            {addLabel ?? messages.link} </Button>
         </BaseCombobox.Chips>
       </BaseCombobox.InputGroup>
 
@@ -495,7 +503,7 @@ export function ReferenceInput<R extends string = string>({
         <BaseCombobox.Positioner className="fa-select-positioner" align="start" sideOffset={popup.offset} collisionPadding={popup.collisionPadding}>
           <BaseCombobox.Popup className="glass-overlay fa-popup fa-combobox-popup fa-ref-popup" aria-busy={status === "loading" || status === "refreshing" || undefined} data-status={status}>
             {filterable ? (
-              <div className="fa-ref-kinds" role="group" aria-label={messages.kind}>
+              <div ref={kindsRef} className="fa-ref-kinds" role="group" aria-label={messages.kind}>
                 {[null, ...kinds.map((entry) => entry.id)].map((entry) => {
                   const spec = entry ? kindOf(entry) : undefined
                   const Icon = spec?.icon

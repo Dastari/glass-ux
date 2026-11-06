@@ -1276,18 +1276,21 @@
   /* Rows selected on a table with pages: the bar and the pager share the line, and the pager
      stays at the end where it was. The bar wraps above it when both will not fit. */
   .fa-dt-footer[data-bulk-pager] {
-    /* component token: the bar's share of the line before the pager wraps under it */
-    --_bulk-basis: 16rem;
+    /* component token: the pager's share of the line. It is a size container, with no width of
+       its own to offer; at this width it keeps its range and its first, previous, next and last
+       buttons. The bar asks for what its actions need, so they never clip: past that the pager
+       wraps under it. */
+    --_pager-basis: 20rem;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2);
   }
   .fa-dt-footer[data-bulk-pager] > .fa-dt-bulk {
-    flex: 1 1 var(--_bulk-basis);
+    flex: 1 1 auto;
   }
   .fa-dt-footer[data-bulk-pager] > .fa-dt-status {
-    flex: 0 1 auto;
+    flex: 0 1 var(--_pager-basis);
     margin-inline-start: auto;
   }
   .fa-dt-footer[data-bulk-pager] .fa-dt-status-text {

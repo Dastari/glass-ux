@@ -18,6 +18,10 @@ for (const width of [1440, 1024, 390]) {
     const bar = table.locator(".fa-dt-bulk[data-open]");
     await expect(bar).toBeVisible();
     // Nothing covers it: the element at its centre is the button or inside it.
+    await expect(table.getByRole("button", { name: /previous page/i })).toBeVisible();
+    // The bar's own actions are not cut off to make room.
+    const actions = bar.locator(".fa-dt-bulk-actions");
+    expect(await actions.evaluate((node) => node.scrollWidth - node.clientWidth)).toBeLessThanOrEqual(1);
     const hit = await next.evaluate((button) => {
       const box = button.getBoundingClientRect();
       const top = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);

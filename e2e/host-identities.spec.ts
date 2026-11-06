@@ -45,7 +45,8 @@ test("a long organisation gives way and the session's time stays whole", async (
     const state = row.locator(".fa-ai-session-end > :is(.fa-ai-session-trail, .fa-ai-session-state)");
     const [rowBox, stateBox] = await Promise.all([row.boundingBox(), state.boundingBox()]);
     expect(stateBox!.x + stateBox!.width).toBeLessThanOrEqual(rowBox!.x + rowBox!.width + 0.5);
-    const text = await state.evaluate((node) => ({ scroll: node.scrollWidth, client: node.clientWidth }));
+    // Only text can be cut short: a working spinner's scroll width changes as it turns.
+    const text = await state.evaluate((node) => (node.querySelector("time") ? { scroll: node.scrollWidth, client: node.clientWidth } : { scroll: 0, client: 0 }));
     // A status dot's ring may report a pixel or two; text cut short would report far more.
     expect(text.scroll).toBeLessThanOrEqual(text.client + 2);
   }

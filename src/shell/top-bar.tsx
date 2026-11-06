@@ -335,6 +335,7 @@ export interface SearchTriggerProps extends Omit<
 
 /** The command search field. A button that looks like a field: it opens the palette. */
 export function SearchTrigger({
+  "aria-label": ariaLabel,
   placeholder: placeholderProp,
   shortcut = "mod+k",
   onOpen,
@@ -362,7 +363,8 @@ export function SearchTrigger({
       type="button"
       {...rest}
       className={cx("fa-control fa-shell-search", className)}
-      aria-label={messages.searchLabel}
+      // Its accessible name holds its visible text (WCAG 2.5.3): a host's name, then its placeholder.
+      aria-label={ariaLabel ?? placeholderProp ?? messages.searchLabel}
       aria-keyshortcuts={aria}
       onClick={onOpen}
     >

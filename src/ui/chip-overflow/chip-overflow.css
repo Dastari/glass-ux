@@ -6,6 +6,30 @@
     gap: var(--gap-inline);
     min-width: 0;
   }
+  /* One line (`wrap={false}`): chips share the width and end in an ellipsis; +N never shrinks. */
+  .fa-chip-overflow[data-nowrap] {
+    flex-wrap: nowrap;
+    max-width: 100%;
+  }
+  .fa-chip-overflow[data-nowrap] > .fa-btn {
+    flex: none;
+  }
+  .fa-chip-overflow-item {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    min-width: 0;
+    border-radius: var(--radius-badge);
+  }
+  /* A chip's own max-width (Badge, EntityIdentity) now reads this box; plain text truncates here. */
+  .fa-chip-overflow-item > * {
+    min-width: 0;
+    max-width: 100%;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .fa-chip-overflow-list {
     display: flex;
     flex-direction: column;

@@ -1240,6 +1240,10 @@
     margin: 0;
     font-size: var(--type-label-size);
   }
+  /* A value that can give way, such as a one-line ChipOverflow, does so before the short label. */
+  .fa-dt-card-value:has([data-nowrap]) {
+    flex-shrink: 1000;
+  }
   /* Placeholder values have no content width of their own. */
   .fa-dt-skel-card .fa-dt-card-value {
     inline-size: calc(var(--space-4) * 4);

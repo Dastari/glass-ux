@@ -153,6 +153,12 @@ function ToolbarRoot({ "aria-label": label, size = "sm", orientation = "horizont
       toolsOf.set(unit, tools)
       const groupStyle = getComputedStyle(node)
       groupGap = parseFloat(vertical ? groupStyle.rowGap : groupStyle.columnGap) || 0
+      // The group's size as if every tool showed, whichever are folded now, so folding can be worked out afresh.
+      if (!node.parentElement!.hidden) {
+        const rect = node.parentElement!.getBoundingClientRect()
+        const folded = tools.filter((tool) => node.querySelector<HTMLElement>(`:scope > [data-group-item="${CSS.escape(tool.key.slice(unit.length + 1))}"]`)?.hidden)
+        widths.current.set(unit, (vertical ? rect.height : rect.width) + folded.reduce((sum, tool) => sum + (widths.current.get(tool.key) ?? 0) + groupGap, 0))
+      }
     }
     if (!overflow) return setFolded((prev) => (prev.size ? new Set() : prev))
     const style = getComputedStyle(box)

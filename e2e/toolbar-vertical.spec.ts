@@ -131,10 +131,11 @@ test("a single-choice group folds one tool at a time, and the chosen tool stays 
   await more.click();
   await expect(page.getByRole("menu").getByRole("menuitemradio", { name: "Text" })).toHaveCount(0);
   await page.keyboard.press("Escape");
-  await more.focus();
-  await page.keyboard.press("ArrowUp");
-  // Arrow keys pass over a folded tool.
-  await expect(bar.locator(":focus")).toBeVisible();
+  await expect(page.getByRole("menu")).toHaveCount(0);
+  // Arrow keys pass over folded tools to the next one showing.
+  await bar.getByRole("radio", { name: "Move" }).focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(text).toBeFocused();
 });
 
 test("the row version opens its flyout with Arrow Down", async ({ page }) => {

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react"
 /**
  * Series identity. A series wears a categorical slot (--chart-1 … --chart-8) assigned in
  * order and kept when others hide (colour follows the entity, never its rank), or a status
@@ -9,8 +10,8 @@ export type ChartTone = "success" | "warning" | "danger" | "info" | "neutral"
 export const SLOT_COUNT = 8
 
 /** CSS hooks for a series' colour: a categorical slot (1–8) or a status tone. */
-export function seriesAttrs(slot: number | undefined, tone?: string) {
-  return { "data-slot": tone ? undefined : String(slot ?? 1), "data-tone": tone }
+export function seriesAttrs(slot: number | undefined, tone?: string, color?: string) {
+  return { "data-slot": tone ? undefined : String(slot ?? 1), "data-tone": tone, ...(color ? { style: { "--_c": color } as CSSProperties } : null) }
 }
 
 /** The slot for the series at `index`, unless it pins its own. Never cycles past 8. */

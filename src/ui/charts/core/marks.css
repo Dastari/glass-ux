@@ -139,6 +139,17 @@
       opacity var(--duration-fast) var(--ease-standard);
     animation: fa-grow var(--duration-slower) var(--ease-enter) var(--_enter-delay) backwards;
   }
+  /* Overlaid columns: see-through to compare shapes, or adding light under screen. Isolated, so
+     they mix with each other and not with whatever is behind the chart. */
+  .fa-chart-bars[data-overlay] {
+    isolation: isolate;
+  }
+  .fa-chart-bars[data-overlay="normal"] > .fa-chart-bar {
+    fill-opacity: 0.6;
+  }
+  .fa-chart-bars[data-overlay="screen"] > .fa-chart-bar {
+    mix-blend-mode: screen;
+  }
   .fa-chart-bar[data-end="right"] {
     --_grow-from: scaleX(0);
     transform-origin: 0 50%;

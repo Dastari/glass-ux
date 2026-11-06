@@ -29,6 +29,11 @@ export interface BarSeries {
   slot?: number
   /** Status tone, only when the series means that state (offline, failed). */
   tone?: ChartTone
+  /**
+   * A colour the series itself means, such as an image's red, green and blue channels, in place of
+   * its slot's. Bars only; give it enough contrast with the surface, which a slot's colour already has.
+   */
+  color?: string
   /** `bar` (the default) or `line`, drawn over the same categories. Vertical columns only: horizontal bars draw every series as a bar. */
   mark?: "bar" | "line"
   /** The value axis the series reads. `secondary` takes effect with `secondaryAxis`, on vertical columns; otherwise the series reads the primary axis. */
@@ -42,8 +47,13 @@ export interface BarChartProps extends ChartCommonProps, ValueFormat {
   series: readonly BarSeries[]
   /** `vertical` columns (time and ordered categories) or `horizontal` bars (ranked lists). */
   orientation?: "vertical" | "horizontal"
-  /** Several series side by side, or stacked as parts of a total. */
-  layout?: "grouped" | "stacked"
+  /**
+   * Several series side by side, stacked as parts of a total, or `overlay`: at one place in each
+   * band, see-through, to compare their shapes. Overlay is for vertical columns; horizontal bars group.
+   */
+  layout?: "grouped" | "stacked" | "overlay"
+  /** How overlaid columns mix where they cross: `normal` (default), or `screen`, which adds light, so red and green read yellow. */
+  blend?: "normal" | "screen"
   /** Fixed value range; defaults to zero → the data, rounded to nice ticks. */
   domain?: Domain
   /** Values at the bar tips. Defaults on for horizontal bars (ranked lists), off for columns. */
@@ -155,6 +165,7 @@ export function BarChart(props: BarChartProps) {
     series,
     orientation = "vertical",
     layout = "grouped",
+    blend = "normal",
     domain,
     labels,
     unit,
@@ -180,6 +191,7 @@ export function BarChart(props: BarChartProps) {
   const secondaryFmt: LocalizedFormat = useMemo(() => ({ unit: secondaryUnit, format: secondaryFormat, locale }), [secondaryUnit, secondaryFormat, locale])
   const stacked = layout === "stacked"
   const horizontal = orientation === "horizontal"
+  const overlaid = layout === "overlay" && !horizontal
   // Lines and a second axis sit on vertical columns: horizontal bars draw every series as a bar.
   const drawn = useMemo(() => (horizontal ? series.map((item) => (item.mark === "line" ? { ...item, mark: "bar" as const } : item)) : series), [series, horizontal])
   const dual = !horizontal && secondaryAxis !== undefined && drawn.some((item) => item.axis === "secondary")
@@ -259,6 +271,7 @@ export function BarChart(props: BarChartProps) {
     label: item.label,
     slot: prepared.slots.get(item.key),
     tone: item.tone,
+    color: item.mark === "line" ? undefined : item.color,
     shape: item.mark === "line" ? "line" : "box",
     detail: dual ? (onSecondary(item) ? messages.rightAxis : messages.leftAxis) : undefined,
   }))
@@ -306,6 +319,8 @@ export function BarChart(props: BarChartProps) {
           store={store}
           categories={categories}
           stacked={stacked}
+          overlaid={overlaid}
+          blend={blend}
           horizontal={horizontal}
           labels={labels ?? horizontal}
           fmt={fmt}
@@ -374,6 +389,8 @@ interface BarPlotProps {
   store: HoverStore
   categories: readonly string[]
   stacked: boolean
+  overlaid: boolean
+  blend: "normal" | "screen"
   horizontal: boolean
   /** Display and accessibility labels supplied by the application. */
   labels: boolean
@@ -406,7 +423,7 @@ interface Mark {
 
 const GAP = 2
 
-const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, categories, stacked, horizontal, labels, fmt, label, edges, formatEdge, thresholds, bands, valueLabel, secondaryAxis, secondaryFmt, onActivate }: BarPlotProps) {
+const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, categories, stacked, overlaid, blend, horizontal, labels, fmt, label, edges, formatEdge, thresholds, bands, valueLabel, secondaryAxis, secondaryFmt, onActivate }: BarPlotProps) {
   const messages = useMessages(barMessages)
 
   const id = useId()
@@ -485,7 +502,7 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
     const band = (x1 - x0) / Math.max(1, n)
     // One slot in a category per bar, or per axis when stacked: stacks of unlike measures stand side by side.
     const groups = stacked ? [primary.bars, secondary?.bars ?? []].filter((group) => group.length > 0) : bars.map((item) => [item])
-    const slotsPerBand = Math.max(1, groups.length)
+    const slotsPerBand = overlaid ? 1 : Math.max(1, groups.length)
     // Dense bins share the gap with their columns, so a column never loses its width to it.
     const groupW = histogram ? band - Math.min(GAP, band / 2) : Math.min(band * (micro ? 0.7 : slotsPerBand === 1 ? 0.62 : 0.8), slotsPerBand * barMax + (slotsPerBand - 1) * GAP)
     const barW = histogram ? groupW : (groupW - (slotsPerBand - 1) * GAP) / slotsPerBand
@@ -498,7 +515,7 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
           const value = Math.max(0, item.data[index] ?? 0)
           const top = py(base + value)
           const bottom = py(base) - (stacked && s > 0 ? GAP : 0)
-          const x = histogram ? left : left + g * (barW + GAP)
+          const x = histogram || overlaid ? left : left + g * (barW + GAP)
           const last = !stacked || s === group.length - 1
           out.push({ key: `${item.key}-${index}`, series: item.key, index, tip: top, slot: slots.get(item.key) ?? 1, tone: item.tone, d: barPath(x, top, barW, Math.max(0, bottom - top), last ? (histogram ? radius * 0.5 : radius) : 0, "top"), end: "top" })
           if (stacked) base += value
@@ -507,7 +524,7 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
     }
     return out
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- scaleFor follows geo and secondary
-  }, [geo, domain, visible, slots, stacked, k, rem, radius, width, height, n, histogram, micro, barMax, primary.bars, secondary, bars])
+  }, [geo, domain, visible, slots, stacked, overlaid, k, rem, radius, width, height, n, histogram, micro, barMax, primary.bars, secondary, bars])
 
   const lines = useMemo<ComboLine[]>(() => {
     if (geo.kind !== "columns") return []
@@ -567,7 +584,7 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
       <svg className="fa-chart-svg" width={width} height={height} aria-hidden>
         <defs>
           {bars.map((item) => (
-            <linearGradient key={item.key} id={`${id}-sheen-${item.key}`} x1="0" y1="0" x2="0" y2="1" {...seriesAttrs(slots.get(item.key), item.tone)}>
+            <linearGradient key={item.key} id={`${id}-sheen-${item.key}`} x1="0" y1="0" x2="0" y2="1" {...seriesAttrs(slots.get(item.key), item.tone, item.color)}>
               <stop offset="0" className="fa-chart-sheen-top" />
               <stop offset="0.45" className="fa-chart-sheen-bottom" />
             </linearGradient>
@@ -587,21 +604,23 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
           </>
         ) : null}
         {reference ? <ReferenceMarks geometry={reference} thresholds={thresholds ?? []} bands={reference.shaded} shade={full} /> : null}
-        {marks.map((mark) => (
-          <path
-            key={mark.key}
-            className="fa-chart-bar"
-            data-end={mark.end}
-            {...seriesAttrs(mark.slot, mark.tone)}
-            d={mark.d} style={
-              {
-                d: cssPath(mark.d),
-                fill: `url(#${id}-sheen-${mark.series})`,
-                "--_enter-delay": `calc(var(--duration-instant) * ${Math.min(mark.index, 12) * 0.25})`,
-              } as CSSProperties
-            }
-          />
-        ))}
+        <g className="fa-chart-bars" data-overlay={overlaid ? blend : undefined}>
+          {marks.map((mark) => (
+            <path
+              key={mark.key}
+              className="fa-chart-bar"
+              data-end={mark.end}
+              {...seriesAttrs(mark.slot, mark.tone)}
+              d={mark.d} style={
+                {
+                  d: cssPath(mark.d),
+                  fill: `url(#${id}-sheen-${mark.series})`,
+                  "--_enter-delay": `calc(var(--duration-instant) * ${Math.min(mark.index, 12) * 0.25})`,
+                } as CSSProperties
+              }
+            />
+          ))}
+        </g>
         <ComboLines lines={lines} rem={rem} />
       </svg>
 
@@ -690,6 +709,7 @@ const BarPlot = /* @__PURE__ */ memo(function BarPlot({ box, prepared, store, ca
                 value: formatValue(item.data[hover.index], fmtFor(item)),
                 slot: slots.get(item.key),
                 tone: item.tone,
+                color: item.mark === "line" ? undefined : item.color,
                 shape: item.mark === "line" ? "line" : "box",
                 detail: secondary ? (item.axis === "secondary" ? messages.rightAxis : messages.leftAxis) : visible.length === 1 && item.mark !== "line" && sum > 0 ? formatShare(item.data[hover.index] ?? 0, sum, fmt.locale) : undefined,
               })

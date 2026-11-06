@@ -13,6 +13,8 @@ export interface LegendItem {
   label: string
   /** Categorical slot 1–8. */
   slot?: number
+  /** A colour the series means, in place of its slot's. */
+  color?: string
   /** Status tone, only when the series means that state. */
   tone?: string
   /** The swatch mirrors the mark: a line key for lines, a box for bars and areas. */
@@ -42,16 +44,18 @@ function getLOCK_REASON(messages: typeof chartCoreMessages.defaults) { return me
 
 
 /** The swatch alone: identity is a coloured mark beside text, never coloured text. */
-export function Swatch({ slot, tone, shape = "box", hidden = false }: {
+export function Swatch({ slot, tone, color, shape = "box", hidden = false }: {
   /** Categorical slot 1–8; defaults to 1. Ignored when `tone` is set. */
   slot?: number
+  /** A colour the series means, in place of its slot's. */
+  color?: string
   tone?: string
   /** Mark shape to mirror; defaults to "box". */
   shape?: SwatchShape
   /** Shows the swatch as switched off (its series is hidden); defaults to false. */
   hidden?: boolean
 }) {
-  return <span className="fa-chart-swatch" data-shape={shape} data-off={hidden ? "" : undefined} {...seriesAttrs(slot, tone)} aria-hidden />
+  return <span className="fa-chart-swatch" data-shape={shape} data-off={hidden ? "" : undefined} {...seriesAttrs(slot, tone, color)} aria-hidden />
 }
 
 /**
@@ -104,7 +108,7 @@ export function ChartLegend({ items, hidden, onToggle, layout = "row", active, o
             onPointerEnter={onActive ? () => onActive(item.key) : undefined}
             onPointerLeave={onActive ? () => onActive(null) : undefined}
           >
-            <Swatch slot={item.slot} tone={item.tone} shape={item.shape} />
+            <Swatch slot={item.slot} tone={item.tone} color={item.color} shape={item.shape} />
             <span className="fa-chart-legend-label" title={item.label}>
               {item.label}
             </span>
@@ -144,7 +148,7 @@ export function ChartLegend({ items, hidden, onToggle, layout = "row", active, o
               onPointerEnter={onActive ? () => onActive(item.key) : undefined}
               onPointerLeave={onActive ? () => onActive(null) : undefined}
             >
-              <Swatch slot={item.slot} tone={item.tone} shape={item.shape} hidden={off} />
+              <Swatch slot={item.slot} tone={item.tone} color={item.color} shape={item.shape} hidden={off} />
               <span className="fa-chart-legend-label">{item.label}</span>
               {item.value ? <span className="fa-chart-legend-value">{item.value}</span> : null}
               {item.detail ? <span className="fa-chart-legend-detail">{item.detail}</span> : null}

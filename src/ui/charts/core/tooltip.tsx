@@ -12,6 +12,8 @@ export interface TooltipRow {
   value: string
   /** Named content slot. */
   slot?: number
+  /** A colour the series means, in place of its slot's. */
+  color?: string
   tone?: string
   /** Named shape of the control or marker. */
   shape?: SwatchShape
@@ -105,7 +107,7 @@ export function TooltipBody({ title, meta, rows, footer }: {
       <ul className="fa-chart-tip-rows">
         {rows.map((row) => (
           <li key={row.key} className="fa-chart-tip-row" data-active={row.active ? "" : undefined}>
-            <span className="fa-chart-key" data-shape={row.shape ?? "line"} {...seriesAttrs(row.slot, row.tone)} />
+            <span className="fa-chart-key" data-shape={row.shape ?? "line"} {...seriesAttrs(row.slot, row.tone, row.color)} />
             <span className="fa-chart-tip-value">{row.value}</span>
             <span className="fa-chart-tip-label">{row.label}</span>
             {row.detail ? <span className="fa-chart-tip-detail">{row.detail}</span> : null}

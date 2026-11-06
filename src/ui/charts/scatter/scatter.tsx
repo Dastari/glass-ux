@@ -299,8 +299,39 @@ export interface HistogramBinnedProps extends HistogramBaseProps {
   domain?: undefined
 }
 
-/** `values` to bin here, or precomputed `bins`. */
-export type HistogramProps = HistogramValuesProps | HistogramBinnedProps
+/** One distribution among several: raw `values` to bin here, or precomputed `bins`. */
+export interface HistogramSeries {
+  /** Stable identifier. */
+  key: string
+  /** Its name in the legend, tooltip and table: "Red channel". */
+  label: string
+  /** The raw values. */
+  values?: readonly number[]
+  /** Or bins the host counted, over the same edges as the other series. A value without a bin counts 0. */
+  bins?: readonly HistogramBin[]
+  /** A colour the series means, such as a channel's, in place of its slot's. */
+  color?: string
+  /** Status tone, only when the series means that state. */
+  tone?: ChartTone
+  /** Named content slot. */
+  slot?: number
+}
+
+/** Several distributions drawn over each other, on one set of edges and one axis. */
+export interface HistogramSeriesProps extends HistogramBaseProps {
+  /** The distributions, each with its own colour and name. */
+  series: readonly HistogramSeries[]
+  /** About how many bins for series with raw `values`; series with `bins` set the edges instead. */
+  bins?: number
+  /** The x range to bin raw values over; defaults to the extent of them all. */
+  domain?: Domain
+  /** How columns mix where they cross: `normal` (default, see-through), or `screen`, which adds light, so red and green read yellow. */
+  blend?: "normal" | "screen"
+  values?: undefined
+}
+
+/** `values` to bin here, precomputed `bins`, or several distributions as `series`. */
+export type HistogramProps = HistogramValuesProps | HistogramBinnedProps | HistogramSeriesProps
 
 /** Edges and counts for the columns, from raw values or precomputed bins. */
 export function histogramColumns(values: readonly number[] | undefined, bins: number | readonly HistogramBin[] | undefined, domain: Domain | undefined) {
@@ -319,25 +350,60 @@ export function histogramColumns(values: readonly number[] | undefined, bins: nu
 }
 
 /**
+ * One set of edges for several distributions, and each one's counts on them. The first series
+ * with `bins` sets the edges; otherwise they come from the extent of all the raw values.
+ */
+export function histogramSeriesColumns(series: readonly HistogramSeries[], bins: number | undefined, domain: Domain | undefined) {
+  const counted = series.find((item) => item.bins)?.bins
+  const everyValue = series.flatMap((item) => item.values ?? [])
+  const { edges } = counted ? histogramColumns(undefined, counted, undefined) : histogramColumns(everyValue, bins, domain)
+  const counts = series.map((item) => {
+    if (item.bins) {
+      const byEdge = new Map(item.bins.map((bin) => [bin.from, bin.count]))
+      return edges.slice(0, -1).map((edge) => byEdge.get(edge) ?? 0)
+    }
+    const generator = d3bin<number, number>()
+      .domain([edges[0] ?? 0, edges.at(-1) ?? 1])
+      .thresholds(edges.slice(1, -1))
+    return generator([...(item.values ?? [])]).map((bin) => bin.length)
+  })
+  return { edges, counts }
+}
+
+/**
  * How values spread — check-in latency across the fleet. Pass raw `values` to bin here, or
  * precomputed `bins` when the host has already counted them. Columns touch (the 2px surface
  * gap between them), the axis labels the bin edges, and the tooltip names the bin's range and
- * count. Tiers are the column chart's.
+ * count. Tiers are the column chart's. Pass `series` to draw several distributions over each
+ * other on one set of edges and one axis, such as an image's colour channels.
  */
 export function Histogram(props: HistogramProps) {
   const messages = useMessages(scatterMessages)
 
-  const { values, bins, domain, countLabel: countLabelProp, unit, format, ...rest } = props
+  const { values, bins, domain, countLabel: countLabelProp, unit, format, series: distributions, blend, ...rest } = props as HistogramValuesProps & Partial<Omit<HistogramSeriesProps, "values" | "bins">>
   const countLabel = countLabelProp ?? messages.count
 
   const locale = useLocale(props.locale)
-  const binned = useMemo(() => histogramColumns(values, bins, domain), [values, bins, domain])
+  const binned = useMemo(() => {
+    if (!distributions) {
+      const one = histogramColumns(values, bins, domain)
+      return { edges: one.edges, counts: [one.counts] }
+    }
+    return histogramSeriesColumns(distributions, typeof bins === "number" ? bins : undefined, domain)
+  }, [distributions, values, bins, domain])
   const formatEdge = (value: number) => formatValue(value, { unit, format, locale })
   return (
     <BarChart
       {...rest}
-      categories={binned.counts.map((_, index) => `${formatEdge(binned.edges[index] ?? 0)}–${formatEdge(binned.edges[index + 1] ?? 0)}`)}
-      series={[{ key: "count", label: countLabel, data: binned.counts }]}
+      categories={(binned.counts[0] ?? []).map((_, index) => `${formatEdge(binned.edges[index] ?? 0)}–${formatEdge(binned.edges[index + 1] ?? 0)}`)}
+      series={
+        distributions
+          ? distributions.map((item, index) => ({ key: item.key, label: item.label, color: item.color, tone: item.tone, slot: item.slot, data: binned.counts[index] ?? [] }))
+          : [{ key: "count", label: countLabel, data: binned.counts[0] ?? [] }]
+      }
+      layout={distributions ? "overlay" : undefined}
+      blend={blend}
+      valueLabel={distributions ? countLabel : undefined}
       edges={binned.edges}
       formatEdge={formatEdge}
       categoryLabel={messages.range}

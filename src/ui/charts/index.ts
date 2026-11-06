@@ -38,7 +38,7 @@ export { BarChart, ColumnChart, ComboChart, type BarChartProps, type BarSeries, 
 export { DonutChart, PieChart, type PieChartProps, type PieSlice } from "./pie/pie-chart.js"
 export { Gauge, RadialBar, type GaugeProps, type RadialBarItem, type RadialBarProps } from "./gauge/gauge.js"
 export { Heatmap, type HeatmapProps } from "./heatmap/heatmap.js"
-export { Histogram, ScatterChart, type HistogramBin, type HistogramBinnedProps, type HistogramProps, type HistogramValuesProps, type ScatterAxis, type ScatterChartProps, type ScatterPoint, type ScatterSeries } from "./scatter/scatter.js"
+export { Histogram, ScatterChart, type HistogramBin, type HistogramBinnedProps, type HistogramProps, type HistogramSeries, type HistogramSeriesProps, type HistogramValuesProps, type ScatterAxis, type ScatterChartProps, type ScatterPoint, type ScatterSeries } from "./scatter/scatter.js"
 export { Treemap, type TreemapProps } from "./treemap/treemap.js"
 export { Sunburst, type SunburstProps } from "./sunburst/sunburst.js"
 export { FunnelChart, type FunnelChartProps, type FunnelStage } from "./funnel/funnel-chart.js"

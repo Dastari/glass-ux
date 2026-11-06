@@ -969,7 +969,8 @@
   /* Blurred descendants made every scroller a compositor layer. Without them Chromium re-rasters
      a translucent scroller's content on each scroll frame at standard pixel density, so it is
      promoted. Its text is greyscale, as it is under a live blur. */
-  :root[data-glass-rendering="none"] [data-scroll-container] {
+  :root[data-glass-rendering="none"] [data-scroll-container],
+  :root[data-glass-rendering="none"] .fa-panel[data-scroll] > .fa-panel-body {
     will-change: scroll-position;
   }
   /* Over imagery the frosted fills become the opaque ones. */

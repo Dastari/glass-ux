@@ -115,6 +115,15 @@ test("a scroller is promoted without blur and left alone with it", async ({ page
   expect(await willChange()).toBe("auto");
   await setRendering(page, "none");
   expect(await willChange()).toBe("scroll-position");
+  const body = await page.evaluate(() => {
+    const panel = document.createElement("section");
+    panel.className = "glass-panel fa-panel";
+    panel.dataset.scroll = "";
+    panel.innerHTML = '<div class="fa-panel-body"></div>';
+    document.body.append(panel);
+    return getComputedStyle(panel.firstElementChild!).willChange;
+  });
+  expect(body).toBe("scroll-position");
 });
 
 test("a surface takes its own level, never more transparent than the page's", async ({ page }) => {

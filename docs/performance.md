@@ -69,16 +69,18 @@ transfer and parse; rendering of the components in use is unchanged.
 A live backdrop blur costs most when the layer or its backdrop moves. A blurred panel that
 scrolls is blurred again every frame, and so is a blurred panel holding content that scrolls,
 because any repaint inside a blurred layer redraws its blur. The cost is the blur, not the
-translucency. Scrolling a view of 80 panels (Chromium headless, software compositing, 1920×1080;
-compare the rows, not the absolute times):
+translucency. Scrolling 80 panels (Chromium headless, software compositing, 1920×1080; compare the rows, not
+the absolute times):
 
 | Rendering | Draw time per frame | Frames per second |
 | --- | --- | --- |
-| Live blur, Glass | 34 ms | 26 |
-| Live blur, Frosted | 33 ms | 28 |
-| No blur, translucent fills | 9 ms | 57 |
-| Solid | 5 ms | 56 |
-| `glass-card` tiles, live blur on the shell only | 10 ms | 54 |
+| Live blur, 80 panels | 19 ms | 47 |
+| Live blur, one panel with a scrolling body | 23 ms | 41 |
+| `glassRendering: "none"`, 80 panels | 4 ms | 59 |
+| `glassRendering: "none"`, one panel with a scrolling body | 3 ms | 59 |
+| Solid, 80 panels | 2 ms | 58 |
+
+Frosted costs about the same as Glass, because it runs the same blur pass at a smaller radius.
 
 So, for smoother scrolling, in this order:
 
@@ -86,8 +88,9 @@ So, for smoother scrolling, in this order:
 - Set `configureAppearance({ glassRendering: "none" })` for the whole application. It removes every
   backdrop filter, and Glass takes Frosted's fills. A lower blur radius alone barely helps.
 
-Without blur, each `[data-scroll-container]` is promoted (`will-change: scroll-position`). Without
-that, Chromium re-rasters a translucent scroller's content on each scroll frame at standard pixel
+Without blur, each `[data-scroll-container]` and scrolling `PanelBody` is promoted
+(`will-change: scroll-position`). Mark your own scrollers with `data-scroll-container` to get the
+same. Otherwise Chromium re-rasters a translucent scroller's content on each scroll frame at standard pixel
 density: in the same fixture, a plain scroller of cards ran at 21 frames per second, and 48
 promoted. Its text is greyscale, as it is under a live blur. Above about 1.5× pixel density
 Chromium promotes scrollers anyway.

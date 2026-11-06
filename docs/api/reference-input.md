@@ -17,6 +17,7 @@ Read-only (or `direction="from"` for backlinks) it lists the chips in a recessed
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+| addLabel | `string \| undefined` | See type | no | — | The add button's label: "Tag…" on a tags field. Default: the `referenceInput.link` message ("Link…"). |
 | aria-label | `string \| undefined` | See type | no | — | Accessible name when a visible label does not name the control. |
 | aria-labelledby | `string \| undefined` | See type | no | — | IDs of elements that provide the accessible name. |
 | className | `string \| undefined` | See type | no | — | Layout only. Applied to the control box. |
@@ -29,7 +30,7 @@ Read-only (or `direction="from"` for backlinks) it lists the chips in a recessed
 | emptyText | `string \| undefined` | See type | no | — | What a read-only input with no links says. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Marks the control invalid. Pair it with an accessible validation message. |
-| kindFilter | `boolean \| undefined` | false, true | no | — | Show the kind filter chips in the popup (default when there is more than one kind). |
+| kindFilter | `boolean \| undefined` | false, true | no | — | Show the kind filter chips in the popup, in one row that scrolls (default when there is more than one kind). |
 | kinds | `readonly ReferenceKind[]` | See type | yes | — | The kinds that can be linked, in the order results group by. |
 | max | `number \| undefined` | See type | no | — | Most links allowed. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |

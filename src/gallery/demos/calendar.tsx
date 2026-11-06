@@ -110,7 +110,7 @@ export default function DatePickerSection() {
       <Specimen
         title="Calendar and times"
         description="The date-and-time popup: the calendar beside the times, which wrap below it in a narrow popup. Picking a time closes it."
-        specimenKey="date-picker:default:4"
+        specimenKey="date-picker:default:5"
       >
         <DateTimePickerPreview />
       </Specimen>

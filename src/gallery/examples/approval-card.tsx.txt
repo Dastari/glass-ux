@@ -131,6 +131,22 @@ export default function AiApprovalsSection() {
         </Specimen>
 
         <Specimen
+          title="Disabled"
+          description="The request stays readable and its expiry keeps counting, but it cannot be decided here. A stated reason shows in the card and on the disabled buttons."
+          layout="stack"
+        >
+          <ApprovalCard
+            ask={{
+              ...APPROVAL("pending"),
+              id: "disabled-reason",
+              disabledReason:
+                "The command preview could not be loaded. Reload the conversation to decide.",
+            }}
+          />
+          <ApprovalCard ask={{ ...APPROVAL_DANGER, id: "disabled-plain", disabled: true }} />
+        </Specimen>
+
+        <Specimen
           title="Docked width"
           description="The same card at 26rem: the switch row drops below its text, the command wraps."
           layout="bare"

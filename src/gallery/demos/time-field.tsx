@@ -59,7 +59,7 @@ export default function DatePickerSection() {
         title="Times"
         description="Type 930, 9:30pm, 21:30 or noon; the time is written in the locale's clock when you leave (9:30 am in en-AU). Arrow keys step the part under the caret, minutes by the step; Page Up and Page Down move an hour; Home and End go to the bounds. The list opens from its button or Alt+↓, at the chosen or nearest time."
         layout="stack"
-        specimenKey="date-picker:default:2"
+        specimenKey="date-picker:default:3"
       >
         <TimesDemo />
       </Specimen>

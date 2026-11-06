@@ -9,7 +9,13 @@ import {
 } from "react";
 import { DemoScope } from "glass-ux/gallery/demo-scope";
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { IconOperatingSystem, IconRefresh, IconSoftware, IconWindows } from "glass-ux/icons";
+import {
+  IconOperatingSystem,
+  IconRefresh,
+  IconServer,
+  IconSoftware,
+  IconWindows,
+} from "glass-ux/icons";
 import { Badge } from "glass-ux/badge";
 import { Button, ButtonGroup } from "glass-ux/button";
 import {
@@ -380,6 +386,7 @@ function EndpointsDemo() {
           }
           onRetry={() => setSimulate("data")}
           emptyMessage="No endpoints enrolled"
+          emptyIcon={<IconServer />}
           actions={rowActions}
           onRowOpen={(endpoint) => setOpened(endpoint.name)}
           rowOpen={rowOpen}

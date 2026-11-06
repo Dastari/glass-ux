@@ -74,7 +74,7 @@ export default function DatePickerSection() {
         title="Date and time"
         description="One label and one message line for both parts. The value is a wall clock (2026-10-21T21:00); with a time zone the box shows its abbreviation on that day and the hint names the zone. A time the clocks skip reads forward and is explained; a repeated time reads as the first."
         layout="stack"
-        specimenKey="date-picker:default:3"
+        specimenKey="date-picker:default:4"
       >
         <DateTimesDemo />
       </Specimen>

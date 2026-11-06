@@ -319,9 +319,27 @@ export default function EntityIdentitySection() {
       </Specimen>
 
       <Specimen
+        title="Removable chip"
+        description="A removable chip keeps its link, actions and preview, with ✕ as one extra control that opens nothing."
+        layout="stack"
+        specimenKey="entity-identity:default:5"
+      >
+        <span data-testid="entity-removable">
+          <EntityIdentity
+            {...entity(PERSON)}
+            tier="chip"
+            icon={<IconUser />}
+            size="sm"
+            href="#sample-person"
+            onRemove={() => {}}
+          />
+        </span>
+      </Specimen>
+
+      <Specimen
         title="Chip preview"
         description="Hovering or focusing a chip opens this card after 400 ms: the compact tier and the top two actions. It adds nothing the page, the menu or the palette cannot reach."
-        specimenKey="entity-identity:default:5"
+        specimenKey="entity-identity:default:6"
       >
         <EntityIdentity.PreviewCard {...ORG_PROPS} />
       </Specimen>
@@ -329,7 +347,7 @@ export default function EntityIdentitySection() {
       <Specimen
         title="Loading"
         description="Each tier's skeleton takes the loaded tier's boxes, so content arrives without moving anything."
-        specimenKey="entity-identity:default:6"
+        specimenKey="entity-identity:default:7"
       >
         {(["compact", "row", "chip", "icon"] as const).map((tier) => (
           <Example key={tier} label={tier}>
@@ -357,7 +375,7 @@ export default function EntityIdentitySection() {
         title="Over imagery"
         description="Chips, rows and icons hold their contrast over screenshots and media."
         backdrop
-        specimenKey="entity-identity:default:7"
+        specimenKey="entity-identity:default:8"
       >
         <Tiers props={ORG_PROPS} />
       </Specimen>
@@ -365,7 +383,7 @@ export default function EntityIdentitySection() {
       <ContainerLab
         title="Entity identity in the container lab"
         description="tier=auto fill: the box picks the tier on both axes. Rows under 2.75rem keep the name only; the icon shrinks to a small box."
-        specimenKey="entity-identity:default:8"
+        specimenKey="entity-identity:default:9"
       >
         {() => <EntityIdentity {...ORG_PROPS} tier="auto" fill heading="h4" />}
       </ContainerLab>

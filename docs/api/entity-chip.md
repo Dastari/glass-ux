@@ -15,7 +15,7 @@ opens the entity's actions — the same definition as its own page (R12).
 | --- | --- | --- | --- | --- | --- |
 | entity | `EntityRef` | See type | yes | — | Entity reference supplied by the host. |
 | glyph | `boolean \| undefined` | false, true | no | true | Draw the entity glyph (off when a tile beside it already shows it). |
-| onRemove | `(() => void) \| undefined` | See type | no | — | Render a removable, non-navigating chip (composer context, picked entities). |
+| onRemove | `(() => void) \| undefined` | See type | no | — | Adds a ✕ that removes the chip (composer context, picked entities). It keeps its link, actions and preview; the ✕ opens none of them. |
 | preview | `boolean \| undefined` | false, true | no | true | Show the preview card on hover and focus (default for links). |
 | size | `EntityChipSize \| undefined` | "sm", "inline" | no | "inline" | inline: inside prose (20px, sits in the line box) · sm: rows, composer, cards (24px). |
 | variant | `"plain" \| "chip" \| undefined` | "plain", "chip" | no | "chip" | chip: a soft pill (prose, composer) · plain: glyph and name only (table cells, lists). |

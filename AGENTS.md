@@ -157,6 +157,17 @@ decides when to publish. The local route:
   optimisation pass after that release; `dist/ui` and the language packs are the largest parts.
 - Native-speaker review: "chroma" in the Arabic and Hebrew colour picker messages, and
   "preview class" in Japanese, Korean, Arabic and Hebrew (`results.previewUnavailable`).
+- Native-speaker review of the 0.17.0 messages: `shell.closePane`, `activityFeed.newPrefix`,
+  `datePicker.enterADate*`, `markdown.regionNumber`, `markdown.footnotes`,
+  `markdown.backToReference` and `richTextReader.document`.
+- `glassRendering: "none"` promotes scrollers only when they carry `data-scroll-container` or are a
+  scrolling `PanelBody`; Solid does not promote, so a translucent or plain scroller in Solid still
+  re-rasters per scroll frame at 1× (docs/performance.md). Promoting there costs subpixel text.
+- RichTextInput task lists still report axe `aria-allowed-role` (minor): Lexical sets
+  `role="checkbox"` on the `li`. `e2e/reference-kinds.spec.ts` disables `scrollable-region-focusable`
+  because focus stays in the combobox input while keys scroll the popup's regions.
+- Base UI hides the rest of the page from assistive technology while any combobox popup is open
+  (`focusManagerModal`), and offers no prop for it. Autocomplete only avoids it with nothing to show.
 - Next.js support is verified with webpack (`pnpm test:next`), not Turbopack; forced colours
   only with Chromium's emulation, not Windows High Contrast itself.
 
@@ -167,8 +178,8 @@ decides when to publish. The local route:
   React running a ref's cleanup while its slot is still in the document, so a React upgrade that
   changes that order breaks it.
 - The keymap dispatcher listens on the main document only, so a popped-out window gets no keymap.
-- `src/ui/comment-thread/comment-row.tsx` lazily imports `src/ai/markdown`, the only import from
-  `ai` under `src/ui`. Moving it is not small: Markdown imports CodeBlock, EntityChip,
+- `src/ui/comment-thread/comment-row.tsx` and `src/ui/rich-text-reader/rich-text-reader.tsx` lazily
+  import `src/ai/markdown`, the only imports from `ai` under `src/ui`. Moving it is not small: Markdown imports CodeBlock, EntityChip,
   CitationMarker, TableScroll and `entities` from `ai`, so it needs those injected first.
 - WebKit triage (WPE build 2368, not Safari; `.handoff/webkit-triage.md` has the table). Fixed:
   charts drew nothing (Safari has no CSS `d`; marks now carry the `d` attribute too), the context

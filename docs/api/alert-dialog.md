@@ -12,12 +12,13 @@ cancels; outside presses do nothing. While the action runs, it cannot be dismiss
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | cancelLabel | `string \| undefined` | See type | no | — | Visible label for cancelling or dismissing the request. |
+| children | `ReactNode` | See type | no | — | Below the description: a field the confirmation depends on, such as a name to type. |
 | confirmLabel | `string` | See type | yes | — | A verb naming the outcome: "Remove device". |
 | defaultOpen | `boolean \| undefined` | false, true | no | false | Opens the uncontrolled overlay initially. |
 | description | `ReactNode` | See type | no | — | One factual sentence: what happens, and whether it can be undone. |
 | failureTitle | `string \| undefined` | See type | no | — | Title of the failure toast. Default: "<confirmLabel> failed". |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
-| onConfirm | `() => unknown` | See type | yes | — | Runs in place: the confirm button shows pending, then ✓ and the dialog closes. If it throws, the button shakes ✕, the dialog stays open and the reason goes to a toast. |
+| onConfirm | `() => unknown` | See type | yes | — | Runs in place: the confirm button shows pending, then ✓ and the dialog closes. If it throws, the button shakes ✕, the dialog stays open and the reason goes to a toast. If it returns or resolves to exactly `false`, the confirmation was refused: the dialog stays open at rest with no toast, no shake and no ✓, so a field in `children` can show why. |
 | onOpenChange | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the next open state when the trigger opens it, Cancel or Esc dismisses it, or it closes after `onConfirm` succeeds. Not called for dismissals while the action runs. Pair with `open` to control it. |
 | onOpenChangeComplete | `((open: boolean) => void) \| undefined` | See type | no | — | Called with the final open state once the open or close animation has finished. |
 | open | `boolean \| undefined` | false, true | no | — | Controls whether the overlay is open. |

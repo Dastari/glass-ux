@@ -43,7 +43,7 @@ Parts: `Header`, `Search`, `Content`, `Match`, `Group`, `GroupLabel`, `GroupActi
 | minWidth | ``${number}rem` \| undefined` | See type | no | — | The narrowest a resize can make it. |
 | resizable | `boolean \| undefined` | false, true | no | false | Let the person drag the Rail (or use its arrow keys) to set the width, within `minWidth` and `maxWidth`. The width is remembered with the provider's storageKey. |
 | side | `SidebarSide \| undefined` | "start", "end" | no | "start" | The edge it docks to, following the reading direction: `start` (left in LTR) or `end`. |
-| variant | `SidebarVariant \| undefined` | "sidebar", "floating", "inset" | no | "sidebar" | `sidebar`: a flush chrome pane along the edge. `floating`: a glass panel inset from the edges with its own corners. `inset`: the sidebar sits on the canvas and SidebarInset is drawn as the raised panel beside it. |
+| variant | `SidebarVariant \| undefined` | "inset", "sidebar", "floating" | no | "sidebar" | `sidebar`: a flush chrome pane along the edge. `floating`: a glass panel inset from the edges with its own corners. `inset`: the sidebar sits on the canvas and SidebarInset is drawn as the raised panel beside it. |
 | width | ``${number}rem` \| undefined` | See type | no | — | The expanded width before the person resizes it. |
 
 Inherited properties:

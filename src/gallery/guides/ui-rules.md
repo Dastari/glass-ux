@@ -137,10 +137,8 @@ follows a fine pointer and a glint on the rim nearest it.
   person's Solid choice or reduced transparency still applies everywhere.
 - **R4.4a** The application chooses how glass blurs, for every surface:
   `configureAppearance({ glassRendering })`. `live` (the default) blurs with backdrop-filter;
-  `baked` gives panels and chrome on the page canvas a copy of the canvas blurred once, which
-  looks the same and costs nothing per frame, and keeps the live blur for overlays and
-  anything moving. Baked assumes panels and chrome sit on the canvas (R4.6, the layout
-  contract); a layer that floats over content uses `glass-overlay` or `glass-float`.
+  `none` removes every backdrop filter and gives Glass the Frosted fills, so text stays readable
+  over the canvas. Choose `none` for screens with many panels or long scrolling content.
 - **R4.5** Elevation follows the material: chrome and panels are low, overlays and dialogs
   high. Do not add shadows to raise a component.
 - **R4.6** Page framing — headings, breadcrumbs, group labels, toolbars over panels — sits on
@@ -189,8 +187,8 @@ follows a fine pointer and a glint on the rim nearest it.
 
 ## R6 · Navigation
 
-- **R6.1** Level-one navigation is the Rail: icon-only, on the canvas, every item with a
-  tooltip.
+- **R6.1** Level-one navigation is the Rail, on the canvas: icon-only with a tooltip on every
+  item, or with `labels` a wider column that draws each item's name under its icon.
 - **R6.2** Places are routes. Level-three sections, table sorting, filters and paging belong
   in the URL; component state is the exception for transient presentation choices.
 - **R6.3** Only the routed view transitions between routes; the shell stays still.
@@ -348,7 +346,7 @@ follows a fine pointer and a glint on the rim nearest it.
 - **R15.9** Validate on blur, then on change after an error. Normalise typed input on blur so
   the caret stays put.
 - **R15.10** A form saves with one Save button that stays disabled until something changes and
-  confirms in place.
+  confirms in place. A create form opened with pre-filled values passes `allowUnchanged`.
 - **R15.11** A setting that applies at once needs no Save button: it is optimistic, confirms on
   its row and rolls back on failure.
 

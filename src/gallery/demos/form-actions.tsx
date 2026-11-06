@@ -122,6 +122,30 @@ function ContactForm() {
   );
 }
 
+/** Opened from a template: the pre-filled values are worth submitting as they stand. */
+function CreateFromTemplate() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { name: "Weekly depot check", owner: "Ari Moss" },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="New checklist" className="w-full" data-testid="create-form">
+      <FormStack>
+        <form.AppField name="name">
+          {(field) => <field.TextField label="Name" width="medium" />}
+        </form.AppField>
+        <form.AppField name="owner">
+          {(field) => <field.TextField label="Owner" width="medium" />}
+        </form.AppField>
+        <FormActions>
+          <form.SubmitButton allowUnchanged>Create checklist</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  );
+}
+
 export default function FormSection() {
   return (
     <SectionPage>
@@ -133,12 +157,20 @@ export default function FormSection() {
         <ContactForm />
       </Specimen>
 
+      <Specimen
+        title="Create from pre-filled values"
+        description="allowUnchanged keeps the submit button enabled while the form holds its default values. An edit form's Save still waits for a change."
+        specimenKey="form:default:1"
+      >
+        <CreateFromTemplate />
+      </Specimen>
+
       <ContainerLab
         description="The form column fills its box up to --form-measure; nothing reflows into columns. A whole form has no row or header size. Drag the free frame."
         presets={CONTAINER_PRESETS.filter(
           (preset) => preset.id !== "row" && preset.id !== "header",
         )}
-        specimenKey="form:default:2"
+        specimenKey="form:default:3"
       >
         <div className="h-full overflow-y-auto p-3" data-scroll-container>
           <ContactForm />

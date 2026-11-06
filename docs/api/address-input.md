@@ -14,6 +14,7 @@ instead: it gives every part its own form field.
 | bias | `GeocoderBias \| undefined` | See type | no | — | Lean suggestions towards this point: the workspace's home region. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | countries | `readonly string[] \| undefined` | See type | no | — | Only suggest addresses in these countries (ISO codes). |
+| defaultQuery | `string \| undefined` | See type | no | — | Text the lookup starts with, such as an older free-text address the parts cannot hold. It is sent to the geocoder only once the person comes to the lookup, so opening a form asks nothing; a click or ↓ then shows the suggestions. Read when the field mounts: give the field a new `key` for another record. |
 | defaultValue | `AddressValue \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | errors | `Partial<Record<keyof AddressParts, string>> \| undefined` | See type | no | — | Messages per part, for a form you manage yourself. |

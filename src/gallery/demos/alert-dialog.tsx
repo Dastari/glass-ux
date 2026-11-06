@@ -5,10 +5,51 @@ import { Example, SectionPage, Specimen } from "../kit.js";
 import { IconRestart, IconTrash } from "../../icons/generated/icons.js";
 import { AlertDialog, confirm } from "../../ui/alert-dialog/index.js";
 import { Button } from "../../ui/button/index.js";
+import { Field } from "../../ui/field/index.js";
+import { Input } from "../../ui/input/index.js";
 import { Switch } from "../../ui/switch/index.js";
 import { toast } from "../../ui/toast/index.js";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** A confirm that refuses silently: `false` keeps the dialog open at rest, and the field says why. */
+function TypeToConfirm() {
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string>();
+  return (
+    <AlertDialog
+      trigger={<Button variant="danger-soft">Delete workspace</Button>}
+      title="Delete Orbit Workspace?"
+      description="Its projects and history are erased. This cannot be undone."
+      confirmLabel="Delete workspace"
+      pendingLabel="Deleting…"
+      onOpenChange={() => {
+        setName("");
+        setError(undefined);
+      }}
+      onConfirm={async () => {
+        if (name !== "Orbit Workspace") {
+          setError("Enter Orbit Workspace to confirm");
+          return false;
+        }
+        setError(undefined);
+        await wait(800);
+      }}
+    >
+      <Field label="Workspace name" error={error}>
+        <Input
+          value={name}
+          invalid={Boolean(error)}
+          autoComplete="off"
+          onValueChange={(next) => {
+            setName(next);
+            setError(undefined);
+          }}
+        />
+      </Field>
+    </AlertDialog>
+  );
+}
 
 export default function AlertDialogSection() {
   const [fail, setFail] = useState(false);
@@ -74,6 +115,14 @@ export default function AlertDialogSection() {
         <Example label="Outcome">
           <Switch checked={fail} onCheckedChange={setFail} label="Next confirm fails" />
         </Example>
+      </Specimen>
+
+      <Specimen
+        title="Refused by a field"
+        description="onConfirm resolves to false: the dialog stays open at rest, with no toast, shake or ✓, and the field holds the reason. A throw still goes to a toast."
+        specimenKey="alert-dialog:default:1"
+      >
+        <TypeToConfirm />
       </Specimen>
     </SectionPage>
   );

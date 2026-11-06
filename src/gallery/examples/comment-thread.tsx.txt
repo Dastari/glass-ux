@@ -1,6 +1,10 @@
 import { useRef, useState } from "react";
+import { Badge } from "glass-ux/badge";
 import { Button } from "glass-ux/button";
 import { CommentThread, type CommentEntry, type CommentPermissions } from "glass-ux/comment-thread";
+import { FileIcon } from "glass-ux/file-icon";
+import { Link } from "glass-ux/link";
+import { Segmented } from "glass-ux/segmented";
 import { Switch } from "glass-ux/switch";
 import {
   AVERY,
@@ -120,6 +124,86 @@ function FullThread() {
   );
 }
 
+const NOTE_KINDS = [
+  { value: "team", label: "Team note" },
+  { value: "client", label: "Client note" },
+];
+const NOTE_FILES: Readonly<Record<string, readonly string[]>> = {
+  n1: ["north-beam-survey.pdf", "stair-section.png"],
+  n2: ["revised-stair.dwg"],
+};
+
+/** Each composer holds its own kind of note: a reply starts from its parent's, and changing it leaves the others alone. */
+function NotesThread() {
+  const [now] = useState(() => Date.now());
+  const [notes] = useState<readonly CommentEntry[]>(() => [
+    {
+      id: "n1",
+      author: NOOR,
+      body: "The north beam survey is attached. Moving the stair 300 mm east clears it.",
+      at: now - 5 * HOUR,
+      choice: "team",
+      replies: [
+        {
+          id: "n2",
+          author: AVERY,
+          body: "Revised stair drawing attached.",
+          at: now - 4 * HOUR,
+          choice: "team",
+        },
+      ],
+    },
+    {
+      id: "n3",
+      author: JAMIE,
+      body: "Site access is confirmed for Thursday morning.",
+      at: now - 2 * HOUR,
+      choice: "client",
+    },
+  ]);
+  return (
+    <div className="w-full max-w-2xl" data-testid="comments-notes">
+      <CommentThread
+        aria-label="Site notes"
+        defaultComments={notes}
+        currentUser={AVERY}
+        permissions={{ comment: true, forComment: () => ({ reply: true }) }}
+        composer={{
+          defaultChoice: (parent) => parent?.choice ?? "team",
+          renderControl: ({ choice, setChoice, parent, disabled }) => (
+            <Segmented
+              size="sm"
+              aria-label={parent ? `Kind of reply to ${parent.author.name}` : "Kind of note"}
+              options={NOTE_KINDS}
+              value={choice}
+              onValueChange={setChoice}
+              disabled={disabled}
+            />
+          ),
+          sendLabel: ({ choice }) => (choice === "client" ? "Add client note" : "Add team note"),
+        }}
+        renderBadges={(comment) =>
+          comment.choice ? (
+            <Badge size="sm">{comment.choice === "client" ? "Client" : "Team"}</Badge>
+          ) : null
+        }
+        renderAttachments={(comment) =>
+          NOTE_FILES[comment.id]?.map((name) => (
+            <Link
+              key={name}
+              className="inline-flex items-center gap-1"
+              href={`https://files.northstar.example/${name}`}
+            >
+              <FileIcon name={name} />
+              {name}
+            </Link>
+          ))
+        }
+      />
+    </div>
+  );
+}
+
 function ResolvedThread() {
   const [now] = useState(() => Date.now());
   return (
@@ -214,6 +298,13 @@ export default function CommentThreadSection() {
         layout="stack"
       >
         <FullThread />
+      </Specimen>
+      <Specimen
+        title="Composer control, badges and attachments"
+        description="composer draws a control above each editor and holds its choice; the send label follows it and the draft carries it. Replies hold their own. renderBadges and renderAttachments add to a comment."
+        layout="stack"
+      >
+        <NotesThread />
       </Specimen>
       <Specimen
         title="Resolved"

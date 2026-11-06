@@ -52,7 +52,7 @@ export default function DatePickerSection() {
       <Specimen
         title="Sizes"
         description="The box follows the control sizes; the calendar and the list keep their own."
-        specimenKey="date-picker:default:6"
+        specimenKey="date-picker:default:7"
       >
         <DateField size="sm" defaultValue={today} aria-label="Small" />
         <DateField size="md" defaultValue={today} aria-label="Medium" />
@@ -69,7 +69,7 @@ export default function DatePickerSection() {
         <DateTimeInput size="lg" defaultValue={`${today}T09:30`} aria-label="Large date and time" />
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop specimenKey="date-picker:default:7">
+      <Specimen title="Over glass and imagery" backdrop specimenKey="date-picker:default:8">
         <DateField defaultValue={today} aria-label="Date over imagery" />
         <TimeInput defaultValue="18:00" aria-label="Time over imagery" />
         <DateTimeInput
@@ -83,7 +83,7 @@ export default function DatePickerSection() {
         />
       </Specimen>
 
-      <ContainerLab specimenKey="date-picker:default:8">
+      <ContainerLab specimenKey="date-picker:default:9">
         {(preset) =>
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center gap-2 px-1">

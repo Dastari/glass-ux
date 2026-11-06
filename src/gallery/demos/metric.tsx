@@ -112,10 +112,43 @@ export default function MetricSection() {
       </Specimen>
 
       <Specimen
+        title="Sparkline fills the row"
+        description="sparklineFill lets the micro tier's sparkline take the rest of the row instead of stopping at 8rem. The other tiers ignore it."
+        layout="stack"
+        specimenKey="metric:default:3"
+      >
+        <div className="flex w-full max-w-3xl flex-col" data-testid="metric-spark-fill">
+          {["NST-C106", "LMN-4E5E"].map((host, index) => (
+            <div
+              key={host}
+              className="flex h-12 items-center gap-4 border-b border-line px-2 last:border-b-0"
+            >
+              <span className="type-body w-24 shrink-0 tabular-nums">{host}</span>
+              <div className="h-10 min-w-0 flex-1">
+                <Metric
+                  {...cpu}
+                  value={[34, 71][index] ?? 34}
+                  delta={[6, 18][index]}
+                  data={series(24, index + 2, [34, 64][index] ?? 30, 20)}
+                  sparklineFill
+                />
+              </div>
+            </div>
+          ))}
+          <div className="flex h-12 items-center gap-4 px-2">
+            <span className="type-body w-24 shrink-0 tabular-nums">STUDIO-VM</span>
+            <div className="h-10 min-w-0 flex-1">
+              <MetricSkeleton sparklineFill />
+            </div>
+          </div>
+        </div>
+      </Specimen>
+
+      <Specimen
         title="Loading"
         description="The skeleton takes the same rows in every tier. Swap in place to compare."
         wide
-        specimenKey="metric:default:4"
+        specimenKey="metric:default:5"
       >
         <div className="gallery-tiers">
           <SwapSlot
@@ -141,7 +174,7 @@ export default function MetricSection() {
 
       <ContainerLab
         description="micro in the row and header, compact in the tile and tall-narrow column, full in the pane and the free frame."
-        specimenKey="metric:default:5"
+        specimenKey="metric:default:6"
       >
         {() => <Metric {...cpu} />}
       </ContainerLab>

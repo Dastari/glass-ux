@@ -120,6 +120,30 @@ function ContactForm() {
   );
 }
 
+/** Opened from a template: the pre-filled values are worth submitting as they stand. */
+function CreateFromTemplate() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { name: "Weekly depot check", owner: "Ari Moss" },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="New checklist" className="w-full" data-testid="create-form">
+      <FormStack>
+        <form.AppField name="name">
+          {(field) => <field.TextField label="Name" width="medium" />}
+        </form.AppField>
+        <form.AppField name="owner">
+          {(field) => <field.TextField label="Owner" width="medium" />}
+        </form.AppField>
+        <FormActions>
+          <form.SubmitButton allowUnchanged>Create checklist</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  );
+}
+
 export default function FormSection() {
   return (
     <SectionPage>
@@ -128,6 +152,13 @@ export default function FormSection() {
         description="One field per row in a single column (R15.2). Leave a field to validate it; once it shows an error it re-checks as you type, so the message clears the moment it is fixed. Save validates everything and focuses the first problem. Errors replace hints in place — nothing moves."
       >
         <ContactForm />
+      </Specimen>
+
+      <Specimen
+        title="Create from pre-filled values"
+        description="allowUnchanged keeps the submit button enabled while the form holds its default values. An edit form's Save still waits for a change."
+      >
+        <CreateFromTemplate />
       </Specimen>
 
       <ContainerLab

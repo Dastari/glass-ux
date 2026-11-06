@@ -3,7 +3,8 @@
 An answer: no bubble — the AI mark in the gutter and the blocks on the canvas (or the
 panel), prose across the reading column and wide blocks breaking out wider. Failure, cancellation
 and retention show in place as the message's last block. Copy, regenerate, feedback and
-"Open in window" sit below with the time and model.
+"Open in window" sit below with the time and model; a host with no backend for feedback or
+windows turns those off (`feedback`, `openInWindow`).
 
 `import { AssistantMessage } from "glass-ux/ai"`
 
@@ -14,8 +15,10 @@ and retention show in place as the message's last block. Copy, regenerate, feedb
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | activity | `AiProviderStatus \| undefined` | See type | no | — | What the model is doing right now (before or between blocks) while it streams. |
+| feedback | `boolean \| undefined` | false, true | no | true | Show the good and bad response buttons. Turn off when the host has nowhere to send feedback. |
 | latest | `boolean \| undefined` | false, true | no | false | The newest answer: its actions stay visible. |
 | message | `AiMessage` | See type | yes | — | The typed conversation message and its content blocks. |
+| openInWindow | `boolean \| undefined` | false, true | no | true | Show "Open in a window". Turn off when the host has no window to open the answer in. |
 
 Inherited properties:
 

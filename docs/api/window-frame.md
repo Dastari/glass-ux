@@ -17,7 +17,7 @@ the manager.
 | --- | --- | --- | --- | --- | --- |
 | focused | `boolean \| undefined` | false, true | no | false | The focused window has a stronger edge; others dim their app bar. |
 | material | `"none" \| "panel" \| undefined` | "none", "panel" | no | "panel" | `panel` (default): a glass frame, for secondary windows. `none`: no frame, for the primary window, whose header, tabs and status sit on the canvas and whose content panels carry the glass. |
-| state | `WindowFrameState \| undefined` | "primary", "sheet", "floating", "tiled", "maximised", "minimised", "popout" | no | — | Controlled view state, including loading, empty and error states. |
+| state | `WindowFrameState \| undefined` | "primary", "sheet", "maximised", "floating", "tiled", "minimised", "popout" | no | — | Controlled view state, including loading, empty and error states. |
 
 Inherited properties:
 

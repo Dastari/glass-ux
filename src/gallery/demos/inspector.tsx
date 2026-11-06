@@ -11,6 +11,37 @@ import {
   TopBar,
 } from "../../shell/index.js";
 
+function ClosedInspectorSample() {
+  return (
+    <div className="relative h-120 w-full overflow-hidden" data-testid="inspector-default-closed">
+      <AppShell
+        contentAs="div"
+        className="h-full!"
+        inspectorDefault="closed"
+        brand={<ShellBrand label="Meridian" href="#examples" mark={<IconOrganisation />} />}
+        rail={
+          <Rail.Root aria-label="Default-closed sample navigation">
+            <Rail.Item label="Projects" icon={<IconOrganisation />} />
+          </Rail.Root>
+        }
+        topBar={
+          <TopBar
+            breadcrumb={<span>Projects / Exhibition</span>}
+            actions={<InspectorToggle label="Meridian Assistant" />}
+          />
+        }
+        inspector={
+          <Inspector title="Meridian Assistant" closeName="Meridian Assistant">
+            <p>Three rooms, 42 reservations.</p>
+          </Inspector>
+        }
+      >
+        <p className="p-5">Sample project workspace</p>
+      </AppShell>
+    </div>
+  );
+}
+
 export default function InspectorExample() {
   const scope = "Inspector";
   return (
@@ -46,6 +77,14 @@ export default function InspectorExample() {
             <p className="p-5">Sample project workspace</p>
           </AppShell>
         </div>
+      </Specimen>
+      <Specimen
+        title="Closed by default, with a named close button"
+        description='inspectorDefault="closed" keeps the pane shut at every width until the person opens it; their stored choice then wins. closeName names the close button after the pane.'
+        layout="stack"
+        specimenKey="component-examples:InspectorExample:1"
+      >
+        <ClosedInspectorSample />
       </Specimen>
     </SectionPage>
   );

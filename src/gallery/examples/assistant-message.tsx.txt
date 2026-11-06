@@ -371,6 +371,27 @@ export default function AiMessagesSection() {
           />
         </Specimen>
 
+        <Specimen
+          title="Without feedback or windows"
+          description="A host with no backend for them turns off the feedback buttons and Open in a window."
+          layout="stack"
+        >
+          <AssistantMessage
+            message={base({
+              id: "plain",
+              blocks: [
+                {
+                  kind: "markdown",
+                  text: "**12 reservations** are confirmed for the east gallery on Friday.",
+                },
+              ],
+            })}
+            latest
+            feedback={false}
+            openInWindow={false}
+          />
+        </Specimen>
+
         <ContainerLab description="An answer in a row, a header, a tile, a pane and a tall narrow column: the column scrolls, the mark steps aside below 22rem, prose drops to the body size below 34rem.">
           {() => (
             <LabScroll>

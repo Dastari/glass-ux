@@ -28,6 +28,7 @@ It fills its box (container-type: size), so the parent must give it a definite h
 | label | `string` | See type | yes | — | What is measured: "CPU", "Memory", "Latency". |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for the value, delta and statistics. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | range | `string \| undefined` | See type | no | — | The period the series covers: "Last hour". |
+| sparklineFill | `boolean \| undefined` | false, true | no | false | In the micro tier, let the inline sparkline take the rest of the row instead of stopping at its usual width (8rem). The tiers are still the box's choice; the others ignore this. Pass the same value to `MetricSkeleton`. Default false. |
 | times | `readonly string[] \| undefined` | See type | no | — | A label per data point for the hover readout ("10:32"). |
 | tone | `SparklineTone \| undefined` | "data", "danger", "warning", "success", "accent", "neutral", "info" | no | "data" | The series' state, when it has one (warning when a threshold is crossed). |
 | unit | `string \| undefined` | See type | no | "" | Unit displayed with a numeric value. |

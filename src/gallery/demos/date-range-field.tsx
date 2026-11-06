@@ -49,7 +49,7 @@ export default function DatePickerSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop specimenKey="date-picker:default:7">
+      <Specimen title="Over glass and imagery" backdrop specimenKey="date-picker:default:8">
         <DateField defaultValue={today} aria-label="Date over imagery" />
         <TimeInput defaultValue="18:00" aria-label="Time over imagery" />
         <DateTimeInput
@@ -63,7 +63,7 @@ export default function DatePickerSection() {
         />
       </Specimen>
 
-      <ContainerLab specimenKey="date-picker:default:8">
+      <ContainerLab specimenKey="date-picker:default:9">
         {(preset) =>
           preset?.id === "row" || preset?.id === "header" ? (
             <div className="flex h-full items-center gap-2 px-1">

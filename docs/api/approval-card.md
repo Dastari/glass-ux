@@ -11,6 +11,9 @@ footer into Back and the single solid button. Esc goes back.
 Decisions confirm in the button, then the card folds into its record, which shows the run
 and updates in place.
 
+`ask.disabled` or `ask.disabledReason` keeps the card and turns its decisions off. Back stays
+usable, so a card disabled during the second step can still leave it.
+
 `import { ApprovalCard } from "glass-ux/ai"`
 
 [Live examples](https://dastari.github.io/glass-ux/components/approval-card)

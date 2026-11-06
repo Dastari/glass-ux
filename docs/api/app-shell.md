@@ -18,6 +18,7 @@ Compose application navigation, a top bar and a workspace, with optional section
 | drawerShortcut | `string \| undefined` | See type | no | "mod+b" | Toggle the drawer from the keyboard. Default mod+b. |
 | focusRegions | `boolean \| undefined` | false, true | no | false | F6 and Shift+F6 move between the top bar, rail, section drawer, workspace, inspector and phone navigation, so a keyboard user can leave an editor where Tab belongs to the content. Mark panes of your own inside the workspace with `data-focus-region`. See `useFocusRegions`. |
 | inspector | `ReactNode` | See type | no | — | Context pane (Inspector), docked beside the workspace on wide screens. |
+| inspectorDefault | `"wide" \| "closed" \| undefined` | "wide", "closed" | no | "wide" | Whether the inspector starts open before the person has chosen. `wide`: open at 120rem (1920px) and wider, closed below. `closed`: closed at every width. Their stored choice, from `InspectorToggle` or the pane's close button, always wins over this. |
 | rail | `ReactNode` | See type | yes | — | L1 navigation (Rail). |
 | tabBar | `ReactNode` | See type | no | — | Phone navigation (TabBar). |
 | topBar | `ReactNode` | See type | yes | — | The top bar (TopBar). |

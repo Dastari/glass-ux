@@ -28,6 +28,7 @@ and tree rows with lazy children (`tree`).
 | defaultState | `Partial<DataTableState> \| undefined` | See type | no | — | Initial uncontrolled view state. |
 | density | `DataTableDensity \| undefined` | "compact", "comfortable" | no | — | Row density for this table. Uncontrolled tables persist the user's choice. |
 | emptyAction | `ReactNode` | See type | no | — | The primary action for the unfiltered empty state ("Add a row"). |
+| emptyIcon | `ReactNode` | See type | no | — | An icon for the unfiltered empty state: the thing that is missing, before `emptyMessage`. The table sizes it and hides it from assistive technology, so pass it without a size. Default: none. While searching or filtering the table says so itself, with no icon. |
 | emptyMessage | `ReactNode` | See type | no | — | One line for an empty result with nothing searched or filtered (R2.5), e.g. "No rows yet". While searching or filtering the table says so itself, with the `noun` (`No rows match "q3" and 2 filters`), and offers Clear search and Clear filters instead. |
 | error | `ReactNode` | See type | no | — | Shown in the body box with Retry. A string should say what failed and what to do. |
 | expandAll | `boolean \| undefined` | false, true | no | — | Offer an expand-all in the expander column's header, and in the settings menu on cards (default true). It opens the loaded rows of this view and fetches nothing: rows on other pages, batches that arrive later and unloaded children stay closed. |

@@ -6,13 +6,17 @@ import { ORGANISATION_SETTINGS, moduleRail } from "../fixtures/brand.js";
 import { SectionPage, Specimen } from "../kit.js";
 import {
   IconArchive,
+  IconCalendar,
   IconFolder,
   IconHistory,
+  IconInbox,
   IconNewChat,
+  IconOrganisation,
   IconSearch,
   IconSettings,
 } from "../../icons/generated/icons.js";
-import { Rail, SectionDrawer } from "../../shell/index.js";
+import { AppShell, Rail, SectionDrawer, ShellBrand } from "../../shell/index.js";
+import { CountBadge } from "../../ui/badge/index.js";
 import { BrandMark } from "../../ui/brand/index.js";
 import { Button } from "../../ui/button/index.js";
 import { EmptyState } from "../../ui/empty-state/index.js";
@@ -32,6 +36,49 @@ const SPECIMEN_ITEMS = [
   { label: "Archived chats", icon: <IconArchive />, count: 6 },
 ];
 const SPECIMEN_PROJECTS = ["Northstar Studio migration", "Patch Tuesday · October"];
+
+/** Rail labels in a working shell: the rail's column, the mark above it and the drawer beside it. */
+function LabelledRailShell() {
+  const scope = useContext(DemoScope);
+  const prefix = scope ? `${scope}: ` : "";
+  return (
+    <div className="gallery-shell-labelled" data-testid="rail-labels-shell">
+      <AppShell
+        contentAs="div"
+        className="h-full!"
+        brand={<ShellBrand label="Meridian" href="#examples" mark={<IconOrganisation />} />}
+        rail={
+          <Rail.Root aria-label={`${prefix}Labelled rail sample navigation`} labels>
+            <Rail.Item icon={<IconFolder />} label="Projects" active />
+            <Rail.Item icon={<IconCalendar />} label="Calendar" />
+            <Rail.Item
+              icon={<IconInbox />}
+              label="Inbox"
+              badge={<CountBadge value={4} tone="accent" overlay aria-hidden />}
+            />
+            <Rail.Item icon={<IconOrganisation />} label="Organisations" />
+            <Rail.Spacer />
+            <Rail.Item icon={<IconSettings />} label="Settings" />
+          </Rail.Root>
+        }
+        drawer={
+          <SectionDrawer.Root aria-label={`${prefix}Labelled rail sample sections`}>
+            <SectionDrawer.Header title="Projects" />
+            <SectionDrawer.Body>
+              <SectionDrawer.List>
+                <SectionDrawer.Item label="Exhibition" count={3} active />
+                <SectionDrawer.Item label="Archive" />
+              </SectionDrawer.List>
+            </SectionDrawer.Body>
+          </SectionDrawer.Root>
+        }
+        topBar={<span>Projects / Exhibition</span>}
+      >
+        <p className="p-5">Sample project workspace</p>
+      </AppShell>
+    </div>
+  );
+}
 
 function RailAndDrawer() {
   const scope = useContext(DemoScope);
@@ -117,10 +164,20 @@ export default function AppShellSection() {
     <SectionPage>
       <Specimen
         title="Rail and section drawer"
-        description="An icon-only rail with labelled tooltips, and a resizable drawer for the section's navigation. The rail's gear opens the current organisation's settings. mod+B or the current rail item toggles the drawer."
+        description="An icon-only rail with tooltips, and a resizable drawer for the section's navigation. The rail's gear opens the current organisation's settings. mod+B or the current rail item toggles the drawer."
         specimenKey="app-shell:default:3"
       >
         <RailAndDrawer />
+      </Specimen>
+
+      <Specimen
+        title="Rail labels in the shell"
+        description="The shell's rail column follows the labelled rail's width, with the mark above it."
+        wide
+        layout="stack"
+        specimenKey="app-shell:default:6"
+      >
+        <LabelledRailShell />
       </Specimen>
     </SectionPage>
   );

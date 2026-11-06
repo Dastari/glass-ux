@@ -4,6 +4,58 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.17.0
+
+### Removed
+
+- **Breaking:** baked glass rendering: `glassRendering: "baked"`, `installBakedFrost`,
+  `FROST_LIVE_ATTRIBUTE`, `FROST_READY_ATTRIBUTE` and `FROST_CANVAS_ATTRIBUTE`. It had to return to
+  the live blur whenever a scroller moved its panels, and swapping panels to the blur and back made
+  scrolling slower than the live blur alone. See the [migration guide](docs/migration.md).
+
+### Added
+
+- Appearance: `glassRendering: "none"` removes every backdrop filter for the application, gives
+  Glass the Frosted fills and promotes scroll containers. Scrolling 80 panels drew in about a
+  fifth of the time of the live blur (docs/performance.md).
+- RichTextReader (`glass-ux/rich-text-reader`): a read-only Markdown document with tables, task
+  lists, images and footnotes, and no editor. Its renderer loads on demand.
+- CommentThread: `composer` (`defaultChoice`, `renderControl`, `sendLabel`), with a choice held per
+  composer, top-level or reply, and carried on `CommentDraft.choice` and `CommentEntry.choice`;
+  `renderBadges` and `renderAttachments`.
+- ChipOverflow: `wrap={false}` keeps one line, with chips shrinking to an ellipsis and +N visible.
+- Metric and MetricSkeleton: `sparklineFill` lets the micro-tier sparkline fill the row.
+- AlertDialog: `children` holds a field below the description. `onConfirm` here and in `confirm()`
+  may return or resolve to `false` to refuse: the dialog stays open at rest, with no toast or shake.
+  `useActionFeedback().run` takes an `isRefusal` third argument.
+- SubmitButton: `allowUnchanged` lets a pre-filled form submit unchanged.
+- AddressField and AddressInput: `defaultQuery` seeds the lookup from existing text. Nothing is
+  sent to the geocoder until the person focuses the field.
+- Autocomplete: `onFocus` and `openOnInputClick`.
+- ReferenceInput: `addLabel` names one instance's add control.
+- Form kit: `field.DateField` (also `BoundDateField`) and `dateSchema`. DateField gains `onReject`
+  and `required`.
+- ActivityFeed: `isNew` on an item marks a newly arrived row, moving nothing.
+- DataTable: `emptyIcon`.
+- Rail: `labels` on `Rail.Root` draws each item's name under its icon, and AppShell widens the rail
+  column to `--sidebar-w-rail-labelled`.
+- AppShell: `inspectorDefault="closed"` starts the inspector closed at every width. A stored
+  choice still wins.
+- Inspector: `closeName` names its close button, docked or as a sheet. Dialog and Sheet headers
+  gain `closeLabel`.
+- FileRowItem: `as="div"` renders it outside a list.
+- AssistantMessage: `feedback={false}` and `openInWindow={false}` leave those controls out.
+- ApprovalCard: `disabled` and `disabledReason` on the ask turn its decisions off, Deny included.
+- ScrollArea: `aria-labelledby`.
+
+### Changed
+
+- EntityIdentity and EntityChip: a removable chip keeps its link, `onOpen`, actions and preview,
+  with ✕ as one extra control that opens none of them.
+- ReferenceInput: the kind filter is one scrolling row at any number of kinds.
+- DataTable cards: a value holding a one-line element, such as ChipOverflow with `wrap={false}`,
+  gives way before the field's label.
+
 ## 0.16.3
 
 Bug fixes requested by a consuming application.

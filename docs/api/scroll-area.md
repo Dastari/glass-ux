@@ -13,6 +13,7 @@ the parent a height.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string \| undefined` | See type | no | — | Names the scrolling region when it holds more than a list (makes it a landmark-free focusable region for keyboard scrolling). |
+| aria-labelledby | `string \| undefined` | See type | no | — | IDs of elements that name the scrolling region, in place of `aria-label`. |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | edges | `"none" \| "hairline" \| "fade" \| undefined` | "none", "hairline", "fade" | no | "hairline" | What marks an edge with content beyond it (R5.8):   hairline  a 1px line at the scrolled edge (lists under a header, above a footer)   fade      a soft mask (strips of chips, previews)   none |

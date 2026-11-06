@@ -14,4 +14,5 @@ Every row of the Metric in the same tier geometry, so loading never shifts a pix
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | delta | `boolean \| undefined` | false, true | no | true | Change from the comparison value. |
 | range | `boolean \| undefined` | false, true | no | false | Visible range or selected value interval. |
+| sparklineFill | `boolean \| undefined` | false, true | no | false | The Metric's `sparklineFill`, so the micro tier's chart takes the same box. |
 | stats | `boolean \| undefined` | false, true | no | true | Summary statistics displayed with the content. |

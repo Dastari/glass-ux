@@ -16,6 +16,7 @@ import { ActivityFeed, type ActivityItem } from "../../ui/activity-feed/index.js
 import { Avatar } from "../../ui/avatar/index.js";
 import { Badge } from "../../ui/badge/index.js";
 import { Button } from "../../ui/button/index.js";
+import { Switch } from "../../ui/switch/index.js";
 import { SectionPage, Specimen } from "../kit.js";
 
 const VERSIONS: ActivityItem[] = [
@@ -225,6 +226,46 @@ function VersionTimeline() {
   );
 }
 
+/** The mark for an arrival: it takes no room, so setting and clearing it moves nothing. */
+function NewEvents() {
+  const [marked, setMarked] = useState(true);
+  const [started] = useState(() => Date.now());
+  const items: ActivityItem[] = [
+    {
+      id: "scan",
+      content: "Dock 3 reported a label scan fault",
+      at: started - 2 * MINUTE,
+      icon: <IconFlag />,
+      isNew: marked,
+    },
+    {
+      id: "assigned",
+      content: "Ari Moss assigned the fault to Sam Okafor",
+      at: started - 9 * MINUTE,
+      icon: <IconUserCheck />,
+    },
+    {
+      id: "restart",
+      content: "HF-PRN-07 restarted",
+      at: started - 25 * MINUTE,
+      icon: <IconActivity />,
+    },
+  ];
+  return (
+    <div className="flex w-full max-w-xl flex-col gap-4" data-testid="activity-new">
+      <Switch checked={marked} onCheckedChange={setMarked} label="The first event is new" />
+      <ActivityFeed aria-label="Dock events" items={items} />
+      <ActivityFeed
+        aria-label="Dock history"
+        items={items}
+        variant="timeline"
+        timePlacement="inline"
+      />
+      <ActivityFeed aria-label="Dock events to select" items={items} defaultSelectedId="assigned" />
+    </div>
+  );
+}
+
 export default function ActivityFeedSection() {
   const now = Date.now();
   return (
@@ -298,9 +339,16 @@ export default function ActivityFeedSection() {
         <VersionTimeline />
       </Specimen>
       <Specimen
+        title="Newly arrived"
+        description="isNew draws a wash and an edge bar behind the row and reads “New:” before its content. The mark takes no room, so it moves nothing. The highlight settles once, and not at all under Still."
+        specimenKey="activity-feed:default:5"
+      >
+        <NewEvents />
+      </Specimen>
+      <Specimen
         title="Empty feed"
         description="The named list keeps its place when there are no events."
-        specimenKey="activity-feed:default:5"
+        specimenKey="activity-feed:default:6"
       >
         <ActivityFeed aria-label="Document activity" items={[]} empty="No document activity" />
       </Specimen>

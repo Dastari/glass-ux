@@ -1,6 +1,6 @@
 # Rail
 
-Compose the primary application navigation rail from accessible items, separators and flexible spacers. Items that do not fit its height move into a More menu, and the current section stays visible.
+Compose the primary application navigation rail from accessible items, separators and flexible spacers. Items that do not fit its height move into a More menu, and the current section stays visible. `labels` draws each item's name under its icon.
 
 `import { Rail } from "glass-ux/shell"`
 
@@ -13,6 +13,7 @@ Compose the primary application navigation rail from accessible items, separator
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | aria-label | `string` | See type | yes | — | Accessible name of the navigation landmark. |
+| labels | `boolean \| undefined` | false, true | no | false | Draw every item's name under its icon, in a wider column (`--sidebar-w-rail-labelled`) that AppShell's grid follows. A name that does not fit ends in an ellipsis, with the full name in the tooltip. Applies to the whole rail, including More. |
 | overflow | `"more" \| "scroll" \| undefined` | "more", "scroll" | no | "more" | What happens to items that do not fit the rail's height. `more`: they move into a More menu, and the current section stays visible. `scroll`: every item stays in the column, which scrolls with no visible scrollbar. |
 
 Inherited properties:
@@ -36,7 +37,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | badge | `ReactNode` | See type | no | — | A NotificationDot or count on the icon's corner. |
 | disabledReason | `string \| undefined` | See type | no | — | Why the item does nothing here ("Choose an organisation to see its settings"). It stays focusable (aria-disabled) and the tooltip and description give the reason (R12.3, R20.5). |
 | icon | `ReactNode` | See type | yes | — | An icon element without an explicit size; the component sizes it through its tokens. |
-| label | `string` | See type | yes | — | The destination's name: the accessible name and the tooltip. |
+| label | `string` | See type | yes | — | The destination's name: the accessible name and the tooltip, and on a rail with `labels` the text under the icon. |
 | render | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | Render as a router link: render={<Link to="/endpoints" />}. |
 | shortcut | `string \| undefined` | See type | no | — | "g e" (press G, then E). Shown in the tooltip and handled by the rail. |
 

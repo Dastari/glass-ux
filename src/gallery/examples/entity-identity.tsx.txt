@@ -308,6 +308,23 @@ export default function EntityIdentitySection() {
       </Specimen>
 
       <Specimen
+        title="Removable chip"
+        description="A removable chip keeps its link, actions and preview, with ✕ as one extra control that opens nothing."
+        layout="stack"
+      >
+        <span data-testid="entity-removable">
+          <EntityIdentity
+            {...entity(PERSON)}
+            tier="chip"
+            icon={<IconUser />}
+            size="sm"
+            href="#sample-person"
+            onRemove={() => {}}
+          />
+        </span>
+      </Specimen>
+
+      <Specimen
         title="Chip preview"
         description="Hovering or focusing a chip opens this card after 400 ms: the compact tier and the top two actions. It adds nothing the page, the menu or the palette cannot reach."
       >

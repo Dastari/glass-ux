@@ -3,6 +3,30 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.16.3 → 0.17.0
+
+Code edits, where a project uses these:
+
+- `configureAppearance({ glassRendering: "baked" })` no longer type-checks and now blurs live.
+  Remove it, or use `"none"` for no blur at all. A stored or exported theme that says `"baked"`
+  still imports, and blurs live.
+- Remove calls to `installBakedFrost`, and uses of `FROST_LIVE_ATTRIBUTE`, `FROST_READY_ATTRIBUTE`
+  and `FROST_CANVAS_ATTRIBUTE`. `AppearanceProvider` no longer installs anything for this.
+- CSS that reads `data-frost`, `data-frost-live`, `data-frost-canvas`, `--glass-frost-panel`,
+  `--glass-frost-chrome` or `--glass-baked-*` no longer matches anything.
+
+Behaviour to review:
+
+- Removable chips: `EntityIdentity` and `EntityChip` with `onRemove` now keep their link, `onOpen`,
+  actions and preview. `Composer` context chips are links with a preview. Pass `preview={false}` to
+  leave the preview out. Inside the chip's group, the part that opens is now its own element
+  (`.fa-entity-chip-main`, `.fa-ai-chip-main`), so tests should find the link or button by role.
+- `AlertDialog` and `confirm()`: an `onConfirm` that returns or resolves to exactly `false` now
+  keeps the dialog open. Check any that return a boolean for another reason.
+- `ReferenceInput`: the kind filter no longer wraps. It scrolls in one row, and Alt ←/→ brings the
+  chosen kind into view.
+- `DataTable` cards: a value holding a one-line element gives way before the field's label.
+
 ## 0.16.2 → 0.16.3
 
 No code edits are needed.

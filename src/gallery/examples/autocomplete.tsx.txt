@@ -42,6 +42,27 @@ export default function ComboboxSection() {
               placeholder="\\\\server\\share"
             />
           </Field>
+          <Field
+            label="Search from existing text"
+            hint="openOnInputClick shows the list on a click in text that is already there."
+          >
+            <Autocomplete
+              defaultValue="nst"
+              openOnInputClick
+              options={[
+                {
+                  value: "\\\\nst-server\\shared",
+                  label: "\\\\nst-server\\shared",
+                  description: "NST-SERVER",
+                },
+                {
+                  value: "\\\\nst-server\\finance",
+                  label: "\\\\nst-server\\finance",
+                  description: "NST-SERVER",
+                },
+              ]}
+            />
+          </Field>
         </FormStack>
       </Specimen>
     </SectionPage>

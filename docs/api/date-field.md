@@ -24,10 +24,12 @@ not a day (or is outside min/max) turns the box invalid and keeps what was typed
 | min | `string \| undefined` | See type | no | — | Lower allowed value. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
 | onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the text input loses focus, after the typed date has been committed. |
+| onReject | `((value: string) => void) \| undefined` | See type | no | — | Called on commit with an entry that cannot be accepted: unreadable text as typed, or a day outside min/max as read. The value does not change unless the host holds this text in it, as the form kit's `field.DateField` does so that `dateSchema()` can say which. |
 | onValueChange | `((value: IsoDate \| null) => void) \| undefined` | See type | no | — | Called with a valid day, or null when the field is emptied. Typing commits on blur or Enter. |
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
 | ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
+| required | `boolean \| undefined` | false, true | no | — | Marks the input required for assistive technology; pair it with `dateSchema({ required: true })`. |
 | size | `DateFieldSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | value | `string \| null \| undefined` | See type | no | — | A calendar day (`2026-10-13`), or null when empty. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "medium" | Content width (R15.6). A date fits `short`… almost: the default is medium. |

@@ -64,9 +64,25 @@ export default function AddressFieldSection() {
       </Specimen>
 
       <Specimen
+        title="Starting from existing text"
+        description="defaultQuery seeds the lookup with text the parts cannot hold, such as an older free-text address. Nothing is sent until the person comes to it; click the text or press ↓ for the suggestions."
+        specimenKey="address-field:default:1"
+      >
+        <FormStack className="w-full" data-testid="address-seeded">
+          <AddressInput
+            geocoder={demoGeocoder}
+            label="Site address"
+            defaultQuery="12 Example Lane Hobart"
+            bias={HOME_BIAS}
+            countries={["AU", "NZ"]}
+          />
+        </FormStack>
+      </Specimen>
+
+      <Specimen
         title="Filled, with the pin"
         description="Drag the pin, click the map or focus the pin and use the arrow keys: the position becomes “placed by hand” and Reset pin returns to the lookup's point."
-        specimenKey="address-field:default:1"
+        specimenKey="address-field:default:2"
       >
         <FormStack className="w-full" data-testid="address-filled">
           <AddressInput
@@ -83,7 +99,7 @@ export default function AddressFieldSection() {
         title="States"
         description="Errors replace the hint in place; disabled keeps the layout."
         layout="grid"
-        specimenKey="address-field:default:3"
+        specimenKey="address-field:default:4"
       >
         <FormStack>
           <AddressInput
@@ -103,7 +119,7 @@ export default function AddressFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop specimenKey="address-field:default:5">
+      <Specimen title="Over glass and imagery" backdrop specimenKey="address-field:default:6">
         <FormStack>
           <AddressInput geocoder={demoGeocoder} label="Site address" defaultValue={HOBART_OFFICE} />
         </FormStack>
@@ -114,7 +130,7 @@ export default function AddressFieldSection() {
         presets={CONTAINER_PRESETS.filter(
           (preset) => preset.id !== "row" && preset.id !== "header",
         )}
-        specimenKey="address-field:default:6"
+        specimenKey="address-field:default:7"
       >
         <div className="h-full overflow-y-auto p-3" data-scroll-container>
           <FormStack>

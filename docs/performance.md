@@ -74,11 +74,11 @@ the absolute times):
 
 | Rendering | Draw time per frame | Frames per second |
 | --- | --- | --- |
-| Live blur, 80 panels | 19 ms | 47 |
-| Live blur, one panel with a scrolling body | 23 ms | 41 |
-| `glassRendering: "none"`, 80 panels | 4 ms | 59 |
-| `glassRendering: "none"`, one panel with a scrolling body | 3 ms | 59 |
-| Solid, 80 panels | 2 ms | 58 |
+| Live blur, 80 panels | 32 ms | 28 |
+| Live blur, one panel with a scrolling body | 36 ms | 26 |
+| `glassRendering: "none"`, 80 panels | 7 ms | 58 |
+| `glassRendering: "none"`, one panel with a scrolling body | 7 ms | 59 |
+| Solid, 80 panels | 3 ms | 57 |
 
 Frosted costs about the same as Glass, because it runs the same blur pass at a smaller radius.
 

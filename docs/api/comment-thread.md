@@ -22,6 +22,7 @@ regions; outcomes are announced politely.
 | aria-label | `string \| undefined` | See type | no | — | Names the thread. Default "Comments", or the anchor. |
 | className | `string \| undefined` | See type | no | — | Layout classes. |
 | comments | `readonly CommentEntry[] \| undefined` | See type | no | — | The comments, controlled, oldest first. |
+| composer | `CommentComposerOptions \| undefined` | See type | no | — | A control above each composer's editor, the choice it holds and the send button's text. Default: none of them, and the button says "Send". |
 | currentUser | `CommentAuthor \| undefined` | See type | no | — | The signed-in person: the pending comment's author, and whose comments show at once. Needed to comment. |
 | defaultComments | `readonly CommentEntry[] \| undefined` | See type | no | [] | The comments at first when uncontrolled. The thread then applies sends, edits and deletes itself. |
 | defaultResolved | `boolean \| undefined` | false, true | no | false | Whether the thread starts resolved when uncontrolled. |
@@ -39,5 +40,7 @@ regions; outcomes are announced politely.
 | onRetry | `(() => void) \| undefined` | See type | no | — | Offers Retry after `error`, and calls it. |
 | onSubmit | `((draft: CommentDraft) => Promise<CommentEntry \| void> \| CommentEntry \| void) \| undefined` | See type | no | — | Saves a comment or reply. Resolve to finish; a throw marks it failed, with Retry. Uncontrolled, resolve with the saved comment to keep its id. |
 | permissions | `CommentPermissions \| undefined` | See type | no | — | What the person may do. Absent, the thread is read-only. |
+| renderAttachments | `((comment: CommentEntry) => ReactNode) \| undefined` | See type | no | — | Draws attachments under the comment's text, above its reactions. Not called for a deleted comment. Default none. |
+| renderBadges | `((comment: CommentEntry) => ReactNode) \| undefined` | See type | no | — | Draws badges beside the author's name. Not called for a deleted comment. A pending comment carries the `choice` it was sent with. Default none. |
 | renderBody | `((comment: CommentEntry) => ReactNode) \| undefined` | See type | no | — | Draws a comment's text. Default: Markdown, loaded on demand. |
 | resolved | `boolean \| undefined` | false, true | no | — | Whether the thread is resolved, controlled. |

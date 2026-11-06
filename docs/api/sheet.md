@@ -78,6 +78,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | close | `boolean \| undefined` | false, true | no | true | Show the close button (default). |
+| closeLabel | `string \| undefined` | See type | no | — | The close button's accessible name and tooltip, when "Close" alone is not enough. |
 | icon | `ReactNode` | See type | no | — | Icon in a tile, sized by the header. |
 | media | `ReactNode` | See type | no | — | Replaces the icon tile with the caller's own: an entity's identity tile (its photo, state). |
 | subtitle | `ReactNode` | See type | no | — | Data only: the target's identifier or context (R2.2), never a restatement. |

@@ -136,10 +136,27 @@ export default function AiApprovalsSection() {
         </Specimen>
 
         <Specimen
+          title="Disabled"
+          description="The request stays readable and its expiry keeps counting, but it cannot be decided here. A stated reason shows in the card and on the disabled buttons."
+          layout="stack"
+          specimenKey="ai-approvals:default:3"
+        >
+          <ApprovalCard
+            ask={{
+              ...APPROVAL("pending"),
+              id: "disabled-reason",
+              disabledReason:
+                "The command preview could not be loaded. Reload the conversation to decide.",
+            }}
+          />
+          <ApprovalCard ask={{ ...APPROVAL_DANGER, id: "disabled-plain", disabled: true }} />
+        </Specimen>
+
+        <Specimen
           title="Docked width"
           description="The same card at 26rem: the switch row drops below its text, the command wraps."
           layout="bare"
-          specimenKey="ai-approvals:default:4"
+          specimenKey="ai-approvals:default:5"
         >
           <DockedColumn>
             <ApprovalCard ask={{ ...APPROVAL("pending"), id: "docked" }} />
@@ -148,7 +165,7 @@ export default function AiApprovalsSection() {
 
         <ContainerLab
           description="Approvals in fixed boxes scroll inside them; nothing is cut off."
-          specimenKey="ai-approvals:default:5"
+          specimenKey="ai-approvals:default:6"
         >
           {() => (
             <LabScroll>

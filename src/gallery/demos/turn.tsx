@@ -213,7 +213,7 @@ export default function AiMessagesSection() {
 
         <ContainerLab
           description="An answer in a row, a header, a tile, a pane and a tall narrow column: the column scrolls, the mark steps aside below 22rem, prose drops to the body size below 34rem."
-          specimenKey="ai-messages:default:10"
+          specimenKey="ai-messages:default:11"
         >
           {() => (
             <LabScroll>

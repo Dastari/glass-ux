@@ -10,7 +10,7 @@ export default function MetricSection() {
       <Specimen
         title="Sparkline"
         description="Usable alone: 2px line in the data colour, a wash under it and a ringed dot on the latest sample. Status tones only when the series is in that state. thresholds draw hairlines at values: a status tone for a limit, dashed for a soft reference."
-        specimenKey="metric:default:3"
+        specimenKey="metric:default:4"
       >
         {(["data", "success", "warning", "danger", "neutral"] as const).map((tone, index) => (
           <Example key={tone} label={tone}>

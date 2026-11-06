@@ -23,7 +23,7 @@ Present a host-defined entity with its glyph or avatar, readable name and suppor
 | metric | `ReactNode` | See type | no | — | One live value for the header (a Metric). Its box is reserved, so updates never shift. |
 | name | `string` | See type | yes | — | The entity's name: accessible names, tooltips, menus ("Actions for NST-C106"). |
 | onOpen | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person opens the identity. With `href`, it intercepts plain left clicks (modified clicks follow the link); without it, the title or row becomes a button. |
-| onRemove | `(() => void) \| undefined` | See type | no | — | Chip only: a removable chip (composer context) with no link. |
+| onRemove | `(() => void) \| undefined` | See type | no | — | Chip only: adds a ✕ that removes it. It keeps its link, `onOpen`, actions and preview; the ✕ opens none of them. |
 | portrait | `EntityPortrait \| undefined` | See type | no | — | A person in the icon slot at every tier, with the glyph as a corner mark. Beats `image`. |
 | preview | `boolean \| undefined` | false, true | no | — | Chip only: open the preview card on hover and focus (default true). |
 | secondary | `ReactNode` | See type | no | — | A row's second line. Defaults to the facts. |

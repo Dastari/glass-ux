@@ -383,7 +383,9 @@ const budgets = [
   { entry: 'glass-ux/emoji-picker', named: 'EmojiPicker', gzip: 75_000, forbid: ['dist/ui/emoji-picker/emoji-data.js', 'lexical'] },
   { entry: 'glass-ux/emoji-picker', named: 'EmojiPopover', gzip: 53_000, forbid: ['dist/ui/emoji-picker/emoji-data.js', 'dist/ui/emoji-picker/emoji-picker.js', 'lexical'] },
   { entry: 'glass-ux/phone-field', named: 'PhoneField', gzip: 75_000, forbid: ['libphonenumber-js'] },
-  { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text'] },
+  { entry: 'glass-ux/rich-text', named: 'RichTextInput', gzip: 67_000, forbid: ['lexical', '@lexical/rich-text', 'react-markdown'] },
+  // Measured 10.6 KB: the reader and ScrollArea. The Markdown renderer and its parser load on demand, and the editor never.
+  { entry: 'glass-ux/rich-text-reader', named: 'RichTextReader', gzip: 12_000, forbid: ['lexical', '@lexical/rich-text', 'react-markdown', 'rehype-sanitize', 'shiki', 'dist/ai/markdown/markdown.js'] },
   // The list that RichTextInput drives lives outside the editor: importing it brings in no Lexical.
   { entry: 'glass-ux/typeahead', named: 'Typeahead', gzip: 50_000, forbid: ['lexical', '@lexical/rich-text', '@lexical/react'] },
   { entry: 'glass-ux/typeahead', named: 'useTypeahead', gzip: 2_000, forbid: ['@base-ui/react', 'lexical'] },

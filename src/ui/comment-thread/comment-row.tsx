@@ -30,6 +30,8 @@ interface CommentRowProps {
   editing: boolean
   mentions?: RichTextMentions
   renderBody?: (comment: CommentEntry) => ReactNode
+  renderBadges?: (comment: CommentEntry) => ReactNode
+  renderAttachments?: (comment: CommentEntry) => ReactNode
   onReply: (comment: CommentEntry) => void
   onStartEdit: (comment: CommentEntry) => void
   onCloseEdit: () => void
@@ -41,7 +43,7 @@ interface CommentRowProps {
 }
 
 /** One comment. The time's place holds the send state, so a failure moves nothing beneath it (R9). */
-export function CommentRow({ comment, abilities, editing, mentions, renderBody, onReply, onStartEdit, onCloseEdit, onSaveEdit, onDelete, onRetry, onDiscard, onReactionsChange }: CommentRowProps) {
+export function CommentRow({ comment, abilities, editing, mentions, renderBody, renderBadges, renderAttachments, onReply, onStartEdit, onCloseEdit, onSaveEdit, onDelete, onRetry, onDiscard, onReactionsChange }: CommentRowProps) {
   const messages = useMessages(commentThreadMessages)
   const { author, status } = comment
   const titleId = useId()
@@ -50,6 +52,8 @@ export function CommentRow({ comment, abilities, editing, mentions, renderBody, 
   const remove = live ? abilities.delete : undefined
   const reply = live ? abilities.reply : undefined
   const react = live ? abilities.react : undefined
+  const badges = comment.deleted ? null : renderBadges?.(comment)
+  const attachments = comment.deleted ? null : renderAttachments?.(comment)
   return (
     <article className="fa-comment" aria-labelledby={titleId} tabIndex={-1} data-comment-id={comment.id} data-status={status}>
       <Avatar className="fa-comment-avatar" name={author.name} src={author.avatarSrc} size="sm" decorative />
@@ -57,6 +61,7 @@ export function CommentRow({ comment, abilities, editing, mentions, renderBody, 
         <strong className="fa-comment-author" id={titleId}>
           {author.name}
         </strong>
+        {badges ? <span className="fa-comment-badges">{badges}</span> : null}
         <span className="fa-comment-meta">
           {status === "pending" ? (
             messages.sending
@@ -119,6 +124,7 @@ export function CommentRow({ comment, abilities, editing, mentions, renderBody, 
           (renderBody?.(comment) ?? <DefaultBody text={comment.body} />)
         )}
       </div>
+      {attachments ? <div className="fa-comment-attachments">{attachments}</div> : null}
       {live && (comment.reactions?.length || react) ? (
         <ReactionBar
           className="fa-comment-reactions"

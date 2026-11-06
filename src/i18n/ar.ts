@@ -549,6 +549,9 @@ export default defineMessagePack("ar", {
     notDone: "لم يتم",
     image: "الصورة",
     opensInNewTab: "(يفتح في علامة تبويب جديدة)",
+    regionNumber: (name, index, locale = "ar") => `${name} ${numberFormat(locale).format(index)}`,
+    footnotes: "الحواشي",
+    backToReference: (index, locale = "ar") => `العودة إلى الإحالة ${numberFormat(locale).format(index)}`,
   },
   sources: {
     source: (index, title) => `المصدر ${index}: ${title}`,
@@ -1279,6 +1282,9 @@ export default defineMessagePack("ar", {
     notSaved: "لم يتم حفظه",
     cancel: "إلغاء",
     checkThisValue: "تحقق من هذه القيمة",
+  },
+  richTextReader: {
+    document: "مستند",
   },
   richText: {
     invalidLink: "استخدم https://، http://، mailto:، tel: أو رابط نسبي",

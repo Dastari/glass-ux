@@ -549,6 +549,9 @@ export default defineMessagePack("ko", {
     notDone: "완료되지 않음",
     image: "이미지",
     opensInNewTab: "(새 탭에서 열림)",
+    regionNumber: (name, index, locale = "ko") => `${name} ${numberFormat(locale).format(index)}`,
+    footnotes: "각주",
+    backToReference: (index, locale = "ko") => `참조 ${numberFormat(locale).format(index)}번으로 돌아가기`,
   },
   sources: {
     source: (index, title) => `소스 ${index}: ${title}`,
@@ -1278,6 +1281,9 @@ export default defineMessagePack("ko", {
     notSaved: "저장되지 않음",
     cancel: "취소",
     checkThisValue: "이 값을 확인하세요.",
+  },
+  richTextReader: {
+    document: "문서",
   },
   richText: {
     invalidLink: "https://, http://, mailto:, tel: 또는 상대 링크를 사용하세요.",

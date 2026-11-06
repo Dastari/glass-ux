@@ -4,15 +4,19 @@ import { useMessages } from "../../lib/i18n/index.js"
 import { Button } from "../button/index.js"
 import { RichTextInput, type RichTextMentions } from "../rich-text/index.js"
 import { commentThreadMessages } from "./messages.js"
+import type { CommentComposerOptions, CommentEntry } from "./types.js"
 
 interface ComposerProps {
   label: string
   placeholder: string
   mentions?: RichTextMentions
+  /** The comment this composer replies to, or null for the thread's own. */
+  parent: CommentEntry | null
+  options?: CommentComposerOptions
   /** Disabled, with this reason (R12.3). */
   disabledReason?: string
   focusOnMount?: boolean
-  onSend: (body: string) => void
+  onSend: (body: string, choice: string | undefined) => void
   /** Offers Cancel. */
   onCancel?: () => void
 }
@@ -21,13 +25,17 @@ interface ComposerProps {
 const takeFocus: Ref<HTMLDivElement | HTMLTextAreaElement> = (element) => element?.focus()
 
 /** The composer: Markdown from RichTextInput, sent with the button or Ctrl/⌘ Enter. */
-export function Composer({ label, placeholder, mentions, disabledReason, focusOnMount, onSend, onCancel }: ComposerProps) {
+export function Composer({ label, placeholder, mentions, parent, options, disabledReason, focusOnMount, onSend, onCancel }: ComposerProps) {
   const messages = useMessages(commentThreadMessages)
   const [body, setBody] = useState("")
+  const [choice, setChoice] = useState(() => (typeof options?.defaultChoice === "function" ? options.defaultChoice(parent) : options?.defaultChoice))
   const empty = body.trim() === ""
+  const context = { parent, choice, setChoice, disabled: Boolean(disabledReason) }
+  const control = options?.renderControl?.(context)
+  const sendLabel = options?.sendLabel
   const send = () => {
     if (empty || disabledReason) return
-    onSend(body)
+    onSend(body, choice)
     setBody("")
   }
   const onKeyDownCapture = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -41,37 +49,41 @@ export function Composer({ label, placeholder, mentions, disabledReason, focusOn
     }
   }
   return (
-    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- keys from the editor inside
-    <div className="fa-comment-composer" onKeyDownCapture={onKeyDownCapture}>
-      <RichTextInput
-        ref={focusOnMount ? takeFocus : undefined}
-        aria-label={label}
-        placeholder={placeholder}
-        value={body}
-        onValueChange={setBody}
-        mentions={mentions}
-        sourceView={false}
-        resize={false}
-        minHeight={64}
-        maxHeight={200}
-        disabled={Boolean(disabledReason)}
-      />
-      <div className="fa-comment-composer-actions">
-        <span className="fa-comment-hint">{messages.sendHint}</span>
-        {onCancel ? (
-          <Button variant="ghost" size="sm" onClick={onCancel}>
-            {messages.cancel}
+    <div className="fa-comment-composer">
+      {/* Outside the keys below: Escape in the control's own popup closes that popup, not the reply. */}
+      {control ? <div className="fa-comment-composer-control">{control}</div> : null}
+      {/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- keys from the editor inside */}
+      <div className="fa-comment-composer-keys" onKeyDownCapture={onKeyDownCapture}>
+        <RichTextInput
+          ref={focusOnMount ? takeFocus : undefined}
+          aria-label={label}
+          placeholder={placeholder}
+          value={body}
+          onValueChange={setBody}
+          mentions={mentions}
+          sourceView={false}
+          resize={false}
+          minHeight={64}
+          maxHeight={200}
+          disabled={Boolean(disabledReason)}
+        />
+        <div className="fa-comment-composer-actions">
+          <span className="fa-comment-hint">{messages.sendHint}</span>
+          {onCancel ? (
+            <Button variant="ghost" size="sm" onClick={onCancel}>
+              {messages.cancel}
+            </Button>
+          ) : null}
+          <Button
+            variant="primary"
+            size="sm"
+            icon={<IconSend />}
+            disabledReason={disabledReason ?? (empty ? messages.nothingToSend : undefined)}
+            onClick={send}
+          >
+            {typeof sendLabel === "function" ? sendLabel(context) : (sendLabel ?? messages.send)}
           </Button>
-        ) : null}
-        <Button
-          variant="primary"
-          size="sm"
-          icon={<IconSend />}
-          disabledReason={disabledReason ?? (empty ? messages.nothingToSend : undefined)}
-          onClick={send}
-        >
-          {messages.send}
-        </Button>
+        </div>
       </div>
     </div>
   )

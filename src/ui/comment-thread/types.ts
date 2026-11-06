@@ -30,6 +30,8 @@ export interface CommentEntry {
   deleted?: boolean
   /** Its reactions. */
   reactions?: readonly Reaction[]
+  /** The composer's choice it was written with (`CommentDraft.choice`), for `renderBadges` to read. The thread sets it on a pending comment and on one it adds itself; a controlled host sets it on what it saves. */
+  choice?: string
   /** One level of replies. A reply to a reply joins the same list. */
   replies?: readonly Omit<CommentEntry, "replies">[]
 }
@@ -68,6 +70,30 @@ export interface CommentDraft {
   body: string
   /** The comment it replies to, or null for a new comment. */
   parentId: string | null
+  /** The composer's choice when it was sent, kept through a retry. Absent when the composer holds none. */
+  choice?: string
+}
+
+/** Which composer a slot or label is drawn for, and what that composer holds. */
+export interface CommentComposerContext {
+  /** The comment being replied to, or null for the thread's own composer. */
+  parent: CommentEntry | null
+  /** This composer's choice. Each composer holds its own. */
+  choice: string | undefined
+  /** Changes this composer's choice. The thread's composer keeps it after a send; a reply composer starts from `defaultChoice` each time it opens. */
+  setChoice: (choice: string) => void
+  /** The composer is unavailable (`permissions.comment` is a string), so the control should be too. */
+  disabled: boolean
+}
+
+/** What every composer in a thread adds to its editor and send button. */
+export interface CommentComposerOptions {
+  /** The choice a composer starts with, or a function that answers for each composer: a reply can start from `parent.choice`. Default none. */
+  defaultChoice?: string | ((parent: CommentEntry | null) => string | undefined)
+  /** Draws a control above the editor, such as a Segmented bound to `choice` and `setChoice`. Give it its own accessible name. */
+  renderControl?: (composer: CommentComposerContext) => ReactNode
+  /** The send button's text in place of "Send", as written, or a function that answers for each composer and choice. */
+  sendLabel?: string | ((composer: CommentComposerContext) => string)
 }
 
 export interface CommentThreadProps {
@@ -103,8 +129,14 @@ export interface CommentThreadProps {
   onAnchorClick?: () => void
   /** The mention list for the composers. */
   mentions?: RichTextMentions
+  /** A control above each composer's editor, the choice it holds and the send button's text. Default: none of them, and the button says "Send". */
+  composer?: CommentComposerOptions
   /** Draws a comment's text. Default: Markdown, loaded on demand. */
   renderBody?: (comment: CommentEntry) => ReactNode
+  /** Draws badges beside the author's name. Not called for a deleted comment. A pending comment carries the `choice` it was sent with. Default none. */
+  renderBadges?: (comment: CommentEntry) => ReactNode
+  /** Draws attachments under the comment's text, above its reactions. Not called for a deleted comment. Default none. */
+  renderAttachments?: (comment: CommentEntry) => ReactNode
   /** The comments scroll inside the thread and the composer stays at its foot. Give the parent a height. Default false: the thread takes the height it needs. */
   fill?: boolean
   /** First load: skeleton comments in the list's place. */

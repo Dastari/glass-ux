@@ -549,6 +549,9 @@ export default defineMessagePack("es", {
     notDone: "No hecho",
     image: "Imagen",
     opensInNewTab: "(se abre en una nueva pestaña)",
+    regionNumber: (name, index, locale = "es") => `${name} ${numberFormat(locale).format(index)}`,
+    footnotes: "Notas al pie",
+    backToReference: (index, locale = "es") => `Volver a la referencia ${numberFormat(locale).format(index)}`,
   },
   sources: {
     source: (index, title) => `Fuente ${index}: ${title}`,
@@ -1278,6 +1281,9 @@ export default defineMessagePack("es", {
     notSaved: "No guardado",
     cancel: "Cancelar",
     checkThisValue: "Verifique este valor",
+  },
+  richTextReader: {
+    document: "Documento",
   },
   richText: {
     invalidLink: "Utilice un https://, http://, mailto:, tel: o un enlace relativo",

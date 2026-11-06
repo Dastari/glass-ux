@@ -337,6 +337,7 @@ export default function RichTextSection() {
           "Save the Markdown string and let the host own document revisions and file storage.",
           "Use RichTextField in typed forms and label bare inputs.",
           "Use Markdown view for syntax outside the documented visual subset.",
+          "Use RichTextReader, not a read-only input, to show a document that nobody edits on that screen.",
           "Provide meaningful alternative text for images.",
         ]}
         dont={[

@@ -549,6 +549,9 @@ export default defineMessagePack("ja", {
     notDone: "未完了",
     image: "画像",
     opensInNewTab: "(新しいタブで開きます)",
+    regionNumber: (name, index, locale = "ja") => `${name} ${numberFormat(locale).format(index)}`,
+    footnotes: "脚注",
+    backToReference: (index, locale = "ja") => `参照 ${numberFormat(locale).format(index)} に戻る`,
   },
   sources: {
     source: (index, title) => `ソース ${index}: ${title}`,
@@ -1278,6 +1281,9 @@ export default defineMessagePack("ja", {
     notSaved: "未保存",
     cancel: "キャンセル",
     checkThisValue: "この値を確認してください",
+  },
+  richTextReader: {
+    document: "ドキュメント",
   },
   richText: {
     invalidLink: "https://、http://、mailto:、tel:、または相対リンクを使用します。",

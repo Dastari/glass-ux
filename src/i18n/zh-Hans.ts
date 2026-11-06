@@ -549,6 +549,9 @@ export default defineMessagePack("zh-Hans", {
     notDone: "未完成",
     image: "图像",
     opensInNewTab: "（在新选项卡中打开）",
+    regionNumber: (name, index, locale = "zh-Hans") => `${name} ${numberFormat(locale).format(index)}`,
+    footnotes: "脚注",
+    backToReference: (index, locale = "zh-Hans") => `返回引用 ${numberFormat(locale).format(index)}`,
   },
   sources: {
     source: (index, title) => `来源${index}：${title}`,
@@ -1278,6 +1281,9 @@ export default defineMessagePack("zh-Hans", {
     notSaved: "未保存",
     cancel: "取消",
     checkThisValue: "检查该值",
+  },
+  richTextReader: {
+    document: "文档",
   },
   richText: {
     invalidLink: "请使用 https://、http://、mailto:、tel: 或相对链接",

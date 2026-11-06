@@ -42,7 +42,7 @@ line, a quiet `count` or an entity `face`; `Sidebar.Match` marks a filter's matc
 
 For a list that opens from text and leaves focus there, use `Typeahead` with `useTypeahead`
 (glass-ux/typeahead), anchored to a caret or any rectangle; base UI menus move focus and cannot
-do this. `RichTextInput` takes `mentions` and `slashCommands`. For find in a log, table or
+do this. `RichTextInput` takes `mentions` and `slashCommands`. To show a Markdown document that is read and not edited, including tables, use `RichTextReader` (glass-ux/rich-text-reader), not a read-only `RichTextInput`. For find in a log, table or
 document use `FindBar` (glass-ux/find-bar): the host owns matching. For a change to text use
 `DiffView` (glass-ux/diff-view). For choosing files or where to save over host storage, use
 `FileDialog` (glass-ux/file-dialog) with a `FileProvider` (glass-ux/file-provider): it lists and
@@ -50,7 +50,7 @@ chooses, and the host reads and writes. For a rating from icons, or an average s
 and `selectedId`; a ticket or case history is one with `variant="timeline"` (markers on a rail),
 avatar markers, a `detail` under each post and `order="oldest"`. For the rows behind an unread count use `NotificationList` or `NotificationPopover`
 (glass-ux/notification-list), passing the count to `AccountButton` or a `Rail.Item`, which do not change. For discussion use
-`CommentThread` (glass-ux/comment-thread): `permissions` decides which controls exist. Use `ReactionBar`
+`CommentThread` (glass-ux/comment-thread): `permissions` decides which controls exist, `composer` adds a control and send label to each composer (reply composers hold their own choice), and `renderBadges` and `renderAttachments` add to a comment. Use `ReactionBar`
 (glass-ux/reaction-bar) for reactions and `EmojiPicker` (glass-ux/emoji-picker) to choose an emoji. `AppShell focusRegions`, or `useFocusRegions` from glass-ux/hooks, gives F6
 between panes.
 

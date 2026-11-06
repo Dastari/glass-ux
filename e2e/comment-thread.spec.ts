@@ -251,6 +251,139 @@ test("Markdown takes the same line as the plain text that held its place", async
   expect(sizes.size).toBe(sizes.body);
 });
 
+test.describe("a composer's own control, badges and attachments", () => {
+  const notes = (page: Page) => page.getByTestId("comments-notes");
+  const main = (page: Page) => notes(page).locator(".fa-comment-compose-row");
+  const kind = (scope: Locator, name: string) => scope.getByRole("group", { name });
+  const row = (page: Page, text: string) => comment(notes(page), text);
+
+  test("the label follows the composer's choice, the draft carries it, and its badge shows at once @responsive", async ({ page }) => {
+    const composing = main(page);
+    await expect(composer(composing)).toBeVisible();
+    const send = composing.getByRole("button", { name: "Add team note", exact: true });
+    await expect(send).toBeVisible();
+    const place = (button: Locator) =>
+      button.evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        const row = element.closest(".fa-comment-compose-row")!.getBoundingClientRect();
+        return { end: box.right - row.left, top: box.top - row.top };
+      });
+    const before = await place(send);
+    await kind(composing, "Kind of note").getByRole("button", { name: "Client note" }).click();
+    const client = composing.getByRole("button", { name: "Add client note", exact: true });
+    await expect(client).toBeVisible();
+    // The label's words change its width, and the button keeps its place at the row's end.
+    expect(await place(client)).toEqual(before);
+    await composer(composing).click();
+    await page.keyboard.type("Access confirmed");
+    await page.keyboard.press("Control+Enter");
+    const added = row(page, "Access confirmed");
+    await expect(added.locator(".fa-comment-badges")).toHaveText("Client");
+    await expect(composer(composing)).toHaveText("");
+    await expect(kind(composing, "Kind of note").getByRole("button", { name: "Client note" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("each reply holds its own choice, starting from its parent's @responsive", async ({ page }) => {
+    const parent = row(page, "Site access is confirmed");
+    await parent.hover();
+    await parent.getByRole("button", { name: "Reply to Jamie Wells" }).click();
+    const replying = notes(page).locator(".fa-comment-branch").filter({ has: page.getByRole("textbox", { name: "Reply to Jamie Wells" }) });
+    await expect(replying.getByRole("textbox", { name: "Reply to Jamie Wells" })).toBeFocused();
+    const own = kind(replying, "Kind of reply to Jamie Wells");
+    await expect(own.getByRole("button", { name: "Client note" })).toHaveAttribute("aria-pressed", "true");
+    await expect(kind(main(page), "Kind of note").getByRole("button", { name: "Team note" })).toHaveAttribute("aria-pressed", "true");
+    await own.getByRole("button", { name: "Team note" }).click();
+    await kind(main(page), "Kind of note").getByRole("button", { name: "Client note" }).click();
+    await expect(own.getByRole("button", { name: "Team note" })).toHaveAttribute("aria-pressed", "true");
+    await expect(replying.getByRole("button", { name: "Add team note", exact: true })).toBeVisible();
+    await expect(main(page).getByRole("button", { name: "Add client note", exact: true })).toBeVisible();
+    await replying.getByRole("textbox", { name: "Reply to Jamie Wells" }).click();
+    await page.keyboard.type("Internal follow-up");
+    await replying.getByRole("button", { name: "Add team note", exact: true }).click();
+    const sent = row(page, "Internal follow-up");
+    await expect(sent.locator(".fa-comment-badges")).toHaveText("Team");
+    expect(await sent.evaluate((element) => element.closest(".fa-comment-branch") !== null)).toBe(true);
+  });
+
+  test("the keyboard reaches the control from the editor, and Escape in it leaves a reply open", async ({ page }) => {
+    const parent = row(page, "Site access is confirmed");
+    await parent.hover();
+    await parent.getByRole("button", { name: "Reply to Jamie Wells" }).click();
+    const editor = notes(page).getByRole("textbox", { name: "Reply to Jamie Wells" });
+    await expect(editor).toBeFocused();
+    // Back over the editor's toolbar, which is one tab stop, to the control above it.
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Shift+Tab");
+    const own = kind(notes(page), "Kind of reply to Jamie Wells");
+    await expect(own.locator(":focus")).toHaveCount(1);
+    await page.keyboard.press("Escape");
+    await expect(editor).toBeVisible();
+    await own.getByRole("button", { name: "Client note" }).focus();
+    await page.keyboard.press("ArrowLeft");
+    await expect(own.getByRole("button", { name: "Team note" })).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(own.getByRole("button", { name: "Team note" })).toHaveAttribute("aria-pressed", "true");
+    await editor.click();
+    await page.keyboard.press("Escape");
+    await expect(editor).toBeHidden();
+  });
+
+  test("slots line up with the text and the control with the editor, under every preference @responsive", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("glass-ux.appearance.v1", JSON.stringify({ mode: "dark", motion: "reduced", density: "compact", uiScale: 1.25, radiusScale: 0.5, borderWidth: 2 })));
+    await page.reload();
+    const first = row(page, "north beam survey");
+    await expect(first).toBeVisible();
+    const measured = await first.evaluate((element) => {
+      const edge = (selector: string) => element.querySelector(selector)!.getBoundingClientRect();
+      const probe = document.createElement("div");
+      probe.style.marginBlockStart = "var(--space-1)";
+      element.append(probe);
+      const gap = Number.parseFloat(getComputedStyle(probe).marginBlockStart);
+      probe.remove();
+      return { body: edge(".fa-comment-body"), files: edge(".fa-comment-attachments"), badge: edge(".fa-comment-badges"), author: edge(".fa-comment-author"), gap };
+    });
+    expect(measured.files.left).toBeCloseTo(measured.body.left, 0);
+    expect(measured.files.top).toBeGreaterThanOrEqual(measured.body.bottom);
+    expect(measured.files.top - measured.body.bottom).toBeLessThanOrEqual(measured.gap + 4);
+    expect(measured.badge.left).toBeGreaterThanOrEqual(measured.author.right);
+    const stack = await main(page).evaluate((element) => {
+      const edge = (selector: string) => element.querySelector(selector)!.getBoundingClientRect();
+      return { control: edge(".fa-comment-composer-control"), editor: edge(".fa-rich-text"), actions: edge(".fa-comment-composer-actions"), composer: edge(".fa-comment-composer") };
+    });
+    expect(stack.control.bottom).toBeLessThanOrEqual(stack.editor.top);
+    expect(stack.editor.bottom).toBeLessThanOrEqual(stack.actions.top);
+    expect(stack.control.left).toBeCloseTo(stack.composer.left, 0);
+    const overflow = await page.evaluate(() => {
+      const scroller = document.querySelector("[data-scroll-container]");
+      return scroller ? scroller.scrollWidth - scroller.clientWidth : 0;
+    });
+    expect(overflow).toBeLessThanOrEqual(1);
+  });
+
+  test("in RTL the control and slots read from the right @responsive", async ({ page }) => {
+    await page.goto(`${ROUTE}?dir=rtl`);
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    const first = row(page, "north beam survey");
+    await expect(first).toBeVisible();
+    const author = (await first.locator(".fa-comment-author").boundingBox())!;
+    const badge = (await first.locator(".fa-comment-badges").boundingBox())!;
+    expect(badge.x).toBeLessThan(author.x);
+    const body = (await first.locator(".fa-comment-body").boundingBox())!;
+    const files = (await first.locator(".fa-comment-attachments").boundingBox())!;
+    expect(files.x + files.width).toBeCloseTo(body.x + body.width, 0);
+    await expect(main(page).locator(".fa-comment-composer-control")).toBeVisible();
+    const control = (await main(page).locator(".fa-comment-composer-control .fa-segmented").first().boundingBox())!;
+    const editor = (await main(page).locator(".fa-rich-text").boundingBox())!;
+    expect(control.x + control.width).toBeCloseTo(editor.x + editor.width, 0);
+  });
+
+  test("a thread with slots passes axe @responsive", async ({ page }) => {
+    await expect(composer(main(page))).toBeVisible();
+    const results = await new AxeBuilder({ page }).include('[data-testid="comments-notes"]').analyze();
+    expect(results.violations.filter((violation) => violation.id !== "region")).toEqual([]);
+  });
+});
+
 test("loading and error hold the comments' place", async ({ page }) => {
   await expect(page.getByTestId("comments-error").getByRole("alert")).toContainText("did not load");
   await expect(page.getByTestId("comments-loading").locator("[aria-busy=true]")).toBeVisible();

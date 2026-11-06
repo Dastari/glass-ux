@@ -1,0 +1,76 @@
+/*
+ * RichTextReader — a Markdown document on whatever holds it: no fill, border or inset of its
+ * own. The type and heading steps match the editor's content, so a document does not change size
+ * between editing and reading, and the Markdown renderer's chat sizes do not apply.
+ *
+ * With data-scrolls a longest height bounds a ScrollArea, which otherwise fills a definite box.
+ *
+ * Component tokens
+ *   --_reader-max  the longest height (set inline)
+ *   --_column      the narrowest a table's column gets before the table scrolls in its region
+ */
+@layer components {
+  .fa-rich-text-reader {
+    --_column: 7rem;
+    width: 100%;
+    min-width: 0;
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+  }
+  .fa-rich-text-reader .fa-ai-md {
+    --_size: var(--type-body-size);
+    --_line: var(--type-body-line);
+    --_gap: var(--space-3);
+  }
+  .fa-rich-text-reader .fa-ai-md h1 {
+    font-size: var(--type-headline-size);
+    line-height: var(--type-headline-line);
+    letter-spacing: var(--type-headline-tracking);
+  }
+  .fa-rich-text-reader .fa-ai-md h2 {
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-line);
+    letter-spacing: var(--type-title-tracking);
+  }
+  .fa-rich-text-reader .fa-ai-md :is(h3, h4, h5, h6) {
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+    letter-spacing: var(--type-subtitle-tracking);
+  }
+  .fa-rich-text-reader .fa-ai-md img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-item);
+    vertical-align: middle;
+  }
+  .fa-rich-text-reader .fa-ai-md[data-wrap-table-cells] .fa-ai-table {
+    min-width: calc(var(--_columns, 1) * var(--_column));
+  }
+  .fa-rich-text-reader .fa-ai-md [data-footnotes] {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-rich-text-reader .fa-ai-md [data-footnotes] h2 {
+    color: var(--fg-muted);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    letter-spacing: normal;
+  }
+  .fa-rich-text-reader-plain {
+    margin: 0;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+  .fa-rich-text-reader[data-scrolls] > .fa-scroll {
+    height: auto;
+  }
+  .fa-rich-text-reader[data-scrolls] > .fa-scroll > .fa-scroll-viewport {
+    height: auto;
+    max-height: var(--_reader-max);
+  }
+  /* Room for the rings of links and regions at the edge (R11.10). */
+  .fa-rich-text-reader[data-scrolls] > .fa-scroll .fa-scroll-content {
+    padding: var(--focus-reach);
+  }
+}

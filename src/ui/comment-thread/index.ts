@@ -4,6 +4,8 @@ export type {
   CommentAbilities,
   CommentAuthor,
   CommentCapability,
+  CommentComposerContext,
+  CommentComposerOptions,
   CommentDraft,
   CommentEntry,
   CommentPermissions,

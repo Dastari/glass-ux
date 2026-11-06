@@ -75,7 +75,10 @@ export function CommentThread({
   anchorHref,
   onAnchorClick,
   mentions,
+  composer: composerOptions,
   renderBody,
+  renderBadges,
+  renderAttachments,
   fill = false,
   loading = false,
   error,
@@ -132,6 +135,7 @@ export function CommentThread({
     body: outgoing.draft.body,
     at: outgoing.at,
     status: outgoing.status,
+    ...(outgoing.draft.choice === undefined ? null : { choice: outgoing.draft.choice }),
   })
 
   const addToList = (entry: CommentEntry, parentId: string | null) =>
@@ -144,7 +148,10 @@ export function CommentThread({
   const attempt = async (outgoing: Outgoing) => {
     try {
       const saved = await onSubmit?.(outgoing.draft)
-      if (uncontrolled) addToList(saved ?? { id: outgoing.id, author: entryOf(outgoing).author, body: outgoing.draft.body, at: outgoing.at }, outgoing.draft.parentId)
+      if (uncontrolled) {
+        const { status: _status, ...sent } = entryOf(outgoing)
+        addToList(saved ?? sent, outgoing.draft.parentId)
+      }
       setOutbox((current) => current.filter((item) => item.id !== outgoing.id))
       announce(messages.announceSent)
     } catch {
@@ -153,9 +160,10 @@ export function CommentThread({
     }
   }
 
-  const send = (body: string, parentId: string | null) => {
+  const send = (body: string, parentId: string | null, choice: string | undefined) => {
     sequence.current += 1
-    const outgoing: Outgoing = { id: `${prefix}-sending-${sequence.current}`, draft: { body, parentId }, at: Date.now(), status: "pending" }
+    const draft: CommentDraft = choice === undefined ? { body, parentId } : { body, parentId, choice }
+    const outgoing: Outgoing = { id: `${prefix}-sending-${sequence.current}`, draft, at: Date.now(), status: "pending" }
     setOutbox((current) => [...current, outgoing])
     setReplyTo(null)
     void attempt(outgoing)
@@ -236,6 +244,8 @@ export function CommentThread({
         editing={editing === comment.id}
         mentions={mentions}
         renderBody={renderBody}
+        renderBadges={renderBadges}
+        renderAttachments={renderAttachments}
         onReply={(target) => setReplyTo(target.id)}
         onStartEdit={(target) => setEditing(target.id)}
         onCloseEdit={closeEdit}
@@ -273,8 +283,10 @@ export function CommentThread({
                     label={messages.replyLabel(comment.author.name)}
                     placeholder={messages.replyPlaceholder}
                     mentions={mentions}
+                    parent={comment}
+                    options={composerOptions}
                     focusOnMount
-                    onSend={(body) => send(body, comment.id)}
+                    onSend={(text, choice) => send(text, comment.id, choice)}
                     onCancel={() => {
                       setReplyTo(null)
                       focusComment(comment.id)
@@ -312,8 +324,10 @@ export function CommentThread({
           label={messages.composerLabel}
           placeholder={messages.composerPlaceholder}
           mentions={mentions}
+          parent={null}
+          options={composerOptions}
           disabledReason={reasonOf(composing)}
-          onSend={(text) => send(text, null)}
+          onSend={(text, choice) => send(text, null, choice)}
         />
       </div>
     ) : null

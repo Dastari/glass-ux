@@ -104,6 +104,19 @@
     line-height: var(--type-label-line);
     overflow-wrap: anywhere;
   }
+  /* A slot's component can draw nothing: an empty box must not take a gap in the head or the grid. */
+  .fa-comment-badges:empty,
+  .fa-comment-attachments:empty,
+  .fa-comment-composer-control:empty {
+    display: none;
+  }
+  .fa-comment-badges {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 0;
+  }
   .fa-comment-meta {
     display: inline-flex;
     flex-wrap: wrap;
@@ -158,6 +171,15 @@
     color: var(--fg-muted);
     font-style: italic;
   }
+  .fa-comment-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    grid-column: 2;
+    min-width: 0;
+    margin-block-start: var(--space-1);
+  }
   .fa-comment-reactions {
     grid-column: 2;
     margin-block-start: var(--space-half);
@@ -181,6 +203,17 @@
   .fa-comment-composer {
     display: flex;
     flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  /* Only the editor's keys go through this element; it adds no box to the composer's column. */
+  .fa-comment-composer-keys {
+    display: contents;
+  }
+  .fa-comment-composer-control {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     gap: var(--space-2);
     min-width: 0;
   }

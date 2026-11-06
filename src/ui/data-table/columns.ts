@@ -63,6 +63,11 @@ export interface DataColumnSpec<T extends RowData, V = unknown> {
   flash?: boolean;
   /** Allow hiding from the column menu (default true, except pinned columns). */
   hideable?: boolean;
+  /**
+   * A filter with no column: it appears in the Filters menu and matches rows, and is never drawn,
+   * listed in the column menu, shown on a card or exported. Give it a `filter`. Default false.
+   */
+  filterOnly?: boolean;
   /** Placeholder shape while loading (default text; number for end-aligned columns). */
   skeleton?: CellSkeleton;
   /**
@@ -105,7 +110,8 @@ export function resolveColumnMeta(
     cardRole: spec.cardRole ?? (priority <= 3 ? "meta" : "hidden"),
     grow: spec.grow ?? true,
     flash: spec.flash ?? true,
-    hideable: spec.hideable ?? !pin,
+    hideable: spec.filterOnly ? false : (spec.hideable ?? !pin),
+    filterOnly: Boolean(spec.filterOnly),
     skeleton: spec.skeleton ?? (align === "end" ? "number" : "text"),
     plain: !spec.cell,
     filter: spec.filter && !isNoFilter(spec.filter) ? spec.filter : null,

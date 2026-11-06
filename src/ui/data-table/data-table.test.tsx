@@ -14,6 +14,7 @@ import {
 import { TooltipProvider } from "../tooltip/index.js";
 import { createDataTableColumns } from "./columns.js";
 import { DataTable } from "./data-table.js";
+import { filters } from "./filters/index.js";
 
 const dimensions = vi.hoisted(() => ({ width: 1200 }));
 vi.mock("../../lib/use-element-size.js", () => ({
@@ -368,3 +369,44 @@ describe("DataTable emptyIcon", () => {
     expect(view.container.querySelector(".fa-dt-message-glyph")).toBeNull();
   });
 });
+
+describe("filter-only columns", () => {
+  interface Sample {
+    id: string;
+    name: string;
+    site: string;
+  }
+  const sampleCol = createDataTableColumns<Sample>();
+  const sampleColumns = sampleCol.columns([
+    sampleCol.accessor("name", { header: "Name", cardRole: "title" }),
+    sampleCol.accessor("site", { header: "Site", filterOnly: true, filter: filters.text({ field: "site" }) }),
+  ]);
+  const samples: Sample[] = [{ id: "1", name: "Alpha", site: "North" }];
+
+  it("offers the filter without drawing, listing or exporting the column", async () => {
+    const onExport = vi.fn();
+    render(
+      <TooltipProvider>
+        <DataTable id="filter-only" label="Samples" rows={samples} columns={sampleColumns} getRowId={(row) => row.id} getRowLabel={(row) => row.name} export onExport={onExport} />
+      </TooltipProvider>,
+    );
+    expect(screen.queryByRole("columnheader", { name: /Site/ })).toBeNull();
+    expect(screen.queryByText("North")).toBeNull();
+    expect(screen.getByRole("columnheader", { name: /Name/ })).toBeTruthy();
+    // Not behind a row's "+N" either.
+    expect(screen.queryByRole("button", { name: /more fields/ })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+    expect(await screen.findByRole("menuitem", { name: /Site/ })).toBeTruthy();
+  });
+
+  it("keeps it out of the saved hidden columns", () => {
+    render(
+      <TooltipProvider>
+        <DataTable id="filter-only-prefs" label="Samples" rows={samples} columns={sampleColumns} getRowId={(row) => row.id} getRowLabel={(row) => row.name} />
+      </TooltipProvider>,
+    );
+    expect(Object.values({ ...localStorage }).join("")).not.toContain('"hidden":["site"');
+  });
+});
+

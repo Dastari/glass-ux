@@ -51,6 +51,8 @@ export interface DataColumnMeta {
   flash: boolean;
   /** Can be hidden from the column menu. */
   hideable: boolean;
+  /** A filter with no column: never drawn, listed, shown on a card or exported. */
+  filterOnly: boolean;
   skeleton: CellSkeleton;
   /** No cell renderer: the value renders as truncating text. */
   plain: boolean;

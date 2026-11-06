@@ -600,6 +600,11 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     () => new Map(definitions.map((entry) => [entry.id, entry])),
     [definitions],
   );
+  // The columns that are drawn: a filter-only column takes part in filtering and nothing else.
+  const drawnDefinitions = useMemo(
+    () => definitions.filter((entry) => !entry.meta.filterOnly),
+    [definitions],
+  );
   const idByKey = useMemo(
     () => new Map(definitions.map((entry) => [entry.key, entry.id])),
     [definitions],
@@ -725,8 +730,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const layoutColumns = useMemo<LayoutColumn[]>(
     () =>
       orderColumns(
-        definitions,
-        definitions
+        drawnDefinitions,
+        drawnDefinitions
           .filter((entry) => pinnedSet.has(entry.id))
           .map((entry) => entry.id),
       ).map((entry) => ({
@@ -740,7 +745,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         userHidden: userHidden.has(entry.id),
         grow: entry.meta.grow,
       })),
-    [definitions, pinnedIds, pinnedSet, preferences.widths, userHidden],
+    [drawnDefinitions, pinnedIds, pinnedSet, preferences.widths, userHidden],
   );
 
   // Freeze the column set while a resize drag is in progress; recompute on release.
@@ -794,15 +799,15 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     () =>
       columnInfos(
         orderColumns(
-          definitions,
-          definitions
+          drawnDefinitions,
+          drawnDefinitions
             .filter((entry) => pinnedSet.has(entry.id))
             .map((entry) => entry.id),
         ).map((entry) => entry.id),
         metaById,
         new Set(),
       ),
-    [definitions, pinnedIds, metaById],
+    [drawnDefinitions, pinnedIds, metaById],
   );
   const inlineStatus = measured && widthRem < CARD_INLINE_STATUS_REM;
   const cards = useMemo(
@@ -881,12 +886,13 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const columnVisibility = useMemo<ColumnVisibilityState>(
     () =>
       Object.fromEntries(
-        [...layout.autoHidden, ...userHidden].map((columnId) => [
-          columnId,
-          false,
-        ]),
+        [
+          ...layout.autoHidden,
+          ...userHidden,
+          ...definitions.filter((entry) => entry.meta.filterOnly).map((entry) => entry.id),
+        ].map((columnId) => [columnId, false]),
       ),
-    [layout.autoHidden, userHidden],
+    [layout.autoHidden, userHidden, definitions],
   );
   const columnPinning = useMemo<ColumnPinningState>(
     () => ({ start: pinnedIds, end: [] }),
@@ -927,7 +933,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         ...current,
         hidden: Object.keys(next).filter(
           (columnId) =>
-            next[columnId] === false && !layout.autoHidden.includes(columnId),
+            next[columnId] === false &&
+            !layout.autoHidden.includes(columnId) &&
+            !metaById.get(columnId)?.meta.filterOnly,
         ),
       }));
     },
@@ -2888,8 +2896,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const settingsColumns = useMemo(
     () =>
       orderColumns(
-        definitions,
-        definitions
+        drawnDefinitions,
+        drawnDefinitions
           .filter((entry) => pinnedSet.has(entry.id))
           .map((entry) => entry.id),
       ).map((entry) => ({
@@ -2897,7 +2905,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         label: entry.meta.label,
         hideable: entry.meta.hideable,
       })),
-    [definitions, pinnedIds],
+    [drawnDefinitions, pinnedIds],
   );
   const autoHiddenSet = useMemo(
     () =>

@@ -37,12 +37,11 @@ export const GLASS_LEVELS = ["full", "reduced", "solid"] as const;
 /** Visual treatments: the original glass materials or opaque, undecorated flat surfaces. */
 export const VISUAL_STYLES = ["glass", "flat"] as const;
 /**
- * How glass materials blur what is behind them, chosen by the application for every surface:
- * `live` blurs with backdrop-filter every frame; `baked` shows panels and chrome on the page
- * canvas a copy of the canvas blurred once (`installBakedFrost`), and blurs live only where
- * that copy would be wrong. Both look the same at rest.
+ * How every glass surface blurs, for the whole application: `live` blurs with `backdrop-filter`;
+ * `none` draws no blur at all, which keeps scrolling smooth on screens with many panels. Without
+ * blur, Glass takes Frosted's fills so text stays readable over the canvas.
  */
-export const GLASS_RENDERINGS = ["live", "baked"] as const;
+export const GLASS_RENDERINGS = ["live", "none"] as const;
 /** Motion preferences; `system` follows the operating system's reduced-motion setting. */
 export const MOTION_LEVELS = ["system", "full", "reduced"] as const;
 /** The library's canvas styles: colour fields, then artwork (digital, then scenes), then plain and a picture. */
@@ -372,7 +371,7 @@ export function applyAppearance(
   root.dataset.palette = appearance.palette;
   root.dataset.density = appearance.density;
   root.dataset.glass = flat ? "solid" : appearance.glass;
-  if (config.glassRendering === "baked") root.dataset.glassRendering = "baked";
+  if (config.glassRendering === "none") root.dataset.glassRendering = "none";
   else delete root.dataset.glassRendering;
   root.dataset.background = flat ? "plain" : appearance.background ?? "silk";
   if (flat) root.dataset.motion = "reduced";
@@ -425,7 +424,7 @@ fontSans:o(s.fontSans,${j(FONT_IDS.sans)},D.fontSans),fontDisplay:o(s.fontDispla
 for(var k in L)a[k]=L[k];
 var m=a.mode;if(m==="system")m=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
 var F=a.style==="flat";d.dataset.style=F?"flat":"glass";
-d.dataset.mode=m;d.dataset.palette=a.palette;d.dataset.density=a.density;d.dataset.glass=F?"solid":a.glass;${config.glassRendering === "baked" ? `d.dataset.glassRendering="baked";` : ""}
+d.dataset.mode=m;d.dataset.palette=a.palette;d.dataset.density=a.density;d.dataset.glass=F?"solid":a.glass;${config.glassRendering === "none" ? `d.dataset.glassRendering="none";` : ""}
 d.dataset.background=F?"plain":a.background;
 if(F)d.dataset.motion="reduced";else if(a.motion!=="system")d.dataset.motion=a.motion;
 d.dataset.fontSans=a.fontSans;d.dataset.fontDisplay=a.fontDisplay;d.dataset.fontMono=a.fontMono;

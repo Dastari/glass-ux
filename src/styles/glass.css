@@ -45,6 +45,8 @@
  *   - A layer that moves (a dragged window) sets data-moving for the gesture and drops
  *     its blur; nothing blurs over content that moves beneath it every frame
  *     (docs/performance.md).
+ *   - configureAppearance({ glassRendering: "none" }) removes every backdrop filter for the
+ *     application and gives Glass the Frosted fills (docs/performance.md).
  *   - A blurred layer's elevation shadow never sits in its own blur pass: panels, chrome
  *     and glass-detached (toasts) blur on ::before, popups' positioners paint the shadow.
  *     Otherwise any repaint inside damages the shadow ink too and Edge/Windows shows a
@@ -192,10 +194,6 @@
     --glass-blur-panel: 22px;
     --glass-blur-overlay: 30px;
     --glass-blur-float: 18px;
-    /* Baked rendering (installBakedFrost): the page canvas blurred once for panels and chrome
-       at each level. none until it is baked; the live blur is used until then. */
-    --glass-frost-panel: var(--glass-baked-panel-full, none);
-    --glass-frost-chrome: var(--glass-baked-chrome-full, none);
     /* A layer in motion: how much surface its opaque fill takes; the rest is the canvas
        colour, so it stays close to the frosted tone without showing what is behind. */
     --glass-moving-mix: 82%;
@@ -211,9 +209,11 @@
   :root[data-glass="reduced"],
   :root[data-glass="reduced"] :is([data-mode], [data-glass="full"]),
   [data-glass="reduced"]:not(:root),
-  [data-glass="reduced"]:not(:root) :is([data-mode], [data-glass="full"]) {
-    --glass-frost-panel: var(--glass-baked-panel-reduced, none);
-    --glass-frost-chrome: var(--glass-baked-chrome-reduced, none);
+  [data-glass="reduced"]:not(:root) :is([data-mode], [data-glass="full"]),
+  /* Rendering without blur (configureAppearance glassRendering "none"): Glass takes Frosted's
+     fills, since a translucent fill over sharp artwork would not stay readable. */
+  :root[data-glass-rendering="none"]:where(:not([data-glass="solid"])),
+  :root[data-glass-rendering="none"]:where(:not([data-glass="solid"])) :is([data-mode], [data-glass="full"]):where(:not([data-glass="solid"])) {
     --glass-blur-chrome: 14px;
     --glass-blur-panel: 10px;
     --glass-blur-overlay: 16px;
@@ -235,8 +235,6 @@
   :root[data-glass="solid"] :is([data-mode], [data-glass]),
   [data-glass="solid"]:not(:root),
   [data-glass="solid"]:not(:root) :is([data-mode], [data-glass]) {
-    --glass-frost-panel: none;
-    --glass-frost-chrome: none;
     --glass-moving-mix: 100%;
     --glass-blur-chrome: 0px;
     --glass-blur-panel: 0px;
@@ -281,8 +279,6 @@
   @media (prefers-reduced-transparency: reduce) {
     :root:not([data-glass="full"]),
     :root:not([data-glass="full"]) :is([data-mode], [data-glass]) {
-      --glass-frost-panel: none;
-      --glass-frost-chrome: none;
       --glass-moving-mix: 100%;
       --glass-blur-chrome: 0px;
       --glass-blur-panel: 0px;
@@ -375,13 +371,11 @@
   .glass-chrome {
     --_fill: var(--glass-fill-chrome);
     --_blur: var(--glass-blur-chrome);
-    --_baked: var(--glass-frost-chrome);
     --_shadow: var(--shadow-2);
   }
   .glass-panel {
     --_fill: var(--glass-fill-panel);
     --_blur: var(--glass-blur-panel);
-    --_baked: var(--glass-frost-panel);
     --_shadow: var(--shadow-2);
   }
   .glass-overlay {
@@ -481,57 +475,6 @@
     :is(.glass-panel, .glass-chrome, .glass-detached)[data-moving]::before {
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
-    }
-    /* Baked rendering (configureAppearance glassRendering "baked", installBakedFrost): a
-       panel or chrome layer on the page canvas shows the canvas blurred once into a bitmap,
-       fixed to the viewport like the canvas, under its own fill, instead of blurring what is
-       behind it every frame. The live blur stays wherever the bitmap would be wrong: a layer
-       being dragged, a layer in another layer, a floating window, a floating pane stack, the
-       window dock and phone tab bar (they sit over content), a mode island, and a layer on any canvas other than
-       the page's; and, by the rule after this one, a layer that slides or whose scroller
-       scrolls (data-frost-live). */
-    :root[data-glass-rendering="baked"][data-frost]
-      :is(.glass-panel, .glass-chrome):not(
-        [data-moving],
-        [data-mode]:not(:root),
-        [data-mode]:not(:root) *,
-        :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached) *,
-        .fa-window:not([data-primary]),
-        .fa-pane-stack[data-overlay="floating"],
-        .fa-wm-dock,
-        .fa-tabbar,
-        :is(.canvas-ambient, .canvas-background):not([data-frost-canvas]) *
-      )::before {
-      background-color: transparent;
-      background-image:
-        var(--glass-grain), var(--glass-sheen),
-        linear-gradient(var(--_fill), var(--_fill)), var(--_baked);
-      background-size:
-        160px 160px,
-        100% 100%,
-        100% 100%,
-        100% 100%;
-      background-repeat: repeat, repeat, repeat, no-repeat;
-      background-attachment: scroll, scroll, scroll, fixed;
-      -webkit-backdrop-filter: none;
-      backdrop-filter: none;
-    }
-    /* While it slides or its scroller scrolls, the material's own recipe (the live blur). A
-       separate rule, so marking a scroller restyles only the layers in it. */
-    :root[data-glass-rendering="baked"][data-frost]
-      [data-frost-live]
-      :is(.glass-panel, .glass-chrome):not([data-moving], [data-glass="solid"], [data-glass="solid"] *)::before,
-    :root[data-glass-rendering="baked"][data-frost]
-      :is(.glass-panel, .glass-chrome)[data-frost-live]:not([data-moving], [data-glass="solid"], [data-glass="solid"] *)::before {
-      background-color: var(--_fill);
-      background-image: var(--glass-grain), var(--glass-sheen);
-      background-size:
-        160px 160px,
-        100% 100%;
-      background-repeat: repeat;
-      background-attachment: scroll;
-      -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
-      backdrop-filter: blur(var(--_blur)) saturate(var(--glass-saturate));
     }
     /* A leaving toast fades with opacity, which makes it ::before's backdrop root, so the
        blur would sample only the toast itself: it blurs on the element while it leaves. */
@@ -1010,6 +953,25 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
+  /* Rendering without blur (configureAppearance glassRendering "none"): nothing filters the
+     backdrop, on any material at any level. Floating smoke carries its text alone, so it thickens. */
+  :root[data-glass-rendering="none"]
+    :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached, .glass-scrim, .glass-control, .fa-control),
+  :root[data-glass-rendering="none"]
+    :is(.glass-chrome, .glass-panel, .glass-detached)::before,
+  :root[data-glass-rendering="none"] .glass-detached[data-ending-style]::before {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  :root[data-glass-rendering="none"]:where(:not([data-glass="solid"])) .glass-float {
+    --glass-fill-float: oklch(0.2 0.02 var(--neutral-h) / 0.92);
+  }
+  /* Blurred descendants made every scroller a compositor layer. Without them Chromium re-rasters
+     a translucent scroller's content on each scroll frame at standard pixel density, so it is
+     promoted. Its text is greyscale, as it is under a live blur. */
+  :root[data-glass-rendering="none"] [data-scroll-container] {
+    will-change: scroll-position;
+  }
   /* Over imagery the frosted fills become the opaque ones. */
   :root[data-glass="solid"] .over-imagery,
   [data-glass="solid"]:not(:root) .over-imagery {
@@ -1020,13 +982,6 @@
   }
   /* reduced transparency: generated from the Solid rules above by `pnpm styles` */
   @media (prefers-reduced-transparency: reduce) {
-    :root:not([data-glass="full"])
-      :is(.glass-chrome, .glass-panel, .glass-overlay, .glass-float, .glass-detached, .glass-scrim, .glass-control, .fa-control),
-    :root:not([data-glass="full"])
-      :is(.glass-chrome, .glass-panel, .glass-detached)::before {
-      -webkit-backdrop-filter: none;
-      backdrop-filter: none;
-    }
     :root:not([data-glass="full"]) .over-imagery {
       --glass-fill-control: var(--glass-control-solid);
       --glass-fill-control-hover: var(--glass-control-solid-hover);

@@ -46,9 +46,8 @@
   /* The view is named only while a transition runs. A named element is a backdrop root, so a
      permanent name made every panel in the view blur only the view's transparent background:
      they looked unblurred and still paid for the blur. During a transition the live blur
-     still sees only the view, so its panels lose their frost for the cross-fade; baked
-     rendering keeps it (glass.css). Browsers without :active-view-transition keep the
-     permanent name. */
+     still sees only the view, so its panels lose their frost for the cross-fade. Browsers
+     without :active-view-transition keep the permanent name. */
   :root:active-view-transition .fa-shell .fa-window[data-primary] .fa-window-view {
     view-transition-name: fa-shell-primary-view;
   }

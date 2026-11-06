@@ -11,7 +11,6 @@ import {
 import { mediaList } from "../use-media-query.js"
 import { installShimmerSync } from "../motion.js"
 import { installPointerLight } from "./optics.js"
-import { installBakedFrost } from "./frost.js"
 
 interface AppearanceContextValue {
   appearance: Appearance
@@ -97,7 +96,7 @@ function subscribeScheme(notify: () => void) {
   return () => query.removeEventListener("change", notify)
 }
 
-/** Provide persisted appearance preferences and synchronize theme, palette, density, motion and typography with the document. Also installs the pointer light for lit glass (`installPointerLight`), the shared shimmer beat (`installShimmerSync`) and, when the application selects baked glass rendering, the baked frost (`installBakedFrost`). */
+/** Provide persisted appearance preferences and synchronize theme, palette, density, motion and typography with the document. Also installs the pointer light for lit glass (`installPointerLight`) and the shared shimmer beat (`installShimmerSync`). */
 export function AppearanceProvider({ children }: { children: ReactNode }) {
   const appearance = useSyncExternalStore(subscribeAppearance, readAppearance, serverAppearance)
   const prefersDark = useSyncExternalStore(
@@ -120,8 +119,6 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
   useEffect(() => installPointerLight(), [])
   // Skeleton shimmers sweep in one beat.
   useEffect(() => installShimmerSync(), [])
-  // Baked glass rendering bakes the canvas; it does nothing while the rendering is live.
-  useEffect(() => installBakedFrost(), [])
 
   const update = useCallback((patch: Partial<Appearance>) => {
     writeAppearance(normalizeAppearance({ ...readAppearance(), ...patch }))

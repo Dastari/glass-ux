@@ -123,8 +123,7 @@ const focus = () => setLayout((current) => setPlacement(current, "overlay")) // 
   `moving`, or call `usePaneLayout().setMoving(true)` from the panel that sees the gesture and
   `false` when it ends. Floating stacks then carry `data-moving`, the material's state for a layer
   over moving content: an opaque fill instead of a blur redone every frame. `setMoving` renders
-  nothing, so call it at the gesture's start and end, not per frame. Under baked frost, floating
-  stacks keep the live blur.
+  nothing, so call it at the gesture's start and end, not per frame.
 - **Order.** Tab and F6 follow the tree's reading order, the same as docked.
 - **When it is not drawn.** On a phone (below `collapseBelow`) the collapsed view is unchanged. While
   a stack is maximised, and when there is only the primary stack, the layout draws docked.

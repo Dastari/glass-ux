@@ -64,32 +64,41 @@ The foundation (tokens, themes, materials, fonts, recipes) and the adaptations a
 manifest in `dist/styles/manifest.json` lists each entry's stylesheets. The saving is bytes to
 transfer and parse; rendering of the components in use is unchanged.
 
-## Baked frost
+## Blur and scrolling
 
-With `configureAppearance({ glassRendering: "baked" })`, panel and chrome layers on the page
-canvas stop blurring live. `installBakedFrost` (installed by `AppearanceProvider`) draws the
-canvas — its colour, gradient and image layers and Silk's lines — with the 2D canvas API,
-blurs and saturates it once per material and level at half resolution, and each layer shows
-that bitmap fixed to the viewport under its own fill. The canvas does not move, so the
-result matches the live blur (within 2–5/255 on every background, light and dark), and
-nothing that animates inside or near a layer makes it blur again. The bake runs in idle time
-in short steps, about 150 ms after load, and again when the mode, palette, background,
-material level or window size changes; the live blur covers the gap.
+A live backdrop blur costs most when the layer or its backdrop moves. A blurred panel that
+scrolls is blurred again every frame, and so is a blurred panel holding content that scrolls,
+because any repaint inside a blurred layer redraws its blur. The cost is the blur, not the
+translucency. Scrolling a view of 80 panels (Chromium headless, software compositing, 1920×1080;
+compare the rows, not the absolute times):
 
-The bitmap is wrong wherever something other than the static canvas is behind a layer, so
-those keep the live blur: a scroller while it scrolls (`data-frost-live` on it until it has
-been still for 200 ms, so its panels never repaint a fixed background every scroll frame), a
-pane while it slides (a transform transition), a dragged window, overlays, floating windows,
-the window dock and phone tab bar, mode islands, a layer inside another layer and a layer on
-any canvas other than the page's. A route cross-fade keeps the bake, where the live blur loses
-the canvas for the transition. Baked rendering needs `background-clip: border-area` and fixed
-backgrounds, so other browsers, and iOS and iPadOS, keep the live blur; an image in the canvas
-that cannot be loaded for drawing does the same. Text on a baked panel sits on an opaque
-background, so where the platform uses subpixel text (Windows and Linux at standard density)
-Chromium draws it with subpixel antialiasing instead of greyscale.
+| Rendering | Draw time per frame | Frames per second |
+| --- | --- | --- |
+| Live blur, Glass | 34 ms | 26 |
+| Live blur, Frosted | 33 ms | 28 |
+| No blur, translucent fills | 9 ms | 57 |
+| Solid | 5 ms | 56 |
+| `glass-card` tiles, live blur on the shell only | 10 ms | 54 |
 
-A surface's own level (`glass` on `Surface` and `Panel`, `data-glass` on any element) is
-baked like the page's.
+So, for smoother scrolling, in this order:
+
+- Use `Surface material="card"` for repeated tiles, and keep blurred panels to a few framing panes.
+- Set `configureAppearance({ glassRendering: "none" })` for the whole application. It removes every
+  backdrop filter, and Glass takes Frosted's fills. A lower blur radius alone barely helps.
+
+Without blur, each `[data-scroll-container]` is promoted (`will-change: scroll-position`). Without
+that, Chromium re-rasters a translucent scroller's content on each scroll frame at standard pixel
+density: in the same fixture, a plain scroller of cards ran at 21 frames per second, and 48
+promoted. Its text is greyscale, as it is under a live blur. Above about 1.5× pixel density
+Chromium promotes scrollers anyway.
+
+These measurements come from software rendering, which makes blur dearer than a GPU does.
+Measure in the consuming application on the hardware its people use.
+
+Baked rendering, a pre-blurred bitmap of the canvas behind each panel, was removed in 0.17.0. It
+saved work at rest, but it had to return to the live blur for every scroll. Swapping every panel
+in a scroller to the blur and back cost 20 times the raster work of live rendering when scrolling
+with a notched wheel, and it made scrolling feel slower than the live blur alone.
 
 A `ConversationLog` with 20 or more children lays out and paints only the turns near the
 viewport (`content-visibility: auto`): a 200-turn transcript mounted in half the time in the
@@ -166,11 +175,10 @@ than a GPU does; compare the columns, not the absolute compositor figures.
 
 | Measure | 0.9.8 | 0.9.9 |
 | --- | --- | --- |
-| Resting shell, pulse in drawer and inspector: compositor cost per frame | 39 ms (25 fps) | live 40 ms (24 fps); baked 0.7 ms (60 fps) |
-| Resting shell, pulse in drawer and inspector: compositor ms/s | 980 | live 975; baked 65 |
-| Resting shell, pending spinner only: compositor ms/s | 706 | live 633; baked 26 |
-| Scrolling a view of 26 panels: compositor ms/s (raster s) | 477 (0.18) | live 467 (0.17); baked 459 (0.29) |
-| Baking the canvas at load (4x throttle): longest task added | — | none (Silk); 55 ms (Contours) |
+| Resting shell, pulse in drawer and inspector: compositor cost per frame | 39 ms (25 fps) | 40 ms (24 fps) |
+| Resting shell, pulse in drawer and inspector: compositor ms/s | 980 | 975 |
+| Resting shell, pending spinner only: compositor ms/s | 706 | 633 |
+| Scrolling a view of 26 panels: compositor ms/s (raster s) | 477 (0.18) | 467 (0.17) |
 | Resting shell, nothing animating: compositor ms/s | 0 | 0 |
 | Closed inspector with live content: main thread ms/s | 20 | 7 |
 | Mount 300 icon buttons with tooltips | 182 ms | 80 ms |
@@ -185,4 +193,3 @@ than a GPU does; compare the columns, not the absolute compositor figures.
 | Style recalc over 10 scroll steps, 10,000-row table (no throttle) | 20 ms | 18 ms |
 | `glass-ux/button` `Button`, gzip | 31.6 KB | 32.3 KB |
 | Library stylesheet as the shell fixture bundles it, gzip | 70.9 KB | 72.6 KB |
-| `glass-ux/appearance`, gzip (baked renderer loaded on demand) | 4.5 KB | 6.7 KB (renderer 11.7 KB min) |

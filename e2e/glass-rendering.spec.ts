@@ -2,19 +2,14 @@ import { expect, test, type Page } from "@playwright/test";
 
 /*
  * Glass rendering (configureAppearance glassRendering) and per-surface material levels.
- * Baked rendering shows panels on the page canvas a copy of the canvas blurred once; it must
- * look like the live blur, give way to it while a scroller moves the panels, and follow each
- * surface's own level, which is never more transparent than the page's.
+ * "none" removes every backdrop filter for the application, gives Glass the Frosted fills and
+ * promotes scrollers; a surface still follows its own level, never more transparent than the page's.
  */
 
-const frost = (page: Page, selector: string) =>
+const material = (page: Page, selector: string) =>
   page.locator(selector).first().evaluate((element) => {
     const before = getComputedStyle(element, "::before");
-    return {
-      blur: before.backdropFilter,
-      baked: before.backgroundImage.includes("blob:"),
-      fill: before.backgroundColor,
-    };
+    return { blur: before.backdropFilter, fill: before.backgroundColor };
   });
 
 async function open(page: Page, glass = "full") {
@@ -27,121 +22,128 @@ async function open(page: Page, glass = "full") {
   await expect(page.locator(".docs-sidebar")).toBeVisible({ timeout: 30_000 });
 }
 
-/** Safari has no canvas filters, so the baked renderer declines and the live blur stays (frost-render.ts). */
-const canBake = (page: Page) => page.evaluate(() => "filter" in CanvasRenderingContext2D.prototype);
-const NO_BAKE = "this browser has no canvas filters: baked frost falls back to the live blur";
+const setRendering = (page: Page, rendering: string | null) =>
+  page.evaluate((value) => {
+    if (value) document.documentElement.dataset.glassRendering = value;
+    else delete document.documentElement.dataset.glassRendering;
+  }, rendering);
 
-const bake = async (page: Page) => {
-  await page.evaluate(() => {
-    document.documentElement.dataset.glassRendering = "baked";
+/** Every element and pseudo-element on the page that filters its backdrop. */
+const filtering = (page: Page) =>
+  page.evaluate(() => {
+    const found: string[] = [];
+    for (const element of document.querySelectorAll("*")) {
+      for (const pseudo of [null, "::before", "::after"]) {
+        const filter = getComputedStyle(element, pseudo).backdropFilter;
+        if (filter && filter !== "none") found.push(`${element.tagName}.${String(element.className).slice(0, 40)}${pseudo ?? ""}`);
+      }
+    }
+    return found;
   });
-  await expect(page.locator("html")).toHaveAttribute("data-frost", "", { timeout: 10_000 });
-};
 
-/** The sidebar's material alone (its contents hidden), as pixels. */
-const sidebarPixels = async (page: Page) => {
-  await page.addStyleTag({ content: ".docs-sidebar .fa-sidebar-nav { visibility: hidden !important; }" });
-  const box = (await page.locator(".docs-sidebar > .fa-sidebar-pane").boundingBox())!;
-  // Inside the rims and lens: the frosted body of the pane.
-  return page.screenshot({ clip: { x: box.x + 24, y: box.y + 24, width: box.width - 48, height: box.height - 48 } });
-};
+const PANEL = ".gallery-document-sections .glass-panel";
+const PANE = ".docs-sidebar > .fa-sidebar-pane";
 
-test("baked frost matches the live blur at rest", async ({ page }) => {
+test("no blur removes every backdrop filter, and live keeps them", async ({ page }) => {
   await open(page);
-  test.skip(!(await canBake(page)), NO_BAKE);
-  await page.waitForTimeout(500);
-  expect(await frost(page, ".docs-sidebar > .fa-sidebar-pane")).toMatchObject({ blur: expect.stringContaining("blur("), baked: false });
-  const live = await sidebarPixels(page);
-  await bake(page);
-  expect(await frost(page, ".docs-sidebar > .fa-sidebar-pane")).toMatchObject({ blur: "none", baked: true });
-  const baked = await sidebarPixels(page);
-  const diff = await page.evaluate(
-    async ([a, b]) => {
-      const pixels = async (data: string) => {
-        const image = new Image();
-        image.src = `data:image/png;base64,${data}`;
-        await image.decode();
-        const canvas = new OffscreenCanvas(image.width, image.height);
-        const context = canvas.getContext("2d")!;
-        context.drawImage(image, 0, 0);
-        return context.getImageData(0, 0, image.width, image.height).data;
-      };
-      const [x, y] = await Promise.all([pixels(a!), pixels(b!)]);
-      let max = 0;
-      for (let i = 0; i < x.length; i += 4)
-        for (let c = 0; c < 3; c += 1) max = Math.max(max, Math.abs(x[i + c]! - y[i + c]!));
-      return max;
-    },
-    [live.toString("base64"), baked.toString("base64")],
-  );
-  expect(diff).toBeLessThanOrEqual(8);
+  expect((await filtering(page)).length).toBeGreaterThan(0);
+  await setRendering(page, "none");
+  expect(await filtering(page)).toEqual([]);
+  await setRendering(page, null);
+  expect((await filtering(page)).length).toBeGreaterThan(0);
 });
 
-test("a scrolling page blurs live and returns to the bake when it settles", async ({ page }) => {
+test("no blur reaches materials opened later, over imagery and on the way out", async ({ page }) => {
   await open(page);
-  test.skip(!(await canBake(page)), NO_BAKE);
-  await bake(page);
-  const panel = ".gallery-document-sections .glass-panel";
-  expect(await frost(page, panel)).toMatchObject({ blur: "none", baked: true });
-  await page.mouse.move(800, 500);
-  await page.mouse.wheel(0, 200);
-  // The scroller that moved the panel (the document or the docs layout's own) is marked.
-  await expect.poll(() => page.locator(panel).first().evaluate((element) => Boolean(element.closest("[data-frost-live]")))).toBe(true);
-  expect((await frost(page, panel)).blur).toContain("blur(");
-  await expect.poll(() => frost(page, panel), { timeout: 3_000 }).toMatchObject({ blur: "none", baked: true });
+  await setRendering(page, "none");
+  await page.evaluate(() => {
+    const host = document.createElement("div");
+    host.id = "materials";
+    host.innerHTML = `
+      <div class="glass-overlay"></div>
+      <div class="glass-float"></div>
+      <div class="glass-scrim"></div>
+      <div class="glass-detached" data-ending-style></div>
+      <div class="over-imagery"><span class="glass-control"></span><span class="fa-control"></span></div>`;
+    document.body.append(host);
+  });
+  expect(await filtering(page)).toEqual([]);
+});
+
+test("Glass without blur takes the Frosted fill and keeps its rims", async ({ page }) => {
+  await open(page, "reduced");
+  const frosted = await material(page, PANEL);
+  expect(frosted.blur).toContain("blur(10px)");
+  await page.evaluate(() => {
+    document.documentElement.dataset.glass = "full";
+  });
+  const glass = await material(page, PANEL);
+  expect(glass.blur).toContain("blur(22px)");
+  expect(glass.fill).not.toBe(frosted.fill);
+  await setRendering(page, "none");
+  const none = await material(page, PANEL);
+  expect(none).toEqual({ blur: "none", fill: frosted.fill });
+  const rims = await page.locator(PANEL).first().evaluate((element) => getComputedStyle(element, "::before").boxShadow);
+  expect(rims).toContain("inset");
+});
+
+test("a Solid surface and a Solid page stay opaque without blur", async ({ page }) => {
+  await open(page);
+  await setRendering(page, "none");
+  const panel = page.locator(PANEL).first();
+  await panel.evaluate((element) => {
+    element.dataset.glass = "solid";
+  });
+  const surface = await material(page, PANEL);
+  expect(surface.blur).toBe("none");
+  const alpha = (colour: string) => {
+    const slash = /\/\s*([\d.]+)\s*\)/.exec(colour);
+    return slash ? Number(slash[1]) : 1;
+  };
+  expect(alpha(surface.fill)).toBe(1);
+  await panel.evaluate((element) => {
+    delete element.dataset.glass;
+    document.documentElement.dataset.glass = "solid";
+  });
+  expect(alpha((await material(page, PANEL)).fill)).toBe(1);
+});
+
+test("a scroller is promoted without blur and left alone with it", async ({ page }) => {
+  await open(page);
+  const scroller = page.locator("[data-scroll-container]").first();
+  const willChange = () => scroller.evaluate((element) => getComputedStyle(element).willChange);
+  expect(await willChange()).toBe("auto");
+  await setRendering(page, "none");
+  expect(await willChange()).toBe("scroll-position");
 });
 
 test("a surface takes its own level, never more transparent than the page's", async ({ page }) => {
   await open(page);
-  test.skip(!(await canBake(page)), NO_BAKE);
-  const panel = page.locator(".gallery-document-sections .glass-panel").first();
+  const panel = page.locator(PANEL).first();
   await panel.evaluate((element) => {
     element.dataset.glass = "reduced";
   });
-  expect((await frost(page, ".gallery-document-sections .glass-panel")).blur).toContain("blur(10px)");
+  expect((await material(page, PANEL)).blur).toContain("blur(10px)");
   await panel.evaluate((element) => {
     element.dataset.glass = "solid";
   });
-  expect((await frost(page, ".gallery-document-sections .glass-panel")).blur).toBe("none");
+  expect((await material(page, PANEL)).blur).toBe("none");
   // On a Frosted page a Glass surface stays Frosted.
   await panel.evaluate((element) => {
     element.dataset.glass = "full";
     document.documentElement.dataset.glass = "reduced";
   });
-  expect((await frost(page, ".gallery-document-sections .glass-panel")).blur).toContain("blur(10px)");
-  // Baked, a Frosted surface shows the Frosted bake.
-  await bake(page);
-  expect(await frost(page, ".gallery-document-sections .glass-panel")).toMatchObject({ blur: "none", baked: true });
-  // On a Solid page nothing is baked and every surface is opaque.
-  await page.evaluate(() => {
-    document.documentElement.dataset.glass = "solid";
-  });
-  await expect(page.locator("html")).not.toHaveAttribute("data-frost", "");
-  expect(await frost(page, ".gallery-document-sections .glass-panel")).toMatchObject({ blur: "none", baked: false });
+  expect((await material(page, PANEL)).blur).toContain("blur(10px)");
 });
 
-test("the documentation toolbar switches the glass rendering and remembers it", async ({ page }) => {
+test("the documentation toolbar switches blur and remembers it", async ({ page }) => {
   await open(page);
-  const blur = page.locator('.docs-header [aria-label="Blur"]');
-  const baking = await canBake(page);
-  await blur.getByText("Baked").first().click();
-  await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "baked");
-  if (baking) await expect(page.locator("html")).toHaveAttribute("data-frost", "", { timeout: 10_000 });
+  await page.locator('.docs-header [aria-label="Blur"]').getByText("Off").first().click();
+  await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "none");
   await page.reload();
-  await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "baked");
-  if (baking) await expect(page.locator("html")).toHaveAttribute("data-frost", "", { timeout: 10_000 });
-  await page.locator('.docs-header [aria-label="Blur"]').getByText("Live").first().click();
+  await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "none");
+  expect((await material(page, PANE)).blur).toBe("none");
+  await page.locator('.docs-header [aria-label="Blur"]').getByText("On").first().click();
   await expect(page.locator("html")).not.toHaveAttribute("data-glass-rendering", /./);
-  expect((await frost(page, ".docs-sidebar > .fa-sidebar-pane")).blur).toContain("blur(");
-});
-
-test("without canvas filters a baked setting keeps the live blur", async ({ page }) => {
-  await open(page);
-  test.skip(await canBake(page), "this browser bakes");
-  await page.evaluate(() => {
-    document.documentElement.dataset.glassRendering = "baked";
-  });
-  await page.waitForTimeout(1500);
-  await expect(page.locator("html")).not.toHaveAttribute("data-frost", /./);
-  expect(await frost(page, ".docs-sidebar > .fa-sidebar-pane")).toMatchObject({ blur: expect.stringContaining("blur("), baked: false });
+  expect((await material(page, PANE)).blur).toContain("blur(");
 });

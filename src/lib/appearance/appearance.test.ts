@@ -123,10 +123,10 @@ describe("appearance boot script", () => {
 
   it("applies the application's glass rendering in both paths", () => {
     expect(snapshot(runBoot(null)).data).not.toHaveProperty("glassRendering");
-    configureAppearance({ glassRendering: "baked" });
+    configureAppearance({ glassRendering: "none" });
     const boot = snapshot(runBoot(null));
     expect(boot).toEqual(snapshot(runApply(null)));
-    expect(boot.data).toMatchObject({ glassRendering: "baked" });
+    expect(boot.data).toMatchObject({ glassRendering: "none" });
     configureAppearance({ glassRendering: "nope" as never });
     expect(snapshot(runApply(null)).data).not.toHaveProperty("glassRendering");
   });

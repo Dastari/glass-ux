@@ -137,10 +137,8 @@ follows a fine pointer and a glint on the rim nearest it.
   person's Solid choice or reduced transparency still applies everywhere.
 - **R4.4a** The application chooses how glass blurs, for every surface:
   `configureAppearance({ glassRendering })`. `live` (the default) blurs with backdrop-filter;
-  `baked` gives panels and chrome on the page canvas a copy of the canvas blurred once, which
-  looks the same and costs nothing per frame, and keeps the live blur for overlays and
-  anything moving. Baked assumes panels and chrome sit on the canvas (R4.6, the layout
-  contract); a layer that floats over content uses `glass-overlay` or `glass-float`.
+  `none` removes every backdrop filter and gives Glass the Frosted fills, so text stays readable
+  over the canvas. Choose `none` for screens with many panels or long scrolling content.
 - **R4.5** Elevation follows the material: chrome and panels are low, overlays and dialogs
   high. Do not add shadows to raise a component.
 - **R4.6** Page framing — headings, breadcrumbs, group labels, toolbars over panels — sits on

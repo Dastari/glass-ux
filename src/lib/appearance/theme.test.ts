@@ -36,8 +36,8 @@ describe("exportAppearance", () => {
   });
 
   it("carries the application's glass rendering", () => {
-    configureAppearance({ glassRendering: "baked" });
-    expect(exportAppearance({}).theme.glassRendering).toBe("baked");
+    configureAppearance({ glassRendering: "none" });
+    expect(exportAppearance({}).theme.glassRendering).toBe("none");
     expect(exportAppearance({}, { glassRendering: "live" }).theme.glassRendering).toBeUndefined();
   });
 
@@ -122,8 +122,8 @@ describe("importAppearance", () => {
   });
 
   it("restores the glass rendering", () => {
-    const { source } = exportAppearance({}, { glassRendering: "baked" });
-    expect(importAppearance(source)).toMatchObject({ ok: true, theme: { glassRendering: "baked" } });
+    const { source } = exportAppearance({}, { glassRendering: "none" });
+    expect(importAppearance(source)).toMatchObject({ ok: true, theme: { glassRendering: "none" } });
   });
 
   it("a theme works as configureAppearance's argument", () => {
@@ -218,5 +218,11 @@ describe("importAppearance", () => {
 
   it.each(["/pictures/x.webp", "./x.png", "../x.png", "data:image/png;base64,AAAA"])("accepts a same-site or embedded picture: %j", (backgroundImage) => {
     expect(importAppearance({ defaults: { backgroundImage } })).toMatchObject({ ok: true });
+  });
+
+  it("imports a theme exported with the removed baked rendering, and blurs live", () => {
+    const result = importAppearance({ defaults: {}, glassRendering: "baked" });
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.theme.glassRendering).toBeUndefined();
   });
 });

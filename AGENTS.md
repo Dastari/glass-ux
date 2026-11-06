@@ -132,8 +132,10 @@ decides when to publish. The local route:
 
 ## Settled decisions
 
-- Material level (Glass, Frosted, Solid) can be set per surface; live or baked blur is one
-  application-wide setting (`configureAppearance({ glassRendering })`), not per surface.
+- Material level (Glass, Frosted, Solid) can be set per surface; blur on or off is one
+  application-wide setting (`configureAppearance({ glassRendering })`), not per surface or a
+  personal preference. Off uses Frosted's fills. Baked rendering was removed in 0.17.0: swapping
+  scrolling panels between a bitmap and the blur cost more than the live blur (docs/performance.md).
 - Images and media take no drop shadows or reflections; hover effects stay within the
   Image component's trimmed set and are off under Still or reduced motion.
 - File type icons stay monochrome (applications colour them through `data-file-kind`); the
@@ -180,7 +182,6 @@ decides when to publish. The local route:
     message in WebKit (`menubar.spec.ts`); its cause there has not been traced.
   - ConversationLog in WebKit ends 26 px short of the end after an answer completes (the browser
     moves `scrollTop` with no size change, so nothing re-pins). `conversation-follow.spec.ts:11`.
-  - Baked frost needs canvas filters, which Safari lacks: it keeps the live blur by design.
   - `fit-form` tolerance went from 1 to 2 px; a row can now stay on its wider form up to 2 px
     past its box.
   - WPE cannot test forced colours, element fullscreen, WebGL 2 (`maps-basemap`), clipboard

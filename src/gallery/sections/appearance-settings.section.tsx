@@ -46,7 +46,7 @@ export default function AppearanceSettingsSection() {
         do={[
           "Lock what the organisation decides with configureAppearance({ locked }); those rows show as set by your organisation.",
           "Register product palettes and backgrounds first (definePalette, defineBackground) so the panel lists them.",
-          "Keep the application's own rendering choice (live or baked blur) out of personal settings.",
+          "Keep the application's own rendering choice (live blur or none) out of personal settings.",
         ]}
         dont={[
           "Don't build a second appearance menu beside this one; one place keeps preferences consistent.",

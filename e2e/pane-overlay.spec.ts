@@ -56,7 +56,7 @@ test("the primary panel fills the layout and the other stacks float inside its e
   // The clear area passes the pointer through to the primary panel.
   const through = await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.closest("[data-testid]")?.getAttribute("data-testid"), { x: frame.x + frame.width / 2, y: frame.y + frame.height / 2 });
   expect(through).toBe("pane-field");
-  // Floating stacks keep the theme's corners, and live blur under baked frost.
+  // Floating stacks keep the theme's corners.
   const radius = await stackFor(overlay, "layers").evaluate((element) => Number.parseFloat(getComputedStyle(element).borderStartStartRadius));
   expect(radius).toBeCloseTo(await px(page, "var(--radius-surface)"), 0);
   const result = await new AxeBuilder({ page }).include('[data-testid="pane-overlay"]').analyze();

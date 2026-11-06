@@ -214,7 +214,7 @@ export function exportAppearance(appearance: Partial<Appearance>, options: Expor
   }
   const glassRendering = options.glassRendering ?? appearanceConfig().glassRendering;
   const theme: AppearanceTheme = { defaults: defaults as Partial<Appearance> };
-  if (glassRendering === "baked") theme.glassRendering = glassRendering;
+  if (glassRendering === "none") theme.glassRendering = glassRendering;
   const complete = { ...BASE_APPEARANCE, ...theme.defaults };
   const attributes = themeAttributes(complete);
   return { theme, source: themeSource(theme), css: themeCss(complete, attributes), attributes, omitted };
@@ -251,7 +251,9 @@ export function importAppearance(input: unknown, options: ImportAppearanceOption
       issues.push({ field: key, reason: "picture-remote" });
     else defaults[key] = value;
   }
-  const rendering = Object.hasOwn(raw, "glassRendering") ? raw.glassRendering : undefined;
+  // "baked" was removed in 0.17: a theme exported before then still imports, and blurs live.
+  const stated = Object.hasOwn(raw, "glassRendering") ? raw.glassRendering : undefined;
+  const rendering = stated === "baked" ? undefined : stated;
   if (rendering !== undefined && !GLASS_RENDERINGS.includes(rendering as GlassRendering)) issues.push({ field: "glassRendering", reason: "invalid" });
   if (issues.length) return { ok: false, issues };
   const theme: AppearanceTheme = { defaults: defaults as Partial<Appearance> };

@@ -70,6 +70,14 @@
     line-height: var(--type-caption-line);
     font-variant-numeric: tabular-nums;
   }
+  /* A host's node in the subtitle: it stays on the bar's line and truncates itself. */
+  div.fa-window-subtitle {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+  }
   .fa-window:not([data-focused]) .fa-window-title {
     color: var(--fg-muted);
   }

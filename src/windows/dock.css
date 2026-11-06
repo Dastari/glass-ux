@@ -138,11 +138,24 @@
   }
   .fa-wm-switcher-row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-1);
   }
+  .fa-wm-switcher-row > .fa-btn {
+    flex: none;
+  }
+  .fa-wm-switcher-subject {
+    flex: 1 0 100%;
+    min-width: 0;
+    padding-inline-start: var(--space-2-5);
+    padding-block-end: var(--space-1);
+  }
+  .fa-wm-dock-host {
+    display: contents;
+  }
   .fa-wm-switcher-item {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     min-width: 0;
     width: 100%;
     border: 0;

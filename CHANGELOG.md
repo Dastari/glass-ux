@@ -46,6 +46,12 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - FileRowItem: `as="div"` renders it outside a list.
 - AssistantMessage: `feedback={false}` and `openInWindow={false}` leave those controls out.
 - ApprovalCard: `disabled` and `disabledReason` on the ask turn its decisions off, Deny included.
+- Window kinds: `renderSubtitle` draws the subtitle as a node, such as an identity chip with its
+  actions, in the title bar and the switcher. `renderDockItem` wraps the dock item, which is where
+  its subject's actions go. `subtitle` stays the text for the document title and the dock.
+  `WindowFrame.AppBar` draws a non-string `subtitle` as given, and the window does not drag from it.
+- SessionNav: `renderOrganisation` draws a session's organisation beside its row, so it can carry a
+  link, actions and a preview, and pressing it does not select the session.
 - ScrollArea: `aria-labelledby`.
 
 ### Changed

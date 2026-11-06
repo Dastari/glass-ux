@@ -26,7 +26,7 @@ import {
   useWindowManager,
   useWindows,
 } from "./react.js";
-import { describeWindow } from "./registry.js";
+import { describeWindow, getWindowKind } from "./registry.js";
 import {
   describeScope,
   useWindowScopes,
@@ -113,8 +113,7 @@ function DockItem({
     .filter(Boolean)
     .join(" · ");
   const active = focused && !entry.minimised && !entry.poppedOut;
-  return (
-    <li className="fa-wm-dock-entry">
+  const item = (
       <Tooltip content={detail ? `${title} · ${detail}` : title} side="top">
         <button
           type="button"
@@ -143,6 +142,12 @@ function DockItem({
           </span>
         </button>
       </Tooltip>
+  );
+  const wrap = getWindowKind(entry.kind)?.renderDockItem;
+  return (
+    <li className="fa-wm-dock-entry">
+      {/* A plain element, so a context menu around the item has something to attach to. */}
+      {wrap ? wrap(<span className="fa-wm-dock-host">{item}</span>, entry.params) : item}
     </li>
   );
 }
@@ -287,11 +292,12 @@ export function WindowSwitcher({
                       subtitle,
                       icon: Icon,
                     } = describeWindow(entry.kind, entry.params, messages);
+                    const subject = getWindowKind(entry.kind)?.renderSubtitle?.(entry.params);
                     return (
                       <li key={entry.id} className="fa-wm-switcher-row">
                         <ListRow
                           title={title}
-                          meta={subtitle}
+                          meta={subject ? undefined : subtitle}
                           icon={Icon ? <Icon /> : undefined}
                           trailing={<Badge size="sm">{stateText(entry, messages)}</Badge>}
                           className="fa-wm-switcher-item"
@@ -305,6 +311,8 @@ export function WindowSwitcher({
                           aria-label={messages.close(title)}
                           onClick={() => void manager.close(entry.id)}
                         />
+                        {/* Beside the row's button, not in it: a chip may be interactive. */}
+                        {subject ? <div className="fa-wm-switcher-subject">{subject}</div> : null}
                       </li>
                     );
                   })}

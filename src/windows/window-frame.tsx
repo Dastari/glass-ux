@@ -81,7 +81,7 @@ export interface WindowAppBarProps extends Omit<
 > {
   icon?: ReactNode;
   title: ReactNode;
-  /** Data only (R2.2): the endpoint or organisation the window is about. */
+  /** Data only (R2.2): the endpoint or organisation the window is about. A string truncates with a tooltip; a node, such as an identity chip, is drawn as given and may be interactive. */
   subtitle?: ReactNode;
   /** The window's organisation when it is not the current one (WindowScopeChip, R14.4). */
   scope?: ReactNode;
@@ -118,10 +118,15 @@ function AppBar({
         <h2 className="fa-window-title" id={titleId}>
           <TruncatedText>{title}</TruncatedText>
         </h2>
-        {subtitle ? (
+        {typeof subtitle === "string" || typeof subtitle === "number" ? (
           <p className="fa-window-subtitle">
             <TruncatedText>{subtitle}</TruncatedText>
           </p>
+        ) : subtitle ? (
+          // A node may be interactive: the window does not drag from it, and it truncates itself.
+          <div className="fa-window-subtitle" data-window-no-drag="">
+            {subtitle}
+          </div>
         ) : null}
       </div>
       {scope}

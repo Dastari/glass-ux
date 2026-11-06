@@ -133,7 +133,7 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
         <WindowFrame.AppBar
           icon={Icon ? <Icon /> : null}
           title={description.title}
-          subtitle={description.subtitle}
+          subtitle={getWindowKind(entry.kind)?.renderSubtitle?.(entry.params) ?? description.subtitle}
           scope={<WindowScopeChip scope={entry.scope} />}
           titleId={titleId}
           actionsRef={setActionsSlot}

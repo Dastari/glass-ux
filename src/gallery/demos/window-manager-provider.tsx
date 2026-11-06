@@ -15,6 +15,8 @@ import {
   IconTerminal,
 } from "../../icons/generated/icons.js";
 import { EntityHeader } from "../../shell/index.js";
+import { EntityIdentity } from "../../ui/entity/index.js";
+import { ActionContextMenu, defineActions } from "../../ui/actions/index.js";
 import { Button } from "../../ui/button/index.js";
 import { Menu } from "../../ui/menu/index.js";
 import { Toaster, toast } from "../../ui/toast/index.js";
@@ -421,6 +423,67 @@ function DashboardWorkspace() {
   );
 }
 
+const SUBJECT_ACTIONS = defineActions<string>("gallery.subject", [
+  { id: "open", label: "Open device", group: "open", primary: true, run: () => undefined },
+  { id: "copy", label: "Copy name", group: "open", run: () => undefined },
+]);
+const subjectChip = (endpoint: string) => (
+  <EntityIdentity
+    tier="chip"
+    name={endpoint}
+    kind="Device"
+    icon={<IconTaskManager />}
+    href={`#${endpoint}`}
+    actions={SUBJECT_ACTIONS}
+    target={endpoint}
+    preview={false}
+  />
+);
+
+registerWindowKind<SampleParams>({
+  kind: "gallery.subject",
+  title: () => "Terminal",
+  subtitle: (params) => params.endpoint,
+  renderSubtitle: (params) => subjectChip(params.endpoint),
+  renderDockItem: (item, params) => (
+    <ActionContextMenu set={SUBJECT_ACTIONS} targets={[params.endpoint]} label={params.endpoint}>
+      {item}
+    </ActionContextMenu>
+  ),
+  icon: IconList,
+  size: { w: 420, h: 260 },
+  minSize: { w: 280, h: 180 },
+  load: async () => ({ default: TerminalBody }),
+});
+
+/** A window whose subtitle is an identity the host draws, with the same actions on its dock item. */
+function SubjectSpecimen() {
+  const [manager] = useState(() => {
+    const store = createWindowManager({ storageKey: null, channelName: null });
+    store.open({ kind: "gallery.subject", params: { endpoint: "NST-C106" } });
+    return store;
+  });
+  return (
+    <WindowManagerProvider manager={manager}>
+      <div data-testid="window-subject">
+        <div className="gallery-wm-box" data-size="sm">
+          <WindowFrame.Root focused state="floating" aria-label="Terminal on NST-C106">
+            <WindowFrame.AppBar
+              icon={<IconList />}
+              title="Terminal"
+              subtitle={subjectChip("NST-C106")}
+              titleId="window-subject-title"
+            />
+          </WindowFrame.Root>
+        </div>
+        <div className="gallery-wm-dock-stage">
+          <Dock />
+        </div>
+      </div>
+    </WindowManagerProvider>
+  );
+}
+
 /** A dock with real entries: one focused, one minimised, one popped out. */
 function DockSpecimen() {
   const [manager] = useState(() => {
@@ -448,11 +511,20 @@ export default function WindowsSection() {
   return (
     <SectionPage>
       <Specimen
+        title="Subtitle as an identity"
+        description="A kind's renderSubtitle draws the subject in the title bar and the switcher. Its subtitle text stays the dock item's name."
+        layout="stack"
+        specimenKey="windows:default:0"
+      >
+        <SubjectSpecimen />
+      </Specimen>
+
+      <Specimen
         title="States"
         description="The layout is state, not position: a window keeps its intent (tiled, floating) when the screen changes size."
         wide
         layout="bare"
-        specimenKey="windows:default:1"
+        specimenKey="windows:default:2"
       >
         <div className="gallery-wm-states">
           <Example label="Tiled: a column beside the page (default at 1920px and wider)">
@@ -479,7 +551,7 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
-        specimenKey="windows:default:5"
+        specimenKey="windows:default:6"
       >
         <MiniWorkspace />
       </Specimen>
@@ -490,7 +562,7 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
-        specimenKey="windows:default:6"
+        specimenKey="windows:default:7"
       >
         <DashboardWorkspace />
       </Specimen>

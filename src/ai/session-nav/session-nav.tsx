@@ -1,7 +1,7 @@
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { sessionNavMessages } from "./messages.js"
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
 import {
   IconArchive,
   IconChat,
@@ -34,7 +34,7 @@ import { Skeleton } from "../../ui/skeleton/index.js";
 import { ToneDot } from "../../ui/tone-dot/index.js";
 import { Tooltip } from "../../ui/tooltip/index.js";
 import { useNow } from "../format.js";
-import type { AiProject, AiSession } from "../types.js";
+import type { AiProject, AiSession, EntityRef } from "../types.js";
 import { listFormat } from "../../lib/locale/intl.js"
 
 const DAY = 86_400_000;
@@ -72,6 +72,14 @@ export interface SessionNavProps {
   sessions: AiSession[];
   /** Projects offered by the host. */
   projects?: AiProject[];
+  /**
+   * Draw a session's organisation yourself, such as an identity chip with its actions, in place of
+   * the short code. `organisation` is null for a cross-client chat. It sits beside the row's button,
+   * so it may be interactive, and pressing it does not select the session. Return undefined to keep
+   * the short code for that row, and null to draw nothing. Not called when a session has no
+   * `organisation`.
+   */
+  renderOrganisation?: (organisation: EntityRef | null, session: AiSession) => ReactNode;
   /** The current session's id, or null for none; its row is marked current. Controlled while defined; leave it undefined to use `defaultSelectedId`. */
   selectedId?: string | null;
   /** The session current at first when the selection is uncontrolled. */
@@ -242,6 +250,7 @@ function RenameField({
 export function SessionNav({
   sessions,
   projects = [],
+  renderOrganisation,
   selectedId: selectedIdProp,
   defaultSelectedId,
   view = "conversations",
@@ -364,11 +373,17 @@ export function SessionNav({
       );
     }
     const status = getACTIVITY_WORDS(messages)[session.activity];
+    const organisation =
+      session.organisation === undefined
+        ? undefined
+        : renderOrganisation?.(session.organisation, session);
+    const drawn = organisation !== undefined;
     return (
       <li
         key={session.id}
         className="fa-ai-session"
         data-active={active ? "" : undefined}
+        data-organisation-slot={drawn ? "" : undefined}
       >
         <ActionContextMenu
           set={actions}
@@ -378,10 +393,12 @@ export function SessionNav({
           <ListRow
             title={<span className="fa-ai-session-title">{session.title}</span>}
             trailing={
-              <>
-                <SessionOrganisation organisation={session.organisation} />
-                <SessionState session={session} />
-              </>
+              drawn ? undefined : (
+                <>
+                  <SessionOrganisation organisation={session.organisation} />
+                  <SessionState session={session} />
+                </>
+              )
             }
             selected={active}
             className="fa-ai-session-row"
@@ -403,6 +420,12 @@ export function SessionNav({
             }}
           />
         </ActionContextMenu>
+        {drawn ? (
+          <span className="fa-ai-session-end">
+            <span className="fa-ai-session-org-slot">{organisation}</span>
+            <SessionState session={session} />
+          </span>
+        ) : null}
         <span className="fa-ai-session-menu">
           <ActionMenu set={actions} targets={[session]} label={session.title} />
         </span>

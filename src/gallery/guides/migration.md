@@ -26,6 +26,8 @@ Behaviour to review:
 - `ReferenceInput`: the kind filter no longer wraps. It scrolls in one row, and Alt ←/→ brings the
   chosen kind into view.
 - `DataTable` cards: a value holding a one-line element gives way before the field's label.
+- `WindowFrame.AppBar`: a `subtitle` that is an element, rather than a string or number, is no longer
+  wrapped in a truncating paragraph. It is drawn as given, so give it its own truncation.
 
 ## 0.16.2 → 0.16.3
 

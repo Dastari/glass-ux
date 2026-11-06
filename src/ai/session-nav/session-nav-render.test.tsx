@@ -42,3 +42,57 @@ describe("SessionNav selection", () => {
     expect(rowOf("Sample two")).not.toHaveAttribute("aria-current");
   });
 });
+
+describe("SessionNav renderOrganisation", () => {
+  const org = { kind: "organisation", id: "o-1", label: "Northwind Studio" };
+  const owned: AiSession[] = [
+    { id: "s-1", title: "Sample one", lastActivityAt: now, activity: "idle", organisation: org },
+    { id: "s-2", title: "Sample two", lastActivityAt: now, activity: "idle", organisation: null },
+    { id: "s-3", title: "Sample three", lastActivityAt: now, activity: "idle" },
+  ];
+  const row = (name: RegExp) => screen.getByRole("button", { name });
+
+  it("draws the host's node beside the row's button, and pressing it selects nothing", () => {
+    const onSelectedIdChange = vi.fn();
+    const press = vi.fn();
+    render(
+      <SessionNav
+        sessions={owned}
+        onSelectedIdChange={onSelectedIdChange}
+        renderOrganisation={(organisation, session) =>
+          organisation ? <button onClick={press}>{`${organisation.label} of ${session.title}`}</button> : undefined
+        }
+      />,
+    );
+    const chip = screen.getByRole("button", { name: "Northwind Studio of Sample one" });
+    expect(row(/^Sample one/).contains(chip)).toBe(false);
+    fireEvent.click(chip);
+    expect(press).toHaveBeenCalledTimes(1);
+    expect(onSelectedIdChange).not.toHaveBeenCalled();
+  });
+
+  it("keeps the short code on undefined, draws nothing on null, and skips a session with no organisation", () => {
+    const seen: string[] = [];
+    const { unmount } = render(
+      <SessionNav
+        sessions={owned}
+        renderOrganisation={(_organisation, session) => {
+          seen.push(session.id);
+          return undefined;
+        }}
+      />,
+    );
+    expect(new Set(seen)).toEqual(new Set(["s-1", "s-2"]));
+    expect(row(/^Sample one/).querySelector(".fa-ai-session-org")).toBeTruthy();
+    unmount();
+    render(<SessionNav sessions={owned} renderOrganisation={() => null} />);
+    expect(document.querySelector(".fa-ai-session-org")).toBeNull();
+    expect(row(/^Sample one/).closest("[data-organisation-slot]")).toBeTruthy();
+  });
+
+  it("keeps every row as it was without the option", () => {
+    render(<SessionNav sessions={owned} />);
+    expect(document.querySelector("[data-organisation-slot]")).toBeNull();
+    expect(row(/^Sample one/).querySelector(".fa-ai-session-org")).toBeTruthy();
+  });
+});

@@ -17,6 +17,8 @@ import {
   IconTerminal,
 } from "../../icons/generated/icons.js";
 import { EntityHeader } from "../../shell/index.js";
+import { EntityIdentity } from "../../ui/entity/index.js";
+import { ActionContextMenu, defineActions } from "../../ui/actions/index.js";
 import { Button } from "../../ui/button/index.js";
 import { Menu } from "../../ui/menu/index.js";
 import { Toaster, toast } from "../../ui/toast/index.js";
@@ -577,6 +579,67 @@ function DashboardWorkspace() {
   );
 }
 
+const SUBJECT_ACTIONS = defineActions<string>("gallery.subject", [
+  { id: "open", label: "Open device", group: "open", primary: true, run: () => undefined },
+  { id: "copy", label: "Copy name", group: "open", run: () => undefined },
+]);
+const subjectChip = (endpoint: string) => (
+  <EntityIdentity
+    tier="chip"
+    name={endpoint}
+    kind="Device"
+    icon={<IconTaskManager />}
+    href={`#${endpoint}`}
+    actions={SUBJECT_ACTIONS}
+    target={endpoint}
+    preview={false}
+  />
+);
+
+registerWindowKind<SampleParams>({
+  kind: "gallery.subject",
+  title: () => "Terminal",
+  subtitle: (params) => params.endpoint,
+  renderSubtitle: (params) => subjectChip(params.endpoint),
+  renderDockItem: (item, params) => (
+    <ActionContextMenu set={SUBJECT_ACTIONS} targets={[params.endpoint]} label={params.endpoint}>
+      {item}
+    </ActionContextMenu>
+  ),
+  icon: IconList,
+  size: { w: 420, h: 260 },
+  minSize: { w: 280, h: 180 },
+  load: async () => ({ default: TerminalBody }),
+});
+
+/** A window whose subtitle is an identity the host draws, with the same actions on its dock item. */
+function SubjectSpecimen() {
+  const [manager] = useState(() => {
+    const store = createWindowManager({ storageKey: null, channelName: null });
+    store.open({ kind: "gallery.subject", params: { endpoint: "NST-C106" } });
+    return store;
+  });
+  return (
+    <WindowManagerProvider manager={manager}>
+      <div data-testid="window-subject">
+        <div className="gallery-wm-box" data-size="sm">
+          <WindowFrame.Root focused state="floating" aria-label="Terminal on NST-C106">
+            <WindowFrame.AppBar
+              icon={<IconList />}
+              title="Terminal"
+              subtitle={subjectChip("NST-C106")}
+              titleId="window-subject-title"
+            />
+          </WindowFrame.Root>
+        </div>
+        <div className="gallery-wm-dock-stage">
+          <Dock />
+        </div>
+      </div>
+    </WindowManagerProvider>
+  );
+}
+
 /** A dock with real entries: one focused, one minimised, one popped out. */
 function DockSpecimen() {
   const [manager] = useState(() => {
@@ -604,11 +667,20 @@ export default function WindowsSection() {
   return (
     <SectionPage>
       <Specimen
+        title="Subtitle as an identity"
+        description="A kind's renderSubtitle draws the subject in the title bar and the switcher. Its subtitle text stays the dock item's name."
+        layout="stack"
+        specimenKey="windows:default:0"
+      >
+        <SubjectSpecimen />
+      </Specimen>
+
+      <Specimen
         title="Anatomy"
         description="A view in a frame (R14.1). The body supplies its actions and live state through slots; the frame is the same for every kind."
         wide
         layout="bare"
-        specimenKey="windows:default:0"
+        specimenKey="windows:default:1"
       >
         <div className="gallery-wm-anatomy">
           <StaticFrame size="lg" className="gallery-wm-annotated" />
@@ -628,7 +700,7 @@ export default function WindowsSection() {
         description="The layout is state, not position: a window keeps its intent (tiled, floating) when the screen changes size."
         wide
         layout="bare"
-        specimenKey="windows:default:1"
+        specimenKey="windows:default:2"
       >
         <div className="gallery-wm-states">
           <Example label="Tiled: a column beside the page (default at 1920px and wider)">
@@ -654,7 +726,7 @@ export default function WindowsSection() {
         description="Wrap an action in Window.Action to give it a priority. When the app bar runs out of room the title and scope chip give way first, then secondary actions fold into a trailing More menu, last first; a primary action and the window controls always stay."
         wide
         layout="stack"
-        specimenKey="windows:default:3"
+        specimenKey="windows:default:4"
       >
         <TerminalFrame width="wide" />
         <TerminalFrame width="medium" />
@@ -665,7 +737,7 @@ export default function WindowsSection() {
         title="Status bar"
         description="Background state lives here (R14.6): never a banner in the body. The toned item never truncates; metadata gives way first."
         layout="stack"
-        specimenKey="windows:default:4"
+        specimenKey="windows:default:5"
       >
         <Example label="Live">
           <StaticFrame size="sm" status="success" statusLabel="Connected" />
@@ -694,7 +766,7 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
-        specimenKey="windows:default:5"
+        specimenKey="windows:default:6"
       >
         <MiniWorkspace />
       </Specimen>
@@ -705,14 +777,14 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
-        specimenKey="windows:default:6"
+        specimenKey="windows:default:7"
       >
         <DashboardWorkspace />
       </Specimen>
 
       <ContainerLab
         description="The frame in a table row, a header, a grid tile, a pane and a tall narrow column. Short frames keep the title bar; narrow ones shed the icon and subtitle."
-        specimenKey="windows:default:8"
+        specimenKey="windows:default:9"
       >
         {() => (
           <div className="gallery-wm-fill">

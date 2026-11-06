@@ -563,7 +563,7 @@ export const ManagedWindow = /* @__PURE__ */ memo(function ManagedWindow({ entry
               ref={appBarRef}
               icon={Icon ? <Icon /> : null}
               title={title}
-              subtitle={subtitle}
+              subtitle={getWindowKind(entry.kind)?.renderSubtitle?.(entry.params) ?? subtitle}
               scope={<WindowScopeChip scope={entry.scope} />}
               titleId={titleId}
               actionsRef={setActionsSlot}

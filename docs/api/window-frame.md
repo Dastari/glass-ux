@@ -41,7 +41,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | controls | `ReactNode` | See type | no | — | Window controls (WindowControls). |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 | scope | `ReactNode` | See type | no | — | The window's organisation when it is not the current one (WindowScopeChip, R14.4). |
-| subtitle | `ReactNode` | See type | no | — | Data only (R2.2): the endpoint or organisation the window is about. |
+| subtitle | `ReactNode` | See type | no | — | Data only (R2.2): the endpoint or organisation the window is about. A string truncates with a tooltip; a node, such as an identity chip, is drawn as given and may be interactive. |
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
 | titleId | `string \| undefined` | See type | no | — | id for the title, so the frame can be labelled by it. |
 

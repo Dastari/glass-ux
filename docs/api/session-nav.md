@@ -33,6 +33,7 @@ narrowest up); the content never widens it.
 | onSelectProject | `((project: AiProject) => void) \| undefined` | See type | no | — | Called with the project whose row is pressed in the Projects group. |
 | onViewChange | `((view: SessionView) => void) \| undefined` | See type | no | — | Called with `conversations` or `archived` when the person picks Conversation history or Archived chats. Pair with `view` to switch the list. |
 | projects | `AiProject[] \| undefined` | See type | no | [] | Projects offered by the host. |
+| renderOrganisation | `((organisation: EntityRef \| null, session: AiSession) => ReactNode) \| undefined` | See type | no | — | Draw a session's organisation yourself, such as an identity chip with its actions, in place of the short code. `organisation` is null for a cross-client chat. It sits beside the row's button, so it may be interactive, and pressing it does not select the session. Return undefined to keep the short code for that row, and null to draw nothing. Not called when a session has no `organisation`. |
 | selectedId | `string \| null \| undefined` | See type | no | — | The current session's id, or null for none; its row is marked current. Controlled while defined; leave it undefined to use `defaultSelectedId`. |
 | sessions | `AiSession[]` | See type | yes | — | Conversations or sessions shown in the navigation. |
 | view | `SessionView \| undefined` | "conversations", "archived" | no | "conversations" | Currently selected presentation view. |

@@ -163,7 +163,7 @@ export default function WindowsSection() {
         description="Wrap an action in Window.Action to give it a priority. When the app bar runs out of room the title and scope chip give way first, then secondary actions fold into a trailing More menu, last first; a primary action and the window controls always stay."
         wide
         layout="stack"
-        specimenKey="windows:default:3"
+        specimenKey="windows:default:4"
       >
         <TerminalFrame width="wide" />
         <TerminalFrame width="medium" />

@@ -97,6 +97,51 @@
   .fa-ai-session-org + :is(.fa-ai-session-trail, .fa-ai-session-state) {
     margin-inline-start: 0;
   }
+  /* A host's organisation sits beside the row's button, so it can be interactive. The row keeps one
+     surface: the list item answers for hover and selection across both. */
+  .fa-ai-session[data-organisation-slot] {
+    align-items: center;
+    border-radius: var(--radius-item);
+    transition: background-color var(--duration-fast) var(--ease-standard);
+  }
+  .fa-ai-session[data-organisation-slot]:hover {
+    background-color: var(--fill-hover);
+  }
+  .fa-ai-session[data-organisation-slot][data-active] {
+    background-color: var(--accent-soft);
+  }
+  .fa-ai-session[data-organisation-slot][data-active]:hover {
+    background-color: var(--accent-soft-hover);
+  }
+  .fa-ai-session[data-organisation-slot] .fa-ai-session-row,
+  .fa-ai-session[data-organisation-slot] .fa-ai-session-row:is(:hover, :active, [aria-current="page"], [data-selected]):not([data-disabled]) {
+    flex: 1 1 0;
+    min-width: 0;
+    background-color: transparent;
+  }
+  .fa-ai-session-end {
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: var(--space-1-5);
+    min-width: 0;
+    max-inline-size: 60%;
+    padding-inline-end: var(--space-2);
+  }
+  /* The organisation gives way first: the time stays whole, and a chip truncates inside this. */
+  .fa-ai-session-org-slot {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  /* The row's menu takes this place on hover, so it never covers the organisation. */
+  .fa-ai-session-end > :is(.fa-ai-session-trail, .fa-ai-session-state) {
+    flex: none;
+    justify-content: flex-end;
+    min-inline-size: var(--control-h-xs);
+    padding-inline-start: 0;
+    margin-inline-start: 0;
+  }
   .fa-ai-session-trail,
   .fa-ai-session-state {
     display: inline-flex;

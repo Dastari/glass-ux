@@ -8,7 +8,7 @@ import { getWindowsMessages } from "./messages.js"
  * sizes without depending on a UI framework. The lazy body components are created in
  * window-content.tsx.
  */
-import type { ComponentType } from "react"
+import type { ComponentType, ReactElement, ReactNode } from "react"
 import type { IconComponent } from "../ui/icon/index.js"
 import type { WindowParams } from "./types.js"
 
@@ -24,6 +24,17 @@ export interface WindowKindDefinition<P extends WindowParams = WindowParams> {
   title: (params: P) => string
   /** A data subtitle (R2.2): the endpoint, organisation or user the window is about. */
   subtitle?: (params: P) => string | undefined
+  /**
+   * Draw the subtitle yourself, such as an inline identity chip with its actions, in the title bar
+   * and the window switcher. Keep `subtitle` as well: its text stays the document title, and the dock
+   * item's tooltip and accessible name.
+   */
+  renderSubtitle?: (params: P) => ReactNode
+  /**
+   * Wrap the window's dock item. A dock item is an icon button and cannot hold a chip, so this is
+   * where its subject's actions go: `(item) => <ActionContextMenu set={…} targets={…} label={…}>{item}</ActionContextMenu>`.
+   */
+  renderDockItem?: (item: ReactElement, params: P) => ReactElement
   /**
    * The tenant scope (organisation id) a window of this kind belongs to, from its params:
    * a terminal belongs to its endpoint's organisation. Read once, when the window opens, and

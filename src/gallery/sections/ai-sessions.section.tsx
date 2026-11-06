@@ -11,6 +11,7 @@ import {
   ConversationContext,
   ConversationLog,
   DesktopSession,
+  EntityChip,
   SessionNav,
   SuggestionChips,
   type DesktopState,
@@ -166,6 +167,23 @@ export default function AiSessionsSection() {
               </div>
             </Example>
           ))}
+        </Specimen>
+
+        <Specimen
+          title="Organisation as an identity"
+          description="renderOrganisation draws a session's organisation beside its row, so it can carry a link, actions and a preview."
+          layout="bare"
+        >
+          <div className="glass-control ai-drawer-sample" data-testid="session-organisation-slot">
+            <SessionNav
+              sessions={SESSIONS.slice(0, 4)}
+              defaultSelectedId={SESSIONS[0]?.id}
+              onNewChat={() => {}}
+              renderOrganisation={(organisation) =>
+                organisation ? <EntityChip entity={organisation} size="sm" preview={false} glyph={false} /> : undefined
+              }
+            />
+          </div>
         </Specimen>
 
         <Specimen

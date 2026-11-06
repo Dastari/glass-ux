@@ -52,6 +52,10 @@ export interface AutocompleteProps<V extends string = string> {
   id?: string
   /** Called when the text input loses focus, so a form can mark the field touched. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
+  /** Called when the text input takes focus. */
+  onFocus?: (event: FocusEvent<HTMLInputElement>) => void
+  /** Open the list on a click in the text, for text that is already there to search from. Default: only when the source has `suggestions`. */
+  openOnInputClick?: boolean
   /** Layout only. Applied to the control box. */
   className?: string
   ref?: Ref<HTMLInputElement>
@@ -86,6 +90,8 @@ export function Autocomplete<V extends string = string>({
   name,
   id,
   onBlur,
+  onFocus,
+  openOnInputClick,
   className,
   ref,
   ...aria
@@ -135,7 +141,7 @@ export function Autocomplete<V extends string = string>({
       }}
       filter={null}
       itemToStringValue={(item: OptionItem<V>) => (fill === "value" ? item.value : item.label)}
-      openOnInputClick={Boolean(source?.suggestions?.length)}
+      openOnInputClick={openOnInputClick ?? Boolean(source?.suggestions?.length)}
       autoHighlight
       disabled={disabled}
       readOnly={readOnly}
@@ -157,6 +163,7 @@ export function Autocomplete<V extends string = string>({
           ref={ref}
           placeholder={placeholder}
           aria-invalid={invalid || undefined}
+          onFocus={onFocus}
           onBlur={(event) => {
             // Base UI reports no close for a popup held shut, and results may still arrive.
             setWantsOpen(false)

@@ -102,6 +102,13 @@ export interface AddressOptions {
   map?: MapConfig
   /** The lookup's placeholder. */
   placeholder?: string
+  /**
+   * Text the lookup starts with, such as an older free-text address the parts cannot hold. It is
+   * sent to the geocoder only once the person comes to the lookup, so opening a form asks nothing;
+   * a click or ↓ then shows the suggestions. Read when the field mounts: give the field a new `key`
+   * for another record.
+   */
+  defaultQuery?: string
   disabled?: boolean
 }
 
@@ -168,6 +175,7 @@ export function AddressEditor({
   homeCountry = "AU",
   map,
   placeholder,
+  defaultQuery,
   disabled,
   className,
 }: EditorProps) {
@@ -175,7 +183,9 @@ export function AddressEditor({
 
   const locale = useLocale()
   const [manual, setManual] = useState(false)
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState(defaultQuery ?? "")
+  // A seeded lookup waits for the person: mounting must not send an address to the geocoder.
+  const [engaged, setEngaged] = useState(!defaultQuery)
   const expanded = manual || !isEmptyAddress(value)
   const shownError = error ?? (!expanded ? emptyError : undefined)
   // Every suggestion seen, so a cached result list still resolves to its address.
@@ -271,9 +281,11 @@ export function AddressEditor({
         }
       >
         <Autocomplete<string>
-          source={source}
+          source={engaged ? source : undefined}
           value={query}
           onValueChange={setQuery}
+          onFocus={() => setEngaged(true)}
+          openOnInputClick={Boolean(defaultQuery)}
           onPick={pick}
           icon={<IconSearch />}
           placeholder={placeholder ?? messages.startTypingAnAddress}

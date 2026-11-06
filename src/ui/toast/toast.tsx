@@ -110,6 +110,10 @@ function ToastItem({ item }: { item: ReturnType<typeof BaseToast.useToastManager
       toast={item}
       className="glass-overlay glass-detached fa-toast"
       data-tone={tone}
+      // Base UI names every toast a dialog. It is a labelled notice, announced by the viewport's
+      // live region, and never takes focus on its own.
+      role="group"
+      aria-modal={undefined}
       swipeDirection={phone ? "up" : [direction === "rtl" ? "left" : "right", "down"]}
     >
       <BaseToast.Content className="fa-toast-content">

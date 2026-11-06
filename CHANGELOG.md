@@ -4,6 +4,27 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.17.1
+
+### Added
+
+- MeterCell and Meter: `tone="success"` is green for a level where more is good, such as licence
+  seats all assigned. It has no thresholds, so a full bar stays green, unless you set `warningAt`
+  or `dangerAt`.
+- DataTable: `filterOnly` on a column gives a filter with no column. It appears in the Filters menu
+  and matches rows, and is never drawn, listed in the column menu, shown on a card or exported.
+- Switch: `disabledReason` turns it off, keeps it in the Tab order and shows the reason as its
+  tooltip and description. `focusableWhenDisabled` keeps a disabled switch reachable.
+
+### Fixed
+
+- DataTable: an open bulk action bar covered the pager, so the next page could not be reached. They
+  now share the line, and the bar wraps above the pager when both will not fit.
+- ReferenceInput: a read-only relation label, as with `direction="from"`, touched its chip. It now
+  has the editable row's gap.
+- ContextMenu, and so EntityIdentity, EntityChip and every other long-pressable link: lifting a long
+  press clicked the link while the menu it opened was still up, which navigated away.
+
 ## 0.17.0
 
 ### Removed

@@ -14,6 +14,8 @@ a Save.
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | description | `ReactNode` | See type | no | — | Second line: what turning it on does. |
+| disabledReason | `string \| undefined` | See type | no | — | Why it is disabled: turns it off, keeps it in the Tab order, and shows this as its tooltip and description. |
+| focusableWhenDisabled | `boolean \| undefined` | false, true | no | — | Keep a disabled switch in the Tab order, so its state and name can be reached. Default false. |
 | icons | `boolean \| undefined` | false, true | no | — | ✓ / ✕ inside the bead (md and lg). |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
 | label | `ReactNode` | See type | no | — | Label beside the switch. Omit when a Field (or an aria-label) names it. |

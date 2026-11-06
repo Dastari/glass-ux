@@ -3,6 +3,17 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.17.0 → 0.17.1
+
+No code edits are needed.
+
+Behaviour to review:
+
+- `DataTable`: with rows selected on a table with pages, the pager stays in the Tab order after the
+  bar's actions, and the status text next to it hides. On a narrow table the footer takes two lines.
+- A link inside a `ContextMenu.Trigger`: the click that follows a long press which opened the menu no
+  longer reaches the link's `onClick`.
+
 ## 0.16.2 → 0.17.0
 
 Baked glass rendering has been removed. It had to return to the live blur whenever a scroller moved

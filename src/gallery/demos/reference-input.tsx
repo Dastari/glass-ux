@@ -43,7 +43,13 @@ const source: ReferenceSource = {
     ),
 };
 const relations = [
-  { value: "assigned-to", label: "Assigned to", kinds: ["person"], exclusive: true },
+  {
+    value: "assigned-to",
+    label: "Assigned to",
+    inverseLabel: "Assignee of",
+    kinds: ["person"],
+    exclusive: true,
+  },
   { value: "related", label: "Related to" },
 ];
 
@@ -147,10 +153,27 @@ export default function ReferenceInputSection() {
         <Demo readOnly />
       </Specimen>
       <Specimen
+        title="Backlinks"
+        description='direction="from" lists what links here, read with each relation&apos;s inverse label.'
+        layout="stack"
+        specimenKey="reference-input:default:1"
+      >
+        <div data-testid="ref-backlinks">
+          <ReferenceInput
+            aria-label="Linked from"
+            direction="from"
+            source={source}
+            kinds={kinds}
+            relations={relations}
+            value={[{ target: targets[0]!, relation: "assigned-to" }]}
+          />
+        </div>
+      </Specimen>
+      <Specimen
         title="Many kinds"
         description="The kind filter keeps to one row and scrolls, so fourteen kinds leave the results their room. Alt ← → moves through them and brings the chosen one into view."
         layout="stack"
-        specimenKey="reference-input:default:1"
+        specimenKey="reference-input:default:2"
       >
         <div className="w-full" data-testid="reference-many-kinds">
           <ManyKinds />
@@ -160,13 +183,13 @@ export default function ReferenceInputSection() {
         title="Add label"
         description="addLabel names the add button for this field; every other field keeps the referenceInput.link message."
         layout="stack"
-        specimenKey="reference-input:default:2"
+        specimenKey="reference-input:default:3"
       >
         <div className="w-full" data-testid="reference-tags">
           <Tags />
         </div>
       </Specimen>
-      <ContainerLab specimenKey="reference-input:default:3">{() => <Demo />}</ContainerLab>
+      <ContainerLab specimenKey="reference-input:default:4">{() => <Demo />}</ContainerLab>
     </SectionPage>
   );
 }

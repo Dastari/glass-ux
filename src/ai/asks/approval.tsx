@@ -131,6 +131,9 @@ function Expiry({ at, onExpire }: { at: number; onExpire: () => void }) {
  * footer into Back and the single solid button. Esc goes back.
  * Decisions confirm in the button, then the card folds into its record, which shows the run
  * and updates in place.
+ *
+ * `ask.disabled` or `ask.disabledReason` keeps the card and turns its decisions off. Back stays
+ * usable, so a card disabled during the second step can still leave it.
  */
 export function ApprovalCard({ ask }: {
   /** The approval request and its current state; once decided the card folds into its record. */
@@ -209,6 +212,8 @@ export function ApprovalCard({ ask }: {
 
   const tier = ask.stepUp ? messages.assuredMfa : messages.confirm;
   const approveLabel = ask.stepUp ? messages.approveWithMfa : messages.approveOnce;
+  // On each decision control: it stays focusable, so focus and the reason survive a live change (R11.3).
+  const unavailable = ask.disabled || ask.disabledReason ? { disabled: true, disabledReason: ask.disabledReason, focusableWhenDisabled: true } : undefined;
 
   return (
     <AskShell
@@ -252,6 +257,7 @@ export function ApprovalCard({ ask }: {
               pendingLabel={messages.denying}
               successLabel={messages.deniedStatus}
               onAction={() => decide("deny")}
+              {...unavailable}
             >
               {messages.deny} </ActionButton>
           )
@@ -264,6 +270,7 @@ export function ApprovalCard({ ask }: {
               pendingLabel={messages.approving}
               successLabel={messages.approved}
               onAction={() => decide("approve")}
+              {...unavailable}
             >
               {approveLabel}
             </ActionButton>
@@ -275,6 +282,7 @@ export function ApprovalCard({ ask }: {
               pendingLabel={messages.approving}
               successLabel={messages.approved}
               onAction={() => decide("approve")}
+              {...unavailable}
             >
               {approveLabel}
             </ActionButton>
@@ -285,12 +293,16 @@ export function ApprovalCard({ ask }: {
               size="sm"
               icon={ask.stepUp ? <IconLock /> : undefined}
               onClick={() => step(true)}
+              {...unavailable}
             >
               {messages.reviewAndApprove} </Button>
           )
         }
       >
         <div className="fa-ai-approval">
+          {ask.disabledReason ? (
+            <Notice tone="warning">{ask.disabledReason}</Notice>
+          ) : null}
           <div
             className="fa-ai-approval-targets"
             role="group"
@@ -330,6 +342,7 @@ export function ApprovalCard({ ask }: {
                   checked={allow}
                   onCheckedChange={setAllow}
                   tone="warning"
+                  disabled={Boolean(unavailable)}
                 />
               }
             />

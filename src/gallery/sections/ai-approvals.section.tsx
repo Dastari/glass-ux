@@ -111,6 +111,11 @@ export default function AiApprovalsSection() {
           <ApprovalCard ask={{ ...APPROVAL("pending"), id: "step-up", stepUp: true, allowForSession: false }} />
         </Specimen>
 
+        <Specimen title="Disabled" description="The request stays readable and its expiry keeps counting, but it cannot be decided here. A stated reason shows in the card and on the disabled buttons." layout="stack">
+          <ApprovalCard ask={{ ...APPROVAL("pending"), id: "disabled-reason", disabledReason: "The command preview could not be loaded. Reload the conversation to decide." }} />
+          <ApprovalCard ask={{ ...APPROVAL_DANGER, id: "disabled-plain", disabled: true }} />
+        </Specimen>
+
         <Specimen title="In a conversation" description="Never modal: the card waits in the ask dock above the composer, the transcript keeps a marker with Review at its place, and the agent carries on with work that does not depend on it." wide layout="stack">
           <DockedApproval />
         </Specimen>

@@ -381,6 +381,17 @@ export interface ApprovalAsk {
   allowForSession?: boolean;
   /** "PowerShell", "Software update": what kind of action the grant covers. */
   actionKind?: string;
+  /**
+   * The person cannot decide this request here right now. Deny, Approve and the switch stay in
+   * place, disabled, and the expiry keeps counting. A decided request's record is unaffected.
+   * @defaultValue false
+   */
+  disabled?: boolean;
+  /**
+   * Why the request cannot be decided ("The command preview could not be loaded"). Implies
+   * `disabled`: it shows in the card and is the disabled buttons' tooltip and description (R11.3).
+   */
+  disabledReason?: string;
   /** Controlled view state, including loading, empty and error states. */
   state: ApprovalState;
   /** Actor display name for legacy records. */

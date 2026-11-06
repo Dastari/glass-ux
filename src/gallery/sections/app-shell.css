@@ -179,6 +179,13 @@
   .gallery-shell-rail-frame > .fa-shell-rail {
     flex: none;
   }
+  /* A bounded shell, for the rail's labelled column beside the drawer. */
+  .gallery-shell-labelled {
+    position: relative;
+    block-size: 30rem;
+    inline-size: 100%;
+    overflow: hidden;
+  }
   .gallery-shell-rail-frame-side {
     display: flex;
     flex-direction: column;

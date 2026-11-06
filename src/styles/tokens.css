@@ -196,6 +196,7 @@
     /* ── Shell ─────────────────────────────────────────────────────────────── */
     --sidebar-w: 16.5rem;
     --sidebar-w-rail: 4.5rem;
+    --sidebar-w-rail-labelled: 5.5rem;
     --topbar-h: 4rem;
     --bottombar-h: 4rem;
     --inspector-w: clamp(22rem, 24vw, 34rem);

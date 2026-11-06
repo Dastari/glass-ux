@@ -3,6 +3,9 @@
  * targets: hover is a fill-hover tile, the current section an accent-soft tile with an
  * accent icon. Icons are navigation size (lg, R19.2).
  *
+ * With data-labels the rail is wider (--sidebar-w-rail-labelled) and every item spans it, an
+ * icon over its name as on the TabBar. AppShell's grid follows the rail's width.
+ *
  * Component tokens
  *   --_size   an item's square (the touch-target minimum, so it is never too small)
  */
@@ -87,6 +90,62 @@
   }
   .fa-shell-rail-item[data-active]:hover {
     background-color: var(--accent-soft-hover);
+  }
+
+  /* ── Labels ─────────────────────────────────────────────────────────────── */
+  .fa-shell-rail[data-labels] {
+    inline-size: var(--sidebar-w-rail-labelled);
+  }
+  /* The list scrolls, so it keeps room for the focus ring beside the full-width items. */
+  .fa-shell-rail[data-labels] .fa-shell-rail-list {
+    align-items: stretch;
+    padding: max(var(--space-1), var(--focus-reach));
+  }
+  /* Hidden, an item keeps the width it has when shown, so it measures the same height. */
+  .fa-shell-rail[data-labels] .fa-shell-rail-entry[data-overflowed] {
+    inset-inline: max(var(--space-1), var(--focus-reach));
+  }
+  .fa-shell-rail[data-labels] .fa-shell-rail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-half);
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    min-height: var(--_size);
+    padding: var(--space-1-5) var(--space-half);
+    font: inherit;
+    text-decoration: none;
+  }
+  .fa-shell-rail-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+  .fa-shell-rail-icon > svg {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+  }
+  /* Badges on the icon's corner, where they sit on an icon-only item. */
+  .fa-shell-rail-icon > .fa-count[data-overlay] {
+    position: absolute;
+    inset-block-start: calc(var(--space-1) * -1);
+    inset-inline-end: calc(var(--space-2-5) * -1);
+  }
+  .fa-shell-rail-icon > .fa-notify-dot {
+    inset-block-start: calc(var(--space-half) * -1);
+    inset-inline-end: calc(var(--space-half) * -1);
+  }
+  .fa-shell-rail-label {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: var(--type-overline-size);
+    line-height: var(--type-overline-line);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* The product mark over the rail, in the top-left corner. */

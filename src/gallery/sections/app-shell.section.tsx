@@ -4,7 +4,7 @@ import { MOCK_ORGANISATIONS, PORTRAITS, toContextItem } from "../fixtures/organi
 import { WORKSPACE_SETTINGS, ORGANISATION_SETTINGS, moduleRail } from "../fixtures/brand.js"
 import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { IconAi, IconArchive, IconAlerts, IconCalendar, IconDashboard, IconEndpoint, IconFolder, IconHistory, IconInbox, IconNewChat, IconOrganisation, IconReporting, IconSearch, IconSettings, IconTickets, IconUsers,  } from "../../icons/generated/icons.js"
-import { AccountButton, EntityHeader, EntityHeaderSkeleton, Rail, SearchTrigger, SectionDrawer, TabBar, TopBar, TopBarSettingsButton,  } from "../../shell/index.js"
+import { AccountButton, AppShell, EntityHeader, EntityHeaderSkeleton, Rail, SearchTrigger, SectionDrawer, ShellBrand, TabBar, TopBar, TopBarSettingsButton,  } from "../../shell/index.js"
 import { ContextSwitcher } from "../../shell/context-switcher/index.js"
 import { ActionBar } from "../../ui/actions/index.js"
 import { CountBadge, StatusBadge, StatusDot } from "../../ui/badge/index.js"
@@ -70,13 +70,14 @@ const OVERFLOW_ITEMS = [
   { label: "Inbox", icon: <IconInbox /> },
 ]
 
-function RailOverflowFrame() {
+function RailOverflowFrame({ labels = false }: { labels?: boolean }) {
   const [current, setCurrent] = useState("Projects")
   const [overflow, setOverflow] = useState<"more" | "scroll">("more")
   const scope = useContext(DemoScope)
+  const name = labels ? "Rail labels (specimen)" : "Rail overflow (specimen)"
   return (
-    <div className="gallery-shell-rail-frame" data-testid="rail-overflow">
-      <Rail.Root aria-label={scope ? `Rail overflow (specimen): ${scope}` : "Rail overflow (specimen)"} overflow={overflow}>
+    <div className="gallery-shell-rail-frame" data-testid={labels ? "rail-labels" : "rail-overflow"}>
+      <Rail.Root aria-label={scope ? `${name}: ${scope}` : name} overflow={overflow} labels={labels}>
         {OVERFLOW_ITEMS.map((item) => (
           <Rail.Item
             key={item.label}
@@ -103,6 +104,45 @@ function RailOverflowFrame() {
         />
         <p className="type-caption text-fg-muted">{current}</p>
       </div>
+    </div>
+  )
+}
+
+/** Rail labels in a working shell: the rail's column, the mark above it and the drawer beside it. */
+function LabelledRailShell() {
+  const scope = useContext(DemoScope)
+  const prefix = scope ? `${scope}: ` : ""
+  return (
+    <div className="gallery-shell-labelled" data-testid="rail-labels-shell">
+      <AppShell
+        contentAs="div"
+        className="h-full!"
+        brand={<ShellBrand label="Meridian" href="#examples" mark={<IconOrganisation />} />}
+        rail={
+          <Rail.Root aria-label={`${prefix}Labelled rail sample navigation`} labels>
+            <Rail.Item icon={<IconFolder />} label="Projects" active />
+            <Rail.Item icon={<IconCalendar />} label="Calendar" />
+            <Rail.Item icon={<IconInbox />} label="Inbox" badge={<CountBadge value={4} tone="accent" overlay aria-hidden />} />
+            <Rail.Item icon={<IconOrganisation />} label="Organisations" />
+            <Rail.Spacer />
+            <Rail.Item icon={<IconSettings />} label="Settings" />
+          </Rail.Root>
+        }
+        drawer={
+          <SectionDrawer.Root aria-label={`${prefix}Labelled rail sample sections`}>
+            <SectionDrawer.Header title="Projects" />
+            <SectionDrawer.Body>
+              <SectionDrawer.List>
+                <SectionDrawer.Item label="Exhibition" count={3} active />
+                <SectionDrawer.Item label="Archive" />
+              </SectionDrawer.List>
+            </SectionDrawer.Body>
+          </SectionDrawer.Root>
+        }
+        topBar={<span>Projects / Exhibition</span>}
+      >
+        <p className="p-5">Sample project workspace</p>
+      </AppShell>
     </div>
   )
 }
@@ -252,7 +292,7 @@ const BREAKPOINTS: Array<[string, string]> = [
 
 const SLOTS: Array<[string, string]> = [
   ["AppShell.brand", "ShellBrand: the product mark over the rail (the configured BrandMark product mark by default)."],
-  ["AppShell.rail", "Rail.Root with Rail.Item (icon, label, shortcut, active, render link) and Rail.Spacer. Items that do not fit move into a More menu."],
+  ["AppShell.rail", "Rail.Root (labels draws names under the icons) with Rail.Item (icon, label, shortcut, active, render link) and Rail.Spacer. Items that do not fit move into a More menu."],
   ["AppShell.drawer", "SectionDrawer for the current section; omit for none. Docked, resizable and collapsible on desktops, a left Sheet below. SectionDrawer.Search (between Header and Body, fixed while the list scrolls) filters the list with local state: / or ⌘F / Ctrl F focuses it from anywhere in the drawer, ↓ enters the list, Esc clears and then returns focus; highlight with SectionDrawer.Match, or hand the query to a Tree. SectionDrawer.Body fill hands the height to a Tree that scrolls itself; useDrawerDismiss closes the sheet after a choice."],
   ["AppShell.topBar", "TopBar with scope (ContextSwitcher: the organisation or project in the URL, first after the logo), breadcrumb (RouteBreadcrumb after the scope, fed from route matches), search (SearchTrigger → useCommandPalette().open), actions and account (AccountButton with the shared Avatar, a Menu trigger)."],
   ["Workspace.scopes", "The current organisation and how to draw one. Windows from another organisation show its chip; the dock groups by organisation (R14.4)."],
@@ -314,12 +354,20 @@ export default function AppShellSection() {
         )}
       </ContainerLab>
 
-      <Specimen title="Rail and section drawer" description="An icon-only rail with labelled tooltips, and a resizable drawer for the section's navigation. The rail's gear opens the current organisation's settings. mod+B or the current rail item toggles the drawer.">
+      <Specimen title="Rail and section drawer" description="An icon-only rail with tooltips, and a resizable drawer for the section's navigation. The rail's gear opens the current organisation's settings. mod+B or the current rail item toggles the drawer.">
         <RailAndDrawer />
       </Specimen>
 
       <Specimen title="Rail overflow" description="Items that do not fit the rail's height move into a More menu, before the spacer, or the column scrolls. The current section stays visible, and an item chosen from the menu joins the rail. Drag the frame's bottom edge to change the height.">
         <RailOverflowFrame />
+      </Specimen>
+
+      <Specimen title="Rail labels" description="labels on Rail.Root draws every item's name under its icon, More included. Items that do not fit still move into More, and a name too long for the column ends in an ellipsis with the full name in its tooltip.">
+        <RailOverflowFrame labels />
+      </Specimen>
+
+      <Specimen title="Rail labels in the shell" description="The shell's rail column follows the labelled rail's width, with the mark above it." wide layout="stack">
+        <LabelledRailShell />
       </Specimen>
 
       <Specimen title="Top bar" description="The application context: organisation switcher, search, settings and the account with its notification badge. As the bar narrows, the organisation and account fold to avatars and search to a button." wide layout="stack">
@@ -393,6 +441,7 @@ export default function AppShellSection() {
       <TokenTable
         tokens={[
           ["--sidebar-w-rail", "Rail column"],
+          ["--sidebar-w-rail-labelled", "Rail column with labels"],
           ["--sidebar-w", "Default section drawer width"],
           ["--topbar-h", "Top bar row"],
           ["--bottombar-h", "Phone tab bar"],

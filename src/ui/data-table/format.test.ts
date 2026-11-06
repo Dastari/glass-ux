@@ -16,6 +16,15 @@ describe("format", () => {
     expect(formatRelative(now - 2 * 86_400_000, now)).toBe("2 days ago")
   })
 
+  it("reads a time the shared clock has not caught up with as just now", () => {
+    const now = Date.UTC(2026, 9, 13, 12)
+    expect(formatRelative(now + 1, now)).toBe("just now")
+    expect(formatRelative(now + 15_000, now)).toBe("just now")
+    expect(formatRelative(now + 19_999, now)).toBe("just now")
+    expect(formatRelative(now + 20_000, now)).toBe("in less than a minute")
+    expect(formatRelative(now + 2 * 60_000, now)).toBe("in 2 min")
+  })
+
   it("pluralises counts", () => {
     expect(formatCount(1, { one: "endpoint", other: "endpoints" })).toBe("1 endpoint")
     expect(formatCount(1284, { one: "endpoint", other: "endpoints" })).toBe("1,284 endpoints")

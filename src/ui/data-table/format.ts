@@ -72,7 +72,16 @@ export function toTime(value: Date | number | string) {
       : Date.parse(value);
 }
 
-/** m.justNow, "2 min ago", "3 h ago", "2 days ago", then a date in `locale`. */
+/**
+ * How far ahead of `now` a time still counts as now: one tick of the shared clock (15 s, so `now`
+ * can lag a time just taken) and a few seconds of difference between two machines' clocks.
+ */
+const CLOCK_TOLERANCE = 20_000;
+
+/**
+ * m.justNow, "2 min ago", "3 h ago", "2 days ago", then a date in `locale`. A time up to 20 seconds
+ * ahead is m.justNow, since the shared clock can lag it; a later one reads as being ahead.
+ */
 export function formatRelative(
   value: Date | number | string,
   now: number,
@@ -84,6 +93,7 @@ export function formatRelative(
   if (Number.isNaN(time)) return "—";
   if (delta < 0) {
     const ahead = -delta;
+    if (ahead < CLOCK_TOLERANCE) return m.justNow;
     if (ahead < MINUTE) return m.lessThanMinute;
     if (ahead < HOUR) return m.minutesAhead(Math.ceil(ahead / MINUTE));
     if (ahead < DAY) return m.hoursAhead(Math.ceil(ahead / HOUR));

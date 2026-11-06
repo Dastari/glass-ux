@@ -147,12 +147,12 @@ test("a surface takes its own level, never more transparent than the page's", as
 
 test("the documentation toolbar switches blur and remembers it", async ({ page }) => {
   await open(page);
-  await page.locator('.docs-header [aria-label="Blur"]').getByText("Off").first().click();
+  await page.locator('.docs-header [aria-label="Blur"]').getByText("None").first().click();
   await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "none");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "none");
   expect((await material(page, PANE)).blur).toBe("none");
-  await page.locator('.docs-header [aria-label="Blur"]').getByText("On").first().click();
+  await page.locator('.docs-header [aria-label="Blur"]').getByText("Live").first().click();
   await expect(page.locator("html")).not.toHaveAttribute("data-glass-rendering", /./);
   expect((await material(page, PANE)).blur).toContain("blur(");
 });

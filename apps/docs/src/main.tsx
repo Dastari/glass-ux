@@ -153,8 +153,8 @@ function useGlassRendering(): GlassRendering {
   );
 }
 const RENDERING_OPTIONS: Array<{ value: GlassRendering; label: string }> = [
-  { value: "live", label: "On" },
-  { value: "none", label: "Off" },
+  { value: "live", label: "Live" },
+  { value: "none", label: "None" },
 ];
 
 function RepositoryLink() {

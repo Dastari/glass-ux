@@ -12,6 +12,7 @@ a prompt for more characters. Rows are exactly one option tall.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+| errorText | `ReactNode` | See type | no | — | The error row's wording, for a source that knows more than the default "Search failed". It wraps. |
 | needsMore | `number \| undefined` | See type | no | 0 | Characters still needed before searching. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called when Retry is pressed in the error row. Without it the error row has no Retry button. |
 | status | `SearchStatus` | "idle", "error", "loading", "refreshing" | yes | — | Current operation or connection status. |

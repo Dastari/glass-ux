@@ -10,6 +10,7 @@ The swatch alone: identity is a coloured mark beside text, never coloured text.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+| color | `string \| undefined` | See type | no | — | A colour the series means, in place of its slot's. |
 | hidden | `boolean \| undefined` | false, true | no | false | Shows the swatch as switched off (its series is hidden); defaults to false. |
 | shape | `SwatchShape \| undefined` | "line", "dot", "box" | no | "box" | Mark shape to mirror; defaults to "box". |
 | slot | `number \| undefined` | See type | no | — | Categorical slot 1–8; defaults to 1. Ignored when `tone` is set. |

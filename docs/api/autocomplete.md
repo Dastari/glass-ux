@@ -18,6 +18,7 @@ list or an async source and use the same rows as Select and Combobox.
 | defaultValue | `string \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | empty | `((query: string) => ReactNode) \| undefined` | See type | no | — | Text for the empty row (only while a source has answered). Default: none. |
+| errorText | `ReactNode` | See type | no | — | What the list says when a source's search fails, in place of the default "Search failed" text. Retry stays beside it. |
 | fill | `"label" \| "value" \| undefined` | "label", "value" | no | "label" | What choosing a suggestion puts in the field: its label (default) or its value. |
 | footer | `ReactNode` | See type | no | — | A quiet line at the foot of the suggestions: a data source's attribution. |
 | icon | `ReactNode` | See type | no | — | Leading icon. |

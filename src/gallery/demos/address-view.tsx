@@ -41,7 +41,7 @@ export default function AddressFieldSection() {
         title="Read-only"
         description="AddressView: the postal block in a recessed well with Copy, and the map when the address has a position. Put it in a Field for its label."
         layout="grid"
-        specimenKey="address-field:default:5"
+        specimenKey="address-field:default:6"
       >
         <FormStack>
           <Field label="Address" hint="Change it in the organisation's settings.">
@@ -71,7 +71,7 @@ export default function AddressFieldSection() {
         presets={CONTAINER_PRESETS.filter(
           (preset) => preset.id !== "row" && preset.id !== "header",
         )}
-        specimenKey="address-field:default:7"
+        specimenKey="address-field:default:8"
       >
         <div className="h-full overflow-y-auto p-3" data-scroll-container>
           <FormStack>

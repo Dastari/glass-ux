@@ -3,6 +3,35 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.17.1 → 0.18.0
+
+Breaking:
+
+- `addressField.lookupStatusError` is gone. If you override it through `configureMessages` or a language
+  pack, remove the override; `addressLookupFailed` is the message for that error.
+
+```ts
+// Before
+configureMessages({ addressField: { lookupStatusError: (status) => `Lookup failed: ${status}` } })
+// After
+configureMessages({ addressField: { addressLookupFailed: (status) => `Lookup failed: ${status}` } })
+```
+
+Behaviour to review:
+
+- `Toolbar.Group` with a choice folds tool by tool, not as a whole, so part of it can show beside More.
+- `Menu`: rows with no icon line up with rows that have one, so such a row starts further in. A menu with
+  no icons or ticks is unchanged.
+- `AddressInput` and `AddressField`: a failed lookup shows new wording, and a line under the field. Tests
+  that look for "Search failed" there need the new text.
+- `loadMessagePack` now runs its loader even if a pack for the language is already registered, and the
+  packs merge. To avoid the download, do not call it for a language you register yourself.
+- Language packs: wording changed in all eleven. Update tests that assert translated strings.
+- `formatRelative` from `glass-ux/data-table`: up to 20 seconds ahead now reads "just now".
+
+New props: `Histogram.series` and `blend`; `BarChart.layout="overlay"`, `blend` and `BarSeries.color`;
+`Autocomplete.errorText`; `OptionStatus.errorText`.
+
 ## 0.17.0 → 0.17.1
 
 No code edits are needed.

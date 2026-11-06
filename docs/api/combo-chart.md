@@ -32,6 +32,7 @@ the value axes do not mirror in right-to-left text: the primary axis stays on th
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | bands | `readonly ReferenceBand[] \| undefined` | See type | no | — | Shaded ranges on the value axis behind the columns. Vertical columns only. Thresholds and bands read the primary axis. |
+| blend | `"normal" \| "screen" \| undefined` | "normal", "screen" | no | — | How overlaid columns mix where they cross: `normal` (default), or `screen`, which adds light, so red and green read yellow. |
 | categories | `readonly string[]` | See type | yes | — | One label per band: days, processes, organisations. |
 | categoryLabel | `string \| undefined` | See type | no | — | Header for the category column of the table ("Process", "Day"). |
 | domain | `Domain \| undefined` | See type | no | — | Fixed value range; defaults to zero → the data, rounded to nice ticks. |
@@ -39,7 +40,7 @@ the value axes do not mirror in right-to-left text: the primary axis stays on th
 | errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
 | format | `((value: number, locale: string) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). Receives the chart's resolved locale as its second argument. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
-| layout | `"grouped" \| "stacked" \| undefined` | "grouped", "stacked" | no | — | Several series side by side, or stacked as parts of a total. |
+| layout | `"overlay" \| "grouped" \| "stacked" \| undefined` | "overlay", "grouped", "stacked" | no | — | Several series side by side, stacked as parts of a total, or `overlay`: at one place in each band, see-through, to compare their shapes. Overlay is for vertical columns; horizontal bars group. |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for this chart's numbers, dates and table. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | onActivate | `((index: number, category: string) => void) \| undefined` | See type | no | — | Click, Enter or Space on a category: its index and label. While set, the plot shows a pointer cursor and its accessible name says Enter selects. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |

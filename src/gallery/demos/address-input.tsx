@@ -6,8 +6,10 @@ import { DEMO_MAP_CONFIG } from "../fixtures/map.js";
 import {
   AddressInput,
   AddressView,
+  GeocoderError,
   emptyAddress,
   type AddressValue,
+  type GeocoderAdapter,
 } from "../../ui/address-field/index.js";
 import { FormStack } from "../../ui/form/index.js";
 import { demoGeocoder } from "../fixtures/geocoder.js";
@@ -52,6 +54,14 @@ function LookupDemo() {
   );
 }
 
+/** A geocoder that always fails with this error: there is nothing behind these two specimens. */
+const failingGeocoder = (status: number, code: string): GeocoderAdapter => ({
+  ...demoGeocoder,
+  search: () => Promise.reject(new GeocoderError(status, code)),
+});
+const unavailableGeocoder = failingGeocoder(504, "GEOCODER_TIMEOUT");
+const rateLimitedGeocoder = failingGeocoder(429, "RATE_LIMITED");
+
 export default function AddressFieldSection() {
   return (
     <SectionPage>
@@ -80,9 +90,31 @@ export default function AddressFieldSection() {
       </Specimen>
 
       <Specimen
+        title="When the lookup fails"
+        description="A timeout or upstream failure points to manual entry; a 429 asks for a moment. Retry stays in the list, and the message stays under the field once the list closes."
+        wide
+        specimenKey="address-field:default:2"
+      >
+        <FormStack className="w-full" data-testid="address-unavailable">
+          <AddressInput
+            geocoder={unavailableGeocoder}
+            label="Site address"
+            defaultQuery="12 Example Lane Hobart"
+          />
+        </FormStack>
+        <FormStack className="w-full" data-testid="address-rate-limited">
+          <AddressInput
+            geocoder={rateLimitedGeocoder}
+            label="Site address"
+            defaultQuery="12 Example Lane Hobart"
+          />
+        </FormStack>
+      </Specimen>
+
+      <Specimen
         title="Filled, with the pin"
         description="Drag the pin, click the map or focus the pin and use the arrow keys: the position becomes “placed by hand” and Reset pin returns to the lookup's point."
-        specimenKey="address-field:default:2"
+        specimenKey="address-field:default:3"
       >
         <FormStack className="w-full" data-testid="address-filled">
           <AddressInput
@@ -99,7 +131,7 @@ export default function AddressFieldSection() {
         title="States"
         description="Errors replace the hint in place; disabled keeps the layout."
         layout="grid"
-        specimenKey="address-field:default:4"
+        specimenKey="address-field:default:5"
       >
         <FormStack>
           <AddressInput
@@ -119,7 +151,7 @@ export default function AddressFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop specimenKey="address-field:default:6">
+      <Specimen title="Over glass and imagery" backdrop specimenKey="address-field:default:7">
         <FormStack>
           <AddressInput geocoder={demoGeocoder} label="Site address" defaultValue={HOBART_OFFICE} />
         </FormStack>
@@ -130,7 +162,7 @@ export default function AddressFieldSection() {
         presets={CONTAINER_PRESETS.filter(
           (preset) => preset.id !== "row" && preset.id !== "header",
         )}
-        specimenKey="address-field:default:7"
+        specimenKey="address-field:default:8"
       >
         <div className="h-full overflow-y-auto p-3" data-scroll-container>
           <FormStack>

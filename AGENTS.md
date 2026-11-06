@@ -157,6 +157,11 @@ decides when to publish. The local route:
   optimisation pass after that release; `dist/ui` and the language packs are the largest parts.
 - Native-speaker review: "chroma" in the Arabic and Hebrew colour picker messages, and
   "preview class" in Japanese, Korean, Arabic and Hebrew (`results.previewUnavailable`).
+- Native-speaker review of the 0.18.0 consistency pass, machine-written and checked only for keys and
+  placeholders. Italian: imperatives chosen over infinitives for labels, and `Cancella` for every clear.
+  Spanish: `Introduzca` over `Ingrese` suits neutral Spanish, less so Latin America. Hebrew and Arabic
+  address the reader in the masculine singular; Hebrew `בצע שוב` for Redo. Arabic and Hebrew examples
+  holding an address (`...Example`) may reorder. Chinese: 查询 for lookup.
 - Native-speaker review of the 0.17.0 messages: `shell.closePane`, `activityFeed.newPrefix`,
   `datePicker.enterADate*`, `markdown.regionNumber`, `markdown.footnotes`,
   `markdown.backToReference` and `richTextReader.document`.
@@ -204,10 +209,6 @@ decides when to publish. The local route:
   `lang="en-AU" dir="rtl"`. The dev server does not transpile, and `e2e/rtl.spec.ts` always sets
   `lang=ar`, so tests do not see it. Needs a selector Lightning CSS keeps, or a documented `lang`
   requirement.
-- The docs kit does not export `TemplateDocumentation` or `TemplatePreview`
-  (src/gallery/template-documentation.tsx): they read this project's template list and application
-  shell. Sister packages copy their structure. Exporting them needs the screen, sources and shell
-  passed in.
 - Tree with `onMove` (and PaneLayout's tab titles) remount when their lazy drag or menu code
   arrives. Tree hands focus back, but a click landing in that moment loses its selection. Loading
   the code with the component would remove the swap, at the cost of the split.

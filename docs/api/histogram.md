@@ -3,7 +3,8 @@
 How values spread — check-in latency across the fleet. Pass raw `values` to bin here, or
 precomputed `bins` when the host has already counted them. Columns touch (the 2px surface
 gap between them), the axis labels the bin edges, and the tooltip names the bin's range and
-count. Tiers are the column chart's.
+count. Tiers are the column chart's. Pass `series` to draw several distributions over each
+other on one set of edges and one axis, such as an image's colour channels.
 
 `import { Histogram } from "glass-ux/charts"`
 
@@ -13,9 +14,9 @@ count. Tiers are the column chart's.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| bins | `number \| readonly HistogramBin[] \| undefined` | See type | no | — | About how many bins (d3 picks nice edges near this). The bins, touching and of equal width: each column is drawn the same width, and the axis labels their edges. |
+| bins | `number \| readonly HistogramBin[] \| undefined` | See type | no | — | About how many bins (d3 picks nice edges near this). The bins, touching and of equal width: each column is drawn the same width, and the axis labels their edges. About how many bins for series with raw `values`; series with `bins` set the edges instead. |
 | countLabel | `string \| undefined` | See type | no | — | What is counted: "Endpoints", "Check-ins". |
-| domain | `Domain \| undefined` | See type | no | — | The x range to bin over; defaults to the data's extent. |
+| domain | `Domain \| undefined` | See type | no | — | The x range to bin over; defaults to the data's extent. The x range to bin raw values over; defaults to the extent of them all. |
 | emptyText | `ReactNode` | See type | no | — | One factual line for the empty state (R2.5): "No samples in the last hour". |
 | errorText | `ReactNode` | See type | no | — | What failed and what to do (R2.4): "Agent offline — retry when NST-C106 reconnects". |
 | format | `((value: number, locale: string) => string) \| undefined` | See type | no | — | Full control of the number (the unit is still appended). Receives the chart's resolved locale as its second argument. |

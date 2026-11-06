@@ -45,9 +45,9 @@ const channel = (key: string, label: string, color: string, peak: number) => ({
   })),
 });
 const CHANNELS = [
-  channel("red", "Red", "#e5484d", 40),
-  channel("green", "Green", "#30a46c", 30),
-  channel("blue", "Blue", "#3e63dd", 20),
+  channel("red", "Red", "var(--danger)", 40),
+  channel("green", "Green", "var(--success)", 30),
+  channel("blue", "Blue", "var(--info)", 20),
 ];
 const render = (state: ChartState = "ready") => (
   <Histogram

@@ -176,8 +176,13 @@ Wrap the pages in `Suspense`: a component page loads that content on first rende
 "Foundation". A section that is a tool, a filter or a kit sets `badge` in its meta (`badge: "Tool"`),
 or the page takes a `badge` prop.
 
+`TemplateDocumentation` is a page for a whole screen: pass its `title`, `summary`, `screen` and the
+`sources` to show under it. `TemplatePreview` draws the `screen` alone, inside your `shell` if you
+pass one. Neither knows a catalogue, so give them a lazy component to load the screen with the page.
+
 `glass-ux-docs-kit/react` exports the pages (`ComponentDocumentation`, `FoundationDocumentation`,
-`ApiReference`, `UsageExample`, `LibraryGuide`, `CatalogueIndex`), the specimens (`SectionPage`,
+`TemplateDocumentation`, `TemplatePreview`, `ApiReference`, `UsageExample`, `LibraryGuide`,
+`CatalogueIndex`), the specimens (`SectionPage`,
 `Specimen`, `OnCanvas`, `Example`, `Matrix`, `Rules`, `TokenTable`, `ContainerLab`, `SwapSlot`,
 `TierBox`, `TierRow`), `DocsKitProvider`, `useDocsSite` and `siteRuntime`.
 `glass-ux-docs-kit/styles.css` holds the page and specimen styles. The frame's stylesheet imports it

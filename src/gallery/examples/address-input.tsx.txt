@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { CONTAINER_PRESETS, ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { DEMO_MAP_CONFIG } from "glass-ux/gallery/fixtures/map";
-import { AddressInput, AddressView, emptyAddress, type AddressValue } from "glass-ux/address-field";
+import {
+  AddressInput,
+  AddressView,
+  GeocoderError,
+  emptyAddress,
+  type AddressValue,
+  type GeocoderAdapter,
+} from "glass-ux/address-field";
 import { FormStack } from "glass-ux/form";
 import { demoGeocoder } from "glass-ux/gallery/fixtures/geocoder";
 import { HOME_BIAS } from "glass-ux/gallery/sections/inputs.kit";
@@ -45,6 +52,14 @@ function LookupDemo() {
   );
 }
 
+/** A geocoder that always fails with this error: there is nothing behind these two specimens. */
+const failingGeocoder = (status: number, code: string): GeocoderAdapter => ({
+  ...demoGeocoder,
+  search: () => Promise.reject(new GeocoderError(status, code)),
+});
+const unavailableGeocoder = failingGeocoder(504, "GEOCODER_TIMEOUT");
+const rateLimitedGeocoder = failingGeocoder(429, "RATE_LIMITED");
+
 export default function AddressFieldSection() {
   return (
     <SectionPage>
@@ -66,6 +81,27 @@ export default function AddressFieldSection() {
             defaultQuery="12 Example Lane Hobart"
             bias={HOME_BIAS}
             countries={["AU", "NZ"]}
+          />
+        </FormStack>
+      </Specimen>
+
+      <Specimen
+        title="When the lookup fails"
+        description="A timeout or upstream failure points to manual entry; a 429 asks for a moment. Retry stays in the list, and the message stays under the field once the list closes."
+        wide
+      >
+        <FormStack className="w-full" data-testid="address-unavailable">
+          <AddressInput
+            geocoder={unavailableGeocoder}
+            label="Site address"
+            defaultQuery="12 Example Lane Hobart"
+          />
+        </FormStack>
+        <FormStack className="w-full" data-testid="address-rate-limited">
+          <AddressInput
+            geocoder={rateLimitedGeocoder}
+            label="Site address"
+            defaultQuery="12 Example Lane Hobart"
           />
         </FormStack>
       </Specimen>

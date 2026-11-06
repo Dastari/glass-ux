@@ -27,6 +27,7 @@ export function TemplateDocumentation({
   if (!template || !Screen) return <Notice tone="warning">This template is not in the catalogue.</Notice>;
   return (
     <TemplatePage
+      id={id}
       title={template.title}
       summary={template.summary}
       screen={Screen}

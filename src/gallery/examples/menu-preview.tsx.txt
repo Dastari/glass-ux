@@ -1,5 +1,5 @@
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
-import { IconDownload } from "glass-ux/icons";
+import { IconCopy, IconDownload, IconPin } from "glass-ux/icons";
 import { ActionMenuPreview, ActionProvider } from "glass-ux/actions";
 import { MenuPreview } from "glass-ux/menu";
 import { ENDPOINTS, endpointActions } from "glass-ux/gallery/sections/overlays.fixtures";
@@ -35,6 +35,32 @@ export default function MenuSection() {
             </MenuPreview.Group>
           </MenuPreview.Surface>
           <ActionMenuPreview set={endpointActions} targets={[win11]} label={win11.name} />
+        </Specimen>
+
+        <Specimen
+          title="Rows with and without icons"
+          description="A menu with any icon keeps that column on every row, so labels share one edge. One with no icons or ticks starts its labels at the row's inset."
+          wide
+        >
+          <div data-testid="menu-mixed-rows">
+            <MenuPreview.Surface label="Tab">
+              <MenuPreview.Group>
+                <MenuPreview.Item icon={<IconPin />}>Pin tab</MenuPreview.Item>
+                <MenuPreview.Item icon={<IconCopy />}>Copy path</MenuPreview.Item>
+                <MenuPreview.Item>Maximise</MenuPreview.Item>
+                <MenuPreview.Item>Close</MenuPreview.Item>
+              </MenuPreview.Group>
+            </MenuPreview.Surface>
+          </div>
+          <div data-testid="menu-plain-rows">
+            <MenuPreview.Surface label="Sort">
+              <MenuPreview.Group>
+                <MenuPreview.Item>Name</MenuPreview.Item>
+                <MenuPreview.Item>Date modified</MenuPreview.Item>
+                <MenuPreview.Item>Size</MenuPreview.Item>
+              </MenuPreview.Group>
+            </MenuPreview.Surface>
+          </div>
         </Specimen>
 
         <Specimen

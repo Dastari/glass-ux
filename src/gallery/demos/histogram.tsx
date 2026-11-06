@@ -25,6 +25,27 @@ const QUARTERS = [
   { from: 50, to: 75, count: 41 },
   { from: 75, to: 100, count: 9 },
 ];
+/** Fictional response times from two services, in milliseconds, each with its own values. */
+const SERVICES = [
+  { key: "web", label: "Web", values: [42, 48, 51, 55, 58, 60, 62, 64, 66, 71, 74, 80, 88, 96] },
+  { key: "api", label: "API", values: [70, 78, 84, 88, 92, 95, 99, 104, 108, 112, 120, 130, 145] },
+];
+/** Fictional counts of 64 levels per colour channel: three humps that cross. */
+const channel = (key: string, label: string, color: string, peak: number) => ({
+  key,
+  label,
+  color,
+  bins: Array.from({ length: 64 }, (_, level) => ({
+    from: level,
+    to: level + 1,
+    count: Math.round(800 * Math.exp(-(((level - peak) / 11) ** 2)) + 30),
+  })),
+});
+const CHANNELS = [
+  channel("red", "Red", "var(--danger)", 40),
+  channel("green", "Green", "var(--success)", 30),
+  channel("blue", "Blue", "var(--info)", 20),
+];
 const render = (state: ChartState = "ready") => (
   <Histogram
     {...sample}
@@ -74,10 +95,36 @@ export default function HistogramSection() {
         </div>
       </Specimen>
       <Specimen
+        title="Several distributions"
+        description="Pass series to draw them over each other on one set of edges and one axis. See-through by default; screen adds light, so channels that cross read yellow, cyan and white."
+        wide
+        specimenKey="chart-histogram:default:2"
+      >
+        <div className="charts-pane" data-testid="histogram-series">
+          <Histogram
+            label="Response times · fictional services"
+            title="Response times"
+            unit="ms"
+            bins={8}
+            countLabel="Requests"
+            series={SERVICES}
+          />
+        </div>
+        <div className="charts-pane" data-testid="histogram-channels">
+          <Histogram
+            label="Colour channels · fictional photograph"
+            title="Channels"
+            blend="screen"
+            countLabel="Pixels"
+            series={CHANNELS}
+          />
+        </div>
+      </Specimen>
+      <Specimen
         title="Responsive sizes"
         description="The same Histogram adapts to row, tile and full-panel sizes."
         wide
-        specimenKey="chart-histogram:default:2"
+        specimenKey="chart-histogram:default:3"
       >
         <TierRow>{() => render()}</TierRow>
       </Specimen>
@@ -85,7 +132,7 @@ export default function HistogramSection() {
         title="Loading, empty and error"
         description="States stay in the chart's own box. Swap the skeleton to compare its dimensions."
         wide
-        specimenKey="chart-histogram:default:3"
+        specimenKey="chart-histogram:default:4"
       >
         <SkeletonSwaps id="histogram" render={render} />
         <div className="gallery-tiers">
@@ -97,7 +144,7 @@ export default function HistogramSection() {
           </TierBox>
         </div>
       </Specimen>
-      <ContainerLab specimenKey="chart-histogram:default:4">{() => render()}</ContainerLab>
+      <ContainerLab specimenKey="chart-histogram:default:5">{() => render()}</ContainerLab>
     </SectionPage>
   );
 }

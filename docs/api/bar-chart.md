@@ -21,6 +21,7 @@ Rows that do not fit in a ranked list fold into a "+N more" line — nothing is 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | bands | `readonly ReferenceBand[] \| undefined` | See type | no | — | Shaded ranges on the value axis behind the columns. Vertical columns only. Thresholds and bands read the primary axis. |
+| blend | `"normal" \| "screen" \| undefined` | "normal", "screen" | no | "normal" | How overlaid columns mix where they cross: `normal` (default), or `screen`, which adds light, so red and green read yellow. |
 | categories | `readonly string[]` | See type | yes | — | One label per band: days, processes, organisations. |
 | categoryLabel | `string \| undefined` | See type | no | — | Header for the category column of the table ("Process", "Day"). |
 | domain | `Domain \| undefined` | See type | no | — | Fixed value range; defaults to zero → the data, rounded to nice ticks. |
@@ -31,7 +32,7 @@ Rows that do not fit in a ranked list fold into a "+N more" line — nothing is 
 | formatEdge | `((value: number) => string) \| undefined` | See type | no | — | Format a bin edge. |
 | label | `string` | See type | yes | — | Accessible name: what is plotted, for what, over when ("CPU · NST-C106 · last hour"). |
 | labels | `boolean \| undefined` | false, true | no | — | Values at the bar tips. Defaults on for horizontal bars (ranked lists), off for columns. |
-| layout | `"grouped" \| "stacked" \| undefined` | "grouped", "stacked" | no | "grouped" | Several series side by side, or stacked as parts of a total. |
+| layout | `"overlay" \| "grouped" \| "stacked" \| undefined` | "overlay", "grouped", "stacked" | no | "grouped" | Several series side by side, stacked as parts of a total, or `overlay`: at one place in each band, see-through, to compare their shapes. Overlay is for vertical columns; horizontal bars group. |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for this chart's numbers, dates and table. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | onActivate | `((index: number, category: string) => void) \| undefined` | See type | no | — | Click, Enter or Space on a category: its index and label. While set, the plot shows a pointer cursor and its accessible name says Enter selects. |
 | onRetry | `(() => void) \| undefined` | See type | no | — | Called with no arguments when the person presses Retry in the error state. The button appears only when this is set, `state` is "error" and the tier is not micro. |

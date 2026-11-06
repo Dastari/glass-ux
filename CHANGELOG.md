@@ -4,6 +4,45 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.18.0
+
+### Added
+
+- Histogram: `series` draws several distributions over each other, each with its own name and colour, on
+  one set of edges and one axis. `blend="screen"` adds light where they cross, so an image's channels
+  read yellow, cyan and white.
+- BarChart: `layout="overlay"` draws vertical columns at one place in each band, see-through, with
+  `blend` to choose how they mix. A bar series takes a `color` it means, in its legend and tooltip too.
+- Autocomplete and OptionStatus: `errorText` replaces the list's failure text.
+- Docs kit: `TemplateDocumentation` and `TemplatePreview` take the screen, its sources and an optional
+  shell, so a sister package can use them directly.
+
+### Changed
+
+- Toolbar: a single-choice `Toolbar.Group` folds one tool at a time, the last first, and keeps the
+  chosen tool showing. Choosing a folded tool from More brings it into the row.
+- Menu: a menu with any icon or tick keeps that column on every row, so labels share one edge.
+- AddressInput and AddressField: a failed lookup has its own words. A timeout or upstream failure points
+  to manual entry, and a 429 or `RATE_LIMITED` asks for a moment. Retry stays, the text wraps, and it
+  stays under the field once the list closes, with Enter manually filled in.
+- Language packs: each one uses one register and one term per concept throughout. Spanish uses usted,
+  Dutch u and Italian tu; wording changes across all eleven, so check tests that assert translated text.
+- `loadMessagePack`: a loader runs once however many times it is asked, including when another package
+  registered a pack for the language first.
+
+### Removed
+
+- **Breaking:** the `addressField.lookupStatusError` message, which only `createPhotonGeocoder` used. It
+  now throws `GeocoderError`, whose message reads the same.
+
+### Fixed
+
+- DataTable: `formatRelative` read a time up to 20 seconds ahead of the shared clock as "in less than a
+  minute". It now reads "just now"; the clock ticks every 15 seconds, so it can lag a time just taken.
+- Toolbar: an uncontrolled single-choice group kept separate choices in the row and in More.
+- `loadMessagePack`: a sister package's pack registered first left Glass UX's own words in English.
+- Greetings: AiHero's marked phrase was not in its title in Chinese and Korean, so nothing was marked.
+
 ## 0.17.1
 
 ### Added

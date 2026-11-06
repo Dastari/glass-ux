@@ -14,6 +14,8 @@ export interface TemplateSource {
 }
 
 export interface TemplateDocumentationProps {
+  /** Marks the frame with `data-template`, for a test or a page's own style. */
+  id?: string;
   /** The page's heading. */
   title: string;
   /** One or two sentences under it. */
@@ -29,7 +31,7 @@ export interface TemplateDocumentationProps {
 }
 
 /** A template's page: the live screen in a bounded frame on the canvas, then its source to copy. */
-export function TemplateDocumentation({ title, summary, screen: Screen, sources = [], fullScreen, badge = "Template" }: TemplateDocumentationProps) {
+export function TemplateDocumentation({ id, title, summary, screen: Screen, sources = [], fullScreen, badge = "Template" }: TemplateDocumentationProps) {
   return (
     <article className="gallery-documentation gallery-template-document" aria-label={`${title} template`}>
       <header className="gallery-document-intro">
@@ -38,7 +40,7 @@ export function TemplateDocumentation({ title, summary, screen: Screen, sources 
         <p className="gallery-document-description type-body text-fg-muted">{summary}</p>
       </header>
       {fullScreen ? <div className="flex justify-end">{fullScreen}</div> : null}
-      <div className="gallery-template-stage">
+      <div className="gallery-template-stage" data-template={id}>
         <Suspense fallback={<Skeleton.Block className="h-full" radius="surface" />}>
           <Screen />
         </Suspense>

@@ -52,6 +52,8 @@ export interface AlertDialogProps {
   title: ReactNode
   /** One factual sentence: what happens, and whether it can be undone. */
   description?: ReactNode
+  /** Below the description: a field the confirmation depends on, such as a name to type. */
+  children?: ReactNode
   /** A verb naming the outcome: "Remove device". */
   confirmLabel: string
   /** Visible label for cancelling or dismissing the request. */
@@ -62,7 +64,9 @@ export interface AlertDialogProps {
   icon?: ReactNode
   /**
    * Runs in place: the confirm button shows pending, then ✓ and the dialog closes. If it
-   * throws, the button shakes ✕, the dialog stays open and the reason goes to a toast.
+   * throws, the button shakes ✕, the dialog stays open and the reason goes to a toast. If it
+   * returns or resolves to exactly `false`, the confirmation was refused: the dialog stays open
+   * at rest with no toast, no shake and no ✓, so a field in `children` can show why.
    */
   onConfirm: () => unknown
   /** Title of the failure toast. Default: "<confirmLabel> failed". */
@@ -81,6 +85,7 @@ export function AlertDialog({
   onOpenChangeComplete,
   title,
   description,
+  children,
   confirmLabel,
   cancelLabel: cancelLabelProp,
   pendingLabel,
@@ -111,15 +116,14 @@ export function AlertDialog({
   const handleConfirm = async () => {
     if (pending) return
     const ok = await run(
-      async () => {
-        await onConfirm()
-      },
+      async () => onConfirm(),
       (error) =>
         toast({
           tone: "danger",
           title: failureTitle ?? messages.failed(confirmLabel),
           description: error instanceof Error ? error.message : String(error),
-        })
+        }),
+      (result) => result === false
     )
     if (ok) closeTimer.current = setTimeout(() => setOpen(false), SUCCESS_BEAT_MS)
   }
@@ -148,7 +152,9 @@ export function AlertDialog({
           pendingLabel={pendingLabel}
           status={status}
           onConfirm={() => void handleConfirm()}
-        />
+        >
+          {children}
+        </AlertLayout>
       </DialogSurface>
     </BaseAlertDialog.Root>
   )
@@ -159,6 +165,8 @@ interface AlertLayoutProps {
   icon?: ReactNode
   title: ReactNode
   description?: ReactNode
+  /** Below the description: a field the confirmation depends on. */
+  children?: ReactNode
   /** Visible label for cancelling or dismissing the request. */
   cancelLabel: string
   /** Visible label naming the outcome of the confirmation. */
@@ -177,6 +185,7 @@ function AlertLayout({
   icon,
   title,
   description,
+  children,
   cancelLabel,
   confirmLabel,
   pendingLabel,
@@ -204,6 +213,7 @@ function AlertLayout({
               {description}
             </DialogDescriptionPart>
           ) : null}
+          {children ? <div className="fa-alert-body">{children}</div> : null}
         </div>
       </div>
       <footer className="fa-dialog-footer">
@@ -258,7 +268,10 @@ export interface ConfirmOptions extends Omit<
   AlertDialogProps,
   "trigger" | "open" | "defaultOpen" | "onOpenChange" | "onOpenChangeComplete" | "onConfirm"
 > {
-  /** Optional work to run in place before resolving (pending → ✓ → close). */
+  /**
+   * Optional work to run in place before resolving (pending → ✓ → close). Exactly `false` keeps
+   * the dialog open at rest, as on AlertDialog.
+   */
   onConfirm?: () => unknown
 }
 
@@ -310,9 +323,11 @@ export function ConfirmHost() {
       {...props}
       open={id !== closedId}
       onConfirm={async () => {
-        await onConfirm?.()
+        // A refusal stays open and leaves the promise waiting for the next press or a cancel.
+        if ((await onConfirm?.()) === false) return false
         settled.current = id
         resolve(true)
+        return true
       }}
       onOpenChange={(next) => {
         if (next) return

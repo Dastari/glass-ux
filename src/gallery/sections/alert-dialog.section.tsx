@@ -3,10 +3,51 @@ import { Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { IconRestart, IconTrash } from "../../icons/generated/icons.js"
 import { AlertDialog, AlertDialogPreview, ConfirmHost, confirm } from "../../ui/alert-dialog/index.js"
 import { Button } from "../../ui/button/index.js"
+import { Field } from "../../ui/field/index.js"
+import { Input } from "../../ui/input/index.js"
 import { Switch } from "../../ui/switch/index.js"
 import { Toaster, toast } from "../../ui/toast/index.js"
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/** A confirm that refuses silently: `false` keeps the dialog open at rest, and the field says why. */
+function TypeToConfirm() {
+  const [name, setName] = useState("")
+  const [error, setError] = useState<string>()
+  return (
+    <AlertDialog
+      trigger={<Button variant="danger-soft">Delete workspace</Button>}
+      title="Delete Orbit Workspace?"
+      description="Its projects and history are erased. This cannot be undone."
+      confirmLabel="Delete workspace"
+      pendingLabel="Deleting…"
+      onOpenChange={() => {
+        setName("")
+        setError(undefined)
+      }}
+      onConfirm={async () => {
+        if (name !== "Orbit Workspace") {
+          setError("Enter Orbit Workspace to confirm")
+          return false
+        }
+        setError(undefined)
+        await wait(800)
+      }}
+    >
+      <Field label="Workspace name" error={error}>
+        <Input
+          value={name}
+          invalid={Boolean(error)}
+          autoComplete="off"
+          onValueChange={(next) => {
+            setName(next)
+            setError(undefined)
+          }}
+        />
+      </Field>
+    </AlertDialog>
+  )
+}
 
 export default function AlertDialogSection() {
   const [fail, setFail] = useState(false)
@@ -76,6 +117,10 @@ export default function AlertDialogSection() {
         </Example>
       </Specimen>
 
+      <Specimen title="Refused by a field" description="onConfirm resolves to false: the dialog stays open at rest, with no toast, shake or ✓, and the field holds the reason. A throw still goes to a toast.">
+        <TypeToConfirm />
+      </Specimen>
+
       <Specimen title="Anatomy" description="Tone tile, a title that names the target, one sentence, Cancel, then the confirm — the only solid danger button in the product.">
         <AlertDialogPreview
           tone="danger"
@@ -112,7 +157,7 @@ export default function AlertDialogSection() {
         dont={[
           "Confirm actions that are easy to undo; offer Undo in a toast instead.",
           "Use a solid danger button anywhere but an alert dialog's confirm.",
-          "Close the dialog on failure; leave it open with the reason in a toast.",
+          "Close the dialog on failure; leave it open with the reason in a toast, or in its field when the person can fix it.",
           "Ask “Are you sure?” — the title is the question.",
           "Stack an alert on top of two dialogs.",
         ]}

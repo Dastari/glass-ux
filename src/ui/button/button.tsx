@@ -299,7 +299,9 @@ function useSettledStatus(status: ButtonStatus): "success" | "error" | null {
 /**
  * Drive a button's feedback from an async action: pending while it runs, then ✓ or ✕
  * for `holdMs` (default: the --feedback-hold token) before resting. Errors are handed to `onError` (normally a toast);
- * the button itself only signals that something failed.
+ * the button itself only signals that something failed. `run`'s third argument tells a refusal from a
+ * success by the action's result: the button returns to rest with neither ✓ nor ✕, and `run` resolves
+ * to false.
  */
 export function useActionFeedback(holdMs?: number) {
   const [status, setStatus] = useState<ButtonStatus>("idle")
@@ -307,11 +309,16 @@ export function useActionFeedback(holdMs?: number) {
   useEffect(() => () => clearTimeout(timer.current), [])
 
   const run = useCallback(
-    async (action: () => Promise<unknown>, onError?: (error: unknown) => void) => {
+    async (action: () => Promise<unknown>, onError?: (error: unknown) => void, isRefusal?: (result: unknown) => boolean) => {
       clearTimeout(timer.current)
       setStatus("pending")
       try {
-        await action()
+        const result = await action()
+        // The action declined: back to rest with no ✓ and no ✕, and `run` reports no success.
+        if (isRefusal?.(result)) {
+          setStatus("idle")
+          return false
+        }
         setStatus("success")
         return true
       } catch (error) {

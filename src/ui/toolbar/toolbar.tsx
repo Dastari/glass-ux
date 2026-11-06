@@ -51,6 +51,20 @@ interface ChoiceState {
 }
 const ChoiceContext = /* @__PURE__ */ createContext<ChoiceState | null>(null)
 
+/** The key a tool has in the toolbar's folded set: its group's unit and its own key. */
+const itemKey = (unit: string, item: string) => `${unit}\u0000${item}`
+
+/** What a single-choice group needs from its toolbar to fold item by item. */
+interface FoldState {
+  folded: ReadonlySet<string>
+  /** Each group's choice, from its copy in the row, so its copy in More reads and sets the same one. */
+  choices: { current: Map<string, ChoiceState> }
+  /** Fold again: the chosen tool has changed, and it has to be showing. */
+  refold: () => void
+}
+const FoldContext = /* @__PURE__ */ createContext<FoldState | null>(null)
+const UnitContext = /* @__PURE__ */ createContext("")
+
 export interface ToolbarProps {
   /** Names the toolbar for assistive technology ("Formatting"). Required: toolbars are landmarks of controls. */
   "aria-label": string
@@ -96,7 +110,9 @@ const priorityOf = (element: ReactElement): UnitInfo["priority"] => {
  * pattern). When the row runs out of room, items fold into a trailing More menu — low
  * priority first, the last ones first — where each reads as a menu item (toggles as checkbox
  * items). A folded item keeps the width it last showed at, so the row does not flicker at its
- * edge. Groups fold as a whole and show in More between separators.
+ * edge. Groups fold as a whole and show in More between separators. A single-choice group folds
+ * one tool at a time, the last first, and keeps the chosen tool showing: that tool folds only when
+ * nothing else is left to fold.
  */
 function ToolbarRoot({ "aria-label": label, size = "sm", orientation = "horizontal", overflow = true, disabled, children, labels, className }: ToolbarProps) {
   const vertical = orientation === "vertical"
@@ -108,6 +124,7 @@ function ToolbarRoot({ "aria-label": label, size = "sm", orientation = "horizont
     .map((element, index) => ({ key: String(element.key ?? index), priority: priorityOf(element), element }))
   const widths = useRef(new Map<string, number>())
   const [folded, setFolded] = useState<ReadonlySet<string>>(() => new Set())
+  const choices = useRef(new Map<string, ChoiceState>())
 
   const measure = () => {
     const box = root.current
@@ -119,6 +136,24 @@ function ToolbarRoot({ "aria-label": label, size = "sm", orientation = "horizont
         widths.current.set(node.dataset.toolbarUnit!, node.dataset.kind === "spacer" ? 0 : vertical ? rect.height : rect.width)
       }
     }
+    // A single-choice group's tools, last first as they fold: each keeps the size it last showed at.
+    const toolsOf = new Map<string, { key: string; chosen: boolean }[]>()
+    let groupGap = 0
+    for (const node of box.querySelectorAll<HTMLElement>(":scope > [data-toolbar-unit] > .fa-toolbar-group[data-choice]")) {
+      const unit = node.parentElement!.dataset.toolbarUnit!
+      const tools: { key: string; chosen: boolean }[] = []
+      for (const tool of node.querySelectorAll<HTMLElement>(":scope > [data-group-item]")) {
+        const key = itemKey(unit, tool.dataset.groupItem!)
+        if (!tool.hidden && !node.parentElement!.hidden) {
+          const rect = tool.getBoundingClientRect()
+          widths.current.set(key, vertical ? rect.height : rect.width)
+        }
+        tools.unshift({ key, chosen: tool.dataset.chosen !== undefined })
+      }
+      toolsOf.set(unit, tools)
+      const groupStyle = getComputedStyle(node)
+      groupGap = parseFloat(vertical ? groupStyle.rowGap : groupStyle.columnGap) || 0
+    }
     if (!overflow) return setFolded((prev) => (prev.size ? new Set() : prev))
     const style = getComputedStyle(box)
     const gap = parseFloat(vertical ? style.rowGap : style.columnGap) || 0
@@ -126,7 +161,8 @@ function ToolbarRoot({ "aria-label": label, size = "sm", orientation = "horizont
     const width = (key: string) => widths.current.get(key) ?? 0
     const total = (hidden: Set<string>, withMore: boolean) => {
       const shown = units.filter((unit) => !hidden.has(unit.key))
-      const sum = shown.reduce((acc, unit) => acc + width(unit.key), 0)
+      // Folding a tool takes its own size and one gap off its group's.
+      const sum = shown.reduce((acc, unit) => acc + width(unit.key) - (toolsOf.get(unit.key) ?? []).reduce((off, tool) => off + (hidden.has(tool.key) ? width(tool.key) + groupGap : 0), 0), 0)
       const moreRect = withMore ? more.current?.getBoundingClientRect() : undefined
       const moreWidth = moreRect ? (vertical ? moreRect.height : moreRect.width) : 0
       return sum + moreWidth + gap * Math.max(0, shown.length - (withMore ? 0 : 1))
@@ -137,8 +173,25 @@ function ToolbarRoot({ "aria-label": label, size = "sm", orientation = "horizont
         ...units.filter((unit) => unit.priority === "low").reverse(),
         ...units.filter((unit) => unit.priority === "high").reverse(),
       ]
+      const fits = () => total(next, true) <= available
       for (const unit of order) {
-        if (total(next, true) <= available) break
+        if (fits()) break
+        const tools = toolsOf.get(unit.key)
+        if (!tools) {
+          next.add(unit.key)
+          continue
+        }
+        for (const tool of tools) {
+          if (fits()) break
+          if (!tool.chosen) next.add(tool.key)
+        }
+      }
+      // Still too long with every other tool folded: a group's chosen tool goes too, and More lists them all.
+      for (const unit of order) {
+        if (fits()) break
+        const tools = toolsOf.get(unit.key)
+        if (!tools) continue
+        for (const tool of tools) next.delete(tool.key)
         next.add(unit.key)
       }
     }
@@ -172,14 +225,15 @@ function ToolbarRoot({ "aria-label": label, size = "sm", orientation = "horizont
     return () => observer.disconnect()
   }, [signature])
 
-  const foldedUnits = units.filter((unit) => folded.has(unit.key) && unit.priority !== "separator")
+  const foldedUnits = units.filter((unit) => unit.priority !== "separator" && (folded.has(unit.key) || [...folded].some((key) => key.startsWith(itemKey(unit.key, "")))))
   return (
     <SizeContext.Provider value={size}>
       <OrientationContext.Provider value={orientation}>
+      <FoldContext.Provider value={{ folded, choices, refold: () => latestMeasure.current() }}>
       <BaseToolbar.Root ref={root} aria-label={label} orientation={orientation} disabled={disabled} className={cx("fa-toolbar", className)} data-size={size}>
         {units.map((unit) => (
           <div key={unit.key} className="fa-toolbar-unit" data-toolbar-unit={unit.key} data-kind={unit.priority} hidden={folded.has(unit.key)}>
-            {unit.element}
+            <UnitContext.Provider value={unit.key}>{unit.element}</UnitContext.Provider>
           </div>
         ))}
         {/* Always rendered so its width is known; invisible (and unfocusable) until something folds. */}
@@ -192,7 +246,7 @@ function ToolbarRoot({ "aria-label": label, size = "sm", orientation = "horizont
               <MenuMode.Provider value>
                 {foldedUnits.map((unit, index) => (
                   <MoreSection key={unit.key} separated={index > 0 && separatedFrom(units, foldedUnits[index - 1]!, unit)}>
-                    {unit.element}
+                    <UnitContext.Provider value={unit.key}>{unit.element}</UnitContext.Provider>
                   </MoreSection>
                 ))}
               </MenuMode.Provider>
@@ -200,6 +254,7 @@ function ToolbarRoot({ "aria-label": label, size = "sm", orientation = "horizont
           </Menu.Root>
         </div>
       </BaseToolbar.Root>
+      </FoldContext.Provider>
       </OrientationContext.Provider>
     </SizeContext.Provider>
   )
@@ -325,25 +380,48 @@ function firstChoice(children: ReactNode): string | undefined {
   return undefined
 }
 
+/** Whether a group's child is the chosen tool, or a flyout with the chosen tool behind it. */
+function holdsChoice(child: ReactElement, value: string | undefined) {
+  const props = child.props as { value?: unknown; tools?: Array<{ value: string }> }
+  return value !== undefined && (props.value === value || Boolean(props.tools?.some((tool) => tool.value === value)))
+}
+
 /**
  * Related toolbar controls that sit and fold together. Give it `value`, `defaultValue` or
  * `onValueChange` and it is a single-choice group: a `radiogroup` of radio buttons, exactly
  * one chosen. Arrow keys still move between the toolbar's controls (the toolbar owns them), and
- * Space or Enter chooses the focused tool, so passing over a tool never switches to it.
+ * Space or Enter chooses the focused tool, so passing over a tool never switches to it. It folds
+ * tool by tool, the last first, and the chosen tool stays showing; choosing one from More brings
+ * it back into the row.
  */
 function ToolbarGroup({ "aria-label": label, priority: _priority, value: valueProp, defaultValue, onValueChange, children, className }: ToolbarGroupProps) {
   const inMenu = useContext(MenuMode)
   const single = valueProp !== undefined || defaultValue !== undefined || onValueChange !== undefined
   const [value, setValue] = useControllable<string | undefined>(valueProp, defaultValue ?? (single ? firstChoice(children) : undefined), onValueChange as ((next: string | undefined) => void) | undefined)
-  const choice: ChoiceState | null = single ? { value, choose: (next) => setValue(next) } : null
+  const own: ChoiceState | null = single ? { value, choose: (next) => setValue(next) } : null
+  const fold = useContext(FoldContext)
+  const unit = useContext(UnitContext)
+  // The copy in the row holds the choice; the copy in More reads and sets that one.
+  const choice = own && inMenu ? (fold?.choices.current.get(unit) ?? own) : own
+  useIsomorphicLayoutEffect(() => {
+    if (!own || inMenu) return
+    fold?.choices.current.set(unit, own)
+  })
+  useIsomorphicLayoutEffect(() => {
+    if (single && !inMenu) fold?.refold()
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- only a new choice can change what has to show
+  }, [value])
+  const tools = single ? Children.toArray(children).filter(isValidElement) : []
+  const isFolded = (key: string) => Boolean(fold?.folded.has(itemKey(unit, String(key))))
   if (inMenu)
     return (
       <Menu.Group>
         {label ? <Menu.GroupLabel>{label}</Menu.GroupLabel> : null}
         {choice ? (
           <ChoiceContext.Provider value={choice}>
-            <Menu.RadioGroup value={value ?? ""} onValueChange={(next) => choice.choose(String(next))}>
-              {children}
+            <Menu.RadioGroup value={choice.value ?? ""} onValueChange={(next) => choice.choose(String(next))}>
+              {/* Part of the group folded: only those tools. All of it folded: every tool. */}
+              {tools.some((tool) => isFolded(String(tool.key))) ? tools.filter((tool) => isFolded(String(tool.key))) : children}
             </Menu.RadioGroup>
           </ChoiceContext.Provider>
         ) : (
@@ -353,7 +431,17 @@ function ToolbarGroup({ "aria-label": label, priority: _priority, value: valuePr
     )
   return (
     <BaseToolbar.Group aria-label={label} role={choice ? "radiogroup" : undefined} className={cx("fa-toolbar-group", className)} data-choice={choice ? "" : undefined}>
-      {choice ? <ChoiceContext.Provider value={choice}>{children}</ChoiceContext.Provider> : children}
+      {choice ? (
+        <ChoiceContext.Provider value={choice}>
+          {tools.map((tool) => (
+            <div key={tool.key} className="fa-toolbar-group-item" data-group-item={tool.key ?? undefined} data-chosen={holdsChoice(tool, value) ? "" : undefined} hidden={isFolded(String(tool.key))}>
+              {tool}
+            </div>
+          ))}
+        </ChoiceContext.Provider>
+      ) : (
+        children
+      )}
     </BaseToolbar.Group>
   )
 }

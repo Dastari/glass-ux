@@ -1,7 +1,7 @@
 /*
  * Toolbar: one row of controls with a single tab stop. Units (buttons, groups, items) sit in
- * a flex row (a column when vertical); folded units are hidden and listed in the trailing More
- * menu. Toggles and chosen tools that are on take the accent's soft fill, like a selected
+ * a flex row (a column when vertical); folded units, and folded tools of a single-choice group,
+ * are hidden and listed in the trailing More menu. Toggles and chosen tools that are on take the accent's soft fill, like a selected
  * segment. A flyout button carries a small corner mark: the tools behind it.
  */
 @layer components {
@@ -28,6 +28,14 @@
     display: flex;
     align-items: center;
     gap: var(--space-half);
+  }
+  .fa-toolbar-group-item {
+    display: flex;
+    flex: none;
+    align-items: center;
+  }
+  .fa-toolbar-group-item[hidden] {
+    display: none;
   }
   .fa-toolbar-separator {
     width: var(--border-width);

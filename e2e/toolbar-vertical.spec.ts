@@ -108,6 +108,35 @@ test("a vertical toolbar given little height folds low-priority tools into More,
   await page.keyboard.press("Escape");
 });
 
+test("a single-choice group folds one tool at a time, and the chosen tool stays showing", async ({ page }) => {
+  await open(page);
+  const bar = page.getByRole("toolbar", { name: "Tools" }).nth(1);
+  await bar.scrollIntoViewIfNeeded();
+  // Too short for every tool: the group stays, and only its last tools go.
+  await expect(bar.getByRole("radiogroup", { name: "Tool" })).toBeVisible();
+  await expect(bar.getByRole("radio", { name: "Move" })).toBeVisible();
+  await expect(bar.getByRole("radio", { name: "Move" })).toHaveAttribute("aria-checked", "true");
+  await expect(bar.getByRole("radio", { name: "Text" })).toBeHidden();
+  const more = bar.getByRole("button", { name: "More" });
+  await more.click();
+  const menu = page.getByRole("menu");
+  await expect(menu.getByRole("menuitemradio", { name: "Move" })).toHaveCount(0);
+  await menu.getByRole("menuitemradio", { name: "Text" }).click();
+  // Chosen from More, it comes back into the row, and a tool before it gives up its place.
+  const text = bar.getByRole("radio", { name: "Text" });
+  await expect(text).toBeVisible();
+  await expect(text).toHaveAttribute("aria-checked", "true");
+  await expect(bar.getByRole("radio", { name: "Move" })).toBeVisible();
+  expect(await bar.evaluate((element) => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1);
+  await more.click();
+  await expect(page.getByRole("menu").getByRole("menuitemradio", { name: "Text" })).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await more.focus();
+  await page.keyboard.press("ArrowUp");
+  // Arrow keys pass over a folded tool.
+  await expect(bar.locator(":focus")).toBeVisible();
+});
+
 test("the row version opens its flyout with Arrow Down", async ({ page }) => {
   await open(page);
   const row = page.getByRole("toolbar", { name: "Row tools" });

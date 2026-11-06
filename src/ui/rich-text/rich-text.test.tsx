@@ -751,3 +751,13 @@ describe("mentions and slash commands", () => {
     expect(editable().hasAttribute("aria-haspopup")).toBe(false);
   });
 });
+
+describe("RichTextInput task lists", () => {
+  it("makes a task list a group of checkboxes and leaves other lists as lists", async () => {
+    render(<RichTextInput aria-label="Document" defaultValue={"- [ ] First\n\n- Plain"} />);
+    const checkbox = await screen.findByRole("checkbox", { name: "First" });
+    await waitFor(() => expect(checkbox.closest("ul")?.getAttribute("role")).toBe("group"));
+    const plain = await screen.findByText("Plain");
+    expect(plain.closest("ul")?.hasAttribute("role")).toBe(false);
+  });
+});

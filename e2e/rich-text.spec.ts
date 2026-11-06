@@ -702,3 +702,17 @@ for (const mode of ["light", "dark"] as const) {
     expect(errors).toEqual([]);
   });
 }
+
+test("a task list passes axe list semantics in the visual view", async ({ page }) => {
+  await page.goto("/components/rich-text-input");
+  const editor = page.getByTestId("rich-text-quote-demo").getByRole("textbox", { name: "Quoted passage" });
+  await editor.fill("");
+  await editor.pressSequentially("[ ] First task");
+  const list = editor.locator('ul:has([role="checkbox"])');
+  await expect(list).toHaveAttribute("role", "group");
+  const results = await new AxeBuilder({ page })
+    .include('[data-testid="rich-text-quote-demo"]')
+    .withRules(["list"])
+    .analyze();
+  expect(results.violations).toEqual([]);
+});

@@ -2,7 +2,7 @@ import { useMessages } from "../../lib/i18n/index.js"
 import { richTextMessages } from "./messages.js"
 import { Field as BaseField } from "@base-ui/react/field";
 import { CodeNode } from "@lexical/code";
-import { ListItemNode, ListNode } from "@lexical/list";
+import { $isListNode, ListItemNode, ListNode } from "@lexical/list";
 import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
@@ -22,6 +22,7 @@ import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPl
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import {
+  $getNodeByKey,
   $setSelection,
   CLEAR_HISTORY_COMMAND,
   SKIP_DOM_SELECTION_TAG,
@@ -66,6 +67,35 @@ const THEME = {
     strikethrough: "fa-rich-text-strike",
   },
 };
+
+/**
+ * Lexical gives a task list's rows `role="checkbox"`, and a list may only hold list items
+ * (axe `list`, serious), so a task list is a group of checkboxes.
+ */
+function TaskListSemantics() {
+  const [editor] = useLexicalComposerContext();
+  useEffect(
+    () =>
+      editor.registerMutationListener(
+        ListNode,
+        (mutations) => {
+          editor.getEditorState().read(() => {
+            for (const [key, mutation] of mutations) {
+              if (mutation === "destroyed") continue;
+              const node = $getNodeByKey(key);
+              const element = editor.getElementByKey(key);
+              if (!$isListNode(node) || !element) continue;
+              if (node.getListType() === "check") element.setAttribute("role", "group");
+              else element.removeAttribute("role");
+            }
+          });
+        },
+        { skipInitialization: false },
+      ),
+    [editor],
+  );
+  return null;
+}
 
 /** Keep Markdown ownership outside Lexical. Imports never trigger a value-change callback. */
 function MarkdownState({
@@ -424,6 +454,7 @@ export default function RichTextEditor({
         <HistoryPlugin />
         <ListPlugin shouldPreserveNumbering />
         <CheckListPlugin />
+        <TaskListSemantics />
         <LinkPlugin
           validateUrl={isSafeRichTextUrl}
           attributes={{ rel: "noopener noreferrer" }}

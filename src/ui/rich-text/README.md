@@ -56,8 +56,9 @@ or type `>` followed by a space; it saves with Markdown’s `>` prefix. Choose P
 to leave the quote. Formatting buttons announce their pressed state. The toolbar uses
 Base UI roving focus with Left/Right arrows, and the shared menus/popovers support Escape.
 Ctrl/⌘ B and I format text; Ctrl/⌘ Z and Shift Ctrl/⌘ Z undo and redo visual edits. Markdown
-shortcuts work in the visual editor. Select source mode to edit tables, reference links,
-footnotes, frontmatter and extensions outside the visual subset.
+shortcuts work in the visual editor. Tables, reference links, footnotes, frontmatter and
+extensions are outside the visual subset: the visual view shows them as their literal Markdown,
+so a table appears as lines of pipes. Select source mode to edit them. The Markdown stays intact.
 
 Switching views preserves the supplied Markdown exactly and emits no value change. Visual
 content changes emit equivalent Markdown with canonical formatting; unsupported syntax

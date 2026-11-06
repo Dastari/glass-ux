@@ -57,7 +57,16 @@ describe("removable EntityChip", () => {
         <EntityChip entity={entity} preview={false} glyph={false} onRemove={remove} />
       </EntityResolverProvider>
     )
-    const link = screen.getByRole("link", { name: "NST-C106" })
+    const link = screen.getByRole("link", { name: /NST-C106/ })
+    // The same computed name as a chip with no ✕, kind and meta included.
+    const { unmount } = render(
+      <EntityResolverProvider resolver={{ ...base, kinds: { endpoint: { segment: "endpoints" } } as EntityResolver["kinds"] }}>
+        <div data-testid="plain"><EntityChip entity={entity} preview={false} glyph={false} /></div>
+      </EntityResolverProvider>
+    )
+    const plain = screen.getByTestId("plain").querySelector("a")!
+    expect(link.getAttribute("aria-label")).toBe(plain.getAttribute("aria-label"))
+    unmount()
     const close = screen.getByRole("button", { name: /NST-C106/ })
     expect(link.getAttribute("href")).toBe("/endpoints/NST-C106")
     expect(link.contains(close)).toBe(false)

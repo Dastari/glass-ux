@@ -139,7 +139,7 @@ export function EntityChip({
     event.preventDefault();
     resolver.open(entity);
   };
-  const label = (entity.verified === false ? messages.unverifiedLabel : (name: string) => name)(entity.label);
+  const label = (entity.verified === false ? messages.unverifiedLabel : (name: string) => name)(entityName(resolver.kinds, entity, entityMessages));
   const surface = {
     "data-size": size,
     "data-kind": entity.kind,

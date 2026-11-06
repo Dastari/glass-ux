@@ -1,9 +1,7 @@
-import { Suspense, lazy, type ComponentType, type ReactElement, type ReactNode } from "react";
-import { Badge } from "../ui/badge/index.js";
+import { lazy, type ComponentType, type ReactElement, type ReactNode } from "react";
 import { Notice } from "../ui/notice/index.js";
-import { Skeleton } from "../ui/skeleton/index.js";
-import { UsageExample } from "./documentation.js";
 import { templates } from "./template-catalogue.js";
+import { TemplateDocumentation as TemplatePage, TemplatePreview as TemplateAlone } from "./template-page.js";
 import ApplicationShell from "./templates/application-shell.js";
 
 const loaders = import.meta.glob<{ default: ComponentType }>("./templates/*.js");
@@ -14,7 +12,7 @@ const screens = new Map(
   }),
 );
 
-/** A template's page: the live screen in a bounded frame on the canvas, then its source to copy. */
+/** A template's page in this site, from its id in the catalogue. */
 export function TemplateDocumentation({
   id,
   fullScreen,
@@ -28,21 +26,16 @@ export function TemplateDocumentation({
   const Screen = screens.get(id);
   if (!template || !Screen) return <Notice tone="warning">This template is not in the catalogue.</Notice>;
   return (
-    <article className="gallery-documentation gallery-template-document" aria-label={`${template.title} template`}>
-      <header className="gallery-document-intro">
-        <Badge>Template</Badge>
-        <h1 className="type-display">{template.title}</h1>
-        <p className="gallery-document-description type-body text-fg-muted">{template.summary}</p>
-      </header>
-      {fullScreen ? <div className="flex justify-end">{fullScreen}</div> : null}
-      <div className="gallery-template-stage" data-template={id}>
-        <Suspense fallback={<Skeleton.Block className="h-full" radius="surface" />}>
-          <Screen />
-        </Suspense>
-      </div>
-      <UsageExample section={`template-${id}`} title="Source" headingId="template-source" />
-      <UsageExample section="template-application-shell" title="Application shell" headingId="template-shell" />
-    </article>
+    <TemplatePage
+      title={template.title}
+      summary={template.summary}
+      screen={Screen}
+      fullScreen={fullScreen}
+      sources={[
+        { section: `template-${id}`, title: "Source", headingId: "template-source" },
+        { section: "template-application-shell", title: "Application shell", headingId: "template-shell" },
+      ]}
+    />
   );
 }
 
@@ -58,11 +51,5 @@ export function TemplatePreview({
 }) {
   const Screen = screens.get(id);
   if (!Screen) return <Notice tone="warning">This template is not in the catalogue.</Notice>;
-  return (
-    <ApplicationShell current={id} link={link}>
-      <Suspense fallback={<Skeleton.Block className="h-full" radius="surface" />}>
-        <Screen />
-      </Suspense>
-    </ApplicationShell>
-  );
+  return <TemplateAlone screen={Screen} shell={(screen) => <ApplicationShell current={id} link={link}>{screen}</ApplicationShell>} />;
 }

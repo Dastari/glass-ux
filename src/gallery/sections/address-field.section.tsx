@@ -2,7 +2,7 @@ import { useState } from "react"
 import { z } from "zod"
 import { CONTAINER_PRESETS, ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { DEMO_MAP_CONFIG } from "../fixtures/map.js"
-import { AddressInput, AddressView, addressSchema, emptyAddress, type AddressValue } from "../../ui/address-field/index.js"
+import { AddressInput, AddressView, GeocoderError, addressSchema, emptyAddress, type AddressValue, type GeocoderAdapter } from "../../ui/address-field/index.js"
 import { Field } from "../../ui/field/index.js"
 import { Form, FormActions, FormGroup, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js"
 import { demoGeocoder } from "../fixtures/geocoder.js"
@@ -73,6 +73,11 @@ function BoundDemo() {
   )
 }
 
+/** A geocoder that always fails with this error: there is nothing behind these two specimens. */
+const failingGeocoder = (status: number, code: string): GeocoderAdapter => ({ ...demoGeocoder, search: () => Promise.reject(new GeocoderError(status, code)) })
+const unavailableGeocoder = failingGeocoder(504, "GEOCODER_TIMEOUT")
+const rateLimitedGeocoder = failingGeocoder(429, "RATE_LIMITED")
+
 export default function AddressFieldSection() {
   return (
     <SectionPage>
@@ -86,6 +91,15 @@ export default function AddressFieldSection() {
       <Specimen title="Starting from existing text" description="defaultQuery seeds the lookup with text the parts cannot hold, such as an older free-text address. Nothing is sent until the person comes to it; click the text or press ↓ for the suggestions.">
         <FormStack className="w-full" data-testid="address-seeded">
           <AddressInput geocoder={demoGeocoder} label="Site address" defaultQuery="12 Example Lane Hobart" bias={HOME_BIAS} countries={["AU", "NZ"]} />
+        </FormStack>
+      </Specimen>
+
+      <Specimen title="When the lookup fails" description="A timeout or upstream failure points to manual entry; a 429 asks for a moment. Retry stays in the list, and the message stays under the field once the list closes." wide>
+        <FormStack className="w-full" data-testid="address-unavailable">
+          <AddressInput geocoder={unavailableGeocoder} label="Site address" defaultQuery="12 Example Lane Hobart" />
+        </FormStack>
+        <FormStack className="w-full" data-testid="address-rate-limited">
+          <AddressInput geocoder={rateLimitedGeocoder} label="Site address" defaultQuery="12 Example Lane Hobart" />
         </FormStack>
       </Specimen>
 

@@ -10,6 +10,13 @@ export {
 } from "./documentation.js";
 export { LibraryGuide } from "./guide.js";
 export {
+  TemplateDocumentation,
+  TemplatePreview,
+  type TemplateDocumentationProps,
+  type TemplatePreviewProps,
+  type TemplateSource,
+} from "./template-page.js";
+export {
   CatalogueIndex,
   type CatalogueEntry,
   type CatalogueLinkProps,

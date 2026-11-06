@@ -1870,6 +1870,7 @@ export default defineMessagePack("ko", {
   },
   activityFeed: {
     noActivity: "활동 없음",
+    newPrefix: "새 항목:",
   },
   chipOverflow: {
     more: (count, noun) => `${count} 더 보기 ${noun}`,

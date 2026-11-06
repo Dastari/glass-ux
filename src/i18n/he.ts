@@ -1870,6 +1870,7 @@ export default defineMessagePack("he", {
   },
   activityFeed: {
     noActivity: "אין פעילות",
+    newPrefix: "חדש:",
   },
   chipOverflow: {
     more: (count, noun) => `${count} נוספים ${noun}`,

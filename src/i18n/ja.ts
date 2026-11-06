@@ -1870,6 +1870,7 @@ export default defineMessagePack("ja", {
   },
   activityFeed: {
     noActivity: "活動なし",
+    newPrefix: "新着:",
   },
   chipOverflow: {
     more: (count, noun) => `さらに ${count} ${noun}`,

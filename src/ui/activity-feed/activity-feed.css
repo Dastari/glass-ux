@@ -94,6 +94,61 @@
     max-inline-size: var(--measure);
   }
 
+  /*
+   * A new event (`isNew`). The wash and the edge bar are positioned against the row, behind its
+   * content, so the mark moves nothing. A plain row has no inset of its own, so they reach just
+   * past its text; a selectable row is already an inset item.
+   */
+  :is(.fa-activity-feed, .fa-activity-branch) > li[data-new],
+  .fa-activity-row[data-new] {
+    --_new-reach: var(--space-1);
+    position: relative;
+    isolation: isolate;
+  }
+  .fa-activity-row[data-new] {
+    --_new-reach: 0px;
+  }
+  :is(li, .fa-activity-row)[data-new] > .fa-activity-content::before,
+  :is(li, .fa-activity-row)[data-new] > .fa-activity-line > .fa-activity-content::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset-block: 0;
+    inset-inline: calc(var(--_new-reach) * -1);
+    border-radius: var(--radius-item);
+    background-color: var(--accent-soft);
+    pointer-events: none;
+    animation: fa-activity-arrive var(--duration-slower) var(--ease-standard);
+  }
+  :is(li, .fa-activity-row)[data-new] > .fa-activity-content::after,
+  :is(li, .fa-activity-row)[data-new] > .fa-activity-line > .fa-activity-content::after {
+    content: "";
+    position: absolute;
+    inset-block: var(--space-1);
+    inset-inline-start: calc(var(--_new-reach) * -1);
+    inline-size: calc(var(--border-width) * 2);
+    border-radius: var(--radius-full);
+    background-color: var(--accent);
+    pointer-events: none;
+  }
+  @keyframes fa-activity-arrive {
+    from {
+      background-color: var(--accent-soft-hover);
+    }
+  }
+  @media (forced-colors: active) {
+    :is(li, .fa-activity-row)[data-new] > .fa-activity-content::before,
+    :is(li, .fa-activity-row)[data-new] > .fa-activity-line > .fa-activity-content::before {
+      background: none;
+      animation: none;
+    }
+    :is(li, .fa-activity-row)[data-new] > .fa-activity-content::after,
+    :is(li, .fa-activity-row)[data-new] > .fa-activity-line > .fa-activity-content::after {
+      background: Highlight;
+      forced-color-adjust: none;
+    }
+  }
+
   /* A branch hangs from its parent, one level in, its rail aligned with the parent's marker. */
   .fa-activity-branch {
     display: flex;

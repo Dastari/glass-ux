@@ -9,6 +9,7 @@ import { toTime } from "../data-table/format.js";
 import { EmptyState } from "../empty-state/index.js";
 import { Surface } from "../surface/index.js";
 import { ToneDot } from "../tone-dot/index.js";
+import { VisuallyHidden } from "../visually-hidden/index.js";
 export interface ActivityItem {
   /** Stable event identifier. */ id: string;
   /** Event description, with optional entity chips. Phrasing content (text, `strong`, chips, badges), so `timePlacement="inline"` can follow it. */ content: ReactNode;
@@ -29,6 +30,12 @@ export interface ActivityItem {
    */
   detail?: ReactNode;
   /** Events that branch from this one, drawn indented beneath it. One level only. */ children?: readonly Omit<ActivityItem, "children">[];
+  /**
+   * Marks an event that has just arrived: a wash and an edge bar drawn behind the row, which take
+   * no room, and "New:" read before its content. They last until the host clears the flag. The
+   * highlight settles once when the row gets the mark, and not at all under Still or reduced motion.
+   */
+  isNew?: boolean;
 }
 
 /** The order `ActivityFeed` draws its events in; see {@link ActivityFeedProps.order}. */
@@ -114,6 +121,21 @@ function Time({ at, layout }: { at: ActivityItem["at"]; layout: Layout }) {
   );
 }
 
+/** What a new event's mark says to assistive technology, ahead of its content. */
+function NewPrefix() {
+  const messages = useMessages(activityFeedMessages);
+  return <VisuallyHidden>{messages.newPrefix} </VisuallyHidden>;
+}
+
+function Content({ item }: { item: ActivityItem }) {
+  return (
+    <span className="fa-activity-content">
+      {item.isNew ? <NewPrefix /> : null}
+      {item.content}
+    </span>
+  );
+}
+
 /**
  * The event's line: its content and time. A plain feed row keeps them as the row's own children,
  * as it always has; otherwise they share one line box that the marker centres on and that names
@@ -123,13 +145,13 @@ function Line({ item, layout, id }: { item: ActivityItem; layout: Layout; id?: s
   if (!layout.timeline && !layout.inline && !hasDetail(item))
     return (
       <>
-        <span className="fa-activity-content">{item.content}</span>
+        <Content item={item} />
         <RelativeTime value={item.at} />
       </>
     );
   return (
     <span className="fa-activity-line" id={id} data-placement={layout.inline ? "inline" : "end"}>
-      <span className="fa-activity-content">{item.content}</span>
+      <Content item={item} />
       {/* A real space: the sentence and its time never run together, read aloud or wrapped. */}
       {layout.inline ? " " : null}
       <Time at={item.at} layout={layout} />
@@ -162,7 +184,7 @@ function PlainFeed({
   return (
     <ol {...rest}>
       {items.map((item) => (
-        <li key={item.id} data-marker={layout.timeline ? markerKind(item) : undefined}>
+        <li key={item.id} data-marker={layout.timeline ? markerKind(item) : undefined} data-new={item.isNew ? "" : undefined}>
           {marker(item, layout.timeline)}
           <Line item={item} layout={layout} />
           <Detail item={item} layout={layout} />
@@ -232,6 +254,7 @@ function SelectableFeed({
         aria-labelledby={detail ? `${id}-line` : undefined}
         aria-describedby={detail ? `${id}-detail` : undefined}
         data-selected={isSelected ? "" : undefined}
+        data-new={item.isNew ? "" : undefined}
         tabIndex={item.id === stop ? 0 : -1}
         className="fa-item fa-activity-row"
         onFocus={() => setFocused(item.id)}

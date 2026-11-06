@@ -1871,6 +1871,7 @@ export default defineMessagePack("ar", {
   },
   activityFeed: {
     noActivity: "لا يوجد نشاط",
+    newPrefix: "جديد:",
   },
   chipOverflow: {
     more: (count, noun) => `${count} المزيد ${noun}`,

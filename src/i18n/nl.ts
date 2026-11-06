@@ -1870,6 +1870,7 @@ export default defineMessagePack("nl", {
   },
   activityFeed: {
     noActivity: "Geen activiteit",
+    newPrefix: "Nieuw:",
   },
   chipOverflow: {
     more: (count, noun) => `${count} meer ${noun}`,

@@ -1870,6 +1870,7 @@ export default defineMessagePack("zh-Hans", {
   },
   activityFeed: {
     noActivity: "无活动",
+    newPrefix: "新：",
   },
   chipOverflow: {
     more: (count, noun) => `还有${count}个${noun}`,

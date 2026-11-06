@@ -36,7 +36,7 @@ import {
 } from "../combobox/index.js";
 import { CoordinatesField } from "../coordinates-field/index.js";
 import { CountryField } from "../country-select/index.js";
-import { DateTimeField, TimeField } from "../date-picker/fields.js";
+import { BoundDateField, DateTimeField, TimeField } from "../date-picker/fields.js";
 import { DurationField } from "../duration-field/index.js";
 import { EmailField } from "../email-field/index.js";
 import {
@@ -934,6 +934,7 @@ export const { useAppForm, withForm, withFieldGroup } = /* @__PURE__ */ createFo
     PercentField,
     CountryField,
     TimeZoneField,
+    DateField: BoundDateField,
     TimeField,
     DateTimeField,
   },

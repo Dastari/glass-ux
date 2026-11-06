@@ -4,7 +4,8 @@ import { dateTimeFormat } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { Field } from "../field/index.js"
 import { useBoundField, type FieldChrome } from "../form/context.js"
-import { fromIsoDate } from "./calendar-date.js"
+import { fromIsoDate, type IsoDate } from "./calendar-date.js"
+import { DateField, type DateFieldProps } from "./date-field.js"
 import { DateTimeInput, zoneLabel, type DateTimeInputProps } from "./date-time-input.js"
 import { formatTimeText, type TimeValue } from "./time.js"
 import { TimeInput, type TimeInputProps } from "./time-input.js"
@@ -24,6 +25,33 @@ export function TimeField({ label, hint, warning, optional, required, aside, cla
   return (
     <Field {...root} label={label} hint={hint} warning={warning} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <TimeInput
+        {...control}
+        name={field.name}
+        value={field.state.value}
+        onValueChange={(next) => field.handleChange(next)}
+        onReject={(next) => field.handleChange(next)}
+        onBlur={field.handleBlur}
+        required={required}
+        disabled={disabled}
+        invalid={Boolean(error)}
+      />
+    </Field>
+  )
+}
+
+export interface BoundDateFieldProps extends FieldChrome, Omit<DateFieldProps, Bound> {}
+
+/**
+ * DateField bound to a `string | null` form field holding a calendar day (`2026-10-13`):
+ * `field.DateField` in the form kit. Pair it with `dateSchema()` and the same locale and bounds.
+ * Unreadable text reaches the form as typed and a day outside min/max as read, so the schema can
+ * say which.
+ */
+export function BoundDateField({ label, hint, warning, optional, required, aside, className, disabled, ...control }: BoundDateFieldProps) {
+  const { field, error, root } = useBoundField<IsoDate | null>()
+  return (
+    <Field {...root} label={label} hint={hint} warning={warning} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
+      <DateField
         {...control}
         name={field.name}
         value={field.state.value}

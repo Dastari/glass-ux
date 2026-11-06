@@ -1,9 +1,59 @@
 import { getDatePickerMessages } from "./messages.js"
 import { z } from "zod"
 import { getLocale } from "../../lib/locale/locale.js"
-import { datePlaceholder, formatDateText, isIsoDate } from "./calendar-date.js"
+import { datePlaceholder, formatDateText, isIsoDate, type IsoDate } from "./calendar-date.js"
 import { formatTimeText, isTimeValue, timeToSeconds, type TimeTextOptions, type TimeValue } from "./time.js"
 import { isWallClock, resolveWallClock, splitWallClock, type WallClock } from "./zoned-time.js"
+
+export interface DateSchemaOptions {
+  /** Locale for validation wording and the days it shows. Defaults to getLocale(). */
+  locale?: string
+  /** Empty is an error ("Enter a date"). Default false. */
+  required?: boolean
+  /** Earliest allowed day. */
+  min?: IsoDate
+  /** Latest allowed day. */
+  max?: IsoDate
+}
+
+/**
+ * A calendar day (`2026-10-13`), or null when not required. Pass the field's locale and bounds so
+ * the messages show days as the field does:
+ *
+ *   dateSchema({ required: true, min: "2026-10-01" }) → "Enter a date on or after 01/10/2026" (en-AU)
+ *
+ * `field.DateField` hands unreadable text to the form as typed, so it gets "Enter a date as
+ * dd/mm/yyyy". Without `locale`, messages use `getLocale()` when a value is checked (see `timeSchema`).
+ */
+export function dateSchema(options: DateSchemaOptions = {}) {
+  const messages = () => {
+    const words = getDatePickerMessages(options.locale)
+    const locale = options.locale ?? getLocale()
+    const show = (day: IsoDate) => formatDateText(day, locale)
+    const range =
+      options.min && options.max
+        ? words.enterADateFromTo(show(options.min), show(options.max))
+        : options.max
+          ? words.enterADateOnOrBefore(show(options.max))
+          : options.min
+            ? words.enterADateOnOrAfter(show(options.min))
+            : words.enterADate
+    return { range, example: words.enterADateAs(datePlaceholder(locale)) }
+  }
+  return z
+    .custom<IsoDate | null>((value) => value === null || typeof value === "string", { error: () => messages().example })
+    .superRefine((value, context) => {
+      if (value === null || !value.trim()) {
+        if (options.required) context.addIssue({ code: "custom", message: getDatePickerMessages(options.locale).enterADate })
+        return
+      }
+      if (!isIsoDate(value)) {
+        context.addIssue({ code: "custom", message: messages().example })
+        return
+      }
+      if ((options.min && value < options.min) || (options.max && value > options.max)) context.addIssue({ code: "custom", message: messages().range })
+    })
+}
 
 export interface TimeSchemaOptions extends TimeTextOptions {
   /** Locale for validation wording. Defaults to getLocale(). */

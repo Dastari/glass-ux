@@ -9,7 +9,7 @@ import { Button } from "../button/index.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import { Popover } from "../popover/index.js"
 import { Calendar, type DateRange } from "./calendar.js"
-import { datePlaceholder, formatDateText, parseDateText, type IsoDate } from "./calendar-date.js"
+import { datePlaceholder, formatDateText, isIsoDate, parseDateText, type IsoDate } from "./calendar-date.js"
 
 export type DateFieldSize = "sm" | "md" | "lg"
 
@@ -42,7 +42,15 @@ export interface DateFieldProps extends DateFieldCommon {
   defaultValue?: IsoDate | null
   /** Called with a valid day, or null when the field is emptied. Typing commits on blur or Enter. */
   onValueChange?: (value: IsoDate | null) => void
+  /**
+   * Called on commit with an entry that cannot be accepted: unreadable text as typed, or a day
+   * outside min/max as read. The value does not change unless the host holds this text in it, as
+   * the form kit's `field.DateField` does so that `dateSchema()` can say which.
+   */
+  onReject?: (value: string) => void
   placeholder?: string
+  /** Marks the input required for assistive technology; pair it with `dateSchema({ required: true })`. */
+  required?: boolean
   name?: string
   /** Called when the text input loses focus, after the typed date has been committed. */
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
@@ -51,17 +59,20 @@ export interface DateFieldProps extends DateFieldCommon {
 
 const outOfRange = (iso: IsoDate, min?: IsoDate, max?: IsoDate) => Boolean((min && iso < min) || (max && iso > max))
 
+/** A value's text: a day in the locale's order, and an entry a form holds as rejected as it stands. */
+const valueText = (value: string | null, locale: string) => (!value ? "" : isIsoDate(value) ? formatDateText(value, locale) : value)
+
 /** Text that tracks a committed value and is re-read on blur or Enter. */
 function useDateText(value: IsoDate | null, locale: string) {
-  const [text, setText] = useState(() => (value ? formatDateText(value, locale) : ""))
-  const [bad, setBad] = useState(false)
+  const [text, setText] = useState(() => valueText(value, locale))
+  const [bad, setBad] = useState(() => value !== null && !isIsoDate(value))
   const shown = useRef({ value, locale })
   // Follow a value, or a locale, changed from outside: the same day is rewritten in the new order.
   useEffect(() => {
     if (shown.current.value === value && shown.current.locale === locale) return
     shown.current = { value, locale }
-    setText(value ? formatDateText(value, locale) : "")
-    setBad(false)
+    setText(valueText(value, locale))
+    setBad(value !== null && !isIsoDate(value))
   }, [value, locale])
   /** Show a committed day (or nothing) and remember it as the shown value. */
   const show = (next: IsoDate | null) => {
@@ -69,7 +80,11 @@ function useDateText(value: IsoDate | null, locale: string) {
     setText(next ? formatDateText(next, locale) : "")
     setBad(false)
   }
-  return { text, setText, bad, setBad, show }
+  /** Keep the text and the invalid state when a rejected entry comes back as the value. */
+  const hold = (next: string) => {
+    shown.current = { value: next, locale }
+  }
+  return { text, setText, bad, setBad, show, hold }
 }
 
 /**
@@ -81,6 +96,7 @@ export function DateField({
   value,
   defaultValue = null,
   onValueChange,
+  onReject,
   locale: localeProp,
   min,
   max,
@@ -90,6 +106,7 @@ export function DateField({
   disabled,
   readOnly,
   invalid,
+  required,
   name,
   id,
   onBlur,
@@ -102,7 +119,7 @@ export function DateField({
   const locale = useLocale(localeProp)
   const [inner, setInner] = useState<IsoDate | null>(defaultValue)
   const current = value === undefined ? inner : value
-  const { text, setText, bad, setBad, show } = useDateText(current, locale)
+  const { text, setText, bad, setBad, show, hold } = useDateText(current, locale)
   const [open, setOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -115,7 +132,15 @@ export function DateField({
   const commitText = () => {
     if (!text.trim()) return set(null)
     const parsed = parseDateText(text, locale)
-    if (!parsed || outOfRange(parsed, min, max)) return setBad(true)
+    if (!parsed || outOfRange(parsed, min, max)) {
+      setBad(true)
+      if (onReject) {
+        const entry = parsed ?? text.trim()
+        hold(entry)
+        onReject(entry)
+      }
+      return
+    }
     set(parsed)
   }
 
@@ -148,6 +173,7 @@ export function DateField({
         value={text}
         disabled={disabled}
         readOnly={readOnly}
+        required={required}
         aria-invalid={invalid || bad || undefined}
         onChange={(event) => {
           setText(event.currentTarget.value)
@@ -173,7 +199,7 @@ export function DateField({
               locale={locale}
               min={min}
               max={max}
-              value={current}
+              value={current !== null && isIsoDate(current) ? current : null}
               autoFocus
               onValueChange={(next) => {
                 set(next)

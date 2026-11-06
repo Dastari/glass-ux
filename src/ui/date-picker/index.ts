@@ -3,8 +3,8 @@ export { Calendar, type CalendarProps, type CalendarRangeProps, type CalendarSin
 export { DateField, DateRangeField, type DateFieldProps, type DateFieldSize, type DateRangeFieldProps } from "./date-field.js"
 export { TimeInput, type TimeInputProps } from "./time-input.js"
 export { DateTimeInput, type DateTimeInputProps } from "./date-time-input.js"
-export { DateTimeField, TimeField, type DateTimeFieldProps, type TimeFieldProps } from "./fields.js"
-export { dateTimeSchema, timeSchema, type DateTimeSchemaOptions, type TimeSchemaOptions } from "./schema.js"
+export { BoundDateField, DateTimeField, TimeField, type BoundDateFieldProps, type DateTimeFieldProps, type TimeFieldProps } from "./fields.js"
+export { dateSchema, dateTimeSchema, timeSchema, type DateSchemaOptions, type DateTimeSchemaOptions, type TimeSchemaOptions } from "./schema.js"
 export {
   addDays,
   addMonths,

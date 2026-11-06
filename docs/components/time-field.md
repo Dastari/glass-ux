@@ -24,6 +24,15 @@ Pass the schema the same `hourCycle`, bounds and zone as the field, and the same
 field has one, so its messages show times as the field does. Without `locale`, both use the
 application locale ([resolution order](../getting-started.md#set-the-formatting-locale)).
 
+A date alone is `field.DateField` (`BoundDateField` outside the form kit), with `dateSchema`. Its
+value is a calendar day, `"YYYY-MM-DD"`, or `null` when empty.
+
+```tsx
+const schema = z.object({ review: dateSchema({ required: true, min: "2026-10-01" }) })
+
+<form.AppField name="review">{(field) => <field.DateField label="Next review" required min="2026-10-01" />}</form.AppField>
+```
+
 ## Values
 
 - **TimeField:** `"HH:mm"`, 24-hour and zero-padded (`"07:30"`), or `"HH:mm:ss"` with `seconds`;
@@ -32,10 +41,10 @@ application locale ([resolution order](../getting-started.md#set-the-formatting-
   `null` when empty. `timeZone` (an IANA name) is a separate prop. The value never converts
   while the person types or when the zone changes.
 - While an entry cannot be accepted, the bound value is a string the schema explains: the text
-  as typed ("Enter a time such as 9:30 am"), a time outside min/max as read ("Enter a time from
-  6:00 am to 12:00 pm"), or for DateTimeField the parts as read ("Enter a time", "Enter a date as
-  dd/mm/yyyy"). The bare `TimeInput` and `DateTimeInput` report these through `onReject`;
-  `onValueChange` receives only accepted values.
+  as typed ("Enter a time such as 9:30 am", "Enter a date as dd/mm/yyyy"), a value outside min/max
+  as read ("Enter a time from 6:00 am to 12:00 pm"), or for DateTimeField the parts as read
+  ("Enter a time"). The bare `DateField`, `TimeInput` and `DateTimeInput` report these through
+  `onReject`; `onValueChange` receives only accepted values.
 
 ## Typing and keys
 

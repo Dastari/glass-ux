@@ -53,7 +53,7 @@ const form = useAppForm({ ...formBehaviour, defaultValues, validators: { onDynam
 | [Country](country-select.md)              | `CountryField`                               | ISO code, `string \| null`            | `countrySchema`                           |
 | [Rich text](rich-text.md)                 | `RichTextField`                              | Markdown string                       | `richTextSchema`                          |
 | [Time zone](time-zone-select.md)          | `TimeZoneField`                              | IANA name, `string \| null`           | `timeZoneSchema`                          |
-| [Time and date-time](time-field.md)       | `TimeField`, `DateTimeField`                 | `"HH:mm"`, wall clock, `string \| null` | `timeSchema`, `dateTimeSchema`            |
+| [Time and date-time](time-field.md)       | `DateField`, `TimeField`, `DateTimeField`    | `"YYYY-MM-DD"`, `"HH:mm"`, wall clock, `string \| null` | `dateSchema`, `timeSchema`, `dateTimeSchema` |
 | [Signature](signature-pad.md)             | `SignatureField`                             | `SignatureValue \| null` (strokes or typed name) | `signatureSchema`                         |
 | [Rating](rating.md)                       | `RatingField`                                | `number \| null`, 0 to `max`          | `ratingSchema`                            |
 | [Image](image-cropper.md)                 | `ImageField`                                 | URL, `ImageChange` or `null`          | `imageSchema`                             |

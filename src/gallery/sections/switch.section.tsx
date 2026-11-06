@@ -48,6 +48,11 @@ export default function SwitchSection() {
         />
       </Specimen>
 
+      <Specimen title="Disabled with a reason" description="disabledReason keeps the switch in the Tab order and shows why as its tooltip. focusableWhenDisabled keeps it reachable with no tooltip." layout="stack">
+        <Switch disabledReason="Your plan does not include this" label="Single sign-on" />
+        <Switch disabled focusableWhenDisabled defaultChecked label="Audit log" />
+      </Specimen>
+
       <Specimen title="Tones" description="Accent by default. A status tone only when the setting is itself a status — “Maintenance mode” in warning, “Quarantine” in danger.">
         <Matrix
           columns={["sm", "md", "lg + icons"]}

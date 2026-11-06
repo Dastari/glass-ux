@@ -2,6 +2,7 @@ import { Switch as BaseSwitch } from "@base-ui/react/switch"
 import { useId, type ReactNode } from "react"
 import { IconCheck, IconClose } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { Tooltip } from "../tooltip/index.js"
 import { ChoiceRow, descriptionId, type ChoiceSize, type ChoiceTone } from "../field/index.js"
 
 export type SwitchSize = ChoiceSize
@@ -19,12 +20,26 @@ export interface SwitchProps extends Omit<BaseSwitch.Root.Props, "className" | "
   label?: ReactNode
   /** Second line: what turning it on does. */
   description?: ReactNode
+  /** Why it is disabled: turns it off, keeps it in the Tab order, and shows this as its tooltip and description. */
+  disabledReason?: string
+  /** Keep a disabled switch in the Tab order, so its state and name can be reached. Default false. */
+  focusableWhenDisabled?: boolean
 }
 
-function SwitchTrack({ size = "md", tone, icons = false, invalid, className, ...rest }: Omit<SwitchProps, "label" | "description">) {
-  return (
+function SwitchTrack({ size = "md", tone, icons = false, invalid, className, disabled, disabledReason, focusableWhenDisabled, ...rest }: Omit<SwitchProps, "label" | "description">) {
+  // A disabled button leaves the Tab order and takes no pointer events, so one that stays
+  // reachable is read-only and says it is disabled.
+  const isDisabled = Boolean(disabled || disabledReason)
+  const reachable = isDisabled && Boolean(disabledReason || focusableWhenDisabled)
+  const track = (
     <BaseSwitch.Root
       {...rest}
+      disabled={isDisabled && !reachable}
+      readOnly={reachable || rest.readOnly}
+      aria-disabled={reachable || undefined}
+      aria-readonly={reachable ? undefined : rest.readOnly || undefined}
+      aria-description={disabledReason}
+      data-disabled={reachable ? "" : undefined}
       nativeButton
       // oxlint-disable-next-line jsx-a11y/control-has-associated-label -- named by Base UI (aria-labelledby) or the caller's aria-label
       render={<button type="button" />}
@@ -44,6 +59,7 @@ function SwitchTrack({ size = "md", tone, icons = false, invalid, className, ...
       </BaseSwitch.Thumb>
     </BaseSwitch.Root>
   )
+  return disabledReason ? <Tooltip content={disabledReason}>{track}</Tooltip> : track
 }
 
 /**
@@ -51,8 +67,9 @@ function SwitchTrack({ size = "md", tone, icons = false, invalid, className, ...
  * travels on the spring curve. Use a Checkbox instead when the choice only applies after
  * a Save.
  */
-export function Switch({ label, description, className, disabled, id, ...rest }: SwitchProps) {
+export function Switch({ label, description, className, disabled: disabledProp, id, ...rest }: SwitchProps) {
   const autoId = useId()
+  const disabled = disabledProp || Boolean(rest.disabledReason)
   if (!label) return <SwitchTrack {...rest} id={id} disabled={disabled} className={className} />
   const controlId = id ?? autoId
   return (

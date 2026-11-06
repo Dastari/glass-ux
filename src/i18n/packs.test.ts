@@ -107,6 +107,12 @@ it("runs a sankey flow's arrow with the reading direction, and pluralises its lo
   }
 })
 
+// AiHero finds this phrase inside the title to mark it, so it has to be there word for word.
+it.each(packs)("$locale marks a phrase that is really in the assistant's greeting", (pack: MessagePack) => {
+  const landing = (pack.messages as Record<string, Record<string, unknown>>).landing!
+  expect(landing.whatCanIHelpYouWith as string).toContain(landing.helpYou as string)
+})
+
 it("uses Japanese rows and a complete page-input label", () => {
   expect(ja.messages.pagination!.noRows).toBe("行がありません")
   expect(ja.messages.pagination!.previousPage).toBe("前のページ")

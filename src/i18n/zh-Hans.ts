@@ -1146,6 +1146,7 @@ export default defineMessagePack("zh-Hans", {
   shell: {
     resizeSectionNavigation: "调整部分导航的大小",
     hideInspector: "隐藏检查器",
+    closePane: (name) => `关闭“${name}”`,
     collapseSectionNavigation: "折叠部分导航",
     search: (noun) => `搜索${noun}`,
     more: "更多",

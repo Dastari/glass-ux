@@ -187,8 +187,8 @@ follows a fine pointer and a glint on the rim nearest it.
 
 ## R6 · Navigation
 
-- **R6.1** Level-one navigation is the Rail: icon-only, on the canvas, every item with a
-  tooltip.
+- **R6.1** Level-one navigation is the Rail, on the canvas: icon-only with a tooltip on every
+  item, or with `labels` a wider column that draws each item's name under its icon.
 - **R6.2** Places are routes. Level-three sections, table sorting, filters and paging belong
   in the URL; component state is the exception for transient presentation choices.
 - **R6.3** Only the routed view transitions between routes; the shell stays still.

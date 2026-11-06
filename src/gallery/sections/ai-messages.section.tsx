@@ -191,6 +191,10 @@ export default function AiMessagesSection() {
           <AssistantMessage message={base({ id: "u", state: "failed", failure: { code: "budget_exhausted", reason: "Your daily AI allowance is used up. It resets at 4:00 pm.", retryable: false } })} />
         </Specimen>
 
+        <Specimen title="Without feedback or windows" description="A host with no backend for them turns off the feedback buttons and Open in a window." layout="stack">
+          <AssistantMessage message={base({ id: "plain", blocks: [{ kind: "markdown", text: "**12 reservations** are confirmed for the east gallery on Friday." }] })} latest feedback={false} openInWindow={false} />
+        </Specimen>
+
         <Specimen title="Loading" description="A loading conversation draws its turns in their final boxes: the prompt bubble, prose lines and a card." layout="stack">
           <MessageSkeleton />
         </Specimen>

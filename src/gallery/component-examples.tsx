@@ -998,14 +998,26 @@ export function FileRowItemExample() {
   return (
     <AiGallery>
       <SectionPage>
-        <Specimen title="FileRowItem" layout="stack">
+        <Specimen title="FileRowItem" description='A list row by default, directly under a ul. Outside a list, as="div" draws the same row.' layout="stack">
+          <ul className="fa-ai-files">
+            <FileRowItem
+              file={{
+                id: "brief",
+                name: "exhibition-brief.pdf",
+                size: 240000,
+                mime: "application/pdf",
+                href: "https://files.northstar.example/brief.pdf",
+              }}
+            />
+          </ul>
           <FileRowItem
+            as="div"
             file={{
-              id: "brief",
-              name: "exhibition-brief.pdf",
-              size: 240000,
-              mime: "application/pdf",
-              href: "https://files.northstar.example/brief.pdf",
+              id: "floorplan",
+              name: "gallery-floorplan.png",
+              size: 1820000,
+              mime: "image/png",
+              href: "https://files.northstar.example/floorplan.png",
             }}
           />
         </Specimen>
@@ -2127,7 +2139,40 @@ export function InspectorExample() {
           </AppShell>
         </div>
       </Specimen>
+      <Specimen
+        title="Closed by default, with a named close button"
+        description='inspectorDefault="closed" keeps the pane shut at every width until the person opens it; their stored choice then wins. closeName names the close button after the pane.'
+        layout="stack"
+      >
+        <ClosedInspectorSample />
+      </Specimen>
     </SectionPage>
+  );
+}
+
+function ClosedInspectorSample() {
+  return (
+    <div className="relative h-120 w-full overflow-hidden" data-testid="inspector-default-closed">
+      <AppShell
+        contentAs="div"
+        className="h-full!"
+        inspectorDefault="closed"
+        brand={<ShellBrand label="Meridian" href="#examples" mark={<IconOrganisation />} />}
+        rail={
+          <Rail.Root aria-label="Default-closed sample navigation">
+            <Rail.Item label="Projects" icon={<IconOrganisation />} />
+          </Rail.Root>
+        }
+        topBar={<TopBar breadcrumb={<span>Projects / Exhibition</span>} actions={<InspectorToggle label="Meridian Assistant" />} />}
+        inspector={
+          <Inspector title="Meridian Assistant" closeName="Meridian Assistant">
+            <p>Three rooms, 42 reservations.</p>
+          </Inspector>
+        }
+      >
+        <p className="p-5">Sample project workspace</p>
+      </AppShell>
+    </div>
   );
 }
 

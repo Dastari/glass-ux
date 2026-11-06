@@ -183,6 +183,97 @@ describe("Rail overflow", () => {
   })
 })
 
+describe("Rail labels", () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  it("draws no text unless asked, and keeps the icon-only markup", () => {
+    render(
+      <TooltipProvider>
+        <Rail.Root aria-label="Main">
+          <Rail.Item icon={<svg data-testid="icon" />} label="Projects" />
+        </Rail.Root>
+      </TooltipProvider>,
+    )
+    const item = screen.getByRole("button", { name: "Projects" })
+    expect(item).toHaveTextContent("")
+    expect(screen.getByTestId("icon").parentElement).toBe(item)
+    expect(screen.getByRole("navigation")).not.toHaveAttribute("data-labels")
+  })
+
+  it("draws the name under the icon with the same accessible name, the badge on the icon", () => {
+    render(
+      <TooltipProvider>
+        <Rail.Root aria-label="Main" labels>
+          <Rail.Item icon={<svg data-testid="icon" />} label="Projects" badge={<span data-testid="badge" />} />
+        </Rail.Root>
+      </TooltipProvider>,
+    )
+    expect(screen.getByRole("navigation")).toHaveAttribute("data-labels")
+    const item = screen.getByRole("button", { name: "Projects" })
+    expect(item).toHaveTextContent("Projects")
+    const icon = screen.getByTestId("icon").parentElement!
+    expect(icon).toHaveClass("fa-shell-rail-icon")
+    expect(screen.getByTestId("badge").parentElement).toBe(icon)
+  })
+
+  it("labels More and still folds items into it by what they measure", () => {
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(170)
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({ height: 52 } as DOMRect)
+    render(
+      <TooltipProvider>
+        <Rail.Root aria-label="Main" labels>
+          {["One", "Two", "Three", "Four", "Five"].map((label) => (
+            <Rail.Item key={label} icon={<span />} label={label} />
+          ))}
+        </Rail.Root>
+      </TooltipProvider>,
+    )
+    expect(screen.getByRole("button", { name: "More" })).toHaveTextContent("More")
+    // jsdom has no styles, so no gap: three 52px rows fit 170, and More is one of them.
+    const hidden = [...document.querySelectorAll("[data-overflowed]")].map((entry) => entry.textContent)
+    expect(hidden).toEqual(["Three", "Four", "Five"])
+  })
+
+  it("shows the tooltip only for what the label does not say", () => {
+    configureShortcuts({ characterKeys: true })
+    render(
+      <TooltipProvider>
+        <Rail.Root aria-label="Main" labels>
+          <Rail.Item icon={<span />} label="Plain" />
+          <Rail.Item icon={<span />} label="Keyed" shortcut="g k" />
+          <Rail.Item icon={<span />} label="Reasoned" disabledReason="Choose an organisation first" />
+        </Rail.Root>
+      </TooltipProvider>,
+    )
+    expect(screen.getByRole("button", { name: "Plain" })).toHaveAttribute("data-trigger-disabled")
+    expect(screen.getByRole("button", { name: "Keyed" })).not.toHaveAttribute("data-trigger-disabled")
+    expect(screen.getByRole("button", { name: "Reasoned" })).not.toHaveAttribute("data-trigger-disabled")
+  })
+
+  it("shows the tooltip when the name was cut", () => {
+    vi.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockReturnValue(120)
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(72)
+    render(
+      <TooltipProvider>
+        <Rail.Root aria-label="Main" labels>
+          <Rail.Item icon={<span />} label="A very long destination name" />
+        </Rail.Root>
+      </TooltipProvider>,
+    )
+    expect(screen.getByRole("button", { name: "A very long destination name" })).not.toHaveAttribute("data-trigger-disabled")
+  })
+})
+
+describe("railOverflow with labelled heights", () => {
+  it("fits by the measured height, and More takes the tallest item's", () => {
+    const tall = ["a", "b", "c", "d"].map((id) => entry(id, { size: 52 }))
+    // Everything: 4 x 52 + 3 x 6 = 226.
+    expect(railOverflow({ room: 226, gap: 6, fixed: [], entries: tall })).toEqual([])
+    // Three rows at 52 with two gaps is 168: two items and More.
+    expect(railOverflow({ room: 168, gap: 6, fixed: [], entries: tall })).toEqual(["c", "d"])
+  })
+})
+
 describe("tabBarOverflow", () => {
   const tabs = ["a", "b", "c", "d", "e", "f", "g"].map((id) => ({ id, pinned: false }))
   const fit = { room: 1000, gap: 2, tabMin: 64, maxItems: 5, fixed: 0, hasMore: false }

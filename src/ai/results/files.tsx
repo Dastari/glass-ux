@@ -30,15 +30,20 @@ export function fileType(name: string, messages = getResultsMessages()) {
 }
 
 /** One downloadable file: type glyph, name, size and type, and a download button. */
-export function FileRowItem({ file }: {
+export function FileRowItem({ file, as: Row = "li" }: {
   /** The file to list: `name` and `mime` pick the glyph and type, `size` is in bytes, and `href` makes the button a download link. */
   file: ResultFile
+  /**
+   * The row's element. `li` must sit directly under a `ul` or `ol`; use `div` for a row outside a list.
+   * @defaultValue "li"
+   */
+  as?: "li" | "div"
 }) {
   const messages = useMessages(resultsMessages)
   const locale = useLocale()
 
   return (
-    <li className="fa-ai-file">
+    <Row className="fa-ai-file">
       <span className="fa-tile-icon fa-ai-file-icon" aria-hidden>
         <FileGlyph name={file.name} mime={file.mime} />
       </span>
@@ -58,7 +63,7 @@ export function FileRowItem({ file }: {
         render={file.href ? <a href={file.href} download={file.name} aria-label={messages.download(file.name)} /> : undefined}
         nativeButton={!file.href}
       />
-    </li>
+    </Row>
   )
 }
 

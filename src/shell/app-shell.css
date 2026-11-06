@@ -24,6 +24,7 @@
  *   --fa-shell-drawer-track / --fa-shell-inspector-track
  *                   the registered copies the grid reads, so each commits on its own delay
  *   --_tabbar-space room reserved under the workspace for the floating phone tab bar
+ *   --_rail-col     the rail's track, and the brand's above it: wider while the rail has labels
  */
 @property --fa-shell-drawer-track {
   syntax: "<length>";
@@ -75,10 +76,11 @@
     --_tabbar-space: 0px;
     --_drawer-commit: var(--duration-base);
     --_insp-commit: 0s;
+    --_rail-col: var(--sidebar-w-rail);
     --fa-shell-drawer-track: var(--_drawer-col);
     --fa-shell-inspector-track: var(--_insp-col);
     display: grid;
-    grid-template-columns: var(--sidebar-w-rail) var(--fa-shell-drawer-track) minmax(0, 1fr) var(--fa-shell-inspector-track);
+    grid-template-columns: var(--_rail-col) var(--fa-shell-drawer-track) minmax(0, 1fr) var(--fa-shell-inspector-track);
     grid-template-rows: var(--topbar-h) minmax(0, 1fr);
     grid-template-areas:
       "brand top top top"
@@ -90,6 +92,10 @@
     transition-property: --fa-shell-drawer-track, --fa-shell-inspector-track;
     transition-duration: 0s;
     transition-delay: var(--_drawer-commit), var(--_insp-commit);
+  }
+  /* CSS alone, so the first paint is right: the option is on Rail.Root, inside this grid. */
+  .fa-shell:has(> .fa-shell-slot-rail .fa-shell-rail[data-labels]) {
+    --_rail-col: var(--sidebar-w-rail-labelled);
   }
   .fa-shell[data-resizing] {
     transition: none;
@@ -235,15 +241,15 @@
     transition: transform var(--duration-base) var(--ease-exit);
   }
   @media (width >= 120rem) {
-    :root:not([data-shell-inspector="closed"]) .fa-shell[data-has-inspector] {
+    :root:not([data-shell-inspector="closed"]) .fa-shell[data-has-inspector]:not([data-inspector-default="closed"]) {
       --_insp-col: calc(var(--inspector-w) + var(--gap-panels));
       --_insp-commit: var(--duration-base);
     }
-    :root:not([data-shell-inspector="closed"]) .fa-shell-slot-inspector {
+    :root:not([data-shell-inspector="closed"]) .fa-shell:not([data-inspector-default="closed"]) > .fa-shell-slot-inspector {
       visibility: visible;
       transition-delay: 0s;
     }
-    :root:not([data-shell-inspector="closed"]) .fa-shell-slot-inspector > * {
+    :root:not([data-shell-inspector="closed"]) .fa-shell:not([data-inspector-default="closed"]) > .fa-shell-slot-inspector > * {
       transform: none;
       transition-timing-function: var(--ease-enter);
     }

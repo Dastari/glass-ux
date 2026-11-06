@@ -71,6 +71,50 @@ async function workTakesItsOwnClicks(work: Locator) {
   expect(hit).toBe(true);
 }
 
+test.describe("inspectorDefault=closed on a wide screen", () => {
+  const open = async (page: Page, stored?: "open" | "closed") => {
+    if (stored)
+      await page.addInitScript(
+        ([key, value]) => localStorage.getItem(key) ?? localStorage.setItem(key, value),
+        [SHELL_STORAGE_KEY, JSON.stringify({ inspector: stored })] as const,
+      );
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.goto("/components/inspector");
+    const frame = page.getByTestId("inspector-default-closed");
+    await expect(frame.locator(".fa-shell")).toBeVisible({ timeout: 30_000 });
+    return frame;
+  };
+  /** The track and the pane's visibility: what the CSS gave the first paint. */
+  const docked = (frame: Locator) =>
+    frame.locator(".fa-shell").evaluate((shell) => ({
+      track: getComputedStyle(shell).gridTemplateColumns.split(" ").at(-1),
+      visible: getComputedStyle(shell.querySelector(".fa-shell-slot-inspector")!).visibility === "visible",
+    }));
+
+  test("starts closed with nothing stored, in the CSS as well as the state", async ({ page }) => {
+    const frame = await open(page);
+    await expect.poll(() => docked(frame)).toEqual({ track: "0px", visible: false });
+    await expect(frame.getByRole("button", { name: "Meridian Assistant" })).toHaveAttribute("aria-pressed", "false");
+    await expect(frame.locator(".fa-shell-slot-inspector")).toHaveAttribute("inert");
+    // A shell without the option on the same page keeps the wide default.
+    await expect(page.locator(".fa-shell:not([data-inspector-default]) .fa-shell-slot-inspector").first()).not.toHaveAttribute("inert");
+  });
+
+  test("a stored choice of open wins, and closing it stores closed", async ({ page }) => {
+    const frame = await open(page, "open");
+    const pane = frame.locator(".fa-shell-inspector");
+    await expect(pane).toBeVisible();
+    await settled(pane, frame.locator(".fa-shell-slot-work"));
+    const { track } = await docked(frame);
+    expect(Number.parseFloat(track!)).toBeGreaterThan(100);
+    await pane.getByRole("button", { name: "Close Meridian Assistant" }).click();
+    await expect.poll(() => docked(frame)).toEqual({ track: "0px", visible: false });
+    await page.reload();
+    await expect(frame.locator(".fa-shell")).toBeVisible({ timeout: 30_000 });
+    await expect.poll(() => docked(frame)).toEqual({ track: "0px", visible: false });
+  });
+});
+
 for (const viewport of [
   { width: 1920, height: 1080, inspector: undefined },
   { width: 1366, height: 768, inspector: "open" as const },

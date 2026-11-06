@@ -4,6 +4,12 @@
  * an accent-soft tile; clicking it again collapses or expands the section drawer (the
  * VS Code activity-bar model). On phones the rail is replaced by the TabBar.
  *
+ * With `labels` every item draws its name under its icon and the rail takes a wider column,
+ * which AppShell's grid follows. The option is the whole rail's: the names need that column,
+ * and a mix of tile sizes would break its rhythm. Items then measure taller, and the fit below
+ * reads what they measure. The tooltip stays for what the label does not show: a shortcut, a
+ * disabled reason, or a name that was cut.
+ *
  * Items that do not fit its height move into a More menu (R6.6), or with `overflow="scroll"`
  * the column scrolls. In More they stay in the document, hidden, so a menu row or a shortcut
  * clicks the item itself: its router link, its handler and the drawer toggle all run as they
@@ -30,11 +36,12 @@ import {
   type MouseEvent,
   type ReactElement,
   type ReactNode,
+  type Ref,
 } from "react"
 import { IconMoreHorizontal } from "../icons/generated/icons.js"
 import { cx } from "../lib/cx.js"
 import { useMessages } from "../lib/i18n/index.js"
-import { observeElementSizes } from "../lib/resize-observer.js"
+import { observeElementSize, observeElementSizes } from "../lib/resize-observer.js"
 import { NotificationDot } from "../ui/badge/index.js"
 import { BrandMark } from "../ui/brand/index.js"
 import { Kbd, characterShortcutsEnabled, useCharacterShortcuts } from "../ui/kbd/index.js"
@@ -82,6 +89,9 @@ interface RailOverflowValue {
 }
 
 const RailOverflow = /* @__PURE__ */ createContext<RailOverflowValue | null>(null)
+
+/** The rail draws each item's name under its icon. */
+const RailLabels = /* @__PURE__ */ createContext(false)
 
 const SEQUENCE_TIMEOUT = 1200
 
@@ -138,21 +148,30 @@ export interface RailProps extends ComponentProps<"nav"> {
    * @defaultValue "more"
    */
   overflow?: "more" | "scroll"
+  /**
+   * Draw every item's name under its icon, in a wider column (`--sidebar-w-rail-labelled`) that
+   * AppShell's grid follows. A name that does not fit ends in an ellipsis, with the full name in
+   * the tooltip. Applies to the whole rail, including More.
+   * @defaultValue false
+   */
+  labels?: boolean
 }
 
-function Root({ overflow: mode = "more", className, children, ...rest }: RailProps) {
+function Root({ overflow: mode = "more", labels = false, className, children, ...rest }: RailProps) {
   const [registry] = useState<ShortcutRegistry>(() => new Map())
   useSequenceShortcuts(registry)
   const overflow = useRailOverflow(mode)
   return (
     <RailShortcuts.Provider value={registry}>
       <RailOverflow.Provider value={overflow.value}>
-        <nav {...rest} className={cx("fa-shell-rail", className)}>
-          <ul ref={overflow.listRef} className="fa-shell-rail-list">
-            {children}
-            {overflow.value.host ? null : <More />}
-          </ul>
-        </nav>
+        <RailLabels.Provider value={labels}>
+          <nav {...rest} className={cx("fa-shell-rail", className)} data-labels={labels ? "" : undefined}>
+            <ul ref={overflow.listRef} className="fa-shell-rail-list">
+              {children}
+              {overflow.value.host ? null : <More />}
+            </ul>
+          </nav>
+        </RailLabels.Provider>
       </RailOverflow.Provider>
     </RailShortcuts.Provider>
   )
@@ -247,18 +266,26 @@ function More() {
   const overflow = useContext(RailOverflow)
   const messages = useMessages(shellMessages)
   const sequences = useCharacterShortcuts()
+  const labels = useContext(RailLabels)
   if (!overflow?.hidden.length) return null
   const rows = overflow.hidden.flatMap((id) => {
     const row = overflow.rows.get(id)
     return row ? [{ id, ...row }] : []
   })
+  const dot = rows.some((row) => row.badge) ? <NotificationDot label="" aria-hidden /> : null
   return (
     <li className="fa-shell-rail-entry" data-rail-more="">
       <Menu.Root>
-        <Tooltip side="inline-end" content={messages.more}>
+        <Tooltip side="inline-end" content={messages.more} enabled={!labels}>
           <Menu.Trigger className="fa-shell-rail-item fa-pressable" aria-label={messages.more}>
-            <IconMoreHorizontal />
-            {rows.some((row) => row.badge) ? <NotificationDot label="" aria-hidden /> : null}
+            {labels ? (
+              <LabelledFace icon={<IconMoreHorizontal />} badge={dot} label={messages.more} />
+            ) : (
+              <>
+                <IconMoreHorizontal />
+                {dot}
+              </>
+            )}
           </Menu.Trigger>
         </Tooltip>
         <Menu.Popup side="inline-end">
@@ -292,6 +319,21 @@ function More() {
   )
 }
 
+/** An item's insides on a labelled rail: the icon with its badge, and the name under them. */
+function LabelledFace({ icon, badge, label, labelRef }: { icon: ReactNode; badge: ReactNode; label: string; labelRef?: Ref<HTMLSpanElement> }) {
+  return (
+    <>
+      <span className="fa-shell-rail-icon">
+        {icon}
+        {badge}
+      </span>
+      <span ref={labelRef} className="fa-shell-rail-label">
+        {label}
+      </span>
+    </>
+  )
+}
+
 /** The keys of a shortcut, as keycaps: "g e" → G E; "mod+k" → Ctrl K. */
 export function ShortcutKeys({ shortcut }: {
   /** The shortcut: space-separated steps of a sequence ("g e"), each a `+`-joined chord ("mod+k"). */
@@ -308,7 +350,7 @@ export function ShortcutKeys({ shortcut }: {
 
 export interface RailItemProps extends Omit<ComponentProps<"button">, "children"> {
   icon: ReactNode
-  /** The destination's name: the accessible name and the tooltip. */
+  /** The destination's name: the accessible name and the tooltip, and on a rail with `labels` the text under the icon. */
   label: string
   /** "g e" (press G, then E). Shown in the tooltip and handled by the rail. */
   shortcut?: string
@@ -335,6 +377,17 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
   const overflow = useContext(RailOverflow)
   const actions = overflow?.actions
   const inMore = overflow?.hidden.includes(id) ?? false
+  const labels = useContext(RailLabels)
+  const labelRef = useRef<HTMLSpanElement>(null)
+  const [labelCut, setLabelCut] = useState(false)
+
+  useIsoLayoutEffect(() => {
+    const element = labelRef.current
+    if (!element) return
+    const check = () => setLabelCut(element.scrollWidth > element.clientWidth)
+    check()
+    return observeElementSize(element, check)
+  }, [labels, label])
 
   useIsoLayoutEffect(() => {
     actions?.update(id, { label, icon, badge, shortcut, disabledReason, element: ref })
@@ -396,7 +449,9 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
         "aria-description": disabledReason,
         type: render ? undefined : "button",
         onClick: handleClick,
-        children: (
+        children: labels ? (
+          <LabelledFace icon={icon} badge={badge} label={label} labelRef={labelRef} />
+        ) : (
           <>
             {icon}
             {badge}
@@ -411,6 +466,8 @@ function Item({ icon, label, shortcut, active = false, render, badge, disabledRe
     <li className="fa-shell-rail-entry" data-rail-id={id} data-overflowed={inMore ? "" : undefined}>
       <Tooltip
         side="inline-end"
+        // A visible name needs no tooltip to repeat it (R2.1), unless something else is to be said.
+        enabled={!labels || labelCut || Boolean(disabledReason) || Boolean(shortcut && sequences)}
         content={
           <span className="fa-shell-tip">
             <span>{disabledReason ?? label}</span>
@@ -462,7 +519,7 @@ function Shortcut({ keys, onTrigger }: {
   return null
 }
 
-/** Compose the primary application navigation rail from accessible items, separators and flexible spacers. Items that do not fit its height move into a More menu, and the current section stays visible. */
+/** Compose the primary application navigation rail from accessible items, separators and flexible spacers. Items that do not fit its height move into a More menu, and the current section stays visible. `labels` draws each item's name under its icon. */
 export const Rail = { Root, Item, Spacer, Shortcut }
 
 export interface ShellBrandProps extends Omit<ComponentProps<"a">, "children"> {

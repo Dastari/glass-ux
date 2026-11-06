@@ -1147,6 +1147,7 @@ export default defineMessagePack("ar", {
   shell: {
     resizeSectionNavigation: "تغيير حجم التنقل في القسم",
     hideInspector: "إخفاء المفتش",
+    closePane: (name) => `إغلاق ${name}`,
     collapseSectionNavigation: "طي التنقل بين الأقسام",
     search: (noun) => `بحث ${noun}`,
     more: "المزيد",

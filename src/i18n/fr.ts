@@ -1146,6 +1146,7 @@ export default defineMessagePack("fr", {
   shell: {
     resizeSectionNavigation: "Redimensionner la navigation dans les sections",
     hideInspector: "Masquer l’inspecteur",
+    closePane: (name) => `Fermer ${name}`,
     collapseSectionNavigation: "Réduire la navigation dans la section",
     search: (noun) => `Rechercher ${noun}`,
     more: "Plus",

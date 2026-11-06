@@ -48,6 +48,14 @@
     --_px: var(--space-2);
   }
   @container ai-status (width < 26rem) {
+    /* The state wraps to a second line rather than losing its words beside Retry. */
+    .fa-ai-status > .fa-ai-status-item {
+      overflow: visible;
+      white-space: normal;
+    }
+    .fa-ai-status-retry.fa-btn {
+      flex: none;
+    }
     .fa-ai-status-meta .fa-ai-status-item:last-child:not(:first-child) {
       display: none;
     }

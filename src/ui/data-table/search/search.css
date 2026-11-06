@@ -28,14 +28,30 @@
   /* It keeps a fixed share of the line for the fold (SEARCH_CHIP_REM in filters/bar.tsx) and
      truncates rather than push the line wider. */
   .fa-dt-search[data-mode="collapsed"] {
-    flex: 0 1 auto;
-    min-inline-size: auto;
+    /* component token: the chip's narrowest (icon, a few letters, ✕); it truncates down to this */
+    --_chip-min: 6rem;
+    flex: 1 1 var(--_chip-min);
+    min-inline-size: var(--_chip-min);
+    max-inline-size: fit-content;
   }
   .fa-dt-filter-chip.fa-dt-search-chip {
-    /* component tokens: the chip's widest and narrowest (icon, a few letters, ✕) */
+    /* component tokens: the chip's widest and narrowest */
     --_max: 12rem;
-    --_min: 6rem;
+    --_min: var(--_chip-min);
     min-inline-size: var(--_min);
+  }
+  /* A narrow line with an active query: the strip claims the chip's narrowest beside Filters, so
+     the table's own tools wrap under it when both will not fit. A Filters label longer than this
+     allows wraps inside the strip, and nothing overlaps in any language. */
+  @container fa-dt (inline-size < 36rem) {
+    .fa-dt > .fa-dt-toolbar > .fa-dt-filterbar:has(.fa-dt-search-chip) {
+      --_basis: 11.75rem;
+      flex-wrap: wrap;
+    }
+    /* No chips: the empty strip takes no line of its own, or the wrap above adds a row gap. */
+    .fa-dt-filterbar:has(.fa-dt-search-chip) .fa-dt-filter-chips:not(:has(> :not(.fa-dt-filter-measure))) {
+      margin-inline-start: calc(var(--gap-controls) * -1);
+    }
   }
   .fa-dt-search-chip .fa-dt-filter-chip-body {
     padding-inline-start: var(--space-2);

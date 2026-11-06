@@ -140,6 +140,28 @@ export default function MenuSection() {
           <ActionMenuPreview set={endpointActions} targets={[win11]} label={win11.name} />
         </Specimen>
 
+        <Specimen title="Rows with and without icons" description="A menu with any icon keeps that column on every row, so labels share one edge. One with no icons or ticks starts its labels at the row's inset." wide>
+          <div data-testid="menu-mixed-rows">
+            <MenuPreview.Surface label="Tab">
+              <MenuPreview.Group>
+                <MenuPreview.Item icon={<IconPin />}>Pin tab</MenuPreview.Item>
+                <MenuPreview.Item icon={<IconCopy />}>Copy path</MenuPreview.Item>
+                <MenuPreview.Item>Maximise</MenuPreview.Item>
+                <MenuPreview.Item>Close</MenuPreview.Item>
+              </MenuPreview.Group>
+            </MenuPreview.Surface>
+          </div>
+          <div data-testid="menu-plain-rows">
+            <MenuPreview.Surface label="Sort">
+              <MenuPreview.Group>
+                <MenuPreview.Item>Name</MenuPreview.Item>
+                <MenuPreview.Item>Date modified</MenuPreview.Item>
+                <MenuPreview.Item>Size</MenuPreview.Item>
+              </MenuPreview.Group>
+            </MenuPreview.Surface>
+          </div>
+        </Specimen>
+
         <Specimen title="Detail line" description="A second line under the label gives the row one fixed taller height, and the icon slot a thumbnail's box.">
           <MenuPreview.Surface label="Recent reports">
             <MenuPreview.Item icon={<IconDownload />} detail="Reports · 12 March">

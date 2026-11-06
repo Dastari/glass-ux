@@ -9,6 +9,7 @@ export default function MeterCellSection() {
         description="The shared meter carries its accessible name, exact reading, and warning/danger thresholds."
       >
         <div className="flex w-full max-w-xl flex-col gap-controls">
+          <MeterCell value={40} max={40} valueText="40 of 40 seats" tone="success" label="Seats assigned" />
           <MeterCell
             label="Storage used"
             value={24}

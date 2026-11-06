@@ -92,3 +92,30 @@ describe("Meter tone public types", () => {
     expect(rejected.join("\n")).toMatch(/"accent"/)
   }, 60_000)
 })
+
+describe("Meter success tone", () => {
+  const meter = (props: { value: number; warningAt?: number; dangerAt?: number }) => {
+    const { container } = render(<Meter max={40} tone="success" aria-label="Seats" {...props} />);
+    return container.querySelector<HTMLElement>(".fa-meter")!;
+  };
+
+  it("stays green when full, with no threshold mark", () => {
+    const root = meter({ value: 40 });
+    expect(root.dataset.tone).toBe("success");
+    expect(root.dataset.level).toBe("normal");
+    expect(root.hasAttribute("data-unmarked")).toBe(true);
+  });
+
+  it("uses thresholds a host sets", () => {
+    const root = meter({ value: 40, dangerAt: 0.9 });
+    expect(root.dataset.level).toBe("danger");
+    expect(root.hasAttribute("data-unmarked")).toBe(false);
+  });
+
+  it("leaves the other tones' thresholds alone", () => {
+    const { container } = render(<Meter value={40} max={40} aria-label="Disk" />);
+    const root = container.querySelector<HTMLElement>(".fa-meter")!;
+    expect(root.dataset.level).toBe("danger");
+    expect(root.hasAttribute("data-tone")).toBe(false);
+  });
+});

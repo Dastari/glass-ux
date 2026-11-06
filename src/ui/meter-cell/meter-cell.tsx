@@ -10,7 +10,7 @@ export interface MeterCellProps extends Omit<MeterProps, "layout" | "label"> {
 /**
  * A responsive table meter: the reading remains when the narrow cell drops its track. It
  * takes Meter's thresholds and `tone`; pass `tone="data"` where the column compares levels
- * in the data colour.
+ * in the data colour, and `tone="success"` where a full level is good, such as licence seats.
  */
 export function MeterCell({
   label,

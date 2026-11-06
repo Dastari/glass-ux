@@ -20,6 +20,12 @@
   .fa-meter[data-tone="data"][data-level="normal"] {
     --_bar: var(--chart-1);
   }
+  .fa-meter[data-tone="success"][data-level="normal"] {
+    --_bar: var(--success);
+  }
+  .fa-meter[data-unmarked] .fa-meter-mark {
+    display: none;
+  }
   .fa-meter[data-level="warning"] {
     --_bar: var(--warning);
     --_reading: var(--warning-text);

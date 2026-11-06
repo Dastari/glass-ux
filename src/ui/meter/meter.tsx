@@ -32,8 +32,10 @@ export interface MeterProps {
   /** The bar's colour below the warning threshold. `neutral` (default) keeps a healthy level
    *  calm; `data` uses the first data colour (`--chart-1`) where the level is itself the data
    *  being compared, such as disk use in a table. Warning and danger apply past their
-   *  thresholds either way. */
-  tone?: "neutral" | "data"
+   *  thresholds either way. `success` is green for a level where more is good, such as licence
+   *  seats all assigned: it has no thresholds, so a full bar stays green, unless you set
+   *  `warningAt` or `dangerAt`. */
+  tone?: "neutral" | "data" | "success"
   /** Accessible name when there is no visible label. */
   "aria-label"?: string
   className?: string
@@ -49,8 +51,8 @@ export function Meter({
   max = 100,
   label,
   valueText,
-  warningAt = 0.75,
-  dangerAt = 0.9,
+  warningAt: warningAtProp,
+  dangerAt: dangerAtProp,
   layout = "stacked",
   tone = "neutral",
   className,
@@ -58,7 +60,11 @@ export function Meter({
 }: MeterProps) {
   const locale = useLocale()
   const ratio = max > 0 ? Math.min(1, Math.max(0, value / max)) : 0
-  const level = meterLevel(ratio, warningAt, dangerAt)
+  const warningAt = warningAtProp ?? 0.75
+  const dangerAt = dangerAtProp ?? 0.9
+  // Success has no thresholds unless the host sets one.
+  const thresholds = tone !== "success" || warningAtProp !== undefined || dangerAtProp !== undefined
+  const level = thresholds ? meterLevel(ratio, warningAt, dangerAt) : "normal"
   const reading = valueText ?? formatPercent(locale, Math.round(ratio * 100))
   return (
     <BaseMeter.Root
@@ -69,7 +75,8 @@ export function Meter({
       className={cx("fa-meter", className)}
       data-level={level}
       data-layout={layout}
-      data-tone={tone === "data" ? tone : undefined}
+      data-tone={tone === "neutral" ? undefined : tone}
+      data-unmarked={thresholds ? undefined : ""}
       style={{ "--_warn-at": `${warningAt * 100}%` } as CSSProperties}
     >
       {layout === "stacked" ? (

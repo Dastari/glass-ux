@@ -49,6 +49,12 @@ export interface MetricProps extends Omit<ComponentProps<"div">, "children"> {
   /** The series' state, when it has one (warning when a threshold is crossed). */
   tone?: SparklineTone
   /**
+   * In the micro tier, let the inline sparkline take the rest of the row instead of stopping at
+   * its usual width (8rem). The tiers are still the box's choice; the others ignore this. Pass the
+   * same value to `MetricSkeleton`. Default false.
+   */
+  sparklineFill?: boolean
+  /**
    * BCP 47 locale for the value, delta and statistics. Default: the nearest
    * `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US.
    */
@@ -96,6 +102,7 @@ export function Metric({
   range,
   domain,
   tone = "data",
+  sparklineFill = false,
   locale: localeProp,
   className,
   ...rest
@@ -113,7 +120,7 @@ export function Metric({
 
   return (
     <div {...rest} className={cx("fa-metric", className)} role="group" aria-label={label}>
-      <div className="fa-metric-body" data-hovering={hover !== null ? "" : undefined}>
+      <div className="fa-metric-body" data-hovering={hover !== null ? "" : undefined} data-sparkline={sparklineFill ? "fill" : undefined}>
         <div className="fa-metric-head">
           <span className="fa-metric-label">{label}</span>
           {range ? <span className="fa-metric-range">{range}</span> : null}
@@ -177,14 +184,16 @@ export interface MetricSkeletonProps {
   stats?: boolean
   /** Axis extent, labels and formatting specification. */
   axis?: boolean
+  /** The Metric's `sparklineFill`, so the micro tier's chart takes the same box. */
+  sparklineFill?: boolean
   className?: string
 }
 
 /** Every row of the Metric in the same tier geometry, so loading never shifts a pixel. */
-export function MetricSkeleton({ range = false, delta = true, stats = true, axis = false, className }: MetricSkeletonProps): ReactNode {
+export function MetricSkeleton({ range = false, delta = true, stats = true, axis = false, sparklineFill = false, className }: MetricSkeletonProps): ReactNode {
   return (
     <div className={cx("fa-metric", className)} aria-hidden data-skeleton="">
-      <div className="fa-metric-body">
+      <div className="fa-metric-body" data-sparkline={sparklineFill ? "fill" : undefined}>
         <div className="fa-metric-head">
           <Skeleton.Text type="label" className="fa-metric-label fa-metric-skel" data-part="label" />
           {range ? <Skeleton.Text type="caption" className="fa-metric-range fa-metric-skel" data-part="range" /> : null}

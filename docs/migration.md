@@ -11,6 +11,10 @@ Behaviour to review:
 
 - `DataTable`: with rows selected on a table with pages, the pager stays in the Tab order after the
   bar's actions, and the status text next to it hides. On a narrow table the footer takes two lines.
+- `registerMessagePack`: packs for one language merge instead of replacing. If you relied on a later
+  pack removing an earlier pack's messages, that no longer happens.
+- `SearchTrigger`: a custom `placeholder` now also becomes its accessible name, so tests that find it
+  by the default name need that placeholder or their own `aria-label`.
 - A link inside a `ContextMenu.Trigger`: the click that follows a long press which opened the menu no
   longer reaches the link's `onClick`.
 

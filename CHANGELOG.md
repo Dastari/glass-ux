@@ -22,6 +22,12 @@ has upgrade steps in the [migration guide](docs/migration.md).
   now share the line, and the bar wraps above the pager when both will not fit.
 - ReferenceInput: a read-only relation label, as with `direction="from"`, touched its chip. It now
   has the editable row's gap.
+- Toolbar: `Toolbar.Button` with only `disabledReason` read as enabled to assistive technology. A
+  reason alone now means disabled, as it does on Button, in the toolbar and in its More menu.
+- SearchTrigger: it ignored a host's `aria-label`, and a custom `placeholder` failed axe
+  `label-content-name-mismatch`. A host's name wins; without one, the name follows the placeholder.
+- `registerMessagePack`: a later pack for a language removed the earlier pack's messages. Packs for
+  one language now merge, and a later pack wins for each message it provides.
 - ContextMenu, and so EntityIdentity, EntityChip and every other long-pressable link: lifting a long
   press clicked the link while the menu it opened was still up, which navigated away.
 

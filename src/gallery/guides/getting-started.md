@@ -258,7 +258,7 @@ registerMessagePack(defineMessagePack("fi", {
 }));
 ```
 
-A package built on Glass UX adds its own namespace to the same catalogue, so its packs are typed
+Packs for one language merge, and a later pack wins for each message it provides. A package built on Glass UX adds its own namespace to the same catalogue, so its packs are typed
 like the library's:
 
 ```ts

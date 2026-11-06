@@ -116,13 +116,21 @@ export function Autocomplete<V extends string = string>({
     </BaseAutocomplete.Item>
   )
   const showEmpty = Boolean(source || empty) && text.trim() !== "" && status === "idle" && search.needsMore === 0
+  // With nothing to show the popup stays shut: no empty strip, and Base UI, which hides the
+  // rest of the page from assistive technology while a combobox popup is open, hides nothing.
+  const [wantsOpen, setWantsOpen] = useState(false)
+  const hasContent = items.length > 0 || showEmpty || status !== "idle" || search.needsMore > 0
 
   return (
     <BaseAutocomplete.Root
+      open={wantsOpen && hasContent}
+      onOpenChange={setWantsOpen}
       items={(groups ?? items) as Array<OptionItem<V>>}
       value={text}
       onValueChange={(next) => {
         if (value === undefined) setInner(next)
+        // Base UI closes on an emptied field only when its popup was showing.
+        if (next.trim() === "" && !source?.suggestions?.length) setWantsOpen(false)
         onValueChange?.(next)
       }}
       filter={null}
@@ -149,7 +157,11 @@ export function Autocomplete<V extends string = string>({
           ref={ref}
           placeholder={placeholder}
           aria-invalid={invalid || undefined}
-          onBlur={onBlur}
+          onBlur={(event) => {
+            // Base UI reports no close for a popup held shut, and results may still arrive.
+            setWantsOpen(false)
+            onBlur?.(event)
+          }}
           className="fa-control-input"
         />
         {readOnly || !clearable ? null : (

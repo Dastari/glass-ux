@@ -3,6 +3,22 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.16.2 → 0.16.3
+
+No code edits are needed.
+
+Behaviour to review:
+
+- `Toast`: tests or tools that find a toast with `getByRole("dialog")` or `getByRole("alertdialog")`
+  need `getByRole("group", { name })`.
+- `Autocomplete`: with nothing to show, the popup stays shut and `aria-expanded` is `false`. While
+  suggestions are showing, Base UI still hides the rest of the page from assistive technology, as
+  it does for every combobox popup.
+- `Composer`: a rejecting `onSend` keeps the draft and is no longer an unhandled rejection, so a
+  global rejection handler no longer sees it. Report the failure in `onSend`.
+- `AiStatusStrip`: below 26rem the state can take two lines.
+- `DataTable`: on a narrow toolbar, an active search can move the table's own tools to a second line.
+
 ## 0.16.1 → 0.16.2
 
 No code edits are needed.

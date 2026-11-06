@@ -4,6 +4,31 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.16.3
+
+Bug fixes requested by a consuming application.
+
+### Fixed
+
+- Tree: a search that emptied the tree, or filled it again, threw React errors #300 and #310.
+- RichTextInput: a task list failed axe `list` at serious level. It is now a group of checkboxes.
+  Lexical's `role="checkbox"` on the list item still reports axe `aria-allowed-role` at minor level.
+- Composer: a rejecting `onSend` was an unhandled rejection. The draft now stays and nothing is
+  raised. Report the failure in `onSend`.
+- DataTable: on a narrow toolbar, an active search chip overlapped Filters and the table's own
+  tools. The chip now truncates, and the tools wrap under the strip when both will not fit.
+- AiStatusStrip: below 26rem the state wraps to a second line instead of truncating beside Retry.
+- Autocomplete and AutocompleteField: the popup stays shut when it has nothing to show, so there
+  is no empty strip and the rest of the page is not hidden from assistive technology.
+- Toast: each toast is a labelled `group` rather than a `dialog` or `alertdialog`.
+
+### Documentation
+
+- RichTextInput: the visual view shows tables, reference links, footnotes and frontmatter as
+  literal Markdown. Source mode edits them, and the Markdown stays intact.
+- `glass-ux/adapters/graphql-orm`: keyset lists take the table's `OrderBy`, so they can back
+  sortable tables.
+
 ## 0.16.2
 
 ### Added

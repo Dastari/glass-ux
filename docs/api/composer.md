@@ -38,7 +38,7 @@ Width  container-aware down to the docked pane: labels drop to icons, the model 
 | onEditLast | `(() => void) \| undefined` | See type | no | — | ↑ in an empty composer edits the last prompt. |
 | onOpenSettings | `(() => void) \| undefined` | See type | no | — | Called from the AI settings button in the model popover; the button is shown only when this is supplied. |
 | onRemoveAttachment | `((id: string) => void) \| undefined` | See type | no | — | Called with the attachment `id` when the person removes its chip; the chip shows a remove button only when this is supplied. |
-| onSend | `((text: string) => void \| Promise<void>) \| undefined` | See type | no | — | Called with the trimmed text; clear the composer by resolving. |
+| onSend | `((text: string) => void \| Promise<void>) \| undefined` | See type | no | — | Called with the trimmed text. Resolving clears the composer; rejecting keeps the draft, so report the failure in this callback. |
 | onStop | `(() => void) \| undefined` | See type | no | — | Called when the person stops a running response: the Stop button or Esc while `run` is `running` or `stopping` and no menu is open. |
 | onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the full text on every edit, pick from a menu, dictation and the clear after a send (`""`). Pair with `value` to control it. |
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |

@@ -523,6 +523,9 @@ export default defineMessagePack("ar", {
     enterADateAndTimeOnOrAfter: (minimum) => `أدخل التاريخ والوقت في ${minimum} أو بعده`,
     enterADateAndTime: "أدخل التاريخ والوقت",
     enterADate: "أدخل التاريخ",
+    enterADateFromTo: (minimum, maximum) => `أدخل تاريخًا من ${minimum} إلى ${maximum}`,
+    enterADateOnOrBefore: (maximum) => `أدخل تاريخًا في ${maximum} أو قبله`,
+    enterADateOnOrAfter: (minimum) => `أدخل تاريخًا في ${minimum} أو بعده`,
     enterADateAs: (format) => `أدخل تاريخًا باسم ${format}`,
     skippedTime: "هذا الوقت غير موجود عند تغيير التوقيت الصيفي. يُرجى اختيار وقت آخر.",
     repeatedTime: "يتكرر هذا الوقت عند تغيير التوقيت الصيفي. يُرجى اختيار وقت غير ملتبس.",
@@ -1875,6 +1878,7 @@ export default defineMessagePack("ar", {
   },
   activityFeed: {
     noActivity: "لا يوجد نشاط",
+    newPrefix: "جديد:",
   },
   chipOverflow: {
     more: (count, noun) => `${count} المزيد ${noun}`,

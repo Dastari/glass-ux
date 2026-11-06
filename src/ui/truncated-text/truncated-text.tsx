@@ -15,7 +15,7 @@ const useIsomorphicLayoutEffect =
   typeof window === "undefined" ? () => {} : useLayoutEffect;
 
 /** Ancestors that are already focusable: truncated text inside one adds no tab stop. */
-const CONTROL_SELECTOR =
+export const CONTROL_SELECTOR =
   "a[href], button, input, select, textarea, [role=button], [role=link], [role=tab], [role=treeitem], [role=option], [role=menuitem], [role=row][tabindex], [role=gridcell][tabindex]";
 
 interface Measurement {

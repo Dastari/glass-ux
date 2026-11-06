@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { renderToString } from "react-dom/server";
 import {
   afterAll,
@@ -325,5 +326,45 @@ describe("column header names", () => {
       screen.getByRole("separator", { name: "Resize Serial column" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Reorder Serial column")).toBeInTheDocument();
+  });
+});
+
+describe("DataTable emptyIcon", () => {
+  const Empty = ({ query = "", emptyIcon }: { query?: string; emptyIcon?: ReactNode }) => (
+    <TooltipProvider>
+      <DataTable
+        id="empty-icon"
+        label="Devices"
+        rows={[]}
+        columns={columns}
+        getRowId={(row) => row.id}
+        rowCount={0}
+        height="auto"
+        selectable={false}
+        search={{ fields: [{ field: "Name", value: (row: Device) => row.name }] }}
+        state={{ sorting: [], filters: [], pagination: { pageIndex: 0, pageSize: 25 }, selection: {}, search: query }}
+        onStateChange={() => {}}
+        emptyMessage="No devices yet"
+        emptyIcon={emptyIcon}
+      />
+    </TooltipProvider>
+  );
+
+  it("has no icon by default", () => {
+    const view = render(<Empty />);
+    expect(screen.getByText("No devices yet")).toBeInTheDocument();
+    expect(view.container.querySelector(".fa-dt-message-glyph")).toBeNull();
+  });
+
+  it("draws the icon beside the message, hidden from assistive technology", () => {
+    const view = render(<Empty emptyIcon={<svg data-testid="depot" />} />);
+    const glyph = view.container.querySelector(".fa-dt-message-glyph")!;
+    expect(glyph.getAttribute("aria-hidden")).toBe("true");
+    expect(glyph.querySelector("[data-testid=depot]")).not.toBeNull();
+  });
+
+  it("leaves it out while searching", () => {
+    const view = render(<Empty query="q3" emptyIcon={<svg />} />);
+    expect(view.container.querySelector(".fa-dt-message-glyph")).toBeNull();
   });
 });

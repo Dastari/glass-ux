@@ -83,6 +83,12 @@ export default function AddressFieldSection() {
         <LookupDemo />
       </Specimen>
 
+      <Specimen title="Starting from existing text" description="defaultQuery seeds the lookup with text the parts cannot hold, such as an older free-text address. Nothing is sent until the person comes to it; click the text or press ↓ for the suggestions.">
+        <FormStack className="w-full" data-testid="address-seeded">
+          <AddressInput geocoder={demoGeocoder} label="Site address" defaultQuery="12 Example Lane Hobart" bias={HOME_BIAS} countries={["AU", "NZ"]} />
+        </FormStack>
+      </Specimen>
+
       <Specimen title="Filled, with the pin" description="Drag the pin, click the map or focus the pin and use the arrow keys: the position becomes “placed by hand” and Reset pin returns to the lookup's point.">
         <FormStack className="w-full" data-testid="address-filled">
           <AddressInput geocoder={demoGeocoder} label="Site address" defaultValue={HOBART_OFFICE} bias={HOME_BIAS} map={DEMO_MAP_CONFIG} />

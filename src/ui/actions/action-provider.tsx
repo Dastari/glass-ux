@@ -159,7 +159,10 @@ export function useActionRunner() {
             confirmLabel: spec.confirmLabel,
             tone: spec.tone === "danger" ? "danger" : "warning",
             failureTitle: messages.failed(action.label),
-            onConfirm: () => run(targets, context),
+            // Awaited, not returned: an action's result is its own, not a refusal of the dialog.
+            onConfirm: async () => {
+              await run(targets, context);
+            },
           })
           .then((confirmed) => {
             if (confirmed) succeed();

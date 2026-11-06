@@ -4,6 +4,7 @@ import { getLocale } from "../../lib/locale/locale.js"
 /** English defaults for activityFeed. */
 export const activityFeedMessages = defineMessages("activityFeed", {
   noActivity: "No activity",
+  newPrefix: "New:",
 })
 
 declare module "../../lib/i18n/catalog.js" {

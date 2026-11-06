@@ -58,3 +58,27 @@ describe("Autocomplete with nothing to show", () => {
     expect(await screen.findByText("No host named zzz")).toBeTruthy();
   });
 });
+
+describe("Autocomplete focus and click", () => {
+  it("reports focus", async () => {
+    const user = userEvent.setup();
+    const onFocus = vi.fn();
+    render(<Autocomplete aria-label="Host" options={OPTIONS} onFocus={onFocus} />);
+    await user.click(screen.getByRole("combobox"));
+    expect(onFocus).toHaveBeenCalledOnce();
+  });
+
+  it("stays shut on a click in existing text by default", async () => {
+    const user = userEvent.setup();
+    render(<Autocomplete aria-label="Host" options={OPTIONS} defaultValue="al" />);
+    await user.click(screen.getByRole("combobox"));
+    expect(document.querySelector(".fa-combobox-popup")).toBeNull();
+  });
+
+  it("opens on that click with openOnInputClick", async () => {
+    const user = userEvent.setup();
+    render(<Autocomplete aria-label="Host" options={OPTIONS} defaultValue="al" openOnInputClick />);
+    await user.click(screen.getByRole("combobox"));
+    expect(await screen.findByRole("option", { name: "Alpha" })).toBeTruthy();
+  });
+});

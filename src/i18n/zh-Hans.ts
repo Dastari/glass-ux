@@ -523,6 +523,9 @@ export default defineMessagePack("zh-Hans", {
     enterADateAndTimeOnOrAfter: (minimum) => `输入 ${minimum} 或之后的日期和时间`,
     enterADateAndTime: "输入日期和时间",
     enterADate: "输入日期",
+    enterADateFromTo: (minimum, maximum) => `输入 ${minimum} 到 ${maximum} 之间的日期`,
+    enterADateOnOrBefore: (maximum) => `输入 ${maximum} 或之前的日期`,
+    enterADateOnOrAfter: (minimum) => `输入 ${minimum} 或之后的日期`,
     enterADateAs: (format) => `输入日期为 ${format}`,
     skippedTime: "由于夏令时切换，此时间不存在。请选择其他时间。",
     repeatedTime: "由于夏令时切换，此时间出现两次。请选择没有歧义的时间。",
@@ -1874,6 +1877,7 @@ export default defineMessagePack("zh-Hans", {
   },
   activityFeed: {
     noActivity: "无活动",
+    newPrefix: "新：",
   },
   chipOverflow: {
     more: (count, noun) => `还有${count}个${noun}`,

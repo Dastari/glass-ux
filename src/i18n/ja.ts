@@ -523,6 +523,9 @@ export default defineMessagePack("ja", {
     enterADateAndTimeOnOrAfter: (minimum) => `${minimum} 以降の日付と時刻を入力してください`,
     enterADateAndTime: "日付と時刻を入力します",
     enterADate: "日付を入力してください",
+    enterADateFromTo: (minimum, maximum) => `${minimum} から ${maximum} までの日付を入力してください`,
+    enterADateOnOrBefore: (maximum) => `${maximum} 以前の日付を入力してください`,
+    enterADateOnOrAfter: (minimum) => `${minimum} 以降の日付を入力してください`,
     enterADateAs: (format) => `日付を ${format} として入力してください`,
     skippedTime: "夏時間への切り替えにより、この時刻は存在しません。別の時刻を選択してください。",
     repeatedTime: "夏時間の切り替えにより、この時刻は2回あります。重複しない時刻を選択してください。",
@@ -1874,6 +1877,7 @@ export default defineMessagePack("ja", {
   },
   activityFeed: {
     noActivity: "活動なし",
+    newPrefix: "新着:",
   },
   chipOverflow: {
     more: (count, noun) => `さらに ${count} ${noun}`,

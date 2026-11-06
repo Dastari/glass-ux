@@ -36,7 +36,7 @@ import {
 } from "../combobox/index.js";
 import { CoordinatesField } from "../coordinates-field/index.js";
 import { CountryField } from "../country-select/index.js";
-import { DateTimeField, TimeField } from "../date-picker/fields.js";
+import { BoundDateField, DateTimeField, TimeField } from "../date-picker/fields.js";
 import { DurationField } from "../duration-field/index.js";
 import { EmailField } from "../email-field/index.js";
 import {
@@ -803,7 +803,14 @@ const FormStatusContext = /* @__PURE__ */ createContext<FormStatus>({ status: "i
 export interface SubmitButtonProps extends Omit<
   ButtonProps,
   "type" | "status" | "onClick"
-> {}
+> {
+  /**
+   * Stay enabled while the form holds its default values, for a create form opened with pre-filled
+   * values that are worth submitting as they are. Default false: an edit form's Save waits for a
+   * change (R15.10).
+   */
+  allowUnchanged?: boolean;
+}
 
 /**
  * The form's Save. Disabled until something changes; then pending → ✓ Saved in place
@@ -816,6 +823,7 @@ function SubmitButton({
   errorLabel: errorLabelProp,
   variant = "primary",
   disabled,
+  allowUnchanged = false,
   ...rest
 }: SubmitButtonProps) {
   const messages = useMessages(formMessages)
@@ -836,7 +844,7 @@ function SubmitButton({
       pendingLabel={pendingLabel}
       successLabel={successLabel}
       errorLabel={errorLabel}
-      disabled={disabled || (unchanged && status === "idle")}
+      disabled={disabled || (unchanged && !allowUnchanged && status === "idle")}
     >
       {children}
     </Button>
@@ -926,6 +934,7 @@ export const { useAppForm, withForm, withFieldGroup } = /* @__PURE__ */ createFo
     PercentField,
     CountryField,
     TimeZoneField,
+    DateField: BoundDateField,
     TimeField,
     DateTimeField,
   },

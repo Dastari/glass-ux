@@ -76,6 +76,13 @@ Arrivals must not move what the person is looking at (R17.3). With `order="oldes
 joins the end and nothing above it moves. With `newest`, a new event would push every row down:
 hold arrivals behind a count, as NotificationList does, or add them when the person asks.
 
+`isNew` on an event marks it as arrived: a wash and an edge bar behind the row, and "New:" read
+before its content. Both are positioned behind the row, so setting or clearing the flag moves no
+row or control, and the host clears it when the event has been seen. The highlight settles once
+when the row gets the mark and does not run under Still or reduced motion. On a plain row the wash
+covers its detail and branches, and reaches a little past the text, so leave a small inset around
+a feed in a clipping container.
+
 ## Selection
 
 `selectedId`, `defaultSelectedId` or `onSelectedIdChange` make the feed a listbox with one tab stop

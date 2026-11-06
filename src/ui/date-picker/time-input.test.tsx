@@ -6,11 +6,11 @@ import { z } from "zod"
 import { configureLocale, configuredLocale } from "../../lib/locale/locale.js"
 import { LocaleProvider } from "../../lib/locale/use-locale.js"
 import { Field } from "../field/index.js"
-import { formBehaviour, useAppForm } from "../form/index.js"
+import { Form, formBehaviour, useAppForm } from "../form/index.js"
 import { DateField } from "./date-field.js"
 import { DateTimeInput } from "./date-time-input.js"
 import { describeZonedValue } from "./fields.js"
-import { dateTimeSchema, timeSchema } from "./schema.js"
+import { dateSchema, dateTimeSchema, timeSchema } from "./schema.js"
 import { TimeInput } from "./time-input.js"
 
 afterEach(cleanup)
@@ -251,5 +251,109 @@ describe("locale", () => {
     rerender(view("de-DE"))
     expect(screen.getByRole("textbox", { name: "Day" })).toHaveValue("03.10.2026")
     expect(screen.getByRole("textbox", { name: "At" })).toHaveValue("21:05")
+  })
+})
+
+describe("field.DateField", () => {
+  function Dates({ onSubmit }: { onSubmit?: (value: { review: string | null }) => void }) {
+    const form = useAppForm({
+      ...formBehaviour,
+      defaultValues: { review: "2026-10-13" as string | null },
+      validators: { onDynamic: z.object({ review: dateSchema({ required: true, min: "2026-10-01", max: "2026-12-31", locale: "en-AU" }) }) },
+      onSubmit: ({ value }) => onSubmit?.(value),
+    })
+    return (
+      <Form form={form} aria-label="Dates">
+        <form.AppField name="review">{(field) => <field.DateField label="Next review" required locale="en-AU" min="2026-10-01" max="2026-12-31" />}</form.AppField>
+        <form.AppForm>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </form.AppForm>
+        <form.Subscribe selector={(state) => state.values.review}>{(value) => <output>{String(value)}</output>}</form.Subscribe>
+      </Form>
+    )
+  }
+  const box = () => screen.getByRole("textbox", { name: /Next review/ }) as HTMLInputElement
+  const leave = (text: string) => {
+    type(box(), text)
+    fireEvent.blur(box())
+  }
+
+  it("is labelled, required and shows the day in the locale's order", () => {
+    render(<Dates />)
+    expect(box().value).toBe("13/10/2026")
+    expect(box().required).toBe(true)
+  })
+
+  it("writes a typed day to the form as a calendar day", async () => {
+    render(<Dates />)
+    leave("14/10/26")
+    expect(await screen.findByText("2026-10-14")).toBeTruthy()
+    expect(box().value).toBe("14/10/2026")
+    expect(box()).not.toHaveAttribute("aria-invalid")
+  })
+
+  it("hands unreadable text to the schema and keeps it in the box", async () => {
+    render(<Dates />)
+    leave("soon")
+    expect(await screen.findByText("Enter a date as dd/mm/yyyy")).toBeTruthy()
+    expect(box().value).toBe("soon")
+    expect(box()).toHaveAttribute("aria-invalid", "true")
+    leave("15/10/2026")
+    await vi.waitFor(() => expect(screen.queryByText("Enter a date as dd/mm/yyyy")).toBeNull())
+    expect(screen.getByText("2026-10-15")).toBeTruthy()
+  })
+
+  it("hands a day outside the bounds to the schema as read", async () => {
+    render(<Dates />)
+    leave("1/1/2027")
+    expect(await screen.findByText("Enter a date from 01/10/2026 to 31/12/2026")).toBeTruthy()
+    expect(screen.getByText("2027-01-01")).toBeTruthy()
+    expect(box()).toHaveAttribute("aria-invalid", "true")
+  })
+
+  it("asks for a date when a required one is emptied", async () => {
+    render(<Dates />)
+    leave("")
+    expect(await screen.findByText("Enter a date")).toBeTruthy()
+  })
+})
+
+describe("DateField onReject", () => {
+  it("reports what it could not accept and leaves the value alone", () => {
+    const onValueChange = vi.fn()
+    const onReject = vi.fn()
+    render(<DateField aria-label="Day" locale="en-AU" min="2026-10-01" defaultValue="2026-10-13" onValueChange={onValueChange} onReject={onReject} />)
+    const input = screen.getByRole("textbox", { name: "Day" })
+    type(input, "soon")
+    fireEvent.blur(input)
+    expect(onReject).toHaveBeenLastCalledWith("soon")
+    type(input, "1/1/2026")
+    fireEvent.blur(input)
+    expect(onReject).toHaveBeenLastCalledWith("2026-01-01")
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(input).toHaveAttribute("aria-invalid", "true")
+  })
+})
+
+describe("dateSchema", () => {
+  const message = (schema: ReturnType<typeof dateSchema>, value: unknown) => {
+    const result = schema.safeParse(value)
+    return result.success ? null : result.error.issues[0]!.message
+  }
+
+  it("accepts a day or nothing", () => {
+    const schema = dateSchema()
+    expect(schema.safeParse("2026-10-13").success).toBe(true)
+    expect(schema.safeParse(null).success).toBe(true)
+    expect(schema.safeParse("").success).toBe(true)
+  })
+
+  it("names what is wrong", () => {
+    expect(message(dateSchema({ required: true, locale: "en-AU" }), null)).toBe("Enter a date")
+    expect(message(dateSchema({ locale: "en-AU" }), "soon")).toBe("Enter a date as dd/mm/yyyy")
+    expect(message(dateSchema({ locale: "en-US" }), "soon")).toBe("Enter a date as mm/dd/yyyy")
+    expect(message(dateSchema({ min: "2026-10-01", locale: "en-AU" }), "2026-09-30")).toBe("Enter a date on or after 01/10/2026")
+    expect(message(dateSchema({ max: "2026-10-01", locale: "en-AU" }), "2026-10-02")).toBe("Enter a date on or before 01/10/2026")
+    expect(message(dateSchema({ min: "2026-10-01", max: "2026-10-31", locale: "en-AU" }), "2026-11-01")).toBe("Enter a date from 01/10/2026 to 31/10/2026")
   })
 })

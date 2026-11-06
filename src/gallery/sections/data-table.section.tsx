@@ -19,6 +19,7 @@ import {
 import {
   IconOperatingSystem,
   IconRefresh,
+  IconServer,
   IconSoftware,
   IconWindows,
 } from "../../icons/generated/icons.js";
@@ -442,6 +443,7 @@ function EndpointsDemo() {
           }
           onRetry={() => setSimulate("data")}
           emptyMessage="No endpoints enrolled"
+          emptyIcon={<IconServer />}
           actions={rowActions}
           onRowOpen={(endpoint) => setOpened(endpoint.name)}
           rowOpen={rowOpen}

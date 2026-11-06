@@ -346,7 +346,7 @@ follows a fine pointer and a glint on the rim nearest it.
 - **R15.9** Validate on blur, then on change after an error. Normalise typed input on blur so
   the caret stays put.
 - **R15.10** A form saves with one Save button that stays disabled until something changes and
-  confirms in place.
+  confirms in place. A create form opened with pre-filled values passes `allowUnchanged`.
 - **R15.11** A setting that applies at once needs no Save button: it is optimistic, confirms on
   its row and rolls back on failure.
 

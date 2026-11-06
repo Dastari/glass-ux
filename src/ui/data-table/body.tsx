@@ -516,10 +516,13 @@ export function SkeletonRow({
 /** Empty and error states: one line in the body's own box, never pushing anything (R9.1). */
 export function BodyMessage({
   tone,
+  icon,
   children,
   action,
 }: {
   tone: "empty" | "error";
+  /** The empty state's icon, sized here. */
+  icon?: ReactNode;
   children: ReactNode;
   /** Trailing action for a notice or result. */
   action?: ReactNode;
@@ -528,6 +531,11 @@ export function BodyMessage({
     <div role="row" className="fa-dt-message-row">
       <div role="gridcell" className="fa-dt-message" data-tone={tone}>
         {tone === "error" ? <IconAlert className="fa-dt-message-icon" /> : null}
+        {icon ? (
+          <span className="fa-dt-message-glyph" aria-hidden>
+            {icon}
+          </span>
+        ) : null}
         <span className="fa-dt-message-text">{children}</span>
         {action ? <span className="fa-dt-message-action">{action}</span> : null}
       </div>

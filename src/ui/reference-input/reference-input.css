@@ -8,7 +8,8 @@
  * entity's own chip; the pair is one Base UI chip, reachable with ← from the input and
  * removed with Backspace or Delete. A duplicate flashes the existing link.
  *
- * Popup: kind filter chips stay above the results while they scroll; results group by kind.
+ * Popup: kind filter chips stay above the results while they scroll, in one row with its own
+ * scrolling, so many kinds never take the results' room; results group by kind.
  *
  * Component tokens
  *   --_relation-h   the relation button's height (the chip's)
@@ -126,12 +127,15 @@
   .fa-ref-kinds {
     display: flex;
     flex: none;
-    flex-wrap: wrap;
     gap: var(--space-1);
     padding: var(--space-half) var(--space-half) var(--space-1);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--space-2);
   }
   .fa-ref-kind {
     display: inline-flex;
+    flex: none;
     align-items: center;
     gap: var(--space-1);
     height: var(--control-h-xs);

@@ -72,6 +72,11 @@ interface GeocoderAdapter {
 The field debounces typing, cancels stale requests (only the latest query renders) and caches
 recent queries. Pass `geocoder` to change the provider.
 
+`defaultQuery` starts the lookup from text the parts cannot hold, such as an older free-text
+address. Nothing reaches the geocoder until the person focuses the lookup, and a click or ↓ then
+shows the suggestions. It is read when the field mounts, so give the field a new `key` for another
+record.
+
 The default `createServerGeocoder()` sends a same-origin `GET /api/geocode` request.
 **Your application must implement this endpoint** or pass another `GeocoderAdapter`.
 Glass UX does not include a server, proxy, authentication layer or upstream rate limiter.

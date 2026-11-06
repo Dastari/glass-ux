@@ -960,6 +960,15 @@
     block-size: var(--icon-md);
     color: var(--danger-text);
   }
+  .fa-dt-message-glyph {
+    display: inline-flex;
+    flex: none;
+    color: var(--fg-subtle);
+  }
+  .fa-dt-message-glyph svg {
+    inline-size: var(--icon-md);
+    block-size: var(--icon-md);
+  }
   .fa-dt-message[data-tone="error"] .fa-dt-message-text {
     color: var(--fg);
   }
@@ -1239,6 +1248,10 @@
     min-block-size: var(--fa-dt-detail-value);
     margin: 0;
     font-size: var(--type-label-size);
+  }
+  /* A value that can give way, such as a one-line ChipOverflow, does so before the short label. */
+  .fa-dt-card-value:has([data-nowrap]) {
+    flex-shrink: 1000;
   }
   /* Placeholder values have no content width of their own. */
   .fa-dt-skel-card .fa-dt-card-value {

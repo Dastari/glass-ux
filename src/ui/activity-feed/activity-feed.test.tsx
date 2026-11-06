@@ -352,3 +352,37 @@ describe("inline time", () => {
     expect(line.lastElementChild?.classList.contains("fa-activity-time")).toBe(true)
   })
 })
+
+describe("ActivityFeed new events", () => {
+  const marked: ActivityItem[] = [
+    { id: "a", content: "Mira reviewed the draft", at: NOW, isNew: true },
+    { id: "b", content: "Avery attached a file", at: NOW },
+  ]
+
+  it("marks the row and reads New: before its content, in a plain feed", () => {
+    render(<ActivityFeed aria-label="Project activity" items={marked} />)
+    const [first, second] = screen.getAllByRole("listitem")
+    expect(first!.hasAttribute("data-new")).toBe(true)
+    expect(first!.textContent).toContain("New: Mira reviewed the draft")
+    expect(second!.hasAttribute("data-new")).toBe(false)
+    expect(second!.textContent).not.toContain("New:")
+  })
+
+  it("marks the option, not its list item, and the mark is part of its name", () => {
+    render(<ActivityFeed aria-label="Project activity" items={marked} defaultSelectedId="b" />)
+    const option = screen.getByRole("option", { name: /^New:\s*Mira reviewed the draft/ })
+    expect(option.hasAttribute("data-new")).toBe(true)
+    expect(option.parentElement!.hasAttribute("data-new")).toBe(false)
+  })
+
+  it("names an option with a detail through the mark as well", () => {
+    render(<ActivityFeed aria-label="Project activity" items={[{ ...marked[0]!, detail: "Two comments" }]} defaultSelectedId={null} />)
+    expect(screen.getByRole("option", { name: /^New:\s*Mira reviewed the draft/ })).toBeTruthy()
+  })
+
+  it("adds nothing to a row without the flag", () => {
+    const { container } = render(<ActivityFeed aria-label="Project activity" items={items} />)
+    expect(container.querySelector("[data-new]")).toBeNull()
+    expect(container.textContent).not.toContain("New:")
+  })
+})

@@ -53,6 +53,10 @@
     max-width: var(--measure);
     color: var(--fg-muted);
   }
+  .fa-alert-body {
+    min-width: 0;
+    margin-block-start: var(--space-1-5);
+  }
 
   /* Phones: anchored to the bottom edge with equal, thumb-sized actions (R13.4). The
      viewport query is deliberate — the dialog is positioned against the viewport. */

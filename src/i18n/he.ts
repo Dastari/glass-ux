@@ -523,6 +523,9 @@ export default defineMessagePack("he", {
     enterADateAndTimeOnOrAfter: (minimum) => `הזן תאריך ושעה בתאריך ${minimum} או אחריו`,
     enterADateAndTime: "יש להזין תאריך ושעה",
     enterADate: "יש להזין תאריך",
+    enterADateFromTo: (minimum, maximum) => `הזן תאריך מ-${minimum} עד ${maximum}`,
+    enterADateOnOrBefore: (maximum) => `הזן תאריך ${maximum} או לפניו`,
+    enterADateOnOrAfter: (minimum) => `הזן תאריך ${minimum} או אחריו`,
     enterADateAs: (format) => `הזן תאריך בתור ${format}`,
     skippedTime: "שעה זו אינה קיימת במעבר לשעון קיץ. יש לבחור שעה אחרת.",
     repeatedTime: "שעה זו מופיעה פעמיים במעבר משעון קיץ. יש לבחור שעה חד־משמעית.",
@@ -1874,6 +1877,7 @@ export default defineMessagePack("he", {
   },
   activityFeed: {
     noActivity: "אין פעילות",
+    newPrefix: "חדש:",
   },
   chipOverflow: {
     more: (count, noun) => `${count} נוספים ${noun}`,

@@ -523,6 +523,9 @@ export default defineMessagePack("pt-BR", {
     enterADateAndTimeOnOrAfter: (minimum) => `Insira uma data e hora em ou após ${minimum}`,
     enterADateAndTime: "Insira uma data e hora",
     enterADate: "Insira uma data",
+    enterADateFromTo: (minimum, maximum) => `Insira uma data de ${minimum} a ${maximum}`,
+    enterADateOnOrBefore: (maximum) => `Insira uma data igual ou anterior a ${maximum}`,
+    enterADateOnOrAfter: (minimum) => `Insira uma data igual ou posterior a ${minimum}`,
     enterADateAs: (format) => `Insira uma data como ${format}`,
     skippedTime: "Este horário não existe durante a mudança de horário. Escolha outro horário.",
     repeatedTime: "Este horário se repete durante a mudança de horário. Escolha um horário sem ambiguidade.",
@@ -1874,6 +1877,7 @@ export default defineMessagePack("pt-BR", {
   },
   activityFeed: {
     noActivity: "Nenhuma atividade",
+    newPrefix: "Novo:",
   },
   chipOverflow: {
     more: (count, noun) => `${count} mais ${noun}`,

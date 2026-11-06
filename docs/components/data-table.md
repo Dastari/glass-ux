@@ -6,6 +6,12 @@ The table owns column geometry, preferences, selection and keyboard interaction.
 supplies records, identifiers, sorting/filtering/pagination state and persistence callbacks.
 See [Data tables and filters](../data-filters.md) for server queries and filter definitions.
 
+## Empty state
+
+With nothing searched or filtered, an empty table shows `emptyMessage`, `emptyAction` and, if given,
+`emptyIcon`, which the table sizes and hides from assistive technology. While searching or filtering
+it says so itself and offers Clear search and Clear filters, with no icon.
+
 ## Inline editing
 
 Declare `edit` on an accessor column and provide `onCellEdit` on the table. The column helper

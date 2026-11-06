@@ -8,6 +8,7 @@ import {
   DateTimeInput,
   TimeInput,
   addDays,
+  dateSchema,
   dateTimeSchema,
   formatTimeText,
   timeSchema,
@@ -74,6 +75,31 @@ function TimesDemo() {
         <form.AppField name="closes">{(field) => <field.TimeField label="Depot closes" required min="12:00" max="22:00" step={30} />}</form.AppField>
         <form.AppField name="reminder">{(field) => <field.TimeField label="Daily reminder" optional step={5} />}</form.AppField>
         <form.AppField name="rotation">{(field) => <field.TimeField label="Log rotation" optional hourCycle={24} />}</form.AppField>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  )
+}
+
+function DatesDemo() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { review: addDays(today, 7) as IsoDate | null, expires: null as IsoDate | null },
+    validators: {
+      onDynamic: z.object({
+        review: dateSchema({ required: true, min: today }),
+        expires: dateSchema(),
+      }),
+    },
+    onSubmit: () => wait(600),
+  })
+  return (
+    <Form form={form} aria-label="Contract dates" className="w-full" data-testid="date-form">
+      <FormStack>
+        <form.AppField name="review">{(field) => <field.DateField label="Next review" required min={today} />}</form.AppField>
+        <form.AppField name="expires">{(field) => <field.DateField label="Contract expires" optional />}</form.AppField>
         <FormActions>
           <form.SubmitButton>Save</form.SubmitButton>
         </FormActions>
@@ -168,6 +194,14 @@ export default function DatePickerSection() {
             <DateField disabled />
           </Field>
         </FormStack>
+      </Specimen>
+
+      <Specimen
+        title="In a form"
+        description="field.DateField holds a calendar day (2026-10-21). Text that is not a date reaches the form as typed, and a day outside the bounds as read, so dateSchema says which and Save focuses it."
+        layout="stack"
+      >
+        <DatesDemo />
       </Specimen>
 
       <Specimen

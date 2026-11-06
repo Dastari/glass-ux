@@ -11,7 +11,7 @@ They do not own routing, domain queries, persistence or backend authorization.
 | Clickable compact row                 | `glass-ux/list-row`      | `ListRow` composes icon, title, metadata and trailing content, with a native button or supplied link.                                       |
 | Time-stamped activity                 | `glass-ux/activity-feed` | `ActivityFeed` renders a feed with shared relative times and exact-time tooltips. `variant="timeline"` joins the markers with a rail; events take a `tone`, an avatar or icon marker, a `detail` under their line and one level of `children`; `order` sorts by time; selection (`selectedId`) makes it a one-stop listbox. See [ActivityFeed](activity-feed.md). |
 | Meter in a data-table cell            | `glass-ux/meter-cell`    | `MeterCell` always keeps its reading and hides the bar in a narrow cell. Values stay numeric.                                               |
-| Many identity chips                   | `glass-ux/chip-overflow` | `ChipOverflow` shows the first chips and a searchable overflow popover. Supply stable IDs and the identity renderer.                        |
+| Many identity chips                   | `glass-ux/chip-overflow` | `ChipOverflow` shows the first chips and a searchable overflow popover. Supply stable IDs and the identity renderer. `wrap={false}` keeps a table row to one line: chips end in an ellipsis and +N keeps its size. |
 
 Each component has a dedicated example, usage and complete typed API page in the gallery
 and in `docs/api/`. Compose their public props rather than overriding private class styles.

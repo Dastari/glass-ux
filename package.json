@@ -733,6 +733,10 @@
       "types": "./dist/ui/rich-text/index.d.ts",
       "import": "./dist/ui/rich-text/index.js"
     },
+    "./rich-text-reader": {
+      "types": "./dist/ui/rich-text-reader/index.d.ts",
+      "import": "./dist/ui/rich-text-reader/index.js"
+    },
     "./visually-hidden": {
       "types": "./dist/ui/visually-hidden/index.d.ts",
       "import": "./dist/ui/visually-hidden/index.js"

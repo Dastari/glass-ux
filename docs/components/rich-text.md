@@ -4,6 +4,7 @@
 the source of the same document. `RichTextField` binds the string to TanStack Form with
 the shared Field label and reserved validation message. `RichTextSkeleton` reserves the
 toolbar and content geometry while a document loads. The editor engine is a lazy import.
+[`RichTextReader`](rich-text-reader.md) shows a document with no editor at all.
 
 ```tsx
 import { RichTextInput, richTextSchema } from "glass-ux/rich-text";
@@ -58,7 +59,8 @@ Base UI roving focus with Left/Right arrows, and the shared menus/popovers suppo
 Ctrl/⌘ B and I format text; Ctrl/⌘ Z and Shift Ctrl/⌘ Z undo and redo visual edits. Markdown
 shortcuts work in the visual editor. Tables, reference links, footnotes, frontmatter and
 extensions are outside the visual subset: the visual view shows them as their literal Markdown,
-so a table appears as lines of pipes. Select source mode to edit them. The Markdown stays intact.
+so a table appears as lines of pipes. Select source mode to edit them, and use
+[`RichTextReader`](rich-text-reader.md) to show them drawn. The Markdown stays intact.
 
 Switching views preserves the supplied Markdown exactly and emits no value change. Visual
 content changes emit equivalent Markdown with canonical formatting; unsupported syntax

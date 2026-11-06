@@ -549,6 +549,9 @@ export default defineMessagePack("he", {
     notDone: "לא נעשה",
     image: "תמונה",
     opensInNewTab: "(נפתח בכרטיסייה חדשה)",
+    regionNumber: (name, index, locale = "he") => `${name} ${numberFormat(locale).format(index)}`,
+    footnotes: "הערות שוליים",
+    backToReference: (index, locale = "he") => `חזרה להפניה ${numberFormat(locale).format(index)}`,
   },
   sources: {
     source: (index, title) => `מקור ${index}: ${title}`,
@@ -1277,6 +1280,9 @@ export default defineMessagePack("he", {
     notSaved: "לא נשמר",
     cancel: "בטל",
     checkThisValue: "בדוק את הערך הזה",
+  },
+  richTextReader: {
+    document: "מסמך",
   },
   richText: {
     invalidLink: "השתמש ב-https://, http://, mailto:, tel: או קישור יחסי",

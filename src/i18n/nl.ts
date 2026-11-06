@@ -549,6 +549,9 @@ export default defineMessagePack("nl", {
     notDone: "Niet gedaan",
     image: "Afbeelding",
     opensInNewTab: "(opent in een nieuw tabblad)",
+    regionNumber: (name, index, locale = "nl") => `${name} ${numberFormat(locale).format(index)}`,
+    footnotes: "Voetnoten",
+    backToReference: (index, locale = "nl") => `Terug naar verwijzing ${numberFormat(locale).format(index)}`,
   },
   sources: {
     source: (index, title) => `Bron ${index}: ${title}`,
@@ -1277,6 +1280,9 @@ export default defineMessagePack("nl", {
     notSaved: "Niet opgeslagen",
     cancel: "Annuleer",
     checkThisValue: "Controleer deze waarde",
+  },
+  richTextReader: {
+    document: "Document",
   },
   richText: {
     invalidLink: "Gebruik een https://, http://, mailto:, tel: of relatieve link",

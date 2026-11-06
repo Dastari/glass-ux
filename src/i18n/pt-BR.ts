@@ -549,6 +549,9 @@ export default defineMessagePack("pt-BR", {
     notDone: "Não feito",
     image: "Imagem",
     opensInNewTab: "(abre em uma nova aba)",
+    regionNumber: (name, index, locale = "pt-BR") => `${name} ${numberFormat(locale).format(index)}`,
+    footnotes: "Notas de rodapé",
+    backToReference: (index, locale = "pt-BR") => `Voltar à referência ${numberFormat(locale).format(index)}`,
   },
   sources: {
     source: (index, title) => `Fonte ${index}: ${title}`,
@@ -1277,6 +1280,9 @@ export default defineMessagePack("pt-BR", {
     notSaved: "Não salvo",
     cancel: "Cancelar",
     checkThisValue: "Verifique este valor",
+  },
+  richTextReader: {
+    document: "Documento",
   },
   richText: {
     invalidLink: "Use um link https://, http://, mailto:, tel: ou link relativo",

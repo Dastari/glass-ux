@@ -9,12 +9,14 @@ import {
   type ComponentProps,
   type ReactNode,
 } from "react";
-import ReactMarkdown, { type Components } from "react-markdown";
-import rehypeSanitize from "rehype-sanitize";
+import ReactMarkdown, { type Components, type UrlTransform } from "react-markdown";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import { IconExternalLink, IconImage } from "../../icons/generated/icons.js";
 import { cx } from "../../lib/cx.js";
+import { useLocale } from "../../lib/locale/use-locale.js";
 import { Checkbox } from "../../ui/checkbox/index.js";
+import { isSafeRichTextUrl } from "../../ui/rich-text/urls.js";
 import { TruncatedText } from "../../ui/truncated-text/index.js";
 import { CodeBlock, InlineCode } from "../code-block/index.js";
 import { parseEntityHref, safeExternalHref } from "../entities.js";
@@ -242,7 +244,159 @@ function withAnchors(map: Components): Components {
   };
 }
 
+/* ── Reader documents ─────────────────────────────────────────────────────── */
 
+/** What a document may draw: images from a safe address, or their alternative text only. */
+type ReaderImages = "show" | "alt";
+
+/**
+ * The rich text editor's address rules, since a reader shows the document that editor writes:
+ * http(s), mailto:, tel: and relative links, http(s) and relative images. Anything else loses
+ * its address and keeps its text. An address with credentials in it is refused too: it can
+ * read as one host and go to another.
+ */
+const readerUrl: UrlTransform = (url, key) =>
+  isSafeRichTextUrl(url, key === "src") &&
+  !/^[a-z][a-z\d+.-]*:\/\/[^/?#]*@/i.test(url)
+    ? url
+    : "";
+
+/**
+ * The default schema, with tel: addresses and the prefix left to the Markdown stage. Raw HTML
+ * never reaches the tree (`skipHtml`), so the only ids and names are the footnotes' own, already
+ * prefixed; prefixing them again would part the footnote ids from the links to them.
+ */
+const readerRehypePlugins = [
+  [
+    rehypeSanitize,
+    {
+      ...defaultSchema,
+      clobberPrefix: "",
+      protocols: {
+        ...defaultSchema.protocols,
+        href: [...(defaultSchema.protocols?.href ?? []), "tel"],
+      },
+    },
+  ],
+] as never;
+
+/** The number of columns in a table, from its first row. */
+function columnsOf(node: HastNode | undefined): number {
+  const row = (current: HastNode | undefined): HastElement | undefined => {
+    if ((current as HastElement | undefined)?.tagName === "tr")
+      return current as HastElement;
+    for (const child of (current as HastElement | undefined)?.children ?? []) {
+      const found = row(child);
+      if (found) return found;
+    }
+    return undefined;
+  };
+  return (
+    row(node)?.children.filter((cell) => (cell as HastElement).tagName).length ??
+    1
+  );
+}
+
+function ReaderLink({
+  href,
+  label,
+  children,
+}: {
+  href?: string;
+  label?: string;
+  children?: ReactNode;
+}) {
+  const messages = useMessages(markdownMessages);
+  const resolver = useEntityResolver();
+  if (!href) return <span className="fa-ai-link-dead">{children}</span>;
+  const entity = parseEntityHref(resolver.kinds, href);
+  if (entity) {
+    const text =
+      typeof children === "string"
+        ? children
+        : Array.isArray(children)
+          ? children.join("")
+          : entity.id;
+    return <EntityChip entity={{ ...entity, label: text }} />;
+  }
+  // Mail and phone addresses hand over to another application rather than open a tab.
+  if (/^(?:mailto|tel):/i.test(href))
+    return (
+      <a className="fa-ai-link" href={href} aria-label={label}>
+        {children}
+      </a>
+    );
+  return (
+    <a
+      className="fa-ai-link"
+      href={href}
+      aria-label={label}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {children}
+      <IconExternalLink
+        className="fa-ai-link-external"
+        label={messages.opensInNewTab}
+      />
+    </a>
+  );
+}
+
+/** A document read at length: every row, wrapped text, real images and footnotes as links. */
+function readerComponents(
+  messages: typeof markdownMessages.defaults,
+  anchors: boolean,
+  images: ReaderImages,
+): Components {
+  return {
+    ...wrappingComponents(messages),
+    a: ({ href, id, children, "aria-label": label }) =>
+      href?.startsWith("#") ? (
+        anchors ? (
+          // `id`: a footnote's back link returns to its reference.
+          <a className="fa-ai-link" id={id} href={href} aria-label={label}>
+            {children}
+          </a>
+        ) : (
+          <span className="fa-ai-link-dead">{children}</span>
+        )
+      ) : (
+        <ReaderLink href={href} label={label}>
+          {children}
+        </ReaderLink>
+      ),
+    table: ({ children, node }) => (
+      <div className="fa-ai-md-table" data-breakout="">
+        <TableScroll label={messages.table}>
+          {/* Each column keeps a readable width; past the box the table scrolls inside its region. */}
+          <table
+            className="fa-ai-table"
+            style={{ ["--_columns" as string]: columnsOf(node as HastNode | undefined) }}
+          >
+            {children}
+          </table>
+        </TableScroll>
+      </div>
+    ),
+    img: ({ src, alt, title }) =>
+      images === "show" && src ? (
+        <img
+          src={src}
+          alt={alt ?? ""}
+          title={title}
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+        />
+      ) : (
+        <span className="fa-ai-md-image">
+          <IconImage />
+          {alt || messages.image}
+        </span>
+      ),
+  };
+}
 
 export interface MarkdownProps extends Omit<ComponentProps<"div">, "children"> {
   /** Assistant markdown (GFM). Raw HTML is ignored and the tree is sanitised. */
@@ -279,14 +433,33 @@ const MarkdownSegment = /* @__PURE__ */ memo(function MarkdownSegment({
   caret,
   wrapTableCells,
   anchors,
+  reader,
 }: {
   /** Plain text rendered or copied by the component. */
   text: string;
   caret: boolean;
   wrapTableCells: boolean;
   anchors: boolean;
+  reader?: ReaderImages;
 }) {
  const messages = useMessages(markdownMessages)
+  const locale = useLocale();
+  if (reader)
+    return (
+      <ReactMarkdown
+        remarkPlugins={remarkPlugins}
+        rehypePlugins={readerRehypePlugins}
+        remarkRehypeOptions={{
+          footnoteLabel: messages.footnotes,
+          footnoteBackLabel: (index) => messages.backToReference(index + 1, locale),
+        }}
+        components={readerComponents(messages, anchors, reader)}
+        urlTransform={readerUrl}
+        skipHtml
+      >
+        {text}
+      </ReactMarkdown>
+    );
   return (
     <ReactMarkdown
       remarkPlugins={remarkPlugins}
@@ -401,22 +574,16 @@ function hasCaretText(segment: string) {
   return false;
 }
 
-/**
- * Assistant prose. GFM markdown, sanitised, with Glass UX semantics: internal links to
- * entities become context chips, external links say they leave Glass UX, `[^n]` markers become
- * citation pills, fenced code becomes a CodeBlock and tables take the AI table style.
- * Prose holds the reading measure (in a conversation, the reading column); code and tables
- * are wide blocks that break out wider than the text.
- */
-export const Markdown = /* @__PURE__ */ memo(function Markdown({
+function MarkdownRoot({
   text,
   streaming = false,
   wrapTableCells = false,
   anchors = false,
+  reader,
   className,
   ref,
   ...rest
-}: MarkdownProps) {
+}: MarkdownProps & { reader?: ReaderImages }) {
   // Heading ids are assigned over the whole document in order, so repeats across separately
   // parsed segments are numbered as GitHub numbers them.
   const root = useRef<HTMLDivElement | null>(null);
@@ -465,9 +632,77 @@ export const Markdown = /* @__PURE__ */ memo(function Markdown({
             caret={index === caretIndex}
             wrapTableCells={wrapTableCells}
             anchors={anchors}
+            reader={reader}
           />
         </Fragment>
       ))}
     </div>
+  );
+}
+
+/**
+ * Assistant prose. GFM markdown, sanitised, with Glass UX semantics: internal links to
+ * entities become context chips, external links say they leave Glass UX, `[^n]` markers become
+ * citation pills, fenced code becomes a CodeBlock and tables take the AI table style.
+ * Prose holds the reading measure (in a conversation, the reading column); code and tables
+ * are wide blocks that break out wider than the text.
+ */
+export const Markdown = /* @__PURE__ */ memo(function Markdown(
+  props: MarkdownProps,
+) {
+  return <MarkdownRoot {...props} />;
+});
+
+/** A region's own name and the numbered one it was given, so a number is not numbered again. */
+const NUMBERED = /* @__PURE__ */ new WeakMap<Element, { name: string; label: string }>();
+
+/**
+ * A document for RichTextReader, which loads this module on demand: the same sanitised pipeline
+ * as Markdown, with the rich text editor's address rules, images, footnotes and every table row.
+ * Not a public export.
+ */
+export const MarkdownDocument = /* @__PURE__ */ memo(function MarkdownDocument({
+  text,
+  anchors,
+  images,
+}: {
+  text: string;
+  anchors: boolean;
+  images: boolean;
+}) {
+  const messages = useMessages(markdownMessages);
+  const locale = useLocale();
+  const root = useRef<HTMLDivElement>(null);
+  // Tables and code are named regions, and two of a kind would share a name, in this document or
+  // another on the page. Numbers tell them apart, only where a name repeats: a lone table is "Table".
+  useLayoutEffect(() => {
+    const groups = new Map<string, Element[]>();
+    for (const region of root.current?.ownerDocument.querySelectorAll(
+      "[data-markdown-document] :is([role=region][aria-label], section[aria-label])",
+    ) ?? []) {
+      const current = region.getAttribute("aria-label")!;
+      const known = NUMBERED.get(region);
+      const name = known?.label === current ? known.name : current;
+      groups.set(name, [...(groups.get(name) ?? []), region]);
+    }
+    for (const [name, regions] of groups)
+      regions.forEach((region, index) => {
+        const label =
+          regions.length > 1
+            ? messages.regionNumber(name, index + 1, locale)
+            : name;
+        NUMBERED.set(region, { name, label });
+        region.setAttribute("aria-label", label);
+      });
+  }, [text, messages, locale]);
+  return (
+    <MarkdownRoot
+      ref={root}
+      text={text}
+      data-markdown-document=""
+      wrapTableCells
+      anchors={anchors}
+      reader={images ? "show" : "alt"}
+    />
   );
 });

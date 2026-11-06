@@ -303,11 +303,18 @@ export function DataTableFooter<T extends RowData>({
       (rowCount ?? pageRows) <= pageSize &&
       pageRows <= pageSize);
   return (
-    <div className="fa-dt-footer" data-compact={compact ? "" : undefined}>
+    <div
+      className="fa-dt-footer"
+      data-compact={compact ? "" : undefined}
+      data-bulk-pager={bulkOpen && !singlePage ? "" : undefined}
+    >
+      {/* First, so focus reaches the selection's actions and then the pager, as drawn. */}
+      <BulkBar {...bulk} />
+      {/* The pager stays usable with rows selected: only a count with no pager gives way. */}
       <div
         className="fa-dt-status"
-        inert={bulkOpen}
-        data-hidden={bulkOpen ? "" : undefined}
+        inert={bulkOpen && singlePage}
+        data-hidden={bulkOpen && singlePage ? "" : undefined}
       >
         {!compact && (updatedAt !== undefined || status) ? (
           <div className="fa-dt-status-text">
@@ -337,7 +344,6 @@ export function DataTableFooter<T extends RowData>({
           />
         )}
       </div>
-      <BulkBar {...bulk} />
     </div>
   );
 }

@@ -11,16 +11,27 @@ const notify = () => {
   for (const listener of listeners) listener()
 }
 
+/** Two packs for one tag: every namespace of both, and the later pack's message where both have one. */
+function mergePacks(earlier: MessagePack, later: MessagePack): MessagePack {
+  const messages: Record<string, unknown> = { ...earlier.messages }
+  for (const [namespace, set] of Object.entries(later.messages)) {
+    messages[namespace] = { ...(messages[namespace] as object | undefined), ...(set as object | undefined) }
+  }
+  return { ...later, messages: messages as MessagePack["messages"] }
+}
+
 /**
  * Make a language pack available. Components whose locale matches it (exactly, or by
  * language: a "de" pack serves "de-AT") show its messages. Register packs at start-up,
- * beside `configureLocale`; a later pack for the same tag replaces the earlier one.
+ * beside `configureLocale`. Packs for the same tag merge: a package built on Glass UX can add its
+ * namespace beside the library's, and a later pack wins for each message it provides.
  */
 export function registerMessagePack(...list: MessagePack[]): void {
   for (const pack of list) {
     const tag = canonicalLocale(pack.locale)
     if (!tag) throw new RangeError(`registerMessagePack: "${pack.locale}" is not a valid BCP 47 language tag`)
-    packs.set(tag, pack)
+    const earlier = packs.get(tag)
+    packs.set(tag, earlier ? mergePacks(earlier, pack) : pack)
   }
   notify()
 }

@@ -135,4 +135,14 @@ describe("loadMessagePack", () => {
     await expect(loadMessagePack("da", { da: async () => Promise.reject(new Error("offline")) })).rejects.toThrow("offline")
     expect(messagePackFor("da")).toBeUndefined()
   })
+
+  it("merges packs for one tag: both namespaces, and the later pack's message where both have one", () => {
+    registerMessagePack(defineMessagePack("sv", { i18nDemo: { clear: "Rensa" }, other: { keep: "Behåll" } }))
+    registerMessagePack(defineMessagePack("sv", { sister: { open: "Öppna" }, other: { keep: "Spara" } }))
+    expect(messagePackFor("sv")?.messages).toEqual({
+      i18nDemo: { clear: "Rensa" },
+      other: { keep: "Spara" },
+      sister: { open: "Öppna" },
+    })
+  })
 })

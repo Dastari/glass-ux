@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { Composer } from "./composer.js"
 
 beforeEach(() => {
@@ -46,5 +46,25 @@ describe("Composer send/stop control", () => {
     rerender(<Composer value="" onSend={onSend} onStop={onStop} run="idle" />)
     expect(screen.getByRole("button", { name: "Send" })).toBe(send)
     expect(document.activeElement).toBe(send)
+  })
+
+  it("keeps the draft when a send rejects, and clears it when a send resolves", async () => {
+    const unhandled = vi.fn()
+    process.on("unhandledRejection", unhandled)
+    const onSend = vi.fn().mockRejectedValueOnce(new Error("offline")).mockResolvedValueOnce(undefined)
+    render(<Composer defaultValue="Summarise the report" onSend={onSend} />)
+    const send = screen.getByRole("button", { name: "Send" })
+    const box = screen.getByRole("textbox") as HTMLTextAreaElement
+
+    fireEvent.click(send)
+    await waitFor(() => expect(onSend).toHaveBeenCalledTimes(1))
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(box.value).toBe("Summarise the report")
+    expect(unhandled).not.toHaveBeenCalled()
+
+    fireEvent.click(send)
+    await waitFor(() => expect(box.value).toBe(""))
+    expect(onSend).toHaveBeenCalledTimes(2)
+    process.off("unhandledRejection", unhandled)
   })
 })

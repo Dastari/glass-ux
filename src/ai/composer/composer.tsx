@@ -75,7 +75,7 @@ export interface ComposerProps {
   defaultValue?: string;
   /** Called with the full text on every edit, pick from a menu, dictation and the clear after a send (`""`). Pair with `value` to control it. */
   onValueChange?: (value: string) => void;
-  /** Called with the trimmed text; clear the composer by resolving. */
+  /** Called with the trimmed text. Resolving clears the composer; rejecting keeps the draft, so report the failure in this callback. */
   onSend?: (text: string) => void | Promise<void>;
   /** Called when the person stops a running response: the Stop button or Esc while `run` is `running` or `stopping` and no menu is open. */
   onStop?: () => void;
@@ -540,7 +540,12 @@ export function Composer({
   const send = async () => {
     const text = value.trim();
     if (!text || disabled || run !== "idle") return;
-    await onSend?.(text);
+    try {
+      await onSend?.(text);
+    } catch {
+      // The send failed: the draft stays for another try. The host reports the failure.
+      return;
+    }
     setValue("");
     setMenu(null);
     requestAnimationFrame(fit);

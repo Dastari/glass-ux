@@ -223,18 +223,31 @@ export interface AssistantMessageProps extends Omit<
   activity?: AiProviderStatus;
   /** The newest answer: its actions stay visible. */
   latest?: boolean;
+  /**
+   * Show the good and bad response buttons. Turn off when the host has nowhere to send feedback.
+   * @defaultValue true
+   */
+  feedback?: boolean;
+  /**
+   * Show "Open in a window". Turn off when the host has no window to open the answer in.
+   * @defaultValue true
+   */
+  openInWindow?: boolean;
 }
 
 /**
  * An answer: no bubble — the AI mark in the gutter and the blocks on the canvas (or the
  * panel), prose across the reading column and wide blocks breaking out wider. Failure, cancellation
  * and retention show in place as the message's last block. Copy, regenerate, feedback and
- * "Open in window" sit below with the time and model.
+ * "Open in window" sit below with the time and model; a host with no backend for feedback or
+ * windows turns those off (`feedback`, `openInWindow`).
  */
 export const AssistantMessage = /* @__PURE__ */ memo(function AssistantMessage({
   message,
   activity,
   latest = false,
+  feedback = true,
+  openInWindow = true,
   className,
   ...rest
 }: AssistantMessageProps) {
@@ -308,46 +321,50 @@ export const AssistantMessage = /* @__PURE__ */ memo(function AssistantMessage({
                   aria-label={messages.regenerate}
                   onAction={() => handlers.retry(message)}
                 />
-                <ButtonGroup
-                  className="fa-ai-msg-feedback"
-                  aria-label={messages.feedback}
-                >
-                  <Button
-                    variant={message.feedback === "up" ? "soft" : "ghost"}
-                    size="sm"
-                    icon={<IconThumbsUp />}
-                    aria-label={messages.goodResponse}
-                    aria-pressed={message.feedback === "up"}
-                    onClick={() =>
-                      handlers.feedback(
-                        message,
-                        message.feedback === "up" ? null : "up",
-                      )
-                    }
-                  />
-                  <Button
-                    variant={message.feedback === "down" ? "soft" : "ghost"}
-                    size="sm"
-                    icon={<IconThumbsDown />}
-                    aria-label={messages.badResponse}
-                    aria-pressed={message.feedback === "down"}
-                    onClick={() =>
-                      handlers.feedback(
-                        message,
-                        message.feedback === "down" ? null : "down",
-                      )
-                    }
-                  />
-                </ButtonGroup>
+                {feedback ? (
+                  <ButtonGroup
+                    className="fa-ai-msg-feedback"
+                    aria-label={messages.feedback}
+                  >
+                    <Button
+                      variant={message.feedback === "up" ? "soft" : "ghost"}
+                      size="sm"
+                      icon={<IconThumbsUp />}
+                      aria-label={messages.goodResponse}
+                      aria-pressed={message.feedback === "up"}
+                      onClick={() =>
+                        handlers.feedback(
+                          message,
+                          message.feedback === "up" ? null : "up",
+                        )
+                      }
+                    />
+                    <Button
+                      variant={message.feedback === "down" ? "soft" : "ghost"}
+                      size="sm"
+                      icon={<IconThumbsDown />}
+                      aria-label={messages.badResponse}
+                      aria-pressed={message.feedback === "down"}
+                      onClick={() =>
+                        handlers.feedback(
+                          message,
+                          message.feedback === "down" ? null : "down",
+                        )
+                      }
+                    />
+                  </ButtonGroup>
+                ) : null}
               </>
             ) : null}
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={<IconPopOut />}
-              aria-label={messages.openInAWindow}
-              onClick={() => handlers.openMessageWindow(message)}
-            />
+            {openInWindow ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={<IconPopOut />}
+                aria-label={messages.openInAWindow}
+                onClick={() => handlers.openMessageWindow(message)}
+              />
+            ) : null}
           </div>
         </footer>
       </div>

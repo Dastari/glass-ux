@@ -248,28 +248,30 @@ function ToolbarButton({ label, showLabel = false, icon, pressed, onPressedChang
   const choice = useContext(ChoiceContext)
   const choosing = choice !== null && value !== undefined
   const toggle = !choosing && pressed !== undefined
+  // A reason alone means disabled, as on Button. The toolbar's own button sets aria-disabled.
+  const isDisabled = Boolean(disabled || rest.disabledReason)
   if (inMenu) {
     if (choosing)
       return (
-        <Menu.RadioItem value={value} disabled={Boolean(disabled)} shortcut={shortcut} closeOnClick>
+        <Menu.RadioItem value={value} disabled={isDisabled} shortcut={shortcut} closeOnClick>
           {label}
         </Menu.RadioItem>
       )
     if (toggle)
       return (
-        <Menu.CheckboxItem checked={pressed} disabled={Boolean(disabled)} shortcut={shortcut} onCheckedChange={(next) => onPressedChange?.(next)}>
+        <Menu.CheckboxItem checked={pressed} disabled={isDisabled} shortcut={shortcut} onCheckedChange={(next) => onPressedChange?.(next)}>
           {label}
         </Menu.CheckboxItem>
       )
     return (
-      <Menu.Item icon={icon} disabled={Boolean(disabled)} shortcut={shortcut} onClick={() => (onSelect ? onSelect() : onClick?.(undefined as never))}>
+      <Menu.Item icon={icon} disabled={isDisabled} disabledReason={rest.disabledReason} shortcut={shortcut} onClick={() => (onSelect ? onSelect() : onClick?.(undefined as never))}>
         {label}
       </Menu.Item>
     )
   }
   return (
     <BaseToolbar.Button
-      disabled={Boolean(disabled)}
+      disabled={isDisabled}
       render={
         <Button
           {...rest}

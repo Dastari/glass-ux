@@ -218,3 +218,20 @@ describe("flyout", () => {
     expect(screen.getByRole("radio", { name: "Lasso" }).getAttribute("aria-checked")).toBe("true")
   })
 })
+
+describe("Toolbar.Button with a disabled reason", () => {
+  it("reads as disabled with only the reason, and stays reachable", () => {
+    const onSelect = vi.fn()
+    render(
+      <Toolbar aria-label="Tools">
+        <Toolbar.Button label="Reset" disabledReason="Nothing to reset" onSelect={onSelect} />
+      </Toolbar>,
+    )
+    const button = screen.getByRole("button", { name: "Reset" })
+    expect(button.getAttribute("aria-disabled")).toBe("true")
+    expect(button.hasAttribute("data-disabled")).toBe(true)
+    fireEvent.click(button)
+    expect(onSelect).not.toHaveBeenCalled()
+  })
+})
+

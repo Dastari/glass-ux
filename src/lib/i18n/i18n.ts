@@ -58,6 +58,9 @@ export function messagePackFor(locale: string): MessagePack | undefined {
 /** Loads one language pack: `() => import("glass-ux/i18n/de")`. */
 export type MessagePackLoader = () => Promise<{ default: MessagePack }>
 
+/** Each loader's one run, so asking again waits for it rather than loading twice. */
+const loads = /* @__PURE__ */ new WeakMap<MessagePackLoader, Promise<MessagePack>>()
+
 /**
  * Load and register the pack for `locale` from a map of language tag to loader, so a
  * bundler splits each language into its own chunk and only the one in use is fetched:
@@ -68,9 +71,10 @@ export type MessagePackLoader = () => Promise<{ default: MessagePack }>
  * ```
  *
  * The tag is matched as `messagePackFor` matches (exact, likely script, likely region,
- * language), so a "de" loader serves "de-AT". Resolves with the pack, or `undefined` when no
- * loader fits (English stays). A pack already registered under the matching key is returned
- * without loading again. A failing loader rejects and registers nothing. Components show
+ * language), so a "de" loader serves "de-AT". Resolves with the language's pack, or `undefined`
+ * when no loader fits (English stays). A loader runs once, however many times it is asked. A pack
+ * another package registered for the language does not stop it, since packs for one language merge
+ * (`registerMessagePack`). A failing loader rejects, registers nothing and can run again. Components show
  * English until the pack arrives: await this before the first render or hydration, and
  * register the same pack on the server.
  */
@@ -87,11 +91,17 @@ export async function loadMessagePack(locale: string, loaders: Readonly<Record<s
     return load ? { key: candidate, load } : undefined
   })
   if (!match) return undefined
-  const registered = packs.get(match.key)
-  if (registered) return registered
-  const { default: pack } = await match.load()
-  registerMessagePack(pack)
-  return pack
+  let loading = loads.get(match.load)
+  if (!loading) {
+    loading = match.load().then(({ default: pack }) => {
+      registerMessagePack(pack)
+      return pack
+    })
+    loads.set(match.load, loading)
+    loading.catch(() => loads.delete(match.load))
+  }
+  const pack = await loading
+  return packs.get(match.key) ?? pack
 }
 
 /**

@@ -109,12 +109,30 @@ describe("loadMessagePack", () => {
     await expect(loadMessagePack("not a tag", loaders)).resolves.toBeUndefined()
   })
 
-  it("does not load a pack that is already registered", async () => {
+  it("runs a loader once, however many times it is asked", async () => {
     const polish = defineMessagePack("pl", { i18nDemo: { clear: "Wyczyść" } })
-    registerMessagePack(polish)
-    const load = vi.fn(async () => ({ default: defineMessagePack("pl", {}) }))
+    const load = vi.fn(async () => ({ default: polish }))
+    const [first, second] = await Promise.all([loadMessagePack("pl", { pl: load }), loadMessagePack("pl", { pl: load })])
+    expect(first).toBe(polish)
+    expect(second).toBe(polish)
     await expect(loadMessagePack("pl", { pl: load })).resolves.toBe(polish)
-    expect(load).not.toHaveBeenCalled()
+    expect(load).toHaveBeenCalledTimes(1)
+  })
+
+  it("still loads when another package registered a pack for the language first", async () => {
+    registerMessagePack(defineMessagePack("sk", { sisterDemo: { save: "Uložiť" } } as never))
+    const load = vi.fn(async () => ({ default: defineMessagePack("sk", { i18nDemo: { clear: "Vymazať" } }) }))
+    const pack = await loadMessagePack("sk", { sk: load })
+    expect(load).toHaveBeenCalledOnce()
+    expect((pack!.messages as Record<string, unknown>).sisterDemo).toEqual({ save: "Uložiť" })
+    expect((pack!.messages as Record<string, unknown>).i18nDemo).toEqual({ clear: "Vymazať" })
+  })
+
+  it("can run a loader again after it fails", async () => {
+    const hungarian = defineMessagePack("hu", { i18nDemo: { clear: "Törlés" } })
+    const load = vi.fn<() => Promise<{ default: typeof hungarian }>>().mockRejectedValueOnce(new Error("offline")).mockResolvedValue({ default: hungarian })
+    await expect(loadMessagePack("hu", { hu: load })).rejects.toThrow("offline")
+    await expect(loadMessagePack("hu", { hu: load })).resolves.toBe(hungarian)
   })
 
   it("shows English until the pack arrives, then re-renders in its language", async () => {

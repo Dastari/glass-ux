@@ -476,3 +476,25 @@ describe("reveal", () => {
     await expect(found).resolves.toBe(false);
   });
 });
+
+describe("Tree search that empties it", () => {
+  const nodes: TreeNode[] = [{ id: "a", label: "Alpha" }, { id: "b", label: "Beta" }];
+
+  it("keeps its hooks in order when a search empties it and fills it again", () => {
+    const errors = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { rerender } = render(<Tree nodes={nodes} aria-label="Sample tree" query="" />);
+    expect(screen.getByText("Alpha")).toBeTruthy();
+
+    rerender(<Tree nodes={nodes} aria-label="Sample tree" query="zzz" />);
+    expect(screen.queryByText("Alpha")).toBeNull();
+    expect(document.querySelector(".fa-tree[data-empty]")).toBeTruthy();
+
+    rerender(<Tree nodes={nodes} aria-label="Sample tree" query="alp" />);
+    expect(screen.getByRole("treeitem", { name: /Alpha/ })).toBeTruthy();
+
+    rerender(<Tree nodes={nodes} aria-label="Sample tree" query="" />);
+    expect(screen.getByText("Beta")).toBeTruthy();
+    expect(errors.mock.calls.filter(([message]) => /hook/i.test(String(message)))).toEqual([]);
+    errors.mockRestore();
+  });
+});

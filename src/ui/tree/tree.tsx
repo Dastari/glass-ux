@@ -935,14 +935,6 @@ export function Tree({
     event.preventDefault()
   }
 
-  if (rows.length === 0 && searching) {
-    return (
-      <div className={cx("fa-tree", className)} data-empty="">
-        <EmptyState icon={<IconSearch />}>{emptyText(query.trim())}</EmptyState>
-      </div>
-    )
-  }
-
   const items = virtualizer.getVirtualItems()
   const hint = onRename && onMove ? messages.renameAndMoveHint : onRename ? messages.renameHint : onMove ? messages.moveHint : null
   // Drag support loads with a plain copy of the rows in its place, and the rows mount anew
@@ -956,6 +948,16 @@ export function Tree({
     const key = focusedKey.current
     if (key) element.querySelector<HTMLElement>(`[data-row-id="${CSS.escape(key)}"]`)?.focus({ preventScroll: true })
   }, [])
+
+  // After every hook, so a search that empties the tree or fills it again keeps their order.
+  if (rows.length === 0 && searching) {
+    return (
+      <div className={cx("fa-tree", className)} data-empty="">
+        <EmptyState icon={<IconSearch />}>{emptyText(query.trim())}</EmptyState>
+      </div>
+    )
+  }
+
   const canvas = (dragRow: TreeDragRow | null, dropLine: ReactNode) => (
     <div ref={takeFocusBack} role="presentation" className="fa-tree-canvas" style={{ height: virtualizer.getTotalSize() }}>
       {items.map((item) => {

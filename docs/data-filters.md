@@ -39,9 +39,9 @@ from `onLoadMore` (or `infinite.error`) shows the failure there with Retry and k
 rows. Sorting, filters and the search remain server state: a change returns the table to the
 top, and the host starts a new list. Grouped tables ignore `infinite`.
 
-With graphql-orm, the offset list (`Page: { Limit, Offset }`) takes the table's `OrderBy`; ask
-for the next offset with `nextOffsetPage`. A keyset list (`<Plural>Keyset(page: { after })`)
-has a fixed order, so use it only for a table without sortable columns, with `nextKeysetPage`.
+With graphql-orm, the offset list (`Page: { Limit, Offset }`) and the keyset list
+(`<Plural>Keyset(page: { after })`) both take the table's `OrderBy`, so either can back a table
+with sortable columns. Ask for the next batch with `nextOffsetPage` or `nextKeysetPage`.
 `connectionRows` reads a connection into `rows`, `rowCount` and `hasMore`, returning the same
 array for the same result. With Apollo Client, `connectionPagination()` is the list field's
 type policy: it joins each `fetchMore` batch to the cached list, keyed by every argument but

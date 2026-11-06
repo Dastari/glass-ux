@@ -13,9 +13,8 @@
  * each batch `fetchMore` brings to the cached list, which stays keyed by the other arguments,
  * so a new `Where` or `OrderBy` is a new list.
  *
- * An offset list (`Page: { Limit, Offset }`) takes the table's sorting. A keyset list
- * (`<Plural>Keyset(page: { after, limit })`) has a fixed order: use it for a table without
- * sortable columns, such as a newest-first log.
+ * An offset list (`Page: { Limit, Offset }`) and a keyset list
+ * (`<Plural>Keyset(page: { after, limit })`) both take the table's `OrderBy`.
  */
 
 /** One edge: the row and its position. */

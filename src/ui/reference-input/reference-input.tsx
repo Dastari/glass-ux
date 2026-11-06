@@ -387,12 +387,14 @@ export function ReferenceInput<R extends string = string>({
             const said = direction === "from" ? (relation?.inverseLabel ?? relation?.label) : relation?.label
             return (
               <span key={referenceKey(link.target)} className="fa-ref-chip" role="listitem" aria-label={chipLabel(link)} data-relation={link.relation}>
-                {said ? (
-                  <span className="fa-ref-relation" data-static="">
-                    {said}
-                  </span>
-                ) : null}
-                {chipFor(link.target)}
+                <span className="fa-ref-chip-parts">
+                  {said ? (
+                    <span className="fa-ref-relation" data-static="">
+                      {said}
+                    </span>
+                  ) : null}
+                  {chipFor(link.target)}
+                </span>
               </span>
             )
           })}

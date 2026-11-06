@@ -22,3 +22,21 @@ describe("ReferenceInput add label", () => {
     expect(screen.queryByRole("button", { name: "Link…" })).toBeNull()
   })
 })
+
+describe("ReferenceInput read-only row", () => {
+  it("sets the relation and chip in the same parts as the editable row", () => {
+    const { container } = render(
+      <ReferenceInput
+        aria-label="Linked from"
+        direction="from"
+        kinds={[{ id: "person", noun: "Person", plural: "People" }]}
+        relations={[{ value: "owner", label: "Owner", inverseLabel: "Owns", kinds: ["person"] }]}
+        value={[{ target: { kind: "person", id: "p-1", label: "Sample person" }, relation: "owner" }]}
+      />,
+    );
+    const parts = container.querySelector(".fa-ref-chip .fa-ref-chip-parts");
+    expect(parts?.querySelector(".fa-ref-relation")?.textContent).toBe("Owns");
+    expect(parts?.querySelector(".fa-entity, .fa-ref-chip-parts > *:last-child")).toBeTruthy();
+  });
+});
+

@@ -106,3 +106,18 @@ test("the open popup has no axe violations", async ({ page }) => {
   const results = await new AxeBuilder({ page }).include(".fa-ref-popup").disableRules(["scrollable-region-focusable"]).analyze();
   expect(results.violations).toEqual([]);
 });
+
+test("a read-only relation has the editable row's gap before its chip", async ({ page }) => {
+  await page.goto("/components/reference-input");
+  const gap = (row: import("@playwright/test").Locator) =>
+    row.evaluate((chip) => {
+      const relation = chip.querySelector<HTMLElement>(".fa-ref-chip-parts > .fa-ref-relation")!;
+      return relation.nextElementSibling!.getBoundingClientRect().left - relation.getBoundingClientRect().right;
+    });
+  const backlinks = page.getByTestId("ref-backlinks").locator(".fa-ref-chip").first();
+  await backlinks.scrollIntoViewIfNeeded();
+  const readOnly = await gap(backlinks);
+  const editable = await gap(page.locator(".fa-ref-input:not([data-readonly]) .fa-ref-chip:has(.fa-ref-relation)").first());
+  expect(readOnly).toBeGreaterThan(0);
+  expect(Math.abs(readOnly - editable)).toBeLessThanOrEqual(0.5);
+});

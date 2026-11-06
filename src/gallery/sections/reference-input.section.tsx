@@ -7,7 +7,7 @@ import { DEMO_DATASET } from '../fixtures/organisations.js'
 const kinds=[{id:'person',noun:'Person',plural:'People',icon:IconUser},{id:'project',noun:'Project',plural:'Projects',icon:IconFolder}]
 const targets=[...DEMO_DATASET.people.map(p=>({kind:'person',id:p.id,label:p.name,image:p.photo})),{kind:'project',id:'meridian',label:'Meridian launch'}]
 const source:ReferenceSource={suggestions:targets,search:async(q,{kind})=>targets.filter(t=>(!kind||t.kind===kind)&&t.label.toLowerCase().includes(q.toLowerCase()))}
-const relations=[{value:'assigned-to',label:'Assigned to',kinds:['person'],exclusive:true},{value:'related',label:'Related to'}]
+const relations=[{value:'assigned-to',label:'Assigned to',inverseLabel:'Assignee of',kinds:['person'],exclusive:true},{value:'related',label:'Related to'}]
 function Demo({disabled=false,readOnly=false}:{disabled?:boolean;readOnly?:boolean}){
  const [value,setValue]=useState<ReferenceLink[]>([{target:targets[0]!,relation:'assigned-to'}])
  return <Field label="References"><ReferenceInput value={value} onValueChange={setValue} source={source} kinds={kinds} relations={relations} defaultRelation="related" disabled={disabled} readOnly={readOnly}/></Field>
@@ -42,6 +42,7 @@ function Tags(){
 }
 export default function ReferenceInputSection(){return <SectionPage>
  <Specimen title="Linked items" layout="stack"><Demo/><Demo disabled/><Demo readOnly/></Specimen>
+ <Specimen title="Backlinks" description="direction=&quot;from&quot; lists what links here, read with each relation's inverse label." layout="stack"><div data-testid="ref-backlinks"><ReferenceInput aria-label="Linked from" direction="from" source={source} kinds={kinds} relations={relations} value={[{target:targets[0]!,relation:'assigned-to'}]}/></div></Specimen>
  <Specimen title="Many kinds" description="The kind filter keeps to one row and scrolls, so fourteen kinds leave the results their room. Alt ← → moves through them and brings the chosen one into view." layout="stack"><div className="w-full" data-testid="reference-many-kinds"><ManyKinds/></div></Specimen>
  <Specimen title="Add label" description="addLabel names the add button for this field; every other field keeps the referenceInput.link message." layout="stack"><div className="w-full" data-testid="reference-tags"><Tags/></div></Specimen>
  <ContainerLab>{()=> <Demo/>}</ContainerLab>

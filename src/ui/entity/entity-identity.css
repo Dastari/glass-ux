@@ -664,6 +664,45 @@
   .fa-entity[data-tier="chip"][data-removable] {
     padding-inline-end: var(--space-half);
   }
+  /* A removable chip that opens: the part that opens fills the chip up to the ✕, and the chip's
+     own surface answers for it. */
+  .fa-entity-chip-main {
+    --_pad: var(--space-1-5);
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    align-self: stretch;
+    gap: inherit;
+    min-width: 0;
+    margin-inline-start: calc(var(--_pad) * -1);
+    padding-inline-start: var(--_pad);
+    border-radius: inherit;
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+  }
+  .fa-entity[data-tier="chip"][data-size="sm"] > .fa-entity-chip-main {
+    --_pad: var(--space-2);
+  }
+  .fa-entity-chip-main:is([data-link], [tabindex]) {
+    cursor: pointer;
+  }
+  .fa-entity[data-tier="chip"][data-opens] {
+    transition-property: background-color, box-shadow, color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-entity[data-tier="chip"][data-opens]:has(> .fa-entity-chip-main[data-link]:is(:hover, [data-popup-open])) {
+    background-color: var(--fill-press);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+  }
+  .fa-entity[data-tier="chip"][data-opens]:has(> .fa-entity-chip-main[data-link]:active) {
+    background-color: var(--accent-soft);
+  }
+  .fa-entity[data-tier="chip"][data-opens]:has(> .fa-entity-chip-main:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--space-half);
+  }
   .fa-entity[data-tier="chip"][data-skeleton] {
     --_skel-w: 7rem;
     width: var(--_skel-w);

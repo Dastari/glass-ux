@@ -20,6 +20,8 @@ const commands = [
 
 const resolver = {
   kinds: {},
+  actions: () => undefined,
+  preview: () => undefined,
   search: (query: string) => people.filter((person) => person.label.toLowerCase().includes(query.toLowerCase())),
 }
 
@@ -211,7 +213,7 @@ describe("Composer menus", () => {
   it("keeps no more than six mentions", async () => {
     const many = Array.from({ length: 9 }, (_, index) => ({ kind: "person", id: `p${index}`, label: `Person ${index}` }))
     render(
-      <EntityResolverProvider resolver={{ kinds: {}, search: () => many }}>
+      <EntityResolverProvider resolver={{ ...resolver, search: () => many }}>
         <Composer context={[]} onContextChange={() => {}} />
       </EntityResolverProvider>
     )

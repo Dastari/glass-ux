@@ -166,6 +166,42 @@
   .fa-ai-chip[data-removable] .fa-truncate {
     flex: 1 1 auto;
   }
+  /* The link fills the chip up to the ✕, and the chip's own surface answers for it. */
+  .fa-ai-chip-main {
+    --_pad: var(--space-1-5);
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    align-self: stretch;
+    gap: inherit;
+    min-width: 0;
+    margin-inline-start: calc(var(--_pad) * -1);
+    padding-inline-start: var(--_pad);
+    border-radius: inherit;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+  }
+  .fa-ai-chip[data-size="sm"] > .fa-ai-chip-main {
+    --_pad: var(--space-2);
+  }
+  .fa-ai-chip[data-removable] {
+    transition-property: background-color, box-shadow, color;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+  .fa-ai-chip[data-removable]:has(> .fa-ai-chip-main:is(:hover, [data-popup-open])) {
+    background-color: var(--fill-press);
+    box-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
+  }
+  .fa-ai-chip[data-removable]:has(> .fa-ai-chip-main:active) {
+    background-color: var(--accent-soft);
+  }
+  .fa-ai-chip[data-removable]:has(> .fa-ai-chip-main:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: var(--space-half);
+  }
   .fa-ai-chip-remove {
     display: inline-grid;
     flex: none;

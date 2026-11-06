@@ -93,7 +93,7 @@ export interface EntityChipProps extends Omit<
   preview?: boolean;
   /** Draw the entity glyph (off when a tile beside it already shows it). */
   glyph?: boolean;
-  /** Render a removable, non-navigating chip (composer context, picked entities). */
+  /** Adds a ✕ that removes the chip (composer context, picked entities). It keeps its link, actions and preview; the ✕ opens none of them. */
   onRemove?: () => void;
 }
 
@@ -124,33 +124,6 @@ export function EntityChip({
     { size, onRemove, preview, className },
   );
   if (custom !== undefined) return <>{custom}</>;
-  if (onRemove) {
-    return (
-      <span
-        {...rest}
-        className={cx("fa-ai-chip", className)}
-        data-size={size}
-        data-kind={entity.kind}
-        data-removable=""
-      >
-        <EntityGlyph entity={entity} className="fa-ai-chip-glyph" />
-        <TruncatedText className="fa-ai-chip-label">
-          {entity.label}
-        </TruncatedText>
-        <Button
-          variant="ghost"
-          shape="circle"
-          size="xs"
-          className="fa-ai-chip-remove"
-          aria-label={messages.remove(entity.label)}
-          onClick={onRemove}
-        >
-          <IconClose />
-        </Button>
-      </span>
-    );
-  }
-
   const href = entityHref(resolver.kinds, entity);
   const set = resolver.actions(entity.kind);
   const navigate = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -166,20 +139,24 @@ export function EntityChip({
     event.preventDefault();
     resolver.open(entity);
   };
-  const chipProps = {
-    className: cx("fa-ai-chip fa-ai-chip-link", className),
+  const label = (entity.verified === false ? messages.unverifiedLabel : (name: string) => name)(entity.label);
+  const surface = {
     "data-size": size,
     "data-kind": entity.kind,
     "data-variant": variant === "plain" ? "plain" : undefined,
     "data-unverified": entity.verified === false ? "" : undefined,
-    "aria-label": (entity.verified === false ? messages.unverifiedLabel : (label: string) => label)(entityName(resolver.kinds, entity, entityMessages)),
-    href,
-    onClick: navigate,
   };
+  const link = { "aria-label": label, href, onClick: navigate };
+  // A ✕ cannot sit inside a link, so a removable chip is a group of the link and the ✕ beside it.
+  // Hovering the ✕ raises no preview, and right-clicking it raises no actions.
+  const chipProps = onRemove
+    ? { ...link, className: "fa-ai-chip-main" }
+    : { ...link, ...surface, className: cx("fa-ai-chip fa-ai-chip-link", className) };
+  const linkRest = onRemove ? {} : rest;
 
-  const trigger = preview ? (
+  const main = preview ? (
     <PreviewCard.Trigger
-      {...(rest as object)}
+      {...(linkRest as object)}
       {...chipProps}
       delay={PREVIEW_DELAY_MS}
       closeDelay={PREVIEW_CLOSE_MS}
@@ -187,9 +164,34 @@ export function EntityChip({
       <ChipInner entity={entity} glyph={glyph} />
     </PreviewCard.Trigger>
   ) : (
-    <a {...(rest as ComponentProps<"a">)} {...chipProps}>
+    <a {...(linkRest as ComponentProps<"a">)} {...chipProps}>
       <ChipInner entity={entity} glyph={glyph} />
     </a>
+  );
+  const trigger = onRemove ? (
+    <span
+      {...(rest as ComponentProps<"span">)}
+      {...surface}
+      className={cx("fa-ai-chip", className)}
+      data-removable=""
+      role="group"
+      aria-label={label}
+    >
+      {main}
+      <Button
+        variant="ghost"
+        shape="circle"
+        size="xs"
+        className="fa-ai-chip-remove"
+        aria-label={messages.remove(entity.label)}
+        onClick={onRemove}
+        onContextMenu={(event) => event.stopPropagation()}
+      >
+        <IconClose />
+      </Button>
+    </span>
+  ) : (
+    main
   );
   const withMenu = set ? (
     <ActionContextMenu set={set} targets={[entity]} label={entity.label}>

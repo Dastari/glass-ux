@@ -128,7 +128,7 @@ export interface EntityIdentityProps<T = unknown> extends Omit<HTMLAttributes<HT
   heading?: EntityHeading
   /** Chip only: inline sits in a prose line box (20px), sm suits rows and the composer (24px). */
   size?: "inline" | "sm"
-  /** Chip only: a removable chip (composer context) with no link. */
+  /** Chip only: adds a ✕ that removes it. It keeps its link, `onOpen`, actions and preview; the ✕ opens none of them. */
   onRemove?: () => void
   /** Chip only: open the preview card on hover and focus (default true). */
   preview?: boolean
@@ -591,20 +591,32 @@ function ChipTier<T>({ parts, dom }: TierProps<T>) {
   const label = accessibleName(name, kind, state)
   const glyph = <EntityGlyph icon={icon} portrait={portrait} state={state} labelled={false} badge={slots?.badge} className="fa-entity-chip-glyph" />
   const common = { ...dom, ...stateData(state), className: cx("fa-entity", dom.className), "data-tier": "chip", "data-size": size }
-  if (onRemove) {
+  const opens = Boolean(href || onOpen)
+  const hasActions = Boolean(actions && targets.length)
+  const remove = onRemove ? (
+    <Tooltip content={messages.remove(name)}>
+      <button
+        type="button"
+        className="fa-entity-remove fa-pressable"
+        aria-label={messages.remove(name)}
+        onClick={onRemove}
+        // The ✕ opens nothing: right-clicking it does not raise the chip's actions.
+        onContextMenu={(event) => event.stopPropagation()}
+      >
+        <IconClose />
+      </button>
+    </Tooltip>
+  ) : null
+  // Nothing to open: a label and its ✕, in one group.
+  if (onRemove && !opens && !hasActions && !preview) {
     return (
       <span {...common} data-removable="" role="group" aria-label={label}>
         {glyph}
         <Name name={name} title={title} className="fa-entity-title" />
-        <Tooltip content={messages.remove(name)}>
-          <button type="button" className="fa-entity-remove fa-pressable" aria-label={messages.remove(name)} onClick={onRemove}>
-            <IconClose />
-          </button>
-        </Tooltip>
+        {remove}
       </span>
     )
   }
-  const opens = Boolean(href || onOpen)
   const inner = (
     <>
       {glyph}
@@ -616,9 +628,13 @@ function ChipTier<T>({ parts, dom }: TierProps<T>) {
     ? { href, onClick: openHandler(onOpen) }
     : onOpen
       ? { role: "button", tabIndex: 0, onClick: onOpen, onKeyDown: keyOpen(onOpen) }
-      : { role: "group", tabIndex: actions && targets.length ? 0 : undefined }
-  const chipProps = { ...common, ...behaviour, "data-link": opens ? "" : undefined, "aria-label": label }
-  const trigger = preview ? (
+      : { role: "group", tabIndex: hasActions ? 0 : undefined }
+  // A ✕ cannot sit inside a link or a button, so a removable chip is a group of the two: the part
+  // that opens, and the ✕ beside it. Hovering the ✕ raises no preview.
+  const chipProps = onRemove
+    ? { ...behaviour, className: "fa-entity-chip-main", "data-link": opens ? "" : undefined, "aria-label": label }
+    : { ...common, ...behaviour, "data-link": opens ? "" : undefined, "aria-label": label }
+  const main = preview ? (
     <BasePreviewCard.Trigger {...(chipProps as object)} render={href ? undefined : <span />} delay={PREVIEW_DELAY_MS} closeDelay={PREVIEW_CLOSE_MS}>
       {inner}
     </BasePreviewCard.Trigger>
@@ -629,7 +645,14 @@ function ChipTier<T>({ parts, dom }: TierProps<T>) {
   )
   const withMenu = (
     <WithContextMenu actions={actions} targets={targets} name={name}>
-      {trigger}
+      {onRemove ? (
+        <span {...common} data-removable="" data-opens="" role="group" aria-label={label}>
+          {main}
+          {remove}
+        </span>
+      ) : (
+        main
+      )}
     </WithContextMenu>
   )
   if (!preview) return withMenu

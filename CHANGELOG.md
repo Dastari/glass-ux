@@ -11,7 +11,8 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - **Breaking:** baked glass rendering: `glassRendering: "baked"`, `installBakedFrost`,
   `FROST_LIVE_ATTRIBUTE`, `FROST_READY_ATTRIBUTE` and `FROST_CANVAS_ATTRIBUTE`. It had to return to
   the live blur whenever a scroller moved its panels, and swapping panels to the blur and back made
-  scrolling slower than the live blur alone. See the [migration guide](docs/migration.md).
+  scrolling slower than the live blur alone. `glassRendering: "none"` takes its place. Upgrade
+  steps are in the [migration guide](docs/migration.md).
 
 ### Added
 
@@ -61,10 +62,6 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - ReferenceInput: the kind filter is one scrolling row at any number of kinds.
 - DataTable cards: a value holding a one-line element, such as ChipOverflow with `wrap={false}`,
   gives way before the field's label.
-
-## 0.16.3
-
-Bug fixes requested by a consuming application.
 
 ### Fixed
 

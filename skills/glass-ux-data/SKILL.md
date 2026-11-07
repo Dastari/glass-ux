@@ -70,6 +70,12 @@ label/value pairs, lowest priority number first, so give the facts a phone user 
 (latency, devices, due date) priority 2. Priority 4–5 columns and `cardRole: "hidden"` sit
 behind the card's "+N" toggle; hide a field the title already shows.
 
+`view` holds `"table"` or `"cards"` at any width (default `"auto"`). For a person's choice, put a
+`Segmented` in `toolbar` and switch between `"auto"` and `"cards"`. `cardMinWidth` lays cards in a
+grid, and `renderCard(row, card)` draws their content: place `card.select`, `card.actions` and
+`card.expander`, draw columns with `card.cell(id)`, give your own controls `card.tabIndex`, and pass
+`renderCardSkeleton` at the same size (docs/data-filters.md).
+
 `onRowOpen` opens a row on Enter and, by default, on double-click. Where opening is the
 row's main purpose (a list of records that each lead to a page), pass `rowOpen="click"`: a
 plain primary click opens it and rows and cards show a pointer. Clicks on controls in the

@@ -393,9 +393,53 @@ export interface DataTableProps<T extends RowData> {
   filterToggles?: readonly DataTableFilterToggle[];
   /** Extra status bar content (connection state, last sync). */
   status?: ReactNode;
-  /** Below this width (rem) rows become cards (default 36). */
+  /**
+   * `"auto"` (the default) shows cards below `cardBreakpoint` and the table above it. `"table"`
+   * and `"cards"` hold that view at any width. For a person's choice of view, put a `Segmented`
+   * in `toolbar` and switch between `"auto"` and `"cards"`, so a phone still gets cards.
+   */
+  view?: DataTableView;
+  /** With `view="auto"`: below this width (rem) rows become cards (default 36). */
   cardBreakpoint?: number;
+  /**
+   * Lay cards out in as many columns as fit, each at least this wide (rem). Default: one
+   * column. Group headers, detail panels and status lines run across the grid. Arrow keys move
+   * by what is drawn: Up and Down within a column, Left and Right in reading order. A
+   * reorderable table keeps one column.
+   */
+  cardMinWidth?: number;
+  /**
+   * Draw each card's content yourself. The table keeps the card's frame, focus, selection
+   * highlight and click handling, and hands over the row's controls to place. The columns menu
+   * leaves its column choices out, since they no longer decide what a card shows. Keep the
+   * function stable: a new one draws every card again.
+   */
+  renderCard?: (row: T, card: DataTableCard) => ReactNode;
+  /** A card's loading placeholder, the same size as `renderCard`'s content. */
+  renderCardSkeleton?: () => ReactNode;
   className?: string;
+}
+
+/** Which view a DataTable shows: `"auto"` follows its width. */
+export type DataTableView = "auto" | "table" | "cards";
+
+/** What `renderCard` receives beside the row: its state, and its controls ready to place. */
+export interface DataTableCard {
+  /** The row's name (`getRowLabel`), for accessible names on your own controls. */
+  label: string;
+  selected: boolean;
+  /** The row's detail panel or children are showing. */
+  open: boolean;
+  /** Give this to your own controls, so Tab reaches only those in the current card. */
+  tabIndex: number;
+  /** The selection checkbox; null when the table is not selectable. */
+  select: ReactNode;
+  /** The row's actions (⋯ or `renderRowActions`); null when it has none. */
+  actions: ReactNode;
+  /** The expander for a detail panel or children; null when the row does not open. */
+  expander: ReactNode;
+  /** A column's cell, as the table draws it, with inline editing if the column has it. */
+  cell: (columnId: string) => ReactNode;
 }
 
 /**

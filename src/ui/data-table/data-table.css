@@ -1056,6 +1056,35 @@
     gap: var(--space-2);
     padding-block: var(--space-1);
   }
+  /* A grid of cards (cardMinWidth): lines that are not cards run across it. */
+  .fa-dt-cards[data-grid] {
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(var(--_card-min), 100%), 1fr)
+    );
+  }
+  .fa-dt-cards[data-grid] > :not(.fa-dt-card, .fa-dt-load-card) {
+    grid-column: 1 / -1;
+  }
+  .fa-dt-cards[data-grid] > .fa-dt-card {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+  }
+  .fa-dt-cards[data-grid] > .fa-dt-card > :is(.fa-dt-card-cell, .fa-dt-card-slot) {
+    flex: 1 1 auto;
+  }
+  /* A card the host draws (renderCard): the frame is the table's, the content has no inset. */
+  .fa-dt-card-slot {
+    min-inline-size: 0;
+    border-radius: inherit;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+  }
+  .fa-dt-card-part {
+    display: contents;
+  }
   .fa-dt-card {
     position: relative;
     border-radius: var(--radius-tile);
@@ -1069,7 +1098,7 @@
   .fa-dt-cards[data-row-open="click"] .fa-dt-card:not(.fa-dt-skel-card) {
     cursor: pointer;
   }
-  .fa-dt-card:not(.fa-dt-skel-card):hover {
+  .fa-dt-card:not(.fa-dt-skel-card, [data-selected]):hover {
     background-color: var(--glass-fill-control-hover);
     border-color: var(--line-strong);
   }

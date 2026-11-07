@@ -5,8 +5,14 @@ then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everyth
 
 ## After 0.18.0 (unreleased)
 
-No code edits are needed. New prop: `TopologyCanvas.listFlush` removes the list view's inset. If you
-override `.fa-topology-list` to do this, pass the prop and delete the override.
+No code edits are needed. New props:
+
+- `TopologyCanvas.listFlush` removes the list view's inset. If you override `.fa-topology-list` to do
+  this, pass the prop and delete the override.
+- `DataTable.view` holds `"table"` or `"cards"` at any width. The default `"auto"` keeps today's
+  behaviour. If you force a view with `cardBreakpoint={Infinity}` or `{0}`, use this instead.
+- `DataTable.cardMinWidth`, `renderCard` and `renderCardSkeleton`: a grid of cards and your own card
+  design. See [Choose a card view](data-filters.md#choose-a-card-view).
 
 ## 0.17.1 → 0.18.0
 

@@ -85,6 +85,7 @@ import {
 } from "./expansion.js";
 import { ExpandAllButton } from "./row-expander.js";
 import { childStatus, useChildLoads } from "./use-child-loads.js";
+import { drawnLines, lineInNextRow, linesAcross } from "./card-grid.js";
 import { LoadMoreCard, LoadMoreRow, useLoadMore } from "./infinite.js";
 import { useHeaderWheel } from "./wheel.js";
 import {
@@ -255,6 +256,13 @@ function isInteractive(target: EventTarget | null, row: Element) {
   return Boolean(control && row.contains(control) && control !== row);
 }
 
+/** The columns menu with no column choices: a host's own cards decide what they show. */
+const NO_COLUMNS: ReadonlyArray<{
+  id: string;
+  label: string;
+  hideable: boolean;
+}> = [];
+
 /** Quiet time after the last search or filter change before the result count is announced. */
 const RESULTS_ANNOUNCE_DELAY = 500;
 
@@ -354,7 +362,11 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     search,
     filterToggles,
     status,
+    view = "auto",
     cardBreakpoint = 36,
+    cardMinWidth,
+    renderCard,
+    renderCardSkeleton,
     className,
     reorder,
   } = props;
@@ -720,7 +732,14 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const measured = size.width > 0;
   const widthRem = size.width / metrics.rem;
   const heightRem = size.height / metrics.rem;
-  const mode = measured && widthRem < cardBreakpoint ? "cards" : "table";
+  const mode =
+    view !== "auto"
+      ? view
+      : measured && widthRem < cardBreakpoint
+        ? "cards"
+        : "table";
+  // A reorder moves along one column, so a reorderable table stays in one.
+  const cardGrid = !reorderable && cardMinWidth !== undefined;
   const compactFooter =
     height === "fill" && measured && heightRem < COMPACT_HEIGHT;
   const statusOnly =
@@ -809,7 +828,11 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       ),
     [drawnDefinitions, pinnedIds, metaById],
   );
-  const inlineStatus = measured && widthRem < CARD_INLINE_STATUS_REM;
+  // Each card's own width decides: in a grid that can be far less than the table's.
+  const inlineStatus =
+    measured &&
+    Math.min(widthRem, cardGrid ? cardMinWidth : Infinity) <
+      CARD_INLINE_STATUS_REM;
   const cards = useMemo(
     () => cardLayout(cardColumns, userHidden, { inlineStatus }),
     [cardColumns, userHidden, inlineStatus],
@@ -2399,12 +2422,22 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     if (!line || event.target !== line.element) return;
     if (line.kind !== "row" && onLineKeyDown(event, line)) return;
     const hit = line;
-    const page = Math.max(
-      1,
-      Math.floor(
-        (metrics.bodyHeight || metrics.rowHeight * 10) / metrics.rowHeight,
-      ) - 1,
-    );
+    // A grid of cards: what the keys reach depends on what was drawn.
+    const cardList =
+      mode === "cards" && cardGrid
+        ? hit.element.closest<HTMLElement>(".fa-dt-cards")
+        : null;
+    const drawn = cardList ? drawnLines(cardList) : null;
+    const across = drawn ? linesAcross(drawn, hit.index) : 1;
+    const lineHeight =
+      across > 1 ? hit.element.offsetHeight : metrics.rowHeight;
+    const page =
+      across *
+      Math.max(
+        1,
+        Math.floor((metrics.bodyHeight || lineHeight * 10) / lineHeight) -
+          (across > 1 ? 0 : 1),
+      );
     /** The row id at a line index (grouped bodies hold headers too). */
     const rowIdAt = (index: number) => {
       const clamped = Math.min(Math.max(index, 0), lineCount - 1);
@@ -2443,9 +2476,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       expansionRow && canOpen(expansionRow) ? expansionRow : undefined;
     switch (event.key) {
       case "ArrowDown":
-        return move(hit.index + 1);
+        return move(drawn ? lineInNextRow(drawn, hit.index, 1) : hit.index + 1);
       case "ArrowUp":
-        return move(hit.index - 1);
+        return move(drawn ? lineInNextRow(drawn, hit.index, -1) : hit.index - 1);
       case "Home":
         return move(0);
       case "End":
@@ -2481,6 +2514,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         if (hit.kind !== "row") return;
         const forward =
           readingKey(event.key, event.currentTarget) === "ArrowRight";
+        // Across a grid these keys walk the cards; the expander is a Tab away.
+        if (across > 1) return move(hit.index + (forward ? 1 : -1));
         if (openableRow) {
           const open = isOpen(openableRow);
           event.preventDefault();
@@ -2498,7 +2533,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         if (openableRow) return;
         const closed = !expandAll && !expanded.has(hit.rowId);
         if (
-          (mode === "cards" ? cards.details.length : hiddenColumns.length) &&
+          (mode === "cards"
+            ? !renderCard && cards.details.length
+            : hiddenColumns.length) &&
           (forward ? closed : expanded.has(hit.rowId))
         ) {
           event.preventDefault();
@@ -2726,17 +2763,30 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       element
     );
 
+  const cardGridProps = cardGrid
+    ? {
+        "data-grid": "",
+        style: { "--_card-min": `${cardMinWidth}rem` } as CSSProperties,
+      }
+    : undefined;
+
   let body: ReactElement;
   if (showSkeleton) {
     body =
       mode === "cards" ? (
-        <div role="rowgroup" className="fa-dt-cards" aria-hidden>
+        <div
+          {...cardGridProps}
+          role="rowgroup"
+          className="fa-dt-cards"
+          aria-hidden
+        >
           <SkeletonCards
-            count={Math.min(skeletonCount, 6)}
+            count={cardGrid ? skeletonCount : Math.min(skeletonCount, 6)}
             layout={cards}
             selectable={selectable}
             actions={hasActions || Boolean(renderRowActions)}
             grip={reorderable}
+            renderSkeleton={renderCard ? renderCardSkeleton : undefined}
           />
         </div>
       ) : (
@@ -2814,8 +2864,14 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     );
   } else if (mode === "cards") {
     body = wrapRows(
-      <div {...rowsContainerProps} role="rowgroup" className="fa-dt-cards">
+      <div
+        {...rowsContainerProps}
+        {...cardGridProps}
+        role="rowgroup"
+        className="fa-dt-cards"
+      >
         <CardList<T>
+          renderCard={renderCard}
           rows={pageRows}
           items={lines as readonly BodyLine<Row<DataTableFeatures, T>>[] | null}
           expansion={expansion}
@@ -2840,6 +2896,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                 selectable={selectable}
                 actions={hasActions || Boolean(renderRowActions)}
                 grip={reorderable}
+                renderSkeleton={renderCard ? renderCardSkeleton : undefined}
               />
             ) : null
           }
@@ -2928,7 +2985,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const settingsMenu = useMemo(
     () => (
       <SettingsMenu
-        columns={settingsColumns}
+        columns={mode === "cards" && renderCard ? NO_COLUMNS : settingsColumns}
         userHidden={userHidden}
         autoHidden={autoHiddenSet}
         density={effectiveDensity}
@@ -2937,6 +2994,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       />
     ),
     [
+      mode,
+      Boolean(renderCard),
       settingsColumns,
       userHidden,
       autoHiddenSet,
@@ -3037,15 +3096,18 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     }
   };
 
-  const focusEditable = (target: { rowId: string; columnId: string }) => {
+  const editableField = (rowId: string, columnId: string) => {
     const row = [
       ...(rootRef.current?.querySelectorAll<HTMLElement>("[data-row-id]") ??
         []),
-    ].find((element) => element.dataset.rowId === target.rowId);
-    const key = metaById.get(target.columnId)?.key;
-    const field = row?.querySelector<HTMLElement>(
+    ].find((element) => element.dataset.rowId === rowId);
+    const key = metaById.get(columnId)?.key;
+    return row?.querySelector<HTMLElement>(
       `[data-col="${key}"] [data-cell-editable]`,
     );
+  };
+  const focusEditable = (target: { rowId: string; columnId: string }) => {
+    const field = editableField(target.rowId, target.columnId);
     if (!field) return false;
     field.focus({ preventScroll: true });
     field.dispatchEvent(
@@ -3058,15 +3120,18 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       const row = rowsById.get(id);
       const more = expandAll || expanded.has(id);
       const fields =
-        mode === "cards"
-          ? [
-              cards.title,
-              cards.subtitle,
-              cards.status,
-              ...cards.meta,
-              ...(more ? cards.details : []),
-            ].filter((field) => field !== undefined)
-          : [...visibleColumns, ...(more ? hiddenColumns : [])];
+        mode === "cards" && renderCard
+          ? // Only the columns the host's card chose to draw.
+            cardColumns.filter((field) => editableField(id, field.id))
+          : mode === "cards"
+            ? [
+                cards.title,
+                cards.subtitle,
+                cards.status,
+                ...cards.meta,
+                ...(more ? cards.details : []),
+              ].filter((field) => field !== undefined)
+            : [...visibleColumns, ...(more ? hiddenColumns : [])];
       return fields.filter(
         (field) =>
           field.meta.edit &&

@@ -92,6 +92,54 @@ import { configureDataTables } from "glass-ux/data-table";
 configureDataTables({ storageKeyPrefix: "my-app.table" });
 ```
 
+## Choose a card view
+
+Rows become cards below `cardBreakpoint` (36rem), measured on the table rather than the screen.
+`view="cards"` or `view="table"` holds one view at any width; a table held narrower than its pinned
+columns scrolls sideways. For a person's choice, put a
+`Segmented` in `toolbar` and switch between `"auto"` and `"cards"`, so a phone still gets cards:
+
+```tsx
+<DataTable
+  view={choice === "cards" ? "cards" : "auto"}
+  cardMinWidth={16}
+  renderCard={renderPackageCard}
+  renderCardSkeleton={renderPackageSkeleton}
+  toolbar={<Segmented options={VIEWS} value={choice} onValueChange={setChoice} iconOnly aria-label="View" />}
+/>
+```
+
+The switch has nothing to choose below the breakpoint. `.fa-dt` is a named container, so hide it
+there with `@container fa-dt (width < 36rem)`.
+
+`cardMinWidth` lays cards in as many columns as fit. Group headers, detail panels and status lines
+run across the grid. Up and Down move within a column, Left and Right in reading order, and an
+expander or "+N" is reached with Tab. A reorderable table keeps one column.
+
+`renderCard` draws a card's content; the table keeps its frame, focus, selection highlight and
+clicks. Place what it hands you, or that part of the row is out of reach:
+
+```tsx
+const renderPackageCard = (row: Package, card: DataTableCard) => (
+  <div className="package-card">
+    {card.select}
+    {row.name}
+    {card.actions}
+    {card.expander}
+    {card.cell("version")}
+  </div>
+);
+```
+
+- `card.cell(columnId)` draws a column's cell as the table does, with inline editing if it has it.
+- Give your own controls `card.tabIndex`, so Tab reaches only those in the current card.
+- Keep the function stable: a new one draws every card again.
+- Pass `renderCardSkeleton` at the card's size, or loading shows the default card's shape.
+- The columns menu leaves out its column choices, since they no longer decide what a card shows.
+
+Cards have no column headers, so sorting has no control there. If people must sort in a card view,
+offer it in `toolbar` and set `state.sorting`.
+
 ## Keep a manual order in host data
 
 `reorder={{ onReorder }}` adds a grip column (and a grip on cards) for pointer, touch and

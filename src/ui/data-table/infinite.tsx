@@ -202,9 +202,12 @@ export function LoadMoreCard({
   selectable,
   actions,
   grip,
+  renderSkeleton,
 }: {
   load: LoadMore
   scrollRef: RefObject<HTMLElement | null>
+  /** The host's placeholder for a card it draws. */
+  renderSkeleton?: () => ReactNode
   /** The card layout, for the placeholder's slots. */
   layout: CardLayout
   selectable: boolean
@@ -226,7 +229,7 @@ export function LoadMoreCard({
   }
   return (
     <div ref={ref} className="fa-dt-load-card" aria-hidden>
-      <SkeletonCards count={1} layout={layout} selectable={selectable} actions={actions} grip={grip} />
+      <SkeletonCards count={1} layout={layout} selectable={selectable} actions={actions} grip={grip} renderSkeleton={renderSkeleton} />
     </div>
   )
 }

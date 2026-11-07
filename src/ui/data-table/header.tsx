@@ -557,27 +557,29 @@ export function SettingsMenu({
         }
       />
       <Menu.Popup align="end" aria-label={m.columnsDensity}>
-        <Menu.Group>
-          <Menu.GroupLabel>{m.columns}</Menu.GroupLabel>
-          {columns.map((column) => (
-            <Menu.CheckboxItem
-              key={column.id}
-              checked={!userHidden.has(column.id)}
-              disabled={!column.hideable}
-              closeOnClick={false}
-              onCheckedChange={(checked) =>
-                controller.setUserHidden(column.id, !checked)
-              }
-              trail={
-                autoHidden.has(column.id) && !userHidden.has(column.id)
-                  ? m.inDetails
-                  : undefined
-              }
-            >
-              {column.label}
-            </Menu.CheckboxItem>
-          ))}
-        </Menu.Group>
+        {columns.length ? (
+          <Menu.Group>
+            <Menu.GroupLabel>{m.columns}</Menu.GroupLabel>
+            {columns.map((column) => (
+              <Menu.CheckboxItem
+                key={column.id}
+                checked={!userHidden.has(column.id)}
+                disabled={!column.hideable}
+                closeOnClick={false}
+                onCheckedChange={(checked) =>
+                  controller.setUserHidden(column.id, !checked)
+                }
+                trail={
+                  autoHidden.has(column.id) && !userHidden.has(column.id)
+                    ? m.inDetails
+                    : undefined
+                }
+              >
+                {column.label}
+              </Menu.CheckboxItem>
+            ))}
+          </Menu.Group>
+        ) : null}
         <Menu.Group>
           <Menu.GroupLabel>{m.density}</Menu.GroupLabel>
           <Menu.RadioGroup
@@ -598,11 +600,13 @@ export function SettingsMenu({
             <Menu.Item onClick={expandAll.onToggle}>{expandAll.label}</Menu.Item>
           </Menu.Group>
         ) : null}
-        <Menu.Group>
-          <Menu.Item icon={<IconUndo />} onClick={controller.resetColumns}>
-            {m.resetColumns}
-          </Menu.Item>
-        </Menu.Group>
+        {columns.length ? (
+          <Menu.Group>
+            <Menu.Item icon={<IconUndo />} onClick={controller.resetColumns}>
+              {m.resetColumns}
+            </Menu.Item>
+          </Menu.Group>
+        ) : null}
       </Menu.Popup>
     </Menu.Root>
   );

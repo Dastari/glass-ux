@@ -12,14 +12,20 @@ import {
 import { DemoScope } from "../demo-scope.js";
 import { ContainerLab, SectionPage, Specimen } from "../kit.js";
 import {
+  IconGrid,
+  IconList,
   IconOperatingSystem,
   IconRefresh,
   IconServer,
   IconSoftware,
+  IconTrash,
   IconWindows,
 } from "../../icons/generated/icons.js";
+import { defineActions } from "../../ui/actions/index.js";
 import { Badge } from "../../ui/badge/index.js";
 import { Button, ButtonGroup } from "../../ui/button/index.js";
+import { Segmented, type SegmentedOption } from "../../ui/segmented/index.js";
+import { Skeleton } from "../../ui/skeleton/index.js";
 import {
   createDataTableColumns,
   DataTable,
@@ -32,6 +38,7 @@ import {
   searchRows,
   shownFor,
   useTableUrlState,
+  type DataTableCard,
   type DataTableDensity,
   type DataTableGroup,
   type DataTableRowMove,
@@ -1109,6 +1116,201 @@ function SoftwareTable({
   );
 }
 
+/* ── A person's choice of view, a grid of cards and cards drawn by the host ─────────── */
+interface DeployPackage {
+  id: string;
+  name: string;
+  publisher: string;
+  version: string;
+  sizeMb: number;
+}
+
+const PACKAGE_NAMES = [
+  ["Harbour Agent", "Harbour Systems"],
+  ["Northwind Backup", "Northwind Data"],
+  ["Lumen Remote", "Lumen Labs"],
+  ["Quill Editor", "Quill Software"],
+  ["Tidewater VPN", "Tidewater Networks"],
+  ["Pinecone Scanner", "Pinecone Security"],
+  ["Meridian Mail", "Meridian Works"],
+  ["Sable Monitor", "Sable Instruments"],
+  ["Orchard Notes", "Orchard Software"],
+  ["Copperline Sync", "Copperline Data"],
+  ["Fathom Reports", "Fathom Analytics"],
+  ["Kestrel Patch", "Kestrel Security"],
+] as const;
+const PACKAGES: DeployPackage[] = PACKAGE_NAMES.map(([name, publisher], index) => ({
+  id: `p${index + 1}`,
+  name,
+  publisher,
+  version: `${index + 2}.${index % 4}.${(index * 7) % 10}`,
+  sizeMb: 40 + index * 85,
+}));
+const packageCol = createDataTableColumns<DeployPackage>();
+const NO_PACKAGES: DeployPackage[] = [];
+const packageColumns = packageCol.columns([
+  packageCol.accessor("name", {
+    header: "Name",
+    pin: true,
+    width: 16,
+    cardRole: "title",
+    skeleton: "identity",
+    cell: ({ row }) => (
+      <IdentityCell
+        title={row.original.name}
+        subtitle={row.original.publisher}
+        icon={<IconSoftware />}
+      />
+    ),
+  }),
+  packageCol.accessor("version", {
+    header: "Version",
+    priority: 2,
+    width: 9,
+    cell: ({ getValue }) => <TextCell identifier>{getValue()}</TextCell>,
+  }),
+  packageCol.accessor("sizeMb", {
+    header: "Size",
+    priority: 2,
+    width: 7,
+    align: "end",
+    cell: ({ getValue }) => <NumericCell value={getValue()} unit="MB" />,
+  }),
+]);
+const packageActions = defineActions<DeployPackage>("package", [
+  { id: "remove", label: "Remove", icon: IconTrash, group: "manage", run: () => undefined },
+]);
+const PACKAGE_VIEWS: SegmentedOption<"list" | "cards">[] = [
+  { value: "list", label: "List", icon: <IconList /> },
+  { value: "cards", label: "Cards", icon: <IconGrid /> },
+];
+const packageId = (row: DeployPackage) => row.id;
+/* Sample groups, by size: rows must arrive in group order. */
+const smallPackage = (row: DeployPackage) => row.sizeMb < 500;
+const PACKAGE_ROWS_GROUPED = [
+  ...PACKAGES.filter(smallPackage),
+  ...PACKAGES.filter((row) => !smallPackage(row)),
+];
+const PACKAGE_GROUPS: DataTableGroup[] = [
+  { id: "small", label: "Under 500 MB", count: PACKAGES.filter(smallPackage).length },
+  {
+    id: "large",
+    label: "500 MB and over",
+    count: PACKAGES.filter((row) => !smallPackage(row)).length,
+  },
+];
+const PACKAGE_GROUPING = {
+  groupOf: (row: DeployPackage) => (smallPackage(row) ? "small" : "large"),
+  groups: PACKAGE_GROUPS,
+};
+const renderPackageDetail = (row: DeployPackage) => (
+  <div className="dt-demo-tile-detail">
+    {row.name} {row.version} from {row.publisher}
+  </div>
+);
+const packageLabel = (row: DeployPackage) => row.name;
+const renderPackageCard = (row: DeployPackage, card: DataTableCard) => (
+  <div className="dt-demo-tile">
+    <div className="dt-demo-tile-head">
+      {card.select}
+      <span className="dt-demo-tile-mark">
+        <IconSoftware />
+      </span>
+      <span className="dt-demo-tile-actions">
+        {card.expander}
+        {card.actions}
+      </span>
+    </div>
+    <div className="dt-demo-tile-name">{row.name}</div>
+    <div className="dt-demo-tile-publisher">{row.publisher}</div>
+    <div className="dt-demo-tile-foot">
+      {card.cell("version")}
+      {card.cell("sizeMb")}
+    </div>
+  </div>
+);
+const renderPackageSkeleton = () => (
+  <div className="dt-demo-tile">
+    <div className="dt-demo-tile-head">
+      <Skeleton.Block className="dt-demo-tile-mark" radius="control" />
+    </div>
+    <div className="dt-demo-tile-name">
+      <Skeleton.Text type="body" width="70%" />
+    </div>
+    <div className="dt-demo-tile-publisher">
+      <Skeleton.Text type="caption" width="50%" />
+    </div>
+    <div className="dt-demo-tile-foot">
+      <Skeleton.Text type="body" width="30%" />
+    </div>
+  </div>
+);
+
+function CardViewDemo() {
+  const [view, setView] = useState<"list" | "cards">("cards");
+  const [grid, setGrid] = useState(true);
+  const [custom, setCustom] = useState(true);
+  const [hold, setHold] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [grouped, setGrouped] = useState(false);
+  const [details, setDetails] = useState(false);
+  return (
+    <div className="dt-demo">
+      <div className="dt-demo-controls">
+        <Toggle pressed={grid} onClick={() => setGrid((value) => !value)}>
+          Grid
+        </Toggle>
+        <Toggle pressed={custom} onClick={() => setCustom((value) => !value)}>
+          Own card design
+        </Toggle>
+        <Toggle pressed={hold} onClick={() => setHold((value) => !value)}>
+          Keep the table when narrow
+        </Toggle>
+        <Toggle pressed={grouped} onClick={() => setGrouped((value) => !value)}>
+          Groups
+        </Toggle>
+        <Toggle pressed={details} onClick={() => setDetails((value) => !value)}>
+          Detail panels
+        </Toggle>
+        <Toggle pressed={loading} onClick={() => setLoading((value) => !value)}>
+          Loading
+        </Toggle>
+      </div>
+      <div className="dt-demo-frame" data-testid="dt-card-view">
+        <DataTable<DeployPackage>
+          id="gallery-card-view"
+          label="Packages"
+          rows={loading ? NO_PACKAGES : grouped ? PACKAGE_ROWS_GROUPED : PACKAGES}
+          loading={loading}
+          grouping={grouped ? PACKAGE_GROUPING : undefined}
+          renderRowDetail={details ? renderPackageDetail : undefined}
+          columns={packageColumns}
+          getRowId={packageId}
+          getRowLabel={packageLabel}
+          actions={packageActions}
+          noun={{ one: "package", other: "packages" }}
+          view={view === "cards" ? "cards" : hold ? "table" : "auto"}
+          cardMinWidth={grid ? 15 : undefined}
+          renderCard={custom ? renderPackageCard : undefined}
+          renderCardSkeleton={custom ? renderPackageSkeleton : undefined}
+          toolbar={
+            <div className={hold ? undefined : "dt-demo-view-switch"}>
+              <Segmented
+                size="sm"
+                iconOnly
+                aria-label="View"
+                options={PACKAGE_VIEWS}
+                value={view}
+                onValueChange={setView}
+              />
+            </div>
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
 /* ── Detail panels ─────────────────────────────────────────────────────────────── */
 const orderColumns = (() => {
   const col = createDataTableColumns<Order>();
@@ -1316,6 +1518,15 @@ function DataTableSection() {
         wide
       >
         <ResponsiveDemo />
+      </Specimen>
+
+      <Specimen
+        title="Card view"
+        description="The switch in the toolbar holds cards at any width; List goes back to following the table's width, so it is hidden where cards would show anyway. cardMinWidth lays cards in a grid, and renderCard draws their content, with the table keeping selection, focus and the row's actions."
+        layout="bare"
+        wide
+      >
+        <CardViewDemo />
       </Specimen>
 
       <Specimen

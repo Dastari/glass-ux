@@ -8,8 +8,18 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- DataTable: `view` holds `"table"` or `"cards"` at any width; the default `"auto"` follows
+  `cardBreakpoint` as before. Put a `Segmented` in `toolbar` to let people choose.
+- DataTable: `cardMinWidth` lays cards in as many columns as fit, with arrow keys that move by what is
+  drawn. A reorderable table keeps one column.
+- DataTable: `renderCard` draws a card's content, handing over the row's checkbox, actions, expander and
+  cells; `renderCardSkeleton` is its loading placeholder. New types `DataTableView` and `DataTableCard`.
 - TopologyCanvas: `listFlush` removes the list view's inset, for a list that brings its own edges, such
   as a DataTable.
+
+### Fixed
+
+- DataTable: a selected card keeps its highlight while the pointer is over it.
 
 ## 0.18.0
 

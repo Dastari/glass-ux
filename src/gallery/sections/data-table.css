@@ -53,6 +53,58 @@
     height: clamp(30rem, calc(100dvh - 22rem), 48rem);
     min-width: 0;
   }
+  /* The view switch has nothing to choose where cards would show either way. */
+  @container fa-dt (width < 36rem) {
+    .dt-demo-view-switch {
+      display: none;
+    }
+  }
+  .dt-demo-tile {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+    padding: var(--space-3);
+  }
+  .dt-demo-tile-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--control-h-sm);
+  }
+  .dt-demo-tile-mark {
+    display: grid;
+    place-items: center;
+    inline-size: var(--control-h-sm);
+    block-size: var(--control-h-sm);
+    border-radius: var(--radius-control);
+    background-color: var(--accent-soft);
+    color: var(--accent);
+  }
+  .dt-demo-tile-actions {
+    display: flex;
+    align-items: center;
+    margin-inline-start: auto;
+  }
+  .dt-demo-tile-detail {
+    padding: var(--space-3);
+  }
+  .dt-demo-tile-name {
+    margin-block-start: var(--space-3);
+    font-weight: 600;
+  }
+  .dt-demo-tile-publisher {
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .dt-demo-tile-foot {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-block-size: calc(var(--space-3) + var(--type-body-line));
+    margin-block-start: auto;
+    padding-block-start: var(--space-3);
+  }
   .dt-demo-search {
     flex: 0 1 18rem;
     min-width: 10rem;

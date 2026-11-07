@@ -12,6 +12,7 @@ import { levelStyle, RowExpander } from "./row-expander.js";
 import type { BodyLine } from "./expansion.js";
 import type { DataTableFeatures } from "./features.js";
 import { GroupLine } from "./group-rows.js";
+import { columnKey } from "./layout.js";
 import { GripButton } from "./reorder-handle.js";
 import {
   cellContent,
@@ -20,7 +21,7 @@ import {
   type RowController,
   type RowExpansionProps,
 } from "./row.js";
-import type { DataTableNoun } from "./types.js";
+import type { DataTableCard, DataTableNoun } from "./types.js";
 
 /** Which columns fill which slot of a card, from each column's `cardRole`. */
 export interface CardLayout {
@@ -97,6 +98,8 @@ interface CardProps<T extends RowData> extends RowExpansionProps {
   grip?: string;
   /** Bumps when row-level renderers change. */
   revision?: object;
+  /** The host draws the card's content. */
+  renderCard?: (row: T, card: DataTableCard) => ReactNode;
 }
 
 function CardView<T extends RowData>({
@@ -120,6 +123,7 @@ function CardView<T extends RowData>({
   open = false,
   panelId,
   context = false,
+  renderCard,
 }: CardProps<T>) {
   const m = useDataTableMessages();
   countRender("cards");
@@ -129,6 +133,24 @@ function CardView<T extends RowData>({
     const cell = column ? cells[column.id] : undefined;
     return cell ? cellContent(cell) : null;
   };
+  const select = selectable ? (
+    <SelectCheckbox
+      checked={selected}
+      label={m.selectRow(label)}
+      tabIndex={tabIndex}
+      onToggle={(value, { shift }) => controller.toggleRow(rowId, value, shift)}
+    />
+  ) : null;
+  const expander = openable ? (
+    <RowExpander
+      label={label}
+      open={open}
+      openable
+      panelId={panelId}
+      tabIndex={tabIndex}
+      onToggle={() => controller.toggleOpen(rowId)}
+    />
+  ) : null;
   const fields = (columns: readonly ColumnInfo[], className: string) => (
     <dl className={className}>
       {columns.map((column) => (
@@ -153,7 +175,11 @@ function CardView<T extends RowData>({
       size="sm"
       className="fa-dt-card-more"
       icon={expanded ? <IconChevronUp /> : <IconChevronDown />}
-      aria-label={m.moreFields({ expanded: expanded, count: layout.details.length, label: label })}
+      aria-label={m.moreFields({
+        expanded: expanded,
+        count: layout.details.length,
+        label: label,
+      })}
       aria-expanded={expanded}
       tabIndex={tabIndex}
       data-dt-interactive=""
@@ -193,59 +219,66 @@ function CardView<T extends RowData>({
           />
         </div>
       ) : null}
-      <div role="gridcell" className="fa-dt-card-cell">
-        <div
-          className="fa-dt-card-head"
-          data-subtitle={layout.subtitle ? "" : undefined}
-        >
-          {selectable ? (
-            <SelectCheckbox
-              checked={selected}
-              label={m.selectRow(label)}
-              tabIndex={tabIndex}
-              onToggle={(value, { shift }) =>
-                controller.toggleRow(rowId, value, shift)
-              }
-            />
-          ) : null}
-          <div className="fa-dt-card-title" data-col={layout.title?.key}>
-            {render(layout.title)}
-          </div>
-          {layout.subtitle ? (
-            <div className="fa-dt-card-subtitle" data-col={layout.subtitle.key}>
-              {render(layout.subtitle)}
-            </div>
-          ) : null}
-          {layout.status ? (
-            <div className="fa-dt-card-status" data-col={layout.status.key}>
-              {render(layout.status)}
-            </div>
-          ) : null}
-          <div className="fa-dt-card-actions">
-            {openable ? (
-              <RowExpander
-                label={label}
-                open={open}
-                openable
-                panelId={panelId}
-                tabIndex={tabIndex}
-                onToggle={() => controller.toggleOpen(rowId)}
-              />
-            ) : null}
-            {fieldLine ? null : more}
-            {controller.renderActions(rowId, label, tabIndex)}
-          </div>
+      {renderCard ? (
+        <div role="gridcell" className="fa-dt-card-slot">
+          {renderCard(row.original, {
+            label,
+            selected,
+            open,
+            tabIndex,
+            select,
+            actions: controller.renderActions(rowId, label, tabIndex),
+            expander,
+            cell: (columnId) => {
+              const cell = cells[columnId];
+              return cell ? (
+                <div className="fa-dt-card-part" data-col={columnKey(columnId)}>
+                  {cellContent(cell)}
+                </div>
+              ) : null;
+            },
+          })}
         </div>
-        {fieldLine ? (
-          <div className="fa-dt-card-body" data-more={more ? "" : undefined}>
-            {fields(layout.meta, "fa-dt-card-meta")}
-            {more}
+      ) : (
+        <div role="gridcell" className="fa-dt-card-cell">
+          <div
+            className="fa-dt-card-head"
+            data-subtitle={layout.subtitle ? "" : undefined}
+          >
+            {select}
+            <div className="fa-dt-card-title" data-col={layout.title?.key}>
+              {render(layout.title)}
+            </div>
+            {layout.subtitle ? (
+              <div
+                className="fa-dt-card-subtitle"
+                data-col={layout.subtitle.key}
+              >
+                {render(layout.subtitle)}
+              </div>
+            ) : null}
+            {layout.status ? (
+              <div className="fa-dt-card-status" data-col={layout.status.key}>
+                {render(layout.status)}
+              </div>
+            ) : null}
+            <div className="fa-dt-card-actions">
+              {expander}
+              {fieldLine ? null : more}
+              {controller.renderActions(rowId, label, tabIndex)}
+            </div>
           </div>
-        ) : null}
-        {expanded && layout.details.length
-          ? fields(layout.details, "fa-dt-card-meta fa-dt-card-details")
-          : null}
-      </div>
+          {fieldLine ? (
+            <div className="fa-dt-card-body" data-more={more ? "" : undefined}>
+              {fields(layout.meta, "fa-dt-card-meta")}
+              {more}
+            </div>
+          ) : null}
+          {expanded && layout.details.length
+            ? fields(layout.details, "fa-dt-card-meta fa-dt-card-details")
+            : null}
+        </div>
+      )}
     </div>
   );
   return controller.wrap(rowId, element);
@@ -266,6 +299,7 @@ export const DataCard = /* @__PURE__ */ memo(
     a.controller === b.controller &&
     a.grip === b.grip &&
     a.revision === b.revision &&
+    a.renderCard === b.renderCard &&
     sameExpansion(a, b),
 ) as <T extends RowData>(props: CardProps<T>) => ReactElement;
 
@@ -286,6 +320,7 @@ export function CardList<T extends RowData>({
   gripOf,
   revision,
   tail,
+  renderCard,
 }: {
   /** Records or matrix rows in display order. */
   rows: readonly Row<DataTableFeatures, T>[];
@@ -311,6 +346,8 @@ export function CardList<T extends RowData>({
   gripOf?: (row: Row<DataTableFeatures, T>) => string;
   /** Bumps when row-level renderers change. */
   revision: object;
+  /** The host draws each card's content. */
+  renderCard?: (row: T, card: DataTableCard) => ReactNode;
 }) {
   const lines =
     items ??
@@ -350,6 +387,7 @@ export function CardList<T extends RowData>({
             controller={controller}
             grip={gripOf?.(item.row)}
             revision={revision}
+            renderCard={renderCard}
             {...expansion?.rowProps(item)}
           />
         ) : (
@@ -362,7 +400,9 @@ export function CardList<T extends RowData>({
             colSpan={1}
             noun={noun}
             controller={controller}
-            treegridGroups={expansion?.treegrid ? expansion.groupCount : undefined}
+            treegridGroups={
+              expansion?.treegrid ? expansion.groupCount : undefined
+            }
           />
         ),
       )}
@@ -378,7 +418,10 @@ export function SkeletonCards({
   selectable,
   actions,
   grip = false,
+  renderSkeleton,
 }: {
+  /** The host's placeholder for a card it draws (`renderCardSkeleton`). */
+  renderSkeleton?: () => ReactNode;
   /** Item count shown by the component. */
   count: number;
   /** Layout or presentation mode. */
@@ -402,83 +445,90 @@ export function SkeletonCards({
               <span className="fa-dt-grip-space" />
             </div>
           ) : null}
-          <div className="fa-dt-card-cell">
-            <div
-              className="fa-dt-card-head"
-              data-subtitle={layout.subtitle ? "" : undefined}
-            >
-              {selectable ? (
-                <Skeleton.Block className="fa-dt-skel-check" radius="check" />
-              ) : null}
-              <div className="fa-dt-card-title">
-                <CellPlaceholder
-                  kind={layout.title?.meta.skeleton ?? "text"}
-                  seed={index}
-                />
-              </div>
-              {layout.subtitle ? (
-                <div className="fa-dt-card-subtitle">
-                  <Skeleton.Text type="caption" width="40%" />
-                </div>
-              ) : null}
-              {layout.status ? (
-                <div className="fa-dt-card-status">
+          {renderSkeleton ? (
+            <div className="fa-dt-card-slot">{renderSkeleton()}</div>
+          ) : (
+            <div className="fa-dt-card-cell">
+              <div
+                className="fa-dt-card-head"
+                data-subtitle={layout.subtitle ? "" : undefined}
+              >
+                {selectable ? (
+                  <Skeleton.Block className="fa-dt-skel-check" radius="check" />
+                ) : null}
+                <div className="fa-dt-card-title">
                   <CellPlaceholder
-                    kind={layout.status.meta.skeleton}
+                    kind={layout.title?.meta.skeleton ?? "text"}
                     seed={index}
                   />
                 </div>
-              ) : null}
-              <div className="fa-dt-card-actions">
-                {Array.from(
-                  {
-                    length:
-                      Number(layout.details.length > 0 && !layout.meta.length) +
-                      Number(actions),
-                  },
-                  (_, action) => (
+                {layout.subtitle ? (
+                  <div className="fa-dt-card-subtitle">
+                    <Skeleton.Text type="caption" width="40%" />
+                  </div>
+                ) : null}
+                {layout.status ? (
+                  <div className="fa-dt-card-status">
+                    <CellPlaceholder
+                      kind={layout.status.meta.skeleton}
+                      seed={index}
+                    />
+                  </div>
+                ) : null}
+                <div className="fa-dt-card-actions">
+                  {Array.from(
+                    {
+                      length:
+                        Number(
+                          layout.details.length > 0 && !layout.meta.length,
+                        ) + Number(actions),
+                    },
+                    (_, action) => (
+                      <Skeleton.Block
+                        key={action}
+                        className="fa-dt-skel-action"
+                        radius="control"
+                      />
+                    ),
+                  )}
+                </div>
+              </div>
+              {layout.meta.length ? (
+                <div
+                  className="fa-dt-card-body"
+                  data-more={layout.details.length ? "" : undefined}
+                >
+                  <dl className="fa-dt-card-meta">
+                    {layout.meta.map((column, columnIndex) => (
+                      <div
+                        key={column.id}
+                        className="fa-dt-card-field"
+                        data-status={
+                          column === layout.inlineStatus ? "" : undefined
+                        }
+                      >
+                        <dt className="fa-dt-card-label">
+                          {column.meta.label}
+                        </dt>
+                        <dd className="fa-dt-card-value">
+                          <CellPlaceholder
+                            kind={column.meta.skeleton}
+                            seed={index + columnIndex}
+                          />
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                  {layout.details.length ? (
                     <Skeleton.Block
-                      key={action}
-                      className="fa-dt-skel-action"
+                      className="fa-dt-skel-action fa-dt-card-more"
                       radius="control"
                     />
-                  ),
-                )}
-              </div>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
-            {layout.meta.length ? (
-              <div
-                className="fa-dt-card-body"
-                data-more={layout.details.length ? "" : undefined}
-              >
-                <dl className="fa-dt-card-meta">
-                  {layout.meta.map((column, columnIndex) => (
-                    <div
-                      key={column.id}
-                      className="fa-dt-card-field"
-                      data-status={
-                        column === layout.inlineStatus ? "" : undefined
-                      }
-                    >
-                      <dt className="fa-dt-card-label">{column.meta.label}</dt>
-                      <dd className="fa-dt-card-value">
-                        <CellPlaceholder
-                          kind={column.meta.skeleton}
-                          seed={index + columnIndex}
-                        />
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-                {layout.details.length ? (
-                  <Skeleton.Block
-                    className="fa-dt-skel-action fa-dt-card-more"
-                    radius="control"
-                  />
-                ) : null}
-              </div>
-            ) : null}
-          </div>
+          )}
         </div>
       ))}
     </>

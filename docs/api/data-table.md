@@ -18,7 +18,8 @@ and tree rows with lazy children (`tree`).
 | --- | --- | --- | --- | --- | --- |
 | actions | `ActionSet<T> \| undefined` | See type | no | — | The entity's actions (R12). The row ⋯ menu, the right-click menu and the bulk bar are the shared action renderers reading this one definition, so they match ActionMenu, ActionContextMenu and every other surface. |
 | canExpandRow | `((row: T) => boolean) \| undefined` | See type | no | — | Rows that have a panel (default: all). |
-| cardBreakpoint | `number \| undefined` | See type | no | 36 | Below this width (rem) rows become cards (default 36). |
+| cardBreakpoint | `number \| undefined` | See type | no | 36 | With `view="auto"`: below this width (rem) rows become cards (default 36). |
+| cardMinWidth | `number \| undefined` | See type | no | — | Lay cards out in as many columns as fit, each at least this wide (rem). Default: one column. Group headers, detail panels and status lines run across the grid. Arrow keys move by what is drawn: Up and Down within a column, Left and Right in reading order. A reorderable table keeps one column. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | columnOrder | `readonly string[] \| undefined` | See type | no | — | Controlled display order. Pinned columns remain in their own group. |
 | columns | `readonly DataTableColumn<T>[]` | See type | yes | — | Typed column definitions, including rendering, sorting, priorities and filters. |
@@ -59,6 +60,8 @@ and tree rows with lazy children (`tree`).
 | queryKey | `unknown` | See type | no | — | Identity of the query behind `rows` (scope, view, anything outside the table's state). When it changes the rows are a new result; when it does not, changed rows are live updates and flash. Sorting, the search, filters and the page are part of it already. |
 | refetching | `boolean \| undefined` | false, true | no | false | A refetch is in flight: rows stay, a thin line runs under the header. |
 | renderBulkActions | `((rows: T[], clear: () => void) => ReactNode) \| undefined` | See type | no | — | Replace the bulk bar's action buttons. |
+| renderCard | `((row: T, card: DataTableCard) => ReactNode) \| undefined` | See type | no | — | Draw each card's content yourself. The table keeps the card's frame, focus, selection highlight and click handling, and hands over the row's controls to place. The columns menu leaves its column choices out, since they no longer decide what a card shows. Keep the function stable: a new one draws every card again. |
+| renderCardSkeleton | `(() => ReactNode) \| undefined` | See type | no | — | A card's loading placeholder, the same size as `renderCard`'s content. |
 | renderRowActions | `((row: T) => ReactNode) \| undefined` | See type | no | — | Replace the ⋯ menu for a row (render your own trigger, e.g. a shared ActionMenu). |
 | renderRowContextMenu | `((row: T, targets: T[]) => ReactNode) \| undefined` | See type | no | — | Replace the context menu's content for a row (or the selection it belongs to). It is placed inside the shared ContextMenu popup, so build it from Menu parts. |
 | renderRowDetail | `((row: T) => ReactNode) \| undefined` | See type | no | — | A panel of host content under a row. An expander opens it, in the first visible column or on the card; the open rows are the `expanded` state slice. `render` runs only for a panel that is open and on screen, and its height is measured, so it can be anything. A panel scrolled far away unmounts like its row, so keep state worth keeping in the host. Keep the function stable: a new one redraws the panels on screen. |
@@ -75,3 +78,4 @@ and tree rows with lazy children (`tree`).
 | toolbar | `ReactNode` | See type | no | — | The table's own controls (a view switch, Refresh), at the end of the toolbar. |
 | tree | `DataTableTree<T> \| undefined` | See type | no | — | Hierarchical rows: see `DataTableTree`. The grid becomes a `treegrid`. With `renderRowDetail` a row's panel comes first, then its children, under one expander. |
 | updatedAt | `number \| Date \| undefined` | See type | no | — | When the data was last refreshed (status bar: "Updated 2 min ago"). |
+| view | `DataTableView \| undefined` | "table", "auto", "cards" | no | "auto" | `"auto"` (the default) shows cards below `cardBreakpoint` and the table above it. `"table"` and `"cards"` hold that view at any width. For a person's choice of view, put a `Segmented` in `toolbar` and switch between `"auto"` and `"cards"`, so a phone still gets cards. |

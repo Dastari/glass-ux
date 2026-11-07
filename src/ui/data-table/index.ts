@@ -56,6 +56,7 @@ export {
 } from "./expansion.js";
 export type {
   CursorPagination,
+  DataTableCard,
   DataTableChildRequest,
   DataTableDensity,
   DataTableFilterToggle,
@@ -68,6 +69,7 @@ export type {
   DataTableState,
   DataTableStateChange,
   DataTableStateChangeDetails,
+  DataTableView,
   DataTableTree,
 } from "./types.js";
 export {

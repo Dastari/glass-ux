@@ -129,7 +129,9 @@ import {
 import {
   ColumnMenu,
   DataTableHeader,
+  CardSortMenu,
   SettingsMenu,
+  SortGroups,
   type HeaderController,
 } from "./header.js";
 import {
@@ -256,6 +258,9 @@ function isInteractive(target: EventTarget | null, row: Element) {
   return Boolean(control && row.contains(control) && control !== row);
 }
 
+/** Below this width (rem) the sort choices join the columns menu, so the toolbar stays one line. */
+const CARD_SORT_FOLD_REM = 20;
+
 /** The columns menu with no column choices: a host's own cards decide what they show. */
 const NO_COLUMNS: ReadonlyArray<{
   id: string;
@@ -365,6 +370,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     view = "auto",
     cardBreakpoint = 36,
     cardMinWidth,
+    cardMaxWidth,
+    cardSort = true,
     renderCard,
     renderCardSkeleton,
     className,
@@ -2766,7 +2773,12 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const cardGridProps = cardGrid
     ? {
         "data-grid": "",
-        style: { "--_card-min": `${cardMinWidth}rem` } as CSSProperties,
+        style: {
+          "--_card-min": `${cardMinWidth}rem`,
+          ...(cardMaxWidth !== undefined
+            ? { "--_card-max": `${cardMaxWidth}rem` }
+            : null),
+        } as CSSProperties,
       }
     : undefined;
 
@@ -2964,6 +2976,14 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       })),
     [drawnDefinitions, pinnedIds],
   );
+  const sortableColumns = useMemo(
+    () =>
+      drawnDefinitions
+        .filter((entry) => table.getColumn(entry.id)?.getCanSort())
+        .map((entry) => ({ id: entry.id, label: entry.meta.label })),
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- a column's sortability comes from its definition
+    [drawnDefinitions],
+  );
   const autoHiddenSet = useMemo(
     () =>
       new Set(
@@ -2982,9 +3002,20 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         : undefined,
     [offerExpandAll, mode, expandAllLabel, setAllOpen, allOpen],
   );
+  const offerSort = mode === "cards" && cardSort && sortableColumns.length > 0;
+  const sortFolded = offerSort && measured && widthRem < CARD_SORT_FOLD_REM;
   const settingsMenu = useMemo(
     () => (
       <SettingsMenu
+        sort={
+          sortFolded ? (
+            <SortGroups
+              columns={sortableColumns}
+              sorting={sorting}
+              controller={headerController}
+            />
+          ) : undefined
+        }
         columns={mode === "cards" && renderCard ? NO_COLUMNS : settingsColumns}
         userHidden={userHidden}
         autoHidden={autoHiddenSet}
@@ -2994,6 +3025,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       />
     ),
     [
+      sortFolded,
+      sortableColumns,
+      sorting,
       mode,
       Boolean(renderCard),
       settingsColumns,
@@ -3248,6 +3282,15 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                   ) : null}
                   {toolbar || props.export || mode === "cards" ? (
                     <div className="fa-dt-toolbar-end">
+                      {/* What shows only with cards comes first, so what stays put does not move when the view changes. */}
+                      {offerSort && !sortFolded ? (
+                        <CardSortMenu
+                          columns={sortableColumns}
+                          sorting={sorting}
+                          controller={headerController}
+                        />
+                      ) : null}
+                      {mode === "cards" ? settingsMenu : null}
                       {props.export ? (
                         <ExportMenu
                           run={(format) => {
@@ -3256,7 +3299,6 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                         />
                       ) : null}
                       {toolbar}
-                      {mode === "cards" ? settingsMenu : null}
                     </div>
                   ) : null}
                 </div>

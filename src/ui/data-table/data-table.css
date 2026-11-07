@@ -1061,8 +1061,9 @@
     display: grid;
     grid-template-columns: repeat(
       auto-fill,
-      minmax(min(var(--_card-min), 100%), 1fr)
+      minmax(min(var(--_card-min), 100%), var(--_card-max, 1fr))
     );
+    justify-content: start;
   }
   .fa-dt-cards[data-grid] > :not(.fa-dt-card, .fa-dt-load-card) {
     grid-column: 1 / -1;

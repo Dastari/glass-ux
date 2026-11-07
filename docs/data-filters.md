@@ -137,8 +137,15 @@ const renderPackageCard = (row: Package, card: DataTableCard) => (
 - Pass `renderCardSkeleton` at the card's size, or loading shows the default card's shape.
 - The columns menu leaves out its column choices, since they no longer decide what a card shows.
 
-Cards have no column headers, so sorting has no control there. If people must sort in a card view,
-offer it in `toolbar` and set `state.sorting`.
+A card is as tall as its content, and a grid's row as tall as its tallest card, so `renderCard` sets
+the height. `cardMaxWidth` caps the width: give it the same value as `cardMinWidth` for tiles of one
+fixed width. Every card in a table follows those two; one card wider than the rest is not offered.
+
+Cards have no column headers, so the toolbar gains a sort menu while they show, over the sortable
+columns and the same `sorting` state; below 20rem it joins the columns menu, so the toolbar stays one
+line. Pass `cardSort={false}` to place your own control in `toolbar`.
+Controls that show only with cards come first in the toolbar, so `toolbar` and Export stay where they
+are when the view changes.
 
 ## Keep a manual order in host data
 

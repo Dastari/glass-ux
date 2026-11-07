@@ -1155,6 +1155,7 @@ const packageColumns = packageCol.columns([
     width: 16,
     cardRole: "title",
     skeleton: "identity",
+    sortable: true,
     cell: ({ row }) => (
       <IdentityCell
         title={row.original.name}
@@ -1174,6 +1175,8 @@ const packageColumns = packageCol.columns([
     priority: 2,
     width: 7,
     align: "end",
+    sortable: true,
+    sortDescFirst: true,
     cell: ({ getValue }) => <NumericCell value={getValue()} unit="MB" />,
   }),
 ]);
@@ -1254,6 +1257,17 @@ function CardViewDemo() {
   const [loading, setLoading] = useState(false);
   const [grouped, setGrouped] = useState(false);
   const [details, setDetails] = useState(false);
+  const [small, setSmall] = useState(false);
+  const [menu, setMenu] = useState(true);
+  const [sorting, setSorting] = useState<DataTableState["sorting"]>([]);
+  const shown = useMemo(() => {
+    const source = grouped ? PACKAGE_ROWS_GROUPED : PACKAGES;
+    const sort = sorting[0];
+    if (!sort || grouped) return source;
+    const key = sort.id as "name" | "sizeMb";
+    const order = sort.desc ? -1 : 1;
+    return source.toSorted((a, b) => (a[key] < b[key] ? -order : a[key] > b[key] ? order : 0));
+  }, [grouped, sorting]);
   return (
     <div className="dt-demo">
       <div className="dt-demo-controls">
@@ -1272,6 +1286,12 @@ function CardViewDemo() {
         <Toggle pressed={details} onClick={() => setDetails((value) => !value)}>
           Detail panels
         </Toggle>
+        <Toggle pressed={small} onClick={() => setSmall((value) => !value)}>
+          Small fixed tiles
+        </Toggle>
+        <Toggle pressed={menu} onClick={() => setMenu((value) => !value)}>
+          Sort menu
+        </Toggle>
         <Toggle pressed={loading} onClick={() => setLoading((value) => !value)}>
           Loading
         </Toggle>
@@ -1280,7 +1300,10 @@ function CardViewDemo() {
         <DataTable<DeployPackage>
           id="gallery-card-view"
           label="Packages"
-          rows={loading ? NO_PACKAGES : grouped ? PACKAGE_ROWS_GROUPED : PACKAGES}
+          rows={loading ? NO_PACKAGES : shown}
+          state={{ sorting }}
+          onStateChange={(next) => setSorting(next.sorting)}
+          cardSort={menu}
           loading={loading}
           grouping={grouped ? PACKAGE_GROUPING : undefined}
           renderRowDetail={details ? renderPackageDetail : undefined}
@@ -1290,7 +1313,8 @@ function CardViewDemo() {
           actions={packageActions}
           noun={{ one: "package", other: "packages" }}
           view={view === "cards" ? "cards" : hold ? "table" : "auto"}
-          cardMinWidth={grid ? 15 : undefined}
+          cardMinWidth={small ? 11 : grid ? 15 : undefined}
+          cardMaxWidth={small ? 11 : undefined}
           renderCard={custom ? renderPackageCard : undefined}
           renderCardSkeleton={custom ? renderPackageSkeleton : undefined}
           toolbar={

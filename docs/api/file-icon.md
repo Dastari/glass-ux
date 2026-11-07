@@ -12,7 +12,7 @@ Decorative by default like every icon: pass `label` when no visible text names t
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
-| kind | `FileKind \| undefined` | "audio", "code", "data", "link", "script", "video", "image", "text", "key", "document", "presentation", "email", "file", "folder", "pdf", "spreadsheet", "ebook", "layered-image", "vector", "font", "model", "database", "archive", "executable", "disk-image", "calendar", "contact", "encrypted" | no | — | The kind, when the application already knows it. Skips detection. |
+| kind | `FileKind \| undefined` | "audio", "code", "data", "link", "script", "video", "image", "text", "key", "document", "presentation", "email", "folder", "file", "pdf", "spreadsheet", "ebook", "layered-image", "vector", "font", "model", "database", "archive", "executable", "disk-image", "calendar", "contact", "encrypted" | no | — | The kind, when the application already knows it. Skips detection. |
 | label | `string \| undefined` | See type | no | — | Accessible name. Omit for decorative icons (the default) — they are hidden from AT. |
 | mime | `string \| null \| undefined` | See type | no | — | MIME type. A specific type (`application/pdf`) wins over the extension. |
 | name | `string \| null \| undefined` | See type | no | — | File name or path. Its extension picks the icon when the MIME type is missing or generic. |

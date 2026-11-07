@@ -266,3 +266,106 @@ for (const density of ["comfortable", "compact"] as const) {
     expect(await fits()).toBe(true);
   });
 }
+
+test("the view switch and Export stay put when the view changes @responsive", async ({ page }) => {
+  const { frame, table } = await open(page);
+  const list = frame.getByRole("button", { name: "List", exact: true });
+  // From the table's own edge: forced wider than the page, the page itself can scroll sideways.
+  const x = () =>
+    list.evaluate((el) =>
+      Math.round(el.closest(".fa-dt")!.getBoundingClientRect().right - el.getBoundingClientRect().left),
+    );
+  const inCards = await x();
+  await list.click();
+  await expect(table).toHaveAttribute("data-mode", "table");
+  expect(await x()).toBe(inCards);
+  // In cards the menus come first, ahead of what stays.
+  await frame.getByRole("button", { name: "Cards", exact: true }).click();
+  await expect(table).toHaveAttribute("data-mode", "cards");
+  const order = await table.locator(".fa-dt-toolbar-end").evaluate((end) =>
+    [...end.children].map((child) =>
+      child.classList.contains("fa-dt-sort-menu")
+        ? "sort"
+        : child.classList.contains("fa-dt-settings")
+          ? "settings"
+          : child.classList.contains("dt-demo-view-switch")
+            ? "switch"
+            : "other",
+    ),
+  );
+  expect(order).toEqual(["sort", "settings", "switch"]);
+});
+
+test("the sort menu sets the same sort as the headers", async ({ page }) => {
+  const { frame, table } = await open(page);
+  const titles = () =>
+    table.locator(".fa-dt-card .dt-demo-tile-name").allTextContents();
+  const unsorted = await titles();
+  await table.getByRole("button", { name: "Sort by" }).click();
+  // Only sortable columns: Version is not.
+  await expect(page.getByRole("menuitemradio", { name: "Version" })).toHaveCount(0);
+  await expect(page.getByRole("menuitemradio", { name: "Sort ascending" })).toBeDisabled();
+  await page.getByRole("menuitemradio", { name: "Name" }).click();
+  const byName = [...unsorted].sort((a, b) => a.localeCompare(b));
+  await expect.poll(titles).toEqual(byName);
+  await page.getByRole("menuitemradio", { name: "Sort descending" }).click();
+  await expect.poll(titles).toEqual([...byName].reverse());
+  // The menu stays open for the second choice, and the trigger says what is applied.
+  await page.keyboard.press("Escape");
+  await expect(table.getByRole("button", { name: "Sorted by Name" })).toBeVisible();
+  // The same state as the table's own header.
+  await frame.getByRole("button", { name: "List", exact: true }).click();
+  await expect(table.getByRole("columnheader", { name: /Name/ })).toHaveAttribute("aria-sort", "descending");
+  await frame.getByRole("button", { name: "Cards", exact: true }).click();
+  await table.getByRole("button", { name: "Sorted by Name" }).click();
+  await page.getByRole("menuitem", { name: "Clear sort" }).click();
+  await expect.poll(titles).toEqual(unsorted);
+});
+
+test("a column's first sort direction is respected", async ({ page }) => {
+  const { table } = await open(page);
+  await table.getByRole("button", { name: "Sort by" }).click();
+  await page.getByRole("menuitemradio", { name: "Size" }).click();
+  await expect(page.getByRole("menuitemradio", { name: "Sort descending" })).toHaveAttribute("aria-checked", "true");
+});
+
+test("cardSort=false leaves the sort to the host", async ({ page }) => {
+  const { table } = await open(page);
+  await expect(table.getByRole("button", { name: "Sort by" })).toBeVisible();
+  await page.getByRole("region", { name: "Card view" }).getByRole("button", { name: "Sort menu", exact: true }).click();
+  await expect(table.getByRole("button", { name: "Sort by" })).toHaveCount(0);
+});
+
+test("fixed tiles keep one width from the row's start, and the height is the card's content @responsive", async ({ page }) => {
+  const { table } = await open(page);
+  await toggle(page, "Small fixed tiles");
+  const boxes = await table.locator(".fa-dt-card").evaluateAll((cards) =>
+    cards.map((c) => c.getBoundingClientRect().width),
+  );
+  const rem = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).fontSize));
+  for (const width of boxes) expect(width).toBeCloseTo(11 * rem, 0);
+  // Taller content makes a taller card, and its row with it.
+  const first = card(table, "p1");
+  const before = await first.evaluate((c) => c.getBoundingClientRect().height);
+  await first.evaluate((c) => {
+    (c.querySelector(".dt-demo-tile-publisher") as HTMLElement).style.minHeight = "6rem";
+  });
+  const after = await first.evaluate((c) => c.getBoundingClientRect().height);
+  expect(after).toBeGreaterThan(before);
+  const neighbour = await card(table, "p2").evaluate((c) => c.getBoundingClientRect().height);
+  expect(neighbour).toBeCloseTo(after, 0);
+});
+
+test("very narrow, the sort joins the columns menu and the toolbar stays one line", async ({ page }) => {
+  const { frame, table } = await open(page);
+  await setWidth(frame, 280);
+  await expect(table.locator(".fa-dt-sort-menu")).toHaveCount(0);
+  await table.getByRole("button", { name: "Columns and density" }).click();
+  await page.getByRole("menuitemradio", { name: "Name" }).click();
+  await expect(page.getByRole("menuitemradio", { name: "Sort ascending" })).toHaveAttribute("aria-checked", "true");
+  await page.keyboard.press("Escape");
+  await expect(card(table, "p7")).toBeVisible();
+  await expect
+    .poll(() => table.locator(".fa-dt-card .dt-demo-tile-name").first().textContent())
+    .toBe("Copperline Sync");
+});

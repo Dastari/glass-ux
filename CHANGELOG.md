@@ -8,14 +8,27 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- FileDialog: `mode="folder"` chooses a folder, returned through `onChoose`: the one selected in the list,
+  or else the one showing. Files stay listed, dimmed. New types `FolderFileDialogProps` and
+  `FolderSelection`.
+- FileDialog: `places` adds shortcuts to common folders in every mode, above the folders, or in a menu
+  where the dialog is narrow. New type `FileDialogPlace`.
 - DataTable: `view` holds `"table"` or `"cards"` at any width; the default `"auto"` follows
   `cardBreakpoint` as before. Put a `Segmented` in `toolbar` to let people choose.
 - DataTable: `cardMinWidth` lays cards in as many columns as fit, with arrow keys that move by what is
-  drawn. A reorderable table keeps one column.
+  drawn. `cardMaxWidth` caps the width, and the same value as `cardMinWidth` gives fixed tiles. A
+  reorderable table keeps one column.
+- DataTable: while cards show, the toolbar has a sort menu over the sortable columns, since cards have no
+  headers. `cardSort={false}` removes it.
 - DataTable: `renderCard` draws a card's content, handing over the row's checkbox, actions, expander and
   cells; `renderCardSkeleton` is its loading placeholder. New types `DataTableView` and `DataTableCard`.
 - TopologyCanvas: `listFlush` removes the list view's inset, for a list that brings its own edges, such
   as a DataTable.
+
+### Changed
+
+- DataTable: while cards show, the sort menu and the columns menu come before Export and `toolbar`, so those
+  two stay where they are when the view changes. The columns menu used to come last.
 
 ### Fixed
 

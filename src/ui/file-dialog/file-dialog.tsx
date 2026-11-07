@@ -5,18 +5,20 @@ import { FileBrowser, type FileBrowserHandle } from "./file-browser.js"
 import type { FileDialogProps } from "./types.js"
 
 /**
- * Open and save dialogs over any `FileProvider`. It lists and chooses, and never reads file
- * contents or writes them: the host does that in `onOpen` and `onSave`, with `{ signal, setProgress }`,
- * so the library still never uploads.
+ * Open, save and folder dialogs over any `FileProvider`. It lists and chooses, and never reads file
+ * contents or writes them: the host does that in `onOpen`, `onSave` and `onChoose`, with
+ * `{ signal, setProgress }`, so the library still never uploads.
  *
  * It adapts to what a provider has: no `readDirectory` gives a location field, no `write` leaves
  * the provider out of Save, no `thumbnail` leaves the list view, and no `createDirectory`, `rename`
  * or `delete` means no such command. An entry's `denied` disables the action and shows the reason.
+ * `mode="folder"` returns the folder selected in the list, or else the one showing, and `places`
+ * adds shortcuts to common folders in any mode.
  *
  * Keyboard: arrows move, Enter opens, Space selects, Shift extends, ⌘/Ctrl+A selects all loaded,
  * Backspace goes up a level, F2 renames, Delete deletes, typing jumps to a name, and Shift+F10 or
  * the Menu key opens a row's menu. Escape closes; during a run it cancels the run and stays open.
- * On phones it is a bottom sheet, and the folders give way to the path line.
+ * On phones it is a bottom sheet, the folders give way to the path line, and places to a menu.
  */
 export function FileDialog(props: FileDialogProps): ReactElement {
   const { open: openProp, defaultOpen = false, onOpenChange, trigger } = props

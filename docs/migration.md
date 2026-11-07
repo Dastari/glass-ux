@@ -11,8 +11,15 @@ No code edits are needed. New props:
   this, pass the prop and delete the override.
 - `DataTable.view` holds `"table"` or `"cards"` at any width. The default `"auto"` keeps today's
   behaviour. If you force a view with `cardBreakpoint={Infinity}` or `{0}`, use this instead.
-- `DataTable.cardMinWidth`, `renderCard` and `renderCardSkeleton`: a grid of cards and your own card
-  design. See [Choose a card view](data-filters.md#choose-a-card-view).
+- `DataTable.cardMinWidth`, `cardMaxWidth`, `renderCard` and `renderCardSkeleton`: a grid of cards and
+  your own card design. See [Choose a card view](data-filters.md#choose-a-card-view).
+- `DataTable.cardSort`: a table with a sortable column now shows a sort menu in the toolbar while cards
+  show, including on phones. If you already offer your own sort control there, pass `cardSort={false}`.
+- `FileDialog`: `mode="folder"` with `onChoose`, and `places` for shortcuts to common folders in every
+  mode.
+
+Visible change: while cards show, the columns menu moves ahead of Export and `toolbar` in the toolbar. A
+test that finds these by position needs updating.
 
 ## 0.17.1 → 0.18.0
 

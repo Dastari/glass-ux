@@ -31,13 +31,15 @@ export default function FileDialogSection() {
   const [compared, setCompared] = useState("");
   const [question, setQuestion] = useState<"changed" | "gone" | null>(null);
   const [answer, setAnswer] = useState("");
+  const [folder, setFolder] = useState("");
+  const [failNext, setFailNext] = useState(false);
   return (
     <SectionPage>
       <Specimen
         title="The conflict step alone"
         description="FileConflictDialog, for a plain Save that opens no dialog."
         layout="stack"
-        specimenKey="file-dialog:default:10"
+        specimenKey="file-dialog:default:12"
       >
         <Button onClick={() => setQuestion("changed")}>A newer version</Button>
         <Button onClick={() => setQuestion("gone")}>The file has gone</Button>

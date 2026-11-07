@@ -2,6 +2,7 @@
 // oxlint-disable no-unused-vars -- the scoped specimen preserves hook ordering from its source
 import { useState } from "react";
 import { memoryFiles } from "../../file-provider/memory.js";
+import { IconHome, IconImage } from "../../icons/generated/icons.js";
 import { FileDialogPreview } from "../../ui/file-dialog/index.js";
 import { sampleWorkspace, slowListing, stuckListing } from "../fixtures/sample-files.js";
 import { SectionPage, Specimen } from "../kit.js";
@@ -42,6 +43,8 @@ export default function FileDialogSection() {
   const [compared, setCompared] = useState("");
   const [question, setQuestion] = useState<"changed" | "gone" | null>(null);
   const [answer, setAnswer] = useState("");
+  const [folder, setFolder] = useState("");
+  const [failNext, setFailNext] = useState(false);
   return (
     <SectionPage>
       <Specimen
@@ -49,7 +52,7 @@ export default function FileDialogSection() {
         description="FileDialogPreview draws the real parts in place, for documentation and comparison."
         layout="stack"
         wide
-        specimenKey="file-dialog:default:8"
+        specimenKey="file-dialog:default:10"
       >
         <div data-testid="file-dialog-list">
           <FileDialogPreview
@@ -76,6 +79,18 @@ export default function FileDialogSection() {
             onSave={() => Promise.reject(new Error("Unreachable"))}
           />
         </div>
+        <div data-testid="file-dialog-folder-preview">
+          <FileDialogPreview
+            mode="folder"
+            providers={[sampleWorkspace("pick", "Workspace")]}
+            places={[
+              { label: "Home", uri: "pick:///", icon: <IconHome /> },
+              { label: "Pictures", uri: "pick:///Pictures", icon: <IconImage /> },
+              { label: "Drafts", uri: "pick:///Reports/Drafts" },
+            ]}
+            onChoose={noop}
+          />
+        </div>
       </Specimen>
 
       <Specimen
@@ -83,7 +98,7 @@ export default function FileDialogSection() {
         description="Loading, empty, a provider with no folders, denied and failed all use the same box."
         layout="stack"
         wide
-        specimenKey="file-dialog:default:9"
+        specimenKey="file-dialog:default:11"
       >
         <div data-testid="file-dialog-loading">
           <FileDialogPreview mode="open" providers={[LOADING]} onOpen={noop} />

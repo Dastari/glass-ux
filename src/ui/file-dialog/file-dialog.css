@@ -86,8 +86,46 @@
     display: flex;
     flex: 0 0 var(--_folders);
     flex-direction: column;
+    gap: var(--space-2);
     min-width: 0;
     min-height: 0;
+  }
+  /* Shortcuts above the tree: the height of the tree's rows, and they scroll if there are many. */
+  .fa-file-dialog-shortcuts {
+    flex: none;
+    max-block-size: 50%;
+    overflow: auto;
+    padding: var(--focus-reach);
+    border-block-end: var(--border-width) solid var(--line);
+  }
+  .fa-file-dialog-shortcuts > ul {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    padding-block-end: var(--space-2);
+    list-style: none;
+  }
+  .fa-file-dialog-shortcut {
+    inline-size: 100%;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: start;
+  }
+  .fa-file-dialog-choice {
+    overflow: hidden;
+    min-inline-size: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* The tree takes what the shortcuts leave, and scrolls in it. */
+  .fa-file-dialog-folders > :not(.fa-file-dialog-shortcuts) {
+    flex: 1 1 0;
+    min-block-size: 0;
   }
   .fa-file-dialog-main {
     position: relative;

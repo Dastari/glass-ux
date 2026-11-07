@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { IconFolder, IconHome, IconImage } from "glass-ux/icons";
 import { Button } from "glass-ux/button";
-import { FileDialog } from "glass-ux/file-dialog";
+import { FileDialog, type FileDialogPlace } from "glass-ux/file-dialog";
 import {
   longFolder,
   sampleWorkspace,
@@ -10,6 +11,14 @@ import {
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 
 const noop = () => undefined;
+const PLACES: FileDialogPlace[] = [
+  { label: "Home", uri: "workspace:///", icon: <IconHome /> },
+  { label: "Pictures", uri: "workspace:///Pictures", icon: <IconImage /> },
+  { label: "Drafts", uri: "workspace:///Reports/Drafts" },
+  { label: "Archived reports", uri: "archive:///Reports", icon: <IconFolder /> },
+  // Offered only where its location is: this dialog has none named "elsewhere".
+  { label: "Elsewhere", uri: "elsewhere:///" },
+];
 const stream = (text: string) => new Blob([text]).stream();
 const WORKSPACE = sampleWorkspace();
 const SECOND = sampleWorkspace("archive", "Archive");
@@ -51,6 +60,8 @@ export default function FileDialogSection() {
   const [compared, setCompared] = useState("");
   const [question, setQuestion] = useState<"changed" | "gone" | null>(null);
   const [answer, setAnswer] = useState("");
+  const [folder, setFolder] = useState("");
+  const [failNext, setFailNext] = useState(false);
   return (
     <SectionPage>
       <Specimen
@@ -78,6 +89,56 @@ export default function FileDialogSection() {
           }}
         />
         <p data-testid="file-dialog-opened">{opened || "Nothing opened"}</p>
+      </Specimen>
+
+      <Specimen
+        title="Choose a folder"
+        description="Choose folder returns the folder selected in the list, or else the one showing; the status line says which. Files stay listed, dimmed. Places jump to common folders, across locations, and fold into a menu where the dialog is narrow."
+        layout="stack"
+      >
+        <Button
+          variant={failNext ? "soft" : "ghost"}
+          aria-pressed={failNext}
+          onClick={() => setFailNext((value) => !value)}
+        >
+          Fail the next choice
+        </Button>
+        <FileDialog
+          mode="folder"
+          providers={[WORKSPACE, SECOND]}
+          places={PLACES}
+          trigger={<Button>Choose a folder</Button>}
+          onChoose={async ({ provider, folder: chosen }) => {
+            if (failNext) {
+              setFailNext(false);
+              throw new Error("The sample refused this folder");
+            }
+            setFolder(`${provider.label}: ${chosen.uri}`);
+          }}
+        />
+        <p data-testid="file-dialog-folder">{folder || "No folder chosen"}</p>
+      </Specimen>
+
+      <Specimen
+        title="Places in Open and Save"
+        description="The same shortcuts in the other two flows. Save leaves out a place in a location it can't write to."
+        layout="stack"
+      >
+        <FileDialog
+          mode="open"
+          providers={[WORKSPACE, SECOND]}
+          places={PLACES}
+          trigger={<Button>Open with places</Button>}
+          onOpen={(selection) => setOpened(selection.files[0]?.name ?? "")}
+        />
+        <FileDialog
+          mode="save"
+          defaultName="Notes.txt"
+          providers={[WORKSPACE, READ_ONLY]}
+          places={[...PLACES, { label: "Published", uri: "published:///" }]}
+          trigger={<Button>Save with places</Button>}
+          onSave={() => Promise.reject(new Error("The sample doesn't save"))}
+        />
       </Specimen>
 
       <Specimen

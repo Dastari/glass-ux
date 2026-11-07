@@ -44,6 +44,8 @@ const defaults = {
   sortAscending: "Sort ascending",
   sortDescending: "Sort descending",
   clearSort: "Clear sort",
+  sortBy: "Sort by",
+  sortedBy: (column: string) => `Sorted by ${column}`,
   filter: "Filter\u2026",
   clearFilter: "Clear filter",
   unpinColumn: "Unpin column",

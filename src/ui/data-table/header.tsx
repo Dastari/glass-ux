@@ -524,6 +524,126 @@ export function ColumnMenu({
   );
 }
 
+/** The sort choices: in their own menu, or in the columns menu where a table is very narrow. */
+export function SortGroups({
+  columns,
+  sorting,
+  controller,
+}: {
+  /** The sortable columns. */
+  columns: ReadonlyArray<{ id: string; label: string }>;
+  sorting: readonly { id: string; desc: boolean }[];
+  controller: HeaderController;
+}) {
+  const m = useDataTableMessages();
+  const current = sorting[0];
+  const column = current
+    ? columns.find((candidate) => candidate.id === current.id)
+    : undefined;
+  return (
+    <>
+        <Menu.Group>
+          <Menu.GroupLabel>{m.sortBy}</Menu.GroupLabel>
+          <Menu.RadioGroup
+            value={column?.id ?? ""}
+            onValueChange={(value) => {
+              const id = value as string;
+              const first =
+                controller.getColumn(id)?.getFirstSortDir() === "desc";
+              controller.sortBy(id, current ? current.desc : first);
+            }}
+          >
+            {columns.map((candidate) => (
+              <Menu.RadioItem
+                key={candidate.id}
+                value={candidate.id}
+                closeOnClick={false}
+              >
+                {candidate.label}
+              </Menu.RadioItem>
+            ))}
+          </Menu.RadioGroup>
+        </Menu.Group>
+        <Menu.Group>
+          <Menu.RadioGroup
+            value={column ? (current?.desc ? "desc" : "asc") : ""}
+            onValueChange={(value) => {
+              if (column) controller.sortBy(column.id, value === "desc");
+            }}
+          >
+            <Menu.RadioItem
+              value="asc"
+              disabled={!column}
+              closeOnClick={false}
+            >
+              {m.sortAscending}
+            </Menu.RadioItem>
+            <Menu.RadioItem
+              value="desc"
+              disabled={!column}
+              closeOnClick={false}
+            >
+              {m.sortDescending}
+            </Menu.RadioItem>
+          </Menu.RadioGroup>
+        </Menu.Group>
+        <Menu.Group>
+          <Menu.Item
+            disabled={!column}
+            icon={<IconClose />}
+            onClick={() => controller.sortBy(column?.id ?? "", null)}
+          >
+            {m.clearSort}
+          </Menu.Item>
+        </Menu.Group>
+    </>
+  );
+}
+
+/** Cards have no headers: the same sort, from the toolbar. */
+export function CardSortMenu({
+  columns,
+  sorting,
+  controller,
+}: {
+  /** The sortable columns. */
+  columns: ReadonlyArray<{ id: string; label: string }>;
+  sorting: readonly { id: string; desc: boolean }[];
+  controller: HeaderController;
+}) {
+  const m = useDataTableMessages();
+  const current = sorting[0];
+  const column = current
+    ? columns.find((candidate) => candidate.id === current.id)
+    : undefined;
+  return (
+    <Menu.Root>
+      <Menu.Trigger
+        render={
+          <Button
+            variant="ghost"
+            size="sm"
+            className="fa-dt-sort-menu"
+            icon={
+              !column ? (
+                <IconSort />
+              ) : current?.desc ? (
+                <IconSortDesc />
+              ) : (
+                <IconSortAsc />
+              )
+            }
+            aria-label={column ? m.sortedBy(column.label) : m.sortBy}
+          />
+        }
+      />
+      <Menu.Popup align="end" aria-label={m.sortBy}>
+        <SortGroups columns={columns} sorting={sorting} controller={controller} />
+      </Menu.Popup>
+    </Menu.Root>
+  );
+}
+
 /** The trailing header button: choose columns, density, reset. */
 export function SettingsMenu({
   columns,
@@ -532,7 +652,10 @@ export function SettingsMenu({
   density,
   controller,
   expandAll,
+  sort,
 }: {
+  /** Very narrow cards: the sort choices, when there is no room for their own button. */
+  sort?: ReactNode;
   /** Cards: expand-all, which has no header to live in. */
   expandAll?: { label: string; onToggle: () => void };
   /** Typed column definitions, including rendering, sorting, priorities and filters. */
@@ -557,6 +680,7 @@ export function SettingsMenu({
         }
       />
       <Menu.Popup align="end" aria-label={m.columnsDensity}>
+        {sort}
         {columns.length ? (
           <Menu.Group>
             <Menu.GroupLabel>{m.columns}</Menu.GroupLabel>

@@ -409,8 +409,21 @@ export interface DataTableProps<T extends RowData> {
    */
   cardMinWidth?: number;
   /**
+   * The widest a card grows (rem); needs `cardMinWidth`. Default: cards share the row's spare
+   * width. The same value as `cardMinWidth` gives tiles of one fixed width, from the row's start.
+   */
+  cardMaxWidth?: number;
+  /**
+   * Offer a sort menu in the toolbar while cards show, which have no column headers. Default
+   * true, when a column is sortable. It reads and sets the same `sorting` state as the headers,
+   * and joins the columns menu where the table is very narrow. Pass false to place your own
+   * control in `toolbar`.
+   */
+  cardSort?: boolean;
+  /**
    * Draw each card's content yourself. The table keeps the card's frame, focus, selection
-   * highlight and click handling, and hands over the row's controls to place. The columns menu
+   * highlight and click handling, and hands over the row's controls to place. A card is as tall
+   * as its content, and a row of a grid as tall as its tallest card. The columns menu
    * leaves its column choices out, since they no longer decide what a card shows. Keep the
    * function stable: a new one draws every card again.
    */

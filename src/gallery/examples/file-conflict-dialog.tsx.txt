@@ -29,6 +29,8 @@ export default function FileDialogSection() {
   const [compared, setCompared] = useState("");
   const [question, setQuestion] = useState<"changed" | "gone" | null>(null);
   const [answer, setAnswer] = useState("");
+  const [folder, setFolder] = useState("");
+  const [failNext, setFailNext] = useState(false);
   return (
     <SectionPage>
       <Specimen

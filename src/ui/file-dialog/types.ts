@@ -1,4 +1,4 @@
-import type { ReactElement } from "react"
+import type { ReactElement, ReactNode } from "react"
 import type { FileProvider, FileStat, FileUri, FileVersion, WriteBase, WriteResult } from "../../file-provider/index.js"
 
 /** What `onOpen` receives for files chosen in a location. */
@@ -15,7 +15,25 @@ export interface DeviceFileSelection {
   files: readonly File[]
 }
 
-/** What `onOpen` and `onSave` receive besides the choice: the run's abort signal and a progress reporter. */
+/** What `onChoose` receives: the folder chosen in a location. */
+export interface FolderSelection {
+  /** The location it is in. */
+  provider: FileProvider
+  /** Stat'ed on confirm. */
+  folder: FileStat
+}
+
+/** A shortcut to a folder, beside the folders or in a menu where the dialog is narrow. */
+export interface FileDialogPlace {
+  /** Application text naming the place. */
+  label: string
+  /** The folder. Its scheme chooses the location; a place in no location offered is left out. */
+  uri: FileUri
+  /** Pass the icon without a size. Default a folder. */
+  icon?: ReactNode
+}
+
+/** What `onOpen`, `onChoose` and `onSave` receive besides the choice: the run's abort signal and a progress reporter. */
 export interface FileRunContext {
   /** Aborts when the person cancels. Pass it to the read or write. */
   signal: AbortSignal
@@ -69,8 +87,13 @@ interface FileDialogBaseProps {
   defaultView?: FileDialogView
   /** Called with the view the person picks. */
   onViewChange?: (view: FileDialogView) => void
-  /** The dialog's title. Default Open, Open files or Save as. */
+  /** The dialog's title. Default Open, Open files, Choose a folder or Save as. */
   title?: string
+  /**
+   * Shortcuts to common folders. The application names them, since a location has no idea what
+   * its Documents or Downloads is. Each jumps there, switching location if it needs to.
+   */
+  places?: readonly FileDialogPlace[]
 }
 
 /** A FileDialog that chooses files. */
@@ -103,5 +126,13 @@ export interface SaveFileDialogProps extends FileDialogBaseProps {
   onCompare?: (current: FileStat | null) => void
 }
 
-/** The props of {@link FileDialog}: `mode` chooses between the two flows. */
-export type FileDialogProps = OpenFileDialogProps | SaveFileDialogProps
+/** A FileDialog that chooses a folder. Files stay listed, dimmed, for context. */
+export interface FolderFileDialogProps extends FileDialogBaseProps {
+  /** Choose a folder: the one selected in the list, or else the one showing. */
+  mode: "folder"
+  /** The dialog stays open and pending until this settles; a rejection shows in place. */
+  onChoose: (selection: FolderSelection, context: FileRunContext) => unknown
+}
+
+/** The props of {@link FileDialog}: `mode` chooses between the three flows. */
+export type FileDialogProps = OpenFileDialogProps | SaveFileDialogProps | FolderFileDialogProps

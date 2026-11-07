@@ -1,12 +1,21 @@
 import { useState } from "react"
 import type { FileStat } from "../../file-provider/index.js"
 import { memoryFiles } from "../../file-provider/memory.js"
+import { IconFolder, IconHome, IconImage } from "../../icons/generated/icons.js"
 import { Button } from "../../ui/button/index.js"
-import { FileConflictDialog, FileDialog, FileDialogPreview } from "../../ui/file-dialog/index.js"
+import { FileConflictDialog, FileDialog, FileDialogPreview, type FileDialogPlace } from "../../ui/file-dialog/index.js"
 import { longFolder, sampleWorkspace, slowListing, stuckListing, without } from "../fixtures/sample-files.js"
 import { Rules, SectionPage, Specimen } from "../kit.js"
 
 const noop = () => undefined
+const PLACES: FileDialogPlace[] = [
+  { label: "Home", uri: "workspace:///", icon: <IconHome /> },
+  { label: "Pictures", uri: "workspace:///Pictures", icon: <IconImage /> },
+  { label: "Drafts", uri: "workspace:///Reports/Drafts" },
+  { label: "Archived reports", uri: "archive:///Reports", icon: <IconFolder /> },
+  // Offered only where its location is: this dialog has none named "elsewhere".
+  { label: "Elsewhere", uri: "elsewhere:///" },
+]
 const NEWER: FileStat = { uri: "team:///Plan.txt", name: "Plan.txt", kind: "file", size: 2048, version: "v9", modified: Date.UTC(2026, 2, 16, 9, 30) }
 const stream = (text: string) => new Blob([text]).stream()
 
@@ -35,6 +44,8 @@ export default function FileDialogSection() {
   const [compared, setCompared] = useState("")
   const [question, setQuestion] = useState<"changed" | "gone" | null>(null)
   const [answer, setAnswer] = useState("")
+  const [folder, setFolder] = useState("")
+  const [failNext, setFailNext] = useState(false)
 
   return (
     <SectionPage>
@@ -51,6 +62,31 @@ export default function FileDialogSection() {
           }}
         />
         <p data-testid="file-dialog-opened">{opened || "Nothing opened"}</p>
+      </Specimen>
+
+      <Specimen title="Choose a folder" description="Choose folder returns the folder selected in the list, or else the one showing; the status line says which. Files stay listed, dimmed. Places jump to common folders, across locations, and fold into a menu where the dialog is narrow." layout="stack">
+        <Button variant={failNext ? "soft" : "ghost"} aria-pressed={failNext} onClick={() => setFailNext((value) => !value)}>
+          Fail the next choice
+        </Button>
+        <FileDialog
+          mode="folder"
+          providers={[WORKSPACE, SECOND]}
+          places={PLACES}
+          trigger={<Button>Choose a folder</Button>}
+          onChoose={async ({ provider, folder: chosen }) => {
+            if (failNext) {
+              setFailNext(false)
+              throw new Error("The sample refused this folder")
+            }
+            setFolder(`${provider.label}: ${chosen.uri}`)
+          }}
+        />
+        <p data-testid="file-dialog-folder">{folder || "No folder chosen"}</p>
+      </Specimen>
+
+      <Specimen title="Places in Open and Save" description="The same shortcuts in the other two flows. Save leaves out a place in a location it can't write to." layout="stack">
+        <FileDialog mode="open" providers={[WORKSPACE, SECOND]} places={PLACES} trigger={<Button>Open with places</Button>} onOpen={(selection) => setOpened(selection.files[0]?.name ?? "")} />
+        <FileDialog mode="save" defaultName="Notes.txt" providers={[WORKSPACE, READ_ONLY]} places={[...PLACES, { label: "Published", uri: "published:///" }]} trigger={<Button>Save with places</Button>} onSave={() => Promise.reject(new Error("The sample doesn't save"))} />
       </Specimen>
 
       <Specimen title="Thumbnails and a filter" description="Controlled open and view. Only pictures can be chosen here; the rest stay listed, dimmed. Thumbnail cells have a fixed size and swap in place." layout="stack">
@@ -136,6 +172,9 @@ export default function FileDialogSection() {
         </div>
         <div data-testid="file-dialog-save">
           <FileDialogPreview mode="save" defaultName="Quarterly plan.txt" providers={[sampleWorkspace("save", "Workspace")]} onSave={() => Promise.reject(new Error("Unreachable"))} />
+        </div>
+        <div data-testid="file-dialog-folder-preview">
+          <FileDialogPreview mode="folder" providers={[sampleWorkspace("pick", "Workspace")]} places={[{ label: "Home", uri: "pick:///", icon: <IconHome /> }, { label: "Pictures", uri: "pick:///Pictures", icon: <IconImage /> }, { label: "Drafts", uri: "pick:///Reports/Drafts" }]} onChoose={noop} />
         </div>
       </Specimen>
 

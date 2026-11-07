@@ -346,3 +346,25 @@ describe("thumbnails", () => {
     store.dispose()
   })
 })
+
+describe('mode="folder"', () => {
+  it("returns the folder a location with no listing names, and refuses a file there", async () => {
+    const user = userEvent.setup()
+    const { readDirectory: _list, ...files } = memoryFiles(SEED)
+    const onChoose = vi.fn()
+    render(<FileDialog mode="folder" defaultOpen providers={[files]} onChoose={onChoose} />)
+    const field = await screen.findByRole("textbox", { name: messages.location })
+    // With nothing named yet there is nothing to choose: the root is not a silent answer.
+    await user.click(confirmButton(messages.chooseFolder))
+    expect(onChoose).not.toHaveBeenCalled()
+    await user.type(field, "memory:///b.txt{Enter}")
+    await screen.findByText(messages.isFile("b.txt"))
+    await user.clear(field)
+    await user.type(field, "memory:///Docs{Enter}")
+    await waitFor(() => expect(screen.queryByText(messages.isFile("b.txt"))).toBeNull())
+    await screen.findByText(messages.folderChoice("Docs"))
+    await user.click(confirmButton(messages.chooseFolder))
+    await waitFor(() => expect(onChoose).toHaveBeenCalledTimes(1))
+    expect(onChoose.mock.calls[0]![0].folder.uri).toBe("memory:///Docs")
+  })
+})

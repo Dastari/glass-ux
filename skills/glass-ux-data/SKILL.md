@@ -72,7 +72,8 @@ behind the card's "+N" toggle; hide a field the title already shows.
 
 `view` holds `"table"` or `"cards"` at any width (default `"auto"`). For a person's choice, put a
 `Segmented` in `toolbar` and switch between `"auto"` and `"cards"`. `cardMinWidth` lays cards in a
-grid, and `renderCard(row, card)` draws their content: place `card.select`, `card.actions` and
+grid (`cardMaxWidth` caps it, and the same value gives fixed tiles), the toolbar gains a sort menu
+while cards show (`cardSort={false}` to place your own), and `renderCard(row, card)` draws their content: place `card.select`, `card.actions` and
 `card.expander`, draw columns with `card.cell(id)`, give your own controls `card.tabIndex`, and pass
 `renderCardSkeleton` at the same size (docs/data-filters.md).
 

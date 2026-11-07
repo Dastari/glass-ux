@@ -216,6 +216,8 @@ test.describe("save", () => {
     const dialog = await openDialog(page, "Save a copy");
     const name = dialog.getByRole("textbox", { name: "Name" });
     const save = dialog.getByRole("button", { name: "Save", exact: true });
+    // Measured after the dialog has finished opening: it scales in, and the button with it.
+    await dialog.evaluate((element) => Promise.all(element.getAnimations({ subtree: true }).map((animation) => animation.finished)));
     const before = await save.boundingBox();
     await name.fill("");
     await name.press("Enter");

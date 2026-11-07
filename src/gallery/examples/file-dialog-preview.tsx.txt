@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { memoryFiles } from "glass-ux/file-provider/memory";
+import { IconHome, IconImage } from "glass-ux/icons";
 import { FileDialogPreview } from "glass-ux/file-dialog";
 import { sampleWorkspace, slowListing, stuckListing } from "glass-ux/gallery/fixtures/sample-files";
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
@@ -40,6 +41,8 @@ export default function FileDialogSection() {
   const [compared, setCompared] = useState("");
   const [question, setQuestion] = useState<"changed" | "gone" | null>(null);
   const [answer, setAnswer] = useState("");
+  const [folder, setFolder] = useState("");
+  const [failNext, setFailNext] = useState(false);
   return (
     <SectionPage>
       <Specimen
@@ -71,6 +74,18 @@ export default function FileDialogSection() {
             defaultName="Quarterly plan.txt"
             providers={[sampleWorkspace("save", "Workspace")]}
             onSave={() => Promise.reject(new Error("Unreachable"))}
+          />
+        </div>
+        <div data-testid="file-dialog-folder-preview">
+          <FileDialogPreview
+            mode="folder"
+            providers={[sampleWorkspace("pick", "Workspace")]}
+            places={[
+              { label: "Home", uri: "pick:///", icon: <IconHome /> },
+              { label: "Pictures", uri: "pick:///Pictures", icon: <IconImage /> },
+              { label: "Drafts", uri: "pick:///Reports/Drafts" },
+            ]}
+            onChoose={noop}
           />
         </div>
       </Specimen>

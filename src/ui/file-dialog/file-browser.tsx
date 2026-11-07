@@ -20,6 +20,7 @@ import { describeAccept, describeRejections, matchesAccept } from "../file-drop/
 import { FileDrop } from "../file-drop/index.js"
 import { getFileDropMessages } from "../file-drop/messages.js"
 import { Input } from "../input/index.js"
+import { PlaceList, PlaceMenu } from "./places.js"
 import { Progress } from "../progress/index.js"
 import { Segmented } from "../segmented/index.js"
 import { Select } from "../select/index.js"
@@ -30,7 +31,7 @@ import { FolderTree } from "./folder-tree.js"
 import { fileDialogMessages } from "./messages.js"
 import { NameDialog } from "./name-dialog.js"
 import { createThumbnailStore } from "./thumbnails.js"
-import type { FileDialogProps, FileDialogView, FileRunContext, SaveTarget } from "./types.js"
+import type { FileDialogPlace, FileDialogProps, FileDialogView, FileRunContext, SaveTarget } from "./types.js"
 import { useDirectory } from "./use-directory.js"
 
 /** The last place used in this session, for a dialog with no `defaultUri`. */
@@ -38,7 +39,7 @@ let lastPlace: FileUri | null = null
 const DEVICE = "device"
 /** Stat requests at once when confirming a selection. */
 const STAT_BATCH = 8
-/** Below this width in rem the folders give way to the path line. */
+/** Below this width in rem the folders give way to the path line, and places to a menu. */
 const TREE_MIN_REM = 38
 
 interface Place {
@@ -78,6 +79,7 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
   const saving = props.mode === "save"
   const open = props.mode === "open" ? props : null
   const save = props.mode === "save" ? props : null
+  const choosing = props.mode === "folder" ? props : null
   const multiple = open?.multiple ?? false
   const accept = open?.accept
   const device = open?.device ?? false
@@ -183,11 +185,12 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
     (entry: FileEntry) => {
       if (entry.kind === "directory") return deniedReason(entry.denied?.read, messages.readDenied)
       if (saving) return null
+      if (choosing) return messages.onlyFolders
       const denied = deniedReason(entry.denied?.read, messages.readDenied)
       if (denied) return denied
       return accept && !matchesAccept({ name: entry.name, type: entry.mime ?? "" }, accept) ? messages.notAccepted(accepted) : null
     },
-    [accept, accepted, messages, saving]
+    [accept, accepted, choosing, messages, saving]
   )
   const askName = useCallback((next: NameStep) => {
     setStep(next)
@@ -305,7 +308,19 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
       return false
     })
   }
+  const chooseFolder = (target: FileUri) => {
+    if (!provider || !choosing) return
+    void perform(async (context) => {
+      const folder = await provider.stat(target, { signal: context.signal })
+      const denied = deniedReason(folder.denied?.read, messages.readDenied)
+      if (denied) throw new Error(denied)
+      await choosing.onChoose({ provider, folder }, context)
+      announce(messages.folderChosen(folder.name || provider.label))
+    })
+  }
   const activate = (entry: FileEntry) => {
+    // A location with no listing has nowhere to go: its one folder is the choice.
+    if (entry.kind === "directory" && choosing && !browsing) return chooseFolder(entry.uri)
     if (entry.kind === "directory") return navigate(entry.uri, true)
     if (saving) {
       setName(entry.name)
@@ -319,6 +334,11 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
   const confirm = () => {
     if (busy) return
     if (saving) return confirmSave()
+    if (choosing) {
+      const target = chosenFolder?.uri ?? (browsing ? uri : null)
+      if (target !== null) chooseFolder(target)
+      return
+    }
     if (chosenFolder) return navigate(chosenFolder.uri, true)
     if (chosenFiles.length) openFiles(chosenFiles.map((entry) => entry.uri))
   }
@@ -410,6 +430,12 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
         if (saving) {
           if (stat.kind === "file") setLocationError(messages.isFile(stat.name))
           else setPlace({ provider, uri: stat.uri })
+        } else if (choosing) {
+          if (stat.kind === "file") setLocationError(messages.isFile(stat.name))
+          else {
+            setResolved(stat)
+            setSelected(new Set([stat.uri]))
+          }
         } else if (stat.kind === "directory") setLocationError(messages.isFolder(stat.name))
         else {
           setResolved(stat)
@@ -435,10 +461,21 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
   }
   const atRoot = provider !== null && uri !== null && trimUri(uri) === trimUri(root)
   const noFolders = atRoot && directory.status === "ready" && !directory.hasMore && !directory.entries.some((entry) => entry.kind === "directory")
-  const treeShown = browsing && !noFolders && provider !== null && uri !== null && bodyWidth / remPx() >= TREE_MIN_REM
+  const roomy = bodyWidth / remPx() >= TREE_MIN_REM
+  const treeShown = browsing && !noFolders && provider !== null && uri !== null && roomy
+  const places = useMemo(() => (props.places ?? []).filter((item) => providers.some((candidate) => candidate.scheme === uriScheme(item.uri))), [props.places, providers])
+  const goToPlace = (item: FileDialogPlace) => {
+    const next = providers.find((candidate) => candidate.scheme === uriScheme(item.uri))
+    if (!next) return
+    clearState()
+    setOnDevice(false)
+    setPlace({ provider: next, uri: item.uri })
+  }
   const failure = directory.status === "error" ? directory.error : null
   const refused = failureCode(failure) === "denied"
   const total = directory.total ?? (directory.hasMore ? null : directory.entries.length)
+  // What Choose folder will return, beside it, so the button's meaning is never a guess.
+  const folderChoice = choosing && provider && !failure ? (chosenFolder?.name ?? (browsing ? crumbs.at(-1)?.label : undefined)) : undefined
   const statusLine = message ?? hint ?? (selected.size > 0 && (multiple || chosenFolder === undefined) ? messages.selected(selected.size, locale) : browsing && directory.status === "ready" && total !== null ? messages.items(total, locale) : "")
 
   const main = (): ReactNode => {
@@ -516,17 +553,21 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
     )
   }
 
-  const title = props.title ?? (saving ? messages.saveTitle : multiple ? messages.openFilesTitle : messages.openTitle)
-  const confirmLabel = saving ? messages.save : messages.open
-  const confirmReason = providers.length === 0 ? messages.noLocations : saving ? (folderDenied ?? undefined) : chosenFiles.length === 0 && !chosenFolder ? messages.chooseFirst : undefined
+  const title = props.title ?? (saving ? messages.saveTitle : choosing ? messages.folderTitle : multiple ? messages.openFilesTitle : messages.openTitle)
+  const confirmLabel = saving ? messages.save : choosing ? messages.chooseFolder : messages.open
+  const pendingLabel = saving ? messages.saving : choosing ? messages.choosing : messages.opening
+  const folderReason = failure ? describeFailure(failure, messages, messages.errorList) : !browsing && !chosenFolder ? messages.chooseFolderFirst : undefined
+  const confirmReason = providers.length === 0 ? messages.noLocations : saving ? (folderDenied ?? undefined) : choosing ? folderReason : chosenFiles.length === 0 && !chosenFolder ? messages.chooseFirst : undefined
+  const placeMenu = places.length > 0 && !roomy
   return (
     <>
       <Dialog.Header title={title} />
       <Dialog.Body flush className="fa-file-dialog-body">
         <div ref={body} className="fa-file-dialog-layout" aria-busy={directory.status === "loading" || busy}>
-          {(locationOptions.length > 1 || browsing || canGrid) && (
+          {(locationOptions.length > 1 || browsing || canGrid || placeMenu) && (
             <div className="fa-file-dialog-bar">
               {locationOptions.length > 1 ? <Select className="fa-file-dialog-places" aria-label={messages.location} options={locationOptions} value={locationValue} onValueChange={chooseLocation} size="sm" /> : null}
+              {placeMenu ? <PlaceMenu places={places} current={uri} onChoose={goToPlace} /> : null}
               {browsing && !onDevice ? <Breadcrumb className="fa-file-dialog-path" size="xs" aria-label={messages.path} items={crumbs} /> : <span className="fa-file-dialog-path" />}
               {browsing && !onDevice ? (
                 <div className="fa-file-dialog-commands">
@@ -551,9 +592,10 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
             </div>
           )}
           <div className="fa-file-dialog-panes">
-            {treeShown ? (
+            {treeShown || (places.length > 0 && roomy) ? (
               <div className="fa-file-dialog-folders">
-                <FolderTree key={provider.scheme} provider={provider} uri={uri} onNavigate={(next) => navigate(next)} />
+                {places.length > 0 ? <PlaceList places={places} current={uri} onChoose={goToPlace} /> : null}
+                {treeShown ? <FolderTree key={provider.scheme} provider={provider} uri={uri} onNavigate={(next) => navigate(next)} /> : null}
               </div>
             ) : null}
             <div
@@ -617,6 +659,10 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
             <span className="fa-file-dialog-progress">
               <Progress value={progress * 100} size="sm" showValue={false} aria-label={messages.progress} />
             </span>
+          ) : folderChoice ? (
+            <span className="fa-file-dialog-choice" role="status">
+              {messages.folderChoice(folderChoice)}
+            </span>
           ) : undefined
         }
       >
@@ -624,7 +670,7 @@ export function FileBrowser({ props, onClose, run, preview = false, ref }: FileB
           {messages.cancel}
         </Button>
         {onDevice ? null : (
-          <Button variant="primary" status={busy ? "pending" : "idle"} pendingLabel={saving ? messages.saving : messages.opening} statusAnnouncement={false} disabledReason={confirmReason} onClick={confirm}>
+          <Button variant="primary" status={busy ? "pending" : "idle"} pendingLabel={pendingLabel} statusAnnouncement={false} disabledReason={confirmReason} onClick={confirm}>
             {confirmLabel}
           </Button>
         )}

@@ -148,6 +148,7 @@ decides when to publish. The local route:
 - Slider: a visible value bubble over an end thumb overhangs while shown (fixing it shifts
   the bubble inward at the ends, a visual change for the owner to approve).
 - Sparkline has no `gaps` option yet (LineChart has `gaps="bridge"`).
+- DataTable cards: inline editing through `card.cell` and tree rows in a grid have no browser test.
 - Scheduler timeline: no per-cell render slot and no resource window in `onRangeChange`;
   DragDrop keyboard travel reaches only rendered (virtualised) rows, so keyboard moves between
   far rows use the event's arrow keys. `grip.svg` differs from its authoring definition.
@@ -159,6 +160,10 @@ decides when to publish. The local route:
   optimisation pass after that release; `dist/ui` and the language packs are the largest parts.
 - Native-speaker review: "chroma" in the Arabic and Hebrew colour picker messages, and
   "preview class" in Japanese, Korean, Arabic and Hebrew (`results.previewUnavailable`).
+- Native-speaker review of the 0.19.0 messages, machine-written and checked only for keys and placeholders:
+  `fileDialog.places` (Italian `Posizioni`, German `Orte`, Japanese, Korean and Chinese use "frequent places"),
+  `fileDialog.choosing` (French `Sélection…`, Italian `Scelta…`), and `fileDialog.folderChosen`, whose
+  participle agrees with a masculine noun in French, Spanish, Italian and Portuguese.
 - Native-speaker review of the 0.18.0 consistency pass, machine-written and checked only for keys and
   placeholders. Italian: imperatives chosen over infinitives for labels, and `Cancella` for every clear.
   Spanish: `Introduzca` over `Ingrese` suits neutral Spanish, less so Latin America. Hebrew and Arabic

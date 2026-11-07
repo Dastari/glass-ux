@@ -4,6 +4,13 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Added
+
+- TopologyCanvas: `listFlush` removes the list view's inset, for a list that brings its own edges, such
+  as a DataTable.
+
 ## 0.18.0
 
 ### Added

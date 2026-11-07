@@ -101,6 +101,8 @@ export interface TopologyCanvasProps<T> {
   onViewChange?: (view: TopologyView) => void
   /** The list view's content: a DataTable of the same nodes, with TopologyViewToggle in its toolbar. */
   list?: ReactNode
+  /** Remove the list view's inset, for a list that brings its own edges, as a DataTable does. Default false: the list sits at a panel's inset. */
+  listFlush?: boolean
   /** Show the minimap where there is room (the user can turn it off). Default true. */
   minimap?: boolean
   /** Draw the dot grid behind the map; it pans and scales with the camera. Default true. */
@@ -277,6 +279,7 @@ export function TopologyCanvas<T>({
   view = "map",
   onViewChange,
   list,
+  listFlush = false,
   minimap = true,
   grid = true,
   emptyText: emptyTextProp,
@@ -890,7 +893,7 @@ export function TopologyCanvas<T>({
           </div>
         </div>
       ) : null}
-      {view === "list" ? <div className="fa-topology-list">{list}</div> : null}
+      {view === "list" ? <div className="fa-topology-list" data-flush={listFlush ? "" : undefined}>{list}</div> : null}
     </div>
   )
 }

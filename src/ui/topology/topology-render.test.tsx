@@ -72,3 +72,18 @@ describe("TopologyCanvas selection", () => {
     expect(onSelectedIdChange).toHaveBeenCalledTimes(calls);
   });
 });
+
+describe("TopologyCanvas list view", () => {
+  const listBox = (container: HTMLElement) => container.querySelector(".fa-topology-list")!;
+
+  it("keeps the panel's inset unless the list is flush", () => {
+    const { container } = render(<TopologyCanvas<null> label="Map" nodes={nodes} renderNode={renderNode} view="list" list={<p>The list</p>} />);
+    expect(screen.getByText("The list")).toBeTruthy();
+    expect(listBox(container).hasAttribute("data-flush")).toBe(false);
+  });
+
+  it("marks the list flush with listFlush", () => {
+    const { container } = render(<TopologyCanvas<null> label="Map" nodes={nodes} renderNode={renderNode} view="list" list={<p>The list</p>} listFlush />);
+    expect(listBox(container).hasAttribute("data-flush")).toBe(true);
+  });
+});

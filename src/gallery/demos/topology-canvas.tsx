@@ -187,13 +187,17 @@ function DemoMap({
   nodes,
   minimap = true,
   listable = false,
+  listFlush = false,
+  startView = "map",
 }: {
   nodes: TopologyNode<Thing>[] | undefined;
   minimap?: boolean;
   listable?: boolean;
+  listFlush?: boolean;
+  startView?: TopologyView;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
-  const [view, setView] = useState<TopologyView>("map");
+  const [view, setView] = useState<TopologyView>(startView);
   const renderNode = useCallback((node: TopologyNode<Thing>) => <Tile node={node} />, []);
   const describe = useCallback(
     (node: TopologyNode<Thing>) =>
@@ -221,6 +225,7 @@ function DemoMap({
       minimap={minimap}
       view={view}
       onViewChange={listable ? setView : undefined}
+      listFlush={listFlush}
       list={
         listable ? (
           <div className="flex flex-col items-start gap-3">
@@ -252,10 +257,24 @@ export default function TopologySection() {
       </Specimen>
 
       <Specimen
+        title="The list's inset"
+        description="The list view sits at a panel's inset. listFlush removes it, for a DataTable that brings its own edges."
+        wide
+        specimenKey="topology:default:1"
+      >
+        <Panel className="h-60 w-full" data-testid="topology-list-inset">
+          <DemoMap nodes={OFFICE} listable startView="list" />
+        </Panel>
+        <Panel className="h-60 w-full" data-testid="topology-list-flush">
+          <DemoMap nodes={OFFICE} listable startView="list" listFlush />
+        </Panel>
+      </Specimen>
+
+      <Specimen
         title="About 300 nodes"
         description="A school: six switches, twelve access points and their clients. Blocks keep it a few rows deep; the minimap appears once part of the map is out of view."
         wide
-        specimenKey="topology:default:1"
+        specimenKey="topology:default:2"
       >
         <Panel className="h-140 w-full" data-testid="topology-school">
           <DemoMap nodes={big} />
@@ -265,7 +284,7 @@ export default function TopologySection() {
       <Specimen
         title="Loading and empty"
         description="The skeleton fills the map's own box while the layout loads (it is code-split), so nothing moves when the map lands. An empty map says so in the same box."
-        specimenKey="topology:default:2"
+        specimenKey="topology:default:3"
       >
         <SwapSlot
           id="topology"
@@ -284,7 +303,7 @@ export default function TopologySection() {
 
       <ContainerLab
         description="The map fills its box: the minimap goes first, then the zoom buttons (scroll and pinch still zoom), and a row-sized box keeps only the map."
-        specimenKey="topology:default:3"
+        specimenKey="topology:default:4"
       >
         {() => <DemoMap nodes={OFFICE} />}
       </ContainerLab>

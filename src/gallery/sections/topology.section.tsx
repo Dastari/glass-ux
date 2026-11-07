@@ -74,9 +74,9 @@ function Tile({ node }: { node: TopologyNode<Thing> }) {
   return <EntityIdentity tier="icon" name={node.label} kind={LABELS[node.data.kind]} icon={<Icon />} state={node.data.state} />
 }
 
-function DemoMap({ nodes, minimap = true, listable = false }: { nodes: TopologyNode<Thing>[] | undefined; minimap?: boolean; listable?: boolean }) {
+function DemoMap({ nodes, minimap = true, listable = false, listFlush = false, startView = "map" }: { nodes: TopologyNode<Thing>[] | undefined; minimap?: boolean; listable?: boolean; listFlush?: boolean; startView?: TopologyView }) {
   const [selected, setSelected] = useState<string | null>(null)
-  const [view, setView] = useState<TopologyView>("map")
+  const [view, setView] = useState<TopologyView>(startView)
   const renderNode = useCallback((node: TopologyNode<Thing>) => <Tile node={node} />, [])
   const describe = useCallback((node: TopologyNode<Thing>) => `${LABELS[node.data.kind]} ${node.label}, ${node.data.state.label}`, [])
   const menu = useCallback((node: TopologyNode<Thing>): TopologyNodeMenu => ({ set: ACTIONS, targets: [{ ...node.data, name: node.label }], label: node.label }), [])
@@ -93,6 +93,7 @@ function DemoMap({ nodes, minimap = true, listable = false }: { nodes: TopologyN
       minimap={minimap}
       view={view}
       onViewChange={listable ? setView : undefined}
+      listFlush={listFlush}
       list={
         listable ? (
           <div className="flex flex-col items-start gap-3">
@@ -117,6 +118,15 @@ export default function TopologySection() {
       >
         <Panel className="h-140 w-full" data-testid="topology-office">
           <DemoMap nodes={OFFICE} listable />
+        </Panel>
+      </Specimen>
+
+      <Specimen title="The list's inset" description="The list view sits at a panel's inset. listFlush removes it, for a DataTable that brings its own edges." wide>
+        <Panel className="h-60 w-full" data-testid="topology-list-inset">
+          <DemoMap nodes={OFFICE} listable startView="list" />
+        </Panel>
+        <Panel className="h-60 w-full" data-testid="topology-list-flush">
+          <DemoMap nodes={OFFICE} listable startView="list" listFlush />
         </Panel>
       </Specimen>
 

@@ -186,13 +186,17 @@ function DemoMap({
   nodes,
   minimap = true,
   listable = false,
+  listFlush = false,
+  startView = "map",
 }: {
   nodes: TopologyNode<Thing>[] | undefined;
   minimap?: boolean;
   listable?: boolean;
+  listFlush?: boolean;
+  startView?: TopologyView;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
-  const [view, setView] = useState<TopologyView>("map");
+  const [view, setView] = useState<TopologyView>(startView);
   const renderNode = useCallback((node: TopologyNode<Thing>) => <Tile node={node} />, []);
   const describe = useCallback(
     (node: TopologyNode<Thing>) =>
@@ -220,6 +224,7 @@ function DemoMap({
       minimap={minimap}
       view={view}
       onViewChange={listable ? setView : undefined}
+      listFlush={listFlush}
       list={
         listable ? (
           <div className="flex flex-col items-start gap-3">
@@ -242,7 +247,7 @@ export default function TopologySection() {
       <Specimen
         title="Loading and empty"
         description="The skeleton fills the map's own box while the layout loads (it is code-split), so nothing moves when the map lands. An empty map says so in the same box."
-        specimenKey="topology:default:2"
+        specimenKey="topology:default:3"
       >
         <SwapSlot
           id="topology"

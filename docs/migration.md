@@ -3,6 +3,11 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## After 0.18.0 (unreleased)
+
+No code edits are needed. New prop: `TopologyCanvas.listFlush` removes the list view's inset. If you
+override `.fa-topology-list` to do this, pass the prop and delete the override.
+
 ## 0.17.1 → 0.18.0
 
 Breaking:

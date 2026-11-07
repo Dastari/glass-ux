@@ -26,6 +26,7 @@ the focused node's menu.
 | insets | `TopologyInsets \| null \| undefined` | See type | no | — | Page chrome floating over a full-bleed canvas, in CSS pixels (useBleed): fitting, the controls, the minimap and the way to a focused node stay clear of it, and an untouched camera re-fits when it changes. `null` means "being measured": the canvas holds its loading shape and its first frame back until it is known, so nothing jumps (R9). |
 | label | `string` | See type | yes | — | Names the map: "Network map, Office LAN". |
 | list | `ReactNode` | See type | no | — | The list view's content: a DataTable of the same nodes, with TopologyViewToggle in its toolbar. |
+| listFlush | `boolean \| undefined` | false, true | no | false | Remove the list view's inset, for a list that brings its own edges, as a DataTable does. Default false: the list sits at a panel's inset. |
 | minimap | `boolean \| undefined` | false, true | no | true | Show the minimap where there is room (the user can turn it off). Default true. |
 | nodeMenu | `((node: TopologyNode<T>) => TopologyNodeMenu \| undefined) \| undefined` | See type | no | — | The node's ActionSet for right-click. |
 | nodes | `readonly TopologyNode<T>[] \| undefined` | See type | yes | — | undefined while loading: the skeleton shows in the same box. |

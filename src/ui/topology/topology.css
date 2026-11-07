@@ -323,6 +323,9 @@
     padding: var(--inset-panel);
     overflow: hidden;
   }
+  .fa-topology-list[data-flush] {
+    padding: 0;
+  }
   .fa-topology-list > * {
     flex: 1 1 auto;
     min-height: 0;

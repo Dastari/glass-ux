@@ -32,6 +32,8 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Fixed
 
+- Flat: an off Switch and a Slider's thumb no longer vanish. The bead took the same colour as a dialog's
+  surface, and the off Switch's edge was removed, so on a dialog it drew nothing at all.
 - DataTable: a selected card keeps its highlight while the pointer is over it.
 - AddressField and AddressInput: Enter manually focuses Street address as the fields open, not a frame
   later, when it could take focus back from a field the person had already moved to.

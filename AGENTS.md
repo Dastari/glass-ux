@@ -143,6 +143,8 @@ decides when to publish. The local route:
 
 ## Open follow-ups
 
+- Flat: an unchecked Checkbox and Radio edge reads at about 2.4:1 on a surface, below R20.1's 3:1.
+  `e2e/flat-controls.spec.ts` holds them at 2.2 so they get no worse.
 - Slider: a visible value bubble over an end thumb overhangs while shown (fixing it shifts
   the bubble inward at the ends, a visual change for the owner to approve).
 - Sparkline has no `gaps` option yet (LineChart has `gaps="bridge"`).

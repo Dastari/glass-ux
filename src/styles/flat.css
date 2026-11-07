@@ -106,14 +106,28 @@
     }
 
     /* Choice controls declare their own local material tokens. Flatten the bead and
-       well, retaining their tone and the switch thumb's checked-position transform. */
+       well, retaining their tone and the switch thumb's checked-position transform. A bead
+       takes a text colour: any surface colour is some surface's fill, where it would vanish. */
     :root[data-style="flat"] :is(.fa-check, .fa-radio, .fa-switch, .fa-slider, .fa-color-wheel) {
       --_on-fill: none;
       --_on-glow: transparent;
-      --_bead: var(--surface-3);
+      --_bead: var(--fg);
       --_bead-shadow: 0 0 transparent;
       --_well-shadow: inset 0 0 0 var(--border-width) var(--line-strong);
       box-shadow: none;
+    }
+    /* With no material, an off switch is its edge and its bead, both at 3:1 (R20.1). */
+    :root[data-style="flat"] .fa-switch {
+      --_bead: var(--fg-subtle);
+      --_well-shadow: inset 0 0 0 var(--border-width) var(--fg-subtle);
+      box-shadow: var(--_well-shadow);
+    }
+    :root[data-style="flat"] .fa-switch[data-checked] {
+      --_bead: var(--_on-fg);
+    }
+    :root[data-style="flat"] .fa-switch[data-invalid]:not([data-checked]) {
+      --_bead: var(--danger-text);
+      box-shadow: inset 0 0 0 var(--border-width) var(--danger-line);
     }
     :root[data-style="flat"] :is(.fa-check, .fa-radio, .fa-switch)::before {
       background-image: none;

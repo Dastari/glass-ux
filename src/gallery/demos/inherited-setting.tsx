@@ -4,7 +4,16 @@ import { useStore } from "@tanstack/react-form";
 import { useState } from "react";
 import { z } from "zod";
 import { SectionPage, Specimen } from "../kit.js";
-import { IconGlobe, IconLayers, IconMail, IconSettings } from "../../icons/generated/icons.js";
+import {
+  IconGlobe,
+  IconLayers,
+  IconMail,
+  IconPause,
+  IconSend,
+  IconSettings,
+  IconTrash,
+} from "../../icons/generated/icons.js";
+import { defineActions } from "../../ui/actions/index.js";
 import { Button } from "../../ui/button/index.js";
 import { EntityIdentity } from "../../ui/entity/index.js";
 import {
@@ -99,18 +108,48 @@ const RETRY_LAYERS = [
 ] as const;
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/* The relay as an entity: what its identity header shows and offers. Fictional. */
+interface Relay {
+  id: string;
+  name: string;
+}
+
+const RELAY: Relay = { id: "relay-cedar", name: "Cedar Annex SMTP relay" };
+const relayActions = defineActions<Relay>("relay", [
+  {
+    id: "test",
+    label: "Send test message",
+    icon: IconSend,
+    group: "connect",
+    primary: true,
+    priority: 1,
+    run: () => undefined,
+  },
+  {
+    id: "pause",
+    label: "Pause sending",
+    icon: IconPause,
+    group: "manage",
+    priority: 2,
+    run: () => undefined,
+  },
+  { id: "remove", label: "Remove", icon: IconTrash, group: "danger", run: () => undefined },
+]);
+
 function RelaySettings({
   open,
   onOpenChange,
   preview = false,
   loading = false,
   saveDisabledReason,
+  identity = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   preview?: boolean;
   loading?: boolean;
   saveDisabledReason?: string;
+  identity?: boolean;
 }) {
   const [saved, setSaved] = useState<RelayValues>(SAVED);
   const [tab, setTab] = useState("general");
@@ -157,17 +196,31 @@ function RelaySettings({
       form={form}
       tab={tab}
       onTabChange={setTab}
-      media={
-        <EntityIdentity
-          tier="icon"
-          name="Cedar Annex SMTP relay"
-          kind="Mail relay"
-          icon={<IconMail />}
-          state={{ id: "up", label: "Sending", tone: "success" }}
-        />
-      }
-      subtitle="smtp.northstar.example · Northstar Studio"
-      entityName="Cedar Annex SMTP relay"
+      {...(identity
+        ? {
+            identity: {
+              name: RELAY.name,
+              kind: "Mail relay",
+              icon: <IconMail />,
+              state: { id: "up", label: "Sending", tone: "success" as const },
+              facts: ["smtp.northstar.example", "Northstar Studio"],
+              actions: relayActions,
+              target: RELAY,
+            },
+          }
+        : {
+            media: (
+              <EntityIdentity
+                tier="icon"
+                name="Cedar Annex SMTP relay"
+                kind="Mail relay"
+                icon={<IconMail />}
+                state={{ id: "up", label: "Sending", tone: "success" }}
+              />
+            ),
+            subtitle: "smtp.northstar.example · Northstar Studio",
+            entityName: "Cedar Annex SMTP relay",
+          })}
       onSaveError={(error) =>
         toast.danger(error instanceof Error ? error.message : "Not saved", {
           description: "Fix the marked fields and save again.",
@@ -353,11 +406,28 @@ export default function EntitySettingsSection() {
       </Specimen>
 
       <Specimen
+        title="Its identity as the header"
+        description="identity puts the entity's EntityIdentity in the header, with its state, facts and ActionBar beside the close button. The dialog is named from it. In a narrow dialog it takes its compact tier, and the actions fold into one ⋯."
+        layout="bare"
+        wide
+        specimenKey="entity-settings:default:1"
+      >
+        <div className="flex w-full flex-col items-center gap-6 p-4">
+          <div className="w-full max-w-4xl" data-testid="relay-identity-wide">
+            <RelaySettings open onOpenChange={() => undefined} preview identity />
+          </div>
+          <div className="w-88 max-w-full" data-testid="relay-identity-narrow">
+            <RelaySettings open onOpenChange={() => undefined} preview identity />
+          </div>
+        </div>
+      </Specimen>
+
+      <Specimen
         title="In the page"
         description="The same dialog drawn in place, for review."
         layout="bare"
         wide
-        specimenKey="entity-settings:default:1"
+        specimenKey="entity-settings:default:2"
       >
         <div className="flex w-full justify-center p-4" data-testid="relay-preview">
           <RelaySettings open onOpenChange={() => undefined} preview />
@@ -369,7 +439,7 @@ export default function EntitySettingsSection() {
         description="The labelled group reserves field geometry while the host loads a document."
         layout="bare"
         wide
-        specimenKey="entity-settings:default:2"
+        specimenKey="entity-settings:default:3"
       >
         <RelaySettings open onOpenChange={() => undefined} preview loading />
       </Specimen>
@@ -379,7 +449,7 @@ export default function EntitySettingsSection() {
         description="Populated fields remain editable when the host has no admitted save operation. Save explains why it is unavailable; the dialog does not pretend a read or save is pending."
         layout="bare"
         wide
-        specimenKey="entity-settings:default:3"
+        specimenKey="entity-settings:default:4"
       >
         <RelaySettings
           open
@@ -393,7 +463,7 @@ export default function EntitySettingsSection() {
         title="Inherited setting"
         description="Where a value comes from (workspace → organisation → this entity), with Override; overridden, it says so and offers Reset. A group setting shows its fields beneath while overridden."
         layout="stack"
-        specimenKey="entity-settings:default:4"
+        specimenKey="entity-settings:default:5"
       >
         <Inherited />
       </Specimen>

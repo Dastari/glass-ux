@@ -17,7 +17,15 @@ Behaviour to review:
   and density" when it holds sorting. Below 30rem Filters is icon-only, keeping "Filters" as its name. If you
   pass `cardSort={false}` only because of the overlap, remove it.
 
-New props: `PinMap.ref` (`PinMapHandle.goTo`), `Popover.Popup.headerActions`, and the export `hasAddressParts`.
+New props:
+
+- `EntitySettingsDialog.identity`, in place of a hidden title with the identity in `media`: pass the
+  identity's props and drop `media`, `title`, `subtitle` and `entityName`. `EntitySettingsDialog.headerActions`
+  for a header without one, and `Dialog.Header.identity`.
+- A DataTable column's `entity`, for right-click in a cell that shows another entity.
+- `SessionNav.renderSession`, to draw each session with an identity.
+- `PinMap.ref` (`PinMapHandle.goTo`), `Popover.Popup.headerActions`, the export `hasAddressParts`, and
+  `IconCrown`.
 
 ## 0.18.0 → 0.19.0
 

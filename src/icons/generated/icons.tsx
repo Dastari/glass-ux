@@ -1438,6 +1438,20 @@ export const IconCrop = /* @__PURE__ */ createIcon(
   )
 )
 
+export const IconCrown = /* @__PURE__ */ createIcon(
+  "crown",
+  () => (
+    <>
+      <path className="fa-icon-tint" d="M6.47 18A1.5 1.5 0 0 1 5 16.8L3.5 9.5L7.38 12.51A0.75 0.75 0 0 0 8.45 12.35L12 7.25L15.55 12.35A0.75 0.75 0 0 0 16.62 12.51L20.5 9.5L19 16.8A1.5 1.5 0 0 1 17.53 18H6.47Z" />
+      <path d="M6.47 18A1.5 1.5 0 0 1 5 16.8L3.5 9.5L7.38 12.51A0.75 0.75 0 0 0 8.45 12.35L12 7.25L15.55 12.35A0.75 0.75 0 0 0 16.62 12.51L20.5 9.5L19 16.8A1.5 1.5 0 0 1 17.53 18H6.47Z" />
+      <circle className="fa-icon-dot" cx="3.5" cy="6.5" r="1.25" />
+      <circle className="fa-icon-dot" cx="12" cy="4.25" r="1.25" />
+      <circle className="fa-icon-dot" cx="20.5" cy="6.5" r="1.25" />
+      <path d="M6.5 21H17.5" />
+    </>
+  )
+)
+
 export const IconCursor = /* @__PURE__ */ createIcon(
   "cursor",
   () => (

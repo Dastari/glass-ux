@@ -147,6 +147,23 @@ so the toolbar gains no button there. Pass `cardSort={false}` to place your own 
 Controls that show only with cards come first in the toolbar, so `toolbar` and Export stay where they
 are when the view changes.
 
+## Another entity in a cell
+
+A row belongs to one entity, and its right-click menu offers that entity's actions. When a cell shows
+another (a device's Organisation or Site), give its column `entity`, and right-click in that cell offers
+that entity's actions instead:
+
+```ts
+col.accessor("site", {
+  header: "Site",
+  entity: (device) => device.site && { name: device.site.name, actions: siteActions, target: device.site },
+})
+```
+
+Draw the cell's identity passive, as a row's own identity is: the row owns clicks and menus. The menu
+runs through the shared runner, not the table's `onAction`, and is reached with the pointer; keyboard
+users reach the entity where it has its own page or menu.
+
 ## Keep a manual order in host data
 
 `reorder={{ onReorder }}` adds a grip column (and a grip on cards) for pointer, touch and

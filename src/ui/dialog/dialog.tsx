@@ -314,9 +314,16 @@ export interface DialogHeaderProps extends Omit<ComponentProps<"header">, "title
   /** Replaces the icon tile with the caller's own: an entity's identity tile (its photo, state). */
   media?: ReactNode
   tone?: DialogTone
-  title: ReactNode
+  /** The heading. Required unless `identity` takes its place. */
+  title?: ReactNode
   /** Data only: the target's identifier or context (R2.2), never a restatement. */
   subtitle?: ReactNode
+  /**
+   * An entity's identity in place of the media, title and subtitle: an `EntityIdentity`, whose
+   * state and actions come with it, beside the close button. It is not the dialog's title, so give
+   * `Dialog.Popup` an `aria-label` ("NST-C106 settings").
+   */
+  identity?: ReactNode
   /** Show the close button (default). */
   close?: boolean
   /** The close button's accessible name and tooltip, when "Close" alone is not enough. */
@@ -329,6 +336,7 @@ function DialogHeader({
   tone = "default",
   title,
   subtitle,
+  identity,
   close = true,
   closeLabel,
   className,
@@ -337,6 +345,20 @@ function DialogHeader({
 }: DialogHeaderProps) {
   const messages = useMessages(dialogMessages)
 
+  if (identity) {
+    return (
+      <header {...rest} className={cx("fa-dialog-header", className)} data-identity="">
+        <div className="fa-dialog-identity">{identity}</div>
+        {children ? <div className="fa-dialog-header-actions">{children}</div> : null}
+        {close ? (
+          <DialogClosePart
+            className="fa-dialog-close"
+            render={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label={closeLabel ?? messages.close} />}
+          />
+        ) : null}
+      </header>
+    )
+  }
   return (
     <header {...rest} className={cx("fa-dialog-header", className)}>
       {media ? (

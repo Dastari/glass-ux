@@ -34,7 +34,7 @@ function DialogDemo() {
           <Field label="Site position">
             <CoordinatesInput value={value} onValueChange={setValue} map={DEMO_MAP_CONFIG} mapFallback={TASMANIA} />
           </Field>
-          <div className="h-[120vh]" aria-hidden />
+          <div className="h-320" aria-hidden />
         </Dialog.Body>
       </Dialog.Popup>
     </Dialog.Root>

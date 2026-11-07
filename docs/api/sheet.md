@@ -80,9 +80,10 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | close | `boolean \| undefined` | false, true | no | true | Show the close button (default). |
 | closeLabel | `string \| undefined` | See type | no | — | The close button's accessible name and tooltip, when "Close" alone is not enough. |
 | icon | `ReactNode` | See type | no | — | Icon in a tile, sized by the header. |
+| identity | `ReactNode` | See type | no | — | An entity's identity in place of the media, title and subtitle: an `EntityIdentity`, whose state and actions come with it, beside the close button. It is not the dialog's title, so give `Dialog.Popup` an `aria-label` ("NST-C106 settings"). |
 | media | `ReactNode` | See type | no | — | Replaces the icon tile with the caller's own: an entity's identity tile (its photo, state). |
 | subtitle | `ReactNode` | See type | no | — | Data only: the target's identifier or context (R2.2), never a restatement. |
-| title | `ReactNode` | See type | yes | — | The heading or title content. |
+| title | `ReactNode` | See type | no | — | The heading. Required unless `identity` takes its place. |
 | tone | `DialogTone \| undefined` | "danger", "warning", "default", "success", "accent", "info" | no | "default" | The semantic tone. Use danger and warning for consequences and states. |
 
 Inherited properties:

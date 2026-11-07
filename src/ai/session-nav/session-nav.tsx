@@ -80,6 +80,14 @@ export interface SessionNavProps {
    * `organisation`.
    */
   renderOrganisation?: (organisation: EntityRef | null, session: AiSession) => ReactNode;
+  /**
+   * Draw a session's row yourself, such as its EntityIdentity at the row tier with the session's
+   * state and organisation, in place of the title, organisation code and state. The row stays the
+   * nav's: selection, the current marker, rename, right-click and ⋯ work as before, and its
+   * accessible name is still the session's. Draw nothing interactive here (the row is a button);
+   * `renderOrganisation` is the place for a chip with actions. Return undefined for the default.
+   */
+  renderSession?: (session: AiSession) => ReactNode;
   /** The current session's id, or null for none; its row is marked current. Controlled while defined; leave it undefined to use `defaultSelectedId`. */
   selectedId?: string | null;
   /** The session current at first when the selection is uncontrolled. */
@@ -251,6 +259,7 @@ export function SessionNav({
   sessions,
   projects = [],
   renderOrganisation,
+  renderSession,
   selectedId: selectedIdProp,
   defaultSelectedId,
   view = "conversations",
@@ -378,12 +387,15 @@ export function SessionNav({
         ? undefined
         : renderOrganisation?.(session.organisation, session);
     const drawn = organisation !== undefined;
+    const custom = renderSession?.(session);
+    const own = custom !== undefined;
     return (
       <li
         key={session.id}
         className="fa-ai-session"
         data-active={active ? "" : undefined}
         data-organisation-slot={drawn ? "" : undefined}
+        data-custom={own ? "" : undefined}
       >
         <ActionContextMenu
           set={actions}
@@ -391,9 +403,9 @@ export function SessionNav({
           label={session.title}
         >
           <ListRow
-            title={<span className="fa-ai-session-title">{session.title}</span>}
+            title={own ? <span className="fa-ai-session-custom">{custom}</span> : <span className="fa-ai-session-title">{session.title}</span>}
             trailing={
-              drawn ? undefined : (
+              drawn || own ? undefined : (
                 <>
                   <SessionOrganisation organisation={session.organisation} />
                   <SessionState session={session} />
@@ -423,7 +435,7 @@ export function SessionNav({
         {drawn ? (
           <span className="fa-ai-session-end">
             <span className="fa-ai-session-org-slot">{organisation}</span>
-            <SessionState session={session} />
+            {own ? null : <SessionState session={session} />}
           </span>
         ) : null}
         <span className="fa-ai-session-menu">

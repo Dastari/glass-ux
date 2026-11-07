@@ -211,4 +211,15 @@
     flex: none;
     padding: var(--space-2) var(--space-3) var(--space-3);
   }
+
+  /* renderSession: the host's content fills the row's label, which keeps its height. */
+  .fa-ai-session[data-custom] .fa-ai-session-custom {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+  .fa-ai-session[data-custom] .fa-ai-session-custom > * {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
 }

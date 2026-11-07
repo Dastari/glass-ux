@@ -15,6 +15,7 @@ import {
   IconGrid,
   IconList,
   IconOperatingSystem,
+  IconOrganisation,
   IconRefresh,
   IconServer,
   IconSoftware,
@@ -1164,6 +1165,16 @@ const packageColumns = packageCol.columns([
       />
     ),
   }),
+  packageCol.accessor("publisher", {
+    header: "Publisher",
+    priority: 3,
+    width: 12,
+    entity: (row) => ({
+      name: row.publisher,
+      actions: publisherActions,
+      target: { name: row.publisher },
+    }),
+  }),
   packageCol.accessor("version", {
     header: "Version",
     priority: 2,
@@ -1179,6 +1190,28 @@ const packageColumns = packageCol.columns([
     sortDescFirst: true,
     cell: ({ getValue }) => <NumericCell value={getValue()} unit="MB" />,
   }),
+]);
+
+/* A package's publisher is an entity of its own: right-click its cell for its actions. */
+interface Publisher {
+  name: string;
+}
+
+const publisherActions = defineActions<Publisher>("publisher", [
+  {
+    id: "open",
+    label: "Show publisher",
+    icon: IconOrganisation,
+    group: "open",
+    run: () => undefined,
+  },
+  {
+    id: "trust",
+    label: "Trust publisher",
+    icon: IconSoftware,
+    group: "manage",
+    run: () => undefined,
+  },
 ]);
 const packageActions = defineActions<DeployPackage>("package", [
   { id: "remove", label: "Remove", icon: IconTrash, group: "manage", run: () => undefined },

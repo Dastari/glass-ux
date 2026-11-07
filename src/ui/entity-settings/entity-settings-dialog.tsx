@@ -6,6 +6,7 @@ import { IconLock, IconRefresh, IconWarning } from "../../icons/generated/icons.
 import { ActionButton, Button, type ButtonStatus } from "../button/index.js"
 import { feedbackHold } from "../../lib/motion.js"
 import { Dialog, SettingsSections, useDialogGuard, type SettingsSection } from "../dialog/index.js"
+import { EntityIdentity, type EntityIdentityProps } from "../entity/index.js"
 import { FieldSkeleton } from "../field/index.js"
 import { blurThenChange } from "../form/index.js"
 import { SettingRowSkeleton } from "../setting-row/index.js"
@@ -65,7 +66,10 @@ export interface EntitySettingsTab {
   content: ReactNode
 }
 
-export interface EntitySettingsDialogProps {
+/** What `identity` takes: an EntityIdentity's props. The dialog chooses its tier and heading. */
+export type EntitySettingsIdentity<T> = Omit<EntityIdentityProps<T>, "tier" | "heading" | "tabs" | "fill" | "size" | "onRemove" | "preview">
+
+export interface EntitySettingsDialogProps<T = unknown> {
   open: boolean
   /** Called with the next open state: `false` on Cancel (after the form resets) or on dismissal, which first asks to discard unsaved changes. Pair with `open`. */
   onOpenChange: (open: boolean) => void
@@ -84,6 +88,14 @@ export interface EntitySettingsDialogProps {
   defaultTab?: string
   /** Called with the `value` of the tab the person selects. Pair with `tab` to control it; without `tab` the dialog tracks the tab itself. */
   onTabChange?: (tab: string) => void
+  /**
+   * The entity's identity as the header: its tile, name, state, facts and ActionBar, beside the
+   * close button. At a narrow width it takes its compact tier, with the actions in one ⋯. It names
+   * the dialog ("NST-C106 settings") and replaces `media`, `title` and `subtitle`.
+   */
+  identity?: EntitySettingsIdentity<T>
+  /** Controls in the header, before the close button, for a header without `identity`. */
+  headerActions?: ReactNode
   /** The entity's identity tile: its glyph or photo with the state dot. */
   media?: ReactNode
   /** Default "Settings". */
@@ -168,7 +180,7 @@ function focusFirstInvalidIn(panel: Element | null) {
  *   `confirmOnCancel` asks first too.
  * - On phones it is a bottom sheet; the rail becomes chips, or a picker past six tabs.
  */
-export function EntitySettingsDialog({
+export function EntitySettingsDialog<T = unknown>({
   open,
   onOpenChange,
   confirmOnCancel = false,
@@ -177,10 +189,12 @@ export function EntitySettingsDialog({
   tab,
   defaultTab,
   onTabChange,
+  identity,
+  headerActions,
   media,
   title: titleProp,
   subtitle,
-  entityName,
+  entityName: entityNameProp,
   onSaveError,
   onSaved,
   footerStart,
@@ -191,7 +205,8 @@ export function EntitySettingsDialog({
   privileged = [],
   onVerify,
   onReload,
-}: EntitySettingsDialogProps) {
+}: EntitySettingsDialogProps<T>) {
+  const entityName = entityNameProp ?? identity?.name
   const messages = useMessages(entitySettingsMessages)
   const title = titleProp ?? messages.settings
 
@@ -382,7 +397,13 @@ export function EntitySettingsDialog({
         }}
       >
         <div ref={rootRef} hidden />
-        <Dialog.Header media={media} title={title} subtitle={subtitle} />
+        {identity ? (
+          <Dialog.Header identity={<EntityIdentity<T> {...identity} tier="auto" heading="h2" />}>{headerActions}</Dialog.Header>
+        ) : (
+          <Dialog.Header media={media} title={title} subtitle={subtitle}>
+            {headerActions}
+          </Dialog.Header>
+        )}
         <SettingsSections sections={sections} section={current} onSectionChange={select} label={entityName ? messages.entitySettings(entityName) : messages.settingsSections} keepMounted />
         <Dialog.Footer start={conflictNotice ?? footerStart}>
           <Button
@@ -424,7 +445,7 @@ export function EntitySettingsDialog({
   return (
     <Dialog.Root {...guard.rootProps}>
       {/* Focus starts on the open tab, not the Close button: its tooltip would take the first Esc. */}
-      <Dialog.Popup size={size} kind="settings" initialFocus={() => rootRef.current?.closest(".fa-dialog")?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]') ?? true}>
+      <Dialog.Popup size={size} kind="settings" aria-label={identity ? messages.entitySettings(identity.name) : undefined} initialFocus={() => rootRef.current?.closest(".fa-dialog")?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]') ?? true}>
         {body}
         {guard.confirm}
       </Dialog.Popup>

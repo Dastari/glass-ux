@@ -16,6 +16,7 @@ import {
   it,
   vi,
 } from "vitest";
+import type React from "react";
 import { useAppForm } from "../form/index.js";
 import { TooltipProvider } from "../tooltip/index.js";
 import { EntitySettingsDialog } from "./entity-settings-dialog.js";
@@ -181,5 +182,45 @@ describe("Cancel", () => {
     render(<CancelEditor confirmOnCancel onOpenChange={onOpenChange} />);
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+});
+
+describe("the header", () => {
+  function Header({ identity, headerActions }: { identity?: boolean; headerActions?: React.ReactNode }) {
+    const form = useAppForm({ defaultValues: { name: "Cedar" }, onSubmit: async () => {} });
+    return (
+      <TooltipProvider>
+        <EntitySettingsDialog<{ id: string }>
+          open
+          onOpenChange={() => {}}
+          form={form}
+          title="Relay settings"
+          headerActions={headerActions}
+          identity={identity ? { name: "Cedar relay", kind: "Mail relay", target: { id: "cedar" } } : undefined}
+          tabs={[{ value: "general", label: "General", fields: ["name"], content: <span>Fields</span> }]}
+        />
+      </TooltipProvider>
+    );
+  }
+
+  it("names the dialog from the identity, which takes the title's place", () => {
+    render(<Header identity />);
+    const dialog = screen.getByRole("dialog", { name: "Cedar relay settings" });
+    expect(within(dialog).queryByText("Relay settings")).toBeNull();
+    expect(within(dialog).getAllByText("Cedar relay").length).toBeGreaterThan(0);
+    expect(dialog.querySelector(".fa-dialog-header[data-identity] .fa-dialog-identity .fa-entity")).not.toBeNull();
+    expect(within(dialog).getByRole("button", { name: "Close" })).toBeTruthy();
+  });
+
+  it("keeps the title and its accessible name without an identity", () => {
+    render(<Header />);
+    expect(screen.getByRole("dialog", { name: "Relay settings" })).toBeTruthy();
+  });
+
+  it("puts headerActions in the header, before the close button", () => {
+    render(<Header headerActions={<button type="button">Open relay</button>} />);
+    const header = screen.getByRole("dialog").querySelector(".fa-dialog-header")!;
+    const buttons = within(header as HTMLElement).getAllByRole("button");
+    expect(buttons.map((button) => button.getAttribute("aria-label") ?? button.textContent)).toEqual(["Open relay", "Close"]);
   });
 });

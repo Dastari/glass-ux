@@ -30,6 +30,8 @@ and Cancel / Save. One form spans every tab, so Save sends one document.
 | entityName | `string \| undefined` | See type | no | — | Names the entity in the discard question: "Discard changes to NST-C106?". |
 | footerStart | `ReactNode` | See type | no | — | Tertiary footer actions on the left. |
 | form | `EntitySettingsForm` | See type | yes | — | The form every tab edits: one `useAppForm` with the entity's Zod schema. |
+| headerActions | `ReactNode` | See type | no | — | Controls in the header, before the close button, for a header without `identity`. |
+| identity | `EntitySettingsIdentity<T> \| undefined` | See type | no | — | The entity's identity as the header: its tile, name, state, facts and ActionBar, beside the close button. At a narrow width it takes its compact tier, with the actions in one ⋯. It names the dialog ("NST-C106 settings") and replaces `media`, `title` and `subtitle`. |
 | loading | `boolean \| undefined` | false, true | no | false | The document is loading: every tab shows its skeleton and Save waits. |
 | media | `ReactNode` | See type | no | — | The entity's identity tile: its glyph or photo with the state dot. |
 | onOpenChange | `(open: boolean) => void` | See type | yes | — | Called with the next open state: `false` on Cancel (after the form resets) or on dismissal, which first asks to discard unsaved changes. Pair with `open`. |

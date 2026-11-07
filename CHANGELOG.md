@@ -8,6 +8,17 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Added
 
+- EntitySettingsDialog: `identity` makes the entity's EntityIdentity the header, with its state, facts and
+  ActionBar beside the close button. In a narrow dialog it takes its compact tier, with the actions in one ⋯.
+  The dialog is named from it ("NST-C106 settings"). New type `EntitySettingsIdentity`.
+- EntitySettingsDialog: `headerActions` puts controls in a header without `identity`. Dialog.Header takes
+  `identity` too, and its `title` is optional with one.
+- DataTable: a column's `entity` names the entity its cell shows when it is not the row's own (a device's
+  Organisation or Site). Right-click in that cell offers that entity's actions. New type
+  `DataTableCellEntity`.
+- SessionNav: `renderSession` draws a session's row, such as its EntityIdentity at the row tier. The row
+  still selects, renames and keeps its menus.
+- Icons: `IconCrown`, for a primary item (a site's primary badge).
 - PinMap: `ref` takes a `PinMapHandle`, whose `goTo` moves the view without placing the pin.
 - PinMap: the wheel zooms at the cursor without scrolling what is behind it. A scroll that began elsewhere
   keeps scrolling across the map until the wheel has been still for 400 ms.

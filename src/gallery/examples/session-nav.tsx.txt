@@ -1,5 +1,7 @@
+import { IconChat } from "glass-ux/icons";
 import { EntityChip, SessionNav } from "glass-ux/ai";
 import { ContainerLab, Example, SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { EntityIdentity } from "glass-ux/entity";
 import { PROJECTS, SESSIONS } from "glass-ux/gallery/sections/ai.fixtures";
 import { AiGallery } from "glass-ux/gallery/sections/ai.kit";
 
@@ -58,6 +60,34 @@ export default function AiSessionsSection() {
                   <EntityChip entity={organisation} size="sm" preview={false} glyph={false} />
                 ) : undefined
               }
+            />
+          </div>
+        </Specimen>
+
+        <Specimen
+          title="Each session as an identity"
+          description="renderSession draws a row's content, here the session's EntityIdentity at the row tier with its organisation. The row still selects, renames and keeps its ⋯ and right-click menus."
+          layout="bare"
+        >
+          <div className="glass-control ai-drawer-sample" data-testid="session-identity">
+            <SessionNav
+              sessions={SESSIONS.slice(0, 4)}
+              defaultSelectedId={SESSIONS[0]?.id}
+              onNewChat={() => {}}
+              onArchive={() => {}}
+              renderSession={(session) => (
+                <EntityIdentity
+                  tier="row"
+                  name={session.title}
+                  kind="Chat"
+                  icon={<IconChat />}
+                  secondary={
+                    session.organisation === null
+                      ? "All organisations"
+                      : session.organisation?.label
+                  }
+                />
+              )}
             />
           </div>
         </Specimen>

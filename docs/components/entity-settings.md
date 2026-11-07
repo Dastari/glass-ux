@@ -4,6 +4,19 @@
 sections, validation, dirty markers, conflict handling and the shared Save feedback.
 The host owns document loading, authorization, persistence and any verification step.
 
+Give the dialog the entity's identity, and it becomes the header: its tile, name, state, facts and
+actions, beside the close button. The dialog is named from it ("NST-C106 settings"), and in a narrow
+dialog it takes its compact tier, with the actions in one ⋯:
+
+```tsx
+<EntitySettingsDialog
+  identity={{ name: device.name, kind: "Endpoint", icon: <IconEndpoint />, state, facts, actions: deviceActions, target: device }}
+  …
+/>
+```
+
+It replaces `media`, `title` and `subtitle`. A header without one takes `headerActions`.
+
 For a populated form whose save operation is unavailable, supply a reason:
 
 ```tsx

@@ -1,3 +1,4 @@
+import type { DataTableCellEntity } from "./features.js";
 import {
   createColumnHelper,
   type AccessorFn,
@@ -33,6 +34,12 @@ export interface DataColumnSpec<T extends RowData, V = unknown> {
   editable?: boolean | ((row: T) => boolean);
   /** Plain export data. Defaults to the raw accessor value, never rendered JSX. */
   exportValue?: (row: T) => unknown;
+  /**
+   * The entity this column's cell shows, when it is another than the row's own: a device's
+   * Organisation or Site. Right-click in that cell offers its actions in place of the row's, run by
+   * the shared runner (not the table's `onAction`). Return null for a row with none.
+   */
+  entity?: (row: T) => DataTableCellEntity<any> | null | undefined;
   /** Column name. Also labels the field in cards, the "+N" detail and menus. */
   header: string;
   /** Cell renderer. Return a string for plain text (it truncates with an ellipsis). */
@@ -100,6 +107,7 @@ export function resolveColumnMeta(
     edit: spec.edit as DataColumnMeta["edit"],
     editable: spec.editable as DataColumnMeta["editable"],
     exportValue: spec.exportValue as DataColumnMeta["exportValue"],
+    entity: spec.entity as DataColumnMeta["entity"],
     priority,
     width,
     minWidth,

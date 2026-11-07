@@ -370,3 +370,21 @@ test("in a narrow table, the sort joins the columns menu", async ({ page }) => {
     .poll(() => table.locator(".fa-dt-card .dt-demo-tile-name").first().textContent())
     .toBe("Copperline Sync");
 });
+
+test("a cell showing another entity offers that entity's actions on right-click", async ({ page }) => {
+  const { frame, table } = await open(page);
+  await frame.getByRole("button", { name: "List", exact: true }).click();
+  await expect(table).toHaveAttribute("data-mode", "table");
+  const row = table.locator('.fa-dt-row[data-row-id="p2"]');
+  await row.locator('[data-col="publisher"]').click({ button: "right" });
+  const menu = page.getByRole("menu", { name: "Actions for Northwind Data" });
+  await expect(menu).toBeVisible();
+  await expect(menu.getByRole("menuitem", { name: "Show publisher" })).toBeVisible();
+  await expect(menu.getByRole("menuitem", { name: "Remove" })).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  // Anywhere else in the row, the row's own.
+  await row.locator('[data-col="version"]').click({ button: "right" });
+  const own = page.getByRole("menu", { name: "Actions for Northwind Backup" });
+  await expect(own.getByRole("menuitem", { name: "Remove" })).toBeVisible();
+  await expect(own.getByRole("menuitem", { name: "Show publisher" })).toHaveCount(0);
+});

@@ -1,3 +1,4 @@
+import type { ActionSet } from "../../lib/actions/actions.js";
 import {
   columnFilteringFeature,
   columnPinningFeature,
@@ -23,6 +24,16 @@ export type CellSkeleton =
  * Glass UX column metadata, resolved with defaults by `createDataTableColumns`. Widths are rem
  * so columns scale with --ui-scale like everything else.
  */
+/** The entity a cell shows when it is not the row's own: its name, actions and target. */
+export interface DataTableCellEntity<U = unknown> {
+  /** Names the menu: "Actions for Northwind Studio". */
+  name: string;
+  /** The entity's actions, as its own surfaces offer them. */
+  actions: ActionSet<U>;
+  /** The entity the actions run against. */
+  target: U;
+}
+
 export interface DataColumnMeta {
   /** Plain-text column name for menus, card labels and the "+N" detail. */
   label: string;
@@ -32,6 +43,8 @@ export interface DataColumnMeta {
   editable?: boolean | ((row: any) => boolean);
   /** Plain data for export instead of the accessor. */
   exportValue?: (row: any) => unknown;
+  /** The entity this cell shows, for right-click in the cell. */
+  entity?: (row: any) => DataTableCellEntity<any> | null | undefined;
   /** 1 = never hide … 5 = hide first. */
   priority: number;
   /** Available width or named width tier. */

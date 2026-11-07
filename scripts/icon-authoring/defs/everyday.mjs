@@ -230,3 +230,22 @@ def("cloud-download", () => {
 def("check-check", () => [path("M2.75 11.5L7.25 16L15.25 8"), path("M11.75 14.5L13.25 16L21.25 8")])
 def("circle-plus", () => [...ring(), ...plusAt(12, 12)])
 def("circle-minus", () => [...ring(), path("M9.25 12H14.75")])
+
+// Crown: a band with three points, a jewel above each; the primary one of a kind (a site,
+// an owner). Landscape keyline, 17 wide. Points are tips (round join only); the valleys take a
+// small radius and the foot the band's, as a polygon with non-right angles does.
+def("crown", () => {
+  const body = poly(
+    [
+      [5.25, 18],
+      [3.5, 9.5],
+      [8, 13],
+      [12, 7.25],
+      [16, 13],
+      [20.5, 9.5],
+      [18.75, 18],
+    ],
+    [1.5, 0, 0.75, 0, 0.75, 0, 1.5]
+  )
+  return [...tinted(body), dotEl(3.5, 6.5, 1.25), dotEl(12, 4.25, 1.25), dotEl(20.5, 6.5, 1.25), path("M6.5 21H17.5")]
+})

@@ -96,3 +96,34 @@ describe("SessionNav renderOrganisation", () => {
     expect(row(/^Sample one/).querySelector(".fa-ai-session-org")).toBeTruthy();
   });
 });
+
+describe("SessionNav renderSession", () => {
+  it("draws the host's content in the row, which still selects and keeps its name", () => {
+    const onSelectedIdChange = vi.fn();
+    render(
+      <SessionNav
+        sessions={sessions}
+        defaultSelectedId="s-1"
+        onSelectedIdChange={onSelectedIdChange}
+        renderSession={(session) => <span data-testid={`own-${session.id}`}>Drawn {session.title}</span>}
+      />,
+    );
+    expect(screen.getByTestId("own-s-2")).toHaveTextContent("Drawn Sample two");
+    const row = rowOf("Sample two");
+    expect(row).toContainElement(screen.getByTestId("own-s-2"));
+    fireEvent.click(screen.getByTestId("own-s-2"));
+    expect(onSelectedIdChange).toHaveBeenCalledWith("s-2", expect.objectContaining({ item: sessions[1] }));
+    expect(rowOf("Sample two")).toHaveAttribute("aria-current", "page");
+  });
+
+  it("keeps the default row where it returns undefined", () => {
+    render(<SessionNav sessions={sessions} renderSession={(session) => (session.id === "s-1" ? <b>Own</b> : undefined)} />);
+    expect(screen.getByText("Own")).toBeTruthy();
+    expect(screen.getByText("Sample two")).toBeTruthy();
+  });
+
+  it("keeps each row's ⋯ menu", () => {
+    render(<SessionNav sessions={sessions} onArchive={() => {}} renderSession={() => <i>Own</i>} />);
+    expect(screen.getAllByRole("button", { name: /Sample one/ }).length).toBeGreaterThan(1);
+  });
+});

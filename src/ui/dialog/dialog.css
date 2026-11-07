@@ -145,6 +145,20 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* An entity's identity as the header: it takes the heading's room and keeps the dialog's type. */
+  .fa-dialog-identity {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .fa-dialog-identity :is(.fa-entity, .fa-entity-fit):not(:where(.fa-entity *)) {
+    padding-block: 0;
+  }
+  .fa-dialog-identity .fa-entity[data-tier="header"] .fa-entity-title:not(:where(.fa-entity .fa-entity *)) {
+    font-size: var(--type-title-size);
+    line-height: var(--type-title-line);
+    font-weight: var(--type-title-weight);
+    letter-spacing: var(--type-title-tracking);
+  }
   .fa-dialog-header-actions {
     display: flex;
     flex: none;

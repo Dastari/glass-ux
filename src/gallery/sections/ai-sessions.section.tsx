@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  IconChat,
   IconHistory,
   IconMaximise,
   IconNewChat,
@@ -18,6 +19,7 @@ import {
 } from "../../ai/index.js";
 import { ContainerLab, Example, Rules, SectionPage, Specimen } from "../kit.js";
 import { Button } from "../../ui/button/index.js";
+import { EntityIdentity } from "../../ui/entity/index.js";
 import { Segmented } from "../../ui/segmented/index.js";
 import { toast } from "../../ui/toast/index.js";
 import {
@@ -182,6 +184,30 @@ export default function AiSessionsSection() {
               renderOrganisation={(organisation) =>
                 organisation ? <EntityChip entity={organisation} size="sm" preview={false} glyph={false} /> : undefined
               }
+            />
+          </div>
+        </Specimen>
+
+        <Specimen
+          title="Each session as an identity"
+          description="renderSession draws a row's content, here the session's EntityIdentity at the row tier with its organisation. The row still selects, renames and keeps its ⋯ and right-click menus."
+          layout="bare"
+        >
+          <div className="glass-control ai-drawer-sample" data-testid="session-identity">
+            <SessionNav
+              sessions={SESSIONS.slice(0, 4)}
+              defaultSelectedId={SESSIONS[0]?.id}
+              onNewChat={() => {}}
+              onArchive={() => {}}
+              renderSession={(session) => (
+                <EntityIdentity
+                  tier="row"
+                  name={session.title}
+                  kind="Chat"
+                  icon={<IconChat />}
+                  secondary={session.organisation === null ? "All organisations" : session.organisation?.label}
+                />
+              )}
             />
           </div>
         </Specimen>

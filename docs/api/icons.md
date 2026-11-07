@@ -140,6 +140,7 @@ Company and manufacturer icons use the same props, for example `IconGithub`, `Ic
 - **IconCreditCard** — Credit Card icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconCrestron** — Crestron icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconCrop** — Crop icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
+- **IconCrown** — Crown icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconCursor** — Cursor icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconCurves** — Curves icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.
 - **IconCut** — Cut icon. Uses the shared icon size tokens; provide label for meaningful icons and omit it for decoration.

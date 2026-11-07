@@ -46,7 +46,7 @@ function DialogDemo() {
               mapFallback={TASMANIA}
             />
           </Field>
-          <div className="h-[120vh]" aria-hidden />
+          <div className="h-320" aria-hidden />
         </Dialog.Body>
       </Dialog.Popup>
     </Dialog.Root>

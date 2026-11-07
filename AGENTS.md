@@ -160,6 +160,11 @@ decides when to publish. The local route:
   optimisation pass after that release; `dist/ui` and the language packs are the largest parts.
 - Native-speaker review: "chroma" in the Arabic and Hebrew colour picker messages, and
   "preview class" in Japanese, Korean, Arabic and Hebrew (`results.previewUnavailable`).
+- Native-speaker review of `dataTable.sortColumnsDensity` (Spanish and Portuguese use a noun for sort, French
+  and Italian a verb) and `coordinatesField.goToMyLocation` (German `Zu meinem Standort gehen`; Japanese
+  uses 現在地 where `useMyLocation` says 私の位置情報).
+- DataTable cell entities (a column's `entity`) are reached by right-click only: keyboard users need the
+  entity's own page or menu.
 - Native-speaker review of the 0.19.0 messages, machine-written and checked only for keys and placeholders:
   `fileDialog.places` (Italian `Posizioni`, German `Orte`, Japanese, Korean and Chinese use "frequent places"),
   `fileDialog.choosing` (French `Sélection…`, Italian `Scelta…`), and `fileDialog.folderChosen`, whose

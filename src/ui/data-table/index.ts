@@ -14,6 +14,7 @@ export {
   type CellSkeleton,
   type ColumnAlign,
   type DataColumnMeta,
+  type DataTableCellEntity,
   type DataTableFeatures,
 } from "./features.js";
 export * from "./filters/index.js";

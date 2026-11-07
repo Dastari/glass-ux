@@ -6,6 +6,7 @@ import { ExportMenu } from "./export-menu.js";
 import { exportCsv, exportTsv, type DataTableExportColumn } from "./export.js";
 import { writeClipboardText } from "../../lib/clipboard.js";
 import { readingKey } from "../../lib/direction.js";
+import { ActionMenuItems } from "../actions/index.js";
 import { normaliseColumnOrder, moveColumn } from "./column-order.js";
 import { DragDropProvider } from "../drag-drop/index.js";
 import {
@@ -2257,6 +2258,27 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     ) : null;
   };
 
+  /** The entity a right-clicked cell shows, when its column names one (a device's Site). */
+  const resolveCellEntity = (
+    rowId: string,
+    target: EventTarget | null,
+    rowElement: Element,
+  ) => {
+    if (!(target instanceof Element)) return null;
+    const cell = target.closest<HTMLElement>("[data-col]");
+    const columnId =
+      cell && rowElement.contains(cell)
+        ? idByKey.get(cell.dataset.col ?? "")
+        : undefined;
+    const entityOf = columnId ? metaById.get(columnId)?.meta.entity : undefined;
+    const row = rowsById.get(rowId);
+    if (!entityOf || row === undefined) return null;
+    const entity = entityOf(row);
+    if (!entity) return null;
+    const groups = resolveActions(entity.actions, [entity.target], "context");
+    return groups.length ? { entity, groups } : null;
+  };
+
   /** The right-click menu for a row, or null when nothing applies (the native menu stays). */
   const resolveContextMenu = (
     rowId: string,
@@ -2265,6 +2287,22 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   ): MenuContent<T> | null => {
     const row = rowsById.get(rowId);
     if (row === undefined) return null;
+    // A cell showing another entity offers that entity's actions, not the row's.
+    const cellEntity = resolveCellEntity(rowId, target, rowElement);
+    if (cellEntity)
+      return {
+        groups: [],
+        targets: [row],
+        custom: (
+          <ActionMenuItems
+            groups={cellEntity.groups}
+            targets={[cellEntity.entity.target]}
+            surface="context"
+          />
+        ),
+        filter: resolveCellFilter(rowId, target, rowElement),
+        label: cellEntity.entity.name,
+      };
     // Right-click inside a multi-selection acts on the selection, like a file manager.
     const many = Boolean(selection[rowId]) && selectedTargets.length > 1;
     const targets = many ? selectedTargets : [row];
@@ -2749,7 +2787,10 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
         },
       };
   const hasContextMenu = Boolean(
-    hasActions || renderRowContextMenu || cellFilterable,
+    hasActions ||
+      renderRowContextMenu ||
+      cellFilterable ||
+      definitions.some((entry) => entry.meta.entity),
   );
   const wrapRows = (element: ReactElement) =>
     hasContextMenu ? (

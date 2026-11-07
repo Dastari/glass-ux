@@ -17,7 +17,7 @@ are routes, use `RouteVerticalTabs`.
 | aria-label | `string` | See type | yes | — | Names the rail, e.g. "Agent settings sections". |
 | defaultValue | `string \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
 | items | `VerticalTabItem[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
-| layout | `VerticalTabsLayout \| undefined` | "select", "rail", "icons", "tabs", "chips" | no | — | Force a layout instead of following the container. |
+| layout | `VerticalTabsLayout \| undefined` | "select", "tabs", "rail", "icons", "chips" | no | — | Force a layout instead of following the container. |
 | onValueChange | `((value: string) => void) \| undefined` | See type | no | — | Called with the chosen section's `value` when the person selects a section. Pair with `value` to control it. |
 | value | `string \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 

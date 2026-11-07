@@ -132,6 +132,7 @@ export const iconRegistry = [
   { name: "credit-card", Icon: icons.IconCreditCard },
   { name: "crestron", Icon: icons.IconCrestron },
   { name: "crop", Icon: icons.IconCrop },
+  { name: "crown", Icon: icons.IconCrown },
   { name: "cursor", Icon: icons.IconCursor },
   { name: "curves", Icon: icons.IconCurves },
   { name: "cut", Icon: icons.IconCut },

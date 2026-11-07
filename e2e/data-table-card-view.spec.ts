@@ -245,13 +245,24 @@ test("the loading placeholder matches the card it stands for @responsive", async
   expect(Math.abs(held.height - real.height)).toBeLessThanOrEqual(2);
 });
 
-test("the default card keeps its slots in a grid, at each density", async ({ page }) => {
-  const { table } = await open(page);
-  await toggle(page, "Own card design");
-  const first = card(table, "p1");
-  await expect(first.locator(".fa-dt-card-title")).toContainText("Harbour Agent");
-  const fits = await table.locator(".fa-dt-card").evaluateAll((cards) =>
-    cards.every((c) => c.scrollWidth <= c.clientWidth + 1),
-  );
-  expect(fits).toBe(true);
-});
+for (const density of ["comfortable", "compact"] as const) {
+  test(`both card designs fit the grid at ${density} density and 125% scale`, async ({ page }) => {
+    await page.addInitScript((density) => {
+      localStorage.setItem(
+        "glass-ux.appearance.v1",
+        JSON.stringify({ density, uiScale: 1.25, mode: "light", motion: "reduced" }),
+      );
+    }, density);
+    const { table } = await open(page);
+    const fits = () =>
+      table.locator(".fa-dt-card").evaluateAll((cards) =>
+        cards.every(
+          (c) => c.scrollWidth <= c.clientWidth + 1 && c.scrollHeight <= c.clientHeight + 1,
+        ),
+      );
+    expect(await fits()).toBe(true);
+    await toggle(page, "Own card design");
+    await expect(card(table, "p1").locator(".fa-dt-card-title")).toContainText("Harbour Agent");
+    expect(await fits()).toBe(true);
+  });
+}

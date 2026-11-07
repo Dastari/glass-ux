@@ -209,6 +209,10 @@ decides when to publish. The local route:
   `lang="en-AU" dir="rtl"`. The dev server does not transpile, and `e2e/rtl.spec.ts` always sets
   `lang=ar`, so tests do not see it. Needs a selector Lightning CSS keeps, or a documented `lang`
   requirement.
+- glass-ux-image keeps its own template pages (`apps/docs/src/templates.tsx`) rather than the docs kit's
+  `TemplateDocumentation` and `TemplatePreview`: its screens take a picture, and its page and preview bar
+  carry an image picker. The kit's `screen` takes no props and `TemplatePreview` has no bar slot, and
+  sources load only by catalogue section. Change the kit only if another package needs the same.
 - Tree with `onMove` (and PaneLayout's tab titles) remount when their lazy drag or menu code
   arrives. Tree hands focus back, but a click landing in that moment loses its selection. Loading
   the code with the component would remove the swap, at the cost of the split.

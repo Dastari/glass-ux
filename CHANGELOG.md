@@ -4,6 +4,36 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Added
+
+- PinMap: `ref` takes a `PinMapHandle`, whose `goTo` moves the view without placing the pin.
+- PinMap: the wheel zooms at the cursor without scrolling what is behind it. A scroll that began elsewhere
+  keeps scrolling across the map until the wheel has been still for 400 ms.
+- CoordinatesField: Go to my location in the Pick on map header moves the map there without placing the pin.
+  Hidden where the browser has no geolocation, or with `locate={false}`.
+- Popover: `headerActions` adds controls to the title row.
+- `hasAddressParts(value)`: whether any written part of an address is set.
+
+### Changed
+
+- PinMap: a drag, click or nudge inside the map leaves the camera alone. Only a value from outside, such as
+  a lookup or typed coordinates, moves it.
+- PinMap: a crosshair where a click places the pin, and a grabbing hand while dragging the map or the pin.
+- AddressField and AddressInput: a position alone no longer opens the address parts. An address part or
+  Enter manually does.
+- CoordinatesField: Pick on map closes when its button scrolls out of view.
+
+### Fixed
+
+- PinMap: dropping the pin no longer re-places it at the cursor. The browser's click after a drag placed it
+  a second time, so latitude moved by however far above the tip it was grabbed, and hosts got the value twice.
+- PinMap: the pin's tip marks the exact point. It sat 10% of the pin's size above it.
+- DataTable: on a narrow table the sort menu joins the columns menu (below 36rem), and Filters is icon-only
+  and an idle search reserves no room (below 30rem). The filter strip used to run under the table's own tools,
+  which then drew over Filters and its chip and blocked clicks on them.
+
 ## 0.19.0
 
 ### Added

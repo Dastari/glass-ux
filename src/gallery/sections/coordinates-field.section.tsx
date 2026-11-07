@@ -3,6 +3,8 @@ import { z } from "zod"
 import { ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { DEMO_MAP_CONFIG } from "../fixtures/map.js"
 import { CoordinatesInput, coordinatesSchema, formatDms, isReadable, type LatLng } from "../../ui/coordinates-field/index.js"
+import { Button } from "../../ui/button/index.js"
+import { Dialog } from "../../ui/dialog/index.js"
 import { Field } from "../../ui/field/index.js"
 import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "../../ui/form/index.js"
 import { Usage } from "./inputs.kit.js"
@@ -18,6 +20,24 @@ function PasteDemo() {
         <CoordinatesInput value={value} onValueChange={setValue} map={DEMO_MAP_CONFIG} mapFallback={TASMANIA} />
       </Field>
     </FormStack>
+  )
+}
+
+function DialogDemo() {
+  const [value, setValue] = useState<LatLng | null>(null)
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger render={<Button>Open site settings</Button>} />
+      <Dialog.Popup size="md">
+        <Dialog.Header title="Site settings" />
+        <Dialog.Body data-testid="coordinates-dialog-body">
+          <Field label="Site position">
+            <CoordinatesInput value={value} onValueChange={setValue} map={DEMO_MAP_CONFIG} mapFallback={TASMANIA} />
+          </Field>
+          <div className="h-[120vh]" aria-hidden />
+        </Dialog.Body>
+      </Dialog.Popup>
+    </Dialog.Root>
   )
 }
 
@@ -53,6 +73,10 @@ export default function CoordinatesFieldSection() {
 
       <Specimen title="Pick on map and use my location" description="The map pin opens a picker: click the map or drag the pin. The location button asks the browser for the device's position; a site whose location is blocked says how to allow it.">
         <BoundDemo />
+      </Specimen>
+
+      <Specimen title="In a scrolling dialog" description="The picker closes once its button has scrolled out of the dialog's body, rather than staying behind." layout="stack">
+        <DialogDemo />
       </Specimen>
 
       <Specimen title="States" layout="grid">

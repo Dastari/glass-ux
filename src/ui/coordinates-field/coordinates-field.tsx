@@ -1,6 +1,6 @@
 import { useMessages } from "../../lib/i18n/index.js"
 import { coordinatesFieldMessages, getCoordinatesFieldMessages } from "./messages.js"
-import { lazy, Suspense, useState, useSyncExternalStore } from "react"
+import { lazy, Suspense, useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { IconLocate, IconMapPin } from "../../icons/generated/icons.js"
 import { useParsedText } from "../../lib/use-parsed-text.js"
 import { Button, useActionFeedback } from "../button/index.js"
@@ -8,7 +8,7 @@ import { CopyButton } from "../copy-button/index.js"
 import { Field } from "../field/index.js"
 import { useBoundField, type FieldChrome } from "../form/context.js"
 import { Input, type InputProps } from "../input/index.js"
-import type { LngLatBox, MapConfig } from "../map/index.js"
+import type { LngLatBox, MapConfig, PinMapHandle } from "../map/index.js"
 import { Popover } from "../popover/index.js"
 import { toast } from "../toast/index.js"
 import { formatCoordinates, formatDms, parseCoordinates, type LatLng } from "./coordinates.js"
@@ -145,8 +145,27 @@ export function CoordinatesInput({
   const readable = isReadable(current) && showCoordinates(current) !== ""
   const locateStatus = useLocateState()
   const locating = useActionFeedback()
+  const going = useActionFeedback()
   const [picking, setPicking] = useState(false)
+  const pinMap = useRef<PinMapHandle>(null)
+  const trigger = useRef<HTMLButtonElement>(null)
+  const scrolledAway = useRef(false)
   const editable = !disabled && !readOnly
+
+  // The picker points at its button. Once the button has scrolled out of view, in a dialog's body
+  // say, it would be pointing at nothing, so it closes.
+  useEffect(() => {
+    const button = trigger.current
+    if (!picking || !button || typeof IntersectionObserver === "undefined") return
+    scrolledAway.current = false
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting !== false) return
+      scrolledAway.current = true
+      setPicking(false)
+    })
+    observer.observe(button)
+    return () => observer.disconnect()
+  }, [picking])
 
   const set = (point: LatLng | null) => text.onTextChange(point ? formatCoordinates(point) : "")
 
@@ -155,6 +174,13 @@ export function CoordinatesInput({
       async () => set(await currentPosition(messages)),
       (error) => toast.danger(messages.locationNotFound, { description: error instanceof Error ? error.message : String(error) })
     )
+
+  const goToMyLocation = () =>
+    void going.run(
+      async () => pinMap.current?.goTo(await currentPosition(messages)),
+      (error) => toast.danger(messages.locationNotFound, { description: error instanceof Error ? error.message : String(error) })
+    )
+  const showLocate = locate && editable && locateStatus !== "unsupported" && locateStatus !== "unknown"
 
   return (
     <Input
@@ -179,10 +205,27 @@ export function CoordinatesInput({
           {copyable && readable ? <CopyButton value={formatCoordinates(current)} label={messages.copyCoordinates} className="fa-input-btn" /> : null}
           {map && editable ? (
             <Popover.Root open={picking} onOpenChange={setPicking}>
-              <Popover.Trigger render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconMapPin />} aria-label={messages.pickOnMap} />} />
-              <Popover.Popup size="lg" align="end" title={messages.pickOnMap} className="fa-coordinates-popup">
+              <Popover.Trigger ref={trigger} render={<Button variant="ghost" size="sm" className="fa-input-btn" icon={<IconMapPin />} aria-label={messages.pickOnMap} />} />
+              <Popover.Popup
+                size="lg"
+                align="end"
+                title={messages.pickOnMap}
+                className="fa-coordinates-popup"
+                // Scrolled away, focus returns to the button without bringing it back into view.
+                finalFocus={() => {
+                  if (!scrolledAway.current) return true
+                  trigger.current?.focus({ preventScroll: true })
+                  return false
+                }}
+                headerActions={
+                  showLocate ? (
+                    <Button variant="ghost" size="sm" icon={<IconLocate />} aria-label={messages.goToMyLocation} status={going.status} disabledReason={locateStatus === "denied" ? messages.geolocationPermission : undefined} onClick={goToMyLocation} />
+                  ) : undefined
+                }
+              >
                 <Suspense fallback={<div className="fa-coordinates-map fa-coordinates-map-loading glass-inset" aria-hidden />}>
                   <PinMap
+                    ref={pinMap}
                     config={map}
                     value={readable ? current : null}
                     onValueChange={(point) => set(point)}
@@ -196,7 +239,7 @@ export function CoordinatesInput({
               </Popover.Popup>
             </Popover.Root>
           ) : null}
-          {locate && editable && locateStatus !== "unsupported" && locateStatus !== "unknown" ? (
+          {showLocate ? (
             <Button
               variant="ghost"
               size="sm"

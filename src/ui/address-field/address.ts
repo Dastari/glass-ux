@@ -66,6 +66,10 @@ export function emptyAddress(country?: AddressCountry): AddressValue {
 export const isEmptyAddress = (value: AddressValue | null | undefined) =>
   !value || (!value.line1.trim() && !value.line2.trim() && !value.locality.trim() && !value.postcode.trim() && !value.region.name.trim() && !value.location)
 
+/** True when any written part is set. A position alone is not one, and a country alone is a default. */
+export const hasAddressParts = (value: AddressValue | null | undefined) =>
+  Boolean(value) && Boolean(value?.line1.trim() || value?.line2.trim() || value?.locality.trim() || value?.postcode.trim() || value?.region.name.trim())
+
 /* ── Regions (admin-1) ──────────────────────────────────────────────────────── */
 
 /**

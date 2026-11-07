@@ -1184,6 +1184,12 @@ const packageColumns = packageCol.columns([
 const packageActions = defineActions<DeployPackage>("package", [
   { id: "remove", label: "Remove", icon: IconTrash, group: "manage", run: () => undefined },
 ]);
+const PACKAGE_SEARCH: DataTableSearch<DeployPackage> = {
+  fields: [
+    { field: "Name", value: (row) => row.name },
+    { field: "Publisher", value: (row) => row.publisher },
+  ],
+};
 const PACKAGE_VIEWS: SegmentedOption<"list" | "cards">[] = [
   { value: "list", label: "List", icon: <IconList /> },
   { value: "cards", label: "Cards", icon: <IconGrid /> },
@@ -1261,14 +1267,17 @@ function CardViewDemo() {
   const [small, setSmall] = useState(false);
   const [menu, setMenu] = useState(true);
   const [sorting, setSorting] = useState<DataTableState["sorting"]>([]);
+  const [largeOnly, setLargeOnly] = useState(false);
+  const [query, setQuery] = useState("");
   const shown = useMemo(() => {
-    const source = grouped ? PACKAGE_ROWS_GROUPED : PACKAGES;
+    const everything = searchRows(grouped ? PACKAGE_ROWS_GROUPED : PACKAGES, query, PACKAGE_SEARCH);
+    const source = largeOnly ? everything.filter((row) => !smallPackage(row)) : everything;
     const sort = sorting[0];
     if (!sort || grouped) return source;
     const key = sort.id as "name" | "sizeMb";
     const order = sort.desc ? -1 : 1;
     return source.toSorted((a, b) => (a[key] < b[key] ? -order : a[key] > b[key] ? order : 0));
-  }, [grouped, sorting]);
+  }, [grouped, largeOnly, query, sorting]);
   return (
     <div className="dt-demo">
       <div className="dt-demo-controls">
@@ -1302,9 +1311,22 @@ function CardViewDemo() {
           id="gallery-card-view"
           label="Packages"
           rows={loading ? NO_PACKAGES : shown}
-          state={{ sorting }}
-          onStateChange={(next) => setSorting(next.sorting)}
+          state={{ sorting, search: query }}
+          onStateChange={(next) => {
+            setSorting(next.sorting);
+            setQuery(next.search ?? "");
+          }}
+          search={PACKAGE_SEARCH}
           cardSort={menu}
+          filterToggles={[
+            {
+              id: "large-only",
+              label: "500 MB and over",
+              checked: largeOnly,
+              onCheckedChange: setLargeOnly,
+              summary: "500 MB and over",
+            },
+          ]}
           loading={loading}
           grouping={grouped ? PACKAGE_GROUPING : undefined}
           renderRowDetail={details ? renderPackageDetail : undefined}

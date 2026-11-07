@@ -67,3 +67,36 @@ for (const width of WIDTHS) {
     expect(overlaps(await boxes(strip.locator("> .fa-ai-status-item, > .fa-ai-status-retry")))).toEqual([]);
   });
 }
+
+/* A filtered table's cards, in a width like a settings dialog on a phone: its own sort adds no button. */
+for (const width of [560, 480, 430, ...WIDTHS]) {
+  test(`a filtered table's cards keep every toolbar control clear and pressable at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto("/components/data-table");
+    const table = page.getByTestId("dt-card-view").locator(".fa-dt");
+    await table.scrollIntoViewIfNeeded();
+    await expect(table).toHaveAttribute("data-mode", "cards");
+    await table.locator(".fa-dt-filters-button").click();
+    await page.getByRole("menuitemcheckbox", { name: "500 MB and over" }).click();
+    await page.keyboard.press("Escape");
+    // The filter is on: six of the twelve packages, and the strip has settled around its chip.
+    await expect(table.locator(".fa-dt-card")).toHaveCount(6);
+    await page.waitForTimeout(500);
+    const controls = table.locator(".fa-dt-toolbar button:visible");
+    const found = await controls.evaluateAll((buttons) =>
+      buttons.map((button) => {
+        const box = button.getBoundingClientRect();
+        const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+        return {
+          name: button.getAttribute("aria-label") ?? button.textContent ?? "",
+          x: box.x, y: box.y, width: box.width, height: box.height,
+          pressable: Boolean(hit && (button === hit || button.contains(hit))),
+        };
+      }),
+    );
+    expect(overlaps(found)).toEqual([]);
+    for (const control of found) expect(control.pressable, control.name).toBe(true);
+    await expect(table.locator(".fa-dt-sort-menu")).toHaveCount(0);
+    await expect(table.getByRole("button", { name: "Sort, columns and density" })).toBeVisible();
+  });
+}

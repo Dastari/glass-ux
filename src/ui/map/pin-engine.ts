@@ -26,6 +26,8 @@ export interface PinEngineOptions {
   onPlace: (point: { lng: number; lat: number }) => void
   /** Receives a failed operation so the application can explain it, normally with a toast. */
   onError: (message: string) => void
+  /** The map started (true) or stopped (false) being dragged, by its canvas or by the pin. */
+  onDragging?: (dragging: boolean) => void
 }
 
 const EMPTY = { type: "FeatureCollection" as const, features: [] }
@@ -37,6 +39,8 @@ export class PinEngine {
   private readonly marker: Marker
   private config: MapConfig
   private placed = false
+  /** The click a drag ends in: the browser sends one to the canvas under the released pin. */
+  private ignoreClick = false
 
   constructor(private readonly options: PinEngineOptions) {
     const { config, center, zoom } = options
@@ -54,9 +58,8 @@ export class PinEngine {
       renderWorldCopies: false,
       fadeDuration: options.fadeDuration,
     })
-    // A form scrolls past a small map: the wheel never zooms it (the + and − buttons, a
-    // double-click and a pinch do).
-    this.map.scrollZoom.disable()
+    // The wheel zooms at the cursor. PinMap holds it back while a scroll that began elsewhere is
+    // still going, so a form scrolling past the map does not get caught on it (wheel-gate.ts).
     this.map.touchZoomRotate.disableRotation()
     this.map.keyboard.disable()
     this.map.getCanvas().setAttribute("aria-hidden", "true")
@@ -66,12 +69,30 @@ export class PinEngine {
     this.host.className = "fa-pin-map-host"
     this.marker = new Marker({ element: this.host, anchor: "bottom", draggable: options.draggable })
     if (center) this.setPin(center)
+    this.marker.on("dragstart", () => {
+      this.ignoreClick = true
+      options.onDragging?.(true)
+    })
     this.marker.on("dragend", () => {
       const point = this.marker.getLngLat()
+      options.onDragging?.(false)
       options.onPlace({ lng: point.lng, lat: point.lat })
     })
+    this.map.on("dragstart", () => options.onDragging?.(true))
+    this.map.on("dragend", () => options.onDragging?.(false))
     if (options.draggable) {
+      // A press starts over: a drag that ended without a click leaves nothing to ignore.
+      const pressed = () => {
+        this.ignoreClick = false
+      }
+      this.map.on("mousedown", pressed)
+      this.map.on("touchstart", pressed)
       this.map.on("click", (event) => {
+        if (this.ignoreClick) {
+          // The pin was released here: the drop is the point, not the cursor over its body.
+          this.ignoreClick = false
+          return
+        }
         if ((event.originalEvent.target as Element | null)?.closest(".fa-pin-map-host")) return
         options.onPlace({ lng: event.lngLat.lng, lat: event.lngLat.lat })
       })

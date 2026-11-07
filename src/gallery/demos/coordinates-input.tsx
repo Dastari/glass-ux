@@ -9,6 +9,8 @@ import {
   isReadable,
   type LatLng,
 } from "../../ui/coordinates-field/index.js";
+import { Button } from "../../ui/button/index.js";
+import { Dialog } from "../../ui/dialog/index.js";
 import { Field } from "../../ui/field/index.js";
 import { FormStack } from "../../ui/form/index.js";
 
@@ -35,6 +37,29 @@ function PasteDemo() {
   );
 }
 
+function DialogDemo() {
+  const [value, setValue] = useState<LatLng | null>(null);
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger render={<Button>Open site settings</Button>} />
+      <Dialog.Popup size="md">
+        <Dialog.Header title="Site settings" />
+        <Dialog.Body data-testid="coordinates-dialog-body">
+          <Field label="Site position">
+            <CoordinatesInput
+              value={value}
+              onValueChange={setValue}
+              map={DEMO_MAP_CONFIG}
+              mapFallback={TASMANIA}
+            />
+          </Field>
+          <div className="h-[120vh]" aria-hidden />
+        </Dialog.Body>
+      </Dialog.Popup>
+    </Dialog.Root>
+  );
+}
+
 export default function CoordinatesFieldSection() {
   return (
     <SectionPage>
@@ -46,7 +71,16 @@ export default function CoordinatesFieldSection() {
         <PasteDemo />
       </Specimen>
 
-      <Specimen title="States" layout="grid" specimenKey="coordinates-field:default:2">
+      <Specimen
+        title="In a scrolling dialog"
+        description="The picker closes once its button has scrolled out of the dialog's body, rather than staying behind."
+        layout="stack"
+        specimenKey="coordinates-field:default:2"
+      >
+        <DialogDemo />
+      </Specimen>
+
+      <Specimen title="States" layout="grid" specimenKey="coordinates-field:default:3">
         <FormStack>
           <Field label="Empty">
             <CoordinatesInput />
@@ -65,7 +99,7 @@ export default function CoordinatesFieldSection() {
         </FormStack>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop specimenKey="coordinates-field:default:3">
+      <Specimen title="Over glass and imagery" backdrop specimenKey="coordinates-field:default:4">
         <FormStack>
           <Field label="Site position">
             <CoordinatesInput
@@ -76,7 +110,7 @@ export default function CoordinatesFieldSection() {
         </FormStack>
       </Specimen>
 
-      <ContainerLab specimenKey="coordinates-field:default:4">
+      <ContainerLab specimenKey="coordinates-field:default:5">
         <div className="flex h-full items-center p-1">
           <CoordinatesInput
             size="sm"

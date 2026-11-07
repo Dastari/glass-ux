@@ -15,6 +15,8 @@ export interface PopoverPopupProps extends Omit<ComponentProps<typeof BasePopove
   className?: string
   /** Optional title row; adds a close button. Omit it when the trigger already names the content. */
   title?: ReactNode
+  /** Controls in the title row, before the close button. Needs `title`. */
+  headerActions?: ReactNode
   size?: PopoverSize
   /** Preferred side of the anchor; collision handling may choose another side. */
   side?: ComponentProps<typeof BasePopover.Positioner>["side"]
@@ -29,7 +31,7 @@ export interface PopoverPopupProps extends Omit<ComponentProps<typeof BasePopove
  * Closes on Esc and outside press. No arrow — the popup sits `--popup-offset` from its trigger and
  * grows out of it (transform-origin), which already says where it came from.
  */
-function PopoverPopup({ title, size = "md", side = "bottom", align = "center", anchor, className, children, ...rest }: PopoverPopupProps) {
+function PopoverPopup({ title, headerActions, size = "md", side = "bottom", align = "center", anchor, className, children, ...rest }: PopoverPopupProps) {
   const messages = useMessages(popoverMessages)
 
   const popup = usePopupMetrics()
@@ -47,6 +49,7 @@ function PopoverPopup({ title, size = "md", side = "bottom", align = "center", a
           {title ? (
             <div className="fa-popover-header">
               <BasePopover.Title className="fa-popover-title">{title}</BasePopover.Title>
+              {headerActions}
               <BasePopover.Close render={<Button variant="ghost" size="sm" icon={<IconClose />} aria-label={messages.close} />} />
             </div>
           ) : null}

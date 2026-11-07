@@ -34,6 +34,11 @@
     min-inline-size: var(--_chip-min);
     max-inline-size: fit-content;
   }
+  /* Compact, an idle search is its button: the chip's room is taken only when there is a chip. */
+  .fa-dt-filterbar[data-compact] .fa-dt-search[data-mode="collapsed"]:has(> .fa-dt-search-button) {
+    flex: none;
+    min-inline-size: 0;
+  }
   .fa-dt-filter-chip.fa-dt-search-chip {
     /* component tokens: the chip's widest and narrowest */
     --_max: 12rem;

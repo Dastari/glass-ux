@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { DEMO_MAP_CONFIG } from "glass-ux/gallery/fixtures/map";
 import { CoordinatesInput, formatDms, isReadable, type LatLng } from "glass-ux/coordinates-field";
+import { Button } from "glass-ux/button";
+import { Dialog } from "glass-ux/dialog";
 import { Field } from "glass-ux/field";
 import { FormStack } from "glass-ux/form";
 
@@ -28,6 +30,29 @@ function PasteDemo() {
   );
 }
 
+function DialogDemo() {
+  const [value, setValue] = useState<LatLng | null>(null);
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger render={<Button>Open site settings</Button>} />
+      <Dialog.Popup size="md">
+        <Dialog.Header title="Site settings" />
+        <Dialog.Body data-testid="coordinates-dialog-body">
+          <Field label="Site position">
+            <CoordinatesInput
+              value={value}
+              onValueChange={setValue}
+              map={DEMO_MAP_CONFIG}
+              mapFallback={TASMANIA}
+            />
+          </Field>
+          <div className="h-[120vh]" aria-hidden />
+        </Dialog.Body>
+      </Dialog.Popup>
+    </Dialog.Root>
+  );
+}
+
 export default function CoordinatesFieldSection() {
   return (
     <SectionPage>
@@ -36,6 +61,14 @@ export default function CoordinatesFieldSection() {
         description="-42.88334, 147.32688 · 42°53′0″S 147°19′37″E · 42.88334S 147.32688E · a Google Maps, OpenStreetMap or Apple Maps link · geo:-42.88,147.33. Leave the field and it becomes decimal degrees; the hint shows DMS."
       >
         <PasteDemo />
+      </Specimen>
+
+      <Specimen
+        title="In a scrolling dialog"
+        description="The picker closes once its button has scrolled out of the dialog's body, rather than staying behind."
+        layout="stack"
+      >
+        <DialogDemo />
       </Specimen>
 
       <Specimen title="States" layout="grid">

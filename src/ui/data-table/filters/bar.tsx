@@ -115,11 +115,17 @@ export function FilterBar({
   controller,
   toggles = NO_TOGGLES,
   search,
+  compact = false,
 }: {
   controller: FilterController;
   toggles?: readonly DataTableFilterToggle[];
   /** Search definition or controlled search value. */
   search?: ToolbarSearchBinding;
+  /**
+   * A narrow table: Filters is icon-only and an idle search reserves nothing, so the strip's fixed
+   * parts fit beside the table's own tools instead of running under them.
+   */
+  compact?: boolean;
 }) {
   const m = useDataTableMessages();
   const { columns } = controller;
@@ -234,6 +240,7 @@ export function FilterBar({
     <div
       ref={barRef}
       className="fa-dt-filterbar"
+      data-compact={compact ? "" : undefined}
       data-search={
         search
           ? searchOpen
@@ -266,8 +273,9 @@ export function FilterBar({
                 variant="secondary"
                 className="fa-dt-filters-button"
                 icon={<IconFilter />}
+                aria-label={compact ? m.filters : undefined}
               >
-                {m.filters}
+                {compact ? undefined : m.filters}
               </Button>
             }
           />

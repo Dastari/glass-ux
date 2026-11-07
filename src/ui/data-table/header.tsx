@@ -675,11 +675,14 @@ export function SettingsMenu({
             size="sm"
             className="fa-dt-settings"
             icon={<IconColumns />}
-            aria-label={m.columnsDensity}
+            aria-label={sort ? m.sortColumnsDensity : m.columnsDensity}
           />
         }
       />
-      <Menu.Popup align="end" aria-label={m.columnsDensity}>
+      <Menu.Popup
+        align="end"
+        aria-label={sort ? m.sortColumnsDensity : m.columnsDensity}
+      >
         {sort}
         {columns.length ? (
           <Menu.Group>

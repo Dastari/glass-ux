@@ -415,9 +415,9 @@ export interface DataTableProps<T extends RowData> {
   cardMaxWidth?: number;
   /**
    * Offer a sort menu in the toolbar while cards show, which have no column headers. Default
-   * true, when a column is sortable. It reads and sets the same `sorting` state as the headers,
-   * and joins the columns menu where the table is very narrow. Pass false to place your own
-   * control in `toolbar`.
+   * true, when a column is sortable. It reads and sets the same `sorting` state as the headers.
+   * Below 36rem, a phone or a narrow dialog, it joins the columns menu, so the toolbar has no extra
+   * button. Pass false to place your own control in `toolbar`.
    */
   cardSort?: boolean;
   /**

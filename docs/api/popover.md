@@ -68,6 +68,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | align | `import("@base-ui/react/internals/useAnchorPositioning").Align \| undefined` | "center", "start", "end" | no | "center" | Alignment of the overlay relative to its anchor. |
 | anchor | `Element \| import("@floating-ui/dom").VirtualElement \| import("react").RefObject<Element \| null> \| (() => Element \| import("@floating-ui/dom").VirtualElement \| null) \| null \| undefined` | See type | no | — | Anchor used to position floating content. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| headerActions | `ReactNode` | See type | no | — | Controls in the title row, before the close button. Needs `title`. |
 | side | `import("@base-ui/react/internals/useAnchorPositioning").Side \| undefined` | "top", "bottom", "left", "right", "inline-end", "inline-start" | no | "bottom" | Preferred side of the anchor; collision handling may choose another side. |
 | size | `PopoverSize \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | title | `ReactNode` | See type | no | — | Optional title row; adds a close button. Omit it when the trigger already names the content. |

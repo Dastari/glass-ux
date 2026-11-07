@@ -258,8 +258,14 @@ function isInteractive(target: EventTarget | null, row: Element) {
   return Boolean(control && row.contains(control) && control !== row);
 }
 
-/** Below this width (rem) the sort choices join the columns menu, so the toolbar stays one line. */
-const CARD_SORT_FOLD_REM = 20;
+/**
+ * Below this width (rem) the sort choices join the columns menu. The toolbar's filter strip gives way
+ * to its tools below the same width (filters.css), so one more button would sit over the strip.
+ */
+const CARD_SORT_FOLD_REM = 36;
+
+/** Below this width (rem) the filter strip's own controls take less of the line. */
+const FILTERS_COMPACT_REM = 30;
 
 /** The columns menu with no column choices: a host's own cards decide what they show. */
 const NO_COLUMNS: ReadonlyArray<{
@@ -3003,7 +3009,8 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     [offerExpandAll, mode, expandAllLabel, setAllOpen, allOpen],
   );
   const offerSort = mode === "cards" && cardSort && sortableColumns.length > 0;
-  const sortFolded = offerSort && measured && widthRem < CARD_SORT_FOLD_REM;
+  // Before measuring, a table is taken as narrow: the button then only ever appears, never overlaps.
+  const sortFolded = offerSort && (!measured || widthRem < CARD_SORT_FOLD_REM);
   const settingsMenu = useMemo(
     () => (
       <SettingsMenu
@@ -3278,6 +3285,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
                       controller={filterController}
                       toggles={toggles}
                       search={searchBinding}
+                      compact={measured && widthRem < FILTERS_COMPACT_REM}
                     />
                   ) : null}
                   {toolbar || props.export || mode === "cards" ? (

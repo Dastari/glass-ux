@@ -12,6 +12,7 @@ export const coordinatesFieldMessages = defineMessages("coordinatesField", {
   pickOnMap: "Pick on map",
   pickThePointClickTheMapOrDrag: "Pick the point: click the map or drag the pin",
   clickTheMapToPlaceThePinThen: "Click the map to place the pin, then drag it to adjust.",
+  goToMyLocation: "Go to my location",
   useMyLocation: "Use my location",
   geolocationPermission: "Location is blocked for this site. Allow it in the browser's site settings.",
   invalidCoordinates: "Enter a latitude and longitude, such as -42.88334, 147.32688",

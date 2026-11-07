@@ -2,6 +2,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { AddressInput } from "./address-field.js"
+import { emptyAddress, hasAddressParts } from "./address.js"
 import { GeocoderError, type GeocoderAdapter } from "./geocoder.js"
 
 afterEach(cleanup)
@@ -118,5 +119,39 @@ describe("AddressInput lookup failure", () => {
     vi.mocked(adapter.search).mockResolvedValue([])
     await type("12 Exa")
     expect(failureLine()).toBeUndefined()
+  })
+})
+
+describe("AddressInput parts", () => {
+  const blank = emptyAddress({ code: "AU", name: "Australia" })
+  const position = { lat: -41.45, lng: 147.13 }
+  const street = () => screen.queryByRole("textbox", { name: "Street address" })
+
+  it("stay shut for a position alone", () => {
+    render(<AddressInput label="Site address" geocoder={geocoder()} value={{ ...blank, location: position }} />)
+    expect(street()).toBeNull()
+    expect(screen.getByRole("button", { name: "Enter manually" })).toBeTruthy()
+  })
+  it("stay shut when a position arrives on a blank address", () => {
+    const { rerender } = render(<AddressInput label="Site address" geocoder={geocoder()} value={blank} />)
+    rerender(<AddressInput label="Site address" geocoder={geocoder()} value={{ ...blank, location: position, pinned: true }} />)
+    expect(street()).toBeNull()
+  })
+  it("open for any written part", () => {
+    for (const part of [{ line1: "6 Integrity Drive" }, { line2: "Level 2" }, { locality: "Westbury" }, { postcode: "7303" }, { region: { code: "AU-TAS", name: "Tasmania" } }]) {
+      const { unmount } = render(<AddressInput label="Site address" geocoder={geocoder()} value={{ ...blank, ...part }} />)
+      expect(street()).not.toBeNull()
+      unmount()
+    }
+  })
+  it("open with Enter manually, and hold the position", () => {
+    render(<AddressInput label="Site address" geocoder={geocoder()} value={{ ...blank, location: position }} />)
+    fireEvent.click(screen.getByRole("button", { name: "Enter manually" }))
+    expect(street()).not.toBeNull()
+  })
+  it("treat a country as a default and whitespace as nothing", () => {
+    expect(hasAddressParts(blank)).toBe(false)
+    expect(hasAddressParts({ ...blank, line1: "   ", location: position })).toBe(false)
+    expect(hasAddressParts(null)).toBe(false)
   })
 })

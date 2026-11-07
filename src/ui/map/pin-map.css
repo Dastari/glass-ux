@@ -54,6 +54,14 @@
     text-wrap: pretty;
   }
 
+  /* Where a click places the pin, the cursor says so. Dragging the map or the pin grabs. */
+  .fa-map.fa-pin-map[data-editable] .maplibregl-canvas-container.maplibregl-interactive {
+    cursor: crosshair;
+  }
+  .fa-map.fa-pin-map[data-editable][data-dragging] .maplibregl-canvas-container.maplibregl-interactive {
+    cursor: grabbing;
+  }
+
   /* ── The pin ─────────────────────────────────────────────────────────────── */
   .fa-pin-map-host {
     z-index: var(--z-raised);
@@ -70,6 +78,9 @@
     color: var(--accent);
     --icon-tint-opacity: 0.4;
     filter: drop-shadow(0 0 var(--space-half) var(--canvas)) drop-shadow(0 var(--space-half) var(--space-1) var(--shadow-tint));
+    /* MapLibre anchors the box's bottom edge at the point. The icon's tip is 2.5 of its 24 units
+       above that edge, so the box moves down by as much and the tip marks the point. */
+    translate: 0 calc(var(--_pin) * 2.5 / 24);
     cursor: default;
   }
   .fa-pin-map[data-editable] .fa-pin-map-pin {

@@ -54,6 +54,7 @@ const defaults = {
   resetWidth: "Reset width",
   hideColumn: "Hide column",
   columnsDensity: "Columns and density",
+  sortColumnsDensity: "Sort, columns and density",
   columns: "Columns",
   inDetails: "In row details",
   density: "Density",

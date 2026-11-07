@@ -142,8 +142,8 @@ the height. `cardMaxWidth` caps the width: give it the same value as `cardMinWid
 fixed width. Every card in a table follows those two; one card wider than the rest is not offered.
 
 Cards have no column headers, so the toolbar gains a sort menu while they show, over the sortable
-columns and the same `sorting` state; below 20rem it joins the columns menu, so the toolbar stays one
-line. Pass `cardSort={false}` to place your own control in `toolbar`.
+columns and the same `sorting` state. Below 36rem, a phone or a narrow dialog, it joins the columns menu,
+so the toolbar gains no button there. Pass `cardSort={false}` to place your own control in `toolbar`.
 Controls that show only with cards come first in the toolbar, so `toolbar` and Export stay where they
 are when the view changes.
 

@@ -19,6 +19,7 @@ export {
   addressLines,
   emptyAddress,
   formatAddress,
+  hasAddressParts,
   isEmptyAddress,
   isPostcode,
   localityLine,

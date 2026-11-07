@@ -356,11 +356,12 @@ test("fixed tiles keep one width from the row's start, and the height is the car
   expect(neighbour).toBeCloseTo(after, 0);
 });
 
-test("very narrow, the sort joins the columns menu and the toolbar stays one line", async ({ page }) => {
+test("in a narrow table, the sort joins the columns menu", async ({ page }) => {
   const { frame, table } = await open(page);
-  await setWidth(frame, 280);
+  // 35rem and under: a phone, or a settings dialog on one.
+  await setWidth(frame, 340);
   await expect(table.locator(".fa-dt-sort-menu")).toHaveCount(0);
-  await table.getByRole("button", { name: "Columns and density" }).click();
+  await table.getByRole("button", { name: "Sort, columns and density" }).click();
   await page.getByRole("menuitemradio", { name: "Name" }).click();
   await expect(page.getByRole("menuitemradio", { name: "Sort ascending" })).toHaveAttribute("aria-checked", "true");
   await page.keyboard.press("Escape");

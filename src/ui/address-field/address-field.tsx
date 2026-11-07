@@ -46,6 +46,7 @@ import {
   addressLines,
   emptyAddress,
   formatAddress,
+  hasAddressParts,
   isEmptyAddress,
   type AddressCountry,
   type AddressRegion,
@@ -187,7 +188,8 @@ export function AddressEditor({
   const [query, setQuery] = useState(defaultQuery ?? "")
   // A seeded lookup waits for the person: mounting must not send an address to the geocoder.
   const [engaged, setEngaged] = useState(!defaultQuery)
-  const expanded = manual || !isEmptyAddress(value)
+  // A position alone does not open the parts: coordinates can arrive with no address to edit.
+  const expanded = manual || hasAddressParts(value)
   const shownError = error ?? (!expanded ? emptyError : undefined)
   // Every suggestion seen, so a cached result list still resolves to its address.
   const seen = useRef(new Map<string, AddressSuggestion>())

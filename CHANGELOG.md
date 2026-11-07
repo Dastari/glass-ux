@@ -20,6 +20,8 @@ has upgrade steps in the [migration guide](docs/migration.md).
 ### Fixed
 
 - DataTable: a selected card keeps its highlight while the pointer is over it.
+- AddressField and AddressInput: Enter manually focuses Street address as the fields open, not a frame
+  later, when it could take focus back from a field the person had already moved to.
 
 ## 0.18.0
 

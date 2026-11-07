@@ -23,7 +23,7 @@ import { addressFieldMessages } from "./messages.js"
  * Privacy: supply a host-owned geocoder adapter. The default adapter calls /api/geocode;
  * the consuming application implements that endpoint and owns its upstream privacy policy.
  */
-import { lazy, Suspense, useMemo, useRef, useState, type ReactNode, type Ref } from "react"
+import { lazy, Suspense, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type Ref } from "react"
 import { useField } from "@tanstack/react-form"
 import { IconHome, IconMapPin, IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -194,6 +194,14 @@ export function AddressEditor({
   // The lookup's own point for this address, so a hand-placed pin can be reset.
   const [lookupPoint, setLookupPoint] = useState<GeoPoint | null>(value.pinned ? null : value.location)
   const firstFieldRef = useRef<HTMLInputElement>(null)
+  // Enter manually hands focus to the first field in the commit that shows it. Waiting a frame
+  // could take focus back from a field the person had already moved to.
+  const focusFirstField = useRef(false)
+  useLayoutEffect(() => {
+    if (!focusFirstField.current) return
+    focusFirstField.current = false
+    firstFieldRef.current?.focus()
+  }, [expanded])
   // Held here so the failure outlives the list, which closes with the field's focus.
   const [lookupFailure, setLookupFailure] = useState<ReturnType<typeof geocoderFailure> | null>(null)
 
@@ -292,9 +300,9 @@ export function AddressEditor({
               size="xs"
               className="fa-address-manual"
               onClick={() => {
+                focusFirstField.current = true
                 setManual(true)
                 if (!value.country.code) onValueChange({ ...value, country: { code: homeCountry, name: countryName(homeCountry, locale) } })
-                requestAnimationFrame(() => firstFieldRef.current?.focus())
               }}
             >
               {messages.enterManually} </Button>

@@ -7,9 +7,9 @@ import families from "./families.generated.json";
 export const site = {
   title: "Glass UX",
   packageName: "glass-ux",
-  version: "0.19.1",
+  version: "0.19.2",
   repositoryUrl: "https://github.com/Dastari/glass-ux",
-  docsSourceUrl: "https://github.com/Dastari/glass-ux/blob/v0.19.1/docs/",
+  docsSourceUrl: "https://github.com/Dastari/glass-ux/blob/v0.19.2/docs/",
   collections: [{"id":"icons","name":"Icons","entry":"glass-ux/icons","family":"icons","section":"icons","description":"A shared family of scalable icons with accessible labels, theme-aware strokes and tree-shaken named imports.","sample":"IconSearch"}],
   badges: {"icons":"Foundation","charts":"Charts","ai":"Assistant components"},
   guides: [{"id":"getting-started","title":"Getting started"},{"id":"integration","title":"Existing applications"},{"id":"agent-adoption","title":"AI agent adoption"},{"id":"layout-contract","title":"Theme and layout"},{"id":"ui-rules","title":"Design rules"},{"id":"testing","title":"Testing"},{"id":"migration","title":"Migration"}] as { id: string; title: string }[],

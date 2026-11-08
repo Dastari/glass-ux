@@ -3,6 +3,27 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.1 → 0.19.2
+
+No code edits are needed.
+
+Behaviour to review:
+
+- On touch screens, text in inputs, textareas, selects and editable regions is at least 16 px. Remove any
+  override added to stop iPhone Safari zooming (such as `input { font-size: max(16px, …) }`). An element
+  whose own font size is larger than its parent's can carry `data-own-font-size` and set its own floor.
+- `RadioCard` titles wrap. Cards in a horizontal grid can differ in height when one title is longer; remove
+  any override that made titles wrap.
+- `PhoneInput.ref` is the number input. Replace a focus selector that skips `[aria-hidden='true']` with
+  `autoFocus` or the ref.
+- Remove overrides that enlarged `.fa-phone-country` or a pressable `.fa-level-gauge` on touch screens: their
+  hit areas now reach 44 px without the controls growing.
+
+New props:
+
+- `RadioCard.size`, `SignaturePad.maxHeight` and `SignatureField.maxHeight`, and standard input attributes on
+  `PhoneInput`, `PhoneField` and `MobileField` (`PhoneInputAttributes`).
+
 ## 0.19.0 → 0.19.1
 
 No code edits are needed.

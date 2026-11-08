@@ -4,6 +4,30 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.19.2
+
+### Added
+
+- RadioCard: `size="lg"` for questionnaires and consent on touch screens: a subtitle-size title, a
+  body-size description and a larger circle (#2).
+- SignaturePad and SignatureField: `maxHeight` (a CSS length or pixels) caps the signing area. The pad
+  narrows to keep its shape, so the saved drawing keeps its proportions and a phone held sideways leaves
+  room to scroll past it (#6).
+- PhoneInput, PhoneField and MobileField: standard input attributes (`enterKeyHint`, `autoComplete`,
+  `autoFocus`, `onKeyDown`, `onFocus`, `onPaste`, `data-*`…) reach the number input. New type
+  `PhoneInputAttributes` (#4).
+
+### Fixed
+
+- Text fields no longer zoom the page on iPhone Safari. On coarse pointers every text-entry element (inputs,
+  textareas, selects, editable regions, and the search boxes inside Select, Combobox and the country picker)
+  has at least 16 px text; control heights do not change (#1).
+- RadioCard: titles wrap instead of ending in an ellipsis (#2).
+- PhoneInput: the country picker's hit area reaches 44 px on touch screens without changing its size (#3).
+- LevelGauge: a pressable gauge's hit area reaches 44 px on touch screens without changing its size (#5).
+- PhoneInput: `autoFocus` and `ref` reach the number input, so an application can focus it without querying
+  for an `input`, which finds the country picker's hidden one first (#7).
+
 ## 0.19.1
 
 ### Added

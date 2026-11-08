@@ -3,7 +3,7 @@ import { useMessages } from "../../lib/i18n/index.js"
 import { phoneFieldMessages } from "./messages.js"
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox"
 import { Input as BaseInput } from "@base-ui/react/input"
-import { useMemo, useRef, useState, type ClipboardEvent, type FocusEvent, type MouseEvent, type Ref } from "react"
+import { useMemo, useRef, useState, type ClipboardEvent, type FocusEvent, type InputHTMLAttributes, type MouseEvent, type Ref } from "react"
 import { Field as BaseField } from "@base-ui/react/field"
 import { IconCheck, IconChevronDown, IconSearch } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
@@ -30,7 +30,16 @@ import {
 } from "./phone.js"
 import { popupContainer } from "../../lib/popup-container.js"
 
-export interface PhoneInputProps {
+/**
+ * Standard attributes PhoneInput passes to its number input (`enterKeyHint`, `autoComplete`,
+ * `autoFocus`, `onKeyDown`, `data-*` and the like). The props below replace the rest.
+ */
+export type PhoneInputAttributes = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "value" | "defaultValue" | "onChange" | "size" | "width" | "height" | "type" | "children" | "className" | "dangerouslySetInnerHTML" | "list" | "multiple" | "accept" | "checked" | "defaultChecked"
+>
+
+export interface PhoneInputProps extends PhoneInputAttributes {
   /** E.164 ("+61412345678"), with ";ext=204" for an extension. While the text cannot be read, the text as typed. */
   value?: string
   defaultValue?: string
@@ -71,6 +80,10 @@ export interface PhoneInputProps {
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
   /** Layout only. */
   className?: string
+  /**
+   * The number input, never the country picker's hidden input: focus it with `ref.current.focus()`
+   * or `autoFocus` rather than querying the component for an `input`.
+   */
   ref?: Ref<HTMLInputElement>
   /** Accessible name when a visible label does not name the control. */
   "aria-label"?: string
@@ -143,9 +156,14 @@ export function PhoneInput({
   name,
   id,
   onBlur,
+  onFocus,
+  onPaste: onPasteProp,
   className,
   ref,
   "aria-label": ariaLabel,
+  autoComplete,
+  inputMode = "tel",
+  ...inputAttributes
 }: PhoneInputProps) {
   const messages = useMessages(phoneFieldMessages)
 
@@ -192,6 +210,8 @@ export function PhoneInput({
   }
 
   const onPaste = (event: ClipboardEvent<HTMLInputElement>) => {
+    onPasteProp?.(event)
+    if (event.defaultPrevented) return
     const pasted = event.clipboardData.getData("text/plain")
     if (!lib || !isInternationalText(pasted)) return
     const parsed = parsePhone(lib, pasted, undefined)
@@ -270,18 +290,22 @@ export function PhoneInput({
         readOnly={readOnly}
       />
       <BaseInput
+        {...inputAttributes}
         ref={setRefs}
         id={id}
         name={name}
         type="tel"
-        inputMode="tel"
-        autoComplete={kind === "mobile" ? "mobile tel" : "tel"}
+        inputMode={inputMode}
+        autoComplete={autoComplete ?? (kind === "mobile" ? "mobile tel" : "tel")}
         className="fa-control-input fa-phone-number"
         data-identifier=""
         value={view.text}
         onValueChange={setText}
         onPaste={onPaste}
-        onFocus={() => setFocused(true)}
+        onFocus={(event) => {
+          setFocused(true)
+          onFocus?.(event)
+        }}
         onBlur={(event) => {
           setFocused(false)
           tidy()

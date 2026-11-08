@@ -126,6 +126,14 @@ export default function SignaturePadSection() {
         </FormStack>
       </Specimen>
 
+      <Specimen title="Height limit" description="maxHeight caps the signing area. The pad narrows to keep its shape, so a phone held sideways still has room to scroll past it.">
+        <div className="w-full" data-testid="signature-max-height">
+          <Field label="Signature">
+            <SignaturePad aspectRatio={2} maxHeight={160} />
+          </Field>
+        </div>
+      </Specimen>
+
       <Specimen title="Export" description="signatureToSvg and signatureToPng render the stored strokes in black on a transparent background, at any width.">
         <ExportDemo />
       </Specimen>

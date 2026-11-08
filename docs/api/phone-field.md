@@ -27,7 +27,7 @@ PhoneInput bound to a string form field (E.164). Pair it with `phoneSchema()`.
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | priority | `readonly string[] \| undefined` | See type | no | — | Countries listed first in the picker. Default: the default country, then AU and NZ. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
-| ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
+| ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | The number input, never the country picker's hidden input: focus it with `ref.current.focus()` or `autoFocus` rather than querying the component for an `input`. |
 | required | `boolean \| undefined` | false, true | no | — | Shows the required marker. Pass `required` to the control as well. |
 | size | `"sm" \| "md" \| "lg" \| undefined` | "sm", "md", "lg" | no | — | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | warning | `ReactNode` | See type | no | — | Non-blocking warning in the reserved message slot; errors take precedence. |
@@ -38,3 +38,5 @@ Inherited properties:
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | disabled | `boolean \| undefined` | false, true | no | — | Whether the component should ignore user interaction. Takes precedence over the `disabled` prop on the `<Field.Control>` component. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

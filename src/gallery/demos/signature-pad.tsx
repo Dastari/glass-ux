@@ -126,20 +126,32 @@ export default function SignaturePadSection() {
       </Specimen>
 
       <Specimen
+        title="Height limit"
+        description="maxHeight caps the signing area. The pad narrows to keep its shape, so a phone held sideways still has room to scroll past it."
+        specimenKey="signature-pad:default:2"
+      >
+        <div className="w-full" data-testid="signature-max-height">
+          <Field label="Signature">
+            <SignaturePad aspectRatio={2} maxHeight={160} />
+          </Field>
+        </div>
+      </Specimen>
+
+      <Specimen
         title="Export"
         description="signatureToSvg and signatureToPng render the stored strokes in black on a transparent background, at any width."
-        specimenKey="signature-pad:default:2"
+        specimenKey="signature-pad:default:3"
       >
         <ExportDemo />
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop specimenKey="signature-pad:default:3">
+      <Specimen title="Over glass and imagery" backdrop specimenKey="signature-pad:default:4">
         <Field label="Signature">
           <SignaturePad defaultValue={SIGNED} />
         </Field>
       </Specimen>
 
-      <ContainerLab specimenKey="signature-pad:default:4">
+      <ContainerLab specimenKey="signature-pad:default:5">
         <div className="flex h-full items-center p-1">
           <SignaturePad aria-label="Signature" defaultValue={SIGNED} />
         </div>

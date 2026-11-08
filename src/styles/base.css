@@ -95,3 +95,24 @@
   :root { --safe-inline-start: var(--safe-left); --safe-inline-end: var(--safe-right); }
   :root:dir(rtl) { --safe-inline-start: var(--safe-right); --safe-inline-end: var(--safe-left); }
 }
+
+/*
+ * iPhone Safari zooms the page when a focused field's text is under 16 CSS px, and stays
+ * zoomed. On touch screens every text-entry element gets a 16px floor; line heights are
+ * lengths, so control heights do not change. In the utilities layer so that component
+ * rules (`font: inherit`, a small size) cannot lower it; text larger than its parent's
+ * marks itself `data-own-font-size` and applies the floor to its own size.
+ */
+@layer utilities {
+  @media (pointer: coarse) {
+    :is(
+        input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="button"], [type="submit"], [type="reset"], [type="image"], [type="hidden"]),
+        textarea,
+        select,
+        [contenteditable]:not([contenteditable="false"])
+      ):not([data-own-font-size]) {
+      font-size: max(16px, 1em); /* tokens:allow iOS Safari's zoom threshold is in CSS px, not the UI scale */
+    }
+  }
+}
+

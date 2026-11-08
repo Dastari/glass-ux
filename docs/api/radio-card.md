@@ -15,6 +15,7 @@ device"). Chosen = accent-soft fill with an accent edge.
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | description | `ReactNode` | See type | no | — | One line that says what choosing this does ("View and control the device"). |
 | icon | `ReactNode` | See type | no | — | Optional icon tile. Pass the icon without a size. |
+| size | `"md" \| "lg" \| undefined` | "md", "lg" | no | "md" | `lg` suits questionnaires and consent on touch screens, where the answer is the main text: a subtitle-size title, body-size description and a larger circle. Default md. Titles and descriptions wrap at every size. |
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
 | tone | `ChoiceTone \| undefined` | "danger", "warning", "success", "accent" | no | — | The semantic tone. Use danger and warning for consequences and states. |
 

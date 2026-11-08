@@ -52,6 +52,9 @@ gains nothing from it, including `docs/docs-kit.md`, which `excluded()` leaves o
 
 ## Working in this repository
 
+- The open GitHub issues (`gh issue list`) are the work queue. Check them at the start of a
+  session and after finishing a task; fix them, close each with the commit or release that
+  fixed it, and ship the fixes in a patch release.
 - The docs app reads the built `dist`, not `src`: run `pnpm build` (after `pnpm docs:api` for
   catalogue changes) before checking a page in the dev server.
 - Playwright reuses any server already on its port (4220 by default). When several checkouts

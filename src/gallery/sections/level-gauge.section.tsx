@@ -52,6 +52,35 @@ function RiskHelp({ open, onOpenChange }: { open: boolean; onOpenChange: (open: 
   )
 }
 
+function VisitsTable() {
+  const [help, setHelp] = useState(false)
+  return (
+    <>
+      <table className="w-full max-w-2xl text-left" data-testid="level-gauge-table">
+        <thead className="type-caption text-fg-muted">
+          <tr>
+            <th className="py-2 font-medium">Visitor</th>
+            <th className="py-2 font-medium">Company</th>
+            <th className="py-2 font-medium">Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          {VISITS.map((visit) => (
+            <tr key={visit.name} className="border-t border-line">
+              <td className="py-2">{visit.name}</td>
+              <td className="py-2 text-fg-muted">{visit.company}</td>
+              <td className="py-2">
+                <LevelGauge label="Risk" levels={RISK} value={visit.risk} previous={visit.before} previousLabel="Before mitigation" onPress={() => setHelp(true)} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <RiskHelp open={help} onOpenChange={setHelp} />
+    </>
+  )
+}
+
 function SummaryDemo() {
   const [help, setHelp] = useState(false)
   return (
@@ -74,27 +103,8 @@ function SummaryDemo() {
 export default function LevelGaugeSection() {
   return (
     <SectionPage>
-      <Specimen title="In a table" description="The sm tier: segments and the level's name on one line. An earlier, higher level stays traced; a visitor not yet screened reads Not rated in the same space." layout="stack" wide>
-        <table className="w-full max-w-2xl text-left" data-testid="level-gauge-table">
-          <thead className="type-caption text-fg-muted">
-            <tr>
-              <th className="py-2 font-medium">Visitor</th>
-              <th className="py-2 font-medium">Company</th>
-              <th className="py-2 font-medium">Risk</th>
-            </tr>
-          </thead>
-          <tbody>
-            {VISITS.map((visit) => (
-              <tr key={visit.name} className="border-t border-line">
-                <td className="py-2">{visit.name}</td>
-                <td className="py-2 text-fg-muted">{visit.company}</td>
-                <td className="py-2">
-                  <LevelGauge label="Risk" levels={RISK} value={visit.risk} previous={visit.before} previousLabel="Before mitigation" />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <Specimen title="In a table" description="The sm tier: segments and the level's name on one line. An earlier, higher level stays traced; a visitor not yet screened reads Not rated in the same space. Pressing one explains the levels." layout="stack" wide>
+        <VisitsTable />
       </Specimen>
 
       <Specimen title="In a summary" description="The md tier: the label and level, the earlier level and a note, full-width segments and the scale beneath. Pressing it explains the levels.">

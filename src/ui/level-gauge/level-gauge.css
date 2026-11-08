@@ -10,7 +10,7 @@
  *   md        the label and the name, a note (and the earlier level), full-width segments and
  *             the scale's names beneath, the current one in full colour; up to 24rem wide
  *   pressable with onPress the gauge is a button; its hover fill reaches past it without
- *             changing its size
+ *             changing its size, and on touch screens its hit area reaches --target-min
  */
 @layer components {
   .fa-level-gauge {
@@ -61,6 +61,16 @@
   }
   .fa-level-gauge[data-pressable]:focus-visible {
     outline-offset: var(--space-1);
+  }
+  /* A finger-sized target on touch screens (R20.4) without growing: the hit area reaches
+     --target-min, as Button's small sizes do. */
+  @media (pointer: coarse) {
+    .fa-level-gauge[data-pressable]::after {
+      content: "";
+      position: absolute;
+      inset-block: min(0px, calc((100% - var(--target-min)) / 2));
+      inset-inline: 0;
+    }
   }
 
   /* ── Tones ──────────────────────────────────────────────────────────────── */

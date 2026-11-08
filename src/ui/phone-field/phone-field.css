@@ -41,6 +41,7 @@
     display: contents;
   }
   .fa-phone-country {
+    position: relative;
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -82,6 +83,16 @@
   .fa-phone[data-size="sm"] .fa-phone-country {
     margin-block: var(--space-half);
     gap: var(--space-1);
+  }
+  /* A finger-sized target on touch screens (R20.4) without growing: the hit area reaches
+     --target-min, past the picker's inset from the box edge. */
+  @media (pointer: coarse) {
+    .fa-phone-country::after {
+      content: "";
+      position: absolute;
+      inset-block: min(0px, calc((100% - var(--target-min)) / 2));
+      inset-inline: 0;
+    }
   }
 
   /* ── Extension ─────────────────────────────────────────────────────────── */

@@ -24,6 +24,7 @@ and what was agreed.
 | defaultValue | `SignatureValue \| null \| undefined` | See type | no | null | The starting signature when uncontrolled. |
 | disabled | `boolean \| undefined` | false, true | no | false | Disables interaction while retaining the component’s disabled appearance. |
 | invalid | `boolean \| undefined` | false, true | no | — | Show the invalid state (set by SignatureField when its error shows). |
+| maxHeight | `string \| number \| undefined` | See type | no | — | The tallest the signing area gets: a CSS length ("50svh", "12rem") or pixels. The pad narrows to keep its shape, so on a phone held sideways it leaves room to scroll past. |
 | name | `string \| undefined` | See type | no | — | Name for a native form submission (a hidden input carries the value as JSON). |
 | onBlur | `((event: FocusEvent<HTMLDivElement>) => void) \| undefined` | See type | no | — | Called when focus leaves the pad, for form libraries' touched state. |
 | onValueChange | `((value: SignatureValue \| null) => void) \| undefined` | See type | no | — | Called after each stroke, undo, clear or typed change with the new signature (null when empty). |

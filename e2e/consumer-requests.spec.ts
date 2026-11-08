@@ -90,8 +90,8 @@ test("level gauges name their level and the earlier one, open their explanation,
   const errors = await open(page, "/components/level-gauge");
   const table = page.getByTestId("level-gauge-table");
   await expect(table).toBeVisible({ timeout: 30_000 });
-  await expect(table.getByText("Risk: Moderate (Before mitigation: High)")).toBeAttached();
-  await expect(table.getByText("Risk: Not rated")).toBeAttached();
+  await expect(table.getByRole("button", { name: "Risk: Moderate (Before mitigation: High)" })).toBeVisible();
+  await expect(table.getByRole("button", { name: "Risk: Not rated" })).toBeVisible();
   const summary = page.getByRole("button", { name: "Final risk: Moderate (Before mitigation: High)" }).first();
   await summary.click();
   await expect(page.getByRole("dialog", { name: "Risk levels" })).toBeVisible();

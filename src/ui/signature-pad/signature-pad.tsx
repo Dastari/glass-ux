@@ -32,6 +32,11 @@ export interface SignaturePadProps {
   allowTyped?: boolean
   /** Width ÷ height of the signing area. Default 3. The pad keeps this shape at every width. */
   aspectRatio?: number
+  /**
+   * The tallest the signing area gets: a CSS length ("50svh", "12rem") or pixels. The pad
+   * narrows to keep its shape, so on a phone held sideways it leaves room to scroll past.
+   */
+  maxHeight?: number | string
   /** Shows the signature without the toolbar; it cannot be changed. */
   readOnly?: boolean
   disabled?: boolean
@@ -85,6 +90,7 @@ export function SignaturePad({
   onValueChange,
   allowTyped = true,
   aspectRatio = 3,
+  maxHeight,
   readOnly = false,
   disabled = false,
   invalid,
@@ -208,7 +214,8 @@ export function SignaturePad({
     <div
       ref={rootRef}
       className={cx("fa-signature", className)}
-      style={{ "--_ratio": `${width} / ${height}` } as CSSProperties}
+      style={{ "--_ratio": `${width} / ${height}`, "--_max-h": maxHeight === undefined ? undefined : typeof maxHeight === "number" ? `${maxHeight}px` : maxHeight } as CSSProperties}
+      data-max-height={maxHeight === undefined ? undefined : ""}
       data-mode={mode}
       data-empty={empty ? "" : undefined}
       data-readonly={readOnly ? "" : undefined}
@@ -259,6 +266,7 @@ export function SignaturePad({
             ref={typedRef}
             id={ids.control}
             className="fa-signature-typed"
+            data-own-font-size=""
             style={{ "--_typed-size": `${(typedFontSize(typedText || t.typeYourName, width, height) / width) * 100}cqi` } as CSSProperties}
             value={typedText}
             placeholder={editable ? t.typeYourName : undefined}

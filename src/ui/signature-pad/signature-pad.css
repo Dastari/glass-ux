@@ -2,7 +2,8 @@
  * SignaturePad.
  *
  *   surface    the field box (fa-control) at a fixed aspect ratio, so it never resizes; the
- *              text-entry halo shows while it or its typed name has focus
+ *              text-entry halo shows while it or its typed name has focus. With maxHeight the
+ *              pad narrows rather than letterboxing, so the saved drawing keeps its shape
  *   line       a hairline signing line across the lower third; "Sign here" sits above its
  *              start while the pad is empty
  *   ink        filled stroke outlines in --fg, scaled with the box (SVG viewBox)
@@ -19,6 +20,10 @@
     position: relative;
     width: 100%;
     min-width: 0;
+  }
+  /* maxHeight: the pad narrows to keep its shape, so a sideways phone keeps room to scroll. */
+  .fa-signature[data-max-height] {
+    max-inline-size: calc(var(--_max-h) * var(--_ratio));
   }
   .fa-signature-surface {
     display: block;
@@ -83,6 +88,12 @@
     line-height: 1.2;
     text-align: center;
     outline: none;
+  }
+  /* The page-wide 16px floor for touch screens (base.css), applied to the fitted size. */
+  @media (pointer: coarse) {
+    .fa-signature-typed {
+      font-size: max(16px, var(--_typed-size, 10cqi)); /* tokens:allow iOS Safari's zoom threshold is in CSS px */
+    }
   }
   .fa-signature-typed::placeholder {
     color: var(--fg-subtle);

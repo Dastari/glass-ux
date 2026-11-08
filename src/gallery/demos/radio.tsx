@@ -126,7 +126,7 @@ export default function ChoiceSection() {
         </RadioGroup>
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop specimenKey="choice:default:7">
+      <Specimen title="Over glass and imagery" backdrop specimenKey="choice:default:8">
         <div className="flex flex-col gap-3">
           <Checkbox label="Wake devices before patching" defaultChecked />
           <Checkbox label="Skip devices on battery" />
@@ -138,7 +138,7 @@ export default function ChoiceSection() {
         </div>
       </Specimen>
 
-      <ContainerLab specimenKey="choice:default:9">
+      <ContainerLab specimenKey="choice:default:10">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-5 px-3">

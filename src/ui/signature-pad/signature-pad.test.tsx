@@ -78,3 +78,16 @@ describe("SignaturePad", () => {
     expect(JSON.parse(hidden!.value)).toEqual({ kind: "typed", text: "Ana Lima" })
   })
 })
+
+describe("SignaturePad maxHeight", () => {
+  it("narrows the pad to keep its shape", () => {
+    const { container, rerender } = render(<SignaturePad aria-label="Signature" aspectRatio={2} maxHeight="10rem" />)
+    const root = container.querySelector<HTMLElement>(".fa-signature")!
+    expect(root.hasAttribute("data-max-height")).toBe(true)
+    expect(root.style.getPropertyValue("--_max-h")).toBe("10rem")
+    rerender(<SignaturePad aria-label="Signature" aspectRatio={2} maxHeight={180} />)
+    expect(root.style.getPropertyValue("--_max-h")).toBe("180px")
+    rerender(<SignaturePad aria-label="Signature" aspectRatio={2} />)
+    expect(root.hasAttribute("data-max-height")).toBe(false)
+  })
+})

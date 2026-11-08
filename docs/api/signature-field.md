@@ -17,6 +17,7 @@ SignaturePad bound to a `SignatureValue | null` form field. Pair it with `signat
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | hint | `ReactNode` | See type | no | — | The message line's resting text. Only when the format or consequence is not obvious (R2.8). |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
+| maxHeight | `string \| number \| undefined` | See type | no | — | The tallest the signing area gets: a CSS length ("50svh", "12rem") or pixels. The pad narrows to keep its shape, so on a phone held sideways it leaves room to scroll past. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Shows the signature without the toolbar; it cannot be changed. |
 | required | `boolean \| undefined` | false, true | no | — | Shows the required marker. Pass `required` to the control as well. |

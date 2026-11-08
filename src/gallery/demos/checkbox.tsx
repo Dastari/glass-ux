@@ -144,7 +144,7 @@ export default function ChoiceSection() {
         <ParentGroup />
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop specimenKey="choice:default:7">
+      <Specimen title="Over glass and imagery" backdrop specimenKey="choice:default:8">
         <div className="flex flex-col gap-3">
           <Checkbox label="Wake devices before patching" defaultChecked />
           <Checkbox label="Skip devices on battery" />
@@ -159,7 +159,7 @@ export default function ChoiceSection() {
       <Specimen
         title="Consent"
         description="Explicit consent is a checkbox in a horizontal Field: the statement, and the message line for the error."
-        specimenKey="choice:default:8"
+        specimenKey="choice:default:9"
       >
         <div className="flex max-w-sm flex-col gap-3">
           <Field
@@ -172,7 +172,7 @@ export default function ChoiceSection() {
         </div>
       </Specimen>
 
-      <ContainerLab specimenKey="choice:default:9">
+      <ContainerLab specimenKey="choice:default:10">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-5 px-3">

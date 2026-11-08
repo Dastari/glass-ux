@@ -136,18 +136,38 @@
     gap: var(--space-half);
     min-width: 0;
   }
+  /* Titles wrap: an answer can be a whole sentence, and a sentence is never cut short (R8.2). */
   .fa-radio-card-title {
-    overflow: hidden;
     font-size: var(--type-body-size);
     line-height: var(--type-body-line);
     font-weight: var(--weight-medium);
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
   }
   .fa-radio-card-description {
     color: var(--fg-muted);
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
+    overflow-wrap: anywhere;
     text-wrap: pretty;
+  }
+
+  /* lg: questionnaires and consent on touch screens, where the answer is the main text. */
+  .fa-radio-card[data-size="lg"] {
+    padding: var(--space-4);
+  }
+  .fa-radio-card[data-size="lg"] .fa-radio-card-circle {
+    margin-top: calc((var(--type-subtitle-line) - var(--check-size) - var(--space-1)) / 2);
+  }
+  .fa-radio-card[data-size="lg"] .fa-radio-card-icon {
+    margin-block: calc((var(--type-subtitle-line) - var(--control-h-sm)) / 2) 0;
+  }
+  .fa-radio-card[data-size="lg"] .fa-radio-card-title {
+    font-size: var(--type-subtitle-size);
+    line-height: var(--type-subtitle-line);
+  }
+  .fa-radio-card[data-size="lg"] .fa-radio-card-description {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
   }
 }

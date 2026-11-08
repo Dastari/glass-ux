@@ -33,8 +33,10 @@ caret. libphonenumber-js loads with the first phone control.
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |
 | priority | `readonly string[] \| undefined` | See type | no | — | Countries listed first in the picker. Default: the default country, then AU and NZ. |
 | readOnly | `boolean \| undefined` | false, true | no | — | Displays the current value without allowing edits. |
-| ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | Receives the underlying element for focus or measurement. React 19 accepts ref as a normal prop. |
+| ref | `Ref<HTMLInputElement> \| undefined` | See type | no | — | The number input, never the country picker's hidden input: focus it with `ref.current.focus()` or `autoFocus` rather than querying the component for an `input`. |
 | required | `boolean \| undefined` | false, true | no | — | Marks the field as required; pair it with the corresponding schema validation. |
 | size | `"sm" \| "md" \| "lg" \| undefined` | "sm", "md", "lg" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | value | `string \| undefined` | See type | no | — | E.164 ("+61412345678"), with ";ext=204" for an extension. While the text cannot be read, the text as typed. |
 | width | `FieldWidth \| undefined` | "full", "short", "medium" | no | "medium" | Content width (R15.6). Default medium. |
+
+Also accepts the element’s standard HTML attributes and React DOM events.

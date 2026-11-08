@@ -115,6 +115,12 @@ export interface RadioCardProps<V extends string = string>
   /** Optional icon tile. Pass the icon without a size. */
   icon?: ReactNode
   tone?: ChoiceTone
+  /**
+   * `lg` suits questionnaires and consent on touch screens, where the answer is the main
+   * text: a subtitle-size title, body-size description and a larger circle. Default md.
+   * Titles and descriptions wrap at every size.
+   */
+  size?: "md" | "lg"
 }
 
 /**
@@ -122,7 +128,7 @@ export interface RadioCardProps<V extends string = string>
  * needs a sentence, typically in a dialog ("Interactive session · View and control the
  * device"). Chosen = accent-soft fill with an accent edge.
  */
-export function RadioCard<V extends string = string>({ title, description, icon, tone, className, ...rest }: RadioCardProps<V>) {
+export function RadioCard<V extends string = string>({ title, description, icon, tone, size = "md", className, ...rest }: RadioCardProps<V>) {
   const id = useId()
   return (
     <FieldOptionItem>
@@ -134,10 +140,11 @@ export function RadioCard<V extends string = string>({ title, description, icon,
       render={<button type="button" />}
       className={cx("fa-radio-card fa-lit", className)}
       data-tone={tone === "accent" ? undefined : tone}
+      data-size={size === "md" ? undefined : size}
       aria-labelledby={`${id}-title`}
       aria-describedby={description ? `${id}-description` : undefined}
     >
-      <span className="fa-radio fa-radio-card-circle" aria-hidden>
+      <span className="fa-radio fa-radio-card-circle" data-size={size === "md" ? undefined : size} aria-hidden>
         <BaseRadio.Indicator className="fa-radio-indicator" />
       </span>
       {icon ? (

@@ -147,7 +147,30 @@ export default function ChoiceSection() {
         <SessionCards orientation="horizontal" />
       </Specimen>
 
-      <Specimen title="Over glass and imagery" backdrop specimenKey="choice:default:7">
+      <Specimen
+        title="Answer cards"
+        description='size="lg" suits questionnaires on touch screens, where the answer is the title. Titles wrap at every size.'
+        layout="stack"
+        specimenKey="choice:default:7"
+      >
+        <div className="max-w-sm" data-testid="answer-cards">
+          <RadioGroup variant="cards" legend="Have you visited another site in the last 7 days?">
+            <RadioCard
+              size="lg"
+              value="yes"
+              title="Yes, I have visited another site in the last 7 days"
+              description="Wear the overshoes at the gate."
+            />
+            <RadioCard
+              size="lg"
+              value="no"
+              title="No, I have not visited another site in the last 7 days"
+            />
+          </RadioGroup>
+        </div>
+      </Specimen>
+
+      <Specimen title="Over glass and imagery" backdrop specimenKey="choice:default:8">
         <div className="flex flex-col gap-3">
           <Checkbox label="Wake devices before patching" defaultChecked />
           <Checkbox label="Skip devices on battery" />
@@ -159,7 +182,7 @@ export default function ChoiceSection() {
         </div>
       </Specimen>
 
-      <ContainerLab specimenKey="choice:default:9">
+      <ContainerLab specimenKey="choice:default:10">
         {(preset) =>
           preset?.id === "row" ? (
             <div className="flex h-full items-center gap-5 px-3">

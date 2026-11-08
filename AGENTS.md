@@ -118,7 +118,10 @@ gains nothing from it, including `docs/docs-kit.md`, which `excluded()` leaves o
 ## Releases
 
 The owner releases without waiting for the GitHub e2e run (about 75 minutes), and still
-decides when to publish. The local route:
+decides when to publish, with one standing exception: an hourly scheduled sweep fixes open
+issues and publishes them as a patch release once every gate below passes. Anything breaking,
+a visual change the owner must approve, or a change to a settled decision goes to the owner
+instead (a `needs-owner` label and a comment). The local route:
 
 1. `pnpm check`, the browser specs the change affects, `GLASS_UX_BASE=/glass-ux/ pnpm
    docs:build`, `pnpm pack:check`, and `pnpm test:production` for larger releases.

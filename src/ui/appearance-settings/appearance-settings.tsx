@@ -30,6 +30,7 @@ import { appearanceSettingsMessages } from "./messages.js"
 
 /**
  * The groups AppearanceSettings can show:
+ *   style       Glass or Flat (opt-in)
  *   theme       mode and palette
  *   colours     the person's own accent, second accent and canvas tint
  *   background  the canvas style, and a picture for the Picture background
@@ -38,9 +39,9 @@ import { appearanceSettingsMessages } from "./messages.js"
  *   shape       corner rounding and line weight
  *   fonts       interface, heading and code fonts
  */
-export type AppearanceSection = "theme" | "colours" | "background" | "display" | "size" | "shape" | "fonts"
+export type AppearanceSection = "style" | "theme" | "colours" | "background" | "display" | "size" | "shape" | "fonts"
 
-/** The default groups: everything a person usually changes. Shape and fonts are opt-in. */
+/** The default groups: everything a person usually changes. Style, shape and fonts are opt-in. */
 export const DEFAULT_APPEARANCE_SECTIONS: readonly AppearanceSection[] = ["theme", "colours", "background", "display", "size"]
 
 export interface AppearanceSettingsProps {
@@ -55,6 +56,12 @@ export interface AppearanceSettingsProps {
    * `"disable"` (default) shows it, unchangeable, with "Set by your organisation"; `"hide"` leaves it out.
    */
   locked?: "disable" | "hide"
+  /**
+   * What the rows Flat overrides (Material, Background and Animation) look like while the style
+   * is Flat: `"disable"` (default) shows them, unchangeable, with "Not used in Flat"; `"hide"`
+   * leaves them out. Their stored values are kept and apply again in Glass.
+   */
+  flat?: "disable" | "hide"
   /** Show a "Reset to defaults" button after the groups. Default true. */
   reset?: boolean
   /** Wording overrides. */
@@ -75,6 +82,7 @@ export function AppearanceSettings({
   backgrounds = BACKGROUNDS,
   palettes = PALETTES,
   locked = "disable",
+  flat: flatMode = "disable",
   reset = true,
   labels,
   className,
@@ -107,7 +115,36 @@ export function AppearanceSettings({
   }
   const note = (fixed: boolean, description: ReactNode) => (fixed ? t.locked : description)
 
+  // Flat draws solid panels on a plain canvas, without motion: the rows for those do nothing there.
+  const inFlat = appearance.style === "flat"
+  /** A row Flat overrides: hidden, or fixed with "Not used in Flat", while the style is Flat. */
+  const flatRow = (key: keyof Appearance | Array<keyof Appearance>, render: (fixed: boolean, overridden: boolean) => ReactNode) =>
+    inFlat && flatMode === "hide" ? null : row(key, (fixed) => render(fixed || inFlat, inFlat && !fixed))
+  const flatNote = (fixed: boolean, overridden: boolean, description: ReactNode) => (overridden ? t.notInFlat : note(fixed, description))
+
   const groups: Record<AppearanceSection, () => ReactNode> = {
+    style: () =>
+      row("style", (fixed) => (
+        <FormGroup key="style" label={t.style}>
+          <SettingRow
+            label={t.style}
+            description={note(fixed, t.styleDescription)}
+            disabled={fixed}
+            control={
+              <Segmented<"glass" | "flat">
+                aria-label={t.style}
+                disabled={fixed}
+                value={appearance.style ?? "glass"}
+                onValueChange={(style) => update({ style })}
+                options={[
+                  { value: "glass", label: t.styleGlass },
+                  { value: "flat", label: t.styleFlat },
+                ]}
+              />
+            }
+          />
+        </FormGroup>
+      )),
     theme: () => (
       <FormGroup key="theme" label={t.theme}>
         {row("mode", (fixed) => (
@@ -183,8 +220,9 @@ export function AppearanceSettings({
       ) : null
     },
     background: () =>
-      row(["background", "backgroundImage"], (fixed) => (
+      flatRow(["background", "backgroundImage"], (fixed, overridden) => (
         <FormGroup key="background" label={t.background}>
+          {overridden ? <p className="fa-appearance-note">{t.notInFlat}</p> : null}
           <BackgroundTiles
             label={t.background}
             messages={t}
@@ -197,6 +235,7 @@ export function AppearanceSettings({
             <PictureRow
               t={t}
               disabled={fixed || isLocked("backgroundImage")}
+              note={overridden ? t.notInFlat : undefined}
               hasPicture={Boolean(appearance.backgroundImage)}
               onPicture={(backgroundImage) => update({ background: "image", backgroundImage })}
             />
@@ -205,10 +244,10 @@ export function AppearanceSettings({
       )),
     display: () => (
       <FormGroup key="display" label={t.display}>
-        {row("glass", (fixed) => (
+        {flatRow("glass", (fixed, overridden) => (
           <SettingRow
             label={t.material}
-            description={note(fixed, t.materialDescription)}
+            description={flatNote(fixed, overridden, t.materialDescription)}
             disabled={fixed}
             control={
               <Segmented<Appearance["glass"]>
@@ -244,10 +283,10 @@ export function AppearanceSettings({
             }
           />
         ))}
-        {row("motion", (fixed) => (
+        {flatRow("motion", (fixed, overridden) => (
           <SettingRow
             label={t.motion}
-            description={note(fixed, t.motionDescription)}
+            description={flatNote(fixed, overridden, t.motionDescription)}
             disabled={fixed}
             control={
               <Segmented<Appearance["motion"]>
@@ -441,11 +480,14 @@ function BackgroundTiles({
 function PictureRow({
   t,
   disabled,
+  note,
   hasPicture,
   onPicture,
 }: {
   t: typeof appearanceSettingsMessages.defaults
   disabled: boolean
+  /** Shown in place of the description while the row does nothing ("Not used in Flat"). */
+  note?: string
   hasPicture: boolean
   onPicture: (url: string | null) => void
 }) {
@@ -454,7 +496,7 @@ function PictureRow({
   return (
     <SettingRow
       label={t.picture}
-      description={error ? undefined : disabled ? t.locked : t.pictureDescription}
+      description={error ? undefined : (note ?? (disabled ? t.locked : t.pictureDescription))}
       error={error ? t.pictureError : undefined}
       status={error ? "error" : undefined}
       disabled={disabled}

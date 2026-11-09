@@ -191,6 +191,9 @@ instead (a `needs-owner` label and a comment). The local route:
   because focus stays in the combobox input while keys scroll the popup's regions.
 - Base UI hides the rest of the page from assistive technology while any combobox popup is open
   (`focusManagerModal`), and offers no prop for it. Autocomplete only avoids it with nothing to show.
+- Blur as a person's preference (#9, `needs-owner`): AppearanceSettings has an opt-in Style row since
+  0.19.3, but blur stays the application's `glassRendering` under the Settled decision above. The issue
+  asks for a stored, resettable blur preference restored before first paint; that needs the owner.
 - Next.js support is verified with webpack (`pnpm test:next`), not Turbopack; forced colours
   only with Chromium's emulation, not Windows High Contrast itself.
 

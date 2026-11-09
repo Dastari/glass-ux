@@ -34,11 +34,11 @@ export default function AppearanceSettingsSection() {
 
       <Specimen
         title="On a page"
-        description="The same rows anywhere there is room. Pick the groups an application offers; shape and fonts are opt-in."
+        description='The same rows anywhere there is room. Pick the groups an application offers; style, shape and fonts are opt-in. In Flat, the rows Flat overrides say "Not used in Flat", or flat="hide" leaves them out.'
         layout="stack"
       >
-        <div className="max-w-3xl">
-          <AppearanceSettings sections={["theme", "colours", "background"]} reset={false} />
+        <div className="max-w-3xl" data-testid="appearance-page">
+          <AppearanceSettings sections={["style", "theme", "colours", "background", "display", "size"]} reset={false} />
         </div>
       </Specimen>
 
@@ -50,7 +50,7 @@ export default function AppearanceSettingsSection() {
         ]}
         dont={[
           "Don't build a second appearance menu beside this one; one place keeps preferences consistent.",
-          "Don't hide the Animation row: Still is an accessibility setting.",
+          "Don't hide the Animation row: Still is an accessibility setting. Flat is always still, so flat=\"hide\" may leave it out there.",
         ]}
       />
     </SectionPage>

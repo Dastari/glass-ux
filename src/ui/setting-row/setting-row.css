@@ -88,6 +88,12 @@
     max-width: 100%;
     margin-inline-start: auto;
   }
+  /* A Slider has no width of its own, and a content-sized slot gives it none: its slot takes
+     --_slider-w, narrowing in a narrow row. */
+  .fa-setting-row-control:has(> .fa-slider) {
+    --_slider-w: 14rem;
+    flex: 0 1 var(--_slider-w);
+  }
 
   /* ── In-place save status ──────────────────────────────────────────────── */
   .fa-setting-row-status {

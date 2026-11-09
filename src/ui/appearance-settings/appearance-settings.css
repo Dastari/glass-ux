@@ -63,9 +63,12 @@
     flex-wrap: wrap;
     gap: var(--space-2);
   }
-  .fa-appearance-slider {
-    --_width: 14rem;
-    width: min(var(--_width), 100%);
+  /* The groups Flat overrides say so above their tiles. */
+  .fa-appearance-note {
+    margin: 0;
+    color: var(--fg-subtle);
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
   }
   .fa-appearance-reset {
     display: flex;

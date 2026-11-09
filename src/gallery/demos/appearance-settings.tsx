@@ -42,12 +42,15 @@ export default function AppearanceSettingsSection() {
 
       <Specimen
         title="On a page"
-        description="The same rows anywhere there is room. Pick the groups an application offers; shape and fonts are opt-in."
+        description='The same rows anywhere there is room. Pick the groups an application offers; style, shape and fonts are opt-in. In Flat, the rows Flat overrides say "Not used in Flat", or flat="hide" leaves them out.'
         layout="stack"
         specimenKey="appearance-settings:default:1"
       >
-        <div className="max-w-3xl">
-          <AppearanceSettings sections={["theme", "colours", "background"]} reset={false} />
+        <div className="max-w-3xl" data-testid="appearance-page">
+          <AppearanceSettings
+            sections={["style", "theme", "colours", "background", "display", "size"]}
+            reset={false}
+          />
         </div>
       </Specimen>
     </SectionPage>

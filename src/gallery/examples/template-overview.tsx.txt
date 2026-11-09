@@ -167,7 +167,7 @@ export default function OverviewTemplate() {
           ))}
         </div>
         <div className="grid gap-panels @5xl:grid-cols-3">
-          <Panel className="@5xl:col-span-2">
+          <Panel material="card" className="@5xl:col-span-2">
             <PanelHeader title="Hours by discipline" />
             <PanelBody>
               <div className="h-72">
@@ -182,7 +182,7 @@ export default function OverviewTemplate() {
               </div>
             </PanelBody>
           </Panel>
-          <Panel>
+          <Panel material="card">
             <PanelHeader title="Recent activity" />
             <PanelBody>
               <ActivityFeed aria-label="Recent activity" items={ACTIVITY} />

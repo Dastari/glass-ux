@@ -79,7 +79,7 @@ export default function InboxTemplate() {
   return (
     <div className="@container/screen h-full min-h-0 p-gutter">
       <div className="grid h-full min-h-0 gap-panels @3xl/screen:grid-cols-2">
-        <Panel className={open ? "hidden min-h-0 @3xl/screen:flex" : "min-h-0"}>
+        <Panel material="card" className={open ? "hidden min-h-0 @3xl/screen:flex" : "min-h-0"}>
           <PanelBody className="flex min-h-0 flex-col">
             <NotificationList
               aria-label="Inbox"
@@ -101,7 +101,7 @@ export default function InboxTemplate() {
             />
           </PanelBody>
         </Panel>
-        <Panel ref={pane} tabIndex={-1} scroll className={open ? "min-h-0" : "hidden min-h-0 @3xl/screen:flex"} aria-label="Message">
+        <Panel ref={pane} tabIndex={-1} material="card" scroll className={open ? "min-h-0" : "hidden min-h-0 @3xl/screen:flex"} aria-label="Message">
           {open ? (
             <>
               <PanelHeader

@@ -103,7 +103,7 @@ export default function RecordsTemplate() {
   return (
     <div className="@container/screen h-full min-h-0 p-gutter">
       <div className="grid h-full min-h-0 gap-panels @4xl/screen:grid-cols-3">
-        <Panel className={open ? "hidden min-h-0 @4xl/screen:col-span-2 @4xl/screen:flex" : "min-h-0 @4xl/screen:col-span-2"} aria-label="Projects">
+        <Panel material="card" className={open ? "hidden min-h-0 @4xl/screen:col-span-2 @4xl/screen:flex" : "min-h-0 @4xl/screen:col-span-2"} aria-label="Projects">
           <PanelBody className="flex min-h-0 flex-col">
             <DataTable
               id="template-projects"
@@ -127,7 +127,7 @@ export default function RecordsTemplate() {
             />
           </PanelBody>
         </Panel>
-        <Panel ref={pane} tabIndex={-1} scroll className={open ? "min-h-0" : "hidden min-h-0 @4xl/screen:flex"} aria-label="Project details">
+        <Panel ref={pane} tabIndex={-1} material="card" scroll className={open ? "min-h-0" : "hidden min-h-0 @4xl/screen:flex"} aria-label="Project details">
           {open ? (
             <>
               <PanelHeader

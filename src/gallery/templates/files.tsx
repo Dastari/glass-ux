@@ -145,7 +145,7 @@ export default function FilesTemplate() {
   };
   return (
     <div className="@container h-full min-h-0 p-gutter">
-      <Panel className="h-full min-h-0" aria-label="Files">
+      <Panel material="card" className="h-full min-h-0" aria-label="Files">
         <SplitPane
           name="template-files"
           storageKey={null}

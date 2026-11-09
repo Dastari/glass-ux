@@ -973,6 +973,12 @@
   :root[data-glass-rendering="none"] .fa-panel[data-scroll] > .fa-panel-body {
     will-change: scroll-position;
   }
+  /* A card panel has no blurred layer to make its scrollers compositor layers, with or
+     without blur on the page, so they are promoted for the same reason. */
+  .glass-card.fa-panel [data-scroll-container],
+  .glass-card.fa-panel[data-scroll] > .fa-panel-body {
+    will-change: scroll-position;
+  }
   /* Over imagery the frosted fills become the opaque ones. */
   :root[data-glass="solid"] .over-imagery,
   [data-glass="solid"]:not(:root) .over-imagery {

@@ -128,7 +128,7 @@ export default function SettingsTemplate() {
       <VerticalTabs.Root items={SECTIONS} defaultValue="profile" aria-label="Settings sections" className="min-h-0 flex-1">
         {SECTIONS.map((section) => (
           <VerticalTabs.Panel key={section.value} value={section.value} className="h-full min-h-0">
-            <Panel scroll className="h-full" aria-label={section.label}>
+            <Panel material="card" scroll className="h-full" aria-label={section.label}>
               <PanelBody>
                 {section.value === "profile" ? <ProfileSection /> : null}
                 {section.value === "notifications" ? <NotificationsSection /> : null}

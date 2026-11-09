@@ -80,6 +80,12 @@ export interface PanelProps extends ComponentProps<"section"> {
   compact?: boolean;
   /** This panel's own material level; see Surface `glass`. Default: the page's. */
   glass?: GlassLevel;
+  /**
+   * `panel` (default) blurs what is behind it. `card` keeps the panel's rim and fill without the
+   * blur, for a pane that scrolls or holds content that scrolls: a blurred layer is blurred
+   * again on every frame its content moves (docs/performance.md). Keep blur for framing chrome.
+   */
+  material?: "panel" | "card";
 }
 
 /**
@@ -87,12 +93,12 @@ export interface PanelProps extends ComponentProps<"section"> {
  * Every Panel is an inline-size container named `panel`, so anything inside it lays out
  * against the panel's width — never the viewport's.
  */
-export function Panel({ scroll = false, compact = false, glass, className, ...rest }: PanelProps) {
+export function Panel({ scroll = false, compact = false, glass, material = "panel", className, ...rest }: PanelProps) {
   return (
     <PanelScroll value={scroll}>
       <section
         {...rest}
-        className={cx("glass-panel fa-surface fa-panel", className)}
+        className={cx(material === "card" ? "glass-card" : "glass-panel", "fa-surface fa-panel", className)}
         data-radius="surface"
         data-scroll={scroll ? "" : undefined}
         data-compact={compact ? "" : undefined}

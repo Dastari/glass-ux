@@ -4,6 +4,25 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.19.3
+
+### Added
+
+- AppearanceSettings: a `"style"` section offers Glass or Flat. It is opt-in, like shape and fonts:
+  `sections={["style", ...DEFAULT_APPEARANCE_SECTIONS]}`. The choice applies at once, is stored and is
+  covered by Reset (#9).
+- AppearanceSettings: `flat` sets how the rows Flat overrides look while the style is Flat: `"disable"`
+  (default) or `"hide"` (#10).
+
+### Fixed
+
+- SettingRow: a Slider in its control draws at 14rem, narrowing in a narrow row. The control slot sized to
+  its content, so the slider had no width, track or thumb. This includes AppearanceSettings' Interface
+  size, Corner rounding and Line weight (#8).
+- AppearanceSettings: in Flat, Material, Background and Animation say "Not used in Flat" and cannot be
+  changed, since Flat draws solid panels on a plain canvas without motion. Their stored choices apply
+  again in Glass (#10).
+
 ## 0.19.2
 
 ### Added

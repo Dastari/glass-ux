@@ -3,6 +3,22 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.2 → 0.19.3
+
+No code edits are needed.
+
+Behaviour to review:
+
+- A `Slider` in a `SettingRow` control now takes 14rem. Remove overrides such as
+  `.fa-appearance-slider { width: 14rem }`. A slider given its own width keeps it.
+- `AppearanceSettings` in Flat shows Material, Background and Animation as fixed, with "Not used in
+  Flat". Pass `flat="hide"` to leave them out instead.
+
+New props:
+
+- `AppearanceSettings.flat`, and `"style"` in `AppearanceSection`. If you added your own Style row above
+  the panel, you can use the section instead.
+
 ## 0.19.1 → 0.19.2
 
 No code edits are needed.

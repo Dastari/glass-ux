@@ -92,6 +92,34 @@ describe("AppearanceSettings", () => {
     expect(document.documentElement.dataset.style).toBe("glass")
   })
 
+  it("stores blur as a preference from the style group, over the site-wide default, and resets to it", () => {
+    configureAppearance({ defaults: { glassRendering: "none" } })
+    render(
+      <AppearanceProvider>
+        <AppearanceSettings sections={["style"]} />
+      </AppearanceProvider>,
+    )
+    const blur = segmented("Blur")
+    expect(within(blur).getByRole("button", { name: "Off" }).getAttribute("aria-pressed")).toBe("true")
+    expect(document.documentElement.dataset.glassRendering).toBe("none")
+    fireEvent.click(within(blur).getByRole("button", { name: "On" }))
+    expect(stored().glassRendering).toBe("live")
+    expect(document.documentElement.dataset.glassRendering).toBeUndefined()
+    fireEvent.click(screen.getByRole("button", { name: "Reset to defaults" }))
+    expect(document.documentElement.dataset.glassRendering).toBe("none")
+  })
+
+  it("shows a locked blur as set by the organisation", () => {
+    configureAppearance({ locked: { glassRendering: "none" } })
+    render(
+      <AppearanceProvider>
+        <AppearanceSettings sections={["style"]} />
+      </AppearanceProvider>,
+    )
+    expect(within(segmented("Blur")).getByRole("button", { name: "On" }).hasAttribute("disabled")).toBe(true)
+    expect(screen.getByText("Set by your organisation")).toBeTruthy()
+  })
+
   it("leaves the style group out by default", () => {
     render(
       <AppearanceProvider>
@@ -114,7 +142,8 @@ describe("AppearanceSettings", () => {
     expect(within(material).getByRole("button", { name: "Glass" }).hasAttribute("disabled")).toBe(true)
     expect(within(segmented("Animation")).getByRole("button", { name: "Still" }).hasAttribute("disabled")).toBe(true)
     expect(within(screen.getByRole("radiogroup", { name: "Background" })).getByRole("radio", { name: "Forest" }).hasAttribute("data-disabled")).toBe(true)
-    expect(screen.getAllByText("Not used in Flat.")).toHaveLength(3)
+    expect(screen.getAllByText("Not used in Flat.")).toHaveLength(4)
+    expect(segmented("Blur").querySelector("button")!.hasAttribute("disabled")).toBe(true)
     expect(within(segmented("Density")).getByRole("button", { name: "Compact" }).hasAttribute("disabled")).toBe(false)
 
     rerender(panel("hide"))

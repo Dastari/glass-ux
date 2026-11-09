@@ -37,8 +37,11 @@ describe("exportAppearance", () => {
 
   it("carries the application's glass rendering", () => {
     configureAppearance({ glassRendering: "none" });
-    expect(exportAppearance({}).theme.glassRendering).toBe("none");
-    expect(exportAppearance({}, { glassRendering: "live" }).theme.glassRendering).toBeUndefined();
+    expect(exportAppearance({}).theme.defaults.glassRendering).toBe("none");
+    expect(exportAppearance({}, { glassRendering: "live" }).theme.defaults.glassRendering).toBeUndefined();
+    // A person's own choice is a knob like the others, and outranks the option.
+    expect(exportAppearance({ glassRendering: "none" }, { glassRendering: "live" }).theme.defaults.glassRendering).toBe("none");
+    expect(exportAppearance({ glassRendering: "none" }).attributes["data-glass-rendering"]).toBe("none");
   });
 
   it("writes a module that declares and configures the theme", () => {
@@ -123,7 +126,9 @@ describe("importAppearance", () => {
 
   it("restores the glass rendering", () => {
     const { source } = exportAppearance({}, { glassRendering: "none" });
-    expect(importAppearance(source)).toMatchObject({ ok: true, theme: { glassRendering: "none" } });
+    expect(importAppearance(source)).toMatchObject({ ok: true, theme: { defaults: { glassRendering: "none" } }, appearance: { glassRendering: "none" } });
+    // A theme from before blur was a knob states it at the top level.
+    expect(importAppearance({ defaults: {}, glassRendering: "none" })).toMatchObject({ ok: true, theme: { defaults: { glassRendering: "none" } } });
   });
 
   it("a theme works as configureAppearance's argument", () => {
@@ -223,6 +228,6 @@ describe("importAppearance", () => {
   it("imports a theme exported with the removed baked rendering, and blurs live", () => {
     const result = importAppearance({ defaults: {}, glassRendering: "baked" });
     expect(result.ok).toBe(true);
-    if (result.ok) expect(result.theme.glassRendering).toBeUndefined();
+    if (result.ok) expect(result.theme.defaults.glassRendering).toBeUndefined();
   });
 });

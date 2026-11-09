@@ -40,7 +40,7 @@ export interface AppearanceTheme extends Pick<AppearanceConfig, "defaults" | "gl
 }
 
 export interface ExportAppearanceOptions {
-  /** How glass blurs in this theme. Default: the value `configureAppearance` last set. */
+  /** How glass blurs in this theme when the appearance does not say. Default: the site-wide default `configureAppearance` last set. */
   glassRendering?: GlassRendering;
 }
 
@@ -140,6 +140,7 @@ const FIELDS: Record<keyof Appearance, Reader> = {
   backgroundImage: picture,
   motion: oneOf(MOTION_LEVELS),
   style: oneOf(VISUAL_STYLES),
+  glassRendering: oneOf(GLASS_RENDERINGS),
   fontSans: oneOf(FONT_IDS.sans),
   fontDisplay: oneOf(FONT_IDS.display),
   fontMono: oneOf(FONT_IDS.mono),
@@ -157,6 +158,7 @@ function themeAttributes(appearance: Appearance) {
     if (value && SAFE_ID.test(value)) attributes[name] = value;
   };
   if (flat) set("data-style", "flat");
+  if (appearance.glassRendering === "none") set("data-glass-rendering", "none");
   if (appearance.mode !== "system") set("data-mode", appearance.mode);
   set("data-palette", appearance.palette);
   set("data-density", appearance.density);
@@ -212,9 +214,12 @@ export function exportAppearance(appearance: Partial<Appearance>, options: Expor
     if (value === undefined) omitted.push(key);
     else if (value !== BASE_APPEARANCE[key]) defaults[key] = value;
   }
-  const glassRendering = options.glassRendering ?? appearanceConfig().glassRendering;
+  // Blur is a knob like the others; a theme states it in `defaults`.
+  if (defaults.glassRendering === undefined) {
+    const glassRendering = options.glassRendering ?? appearanceConfig().glassRendering;
+    if (glassRendering === "none") defaults.glassRendering = glassRendering;
+  }
   const theme: AppearanceTheme = { defaults: defaults as Partial<Appearance> };
-  if (glassRendering === "none") theme.glassRendering = glassRendering;
   const complete = { ...BASE_APPEARANCE, ...theme.defaults };
   const attributes = themeAttributes(complete);
   return { theme, source: themeSource(theme), css: themeCss(complete, attributes), attributes, omitted };
@@ -256,7 +261,8 @@ export function importAppearance(input: unknown, options: ImportAppearanceOption
   const rendering = stated === "baked" ? undefined : stated;
   if (rendering !== undefined && !GLASS_RENDERINGS.includes(rendering as GlassRendering)) issues.push({ field: "glassRendering", reason: "invalid" });
   if (issues.length) return { ok: false, issues };
+  // A theme from before blur was a knob states it at the top level: read it as the default.
+  if (rendering !== undefined && defaults.glassRendering === undefined) defaults.glassRendering = rendering;
   const theme: AppearanceTheme = { defaults: defaults as Partial<Appearance> };
-  if (rendering !== undefined) theme.glassRendering = rendering as GlassRendering;
   return { ok: true, theme, appearance: { ...BASE_APPEARANCE, ...theme.defaults } };
 }

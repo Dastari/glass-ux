@@ -85,8 +85,9 @@ Frosted costs about the same as Glass, because it runs the same blur pass at a s
 So, for smoother scrolling, in this order:
 
 - Use `Surface material="card"` for repeated tiles, and keep blurred panels to a few framing panes.
-- Set `configureAppearance({ glassRendering: "none" })` for the whole application. It removes every
-  backdrop filter, and Glass takes Frosted's fills. A lower blur radius alone barely helps.
+- Default to no blur: `configureAppearance({ defaults: { glassRendering: "none" } })`, or `locked` to
+  fix it. It removes every backdrop filter, and Glass takes Frosted's fills. A lower blur radius
+  alone barely helps. Blur is a person's preference, so someone on a fast device can turn it on.
 
 Without blur, each `[data-scroll-container]` and scrolling `PanelBody` is promoted
 (`will-change: scroll-position`). Mark your own scrollers with `data-scroll-container` to get the

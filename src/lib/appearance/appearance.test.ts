@@ -3,8 +3,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   APPEARANCE_STORAGE_KEY,
   appearanceBootScript,
+  appearanceConfig,
   applyAppearance,
   configureAppearance,
+  defaultAppearance,
+  isLocked,
   normalizeAppearance,
   type Appearance,
 } from "./appearance.js";
@@ -129,6 +132,29 @@ describe("appearance boot script", () => {
     expect(boot.data).toMatchObject({ glassRendering: "none" });
     configureAppearance({ glassRendering: "nope" as never });
     expect(snapshot(runApply(null)).data).not.toHaveProperty("glassRendering");
+  });
+
+  it("stores blur as a preference over the site-wide default, before first paint, unless it is locked", () => {
+    // A person's choice, restored by the boot script and by applyAppearance alike.
+    const off = { glassRendering: "none" } as Partial<Appearance>;
+    expect(snapshot(runBoot(off))).toEqual(snapshot(runApply(off)));
+    expect(snapshot(runBoot(off)).data).toMatchObject({ glassRendering: "none" });
+    expect(normalizeAppearance(off).glassRendering).toBe("none");
+    // The site-wide default, in defaults or (as before) at the top level; the person's choice wins.
+    configureAppearance({ defaults: { glassRendering: "none" } });
+    expect(snapshot(runBoot(null)).data).toMatchObject({ glassRendering: "none" });
+    expect(defaultAppearance().glassRendering).toBe("none");
+    const on = { glassRendering: "live" } as Partial<Appearance>;
+    expect(snapshot(runBoot(on)).data).not.toHaveProperty("glassRendering");
+    expect(snapshot(runBoot(on))).toEqual(snapshot(runApply(on)));
+    configureAppearance({ glassRendering: "none", defaults: { glassRendering: "live" } });
+    expect(snapshot(runBoot(null)).data).not.toHaveProperty("glassRendering");
+    // Locked: the site's value whatever the person stored.
+    configureAppearance({ locked: { glassRendering: "none" } });
+    expect(isLocked("glassRendering")).toBe(true);
+    expect(snapshot(runBoot(on)).data).toMatchObject({ glassRendering: "none" });
+    expect(snapshot(runBoot(on))).toEqual(snapshot(runApply(on)));
+    expect(appearanceConfig().glassRendering).toBe("none");
   });
 
   it("Flat applies opaque still materials and restores the saved choices on return to Glass", () => {

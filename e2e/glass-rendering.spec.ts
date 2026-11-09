@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 /*
- * Glass rendering (configureAppearance glassRendering) and per-surface material levels.
+ * Glass rendering (the glassRendering preference) and per-surface material levels.
  * "none" removes every backdrop filter for the application, gives Glass the Frosted fills and
  * promotes scrollers; a surface still follows its own level, never more transparent than the page's.
  */
@@ -14,10 +14,12 @@ const material = (page: Page, selector: string) =>
 
 async function open(page: Page, glass = "full") {
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await page.addInitScript(
-    (settings) => localStorage.setItem("glass-ux.appearance.v1", JSON.stringify(settings)),
-    { mode: "light", glass, palette: "ocean", background: "mesh", motion: "reduced" },
-  );
+  // Seeded once per session, so a reload keeps what the page stored (blur is a stored preference).
+  await page.addInitScript((settings) => {
+    if (sessionStorage.getItem("seeded")) return;
+    localStorage.setItem("glass-ux.appearance.v1", JSON.stringify(settings));
+    sessionStorage.setItem("seeded", "1");
+  }, { mode: "light", glass, palette: "ocean", background: "mesh", motion: "reduced" });
   await page.goto("/components/surface");
   await expect(page.locator(".docs-sidebar")).toBeVisible({ timeout: 30_000 });
 }
@@ -149,7 +151,11 @@ test("the documentation toolbar switches blur and remembers it", async ({ page }
   await open(page);
   await page.locator('.docs-header [aria-label="Blur"]').getByText("None").first().click();
   await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "none");
+  expect(JSON.parse((await page.evaluate(() => localStorage.getItem("glass-ux.appearance.v1"))) ?? "{}").glassRendering).toBe("none");
+  // The boot script restores it before first paint: the attribute is there when the document is parsed.
+  const parsed = page.waitForEvent("domcontentloaded").then(() => page.evaluate(() => document.documentElement.dataset.glassRendering));
   await page.reload();
+  expect(await parsed).toBe("none");
   await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "none");
   expect((await material(page, PANE)).blur).toBe("none");
   await page.locator('.docs-header [aria-label="Blur"]').getByText("Live").first().click();

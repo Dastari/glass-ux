@@ -7,7 +7,6 @@ import {
   use,
   useRef,
   useState,
-  useSyncExternalStore,
   type ReactElement,
   type ReactNode,
 } from "react";
@@ -27,7 +26,6 @@ import {
   PALETTE_LABELS,
   BACKGROUNDS,
   BACKGROUND_LABELS,
-  appearanceConfig,
   configureAppearance,
   type Appearance,
   type GlassRendering,
@@ -114,44 +112,10 @@ function RouteLoading() {
 }
 
 configureDemoBrand();
-// An application picks one glass rendering in configureAppearance. The documentation lets a
-// visitor try both, so it keeps their choice under its own key and configures again on change.
-const RENDERING_KEY = "glass-ux-docs.glass-rendering";
-const storedRendering = (): GlassRendering => {
-  try {
-    return localStorage.getItem(RENDERING_KEY) === "none" ? "none" : "live";
-  } catch {
-    return "live";
-  }
-};
 configureAppearance({
   defaults: { palette: "ocean", style: import.meta.env.VITE_GLASS_UX_STYLE === "flat" ? "flat" : "glass" },
-  glassRendering: storedRendering(),
 });
 
-const renderingListeners = new Set<() => void>();
-function setGlassRendering(glassRendering: GlassRendering) {
-  try {
-    localStorage.setItem(RENDERING_KEY, glassRendering);
-  } catch {
-    // Private mode: the choice lasts for this page only.
-  }
-  configureAppearance({ ...appearanceConfig(), glassRendering });
-  // What applyAppearance and the boot script set from the configuration.
-  if (glassRendering === "none") document.documentElement.dataset.glassRendering = "none";
-  else delete document.documentElement.dataset.glassRendering;
-  for (const listener of renderingListeners) listener();
-}
-function useGlassRendering(): GlassRendering {
-  return useSyncExternalStore(
-    (listener) => {
-      renderingListeners.add(listener);
-      return () => renderingListeners.delete(listener);
-    },
-    () => appearanceConfig().glassRendering,
-    () => "live",
-  );
-}
 const RENDERING_OPTIONS: Array<{ value: GlassRendering; label: string }> = [
   { value: "live", label: "Live" },
   { value: "none", label: "None" },
@@ -314,7 +278,8 @@ function LanguageSelect() {
 
 function Toolbar({ expanded = false }: { expanded?: boolean }) {
   const { appearance, update } = useAppearance();
-  const rendering = useGlassRendering();
+  const rendering = appearance.glassRendering ?? "live";
+  const setGlassRendering = (glassRendering: GlassRendering) => update({ glassRendering });
   const choiceSize = use(ChoiceSize);
   const flat = appearance.style === "flat";
   if (expanded)

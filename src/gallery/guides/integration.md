@@ -62,7 +62,8 @@ Unknown fields are ignored. A known field with a bad value refuses the whole the
 issue per field, so a theme restores exactly or not at all. A picture on another site is refused
 unless you pass `{ remotePictures: true }`, because loading it would tell that site who opened the
 theme. Palette and background ids must be registered first (`definePalette`, `defineBackground`).
-A theme carries `defaults` and `glassRendering`; `locked` and `storageKey` stay in your code.
+A theme carries `defaults`, blur (`defaults.glassRendering`) included; `locked` and `storageKey` stay
+in your code. A theme from before 0.19.4 states blur at the top level, and imports the same way.
 
 Components format with the page's `<html lang>`, or with `configureLocale()` from
 `glass-ux/locale` when the application sets one; see

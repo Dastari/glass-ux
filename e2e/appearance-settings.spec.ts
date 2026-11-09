@@ -4,7 +4,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
  * AppearanceSettings (issues #8-#10):
  *   sliders   a Slider in a SettingRow's control draws at about 14rem, narrowing in a narrow
  *             row: the slot used to size to its content and give the slider no width (#8)
- *   style     the opt-in Style group switches Glass and Flat in place (#9)
+ *   style     the opt-in Style group switches Glass and Flat, and blur on and off, in place;
+ *             blur is stored and restored before first paint (#9)
  *   Flat      Material, Background and Animation say "Not used in Flat" and cannot change;
  *             Density still can, and Glass brings the earlier choices back (#10)
  */
@@ -50,7 +51,8 @@ test("the Style group switches to Flat, which fixes the rows it overrides, and b
   const { errors, panel } = await open(page);
   await segmented(panel, "Style").getByRole("button", { name: "Flat" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-style", "flat");
-  await expect(panel.getByText("Not used in Flat.")).toHaveCount(3);
+  await expect(panel.getByText("Not used in Flat.")).toHaveCount(4);
+  await expect(segmented(panel, "Blur").getByRole("button", { name: "Off" })).toBeDisabled();
   await expect(segmented(panel, "Material").getByRole("button", { name: "Frosted" })).toBeDisabled();
   await expect(segmented(panel, "Material").getByRole("button", { name: "Frosted" })).toHaveAttribute("aria-pressed", "true");
   await expect(segmented(panel, "Animation").getByRole("button", { name: "Still" })).toBeDisabled();
@@ -67,5 +69,19 @@ test("the Style group switches to Flat, which fixes the rows it overrides, and b
   await expect(page.locator("html")).toHaveAttribute("data-background", "forest");
   await expect(again.getByText("Not used in Flat.")).toHaveCount(0);
   await expect(segmented(again, "Material").getByRole("button", { name: "Glass" })).toBeEnabled();
+  expect(errors).toEqual([]);
+});
+
+test("the Style group's Blur row turns blur off and on, and a reload keeps it @responsive", async ({ page }) => {
+  const { errors, panel } = await open(page);
+  await segmented(panel, "Blur").getByRole("button", { name: "Off" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "none");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-glass-rendering", "none");
+  const again = page.getByTestId("appearance-page");
+  await expect(again).toBeVisible({ timeout: 30_000 });
+  await expect(segmented(again, "Blur").getByRole("button", { name: "Off" })).toHaveAttribute("aria-pressed", "true");
+  await segmented(again, "Blur").getByRole("button", { name: "On" }).click();
+  await expect(page.locator("html")).not.toHaveAttribute("data-glass-rendering", /./);
   expect(errors).toEqual([]);
 });

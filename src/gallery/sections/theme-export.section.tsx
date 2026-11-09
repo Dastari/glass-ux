@@ -1,8 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { CodeBlock } from "../../ai/code-block/index.js";
 import {
-  appearanceConfig,
-  configureAppearance,
   exportAppearance,
   importAppearance,
   useAppearance,
@@ -68,8 +66,6 @@ function ThemeImport() {
     setRestored(result.ok);
     setIssues(result.ok ? [] : result.issues);
     if (!result.ok) return;
-    // An application sets glass rendering once; the documentation lets a visitor try both.
-    configureAppearance({ ...appearanceConfig(), glassRendering: result.theme.glassRendering ?? "live" });
     update(result.appearance);
   };
   return (

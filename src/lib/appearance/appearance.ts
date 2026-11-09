@@ -115,6 +115,13 @@ export const FONT_IDS = {
 export interface Appearance {
   /** Component treatment. Flat uses opaque surfaces, a plain canvas and still motion; the stored glass, background and motion choices return when switching back. Default: glass. */
   style?: VisualStyle;
+  /**
+   * How glass surfaces blur: `live` (default), or `none`, which draws them with Frosted's fills
+   * and no blur and is lighter on slower devices. A person's preference like the others: set the
+   * site-wide default with `configureAppearance({ defaults })` and fix it with `locked`. Flat
+   * draws no glass, so it has no effect there.
+   */
+  glassRendering?: GlassRendering;
   /** Active display or interaction mode. */
   mode: Mode;
   palette: Palette;
@@ -156,6 +163,7 @@ export interface Appearance {
 /** The library's built-in appearance, before project defaults, locks or stored preferences apply. */
 export const BASE_APPEARANCE: Appearance = {
   style: "glass",
+  glassRendering: "live",
   mode: "system",
   palette: "graphite",
   density: "comfortable",
@@ -182,7 +190,11 @@ export interface AppearanceConfig {
   defaults?: Partial<Appearance>;
   /** Knobs fixed by the project; user preferences never override them. */
   locked?: Partial<Appearance>;
-  /** How every glass surface blurs (GLASS_RENDERINGS). An application setting, not a preference. Default: live. */
+  /**
+   * The site-wide default for blur, the same as `defaults.glassRendering` (which wins when both
+   * are set). People may change it unless `locked` fixes it. Default: live.
+   * @deprecated Use `defaults.glassRendering`, or `locked.glassRendering` to fix it.
+   */
   glassRendering?: GlassRendering;
 }
 
@@ -198,15 +210,24 @@ let config: {
 
 /** Set the project's appearance defaults and locks. Call once at module scope (server and client). */
 export function configureAppearance(next: AppearanceConfig) {
+  const defaults = { ...next.defaults };
+  // The top-level setting from before blur was a preference: the site-wide default.
+  if (defaults.glassRendering === undefined && next.glassRendering !== undefined)
+    defaults.glassRendering = pick(next.glassRendering, GLASS_RENDERINGS, "live");
+  const locked = next.locked ?? {};
   config = {
-    defaults: next.defaults ?? {},
-    locked: next.locked ?? {},
-    glassRendering: pick(next.glassRendering, GLASS_RENDERINGS, "live"),
+    defaults,
+    locked,
+    glassRendering: pick(locked.glassRendering ?? defaults.glassRendering, GLASS_RENDERINGS, "live"),
   };
   APPEARANCE_STORAGE_KEY = next.storageKey ?? "glass-ux.appearance.v1";
 }
 
-/** The project's current defaults, locks and glass rendering, as last set by `configureAppearance` (empty and live until then). */
+/**
+ * The project's current defaults, locks and glass rendering, as last set by `configureAppearance`
+ * (empty and live until then). `glassRendering` is the site-wide default (or the locked value); a
+ * person's own choice is `useAppearance().appearance.glassRendering`.
+ */
 export function appearanceConfig() {
   return config;
 }
@@ -290,6 +311,7 @@ export function normalizeAppearance(input: unknown): Appearance {
   const d = { ...BASE_APPEARANCE, ...config.defaults };
   const value: Appearance = {
     style: pick(raw.style, VISUAL_STYLES, d.style ?? "glass"),
+    glassRendering: pick(raw.glassRendering, GLASS_RENDERINGS, pick(d.glassRendering, GLASS_RENDERINGS, "live")),
     mode: pick(raw.mode, MODES, d.mode),
     palette: pick(raw.palette, PALETTES, d.palette),
     density: pick(raw.density, DENSITIES, d.density),
@@ -371,7 +393,7 @@ export function applyAppearance(
   root.dataset.palette = appearance.palette;
   root.dataset.density = appearance.density;
   root.dataset.glass = flat ? "solid" : appearance.glass;
-  if (config.glassRendering === "none") root.dataset.glassRendering = "none";
+  if (appearance.glassRendering === "none") root.dataset.glassRendering = "none";
   else delete root.dataset.glassRendering;
   root.dataset.background = flat ? "plain" : appearance.background ?? "silk";
   if (flat) root.dataset.motion = "reduced";
@@ -416,7 +438,7 @@ function o(v,a,f){return a.indexOf(v)>=0?v:f}
 function n(v,lo,hi,f){return typeof v==="number"&&isFinite(v)?Math.min(hi,Math.max(lo,v)):f}
 function x(v){if(typeof v!=="string")return null;var m=/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(v.trim());if(!m)return null;var h=m[1].toLowerCase();return "#"+(h.length===3?h.replace(/./g,function(c){return c+c}):h)}
 function u(v){if(typeof v!=="string")return null;v=v.trim();return v.length>0&&v.length<=${MAX_IMAGE_URL}&&${IMAGE_URL.toString()}.test(v)?v:null}
-var a={style:o(s.style,${j(VISUAL_STYLES)},D.style||"glass"),mode:o(s.mode,${j(MODES)},D.mode),palette:o(s.palette,${j(PALETTES)},D.palette),density:o(s.density,${j(DENSITIES)},D.density),glass:o(s.glass,${j(GLASS_LEVELS)},D.glass),motion:o(s.motion,${j(MOTION_LEVELS)},D.motion),background:o(s.background,${j(BACKGROUNDS)},D.background||"silk"),
+var a={style:o(s.style,${j(VISUAL_STYLES)},D.style||"glass"),glassRendering:o(s.glassRendering,${j(GLASS_RENDERINGS)},o(D.glassRendering,${j(GLASS_RENDERINGS)},"live")),mode:o(s.mode,${j(MODES)},D.mode),palette:o(s.palette,${j(PALETTES)},D.palette),density:o(s.density,${j(DENSITIES)},D.density),glass:o(s.glass,${j(GLASS_LEVELS)},D.glass),motion:o(s.motion,${j(MOTION_LEVELS)},D.motion),background:o(s.background,${j(BACKGROUNDS)},D.background||"silk"),
 radiusScale:n(s.radiusScale,0,1.5,D.radiusScale),borderWidth:n(s.borderWidth,0.5,2,D.borderWidth),uiScale:n(s.uiScale,0.875,1.25,D.uiScale),
 accentHue:s.accentHue==null?D.accentHue:n(s.accentHue,0,360,25),
 accentColor:s.accentColor===undefined?(D.accentColor||null):x(s.accentColor),accentColor2:s.accentColor2===undefined?(D.accentColor2||null):x(s.accentColor2),canvasTint:s.canvasTint===undefined?(D.canvasTint||null):x(s.canvasTint),backgroundImage:s.backgroundImage===undefined?(D.backgroundImage||null):u(s.backgroundImage),
@@ -424,7 +446,7 @@ fontSans:o(s.fontSans,${j(FONT_IDS.sans)},D.fontSans),fontDisplay:o(s.fontDispla
 for(var k in L)a[k]=L[k];
 var m=a.mode;if(m==="system")m=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
 var F=a.style==="flat";d.dataset.style=F?"flat":"glass";
-d.dataset.mode=m;d.dataset.palette=a.palette;d.dataset.density=a.density;d.dataset.glass=F?"solid":a.glass;${config.glassRendering === "none" ? `d.dataset.glassRendering="none";` : ""}
+d.dataset.mode=m;d.dataset.palette=a.palette;d.dataset.density=a.density;d.dataset.glass=F?"solid":a.glass;if(a.glassRendering==="none")d.dataset.glassRendering="none";
 d.dataset.background=F?"plain":a.background;
 if(F)d.dataset.motion="reduced";else if(a.motion!=="system")d.dataset.motion=a.motion;
 d.dataset.fontSans=a.fontSans;d.dataset.fontDisplay=a.fontDisplay;d.dataset.fontMono=a.fontMono;

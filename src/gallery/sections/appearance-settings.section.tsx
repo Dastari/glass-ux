@@ -46,7 +46,7 @@ export default function AppearanceSettingsSection() {
         do={[
           "Lock what the organisation decides with configureAppearance({ locked }); those rows show as set by your organisation.",
           "Register product palettes and backgrounds first (definePalette, defineBackground) so the panel lists them.",
-          "Keep the application's own rendering choice (live blur or none) out of personal settings.",
+          "Set the site-wide blur in configureAppearance({ defaults: { glassRendering } }); offer the style group to let people change it, or lock it.",
         ]}
         dont={[
           "Don't build a second appearance menu beside this one; one place keeps preferences consistent.",

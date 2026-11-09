@@ -155,9 +155,9 @@ import { Button } from "glass-ux/button";
 
 configureAppearance({
   storageKey: "my-application.appearance.v1",
-  defaults: { palette: "graphite", mode: "system" },
-  // Optional: draw no blur at all, for the smoothest scrolling on screens with many panels.
-  glassRendering: "none",
+  // Optional: glassRendering "none" draws no blur, for the smoothest scrolling on screens with
+  // many panels. People can turn blur back on (AppearanceSettings' style group) unless it is locked.
+  defaults: { palette: "graphite", mode: "system", glassRendering: "none" },
 });
 
 export function App() {

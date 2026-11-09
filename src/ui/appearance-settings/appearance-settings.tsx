@@ -4,6 +4,7 @@ import { useRef, useState, type ReactNode } from "react"
 import { IconMoon, IconSun, IconSystem } from "../../icons/generated/icons.js"
 import {
   BACKGROUND_LABELS,
+  type GlassRendering,
   BACKGROUNDS,
   FONT_OPTIONS,
   isLocked,
@@ -30,7 +31,7 @@ import { appearanceSettingsMessages } from "./messages.js"
 
 /**
  * The groups AppearanceSettings can show:
- *   style       Glass or Flat (opt-in)
+ *   style       Glass or Flat, and blur on or off (opt-in)
  *   theme       mode and palette
  *   colours     the person's own accent, second accent and canvas tint
  *   background  the canvas style, and a picture for the Picture background
@@ -123,10 +124,11 @@ export function AppearanceSettings({
   const flatNote = (fixed: boolean, overridden: boolean, description: ReactNode) => (overridden ? t.notInFlat : note(fixed, description))
 
   const groups: Record<AppearanceSection, () => ReactNode> = {
-    style: () =>
-      row("style", (fixed) => (
-        <FormGroup key="style" label={t.style}>
+    style: () => {
+      const rows = [
+        row("style", (fixed) => (
           <SettingRow
+            key="style"
             label={t.style}
             description={note(fixed, t.styleDescription)}
             disabled={fixed}
@@ -143,8 +145,34 @@ export function AppearanceSettings({
               />
             }
           />
+        )),
+        flatRow("glassRendering", (fixed, overridden) => (
+          <SettingRow
+            key="blur"
+            label={t.blur}
+            description={flatNote(fixed, overridden, t.blurDescription)}
+            disabled={fixed}
+            control={
+              <Segmented<GlassRendering>
+                aria-label={t.blur}
+                disabled={fixed}
+                value={appearance.glassRendering ?? "live"}
+                onValueChange={(glassRendering) => update({ glassRendering })}
+                options={[
+                  { value: "live", label: t.blurOn },
+                  { value: "none", label: t.blurOff },
+                ]}
+              />
+            }
+          />
+        )),
+      ]
+      return rows.some(Boolean) ? (
+        <FormGroup key="style" label={t.style}>
+          {rows}
         </FormGroup>
-      )),
+      ) : null
+    },
     theme: () => (
       <FormGroup key="theme" label={t.theme}>
         {row("mode", (fixed) => (

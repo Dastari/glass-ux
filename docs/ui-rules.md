@@ -135,10 +135,11 @@ follows a fine pointer and a glint on the rim nearest it.
   translucent. A surface may take its own level (Surface and Panel `glass`, or `data-glass`
   on any element) for itself and its contents, never more transparent than the page's: a
   person's Solid choice or reduced transparency still applies everywhere.
-- **R4.4a** The application chooses how glass blurs, for every surface:
-  `configureAppearance({ glassRendering })`. `live` (the default) blurs with backdrop-filter;
-  `none` removes every backdrop filter and gives Glass the Frosted fills, so text stays readable
-  over the canvas. Choose `none` for screens with many panels or long scrolling content.
+- **R4.4a** How glass blurs is one setting for every surface: `glassRendering`. `live` (the
+  default) blurs with backdrop-filter; `none` removes every backdrop filter and gives Glass the
+  Frosted fills, so text stays readable over the canvas. It is a person's preference, with the
+  site-wide default in `configureAppearance({ defaults: { glassRendering } })`; `locked` fixes
+  it. Default to `none` for screens with many panels or long scrolling content.
 - **R4.5** Elevation follows the material: chrome and panels are low, overlays and dialogs
   high. Do not add shadows to raise a component.
 - **R4.6** Page framing — headings, breadcrumbs, group labels, toolbars over panels — sits on

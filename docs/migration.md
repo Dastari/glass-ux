@@ -3,6 +3,26 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.3 → 0.19.4
+
+No code edits are needed.
+
+Behaviour to review:
+
+- `configureAppearance({ glassRendering })` still works, as the site-wide default. Move it to
+  `defaults: { glassRendering }`, or to `locked: { glassRendering }` if people must not change it.
+- If you kept blur under your own storage key and configured it before first paint, drop that code. Use
+  `useAppearance().update({ glassRendering })`, or the style group in `AppearanceSettings`. The boot
+  script now restores the choice, and Reset includes it.
+- `exportAppearance(...).theme.glassRendering` is no longer set. Read `theme.defaults.glassRendering`.
+  Themes you already committed with a top-level `glassRendering` still configure and import.
+- `appearanceConfig().glassRendering` is the site-wide default, or the locked value. For what a person
+  sees, read `useAppearance().appearance.glassRendering`.
+
+New props:
+
+- `Appearance.glassRendering`, and the Blur row in `AppearanceSettings`'s `"style"` section.
+
 ## 0.19.2 → 0.19.3
 
 No code edits are needed.

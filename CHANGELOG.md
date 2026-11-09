@@ -4,6 +4,26 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.19.4
+
+### Added
+
+- Appearance: blur is a person's preference. `glassRendering` (`"live"` or `"none"`) is stored with the
+  other choices, restored by the boot script before first paint and covered by Reset. Set the site-wide
+  default with `configureAppearance({ defaults: { glassRendering } })`, or fix it with `locked` (#9).
+- AppearanceSettings: the opt-in style group has a Blur row (On / Off) beside Style. While the style is
+  Flat, it shows "Not used in Flat" (#9).
+
+### Changed
+
+- `configureAppearance({ glassRendering })` now sets the site-wide default, the same as
+  `defaults.glassRendering` (which wins when both are set). It is deprecated. Nothing changes until a
+  person chooses otherwise, which they can only do where the application offers the Blur row.
+- `exportAppearance` writes blur into `theme.defaults.glassRendering`, and reads a person's own
+  `glassRendering` like the other knobs. `importAppearance` still reads a top-level `glassRendering`
+  from older themes, and returns it in `defaults`.
+- The documentation's Blur control is stored with the other appearance choices.
+
 ## 0.19.3
 
 ### Added

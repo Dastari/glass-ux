@@ -1,9 +1,9 @@
-import { useContext, useState, type ReactNode } from "react"
+import { Fragment, useContext, useState, type ReactNode } from "react"
 import { DemoScope } from "../demo-scope.js"
 import { MOCK_ORGANISATIONS, PORTRAITS, toContextItem } from "../fixtures/organisations.js"
 import { WORKSPACE_SETTINGS, ORGANISATION_SETTINGS, moduleRail } from "../fixtures/brand.js"
 import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { IconAi, IconArchive, IconAlerts, IconCalendar, IconDashboard, IconEndpoint, IconFolder, IconHistory, IconInbox, IconNewChat, IconOrganisation, IconReporting, IconSearch, IconSettings, IconTickets, IconUsers,  } from "../../icons/generated/icons.js"
+import { IconAi, IconArchive, IconAlerts, IconCalendar, IconCart, IconChartLine, IconClock, IconDashboard, IconEndpoint, IconFolder, IconHistory, IconInbox, IconNewChat, IconOrganisation, IconReporting, IconSearch, IconSettings, IconTickets, IconToolbox, IconUsers, IconWrench } from "../../icons/generated/icons.js"
 import { AccountButton, AppShell, EntityHeader, EntityHeaderSkeleton, Rail, SearchTrigger, SectionDrawer, ShellBrand, TabBar, TopBar, TopBarSettingsButton,  } from "../../shell/index.js"
 import { ContextSwitcher } from "../../shell/context-switcher/index.js"
 import { ActionBar } from "../../ui/actions/index.js"
@@ -102,6 +102,54 @@ function RailOverflowFrame({ labels = false }: { labels?: boolean }) {
             { value: "scroll", label: "Scroll" },
           ]}
         />
+        <p className="type-caption text-fg-muted">{current}</p>
+      </div>
+    </div>
+  )
+}
+
+const GROUPED_ITEMS = [
+  [
+    { label: "Dashboard", icon: <IconDashboard /> },
+    { label: "Inbox", icon: <IconInbox /> },
+  ],
+  [
+    { label: "Jobs", icon: <IconTickets /> },
+    { label: "Calendar", icon: <IconCalendar /> },
+    { label: "Timesheets", icon: <IconClock /> },
+  ],
+  [
+    { label: "Orders", icon: <IconCart /> },
+    { label: "Customers", icon: <IconUsers /> },
+    { label: "Sales reports", icon: <IconChartLine /> },
+  ],
+  [
+    { label: "Parts", icon: <IconToolbox /> },
+    { label: "Servicing", icon: <IconWrench /> },
+  ],
+]
+
+/** Groups divided by Rail.Separator: a group that moves into More takes its line with it. */
+function RailGroupsFrame() {
+  const [current, setCurrent] = useState("Dashboard")
+  const scope = useContext(DemoScope)
+  const name = "Rail groups (specimen)"
+  return (
+    <div className="gallery-shell-rail-frame" data-testid="rail-groups">
+      <Rail.Root aria-label={scope ? `${name}: ${scope}` : name}>
+        {GROUPED_ITEMS.map((group, index) => (
+          <Fragment key={group[0]!.label}>
+            {index ? <Rail.Separator /> : null}
+            {group.map((item) => (
+              <Rail.Item key={item.label} icon={item.icon} label={item.label} active={item.label === current} onClick={() => setCurrent(item.label)} />
+            ))}
+          </Fragment>
+        ))}
+        <Rail.Spacer />
+        <Rail.Item icon={<IconHistory />} label="Activity" onClick={() => setCurrent("Activity")} active={current === "Activity"} />
+        <Rail.Item icon={<IconSettings />} label="Settings" onClick={() => setCurrent("Settings")} active={current === "Settings"} />
+      </Rail.Root>
+      <div className="gallery-shell-rail-frame-side">
         <p className="type-caption text-fg-muted">{current}</p>
       </div>
     </div>
@@ -292,7 +340,7 @@ const BREAKPOINTS: Array<[string, string]> = [
 
 const SLOTS: Array<[string, string]> = [
   ["AppShell.brand", "ShellBrand: the product mark over the rail (the configured BrandMark product mark by default)."],
-  ["AppShell.rail", "Rail.Root (labels draws names under the icons) with Rail.Item (icon, label, shortcut, active, render link) and Rail.Spacer. Items that do not fit move into a More menu."],
+  ["AppShell.rail", "Rail.Root (labels draws names under the icons) with Rail.Item (icon, label, shortcut, active, render link), Rail.Separator between groups and Rail.Spacer. Items that do not fit move into a More menu, each separator with its group."],
   ["AppShell.drawer", "SectionDrawer for the current section; omit for none. Docked, resizable and collapsible on desktops, a left Sheet below. SectionDrawer.Search (between Header and Body, fixed while the list scrolls) filters the list with local state: / or ⌘F / Ctrl F focuses it from anywhere in the drawer, ↓ enters the list, Esc clears and then returns focus; highlight with SectionDrawer.Match, or hand the query to a Tree. SectionDrawer.Body fill hands the height to a Tree that scrolls itself; useDrawerDismiss closes the sheet after a choice."],
   ["AppShell.topBar", "TopBar with scope (ContextSwitcher: the organisation or project in the URL, first after the logo), breadcrumb (RouteBreadcrumb after the scope, fed from route matches), search (SearchTrigger → useCommandPalette().open), actions and account (AccountButton with the shared Avatar, a Menu trigger)."],
   ["Workspace.scopes", "The current organisation and how to draw one. Windows from another organisation show its chip; the dock groups by organisation (R14.4)."],
@@ -362,6 +410,9 @@ export default function AppShellSection() {
         <RailOverflowFrame />
       </Specimen>
 
+      <Specimen title="Rail groups" description="Rail.Separator divides groups of items. A separator goes into More with its group, so lines never meet, and More draws the same lines between the groups it holds. Drag the frame's bottom edge to change the height.">
+        <RailGroupsFrame />
+      </Specimen>
       <Specimen title="Rail labels" description="labels on Rail.Root draws every item's name under its icon, More included. Items that do not fit still move into More, and a name too long for the column ends in an ellipsis with the full name in its tooltip.">
         <RailOverflowFrame labels />
       </Specimen>

@@ -25,6 +25,8 @@ has upgrade steps in the [migration guide](docs/migration.md).
   body (#26).
 - EntitySettingsDialog `mode="create"`: every tab with fields counts as changed, so Save works with
   prefilled values, and the buttons say Create (#24).
+- `Rail.Separator`: a line between groups of rail items that moves into More with its group, so lines
+  never meet; More draws the same lines between the groups it holds (#20).
 - Draggable `announcements` and `describedBy`, its own words and instructions inside a shared
   provider (#17).
 
@@ -35,6 +37,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
   announcements (#17).
 - Bound text fields (TextField, TextareaField, EmailField, UrlField, and the other text fields) take a
   `null` or `undefined` value, show it as empty, and hand the same blank back when cleared (#23).
+- Rail: the fit counts entries' block margins, so a margin on an entry no longer pushes the foot items
+  out of view; an application's own `position` or `visibility` on an entry no longer keeps it in the
+  rail once it is in More (#20).
 - A touch long press that lifts something to drag it no longer also opens a context menu around it.
 
 ## 0.19.6

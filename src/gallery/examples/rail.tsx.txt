@@ -1,10 +1,14 @@
-import { useContext, useState, type ReactNode } from "react";
+import { Fragment, useContext, useState, type ReactNode } from "react";
 import { DemoScope } from "glass-ux/gallery/demo-scope";
 import { ORGANISATION_SETTINGS, moduleRail } from "glass-ux/gallery/fixtures/brand";
 import { SectionPage, Specimen } from "glass-ux/gallery/kit";
 import {
   IconArchive,
   IconCalendar,
+  IconCart,
+  IconChartLine,
+  IconClock,
+  IconDashboard,
   IconFolder,
   IconHistory,
   IconInbox,
@@ -13,7 +17,10 @@ import {
   IconReporting,
   IconSearch,
   IconSettings,
+  IconTickets,
+  IconToolbox,
   IconUsers,
+  IconWrench,
 } from "glass-ux/icons";
 import { AppShell, Rail, SectionDrawer, ShellBrand } from "glass-ux/shell";
 import { CountBadge } from "glass-ux/badge";
@@ -96,6 +103,70 @@ function RailOverflowFrame({ labels = false }: { labels?: boolean }) {
             { value: "scroll", label: "Scroll" },
           ]}
         />
+        <p className="type-caption text-fg-muted">{current}</p>
+      </div>
+    </div>
+  );
+}
+
+const GROUPED_ITEMS = [
+  [
+    { label: "Dashboard", icon: <IconDashboard /> },
+    { label: "Inbox", icon: <IconInbox /> },
+  ],
+  [
+    { label: "Jobs", icon: <IconTickets /> },
+    { label: "Calendar", icon: <IconCalendar /> },
+    { label: "Timesheets", icon: <IconClock /> },
+  ],
+  [
+    { label: "Orders", icon: <IconCart /> },
+    { label: "Customers", icon: <IconUsers /> },
+    { label: "Sales reports", icon: <IconChartLine /> },
+  ],
+  [
+    { label: "Parts", icon: <IconToolbox /> },
+    { label: "Servicing", icon: <IconWrench /> },
+  ],
+];
+
+/** Groups divided by Rail.Separator: a group that moves into More takes its line with it. */
+function RailGroupsFrame() {
+  const [current, setCurrent] = useState("Dashboard");
+  const scope = useContext(DemoScope);
+  const name = "Rail groups (specimen)";
+  return (
+    <div className="gallery-shell-rail-frame" data-testid="rail-groups">
+      <Rail.Root aria-label={scope ? `${name}: ${scope}` : name}>
+        {GROUPED_ITEMS.map((group, index) => (
+          <Fragment key={group[0]!.label}>
+            {index ? <Rail.Separator /> : null}
+            {group.map((item) => (
+              <Rail.Item
+                key={item.label}
+                icon={item.icon}
+                label={item.label}
+                active={item.label === current}
+                onClick={() => setCurrent(item.label)}
+              />
+            ))}
+          </Fragment>
+        ))}
+        <Rail.Spacer />
+        <Rail.Item
+          icon={<IconHistory />}
+          label="Activity"
+          onClick={() => setCurrent("Activity")}
+          active={current === "Activity"}
+        />
+        <Rail.Item
+          icon={<IconSettings />}
+          label="Settings"
+          onClick={() => setCurrent("Settings")}
+          active={current === "Settings"}
+        />
+      </Rail.Root>
+      <div className="gallery-shell-rail-frame-side">
         <p className="type-caption text-fg-muted">{current}</p>
       </div>
     </div>
@@ -241,6 +312,12 @@ export default function AppShellSection() {
         <RailOverflowFrame />
       </Specimen>
 
+      <Specimen
+        title="Rail groups"
+        description="Rail.Separator divides groups of items. A separator goes into More with its group, so lines never meet, and More draws the same lines between the groups it holds. Drag the frame's bottom edge to change the height."
+      >
+        <RailGroupsFrame />
+      </Specimen>
       <Specimen
         title="Rail labels"
         description="labels on Rail.Root draws every item's name under its icon, More included. Items that do not fit still move into More, and a name too long for the column ends in an ellipsis with the full name in its tooltip."

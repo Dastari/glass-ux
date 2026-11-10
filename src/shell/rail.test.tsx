@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest
 import { configureShortcuts } from "../ui/kbd/index.js"
 import { TooltipProvider } from "../ui/tooltip/index.js"
 import { Rail } from "./rail.js"
-import { railOverflow, type RailFitEntry } from "./rail-fit.js"
+import { railOverflow, railSeparators, type RailFitChild, type RailFitEntry } from "./rail-fit.js"
 import { TabBar } from "./tab-bar.js"
 import { tabBarOverflow } from "./tab-bar-fit.js"
 
@@ -151,6 +151,62 @@ describe("Rail overflow", () => {
     expect(entryOf("Three")).not.toHaveAttribute("data-overflowed")
   })
 
+  function Grouped({ margin }: { margin?: string }) {
+    return (
+      <TooltipProvider>
+        <Rail.Root aria-label="Main">
+          <Rail.Item icon={<span />} label="One" />
+          <Rail.Item icon={<span />} label="Two" />
+          <Rail.Separator />
+          <Rail.Item icon={<span />} label="Three" className={margin} />
+          <Rail.Item icon={<span />} label="Four" />
+          <Rail.Separator />
+          <Rail.Item icon={<span />} label="Five" />
+          <Rail.Spacer />
+          <Rail.Item icon={<span />} label="Settings" />
+        </Rail.Root>
+      </TooltipProvider>
+    )
+  }
+  const separators = (container: HTMLElement) => [...container.querySelectorAll(".fa-shell-rail-separator")].map((line) => line.hasAttribute("data-overflowed"))
+
+  it("hides a separator with its group, and uses its room for items (#20)", async () => {
+    // Every child measures 40 here, separators included: One, Two, More and Settings fit in 200.
+    // Three would bring its separator back, which does not fit.
+    room(200)
+    const { container } = render(<Grouped />)
+    expect(entryOf("Two")).not.toHaveAttribute("data-overflowed")
+    expect(entryOf("Three")).toHaveAttribute("data-overflowed")
+    expect(separators(container)).toEqual([true, true])
+    // More keeps the groups apart.
+    fireEvent.click(screen.getByRole("button", { name: "More" }))
+    const menu = await screen.findByRole("menu")
+    expect([...menu.children].map((child) => child.getAttribute("role"))).toEqual(["menuitem", "menuitem", "separator", "menuitem"])
+  })
+
+  it("shows a separator while its group has an item in the rail", () => {
+    // 280: One, Two, a separator, Three, More and Settings.
+    room(280)
+    const { container } = render(<Grouped />)
+    expect(entryOf("Three")).not.toHaveAttribute("data-overflowed")
+    expect(entryOf("Four")).toHaveAttribute("data-overflowed")
+    expect(separators(container)).toEqual([false, true])
+  })
+
+  it("counts an entry's block margins", () => {
+    room(1000)
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(320)
+    const real = window.getComputedStyle
+    vi.spyOn(window, "getComputedStyle").mockImplementation((element, pseudo) => {
+      const style = real(element, pseudo)
+      if (!(element instanceof HTMLLIElement && element.querySelector(".pushed"))) return style
+      return new Proxy(style, { get: (target, key) => (key === "marginBlockStart" ? "24px" : Reflect.get(target, key)) })
+    })
+    // 6 items and 2 separators at 40 fill 320 exactly; 24 px of margin on one does not fit.
+    render(<Grouped margin="pushed" />)
+    expect(screen.getByRole("button", { name: "More" })).toBeTruthy()
+  })
+
   it("a hidden item's shortcut still works", () => {
     room(160)
     const go = vi.fn()
@@ -261,6 +317,29 @@ describe("Rail labels", () => {
       </TooltipProvider>,
     )
     expect(screen.getByRole("button", { name: "A very long destination name" })).not.toHaveAttribute("data-trigger-disabled")
+  })
+})
+
+describe("railSeparators", () => {
+  const order: RailFitChild[] = [
+    { kind: "item", id: "a" },
+    { kind: "separator", id: "s1" },
+    { kind: "item", id: "b" },
+    { kind: "separator", id: "s2" },
+    { kind: "item", id: "c" },
+    { kind: "spacer" },
+    { kind: "separator", id: "s3" },
+    { kind: "item", id: "d" },
+  ]
+  it("keeps every separator between shown groups", () => {
+    expect(railSeparators(order, new Set())).toEqual(["s3"])
+  })
+  it("hides a separator whose group is hidden, so none meet", () => {
+    expect(railSeparators(order, new Set(["b"]))).toEqual(["s1", "s3"])
+    expect(railSeparators(order, new Set(["b", "c"]))).toEqual(["s1", "s2", "s3"])
+  })
+  it("hides a separator with nothing shown before it", () => {
+    expect(railSeparators(order, new Set(["a"]))).toEqual(["s1", "s3"])
   })
 })
 

@@ -85,7 +85,7 @@ export default function AppShellSection() {
         title="Phone tab bar"
         description="The rail on phones: a floating glass pill above the safe area. Scrolling down condenses it; scrolling up restores it."
         backdrop
-        specimenKey="app-shell:default:8"
+        specimenKey="app-shell:default:9"
       >
         <Example label="Resting">
           <SpecimenTabBar condensed={false} />
@@ -98,7 +98,7 @@ export default function AppShellSection() {
       <Specimen
         title="Tab bar overflow"
         description="Five tabs at most, More included. Tabs beyond that, or too narrow to read, move into More's sheet, and the current destination stays in the bar. Drag the frame's corner to change the width."
-        specimenKey="app-shell:default:9"
+        specimenKey="app-shell:default:10"
       >
         <TabBarOverflowFrame />
       </Specimen>

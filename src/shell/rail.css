@@ -36,10 +36,21 @@
   }
   /* In the More menu: out of the flow and the tab order, but keeping its height to be measured
      and still in the document, so its link and shortcut work. */
-  .fa-shell-rail-entry[data-overflowed] {
-    position: absolute;
+  /* Important, so an application's own position or visibility on an entry (unlayered, as a group
+     rule usually is) cannot leave it in the flow. */
+  .fa-shell-rail-entry[data-overflowed],
+  .fa-shell-rail-separator[data-overflowed] {
+    position: absolute !important;
     inset-block-start: 0;
-    visibility: hidden;
+    visibility: hidden !important;
+  }
+  /* A line between groups, as wide as the icons; it hides with its group (Rail.Separator). */
+  .fa-shell-rail-separator {
+    flex: none;
+    align-self: center;
+    inline-size: var(--icon-lg);
+    block-size: var(--border-width);
+    background-color: var(--line);
   }
   .fa-shell-rail-spacer {
     flex: 1 1 auto;

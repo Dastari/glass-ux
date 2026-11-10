@@ -1,6 +1,6 @@
 # Rail
 
-Compose the primary application navigation rail from accessible items, separators and flexible spacers. Items that do not fit its height move into a More menu, and the current section stays visible. `labels` draws each item's name under its icon.
+Compose the primary application navigation rail from accessible items, separators between groups and flexible spacers. Items that do not fit its height move into a More menu, and the current section stays visible. `labels` draws each item's name under its icon.
 
 `import { Rail } from "glass-ux/shell"`
 
@@ -53,6 +53,14 @@ Inherited properties:
 | value | `string \| number \| readonly string[] \| undefined` | See type | no | — | The controlled value. Keep it in application state and update it in the change callback. |
 
 Also accepts the element’s standard HTML attributes and React DOM events.
+
+## Rail.Separator
+
+
+
+| Prop | Type | Valid options | Required | Default | Description |
+| --- | --- | --- | --- | --- | --- |
+| className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 
 ## Rail.Spacer
 

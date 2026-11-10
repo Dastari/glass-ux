@@ -47,3 +47,32 @@ export function railOverflow({ room, gap, fixed, entries }: RailFitInput): strin
   }
   return entries.filter((entry) => !shown.has(entry.id)).map((entry) => entry.id)
 }
+
+/** A child of the rail in document order, for placing separators. */
+export type RailFitChild = { kind: "item"; id: string } | { kind: "separator"; id: string } | { kind: "spacer" }
+
+/**
+ * The separators to hide, given the items that are hidden: a separator shows only with a shown item
+ * before it and one in the group straight after it (up to the next separator or spacer), so a group
+ * that moved into More takes its separator with it and no two separators meet.
+ */
+export function railSeparators(children: readonly RailFitChild[], hidden: ReadonlySet<string>): string[] {
+  const result: string[] = []
+  let shownBefore = false
+  children.forEach((child, index) => {
+    if (child.kind === "spacer") shownBefore = false
+    else if (child.kind === "item") shownBefore ||= !hidden.has(child.id)
+    else {
+      let shownAfter = false
+      for (const next of children.slice(index + 1)) {
+        if (next.kind !== "item") break
+        if (!hidden.has(next.id)) {
+          shownAfter = true
+          break
+        }
+      }
+      if (!shownBefore || !shownAfter) result.push(child.id)
+    }
+  })
+  return result
+}

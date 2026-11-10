@@ -175,7 +175,7 @@ export default function AppShellSection() {
         description="The shell's rail column follows the labelled rail's width, with the mark above it."
         wide
         layout="stack"
-        specimenKey="app-shell:default:6"
+        specimenKey="app-shell:default:7"
       >
         <LabelledRailShell />
       </Specimen>

@@ -93,6 +93,60 @@ test("overflow=scroll keeps every item in a column that scrolls", async ({ page 
   await expect(frame.locator("[data-rail-more]")).toHaveCount(1)
 })
 
+test("a separator moves into More with its group, lines never meet, and the foot stays in view (#20)", async ({ page }) => {
+  const frame = page.getByTestId("rail-groups")
+  await frame.scrollIntoViewIfNeeded()
+  const list = frame.locator(".fa-shell-rail-list")
+  const more = frame.getByRole("navigation").getByRole("button", { name: "More", exact: true })
+  /** What the rail shows, top to bottom: item names, "|" for a separator, "More" and "~" for the spacer. */
+  const shown = () =>
+    list.evaluate((element) =>
+      [...element.children]
+        .filter((child) => !child.hasAttribute("data-overflowed"))
+        .map((child) => (child.classList.contains("fa-shell-rail-separator") ? "|" : child.classList.contains("fa-shell-rail-spacer") ? "~" : (child.querySelector("[aria-label]")?.getAttribute("aria-label") ?? "?"))),
+    )
+  // Taller than the frame's usual limit, so every group fits.
+  await frame.evaluate((element) => void (element.style.maxBlockSize = "none"))
+  await setHeight(frame, 800)
+  await expect(more).toHaveCount(0)
+  expect((await shown()).filter((entry) => entry === "|")).toHaveLength(3)
+  for (const height of [600, 520, 420, 340, 260, 200]) {
+    await setHeight(frame, height)
+    await expect(more).toBeVisible()
+    const order = await shown()
+    // No line at the top, before More or the spacer, or beside another.
+    for (const [index, entry] of order.entries()) {
+      if (entry !== "|") continue
+      expect(index, order.join(" ")).toBeGreaterThan(0)
+      expect(["|", "More", "~"], order.join(" ")).not.toContain(order[index + 1])
+    }
+    // Nothing spills: the foot's last shown item ends inside the list.
+    expect(await list.evaluate((element) => element.scrollHeight - element.clientHeight)).toBeLessThanOrEqual(1)
+    const box = (await list.boundingBox())!
+    const foot = (await frame.locator(".fa-shell-rail-spacer ~ .fa-shell-rail-entry:not([data-overflowed])").last().boundingBox())!
+    expect(foot.y + foot.height).toBeLessThanOrEqual(box.y + box.height + 1)
+  }
+  // More draws a line between the groups it holds.
+  await setHeight(frame, 260)
+  await more.click()
+  const menu = page.getByRole("menu", { name: "More" })
+  await expect(menu.getByRole("separator").first()).toBeVisible()
+  const roles = await menu.evaluate((element) => [...element.querySelectorAll("[role='menuitem'], [role='separator']")].map((node) => node.getAttribute("role")))
+  expect(roles[0]).toBe("menuitem")
+  expect(roles.at(-1)).toBe("menuitem")
+  expect(roles.join(" ")).not.toContain("separator separator")
+})
+
+test("an application's position on an entry does not keep it in the flow once it is in More", async ({ page }) => {
+  const frame = page.getByTestId("rail-groups")
+  await frame.scrollIntoViewIfNeeded()
+  await page.addStyleTag({ content: ".fa-shell-rail-entry { position: relative; visibility: visible }" })
+  await setHeight(frame, 260)
+  const hidden = frame.locator(".fa-shell-rail-entry[data-overflowed]").first()
+  await expect(hidden).toHaveCount(1)
+  expect(await hidden.evaluate((element) => [getComputedStyle(element).position, getComputedStyle(element).visibility])).toEqual(["absolute", "hidden"])
+})
+
 test.describe("TabBar", () => {
   const setWidth = (frame: Locator, width: number) => frame.evaluate((element, width) => void (element.style.inlineSize = `${width}px`), width)
   const shown = (frame: Locator) => frame.locator(".fa-tabbar-entry:not([data-overflowed])")

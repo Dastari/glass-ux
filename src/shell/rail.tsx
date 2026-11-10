@@ -23,6 +23,7 @@
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import {
+  Fragment,
   createContext,
   useCallback,
   useContext,
@@ -49,7 +50,7 @@ import { Menu } from "../ui/menu/index.js"
 import { Tooltip } from "../ui/tooltip/index.js"
 import { ShellFocusContext, useOptionalShell } from "./app-shell.js"
 import { shellMessages } from "./messages.js"
-import { railOverflow, type RailFitEntry } from "./rail-fit.js"
+import { railOverflow, railSeparators, type RailFitChild, type RailFitEntry } from "./rail-fit.js"
 
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect
 
@@ -79,11 +80,13 @@ interface RailOverflowActions {
 
 interface RailOverflowValue {
   actions: RailOverflowActions
-  /** The items in More, in document order. */
+  /** The items in More, in document order, then the separators that hide with them. */
   hidden: readonly string[]
   /** The first Spacer: More sits just before it, at the end of the main items. */
   host: Element | null
   rows: ReadonlyMap<string, RailEntry>
+  /** Each item's group, counted in separators and spacers from the top. */
+  groups: ReadonlyMap<string, number>
   /** Changes when a hidden item's row does, so the menu draws it again. */
   version: number
 }
@@ -184,6 +187,8 @@ function useRailOverflow(mode: "more" | "scroll") {
   const listRef = useRef<HTMLUListElement>(null)
   const chosen = useRef<string | null>(null)
   const [rows] = useState(() => new Map<string, RailEntry>())
+  // Each item's group: the separators and spacers before it. More draws a line between groups.
+  const [groups] = useState(() => new Map<string, number>())
   const [hidden, setHidden] = useState<readonly string[]>([])
   const [host, setHost] = useState<Element | null>(null)
   const [version, setVersion] = useState(0)
@@ -203,15 +208,30 @@ function useRailOverflow(mode: "more" | "scroll") {
     const style = getComputedStyle(list)
     const fixed: number[] = []
     const entries: RailFitEntry[] = []
+    const order: RailFitChild[] = []
+    const separators = new Map<string, number>()
     let spacer: Element | null = null
+    let group = 0
+    groups.clear()
     for (const child of list.children) {
       if (child.hasAttribute("data-rail-more")) continue
       if (child.classList.contains("fa-shell-rail-spacer")) {
         spacer ??= child
         fixed.push(0)
+        order.push({ kind: "spacer" })
+        group += 1
         continue
       }
-      const size = child.getBoundingClientRect().height
+      // Margins take room too: flex items' margins do not collapse.
+      const margins = getComputedStyle(child)
+      const size = child.getBoundingClientRect().height + px(margins.marginBlockStart) + px(margins.marginBlockEnd)
+      const separator = child.getAttribute("data-rail-separator")
+      if (separator) {
+        separators.set(separator, size)
+        order.push({ kind: "separator", id: separator })
+        group += 1
+        continue
+      }
       const id = child.getAttribute("data-rail-id")
       if (!id) {
         fixed.push(size)
@@ -219,8 +239,28 @@ function useRailOverflow(mode: "more" | "scroll") {
       }
       const pinned = id === chosen.current || Boolean(child.querySelector("[data-active]")) || child.contains(document.activeElement)
       entries.push({ id, size, foot: spacer !== null, pinned })
+      order.push({ kind: "item", id })
+      groups.set(id, group)
     }
-    const next = railOverflow({ room: list.clientHeight - px(style.paddingBlockStart) - px(style.paddingBlockEnd), gap: px(style.rowGap), fixed, entries })
+    const room = list.clientHeight - px(style.paddingBlockStart) - px(style.paddingBlockEnd)
+    // A hidden separator leaves the flow, so its room goes to items. Fit with every separator, then
+    // without the ones that hide, keeping out only those that stay hidden, until none comes back.
+    // Each round counts more separators, and with all of them counted the fit always holds.
+    const fit = (without: readonly string[]) => {
+      const items = railOverflow({ room, gap: px(style.rowGap), fixed: [...fixed, ...[...separators].filter(([id]) => !without.includes(id)).map(([, size]) => size)], entries })
+      return { items, separators: railSeparators(order, new Set(items)) }
+    }
+    let result = fit([])
+    let without = result.separators
+    while (without.length) {
+      const attempt = fit(without)
+      if (without.every((id) => attempt.separators.includes(id))) {
+        result = attempt
+        break
+      }
+      without = without.filter((id) => attempt.separators.includes(id))
+    }
+    const next = [...result.items, ...result.separators]
     setHost(spacer)
     if (next.join() === hiddenNow.current.join()) return
     hiddenNow.current = next
@@ -257,7 +297,7 @@ function useRailOverflow(mode: "more" | "scroll") {
       latestMeasure.current()
     },
   }))
-  const value = useMemo<RailOverflowValue>(() => ({ actions, hidden, host, rows, version }), [actions, hidden, host, rows, version])
+  const value = useMemo<RailOverflowValue>(() => ({ actions, hidden, host, rows, groups, version }), [actions, hidden, host, rows, groups, version])
   return { listRef, value }
 }
 
@@ -267,11 +307,12 @@ function More() {
   const messages = useMessages(shellMessages)
   const sequences = useCharacterShortcuts()
   const labels = useContext(RailLabels)
-  if (!overflow?.hidden.length) return null
-  const rows = overflow.hidden.flatMap((id) => {
-    const row = overflow.rows.get(id)
+  const rows = (overflow?.hidden ?? []).flatMap((id) => {
+    const row = overflow?.rows.get(id)
     return row ? [{ id, ...row }] : []
   })
+  // Separators alone (an empty group) need no More.
+  if (!overflow || !rows.length) return null
   const dot = rows.some((row) => row.badge) ? <NotificationDot label="" aria-hidden /> : null
   return (
     <li className="fa-shell-rail-entry" data-rail-more="">
@@ -289,28 +330,32 @@ function More() {
           </Menu.Trigger>
         </Tooltip>
         <Menu.Popup side="inline-end">
-          {rows.map((row) => {
+          {rows.map((row, index) => {
+            const previous = rows[index - 1]
+            const line = previous && overflow.groups.get(previous.id) !== overflow.groups.get(row.id) ? <Menu.Separator /> : null
             const keys = row.shortcut && sequences && !row.disabledReason ? <ShortcutKeys shortcut={row.shortcut} /> : null
             return (
-              <Menu.Item
-                key={row.id}
-                icon={row.icon}
-                disabledReason={row.disabledReason}
-                trail={
-                  row.badge || keys ? (
-                    <span className="fa-shell-rail-menu-trail">
-                      {row.badge}
-                      {keys}
-                    </span>
-                  ) : undefined
-                }
-                onClick={(event) => {
-                  const { altKey, ctrlKey, metaKey, shiftKey } = event
-                  row.element.current?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, altKey, ctrlKey, metaKey, shiftKey }))
-                }}
-              >
-                {row.label}
-              </Menu.Item>
+              <Fragment key={row.id}>
+                {line}
+                <Menu.Item
+                  icon={row.icon}
+                  disabledReason={row.disabledReason}
+                  trail={
+                    row.badge || keys ? (
+                      <span className="fa-shell-rail-menu-trail">
+                        {row.badge}
+                        {keys}
+                      </span>
+                    ) : undefined
+                  }
+                  onClick={(event) => {
+                    const { altKey, ctrlKey, metaKey, shiftKey } = event
+                    row.element.current?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, altKey, ctrlKey, metaKey, shiftKey }))
+                  }}
+                >
+                  {row.label}
+                </Menu.Item>
+              </Fragment>
             )
           })}
         </Menu.Popup>
@@ -494,6 +539,23 @@ function Spacer() {
 }
 
 /**
+ * A line between groups of items. It goes into More with its group: it shows only while an item
+ * before it and one in the group after it are in the rail, so separators never meet, and More
+ * draws the same line between the groups it holds.
+ */
+function Separator({ className }: { className?: string }) {
+  const id = useId()
+  const overflow = useContext(RailOverflow)
+  const actions = overflow?.actions
+  const hidden = overflow?.hidden.includes(id) ?? false
+  useIsoLayoutEffect(() => {
+    actions?.changed()
+    return () => actions?.changed()
+  }, [actions])
+  return <li className={cx("fa-shell-rail-separator", className)} data-rail-separator={id} data-overflowed={hidden ? "" : undefined} aria-hidden />
+}
+
+/**
  * A rail-wide sequence shortcut with no item of its own ("g m" switches the product's
  * module). It shares the rail's sequence handling, so it never collides with an item's.
  */
@@ -519,8 +581,8 @@ function Shortcut({ keys, onTrigger }: {
   return null
 }
 
-/** Compose the primary application navigation rail from accessible items, separators and flexible spacers. Items that do not fit its height move into a More menu, and the current section stays visible. `labels` draws each item's name under its icon. */
-export const Rail = { Root, Item, Spacer, Shortcut }
+/** Compose the primary application navigation rail from accessible items, separators between groups and flexible spacers. Items that do not fit its height move into a More menu, and the current section stays visible. `labels` draws each item's name under its icon. */
+export const Rail = { Root, Item, Separator, Spacer, Shortcut }
 
 export interface ShellBrandProps extends Omit<ComponentProps<"a">, "children"> {
   /** Accessible name and tooltip: "Glass UX home, all organisations". */

@@ -244,6 +244,13 @@ instead (a `needs-owner` label and a comment). The local route:
 - Tree with `onMove` (and PaneLayout's tab titles) remount when their lazy drag or menu code
   arrives. Tree hands focus back, but a click landing in that moment loses its selection. Loading
   the code with the component would remove the swap, at the cost of the split.
+- `e2e/data-table-cards.spec.ts:130` (phone cards keep one toolbar line) fails in the desktop project on
+  this box from 0.19.6 on: at 393 px the main demo's toolbar starts below the fold, so clicking search
+  scrolls the page and the Columns button "moves". The test needs the toolbar scrolled into view first.
+- DataTable has no drop target for files around its whole body (#22): the media demo puts a compact
+  FileDrop in the toolbar. A `dropFiles` prop or a FileDrop wrapper mode would cover dragging anywhere.
+- Icons: no public runtime registry with names and keywords yet (#25, needs-owner: public API and about
+  40 KB in the package). The keywords live in the gallery's icons section.
 - Base UI warns once in a while in dev that a RadioGroup changes from uncontrolled to controlled
   (two in a full e2e run); not yet traced to a component.
 - Dark Glass: `--code-comment` in a CodeBlock bare on a canvas is 3.72:1 at worst (Ruby on Hills)

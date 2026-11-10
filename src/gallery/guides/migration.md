@@ -3,6 +3,24 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.6 → 0.19.7
+
+No code edits are needed.
+
+Behaviour to review:
+
+- A DataTable inside your own DragDropProvider now joins it instead of starting its own, so a Draggable
+  in a cell reaches your zones. The table's column drags then pass through your provider too: their ids
+  are `<table zone>:<column id>`, their types `column:<table zone>` (or `pinned-column:…`), and their
+  `data` is the column id. A monitor or zone that takes any type should ignore those types.
+- Bound text fields (TextField, TextareaField, EmailField and the other text fields) show a `null` or
+  `undefined` value as empty without a warning, and clearing such a field hands back the same `null` or
+  `undefined` rather than `""`. If you replaced `null` with `""` before passing values in, you can stop.
+- Rail: an entry in More is placed out of the flow with `!important`, so your own `position` or
+  `visibility` on `.fa-shell-rail-entry` no longer keeps it in the column. Separators drawn with
+  margins or a `::before` on entries can move to `Rail.Separator`.
+- A touch long press that lifts something to drag it no longer also opens a context menu around it.
+
 ## 0.19.5 → 0.19.6
 
 No code edits are needed.

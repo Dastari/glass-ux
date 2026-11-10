@@ -27,6 +27,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
   prefilled values, and the buttons say Create (#24).
 - `Rail.Separator`: a line between groups of rail items that moves into More with its group, so lines
   never meet; More draws the same lines between the groups it holds (#20).
+- FactList `variant="rows"`, a property list for a record's details: an icon column, a label column
+  every value starts after, values centred on the row and a hairline between rows. A fact takes an
+  `icon` in either variant (#21).
 - Draggable `announcements` and `describedBy`, its own words and instructions inside a shared
   provider (#17).
 

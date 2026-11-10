@@ -20,10 +20,64 @@
     font-size: var(--type-caption-size);
     line-height: var(--type-caption-line);
   }
+  .fa-fact-list[data-icons] dt {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .fa-fact-list-icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    color: var(--fg-muted);
+  }
+  .fa-fact-list-icon > svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+  }
   .fa-fact-list dd {
     margin: 0;
     min-width: 0;
     overflow-wrap: anywhere;
     flex: 1;
+  }
+
+  /* ── Rows: a property list ─────────────────────────────────────────────────
+     Every row has the same columns: icon (when any fact has one), label, value. The label
+     column is 6.5–9rem, and at most about a third of a narrow list. */
+  .fa-fact-list[data-variant="rows"] {
+    --_label: minmax(min(6.5rem, 30%), min(9rem, 35%));
+    gap: 0;
+  }
+  .fa-fact-list[data-variant="rows"] > div {
+    display: grid;
+    grid-template-columns: var(--_label) minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--space-3);
+    min-height: var(--row-h-compact);
+    padding-block: var(--space-2);
+    border-block-end: var(--border-width) solid var(--line);
+  }
+  .fa-fact-list[data-variant="rows"] > div:last-child {
+    border-block-end: 0;
+  }
+  .fa-fact-list[data-variant="rows"][data-icons] > div {
+    grid-template-columns: var(--icon-sm) var(--_label) minmax(0, 1fr);
+  }
+  .fa-fact-list[data-variant="rows"] dt {
+    max-width: none;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+  }
+  /* The label cell spans the icon and label columns, which it shares with every row. */
+  .fa-fact-list[data-variant="rows"][data-icons] dt {
+    display: grid;
+    grid-column: 1 / 3;
+    grid-template-columns: subgrid;
+    align-items: center;
+  }
+  /* The row centres the value, so a chip or badge lines up with its label. */
+  .fa-fact-list[data-variant="rows"] dd {
+    font-weight: var(--weight-medium);
   }
 }

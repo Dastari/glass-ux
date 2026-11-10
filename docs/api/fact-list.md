@@ -1,6 +1,6 @@
 # FactList
 
-A compact semantic description list for popovers, metadata and small summaries.
+A semantic description list: compact label and value pairs for popovers, metadata and small summaries, or aligned rows for a record's details.
 
 `import { FactList } from "glass-ux/fact-list"`
 
@@ -11,6 +11,7 @@ A compact semantic description list for popovers, metadata and small summaries.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | facts | `readonly Fact[]` | See type | yes | — | Compact label/value rows, in reading order. |
+| variant | `"compact" \| "rows" \| undefined` | "compact", "rows" | no | "compact" | `compact`: each label sits beside its value, for popovers and small summaries. `rows`: a property list for a record's details panel, with an icon column when any fact has an icon, a label column every value starts after, and a hairline between rows. Values are centred on the row, so chips and badges line up with their labels; the label column narrows in a narrow container. |
 
 Inherited properties:
 

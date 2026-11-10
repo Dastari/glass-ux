@@ -1,4 +1,6 @@
 import { Badge } from "../../ui/badge/index.js";
+import { IconCalendar, IconClock, IconTickets, IconUser, IconWrench } from "../../icons/generated/icons.js";
+import { Panel, PanelBody, PanelHeader } from "../../ui/surface/index.js";
 import { RelativeTime } from "../../ui/data-table/index.js";
 import { FactList } from "../../ui/fact-list/index.js";
 import { SectionPage, Specimen } from "../kit.js";
@@ -27,6 +29,34 @@ export default function FactListSection() {
             },
           ]}
         />
+      </Specimen>
+      <Specimen
+        title="Rows"
+        description="The rows variant for a record's details: icons, labels and values in aligned columns, with a hairline between rows."
+      >
+        <Panel className="w-full max-w-md" data-testid="fact-rows">
+          <PanelHeader title="Job details" />
+          <PanelBody>
+            <FactList
+              variant="rows"
+              facts={[
+                { label: "Job", icon: <IconTickets />, value: "JB-2041 · Hedge line" },
+                {
+                  label: "Status",
+                  icon: <IconWrench />,
+                  value: (
+                    <Badge size="sm" tone="info">
+                      In progress
+                    </Badge>
+                  ),
+                },
+                { label: "Assigned to", icon: <IconUser />, value: "Bea Lund" },
+                { label: "Due", icon: <IconCalendar />, value: "Friday 30 October" },
+                { label: "Time logged", icon: <IconClock />, value: "3 h 20 min" },
+              ]}
+            />
+          </PanelBody>
+        </Panel>
       </Specimen>
       <Specimen
         title="Narrow container"

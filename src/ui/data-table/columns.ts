@@ -60,6 +60,12 @@ export interface DataColumnSpec<T extends RowData, V = unknown> {
   truncate?: "ellipsis" | "wrap";
   /** Role in the card list (default: meta for priority ≤ 3, otherwise hidden). */
   cardRole?: CardRole;
+  /**
+   * With `cardRole: "media"`: the box the cell fills, as a CSS aspect ratio (default "4 / 3").
+   * Cards draw it across their top; the table draws it as a thumbnail the row's height. An
+   * `img` or `video` in the cell covers the box.
+   */
+  media?: { ratio?: string };
   /** The server can sort by this column. Shift-click adds it to a multi-sort. */
   sortable?: boolean;
   /** Sort descending on the first click (times, numbers). */
@@ -75,7 +81,7 @@ export interface DataColumnSpec<T extends RowData, V = unknown> {
    * listed in the column menu, shown on a card or exported. Give it a `filter`. Default false.
    */
   filterOnly?: boolean;
-  /** Placeholder shape while loading (default text; number for end-aligned columns). */
+  /** Placeholder shape while loading (default text; number for end-aligned columns, media for a media column). */
   skeleton?: CellSkeleton;
   /**
    * How the server filters this column (R16.7): `filters.options({ field: "Os", … })`, or
@@ -116,11 +122,12 @@ export function resolveColumnMeta(
     pin,
     truncate: spec.truncate ?? "ellipsis",
     cardRole: spec.cardRole ?? (priority <= 3 ? "meta" : "hidden"),
+    ...(spec.cardRole === "media" ? { mediaRatio: spec.media?.ratio ?? "4 / 3" } : {}),
     grow: spec.grow ?? true,
     flash: spec.flash ?? true,
     hideable: spec.filterOnly ? false : (spec.hideable ?? !pin),
     filterOnly: Boolean(spec.filterOnly),
-    skeleton: spec.skeleton ?? (align === "end" ? "number" : "text"),
+    skeleton: spec.skeleton ?? (spec.cardRole === "media" ? "media" : align === "end" ? "number" : "text"),
     plain: !spec.cell,
     filter: spec.filter && !isNoFilter(spec.filter) ? spec.filter : null,
     ...(isNoFilter(spec.filter) ? { noFilter: spec.filter.none } : {}),

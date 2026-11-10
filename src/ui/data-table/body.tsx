@@ -13,6 +13,7 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
+  type CSSProperties,
   type HTMLAttributes,
   type ReactElement,
   type ReactNode,
@@ -407,6 +408,8 @@ export function CellPlaceholder({
       return <EntityIdentitySkeleton tier="row" />;
     case "badge":
       return <Skeleton.Block className="fa-dt-skel-badge" radius="full" />;
+    case "media":
+      return <Skeleton.Block className="fa-dt-skel-media" radius="item" />;
     case "sparkline":
       return <Skeleton.Block className="fa-dt-skel-spark" radius="item" />;
     case "number":
@@ -497,7 +500,8 @@ export function SkeletonRow({
           data-pinned={column.pinned ? "" : undefined}
           data-edge={column.edge ? "" : undefined}
           data-expander={column.id === expanderColumn ? "" : undefined}
-          style={column.style}
+          data-media={column.meta.mediaRatio ? "" : undefined}
+          style={column.meta.mediaRatio ? ({ ...column.style, "--_media-ratio": column.meta.mediaRatio } as CSSProperties) : column.style}
         >
           {column.id === expanderColumn ? (
             <span className="fa-dt-expander" data-spacer="" />

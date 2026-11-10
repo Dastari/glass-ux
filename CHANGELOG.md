@@ -30,6 +30,9 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - FactList `variant="rows"`, a property list for a record's details: an icon column, a label column
   every value starts after, values centred on the row and a hairline between rows. A fact takes an
   `icon` in either variant (#21).
+- DataTable `cardRole: "media"` with a column's `media: { ratio }`: the cell is drawn across the top
+  of each card, edge to edge, above the title, and as a thumbnail the row's height in the table. A
+  loading card keeps its box. The data table page shows it with a compact FileDrop in the toolbar (#22).
 - Draggable `announcements` and `describedBy`, its own words and instructions inside a shared
   provider (#17).
 

@@ -13,12 +13,16 @@ import {
 import type { DataTableColumnEdit } from "./edit-types.js";
 import type { FilterSpec } from "./filters/types.js";
 
-/** How a column behaves in the card list below the table's minimum width. */
-export type CardRole = "title" | "subtitle" | "status" | "meta" | "hidden";
+/**
+ * How a column behaves in the card list below the table's minimum width. `media` draws the
+ * column's cell across the top of the card, above the title (a photo or a preview), in the
+ * column's `media.ratio`.
+ */
+export type CardRole = "title" | "subtitle" | "status" | "meta" | "media" | "hidden";
 export type ColumnAlign = "start" | "center" | "end";
 /** The placeholder a column draws while the table loads (same boxes as the real cell). */
 export type CellSkeleton =
-  "text" | "identity" | "badge" | "number" | "sparkline" | "time" | "none";
+  "text" | "identity" | "badge" | "number" | "sparkline" | "time" | "media" | "none";
 
 /**
  * Glass UX column metadata, resolved with defaults by `createDataTableColumns`. Widths are rem
@@ -58,6 +62,8 @@ export interface DataColumnMeta {
   /** Single line with an ellipsis, or wrap to at most two lines. */
   truncate: "ellipsis" | "wrap";
   cardRole: CardRole;
+  /** A `media` column's aspect ratio on a card and in its table cell ("4 / 3"). */
+  mediaRatio?: string;
   /** May take a share of spare width. */
   grow: boolean;
   /** Flash the cell when a live update changes its value. */

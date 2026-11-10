@@ -292,7 +292,8 @@ function DataRowView<T extends RowData>({
             data-pinned={column.pinned ? "" : undefined}
             data-edge={column.edge ? "" : undefined}
             data-expander={column.id === expanderColumn ? "" : undefined}
-            style={column.style}
+            data-media={column.meta.mediaRatio ? "" : undefined}
+            style={column.meta.mediaRatio ? { ...column.style, "--_media-ratio": column.meta.mediaRatio } as CSSProperties : column.style}
           >
             {column.id === expanderColumn ? (
               <RowExpander

@@ -498,6 +498,19 @@
     justify-content: center;
     text-align: center;
   }
+  /* A media column (cardRole "media"): an image or video in the cell is a thumbnail the row's
+     content height, in the column's ratio, cropped to fill it. */
+  .fa-dt-cell[data-media] :is(img, video),
+  .fa-dt-cell[data-media] .fa-dt-skel-media {
+    display: block;
+    flex: none;
+    block-size: calc(var(--_row-h) - var(--space-2) * 2);
+    inline-size: auto;
+    max-inline-size: 100%;
+    aspect-ratio: var(--_media-ratio, 4 / 3);
+    object-fit: cover;
+    border-radius: var(--radius-item);
+  }
   .fa-dt-select {
     flex: none;
     justify-content: center;
@@ -1130,6 +1143,38 @@
     gap: var(--space-2);
     min-inline-size: 0;
     padding: var(--_card-py) var(--space-3);
+  }
+  /* The media column across the top of the card, edge to edge, above the title. An image or
+     video in it covers the box; anything else sits in its middle. */
+  .fa-dt-card-media {
+    display: grid;
+    place-items: center;
+    aspect-ratio: var(--_media-ratio, 4 / 3);
+    min-inline-size: 0;
+    margin-block-start: calc(var(--_card-py) * -1);
+    margin-inline: calc(var(--space-3) * -1);
+    overflow: hidden;
+    border-start-start-radius: calc(var(--radius-tile) - var(--border-width));
+    border-start-end-radius: calc(var(--radius-tile) - var(--border-width));
+    background-color: var(--fill-muted);
+  }
+  .fa-dt-card-media :is(img, video) {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+  /* An icon in place of a preview (a document) reads at tile size. */
+  .fa-dt-card-media > svg {
+    inline-size: var(--icon-2xl);
+    block-size: var(--icon-2xl);
+    color: var(--fg-muted);
+  }
+  .fa-dt-card-media > * {
+    grid-area: 1 / 1;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    max-block-size: 100%;
   }
   .fa-dt:not([data-selectable]) .fa-dt-card-cell {
     --_card-indent: 0rem;

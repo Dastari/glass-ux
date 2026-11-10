@@ -215,3 +215,36 @@ describe("renderCard", () => {
     expect(container.querySelector(".fa-dt-skel-card .fa-dt-card-head")).not.toBeNull();
   });
 });
+
+describe("media column (#22)", () => {
+  const mediaColumns = col.columns([
+    col.display({ id: "preview", header: "Preview", cardRole: "media", media: { ratio: "16 / 9" }, cell: ({ row }) => <img alt="" data-testid={`img-${row.original.id}`} /> }),
+    col.accessor("name", { header: "Name", pin: true }),
+    col.accessor("serial", { header: "Serial", cardRole: "meta" }),
+  ]);
+
+  it("draws the column across the top of each card, above the title, in its ratio", () => {
+    const { container } = render(<Table view="cards" columns={mediaColumns} />);
+    const card = container.querySelector(".fa-dt-card")!;
+    const media = card.querySelector(".fa-dt-card-cell > .fa-dt-card-media") as HTMLElement;
+    expect(media).not.toBeNull();
+    expect(media.nextElementSibling).toHaveClass("fa-dt-card-head");
+    expect(media.style.getPropertyValue("--_media-ratio")).toBe("16 / 9");
+    expect(media.querySelector("img")).not.toBeNull();
+    // The title is still the first column that is not media, and the media is not also a field.
+    expect(card.querySelector(".fa-dt-card-title")!.textContent).toBe("Acorn workstation");
+    expect(card.querySelectorAll('[data-col="preview"]')).toHaveLength(1);
+  });
+
+  it("keeps the media box while loading", () => {
+    const { container } = render(<Table view="cards" rows={[]} loading columns={mediaColumns} />);
+    expect(container.querySelector(".fa-dt-skel-card .fa-dt-card-media")).not.toBeNull();
+  });
+
+  it("marks the table cell, which draws the thumbnail", () => {
+    const { container } = render(<Table columns={mediaColumns} />);
+    const cell = container.querySelector('[role="gridcell"][data-col="preview"]') as HTMLElement;
+    expect(cell).toHaveAttribute("data-media");
+    expect(cell.style.getPropertyValue("--_media-ratio")).toBe("16 / 9");
+  });
+});

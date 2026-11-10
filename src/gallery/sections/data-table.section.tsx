@@ -17,6 +17,7 @@ import {
   TokenTable,
 } from "../kit.js";
 import {
+  IconFileDocument,
   IconGrid,
   IconList,
   IconOperatingSystem,
@@ -32,6 +33,8 @@ import { Badge } from "../../ui/badge/index.js";
 import { Button, ButtonGroup } from "../../ui/button/index.js";
 import { Segmented, type SegmentedOption } from "../../ui/segmented/index.js";
 import { Skeleton } from "../../ui/skeleton/index.js";
+import { FileDrop, formatBytes } from "../../ui/file-drop/index.js";
+import { SCENE_IMAGES } from "../fixtures/scenes.js";
 import {
   createDataTableColumns,
   DataTable,
@@ -1472,6 +1475,91 @@ function CardViewDemo() {
   );
 }
 
+/* ── Attachments: a media column ─────────────────────────────────────────────── */
+
+interface Attachment {
+  id: string;
+  name: string;
+  kind: "Photo" | "Document";
+  bytes: number;
+  added: number;
+  src?: string;
+}
+
+const ATTACHMENT_DAY = Date.parse("2026-10-28T01:00:00Z");
+const ATTACHMENTS: Attachment[] = [
+  { id: "a1", name: "Harbour wall, north end.jpg", kind: "Photo", bytes: 2_516_582, added: ATTACHMENT_DAY - 3_600_000, src: SCENE_IMAGES.harbour },
+  { id: "a2", name: "Dune fence after the storm.jpg", kind: "Photo", bytes: 3_145_728, added: ATTACHMENT_DAY - 7_200_000, src: SCENE_IMAGES.dunes },
+  { id: "a3", name: "Inspection report.pdf", kind: "Document", bytes: 482_304, added: ATTACHMENT_DAY - 86_400_000 },
+  { id: "a4", name: "Ridge track, survey point 4.jpg", kind: "Photo", bytes: 1_887_436, added: ATTACHMENT_DAY - 90_000_000, src: SCENE_IMAGES.ridge },
+  { id: "a5", name: "Lighting at dusk.jpg", kind: "Photo", bytes: 2_202_009, added: ATTACHMENT_DAY - 172_800_000, src: SCENE_IMAGES.dusk },
+];
+
+function ByteSize({ bytes }: { bytes: number }) {
+  return <>{formatBytes(bytes)}</>;
+}
+
+const attachmentColumns = (() => {
+  const col = createDataTableColumns<Attachment>();
+  return col.columns([
+    col.display({
+      id: "preview",
+      header: "Preview",
+      width: 6,
+      grow: false,
+      pin: true,
+      cardRole: "media",
+      media: { ratio: "4 / 3" },
+      cell: ({ row }) =>
+        row.original.src ? <img src={row.original.src} alt="" loading="lazy" /> : <IconFileDocument className="text-fg-muted" />,
+    }),
+    col.accessor("name", { header: "Name", width: 16, cardRole: "title", pin: true }),
+    col.accessor("kind", { header: "Kind", width: 7, cardRole: "subtitle" }),
+    col.accessor("bytes", { header: "Size", width: 6, align: "end", cell: ({ getValue }) => <ByteSize bytes={getValue()} /> }),
+    col.accessor("added", { header: "Added", width: 8, cell: ({ getValue }) => <RelativeTime value={getValue()} /> }),
+  ]);
+})();
+
+function AttachmentsDemo() {
+  const [view, setView] = useState<"list" | "cards">("cards");
+  const [rows, setRows] = useState(ATTACHMENTS);
+  const next = useRef(1);
+  const add = (files: File[]) =>
+    setRows((current) => [
+      ...files.map((file) => ({
+        id: `new-${next.current++}`,
+        name: file.name,
+        kind: file.type.startsWith("image/") ? ("Photo" as const) : ("Document" as const),
+        bytes: file.size,
+        added: Date.now(),
+        src: file.type.startsWith("image/") ? URL.createObjectURL(file) : undefined,
+      })),
+      ...current,
+    ]);
+  return (
+    <div className="dt-demo-frame" data-testid="dt-attachments">
+      <DataTable<Attachment>
+        id="gallery-attachments"
+        label="Attachments"
+        rows={rows}
+        columns={attachmentColumns}
+        getRowId={(row) => row.id}
+        getRowLabel={(row) => row.name}
+        selectable
+        noun={{ one: "attachment", other: "attachments" }}
+        view={view === "cards" ? "cards" : "auto"}
+        cardMinWidth={12}
+        toolbar={
+          <>
+            <FileDrop variant="compact" className="w-auto" aria-label="Add attachments" onFiles={add} />
+            <Segmented size="sm" iconOnly aria-label="View" options={PACKAGE_VIEWS} value={view} onValueChange={setView} />
+          </>
+        }
+      />
+    </div>
+  );
+}
+
 /* ── Detail panels ─────────────────────────────────────────────────────────────── */
 
 const orderColumns = (() => {
@@ -1705,6 +1793,15 @@ function DataTableSection() {
         wide
       >
         <CardViewDemo />
+      </Specimen>
+
+      <Specimen
+        title="Media column"
+        description="The media card role draws a column across the top of each card, in its media.ratio, and as a thumbnail in the table. A compact FileDrop in the toolbar adds files."
+        layout="bare"
+        wide
+      >
+        <AttachmentsDemo />
       </Specimen>
 
       <Specimen

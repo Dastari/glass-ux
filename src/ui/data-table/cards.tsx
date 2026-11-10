@@ -1,7 +1,7 @@
 import { useDataTableMessages } from "./use-messages.js";
 import type { RowData } from "@tanstack/react-table";
 import type { Row, RowSelectionState } from "@tanstack/react-table";
-import { Fragment, memo, type ReactElement, type ReactNode } from "react";
+import { Fragment, memo, type CSSProperties, type ReactElement, type ReactNode } from "react";
 import { IconChevronDown, IconChevronUp } from "../../icons/generated/icons.js";
 import { Button } from "../button/index.js";
 import { Skeleton } from "../skeleton/index.js";
@@ -25,6 +25,8 @@ import type { DataTableCard, DataTableNoun } from "./types.js";
 
 /** Which columns fill which slot of a card, from each column's `cardRole`. */
 export interface CardLayout {
+  /** Drawn across the top of the card, above the title. */
+  media?: ColumnInfo | undefined;
   title: ColumnInfo | undefined;
   /** Data shown beneath or beside the title. */
   subtitle: ColumnInfo | undefined;
@@ -49,7 +51,8 @@ export function cardLayout(
   const visible = columns.filter((column) => !hidden.has(column.id));
   const byRole = (role: string) =>
     visible.find((column) => column.meta.cardRole === role);
-  const title = byRole("title") ?? visible[0];
+  const media = byRole("media");
+  const title = byRole("title") ?? visible.find((column) => column !== media);
   const subtitle = byRole("subtitle");
   const status = byRole("status");
   // The most important fields lead the card's field line (priority 1 → 5, then the
@@ -62,11 +65,12 @@ export function cardLayout(
         a.column.meta.priority - b.column.meta.priority || a.order - b.order,
     )
     .map(({ column }) => column);
-  const shown = new Set([title, subtitle, status, ...meta]);
+  const shown = new Set([media, title, subtitle, status, ...meta]);
   const details = columns.filter((column) => !shown.has(column));
   // A narrow title row keeps its width for the title: the status badge leads the fields.
   if (inlineStatus && status)
     return {
+      media,
       title,
       subtitle,
       status: undefined,
@@ -74,7 +78,12 @@ export function cardLayout(
       inlineStatus: status,
       details,
     };
-  return { title, subtitle, status, meta, details };
+  return { media, title, subtitle, status, meta, details };
+}
+
+/** A media column's box: its aspect ratio, read by the card and the table cell. */
+export function mediaStyle(column: ColumnInfo): CSSProperties {
+  return { "--_media-ratio": column.meta.mediaRatio ?? "4 / 3" } as CSSProperties;
 }
 
 interface CardProps<T extends RowData> extends RowExpansionProps {
@@ -240,7 +249,12 @@ function CardView<T extends RowData>({
           })}
         </div>
       ) : (
-        <div role="gridcell" className="fa-dt-card-cell">
+        <div role="gridcell" className="fa-dt-card-cell" data-media={layout.media ? "" : undefined}>
+          {layout.media ? (
+            <div className="fa-dt-card-media" data-col={layout.media.key} style={mediaStyle(layout.media)}>
+              {render(layout.media)}
+            </div>
+          ) : null}
           <div
             className="fa-dt-card-head"
             data-subtitle={layout.subtitle ? "" : undefined}
@@ -448,7 +462,10 @@ export function SkeletonCards({
           {renderSkeleton ? (
             <div className="fa-dt-card-slot">{renderSkeleton()}</div>
           ) : (
-            <div className="fa-dt-card-cell">
+            <div className="fa-dt-card-cell" data-media={layout.media ? "" : undefined}>
+              {layout.media ? (
+                <Skeleton.Block className="fa-dt-card-media" style={mediaStyle(layout.media)} />
+              ) : null}
               <div
                 className="fa-dt-card-head"
                 data-subtitle={layout.subtitle ? "" : undefined}

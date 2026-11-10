@@ -4,6 +4,19 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Added
+
+- Icons for aviation and ground support: `airplane`, `jet-engine`, `propeller`, `landing-gear`, `tyre`,
+  `seat`, `oil-can`, `refueller`, `tug`, `towbar`, `baggage-cart`, `dolly`, `trailer`, `belt-loader`,
+  `forklift`, `airstairs`, `work-stand`, `ladder`, `scissor-lift`, `aircraft-jack`, `ground-power`,
+  `air-start`, `nitrogen-cart`, `oxygen-cart`, `de-icer`, `pump`, `marshalling-stand`, `wheelchair`,
+  `ramp` and `scrubber`. One icon per kind of equipment; the gallery's search also finds them by the
+  codes in use (GPU, ASU, DIU, BB, BT, MS, SD, SL, DPL).
+- Icons for tools and safety: `wrench`, `screwdriver`, `hammer`, `drill`, `toolbox`, `multimeter`,
+  `flashlight`, `fire-extinguisher`, `hard-hat`, `traffic-cone` and `wheel-chock`.
+
 ## 0.19.5
 
 ### Added

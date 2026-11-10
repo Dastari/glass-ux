@@ -12,8 +12,13 @@ test("a linked metric is one target with a hover fill and the focus ring @respon
   await expect(link).toHaveAttribute("href", "#overdue")
   // The label shows: the tile is tall enough for the compact tier.
   await expect(link.locator(".fa-metric-label")).toBeVisible()
-  const tile = await link.evaluate((element) => [element.getBoundingClientRect().toJSON(), element.parentElement!.getBoundingClientRect().toJSON()])
-  expect(tile[0].width).toBeGreaterThan(tile[1].width - 10)
+  // The link fills the tile's content box.
+  const [width, room] = await link.evaluate((element) => {
+    const tile = element.parentElement!
+    const style = getComputedStyle(tile)
+    return [element.getBoundingClientRect().width, tile.clientWidth - Number.parseFloat(style.paddingLeft) - Number.parseFloat(style.paddingRight)]
+  })
+  expect(Math.abs(width - room)).toBeLessThanOrEqual(1)
   const fill = () => link.evaluate((element) => getComputedStyle(element).backgroundColor)
   const rest = await fill()
   await link.hover()

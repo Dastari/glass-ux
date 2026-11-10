@@ -16,6 +16,10 @@ has upgrade steps in the [migration guide](docs/migration.md).
   codes in use (GPU, ASU, DIU, BB, BT, MS, SD, SL, DPL).
 - Icons for tools and safety: `wrench`, `screwdriver`, `hammer`, `drill`, `toolbox`, `multimeter`,
   `flashlight`, `fire-extinguisher`, `hard-hat`, `traffic-cone` and `wheel-chock`.
+- Icons for vehicles, lifting and handling: `van`, `bus`, `boom-lift`, `hoist`, `crane`, `pallet`,
+  `trolley`, `gas-cylinder`, `sprayer` and `snowflake`. The gallery's search also finds existing icons
+  by the other names in use: truck (`supplier`), car (`vehicle`), fuel (`pump`, `refueller`),
+  generator (`ground-power`), compressor (`air-start`), jack, stairs, step stand and tow tractor (#25).
 - Scheduler `eventActions`: an `ActionSet` for an event's context menu, opened by right-click anywhere
   on the event, Shift+F10 or the Menu key, or a long press on an event that cannot be moved, in every
   view (#19).

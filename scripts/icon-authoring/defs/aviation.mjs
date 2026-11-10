@@ -534,3 +534,166 @@ def("scrubber", () => [
   dotEl(5, 16, 1),
   dotEl(6.5, 19.5, 1),
 ])
+
+// ── Road vehicles, lifting and handling ──────────────────────────────────────────
+//
+// `van` and `bus` keep the truck's wheels and knock-out; the truck itself is `supplier`, the
+// car `vehicle`. `hoist` and `crane` share one hook. `boom-lift` keeps the scissor lift's
+// basket and base, on a 45° boom.
+
+// Van: a one-piece body with a short bonnet, the body tinted.
+def("van", () => {
+  const w = wheelsAt([
+    [6.5, 17.5],
+    [17.25, 17.5],
+  ])
+  const body = poly(
+    [
+      [2.5, 15.5],
+      [2.5, 6],
+      [14.5, 6],
+      [18, 10.5],
+      [21.5, 11.5],
+      [21.5, 15.5],
+    ],
+    [1, 1.5, 1, 1, 1, 1]
+  )
+  return [path(d(body, true), "t"), path(d(cut(body, w.clear))), path("M12 6V12"), ...w.els]
+})
+
+// Bus: a long box with a row of windows above the belt line, the body tinted.
+def("bus", () => {
+  const w = wheelsAt([
+    [6.5, 17.5],
+    [17.5, 17.5],
+  ])
+  const body = box(2.5, 4.5, 21.5, 15.5, 2)
+  return [
+    path(d(body, true), "t"),
+    path(d(cut(body, w.clear))),
+    path("M2.5 10.5H21.5"),
+    path("M9 4.5V10.5"),
+    path("M15.5 4.5V10.5"),
+    ...w.els,
+  ]
+})
+
+// Boom lift: the scissor lift's railed basket on a 45° boom from its wheeled base.
+def("boom-lift", () => {
+  const w = wheelsAt([
+    [7, 19.75],
+    [17, 19.75],
+  ], 1.5)
+  const basket = box(14, 3, 20.5, 7.5, 1.5)
+  return [
+    ...tinted(basket),
+    path("M8 16.5L17 7.5"),
+    path(d(cut([line([3.5, 16.5], [20.5, 16.5])], w.clear))),
+    ...w.els,
+  ]
+})
+
+/** A lifting hook hanging from (x, top): its shank, then a J ending level with the shank's foot, on the left. */
+const hook = (x, top) => path(d([line([x, top], [x, top + 3]), arc([x - 2, top + 3], 2, 90, 270)]))
+
+// Hoist: a chain hoist hanging from its beam, the body tinted, the hook below.
+def("hoist", () => [
+  ...tinted(box(8, 8.25, 16, 13.75, 2)),
+  path("M5 5.25H19"),
+  path("M12 5.25V8.25"),
+  hook(12, 13.75),
+])
+
+// Crane: a tower crane, its jib across the mast under the apex, the counterweight tinted and the hook on its line.
+def("crane", () => [
+  ...tinted(box(2.5, 4.5, 5.5, 8.5, 1)),
+  path("M2.5 4.5H21.5"),
+  path("M7 4.5L9.5 2L12 4.5"),
+  path("M9.5 2V20.5"),
+  path("M6 20.5H13"),
+  path("M19 4.5V11"),
+  hook(19, 11),
+])
+
+// Pallet: a load on a pallet's top deck, the load tinted, the blocks between the decks.
+def("pallet", () => {
+  const load = poly(
+    [
+      [5.5, 14],
+      [5.5, 5],
+      [18.5, 5],
+      [18.5, 14],
+    ],
+    [0, 1.5, 1.5, 0]
+  )
+  return [
+    path(d(load, true), "t"),
+    path(d(poly(
+      [
+        [5.5, 14],
+        [5.5, 5],
+        [18.5, 5],
+        [18.5, 14],
+      ],
+      [0, 1.5, 1.5, 0],
+      false
+    ))),
+    path("M2.5 14H21.5"),
+    path("M2.5 19.5H21.5"),
+    path("M4 14V19.5"),
+    path("M12 14V19.5"),
+    path("M20 14V19.5"),
+  ]
+})
+
+// Trolley: a flat platform on castors with an upright handle, the platform tinted.
+def("trolley", () => {
+  const w = wheelsAt([
+    [6.5, 18.25],
+    [15.5, 18.25],
+  ], 1.75)
+  const deck = box(3, 12.5, 19, 15.5, 1)
+  return [
+    path(d(deck, true), "t"),
+    path(d(cut(deck, w.clear))),
+    path("M19 12.5V5.5A1 1 0 0 1 20 4.5H21.5"),
+    ...w.els,
+  ]
+})
+
+// Gas cylinder: an upright cylinder with a domed shoulder and its valve, the cylinder tinted.
+def("gas-cylinder", () => {
+  const cylinder = poly(
+    [
+      [7.5, 20.5],
+      [7.5, 7],
+      [16.5, 7],
+      [16.5, 20.5],
+    ],
+    [1.5, 4.5, 4.5, 1.5]
+  )
+  return [...tinted(cylinder), path("M12 7V3.5"), path("M9.5 3.5H14.5")]
+})
+
+// Sprayer: a pressure tank with its pump handle and a wand, spraying as the de-icer does.
+def("sprayer", () => [
+  ...tinted(box(11.5, 8.5, 20, 20.5, 2.5)),
+  path("M15.75 8.5V5"),
+  path("M13.75 5H17.75"),
+  path("M11.5 13H9.5L5.5 9L7 7.5"),
+  dotEl(4, 4, 1),
+  dotEl(7, 3, 1),
+  dotEl(9.5, 4.5, 1),
+])
+
+// Snowflake: four arms on the 45° axes, the upright and level ones branched. A line glyph.
+def("snowflake", () => [
+  path("M12 3V21"),
+  path("M3 12H21"),
+  path("M6 6L18 18"),
+  path("M18 6L6 18"),
+  path("M9.75 3.5L12 5.75L14.25 3.5"),
+  path("M9.75 20.5L12 18.25L14.25 20.5"),
+  path("M3.5 9.75L5.75 12L3.5 14.25"),
+  path("M20.5 9.75L18.25 12L20.5 14.25"),
+])

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path class="t" d="M11.5 11A2.5 2.5 0 0 1 14 8.5H17.5A2.5 2.5 0 0 1 20 11V18A2.5 2.5 0 0 1 17.5 20.5H14A2.5 2.5 0 0 1 11.5 18V11Z"/>
+  <path d="M11.5 11A2.5 2.5 0 0 1 14 8.5H17.5A2.5 2.5 0 0 1 20 11V18A2.5 2.5 0 0 1 17.5 20.5H14A2.5 2.5 0 0 1 11.5 18V11Z"/>
+  <path d="M15.75 8.5V5"/>
+  <path d="M13.75 5H17.75"/>
+  <path d="M11.5 13H9.5L5.5 9L7 7.5"/>
+  <circle class="d" cx="4" cy="4" r="1"/>
+  <circle class="d" cx="7" cy="3" r="1"/>
+  <circle class="d" cx="9.5" cy="4.5" r="1"/>
+</svg>

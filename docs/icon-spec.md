@@ -46,7 +46,9 @@ Six traits make the set read as one hand. A new icon has all six.
    - **layer plate** (of `layers`): `merge-down`, `flatten`, `file-layers`
    - **truck** (of `supplier`: its cab, and wheels of radius 2 with the body knocked out
      around them): `refueller`, `de-icer`; the same wheels carry `forklift`, `tug`,
-     `baggage-cart`, `trailer`, `belt-loader` and `airstairs`
+     `baggage-cart`, `trailer`, `belt-loader`, `airstairs`, `van` and `bus`
+   - **railed basket** (of `scissor-lift`, over a wheeled base): `boom-lift`
+   - **lifting hook** (a shank and a J ending level with its foot): `hoist`, `crane`
    - **unit cart** (a powered unit on two wheels): `ground-power`, `air-start`
 6. **Even mass.** Every glyph fills the keyline shape nearest to it, so a circle, a square
    and a monitor read as the same weight at 14px.

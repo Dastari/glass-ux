@@ -39,10 +39,15 @@ Six traits make the set read as one hand. A new icon has all six.
    - **picture frame** (of `image`): `image-info`, `image-metadata`, `fill-edges`, `batch`,
      `before-after`, `fit-screen`, `actual-size`, `mask`
    - **tool axis** (the 45° axis of `edit` and `brush`): `brush`, `healing-brush`,
-     `colour-replace`, `smudge`, `sharpen`, `eraser`, `effects`
+     `colour-replace`, `smudge`, `sharpen`, `eraser`, `effects`, and the hand tools `wrench`,
+     `screwdriver`, `hammer`, `flashlight`
    - **medical cross:** `healing-brush`, `spot-healing`
    - **mask** (a frame with a round window): `mask`, `mask-plus`, `mask-apply`
    - **layer plate** (of `layers`): `merge-down`, `flatten`, `file-layers`
+   - **truck** (of `supplier`: its cab, and wheels of radius 2 with the body knocked out
+     around them): `refueller`, `de-icer`; the same wheels carry `forklift`, `tug`,
+     `baggage-cart`, `trailer`, `belt-loader` and `airstairs`
+   - **unit cart** (a powered unit on two wheels): `ground-power`, `air-start`
 6. **Even mass.** Every glyph fills the keyline shape nearest to it, so a circle, a square
    and a monitor read as the same weight at 14px.
 
@@ -209,6 +214,17 @@ masking.
     `split-horizontal` stay panes. `transparency` is two checker squares in a frame, never a
     3 × 3 grid, which is `camera-grid-9`. `sharp` (Sharp), `meta` (Meta) and `patch` keep
     their names.
+- Aviation (`scripts/icon-authoring/defs/aviation.mjs`) draws equipment by silhouette, one
+  icon per kind rather than per model: one `aircraft-jack` for every tonnage, one `work-stand`
+  for every step stand, one `scissor-lift` for every lift and one `airstairs` for front and
+  rear stairs. The gallery's search keywords carry the codes people use (GPU, ASU, DIU, BB,
+  BT, MS, SD, SL, DPL). Gas carts differ by silhouette: `nitrogen-cart` a horizontal tank on a
+  trailer, `oxygen-cart` an upright cylinder on a hand truck. `ground-power` and `air-start`
+  share the unit cart and differ by what is inside (a bolt, a fan) and what leaves it (a
+  plugged cable, an air hose). `airplane` keeps its wing sweep rather than 45°, so it reads as
+  an airliner. `supplier` stays the delivery truck; `vehicle` stays the car.
+- Tools (`scripts/icon-authoring/defs/tools.mjs`): `toolbox` has a sloped lid and a bar
+  handle, so it never reads as `briefcase`; `flashlight` is the torch, since `flame` is fire.
 - Glyphs that point along the reading direction mirror in right-to-left layouts (the list is
   in `src/ui/icon/icon.tsx`). Of the image-editing set, `image-size` (it grows from the
   start corner) and `before-after` (before sits on the start side) mirror; hand tools, tone

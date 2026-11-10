@@ -9,6 +9,7 @@ import { useElementSize } from "../../lib/use-element-size.js"
 import { Button } from "../button/index.js"
 import { firstDayOfWeek, type IsoDate } from "../date-picker/calendar-date.js"
 import type { DragEffect, DragInfo, DropAccept, DropVerdict } from "../drag-drop/types.js"
+import type { ActionSet } from "../../lib/actions/actions.js"
 import { Segmented, type SegmentedOption } from "../segmented/index.js"
 import { AgendaView } from "./agenda-view.js"
 import { describeWhen, SchedulerContext, type PendingChange, type SchedulerContextValue } from "./context.js"
@@ -120,6 +121,12 @@ export interface SchedulerProps<E extends SchedulerEvent = SchedulerEvent, R ext
   resources?: readonly R[]
   /** Timeline: the content of an event's card, instead of its title and time. Buttons and links in it keep their own behaviour. */
   renderEvent?: (event: E, info: SchedulerEventRenderInfo) => ReactNode
+  /**
+   * The actions in an event's context menu, for the event as their target: right-click, a long
+   * press on an event that cannot be moved, or Shift+F10 and the Menu key on a focused event open
+   * it. Pass the same set as the event's ⋯ button or dialog so the two agree (R11.6).
+   */
+  eventActions?: ActionSet<E>
   /** Timeline: a row's heading, instead of its title and description. */
   renderResource?: (resource: R, info: SchedulerResourceRenderInfo) => ReactNode
   /** Timeline: the heading above the row headings ("Staff", a search field). Default "Resources". */
@@ -211,6 +218,7 @@ export function Scheduler<E extends SchedulerEvent = SchedulerEvent, R extends S
   onEventChange,
   resources,
   renderEvent,
+  eventActions,
   renderResource,
   resourceHeader,
   resourceWidth,
@@ -423,6 +431,7 @@ export function Scheduler<E extends SchedulerEvent = SchedulerEvent, R extends S
       columnWidth,
       resourceWidth,
       renderEvent: renderEvent as SchedulerContextValue["renderEvent"],
+      eventActions: eventActions as SchedulerContextValue["eventActions"],
       renderResource: renderResource as SchedulerContextValue["renderResource"],
       resourceHeader,
       acceptsDrop: (item) => {
@@ -440,7 +449,7 @@ export function Scheduler<E extends SchedulerEvent = SchedulerEvent, R extends S
       setView,
       swallowClick,
     }),
-    [locale, timeZone, t, view, date, today, nowMs, firstDay, compact, loading, selectable, snapMinutes, slotMinutes, resourceTitles, commit, announce, setDate, setView, swallowClick, layout, views, rows, continuous, columnWidth, resourceWidth, renderEvent, renderResource, resourceHeader, placedBlocks],
+    [locale, timeZone, t, view, date, today, nowMs, firstDay, compact, loading, selectable, snapMinutes, slotMinutes, resourceTitles, commit, announce, setDate, setView, swallowClick, layout, views, rows, continuous, columnWidth, resourceWidth, renderEvent, eventActions, renderResource, resourceHeader, placedBlocks],
   )
 
   const viewOptions = useMemo<SegmentedOption<SchedulerView>[]>(() => views.map((value) => ({ value, label: t[value], icon: VIEW_ICONS[value] })), [views, t])

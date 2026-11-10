@@ -4,6 +4,7 @@ import { createPortal } from "react-dom"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { Scheduler, type SchedulerProps } from "./scheduler.js"
 import type { SchedulerBlock, SchedulerEvent, SchedulerResource } from "./types.js"
+import { defineActions } from "../../lib/actions/actions.js"
 
 const NOW = Date.parse("2026-10-28T01:00:00Z") // Wednesday 28 October, 12:00 in Hobart
 const RESOURCES: SchedulerResource[] = [
@@ -197,5 +198,24 @@ describe("Scheduler timeline", () => {
     const zones = [...container.querySelectorAll("[data-tl-zone]")]
     expect(zones).toHaveLength(3)
     expect(zones.every((zone) => zone.hasAttribute("data-dnd-zone"))).toBe(true)
+  })
+
+  it("opens an event's actions on right-click anywhere on its bar, and from the keyboard", async () => {
+    const run = vi.fn()
+    const actions = defineActions<SchedulerEvent>("job", [{ id: "done", label: "Mark done", group: "manage", run }])
+    const { container } = timeline({ editable: true, eventActions: actions, renderEvent: (event) => <span data-testid="content">{event.title}</span> })
+    // The bar's own elements, not only the rendered content, open the menu.
+    const bar = container.querySelector<HTMLElement>('.fa-sch-tl-ev:has([data-event-id="mow"])')!
+    fireEvent.contextMenu(bar.querySelector(".fa-sch-tl-hit")!, { clientX: 10, clientY: 10 })
+    const menu = await screen.findByRole("menu", { name: "Actions for Mow fields" })
+    fireEvent.click(within(menu).getByRole("menuitem", { name: "Mark done" }))
+    await waitFor(() => expect(run).toHaveBeenCalledTimes(1))
+    expect(run.mock.calls[0]![0]).toEqual([expect.objectContaining({ id: "mow" })])
+    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull())
+    // Shift+F10 on the focused event.
+    const hedge = screen.getByRole("button", { name: /^Hedge line/ })
+    hedge.focus()
+    fireEvent.keyDown(hedge, { key: "F10", shiftKey: true })
+    expect(await screen.findByRole("menu", { name: "Actions for Hedge line" })).toBeTruthy()
   })
 })

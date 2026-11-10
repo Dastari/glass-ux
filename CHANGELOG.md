@@ -16,6 +16,26 @@ has upgrade steps in the [migration guide](docs/migration.md).
   codes in use (GPU, ASU, DIU, BB, BT, MS, SD, SL, DPL).
 - Icons for tools and safety: `wrench`, `screwdriver`, `hammer`, `drill`, `toolbox`, `multimeter`,
   `flashlight`, `fire-extinguisher`, `hard-hat`, `traffic-cone` and `wheel-chock`.
+- Scheduler `eventActions`: an `ActionSet` for an event's context menu, opened by right-click anywhere
+  on the event, Shift+F10 or the Menu key, or a long press on an event that cannot be moved, in every
+  view (#19).
+- CommandPalette: a command's `meta` (any content, such as an EntityIdentity chip and a time) after
+  its label, in place of `detail` (#18).
+- PanelHeader `density="tight"` for small summary panels: no minimum height, and less space above the
+  body (#26).
+- EntitySettingsDialog `mode="create"`: every tab with fields counts as changed, so Save works with
+  prefilled values, and the buttons say Create (#24).
+- Draggable `announcements` and `describedBy`, its own words and instructions inside a shared
+  provider (#17).
+
+### Fixed
+
+- DataTable joins a DragDropProvider around it instead of starting its own, so Draggables in cells
+  reach the host's zones; its column ids and types are namespaced by the table and keep their own
+  announcements (#17).
+- Bound text fields (TextField, TextareaField, EmailField, UrlField, and the other text fields) take a
+  `null` or `undefined` value, show it as empty, and hand the same blank back when cleared (#23).
+- A touch long press that lifts something to drag it no longer also opens a context menu around it.
 
 ## 0.19.6
 

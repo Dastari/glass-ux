@@ -30,6 +30,7 @@ container's height; give it one (a Panel body, a sized region).
 | defaultView | `SchedulerView \| undefined` | "day", "month", "week", "agenda" | no | "week" | The first view when uncontrolled. Default "week". |
 | dropAccept | `DropAccept \| undefined` | See type | no | — | Timeline: which of your DragDrop items its rows take (a type, types or a test). Default none: rows only take its own events. |
 | editable | `boolean \| ((event: E) => boolean \| string) \| undefined` | See type | no | false | Let people move and resize events by dragging and with the keyboard. A function decides per event; returning a string locks the event and says why ("Sent to the crew"). |
+| eventActions | `ActionSet<E> \| undefined` | See type | no | — | The actions in an event's context menu, for the event as their target: right-click, a long press on an event that cannot be moved, or Shift+F10 and the Menu key on a focused event open it. Pass the same set as the event's ⋯ button or dialog so the two agree (R11.6). |
 | eventEffect | `((event: E) => DragEffect) \| undefined` | See type | no | — | Timeline: whether dragging an event moves it (default) or copies it, leaving it in place (templates, repeating work). |
 | events | `readonly E[]` | See type | yes | — | The events to show. Keep the array stable between renders; a new array drops optimistic changes the host has not kept. |
 | hiddenDays | `readonly number[] \| undefined` | See type | no | — | ISO weekdays to leave out (1 = Monday … 7 = Sunday): `[6, 7]` hides weekends. Applies to the week view and the timeline. |

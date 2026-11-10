@@ -14,8 +14,10 @@ sortable DropZone it is one of the zone's ordered items. While it is dragged it 
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+| announcements | `Partial<DragDropAnnouncements> \| undefined` | See type | no | — | What screen readers hear while this item is dragged, in place of the provider's announcements (any of them). A component that joins its host's provider uses it to keep its own words: a table's columns announce their position among the columns. |
 | children | `ReactNode \| ((state: DraggableState) => ReactNode)` | See type | no | — | The item's content, or a function of its drag state. |
 | data | `T \| undefined` | See type | no | — | The host's object. |
+| describedBy | `string \| undefined` | See type | no | — | The id of the element that says how to drag this item, in place of the provider's instructions. |
 | disabled | `string \| boolean \| undefined` | See type | no | — | Not draggable; a string says why (aria-disabled with the reason as its description). |
 | effect | `DragEffect \| undefined` | "copy", "move" | no | — | "copy" leaves the source in place. Default "move". |
 | id | `string` | See type | yes | — | Unique within the provider; also the item's id in every event. |

@@ -23,6 +23,23 @@ export default function PanelHeaderExample() {
           <PanelBody>Panel body content.</PanelBody>
         </Panel>
       </Specimen>
+      <Specimen
+        title="Tight, for small summary panels"
+        description='density="tight" drops the control-height minimum and starts the body just below the heading.'
+        layout="stack"
+        specimenKey="component-examples:PanelHeaderExample:1"
+      >
+        <div className="grid gap-panels sm:grid-cols-2" data-testid="panel-header-tight">
+          <Panel compact>
+            <PanelHeader title="Rooms" />
+            <PanelBody>East gallery · North hall · Print room</PanelBody>
+          </Panel>
+          <Panel compact>
+            <PanelHeader title="Rooms" density="tight" />
+            <PanelBody>East gallery · North hall · Print room</PanelBody>
+          </Panel>
+        </div>
+      </Specimen>
     </SectionPage>
   );
 }

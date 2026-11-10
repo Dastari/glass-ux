@@ -8,6 +8,7 @@ import { addDays, fromIsoDate, isoParts, isWeekend, type IsoDate } from "../date
 import { DragDropProvider, useDraggable, useDragDropMonitor, useDropZone, useHasDragDropProvider } from "../drag-drop/drag-drop.js"
 import type { DragEffect, DragInfo, DragItem, DropVerdict } from "../drag-drop/types.js"
 import { eventName, formatDay, formatDayShort, formatMinutes, formatMinutesRange, toneAttribute, useScheduler, type PendingChange } from "./context.js"
+import { EventMenu } from "./event.js"
 import { editEvent, moveEventTo } from "./edit.js"
 import { fromPortal, trackPointer } from "./gesture.js"
 import { laneSegments, type LaneSegment, type PlacedEvent } from "./layout.js"
@@ -774,36 +775,38 @@ function TimelineEvent({ segment, days, zonePrefix, grab }: TimelineEventProps) 
   }
 
   return (
-    <div
-      ref={setCard}
-      className="fa-sch-ev fa-sch-tl-ev"
-      data-variant="lane"
-      data-tone={toneAttribute(placed)}
-      data-editable={editable ? "" : undefined}
-      data-continues-before={segment.continuesBefore ? "" : undefined}
-      data-continues-after={segment.continuesAfter ? "" : undefined}
-      data-custom={context.renderEvent ? "" : undefined}
-      style={{ "--_first": segment.first + 1, "--_length": segment.length, "--_lane": segment.lane + 1 } as CSSProperties}
-      onPointerDown={(event) => {
-        if (fromPortal(event)) return
-        const lanes = card.current?.parentElement
-        if (lanes) grab.current = { id: itemId, offset: columnAt(lanes, event.clientX, days.length, isRtl(lanes)) - segment.first }
-      }}
-    >
-      <button
-        ref={draggable.handleRef}
-        type="button"
-        className="fa-sch-tl-hit"
-        data-event-id={placed.id}
-        data-dnd-handle=""
-        aria-label={eventName(placed, context)}
-        aria-description={reason ?? (editable ? t.timelineEditHint : undefined)}
-        onClick={(event) => context.openEvent(placed, event.currentTarget)}
-        onKeyDown={onKeyDown}
-      />
-      <div className="fa-sch-tl-ev-body">{content}</div>
-      {resizable && !segment.continuesBefore ? <span className="fa-sch-resize" data-resize data-axis="x" data-edge="start" aria-hidden onPointerDown={resize("start")} /> : null}
-      {resizable && !segment.continuesAfter ? <span className="fa-sch-resize" data-resize data-axis="x" data-edge="end" aria-hidden onPointerDown={resize("end")} /> : null}
-    </div>
+    <EventMenu placed={placed}>
+      <div
+        ref={setCard}
+        className="fa-sch-ev fa-sch-tl-ev"
+        data-variant="lane"
+        data-tone={toneAttribute(placed)}
+        data-editable={editable ? "" : undefined}
+        data-continues-before={segment.continuesBefore ? "" : undefined}
+        data-continues-after={segment.continuesAfter ? "" : undefined}
+        data-custom={context.renderEvent ? "" : undefined}
+        style={{ "--_first": segment.first + 1, "--_length": segment.length, "--_lane": segment.lane + 1 } as CSSProperties}
+        onPointerDown={(event) => {
+          if (fromPortal(event)) return
+          const lanes = card.current?.parentElement
+          if (lanes) grab.current = { id: itemId, offset: columnAt(lanes, event.clientX, days.length, isRtl(lanes)) - segment.first }
+        }}
+      >
+        <button
+          ref={draggable.handleRef}
+          type="button"
+          className="fa-sch-tl-hit"
+          data-event-id={placed.id}
+          data-dnd-handle=""
+          aria-label={eventName(placed, context)}
+          aria-description={reason ?? (editable ? t.timelineEditHint : undefined)}
+          onClick={(event) => context.openEvent(placed, event.currentTarget)}
+          onKeyDown={onKeyDown}
+        />
+        <div className="fa-sch-tl-ev-body">{content}</div>
+        {resizable && !segment.continuesBefore ? <span className="fa-sch-resize" data-resize data-axis="x" data-edge="start" aria-hidden onPointerDown={resize("start")} /> : null}
+        {resizable && !segment.continuesAfter ? <span className="fa-sch-resize" data-resize data-axis="x" data-edge="end" aria-hidden onPointerDown={resize("end")} /> : null}
+      </div>
+    </EventMenu>
   )
 }

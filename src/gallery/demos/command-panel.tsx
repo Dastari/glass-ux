@@ -10,9 +10,11 @@ import {
   IconGrid,
   IconLayers,
   IconMoon,
+  IconOrganisation,
   IconPlus,
   IconSun,
 } from "../../icons/generated/icons.js";
+import { EntityIdentity } from "../../ui/entity/index.js";
 import { useAppearance } from "../../lib/appearance/index.js";
 import { ActionProvider, usePaletteActions } from "../../ui/actions/index.js";
 import {
@@ -67,6 +69,18 @@ function DemoCommands({
         label: endpoint.name,
         group: "Endpoints",
         detail: `${endpoint.organisation} · ${endpoint.lastSeen}`,
+        // The organisation as its chip; `detail` keeps the same words for search.
+        meta: (
+          <>
+            <EntityIdentity
+              tier="chip"
+              name={endpoint.organisation}
+              icon={<IconOrganisation />}
+              preview={false}
+            />
+            <span className="type-label text-fg-subtle">{endpoint.lastSeen}</span>
+          </>
+        ),
         keywords: [endpoint.user, endpoint.model],
         icon: <IconEndpoint />,
         run: () => onSelect(endpoint.id),

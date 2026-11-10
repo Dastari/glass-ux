@@ -5,6 +5,7 @@ import type { PlacedEvent } from "./layout.js"
 import type { SchedulerMessages } from "./messages.js"
 import type { ReactNode } from "react"
 import type { DragEffect, DragInfo, DragItem, DropVerdict } from "../drag-drop/types.js"
+import type { ActionSet } from "../../lib/actions/actions.js"
 import type { SchedulerBlock, SchedulerDrop, SchedulerDropTarget, SchedulerEvent, SchedulerEventRenderInfo, SchedulerLayout, SchedulerResource, SchedulerResourceRenderInfo, SchedulerSlot, SchedulerView } from "./types.js"
 import { DAY_MINUTES } from "./zone.js"
 
@@ -60,6 +61,8 @@ export interface SchedulerContextValue {
   columnWidth?: string
   resourceWidth?: string
   renderEvent?: (event: SchedulerEvent, info: SchedulerEventRenderInfo) => ReactNode
+  /** The actions an event's context menu offers. */
+  eventActions?: ActionSet<SchedulerEvent>
   renderResource?: (resource: SchedulerResource, info: SchedulerResourceRenderInfo) => ReactNode
   resourceHeader?: ReactNode
   /** Whether a row takes one of your DragDrop items. */

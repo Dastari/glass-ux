@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { Scheduler } from "./scheduler.js"
 import { editEvent } from "./edit.js"
 import { placeEvent } from "./layout.js"
 import type { SchedulerEvent } from "./types.js"
+import { defineActions } from "../../lib/actions/actions.js"
 
 const NOW = Date.parse("2026-10-28T01:00:00Z") // Wednesday 28 October, 12:00 in Sydney
 const EVENTS: SchedulerEvent[] = [
@@ -19,6 +20,14 @@ function renderScheduler(props: Partial<Parameters<typeof Scheduler>[0]> = {}) {
 }
 
 describe("Scheduler", () => {
+  it("gives week and month events the context menu from eventActions", async () => {
+    const actions = defineActions<SchedulerEvent>("job", [{ id: "open", label: "Open job", group: "open", run: () => {} }])
+    renderScheduler({ eventActions: actions, editable: true })
+    fireEvent.contextMenu(screen.getByRole("button", { name: /^Pump check/ }), { clientX: 5, clientY: 5 })
+    const menu = await screen.findByRole("menu", { name: "Actions for Pump check" })
+    expect(within(menu).getByRole("menuitem", { name: "Open job" })).toBeTruthy()
+  })
+
   it("names every event with its time and resource", () => {
     renderScheduler()
     expect(screen.getByRole("button", { name: /^Pump check, Wednesday,? 28 October, 9:00\s?am to 10:30\s?am, Pump house$/ })).toBeTruthy()

@@ -21,6 +21,11 @@ interface TouchGesture {
 }
 const GestureContext = /* @__PURE__ */ createContext<{ current: TouchGesture } | null>(null)
 
+function dragging() {
+  const root = typeof document === "undefined" ? null : document.documentElement
+  return Boolean(root && (root.hasAttribute("data-dnd") || root.hasAttribute("data-scheduler-gesture")))
+}
+
 /** The menu's root. It notes a menu opened by a long press, so the trigger can drop the click that follows. */
 function ContextMenuRoot({ onOpenChange, ...rest }: ContextMenuRootProps) {
   const gesture = useRef<TouchGesture>({ down: false, opened: false, liftedAt: 0 })
@@ -29,6 +34,8 @@ function ContextMenuRoot({ onOpenChange, ...rest }: ContextMenuRootProps) {
       <BaseContextMenu.Root
         {...rest}
         onOpenChange={(open, details) => {
+          // A long press that lifted something to drag it does not also open its menu.
+          if (open && gesture.current.down && dragging()) return details.cancel()
           if (open && gesture.current.down) gesture.current.opened = true
           onOpenChange?.(open, details)
         }}

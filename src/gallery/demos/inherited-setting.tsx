@@ -143,6 +143,7 @@ function RelaySettings({
   loading = false,
   saveDisabledReason,
   identity = false,
+  create = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -150,6 +151,7 @@ function RelaySettings({
   loading?: boolean;
   saveDisabledReason?: string;
   identity?: boolean;
+  create?: boolean;
 }) {
   const [saved, setSaved] = useState<RelayValues>(SAVED);
   const [tab, setTab] = useState("general");
@@ -190,6 +192,7 @@ function RelaySettings({
       open={open}
       onOpenChange={onOpenChange}
       confirmOnCancel
+      mode={create ? "create" : "edit"}
       preview={preview}
       loading={loading}
       saveDisabledReason={saveDisabledReason}
@@ -423,11 +426,23 @@ export default function EntitySettingsSection() {
       </Specimen>
 
       <Specimen
+        title="Creating a record"
+        description='mode="create" opens on a new record filled from where it was started: Create works at once, and the tabs with fields show their unsaved dots until it is created.'
+        layout="bare"
+        wide
+        specimenKey="entity-settings:default:2"
+      >
+        <div className="flex w-full justify-center p-4" data-testid="relay-create">
+          <RelaySettings open onOpenChange={() => undefined} preview create />
+        </div>
+      </Specimen>
+
+      <Specimen
         title="In the page"
         description="The same dialog drawn in place, for review."
         layout="bare"
         wide
-        specimenKey="entity-settings:default:2"
+        specimenKey="entity-settings:default:3"
       >
         <div className="flex w-full justify-center p-4" data-testid="relay-preview">
           <RelaySettings open onOpenChange={() => undefined} preview />
@@ -439,7 +454,7 @@ export default function EntitySettingsSection() {
         description="The labelled group reserves field geometry while the host loads a document."
         layout="bare"
         wide
-        specimenKey="entity-settings:default:3"
+        specimenKey="entity-settings:default:4"
       >
         <RelaySettings open onOpenChange={() => undefined} preview loading />
       </Specimen>
@@ -449,7 +464,7 @@ export default function EntitySettingsSection() {
         description="Populated fields remain editable when the host has no admitted save operation. Save explains why it is unavailable; the dialog does not pretend a read or save is pending."
         layout="bare"
         wide
-        specimenKey="entity-settings:default:4"
+        specimenKey="entity-settings:default:5"
       >
         <RelaySettings
           open
@@ -463,7 +478,7 @@ export default function EntitySettingsSection() {
         title="Inherited setting"
         description="Where a value comes from (workspace → organisation → this entity), with Override; overridden, it says so and offers Reset. A group setting shows its fields beneath while overridden."
         layout="stack"
-        specimenKey="entity-settings:default:5"
+        specimenKey="entity-settings:default:6"
       >
         <Inherited />
       </Specimen>

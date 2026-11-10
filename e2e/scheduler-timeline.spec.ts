@@ -303,7 +303,7 @@ test("choosing an item in a job's menu does not select the row's days", async ({
 }) => {
   test.skip(isMobile, "the wide planner");
   const planner = await open(page);
-  await planner.getByRole("button", { name: "More for Pine removal" }).click();
+  await planner.getByRole("button", { name: "Actions for Pine removal" }).click();
   await page.getByRole("menuitem", { name: "Remove" }).click();
   await expect(status(page)).toHaveText("Removed Pine removal");
   await expect(
@@ -312,6 +312,30 @@ test("choosing an item in a job's menu does not select the row's days", async ({
   await expect(planner.locator(".fa-sch-tl-selection[data-show]")).toHaveCount(
     0,
   );
+});
+
+test("right-clicking anywhere on a job's card opens its actions (#19)", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, "the wide planner");
+  const planner = await open(page);
+  const card = planner.locator(".fa-sch-tl-ev", {
+    has: page.getByRole("button", { name: /^Pine removal/ }),
+  });
+  const box = (await card.boundingBox())!;
+  // The card's own face, away from the buttons in its content.
+  await page.mouse.click(box.x + 8, box.y + box.height / 2, { button: "right" });
+  const menu = page.getByRole("menu", { name: "Actions for Pine removal" });
+  await expect(menu).toBeVisible();
+  await expect(menu.getByRole("menuitem")).toHaveText(["Open", "Send to crew", "Remove"]);
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeHidden();
+  // The keyboard reaches the same menu from the focused event.
+  await planner.getByRole("button", { name: /^Pine removal/ }).focus();
+  await page.keyboard.press("Shift+F10");
+  await expect(menu).toBeVisible();
+  await expect(menu.getByRole("menuitem").first()).toBeFocused();
 });
 
 test("header actions wrap within a narrow scheduler instead of running off its edge @responsive", async ({

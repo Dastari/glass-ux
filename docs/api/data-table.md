@@ -1,12 +1,6 @@
 # DataTable
 
-The one data table (R16). Server-side sorting and pagination, container-aware columns
-(priority hiding → "+N" detail → card list), resizable and pinnable columns persisted
-per user, selection with a bulk bar over the status bar, row ⋯ and right-click menus
-from the entity's ActionSet, live updates that flash in place, and loading, empty and
-error states that keep the table's box, opt-in row reordering by drag or keyboard
-(`reorder`) that leaves the order to the host, and opt-in detail panels (`renderRowDetail`)
-and tree rows with lazy children (`tree`).
+Server-side sorting and pages, columns that fold by priority into “+N” and then cards, a card view with a grid and your own card design, resizable and pinned columns, bulk actions, live rows, inline editing, CSV export, persistent column order, detail panels and tree rows with lazy children.
 
 `import { DataTable } from "glass-ux/data-table"`
 

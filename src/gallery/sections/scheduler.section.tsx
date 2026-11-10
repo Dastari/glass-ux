@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { Rules, SectionPage, Specimen } from "../kit.js"
 import { Panel, PanelBody } from "../../ui/surface/index.js"
 import { Segmented } from "../../ui/segmented/index.js"
@@ -9,9 +9,9 @@ import { Avatar } from "../../ui/avatar/index.js"
 import { Badge } from "../../ui/badge/index.js"
 import { Button } from "../../ui/button/index.js"
 import { Input } from "../../ui/input/index.js"
-import { Menu } from "../../ui/menu/index.js"
+import { ActionMenu, defineActions } from "../../ui/actions/index.js"
 import { DragDropProvider, Draggable, DropZone, type DropEvent } from "../../ui/drag-drop/index.js"
-import { IconMoreHorizontal, IconSearch, IconSend } from "../../icons/generated/icons.js"
+import { IconSearch, IconSend } from "../../icons/generated/icons.js"
 import { PLANT_RESOURCES, WEEK_START, plantEvents, type PlantEvent } from "./scheduler.fixtures.js"
 import { BACKLOG, CREW, CREW_BLOCKS, PEOPLE, availability, crewJobs, type Backlog, type CrewJob, type CrewMember } from "./scheduler-timeline.fixtures.js"
 
@@ -178,9 +178,37 @@ function CrewPlanner({ narrow = false }: { narrow?: boolean }) {
     setJobs((current) => [...current, { id: id(), title: "New job", start: slot.days?.start ?? slot.start, end: slot.days?.end ?? slot.end, allDay: true, resourceId: slot.resourceId, tone: 3 }])
     setStatus("Added a job")
   }
+  // One set for the card's ⋯ button and its context menu (right-click, Shift+F10).
+  const jobActions = useMemo(
+    () =>
+      defineActions<CrewJob>("job", [
+        { id: "open", label: "Open", group: "open", run: ([job]) => setStatus(`Opened ${job!.title}`) },
+        {
+          id: "send",
+          label: "Send to crew",
+          group: "manage",
+          visible: ([job]) => !job!.sent,
+          run: ([job]) => {
+            setJobs((current) => current.map((item) => (item.id === job!.id ? { ...item, sent: true } : item)))
+            setStatus(`Sent ${job!.title}`)
+          },
+        },
+        {
+          id: "remove",
+          label: "Remove",
+          group: "danger",
+          run: ([job]) => {
+            setJobs((current) => current.filter((item) => item.id !== job!.id))
+            setStatus(`Removed ${job!.title}`)
+          },
+        },
+      ]),
+    [],
+  )
   const scheduler = (
     <Scheduler<CrewJob, CrewMember>
       aria-label="Crew planner"
+      eventActions={jobActions}
       layout="timeline"
       events={jobs}
       resources={crew}
@@ -242,19 +270,7 @@ function CrewPlanner({ narrow = false }: { narrow?: boolean }) {
                 }}
               />
             )}
-            <Menu.Root>
-              <Menu.Trigger render={<Button size="xs" variant="ghost" icon={<IconMoreHorizontal />} aria-label={`More for ${job.title}`} />} />
-              <Menu.Popup align="end">
-                <Menu.Item
-                  onClick={() => {
-                    setJobs((current) => current.filter((item) => item.id !== job.id))
-                    setStatus(`Removed ${job.title}`)
-                  }}
-                >
-                  Remove
-                </Menu.Item>
-              </Menu.Popup>
-            </Menu.Root>
+            <ActionMenu set={jobActions} targets={[job]} label={job.title} size="xs" />
           </span>
         </span>
       )}

@@ -151,6 +151,10 @@ import { SCHEDULER_EVENT_TYPE, Scheduler, type SchedulerEventChange } from "glas
   beside your content, never around it, so buttons and links in it keep their own clicks and
   keys and never start a drag. Cut ends show where an event continues before or after the days
   shown; changes always report its real start and end.
+- **Actions.** `eventActions` takes an `ActionSet` for the event: right-click anywhere on an
+  event, Shift+F10 or the Menu key on a focused one, or a long press on one that cannot be
+  moved opens its context menu (on a movable one a long press lifts it). Pass the same set to
+  an `ActionMenu` in `renderEvent` so the ⋯ button offers the same actions. In every view.
 - **Editing.** With `editable`, drag an event to another day or row, or drag either end.
   `editable` may return a string: the event is locked, says why, and still opens. `resizable`
   decides the ends separately (single-day work that only moves). With the keyboard, left and

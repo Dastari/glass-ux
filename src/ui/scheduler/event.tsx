@@ -1,4 +1,5 @@
-import type { CSSProperties, KeyboardEvent, PointerEvent, ReactNode } from "react"
+import type { CSSProperties, KeyboardEvent, PointerEvent, ReactElement, ReactNode } from "react"
+import { ActionContextMenu } from "../actions/action-context-menu.js"
 import { cx } from "../../lib/cx.js"
 import { readingKey } from "../../lib/direction.js"
 import { eventName, toneAttribute, useScheduler } from "./context.js"
@@ -44,24 +45,37 @@ export function EventButton({ placed, variant, editKeys, className, style, tabIn
   }
 
   return (
-    <button
-      type="button"
-      className={cx("fa-sch-ev", className)}
-      data-variant={variant}
-      data-tone={toneAttribute(placed)}
-      data-event-id={placed.id}
-      data-editable={editable ? "" : undefined}
-      aria-label={eventName(placed, context)}
-      aria-description={editable ? context.t.editHint : undefined}
-      tabIndex={tabIndex}
-      style={style}
-      onPointerDown={editable ? onPointerDown : undefined}
-      onClick={(event) => context.openEvent(placed, event.currentTarget)}
-      onKeyDown={keyDown}
-      {...data}
-    >
+    <EventMenu placed={placed}>
+      <button
+        type="button"
+        className={cx("fa-sch-ev", className)}
+        data-variant={variant}
+        data-tone={toneAttribute(placed)}
+        data-event-id={placed.id}
+        data-editable={editable ? "" : undefined}
+        aria-label={eventName(placed, context)}
+        aria-description={editable ? context.t.editHint : undefined}
+        tabIndex={tabIndex}
+        style={style}
+        onPointerDown={editable ? onPointerDown : undefined}
+        onClick={(event) => context.openEvent(placed, event.currentTarget)}
+        onKeyDown={keyDown}
+        {...data}
+      >
+        {children}
+      </button>
+    </EventMenu>
+  )
+}
+
+/** The event's context menu when the Scheduler has `eventActions`. The child forwards its ref and spreads props. */
+export function EventMenu({ placed, children }: { placed: PlacedEvent; children: ReactElement }) {
+  const { eventActions } = useScheduler()
+  if (!eventActions) return children
+  return (
+    <ActionContextMenu set={eventActions} targets={[placed.event]} label={placed.event.title}>
       {children}
-    </button>
+    </ActionContextMenu>
   )
 }
 

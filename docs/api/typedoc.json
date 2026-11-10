@@ -278477,9 +278477,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 390,
+									"line": 443,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L390"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L443"
 								}
 							],
 							"type": {
@@ -278499,9 +278499,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 388,
+							"line": 441,
 							"character": 17,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L388"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L441"
 						}
 					],
 					"extendedTypes": [
@@ -278566,9 +278566,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 433,
+									"line": 486,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L433"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L486"
 								}
 							],
 							"type": {
@@ -278595,9 +278595,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 431,
+							"line": 484,
 							"character": 17,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L431"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L484"
 						}
 					],
 					"extendedTypes": [
@@ -278931,9 +278931,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 328,
+									"line": 330,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L328"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L330"
 								}
 							],
 							"type": {
@@ -278960,9 +278960,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 330,
+									"line": 332,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L330"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L332"
 								}
 							],
 							"type": {
@@ -278989,9 +278989,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 313,
+									"line": 315,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L313"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L315"
 								}
 							],
 							"type": {
@@ -279049,9 +279049,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 326,
+									"line": 328,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L326"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L328"
 								}
 							],
 							"type": {
@@ -279085,9 +279085,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 315,
+									"line": 317,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L315"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L317"
 								}
 							],
 							"type": {
@@ -279121,9 +279121,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 320,
+									"line": 322,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L320"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L322"
 								}
 							],
 							"type": {
@@ -279165,9 +279165,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 318,
+									"line": 320,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L318"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L320"
 								}
 							],
 							"type": {
@@ -279193,9 +279193,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 316,
+									"line": 318,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L316"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L318"
 								}
 							],
 							"type": {
@@ -279224,9 +279224,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 311,
+							"line": 313,
 							"character": 17,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L311"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L313"
 						}
 					],
 					"extendedTypes": [
@@ -279291,9 +279291,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 159,
+									"line": 161,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L159"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L161"
 								}
 							],
 							"type": {
@@ -279312,9 +279312,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 153,
+									"line": 155,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L153"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L155"
 								}
 							],
 							"type": {
@@ -279340,9 +279340,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 152,
+									"line": 154,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L152"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L154"
 								}
 							],
 							"type": {
@@ -279369,9 +279369,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 157,
+									"line": 159,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L157"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L159"
 								}
 							],
 							"type": {
@@ -279500,9 +279500,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 155,
+									"line": 157,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L155"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L157"
 								}
 							],
 							"type": {
@@ -279635,9 +279635,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 151,
+									"line": 153,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L151"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L153"
 								}
 							],
 							"type": {
@@ -279666,9 +279666,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 149,
+									"line": 151,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L149"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L151"
 								}
 							],
 							"type": {
@@ -279696,9 +279696,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 147,
+							"line": 149,
 							"character": 17,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L147"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L149"
 						}
 					]
 				},
@@ -279728,9 +279728,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 118,
+									"line": 120,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L118"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L120"
 								}
 							],
 							"type": {
@@ -279762,9 +279762,9 @@
 															"sources": [
 																{
 																	"fileName": "ui/dialog/dialog.tsx",
-																	"line": 118,
+																	"line": 120,
 																	"character": 48,
-																	"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L118"
+																	"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L120"
 																}
 															],
 															"type": {
@@ -279800,9 +279800,9 @@
 															"sources": [
 																{
 																	"fileName": "ui/dialog/dialog.tsx",
-																	"line": 118,
+																	"line": 120,
 																	"character": 27,
-																	"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L118"
+																	"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L120"
 																}
 															],
 															"type": {
@@ -279864,9 +279864,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 124,
+									"line": 126,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L124"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L126"
 								}
 							],
 							"type": {
@@ -279892,9 +279892,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 108,
+									"line": 110,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L108"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L110"
 								}
 							],
 							"type": {
@@ -279921,9 +279921,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 116,
+									"line": 118,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L116"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L118"
 								}
 							],
 							"type": {
@@ -279958,9 +279958,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 114,
+									"line": 116,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L114"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L116"
 								}
 							],
 							"type": {
@@ -280003,9 +280003,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 110,
+									"line": 112,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L110"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L112"
 								}
 							],
 							"type": {
@@ -280077,9 +280077,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 112,
+									"line": 114,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L112"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L114"
 								}
 							],
 							"type": {
@@ -280130,9 +280130,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 107,
+									"line": 109,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L107"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L109"
 								}
 							],
 							"type": {
@@ -280163,9 +280163,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 123,
+									"line": 125,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L123"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L125"
 								}
 							],
 							"type": {
@@ -280202,9 +280202,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 106,
+							"line": 108,
 							"character": 17,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L106"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L108"
 						}
 					]
 				},
@@ -281256,9 +281256,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 34,
+							"line": 36,
 							"character": 12,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L34"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L36"
 						}
 					],
 					"type": {
@@ -281298,9 +281298,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 31,
+							"line": 33,
 							"character": 12,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L31"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L33"
 						}
 					],
 					"type": {
@@ -281346,9 +281346,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 30,
+							"line": 32,
 							"character": 12,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L30"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L32"
 						}
 					],
 					"type": {
@@ -281378,9 +281378,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 28,
+							"line": 30,
 							"character": 12,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L28"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L30"
 						}
 					],
 					"type": {
@@ -281418,9 +281418,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 32,
+							"line": 34,
 							"character": 12,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L32"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L34"
 						}
 					],
 					"type": {
@@ -281552,9 +281552,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 506,
+							"line": 559,
 							"character": 13,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L506"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L559"
 						}
 					],
 					"type": {
@@ -281575,9 +281575,9 @@
 									"sources": [
 										{
 											"fileName": "ui/dialog/dialog.tsx",
-											"line": 511,
+											"line": 564,
 											"character": 2,
-											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L511"
+											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L564"
 										}
 									],
 									"type": {
@@ -281668,9 +281668,9 @@
 									"sources": [
 										{
 											"fileName": "ui/dialog/dialog.tsx",
-											"line": 515,
+											"line": 568,
 											"character": 2,
-											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L515"
+											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L568"
 										}
 									],
 									"type": {
@@ -281751,9 +281751,9 @@
 									"sources": [
 										{
 											"fileName": "ui/dialog/dialog.tsx",
-											"line": 514,
+											"line": 567,
 											"character": 2,
-											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L514"
+											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L567"
 										}
 									],
 									"type": {
@@ -281824,9 +281824,9 @@
 									"sources": [
 										{
 											"fileName": "ui/dialog/dialog.tsx",
-											"line": 512,
+											"line": 565,
 											"character": 2,
-											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L512"
+											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L565"
 										}
 									],
 									"type": {
@@ -281885,9 +281885,9 @@
 									"sources": [
 										{
 											"fileName": "ui/dialog/dialog.tsx",
-											"line": 510,
+											"line": 563,
 											"character": 2,
-											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L510"
+											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L563"
 										}
 									],
 									"type": {
@@ -281946,9 +281946,9 @@
 									"sources": [
 										{
 											"fileName": "ui/dialog/dialog.tsx",
-											"line": 509,
+											"line": 562,
 											"character": 2,
-											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L509"
+											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L562"
 										}
 									],
 									"type": {
@@ -282015,9 +282015,9 @@
 									"sources": [
 										{
 											"fileName": "ui/dialog/dialog.tsx",
-											"line": 516,
+											"line": 569,
 											"character": 2,
-											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L516"
+											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L569"
 										}
 									],
 									"type": {
@@ -282068,9 +282068,9 @@
 																			"sources": [
 																				{
 																					"fileName": "ui/dialog/dialog.tsx",
-																					"line": 465,
+																					"line": 518,
 																					"character": 2,
-																					"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L465"
+																					"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L518"
 																				}
 																			],
 																			"type": {
@@ -282096,9 +282096,9 @@
 																			"sources": [
 																				{
 																					"fileName": "ui/dialog/dialog.tsx",
-																					"line": 464,
+																					"line": 517,
 																					"character": 2,
-																					"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L464"
+																					"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L517"
 																				}
 																			],
 																			"type": {
@@ -282129,9 +282129,9 @@
 																			"sources": [
 																				{
 																					"fileName": "ui/dialog/dialog.tsx",
-																					"line": 463,
+																					"line": 516,
 																					"character": 2,
-																					"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L463"
+																					"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L516"
 																				}
 																			],
 																			"type": {
@@ -282168,9 +282168,9 @@
 																			"sources": [
 																				{
 																					"fileName": "ui/dialog/dialog.tsx",
-																					"line": 461,
+																					"line": 514,
 																					"character": 2,
-																					"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L461"
+																					"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L514"
 																				}
 																			],
 																			"type": {
@@ -282192,9 +282192,9 @@
 																			"sources": [
 																				{
 																					"fileName": "ui/dialog/dialog.tsx",
-																					"line": 459,
+																					"line": 512,
 																					"character": 2,
-																					"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L459"
+																					"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L512"
 																				}
 																			],
 																			"type": {
@@ -282248,9 +282248,9 @@
 									"sources": [
 										{
 											"fileName": "ui/dialog/dialog.tsx",
-											"line": 507,
+											"line": 560,
 											"character": 2,
-											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L507"
+											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L560"
 										}
 									],
 									"type": {
@@ -282309,9 +282309,9 @@
 									"sources": [
 										{
 											"fileName": "ui/dialog/dialog.tsx",
-											"line": 513,
+											"line": 566,
 											"character": 2,
-											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L513"
+											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L566"
 										}
 									],
 									"type": {
@@ -282382,9 +282382,9 @@
 									"sources": [
 										{
 											"fileName": "ui/dialog/dialog.tsx",
-											"line": 508,
+											"line": 561,
 											"character": 2,
-											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L508"
+											"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L561"
 										}
 									],
 									"type": {
@@ -282460,9 +282460,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 210,
+							"line": 212,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L210"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L212"
 						}
 					],
 					"signatures": [
@@ -282483,9 +282483,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 210,
+									"line": 212,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L210"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L212"
 								}
 							],
 							"parameters": [
@@ -282927,9 +282927,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 100,
+							"line": 102,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L100"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L102"
 						}
 					],
 					"signatures": [
@@ -282974,9 +282974,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 100,
+									"line": 102,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L100"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L102"
 								}
 							],
 							"type": {
@@ -282997,9 +282997,9 @@
 					"sources": [
 						{
 							"fileName": "ui/dialog/dialog.tsx",
-							"line": 422,
+							"line": 475,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L422"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L475"
 						}
 					],
 					"signatures": [
@@ -283020,9 +283020,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 422,
+									"line": 475,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L422"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L475"
 								}
 							],
 							"parameters": [
@@ -395322,9 +395322,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 108,
+									"line": 110,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L108"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L110"
 								}
 							],
 							"type": {
@@ -395411,9 +395411,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 110,
+									"line": 112,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L110"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L112"
 								}
 							],
 							"type": {
@@ -395485,9 +395485,9 @@
 							"sources": [
 								{
 									"fileName": "ui/dialog/dialog.tsx",
-									"line": 107,
+									"line": 109,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L107"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.5/src/ui/dialog/dialog.tsx#L109"
 								}
 							],
 							"type": {

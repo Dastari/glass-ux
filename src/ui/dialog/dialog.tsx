@@ -6,6 +6,7 @@ import { Drawer } from "@base-ui/react/drawer"
 import {
   cloneElement,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useId,
@@ -21,6 +22,7 @@ import {
 import { IconClose } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
+import { observeElementSizes } from "../../lib/resize-observer.js"
 import { Button } from "../button/index.js"
 import { usePhoneLayout } from "../../lib/use-media-query.js"
 import { popupContainer } from "../../lib/popup-container.js"
@@ -330,6 +332,47 @@ export interface DialogHeaderProps extends Omit<ComponentProps<"header">, "title
   closeLabel?: string
 }
 
+/**
+ * With an identity in the header, centre the close button on the identity's actions (its
+ * `data-header-anchor="actions"`), or on its first row when it has none, so the close sits on
+ * their line rather than at the top of a taller block. Measured in a resize observation, which
+ * is delivered before the frame paints, and divided by the dialog's opening scale.
+ */
+function useCloseOnIdentityLine(active: boolean) {
+  const ref = useRef<HTMLElement | null>(null)
+  useEffect(() => {
+    const header = ref.current
+    if (!active || !header) return
+    const identity = header.querySelector<HTMLElement>(":scope > .fa-dialog-identity")
+    const closeButton = header.querySelector<HTMLElement>(":scope > .fa-dialog-close")
+    if (!identity || !closeButton) return
+    const place = () => {
+      const anchor =
+        identity.querySelector<HTMLElement>('[data-header-anchor="actions"]') ??
+        identity.querySelector<HTMLElement>("[data-header-anchor]") ??
+        (identity.firstElementChild as HTMLElement | null)
+      if (!anchor) return
+      const box = identity.getBoundingClientRect()
+      const target = anchor.getBoundingClientRect()
+      // Layout sizes are untransformed; the rectangles carry the opening scale.
+      const scale = identity.offsetHeight ? box.height / identity.offsetHeight : 1
+      if (!scale) return
+      const centre = (target.top - box.top + target.height / 2) / scale
+      const offset = Math.max(0, Math.round((centre - closeButton.offsetHeight / 2) * 100) / 100)
+      const value = `${offset}px`
+      if (header.style.getPropertyValue("--_close-offset") !== value) header.style.setProperty("--_close-offset", value)
+    }
+    const sizes = observeElementSizes(place)
+    sizes.observe(identity)
+    sizes.observe(closeButton)
+    return () => {
+      sizes.disconnect()
+      header.style.removeProperty("--_close-offset")
+    }
+  }, [active])
+  return ref
+}
+
 function DialogHeader({
   icon,
   media,
@@ -341,13 +384,23 @@ function DialogHeader({
   closeLabel,
   className,
   children,
+  ref,
   ...rest
 }: DialogHeaderProps) {
   const messages = useMessages(dialogMessages)
+  const aligned = useCloseOnIdentityLine(Boolean(identity) && close)
+  const identityHeader = useCallback(
+    (node: HTMLElement | null) => {
+      aligned.current = node
+      if (typeof ref === "function") ref(node as HTMLElement)
+      else if (ref) (ref as RefObject<HTMLElement | null>).current = node
+    },
+    [aligned, ref]
+  )
 
   if (identity) {
     return (
-      <header {...rest} className={cx("fa-dialog-header", className)} data-identity="">
+      <header {...rest} ref={identityHeader} className={cx("fa-dialog-header", className)} data-identity="">
         <div className="fa-dialog-identity">{identity}</div>
         {children ? <div className="fa-dialog-header-actions">{children}</div> : null}
         {close ? (
@@ -360,7 +413,7 @@ function DialogHeader({
     )
   }
   return (
-    <header {...rest} className={cx("fa-dialog-header", className)}>
+    <header {...rest} ref={ref} className={cx("fa-dialog-header", className)}>
       {media ? (
         <span className="fa-dialog-media">{media}</span>
       ) : icon ? (

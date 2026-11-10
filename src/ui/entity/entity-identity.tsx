@@ -443,7 +443,7 @@ function HeaderTier<T>({ parts, dom }: TierProps<T>) {
   return (
     <header {...dom} {...stateData(state)} className={cx("fa-entity", dom.className)} data-tier="header" data-metric={metric && !metricFits ? "hidden" : undefined}>
       <WithContextMenu actions={actions} targets={targets} name={name}>
-        <div ref={rowRef} className="fa-entity-row">
+        <div ref={rowRef} className="fa-entity-row" data-header-anchor="row">
           {icon || image || portrait ? <EntityTile icon={icon} image={image} portrait={portrait} state={state} count={count} labelled={false} badge={slots?.badge} /> : null}
           <div className="fa-entity-heading">
             <div className="fa-entity-titleline">
@@ -455,7 +455,7 @@ function HeaderTier<T>({ parts, dom }: TierProps<T>) {
             {factsNode ? <p className="fa-entity-facts">{factsNode}</p> : null}
           </div>
           {metric ? <div className="fa-entity-metric">{metric}</div> : null}
-          {actionsNode ? <div className="fa-entity-actions">{actionsNode}</div> : null}
+          {actionsNode ? <div className="fa-entity-actions" data-header-anchor="actions">{actionsNode}</div> : null}
         </div>
       </WithContextMenu>
       {tabs ? <div className="fa-entity-tabs">{tabs}</div> : null}
@@ -482,7 +482,7 @@ function CompactTier<T>({ parts, dom }: TierProps<T>) {
           </div>
           {factsNode ? <Line className="fa-entity-facts">{factsNode}</Line> : null}
         </div>
-        {menu ? <div className="fa-entity-actions">{menu}</div> : null}
+        {menu ? <div className="fa-entity-actions" data-header-anchor="actions">{menu}</div> : null}
       </div>
     </WithContextMenu>
   )
@@ -807,7 +807,7 @@ function SkeletonTier({ tier, facts = true, metric, actions, tabs, size = "inlin
     case "header":
       return (
         <header {...common}>
-          <div className="fa-entity-row">
+          <div className="fa-entity-row" data-header-anchor="row">
             <Skeleton.Block className="fa-entity-icon fa-entity-icon-skel" radius="tile" />
             <div className="fa-entity-heading">
               <span className="fa-entity-skel" data-tier="wide">
@@ -819,7 +819,7 @@ function SkeletonTier({ tier, facts = true, metric, actions, tabs, size = "inlin
               {facts ? <Skeleton.Text type="body" width="60%" className="fa-entity-facts" /> : null}
             </div>
             {metric ? <Skeleton.Block className="fa-entity-metric" radius="item" /> : null}
-            {actions ? <Skeleton.Block className="fa-entity-actions fa-entity-actions-skel" radius="control" /> : null}
+            {actions ? <Skeleton.Block className="fa-entity-actions fa-entity-actions-skel" radius="control" data-header-anchor="actions" /> : null}
           </div>
           {tabs ? <Skeleton.Block width="50%" height="var(--control-h-md)" radius="control" /> : null}
         </header>
@@ -834,7 +834,7 @@ function SkeletonTier({ tier, facts = true, metric, actions, tabs, size = "inlin
             </div>
             {facts ? <Skeleton.Text type="caption" width="75%" className="fa-entity-facts" /> : null}
           </div>
-          {actions ? <Skeleton.Block className="fa-entity-actions fa-entity-menu-skel" radius="control" /> : null}
+          {actions ? <Skeleton.Block className="fa-entity-actions fa-entity-menu-skel" radius="control" data-header-anchor="actions" /> : null}
         </div>
       )
     case "row":

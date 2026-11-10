@@ -50,3 +50,40 @@ test("narrow, it folds to the compact tier with one ⋯ for the actions @respons
   const closeBox = (await header.getByRole("button", { name: "Close" }).boundingBox())!;
   expect(moreBox.x + moreBox.width).toBeLessThanOrEqual(closeBox.x + 0.5);
 });
+
+/** The vertical centre of a box. */
+const middle = (box: { y: number; height: number }) => box.y + box.height / 2;
+
+test("Close sits on the line of the identity's actions, wide and narrow @responsive", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/components/entity-settings-dialog");
+  for (const id of ["relay-identity-wide", "relay-identity-narrow"]) {
+    const frame = page.getByTestId(id);
+    await frame.scrollIntoViewIfNeeded();
+    const header = frame.locator(".fa-dialog-header[data-identity]");
+    const actions = header.locator('[data-header-anchor="actions"]').first();
+    const close = header.getByRole("button", { name: "Close" });
+    await expect(close).toBeVisible();
+    await expect
+      .poll(async () => Math.abs(middle((await close.boundingBox())!) - middle((await actions.boundingBox())!)), { message: id })
+      .toBeLessThanOrEqual(0.5);
+  }
+});
+
+test("the settings pane's content is cut off at the footer's line, not drawn over it", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/components/entity-settings-dialog");
+  const frame = page.getByTestId("relay-identity-wide");
+  await frame.scrollIntoViewIfNeeded();
+  const pane = frame.locator(".fa-vtabs-content");
+  // Long enough to scroll, and scrolled part-way so a field crosses the footer's edge.
+  await pane.evaluate((element) => {
+    const panel = element.querySelector(".fa-vtabs-panel:not([hidden])") ?? element;
+    const field = panel.querySelector(".fa-field");
+    for (let i = 0; i < 8 && field; i++) panel.append(field.cloneNode(true));
+    element.scrollTop = 157;
+  });
+  const [paneBox, footerBox] = [(await pane.boundingBox())!, (await frame.locator(".fa-dialog-footer").boundingBox())!];
+  expect(paneBox.y + paneBox.height).toBeLessThanOrEqual(footerBox.y + 0.5);
+  await expect(frame.locator(".fa-dialog")).toHaveAttribute("data-scrolled-bottom", "");
+});

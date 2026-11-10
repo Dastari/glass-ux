@@ -168,6 +168,14 @@
     flex: none;
     align-self: flex-start;
   }
+  /* With an identity, the close sits on the line of the identity's actions (or its first row):
+     Dialog.Header measures that line into --_close-offset. */
+  .fa-dialog-header[data-identity] {
+    align-items: flex-start;
+  }
+  .fa-dialog-header[data-identity] > .fa-dialog-close {
+    margin-block-start: var(--_close-offset, 0px);
+  }
   .fa-dialog[data-scrolled-top] .fa-dialog-header {
     box-shadow: inset 0 calc(var(--border-width) * -1) 0 var(--line);
   }
@@ -336,7 +344,11 @@
     flex: 1 1 auto;
     min-height: 0;
   }
+  /* The scrolling pane keeps its focus room at the top and sides, but its clip ends at the
+     footer's line: content scrolls out of sight there instead of running over it. The last
+     control keeps its ring through the padding below it. */
   .fa-settings .fa-vtabs-content {
+    margin-block-end: 0;
     padding-inline-end: calc(var(--space-4) + var(--focus-reach));
     padding-bottom: calc(var(--space-2) + var(--focus-reach));
   }

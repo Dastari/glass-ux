@@ -648,6 +648,7 @@ export default defineMessagePack("ko", {
     min: (value) => `최소 ${value}`,
     avg: (value) => `평균 ${value}`,
     max: (value) => `최대 ${value}`,
+    linkName: ({ label, value }) => `${label}: ${value}`,
   },
   line: {
     gapLabel: "이용 가능한 샘플 없음 · 시각적 브리지만 있음",
@@ -1595,6 +1596,8 @@ export default defineMessagePack("ko", {
     enterAnAmountOfZeroOrMore: "0 이상의 금액을 입력하세요.",
     enterAnAmountOfOrMore: (minimum) => `${minimum} 이상의 금액을 입력하세요.`,
     enterAnAmount: "금액을 입력하세요.",
+    currency: (name, code) => `통화: ${name} (${code})`,
+    chooseACurrency: "통화 선택",
   },
   otpField: {
     characterOf: (position, length) => `${length}의 문자 ${position}`,

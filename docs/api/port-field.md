@@ -16,6 +16,7 @@ PortInput bound to a `number | null` form field. Pair it with `portSchema()`.
 | hint | `ReactNode` | See type | no | — | The message line's resting text. Only when the format or consequence is not obvious (R2.8). |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | label | `ReactNode` | See type | no | — | Names the control. Omit only when a group legend or `aria-label` names it instead. |
+| leading | `ReactNode` | See type | no | — | Content at the start of the box, before the number: a picker for its unit (MoneyInput's currency picker). |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale the number is shown and typed in (decimal and grouping marks). Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | optional | `boolean \| undefined` | false, true | no | — | Marks the label "Optional". Prefer this over marking required fields. |
 | placeholder | `string \| undefined` | See type | no | — | The prompt shown while the value is empty. It does not replace the field’s label. |

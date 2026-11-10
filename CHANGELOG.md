@@ -4,6 +4,29 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Added
+
+- MoneyInput and MoneyField `currencies`: a currency picker at the start of the box, showing the
+  chosen currency's symbol and code, with `onCurrencyChange` and `defaultCurrency`. A change keeps the
+  amount in major units, rounded to the new currency's decimals, and reports it in the new currency's
+  minor units. `currencyDisplay` shows the narrow symbol ("$", default), the full symbol ("A$") or the
+  code, with or without a picker. `currencySymbol` and `currencyName` name a currency in a locale.
+- `fractionDigits` on MoneyInput, MoneyField, `moneySchema`, `toMinor`, `fromMinor`, `formatMoney` and
+  `parseMoney`, for unit costs finer than a cent: the value counts 10^-fractionDigits of the currency
+  (525 is $0.0525 at 4) and shows the currency's decimals at least (#27).
+- Metric `href` and `render`: the whole metric is a link, with the pressable hover, the focus ring and
+  a name made of its label and value (#29).
+- NumberField `leading`: content at the start of the box, before the number.
+- `displayNames` in the locale helpers, a cached `Intl.DisplayNames`.
+
+### Fixed
+
+- ImageInput and ImageField: a rectangular thumbnail shows the whole saved image (`object-fit:
+  contain`) instead of cropping one of another shape to the tile; a round thumbnail still fills its
+  circle (#28).
+
 ## 0.19.7
 
 ### Added

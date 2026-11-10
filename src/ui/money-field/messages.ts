@@ -8,6 +8,10 @@ export const moneyFieldMessages = defineMessages("moneyField", {
   enterAnAmountOfZeroOrMore: "Enter an amount of zero or more",
   enterAnAmountOfOrMore: (minimum: string) => `Enter an amount of ${minimum} or more`,
   enterAnAmount: "Enter an amount",
+  /** The currency picker's name: the currency's name and code. */
+  currency: (name: string, code: string) => `Currency: ${name} (${code})`,
+  /** The currency list's name. */
+  chooseACurrency: "Choose a currency",
 })
 
 declare module "../../lib/i18n/catalog.js" {

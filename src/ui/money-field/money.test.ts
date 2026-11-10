@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { formatMoney, fromMinor, minorDigits, parseMoney, toMinor } from "./money.js"
+import { currencyName, currencySymbol, formatMoney, fromMinor, minorDigits, parseMoney, toMinor, unitDigits } from "./money.js"
+import { moneySchema } from "./schema.js"
 
 describe("money", () => {
   it("knows each currency's minor digits", () => {
@@ -33,5 +34,23 @@ describe("money", () => {
     expect(formatMoney(123450, { display: "none" })).toBe("1,234.50")
     expect(formatMoney(-1230)).toBe("-$12.30")
     expect(formatMoney(123450, { currency: "EUR", locale: "de-DE" })).toBe("1.234,50\u00a0€")
+  })
+  it("counts finer units with fractionDigits (#27)", () => {
+    expect(unitDigits("AUD", 4)).toBe(4)
+    expect(unitDigits("AUD", 1)).toBe(2)
+    expect(toMinor(0.0525, "AUD", 4)).toBe(525)
+    expect(fromMinor(525, "AUD", 4)).toBe(0.0525)
+    expect(formatMoney(525, { currency: "AUD", fractionDigits: 4, locale: "en-AU" })).toBe("$0.0525")
+    expect(formatMoney(12000, { currency: "AUD", fractionDigits: 4, locale: "en-AU" })).toBe("$1.20")
+    expect(parseMoney("$0.05254", "AUD", "en-AU", 4)).toBe(525)
+    const schema = moneySchema({ fractionDigits: 4, max: 10000, locale: "en-AU" })
+    expect(schema.safeParse(525).success).toBe(true)
+    expect(schema.safeParse(20000).error?.issues[0]?.message).toBe("Enter an amount from $0.00 to $1.00")
+  })
+  it("names and draws currencies in the locale", () => {
+    expect(currencySymbol("AUD", "en-AU")).toBe("$")
+    expect(currencySymbol("AUD", "en-US", "symbol")).toBe("A$")
+    expect(currencySymbol("EUR", "de-DE")).toBe("€")
+    expect(currencyName("JPY", "en")).toBe("Japanese Yen")
   })
 })

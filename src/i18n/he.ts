@@ -648,6 +648,7 @@ export default defineMessagePack("he", {
     min: (value) => `מינ׳ ${value}`,
     avg: (value) => `ממוצע ${value}`,
     max: (value) => `מקס׳ ${value}`,
+    linkName: ({ label, value }) => `${label}: ${value}`,
   },
   line: {
     gapLabel: "אין דוגמאות זמינות · גשר חזותי בלבד",
@@ -1595,6 +1596,8 @@ export default defineMessagePack("he", {
     enterAnAmountOfZeroOrMore: "הזן כמות של אפס או יותר",
     enterAnAmountOfOrMore: (minimum) => `הזן סכום של ${minimum} או יותר`,
     enterAnAmount: "הזן סכום",
+    currency: (name, code) => `מטבע: ${name} (${code})`,
+    chooseACurrency: "בחירת מטבע",
   },
   otpField: {
     characterOf: (position, length) => `תו ${position} מתוך ${length}`,

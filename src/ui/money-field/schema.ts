@@ -7,13 +7,16 @@ import { DEFAULT_CURRENCY, formatMoney } from "./money.js"
  *
  *   moneySchema({ required: true, max: 1_000_000 })   → "Enter an amount up to $10,000.00"
  *
+ * With `fractionDigits` the value and bounds count 10^-fractionDigits of the currency, as
+ * `toMinor` does (`moneySchema({ fractionDigits: 4 })`: 525 is $0.0525).
+ *
  * Amounts in messages use `locale`, or `getLocale()` when a value is checked. A
  * `LocaleProvider` cannot reach a schema: pass the field's locale explicitly.
  */
-export function moneySchema(options: { required?: boolean; min?: number; max?: number; currency?: string; allowNegative?: boolean; locale?: string } = {}) {
+export function moneySchema(options: { required?: boolean; min?: number; max?: number; currency?: string; allowNegative?: boolean; locale?: string; fractionDigits?: number } = {}) {
   const currency = options.currency ?? DEFAULT_CURRENCY
   const min = options.min ?? (options.allowNegative ? undefined : 0)
-  const show = (minor: number) => formatMoney(minor, { currency, locale: options.locale })
+  const show = (minor: number) => formatMoney(minor, { currency, locale: options.locale, fractionDigits: options.fractionDigits })
   const range = () =>
     min !== undefined && options.max !== undefined
       ? getMoneyFieldMessages(options.locale).enterAnAmountFromTo(show(min), show(options.max))

@@ -648,6 +648,7 @@ export default defineMessagePack("nl", {
     min: (value) => `Min. ${value}`,
     avg: (value) => `Gem ${value}`,
     max: (value) => `Max. ${value}`,
+    linkName: ({ label, value }) => `${label}: ${value}`,
   },
   line: {
     gapLabel: "Geen monsters beschikbaar · Alleen visuele brug",
@@ -1595,6 +1596,8 @@ export default defineMessagePack("nl", {
     enterAnAmountOfZeroOrMore: "Voer een bedrag van nul of meer in",
     enterAnAmountOfOrMore: (minimum) => `Voer een bedrag in van ${minimum} of meer`,
     enterAnAmount: "Voer een bedrag in",
+    currency: (name, code) => `Valuta: ${name} (${code})`,
+    chooseACurrency: "Kies een valuta",
   },
   otpField: {
     characterOf: (position, length) => `Teken ${position} van ${length}`,

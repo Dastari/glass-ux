@@ -64,7 +64,7 @@ export default function MetricSection() {
         title="Sparkline fills the row"
         description="sparklineFill lets the micro tier's sparkline take the rest of the row instead of stopping at 8rem. The other tiers ignore it."
         layout="stack"
-        specimenKey="metric:default:3"
+        specimenKey="metric:default:4"
       >
         <div className="flex w-full max-w-3xl flex-col" data-testid="metric-spark-fill">
           {["NST-C106", "LMN-4E5E"].map((host, index) => (
@@ -97,7 +97,7 @@ export default function MetricSection() {
         title="Loading"
         description="The skeleton takes the same rows in every tier. Swap in place to compare."
         wide
-        specimenKey="metric:default:5"
+        specimenKey="metric:default:6"
       >
         <div className="gallery-tiers">
           <SwapSlot

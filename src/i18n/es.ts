@@ -648,6 +648,7 @@ export default defineMessagePack("es", {
     min: (value) => `Mín. ${value}`,
     avg: (value) => `Promedio ${value}`,
     max: (value) => `Máx. ${value}`,
+    linkName: ({ label, value }) => `${label}: ${value}`,
   },
   line: {
     gapLabel: "No hay muestras disponibles · solo puente visual",
@@ -1595,6 +1596,8 @@ export default defineMessagePack("es", {
     enterAnAmountOfZeroOrMore: "Introduzca una cantidad de cero o más",
     enterAnAmountOfOrMore: (minimum) => `Introduzca una cantidad de ${minimum} o más`,
     enterAnAmount: "Introduzca una cantidad",
+    currency: (name, code) => `Moneda: ${name} (${code})`,
+    chooseACurrency: "Elegir una moneda",
   },
   otpField: {
     characterOf: (position, length) => `Carácter ${position} de ${length}`,

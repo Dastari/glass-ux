@@ -25,9 +25,11 @@ It fills its box (container-type: size), so the parent must give it a definite h
 | deltaUnit | `string \| undefined` | See type | no | unit | Unit displayed with the change. |
 | domain | `Domain \| undefined` | See type | no | — | Fixed value range, e.g. [0, 100] for percentages. |
 | format | `((value: number) => string) \| undefined` | See type | no | — | Value formatter or formatting options. |
+| href | `string \| undefined` | See type | no | — | Make the metric a link to this address, the rows behind the figure ("/jobs?view=open"): the whole box is pressable with a focus ring, and its name is the label and the value. |
 | label | `string` | See type | yes | — | What is measured: "CPU", "Memory", "Latency". |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale for the value, delta and statistics. Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | range | `string \| undefined` | See type | no | — | The period the series covers: "Last hour". |
+| render | `ReactElement<unknown, string \| import("react").JSXElementConstructor<any>> \| undefined` | See type | no | — | Render your router's link instead: `render={<Link to="/jobs" search={{ view: "open" }} />}`. |
 | sparklineFill | `boolean \| undefined` | false, true | no | false | In the micro tier, let the inline sparkline take the rest of the row instead of stopping at its usual width (8rem). The tiers are still the box's choice; the others ignore this. Pass the same value to `MetricSkeleton`. Default false. |
 | times | `readonly string[] \| undefined` | See type | no | — | A label per data point for the hover readout ("10:32"). |
 | tone | `SparklineTone \| undefined` | "data", "danger", "warning", "success", "accent", "neutral", "info" | no | "data" | The series' state, when it has one (warning when a threshold is crossed). |
@@ -40,6 +42,5 @@ Inherited properties:
 | --- | --- | --- | --- | --- | --- |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | defaultValue | `string \| number \| readonly string[] \| undefined` | See type | no | — | The initial value when using the component without controlling its state. |
-| ref | `Ref<HTMLDivElement> \| undefined` | See type | no | — | Allows getting a ref to the component instance. Once the component unmounts, React will set `ref.current` to `null` (or call the ref with `null` if you passed a callback ref). |
 
 Also accepts the element’s standard HTML attributes and React DOM events.

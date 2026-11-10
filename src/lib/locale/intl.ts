@@ -29,6 +29,21 @@ export function dateTimeFormat(locale: string, options?: Intl.DateTimeFormatOpti
   return format
 }
 
+const names = new Map<string, Intl.DisplayNames | null>()
+
+/** A cached `Intl.DisplayNames` for `locale` and `options`, or null where the runtime has none for them. */
+export function displayNames(locale: string, options: Intl.DisplayNamesOptions): Intl.DisplayNames | null {
+  const key = keyOf(locale, options)
+  if (!names.has(key)) {
+    try {
+      names.set(key, new Intl.DisplayNames([locale], options))
+    } catch {
+      names.set(key, null)
+    }
+  }
+  return names.get(key) ?? null
+}
+
 const separators = new Map<string, { decimal: string; group: string }>()
 
 /** The locale's decimal mark and grouping character: "." and "," in en, "," and "." in de. */

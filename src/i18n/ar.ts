@@ -648,6 +648,7 @@ export default defineMessagePack("ar", {
     min: (value) => `الأدنى ${value}`,
     avg: (value) => `متوسط ${value}`,
     max: (value) => `الأعلى ${value}`,
+    linkName: ({ label, value }) => `${label}: ${value}`,
   },
   line: {
     gapLabel: "لا توجد عينات متاحة · الجسر المرئي فقط",
@@ -1596,6 +1597,8 @@ export default defineMessagePack("ar", {
     enterAnAmountOfZeroOrMore: "أدخل مبلغ صفر أو أكثر",
     enterAnAmountOfOrMore: (minimum) => `أدخل مبلغًا قدره ${minimum} أو أكثر`,
     enterAnAmount: "أدخل المبلغ",
+    currency: (name, code) => `العملة: ${name} (${code})`,
+    chooseACurrency: "اختر عملة",
   },
   otpField: {
     characterOf: (position, length) => `الحرف ${position} من ${length}`,

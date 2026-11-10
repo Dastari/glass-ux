@@ -648,6 +648,7 @@ export default defineMessagePack("zh-Hans", {
     min: (value) => `最小 ${value}`,
     avg: (value) => `平均 ${value}`,
     max: (value) => `最大 ${value}`,
+    linkName: ({ label, value }) => `${label}：${value}`,
   },
   line: {
     gapLabel: "无可用样品 · 仅 Visual Bridge",
@@ -1595,6 +1596,8 @@ export default defineMessagePack("zh-Hans", {
     enterAnAmountOfZeroOrMore: "输入零个或多个的金额",
     enterAnAmountOfOrMore: (minimum) => `输入金额 ${minimum} 或更多`,
     enterAnAmount: "输入金额",
+    currency: (name, code) => `货币：${name} (${code})`,
+    chooseACurrency: "选择货币",
   },
   otpField: {
     characterOf: (position, length) => `${length} 的字符 ${position}`,

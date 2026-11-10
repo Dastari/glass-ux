@@ -648,6 +648,7 @@ export default defineMessagePack("ja", {
     min: (value) => `最小${value}`,
     avg: (value) => `平均${value}`,
     max: (value) => `最大${value}`,
+    linkName: ({ label, value }) => `${label}: ${value}`,
   },
   line: {
     gapLabel: "サンプルなし · 表示上の補間のみ",
@@ -1595,6 +1596,8 @@ export default defineMessagePack("ja", {
     enterAnAmountOfZeroOrMore: "ゼロ以上の金額を入力してください",
     enterAnAmountOfOrMore: (minimum) => `${minimum}以上の金額を入力してください`,
     enterAnAmount: "金額を入力してください",
+    currency: (name, code) => `通貨: ${name} (${code})`,
+    chooseACurrency: "通貨を選択",
   },
   otpField: {
     characterOf: (position, length) => `${length}の文字${position}`,

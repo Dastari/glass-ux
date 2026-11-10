@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { z } from "zod"
 import { ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { Field } from "../../ui/field/index.js"
@@ -34,11 +35,39 @@ function MoneyDemo() {
   )
 }
 
+function CurrencyDemo() {
+  const [currency, setCurrency] = useState("AUD")
+  const [amount, setAmount] = useState<number | null>(129900)
+  return (
+    <FormStack>
+      <Field label="Invoice total">
+        <MoneyInput currencies={["AUD", "NZD", "USD", "EUR", "GBP", "JPY"]} currency={currency} onCurrencyChange={setCurrency} value={amount} onValueChange={setAmount} width="medium" />
+      </Field>
+      <p className="fa-hint" data-testid="money-currency-state">
+        Stored: {amount ?? "null"} in {currency} ({amount === null ? "—" : formatMoney(amount, { currency, display: "code" })})
+      </p>
+      <Field label="With the unambiguous symbol">
+        <MoneyInput currencies={["NZD", "AUD", "USD"]} defaultCurrency="NZD" currencyDisplay="symbol" defaultValue={4500} width="medium" />
+      </Field>
+    </FormStack>
+  )
+}
+
 export default function MoneyFieldSection() {
   return (
     <SectionPage>
       <Specimen title="Integer cents, the locale's format" description="Type 165 or $1,234.5: the field shows $1,234.50 when focus leaves and stores 123450. Other currencies use their own minor digits (JPY has none).">
         <MoneyDemo />
+      </Specimen>
+
+      <Specimen title="Choosing the currency" description="currencies puts a picker at the start of the box with the currency's symbol and code. Changing it keeps the amount and rounds it to the new currency's decimals.">
+        <CurrencyDemo />
+      </Specimen>
+
+      <Specimen title="Unit costs" description="fractionDigits={4} counts ten-thousandths of the currency: 525 is $0.0525. Amounts show 2 to 4 decimals.">
+        <Field label="Unit cost" hint="Per millimetre">
+          <MoneyInput fractionDigits={4} defaultValue={525} width="medium" data-testid="money-unit-cost" />
+        </Field>
       </Specimen>
 
       <Specimen title="Currencies and states" layout="grid">
@@ -81,7 +110,7 @@ const schema = z.object({ rate: moneySchema({ required: true, max: 100000 }) }) 
 <form.AppField name="rate">{(field) => <field.MoneyField label="Hourly rate" currency="AUD" />}</form.AppField>`}
       />
 
-      <Rules do={["Store integer minor units.", "Show the code (showCode) when a screen mixes currencies."]} dont={["Store dollars as floats.", "Allow negatives unless the amount is an adjustment."]} />
+      <Rules do={["Store integer minor units.", "Show the code (showCode) when a screen mixes currencies.", "Store the currency beside the amount when people can change it."]} dont={["Store dollars as floats.", "Allow negatives unless the amount is an adjustment."]} />
 
       <TokenTable tokens={[["--field-medium", "Width"]]} />
     </SectionPage>

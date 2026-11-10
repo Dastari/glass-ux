@@ -648,6 +648,7 @@ export default defineMessagePack("fr", {
     min: (value) => `Min. ${value}`,
     avg: (value) => `Moy. ${value}`,
     max: (value) => `Max. ${value}`,
+    linkName: ({ label, value }) => `${label}\u00a0: ${value}`,
   },
   line: {
     gapLabel: "Aucun échantillon disponible · pont visuel uniquement",
@@ -1595,6 +1596,8 @@ export default defineMessagePack("fr", {
     enterAnAmountOfZeroOrMore: "Saisissez un montant de zéro ou plus",
     enterAnAmountOfOrMore: (minimum) => `Saisissez un montant de ${minimum} ou plus`,
     enterAnAmount: "Saisissez un montant",
+    currency: (name, code) => `Devise\u00a0: ${name} (${code})`,
+    chooseACurrency: "Choisir une devise",
   },
   otpField: {
     characterOf: (position, length) => `Caractère ${position} de ${length}`,
@@ -1754,7 +1757,7 @@ export default defineMessagePack("fr", {
   levelGauge: {
     notRated: "Non évalué",
     previously: "Auparavant",
-    named: ({ label, value }) => `${label} : ${value}`,
+    named: ({ label, value }) => `${label}\u00a0: ${value}`,
     withPrevious: ({ label, value, previousLabel, previous }) => `${label} : ${value} (${previousLabel} : ${previous})`,
     previousLine: ({ previousLabel, previous }) => `${previousLabel} : ${previous}`,
   },

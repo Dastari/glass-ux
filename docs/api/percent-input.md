@@ -19,6 +19,7 @@ whole percent, or a fraction with `scale="fraction"`; bounds are in the same sca
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
 | largeStep | `number \| undefined` | See type | no | — | The larger keyboard increment. |
+| leading | `ReactNode` | See type | no | — | Content at the start of the box, before the number: a picker for its unit (MoneyInput's currency picker). |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale the number is shown and typed in (decimal and grouping marks). Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | max | `number \| undefined` | See type | no | — | Upper value or visible-item limit, as specified by the type. |
 | min | `number \| undefined` | See type | no | — | Lower allowed value. |

@@ -1,0 +1,76 @@
+/*
+ * MoneyInput with `currencies` — NumberField's box with a currency picker at its start:
+ *
+ *   [$ AUD ▾] 1,234.50……………
+ *
+ * The picker is a small pressable inside the box, as PhoneInput's country picker is; it opens
+ * the Select list (name, code · symbol, ✓). The amount takes the rest of the box.
+ */
+@layer components {
+  .fa-money-currency-field {
+    display: contents;
+  }
+  .fa-money-currency {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+    align-self: stretch;
+    margin-block: var(--space-1);
+    margin-inline-start: calc(var(--_px) * -1 + var(--space-1));
+    padding-inline: var(--space-2) var(--space-1-5);
+    border: 0;
+    border-radius: calc(var(--radius-control) - var(--space-half));
+    background: none;
+    color: var(--fg);
+    font: inherit;
+    font-size: var(--type-label-size);
+    line-height: var(--type-label-line);
+    cursor: pointer;
+  }
+  .fa-money-currency:hover:not(:disabled) {
+    background-color: var(--fill-hover);
+  }
+  .fa-money-currency[data-popup-open] {
+    background-color: var(--fill-press);
+  }
+  .fa-money-currency:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--accent-ring);
+  }
+  .fa-money-currency:disabled,
+  .fa-money-currency[data-readonly] {
+    cursor: default;
+  }
+  .fa-money-symbol {
+    font-weight: var(--weight-medium);
+  }
+  .fa-money-code {
+    color: var(--fg-muted);
+  }
+  .fa-money-currency:not(:has(.fa-money-symbol)) .fa-money-code {
+    color: var(--fg);
+    font-weight: var(--weight-medium);
+  }
+  .fa-money-chevron {
+    width: var(--icon-xs);
+    height: var(--icon-xs);
+    color: var(--fg-subtle);
+  }
+  .fa-number-group[data-size="sm"] .fa-money-currency {
+    margin-block: var(--space-half);
+  }
+  .fa-money-option-meta {
+    font-variant-numeric: tabular-nums;
+  }
+  /* A finger-sized target on touch screens (R20.4) without growing the box. */
+  @media (pointer: coarse) {
+    .fa-money-currency::after {
+      content: "";
+      position: absolute;
+      inset-block: min(0px, calc((100% - var(--target-min)) / 2));
+      inset-inline: 0;
+    }
+  }
+}

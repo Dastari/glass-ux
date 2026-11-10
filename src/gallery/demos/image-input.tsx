@@ -3,7 +3,7 @@
 import { Field } from "../../ui/field/index.js";
 import { FormStack } from "../../ui/form/index.js";
 import { ImageCropper, ImageInput } from "../../ui/image-cropper/index.js";
-import { SCENE_IMAGES } from "../fixtures/scenes.js";
+import { SCENE_IMAGES, WIDE_MARK } from "../fixtures/scenes.js";
 import { SectionPage, Specimen } from "../kit.js";
 
 const SCENE = SCENE_IMAGES.harbour;
@@ -21,6 +21,11 @@ export default function ImageCropperSection() {
           </Field>
           <Field label="Missing" nativeLabel={false} error="Add an image">
             <ImageInput aspect={16 / 9} invalid />
+          </Field>
+          <Field label="A wide logo, free aspect" nativeLabel={false}>
+            <div data-testid="image-input-wide">
+              <ImageInput defaultValue={WIDE_MARK} alt="Fictional wordmark" />
+            </div>
           </Field>
         </FormStack>
         <FormStack>

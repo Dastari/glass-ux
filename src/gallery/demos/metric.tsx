@@ -86,10 +86,29 @@ export default function MetricSection() {
       </Specimen>
 
       <Specimen
+        title="Links to the rows behind them"
+        description="href (or render, for a router's link) makes the whole metric a link, named by its label and value."
+        wide
+        specimenKey="metric:default:2"
+      >
+        <div className="flex w-full flex-wrap gap-2" data-testid="metric-links">
+          {[
+            { label: "Open jobs", value: 14, href: "#open-jobs" },
+            { label: "Overdue", value: 3, href: "#overdue" },
+            { label: "Due this week", value: 9, href: "#this-week" },
+          ].map((item) => (
+            <div key={item.label} className="glass-control h-28 w-48 rounded-tile p-1">
+              <Metric label={item.label} value={item.value} href={item.href} />
+            </div>
+          ))}
+        </div>
+      </Specimen>
+
+      <Specimen
         title="In a table row"
         description="Micro tier at row height: value, delta and the inline sparkline in one line."
         layout="stack"
-        specimenKey="metric:default:2"
+        specimenKey="metric:default:3"
       >
         <div className="flex w-150 max-w-full flex-col">
           {["NST-C106", "LMN-4E5E", "STUDIO-VM"].map((host, index) => (
@@ -115,7 +134,7 @@ export default function MetricSection() {
         title="Sparkline fills the row"
         description="sparklineFill lets the micro tier's sparkline take the rest of the row instead of stopping at 8rem. The other tiers ignore it."
         layout="stack"
-        specimenKey="metric:default:3"
+        specimenKey="metric:default:4"
       >
         <div className="flex w-full max-w-3xl flex-col" data-testid="metric-spark-fill">
           {["NST-C106", "LMN-4E5E"].map((host, index) => (
@@ -148,7 +167,7 @@ export default function MetricSection() {
         title="Loading"
         description="The skeleton takes the same rows in every tier. Swap in place to compare."
         wide
-        specimenKey="metric:default:5"
+        specimenKey="metric:default:6"
       >
         <div className="gallery-tiers">
           <SwapSlot
@@ -174,7 +193,7 @@ export default function MetricSection() {
 
       <ContainerLab
         description="micro in the row and header, compact in the tile and tall-narrow column, full in the pane and the free frame."
-        specimenKey="metric:default:6"
+        specimenKey="metric:default:7"
       >
         {() => <Metric {...cpu} />}
       </ContainerLab>

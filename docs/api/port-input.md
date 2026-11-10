@@ -18,6 +18,7 @@ default, because nobody clicks from 443 to 8443.
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | id | `string \| undefined` | See type | no | — | A stable element or component identifier. |
 | invalid | `boolean \| undefined` | false, true | no | — | Invalid outside a Field. |
+| leading | `ReactNode` | See type | no | — | Content at the start of the box, before the number: a picker for its unit (MoneyInput's currency picker). |
 | locale | `string \| undefined` | See type | no | — | BCP 47 locale the number is shown and typed in (decimal and grouping marks). Default: the nearest `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US. |
 | name | `string \| undefined` | See type | no | — | The component’s name or native form field name, as specified by its value type. |
 | onBlur | `((event: FocusEvent<HTMLInputElement>) => void) \| undefined` | See type | no | — | Called when the text input loses focus, so a form can mark the field touched. |

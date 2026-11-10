@@ -1,11 +1,65 @@
+import { useState } from "react";
 import { ContainerLab, SectionPage, Specimen } from "glass-ux/gallery/kit";
 import { Field } from "glass-ux/field";
 import { FormStack } from "glass-ux/form";
-import { MoneyInput } from "glass-ux/money-field";
+import { formatMoney, MoneyInput } from "glass-ux/money-field";
+
+function CurrencyDemo() {
+  const [currency, setCurrency] = useState("AUD");
+  const [amount, setAmount] = useState<number | null>(129900);
+  return (
+    <FormStack>
+      <Field label="Invoice total">
+        <MoneyInput
+          currencies={["AUD", "NZD", "USD", "EUR", "GBP", "JPY"]}
+          currency={currency}
+          onCurrencyChange={setCurrency}
+          value={amount}
+          onValueChange={setAmount}
+          width="medium"
+        />
+      </Field>
+      <p className="fa-hint" data-testid="money-currency-state">
+        Stored: {amount ?? "null"} in {currency} (
+        {amount === null ? "—" : formatMoney(amount, { currency, display: "code" })})
+      </p>
+      <Field label="With the unambiguous symbol">
+        <MoneyInput
+          currencies={["NZD", "AUD", "USD"]}
+          defaultCurrency="NZD"
+          currencyDisplay="symbol"
+          defaultValue={4500}
+          width="medium"
+        />
+      </Field>
+    </FormStack>
+  );
+}
 
 export default function MoneyFieldSection() {
   return (
     <SectionPage>
+      <Specimen
+        title="Choosing the currency"
+        description="currencies puts a picker at the start of the box with the currency's symbol and code. Changing it keeps the amount and rounds it to the new currency's decimals."
+      >
+        <CurrencyDemo />
+      </Specimen>
+
+      <Specimen
+        title="Unit costs"
+        description="fractionDigits={4} counts ten-thousandths of the currency: 525 is $0.0525. Amounts show 2 to 4 decimals."
+      >
+        <Field label="Unit cost" hint="Per millimetre">
+          <MoneyInput
+            fractionDigits={4}
+            defaultValue={525}
+            width="medium"
+            data-testid="money-unit-cost"
+          />
+        </Field>
+      </Specimen>
+
       <Specimen title="Currencies and states" layout="grid">
         <FormStack>
           <Field label="NZD, with its code">

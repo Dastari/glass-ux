@@ -34,6 +34,8 @@ export interface NumberFieldProps {
   unit?: ReactNode
   /** A short prefix inside the box that scrubs the value when dragged ("W", "Max"). */
   scrubLabel?: ReactNode
+  /** Content at the start of the box, before the number: a picker for its unit (MoneyInput's currency picker). */
+  leading?: ReactNode
   size?: NumberFieldSize
   /** Content width: short (port, PIN), medium (name, hostname), full (default). */
   width?: FieldWidth
@@ -73,6 +75,7 @@ export function NumberField({
   locale,
   unit,
   scrubLabel,
+  leading,
   size = "md",
   width,
   steppers = true,
@@ -117,6 +120,7 @@ export function NumberField({
         data-disabled={disabled ? "" : undefined}
         data-invalid={invalid ? "" : undefined}
       >
+        {leading}
         {scrubLabel ? (
           <BaseNumberField.ScrubArea className="fa-number-scrub">
             <span className="fa-number-scrub-label">{scrubLabel}</span>

@@ -3,6 +3,19 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.7 → 0.19.8
+
+No code edits are needed.
+
+Behaviour to review:
+
+- ImageInput and ImageField draw a rectangular thumbnail with `object-fit: contain`: an image that is
+  not the tile's shape shows whole, on the tile's fill, instead of filling the tile cropped. If you
+  covered the tile yourself, remove that override; a round thumbnail is unchanged.
+- MoneyInput holds its amount internally when uncontrolled, as before, and now also when `currencies`
+  changes the currency. A controlled MoneyInput with `currencies` needs `currency` and
+  `onCurrencyChange` to follow a person's choice.
+
 ## 0.19.6 → 0.19.7
 
 No code edits are needed.

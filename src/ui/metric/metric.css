@@ -20,6 +20,20 @@
     min-width: 0;
     min-height: 0;
   }
+  /* A metric that links to the rows behind it (href, render): the whole box is the target, with
+     the pressable hover fill and the global focus ring. It pads its box so the fill never touches
+     the figure; the tiers read the box inside that padding. */
+  .fa-metric[data-link] {
+    --_press: 0.98;
+    display: block;
+    padding: var(--space-2);
+    border-radius: var(--radius-item);
+    color: inherit;
+    text-decoration: none;
+  }
+  .fa-metric[data-link]:hover {
+    background-color: var(--fill-hover);
+  }
   .fa-metric-body {
     --fa-metric-tier: compact;
     display: flex;

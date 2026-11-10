@@ -20,3 +20,25 @@ describe("Metric sparklineFill", () => {
     expect(body(skeleton.container).getAttribute("data-sparkline")).toBe("fill")
   })
 })
+
+describe("Metric as a link (#29)", () => {
+  it("is a group by default", () => {
+    const { getByRole } = render(<Metric label="Open jobs" value={14} />)
+    expect(getByRole("group", { name: "Open jobs" })).toBeTruthy()
+  })
+
+  it("becomes a link named by its label and value with href", () => {
+    const { getByRole } = render(<Metric label="Open jobs" value={14} href="/jobs?view=open" />)
+    const link = getByRole("link", { name: "Open jobs: 14" })
+    expect(link).toHaveAttribute("href", "/jobs?view=open")
+    expect(link).toHaveClass("fa-metric", "fa-pressable")
+    expect(link).toHaveAttribute("data-link")
+  })
+
+  it("renders a router's link with render", () => {
+    const { getByRole } = render(<Metric label="Overdue" value={3} unit="items" render={<a href="/overdue" data-router="" />} />)
+    const link = getByRole("link", { name: /^Overdue: 3\sitems$/ })
+    expect(link).toHaveAttribute("data-router")
+    expect(link.querySelector(".fa-metric-value")?.textContent).toMatch(/^3\sitems$/)
+  })
+})

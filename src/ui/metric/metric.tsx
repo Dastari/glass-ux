@@ -1,6 +1,8 @@
 import { useMessages } from "../../lib/i18n/index.js"
 import { metricMessages } from "./messages.js"
-import { useState, type ComponentProps, type ReactNode } from "react"
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
+import { useState, type ComponentProps, type ReactElement, type ReactNode } from "react"
 import { IconMinus, IconTrendDown, IconTrendUp } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { numberFormat } from "../../lib/locale/intl.js"
@@ -21,7 +23,7 @@ export function formatMetric(value: number, unit = "", format?: (value: number) 
   return unit.startsWith("%") ? `${text}${unit}` : `${text} ${unit.trim()}`
 }
 
-export interface MetricProps extends Omit<ComponentProps<"div">, "children"> {
+export interface MetricProps extends Omit<ComponentProps<"div">, "children" | "ref"> {
   /** What is measured: "CPU", "Memory", "Latency". */
   label: string
   /** The current value; null while unknown. */
@@ -54,6 +56,13 @@ export interface MetricProps extends Omit<ComponentProps<"div">, "children"> {
    * same value to `MetricSkeleton`. Default false.
    */
   sparklineFill?: boolean
+  /**
+   * Make the metric a link to this address, the rows behind the figure ("/jobs?view=open"): the
+   * whole box is pressable with a focus ring, and its name is the label and the value.
+   */
+  href?: string
+  /** Render your router's link instead: `render={<Link to="/jobs" search={{ view: "open" }} />}`. */
+  render?: ReactElement
   /**
    * BCP 47 locale for the value, delta and statistics. Default: the nearest
    * `LocaleProvider`, then `configureLocale()`, then `<html lang>`, then en-US.
@@ -104,6 +113,8 @@ export function Metric({
   tone = "data",
   sparklineFill = false,
   locale: localeProp,
+  href,
+  render,
   className,
   ...rest
 }: MetricProps) {
@@ -118,8 +129,9 @@ export function Metric({
     ? messages.minimumAverageMaximum({ label: label, range: range ?? "", minimum: fmt(stats.min), average: fmt(stats.avg), maximum: fmt(stats.max), current: fmt(stats.last) })
     : undefined
 
-  return (
-    <div {...rest} className={cx("fa-metric", className)} role="group" aria-label={label}>
+  const link = Boolean(href || render)
+  const body = (
+    <>
       <div className="fa-metric-body" data-hovering={hover !== null ? "" : undefined} data-sparkline={sparklineFill ? "fill" : undefined}>
         <div className="fa-metric-head">
           <span className="fa-metric-label">{label}</span>
@@ -171,8 +183,23 @@ export function Metric({
           ? `${fmt(shown)}, ${times?.[hover] ?? messages.samplesAgo(data.length - 1 - hover)}`
           : ""}
       </span>
-    </div>
+    </>
   )
+  const element = useRender({
+    defaultTagName: link ? "a" : "div",
+    render,
+    props: mergeProps<"div">(
+      {
+        className: cx("fa-metric", link && "fa-pressable", className),
+        role: link ? undefined : "group",
+        // A link is named by what it opens to: the label and the value it counts.
+        "aria-label": link ? messages.linkName({ label, value: value === null ? "—" : fmt(value) }) : label,
+        children: body,
+      },
+      { ...rest, ...(href ? { href } : {}), "data-link": link ? "" : undefined } as ComponentProps<"div">
+    ),
+  })
+  return element
 }
 
 export interface MetricSkeletonProps {

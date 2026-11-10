@@ -11,6 +11,8 @@ export const metricMessages = defineMessages("metric", {
   min: (value: string) => `Min ${value}`,
   avg: (value: string) => `Avg ${value}`,
   max: (value: string) => `Max ${value}`,
+  /** A metric that is a link: its label and value ("Open jobs: 14"). */
+  linkName: ({ label, value }: { label: string; value: string }) => `${label}: ${value}`,
 })
 
 declare module "../../lib/i18n/catalog.js" {

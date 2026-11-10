@@ -80,6 +80,20 @@ export default function MetricSection() {
         </DetailGrid>
       </Specimen>
 
+      <Specimen title="Links to the rows behind them" description="href (or render, for a router's link) makes the whole metric a link, named by its label and value." wide>
+        <div className="flex w-full flex-wrap gap-2" data-testid="metric-links">
+          {[
+            { label: "Open jobs", value: 14, href: "#open-jobs" },
+            { label: "Overdue", value: 3, href: "#overdue" },
+            { label: "Due this week", value: 9, href: "#this-week" },
+          ].map((item) => (
+            <div key={item.label} className="glass-control h-28 w-48 rounded-tile p-1">
+              <Metric label={item.label} value={item.value} href={item.href} />
+            </div>
+          ))}
+        </div>
+      </Specimen>
+
       <Specimen title="In a table row" description="Micro tier at row height: value, delta and the inline sparkline in one line." layout="stack">
         <div className="flex w-150 max-w-full flex-col">
           {["NST-C106", "LMN-4E5E", "STUDIO-VM"].map((host, index) => (

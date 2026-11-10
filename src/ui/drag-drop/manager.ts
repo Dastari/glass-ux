@@ -345,6 +345,8 @@ export class DragDropManager {
   private zones = new Map<string, ZoneRecord>()
   private zoneByElement = new WeakMap<Element, ZoneRecord>()
   private session: Session | null = null
+  /** The item of the last drag, whose own words still apply to an announcement after it ends (a failed drop). */
+  private lastRecord: DraggableRecord | null = null
   private pending: Pending | null = null
   private flips = new Set<Animation>()
   private selfScroll = new WeakMap<HTMLElement, { session: Session; scrollX: boolean; scrollY: boolean; depth: number }>()
@@ -503,6 +505,12 @@ export class DragDropManager {
     const call = (callbacks: DragDropCallbacks) => (callbacks[name] as ((value: typeof event) => void) | undefined)?.(event)
     call(this.callbacks)
     for (const monitor of this.monitors) call(monitor)
+  }
+
+  /** The announcements for the item being (or last) dragged: its own words over the provider's. */
+  private words(): DragDropAnnouncements {
+    const own = (this.session?.record ?? this.lastRecord)?.options.announcements
+    return own ? { ...this.announcements, ...own } : this.announcements
   }
 
   private announce(text: string) {
@@ -963,7 +971,7 @@ export class DragDropManager {
     const zoneChanged = zone !== session.over
     if (this.setTarget(zone, index) && zoneChanged) {
       const verdict = zone ? session.verdicts.get(zone.id) : undefined
-      this.announce(this.announcements.moved(session.item, this.place(zone, index), verdict && verdict.status !== "ready" ? (verdict.reason ?? "") : null))
+      this.announce(this.words().moved(session.item, this.place(zone, index), verdict && verdict.status !== "ready" ? (verdict.reason ?? "") : null))
     }
   }
 
@@ -1109,6 +1117,7 @@ export class DragDropManager {
       cleanup: [],
     }
     this.session = session
+    this.lastRecord = record
     // Measure every sortable zone before anything moves.
     for (const candidate of this.zones.values()) {
       const layout = this.measure(candidate)
@@ -1185,7 +1194,7 @@ export class DragDropManager {
 
     options.onDragStart?.(session.info)
     this.emit("onDragStart", session.info)
-    this.announce(this.announcements.lifted(item, this.place(zone, session.index), input))
+    this.announce(this.words().lifted(item, this.place(zone, session.index), input))
     session.frame = requestAnimationFrame(this.tick)
     return true
   }
@@ -1371,7 +1380,7 @@ export class DragDropManager {
     if (!this.setTarget(nextZone, nextIndex)) return
     this.reveal()
     const verdict = nextZone ? session.verdicts.get(nextZone.id) : undefined
-    this.announce(this.announcements.moved(session.item, this.place(nextZone, nextIndex), verdict && verdict.status !== "ready" ? (verdict.reason ?? "") : null))
+    this.announce(this.words().moved(session.item, this.place(nextZone, nextIndex), verdict && verdict.status !== "ready" ? (verdict.reason ?? "") : null))
   }
 
   /** Keep the keyboard target in view. */
@@ -1413,7 +1422,7 @@ export class DragDropManager {
     if (!verdict || verdict.status !== "ready") {
       // A keyboard drop on a refused zone stays lifted and says why.
       if (session.input === "keyboard") {
-        this.announce(this.announcements.blocked(session.item, zone.options.label, verdict?.reason ?? null))
+        this.announce(this.words().blocked(session.item, zone.options.label, verdict?.reason ?? null))
         return
       }
       return this.cancel("blocked")
@@ -1456,11 +1465,11 @@ export class DragDropManager {
     this.flip(before)
     if (session.input === "keyboard") (this.draggables.get(session.item.id)?.handle ?? session.record.handle)?.focus({ preventScroll: true })
     if (result === false) {
-      this.announce(this.announcements.blocked(session.item, zone.options.label, null))
+      this.announce(this.words().blocked(session.item, zone.options.label, null))
       this.end(session, "cancelled", "refused", null)
       return
     }
-    this.announce(this.announcements.dropped(session.item, this.place(zone, event.target.index)))
+    this.announce(this.words().dropped(session.item, this.place(zone, event.target.index)))
     if (result && typeof (result as Promise<unknown>).then === "function") this.track(zone, session.item, result as Promise<unknown>)
     this.end(session, "dropped", null, event.target)
   }
@@ -1476,7 +1485,7 @@ export class DragDropManager {
         if (this.session) return
         const reason = error instanceof DropError ? error.message : null
         this.setZoneState(zone, { status: "error", reason })
-        this.announce(this.announcements.failed(item, zone.options.label, reason))
+        this.announce(this.words().failed(item, zone.options.label, reason))
         this.later(() => {
           if (!this.session && zone.state.status === "error") this.setZoneState(zone, { status: "idle", reason: null })
         }, feedbackHold())
@@ -1516,7 +1525,7 @@ export class DragDropManager {
       if (session.input === "keyboard") session.record.handle?.focus({ preventScroll: true })
       this.emit("onDragCancel", { ...session.info, reason } satisfies DragCancelEvent)
       if (reason !== "unchanged" && reason !== "interrupted")
-        this.announce(reason === "blocked" && refusedBy ? this.announcements.blocked(session.item, refusedBy.options.label, session.verdicts.get(refusedBy.id)?.reason ?? null) : this.announcements.cancelled(session.item, this.place(sourceZone, session.source.index)))
+        this.announce(reason === "blocked" && refusedBy ? this.words().blocked(session.item, refusedBy.options.label, session.verdicts.get(refusedBy.id)?.reason ?? null) : this.words().cancelled(session.item, this.place(sourceZone, session.source.index)))
       this.end(session, "cancelled", reason, null)
     }
     if (!animated) return finish()

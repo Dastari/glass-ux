@@ -3,11 +3,15 @@ import {
   DropZoneScope,
   useDraggable,
   useDropZone,
+  type DragDropAnnouncements,
 } from "../drag-drop/index.js";
 import type { Column, RowData, SortingState } from "@tanstack/react-table";
 import {
+  createContext,
   memo,
+  useContext,
   useId,
+  useMemo,
   useCallback,
   useRef,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -100,6 +104,9 @@ function SortGlyph({ direction }: { direction: false | "asc" | "desc" }) {
   return <IconSort className="fa-dt-sort-glyph" />;
 }
 
+/** The header's column drags: the table's namespace, words and instructions. */
+const ColumnDrag = /* @__PURE__ */ createContext<{ scope: string; describedBy: string; announcements: Partial<DragDropAnnouncements> } | null>(null);
+
 function HeaderCell({
   column,
   sortIndex,
@@ -122,11 +129,15 @@ function HeaderCell({
 }) {
   const m = useDataTableMessages();
   const labelId = useId();
+  const words = useContext(ColumnDrag);
+  // The table's own ids and types: in a host's provider, other tables and the host's items never meet them.
   const drag = useDraggable({
-    id: column.id,
-    type: column.pinned ? "pinned-column" : "column",
+    id: `${words?.scope ?? ""}:${column.id}`,
+    type: `${column.pinned ? "pinned-column" : "column"}:${words?.scope ?? ""}`,
     data: column.id,
     label: m.reorderColumn(column.meta.label),
+    announcements: words?.announcements,
+    describedBy: words?.describedBy,
   });
   const { meta } = column;
   const sortable = controller.getColumn(column.id)?.getCanSort() ?? false;
@@ -267,6 +278,39 @@ function HeaderView({
 }: HeaderProps) {
   const m = useDataTableMessages();
   const zoneId = useId();
+  const instructionsId = `${zoneId}-instructions`;
+  const columnWords = useMemo(
+    () => ({
+      scope: zoneId,
+      describedBy: instructionsId,
+      announcements: {
+                lifted: (item, place, input) =>
+                  m.reorderLifted(
+                    { label: item.label, position: m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }), pointer: input === "pointer" },
+                  ),
+                moved: (item, place, reason) =>
+                  reason ??
+                  m.reorderMoved(
+                    item.label,
+                    m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }),
+                  ),
+                dropped: (item, place) =>
+                  m.reorderDropped(
+                    item.label,
+                    m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }),
+                  ),
+                cancelled: (item, place) =>
+                  m.reorderCancelled(
+                    item.label,
+                    m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }),
+                  ),
+                blocked: (item) => m.columnMoveBlocked(item.label),
+                failed: (item, _place, reason) =>
+                  reason ?? m.columnMoveBlocked(item.label),
+              } satisfies Partial<DragDropAnnouncements>,
+    }),
+    [m, zoneId, instructionsId],
+  );
   const headerRef = useRef<HTMLDivElement>(null);
   const clearMarker = () =>
     headerRef.current
@@ -277,17 +321,17 @@ function HeaderView({
     id: zoneId,
     label: m.columns,
     sort: "horizontal",
-    accept: ["column", "pinned-column"],
+    accept: [`column:${zoneId}`, `pinned-column:${zoneId}`],
     validate: (drag, target) =>
       target.index !== null &&
-      (drag.item.type === "pinned-column"
+      (drag.item.type === `pinned-column:${zoneId}`
         ? target.index < pinnedCount
         : target.index >= pinnedCount),
     onDragOver: (event) => {
       clearMarker();
       const targetIndex = event.target.index;
       if (targetIndex == null) return;
-      const from = columns.findIndex((column) => column.id === event.item.id);
+      const from = columns.findIndex((column) => column.id === event.item.data);
       const target = headerRef.current?.querySelectorAll<HTMLElement>(
         ".fa-dt-th[data-col]",
       )[targetIndex];
@@ -300,7 +344,7 @@ function HeaderView({
     onDrop: (event) => {
       clearMarker();
       const target = columns[event.target.index ?? -1];
-      if (target) controller.reorderColumn(event.item.id, target.id);
+      if (target) controller.reorderColumn(event.item.data as string, target.id);
     },
   });
   const setHeaderRef = useCallback(
@@ -312,7 +356,11 @@ function HeaderView({
   );
   const multi = sorting.length > 1;
   return (
+    <ColumnDrag value={columnWords}>
     <DropZoneScope zoneId={zoneId}>
+      <span id={instructionsId} hidden>
+        {m.columnDragInstructions}
+      </span>
       <div
         ref={setHeaderRef}
         role="row"
@@ -374,6 +422,7 @@ function HeaderView({
         </div>
       </div>
     </DropZoneScope>
+    </ColumnDrag>
   );
 }
 

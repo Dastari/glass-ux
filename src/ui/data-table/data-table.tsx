@@ -9,6 +9,7 @@ import { readingKey } from "../../lib/direction.js";
 import { ActionMenuItems } from "../actions/index.js";
 import { normaliseColumnOrder, moveColumn } from "./column-order.js";
 import { DragDropProvider } from "../drag-drop/index.js";
+import { useHasDragDropProvider } from "../drag-drop/drag-drop.js";
 import {
   functionalUpdate,
   useTable,
@@ -342,6 +343,15 @@ const NO_TOGGLES: readonly DataTableFilterToggle[] = [];
  * (`reorder`) that leaves the order to the host, and opt-in detail panels (`renderRowDetail`)
  * and tree rows with lazy children (`tree`).
  */
+
+/**
+ * Inside a host DragDropProvider the table joins it, so a Draggable in a cell reaches the host's
+ * zones (a Scheduler beside the table). Its columns keep their own words and instructions
+ * (header.tsx), and their ids and types are the table's own. Without one it brings its own.
+ */
+function TableDragDrop({ children }: { children: ReactNode }) {
+  return useHasDragDropProvider() ? children : <DragDropProvider>{children}</DragDropProvider>;
+}
 
 export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const {
@@ -3262,34 +3272,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
     <LocaleProvider locale={locale}>
       <MessagesProvider messages={providedMessages}>
         <EditingContext value={editContext}>
-          <DragDropProvider
-            instructions={m.columnDragInstructions}
-            announcements={{
-              lifted: (item, place, input) =>
-                m.reorderLifted(
-                  { label: item.label, position: m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }), pointer: input === "pointer" },
-                ),
-              moved: (item, place, reason) =>
-                reason ??
-                m.reorderMoved(
-                  item.label,
-                  m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }),
-                ),
-              dropped: (item, place) =>
-                m.reorderDropped(
-                  item.label,
-                  m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }),
-                ),
-              cancelled: (item, place) =>
-                m.reorderCancelled(
-                  item.label,
-                  m.reorderPosition({ position: place.position ?? 1, count: place.count ?? 1 }),
-                ),
-              blocked: (item) => m.columnMoveBlocked(item.label),
-              failed: (item, _place, reason) =>
-                reason ?? m.columnMoveBlocked(item.label),
-            }}
-          >
+          <TableDragDrop>
             {/* oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- delegated: "/" anywhere inside the table focuses its search (R16.8) */}
             <div
               ref={rootRef}
@@ -3515,7 +3498,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
             >
               {notice}
             </div>
-          </DragDropProvider>
+          </TableDragDrop>
         </EditingContext>
       </MessagesProvider>
     </LocaleProvider>

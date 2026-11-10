@@ -182,6 +182,14 @@ export interface DraggableOptions<T = unknown> {
   liftKeys?: readonly (" " | "Enter")[]
   /** Content for the drag preview instead of a copy of the element. */
   preview?: ReactNode
+  /**
+   * What screen readers hear while this item is dragged, in place of the provider's
+   * announcements (any of them). A component that joins its host's provider uses it to keep
+   * its own words: a table's columns announce their position among the columns.
+   */
+  announcements?: Partial<DragDropAnnouncements>
+  /** The id of the element that says how to drag this item, in place of the provider's instructions. */
+  describedBy?: string
   /** This item was lifted. */
   onDragStart?: (event: DragStartEvent<T>) => void
   /** This item's drag ended, dropped or cancelled. */

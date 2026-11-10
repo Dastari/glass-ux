@@ -161,7 +161,7 @@ export function useDraggable<T = unknown>(options: DraggableOptions<T> & { grip?
       tabIndex: 0,
       role: "button",
       "aria-roledescription": messages.draggable,
-      "aria-describedby": instructionsId,
+      "aria-describedby": options.describedBy ?? instructionsId,
       "aria-disabled": disabled ? true : undefined,
       "aria-description": typeof disabled === "string" ? disabled : undefined,
       "data-dnd-handle": "",

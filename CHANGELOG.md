@@ -4,6 +4,16 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.19.6
+
+### Fixed
+
+- Dialog: with an `identity` in the header (EntitySettingsDialog's `identity`), the close button sits on
+  the line of the identity's actions, or its first row when it has none, instead of at the top of the
+  header. EntityIdentity marks those with `data-header-anchor`.
+- SettingsDialog and EntitySettingsDialog: the scrolling pane's content is cut off at the footer's line
+  instead of running 4 px over it.
+
 ## 0.19.5
 
 ### Added

@@ -3,6 +3,17 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.5 → 0.19.6
+
+No code edits are needed.
+
+Behaviour to review:
+
+- A dialog header with `identity` now aligns its items to the top and moves the close button down to the
+  identity's action line. If you nudged `.fa-dialog-close` into place yourself, remove that override.
+- The settings pane no longer extends 4 px below its box. Remove any override that hid content running
+  over the footer.
+
 ## 0.19.4 → 0.19.5
 
 No code edits are needed.

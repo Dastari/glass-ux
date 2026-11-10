@@ -61,6 +61,13 @@
     min-height: calc(var(--control-h-md) + var(--_inset, var(--inset-panel)));
     padding: var(--_inset, var(--inset-panel)) var(--_inset, var(--inset-panel)) 0;
   }
+  /* Tight: no control-height minimum, and the body starts a small step below the heading. */
+  .fa-panel-header[data-density="tight"] {
+    min-height: 0;
+  }
+  .fa-panel-header[data-density="tight"] + .fa-panel-body {
+    padding-block-start: var(--space-2);
+  }
   .fa-panel-header-icon {
     display: inline-grid;
     place-items: center;

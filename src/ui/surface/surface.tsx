@@ -117,6 +117,12 @@ export interface PanelHeaderProps extends Omit<
   actions?: ReactNode;
   /** Heading level for the title; panels on a page are normally h2. */
   level?: 2 | 3 | 4;
+  /**
+   * `tight` drops the header's control-height minimum and starts the body a small step below
+   * it, for small summary panels in a dense dashboard (a heading over a short list). The top
+   * keeps the panel's inset, so the title still lines up with the sides. Default `default`.
+   */
+  density?: "default" | "tight";
 }
 
 /** A Panel heading with an optional icon, description and trailing actions. */
@@ -126,13 +132,14 @@ export function PanelHeader({
   description,
   actions,
   level = 2,
+  density = "default",
   className,
   children,
   ...rest
 }: PanelHeaderProps) {
   const Heading = `h${level}` as const;
   return (
-    <header {...rest} className={cx("fa-panel-header", className)}>
+    <header {...rest} className={cx("fa-panel-header", className)} data-density={density === "tight" ? "tight" : undefined}>
       {icon ? <span className="fa-panel-header-icon">{icon}</span> : null}
       <div className="fa-panel-header-text">
         <Heading className="fa-panel-title">{title}</Heading>

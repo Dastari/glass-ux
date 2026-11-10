@@ -50,6 +50,8 @@ has upgrade steps in the [migration guide](docs/migration.md).
 - Rail: the fit counts entries' block margins, so a margin on an entry no longer pushes the foot items
   out of view; an application's own `position` or `visibility` on an entry no longer keeps it in the
   rail once it is in More (#20).
+- Documentation: headings inside a specimen keep their own styles instead of taking the page's heading
+  size and spacing (a PanelHeader's title had 16 px under it in its own demo).
 - A touch long press that lifts something to drag it no longer also opens a context menu around it.
 
 ## 0.19.6

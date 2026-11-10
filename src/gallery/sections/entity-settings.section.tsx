@@ -74,7 +74,7 @@ const relayActions = defineActions<Relay>("relay", [
   { id: "remove", label: "Remove", icon: IconTrash, group: "danger", run: () => undefined },
 ])
 
-function RelaySettings({ open, onOpenChange, preview = false, loading = false, saveDisabledReason, identity = false }: { open: boolean; onOpenChange: (open: boolean) => void; preview?: boolean; loading?: boolean; saveDisabledReason?: string; identity?: boolean }) {
+function RelaySettings({ open, onOpenChange, preview = false, loading = false, saveDisabledReason, identity = false, create = false }: { open: boolean; onOpenChange: (open: boolean) => void; preview?: boolean; loading?: boolean; saveDisabledReason?: string; identity?: boolean; create?: boolean }) {
   const [saved, setSaved] = useState<RelayValues>(SAVED)
   const [tab, setTab] = useState("general")
   const form = useAppForm({
@@ -96,6 +96,7 @@ function RelaySettings({ open, onOpenChange, preview = false, loading = false, s
       open={open}
       onOpenChange={onOpenChange}
       confirmOnCancel
+      mode={create ? "create" : "edit"}
       preview={preview}
       loading={loading}
       saveDisabledReason={saveDisabledReason}
@@ -300,6 +301,12 @@ export default function EntitySettingsSection() {
           <div className="w-88 max-w-full" data-testid="relay-identity-narrow">
             <RelaySettings open onOpenChange={() => undefined} preview identity />
           </div>
+        </div>
+      </Specimen>
+
+      <Specimen title="Creating a record" description='mode="create" opens on a new record filled from where it was started: Create works at once, and the tabs with fields show their unsaved dots until it is created.' layout="bare" wide>
+        <div className="flex w-full justify-center p-4" data-testid="relay-create">
+          <RelaySettings open onOpenChange={() => undefined} preview create />
         </div>
       </Specimen>
 

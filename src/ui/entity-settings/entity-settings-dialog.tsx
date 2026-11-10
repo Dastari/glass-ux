@@ -80,6 +80,12 @@ export interface EntitySettingsDialogProps<T = unknown> {
   confirmOnCancel?: boolean
   /** The form every tab edits: one `useAppForm` with the entity's Zod schema. */
   form: EntitySettingsForm
+  /**
+   * `create` opens on a new record: the values given at open are the record, so Save reads
+   * "Create" and works as soon as the form is valid, unchanged or not, and every tab with fields
+   * shows its unsaved dot. Once created, the dialog edits the record. Default `edit`.
+   */
+  mode?: "edit" | "create"
   /** Tab definitions in display order. */
   tabs: readonly EntitySettingsTab[]
   /** The open tab, when it lives in the URL (`?settings=snmp`). */
@@ -205,6 +211,7 @@ export function EntitySettingsDialog<T = unknown>({
   privileged = [],
   onVerify,
   onReload,
+  mode = "edit",
 }: EntitySettingsDialogProps<T>) {
   const entityName = entityNameProp ?? identity?.name
   const messages = useMessages(entitySettingsMessages)
@@ -230,8 +237,15 @@ export function EntitySettingsDialog<T = unknown>({
   const fieldMeta = useStore(form.store, (state) => state.fieldMeta)
   const unchanged = useStore(form.store, (state) => state.isDefaultValue)
   const dirty = !unchanged
+  // A new record is unsaved until it is created, whether or not a field changed.
+  const [created, setCreated] = useState(false)
+  useEffect(() => {
+    if (!open) setCreated(false)
+  }, [open])
+  const creating = mode === "create" && !created
   // Field meta, not `form.options`: a useAppForm instance keeps a copy of its first options.
   const markers = tabMarkers(tabs, fieldMeta)
+  if (creating) for (const entry of tabs) if (entry.fields?.length && !markers[entry.value]) markers[entry.value] = "dirty"
   for (const value of savedTabs) if (!markers[value]) markers[value] = "saved"
   const tabOf = (fields: readonly string[]) => tabs.find((entry) => fields.some((field) => ownsField(entry.fields ?? [], field)))
   for (const conflict of conflicts) {
@@ -285,7 +299,9 @@ export function EntitySettingsDialog<T = unknown>({
   const save = async () => {
     if (status === "pending" || loading || saveDisabledReason) return
     // The tabs this save is for: the ones with changes now.
-    const dirtyTabs = tabs.filter((entry) => tabMarkers([entry], form.state.fieldMeta)[entry.value] === "dirty").map((entry) => entry.value)
+    const dirtyTabs = tabs
+      .filter((entry) => (creating && entry.fields?.length) || tabMarkers([entry], form.state.fieldMeta)[entry.value] === "dirty")
+      .map((entry) => entry.value)
     for (const name of serverErrors.current.keys()) clearServerError(name)
     clearTimeout(holdTimer.current)
     setPhase("save")
@@ -309,6 +325,7 @@ export function EntitySettingsDialog<T = unknown>({
       await form.handleSubmit()
       if (form.state.isSubmitSuccessful) {
         form.reset(form.state.values as never)
+        if (creating) setCreated(true)
         hold("success")
         setConflicts([])
         markSaved(dirtyTabs)
@@ -421,13 +438,13 @@ export function EntitySettingsDialog<T = unknown>({
             variant="primary"
             icon={needsVerify ? <IconLock /> : undefined}
             status={status}
-            pendingLabel={phase === "verify" ? messages.verifying : messages.saving}
-            successLabel={phase === "verify" ? messages.verified : messages.saved}
-            errorLabel={messages.notSaved}
-            disabledReason={loading ? messages.loadingSettings : saveDisabledReason || (!dirty && status === "idle" ? messages.noChangesToSave : undefined)}
+            pendingLabel={phase === "verify" ? messages.verifying : creating ? messages.creating : messages.saving}
+            successLabel={phase === "verify" ? messages.verified : mode === "create" && (creating || created) ? messages.created : messages.saved}
+            errorLabel={creating ? messages.notCreated : messages.notSaved}
+            disabledReason={loading ? messages.loadingSettings : saveDisabledReason || (!dirty && !creating && status === "idle" ? messages.noChangesToSave : undefined)}
             data-verify={needsVerify ? "" : undefined}
           >
-            {needsVerify ? messages.verifyAndSave : messages.save}
+            {needsVerify ? messages.verifyAndSave : creating ? messages.create : messages.save}
           </Button>
         </Dialog.Footer>
       </form>

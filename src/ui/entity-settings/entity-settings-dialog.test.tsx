@@ -224,3 +224,52 @@ describe("the header", () => {
     expect(buttons.map((button) => button.getAttribute("aria-label") ?? button.textContent)).toEqual(["Open relay", "Close"]);
   });
 });
+
+function Creator({ submit }: { submit: (value: { job: string; hours: string }) => Promise<void> }) {
+  const form = useAppForm({
+    defaultValues: { job: "JS-000123", hours: "2" },
+    onSubmit: ({ value }) => submit(value),
+  });
+  return (
+    <TooltipProvider>
+      <EntitySettingsDialog
+        open
+        preview
+        mode="create"
+        onOpenChange={() => {}}
+        form={form}
+        title="Log time"
+        tabs={[
+          {
+            value: "time",
+            label: "Time",
+            fields: ["job", "hours"],
+            content: (
+              <>
+                <form.AppField name="job">{(field) => <field.TextField label="Job" />}</form.AppField>
+                <form.AppField name="hours">{(field) => <field.TextField label="Hours" />}</form.AppField>
+              </>
+            ),
+          },
+          { value: "notes", label: "Notes", content: <p>Nothing here</p> },
+        ]}
+      />
+    </TooltipProvider>
+  );
+}
+
+describe("create mode", () => {
+  it("creates the prefilled record without a change, and marks its tabs unsaved until then", async () => {
+    const submit = vi.fn(async () => {});
+    render(<Creator submit={submit} />);
+    const create = screen.getByRole("button", { name: /^Create/ });
+    expect(create).not.toHaveAttribute("aria-disabled", "true");
+    expect(create).not.toHaveAttribute("aria-description", "No changes to save");
+    // The tab with fields shows its unsaved dot; the tab without fields does not.
+    expect(document.querySelector('[data-marker="dirty"]')).not.toBeNull();
+    fireEvent.click(create);
+    await waitFor(() => expect(submit).toHaveBeenCalledWith({ job: "JS-000123", hours: "2" }));
+    // Created: the dialog now edits the record, so an unchanged form has nothing to save.
+    await waitFor(() => expect(screen.getByRole("button", { name: /^Save/ })).toHaveAttribute("aria-description", "No changes to save"), { timeout: 5000 });
+  });
+});

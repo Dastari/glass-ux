@@ -4,6 +4,32 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.19.5
+
+### Added
+
+- `scripts/profile-scroll.mjs` measures a built documentation page while it scrolls: main-thread time
+  and its parts, compositor time, frames, draw time and the transitions that started (#11).
+
+### Changed
+
+- Rows that scroll under a resting pointer change on hover at once and ease only on the way out:
+  DataTable rows and their row actions, notification rows and their tools, and list items (`.fa-item`).
+  Each row starts one transition instead of two (#12).
+- The documentation shell skips rendering for demo, usage and API blocks more than a screen away once
+  the reader scrolls. Each keeps the height it last rendered at, so the page's length and deep links
+  stay put. Under automation it stays off unless `localStorage["docs-kit.far-blocks"]` is `"on"` (#11).
+
+### Fixed
+
+- `useScrollEdges` no longer forces a style recalculation on every scroll event. It schedules one frame
+  per burst of events and reads the reading direction only for a scroller with horizontal overflow at
+  offset 0 (#14).
+- Sparkline's wrapper is no longer positioned, since nothing inside it is positioned against it (#13).
+
+On `/components/data-table/`, main-thread time while scrolling fell from 167–176 to 110–134 ms per
+second, and hit testing from 44–54 to 13–15 ([performance](docs/performance.md#scrolling-long-pages)).
+
 ## 0.19.4
 
 ### Added

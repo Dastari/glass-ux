@@ -3,6 +3,18 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.4 → 0.19.5
+
+No code edits are needed.
+
+Behaviour to review:
+
+- Hover-in is now instant on DataTable rows and row actions, notification rows and tools, and list items
+  (`.fa-item`); leaving still eases. A test that waited for a hover transition to finish no longer needs to.
+- Tests run against a documentation site built with the docs kit: demo blocks far from the view skip
+  rendering once a person scrolls, but not under automation unless `localStorage["docs-kit.far-blocks"]`
+  is `"on"`.
+
 ## 0.19.3 → 0.19.4
 
 No code edits are needed.

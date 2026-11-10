@@ -192,6 +192,15 @@ instead (a `needs-owner` label and a comment). The local route:
   because focus stays in the combobox input while keys scroll the popup's regions.
 - Base UI hides the rest of the page from assistive technology while any combobox popup is open
   (`focusManagerModal`), and offers no prop for it. Autocomplete only avoids it with nothing to show.
+- Scrolling cost (#11–#14, `scripts/profile-scroll.mjs`): the docs shell skips far blocks only after the
+  reader scrolls, and not under automation (a test's visibility wait on a skipped element never ends).
+  `content-visibility` on a block on screen stops a glass demo's blur at the block's edge, so it applies to
+  far blocks only. `useScrollEdges` still listens for scroll events: start and end sentinels would add a
+  child to flex and grid scrollers, which moves content by the gap. Table cells, buttons and truncated text
+  stay positioned or clipped at rest; cells are the containing block for an application's cell content.
+- Browser tests on this box: another project's Docker containers (`graphql-orm-*`) can cycle every few
+  seconds, and each network-interface change makes Chromium abort page loads (`ERR_NETWORK_CHANGED`).
+  Check `docker ps` before trusting a run of blank-page failures.
 - Next.js support is verified with webpack (`pnpm test:next`), not Turbopack; forced colours
   only with Chromium's emulation, not Windows High Contrast itself.
 

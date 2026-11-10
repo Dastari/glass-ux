@@ -335,6 +335,15 @@ interface Metrics {
 const NO_TOGGLES: readonly DataTableFilterToggle[] = [];
 
 /**
+ * Inside a host DragDropProvider the table joins it, so a Draggable in a cell reaches the host's
+ * zones (a Scheduler beside the table). Its columns keep their own words and instructions
+ * (header.tsx), and their ids and types are the table's own. Without one it brings its own.
+ */
+function TableDragDrop({ children }: { children: ReactNode }) {
+  return useHasDragDropProvider() ? children : <DragDropProvider>{children}</DragDropProvider>;
+}
+
+/**
  * The one data table (R16). Server-side sorting and pagination, container-aware columns
  * (priority hiding → "+N" detail → card list), resizable and pinnable columns persisted
  * per user, selection with a bulk bar over the status bar, row ⋯ and right-click menus
@@ -343,15 +352,6 @@ const NO_TOGGLES: readonly DataTableFilterToggle[] = [];
  * (`reorder`) that leaves the order to the host, and opt-in detail panels (`renderRowDetail`)
  * and tree rows with lazy children (`tree`).
  */
-
-/**
- * Inside a host DragDropProvider the table joins it, so a Draggable in a cell reaches the host's
- * zones (a Scheduler beside the table). Its columns keep their own words and instructions
- * (header.tsx), and their ids and types are the table's own. Without one it brings its own.
- */
-function TableDragDrop({ children }: { children: ReactNode }) {
-  return useHasDragDropProvider() ? children : <DragDropProvider>{children}</DragDropProvider>;
-}
 
 export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const {

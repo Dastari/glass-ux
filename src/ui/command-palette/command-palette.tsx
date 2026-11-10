@@ -36,6 +36,12 @@ export interface PaletteCommand {
   icon?: ReactNode
   /** Secondary data shown after the label: a hostname, a path, a parent menu. */
   detail?: string
+  /**
+   * Rich secondary content after the label, in place of `detail`, such as the entity chips a
+   * record belongs to. Display only: the row runs the command wherever it is clicked. `detail`
+   * still finds the command, so give it the same words as text.
+   */
+  meta?: ReactNode
   /** Extra words that should find it ("reboot" for Restart). */
   keywords?: readonly string[]
   /** Keyboard shortcut shown with the control, using the host platform’s modifier keys. A chord needs a KeymapProvider and `keymapId` to run. */
@@ -450,8 +456,12 @@ export function CommandPanel({ commands, onRun, loading = false, groupOrder = DE
                           <span className="fa-palette-label">
                             <Label text={command.label} indices={entry.indices} />
                           </span>
-                          {command.disabledReason || command.detail ? (
-                            <span className="fa-palette-detail">{command.disabledReason ?? command.detail}</span>
+                          {command.disabledReason ? (
+                            <span className="fa-palette-detail">{command.disabledReason}</span>
+                          ) : command.meta != null ? (
+                            <span className="fa-palette-meta">{command.meta}</span>
+                          ) : command.detail ? (
+                            <span className="fa-palette-detail">{command.detail}</span>
                           ) : null}
                         </span>
                         <CommandKeys command={command} characterKeys={characterKeys} />

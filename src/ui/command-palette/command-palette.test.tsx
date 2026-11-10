@@ -195,3 +195,36 @@ describe("command panel group order", () => {
     expect(labels()).toEqual(["Projects", "Actions", "Navigation", "Endpoints"]);
   });
 });
+
+describe("rich meta after a command's label", () => {
+  const job: PaletteCommand = {
+    id: "job-14",
+    label: "JS-000014 August service",
+    group: "Jobs",
+    detail: "Harbour Freight",
+    meta: <span data-testid="meta">Harbour Freight chip</span>,
+    run: () => undefined,
+  };
+
+  it("shows the meta in place of the detail", () => {
+    render(<CommandPanel commands={[job]} onRun={() => undefined} />);
+    expect(screen.getByTestId("meta").closest(".fa-palette-meta")).not.toBeNull();
+    expect(document.querySelector(".fa-palette-detail")).toBeNull();
+  });
+
+  it("is still found by the detail's words, and a click on it runs the command", () => {
+    const onRun = vi.fn();
+    render(<CommandPanel commands={[job, { id: "other", label: "Other", group: "Jobs", run: () => undefined }]} onRun={onRun} />);
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "harbour" } });
+    expect(screen.getByTestId("meta")).toBeTruthy();
+    expect(screen.queryByText("Other")).toBeNull();
+    fireEvent.click(screen.getByTestId("meta"));
+    expect(onRun).toHaveBeenCalledWith(job);
+  });
+
+  it("gives way to the disabled reason", () => {
+    render(<CommandPanel commands={[{ ...job, disabledReason: "Archived" }]} onRun={() => undefined} />);
+    expect(screen.queryByTestId("meta")).toBeNull();
+    expect(screen.getByText("Archived")).toBeTruthy();
+  });
+});

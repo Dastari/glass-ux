@@ -8,8 +8,6 @@
  * display-compositor busy time, frames per second, draw time per frame, scroll events handled
  * and the CSS transitions that started. PERF_CSS injects a rule, PERF_ARGS passes Chromium
  * flags, PERF_AT=x,y moves the pointer and PERF_VIEWPORT=WxH sets the size (1920x1080).
- * PERF_HEADED=1 opens a visible window, and PERF_CHANNEL=chrome uses the installed Chrome rather
- * than Playwright's Chromium: together they measure with the machine's GPU (check chrome://gpu).
  * Headless Chromium renders in software, which makes blur dearer than a GPU does: compare
  * rows of one run, not absolute times; main-thread figures vary by about ±15%.
  */
@@ -49,11 +47,7 @@ if (!base) {
 }
 
 const [width, height] = (process.env.PERF_VIEWPORT ?? "1920x1080").split("x").map(Number);
-const browser = await chromium.launch({
-  args: (process.env.PERF_ARGS ?? "").split(" ").filter(Boolean),
-  headless: process.env.PERF_HEADED !== "1",
-  ...(process.env.PERF_CHANNEL ? { channel: process.env.PERF_CHANNEL } : {}),
-});
+const browser = await chromium.launch({ args: (process.env.PERF_ARGS ?? "").split(" ").filter(Boolean) });
 const MAIN_PARTS = ["HitTest", "Layerize", "PrePaint", "UpdateLayoutTree", "Layout", "Paint", "Commit", "EventDispatch", "FunctionCall", "FireAnimationFrame", "ResizeObserverController::deliverObservations", "IntersectionObserverController::computeIntersections"];
 
 /** Busy time of each thread of interest: the union of its complete events, so nested slices count once. */

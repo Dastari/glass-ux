@@ -4,7 +4,7 @@ import { IconGlobe, IconServer } from "../../icons/generated/icons.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { CopyButton } from "../copy-button/index.js"
 import { Field } from "../field/index.js"
-import { useBoundField, type FieldChrome } from "../form/context.js"
+import { useBoundField, useTextValue, type FieldChrome } from "../form/context.js"
 import { NormalisedInput, type NormalisedInputProps } from "../input/index.js"
 import { NETBIOS_MAX, normaliseDomain, normaliseHostname, type HostnameOptions } from "./hostname.js"
 
@@ -79,7 +79,9 @@ export function HostnameField({ label, hint, optional, required, aside, classNam
   const messages = useMessages(hostnameFieldMessages)
 
   const { field, error, root } = useBoundField<string>()
-  const value = field.state.value
+
+  const text = useTextValue(field)
+  const value = text.value
   const long = netbios && !value.includes(".") && value.length > NETBIOS_MAX ? messages.legacyNameWarning(NETBIOS_MAX, NETBIOS_MAX) : undefined
   return (
     <Field {...root} label={label} hint={hint ?? long} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
@@ -87,7 +89,7 @@ export function HostnameField({ label, hint, optional, required, aside, classNam
         {...control}
         name={field.name}
         value={value}
-        onValueChange={(next) => field.handleChange(next)}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}
@@ -102,13 +104,14 @@ export interface DomainFieldProps extends FieldChrome, Omit<DomainInputProps, Bo
 /** DomainInput bound to a string form field. Pair it with `domainSchema()`. */
 export function DomainField({ label, hint, optional, required, aside, className, disabled, ...control }: DomainFieldProps) {
   const { field, error, root } = useBoundField<string>()
+  const text = useTextValue(field)
   return (
     <Field {...root} label={label} hint={hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <DomainInput
         {...control}
         name={field.name}
-        value={field.state.value}
-        onValueChange={(next) => field.handleChange(next)}
+        value={text.value}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}

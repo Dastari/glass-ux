@@ -29,5 +29,5 @@ export {
 } from "./form.js"
 export { FormActions, FormGroup, FormStack, type FormGroupProps, type FormStackProps } from "./layout.js"
 export { blurThenChange, firstError, focusFirstInvalid, messageFor } from "./validation.js"
-export { useBoundField, type FieldChrome } from "./context.js"
+export { useBoundField, useTextValue, type FieldChrome } from "./context.js"
 export { asCheck, numberRule, textRule, type Check, type RuleOptions } from "./rules.js"

@@ -6,7 +6,7 @@ import { useControllable } from "../../lib/use-controllable.js"
 import { Button } from "../button/index.js"
 import { CopyButton } from "../copy-button/index.js"
 import { Field } from "../field/index.js"
-import { useBoundField, type FieldChrome } from "../form/context.js"
+import { useBoundField, useTextValue, type FieldChrome } from "../form/context.js"
 import { Input, type InputProps } from "../input/index.js"
 import { generatePassword, type GenerateOptions } from "./generate.js"
 import { estimateStrength, type Strength } from "./strength.js"
@@ -180,7 +180,8 @@ export interface PasswordFieldProps
 export function PasswordField({ label, hint, optional, required, aside, className, disabled, ...control }: PasswordFieldProps) {
  const messages = useMessages(passwordFieldMessages)
   const { field, error, root } = useBoundField<string>()
-  const value = field.state.value
+  const text = useTextValue(field)
+  const value = text.value
   const measuring = control.strength ?? (control.purpose ?? "new") === "new"
   const words = measuring && value ? describeStrength(estimateStrength(value, control.userInputs, messages)) : undefined
   return (
@@ -189,7 +190,7 @@ export function PasswordField({ label, hint, optional, required, aside, classNam
         {...control}
         name={field.name}
         value={value}
-        onValueChange={(next) => field.handleChange(next)}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}

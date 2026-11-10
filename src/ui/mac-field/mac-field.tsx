@@ -5,7 +5,7 @@ import { IconEthernet } from "../../icons/generated/icons.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { CopyButton } from "../copy-button/index.js"
 import { Field } from "../field/index.js"
-import { useBoundField, type FieldChrome } from "../form/context.js"
+import { useBoundField, useTextValue, type FieldChrome } from "../form/context.js"
 import { NormalisedInput, type NormalisedInputProps } from "../input/index.js"
 import { describeMac, formatMac, macDigits, ouiOf, type MacFormat } from "./mac.js"
 
@@ -93,14 +93,15 @@ export interface MacAddressFieldProps
 export function MacAddressField({ label, hint, optional, required, aside, className, disabled, lookupVendor, ...control }: MacAddressFieldProps) {
  const messages = useMessages(macFieldMessages)
   const { field, error, root } = useBoundField<string>()
-  const vendor = useMacVendor(field.state.value, lookupVendor)
+  const text = useTextValue(field)
+  const vendor = useMacVendor(text.value, lookupVendor)
   return (
-    <Field {...root} label={label} hint={hint ?? describeMacValue(field.state.value, vendor, messages)} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
+    <Field {...root} label={label} hint={hint ?? describeMacValue(text.value, vendor, messages)} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <MacAddressInput
         {...control}
         name={field.name}
-        value={field.state.value}
-        onValueChange={(next) => field.handleChange(next)}
+        value={text.value}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}

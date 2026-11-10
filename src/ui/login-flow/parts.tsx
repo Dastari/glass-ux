@@ -8,7 +8,7 @@ import { IconAlert, IconInfo, IconRefresh, IconSuccess, IconUser } from "../../i
 import { cx } from "../../lib/cx.js"
 import { Button, type ButtonStatus } from "../button/index.js"
 import { Field } from "../field/index.js"
-import { useBoundField, type FieldChrome } from "../form/index.js"
+import { useBoundField, useTextValue, type FieldChrome } from "../form/index.js"
 import { Input } from "../input/index.js"
 import { useFlow, useLoginAction, type Cooldown, type LoginMessage } from "./flow-context.js"
 import type { LoginOutcome, LoginProvider, LoginView, TwoFactorChallenge } from "./types.js"
@@ -205,15 +205,16 @@ export interface UsernameFieldProps extends FieldChrome {
 /** A username or either-kind identifier: no capitalisation, correction or spell check. */
 export function UsernameField({ label, hint, optional, required, aside, className, disabled, autoComplete = "username" }: UsernameFieldProps) {
   const { field, error, root } = useBoundField<string>()
+  const text = useTextValue(field)
   return (
     <Field {...root} label={label} hint={hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <Input
         name={field.name}
-        value={field.state.value}
-        onValueChange={(next) => field.handleChange(next)}
+        value={text.value}
+        onValueChange={text.onValueChange}
         onBlur={() => {
-          const trimmed = field.state.value.trim()
-          if (trimmed !== field.state.value) field.handleChange(trimmed)
+          const trimmed = text.value.trim()
+          if (trimmed !== text.value) text.onValueChange(trimmed)
           field.handleBlur()
         }}
         icon={<IconUser />}

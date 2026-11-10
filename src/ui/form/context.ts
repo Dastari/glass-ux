@@ -4,7 +4,7 @@
  * while form.tsx registers that field in `useAppForm` — without an import cycle.
  */
 import { createFormHookContexts } from "@tanstack/react-form";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { FieldBindingContext } from "./binding.js";
 import type { FieldProps } from "../field/index.js";
 import { firstError } from "./validation.js";
@@ -55,3 +55,21 @@ export function useBoundField<T>() {
     },
   };
 }
+
+/**
+ * A bound text field's value as its control shows it, and the handler for the control's
+ * changes. A `null` or `undefined` form value (an optional database column) shows as empty and
+ * stays as it is until the person types; clearing a field that started blank puts that blank
+ * back, so an untouched optional value is never saved as an empty string.
+ *
+ *   const text = useTextValue(field)
+ *   return <Input value={text.value} onValueChange={text.onValueChange} … />
+ */
+export function useTextValue(field: { state: { value: unknown }; handleChange: (value: never) => void }) {
+  const raw = field.state.value;
+  const blank = useRef<string | null | undefined>(raw == null ? (raw as null | undefined) : "");
+  const value = typeof raw === "string" ? raw : raw == null ? "" : String(raw);
+  const onValueChange = (next: string) => (field.handleChange as (value: string | null | undefined) => void)(next === "" ? blank.current : next);
+  return { value, onValueChange };
+}
+

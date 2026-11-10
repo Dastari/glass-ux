@@ -17,7 +17,7 @@ import {
 } from "../../icons/generated/icons.js";
 import { Button } from "../button/index.js";
 import { Field } from "../field/index.js";
-import { useBoundField, type FieldChrome } from "../form/context.js";
+import { useBoundField, useTextValue, type FieldChrome } from "../form/context.js";
 import { Skeleton } from "../skeleton/index.js";
 import { Segmented } from "../segmented/index.js";
 import { richTextViews } from "./view-options.js";
@@ -335,6 +335,7 @@ export function RichTextField({
   ...control
 }: RichTextFieldProps) {
   const { field, error, root } = useBoundField<string>();
+  const text = useTextValue(field);
   return (
     <Field
       {...root}
@@ -351,8 +352,8 @@ export function RichTextField({
       <RichTextInput
         {...control}
         name={field.name}
-        value={field.state.value}
-        onValueChange={field.handleChange}
+        value={text.value}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}

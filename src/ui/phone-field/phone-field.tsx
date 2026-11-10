@@ -15,7 +15,7 @@ import { matches, OptionRow } from "../combobox/index.js"
 import { callingCodeOf, listCountries, MAIN_COUNTRY_FOR_CALLING_CODE, type Country } from "../country-select/countries.js"
 import { CountryFlag } from "../country-select/flag.js"
 import { Field, widthAttr, type FieldWidth } from "../field/index.js"
-import { useBoundField, type FieldChrome } from "../form/context.js"
+import { useBoundField, useTextValue, type FieldChrome } from "../form/context.js"
 import {
   countryOfValue,
   examplePhone,
@@ -438,13 +438,14 @@ export interface PhoneFieldProps extends FieldChrome, Omit<PhoneInputProps, "val
 /** PhoneInput bound to a string form field (E.164). Pair it with `phoneSchema()`. */
 export function PhoneField({ label, hint, optional, required, aside, className, disabled, ...control }: PhoneFieldProps) {
   const { field, error, root } = useBoundField<string>()
+  const text = useTextValue(field)
   return (
     <Field {...root} label={label} hint={hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <PhoneInput
         {...control}
         name={field.name}
-        value={field.state.value}
-        onValueChange={(next) => field.handleChange(next)}
+        value={text.value}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}

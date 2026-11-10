@@ -4,7 +4,7 @@ import { IconExternalLink, IconLink } from "../../icons/generated/icons.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { Button } from "../button/index.js"
 import { Field } from "../field/index.js"
-import { useBoundField, type FieldChrome } from "../form/context.js"
+import { useBoundField, useTextValue, type FieldChrome } from "../form/context.js"
 import { NormalisedInput, type NormalisedInputProps } from "../input/index.js"
 import { isInsecure, normaliseUrl, type UrlOptions } from "./url.js"
 
@@ -63,7 +63,9 @@ export function UrlField({ label, hint, optional, required, aside, className, di
   const messages = useMessages(urlFieldMessages)
 
   const { field, error, root } = useBoundField<string>()
-  const value = field.state.value
+
+  const text = useTextValue(field)
+  const value = text.value
   const warn = (warnInsecure ?? (control.schemes ?? ["https"]).includes("https")) && isInsecure(value) ? messages.insecureUrl : undefined
   return (
     <Field {...root} label={label} hint={hint ?? warn} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
@@ -71,7 +73,7 @@ export function UrlField({ label, hint, optional, required, aside, className, di
         {...control}
         name={field.name}
         value={value}
-        onValueChange={(next) => field.handleChange(next)}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}

@@ -75,6 +75,7 @@ import {
   useFieldContext,
   useFormContext,
   type FieldChrome,
+  useTextValue,
 } from "./context.js";
 import { blurThenChange, focusFirstInvalid } from "./validation.js";
 import { numberFormat } from "../../lib/locale/intl.js";
@@ -127,6 +128,7 @@ function TextField({
   ...control
 }: TextFieldProps) {
   const { field, error, root } = useFieldState<string>();
+  const text = useTextValue(field);
   return (
     <Field
       {...root}
@@ -141,15 +143,15 @@ function TextField({
       disabled={disabled}
       counter={
         counter && maxLength
-          ? { value: field.state.value.length, max: maxLength }
+          ? { value: text.value.length, max: maxLength }
           : undefined
       }
     >
       <Input
         {...control}
         name={field.name}
-        value={field.state.value}
-        onValueChange={(value) => field.handleChange(value)}
+        value={text.value}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}
@@ -180,6 +182,7 @@ function TextareaField({
   ...control
 }: TextareaFieldProps) {
   const { field, root } = useFieldState<string>();
+  const text = useTextValue(field);
   return (
     <Field
       {...root}
@@ -193,15 +196,15 @@ function TextareaField({
       disabled={disabled}
       counter={
         maxLength
-          ? { value: field.state.value.length, max: maxLength }
+          ? { value: text.value.length, max: maxLength }
           : undefined
       }
     >
       <Textarea
         {...control}
         name={field.name}
-        value={field.state.value}
-        onValueChange={(value) => field.handleChange(value)}
+        value={text.value}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}
@@ -379,6 +382,7 @@ function AutocompleteField<V extends string = string>({
   ...control
 }: AutocompleteFieldProps<V>) {
   const { field, error, root } = useFieldState<string>();
+  const text = useTextValue(field);
   return (
     <Field
       {...root}
@@ -393,8 +397,8 @@ function AutocompleteField<V extends string = string>({
       <Autocomplete<V>
         {...control}
         name={field.name}
-        value={field.state.value}
-        onValueChange={(value) => field.handleChange(value)}
+        value={text.value}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}

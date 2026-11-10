@@ -2,7 +2,7 @@ import { useMessages } from "../../lib/i18n/index.js"
 import { emailFieldMessages } from "./messages.js"
 import { IconMail } from "../../icons/generated/icons.js"
 import { Field } from "../field/index.js"
-import { useBoundField, type FieldChrome } from "../form/context.js"
+import { useBoundField, useTextValue, type FieldChrome } from "../form/context.js"
 import { NormalisedInput, type NormalisedInputProps } from "../input/index.js"
 import { EMAIL_EXAMPLE, normaliseEmail, suggestEmail } from "./email.js"
 
@@ -57,7 +57,8 @@ export interface EmailFieldProps
 /** EmailInput bound to a string form field, with the typo hint. Pair it with `emailSchema()`. */
 export function EmailField({ label, hint, optional, required, aside, className, disabled, suggest = true, knownDomains, ...control }: EmailFieldProps) {
   const { field, error, root } = useBoundField<string>()
-  const value = field.state.value
+  const text = useTextValue(field)
+  const value = text.value
   // Only once the person has left the field: no suggestions mid-word.
   const suggestion = suggest && field.state.meta.isBlurred && value ? suggestEmail(value, knownDomains) : null
   return (
@@ -75,7 +76,7 @@ export function EmailField({ label, hint, optional, required, aside, className, 
         {...control}
         name={field.name}
         value={value}
-        onValueChange={(next) => field.handleChange(next)}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}

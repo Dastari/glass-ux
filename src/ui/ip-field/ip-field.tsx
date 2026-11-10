@@ -5,7 +5,7 @@ import { useLocale } from "../../lib/locale/use-locale.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { CopyButton } from "../copy-button/index.js"
 import { Field } from "../field/index.js"
-import { useBoundField, type FieldChrome } from "../form/context.js"
+import { useBoundField, useTextValue, type FieldChrome } from "../form/context.js"
 import { NormalisedInput, type NormalisedInputProps } from "../input/index.js"
 import { describeRange, isNetworkAddress, networkOf, normaliseIp, parseIp, scopeOf, type CidrMode, type IpVersion } from "./ip.js"
 
@@ -75,15 +75,16 @@ export interface IpFieldProps extends FieldChrome, Omit<IpInputProps, "value" | 
 export function IpField({ label, hint, optional, required, aside, className, disabled, describe = true, ...control }: IpFieldProps) {
  const messages = useMessages(ipFieldMessages)
   const { field, error, root } = useBoundField<string>()
+  const text = useTextValue(field)
   const locale = useLocale()
-  const derived = describe ? describeIp(field.state.value, { ...control, locale }, messages) : undefined
+  const derived = describe ? describeIp(text.value, { ...control, locale }, messages) : undefined
   return (
     <Field {...root} label={label} hint={hint ?? derived} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <IpInput
         {...control}
         name={field.name}
-        value={field.state.value}
-        onValueChange={(next) => field.handleChange(next)}
+        value={text.value}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}

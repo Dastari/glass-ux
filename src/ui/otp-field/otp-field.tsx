@@ -6,7 +6,7 @@ import { IconCheck } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { Field } from "../field/index.js"
-import { useBoundField, type FieldChrome } from "../form/context.js"
+import { useBoundField, useTextValue, type FieldChrome } from "../form/context.js"
 import { normaliseOtp, type OtpCharacters } from "./otp.js"
 
 export type OtpStatus = "error" | "success"
@@ -162,13 +162,14 @@ export interface OtpFieldProps extends FieldChrome, Omit<OtpInputProps, "value" 
  */
 export function OtpField({ label, hint, optional, required, aside, className, disabled, ...control }: OtpFieldProps) {
   const { field, error, root } = useBoundField<string>()
+  const text = useTextValue(field)
   return (
     <Field {...root} label={label} hint={hint} optional={optional} required={required} aside={aside} className={className} disabled={disabled}>
       <OtpInput
         {...control}
         name={field.name}
-        value={field.state.value}
-        onValueChange={(next) => field.handleChange(next)}
+        value={text.value}
+        onValueChange={text.onValueChange}
         onBlur={field.handleBlur}
         required={required}
         disabled={disabled}

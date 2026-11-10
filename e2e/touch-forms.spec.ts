@@ -46,6 +46,8 @@ test("text-entry elements keep 16 px text on a touch screen, at the same height 
   test.skip(!isMobile, "coarse pointer");
   const errors = await open(page, "/components/input");
   await expect(page.locator(".fa-input .fa-control-input").first()).toBeVisible({ timeout: 30_000 });
+  // The page's demos arrive one after another: measure once they are all there, not on the first.
+  await expect.poll(() => page.locator(".gallery-document-sections .fa-input .fa-control-input").count(), { timeout: 30_000 }).toBeGreaterThan(5);
   const sizes = await page.evaluate(() =>
     [...document.querySelectorAll<HTMLElement>(".gallery-document-sections :is(input:not([type=checkbox], [type=radio], [type=range], [type=hidden]), textarea)")]
       .filter((element) => element.getBoundingClientRect().width > 1 && !element.closest("[aria-hidden='true']"))

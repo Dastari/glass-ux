@@ -75,4 +75,31 @@ describe("useScrollEdges root mirroring", () => {
     unmount();
     expect(root).not.toHaveAttribute("data-scrolled-bottom");
   });
+
+  it("does no style work per scroll event on a scroller without horizontal overflow", async () => {
+    const { container } = render(<Frame />);
+    const root = container.querySelector<HTMLElement>(".frame")!;
+    const body = container.querySelector<HTMLElement>(".body")!;
+    Object.defineProperties(body, {
+      scrollHeight: { configurable: true, value: 400 },
+      clientHeight: { configurable: true, value: 100 },
+      scrollWidth: { configurable: true, value: 100 },
+      clientWidth: { configurable: true, value: 100 },
+    });
+    await nextFrame();
+    const style = vi.spyOn(window, "getComputedStyle");
+    const frames = vi.spyOn(window, "requestAnimationFrame");
+    for (const top of [10, 20, 30, 40]) {
+      body.scrollTop = top;
+      body.dispatchEvent(new Event("scroll"));
+    }
+    // A burst of scroll events schedules one frame, and reading the direction is not needed.
+    expect(frames).toHaveBeenCalledTimes(1);
+    await nextFrame();
+    expect(style).not.toHaveBeenCalled();
+    expect(root).toHaveAttribute("data-scrolled-top");
+    style.mockRestore();
+    frames.mockRestore();
+  });
 });
+

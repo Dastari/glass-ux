@@ -452,6 +452,11 @@
   .fa-dt-rows > .fa-dt-row:not(.fa-dt-skel-row):hover {
     --_bg: var(--fill-hover);
   }
+  /* Hover-in is instant and the release eases, so rows scrolling under a resting pointer start one transition each, not two (docs/performance.md). */
+  .fa-dt-rows > .fa-dt-row:hover,
+  .fa-dt-row:hover .fa-dt-row-button {
+    transition-duration: 0s;
+  }
   .fa-dt-rows > .fa-dt-row[data-selected] {
     --_bg: var(--accent-soft);
   }

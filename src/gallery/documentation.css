@@ -138,6 +138,16 @@
     :is(.charts-split, .charts-tiles, .gallery-tiers, .gallery-rules) {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Demo, usage and API blocks more than a screen away (data-far, set by the page) skip
+     style, layout and paint while the page scrolls: a long catalogue page mounts every demo,
+     and hit testing, pre-paint and layerize grow with all of it (docs/performance.md). Each
+     keeps the height it last rendered at (--far-size), so the scroll range does not change.
+     Blocks near or on screen render normally: content-visibility brings paint containment,
+     which would clip shadows and stop the blur of glass inside a demo at the demo's edge. */
+  .gallery-document-sections :is(.gallery-specimen, .gallery-usage-example, .gallery-api)[data-far] {
+    content-visibility: auto;
+    contain-intrinsic-block-size: var(--far-size, 500px);
+  }
   .gallery-api {
     display: flex;
     flex-direction: column;

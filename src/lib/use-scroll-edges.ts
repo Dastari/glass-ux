@@ -51,26 +51,31 @@ export function useScrollEdges(
     if (!element) return
     const root = rootSelector ? element.parentElement?.closest<HTMLElement>(rootSelector) : null
     let frame = 0
+    let last = NONE
+    const update = () => {
+      frame = 0
+      const { scrollTop, scrollHeight, clientHeight, scrollLeft, scrollWidth, clientWidth } = element
+      // Reading the direction forces a style recalculation, so it is read only when it decides
+      // anything: with horizontal overflow at offset 0. A scrolled offset is negative right to left.
+      const overflowsX = scrollWidth > clientWidth + threshold
+      const rtl = overflowsX && (scrollLeft < 0 || (scrollLeft === 0 && getComputedStyle(element).direction === "rtl"))
+      const away = Math.abs(scrollLeft) > threshold
+      const remaining = Math.abs(scrollLeft) + clientWidth < scrollWidth - threshold
+      const next = {
+        top: scrollTop > threshold,
+        bottom: scrollTop + clientHeight < scrollHeight - threshold,
+        left: rtl ? remaining : away,
+        right: rtl ? away : remaining,
+      }
+      // Most scroll frames change no edge: then nothing is written and nothing re-renders.
+      if (next.top === last.top && next.bottom === last.bottom && next.left === last.left && next.right === last.right) return
+      last = next
+      if (root) for (const [edge, name] of ROOT_ATTRIBUTES) root.toggleAttribute(name, next[edge])
+      setEdges(next)
+    }
+    // One frame per burst of scroll events, scheduled once rather than cancelled and rescheduled.
     const measure = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        const { scrollTop, scrollHeight, clientHeight, scrollLeft, scrollWidth, clientWidth } = element
-        const rtl = getComputedStyle(element).direction === "rtl"
-        const away = Math.abs(scrollLeft) > threshold
-        const remaining = Math.abs(scrollLeft) + clientWidth < scrollWidth - threshold
-        const next = {
-          top: scrollTop > threshold,
-          bottom: scrollTop + clientHeight < scrollHeight - threshold,
-          left: rtl ? remaining : away,
-          right: rtl ? away : remaining,
-        }
-        if (root) for (const [edge, name] of ROOT_ATTRIBUTES) root.toggleAttribute(name, next[edge])
-        setEdges((current) =>
-          current.top === next.top && current.bottom === next.bottom && current.left === next.left && current.right === next.right
-            ? current
-            : next
-        )
-      })
+      if (!frame) frame = requestAnimationFrame(update)
     }
     measure()
     element.addEventListener("scroll", measure, { passive: true })

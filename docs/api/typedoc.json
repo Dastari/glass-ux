@@ -56080,9 +56080,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 509,
+									"line": 597,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.4/src/gallery/documentation.tsx#L509"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.4/src/gallery/documentation.tsx#L597"
 								}
 							],
 							"type": {
@@ -56107,9 +56107,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 507,
+									"line": 595,
 									"character": 2,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.4/src/gallery/documentation.tsx#L507"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.4/src/gallery/documentation.tsx#L595"
 								}
 							],
 							"type": {
@@ -56130,9 +56130,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/documentation.tsx",
-							"line": 505,
+							"line": 593,
 							"character": 17,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.4/src/gallery/documentation.tsx#L505"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.4/src/gallery/documentation.tsx#L593"
 						}
 					]
 				},
@@ -59087,9 +59087,9 @@
 					"sources": [
 						{
 							"fileName": "gallery/documentation.tsx",
-							"line": 513,
+							"line": 601,
 							"character": 16,
-							"url": "https://github.com/dastari/glass-ux/blob/v0.19.4/src/gallery/documentation.tsx#L513"
+							"url": "https://github.com/dastari/glass-ux/blob/v0.19.4/src/gallery/documentation.tsx#L601"
 						}
 					],
 					"signatures": [
@@ -59110,9 +59110,9 @@
 							"sources": [
 								{
 									"fileName": "gallery/documentation.tsx",
-									"line": 513,
+									"line": 601,
 									"character": 16,
-									"url": "https://github.com/dastari/glass-ux/blob/v0.19.4/src/gallery/documentation.tsx#L513"
+									"url": "https://github.com/dastari/glass-ux/blob/v0.19.4/src/gallery/documentation.tsx#L601"
 								}
 							],
 							"parameters": [

@@ -12,7 +12,8 @@
     --_line: var(--chart-1); /* data, never the brand accent ("accent" tone is an alias) */
     --_wash: color-mix(in oklab, var(--chart-1) var(--chart-wash), transparent);
     --_dot: var(--space-2);
-    position: relative;
+    /* Not positioned: the plot is the dot and crosshair's containing block, and every
+       positioned element is one more for hit testing and layerize (docs/performance.md). */
     display: block;
     width: 100%;
     height: 100%;

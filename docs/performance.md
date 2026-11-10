@@ -169,6 +169,47 @@ representative component pages in desktop and phone viewports. For performance b
 profile the production host with its real routes and dataset rather than using the entire
 component catalogue as a runtime benchmark.
 
+## Scrolling long pages
+
+`scripts/profile-scroll.mjs` measures a page of the built documentation while the pointer wheels
+over it (`GLASS_UX_BASE=/glass-ux/ pnpm docs:build`, then `node scripts/profile-scroll.mjs
+/components/data-table/ "live;none;solid" 3`). It reports main-thread time and its parts, the
+compositors' time, frames, draw time per frame and the transitions that started.
+
+A long page's main-thread cost grows with everything mounted on it, not with what is in view:
+hit testing, pre-paint and layerize run on every frame and walk every positioned or clipping
+element. On `/components/data-table/` (29,145 nodes, 1920×1080, live blur, three runs each):
+
+| Main thread while scrolling, ms per second | 0.19.4 | 0.19.5 |
+| --- | --- | --- |
+| Total | 167–176 | 110–134 |
+| Hit testing | 44–54 | 13–15 |
+| Layerize | 34–38 | 19–21 |
+| Paint | 10–12 | 5–6 |
+| Transitions started | 103 | 52 |
+
+- The documentation shell skips rendering for demo, usage and API blocks more than a screen away
+  once the reader scrolls (`content-visibility: auto` under `data-far`). A skipped block keeps the
+  height it last rendered at, so the page's length and deep links stay put; a page at rest is left
+  as it loaded. Under automation it stays off unless `localStorage["docs-kit.far-blocks"]` is
+  `"on"`, because a test's visibility wait on a skipped element never ends. A block on screen renders normally:
+  `content-visibility` brings paint containment, which stops a glass demo's blur at the block's
+  edge.
+- A row that scrolls under a resting pointer used to start two transitions, in and out. Hover-in
+  is now instant and only the release eases, for table rows and their row actions, notification
+  rows and their tools, and list items (`.fa-item`).
+- `useScrollEdges` schedules one frame per burst of scroll events, and reads the reading direction
+  only when a scroller overflows sideways at offset 0. It used to read it on every event, forcing
+  a style recalculation.
+
+Positioned and clipping elements on that page, by component: the largest are table cells (609
+positioned, 675 clipping), buttons (482 positioned, for their light layer and touch target),
+truncated text (874 `overflow: clip`), checkboxes (252), list items (218) and sticky cells
+(208). They are needed at rest: truncation clips, a cell is the containing block and clip for an
+application's cell content, and a button's `::after` needs it. A sparkline's wrapper was
+positioned with nothing to position, and no longer is. Removing `isolation` made no measurable
+difference.
+
 ## Measurements (0.9.9)
 
 Production builds of the fixtures in `scripts/performance` (`node scripts/performance/build.mjs`

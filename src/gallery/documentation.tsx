@@ -257,6 +257,94 @@ export function ComponentDocumentation({ id }: { id: string }) {
   const phone = useMediaQuery(PHONE_QUERY);
   const root = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState("examples");
+  // Blocks more than a screen away from the view skip rendering (documentation.css, data-far).
+  useEffect(() => {
+    const element = root.current;
+    if (!element || typeof IntersectionObserver === "undefined") return;
+    // Under automation a skipped block's contents have no box, and a test's visibility wait
+    // on one never ends; a test opts in with this key (e2e/scroll-cost.spec.ts).
+    let optedIn = false;
+    try {
+      optedIn = localStorage.getItem("docs-kit.far-blocks") === "on";
+    } catch {
+      // storage unavailable
+    }
+    if (navigator.webdriver && !optedIn) return;
+    const BLOCKS = ".gallery-specimen, .gallery-usage-example, .gallery-api";
+    const scrollRoot = element.closest<HTMLElement>("[data-scroll-container]") ?? null;
+    // Each block's last rendered content height. Written onto a block only as it goes far,
+    // because --far-size is inherited and writing it restyles the whole block.
+    const heights = new Map<Element, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const block = entry.target as HTMLElement;
+          if (entry.isIntersecting) block.removeAttribute("data-far");
+          else {
+            block.style.setProperty("--far-size", `${heights.get(block) ?? 0}px`);
+            block.setAttribute("data-far", "");
+          }
+        }
+      },
+      { root: scrollRoot, rootMargin: "100% 0px" },
+    );
+    // A skipped block keeps its last rendered height (--far-size), so the page keeps its length.
+    // A block may be skipped only once its height has held for a second (demos load after the
+    // page, and a block skipped before then would keep a short height), and only once the
+    // reader has scrolled: the saving is in scrolling, and a page at rest is left as it loaded.
+    let scrolled = false;
+    const settled = new Set<Element>();
+    const settling = new Map<Element, ReturnType<typeof setTimeout>>();
+    const sized = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const block = entry.target;
+        if (block.hasAttribute("data-far")) continue; // a skipped block reports the size it was given
+        // The content box: contain-intrinsic-size stands in for the content, and padding adds to it.
+        const height = entry.contentBoxSize[0]?.blockSize ?? entry.contentRect.height;
+        if (height <= 0) continue;
+        heights.set(block, Math.round(height));
+        clearTimeout(settling.get(block));
+        settling.set(
+          block,
+          setTimeout(() => {
+            settled.add(block);
+            if (scrolled) observer.observe(block);
+          }, 1000),
+        );
+      }
+    });
+    const scrollTarget: HTMLElement | Window = scrollRoot ?? window;
+    const start = () => {
+      scrolled = true;
+      scrollTarget.removeEventListener("scroll", start);
+      settled.forEach((block) => observer.observe(block));
+    };
+    scrollTarget.addEventListener("scroll", start, { passive: true });
+    const watch = (node: Element) => {
+      if (node.matches(BLOCKS)) sized.observe(node);
+      node.querySelectorAll(BLOCKS).forEach((block) => sized.observe(block));
+    };
+    watch(element);
+    // Demos load section by section: watch the blocks that arrive later too. Nodes a demo adds
+    // itself (rows, popups) carry no documentation class and are passed over at once.
+    const added = new MutationObserver((records) => {
+      for (const record of records)
+        for (const node of record.addedNodes)
+          if (node instanceof Element && typeof node.className === "string" && node.className.includes("gallery-")) watch(node);
+    });
+    added.observe(element, { childList: true, subtree: true });
+    return () => {
+      scrollTarget.removeEventListener("scroll", start);
+      settling.forEach((timer) => clearTimeout(timer));
+      observer.disconnect();
+      sized.disconnect();
+      added.disconnect();
+      element.querySelectorAll<HTMLElement>("[data-far], [style*='--far-size']").forEach((block) => {
+        block.removeAttribute("data-far");
+        block.style.removeProperty("--far-size");
+      });
+    };
+  }, []);
   useEffect(() => {
     let cancelled = false;
     let frame = 0;

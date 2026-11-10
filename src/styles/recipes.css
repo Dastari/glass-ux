@@ -330,6 +330,10 @@
     transition-duration: var(--duration-fast);
     transition-timing-function: var(--ease-standard);
   }
+  /* Hover-in is instant and the release eases, so rows scrolling under a resting pointer start one transition each, not two (docs/performance.md). */
+  .fa-item:hover {
+    transition-duration: 0s;
+  }
   .fa-item > svg,
   .fa-item > .fa-item-icon {
     flex: none;

@@ -182,6 +182,11 @@
   .fa-notification:is(:hover, :focus-within) .fa-notification-tools {
     opacity: 1;
   }
+  /* Hover-in is instant and the release eases, so rows scrolling under a resting pointer start one transition each, not two (docs/performance.md). */
+  .fa-notification:hover,
+  .fa-notification:hover .fa-notification-tools {
+    transition-duration: 0s;
+  }
   @media (hover: none) {
     .fa-notification-tools {
       opacity: 1;

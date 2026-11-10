@@ -4,6 +4,16 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## Unreleased
+
+### Fixed
+
+- Focus rings at the edges of clipping containers (R11.10, #30): the section drawer's title, a compact
+  Notice's text, a DetailTile's value and detail, and StatusBar's end values clip with room for a ring
+  (`overflow: clip` with `overflow-clip-margin`); the icon rail's list keeps room at its sides, so a
+  rail with no width of its own no longer cuts its items' rings; and the primary (bare) window's scroll
+  body has room at its sides, taken back with a negative margin.
+
 ## 0.19.8
 
 ### Added

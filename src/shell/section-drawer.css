@@ -101,10 +101,12 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* Clipped with room for the ring of a link or button in the title (R11.10). */
   .fa-shell-drawer-title {
     flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     font-size: var(--type-subtitle-size);
     line-height: var(--type-subtitle-line);
     font-weight: var(--type-subtitle-weight);

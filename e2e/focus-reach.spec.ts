@@ -36,6 +36,11 @@ const PAGES = [
   "button",
   "data-table",
   "scheduler",
+  "app-shell",
+  "section-drawer",
+  "notice",
+  "detail-tile",
+  "status-bar",
 ];
 
 type Clip = { control: string; clipper: string; sides: string };
@@ -119,3 +124,42 @@ test("the focus reach reaches overflow-clip-margin", async ({ page }) => {
     .evaluate((element) => getComputedStyle(element).overflowClipMargin);
   expect(margin).toBe("4px");
 });
+
+/*
+ * #30: containers whose demos hold nothing focusable at their edge, but where an application puts
+ * a link, chip or time. Each clips with room for a ring: a focusable placed flush with its edge
+ * keeps the whole ring.
+ */
+const CONTAINERS = [
+  { page: "section-drawer", selector: ".fa-shell-drawer-title" },
+  { page: "notice", selector: ".fa-notice[data-compact] .fa-notice-text" },
+  { page: "detail-tile", selector: ".fa-detail-tile-value" },
+  { page: "status-bar", selector: ".fa-status-bar-end > :not([data-interactive], [data-gave-way])" },
+];
+for (const { page: path, selector } of CONTAINERS) {
+  test(`${selector} keeps room for the ring of a focusable at its edge (#30) @responsive`, async ({ page }) => {
+    await page.goto(`./components/${path}`);
+    const container = page.locator(`.gallery-document-sections ${selector}`).first();
+    await container.waitFor();
+    await page.addStyleTag({ content: "*, *::before, *::after { animation: none !important; transition: none !important }" });
+    const cut = await container.evaluate((element) => {
+      const link = document.createElement("a");
+      link.href = "#ring";
+      link.textContent = "Link";
+      element.prepend(link);
+      link.focus();
+      const style = getComputedStyle(link);
+      const reach = parseFloat(style.outlineWidth) + parseFloat(style.outlineOffset);
+      const box = link.getBoundingClientRect();
+      const edge = element.getBoundingClientRect();
+      const css = getComputedStyle(element);
+      const margin = css.overflowX === "clip" ? parseFloat(css.overflowClipMargin) || 0 : 0;
+      link.remove();
+      // The ring's start and top must fall inside the clip edge.
+      return { start: Math.max(0, edge.left - margin - (box.left - reach)), top: Math.max(0, edge.top - margin - (box.top - reach)), overflow: css.overflowX };
+    });
+    expect(cut.overflow).toBe("clip");
+    expect(cut.start).toBeLessThanOrEqual(0.5);
+    expect(cut.top).toBeLessThanOrEqual(0.5);
+  });
+}

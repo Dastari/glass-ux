@@ -73,10 +73,12 @@
   .fa-status-bar:not(.fa-window-status) .fa-status-bar-end {
     min-width: var(--space-10);
   }
+  /* Clipped with room for the ring of a truncated value that takes focus (R11.10). */
   .fa-status-bar-end > * {
     flex: 0 1 auto;
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     text-overflow: ellipsis;
   }
   .fa-status-bar-end > [data-interactive] {

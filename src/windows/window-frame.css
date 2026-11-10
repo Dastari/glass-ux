@@ -359,8 +359,11 @@
     overflow: visible;
     border-radius: 0;
   }
+  /* Room at the sides for the rings of controls flush with the panels' edges (R11.10), taken
+     back with a negative margin so the content stays where it was. */
   .fa-window[data-material="none"] .fa-window-body[data-variant="scroll"] {
-    padding: var(--space-1) 0 var(--space-4);
+    margin-inline: calc(var(--focus-reach) * -1);
+    padding: var(--space-1) var(--focus-reach) var(--space-4);
   }
   .fa-window[data-material="none"] .fa-window-status {
     padding: var(--space-2) 0 0;

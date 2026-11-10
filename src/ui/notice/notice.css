@@ -78,8 +78,10 @@
     width: var(--icon-md);
     height: var(--icon-md);
   }
+  /* Clipped with room for the ring of a focusable value in the line (R11.10). */
   .fa-notice[data-compact] .fa-notice-text {
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
     text-overflow: ellipsis;
     white-space: nowrap;
   }

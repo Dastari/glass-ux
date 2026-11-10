@@ -25,7 +25,9 @@
     gap: var(--space-1-5);
     min-height: 0;
     margin: 0;
-    padding: var(--space-1) 0 var(--space-1);
+    /* The list scrolls, so it keeps room for its items' focus rings at the sides (R11.10): in a
+       rail with no width of its own the list is otherwise only as wide as an item. */
+    padding: var(--space-1) var(--focus-reach);
     overflow-y: auto;
     scrollbar-width: none;
     list-style: none;

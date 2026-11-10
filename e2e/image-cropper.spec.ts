@@ -139,3 +139,21 @@ test("the page and an open dialog pass axe @responsive", async ({ page }) => {
   await expect(page.getByRole("dialog", { name: "Change banner" })).toBeVisible();
   await scan(".fa-dialog");
 });
+
+test("a free-aspect thumbnail shows the whole image (#28)", async ({ page }) => {
+  await page.goto("/components/image-cropper")
+  const wide = page.getByTestId("image-input-wide")
+  await wide.scrollIntoViewIfNeeded()
+  const image = wide.locator(".fa-image-input-tile > img")
+  await expect(image).toBeVisible({ timeout: 30_000 })
+  await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0)
+  const fit = await image.evaluate((element: HTMLImageElement) => {
+    const tile = element.parentElement!.getBoundingClientRect()
+    const ratio = element.naturalWidth / element.naturalHeight
+    // The drawn picture under object-fit: contain is the whole image, letterboxed in the tile.
+    const drawnWidth = Math.min(tile.width, tile.height * ratio)
+    return { fit: getComputedStyle(element).objectFit, tileWidth: tile.width, drawnWidth }
+  })
+  expect(fit.fit).toBe("contain")
+  expect(Math.abs(fit.drawnWidth - fit.tileWidth)).toBeLessThanOrEqual(1)
+})

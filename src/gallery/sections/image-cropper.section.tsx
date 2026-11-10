@@ -14,7 +14,7 @@ import {
   type ImageFieldValue,
   type ImageSaveContext,
 } from "../../ui/image-cropper/index.js"
-import { SCENE_IMAGES } from "../fixtures/scenes.js"
+import { SCENE_IMAGES, WIDE_MARK } from "../fixtures/scenes.js"
 import { ContainerLab, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
 import { wait } from "./forms.fixtures.js"
 import { Usage } from "./inputs.kit.js"
@@ -153,6 +153,11 @@ export default function ImageCropperSection() {
           </Field>
           <Field label="Missing" nativeLabel={false} error="Add an image">
             <ImageInput aspect={16 / 9} invalid />
+          </Field>
+          <Field label="A wide logo, free aspect" nativeLabel={false}>
+            <div data-testid="image-input-wide">
+              <ImageInput defaultValue={WIDE_MARK} alt="Fictional wordmark" />
+            </div>
           </Field>
         </FormStack>
         <FormStack>

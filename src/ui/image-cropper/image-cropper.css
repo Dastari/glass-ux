@@ -284,10 +284,16 @@
   .fa-image-input[data-invalid] .fa-image-input-tile {
     box-shadow: inset 0 0 0 var(--border-width) var(--danger);
   }
+  /* The whole saved image, whatever its shape: a wide logo in a square tile sits within it
+     rather than losing its ends. An image of the tile's own shape fills it. The tile keeps its
+     size, so nothing beside it moves when the image loads. A round tile is a square crop. */
   .fa-image-input-tile > img {
     display: block;
     width: 100%;
     height: 100%;
+    object-fit: contain;
+  }
+  .fa-image-input-tile[data-shape="round"] > img {
     object-fit: cover;
   }
   .fa-image-input-tile > .fa-icon {

@@ -40,5 +40,13 @@ export const SCENE_COLOURS = Object.fromEntries(
   Object.entries(SCENES).map(([name, scene]) => [name, scene.near])
 ) as Record<keyof typeof SCENES, string>
 
+/** A wide fictional wordmark (800 × 346), for thumbnails of images that are not the tile's shape. */
+export const WIDE_MARK = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 346">
+<rect width="800" height="346" fill="#e8f1f6"/>
+<circle cx="60" cy="173" r="34" fill="#3f6680"/>
+<rect x="130" y="143" width="610" height="60" rx="30" fill="#6f93ad"/>
+<rect x="20" y="20" width="760" height="306" rx="24" fill="none" stroke="#2c4c63" stroke-width="12"/>
+</svg>`)}`
+
 /** A source that never decodes, for the failed-load specimen. */
 export const BROKEN_IMAGE = "data:image/png;base64,AAAA"

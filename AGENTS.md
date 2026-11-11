@@ -249,8 +249,13 @@ instead (a `needs-owner` label and a comment). The local route:
   scrolls the page and the Columns button "moves". The test needs the toolbar scrolled into view first.
 - DataTable has no drop target for files around its whole body (#22): the media demo puts a compact
   FileDrop in the toolbar. A `dropFiles` prop or a FileDrop wrapper mode would cover dragging anywhere.
-- Icons: no public runtime registry with names and keywords yet (#25, needs-owner: public API and about
-  40 KB in the package). The keywords live in the gallery's icons section.
+- Package size: 0.19.9 measures 12.97 MB unpacked (13 MB budget) and 3.94 MB archive (4 MB): about 26 KB
+  of room. The icon catalogue's data (`src/ui/icon-picker/icon-data.ts`, about 23 KB) is shared with the
+  gallery's icon page. The next addition needs the size pass or a budget decision first.
+- Focus room (#30, open for the owner): `.fa-window` (rounded clip), its `fill` body, `.fa-dt-scroll`
+  and `.fa-sch-tl-scroll` still cut the rings of controls flush with their edges. A clip margin on the
+  frame lets square content corners show past its rounded corners; insetting the fill body moves
+  edge-to-edge content. The audit (`e2e/focus-reach.spec.ts`) leaves the window pages out until then.
 - Base UI warns once in a while in dev that a RadioGroup changes from uncontrolled to controlled
   (two in a full e2e run); not yet traced to a component.
 - Dark Glass: `--code-comment` in a CodeBlock bare on a canvas is 3.72:1 at worst (Ruby on Hills)

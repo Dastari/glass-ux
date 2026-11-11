@@ -3,6 +3,20 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.8 → 0.19.9
+
+No code edits are needed.
+
+Behaviour to review:
+
+- The icon rail's list has `--focus-reach` of padding at its sides. In a rail with a width of its own
+  (the shell's) nothing moves; a rail with none is now 8 px wider than its items.
+- The primary (bare) window's scroll body has `--focus-reach` of padding at its sides, taken back with a
+  negative margin, so its content stays where it was. If you added inline padding or room for rings
+  there yourself, remove it.
+- The section drawer's title, a compact Notice's text, a DetailTile's value and detail, and
+  StatusBar's end values clip with `overflow: clip` instead of `hidden`.
+
 ## 0.19.7 → 0.19.8
 
 No code edits are needed.

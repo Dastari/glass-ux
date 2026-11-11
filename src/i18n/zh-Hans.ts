@@ -1810,6 +1810,17 @@ export default defineMessagePack("zh-Hans", {
     toneMediumDark: "中深色",
     toneDark: "深色",
   },
+  iconPicker: {
+    picker: "图标选择器",
+    icons: "图标",
+    searchLabel: "搜索图标",
+    searchPlaceholder: "搜索图标",
+    noResults: (query) => `没有与“${query}”匹配的图标`,
+    clearSearch: "清除搜索",
+    results: counted({other: "找到 {n} 个图标"}),
+    chooseIcon: "选择图标",
+    noIcon: "无图标",
+  },
   reactionBar: {
     reactions: "回应",
     addReaction: "添加回应",

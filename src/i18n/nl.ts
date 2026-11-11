@@ -1810,6 +1810,17 @@ export default defineMessagePack("nl", {
     toneMediumDark: "Middeldonker",
     toneDark: "Donker",
   },
+  iconPicker: {
+    picker: "Pictogramkiezer",
+    icons: "Pictogrammen",
+    searchLabel: "Pictogrammen zoeken",
+    searchPlaceholder: "Pictogrammen zoeken",
+    noResults: (query) => `Geen pictogram komt overeen met ‘${query}’`,
+    clearSearch: "Zoekopdracht wissen",
+    results: counted({one: "{n} pictogram gevonden", other: "{n} pictogrammen gevonden"}),
+    chooseIcon: "Kies een pictogram",
+    noIcon: "Geen pictogram",
+  },
   reactionBar: {
     reactions: "Reacties",
     addReaction: "Reactie toevoegen",

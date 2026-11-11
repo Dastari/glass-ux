@@ -1810,6 +1810,17 @@ export default defineMessagePack("ko", {
     toneMediumDark: "약간 어둡게",
     toneDark: "어둡게",
   },
+  iconPicker: {
+    picker: "아이콘 선택기",
+    icons: "아이콘",
+    searchLabel: "아이콘 검색",
+    searchPlaceholder: "아이콘 검색",
+    noResults: (query) => `"${query}"과(와) 일치하는 아이콘이 없습니다`,
+    clearSearch: "검색 지우기",
+    results: counted({other: "아이콘 {n}개를 찾았습니다"}),
+    chooseIcon: "아이콘 선택",
+    noIcon: "아이콘 없음",
+  },
   reactionBar: {
     reactions: "반응",
     addReaction: "반응 추가",

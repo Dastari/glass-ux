@@ -1810,6 +1810,17 @@ export default defineMessagePack("pt-BR", {
     toneMediumDark: "Médio-escuro",
     toneDark: "Escuro",
   },
+  iconPicker: {
+    picker: "Seletor de ícones",
+    icons: "Ícones",
+    searchLabel: "Pesquisar ícones",
+    searchPlaceholder: "Pesquisar ícones",
+    noResults: (query) => `Nenhum ícone corresponde a “${query}”`,
+    clearSearch: "Limpar pesquisa",
+    results: counted({one: "{n} ícone encontrado", other: "{n} ícones encontrados"}),
+    chooseIcon: "Escolher um ícone",
+    noIcon: "Nenhum ícone",
+  },
   reactionBar: {
     reactions: "Reações",
     addReaction: "Adicionar reação",

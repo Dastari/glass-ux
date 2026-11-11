@@ -1810,6 +1810,17 @@ export default defineMessagePack("he", {
     toneMediumDark: "כהה בינוני",
     toneDark: "כהה",
   },
+  iconPicker: {
+    picker: "בוחר סמלים",
+    icons: "סמלים",
+    searchLabel: "חיפוש סמלים",
+    searchPlaceholder: "חיפוש סמלים",
+    noResults: (query) => `אין סמלים שתואמים ל־"${query}"`,
+    clearSearch: "ניקוי החיפוש",
+    results: counted({one: "נמצא סמל אחד", two: "נמצאו {n} סמלים", other: "נמצאו {n} סמלים"}),
+    chooseIcon: "בחירת סמל",
+    noIcon: "ללא סמל",
+  },
   reactionBar: {
     reactions: "תגובות",
     addReaction: "הוספת תגובה",

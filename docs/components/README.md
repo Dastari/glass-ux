@@ -92,6 +92,7 @@ For sign-in, providers, two-factor codes, password reset and account creation, s
 | [CommentThread](comment-thread.md) | `CommentThread`                                    | Comments and one level of replies with a rich text composer and mentions: sends that show at once and fail in place, permissions from the host |
 | [ReactionBar](reaction-bar.md)  | `ReactionBar`                                         | Emoji reactions with counts: toggles named for what they say, one tab stop, a picker loaded on demand |
 | [EmojiPicker](emoji-picker.md)  | `EmojiPicker`, `EmojiPopover`                         | Searchable emoji in the system font, one tab stop, with its data loaded on demand; English names unless the application supplies others |
+| [Icon picker](icon-picker.md)   | `IconField`, `IconInput`, `IconPicker`, `iconCatalogue` | Choose an icon from the set by name or by the words people use for it; the value is the icon's name |
 | [FileDialog and FileProvider](file-dialog.md) | `FileDialog`, `FileConflictDialog`, `FileDialogPreview` | Open and save over a storage contract: paged folders, thumbnails, conflicts that close nothing; the host reads and writes |
 | [Lightbox and ImageViewer](lightbox.md) | `Lightbox`, `ImageViewer`                       | Pictures at full size, in a dialog or the page: zoom and pan, rotate and flip, full screen, slideshow, details |
 | [Kanban](kanban.md)             | `Kanban`, `KanbanCard`                                | Columns of cards on drag and drop: limits that refuse with a reason, collapse, saves that fly back |

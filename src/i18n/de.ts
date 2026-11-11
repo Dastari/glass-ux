@@ -1810,6 +1810,17 @@ export default defineMessagePack("de", {
     toneMediumDark: "Mitteldunkel",
     toneDark: "Dunkel",
   },
+  iconPicker: {
+    picker: "Symbolauswahl",
+    icons: "Symbole",
+    searchLabel: "Symbole suchen",
+    searchPlaceholder: "Symbole suchen",
+    noResults: (query) => `Kein Symbol entspricht „${query}“`,
+    clearSearch: "Suche löschen",
+    results: counted({one: "{n} Symbol gefunden", other: "{n} Symbole gefunden"}),
+    chooseIcon: "Symbol auswählen",
+    noIcon: "Kein Symbol",
+  },
   reactionBar: {
     reactions: "Reaktionen",
     addReaction: "Reaktion hinzufügen",

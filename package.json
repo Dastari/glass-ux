@@ -578,6 +578,10 @@
       "types": "./dist/lib/i18n/index.d.ts",
       "import": "./dist/lib/i18n/index.js"
     },
+    "./icon-picker": {
+      "types": "./dist/ui/icon-picker/index.d.ts",
+      "import": "./dist/ui/icon-picker/index.js"
+    },
     "./icons": {
       "types": "./dist/icons/generated/icons.d.ts",
       "import": "./dist/icons/generated/icons.js"

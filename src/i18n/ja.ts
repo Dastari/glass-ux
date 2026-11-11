@@ -1810,6 +1810,17 @@ export default defineMessagePack("ja", {
     toneMediumDark: "やや暗い",
     toneDark: "暗い",
   },
+  iconPicker: {
+    picker: "アイコンピッカー",
+    icons: "アイコン",
+    searchLabel: "アイコンを検索",
+    searchPlaceholder: "アイコンを検索",
+    noResults: (query) => `「${query}」に一致するアイコンはありません`,
+    clearSearch: "検索をクリア",
+    results: counted({other: "{n}件のアイコンが見つかりました"}),
+    chooseIcon: "アイコンを選択",
+    noIcon: "アイコンなし",
+  },
   reactionBar: {
     reactions: "リアクション",
     addReaction: "リアクションを追加",

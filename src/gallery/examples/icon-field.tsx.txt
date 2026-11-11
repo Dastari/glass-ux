@@ -1,0 +1,46 @@
+import { z } from "zod";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { Form, FormActions, FormStack, formBehaviour, useAppForm } from "glass-ux/form";
+import { IconField } from "glass-ux/icon-picker";
+import { wait } from "glass-ux/gallery/sections/forms.fixtures";
+
+/** Asset types an application files its equipment under: each keeps its icon's name. */
+function AssetTypeDemo() {
+  const form = useAppForm({
+    ...formBehaviour,
+    defaultValues: { name: "Ground power units", icon: "ground-power" as string | null },
+    validators: { onDynamic: z.object({ name: z.string().min(1), icon: z.string().nullable() }) },
+    onSubmit: () => wait(600),
+  });
+  return (
+    <Form form={form} aria-label="Asset type" className="w-full" data-testid="icon-form">
+      <FormStack>
+        <form.AppField name="name">{(field) => <field.TextField label="Name" />}</form.AppField>
+        <form.AppField name="icon">{() => <IconField label="Icon" clearable />}</form.AppField>
+        <form.Subscribe selector={(state) => state.values.icon}>
+          {(icon) => (
+            <p className="fa-hint" data-testid="icon-value">
+              Stored: {icon ?? "null"}
+            </p>
+          )}
+        </form.Subscribe>
+        <FormActions>
+          <form.SubmitButton>Save</form.SubmitButton>
+        </FormActions>
+      </FormStack>
+    </Form>
+  );
+}
+
+export default function IconPickerSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="In a form"
+        description="IconField holds the chosen icon's name, or null. The search also finds an icon by the words people use for it: try GPU, truck or stairs."
+      >
+        <AssetTypeDemo />
+      </Specimen>
+    </SectionPage>
+  );
+}

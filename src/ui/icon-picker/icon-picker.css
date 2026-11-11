@@ -1,0 +1,135 @@
+/*
+ * IconPicker — the icon set in a fixed box, so a search and an empty result never resize a
+ * popover. The grid adapts its columns to its width; arrow keys read the tracks back from it.
+ * IconInput is a select-like box showing the chosen icon and its name.
+ *
+ * Component tokens
+ *   --_cell   an icon cell
+ *   --_h      the picker's height
+ */
+@layer components {
+  .fa-icon-picker {
+    --_cell: var(--control-h-sm);
+    --_h: 22rem;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: var(--space-2);
+    width: 100%;
+    height: var(--_h);
+    max-height: calc(100dvh - var(--space-16));
+    min-width: 0;
+  }
+  .fa-icon-picker-body {
+    position: relative;
+    min-height: 0;
+    min-width: 0;
+  }
+  .fa-icon-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--_cell), 1fr));
+    grid-auto-rows: var(--_cell);
+    align-content: start;
+    gap: var(--space-half);
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--focus-reach);
+    margin: calc(var(--focus-reach) * -1);
+  }
+  .fa-icon-option {
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-item);
+    color: var(--fg-muted);
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    transition: background-color var(--duration-fast) var(--ease-standard);
+    content-visibility: auto;
+    contain-intrinsic-size: var(--_cell);
+  }
+  .fa-icon-option > svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-icon-option:hover {
+    background: var(--fill-hover);
+    color: var(--fg);
+  }
+  .fa-icon-option[aria-selected="true"] {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
+  .fa-icon-option:focus-visible {
+    background: var(--fill-hover);
+    color: var(--fg);
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-width) * -1);
+  }
+  .fa-icon-picker-foot {
+    display: flex;
+    align-items: center;
+    min-height: var(--control-h-xs);
+    min-width: 0;
+    color: var(--fg-muted);
+    font-size: var(--type-caption-size);
+    line-height: var(--type-caption-line);
+  }
+  .fa-icon-popup-field {
+    display: grid;
+    gap: var(--space-2);
+    width: 100%;
+  }
+  .fa-icon-popup-clear {
+    justify-self: start;
+  }
+
+  /* ── IconInput ─────────────────────────────────────────────────────────── */
+  .fa-icon-input-frame {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+  .fa-icon-input-frame[data-width="short"] {
+    max-width: var(--field-short);
+  }
+  .fa-icon-input-frame[data-width="medium"] {
+    max-width: var(--field-medium);
+  }
+  .fa-icon-input {
+    gap: var(--space-2);
+    text-align: start;
+    font: inherit;
+    cursor: pointer;
+  }
+  .fa-icon-input[data-readonly] {
+    cursor: default;
+  }
+  .fa-icon-input-glyph {
+    flex: none;
+    width: var(--icon-md);
+    height: var(--icon-md);
+  }
+  .fa-icon-input-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: clip;
+    overflow-clip-margin: var(--focus-reach);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fa-icon-input-text[data-placeholder] {
+    color: var(--fg-subtle);
+  }
+  .fa-icon-input-chevron {
+    flex: none;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--fg-subtle);
+  }
+  @media (forced-colors: active) {
+    .fa-icon-option[aria-selected="true"] {
+      outline: var(--border-width) solid Highlight;
+    }
+  }
+}

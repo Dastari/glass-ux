@@ -1,0 +1,35 @@
+import { useState } from "react";
+import { SectionPage, Specimen } from "glass-ux/gallery/kit";
+import { IconPicker, iconCatalogue } from "glass-ux/icon-picker";
+
+const EQUIPMENT = iconCatalogue.filter(
+  (entry) => entry.group === "aviation" || entry.group === "vehicles" || entry.group === "tools",
+);
+
+function PanelDemo() {
+  const [picked, setPicked] = useState<string | null>("crane");
+  return (
+    <div className="flex w-full max-w-sm flex-col gap-2" data-testid="icon-picker-panel">
+      <IconPicker
+        value={picked}
+        onValueChange={setPicked}
+        icons={EQUIPMENT}
+        aria-label="Equipment icon"
+      />
+      <p className="fa-hint">Picked: {picked}</p>
+    </div>
+  );
+}
+
+export default function IconPickerSection() {
+  return (
+    <SectionPage>
+      <Specimen
+        title="A set of your own"
+        description="icons takes any list of catalogue entries: here the aviation, vehicle and tool icons only. The grid is one tab stop; arrow keys move through it."
+      >
+        <PanelDemo />
+      </Specimen>
+    </SectionPage>
+  );
+}

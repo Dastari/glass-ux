@@ -1811,6 +1811,17 @@ export default defineMessagePack("ar", {
     toneMediumDark: "داكن متوسط",
     toneDark: "داكن",
   },
+  iconPicker: {
+    picker: "منتقي الأيقونات",
+    icons: "الأيقونات",
+    searchLabel: "البحث في الأيقونات",
+    searchPlaceholder: "البحث في الأيقونات",
+    noResults: (query) => `لا توجد أيقونات تطابق «${query}»`,
+    clearSearch: "مسح البحث",
+    results: counted({zero: "لم يُعثر على أيقونات", one: "تم العثور على أيقونة واحدة", two: "تم العثور على أيقونتين", few: "تم العثور على {n} أيقونات", many: "تم العثور على {n} أيقونة", other: "تم العثور على {n} أيقونة"}),
+    chooseIcon: "اختيار أيقونة",
+    noIcon: "بلا أيقونة",
+  },
   reactionBar: {
     reactions: "التفاعلات",
     addReaction: "إضافة تفاعل",

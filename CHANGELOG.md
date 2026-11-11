@@ -6,6 +6,14 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ## Unreleased
 
+### Added
+
+- `glass-ux/icon-picker`: IconField, IconInput and IconPicker let a person give something an icon from
+  the set, found by name or by the words people use for it (GPU finds ground-power, truck finds
+  supplier); the value is the icon's name. The grid is one tab stop with arrow keys, and `clearable`
+  offers No icon. `iconCatalogue` lists every icon with its name, component, group and search words,
+  `ICON_GROUPS` the groups in order, and `searchIcons` is the picker's search (#25).
+
 ### Fixed
 
 - Focus rings at the edges of clipping containers (R11.10, #30): the section drawer's title, a compact

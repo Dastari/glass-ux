@@ -18,6 +18,6 @@ it becomes `TabNav`'s horizontal strip, whose More menu rows are links. Router-a
 | children | `ReactNode` | See type | no | — | The section's content (the route's outlet). |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | items | `T[]` | See type | yes | — | The collection rendered by the component. Stable identifiers preserve selection and keyboard focus. |
-| layout | `VerticalTabsLayout \| undefined` | "select", "tabs", "rail", "icons", "chips" | no | — | Layout or presentation mode. |
+| layout | `VerticalTabsLayout \| undefined` | "select", "tabs", "icons", "rail", "chips" | no | — | Layout or presentation mode. |
 | renderLink | `RenderVerticalTabLink<T>` | See type | yes | — | Renders a link with the host router. |
 | value | `string \| null` | See type | yes | — | The active section's value — derived from the location by the route adapter. |

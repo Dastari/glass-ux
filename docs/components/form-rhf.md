@@ -9,6 +9,7 @@ pnpm add react-hook-form @hookform/resolvers
 ```
 
 ```tsx
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -26,11 +27,16 @@ export function ContactForm() {
     resolver: zodResolver(schema),
     defaultValues: { email: "", budget: 12500 as number | null },
   });
-  return <RhfForm form={form} onSubmit={async values => { await saveContact(values); form.reset(values); }}>
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+  // Make the saved values the new baseline once the submission has settled.
+  useEffect(() => {
+    if (isSubmitSuccessful) form.reset(form.getValues(), { keepIsSubmitSuccessful: true });
+  }, [form, isSubmitSuccessful]);
+  return <RhfForm form={form} onSubmit={saveContact}>
     <FormStack>
       <RhfField control={form.control} name="email" component={EmailField} label="Email" />
       <RhfField control={form.control} name="budget" component={MoneyField} label="Monthly budget" />
-      <FormActions><Button type="submit" disabled={!form.formState.isDirty} status={form.formState.isSubmitting ? "pending" : "idle"}>Save contact</Button></FormActions>
+      <FormActions><Button type="submit" disabled={!isDirty} status={isSubmitting ? "pending" : isSubmitSuccessful && !isDirty ? "success" : "idle"}>Save contact</Button></FormActions>
     </FormStack>
   </RhfForm>;
 }
@@ -40,7 +46,9 @@ The application supplies `saveContact`. `RhfForm` supplies RHF context, disables
 validation and focuses the first invalid field after submit. It preserves resolver output
 types, including transformed Zod values. `onError` receives exceptions from the save callback.
 Use RHF's `formState.isSubmitting` and `isSubmitSuccessful` for the initiating button's
-feedback; call `reset(savedValues)` after a successful save to establish the new baseline.
+feedback. Reset to the saved values after the submission settles, as above, with
+`keepIsSubmitSuccessful`: a `reset()` inside `onSubmit` cancels the submission's success state
+from react-hook-form 7.92.
 
 `RhfField` accepts the usual controller options (`control`, `name`, `rules`, `defaultValue`,
 `shouldUnregister`, `disabled`), a bound `component`, and that component's normal props.

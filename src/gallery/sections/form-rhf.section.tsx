@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -34,6 +35,13 @@ export default function RhfSection() {
     defaultValues: defaults,
     resolver: zodResolver(schema),
   });
+  const { isDirty, isSubmitting, isSubmitSuccessful } = form.formState;
+  // The saved values become the new baseline once the submission has settled: a reset inside
+  // onSubmit cancels the submission's success state (react-hook-form 7.92 and later).
+  useEffect(() => {
+    if (isSubmitSuccessful)
+      form.reset(form.getValues(), { keepIsSubmitSuccessful: true });
+  }, [form, isSubmitSuccessful]);
   return (
     <SectionPage>
       <Specimen
@@ -45,9 +53,7 @@ export default function RhfSection() {
           form={form}
           aria-label="RHF site contact"
           data-testid="rhf-contact"
-          onSubmit={async (values) => {
-            form.reset(values);
-          }}
+          onSubmit={async () => {}}
         >
           <FormStack>
             <RhfField
@@ -81,11 +87,11 @@ export default function RhfSection() {
               <Button
                 type="submit"
                 variant="primary"
-                disabled={!form.formState.isDirty}
+                disabled={!isDirty}
                 status={
-                  form.formState.isSubmitting
+                  isSubmitting
                     ? "pending"
-                    : form.formState.isSubmitSuccessful
+                    : isSubmitSuccessful && !isDirty
                       ? "success"
                       : "idle"
                 }

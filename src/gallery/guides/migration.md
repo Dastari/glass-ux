@@ -3,6 +3,20 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.9 → 0.19.10
+
+No code edits are needed.
+
+Behaviour to review:
+
+- TanStack Virtual 3.14.26 sizes a virtualised scroller from its `clientWidth` and `clientHeight`
+  instead of its offset sizes. jsdom tests of DataTable, Tree, TreeSelect, TransferList, FileDialog or
+  VirtualList that stub `offsetHeight` and `offsetWidth` render no rows until they stub `clientHeight`
+  and `clientWidth` too. Browsers are unaffected.
+- With react-hook-form 7.92 or later, a form that calls `reset()` inside `onSubmit` never sets
+  `isSubmitSuccessful`. Reset in an effect once the submission succeeds, with
+  `keepIsSubmitSuccessful: true`, as the [React Hook Form guide](components/form-rhf.md) shows.
+
 ## 0.19.8 → 0.19.9
 
 No code edits are needed.

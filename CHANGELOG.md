@@ -4,6 +4,22 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.19.10
+
+### Changed
+
+- Dependencies at their latest releases: TanStack Router 1.170.46 and Virtual 3.14.26, React 19.3.1,
+  Lexical 0.53, MapLibre 6.18, Shiki 4.6, libphonenumber-js 1.13.16 and the d3 modules' patch releases,
+  built and tested with Vite 8.3.8, Tailwind 4.3.5, Vitest 5.1, Playwright 1.65.1 and jsdom 31.
+- The `@hookform/resolvers` peer range accepts version 7 (`>=5 <8`); 7 changes only the TypeBox resolver.
+- The docs kit's site template pins the same React, TanStack Router, Vite, Tailwind and Prettier versions.
+
+### Fixed
+
+- The React Hook Form guide and demo reset to the saved values after the submission settles, keeping
+  `isSubmitSuccessful`. From react-hook-form 7.92, a `reset()` inside `onSubmit` stops the submission's
+  success state, so a Save button showing `isSubmitSuccessful` never reported success.
+
 ## 0.19.9
 
 ### Added

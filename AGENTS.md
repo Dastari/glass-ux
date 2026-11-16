@@ -200,7 +200,11 @@ instead (a `needs-owner` label and a comment). The local route:
   stay positioned or clipped at rest; cells are the containing block for an application's cell content.
 - Browser tests on this box: another project's Docker containers (`graphql-orm-*`) can cycle every few
   seconds, and each network-interface change makes Chromium abort page loads (`ERR_NETWORK_CHANGED`).
-  Check `docker ps` before trusting a run of blank-page failures.
+  Check `docker ps` before trusting a run of blank-page failures. Running Playwright inside a private
+  network namespace avoids it: `unshare -rn sh -c 'ip link set lo up && … pnpm exec playwright test …'`.
+  The namespace has no internet, so run `maps-basemap.spec.ts` outside it.
+- Held dependencies: TypeScript stays on 6.0 until typedoc supports 7 (#32); `@axe-core/playwright`
+  stays on 4.13 until the Label in Name findings that 4.14 reports are fixed (#31).
 - Next.js support is verified with webpack (`pnpm test:next`), not Turbopack; forced colours
   only with Chromium's emulation, not Windows High Contrast itself.
 

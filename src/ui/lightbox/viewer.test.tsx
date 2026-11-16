@@ -56,7 +56,8 @@ describe("Lightbox: view", () => {
     expect(document.querySelector<HTMLElement>(".fa-lightbox-picture")!.style.transform).toContain("scale(-1, 1)")
     expect(screen.getByRole("img", { name: "First" }).getAttribute("src")).toBe(source)
     key("ArrowRight")
-    expect(document.querySelector<HTMLElement>(".fa-lightbox-picture")!.style.transform).toContain("scale(1, 1)")
+    // jsdom 31 serialises an unflipped scale(1, 1) as scale(1).
+    expect(document.querySelector<HTMLElement>(".fa-lightbox-picture")!.style.transform).toMatch(/scale\(1(, 1)?\)/)
   })
 
   it("offers only the tool groups asked for, and ignores their keys", async () => {

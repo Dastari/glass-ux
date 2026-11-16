@@ -21,7 +21,9 @@ beforeEach(() => {
   vi.stubGlobal("matchMedia", (query: string) => ({ matches: false, media: query, addEventListener() {}, removeEventListener() {} }))
   // jsdom lays nothing out: the scroller gets a height so the virtualiser has a window to fill.
   vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(400)
+  vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(400)
   vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockReturnValue(600)
+  vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(600)
   vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({ x: 0, y: 0, width: 600, height: 400, top: 0, left: 0, right: 600, bottom: 400, toJSON: () => null })
   HTMLElement.prototype.scrollTo = () => undefined
 })

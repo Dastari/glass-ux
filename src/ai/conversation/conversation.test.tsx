@@ -71,7 +71,13 @@ describe("ConversationLog following the end", () => {
   /** A scroller whose geometry the test sets: jsdom lays nothing out. */
   const geometry = (element: HTMLElement) => {
     const box = { scrollTop: 0, scrollHeight: 1000, clientHeight: 400 }
-    Object.defineProperty(element, "scrollTop", { configurable: true, get: () => box.scrollTop, set: (value: number) => (box.scrollTop = Math.min(value, box.scrollHeight - box.clientHeight)) })
+    Object.defineProperty(element, "scrollTop", {
+      configurable: true,
+      get: () => box.scrollTop,
+      set: (value: number) => {
+        box.scrollTop = Math.min(value, box.scrollHeight - box.clientHeight)
+      },
+    })
     Object.defineProperty(element, "scrollHeight", { configurable: true, get: () => box.scrollHeight })
     Object.defineProperty(element, "clientHeight", { configurable: true, get: () => box.clientHeight })
     return box

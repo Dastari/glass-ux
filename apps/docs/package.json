@@ -10,14 +10,14 @@
   },
   "dependencies": {
     "glass-ux": "workspace:*",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "@tanstack/react-router": "1.170.43"
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@tanstack/react-router": "1.170.46"
   },
   "devDependencies": {
-    "vite": "8.3.4",
-    "@vitejs/plugin-react": "6.1.2",
-    "@tailwindcss/vite": "4.3.3",
-    "tailwindcss": "4.3.3"
+    "vite": "8.3.8",
+    "@vitejs/plugin-react": "6.3.0",
+    "@tailwindcss/vite": "4.3.5",
+    "tailwindcss": "4.3.5"
   }
 }

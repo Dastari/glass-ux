@@ -19,7 +19,13 @@ beforeAll(() => {
       return this.classList.contains("fa-virtual-list") ? 180 : 30;
     },
   );
+  vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockImplementation(
+    function () {
+      return this.classList.contains("fa-virtual-list") ? 180 : 30;
+    },
+  );
   vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockReturnValue(500);
+  vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(500);
 });
 afterEach(cleanup);
 afterAll(() => {

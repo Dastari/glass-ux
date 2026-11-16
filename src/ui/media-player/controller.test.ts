@@ -17,7 +17,13 @@ function fakeMedia() {
   let time = 0
   let paused = true
   Object.defineProperties(media, {
-    currentTime: { get: () => time, set: (value: number) => ((time = value), media.dispatchEvent(new Event("seeked"))) },
+    currentTime: {
+      get: () => time,
+      set: (value: number) => {
+        time = value
+        media.dispatchEvent(new Event("seeked"))
+      },
+    },
     paused: { configurable: true, get: () => paused },
     duration: { configurable: true, value: 60 },
     seekable: { configurable: true, value: { length: 1, start: () => 0, end: () => 60 } },

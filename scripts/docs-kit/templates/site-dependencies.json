@@ -1,12 +1,12 @@
 {
-  "@tailwindcss/vite": "4.3.3",
-  "@tanstack/react-router": "1.170.43",
-  "@vitejs/plugin-react": "6.1.2",
-  "prettier": "^3.9.10",
-  "react": "19.3.0",
-  "react-dom": "19.3.0",
-  "tailwindcss": "4.3.3",
+  "@tailwindcss/vite": "4.3.5",
+  "@tanstack/react-router": "1.170.46",
+  "@vitejs/plugin-react": "6.3.0",
+  "prettier": "^3.10.1",
+  "react": "19.3.1",
+  "react-dom": "19.3.1",
+  "tailwindcss": "4.3.5",
   "typedoc": "0.28.20",
   "typescript": "~6.0.3",
-  "vite": "8.3.4"
+  "vite": "8.3.8"
 }

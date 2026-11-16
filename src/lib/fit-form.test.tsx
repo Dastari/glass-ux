@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, render } from "@testing-library/react"
 import { useRef } from "react"
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest"
 import { fitForm, nextFitForm, overflowsOwnBox, useFitForm, type FitWidths } from "./fit-form.js"
 
 const FORMS = ["full", "icons", "menu"] as const
@@ -176,6 +176,10 @@ function row(direction: "ltr" | "rtl", item: { offsetLeft: number; offsetWidth: 
   const last = document.createElement("div")
   Object.defineProperty(last, "offsetLeft", { value: item.offsetLeft })
   Object.defineProperty(last, "offsetWidth", { value: item.offsetWidth })
+  // Computed style is empty for a detached element, as in a browser.
+  root.append(last)
+  document.body.append(root)
+  onTestFinished(() => root.remove())
   return [root, last] as const
 }
 

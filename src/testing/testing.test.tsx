@@ -27,7 +27,13 @@ beforeAll(() => {
       return this.classList.contains("fa-dt-scroll") ? 300 : 32;
     },
   );
+  vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockImplementation(
+    function () {
+      return this.classList.contains("fa-dt-scroll") ? 300 : 32;
+    },
+  );
   vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockReturnValue(1200);
+  vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(1200);
   vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(
     function () {
       return {

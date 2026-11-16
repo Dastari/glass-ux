@@ -29,6 +29,9 @@ beforeAll(() => {
   vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockImplementation(function (this: HTMLElement) {
     return this.classList.contains("fa-dt-scroll") ? 400 : 0;
   });
+  vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockImplementation(function (this: HTMLElement) {
+    return this.classList.contains("fa-dt-scroll") ? 400 : 0;
+  });
 });
 afterEach(() => {
   cleanup();

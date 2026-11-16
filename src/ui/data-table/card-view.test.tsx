@@ -30,6 +30,11 @@ beforeAll(() => {
       return this.classList.contains("fa-dt-scroll") ? 400 : 0;
     },
   );
+  vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockImplementation(
+    function () {
+      return this.classList.contains("fa-dt-scroll") ? 400 : 0;
+    },
+  );
 });
 afterEach(() => {
   cleanup();

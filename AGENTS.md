@@ -170,8 +170,11 @@ instead (a `needs-owner` label and a comment). The local route:
 - Focus room (R11.10, `e2e/focus-reach.spec.ts`): Safari ignores `overflow-clip-margin`, so
   truncated titles and clipped frames still cut rings there; a shaded (bar-only) window cuts
   its title-bar buttons' rings by 1px.
-- Package size: the budgets rose to 13 MB unpacked and 4 MB archive for 0.14. The owner wants an
-  optimisation pass after that release; `dist/ui` and the language packs are the largest parts.
+- Package size: the budgets are 15 MB unpacked and 4.5 MB archive since 0.19.11 (13 MB and 4 MB before).
+  A study of 0.19.11 found about 75–240 KB of savings with nothing visible changing (explicit types on the
+  602 icon exports, unreachable private declarations, a stale rich-text README) and 107 KB from retiring
+  six backgrounds; the owner judged that not yet worth it. The likelier saving is a release variant
+  without the installed API pages and docs (1.36 MB). `dist/ui` and the language packs are the largest parts.
 - Native-speaker review: "chroma" in the Arabic and Hebrew colour picker messages, and
   "preview class" in Japanese, Korean, Arabic and Hebrew (`results.previewUnavailable`).
 - Native-speaker review of `dataTable.sortColumnsDensity` (Spanish and Portuguese use a noun for sort, French
@@ -260,9 +263,6 @@ instead (a `needs-owner` label and a comment). The local route:
   scrolls the page and the Columns button "moves". The test needs the toolbar scrolled into view first.
 - DataTable has no drop target for files around its whole body (#22): the media demo puts a compact
   FileDrop in the toolbar. A `dropFiles` prop or a FileDrop wrapper mode would cover dragging anywhere.
-- Package size: 0.19.11 measures 12,993,372 bytes unpacked (13 MB budget) and 3.95 MB archive (4 MB):
-  about 6.6 KB of room. The icon catalogue's data (`src/ui/icon-picker/icon-data.ts`, about 23 KB) is shared
-  with the gallery's icon page. The next addition needs the size pass or a budget decision first.
 - Focus room (#30, open for the owner): `.fa-window` (rounded clip), its `fill` body, `.fa-dt-scroll`
   and `.fa-sch-tl-scroll` still cut the rings of controls flush with their edges. A clip margin on the
   frame lets square content corners show past its rounded corners; insetting the fill body moves

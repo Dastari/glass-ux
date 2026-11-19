@@ -37,7 +37,11 @@ const out = outIndex === -1 ? join(root, ".handoff") : resolve(args[outIndex + 1
 // 11 MB and 3.5 MB → 13 MB and 4 MB, approved by the owner for 0.14: 12.0 MB and 3.7 MB measured, with 36
 // more documented components (400 to 436), messages in eleven packs and 131 icons. Readable ESM unchanged; an
 // optimisation pass is planned after 0.14.
-const BUDGET = { unpacked: 13_000_000, archive: 4_000_000 }
+// 13 MB and 4 MB → 15 MB and 4.5 MB, approved by the owner after 0.19.11 (2026-11-19): 12.99 MB and 3.95 MB
+// measured, 6.6 KB under the old cap. A size study found about 75–240 KB of savings without a visible change and
+// 107 KB from retiring six canvas backgrounds; the owner judged that too little to act on yet. A release variant
+// without the installed API pages and docs (1.36 MB) is the likelier future saving. Readable ESM unchanged.
+const BUDGET = { unpacked: 15_000_000, archive: 4_500_000 }
 
 /** Paths relative to the package root that the release leaves out. */
 const excluded = (path) =>

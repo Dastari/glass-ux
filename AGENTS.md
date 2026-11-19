@@ -87,8 +87,13 @@ gains nothing from it, including `docs/docs-kit.md`, which `excluded()` leaves o
   not through attribute- or element-only selectors (see `scripts/style-manifest.mjs`).
 - Module-level `Object.assign`, `memo`, `createContext` and `lazy` wrappers carry
   `/* @__PURE__ */` (`pnpm pure:check`), or an unused part keeps its whole component in a bundle.
-- The owner judges visual changes in a browser. Serve the built fixtures or docs on the LAN
-  (`--host 0.0.0.0`) with an index page and keys or toggles to compare variants; built pages
+- The owner judges visual changes in a browser. Bind every preview (dev server, `vite preview`,
+  built fixtures or docs) to this box's Tailscale name, `--host development.tail7a58a6.ts.net`,
+  and give the owner links by that name (`http://development.tail7a58a6.ts.net:<port>/…`), never
+  a LAN, Docker or `localhost` address. Start it detached (`setsid nohup … &`) so it outlives a
+  session and the two-hour limit on background commands. Bound to the name it listens on the
+  Tailscale address only, so a check on this box uses the name too, not `localhost`. Give the
+  preview an index page and keys or toggles to compare variants; built pages
   need relative or correct base asset paths, or fonts and artwork silently go missing.
   Compare isolated demos in fixed states (frozen clock, seeded randomness, same scroll
   position): whole docs-page diffs mislead, because scroll-spy, anchors, load timing and
@@ -160,6 +165,8 @@ instead (a `needs-owner` label and a comment). The local route:
   DragDrop keyboard travel reaches only rendered (virtualised) rows, so keyboard moves between
   far rows use the event's arrow keys. `grip.svg` differs from its authoring definition.
 - File context menus have no icon for "Copy path".
+- `count` (R8.5) is not yet on PaneLayout pane tabs, ToolbarButton overlays, ListRow, CommandPalette
+  items or Checkbox/Radio facet counts; they still take the number in their label or `detail`.
 - Focus room (R11.10, `e2e/focus-reach.spec.ts`): Safari ignores `overflow-clip-margin`, so
   truncated titles and clipped frames still cut rings there; a shaded (bar-only) window cuts
   its title-bar buttons' rings by 1px.
@@ -253,9 +260,9 @@ instead (a `needs-owner` label and a comment). The local route:
   scrolls the page and the Columns button "moves". The test needs the toolbar scrolled into view first.
 - DataTable has no drop target for files around its whole body (#22): the media demo puts a compact
   FileDrop in the toolbar. A `dropFiles` prop or a FileDrop wrapper mode would cover dragging anywhere.
-- Package size: 0.19.9 measures 12.97 MB unpacked (13 MB budget) and 3.94 MB archive (4 MB): about 26 KB
-  of room. The icon catalogue's data (`src/ui/icon-picker/icon-data.ts`, about 23 KB) is shared with the
-  gallery's icon page. The next addition needs the size pass or a budget decision first.
+- Package size: 0.19.11 measures 12,993,372 bytes unpacked (13 MB budget) and 3.95 MB archive (4 MB):
+  about 6.6 KB of room. The icon catalogue's data (`src/ui/icon-picker/icon-data.ts`, about 23 KB) is shared
+  with the gallery's icon page. The next addition needs the size pass or a budget decision first.
 - Focus room (#30, open for the owner): `.fa-window` (rounded clip), its `fill` body, `.fa-dt-scroll`
   and `.fa-sch-tl-scroll` still cut the rings of controls flush with their edges. A clip margin on the
   frame lets square content corners show past its rounded corners; insetting the fill body moves

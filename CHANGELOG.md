@@ -4,6 +4,32 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.19.11
+
+### Added
+
+- A `count` prop for the number beside a label, drawn in the form that suits where it sits (R8.5):
+  - Segmented options: a count badge after the label, tinted with the chosen segment's pill; on an
+    icon-only segment, the solid overlay on the icon's corner; in the collapsed menu, a badge on the
+    button and plain figures at the end of each row.
+  - Menu rows (`Menu.Item`, `LinkItem`, `CheckboxItem`, `RadioItem`, `Submenu`, ContextMenu and the
+    static MenuPreview): plain trailing figures before any shortcut or chevron.
+  - Select, Combobox, MultiSelect and Autocomplete options: plain trailing figures.
+  - Accordion items and Disclosure: a count badge right after the title, with `meta` kept at the
+    trailing edge.
+
+  Badges cap at 999+; trailing figures show the exact number. The count is in locale digits and
+  stays in the accessible name after the label ("Open 12"), so Label in Name holds.
+- R8.5 in the UI rules: a count goes in `count`, never in the label text.
+
+### Changed
+
+- Kanban's phone column switcher passes each column's count as `count` instead of in its label.
+- Menu rows with several trailing parts (a shortcut and a note) keep them together at the end; the free
+  space was split between them before.
+- Every row of a collapsed Segmented menu reserves the check's slot, so labels line up whichever row
+  is chosen.
+
 ## 0.19.10
 
 ### Changed

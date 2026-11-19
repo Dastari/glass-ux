@@ -3,6 +3,20 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.10 → 0.19.11
+
+No code edits are needed.
+
+Behaviour to review:
+
+- If you put a number in a label to show a count (a Segmented option's `label: "Open 12"`, a menu
+  row's text, an option's `detail`, an Accordion item's `meta`), move it to the new `count` prop. It
+  is drawn as a badge or as trailing figures to suit the component, in locale digits, and stays in
+  the accessible name.
+- Menu rows with both a shortcut and a trailing note now keep them together at the trailing edge.
+- A collapsed Segmented menu reserves the check's slot on every row, so its rows' labels move to
+  line up with the chosen one.
+
 ## 0.19.9 → 0.19.10
 
 No code edits are needed.
